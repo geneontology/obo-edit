@@ -1,0 +1,37 @@
+[% INCLUDE filters.tmpl;
+	a_filters = ['ont', 'evcode', 'qual', 'assby'];
+	filters = [];
+	FOREACH f = a_filters;
+		IF filterdata.$f;
+			filters.push(f);
+		END;
+	END;
+	IF filters.size > 0 %]
+<dl>
+	<dt id="filterToggle" class="toggle">Filter associations displayed <a href="http://www.geneontology.org/amigo/help-filter_gp_comp.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
+	<dd id="filterDiv">
+		<form action="gp-assoc.cgi">
+			<fieldset class="floatL block">
+				<legend>Filter Associations</legend> 
+			[% FOREACH opt_name = filters;
+					INCLUDE options_select.tmpl;
+				END; %]
+			</fieldset>
+		[% FOREACH g = gplist %]
+			<input type="hidden" name="gp" value="[% g %]">
+		[% END %]
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input class="button" type="submit" value="Set filters"> 
+		</form>
+		<form action="gp-assoc.cgi">
+		[% FOREACH g = gplist %]
+			<input type="hidden" name="gp" value="[% g %]">
+		[% END %]
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input type="hidden" name="action" value="reset-filters">
+			<input class="button" type="submit" value="Remove all filters"> 
+		</form>
+<hr class="clearL">
+	</dd>
+</dl>
+[% END %]

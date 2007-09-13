@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		[% INCLUDE header_info.tmpl %]
+		[% INCLUDE header_refresh.tmpl %]
+		<title>AmiGO: BLAST Query Submission</title>
+	</head>
+	<body>
+	<div id="header">
+		[% INCLUDE header.tmpl %]
+		[% INCLUDE bar_generic.tmpl %]
+	</div>
+	<div class="contents">
+		<h1>AmiGO: BLAST Query Submission</h1>
+		<div class="block">
+			<h2>Still Waiting...</h2>
+			<p>We're sorry, your job has not yet finished.</p>
+		
+			<p>Please be patient as your job may take several minutes to complete. This page will automatically refresh with the BLAST results when the job is done.</p>
+			<p><a href="blast.cgi?action=get_blast_results&amp;session_id=[% session_id %]">Try retrieving your job now</a></p>
+		</div>
+	</div>
+	<div id="footer">
+		[% INCLUDE footer.tmpl %]
+	</div>
+</body>
+</html>

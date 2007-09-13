@@ -1,0 +1,39 @@
+<input type="hidden" name="session_id" value="[% session_id %]">
+
+[% title = 'Choose an action...';
+	opt_name = 'action';
+	select_set = {
+		view => {
+			title => 'View...'
+			options => [
+			{ value => 'gp-assoc', label => 'gene product associations' },
+			],
+		},
+		assoc => {
+			title => 'Download selected associations',
+			options => [
+			{ value => 'rdfxml', label => 'in RDF-XML format' },
+			{ value => 'go_assoc', label => 'in gene association (tab-delimited) file format' },
+			],
+		},
+		gp => {
+			title => 'Download gene product information',
+			options => [
+			{ value => 'fasta', label => 'in FASTA format (sequences only)' },
+			],
+		}
+	}; %]
+
+<!-- <label for="[% opt_name %]" class="inline">[% title %]</label> -->
+<select id="[% opt_name %]" name="[% opt_name %]">
+	<option value="0">Choose an action...</option>
+[% FOREACH opt = select_set.keys.sort; %]
+		<optgroup label="[% select_set.$opt.title %]">
+		[% FOREACH poss = select_set.$opt.options; %]
+		<option value="[% poss.value %]">[% poss.label %]</option>
+		[% END %]
+		</optgroup>
+	[% END %]
+</select>
+
+<input class="button" type="submit" value="Go!">

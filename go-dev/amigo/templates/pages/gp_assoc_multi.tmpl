@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Annotation Overview</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_gp_comp.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>Gene Product Annotation Overview</h1>
+	[% TRY;
+			IF data.assoc_h; %]
+		<ul class="download">
+		<li>Download all annotations on this page</li>
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> GA format</a></li>
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
+		</ul>
+				
+		[%	END;
+
+			INCLUDE message.tmpl; %]
+		<div class="filters">
+		[% INCLUDE filter_gp_comp.tmpl %]
+		</div>
+	[% assoc_h = data.assoc_h;
+		order = data.order;
+		assoc_view = 'summary';
+		counter = 1;
+		table_type = 'gp_multi';
+	
+		FOREACH entry = order;
+			gp = entry.gp;
+			term_list = entry.terms;
+			gpxref = gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]
+	<div class="block gp">
+		<h2 class="symbol"><a href="gp-details.cgi?gp=[% gpxref %]&amp;session_id=[% session_id %]" title="View details of [% gp.symbol %]">[% gp.symbol %]</a></h2>
+		[% IF gp.full_name != gp.symbol %]
+			<h3><span class="full_name">[% gp.full_name %]</span></h3>
+		[% END %]
+			<p>
+		[% IF gp.species.binomial.match('\S+');
+				IF gp.species.ncbi_taxa_id %]<span class="type">[% gp.type %]</span> from <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% gp.species.ncbi_taxa_id %]" title="View [% gp.species.binomial %] details on the NCBI taxonomy website" class="spp">[% gp.species.binomial %]</a> [% IF gp.species.common_name %] ([% gp.species.common_name %])[% END %]
+			[% ELSE %]<span class="type">[% gp.type %]</span> from <i class="spp">[% gp.species.binomial %]</i>
+		[% END; END %]
+			</p>
+		[% IF score_h && score_h.$gpxref %]
+			<p>BLAST score: [% score_h.$gpxref %]</p>
+		[% END; %]
+		[% IF term_list && term_list.size > 0 %]
+		<ul class="download">
+		<li><a href="gp-assoc.cgi?gp=[% gpxref %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> GA format</a></li>
+		<li><a href="gp-assoc.cgi?gp=[% gpxref %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
+		</ul>
+			<table summary="Terms associated with the [% gp.type %]&nbsp;[% gp.symbol %]" class="gp-comp">
+		<thead>
+		<tr>
+			[% PROCESS assoc_table_head.tmpl %]
+		</tr>
+		</thead>
+		<tbody>
+			[% PROCESS gp_assoc_table.tmpl %]
+		</tbody>
+		</table>
+		[% ELSE %]
+		<p>No annotations matching the current query parameters[% IF data.term_count.${gp.id} && data.term_count.${gp.id} > 0 %] (<a href="gp-assoc.cgi?gp=[% gpxref %]&amp;session_id=[% session_id %]&amp;action=reset-filters" title="View unfiltered annotations to [% gp.symbol %]">[% data.term_count.${gp.id} %] annotations with filters removed</a>)[% END %].</p>
+		[% END %]
+	</div>
+	[% END;
+		CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

@@ -1,0 +1,59 @@
+<div class="filters" id="term-assoc-filter-div">
+[% INCLUDE filters.tmpl %]
+<dl>
+	<dt id="filterToggle" class="toggle">Filter associations displayed <a href="http://www.geneontology.org/amigo/help-filter_term_details.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
+	<dd id="filterDiv">
+<form action="term-assoc.cgi">
+[% all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
+	all_a_filters = ['evcode', 'qual', 'assby'];
+	gp_filters = [];
+	a_filters = [];
+	FOREACH f = all_gp_filters;
+		IF filterdata.$f;
+			gp_filters.push(f);
+		END;
+	END;
+	FOREACH f = all_a_filters;
+		IF filterdata.$f;
+			a_filters.push(f);
+		END;
+	END;
+	IF gp_filters.size != 0 %]
+		<fieldset class="floatL block"><legend>Filter by Gene Product</legend>
+		[% FOREACH opt_name = gp_filters;
+				INCLUDE options_select.tmpl;
+			END; %]
+		</fieldset>
+[% END;
+	IF a_filters.size != 0 %]
+		<fieldset class="floatL block">
+			<legend>Filter by Association</legend> 
+		[% FOREACH opt_name = a_filters;
+				INCLUDE options_select.tmpl;
+			END %]
+		</fieldset>
+[% END %]
+		<fieldset class="floatL block"><legend>View associations</legend>
+			[% opt_name = 'term_assocs';
+				option = extra_filter.$opt_name.data;
+				title = extra_filter.$opt_name.title;
+				INCLUDE options_radio.tmpl %]
+		</fieldset>
+		[% FOREACH t = termlist %]
+			<input type="hidden" name="term" value="[% t %]">
+		[% END %]
+			<input type="hidden" name="session_id" value="[% session_id %]">
+		<input class="button" type="submit" value="Set filters">
+	</form>
+	<form action="term-assoc.cgi">
+		[% FOREACH t = termlist %]
+			<input type="hidden" name="term" value="[% t %]">
+		[% END %]
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input type="hidden" name="action" value="reset-filters">
+		<input class="button" type="submit" value="Remove all filters"> 
+	</form>
+<hr class="clearL">
+	</dd>
+</dl>
+</div>

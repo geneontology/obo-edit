@@ -1,0 +1,198 @@
+[% IF msg_h;
+		tmpl = '';
+		m_types = ['fatal', 'warning', 'info'];
+		FOREACH c = m_types;
+			IF msg_h.$c;
+				img = c;
+				LAST;
+			END;
+		END %]
+<div id="messages" class="[% c %]">
+<ul id="error">
+[% FOREACH class = msg_h.keys.sort;
+		message = '';
+	
+		FOREACH type = msg_h.$class.keys;
+			msg = [];
+			IF msg_h.$class.$type != 1;
+				msg = msg_h.$class.$type;
+			END;
+		#	'<li>' _ type _ '</li>';
+			SWITCH type;
+
+
+	#	general AmiGO messages
+	#	fatal
+		CASE 'unknown_search_type';
+			message = 'AmiGO does not understand the search constraint "' _ msg.0 _ '". Please <a href="search.cgi?session_id=' _ session_id _ '">try your query again</a>.';
+		CASE 'no_valid_query';
+			message = 'AmiGO could not find a valid search string in your query. Please try again.';
+		CASE 'query_too_short';
+			IF (msg.size > 1);
+				message = "The following search terms were too short and were ignored: " _ msg.join(", ");
+			ELSE;
+				message = "The search phrase " _ msg.0 _ " was too short and was ignored.";
+			END;
+		CASE 'no_results';
+			IF (msg.size > 1);
+				message = 'The following search terms could not be found: <em class="hilite">' _ msg.join('</em>, <em class="hilite">') _ '</em>';
+			ELSE;
+				message = 'The search phrase <em class="hilite">' _ msg.0 _ '</em> could not be found.';
+			END;
+
+		CASE 'no_term_action';
+			message = 'Please choose an action to perform on the selected terms.';
+			tmpl = 'term_select';
+		CASE 'no_gp_action';
+			message = 'Please choose an action to perform on the selected gene products.';
+			tmpl = 'gp_select';
+		CASE 'no_term';
+			message = 'No terms selected. Please go back and select one or more terms.';
+		CASE 'no_gps';
+			message = 'No gene products selected. Please go back and select one or more gene products.';
+		CASE 'too_many_gps';
+			message = 'The gene product annotation overview is limited to displaying ' _ max_selected_gps _ ' gene products at one time.';
+
+		CASE 'not_ont_term';
+			message = 'The term you have selected is not in the Gene Ontology and hence has no annotations.';
+
+		CASE 'root_term_assocs';
+			tmpl = 'root_term_assocs';
+			message = "Retrieval of gene product associations to the root terms is currently not allowed.";
+
+		CASE 'no_gp_assocs';
+			tmpl = 'no_gp_assocs';
+			pronoun = 'its';
+			IF (msg.size > 1);
+				message = "There are no terms associated with the gene products " _ msg.join(', ');
+				pronoun = 'their';
+			ELSE;
+				message = "There are no terms annotated to the gene product " _ msg.0;
+			END;
+			IF data.total && session.apph.filters.keys.size > 0;
+				IF data.total == 1;
+					data.total = "1 gene product";
+				ELSE;
+					data.total = data.total _ " gene products";
+				END;
+				message = message _ " Without filters, there are " _ data.total _ " associated with the terms selected.";
+			END;
+
+		CASE 'no_assocs';
+			tmpl = 'no_assocs';
+			pronoun = 'its';
+			IF (msg.size > 1);
+				message = "There are no gene products annotated to the terms " _ msg.join(', ');
+				pronoun = 'their';
+			ELSE;
+				message = "There are no gene products annotated to the term " _ msg.0;
+			END;
+			IF term_assocs == 'direct';
+				message = message _ ".";
+			ELSE;
+				message = message _ " or " _ pronoun _ " children.";
+			END;
+			IF data.total && session.apph.filters.keys.size > 0;
+				IF data.total == 1;
+					data.total = "1 gene product";
+				ELSE;
+					data.total = data.total _ " gene products";
+				END;
+				message = message _ " Without filters, there are " _ data.total _ " associated with the terms selected.";
+			END;
+
+		CASE 'too_many_assocs';
+			tmpl = 'too_many_assocs';
+			IF term_assocs == 'direct';
+				message = "There are a large number of gene products annotated to this term. Are you sure you want to retrieve them all?";
+			ELSE;
+				message = "There are a large number of gene products annotated to this term and its children. Are you sure you want to retrieve them all?";
+			END;
+
+		CASE 'obs_term';
+			message = 'This term is obsolete and hence has no gene products associated with it.';
+
+	#	messages from GO slimmer
+		CASE 'no_termset';
+			message = 'No terms or subsets were entered. Please go back and enter some terms or choose a subset.';
+		CASE 'no_gpset';
+			message = 'No gene product set or annotation file was uploaded. Please go back and add a list of gene products or upload an annotation file.';
+		CASE 'no_assocset';
+			message = 'No gene associations could be found in the uploaded file.';
+		CASE 'terms_not_in_db';
+			message = 'None of the terms in your gene association file could be found in the database.';
+		CASE 'gps_not_in_db';
+			message = 'None of the gene products you entered could be found in the database.';
+		CASE 'no_assocs_gp';
+			message = 'There is no association data for the gene products you have entered.';
+
+	#	term chart messages
+		CASE 'bad_filters';
+			message = 'Unfortunately AmiGO cannot create a bar chart with the current filter settings. <a href="term-chart.cgi?action=reset-filters&amp;session_id=' _ session_id _ '&amp;term=' _ term _ '" title="Remove filters and view chart">Remove filters and try again</a>.';
+		CASE 'no_children';
+			message = 'Your selected term has no child terms and so cannot be viewed in the bar chart viewer. <a href="browse.cgi?session_id=' _ session_id _ '" title="Browse the terms in the Gene Ontology">Browse the Gene Ontology and select a different term</a>.';
+
+	#	warning
+		CASE 'only_one_term';
+			message = 'Only the first term from your list is shown.';
+		CASE 'only_one_gp';
+			message = 'Only the first gene product from your list is shown.';
+		CASE 'no_gp';
+			message = 'No gene products selected. Please go back and select one or more gene products.';
+		CASE 'term_not_found';
+			IF (msg.size > 1);
+				message = "The following terms could not be found: " _ msg.join(", ");
+			ELSE;
+				message = "The term " _ msg.0 _ " could not be found.";
+			END;
+			
+		CASE 'gp_not_found';
+			IF (msg.size > 1);
+				message = "The following gene products could not be found: " _ msg.join(", ");
+			ELSE;
+				message = "The gene product " _ msg.0 _ " could not be found.";
+			END;
+
+#		no_children => sprintf("The term <span class='term'>%s ; %s</span> has no children.", $list->[0]->name, $list->[0]->acc);
+	#	info
+		CASE 'spp_filters_set';
+		message = "Your species filters are now set."; #.join(", ", @list).".",
+
+		CASE;
+			message = type;
+		END; %]
+
+
+		<li><img src="[% image_dir %]/[% class %].png" alt="[% class %] message" height="15" width="15"> [% message %]</li>
+	[% END; END %]
+</ul>
+	[% IF type == 'root_term_assocs' || type == 'too_many_assocs' %]
+	<ul>
+		<li>Set filters to limit the data displayed by AmiGO
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% target.acc %]&amp;open_1=[% target.acc %]&amp;session_id=[% session_id %]">View the children of [% target.name %]</a> and select a more specific GO term.</li>
+	[% IF type == 'too_many_assocs';
+			IF term_assocs == 'all' %]
+		<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;term_assocs=direct&amp;session_id=[% session_id %]">View only gene products associated with [% target.name %]</a> (not its children).</li>
+	[% END %]
+		<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;action=override">View associations anyway</a>.</li>
+		<li>Download association data in <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=go_assoc">tab-delimited gene association format</a>.</li>
+		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
+	[% ELSIF type == 'no_assocs' %]
+		<li>Set different filters or remove all filters.
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+	[% END %]
+	</ul>
+	[% ELSIF tmpl == 'term_select' %]
+	<ul>
+		<li>list of possible actions here</li>
+	</ul>
+	[% ELSIF tmpl == 'gp_select' %]
+	<ul>
+		<li>list of possible actions here</li>
+	</ul>
+	[% END %]
+</div>
+[% END %]

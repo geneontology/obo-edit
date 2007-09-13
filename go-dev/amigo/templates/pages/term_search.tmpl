@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Term Search Results</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_term_search.tmpl %]
+		<meta name="keywords" content="[% querylist.join(', ') %]">
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+			<h1>Term Search Results</h1>
+[% TRY;
+		INCLUDE query_summary.tmpl;
+		IF data.size && data.size > 0;
+			IF n_pages > 1;
+				INCLUDE web_paging.tmpl;
+			END;
+			INCLUDE term_search_results.tmpl;
+			IF n_pages > 1;
+				INCLUDE web_paging.tmpl;
+			END;
+		END;
+	CATCH;
+		PROCESS error.tmpl;
+	END; %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

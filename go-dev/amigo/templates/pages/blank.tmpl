@@ -1,0 +1,29 @@
+[%#	Global page variables
+	page_name = 'front', session_id, html_url, image_dir set by search.cgi
+	query = session.get_param('query');
+	%]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO! Your friend in the Gene Ontology.</title>
+		[% INCLUDE header_info.tmpl %]
+		[% INCLUDE javascript_front.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>Results</h1>
+[% data = session.get_data %]
+
+[% USE Dumper(indent=1) ; '<pre>'; Dumper.dump( data ); '</pre>' %]
+
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

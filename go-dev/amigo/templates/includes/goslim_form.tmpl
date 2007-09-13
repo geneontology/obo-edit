@@ -1,0 +1,62 @@
+<h1>Advanced Search</h1>
+<form action="goslim.cgi" enctype="multipart/form-data" name="goslim" id="goslim" method="POST">
+<div class="block">
+	<h2>Query set</h2>
+		<h3 class="first"><label for="query">Enter your GO slim terms</label> <a href="http://www.geneontology.org/amigo/help-adv_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		<p>To search for more than one term or gene product, separate your queries with a line break.</p>
+			<textarea id="terms" name="terms" cols="55" rows="4"></textarea>
+		<p><em>OR</em> <label for="term_file">upload a text file of queries</label>: <input type="file" name="term_file" id="term_file" title="Upload a text file for AmiGO to use as input" class="button">
+		</p>
+		<p>File/input syntax:</p>
+<p>one line per GS "term"
+<br>use standard computer syntax
+<br>AND = &amp;
+<br>OR = |
+<br>NOT = !
+<br>format:
+<br>term name[TAB]definition, where definition is in the form <var>term</var> <var>operator</var> <var>term</var>, e.g. GO:0008471 &amp; GO:0051872
+<br>bucket(term) - all the terms below that term which don't go to another GO slim term
+</p>
+		<p><em>OR</em> use a pre-existing GO slim set</p>
+		<ul class="radio-options">
+		[% gsset = subsets  gsdefault = 'goslim_generic' %]
+		[% FOREACH gs = gsset %]
+			[% IF gs.acc == gsdefault %]
+				<li><input class="radio" type="radio" name="goslim" value="[% gs.acc %]" id="[% gs.acc %]" checked> <label for="[% gs.acc %]">[% gs.name %]</label></li>
+			[% ELSE %]
+				<li><input class="radio" type="radio" name="goslim" value="[% gs.acc %]" id="[% gs.acc %]"> <label for="[% gs.acc %]">[% gs.name %]</label></li>
+			[% END %]
+		[% END %]
+		</ul>
+		[% IF term_basket %]
+		<p><em>OR</em> <input type="checkbox" name="tbasket" id="tbasket" value="1" class="cbox"><label for="tbasket">use the terms in your term basket</label></p>
+		[% END %]
+		<h3><label for="query">Enter your gene product list</label> <a href="http://www.geneontology.org/amigo/help-adv_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		<p>To search for more than one term or gene product, separate your queries with a line break.</p>
+			<textarea id="gps" name="gps" cols="55" rows="4"></textarea>
+		<p><em>OR</em> <label for="gpfile">upload a text file of gene products or a gene association file</label>: <input type="file" name="gpfile" id="gpfile" title="Upload a text file for AmiGO to use as input" class="button">
+		</p>
+		
+		<p>Or configure an existing gene product set</p>
+		<!-- what would we have here? -->
+		[% IF gp_basket %]
+		<p><em>OR</em> <input type="checkbox" name="gpbasket" id="gpbasket" value="1" class="cbox"><label for="gpbasket">use the gene products in your gene product basket</label></p>
+		[% END %]
+	<h3>Options</h3>
+	<p><input type="checkbox" name="bucket" id="bucket" value="1" class="cbox"><label for="bucket">use buckets</label></p>
+
+	<h3>Choose your output format</h3>
+	<ul class="radio-options">
+	[% formats = options  fdefault = 'count' %]
+	[% FOREACH f = formats.keys.sort %]
+		[% IF f == fdefault %]
+			<li><input class="radio" type="radio" name="output" value="[% f %]" id="[% f %]" checked> <label for="[% f %]">[% formats.$f %]</label></li>
+		[% ELSE %]
+			<li><input class="radio" type="radio" name="output" value="[% f %]" id="[% f %]"> <label for="[% f %]">[% formats.$f %]</label></li>
+		[% END %]
+	[% END %]
+	</ul>
+
+	<input type="submit" class="button">
+</div>
+</form>

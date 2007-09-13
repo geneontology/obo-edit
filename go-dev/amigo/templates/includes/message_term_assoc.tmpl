@@ -1,0 +1,148 @@
+[% IF msg_h;
+	#USE Dumper; '<pre style="font-size: 0.7em">'; Dumper.dump(msg_h);'</pre>';
+
+	tmpl = '';
+	m_types = ['fatal', 'warning', 'info'];
+	FOREACH c = m_types;
+		IF msg_h.$c;
+			img = c;
+			LAST;
+		END;
+	END %]
+<!--	<dt><img src="[% image_dir %]/[% class %].png" alt="[% class %] message"></dt> -->
+<div id="messages" class="[% c %]">
+<ul id="error">
+[% FOREACH class = msg_h.keys.sort;
+		message = '';
+	
+		FOREACH type = msg_h.$class.keys;
+		#	type = msg.shift;
+			msg = [];
+			IF msg_h.$class.$type != 1;
+				msg = msg_h.$class.$type;
+			END;
+		#	'<li>' _ type _ '</li>';
+			SWITCH type;
+
+	#	fatal
+		CASE 'no_term';
+			message = 'No terms selected. Please go back and select one or more terms.';
+
+		CASE 'not_ont_term';
+			message = 'The term you have selected is not in the Gene Ontology and hence has no annotations.';
+
+		CASE 'root_term_assocs';
+			tmpl = 'root_term_assocs';
+			message = "Retrieval of gene product associations to the root terms is currently not allowed.";
+
+		CASE 'no_assocs';
+			tmpl = 'no_assocs';
+			pronoun = 'its';
+			IF (msg.size > 1);
+				message = "There are no gene products annotated to the terms " _ msg.join(', ');
+				pronoun = 'their';
+			ELSE;
+				message = "There are no gene products annotated to the term " _ msg.0;
+			END;
+			IF term_assocs != 'direct';
+				message = message _ " or " _ pronoun _ " children";
+			END;
+			IF data.total && session.apph.filters.keys.size > 0;
+				message = message _ " with the current filter settings.";
+				IF data.total == 1;
+					data.total = "1 gene product";
+				ELSE;
+					data.total = data.total _ " gene products";
+				END;
+				message = message _ " Without filters, there are " _ data.total _ " associated with the terms selected.";
+			END;
+
+		CASE 'too_many_assocs';
+			tmpl = 'too_many_assocs';
+			pronoun = 'its';
+			IF (msg.size > 1);
+				message = "There are over " _ max_results_pages _ " pages of gene products annotated to the terms " _ msg.join(', ');
+				pronoun = 'their';
+			ELSE;
+				message = "There are over " _ max_results_pages _ " pages of gene products annotated to the term " _ msg.0;
+			END;
+			IF term_assocs == 'direct';
+				message = message _ ".";
+			ELSE;
+				message = message _ " and " _ pronoun _ " children.";
+			END;
+			message = message _ " Are you sure you want to retrieve them all?";
+
+		CASE 'obs_term';
+			message = 'This term is obsolete and hence has no gene products associated with it.';
+
+		CASE 'term_not_found';
+			IF (msg.size > 1);
+				message = "The following terms could not be found: " _ msg.join(", ");
+			ELSE;
+				message = "The term " _ msg.0 _ " could not be found.";
+			END;
+
+		CASE;
+			message = type;
+		END; %]
+
+
+		<li><img src="[% image_dir %]/[% class %].png" alt="[% class %] message"> [% message %]</li>
+	[% END; END %]
+</ul>
+
+	[% IF tmpl == 'root_term_assocs' %]
+	<ul>
+		<li><a href="browse.cgi?action=reset-tree&amp;session_id=[% session_id %]">Browse the tree and select a more specific term.</a></li>
+		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
+	</ul>
+	[% ELSIF tmpl == 'too_many_assocs';
+			children = 'children';
+			IF data.direct_children.${target.acc};
+				n_children = data.direct_children.${target.acc};
+				IF n_children == 0;
+					children = '';
+				ELSIF n_children == 1;
+					children = 'one child term';
+				ELSE;
+					children = n_children _ ' children';
+				END;
+			END;
+				%]
+	<ul>
+		<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;action=override">View associations anyway</a>[% IF n_pages_all %] ([% n_pages %] pages)[% END %].</li>
+		<li id="show_hide">Set filters to limit the data displayed by AmiGO
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+		[% IF children != '' %]
+		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% target.acc %]&amp;open_1=[% target.acc %]&amp;session_id=[% session_id %]">View the [% children %] of [% target.name %]</a> and select a more specific GO term.</li>
+		[% END %]
+	[% IF term_assocs == 'all';
+			show_url = 1;
+			prods = 'gene products';
+			n_prods = target.n_products;
+			IF n_prods == 0;
+				show_url = 0;
+				prods = 'no gene products';
+			ELSIF n_prods == 1;
+				prods = 'one gene product';
+			ELSIF n_prods > 1;
+				prods = n_prods _ ' ' _ prods;
+			END;
+				%]
+		<li>There are [% prods %] annotated directly to [% target.name %]. [% IF show_url == 1 %]<a href="term-assoc.cgi?term=[% target.acc %]&amp;term_assocs=direct&amp;session_id=[% session_id %]">View direct associations</a>[% IF n_pages_direct && n_pages_direct != 1 %] ([% n_pages_direct %] pages)[% END %].[% END %]</li>
+	[% END %]
+		<li>Download association data in <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=go_assoc">tab-delimited gene association format</a>.</li>
+		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
+	</ul>
+	[% ELSIF tmpl == 'no_assocs';
+			IF data.total %]
+		<ul>
+		<li>Set different filters or remove all filters.
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+		</ul>
+		[% END; END %]
+</div>
+[% END %]

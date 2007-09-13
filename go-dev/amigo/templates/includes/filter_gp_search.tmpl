@@ -1,0 +1,59 @@
+[% hidden_params = ['query'] %]
+<dl>
+	<dt id="filterToggle" class="toggle">Filter search results <a href="http://www.geneontology.org/amigo/help-filter_gp_search.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
+	<dd id="filterDiv">
+	[% all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
+		all_a_filters = ['ont', 'evcode', 'qual', 'assby'];
+		gp_filters = [];
+		a_filters = [];
+		FOREACH f = all_gp_filters;
+			IF filterdata.$f;
+				gp_filters.push(f);
+			END;
+		END;
+		FOREACH f = all_a_filters;
+			IF filterdata.$f;
+				a_filters.push(f);
+			END;
+		END %]
+		<form action="search.cgi">
+		[% s = 4;
+			IF gp_filters.size != 0 %]
+			<fieldset class="floatL block"><legend>Filter Gene Products</legend>
+			[% FOREACH opt_name = gp_filters;
+					INCLUDE options_select.tmpl;
+				#	tmpl = 'options_' _ f _ '.tmpl';
+				#	INCLUDE $tmpl;
+				END; %]
+			</fieldset>
+		[% END;
+			IF a_filters.size != 0 %]
+			<fieldset class="floatL block">
+				<legend>Filter Gene Products by Associations</legend> 
+			[% FOREACH opt_name = a_filters;
+					INCLUDE options_select.tmpl;
+				#	tmpl = 'options_' _ f _ '.tmpl';
+				#	INCLUDE $tmpl;
+				END; %]
+			</fieldset>
+			[% FOREACH q = querylist %]
+			<input type="hidden" name="query" value="[% q %]">
+			[% END %]
+			<input type="hidden" name="action" value="filter">
+			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input class="button" type="submit" value="Set filters"> 
+		[% END %]
+		</form>
+		<form action="search.cgi">
+			[% FOREACH q = querylist %]
+			<input type="hidden" name="query" value="[% q %]">
+			[% END %]
+			<input type="hidden" name="action" value="reset-filters">
+			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input class="button" type="submit" value="Remove all filters"> 
+		</form>
+<hr class="clearL">
+	</dd>
+</dl>

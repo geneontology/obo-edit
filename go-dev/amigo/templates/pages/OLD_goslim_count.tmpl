@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: GO Slimmer! Results</title>
+		[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>GO Slimmer Results</h1>
+		
+	[% TRY;
+			INCLUDE message.tmpl; %]
+
+		<ul class="inline"><li>download link &nbsp; </li><li>another link &nbsp; </li><li>a third link &nbsp; </li></ul>
+
+		<form action="term-select.cgi">
+		<table id="results" summary="Results for GO slim query">
+		<thead>
+		<tr>
+			<th>
+			 
+			</th>
+			<th>
+				GO ID, Term
+			</th>
+			<th>
+				Ontology
+			</th>
+			<th>
+				# GPs
+			</th>
+			<th>
+				# Assocs
+			</th>
+			</tr>
+			</thead>
+			<tbody>
+		[% counter = 1;
+			FOREACH termitem = data;
+				term = termitem.term;
+				gps = termitem.assocs;
+				IF term.is_obsolete %]
+					<tr class="obsolete term" id="t-[% counter %]">
+			[% ELSIF counter % 2 == 0 %]
+					<tr class="even_row term" id="t-[% counter %]">
+			[% ELSE %]
+					<tr class="term" id="t-[% counter %]">
+			[% END %]
+				<td><input class="cbox" type="checkbox" id="[% term.acc %]" value="[% term.acc %]" name="term"></td>
+				<td>
+					<label for="[% term.acc %]" class="acc">[% term.acc %]</label> : <a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="name">[% term.name %]</a>
+					
+					[%# USE Dumper; '<br><pre>'; Dumper.dump(gps); '</pre>' %]
+				</td> 
+				<td>
+					<a href="http://www.geneontology.org/GO.doc.shtml#[% term.type %]" title="[% term.type.replace('_', ' ') %] documentation" class="ont">[% term.type.replace('_', ' ') %]</a>
+				</td>
+				<td>
+				[% IF gps; gps.size ; ELSE; '0'; END; %]
+				</td>
+				<td>
+				[% IF gps;
+						total = 0;
+						FOREACH n = gps.keys;
+							total = total + gps.$n;
+						END;
+						total;
+					ELSE; '0'; END %]
+				</td>
+				</tr>
+		[% counter = counter + 1; END %]
+			</tbody>
+			<tfoot>
+				<tr id="options">
+					<td></td>
+					<td colspan="4">
+						[% INCLUDE options_term_table.tmpl %]
+					</td>
+				</tr>
+			</tfoot>
+			</table>
+		</form>
+	[% USE Dumper; '<pre>'; Dumper.dump(data.assoc_h); '</pre>' %]
+
+	[% CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>
+

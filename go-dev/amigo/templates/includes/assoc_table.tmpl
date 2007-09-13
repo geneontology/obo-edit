@@ -1,0 +1,84 @@
+[%	IF assoc_view != 'summary';
+FOREACH association = a_list;
+	FOREACH ev = association.evidence_list;
+		IF first == 1;
+			IF counter % 2 == 0 %]
+	<tr class="even_row">
+		[% ELSE %]
+	<tr>
+	[% END; END %]
+	<td class="evidence">
+	<ul>
+	[% IF ev.code %]
+		<li><a href="[% munger.get_GO_doc_url('evcode', ev.code) %]" title="[% munger.get_full_name(ev.code) %]; click to view documentation" class="code">[% ev.code %]</a></li>
+	[% END;
+		IF ev.seq_xref_list.size > 0 %]
+		<li><ul class="ref">
+		[% FOREACH seq_xref = ev.seq_xref_list;
+				seq_xref_link = munger.get_url(seq_xref.xref_dbname, seq_xref.xref_key);
+				IF seq_xref_link %]
+				<li>With <a href="[% seq_xref_link %]" title="Click to view [% seq_xref.xref_key %] in [% seq_xref.xref_dbname %]">[% seq_xref.xref_dbname.replace('_',' ') %]:[% seq_xref.xref_key %]</a></li>
+			[% ELSE %]
+				<li>With [% seq_xref.xref_dbname.replace('_',' ') %]:[% seq_xref.xref_key %]</li>
+		[% END; END %]
+		</ul></li>
+	[% END %]
+	</ul>
+	</td>
+	<td class="ref">
+	[% ref_url = munger.get_ref_url(ev.xref.xref_dbname, ev.xref.xref_key);
+		IF ref_url %]
+			<a href="[% ref_url %]" title="Click to view [% ev.xref.xref_dbname %]:[% ev.xref.xref_key %]">[% ev.xref.xref_dbname.replace('_',' ') _ ':' _ ev.xref.xref_key %]</a>
+	[% ELSE;
+			ev.xref.xref_dbname.replace('_',' ') _ ':' _ ev.xref.xref_key;
+		END %]
+	</td>
+[% IF assoc_view != 'summary';
+		ass = munger.get_human_name(association.assigned_by);
+		db = munger.get_human_name(gp.speciesdb); %]
+		<td>
+		[% ass.replace('_',' ');
+			IF ass != db %]
+		<br>(via [% db.replace('_',' ') %])
+		[% END %]
+		</td>
+	[% END %]
+	</tr>
+[% 	first = 1; END;
+	END;
+ELSE; # summary view
+	#	collect up the evidence codes and refs
+	allevlist = [];
+	allrefh = {};
+	FOREACH association = a_list;
+		FOREACH ev = association.evidence_list;
+			allevlist.push(ev.code);
+			refxref = ev.xref.xref_dbname _ ':' _ ev.xref.xref_key;
+			allrefh.$refxref = [ev.xref.xref_dbname, ev.xref.xref_key];
+		END;
+	END;
+	evlist = allevlist.unique.sort;
+		%]
+	<td class="evidence">
+	<ul class="inline">
+	[% FOREACH code = evlist %]
+		<li><a href="[% munger.get_GO_doc_url('evcode', code) %]" title="[% munger.get_full_name(code) %]; click to view documentation" class="code">[% code %]</a></li>
+	[% END %]
+	</ul>
+	</td>
+	<td class="ref">
+[% FOREACH ref = allrefh.keys.sort;
+		refdb = allrefh.$ref.0;
+		refkey = allrefh.$ref.1;
+		ref_url = munger.get_ref_url(refdb, refkey);
+		IF ref_url %]
+		<a href="[% ref_url %]" title="Click to view [% refdb %]:[% refkey %]">[% refdb.replace('_',' ') _ ':' _ refkey %]</a>
+	[% ELSE;
+			refdb.replace('_',' ') _ ':' _ refkey;
+		END;
+	END %]
+	</td>
+	</tr>
+[% END;
+%]
+

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: GO Slimmer! Results</title>
+		[% page_name = 'goslimmer' %]
+		[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+	[% TRY;
+			INCLUDE message.tmpl;
+			INCLUDE goslim_tree.tmpl;
+		CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+[% FOREACH gp = gplist;
+		gp_id = gp.id;
+		FOREACH q = assoc_h.$t_acc.$gp_id.keys.sort;
+			a_list = assoc_h.$t_acc.$gp_id.$q;
+			rowspan = 0; 
+			FOREACH association = a_list;
+				rowspan = rowspan + association.evidence_list.size;
+			END;
+			IF counter % 2 == 0 %]
+<tr class="even_row assoc">
+			[% ELSE %]
+<tr class="assoc">
+			[% END; %]
+	<td rowspan="[% rowspan %]">
+		<input type="checkbox" name="gp" value="[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]" id="gp-[% counter %]">
+	</td>
+	<td rowspan="[% rowspan %]">
+		[% IF a_list.0.is_not == 1 %]
+		<span class="not">NOT</span>
+		[% ELSIF a_list.0.qualifier_list; %]
+		<ul class="qual">
+			[% FOREACH q = a_list.0.qualifier_list.sort('name');
+					IF q.name != 'not' %]<li>[% q.name.replace('_', ' ') %]</li>
+			[% END; END %]
+		</ul>
+		[% END %]
+	</td>
+	<td rowspan="[% rowspan %]" class="gp">
+		<label for="gp-[% counter %]" class="noDisplay">[% gp.symbol %]</label>
+		[% IF show_blast && gp.seq %]
+				<a class="blast-link-float" href="blast.cgi?action=blast&amp;seq_id=[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="Use sequence as BLAST query">BLAST</a>
+		[% END %]
+		<a href="gp-details.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View gene product details" class="symbol">[% gp.symbol %]</a>
+		[% IF full_name != '' && full_name != symbol %]
+			<br><a href="gp-details.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View gene product details" class="name">[% gp.full_name %]</a>
+		[% END %]
+			<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations" class="assoc-link">[view associations]</a>
+	</td>
+	<td rowspan="[% rowspan %]" class="gp">
+		<span class="type">[% gp.type %]</span>
+		[% IF gp.species.binomial.match('\S+') %]
+			from <i class="spp">[% gp.species.binomial %]</i>
+		[% END %]
+	</td>
+[% first = 0;
+	PROCESS assoc_table.tmpl;
+	counter = counter + 1; END; END; %]
+

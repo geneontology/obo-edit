@@ -1,0 +1,102 @@
+[% link = "search.cgi?action=sort&amp;search_constraint=gp&amp;session_id=" _ session_id _ "&amp;query=" _ queryurl;
+
+	IF page_size && page_size == 'all';
+		link = link _ "&amp;page_size=all";
+	ELSE;
+		link = link _ "&amp;page=1";
+	END;
+	%]
+<form action="gp-select.cgi" name="gp_list">
+	<table summary="Gene product search results for [% querytext %]" id="results">
+	<thead><tr>
+		<th class="input">
+		[% IF gpsort == 'rel' %]
+		<span class="sortedBy">rel</span>
+		[% ELSE %]
+		<a href="[% link %]&amp;gpsort=rel" title="Sort results by relevance">rel</a>
+		[% END %]
+		</th>
+		<th>
+		[% IF gpsort == 'symbol' %]
+		<span class="sortedBy">Symbol</span>
+		[% ELSE %]
+		<a href="[% link %]&amp;gpsort=symbol" title="Sort results by symbol">Symbol</a>
+		[% END %], 
+		[% IF gpsort == 'full_name' %]
+		<span class="sortedBy">full name</span>
+		[% ELSE %]
+		<a href="[% link %]&amp;gpsort=full_name" title="Sort results by full name">full name</a>
+		[% END %]</th>
+		<th>
+		[% IF gpsort == 'spp' %]
+		<span class="sortedBy">Species</span>
+		[% ELSE %]
+		<a href="[% link %]&amp;gpsort=spp" title="Sort results by species">Species</a>
+		[% END %]
+		</th>
+	</tr></thead>
+	<tbody>
+[% counter = 1;
+	FOREACH gp = data %]
+			<tr class="[% IF counter % 2 == 0; 'even_row '; END %]gp">
+			<td>
+			<input type="checkbox" name="gp" value="[% gp.gpxref %]" id="[% gp.gpxref %]">
+			</td>
+			<td><label class="noDisplay" for="[% gp.gpxref %]">[% gp.symbol %]</label>
+			[% IF gp.seq_list && gp.seq_list.size > 0 %]
+				<a class="blast-link-float" href="blast.cgi?action=blast&amp;seq_id=[% gp.gpxref %]&amp;session_id=[% session_id %]" title="Use sequence as BLAST query">BLAST</a>
+			[% END %]
+				<a href="gp-details.cgi?gp=[% gp.gpxref %]&amp;session_id=[% session_id %]" title="View details of [% gp.symbol %]" class="symbol">[% search.hilite(gp.symbol, 1) %]</a>[% IF gp.full_name != gp.symbol && gp.full_name != '' %]<br><a href="gp-details.cgi?gp=[% gp.gpxref %]&amp;session_id=[% session_id %]" title="View details" class="full_name">[% search.hilite(gp.full_name, 1) %]</a>[% END %] <a href="gp-assoc.cgi?gp=[% gp.gpxref %]&amp;session_id=[% session_id %]" title="View term associations" class="assoc-link">[view [% gp.n_terms %] associations]</a>
+			[% IF gp.source == 'product_synonym';
+					syn_matches = gp.get_match_list('product_synonym', gpsort);
+					IF syn_matches;
+						IF syn_matches.size == 1 %]
+						<p>Query matches synonym <span class="syn">[% syn_matches.0 %]</span></p>
+					[% ELSE %]
+						<ul id="syns-[% counter %]" class="synlist inline">
+						<li>Query matches synonyms </li><li class="syn">[% syn_matches.join(',</li> <li class="toggleable syn">') %]</li>
+					</ul>
+			[% END; END; END;
+
+				IF gp.source == 'gpxref' %]
+				<p>Query matches dbxref [% search.hilite(gp.gpxref, 1) %]</p>
+			[% END;
+
+				IF gp.source == 'seq_name';
+					seq_name_matches = gp.get_match_list('seq_name', gpsort);
+					IF seq_name_matches %]
+					<p>Query matches sequence display ID[% IF gp.seq_name_match.size != 1 %]s[% END %]&nbsp;[% gp.seq_name_match.join(", ") %]</p>
+			[% END; END;
+
+				IF gp.source == 'seq_xref';
+					seq_xref_matches = gp.get_match_list('seq_xref', gpsort);
+					IF seq_xref_matches;
+					#	USE Dumper; '<pre>'; Dumper.dump(seq_xref_matches); '</pre>';
+						IF seq_xref_matches.size == 1 %]
+						<p>Query matches sequence cross-reference <span class="dbxref">[% seq_xref_matches.0 %]</span></p>
+					[% ELSE %]
+						<ul id="dbxrefs-[% counter %]" class="dbxreflist inline">
+						<li>Query matches sequence cross-references </li><li class="dbxref">[% seq_xref_matches.join(',</li> <li class="toggleable dbxref">') %]</li>
+					</ul>
+			[% END; END; END %]
+
+			<p>source: [% gp.source %], [% gp.best_match.0; IF gp.source == 'product_synonym' || gp.source == 'seq_xref' || gp.source == 'seq_name' ; ', ' _ gp.best_match.1 ; END %]</p>
+	[%# USE Dumper(indent=1) ; '<pre>'; Dumper.dump( gp ); '</pre>' %]
+			</td>
+			<td>
+				<span class="type">[% gp.type %]</span> from <i class="spp">[% gp.species.binomial %]</i>
+			</td>
+			</tr>
+		[% counter = counter + 1;
+		END;%]
+	</tbody>
+	<tfoot>
+		<tr id="options">
+			<td></td>
+			<td colspan="2">
+				[% INCLUDE options_gp_table.tmpl %]
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+</form>

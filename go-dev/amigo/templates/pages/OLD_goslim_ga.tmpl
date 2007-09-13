@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: GO Slimmer! Results</title>
+		[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+	[% TRY;
+			INCLUDE message.tmpl; %]
+
+[% link = "search.cgi?action=sort&amp;search_constraint=term&amp;session_id=" _ session_id _ "&amp;query=" _ queryurl;
+
+	IF page_size && page_size == 'all';
+		link = link _ "&amp;page_size=all";
+	ELSE;
+		link = link _ "&amp;page=1";
+	END %]
+		<form action="term-select.cgi">
+		<table id="results" summary="Results for GO slim query">
+		<thead>
+		<tr>
+			<th>
+			[% IF termsort == 'rel' %]
+				<span class="sortedBy">rel</span>
+			[% ELSE %]
+				<a href="[% link %]&amp;termsort=rel" title="Sort results by relevance">rel</a></th>
+			[% END %]
+			<th>
+				[% IF termsort == 'acc' %]
+					<span class="sortedBy">GO ID</span>
+				[% ELSE %]
+					<a href="[% link %]&amp;termsort=acc" title="Sort results by GO ID">GO ID</a>
+				[% END %], 
+				[% IF termsort == 'name' %]
+					<span class="sortedBy">Term</span>
+				[% ELSE %]
+					<a href="[% link %]&amp;termsort=name" title="Sort results by term name">Term</a>
+				[% END %]
+			</th>
+			<th>
+				[% IF termsort == 'term_type' %]
+					<span class="sortedBy">Ontology</span>
+				[% ELSE %]
+					<a href="[% link %]&amp;termsort=term_type" title="Sort results by ontology name">Ontology</a>
+				[% END %]
+			</th>
+			<th>
+				Direct GPs
+			</th>
+			<th>
+				All GPs
+			</th>
+			</tr>
+			</thead>
+			<tbody>
+		[% counter = 1;
+			FOREACH termitem = data.terms;
+				term = termitem.term;
+				counts = termitem.counts || {};
+				termdata = termitem.data;
+				gps = termitem.gps;
+				IF term.is_obsolete %]
+					<tr class="obsolete term" id="t-[% counter %]">
+			[% ELSIF counter % 2 == 0 %]
+					<tr class="even_row term" id="t-[% counter %]">
+			[% ELSE %]
+					<tr class="term" id="t-[% counter %]">
+			[% END %]
+				<td><input class="cbox" type="checkbox" id="[% term.acc %]" value="[% term.acc %]" name="term"></td>
+				<td>
+					<label for="[% term.acc %]" class="acc">[% term.acc %]</label> : <a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="name">[% term.name %]</a>
+					<br>
+					[% USE Dumper; '<pre>'; Dumper.dump(termdata); '</pre>' %]
+					<br>
+					[% USE Dumper; '<pre>'; Dumper.dump(gps); '</pre>' %]
+					<p>
+				</td> 
+				<td>
+					<a href="http://www.geneontology.org/GO.doc.shtml#[% term.type %]" title="[% term.type.replace('_', ' ') %] documentation" class="ont">[% term.type.replace('_', ' ') %]</a>
+				</td>
+				<td>
+				[% IF counts.direct; counts.direct ; ELSE; '0'; END; %]
+				</td>
+				<td>
+				[% IF counts.all; counts.all; ELSE; '0'; END %]
+				</td>
+				</tr>
+		[% counter = counter + 1; END %]
+			</tbody>
+			<tfoot>
+				<tr id="options">
+					<td></td>
+					<td colspan="4">
+						[% INCLUDE options_term_table.tmpl %]
+					</td>
+				</tr>
+			</tfoot>
+			</table>
+		</form>
+	[% USE Dumper; '<pre>'; Dumper.dump(data.assoc_h); '</pre>' %]
+
+	[% CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>
+

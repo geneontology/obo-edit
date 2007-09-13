@@ -1,0 +1,43 @@
+<div class="block" id="xrefs">
+<h2>External References</h2>
+[% IF term.dbxref_list && term.dbxref_list.size > 0;
+	xref_hash = {};
+	FOREACH xref = term.dbxref_list;
+		db = xref.xref_dbname;
+		IF xref_hash.$db;
+			xref_list = xref_hash.$db;
+			xref_list.push(xref);
+			xref_hash.$db = xref_list;
+		ELSE;
+			xref_list = [];
+			xref_list.push(xref);
+		xref_hash.$db = xref_list;
+	END; END %]
+	<dl class="ext-ref">
+	[% FOREACH db =  xref_hash.keys.sort %]
+		<dt>
+			<a class="img" href="#[% db %]"><img src="[% image_dir %]/ominus.png" alt="close" id="[% db %]Img"></a>
+				[% db %] ([% xref_hash.$db.size %])
+		</dt>
+		<dd id="[% db %]"><ul>
+			[% FOREACH xref_item = xref_hash.$db %]
+			<li>
+				[% xref_key = xref_item.xref_key; db_link = munger.get_url(db, xref_key);
+					IF db_link %]
+					<a href="[% db_link %]" title="View [% xref_key %] in [% db %]">[% xref_key %]</a>
+				[% ELSE %]
+					[% xref_key %]
+				[% END;
+					IF xref_item.xref_desc %] [% xref_item.xref_desc %][% END %]
+				</li>
+			[% END %]
+			</ul></dd>
+		[% END %]
+	</dl>
+	<p class="toTop">
+		<a href="#top" title="Back to the top of the page">Back to top</a> 
+	</p>
+[% ELSE %]
+	<p>None.</p>
+[% END %]
+</div>

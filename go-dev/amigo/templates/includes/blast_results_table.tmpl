@@ -1,0 +1,75 @@
+<div class="block">
+	<h2>High Scoring Gene Products</h2>
+[% counter = 1;
+	IF data.gplist;
+		IF data.product_h.size > 0 %]
+<form action="gp-select.cgi">
+	<table id="blast_hits">
+		<thead>
+			<tr>
+				<th class="input"></th>
+				<th>Name</th>
+				<th>Species</th>
+				<th>P value</th>
+			</tr>
+		</thead>
+		<tbody>
+	[% FOREACH gpitem = data.gplist;
+			gp = data.product_h.$gpitem.0;
+			IF gp %]
+			<tr class="[% IF counter % 2 == 0; 'even_row '; END %]gp">
+			<td>
+			<input type="checkbox" name="gp" value="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]" id="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]-cbox">
+			</td>
+			<td>
+				<div class="floatR R" style="margin: 0">
+				<a href="gp-details.cgi?[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View gene product information" class="assoc-link">[% gp.symbol %] details <img src="[% image_dir %]/left.png" alt="link to another page"></a>
+				<br>
+				<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations for this gene product" class="assoc-link">[% gp.symbol %] associations <img src="[% image_dir %]/left.png" alt="link to another page"></a>
+				<br>
+				<a href="#[% gpitem.0
+								#gpitem.0 _ '-' _ seq_no %]" class="assoc-link">BLAST match <img src="[% image_dir %]/down.png" alt="in-page link"></a>
+				</div>
+				<label for="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]-cbox" class="symbol">[% gp.symbol %]</label>
+				[% IF gp.full_name != gp.symbol && gp.full_name != '' %]<br>[% gp.full_name %][% END %]
+				<hr class="clearR">
+	[%# USE Dumper(indent=1) ; '<pre>'; Dumper.dump( gpitem ); '</pre>' %]
+			</td>
+			<td>
+			[% IF gp.species.binomial.match('\S+') %]
+				<span class="type">[% gp.type %]</span> from <i class="spp">[% gp.species.binomial %]</i>
+			[% ELSE %]
+				<span class="type">[% gp.type %]</span>
+			[% END %]
+			</td>
+			<td>[% gpitem.1 %]</td>
+			[% counter = counter + 1 %]
+		</tr>
+	[% ELSE %]
+	<tr class="obsolete"><td colspan="4">No data found for [% gpitem.0 %]!</td></tr>
+	[% END;
+		END %]
+		</tbody>
+		<tfoot>
+			<tr id="options">
+				<td></td>
+				<td colspan="3">
+					[% INCLUDE options_gp_table.tmpl %]
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</form>
+[% IF data.omitted && data.omitted > 0 %]
+	<p>The BLAST search returned [% data.omitted %] gene product[% IF data.omitted != 1 %]s[% END %] which did not match your query constraints. Please see the full BLAST report below for the details.</p>
+	[% END;
+		ELSE %]
+<p>No gene products matching your query constraints were returned by the BLAST search.</p>
+	[% END;
+	ELSE %]
+<p>Sorry, your BLAST query returned no results.</p>
+[% END %]
+	<p class="toTop">
+		<a href="#top" title="Back to the top of the page">Back to top</a>
+	</p>
+</div>

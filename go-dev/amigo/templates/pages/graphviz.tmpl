@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO Graph Viewer</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_term_graph.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+	[% TRY %]
+
+<h1>[% graph_title %] Graphical View</h1>
+
+<ul class="download">
+<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]" title="Standard AmiGO view of this graph">AmiGO view</a></li>
+<li><a href="[% cgi %].cgi?format=dot&amp;session_id=[% session_id %][% permalink %]" title="Download graph in dot format"> <img src="[% image_dir %]/dl.png" alt="download link"> dot text</a></li>
+<li><a href="[% cgi %].cgi?format=obo&amp;session_id=[% session_id %][% permalink %]" title="Download graph in OBO format"> <img src="[% image_dir %]/dl.png" alt="download link"> OBO</a></li>
+<li><a href="[% cgi %].cgi?format=rdfxml&amp;session_id=[% session_id %][% permalink %]" title="Download graph in RDF-XML format"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
+</ul>
+
+<form action="[% cgi %].cgi" id="graph">
+	<fieldset class="filters"><legend>Graph View Options</legend>
+	<ul class="inline">
+	[% opt_name = 'layout';
+		option = extra_filter.$opt_name %]
+	<li><label for="[% opt_name %]">[% opt_name | ucfirst %]</label>
+	[% INCLUDE options_radio.tmpl %]
+	</li>
+	[% FOREACH opt_name = [ 'graph_textcolor', 'graph_bgcolor' ];
+			option = extra_filter.$opt_name.data;
+			title = extra_filter.$opt_name.title %]
+	<li><label for="[% opt_name %]">[% title %]</label>
+		<select id="[% opt_name %]" name="[% opt_name %]">
+		[% PROCESS options_select_options.tmpl %]
+		</select>
+	</li>
+	[% END %]
+	<li>
+		<input type="hidden" name="format" value="png">
+		<input type="hidden" name="session_id" value="[% session_id %]">
+		<input type="submit" class="button"></li></ul>
+	</fieldset>
+</form>
+
+[% image_map_html %]
+[% IF !term_acc;
+		term_acc = 'the tree';
+	END %]
+
+<img src="[% html_url %]/[% image_url %]" ismap alt="Graphical representation of [% term_acc %]" title="Graphical representation of [% term_acc %]" usemap="#test">
+	
+	[% CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

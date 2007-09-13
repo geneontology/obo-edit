@@ -1,0 +1,7 @@
+[% FOREACH param = hidden_params %]
+	[% param_list = session.get_param_list(param) %]
+	[% FOREACH value = param_list %]
+		<input type="hidden" name="[% param %]" value="[% value %]">
+	[% END %]
+[% END %]
+

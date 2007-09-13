@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Term Association Details</title>
+		[% INCLUDE header_info.tmpl;
+		# INCLUDE javascript_term_assoc.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+[% TRY;
+		#USE Dumper; '<pre style="size: 0.7em">'; Dumper.dump(data); Dumper.dump(session); '</pre>';
+
+	IF data.term_h;
+	
+		#USE Dumper; Dumper.dump(data.term_h);
+		counter = 1;
+		assoc_h = data.assoc_h;
+		term_order = data.order;
+
+		IF termlist.size == 1;
+			target = data.term_h.$termlist.0 %]
+	<h1>[% target.name %]</h1>
+[% details = 'term-details.cgi?term=' _ target.acc _ '&amp;session_id=' _ session_id %]
+	<ul id="navPage" class="inline C">
+	<li><a href="#[% target.acc %]" title="View gene products associated with this term">Term associations <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+	<li><a href="[% details %]" title="View term information">Term information <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+	<li><a href="[% details %]#lineage" title="View the placement of the term in the tree">Term lineage <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+	<li><a href="[% details %]#xrefs" title="View cross-references to external databases">External references <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+	</ul>
+			<div class="block">
+			<h2 id="[% target.acc %]">Gene Product Associations to [% target.name %] ; [% target.acc %][% IF term_assocs == 'all' %] and children[% END %]</h2>
+	[% ELSE  # more than one term %]
+		<h1>Term Associations</h1>
+		<div class="block">
+		[% term_name_list = [];
+			FOREACH t = termlist;
+				target = data.term_h.$t;
+				IF target.name;
+					term_name_list.push(target.name _ ' ; ' _ target.acc);
+				END;
+			END %]
+		<h2>Gene Product Associations to [% term_name_list.join(" or ") %]
+		[% IF term_assocs == 'all' %] or children[% END %]</h2>
+	[% END;
+	
+		INCLUDE message_term_assoc.tmpl;
+
+		#USE Dumper; '<pre>'; Dumper.dump(data); '</pre>';
+
+		IF assoc_h %]
+<p>Download this data in <a href="term-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt">GA (tab-delimited) format</a> or as <a href="term-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt">RDF-XML</a>.</p>
+
+
+[% IF 1 == 0 %]
+		<h3 id="downloadToggle" class="toggle">Download</h3>
+		<div id="downloadDiv" class="options">
+		<p>Download this data in <a href="term-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt">GA (tab-delimited) format</a> or as <a href="term-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt">RDF-XML</a>.</p>
+		</div>
+		<h3 id="filterToggle" class="toggle">Filter associations displayed <a href="http://www.geneontology.org/amigo/help-filter_term_assoc.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		<div id="filterDiv" class="options">
+		</div>
+		<h3 id="tableOptionsToggle" class="toggle">Options</h3>
+		<div id="tableOptionsDiv" class="options">
+		[% INCLUDE options_gp_table.tmpl %]
+		</div>
+[% END %]
+
+
+	[% INCLUDE filter_term_assoc.tmpl;
+		table_type = 'term' %]
+		<form action="gp-select.cgi">
+			<table summary="Gene products annotated to [% target.name %]" id="results">
+				<tbody class="assoc">
+				[%# pos = 'top' %]
+				<!--	<tr id="options-[% pos %]">
+						<td></td>
+						<td colspan="6">
+		<input class="cbox" id="all-[% pos %]" type="checkbox" value="select_all"><label for="all-[% pos %]">Select all results of this query</label>
+	</td>
+					</tr> -->
+	[% FOREACH entry = data.order;
+			t = entry.term;
+			t_acc = t.acc;
+			gplist = entry.gps;
+			IF counter % 2 == 0;
+				counter = counter + 1;
+			END;
+			%]
+		<tr><td colspan="[% colspan || 7 %]"><h3 class="term"><a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]"  title="Click to view details of [% t.name %]" class='name'>[% t.name %] ; [% t.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% t.acc %]&amp;session_id=[% session_id %]" title="View term in the tree browser">View term in tree</a></h3>
+		[% IF t.definition %]
+			<p class="toggleable def" id="[% t.acc %]-def">[% t.definition %]</p>
+		[% END;
+			IF termlist.size > 1 && data.parent_h.$t_acc;
+				p_list = [];
+				FOREACH p = data.parent_h.$t_acc;
+					IF t_acc != data.term_h.$p.acc;
+						p_list.push(data.term_h.$p.name _ " ; " _ data.term_h.$p.acc);
+					END;
+				END;
+				IF p_list.size > 0 %]
+				<p>Appears under [% p_list.join(" and ") %]</p>[%
+				END;
+			END;
+		%]
+			</td></tr>
+		<tr class="thead">
+		[% PROCESS assoc_table_head.tmpl %]
+		</tr>
+		[% PROCESS term_assoc_table.tmpl;
+		END %]
+				</tbody>
+				<tfoot>
+		[% PROCESS assoc_table_foot.tmpl %]
+				</tfoot>
+			</table>
+		</form>
+	[% IF data.n_pages && data.n_pages > 1;
+			INCLUDE web_paging.tmpl;
+		END %]
+		<p class="toTop">
+			<a href="#top" title="Back to the top of the page">Back to top</a> 
+		</p>
+		[% #ELSE;
+				#INCLUDE message_term_assoc.tmpl;
+			END %]
+		</div>
+		[% ELSE %]
+			<h1>Term Associations</h1>
+			[% INCLUDE message_term_assoc.tmpl;
+			%]<p>No associations for these terms!</p>[%
+
+		END;
+	CATCH;
+		PROCESS error.tmpl;
+	END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

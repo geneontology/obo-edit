@@ -1,0 +1,57 @@
+
+[%	USE Dumper; '<pre>'; Dumper.dump(filterdata) ; '</pre>'; %]
+
+
+
+[% link = "search.cgi?action=sort&amp;search_constraint=spp&amp;session_id=" _ session_id _ "&amp;query=" _ queryurl;
+
+	IF page_size && page_size == 'all';
+		link = link _ "&amp;page_size=all";
+	ELSE;
+		link = link _ "&amp;page=1";
+	END %]
+<form action="spp-select.cgi">
+<table id="results" summary="Species search results for [% querytext %]">
+<thead>
+<tr>
+	<th>
+	 
+	</th>
+	<th>
+		Species, NCBI tax ID
+	</th>
+	</tr>
+	</thead>
+	<tbody>
+[% counter = 1;
+	FOREACH sppitem = data;
+		spp = sppitem.spp;
+		src = sppitem.src;
+		IF counter % 2 == 0 %]
+			<tr class="even_row species" id="t-[% counter %]">
+	[% ELSE %]
+			<tr class="species" id="t-[% counter %]">
+	[% END %]
+		<td><input class="cbox" type="checkbox" id="spp-[% counter %]" value="[% spp.ncbi_taxa_id %]" name="spp"></td>
+		<td>
+			<label for="spp-[% counter %]" class="ncbi_taxa_id"><i class="spp">[% spp.genus %]&nbsp;[% spp.species %]</i></label>
+			[% IF spp.common_name %]
+				 ([% spp.common_name %])
+			[% END %]
+			&nbsp;&nbsp;[% sppitem.gp_count %] gene product[% IF sppitem.gp_count != 1 %]s[% END %]<br>NCBI tax ID:[% spp.ncbi_taxa_id %]
+<p>[% gp.id %] source: [% FOREACH s = src.keys; s _ ': ' _ src.$s; END %]</p>
+			[%# USE Dumper; '<pre>'; Dumper.dump(sppitem) ; '</pre>' %]
+			</td> 
+		</tr>
+[% counter = counter + 1; END %]
+	</tbody>
+	<tfoot>
+		<tr id="options">
+			<td></td>
+			<td>
+				[% INCLUDE options_spp_table.tmpl %]
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+</form>

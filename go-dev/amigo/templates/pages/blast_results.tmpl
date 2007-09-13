@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	[% INCLUDE header_info.tmpl %]
+		<title>AmiGO: BLAST Results</title>
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl;
+				INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>BLAST Results</h1>
+[% TRY;
+		PROCESS blast_summary.tmpl;
+
+	#USE Dumper(indent=1) ; '<pre>'; Dumper.dump( data.product_h ); '</pre>';
+	%]
+	<div class="block" id="result-[% seq_no %]">
+		<h2>Query Sequence</h2>
+		<blockquote>
+<pre class="sequence">[% data.sequence %]</pre>
+		</blockquote>
+	</div>
+[% IF data.gplist;
+		PROCESS blast_results_table.tmpl;
+	END;
+	IF data.raw_data %]
+	<div class="block">
+		<h2>Raw Blast Data</h2>
+		<blockquote>
+<pre class="blast_data">[% data.raw_data %]</pre>
+		</blockquote>
+		<p class="toTop">
+			<a href="#top" title="Back to the top of the page">Back to top</a>
+		</p>
+	</div>
+		[% END;
+		CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

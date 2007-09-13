@@ -1,0 +1,49 @@
+[% #	Global page variables
+	s = 4; 
+#	filter_list = ['ont', 'speciesdb'];
+#	select_list = ['taxid', 'evcode', 'gptype'];
+
+	page_title = 'AmiGO: Gene Product Association Viewer';
+	IF data.product_h.size == 1;
+		product = data.product_h.values.0;
+		IF product.symbol;
+			page_title = product.symbol _ " Term Association Viewer";
+	END; END;
+		
+%]
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>[% page_title %]</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_browse.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+	[% TRY %]
+			<div class="filters">
+				[% INCLUDE filter_gp_assoc.tmpl %]
+			</div>
+		[% IF data.graph;
+				graph = data.graph;
+				PROCESS treeview.tmpl;
+			ELSE;
+				INCLUDE message.tmpl;
+			END;
+		CATCH;
+			PROCESS error.tmpl;
+		END %]
+[% USE Dumper; '<pre>'; Dumper.dump(data); '</pre>'; %]
+
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

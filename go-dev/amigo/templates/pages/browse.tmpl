@@ -1,0 +1,40 @@
+[% #	Global page variables
+	s = 4; 
+#	filter_list = ['ont', 'speciesdb'];
+#	select_list = ['taxid', 'evcode', 'gptype'];
+%]
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Gene Ontology Browser</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_browse.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>Tree Browser</h1>
+		[% IF msg_h.keys; USE Dumper; '<pre>'; Dumper.dump(msg_h); '</pre>'; END %]
+		[%# USE Dumper; '<pre>'; Dumper.dump(tree); '</pre>'; %]
+
+
+	[% TRY %]
+			<div class="filters">
+				[% INCLUDE filter_browse.tmpl %]
+			</div>
+			[% PROCESS treeview.tmpl;
+			#	USE Dumper; '<pre>'; Dumper.dump(graph); '</pre>';
+		CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

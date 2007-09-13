@@ -1,0 +1,141 @@
+[% #	Global page variables
+
+	s = 4; 
+#	filter_list = ['ont', 'taxid', 'speciesdb', 'evcode', 'gptype', 'assby', 'qual'];
+%]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>My AmiGO: Preferences</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_adv.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+<h1>Preferences</h1>
+[% TRY;
+	# USE Dumper; '<pre>'; Dumper.dump(filterdata); '</pre>';
+	IF msg_h; #session.get_message;
+		PROCESS message.tmpl;
+	END %]
+<div class="block">
+<form action="prefs.cgi" enctype="multipart/form-data" method="POST">
+<h2>Filters</h2>
+
+[% INCLUDE filters.tmpl %]
+
+[% all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
+	all_a_filters = ['evcode', 'ont', 'qual', 'assby'];
+	gp_filters = [];
+	a_filters = [];
+	FOREACH f = all_gp_filters;
+		IF filterdata.$f;
+			gp_filters.push(f);
+		END;
+	END;
+	FOREACH f = all_a_filters;
+		IF filterdata.$f;
+			a_filters.push(f);
+		END;
+	END;
+	
+	IF gp_filters.size != 0 %]
+	<h3>Filter Gene Products <a href="http://www.geneontology.org/amigo/help-filter_adv.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+	[% FOREACH opt_name = gp_filters;
+			class = 'block floatL';
+			title = filterdata.$opt_name.title;
+			option = filterdata.$opt_name.data;
+		#	tmpl = 'options_' _ opt_name _ '.tmpl';
+		#	INCLUDE $tmpl;
+			INCLUDE options_checkbox_list.tmpl;
+		END %]
+	<hr class="clearL">
+[% END;
+	IF a_filters.size != 0 %]
+	<h3>Filter Gene Products by Associations <a href="http://www.geneontology.org/amigo/help-filter_adv.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3> 
+	[% FOREACH opt_name = a_filters;
+			class = 'block floatL';
+			title = filterdata.$opt_name.title;
+			option = filterdata.$opt_name.data;
+			INCLUDE options_checkbox_list.tmpl;
+		#	tmpl = 'options_' _ opt_name _ '.tmpl';
+		#	INCLUDE $tmpl;
+		END; %]
+	<hr class="clearL">
+[% END %]
+					
+	<!--	[% IF session.get_param('show_blast') == 1 %]
+		<h3>BLAST Settings <a href="http://www.geneontology.org/amigo/help-blast_settings.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+			<p><label for="threshold">Expect threshold</label>
+			<select name="threshold" id="threshold">
+				<option>100</option>
+				<option>10</option>
+				<option>1.0</option>
+				<option selected>0.1</option>
+				<option>0.01</option>
+				<option>0.001</option>
+				<option>1e-5</option>
+				<option>1e-25</option>
+				<option>1e-50</option>
+				<option>1e-100</option>
+			</select>
+			</p>
+			
+			<p>
+			<label for="maxhits">Maximum number of alignments</label>
+			<select id="maxhits" name="maxhits">
+				<option>10</option>
+				<option>20</option>
+				<option>30</option>
+				<option>40</option>
+				<option selected>50</option>
+				<option>60</option>
+				<option>80</option>
+				<option>100</option>
+				<option>200</option>
+				<option>500</option>
+				<option>1000</option>
+			</select></p>
+			<p>
+			BLAST filter:
+			<input class="radio" type="radio" name="blast_filter" id="filteron" value="on" checked><label for="filteron">On</label>
+			<input class="radio" type="radio" name="blast_filter" id="filteroff" value="off"><label for="filteroff">Off</label>
+			</p>
+
+		[% END %]
+		
+		<h3>Term Lineage View settings</h3>
+		[% opt_name = 'term_context';
+			INCLUDE options_radio.tmpl %]
+
+		<h3>Term Associations settings</h3>
+			[% opt_name = 'term_assocs';
+				INCLUDE options_radio.tmpl %]
+
+		<h3>Association View settings</h3>
+		[%# opt_name = 'gp_context';
+			INCLUDE options_radio.tmpl %] -->
+
+		<h3>Tree view settings</h3>
+		[% opt_name = 'tree_view';
+			INCLUDE options_radio.tmpl %]
+
+		<input type="hidden" name="session_id" value="[% session_id %]"><input type="hidden" name="action" value="set-filters">
+	<input type="submit" class="button">
+</form>
+</div>
+
+[% CATCH;
+		PROCESS error.tmpl;
+	END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

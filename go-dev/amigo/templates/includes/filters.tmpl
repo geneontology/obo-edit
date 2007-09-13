@@ -1,0 +1,75 @@
+[% filtertxt = '';
+
+#	USE Dumper; '<pre style="font-size: 50%">'; Dumper.dump(filterdata); '</pre>';
+
+	IF filterdata.ont.selected;
+		namelist = [];
+		FOREACH x = filterdata.ont.selected;
+			namelist.push(x.label.replace('_',' '));
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.ont.title _ ': '_ namelist.join(', ') _ '</dd>';
+	END;
+	
+	IF filterdata.taxid.selected;
+		namelist = [];
+		FOREACH spec = filterdata.taxid.selected;
+			spec = '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' _ spec.value _ '" title="View ' _ spec.label _ ' details on the NCBI taxonomy website" class="spp">' _ spec.label _ '</a>';
+			namelist.push(spec);
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.taxid.title _ ': ' _ namelist.join(', ') _ '</dd>';
+	END;
+
+	IF filterdata.gptype.selected;
+		namelist = [];
+		FOREACH x = filterdata.gptype.selected;
+			namelist.push(x.label.replace('_',' '));
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.gptype.title _ ': '_ namelist.join(', ') _ '</dd>';
+	END;
+
+	IF filterdata.speciesdb.selected;
+		namelist = [];
+		FOREACH db = filterdata.speciesdb.selected;
+		#	db = munger.get_human_name(db);
+			namelist.push(db.label);
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.speciesdb.title _ ': ' _ namelist.join(', ') _ '</dd>';
+	END;
+
+	IF filterdata.evcode.selected;
+		namelist = [];
+		FOREACH ev = filterdata.evcode.selected;
+			ev = '<acronym title="' _ ev.label _ '">' _ ev.value _ '</acronym>';
+			namelist.push(ev);
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.evcode.title _ ': ' _ namelist.join(', ') _ '</dd>';
+	END;
+	
+	IF filterdata.qual.selected;
+		namelist = [];
+		FOREACH x = filterdata.qual.selected;
+			namelist.push(x.label.replace('_',' '));
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.qual.title _ ': '_ namelist.join(', ') _ '</dd>';
+	END;
+
+	IF filterdata.assby.selected;
+		namelist = [];
+		FOREACH x = filterdata.assby.selected;
+			namelist.push(x.label.replace('_',' '));
+		END;
+		filtertxt = filtertxt _ '<dd>' _ filterdata.assby.title _ ': '_ namelist.join(', ') _ '</dd>';
+	END;
+
+	IF filtertxt != '';
+		IF page_name == 'advanced_query' %]
+		<div class="filters">
+	[% END %]
+	<dl>
+	<dt>Current filters</dt>
+	[% filtertxt %]
+	</dl>
+		[% IF page_name == 'advanced_query' %]
+		</div>
+[% END; END %]
+

@@ -1,0 +1,5 @@
+[% FOREACH opt = option;
+		label = opt.value;
+		IF opt.label; label = opt.label; END; %]
+	<option value="[% opt.value %]"[% IF opt.selected; ' selected'; END %]>[% label %]</option>
+[% END %]

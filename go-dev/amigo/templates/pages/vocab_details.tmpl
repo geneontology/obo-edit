@@ -1,0 +1,47 @@
+[% #	Global page variables
+
+	s = 4; 
+#	filter_list = ['speciesdb'];
+#	select_list = ['ont', 'taxid', 'evcode', 'gptype'];
+
+	page_title = 'Vocabulary Details';
+	term = graph.get_term(term_acc);
+	IF term;
+		page_title = term.name;
+	END %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Term Details</title>
+		[% INCLUDE header_info.tmpl %]
+		[% INCLUDE javascript_term_details.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>[% page_title %]</h1>
+[% TRY;
+		INCLUDE message.tmpl;
+	#	USE Dumper(indent=1) ; '<pre>'; Dumper.dump( graph ); '</pre>' %]
+<div class="block term" id="info">
+	<h2>Term Information</h2>
+	<dl class="term-info">
+		<dt>Accession</dt>
+		<dd class="name">[% term.acc %]</dd>
+		<dt>Ontology</dt>
+		<dd class="type">[% term.type.replace('_', ' ') %]</dd>
+	</dl>
+</div>
+	[% CATCH;
+			PROCESS error.tmpl;
+		END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

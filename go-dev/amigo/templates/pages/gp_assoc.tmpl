@@ -1,0 +1,125 @@
+[% page_title = "AmiGO: Gene Product Associations";
+	counter = 1;
+	TRY;
+		IF data.product_h.size == 1;
+			product = data.order.0.gp;
+			IF product.symbol;
+				page_title = product.symbol _ " Term Associations";
+		END; END;
+	CATCH;
+		PROCESS error.tmpl;
+	END;
+	%]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>[% page_title %]</title>
+		[% INCLUDE header_info.tmpl;
+			# INCLUDE javascript_gp_details.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+		[% INCLUDE header.tmpl %]
+		[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+[% TRY;
+
+	assoc_h = data.assoc_h;
+	order = data.order;
+	
+#	USE Dumper;'<pre>';Dumper.dump(data);'</pre>';
+
+	IF !data.product_h.keys; %]
+	<h1>Gene Product Associations</h1>
+	[% INCLUDE message.tmpl;
+	ELSE; # we have data!
+		gp = order.0.gp;
+		term_list = order.0.terms %]
+		<h1 class="symbol">[% gp.symbol %]</h1>
+		<h2 class="full_name">[% gp.full_name %]</h2>
+		<p>[% gp.type %] from [% IF gp.species.ncbi_taxa_id %] <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% gp.species.ncbi_taxa_id %]" title="View [% gp.species.binomial %] details on the NCBI taxonomy website" class="spp">[% gp.species.binomial %]</a>[% ELSE %] <i class="spp">[% gp.species.binomial %]</i>[% END;
+		IF gp.species.common_name %] ([% gp.species.common_name %])[% END %]
+		</p>
+		<ul id="navPage" class="inline C">
+		<li><a href="#assoc" title="View term associations for this gene product">Term associations <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+		<li><a href="gp-details.cgi?[% url_string %]&amp;session_id=[% session_id %]" title="View gene product information">Gene product information <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+		[% IF gp.seq_list && gp.seq_list.size > 0 %]
+		<li><a href="gp-details.cgi?[% url_string %]&amp;session_id=[% session_id %]#sequence" title="View sequence information">Peptide Sequence <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+		<li><a href="gp-details.cgi?[% url_string %]&amp;session_id=[% session_id %]#seq-info" title="View sequence information">Sequence information <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+		[% END %]
+		</ul>
+		<div class="block">
+		<h2>Term Associations</h2>
+		[% IF term_list && term_list.size > 0 %]
+		<ul class="download">
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"> <img src="[% image_dir %]/down.png" alt="in-page link"> GA format</a></li>
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/down.png" alt="in-page link"> RDF-XML</a></li>
+		</ul>
+		[% INCLUDE filter_gp_assoc.tmpl %]
+		[% IF 1 == 0 %]
+		<h3 id="downloadToggle" class="toggle">Download</h3>
+		<div id="downloadDiv" class="options">
+		</div>
+		<p><a href="gp-assoc-view.cgi?[% url_string %]&amp;session_id=[% session_id %]">View these terms in the tree.</a></p>
+		<h3 id="tableOptionsToggle" class="toggle">Options</h3>
+		<div id="tableOptionsDiv" class="options">
+		</div>
+		[% END;
+
+			INCLUDE message.tmpl;
+			table_type = 'gp';
+			colspan = 6;
+			IF assoc_view == 'summary';
+				colspan = 5;
+			END %]
+			<form action="term-select.cgi">
+			<table summary="Terms associated with the [% gp.type %] [% gp.symbol %]">
+			<thead>
+			<tr>
+			[% PROCESS assoc_table_head.tmpl %]
+			</tr>
+		</thead>
+		<tbody>
+			[% PROCESS gp_assoc_table.tmpl %]
+		</tbody>
+		<tfoot>
+		<tr class="action" id="options-[% pos %]">
+		<td></td>
+		<td colspan="[% colspan %]">
+			[% INCLUDE options_term_table.tmpl %]
+			<!-- <input class="cbox" id="all-[% pos %]" type="checkbox" value="select_all"><label for="all-[% pos %]">Select all results of this query</label> -->
+		</td>
+		</tfoot>
+		</table>
+		</form>
+	[%	IF n_pages && n_pages > 1;
+			INCLUDE web_paging.tmpl;
+		END %]
+		<p class="toTop">
+			<a href="#top" title="Back to the top of the page">Back to top</a> 
+		</p>
+		
+	[% ELSE;
+			INCLUDE message.tmpl; %]
+	[% IF data.term_count.${gp.id} && data.term_count.${gp.id} > 0 %]
+		<p>Without filters, there are [% data.term_count.${gp.id} %] terms associated with [% gp.symbol %]. <a href="gp-assoc.cgi?[% url_string %]&amp;session_id=[% session_id %]&amp;action=reset-filters" title="Remove filters">Remove the filters to view these associations</a>.</p>
+		[% END %]
+
+
+		[% END %]
+	</div>
+		[% END;
+	CATCH;
+		PROCESS error.tmpl;
+	END %]
+
+[%# USE Dumper(indent=1) ; '<pre>' ; Dumper.dump( data ) ; '</pre>' %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>
+

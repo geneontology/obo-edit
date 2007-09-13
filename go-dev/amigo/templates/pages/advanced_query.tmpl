@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Advanced Search</title>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_adv.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+
+[% IF msg_h.fatal;
+		INCLUDE message.tmpl;
+	END %]
+
+
+<h1>Advanced Search</h1>
+<form action="search.cgi" enctype="multipart/form-data" name="advanced_query" id="advanced_query" method="POST">
+<div class="block">
+	<h2>Search the Gene Ontology database</h2>
+		<h3 class="first"><label for="query">Enter your query</label> <a href="http://www.geneontology.org/amigo/help-adv_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		<p>To search for more than one term or gene product, separate your queries with a line break.</p>
+		<p>Wildcard searches can be performed using <em>?</em> to represent a single unknown character or <em>*</em> to represent multiple characters. To search for the characters <em>?</em> or <em>*</em>, prefix them with a backslash like this: <kbd>\*</kbd></p>
+		
+		<!-- For example:</p>
+		<ul><li><kbd>???tose transporter</kbd> would find <span class="term">lactose transporter</span>, <span class="term">maltose transporter</span> and <span class="term">pentose transporter</span></li>
+		<li><kbd>mal* transporter</kbd> would retrieve the results <span class="term">malate transporter</span>, <span class="term">maltodextrin transporter</span> and <span class="term">maltose transporter</span>.
+		</li>
+		</ul> -->
+			<textarea id="query" name="query" cols="55" rows="4"></textarea>
+		<p><em>OR</em> <label for="idfile">upload a text file of queries</label> (maximum file size [% max_upload_size %]K): <input type="file" name="idfile" id="idfile" title="Upload a text file for AmiGO to use as input" class="button">
+		</p>
+		
+		<p><input type="checkbox" id="exact_match" name="exact_match" value="1" class="cbox"><label for="exact_match">Exact match</label></p>
+	<h3>Search type <a href="http://www.geneontology.org/amigo/help-search_fields.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		<div class="searchType">
+			<h4><input class="radio" type="radio" name="search_constraint" value="term" id="sc-term" checked><label for="sc-term">Terms</label></h4>
+			[% opt_name = 'termfields';
+				class = 'block';
+				IF searchfields.$opt_name;
+					title = searchfields.$opt_name.title;
+					option = searchfields.$opt_name.data;
+					PROCESS options_checkbox_list.tmpl;
+				END; %]
+		</div>
+		<div class="searchType">
+			<h4><input class="radio" type="radio" name="search_constraint" value="gp" id="sc-gp"><label for="sc-gp">Genes or Proteins</label></h4>
+			[% opt_name = 'gpfields';
+				class = 'block';
+				IF searchfields.$opt_name;
+					title = searchfields.$opt_name.title;
+					option = searchfields.$opt_name.data;
+					PROCESS options_checkbox_list.tmpl;
+				END; %]
+		</div>
+		<h3 class="clearL">Filter results <a href="http://www.geneontology.org/amigo/help-filter_adv.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		[% PROCESS filters.tmpl;
+			all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
+			all_a_filters = ['evcode', 'qual', 'assby'];
+			gp_filters = [];
+			a_filters = [];
+			FOREACH f = all_gp_filters;
+				IF filterdata.$f;
+					gp_filters.push(f);
+				END;
+			END;
+			FOREACH f = all_a_filters;
+				IF filterdata.$f;
+					a_filters.push(f);
+				END;
+			END %]
+		<fieldset class="block"><legend>Filter by Ontology</legend>
+			[% opt_name = 'ont';
+				title = filterdata.$opt_name.title;
+				option = filterdata.$opt_name.data;
+				PROCESS options_checkbox_list.tmpl %]
+		</fieldset>
+		[% IF gp_filters.size != 0 || a_filters.size != 0;
+			class = 'block floatL' %]
+			<p>The following filters only apply to the gene product search.</p>
+			[% IF gp_filters.size != 0 %]
+			<fieldset class="block"><legend>Filter Gene Products</legend>
+			[% FOREACH opt_name = gp_filters;
+					IF opt_name == 'taxid';
+						title = filterdata.$opt_name.title;
+						option = filterdata.$opt_name.data;
+						PROCESS options_select.tmpl;
+					ELSE;
+						title = filterdata.$opt_name.title;
+						option = filterdata.$opt_name.data;
+						PROCESS options_checkbox_list.tmpl;
+					END;
+				END; %]
+			<hr class="clearL">
+			</fieldset>
+		[% END;
+			IF a_filters.size != 0 %]
+			<fieldset class="block">
+				<legend>Filter Gene Products by Associations</legend> 
+			[% FOREACH opt_name = a_filters;
+					title = filterdata.$opt_name.title;
+					option = filterdata.$opt_name.data;
+					PROCESS options_checkbox_list.tmpl;
+				END; %]
+			<hr class="clearL">
+			</fieldset>
+		[% END %]
+	[% END %]
+			<hr class="clearL">
+		<input type="hidden" name="action" value="new-search">
+		<input type="hidden" name="session_id" value="[% session_id %]">
+	<input type="submit" class="button">
+	[%# USE Dumper; '<pre>'; Dumper.dump(searchfields); '</pre>' %]
+</div>
+</form>
+
+
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

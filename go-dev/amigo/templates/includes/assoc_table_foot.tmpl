@@ -1,0 +1,13 @@
+[% pos = '-bottom' %]
+<tr id="options">
+[% IF table_type != 'gp_multi' %]
+<td></td>
+[% END;
+	IF colspan;
+		colspan = colspan - 1;
+	END %]
+	<td colspan="[% colspan || 6 %]">
+	[% INCLUDE options_gp_table.tmpl %]
+<!--	<input class="cbox" id="all" type="checkbox" value="select_all"><label for="all">Select all results of this query</label> -->
+	</td>
+</tr>

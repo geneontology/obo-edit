@@ -1,0 +1,116 @@
+[% TRY;
+		IF data && data.parent;
+			page_title = ' for ' _ data.parent.acc;
+	END; END %]
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO Bar Chart Viewer[% page_title %]</title>
+<style type="text/css">
+<!--
+.graph { 
+	position: relative; /* IE is dumb */
+	width: 502px;
+/*	border: 1px solid #3875D7; */
+	padding: 0;
+	margin: 0;
+}
+.graph .bar { 
+	display: block;
+	position: relative;
+	background: url(../../amigo/images/graph.png) #3875D7 0 0 repeat-x;
+	text-align: center;
+	color: #000;
+	height: 20px;
+	line-height: 20px;
+	margin: 2px 0;
+}
+.graph .bar span { position: absolute; left: 1em; }
+dl, dt, dd { display: inline }
+
+.bar-chart img { margin: 0; padding: 0; border: 0; background: #3875D7 }
+
+.bar-chart-label { font-size: 80% }
+-->
+</style>
+		[% INCLUDE header_info.tmpl %]
+		[%# INCLUDE javascript_term_graph.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+	[% TRY;
+			IF !data %]
+<h1>AmiGO Bar Chart Viewer</h1>
+
+[% INCLUDE message.tmpl; %]
+
+[% ELSE %]
+<h1>Gene Product Annotation to '[% data.parent.name %] ; [% data.parent.acc %]'</h1>
+<table>
+[% FOREACH t = data.graph;
+		IF t.percent != 0 %]
+	<tr>
+	<td class="R bar-chart-label">[% t.acc %]<br>[% t.name %]</td>
+	<td class='graph'><span class='bar' style="width: [% t.percent %]%">&nbsp;</span></td>
+	</tr>
+[% END; END %]
+</table>
+
+<div>
+<ul>
+[% FOREACH t = data.graph;
+		IF t.percent != 0;
+			IF t.percent == 1 %]
+	<li class='bar-chart'><img src="[% image_dir %]/bar-one.png" alt="[% t.percent %]"> [% t.acc %]</li>
+			[% ELSIF t.percent == 2 %]
+	<li class='bar-chart'><img src="[% image_dir %]/bar-l.png"><img src="[% image_dir %]/bar-r.png"> [% t.acc %]</li>
+			[% ELSE %]
+	<li class='bar-chart'><img src="[% image_dir %]/bar-l.png" width="3" height="20"><img src="[% image_dir %]/bar.png" alt="[% t.percent %]" width="[% 5*(t.percent - 2) %]" height="20"><img src="[% image_dir %]/bar-r.png" width="3" height="20"> [% t.acc %]</li>
+[% END; END; END %]
+</ul>
+</div>
+<div class="block">
+<table summary="[% data.parent.name %] and its direct children, number of gene products annotated to those terms and the percentage of the total annotations to  [% data.parent.name %]">
+	<thead>
+	<tr>
+		<th abbr="Name">Term Name</th>
+		<th abbr="Total GPs">Gene products annotated<br>to or below term</th>
+	</tr>
+	</thead>
+	<tbody>
+	[% counter = 1;
+		FOREACH term = data.graph;
+			IF counter % 2 == 0 %]
+		<tr class="even_row">
+		[% ELSE %]
+		<tr>
+		[% END %]
+			<td><a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="term">[% term.name %] ; [% term.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% term.acc %]&amp;session_id=[% session_id %]" title="View [% term.name %] in the tree browser" class="tree-link">[view in tree]</a></td>
+			<td class="R">[% term.count %] <a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View associations to [% term.name %]" class="assoc-link">[view associations]</a></td>
+		</tr>
+	[% counter = counter + 1;
+		END; %]
+	</tbody>
+	<tfoot>
+	<tr>
+		<td>Distinct gene products annotated to or below <a href="term-details.cgi?term=[% data.parent.acc %]&amp;session_id=[% session_id %]" title="View details of [% data.parent.name %]" class="term">[% data.parent.name %] ; [% data.parent.acc %]</a></td>
+		<td class="R">[% data.parent.count %] <a href="term-assoc.cgi?term=[% data.parent.acc %]&amp;session_id=[% session_id %]" title="View associations to [% data.parent.name %]" class="assoc-link">[view associations]</a></td>
+	</tr>
+	</tfoot>
+</table>
+</div>
+		[% END;
+		CATCH;
+			PROCESS error.tmpl;
+		END; %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

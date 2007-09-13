@@ -1,0 +1,99 @@
+[% IF msg_h.fatal %]
+<div class="fatal block">
+<h2>Error!</h2>
+<ul class="error">
+	[% FOREACH type = msg_h.fatal.keys.sort;
+			message = '';
+			msg = [];
+			IF msg_h.fatal.$type != 1;
+				msg = msg_h.fatal.$type;
+			END;
+	
+			SWITCH type;
+	
+		#	BLAST messages
+		#	fatal
+			CASE 'bad_seq';
+			message = 'Your input is not a valid sequence.';
+			CASE 'bad_seq_id';
+			message = "The sequence ID you have entered is not in the GO database. ";
+			CASE 'no_input';
+			message = "You have entered neither a sequence or sequence ID. ";
+			CASE 'seq_too_long';
+			message = 'The sequence you have entered is too long. The maximum allowable sequence length is ' _ max_seq_length.chunk(-3).join(',') _ ' residues.';
+			CASE 'invalid_id';
+			message = "Either ID for sequence or the input sequence itself is invalid.";
+			CASE 'config_error';
+			message = "There is an error in the configuration of the AmiGO BLAST server.";
+			CASE 'no_results';
+			message = 'Sorry, your BLAST query returned no results. Please see the BLAST report for full details.';
+			CASE;
+			message = type;
+			END;
+			
+			IF msg;
+				message = message _ " " _ msg.join(", ");
+			END %]
+	
+			<li><img src="[% image_dir %]/fatal.png" alt="fatal error message" height="15" width="15">[% message %]</li>
+	[% END %]
+	</ul>
+	</div>
+[% ELSE %]
+<div class="block">
+	<h2>Query Summary</h2>
+[% IF !n_seqs;
+		n_seqs = n_pages;
+	END %]
+	<p>
+		Your job contains [% n_seqs %] sequence[% IF n_seqs != 1 %]s[% END %].
+	</p>
+	<dl>
+	<dt>Parameters</dt>
+		<dd>Threshold: [% threshold %]</dd>
+		<dd>Maximum number of alignments shown: [% maxhits %]</dd>
+		<dd>BLAST filter: [% blast_filter %]</dd>
+	</dl>
+[% IF use_filters && use_filters == 1;
+		INCLUDE filters.tmpl;
+	END;
+	IF page_name != 'blast_submit' && n_seqs > 1;
+		INCLUDE web_paging.tmpl;
+	END;
+	
+	IF msg_h.warning %]
+	<h3>Warning</h3>
+	<ul class="error">
+	[% FOREACH type = msg_h.warning.keys.sort;
+
+		message = '';
+		msg = [];
+		IF msg_h.warning.$type != 1;
+			msg = msg_h.warning.$type;
+		END;
+
+		SWITCH type;
+
+		#	warning
+			CASE 'too_many_seqs';
+				message = 'You have entered more than ' _ max_seq_num _ ' sequences or total sequence length is more than '_ max_seq_length.chunk(-3).join(',') _ '. Only the first ' _ max_seq_num _ ' sequences will be used.';
+			CASE 'upfile_and_seq';
+			message = "You have pasted in a sequence and a filename.  The sequence file will be used as the query sequence.";
+			CASE 'too_many_inputs';
+			message = "You have entered too many possible inputs.";
+			CASE 'aa_seq_too_long';
+			message = "The sequence you have entered is too long. It has been truncated to "_ max_seq_length.chunk(-3).join(',') _" amino acids.";
+			CASE 'seq_too_long';
+			message = "The sequence you have entered is too long. The longest allowable sequence is "_ max_seq_length.chunk(-3).join(',') _" residues.";
+			CASE;
+			message = type;
+		END;
+		IF msg;
+			message = message _ " " _ msg.join(", ");
+		END %]
+		<li><img src="[% image_dir %]/warning.png" alt="warning message" height="15" width="15"> [% message %]</li>
+	[% END %]
+</ul>
+[% END %]
+</div>
+[% END %]

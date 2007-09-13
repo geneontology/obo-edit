@@ -1,0 +1,3 @@
+[% FOREACH opt = option %]
+		<input type="radio" name="[% opt_name %]" id="[% opt.value %]" value="[% opt.value %]" class="radio"[% IF opt.selected; ' checked'; END %]><label for="[% opt.value %]">[% opt.label | ucfirst %]</label>
+[% END %]

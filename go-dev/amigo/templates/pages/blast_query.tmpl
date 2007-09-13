@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+		<title>AmiGO: BLAST Query Submission</title>
+		[% INCLUDE header_info.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>BLAST Search</h1>
+			<p>
+			The sequence search is performed using either BLASTP or BLASTX (from the <a href="http://blast.wustl.edu/">WU-BLAST</a> package), depending on the type of the input sequence.
+			</p>
+[% TRY %]
+
+
+	[% PROCESS blast_error.tmpl
+	#	IF tmpl;
+	#	USE Dumper; '<pre>'; Dumper.dump(tmpl); '</pre>'
+		%]
+		<div class="block">
+			<form action="blast.cgi" enctype="multipart/form-data" method="POST" name="blast_form" id="blast_form">
+			<h2>BLAST Query</h2>
+			<h3><label for="query">Enter your query</label> <a href="http://www.geneontology.org/amigo/help-blast_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+			<fieldset class="blast-form"><legend>Enter a UniProt accession <em>or</em> upload a text file of queries <em>or</em> paste in FASTA sequence(s) </legend>
+				<p><label for="sptr_id">UniProt accession</label>: <input type="text" name="sptr_id" id="sptr_id" class="textBox">
+				</p>
+				<p><label for="upfile">Text file</label> (maximum file size [% max_upload_size %]K): <input type="file" name="upfile" id="upfile" title="Upload a text file to use as input" class="button">
+				</p>
+				<p><label for="seq">FASTA sequence(s):</label><br>Sequences should be separated with an empty line.</p>
+				<textarea name="seq" id="seq" cols="50" rows="20"></textarea>
+			</fieldset>
+			<ul>
+				<li>Maximum number of sequences: [% max_seq_num %]</li>
+				<li>Maximum total length of sequence: [% max_seq_length.chunk(-3).join(',') %] residues</li>
+			</ul>
+			<h3>BLAST settings <a href="http://www.geneontology.org/amigo/help-blast_settings.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+		[% FOREACH opt_name = ['threshold', 'maxhits'];
+				title = extra_filter.$opt_name.title %]
+			<p><label for="[% opt_name %]">[% title %]</label>
+			<select id="[% opt_name %]" name="[% opt_name %]">
+			[% option = extra_filter.$opt_name.data;
+				PROCESS options_select_options.tmpl %]
+			</select></p>
+		[% END;
+			opt_name = 'blast_filter';
+			title = extra_filter.$opt_name.title;
+			option = extra_filter.$opt_name.data; %]
+			<p>[% title %]: 
+			[% PROCESS options_radio.tmpl %]
+			</p>
+			<p>
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input type="hidden" name="action" value="blast">
+			</p>
+
+			<h3 class="clearL">Filter BLAST results <a href="http://www.geneontology.org/amigo/help-filter_adv.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
+			
+			<p>
+				If this option is selected, the BLAST results will be filtered to show only the gene products which match these settings are displayed in the results table. The full (unfiltered) list of matches will be available in the raw BLAST results.
+			</p>
+			<p><input type="checkbox" id="use_filters" name="use_filters" value="1" class="cbox"><label for="use_filters">filter the BLAST results</label></p>
+
+		[% PROCESS filters.tmpl;
+			
+			#USE Dumper; '<pre>'; Dumper.dump(filterdata); '</pre>';
+			
+			all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
+			all_a_filters = ['evcode', 'ont', 'qual', 'assby'];
+			gp_filters = [];
+			a_filters = [];
+			FOREACH f = all_gp_filters;
+				IF filterdata.$f;
+					gp_filters.push(f);
+				END;
+			END;
+			FOREACH f = all_a_filters;
+				IF filterdata.$f;
+					a_filters.push(f);
+				END;
+			END;
+			IF gp_filters.size != 0 || a_filters.size != 0;
+			class = 'block floatL' %]
+			[% IF gp_filters.size != 0 %]
+			<fieldset class="block"><legend>Filter Gene Products</legend>
+			[% IF filterdata.taxid;
+					FOREACH f = ['gptype', 'speciesdb'];
+						IF filterdata.$f && filterdata.$f.data.size > s;
+						s = filterdata.$f.data.size;
+				END; END; END;
+				FOREACH opt_name = gp_filters;
+					IF opt_name == 'taxid';
+						PROCESS options_select.tmpl;
+					ELSE;
+						title = filterdata.$opt_name.title;
+						option = filterdata.$opt_name.data;
+						PROCESS options_checkbox_list.tmpl;
+					END;
+				END; %]
+			<hr class="clearL">
+			</fieldset>
+		[% END;
+			IF a_filters.size != 0 %]
+			<fieldset class="block">
+				<legend>Filter Gene Products by Associations</legend> 
+			[% FOREACH opt_name = a_filters;
+					title = filterdata.$opt_name.title;
+					option = filterdata.$opt_name.data;
+					PROCESS options_checkbox_list.tmpl;
+				END; %]
+			<hr class="clearL">
+			</fieldset>
+		[% END %]
+	[% END %]
+			<hr class="clearL">
+			<input type="submit" class="button">
+		</form>
+		</div>
+
+[% CATCH;
+		PROCESS error.tmpl;
+	END; %]
+
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>

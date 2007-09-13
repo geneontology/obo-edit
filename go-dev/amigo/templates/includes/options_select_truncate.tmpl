@@ -1,0 +1,10 @@
+<fieldset><legend><label for="[% opt_name %]" class="select">[% title %]</label></legend>
+<select id="[% opt_name %]" name="[% opt_name %]" multiple size="[% s %]">
+[% FOREACH opt = option;
+		IF opt.selected %]
+		<option selected value="[% opt.value %]">[% opt.label.chunk(20).0 %]</option>
+	[% ELSE %]
+		<option value="[% opt.value %]">[% opt.label.chunk(20).0 %]</option>
+[% END; END %]
+</select>
+</fieldset>

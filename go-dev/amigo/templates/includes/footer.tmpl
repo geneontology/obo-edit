@@ -1,0 +1,10 @@
+<p>
+	Last updated [% release_date %]
+	<br>
+	How can we improve AmiGO? <a href="http://www.geneontology.org/amigo/suggest.shtml" title="Send us your AmiGO suggestions">Send us your suggestions</a>
+	<br>
+	Copyright &copy; 1999-2007 <a href="http://www.geneontology.org/index.shtml" title="Gene Ontology home page">the Gene Ontology</a> &bull; 
+	<a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact GO">Contact GO</a>
+</p>
+[% '<pre style="font-size: 0.5em">'; USE Dumper(indent=1) ; FOREACH p = session.params.keys; IF p != 'cache_result'; p _ " : " _ Dumper.dump( session.params.$p ); END; END; '</pre>' %]
+

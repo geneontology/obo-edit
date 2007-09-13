@@ -1,0 +1,35 @@
+<!-- <tr class="action" id="options-[% pos %]">
+	<td></td>
+	<td colspan="[% colspan %]"> -->
+[% 
+	opt_name = 'action';
+	select_set = {
+		assoc => {
+			title => 'Tree options',
+			options => [
+			{ value => 'plus_node', label => 'add selected terms to the tree' },
+			{ value => 'set-tree', label => 'create a new tree with these terms' },
+			],
+		},
+		gp => {
+			title => 'Download term information',
+			options => [
+			{ value => 'obo', label => 'in OBO format' },
+			{ value => 'rdfxml', label => 'in RDF-XML format' },
+			],
+		}
+	}; %]
+
+<select name="[% opt_name %]">
+	<option value="0">Choose an action...</option>
+[% FOREACH opt = select_set.keys.sort; %]
+		<optgroup label="[% select_set.$opt.title %]">
+		[% FOREACH poss = select_set.$opt.options; %]
+		<option value="[% poss.value %]">[% poss.label %]</option>
+		[% END %]
+		</optgroup>
+	[% END %]
+</select>
+	<input class="button" type="submit" value="Go!">
+<!--	</td>
+</tr> -->

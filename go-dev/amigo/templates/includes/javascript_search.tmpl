@@ -1,0 +1,60 @@
+<script type="text/javascript" src="[% html_url %]/js/all.js"></script>
+<script type="text/javascript">
+if (document.getElementById && document.getElementsByTagName) {
+	document.write('<style type="text/css"> <!-- .toggleable { display: none } --> <\/style>');
+	var checkBoxes;
+	var numberChecked;
+	window.onload = initialize;
+}
+
+function hiliter() {
+/*	var querylist = document.getElementById('...');
+	var fields = document.getElementById(''); */
+//	var tbs = document.getElementsByTagName('TBODY');
+//	for (var tb in tbs)
+//	{	
+//	var terms = document.getElementsByClass('term');
+//	alert("found " + terms.length + " terms");
+
+	var trs = document.getElementsByTagName('TR');
+	alert("found " + trs.length + " TRs");
+
+	var count = 0;
+	for (var t in trs)
+	{	if (t.className && t.className.length > 0 && t.className.indexOf('term') != -1)
+		{	alert("Found a tr!")
+			var class = t.className;
+			if (count < 5)
+			{	alert("class name is " + t.className);
+			}
+			if (t.id)
+			{	
+/*look for the hidden input with the match field(s) in it
+fields: acc, name, comment, def, syn dbxref subset */
+				var tid = t.id;
+				// get the match fields
+				var match = t.getElementById(tid + "-match");
+				if (!match)
+				{	alert("No match found!");
+					next;
+				}
+				/* check the descendent nodes for query matches */
+				var fields = match.nodeValue.split(",");
+			
+				alert ("Match found in " + fields.join(", "));
+			}
+		}
+		count++;
+	}
+	return;
+}
+//}
+
+
+function initialize()
+{	synToggle();
+	defToggle();
+//	hiliter();
+	initResultsTable();
+}
+</script>

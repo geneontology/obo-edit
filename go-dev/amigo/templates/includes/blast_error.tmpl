@@ -1,0 +1,70 @@
+[% IF msg_h.fatal %]
+<div class="fatal block">
+<h2>Error!</h2>
+<ul class="error">
+	[% FOREACH type = msg_h.fatal.keys.sort;
+			message = '';
+			msg = [];
+			IF msg_h.fatal.$type != 1;
+				msg = msg_h.fatal.$type;
+			END;
+	
+			SWITCH type;
+	
+		#	BLAST messages
+		#	fatal
+			CASE 'bad_seq';
+			message = 'Your input is not a valid sequence.';
+			tmpl = 'blast_query_entry';
+
+			CASE 'no_seq_found';
+			message = "The gene product " _ msg _ " does not have a sequence in the GO database.";
+			tmpl = 'blast_query_entry';
+
+			CASE 'no_input';
+			message = "Please enter either a sequence or a sequence ID.";
+			tmpl = 'blast_query_entry';
+
+			CASE 'seq_too_long';
+			message = 'The sequence you have entered is too long. The maximum allowable sequence length is ' _ max_seq_length.chunk(-3).join(',') _ ' residues.';
+			tmpl = 'blast_query_entry';
+
+			CASE 'gp_not_found';
+			message = "The gene product ID you have entered is not in the GO database. ";
+			tmpl = 'blast_query_entry';
+
+			CASE 'config_error';
+			message = "There is an error in the configuration of the AmiGO BLAST server.";
+			IF msg;
+				message = message _ " " _ msg.join(", ");
+			END;
+
+			CASE 'no_results';
+			message = 'Sorry, your BLAST query returned no results. Please see the BLAST report for full details.';
+
+			CASE;
+			message = type;
+			END;
+			
+#			IF msg;
+#				message = message _ " " _ msg.join(", ");
+#			END
+%]
+	
+			<li><img src="[% image_dir %]/fatal.png" alt="fatal error message" height="15" width="15">[% message %]</li>
+	[% END %]
+	</ul>
+[% IF tmpl;
+		tmpl = tmpl _ ".tmpl" %]
+		<form action="blast.cgi" enctype="multipart/form-data" method="POST" name="blast_form" id="blast_form">
+		[% PROCESS $tmpl %]
+			<input type="hidden" name="session_id" value="[% session_id %]">
+			<input type="hidden" name="action" value="blast">
+			<input type="submit" class="button">
+		</form>
+[% END %]
+
+
+
+	</div>
+[% END %]

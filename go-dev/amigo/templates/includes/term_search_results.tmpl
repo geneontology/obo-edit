@@ -1,0 +1,153 @@
+[% link = "search.cgi?action=sort&amp;search_constraint=term&amp;session_id=" _ session_id _ "&amp;query=" _ queryurl;
+
+	IF page_size && page_size == 'all';
+		link = link _ "&amp;page_size=all";
+	ELSE;
+		link = link _ "&amp;page=1";
+	END %]
+<form action="term-select.cgi">
+<input type="hidden" name="session_id" value="[% session_id %]">
+<table id="results" summary="Term search results for [% querytext %]">
+<thead>
+[% pos = 'top';
+	colspan = 2;
+	#PROCESS options_term_table.tmpl %]
+<tr>
+	<th>
+	[% IF termsort == 'rel' %]
+		<em class="sortedBy">rel</em>
+	[% ELSE %]
+		<a href="[% link %]&amp;termsort=rel" title="Sort results by relevance">rel</a></th>
+	[% END %]
+	<th>
+		[% IF termsort == 'acc' %]
+			<em class="sortedBy">GO ID</em>
+		[% ELSE %]
+			<a href="[% link %]&amp;termsort=acc" title="Sort results by GO ID">GO ID</a>
+		[% END %], 
+		[% IF termsort == 'name' %]
+			<em class="sortedBy">Term</em>
+		[% ELSE %]
+			<a href="[% link %]&amp;termsort=name" title="Sort results by term name">Term</a>
+		[% END %]
+	</th>
+	<th>
+		[% IF termsort == 'term_type' %]
+			<em class="sortedBy">Ontology</em>
+		[% ELSE %]
+			<a href="[% link %]&amp;termsort=term_type" title="Sort results by ontology name">Ontology</a>
+		[% END %]
+	</th>
+	</tr>
+	</thead>
+	<tbody>
+[% counter = 1;
+	FOREACH term = data;
+		IF term.is_obsolete %]
+			<tr class="obsolete term" id="t-[% counter %]">
+	[% ELSIF counter % 2 == 0 %]
+			<tr class="even_row term" id="t-[% counter %]">
+	[% ELSE %]
+			<tr class="term" id="t-[% counter %]">
+	[% END %]
+		<td>[% IF term.is_obsolete == 0 %]<input class="cbox" type="checkbox" id="[% term.acc %]" value="[% term.acc %]" name="term">[% END %]</td>
+		<td>
+		[% #USE Dumper; '<pre>'; Dumper.dump(term); '</pre>' %]
+			
+			<label for="[% term.acc %]" class="acc">[% search.hilite(term.acc, 1) %][%# FILTER $Hilite; term.acc ; END %]</label> : <a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="name">[% search.hilite(term.name, 1) %]</a>
+		[% IF !term.is_obsolete && term.is_ontology_term;
+				assoc_text = 'view associations';
+				IF gp_count_ok == 1;
+					assoc_text = term.n_deep_products _ ' association';
+					IF term.n_deep_products != 1;
+						assoc_text = assoc_text _ 's';
+				END; END %]
+		 <a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene product associations" class="assoc-link">[[% assoc_text %]]</a>
+			[% IF term.definition %]
+				<p id="def-[% counter %]"[% IF term.source != 'definition'; ' class="toggleable def"'; END %]>
+				[% term.definition %]
+				[% IF term.source == 'xref';
+						def_xref_matches = term.get_match_list('def_xref', termsort);
+						IF def_xref_matches %]
+				&nbsp;[ <span class="dbxref">[% def_xref_matches.join("</span>, <span class="dbxref">") %]</span> ]
+					[% END %]
+				</p>
+		[% END; END; END;
+
+			IF term.source == 'term_synonym';
+				matches = term.get_match_list('term_synonym', termsort);
+				IF matches;
+					#'<pre>'; Dumper.dump(matches); '</pre>';
+					IF matches.size == 1 %]
+					<p>Query matches synonym <span class="syn">[% matches.0.name %]</span> [[% matches.0.type %] synonym]</p>
+				[% ELSE;
+						first = matches.shift;
+						last = matches.pop %]
+				<ul id="syns-[% counter %]" class="inline">
+					<li>Query matches synonyms </li>
+					<li class="syn">[% first.name %] [[% first.type %] synonym],</li>
+					[% FOREACH syn = matches %]
+					 <li class="toggleable syn">[% syn.name %] [[% syn.type %]],</li>
+					[% END %]
+					 <li class="toggleable syn">[% last.name %] [[% last.type %]]</li>
+					</ul>
+		[% END; END; END;
+
+			IF term.source == 'subset';
+				subset_matches = term.get_match_list('subset', termsort);
+				IF subset_matches;
+					IF subset_matches.size == 1 %]
+					<p>Query matches subset [% subset_matches.0.name %] [[% subset_matches.0.acc %]]</p>
+				[% ELSE;
+						first = subset_matches.shift;
+						last = subset_matches.pop %]
+				<ul id="subsets-[% counter %]" class="inline">
+					<li>Query matches subsets </li>
+					<li class="syn">[% first.name %] [[% first.acc %]],</li>
+					[% FOREACH sub = matches %]
+					 <li class="toggleable">[% sub.name %] [[% sub.acc %]],</li>
+					[% END %]
+					 <li class="toggleable">[% last.name %] [[% last.acc %]]</li>
+					</ul>
+		[% END; END; END;
+
+			IF term.source == 'xref';
+				xref_matches = term.get_match_list('xref', termsort);
+				IF xref_matches;
+				#	USE Dumper; '<pre>'; Dumper.dump(xref_matches); '</pre>';
+					IF xref_matches.size == 1 %]
+					<p>Query matches cross-reference <span class="dbxref">[% xref_matches.0 %]</span></p>
+				[% ELSE %]
+					<ul id="dbxrefs-[% counter %]" class="dbxreflist inline">
+					<li>Query matches cross-references </li><li class="dbxref">[% xref_matches.join(',</li> <li class="toggleable dbxref">') %]</li>
+				</ul>
+		[% END; END; END;
+
+			IF term.comment;
+				comment = term.comment;
+				IF term.is_obsolete;
+					comment = munger.markup_search_comment(session_id,term.comment);
+				END; %]
+			<p class="comment">
+			[% comment %]
+				</p>
+		[% END %]
+			<p>best match: [% term.source %], [% term.best_match.0; IF term.source != 'comment' && term.source != 'definition' && term.source != 'name' && term.source != 'acc'; ',  ' _ term.best_match.1; END; %]</p>
+			</td> 
+			<td>
+				<a href="http://www.geneontology.org/GO.doc.shtml#[% term.type %]" title="[% term.type.replace('_', ' ') %] documentation" class="ont">[% term.type.replace('_', ' ') %]</a>
+			</td>
+		</tr>
+[% counter = counter + 1; END %]
+	</tbody>
+	<tfoot>
+	<tr>
+	<td></td>
+	<td colspan="2">put options in here</td>
+	</tr>
+[% pos = 'bottom';
+	colspan = 2;
+	#PROCESS options_term_table.tmpl %]
+	</tfoot>
+	</table>
+</form>

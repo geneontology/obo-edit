@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>A Message From Your AmiGO</title>
+		[% INCLUDE header_info.tmpl %]
+		[% INCLUDE javascript_front.tmpl %]
+	</head>
+	<body>
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			[% INCLUDE bar_generic.tmpl %]
+		</div>
+		<div class="contents">
+		<h1>A Message From AmiGO</h1>
+		[% IF msg_h;
+				TRY;
+					INCLUDE message.tmpl;
+				CATCH;
+					PROCESS error.tmpl;
+				END;
+			ELSE %]
+		<p>This feature has not yet been implemented. Please be patient!</p>
+		[% END %]
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>
