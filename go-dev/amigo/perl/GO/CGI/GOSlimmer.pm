@@ -721,7 +721,7 @@ sub get_assoc_data {
 			
 			if (keys %$missing)
 			{	#	these terms have disappeared - may as well delete the associations
-				$session->add_message('warning', ["term_not_found", keys %$missing]);
+				$session->add_message('warning', "term_not_found", [keys %$missing]);
 				foreach (keys %$missing)
 				{	delete $assoc_h->{assocs_by_acc}{$_};
 				}
@@ -813,7 +813,7 @@ sub get_assoc_data {
 				}
 			}
 			if ($results->{lost})
-			{	$session->add_message('warning', ['gp_not_found', @{$results->{lost}}]);
+			{	$session->add_message('warning', 'gp_not_found', $results->{lost});
 			}
 			#	convert into hash
 			
@@ -923,7 +923,7 @@ sub get_valid_terms {
 		}
 		if (keys %$missing)
 		{	#	we found some terms but not all of them
-			$session->add_message('warning', ["term_not_found", keys %$missing]);
+			$session->add_message('warning', "term_not_found", [keys %$missing]);
 		}
 	}
 	

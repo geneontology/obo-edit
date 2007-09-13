@@ -38,12 +38,25 @@ sub graphviz_to_dotty{
 
 sub go_graph_to_graphviz {
 	my $graph = shift;
-	my %gopts = %{shift || {}};
-	my %opts = %{shift || {}};
+	my $gopts = shift;
+	my $opts = shift;
 	my $it = $graph->create_iterator;
 	my %relationships;
 	my %labellednodes;
 	
+	if ($gopts->{layout})
+	{	#	change layout values to 0 or 1
+		if ($gopts->{layout} eq 'horizontal')
+		{	$gopts->{layout} = 1;
+		}
+		else
+		{	delete $gopts->{layout};
+		}
+	}
+	
+use Data::Dumper;
+print STDERR Dumper($gopts);
+
 	my %relcolors = (
 		is_a => 'red',
 		part_of => 'blue',
@@ -51,15 +64,15 @@ sub go_graph_to_graphviz {
 	);
 
 	my %default_graph =
-	(	rankdir => $gopts{layout}-- || 0,
+	(	rankdir => $gopts->{layout} || 0,
 		directed => 1,
 		node => {
 			shape=>'box',
 			color=>'black',
 			style=>'filled',
 			fontsize => 10,
-			fillcolor => $gopts{fillcolor} || 'white',
-			fontcolor => $gopts{fontcolor} || 'blue',
+			fillcolor => $gopts->{fillcolor} || 'white',
+			fontcolor => $gopts->{fontcolor} || 'blue',
 		},
 		edge => {
 			fontsize => 8
@@ -76,7 +89,7 @@ sub go_graph_to_graphviz {
 	while (my $ni = $it->next_node_instance ) {
 		my $term = $ni->term;
 	#	print STDERR "\nterm: ".$term->acc."\n";
-		_graphviz_label( $term, $graph, \%labellednodes, $graphviz, \%opts );
+		_graphviz_label( $term, $graph, \%labellednodes, $graphviz, $opts );
 		
 		#new
 		my $parent_rels = $graph->get_parent_relationships($term->acc);
@@ -86,7 +99,7 @@ sub go_graph_to_graphviz {
 		foreach my $rel (@$parent_rels)
 		{	my $p = $term_h{$rel->acc1};
 		#	print STDERR "parent term: ".$p->acc."\n";
-			_graphviz_label( $p, $graph->is_focus_node( $p ), \%labellednodes, $graphviz, \%opts );
+			_graphviz_label( $p, $graph->is_focus_node( $p ), \%labellednodes, $graphviz, $opts );
 	#	my $parents = $graph->get_parent_terms($term->acc);
 	#	foreach my $p (@$parents) {
 	#		_graphviz_label( $p, $graph->is_focus_node( $p ), \%labellednodes, $graphviz, \%opts );
@@ -108,7 +121,7 @@ sub go_graph_to_graphviz {
 			}
 		}
 	
-		if ($opts{selected_assocs}) {
+		if ($opts->{selected_assocs}) {
 			my @prs = map {$_->gene_product } @{$term->selected_association_list || []};
 			my $node = "acc" . $term->acc;
 			foreach my $pr (@prs) {
@@ -129,19 +142,19 @@ sub _graphviz_label{
 	my $graph = shift;
 	my $labellednodes = shift;
 	my $graphviz = shift;
-	my %opts = %{ shift || {}};
+	my $opts = shift;
 	my $acc = $term->acc;
 	my $node = "acc" . $term->acc;
 
 	unless( $labellednodes->{$acc} ){
-		if ($opts{sub}) {
-			 $graphviz->add_node($opts{sub}->($node, $term));
+		if ($opts->{'sub'}) {
+			 $graphviz->add_node($opts->{'sub'}->($node, $term));
 		}
-		elsif ($opts{base_url}) {
+		elsif ($opts->{base_url}) {
 			$graphviz->add_node
 				(	$node, 
 					label => $term->name . "\n" . $term->acc,
-					URL => $opts{'base_url'}.$term->acc,
+					URL => $opts->{'base_url'}.$term->acc,
 					fontname => 'Courier'
 				);
 		}

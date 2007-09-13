@@ -1,16 +1,16 @@
 package GO::CGI::NameMunger;
 
-use Exporter;
-
-@EXPORT_OK = qw(case_replace);
-%EXPORT_TAGS = (all => [@EXPORT_OK]);
-@ISA = qw(Exporter);
-
+use strict;
 #use GO::Utils qw(rearrange spell_greek);
 use GO::Utils qw(rearrange);
 use FreezeThaw qw(freeze thaw);
 use Data::Dumper;
 use HTML::Entities;
+use Exporter;
+use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
+@ISA = qw(Exporter);
+@EXPORT_OK = qw(case_replace);
+%EXPORT_TAGS = (all => [@EXPORT_OK]);
 
 =head1 GO::CGI::NameMunger
 
@@ -137,12 +137,13 @@ sub get_ref_url {
 		$acc_no =~ s/\|.*$//;
 	} elsif ($database eq "fb") {
 		$acc_no =~ s/^fb/FB/;
-	} elsif (lc($database) eq "dros cdna" || $database eq "image") {
-		my $u_env = $ENV{GO_REF_URL};
-		$url = $u_env ? $u_env.$acc_no :
-			"http://toy.lbl.gov:8888/cgi-bin/ex/exgo_report.pl?image_dbxref=$acc_no";
-		return $url;
 	}
+#		elsif (lc($database) eq "dros cdna" || $database eq "image") {
+#		my $u_env = get_environment_param('ref_url');
+#		$url = $u_env ? $u_env.$acc_no :
+#			"http://toy.lbl.gov:8888/cgi-bin/ex/exgo_report.pl?image_dbxref=$acc_no";
+#		return $url;
+#	}
 
   my %db_hash = 
 (	ddb=>"http://dictybase.org/db/cgi-bin/dictyBase/reference/reference.pl?refNo=$acc_no",
@@ -214,6 +215,7 @@ zfin => 'http://zfin.org/',
 
 }
 
+# UNUSED
 sub get_link_to {
   my $self = shift;
   my ($session, $extension) =
@@ -228,6 +230,7 @@ sub get_link_to {
   return undef;
 }
 
+# UNUSED
 =head2 get_xref_image
 
 parameters: database_abbreviation, acc_no
@@ -303,37 +306,53 @@ sub get_human_name {
 		uniprot => 'UniProt',
 		wb => 'Wormbase',
 		zfin => 'ZFIN',
-		biological_process => 'Biological Process',
-		cellular_component => 'Cellular Component',
-		molecular_function => 'Molecular Function',
 		all => 'All',
 		aca => 'All Curator Approved',
+#	relationships
 		is_a => 'is a',
 		part_of => 'part of',
 		develops_from => 'develops from',
-		plant_growth_and_development_stage => 'Plant Growth Stage',
+#	form labels
 		taxid => 'Species',
 		evcode => 'Evidence Code',
 		gptype => 'Gene Product Type',
 		ont => 'Ontology',
 		speciesdb => 'Data source',
-		term => 'Terms',
-		gp => 'Genes or proteins',
-		parentage => 'Term ancestors',
-		sibling => 'Term parents, siblings and children',
-		direct =>'Direct associations',
-		list =>'All associations',
 		gpfields => 'Search fields',
 		termfields => 'Search fields',
 		assby => 'Assigned by',
 		qual => 'Qualifier',
+		search_constraint => 'Search GO',
+		term => 'Terms',
+		gp => 'Genes or proteins',
+		parents => 'term ancestors',
+		sibling => 'term parents, siblings and children',
+		direct =>'direct associations',
+		list =>'all associations',
+		graph_bgcolor => 'Box color',
+		graph_textcolor => 'Text color',
+		term_context => 'Term context',
+		tree_view => 'Tree view',
+#	qualifiers
 		'not|contributes_to' => 'does not contribute to',
-		contributes_to => 'contributes to',
-		colocalizes_with => 'colocalizes with',
-		
+#	BLAST labels
+		threshold => 'Expect threshold',
+		maxhits => 'Maximum number of alignments',
+		blast_filter => 'BLAST filter',
+#	ontology names
+#		biological_process => 'biological process',
+#		cellular_component => 'cellular component',
+#		molecular_function => 'molecular function',
+		plant_growth_and_development_stage => 'Plant Growth Stage',
+#	graphviz colours
+		forestgreen => 'forest green',
+		navy => 'navy blue',
+		skyblue => 'sky blue',
 	};
   
-  return $dbs->{lc($database)} || $database;
+  return $dbs->{lc($database)} if $dbs->{lc($database)};
+  $database =~ s/_/ /g;
+  return $database;
 }
 
 =head2 get_full_name
@@ -592,8 +611,77 @@ sub hilite {
 	return $text;
 }
 
+sub _highlighting {
+	my $m = shift;
+	my $str = shift;
+	my $found;
+	if ($m =~ /\w/)
+	{	$m =~ s/\*//g;
+		
+	#	$found = $str =~ s/(\Q$m\E)/<span class="hilite">$1<\/span>/i;
+		$found = $str =~ s/(\Q$m\E)/<>$1<>/i;
+	}
+	return ($found, $str);
+}
+
+sub markup_comment {
+	my $self = shift;
+	my $session_id = shift;
+	my $comment = shift || return;
+	$comment =~ s/GO\\:/GO:/g;
+	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
+	return $comment;
+}
+
+sub markup_search_comment {
+	my $self = shift;
+	my $session_id = shift;
+	my $comment = shift || return;
+	$comment =~ s/GO\\:/GO:/g;
+	$comment =~ s/.*?(To update annotations.*)/$1/i;
+	if ($comment =~ /GO:\d{7}/)
+	{	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$session_id\">$1<\/a>/g;
+		return $comment;
+	}
+	return;
+}
+
+sub aspect_abbrev {
+	my $self = shift;
+	my $aspect = shift;
+
+	 my %aspect_h =
+	   (biological_process=>'P',
+		molecular_function=>'F',
+		cellular_component=>'C'
+	   );
+#	my %aspect_h =
+#	  (biological_process=>'process',
+#	   molecular_function=>'function',
+#	   cellular_component=>'component'
+#	  );
+	return $aspect_h{$aspect} || $aspect;
+}
+
+sub get_GO_doc_url {
+	my $self = shift;
+	my $type = shift;
+	my $val = lc(shift);
+
+	my $GO_url = "http://www.geneontology.org";
+	my %url_h =
+	(	aspect =>"$GO_url/GO.doc.shtml",
+		evidence =>"$GO_url/GO.evidence.shtml",
+		ont =>"$GO_url/GO.doc.shtml",
+		evcode =>"$GO_url/GO.evidence.shtml",
+	);
+	return $url_h{$type}."#$val";
+}
 
 
+
+=not used
+# UNUSED
 sub get_matching_synonyms {
 	my $self = shift;
 	my $synonyms = shift;
@@ -620,19 +708,7 @@ sub get_matching_synonyms {
 	}
 }
 
-sub _highlighting {
-	my $m = shift;
-	my $str = shift;
-	my $found;
-	if ($m =~ /\w/)
-	{	$m =~ s/\*//g;
-		
-	#	$found = $str =~ s/(\Q$m\E)/<span class="hilite">$1<\/span>/i;
-		$found = $str =~ s/(\Q$m\E)/<>$1<>/i;
-	}
-	return ($found, $str);
-}
-
+# UNUSED
 sub markup_matching_text {
 	my $self = shift;
 	my $fulln = shift;
@@ -658,47 +734,7 @@ sub markup_matching_text {
 	return $fulln;
 }
 
-sub markup_comment {
-	my $self = shift;
-	my $session = shift;
-	my $comment = shift || return;
-	my $sid = $session->get_param('session_id');
-	$comment =~ s/GO\\:/GO:/g;
-	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$sid\">$1<\/a>/g;
-	return $comment;
-}
-
-sub markup_search_comment {
-	my $self = shift;
-	my $session = shift;
-	my $comment = shift || return;
-	my $sid = $session->get_param('session_id');
-	$comment =~ s/GO\\:/GO:/g;
-	$comment =~ s/.*?(To update annotations.*)/$1/i;
-	if ($comment =~ /GO:\d{7}/)
-	{	$comment =~ s/(GO:\d+)/<a href=\"term-details.cgi?term=$1&amp;session_id=$sid\">$1<\/a>/g;
-		return $comment;
-	}
-	return;
-}
-
-sub aspect_abbrev {
-	my $self = shift;
-	my $aspect = shift;
-
-	 my %aspect_h =
-	   (biological_process=>'P',
-		molecular_function=>'F',
-		cellular_component=>'C'
-	   );
-#	my %aspect_h =
-#	  (biological_process=>'process',
-#	   molecular_function=>'function',
-#	   cellular_component=>'component'
-#	  );
-	return $aspect_h{$aspect} || $aspect;
-}
-
+# UNUSED
 sub get_alt_row_label {
 	my $self = shift;
 	my $c = shift || 0;
@@ -707,21 +743,7 @@ sub get_alt_row_label {
 	return $label_h{$c % 2};
 }
 
-sub get_GO_doc_url {
-	my $self = shift;
-	my $type = shift;
-	my $val = lc(shift);
-
-	my $GO_url = "http://www.geneontology.org";
-	my %url_h =
-	(	aspect =>"$GO_url/GO.doc.shtml",
-		evidence =>"$GO_url/GO.evidence.shtml",
-		ont =>"$GO_url/GO.doc.shtml",
-		evcode =>"$GO_url/GO.evidence.shtml",
-	);
-	return $url_h{$type}."#$val";
-}
-
+#	UNUSED
 sub get_paging_href {
 	my $self = shift;
 	my $page = shift;
@@ -753,6 +775,7 @@ sub get_paging_href {
 	return $href;
 }
 
+#	UNUSED
 sub get_page_href {
 	my $self = shift;
 	my $ses = shift;
@@ -776,11 +799,12 @@ sub get_page_href {
 	return $href;
 }
 
+#	UNUSED
 sub commify {
 	my $self = shift;
 	my $text = reverse $_[0];
 	$text =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
 	return scalar reverse $text;
 }
-
+=cut
 1;

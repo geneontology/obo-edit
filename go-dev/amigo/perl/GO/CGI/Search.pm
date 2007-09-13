@@ -1,9 +1,19 @@
 package GO::CGI::Search;
 
-use Carp;
+use strict;
+use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
+
+@ISA = ('Exporter');
+@EXPORT_OK = qw(new success get_msg results get_results_from_cache get_results_from_db);
+%EXPORT_TAGS = (
+	std => \@EXPORT_OK,
+);
+
+#use Carp;
 use DBI;
 use GO::AppHandle;
 use GO::Utils qw(rearrange);
+use GO::CGI::Utilities qw(:all);
 use GO::SqlWrapper qw(sql_quote select_hashlist);
 use HTML::Entities;
 #use Digest::MD5;
@@ -15,14 +25,13 @@ $Data::Dumper::Indent = 1;
 use GO::Object::TermSearchResult;
 use GO::Object::GeneProductSearchResult;
 
-use GO::CGI::Query qw(get_gp_details get_term_details get_nit);
-
-use strict;
+use GO::CGI::Query qw(get_gp_details get_term_in_graph _get_products_seqs get_nit);
 
 =head2 new
 
-	Arguments - session, arg_h with 1 / 0 for 'clever_mode' and 'get_relevance'
-	            defaults to having clever mode and get relevance on if not set
+	Arguments - session, apph, arg_h with 1 / 0 for 'clever_mode', 'get_relevance',
+	            and 'cache_me' (whether or not to set the cache)
+	            defaults to having these on if nothing is specified
 	Returns   - search object
 
 =cut
@@ -32,23 +41,109 @@ sub new {
 	my $class = shift;
 	my $self = {};
 	bless $self, $class;
-	my $session = shift;
-	my $arg_h = shift || {};
+	my $apph = shift;
+	my $arg_h = shift;
 
-	foreach ('gpsort', 'termsort', 'sppsort', 'action') #, 'page_size')
-	{	if ( $session->get_param($_) )
-		{	$self->{params}{$_} = $session->get_param($_);
-		}
-	}
-	$self->{params}{page} = $session->get_param('page');
-	$self->{params}{search_constraint} = $session->get_param('search_constraint') || 'term';
+	print STDERR Dumper($class);
+	print STDERR Dumper($apph);
 
-	foreach ('clever_mode', 'get_relevance')
-	{	my $val = $arg_h->{$_} || $session->get_param($_);
-		$self->{$_} = 1 unless ($val && $val == 0);
+	if (!$apph)
+	{	$self->set_msg('fatal', 'missing_apph');
+#		$self->success(0);
 	}
+	
+	$self->apph($apph);
+	
+	foreach ('clever_mode', 'get_relevance', 'cache_me')
+	{	my $v = $arg_h->{$_};
+		$self->{$_} = 1 unless ($v && $v == 0);
+	}
+	
 	return $self;
 }
+
+=head2 cache
+
+	Gets or sets the result cache
+
+=cut
+
+sub cache {
+	my $self = shift;
+	if (@_)
+	{	$self->{cache} = shift;
+	}
+	return $self->{cache};
+}
+
+=head2 apph
+
+	Gets or sets the apph
+
+=cut
+
+sub apph {
+	my $self = shift;
+	if (@_)
+	{	$self->{apph} = shift;
+	}
+	return $self->{apph};
+}
+
+=head2 get_param
+
+	Gets a parameter of the Search object
+
+=cut
+
+sub get_param {
+	my $self = shift;
+	my $p = shift;
+	return $self->{params}{$p} || get_environment_param($p) || undef;
+}
+
+=head2 set_param
+
+	Sets a parameter of the Search object
+
+=cut
+
+sub set_param {
+	my $self = shift;
+	my $p = shift;
+	my $x = shift;
+	$self->{params}{$p} = $x;
+}
+
+=head2 get_query_param
+
+	Method for external programs to get the query parameters
+
+=cut
+
+sub get_query_param {
+	my $self = shift;
+	my $q_type = shift || 'orig';
+	return $self->{queryset}{$q_type};
+}
+
+=head2 get_result_param
+
+	Method for external programs to get the result parameters
+
+=cut
+
+sub get_result_param {
+	my $self = shift;
+	my $r_type = shift;
+	return $self->{results}{$r_type} || undef;
+}
+
+=head2 __get_accs
+
+Examines the queryset and puts anything resembling an accession in an array
+
+=cut
 
 sub __get_accs {
 	my $self = shift;
@@ -84,112 +179,60 @@ sub __get_accs {
 	return \@list || undef;
 }
 
+=head2 getResultList
+
+	The basic function which is called by search.cgi to retrieve search results.
+
+	Arguments:  search object, the query, session (optional), arg_h (optional)
+	Returns:    a list of search results
+	            
+	The search object will be updated with information about
+	the query (retrievable through get_query_param) and about
+	the results (get_result_param). Any messages about the
+	search can be accessed via get_message
+	            
+
+=cut
+
 sub getResultList {
 	my $self = shift;
-	my ($session) = rearrange([qw(session)], @_);
-	
-#	print STDERR "session: ".Dumper($session)."\n";
+	my ($query, $session, $arg_h) = rearrange([qw(query session arg_h)], @_);
+	if (!$self->apph) # just in case something horrible has happened...
+	{	$self->set_msg('fatal', 'missing_apph');
+#		$self->success(0);
+		return;
+	}
+	my $success = $self->initialize_search($query, $session, $arg_h);
 
-	#	these params appear if we have already got the results in some form
-	if ( $session->get_param('page_size') eq 'all' || $session->get_param('page') || $self->{params}{'format'} || ($self->{params}{action} && $self->{params}{action} eq 'sort') )
-	{	return $self->get_results_from_cache($session) || $self->get_results_apph($session) || [];
+	return if !$success;
+
+	my $results;
+	if ($self->cache)
+	{	$results = $self->get_results_from_cache || $self->get_results_from_db;
 	}
 	else
-	{	return $self->get_results_apph($session) || [];
-	}
-}
-
-sub get_results_apph {
-	my $self = shift;
-	my $session = shift;
-	my $apph = $session->apph;
-	my $dbh = $apph->dbh;
-
-#	print STDERR "params:\n".Dumper($session->get_param_hash)."\n";
-
-	my $sc = $self->{params}{search_constraint};
-
-	print STDERR "\nStarting apph search...\n";
-
-	if ($session->get_param('exact_match'))
-	{	$self->{params}{exact_match} = 1;
+	{	$results = $self->get_results_from_db;
 	}
 	
-#	check the queryset and turn it into a structure that we can use
-	my $success = $self->_set_queryset($session, $session->get_current_params('query'));
-	$session->suicide_message('no_valid_query') if !$success;
-#	print STDERR "Queryset:\n".Dumper($queryset)."\n";
-
-#	find out what fields we're going to search
-#	if nothing is specified, use the default
-	my $selected = $self->_set_selected($session->get_current_params($sc.'fields'));
-	print STDERR "Selected:\n".Dumper($selected)."\n";
-
-	#	set the filters
-	$self->_set_filters($apph, $sc);
-
-	#	do the search!
-	my $results = $self->search($apph);
-
-#	print STDERR "Results data structure:\n".Dumper($result_h)."\n";
+	return unless $results;
 	
-	if (!@$results && $self->{clever_mode} == 1)
-	{	#	no results! uh-oh. see what fields we've searched and try
-		#	searching some other fields
-		print STDERR "No results found: entering clever mode!\n";
-
-		#	look at the fields we haven't search and examine them for possible matches
-		my @poss = grep { !$selected->{$_} } @{_search_field_list($sc, 'all')};
-
-		if (@poss)
-		{	print STDERR "fields to search: ".join(", ", @poss)."\n";
-			$self->{params}{selected} = {};
-			foreach (@poss)
-			{	$selected->{$_} = 1;
-				$self->{params}{selected}{$_} = 1;
-			}
-			$results = $self->search($apph);
-		}
-		#	turn off exact match if it's on
-		#	try a name / acc / symbol search for the other search constraint
-	}
-	$self->{params}{selected} = $selected;
-
-	if (!@$results)
-	{	print STDERR "No results found\n";
-		$self->_set_results($session, { n_results => 0 });
-		return;
-	}
-
-	#	we have results
-	#	see whether we found results for all our queries
-	if (%{$self->{queryset}{unmatched}})
-	{	#	We didn't find matches for everything.
-		#	Add a warning message about queries that we didn't find a match for
-		$session->add_message('warning', ['no_results', map { join(" ", @$_) } values %{$self->{queryset}{unmatched}} ]);
-	}
-
-	if (scalar @$results > __get_max_n_results($session) )
-	{	$self->_set_results($session, { n_results => scalar @$results,
-		n_pages => 1, large_result_set => 1 }, $results );
-		return;
-	}
-	elsif (scalar @$results == 1 && ($sc eq 'gp' || $sc eq 'term'))
-	{	#	if we only have one result, load up the details page for that result.
-		my $id = $self->_get_url($session, $sc, $results);
+	if ($self->{results}{single_result})
+	{	my $sc = $self->get_param('search_constraint');
+		#	if we only have one result, load up the details page for that result.
+		my $id = $self->_get_url($results);
 #		if ($url)
 #		{	print "Location: ".$session->get_param('cgi_url')."/".$sc."-details.cgi?$sc=".$url."&session_id=".$session->get_param('session_id')."\n\n";
 #			return;
 #		}
-
+=cut for now
 		if ($id)
 		{	my $result;
 			if ($sc eq 'gp')
-			{	my $gp_l = get_gp_details($session, {gpxref => $id});
+			{	my $gp_l = get_gp_details($apph, $msg_h, {gpxref => $id});
 				$result->{gp} = $gp_l->[0] if $gp_l;
 			}
 			else
-			{	my $graph = get_term_details($session, $id);
+			{	my $graph = get_term_in_graph($session, $id);
 				if ($graph)
 				{	$session->set_param('current_query', 'term', [$id]);
 					$result->{graph} = $graph;
@@ -204,18 +247,208 @@ sub get_results_apph {
 			}
 			if ($result)
 			{	#one result
-				$session->add_message('info', "AmiGO found only one result for your search");
+				$self->set_msg('info', 'AmiGO found only one result for your search');
 				if ($session->ses_type =~ /search/)
 				{	#	change the session type accordingly
 					$session->ses_type($sc.'_details');
 				}
-				$self->{results}{single_result} = 1;
 				return $result;
 			}
 		}
+=cut
+		#	if we're still here, something has gone wrong
+		#	so get the results in the standard way
+		return $self->get_result_details($results);
+	}
+	return $results;
+}
+
+
+=head2 initialize_search
+
+	Initializes the search parameters, taking values either from
+	session, an arg_h, or using default values.
+	The values in arg_h take precedence over those in session.
+
+=cut
+
+sub initialize_search {
+	my $self = shift;
+	my ($query, $session, $arg_h) = rearrange([qw(query session arg_h)], @_);
+
+###	Check we have a query
+	if (!$query)
+	{	$self->set_msg('fatal', 'missing_query');
+		print STDERR "No query found\n";
+#		$self->success(0);
+		return;
+	}
+	else
+	{	$self->set_param('query', $query);
 	}
 
-	my $n_pages = $session->get_n_pages(scalar @$results);
+	my $sc = $arg_h->{search_constraint} || $session->get_param('search_constraint');
+	$self->set_param('search_constraint', $sc);
+
+	foreach ($sc.'sort', 'exact_match', 'page_size', 'page') #, 'format')
+	{	my $p = $arg_h->{$_} || $session->get_current_param($_);
+		$self->set_param($_, $p) if $p;
+	}
+	
+	my $action = $arg_h->{'action'} || $session->get_param('action');
+	if ($action && $action eq 'sort')
+	{	$self->set_param('sort_me', 1);
+	}
+#	else
+#	{	$self->set_param('action', $action);
+#	}
+
+	#	see if we already have results from this query
+	if ($self->get_param('page_size') eq 'all' ||
+		$self->get_param('page') ||
+	#	$self->get_param('format') || #not implemented
+		$self->get_param('sort_me'))
+	{	#	this is likely to be a cached search.
+		my $cache = $session->get_all_caching_params;
+		last if (!$cache || !$cache->{result_list} || !$cache->{query});
+
+		#	check that the basic parameters are the same
+		#	Does query match?
+		
+		
+		#	Are the filters (and the search fields?) the same?
+		
+		
+
+		$self->_set_selected($cache->{$sc.'fields'});
+		$self->set_param('select_list', $cache->{$sc.'fields'});
+		$self->{queryset}{orig} = $cache->{queryset};
+		$self->{queryset}{perl} = $cache->{queryset_perl};
+
+		my @perl_qlist = 
+		map {
+			[
+			map { 
+				if ($self->{queryset}{perl}{$_})
+				{	qr/$self->{queryset}{perl}{$_}/i;
+				}
+				else
+				{	qr/$_/i;
+				}
+			} @$_ ];
+		} @{$self->{queryset}{orig}};
+	
+		$self->{queryset}{perllist} = \@perl_qlist;
+
+		print STDERR "Using results from cache...\n";
+		$self->{from_cache} = 1;
+		$self->cache($cache);
+	#	foreach (keys %$cache)
+	#	{	if ($_ ne 'result_list' && $self->get_param($_))
+	#		{	print STDERR "$_ => ".Dumper($self->get_param($_))."\n";
+	#		}
+	#	}
+	}
+
+	if (!$self->cache)
+	{	#	load the search fields
+		#	if nothing is specified, use the default
+		my $fields = $arg_h->{$sc.'fields'} || $session->get_current_param($sc.'fields');
+		$self->_set_selected($fields);
+
+		#	check the queryset and turn it into a structure that we can use
+		my $success = $self->_set_queryset;
+		if (!$success)
+		{	#$self->success(0);
+			return;
+		}
+	}
+
+	#	set the filters
+	$self->_set_filters;
+
+	if ($sc eq 'term')
+	{	$self->set_param('gp_count_ok', $session->gp_count_ok);
+		$self->set_param('ont_list', $session->get_ontology_list);
+	}
+	return 1;
+}
+
+=head2 get_results_from_db
+
+Search method
+
+=cut
+
+sub get_results_from_db {
+	my $self = shift;
+#	my $session = shift;
+	my $apph = $self->apph;
+	my $dbh = $apph->dbh;
+
+	print STDERR "\nStarting db search...\n";
+
+	my $sc = $self->get_param('search_constraint');
+	my $selected = $self->get_param('selected');
+
+	#	do the search!
+	my $results = $self->search;
+
+#	print STDERR "Results data structure:\n".Dumper($results)."\n";
+	
+	if (!@$results && $self->{clever_mode} == 1)
+	{	#	no results! uh-oh. see what fields we've searched and try
+		#	searching some other fields
+		print STDERR "No results found: entering clever mode!\n";
+
+		#	look at the fields we haven't search and examine them for possible matches
+		my @poss = grep { !$selected->{$_} } @{_search_field_list($sc, 'all')};
+
+		if (@poss)
+		{	print STDERR "fields to search: ".join(", ", @poss)."\n";
+			my $temporary_selected;
+			foreach (@poss)
+			{	$selected->{$_} = 1;
+				$temporary_selected->{$_} = 1;
+			}
+			$self->set_param('selected', $temporary_selected);
+			$results = $self->search;
+		}
+		#	turn off exact match if it's on
+		#	try a name / acc / symbol search for the other search constraint
+
+		$self->set_param('selected', $selected);
+	}
+
+	if (!@$results)
+	{	print STDERR "No results found\n";
+	#	$self->_set_cache_results($session, { n_results => 0 });
+	#	$self->success(0);
+		return;
+	}
+
+	#	we have results
+	#	see whether we found results for all our queries
+	if (%{$self->{queryset}{unmatched}})
+	{	#	We didn't find matches for everything.
+		#	Add a warning message about queries that we didn't find a match for
+		$self->set_msg('warning', 'no_results', [ map { join(" ", @$_) } values %{$self->{queryset}{unmatched}} ]);
+	}
+
+	my $max = get_environment_param('page_size') * get_environment_param('max_results_pages');
+	if (scalar @$results > $max )
+	{	$self->_set_cache_results({ n_results => scalar @$results,
+		n_pages => 1, large_result_set => 1 }, $results );
+		return;
+	}
+	elsif (scalar @$results == 1 && ($sc eq 'gp' || $sc eq 'term'))
+	{	$self->{results}{single_result} = 1;
+		return $results;
+	}
+
+	print STDERR "scalar \@\$results: ".scalar (@$results)."\n";
+
+	my $n_pages = get_n_pages(scalar @$results);
 	my $cache = {
 		n_results => scalar @$results,
 		n_pages => $n_pages,
@@ -225,21 +458,25 @@ sub get_results_apph {
 	my $sorted = $self->_sort_results($results);
 #	print STDERR "sorted results data structure:\n".Dumper($sorted)."\n";
 
-	$self->_set_results($session, $cache, $sorted);
-	$sorted = $session->get_subset($sorted, 1) unless ($n_pages == 1);
+	$self->_set_cache_results($cache, $sorted);
+	$sorted = get_subset($sorted, 1) unless ($n_pages == 1);
 	print STDERR "Done apph method.\n";
 #	print STDERR "sorted:\n".Dumper($sorted)."\n";
-
-	return $self->get_result_details($session, $sorted);
+	return $self->get_result_details($sorted);
 }
+
+=head2 _set_query
+
+Internal method to set the queryset using the values in the parameter 'query'
+
+=cut
 
 sub _set_queryset {
 	my $self = shift;
-	my $session = shift;
-	my $query = shift;
 
-	my $exact =  $self->{params}{exact_match} || undef;
-	my $sc = $self->{params}{search_constraint};
+	my $query = $self->get_param('query');
+	my $exact =  $self->get_param('exact_match');
+	my $sc = $self->get_param('search_constraint');
 	my $min_length = __get_min_q_length($sc, $exact);
 	my $selected;
 
@@ -472,20 +709,25 @@ sub _set_queryset {
 	}
 
 	if (@too_short)
-	{	$session->add_message('warning', ['query_too_short', @too_short]);
+	{	if (!@qlist)
+		{	$self->set_msg('fatal', 'query_too_short', $query);
+			return;
+		}
+		$self->set_msg('warning', 'query_too_short', \@too_short);
 	}
 
 	if (!@qlist)
-	{	#$self->_set_results($session, { n_results => 0 }); # is this needed?
-		return 0;
+	{	#$self->_set_cache_results($session, { n_results => 0 }); # is this needed?
+		$self->set_msg('fatal', 'no_valid_query');
+		return;
 	}
 	elsif (scalar @qlist > 1)
 	{	$self->{queryset}{multi} = 1;
 	}
 
-	if ($sc eq 'spp')
-	{	$session->set_param('1', 'sppfields', [keys %$selected])
-	}
+#	if ($sc eq 'spp')
+#	{	$session->set_param('1', 'sppfields', [keys %$selected])
+#	}
 
 	$self->{queryset}{orig} = [ @qlist ];
 
@@ -505,6 +747,12 @@ sub _set_queryset {
 	return 1;
 }
 
+=head2 __get_min_q_length
+
+Internal method to get minimum query length
+
+=cut
+
 sub __get_min_q_length {
 	my $sc = shift;
 	my $exact = shift || undef;
@@ -521,10 +769,16 @@ sub __get_min_q_length {
 	return $exact ? $min_q->{$sc.'_exact'} : $min_q->{$sc};
 }
 
+=head2 _set_filters
+
+Internal method to set the filters for the search
+
+=cut
+
 sub _set_filters {
 	my $self = shift;
-	my $apph = shift;
-	my $sc = shift;
+	my $apph = $self->apph;
+	my $sc = $self->get_param('search_constraint');
 	my $dbh = $apph->dbh;
 
 	my $filters = $apph->filters;
@@ -617,136 +871,119 @@ sub _set_filters {
 		}
 	}
 	if (@tables || @where)
-	{	$self->{params}{filters} = { tables => \@tables, where => \@where };
+	{	$self->set_param('filters', { tables => \@tables, where => \@where });
 	}
 }
 
 sub get_results_from_cache {
 	my $self = shift;
-	my $session = shift;
-	my $cache = $session->get_all_caching_params;
-	if (!$cache->{result_list})
-	{	print STDERR "\nLost result list information!!\n\n";
-		return;
-	}
-
-	print STDERR "Getting results from cache...\n";
-	$self->{from_cache} = 1;
-
-	my $apph = $session->apph;
-	my $dbh = $apph->dbh;
-	my $sc = $self->{params}{search_constraint};
-	my $page_size = $session->get_param('page_size');
+	my $cache = $self->cache;
+	my $sc = $self->get_param('search_constraint');
 	my $result_list = $cache->{result_list};
 	my $sorted;
+	my $n_pages = get_n_pages(scalar @$result_list, $self->get_param('page_size'));
+	print STDERR "num page = $n_pages; result_list size: ".scalar @$result_list."\n";
 
-	foreach (@{$cache->{$sc.'fields'}})
-	{	$self->{params}{selected}{$_} = 1;
+	if ($self->get_param('sort_me') && $self->get_param($sc.'sort') eq 'rel')
+	{	### new subroutine to sort by relevance
+		#	have a look at our cached results,
+		#	see if we already have the relevance info
+		
+		if (!$result_list->[0]{src}[1])  # position of the relevance score
+		{	#	Uh-oh! We need to find out the relevance scores.
+			$sorted = $self->get_relevance_of_cached_results;
+		}
 	}
-	
-	$self->{params}{select_list} = $cache->{$sc.'fields'};
-	$self->{queryset}{orig} = $cache->{queryset};
-	$self->{queryset}{perl} = $cache->{queryset_perl};
-	my @perl_qlist = 
-	map {
-		[	
-		map { 
-			if ($self->{queryset}{perl}{$_})
-			{	qr/$self->{queryset}{perl}{$_}/i;
-			}
-			else
-			{	qr/$_/i;
-			}
-		} @$_ ];
-	} @{$self->{queryset}{orig}};
 
-	$self->{queryset}{perllist} = \@perl_qlist;
-	my $n_pages = $session->get_n_pages(scalar @$result_list, $page_size);
-	$cache->{n_pages} = $n_pages;
+	if (!$sorted)
+	{	my $apph = $self->apph;
+		my $dbh = $apph->dbh;
 
-	print STDERR "num page = $n_pages; result_list size: ".scalar @$result_list."; page size: $page_size\n";
+		my $tables = _search_data($sc, 'results', 'tables');
+		my $cols = _search_data($sc, 'results', 'cols');
 
-#	foreach (keys %$cache)
-#	{	if ($_ ne 'result_list' && $self->{params}{$_})
-#		{	print STDERR "$_ => ".Dumper($self->{params}{$_})."\n";
+
+#		my $tables = $sc;
+#		if ($sc eq 'gp')
+#		{	$tables = 'gene_product';
 #		}
-#	}
-
-	my $tables = $sc;
-	if ($sc eq 'gp')
-	{	$tables = 'gene_product gp';
-	}
-	elsif ($sc eq 'spp')
-	{	$tables = 'species spp';
-	}
+#		elsif ($sc eq 'spp')
+#		{	$tables = 'species spp';
+#		}
+#		my $cols = "*";
+		
+		my $where = "";
 	
-	my $where = "";
-	my $cols = "*";
+		#	these queries all require the whole data set to be loaded
+		if ($self->get_param('sort_me') ||
+		#	$self->get_param('format') || # not implemented
+			$self->get_param('page_size') eq 'all') {
+			print STDERR "Found parameter sort, format or all\n";
 
-	#	these queries all require the whole data set to be loaded
-	if ($self->{params}{action} # || $session->get_param('format')  # not implemented
-			|| $page_size eq 'all') {
-		print STDERR "Found parameter sort, format or all\n";
-		if ($sc eq 'gp' && $self->{params}{action} && $self->{params}{action} eq 'sort' && $self->{params}{gpsort} eq 'spp')
-		{	$tables .= ", species";
-			$where = "species.id = gp.species_id AND ";
-			$cols = "gp.".$cols.", species.genus, species.species";
-#			$order = "ORDER BY species.genus, species.species LIMIT 50";
+			if ($sc eq 'gp' && $self->get_param('sort_me') && $self->get_param('gpsort') eq 'spp')
+			{	$tables .= ", species";
+				$where = "species.id = gp.species_id AND ";
+				$cols = "gp.".$cols.", species.genus, species.species";
+	#			$order = "ORDER BY species.genus, species.species LIMIT 50";
+			}
+		} else {
+		# get the subset for that page
+			$result_list = get_subset($result_list, $self->get_param('page'));
 		}
-	} else {
-	# get the subset for that page
-		$result_list = $session->get_subset($result_list);
-	}
-
-#	print STDERR "Source:\n".Dumper($source)."\n";
-#	$where .= "$sc.id in (".join(",", map { keys %$_ } @$source).")";
-	$where .= "$sc.id in (".join(",", map { $_->{id} } @$result_list).")";
 	
-	my $sql = "SELECT $cols FROM $tables WHERE $where";
-	print STDERR "sql: $sql\n";
-
-	my $result_h = $dbh->selectall_hashref($sql, 'id');
-
-#	print STDERR "result_h:\n".Dumper($result_h)."\n";
-
-	#	source has the correct order
-	#	put the data from result_h into sorted
-	foreach (@$result_list)
-	{	if ($sc eq 'gp')
-		{	$result_h->{$_->{id}}{full_name} = $result_h->{$_->{id}}{symbol} if !$result_h->{$_->{id}}{full_name};
+	#	print STDERR "Source:\n".Dumper($source)."\n";
+		$where .= "$sc.id in (".join(",", map { $_->{id} } @$result_list).")";
+		
+		my $sql = "SELECT $cols FROM $tables WHERE $where";
+		print STDERR "sql: $sql\n";
+	
+		my $result_h = $dbh->selectall_hashref($sql, 'id');
+	
+	#	print STDERR "result_h:\n".Dumper($result_h)."\n";
+	
+		#	result_list has the correct order
+		#	put the data from result_h into sorted
+		foreach (@$result_list)
+		{	#if ($sc eq 'gp')
+			#{	$result_h->{$_->{id}}{full_name} = $result_h->{$_->{id}}{symbol} if !$result_h->{$_->{id}}{full_name};
+			#}
+			$result_h->{$_->{id}}{source} = $_->{src};
+			push @$sorted, $result_h->{$_->{id}};
 		}
-		$result_h->{$_->{id}}{source} = $_->{src};
-		push @$sorted, $result_h->{$_->{id}};
 	}
-
 #	print STDERR "sorted:\n".Dumper($sorted)."\n";
 	
 	#	if the action was sort, we need to sort the results
 	#	and either return the first page OR the whole set
-	if ($self->{params}{action} && $self->{params}{action} eq 'sort')
+	if ($self->get_param('sort_me'))
 	{	print STDERR "Going into sort subroutine\n";
 		$sorted = $self->_sort_results([@$sorted]);
 	#	print STDERR "sorted arr : ".join(", ", map{ $_->{$sc}->{acc} }@$sorted)."\n";
 
-		$self->_set_results($session, $cache, $sorted);
+		$self->_set_cache_results($cache, $sorted);
 
-		return $self->get_result_details($session, $session->get_subset($sorted)) unless ($n_pages == 1)
+		return $self->get_result_details(get_subset($sorted, $self->get_param('page'))) unless ($n_pages == 1);
 	}
-	$self->_set_results($session);
-	return $self->get_result_details($session, $sorted);
+
+	#	otherwise, our cache hasn't changed, so we don't need to save it
+	return $self->get_result_details($sorted);
+}
+
+sub get_relevance_of_cached_results {
+	my $self = shift;
+
 }
 
 sub search {
 	my $self = shift;
-	my $apph = shift;
 	my $subset = shift || undef; # list of IDs to search within
-	
+	my $apph = $self->apph;
 
 	my $dbh = $apph->dbh;
-	my $selected = $self->{params}{selected};
-	my $sc = $self->{params}{search_constraint};
-	my $filters = $self->{params}{filters} || undef;
-	my $exact = $self->{params}{exact_match} || undef;
+	my $selected = $self->get_param('selected');
+	my $sc = $self->get_param('search_constraint');
+	my $filters = $self->get_param('filters') || undef;
+	my $exact = $self->get_param('exact_match') || undef;
 
 	my $extra = '';
 	if ($subset)
@@ -873,7 +1110,7 @@ sub search {
 			}
 		}
 		#	retrieve species info if the sort parameter is species
-		if ($self->{params}{gpsort} && $self->{params}{gpsort} eq 'spp')
+		if ($self->get_param('gpsort') && $self->get_param('gpsort') eq 'spp')
 		{	if (!grep { /species/ } @tables)
 			{	push @tables, "species";
 				push @where, "species.id = gp.species_id";
@@ -891,9 +1128,9 @@ sub search {
 	# NEW
 	elsif ($sc eq 'spp')
 	{	@srch = map { $where_phrases->{$_} } keys %$selected;
-		push @cols, "CONCAT(genus,' ',species) AS binomial, COUNT(gene_product.id) AS gp_count";
-		push @tables, 'gene_product';
-		$extra .= ' AND gene_product.species_id=species.id GROUP BY species.id';
+		push @cols, "CONCAT(genus,' ',species) AS binomial, COUNT(gp.id) AS gp_count";
+		push @tables, 'gene_product gp';
+		$extra .= ' AND gp.species_id=species.id GROUP BY species.id';
 	}
 	
 	if (keys %$other_matches)
@@ -1038,7 +1275,7 @@ sub search {
 
 	if (@obs)
 	{	#	if we have terms, we need to check for obsoletes
-		return _obsolete_check($apph, $results, \@obs);
+		return $self->_obsolete_check($results, \@obs);
 	}
 	return [values %$results];
 }
@@ -1057,13 +1294,13 @@ sub _search_data {
 			},
 			results => {
 				tables => "gene_product gp",
-				cols => "gp.*",
+				cols => "gp.id, gp.symbol, gp.dbxref_id, gp.species_id, gp.type_id, IF (gp.full_name = '', gp.symbol, gp.full_name) as full_name",
 			},
 			symbol => {
-				cols => "gp.symbol, gp.full_name, gp.dbxref_id, gp.species_id, gp.type_id",
+				cols => "gp.symbol, IF (full_name = '', gp.symbol, gp.full_name) as full_name, gp.dbxref_id, gp.species_id, gp.type_id",
 			},
 			full_name => {
-				cols => "gp.symbol, gp.full_name, gp.dbxref_id, gp.species_id, gp.type_id",
+				cols => "gp.symbol, IF (full_name = '', gp.symbol, gp.full_name) as full_name, gp.dbxref_id, gp.species_id, gp.type_id",
 			},
 			product_synonym => {
 				cols => "'product_synonym', synonym.product_synonym, ''",
@@ -1158,11 +1395,11 @@ sub _search_data {
 
 sub _where {
 	my $self = shift;
-	my $selected = shift || $self->{params}{selected};
+	my $selected = shift || $self->get_param('selected');
 	my $queryset = $self->{queryset}{orig};
-	my $sc = $self->{params}{search_constraint};
 	my $queryset_sql = $self->{queryset}{sql} || {};
-	my $exact = $self->{params}{exact_match} || undef;
+	my $sc = $self->get_param('search_constraint');
+	my $exact = $self->get_param('exact_match');
 
 	if ($exact)
 	{	print STDERR "exact = $exact\n";
@@ -1306,7 +1543,8 @@ sub _where {
 	{	my $acc_like = $self->__get_accs;
 		print STDERR "acc_like: ".Dumper($acc_like)."\n";
 		if (@$acc_like)
-		{	$self->{params}{selected}{acc} = 1;
+		{	$selected->{acc} = 1;
+			$self->set_param('selected', $selected);
 			$where_strs{acc} = "(".join(') OR (', 
 				map {
 						"$srch_h{acc}{table}.$srch_h{acc}{col} LIKE ".sql_quote($_)
@@ -1358,11 +1596,11 @@ select distinct seqxref.xref_dbname from seq_dbxref, dbxref AS seqxref where seq
 
 select distinct seqxref.xref_dbname from seq_dbxref, dbxref AS seqxref where seqxref.id = seq_dbxref.dbxref_id and LOCATE(seqxref.xref_dbname, seqxref.xref_key) = 0 and seqxref.xref_dbname IN ( [results of above query] )
 
-select distinct dbxref.xref_dbname from gene_product gp, dbxref where gp.dbxref_id = dbxref.id and LOCATE(concat(dbxref.xref_dbname, ':'), dbxref.xref_key) != 0
+select distinct dbxref.xref_dbname from gene_product, dbxref where gp.dbxref_id = dbxref.id and LOCATE(concat(dbxref.xref_dbname, ':'), dbxref.xref_key) != 0
 
-select distinct dbxref.xref_dbname from gene_product gp, dbxref where gp.dbxref_id = dbxref.id and LOCATE(dbxref.xref_dbname, dbxref.xref_key) != 0
+select distinct dbxref.xref_dbname from gene_product, dbxref where gp.dbxref_id = dbxref.id and LOCATE(dbxref.xref_dbname, dbxref.xref_key) != 0
 
-select distinct dbxref.xref_dbname from gene_product gp, dbxref where gp.dbxref_id = dbxref.id and LOCATE(dbxref.xref_dbname, dbxref.xref_key) = 0 and dbxref.xref_dbname IN ( [results of above query] )
+select distinct dbxref.xref_dbname from gene_product, dbxref where gp.dbxref_id = dbxref.id and LOCATE(dbxref.xref_dbname, dbxref.xref_key) = 0 and dbxref.xref_dbname IN ( [results of above query] )
 
 =cut
 	if ($q =~ /.*:.*/)
@@ -1438,12 +1676,12 @@ sub _get_relevance {
 	my $data = shift;
 
 	my $queryset = $self->{queryset}{perllist};
-	my $sc = $self->{params}{search_constraint};
-	my $field_list = $self->{params}{field_list};
+	my $sc = $self->get_param('search_constraint');
+	my $field_list = $self->get_param('field_list');
 
 #	translate selected into a field list
 	if (!$field_list)
-	{	my $selected = $self->{params}{selected};
+	{	my $selected = $self->get_param('selected');
 		
 		if ($sc eq 'spp')
 		{	if ($selected->{common_name})
@@ -1480,7 +1718,7 @@ sub _get_relevance {
 			{	push @$field_list, [ $field, __search_field_weighting($field) ];
 			}
 		}
-		$self->{params}{field_list} = $field_list;
+		$self->set_param('field_list', $field_list);
 	}
 
 
@@ -1587,7 +1825,7 @@ sub __relevance_algorithm {
 		}
 
 		my $coeff;
-		if ($self->{params}{exact_match})
+		if ($self->get_param('exact_match'))
 		{	$coeff = 1;
 		}
 		else
@@ -1663,7 +1901,7 @@ sub _get_match {
 	my $queryset = $self->{queryset}{perllist};
 
 	if (!$matchstr || !$queryset)
-	{	return 0;
+	{	return;
 	}
 
 	QUERY_LIST:
@@ -1674,7 +1912,7 @@ sub _get_match {
 		}
 		return 1;
 	}
-	return 0;
+	return;
 }
 
 sub _get_match_and_hilite {
@@ -1718,11 +1956,13 @@ sub _get_match_score_and_hilite {
 }
 
 sub _obsolete_check {
-	my $apph = shift;
+	my $self = shift;
 	my $results = shift;
 	my $obs = shift;
 
+	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
+
 	if (@$obs)
 	{	#	get the comments for the term; return only comments with GO IDs in them
 		my $sql =
@@ -1768,7 +2008,7 @@ sub _obsolete_check {
 sub _sort_results {
 	my $self = shift;
 	my $results = shift;
-	my $sc = $self->{params}{search_constraint};
+	my $sc = $self->get_param('search_constraint');
 
 #	print STDERR "results: ".Dumper($results)."\n";
 
@@ -1795,8 +2035,8 @@ sub _sort_results {
 #	search string was found
 
 	my $sortby;
-	if ($self->{params}{$sc.'sort'})
-	{	my $sort_crit = $self->{params}{$sc.'sort'};
+	if ($self->get_param($sc.'sort'))
+	{	my $sort_crit = $self->get_param($sc.'sort');
 		if ($self->{from_cache})
 		{	#	this is a cached search, so leave the list in its current order
 			push @$sortby, $sort_crit;
@@ -1903,16 +2143,16 @@ sub __data {
 }
 
 sub get_result_details {
-	my ($self, $session, $sorted) = @_;
+	my ($self, $sorted) = @_;
 
-	if ($self->{params}{search_constraint} eq 'gp')
-	{	return $self->_get_gp_details($session, $sorted);
+	if ($self->get_param('search_constraint') eq 'gp')
+	{	return $self->_get_gp_details($sorted);
 	}
-	elsif ($self->{params}{search_constraint} eq 'term')
-	{	return $self->_get_term_details($session, $sorted);
+	elsif ($self->get_param('search_constraint') eq 'term')
+	{	return $self->_get_term_details($sorted);
 	}
-	elsif ($self->{params}{search_constraint} eq 'spp')
-	{	return $self->_get_spp_details($session, $sorted);
+	elsif ($self->get_param('search_constraint') eq 'spp')
+	{	return $self->_get_spp_details($sorted);
 	}
 }
 
@@ -1934,13 +2174,12 @@ sub _create_gp_search_result_obj {
 
 sub _get_term_details {
 	my $self = shift;
-	my $session = shift;
 	my $term_ref = shift;
 
-	my $apph = $session->apph;
+	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
-	my $selected = $self->{params}{selected};
+	my $selected = $self->get_param('selected');
 	my $queryset = $self->{queryset}{perllist};
 
 	if (!@$term_ref)
@@ -1949,7 +2188,7 @@ sub _get_term_details {
 
 #	create a term array since it's easier to update the data in it
 	my $terms_by_id;
-	my $ont_list = $session->get_ont_list;
+	my $ont_list = $self->get_param('ont_list');
 	foreach (@$term_ref)
 	{	#print STDERR "term ref looks like this:\n".Dumper($_)."\n";
 	#	my $term = $apph->create_term_search_result_obj($_->{term});
@@ -2099,7 +2338,7 @@ sub _get_term_details {
 	}
 
 #	if there are no association filters, get the number of associations
-	if ($session->check_gp_count_ok == 1)
+	if ($self->get_param('gp_count_ok') == 1)
 	{	print STDERR "Getting the deep product count!\n";
 		my $c = {
 			per_term=>1,
@@ -2120,17 +2359,16 @@ sub _get_term_details {
 
 sub _get_gp_details {
 	my $self = shift;
-	my $session = shift;
 	my $gp_ref = shift;
 
-	my $apph = $session->apph;
+	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
-	my $selected = $self->{params}{selected};
+	my $selected = $self->get_param('selected');
 	my $queryset = $self->{queryset}{perllist};
 
 	# create GP objects and add dbxrefs, species info, etc.
-	my $hashref = $dbh->selectall_hashref("SELECT gene_product.id, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb FROM gene_product, dbxref WHERE gene_product.dbxref_id=dbxref.id AND gene_product.id IN (".join(",", map{$_->{id}}@$gp_ref).")", "id");
+	my $hashref = $dbh->selectall_hashref("SELECT gp.id, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb FROM gene_product gp, dbxref WHERE gp.dbxref_id=dbxref.id AND gp.id IN (".join(",", map{$_->{id}}@$gp_ref).")", "id");
 
 #	create the gp array since it's easier to update the data in it
 	my $gps_by_id;
@@ -2159,7 +2397,7 @@ sub _get_gp_details {
 	
 	use GO::CGI::Query;
 	if ((!$selected->{seq_name} && !$selected->{seq_xref}) || !$self->{from_cache})
-	{	GO::CGI::Query::_get_products_seqs($apph, $gp_ref, 'has_seq');
+	{	_get_products_seqs($apph, $gp_ref, 'has_seq');
 
 		if ($selected->{seq_name})
 		{	my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
@@ -2338,7 +2576,7 @@ sub _get_gp_details {
 		}
 	}
 	
-	my $counts = GO::CGI::Query::_get_term_count_for_gps($session, $gp_ref, 1);
+	my $counts = GO::CGI::Query::_get_term_count_for_gps($apph, $gp_ref, 1);
 	print STDERR "counts: ".Dumper($counts)."\n";
 	my %count_h = @$counts;
 	foreach (@$gp_ref)
@@ -2358,9 +2596,8 @@ sub _get_gp_details {
 
 sub _get_spp_details {
 	my $self = shift;
-	my $session = shift;
-	my $apph = $session->apph;
 	my $spp_ref = shift;
+	my $apph = $self->apph;
 
 	foreach (@$spp_ref) {
 		$_->{gp_count} = $_->{spp}{gp_count};
@@ -2370,15 +2607,10 @@ sub _get_spp_details {
 	return $spp_ref;
 }
 
-sub __get_max_n_results {
-	my $session = shift;
-	return $session->get_param('max_search_results') || 1000;
-}
-
 sub _set_selected {
 	my $self = shift;
 	my $fields = shift;
-	my $sc = $self->{params}{search_constraint};
+	my $sc = $self->get_param('search_constraint');
 	my $all_fields = _search_field_list($sc, 'all');
 
 	my $selected;
@@ -2396,7 +2628,7 @@ sub _set_selected {
 	if (!$selected)
 	{	map { $selected->{$_} = 1 } @{_search_field_list($sc, 'default')};
 	}
-	$self->{params}{selected} = $selected;
+	$self->set_param('selected', $selected);
 	return $selected;
 }
 
@@ -2404,13 +2636,12 @@ sub _set_select_list {
 #	puts the selected fields in the order in which they should be
 #	checked when working out the relevance of the term results
 	my $self = shift;
-	my $selected = $self->{params}{selected};
-	my $ordered = _search_field_list($self->{params}{search_constraint}, 'ordered');
+	my $selected = $self->get_param('selected');
+	my $ordered = _search_field_list($self->get_param('search_constraint'), 'ordered');
 	
-	$self->{params}{select_list} =
-	[ grep { exists $self->{params}{selected}{$_} } @$ordered ];
+	$self->set_param('select_list', [ grep { exists $selected->{$_} } @$ordered ]);
 
-	return $self->{params}{select_list};
+	return $self->get_param('select_list');
 }
 
 sub _search_field_list {
@@ -2442,12 +2673,18 @@ sub _search_field_list {
 	return $hash->{$sc}{$list};
 }
 
-sub _set_results {
+sub _set_cache_results {
 	my $self = shift;
-	my $session = shift;
 	my $cache = shift || undef;
 	my $result_list = shift || undef;
-	my $sc = $self->{params}{search_constraint};
+	my $sc = $self->get_param('search_constraint');
+	return unless $self->{cache_me};
+
+	if ($self->{from_cache})
+	{	#	the results came from the cache, so we don't need to change 'em...
+		#	...unless, of course, we did a sort
+		return unless $self->get_param('sort_me');
+	}
 
 	if ($result_list)
 	{	#print STDERR "Source size: ".scalar @$result_list."\n";
@@ -2456,12 +2693,12 @@ sub _set_results {
 											{	id => $_->{id},
 												src => $_->{source}
 											}
-										}@$result_list ];
+										} @$result_list ];
 	}
-	elsif (!$cache)
-	{	$cache = $session->get_all_caching_params;
+#	elsif (!$cache)
+#	{	$cache = $session->get_all_caching_params;
 	#	print STDERR "Source size: ".scalar @{$cache->{result_list}}."\n";
-	}
+#	}
 
 	if ($self->{from_cache} && $cache->{large_result_set})
 	{	delete $cache->{large_result_set};
@@ -2479,19 +2716,18 @@ sub _set_results {
 	
 	print STDERR "queryset:\n".Dumper($self->{queryset}{orig})."\n";
 
-	if (!$self->{params}{select_list})
+	if (!$self->get_param('select_list'))
 	{	$self->_set_select_list;
 	}
-	$cache->{$sc.'fields'} = $self->{params}{select_list};
+	$cache->{$sc.'fields'} = $self->get_param('select_list');
 
-	$session->set_all_caching_params($cache);
+	$self->cache($cache);
 }
 
 sub _get_url {
 	my $self = shift;
-	my $session = shift;
-	my $sc = shift;
 	my $results = shift;
+	my $sc = $self->get_param('search_constraint');
 
 	print STDERR "results: ".Dumper($results)."\n";
 
@@ -2507,7 +2743,7 @@ sub _get_url {
 			if (!$dbxref)
 			{	return;
 			}
-			my $dbh = $session->apph->dbh;
+			my $dbh = $self->apph->dbh;
 			my $sql = "SELECT xref_dbname, xref_key FROM dbxref WHERE id=".sql_quote($dbxref);
 			my @dbxref = @{$dbh->selectall_arrayref($sql)};
 			if (@dbxref && scalar @dbxref == 1)
@@ -2520,7 +2756,7 @@ sub _get_url {
 
 =head2 get_results_list
 
-	Arguments - search object, session, argument hash
+	Arguments - search object, argument hash
 	            argument hash should contain:
 	            query => [ list of query terms ]
 	            
@@ -2541,30 +2777,33 @@ sub _get_url {
 
 sub get_results_list {
 	my $self = shift;
-	my $session = shift;
+
+	if (!$self->apph || !$self->query)
+	{	$self->set_msg('fatal', 'missing_apph_or_query');
+		$self->success(0);
+		return $self;
+	}
+
 	my $arg_h = shift || {};
-	my $apph = $session->apph;
+	my $apph = $self->apph;
 
 	my $sc = $arg_h->{search_constraint};
 	if ($sc && grep { $sc } qw(term gp spp))
-	{	$self->{params}{search_constraint} = $sc;
+	{	$self->set_param('search_constraint', $sc);
 	}
 
 	#	otherwise, set it to the default (terms)
-	$sc = $self->{params}{search_constraint} unless $sc;
+	$sc = $self->get_param('search_constraint') unless $sc;
 
 	print STDERR "\nStarting apph search...\n";
 
 	if ($arg_h->{exact_match})
-	{	$self->{params}{exact_match} = 1;
+	{	$self->set_param('exact_match', 1);
 	}
 	
 #	check the queryset and turn it into a structure that we can use
-	my $success = $self->_set_queryset($session, $arg_h->{query});
-	if (!$success)
-	{	# ??? send back a warning message
-		return { fatal => 'no_valid_query' };
-	}
+	my $success = $self->_set_queryset($arg_h->{query});
+	return if (!$success);
 	
 #	find out what fields we're going to search
 #	if nothing is specified, use the default
@@ -2578,11 +2817,12 @@ sub get_results_list {
 	}
 	
 	#	do the search!
-	my $results = $self->search($apph);
+	my $results = $self->search;
 
 	if (!$results)
 	{	#	return some kind of error here
-		return { fatal => 'no_search_results' };
+		$self->set_msg('fatal', 'no_search_results');
+		return;
 	}
 
 	my $result_h;
@@ -2594,18 +2834,18 @@ sub get_results_list {
 	}
 
 	#	convert the results into the appropriate object
-	$result_h->{found} = $self->get_result_objects($session, $results, $sc, $arg_h->{template});
+	$result_h->{found} = $self->get_result_objects($results, $sc, $arg_h->{template});
 	return $result_h;
 }
 
 sub get_result_objects {
-	my ($self, $session, $results, $sc, $tmpl) = @_;
-	my $apph = $session->apph;
+	my ($self, $results, $sc, $tmpl) = @_;
+	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
 	if ($sc eq 'gp')
 	{	# create GP objects and add dbxrefs, species info, etc.
-		my $hashref = $dbh->selectall_hashref("SELECT gene_product.id, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb FROM gene_product, dbxref WHERE gene_product.dbxref_id=dbxref.id AND gene_product.id IN (".join(",", map{$_->{id}}@$results).")", "id");
+		my $hashref = $dbh->selectall_hashref("SELECT gp.id, dbxref.xref_key AS acc, dbxref.xref_dbname AS speciesdb FROM gene_product gp, dbxref WHERE gp.dbxref_id=dbxref.id AND gp.id IN (".join(",", map{$_->{id}}@$results).")", "id");
 
 #		print STDERR "hashref: ".Dumper($hashref)."\n";
 #		print STDERR "results: ".Dumper($results)."\n";
@@ -2641,5 +2881,96 @@ sub get_result_objects {
 	return $results;
 }
 
+=head2 set_msg
+
+	Set messages / errors
+
+	Arguments - self
+	            message class: fatal, warning or info
+	            message type: e.g. 'no_valid_query', 'no_results'
+	            what it affects (optional)
+
+	Updates self->{msg_h} with the message
+
+=cut
+
+sub set_msg {
+	my $self = shift;
+
+	print STDERR "\@_ = ".Dumper(\@_);
+
+	$self->{msg_h} = set_message($self->{msg_h}, @_);
+
+	print STDERR "self->{msg_h} = ".Dumper($self->{msg_h})."\n";
+
+}
+
+=head2 get_msg
+
+	Retrieve messages / errors
+
+	Arguments - self
+	            message class (optional)
+	Returns the messages of that class (if there are any), or all messages
+
+=cut
+
+sub get_msg {
+	my $self = shift;
+	return get_message($self->{msg_h}, @_);
+}
+
+=head2 success
+
+	Get or set the success state of the search
+
+	Arguments - search object, 1 or 0 (optional)
+	Returns   - 1 or undefined;
+	            1 means successful search,
+	            undef means there was some sort of error
+
+=cut
+
+sub success {
+	my $self = shift;
+	if (@_)
+	{	$self->{success} = shift;
+	}
+	return $self->{success};
+}
+
+
+=head2 results
+
+	Arguments - search object, results set (optional)
+	Returns   - results set
+
+=cut
+
+sub results {
+	my $self = shift;
+	if (@_)
+	{	$self->{results} = shift;
+	}
+	return $self->{results};
+}
+
+
+sub __search_constraint_specific_data {
+	my $data_to_get = shift;
+	my $sc = shift;
+
+	my $data = {
+		sort_default => {
+			gp => ['rel', 'symbol', 'full_name'],
+			term => ['rel', 'name', 'acc', 'term_type'],
+			spp => ['rel', 'binomial', 'common_name'],
+		},
+	};
+
+
+
+	return $data->{$data_to_get}{$sc} || undef;
+}
 
 1;

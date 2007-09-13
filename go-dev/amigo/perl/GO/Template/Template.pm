@@ -3,9 +3,9 @@ package GO::Template::Template;
 use Template;
 
 sub process_template {
-    my ($self, $session, $template, $args) = @_;
+    my ($self, $template, $args) = @_;
 
-    my $template_paths = $session->get_param('template_paths');
+    my $template_paths = $args->{template_paths};
 
     my $tt = Template->new({
 	PLUGIN_BASE => 'GO::Template::Plugin',
