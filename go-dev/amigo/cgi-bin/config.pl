@@ -3,7 +3,8 @@
 ##########################################
 
 ## go-dev location
-$ENV{GO_ROOT}='/Library/WebServer/cvs/go-dev';
+$ENV{GO_ROOT}='/Library/WebServer/svn/geneontology/go-dev';
+#$ENV{GO_ROOT}='/Library/WebServer/cvs/go-dev';
 
 ## database.
 $ENV{GO_DBNAME}='go';
@@ -15,16 +16,17 @@ $ENV{GO_DBUSER}='root';
 
 $ENV{GO_HTML_DIR}='/Library/WebServer/amigo';
 $ENV{GO_HTML_URL}='http://127.0.0.1/amigo';
-$ENV{GO_CGI_ROOT}='/Library/WebServer/cgi-bin/amigo';
-$ENV{GO_CGI_URL}='http://127.0.0.1/cgi-bin/amigo';
+$ENV{GO_CGI_ROOT}='/Library/WebServer/cgi-bin/amigo'; # used in installation
+#$ENV{GO_CGI_URL}='http://127.0.0.1/cgi-bin/amigo';
+$ENV{GO_CGI_URL}='http://127.0.0.1/amigo-cgi-bin';
 ## Directories where templates live.  Must
 ## be a relative file path to cgi-bin.
-$ENV{GO_TEMPLATE_PATHS}='templates/pages:templates/includes';
+$ENV{GO_TEMPLATE_PATHS}='../templates/pages:../templates/includes';
 
 ## Directory where sessions live.  Must
 ## be a relative file path to cgi-bin.
 ## Default is 'sessions'
-$ENV{GO_SESSION_DIR}='sessions';
+$ENV{GO_SESSION_DIR}='../sessions';
 
 #######################################################
 # Feature Toggles                                     #
@@ -46,14 +48,23 @@ $ENV{GO_SHOW_SPECIESDB_FILTER} = 1;
 $ENV{GO_SHOW_EVCODE_FILTER} = 1;
 $ENV{GO_SHOW_GPTYPE_FILTER} = 1;
 $ENV{GO_SHOW_ASSBY_FILTER} = 1;
-$ENV{GO_SHOW_QUAL_FILTER} = 1;
+$ENV{GO_SHOW_QUAL_FILTER} = 0;
 
 # If you want to allow user to calculate the GP counts no matter what
 # filters are being used, set this to 1. It may slow down AmiGO's
-# performance.
+# performance. NOT YET IMPLEMENTED!!
 $ENV{GO_CALCULATE_GP_COUNTS} = 0;
+$ENV{GO_CALCULATE_TERM_COUNTS} = 0;
 
+$ENV{GO_GET_RELEVANCE} = 1; # search result relevance
 $ENV{GO_CLEVER_MODE} = 1; # 'clever' AmiGO search mode
+
+#	possible obsolete behaviours:
+#	ignore: do not include any obsoletes in the results
+#	include_commented : include terms with comments that
+#	refer to terms not in the results list
+#	include_all: keep all obsolete terms in the results
+$ENV{GO_OBSOLETE_BEHAVIOUR} = 'include_commented';
 
 #######################################################
 # Look and Feel                                       #
@@ -75,7 +86,7 @@ $ENV{GO_MAX_RESULTS_PAGES} = 40;
 #$ENV{GO_DATA_DIR}='/Library/WebServer/blast/data';
 #$ENV{GO_DATA_DIR}='blast_sessions';
 
-$ENV{GO_FASTA_DB}='/Library/WebServer/blast/data/go_20070715-seqdblite.fasta';
+$ENV{GO_FASTA_DB}='/Library/WebServer/blast/data/go_20070916-seqdblite.fasta';
 
 $ENV{GO_BLASTP}='/Library/WebServer/blast/blastp';
 

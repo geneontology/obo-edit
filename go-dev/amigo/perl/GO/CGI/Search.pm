@@ -12,7 +12,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 #use Carp;
 use DBI;
 use GO::AppHandle;
-use GO::Utils qw(rearrange);
+#use GO::Utils qw(rearrange);
 use GO::CGI::Utilities qw(:all);
 use GO::SqlWrapper qw(sql_quote select_hashlist);
 use HTML::Entities;
@@ -25,11 +25,11 @@ $Data::Dumper::Indent = 1;
 use GO::Object::TermSearchResult;
 use GO::Object::GeneProductSearchResult;
 
-use GO::CGI::Query qw(get_gp_details get_term_in_graph _get_products_seqs get_nit);
+use GO::CGI::Query qw(get_gp_details get_term_in_graph _get_products_seqs get_nit get_gp_count_for_terms get_term_count_for_gps);
 
 =head2 new
 
-	Arguments - session, apph, arg_h with 1 / 0 for 'clever_mode', 'get_relevance',
+	Arguments - arg_h with 1 / 0 for 'clever_mode', 'get_relevance',
 	            and 'cache_me' (whether or not to set the cache)
 	            defaults to having these on if nothing is specified
 	Returns   - search object
@@ -41,24 +41,15 @@ sub new {
 	my $class = shift;
 	my $self = {};
 	bless $self, $class;
-	my $apph = shift;
 	my $arg_h = shift;
 
-	print STDERR Dumper($class);
-	print STDERR Dumper($apph);
-
-	if (!$apph)
-	{	$self->set_msg('fatal', 'missing_apph');
-#		$self->success(0);
-	}
-	
-	$self->apph($apph);
-	
 	foreach ('clever_mode', 'get_relevance', 'cache_me')
-	{	my $v = $arg_h->{$_};
-		$self->{$_} = 1 unless ($v && $v == 0);
+	{	unless (exists $arg_h->{$_} && $arg_h->{$_} == 0)
+		{	$self->{$_} = 1;
+		}
 	}
-	
+
+	print STDERR "search object: ". Dumper($self) ."\n";
 	return $self;
 }
 
@@ -139,6 +130,80 @@ sub get_result_param {
 	return $self->{results}{$r_type} || undef;
 }
 
+=head2 set_msg
+
+	Set messages / errors
+
+	Arguments - self
+	            message class: fatal, warning or info
+	            message type: e.g. 'no_valid_query', 'no_results'
+	            what it affects (optional)
+
+	Updates self->{msg_h} with the message
+
+=cut
+
+sub set_msg {
+	my $self = shift;
+
+	print STDERR "\@_ = ".Dumper(\@_);
+
+	$self->{msg_h} = set_message($self->{msg_h}, @_);
+
+	print STDERR "self->{msg_h} = ".Dumper($self->{msg_h})."\n";
+
+}
+
+=head2 get_msg
+
+	Retrieve messages / errors
+
+	Arguments - self
+	            message class (optional)
+	Returns the messages of that class (if there are any), or all messages
+
+=cut
+
+sub get_msg {
+	my $self = shift;
+	return get_message($self->{msg_h}, @_);
+}
+
+=head2 success
+
+	Get or set the success state of the search
+
+	Arguments - search object, 1 or 0 (optional)
+	Returns   - 1 or undefined;
+	            1 means successful search,
+	            undef means there was some sort of error
+
+=cut
+
+sub success {
+	my $self = shift;
+	if (@_)
+	{	$self->{success} = shift;
+	}
+	return $self->{success};
+}
+
+
+=head2 results
+
+	Arguments - search object, results set (optional)
+	Returns   - results set
+
+=cut
+
+sub results {
+	my $self = shift;
+	if (@_)
+	{	$self->{results} = shift;
+	}
+	return $self->{results};
+}
+
 =head2 __get_accs
 
 Examines the queryset and puts anything resembling an accession in an array
@@ -183,7 +248,8 @@ sub __get_accs {
 
 	The basic function which is called by search.cgi to retrieve search results.
 
-	Arguments:  search object, the query, session (optional), arg_h (optional)
+	Arguments:  search object, apph, the query, option_h containing:
+	            - 
 	Returns:    a list of search results
 	            
 	The search object will be updated with information about
@@ -196,132 +262,36 @@ sub __get_accs {
 
 sub getResultList {
 	my $self = shift;
-	my ($query, $session, $arg_h) = rearrange([qw(query session arg_h)], @_);
-	if (!$self->apph) # just in case something horrible has happened...
+#	my ($apph, $query, $option_h) = rearrange([qw(apph query option_h)], @_);
+	my ($apph, $query, $option_h) = @_;
+
+#	print STDERR Dumper($apph);
+	print STDERR "query: ". Dumper($query);
+	print STDERR "option_h: ". Dumper($option_h);
+
+	if (!$apph)
 	{	$self->set_msg('fatal', 'missing_apph');
-#		$self->success(0);
 		return;
-	}
-	my $success = $self->initialize_search($query, $session, $arg_h);
-
-	return if !$success;
-
-	my $results;
-	if ($self->cache)
-	{	$results = $self->get_results_from_cache || $self->get_results_from_db;
-	}
-	else
-	{	$results = $self->get_results_from_db;
+#		$self->success(0);
 	}
 	
-	return unless $results;
-	
-	if ($self->{results}{single_result})
-	{	my $sc = $self->get_param('search_constraint');
-		#	if we only have one result, load up the details page for that result.
-		my $id = $self->_get_url($results);
-#		if ($url)
-#		{	print "Location: ".$session->get_param('cgi_url')."/".$sc."-details.cgi?$sc=".$url."&session_id=".$session->get_param('session_id')."\n\n";
-#			return;
-#		}
-=cut for now
-		if ($id)
-		{	my $result;
-			if ($sc eq 'gp')
-			{	my $gp_l = get_gp_details($apph, $msg_h, {gpxref => $id});
-				$result->{gp} = $gp_l->[0] if $gp_l;
-			}
-			else
-			{	my $graph = get_term_in_graph($session, $id);
-				if ($graph)
-				{	$session->set_param('current_query', 'term', [$id]);
-					$result->{graph} = $graph;
-					if ($session->ses_type ne 'vocab_details')
-					{	my $compact;
-						if ($session->get_param('tree_view') && $session->get_param('tree_view') eq 'compact')
-						{	$compact = 1;
-						}
-						$result->{nit} = get_nit($session, $graph, undef, $compact);
-					}
-				}
-			}
-			if ($result)
-			{	#one result
-				$self->set_msg('info', 'AmiGO found only one result for your search');
-				if ($session->ses_type =~ /search/)
-				{	#	change the session type accordingly
-					$session->ses_type($sc.'_details');
-				}
-				return $result;
-			}
-		}
-=cut
-		#	if we're still here, something has gone wrong
-		#	so get the results in the standard way
-		return $self->get_result_details($results);
-	}
-	return $results;
-}
-
-
-=head2 initialize_search
-
-	Initializes the search parameters, taking values either from
-	session, an arg_h, or using default values.
-	The values in arg_h take precedence over those in session.
-
-=cut
-
-sub initialize_search {
-	my $self = shift;
-	my ($query, $session, $arg_h) = rearrange([qw(query session arg_h)], @_);
-
-###	Check we have a query
 	if (!$query)
 	{	$self->set_msg('fatal', 'missing_query');
 		print STDERR "No query found\n";
 #		$self->success(0);
 		return;
 	}
-	else
-	{	$self->set_param('query', $query);
-	}
 
-	my $sc = $arg_h->{search_constraint} || $session->get_param('search_constraint');
+	$self->apph($apph);
+	my $sc = $option_h->{search_constraint};
 	$self->set_param('search_constraint', $sc);
-
-	foreach ($sc.'sort', 'exact_match', 'page_size', 'page') #, 'format')
-	{	my $p = $arg_h->{$_} || $session->get_current_param($_);
-		$self->set_param($_, $p) if $p;
-	}
 	
-	my $action = $arg_h->{'action'} || $session->get_param('action');
-	if ($action && $action eq 'sort')
-	{	$self->set_param('sort_me', 1);
-	}
-#	else
-#	{	$self->set_param('action', $action);
-#	}
 
-	#	see if we already have results from this query
-	if ($self->get_param('page_size') eq 'all' ||
-		$self->get_param('page') ||
-	#	$self->get_param('format') || #not implemented
-		$self->get_param('sort_me'))
-	{	#	this is likely to be a cached search.
-		my $cache = $session->get_all_caching_params;
-		last if (!$cache || !$cache->{result_list} || !$cache->{query});
-
-		#	check that the basic parameters are the same
-		#	Does query match?
-		
-		
-		#	Are the filters (and the search fields?) the same?
-		
-		
-
+	if ($option_h->{cache})
+	{	my $cache = $option_h->{cache};
+		## get the data from the cache
 		$self->_set_selected($cache->{$sc.'fields'});
-		$self->set_param('select_list', $cache->{$sc.'fields'});
+#		$self->set_param('select_list', $cache->{$sc.'fields'});
 		$self->{queryset}{orig} = $cache->{queryset};
 		$self->{queryset}{perl} = $cache->{queryset_perl};
 
@@ -343,35 +313,95 @@ sub initialize_search {
 		print STDERR "Using results from cache...\n";
 		$self->{from_cache} = 1;
 		$self->cache($cache);
-	#	foreach (keys %$cache)
-	#	{	if ($_ ne 'result_list' && $self->get_param($_))
-	#		{	print STDERR "$_ => ".Dumper($self->get_param($_))."\n";
-	#		}
-	#	}
 	}
 
-	if (!$self->cache)
-	{	#	load the search fields
-		#	if nothing is specified, use the default
-		my $fields = $arg_h->{$sc.'fields'} || $session->get_current_param($sc.'fields');
-		$self->_set_selected($fields);
+	#	if there's no cache or something has gone wrong
+	if (!$self->{from_cache})
+	{	###	set the query
+		$self->set_param('query', $query);
+	
+	#	check the queryset and turn it into a structure that we can use
+		my $success = $self->_set_queryset($query);
+		return if !$success;
+	
+	#	find out what fields we're going to search
+	#	if nothing is specified, use the default
+#		$self->_set_selected($option_h->{search_fields});
+		$self->_set_selected($option_h->{$sc."fields"});
+	}
 
-		#	check the queryset and turn it into a structure that we can use
-		my $success = $self->_set_queryset;
-		if (!$success)
-		{	#$self->success(0);
-			return;
-		}
+	foreach ($sc.'sort', 'exact_match', 'page_size', 'page', 'show_gp_counts', 'show_term_counts') #, 'format')
+	{	$self->set_param($_, $option_h->{$_}) if $option_h->{$_};
 	}
 
 	#	set the filters
 	$self->_set_filters;
 
-	if ($sc eq 'term')
-	{	$self->set_param('gp_count_ok', $session->gp_count_ok);
-		$self->set_param('ont_list', $session->get_ontology_list);
+	$self->set_param('gp_count_ok', $option_h->{gp_count_ok});
+	$self->set_param('ont_list', $option_h->{ontology_list});
+
+	if ($option_h->{action} && $option_h->{action} eq 'sort')
+	{	$self->set_param('sort_me', 1);
 	}
-	return 1;
+
+	my $results;
+	if ($self->{from_cache})
+	{	$results = $self->get_results_from_cache || $self->get_results_from_db;
+	}
+	else
+	{	$results = $self->get_results_from_db;
+	}
+	
+=cut
+	if ($self->{results}{single_result})
+	{	my $sc = $self->get_param('search_constraint');
+		#	if we only have one result, load up the details page for that result.
+		my $id = $self->_get_url($results);
+		print STDERR "id: $id\n";
+		
+#		if ($url)
+#		{	print "Location: ".$session->get_param('cgi_url')."/".$sc."-details.cgi?$sc=".$url."&session_id=".$session->get_param('session_id')."\n\n";
+#			return;
+#		}
+		if ($id)
+		{	my $result;
+			if ($sc eq 'gp')
+#			{	my $result_h = get_gp_details($apph, $msg_h, {gpxref => $id});
+			{	my $result_h = get_gp_details($apph, undef, {gpxref => $id});
+
+#	$result->{msg_h} = $result_h->{msg_h};
+	$result->{ses_type} = 'gp_details';
+	$result->{gp} = $result_h->{results}[0] if $result_h->{results};
+				$self->set_msg('info', 'AmiGO found only one result for your search');
+				return $result;
+			}
+			elsif ($sc eq 'term')
+			{	print "Location: ".$session->get_param('cgi_url')."/".$sc."-details.cgi?$sc=".$url."&session_id=".$session->get_param('session_id')."\n\n";
+				return;
+			}
+		}
+	}
+			
+#			if ($result)
+#			{	#one result
+#				$self->set_msg('info', 'AmiGO found only one result for your search');
+#				if ($session->ses_type =~ /search/)
+#				{	#	change the session type accordingly
+#					$session->ses_type($sc.'_details');
+#				}
+#				return $result;
+#			}
+
+
+		}
+		#	if we're still here, something has gone wrong
+		#	so get the results in the standard way
+		return $self->get_result_details($results);
+	}
+
+=cut
+
+	return $results;
 }
 
 =head2 get_results_from_db
@@ -382,7 +412,6 @@ Search method
 
 sub get_results_from_db {
 	my $self = shift;
-#	my $session = shift;
 	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
@@ -402,7 +431,7 @@ sub get_results_from_db {
 		print STDERR "No results found: entering clever mode!\n";
 
 		#	look at the fields we haven't search and examine them for possible matches
-		my @poss = grep { !$selected->{$_} } @{_search_field_list($sc, 'all')};
+		my @poss = grep { !$selected->{$_} } @{__search_field_list($sc, 'all')};
 
 		if (@poss)
 		{	print STDERR "fields to search: ".join(", ", @poss)."\n";
@@ -443,7 +472,13 @@ sub get_results_from_db {
 	}
 	elsif (scalar @$results == 1 && ($sc eq 'gp' || $sc eq 'term'))
 	{	$self->{results}{single_result} = 1;
-		return $results;
+		print STDERR "results: ".Dumper($results);
+		#	get the ID that we want to do the redirect with
+
+		#	if we only have one result, load up the details page for that result.
+		my $id = $self->_get_url($results);
+		print STDERR "id: $id\n";
+		return { id => $id, search_constraint => $sc };
 	}
 
 	print STDERR "scalar \@\$results: ".scalar (@$results)."\n";
@@ -465,7 +500,7 @@ sub get_results_from_db {
 	return $self->get_result_details($sorted);
 }
 
-=head2 _set_query
+=head2 _set_queryset
 
 Internal method to set the queryset using the values in the parameter 'query'
 
@@ -477,7 +512,7 @@ sub _set_queryset {
 	my $query = $self->get_param('query');
 	my $exact =  $self->get_param('exact_match');
 	my $sc = $self->get_param('search_constraint');
-	my $min_length = __get_min_q_length($sc, $exact);
+	my $min_length = __min_q_length($sc, $exact);
 	my $selected;
 
 #	sort queries by length, descending?
@@ -492,7 +527,7 @@ sub _set_queryset {
 	
 	my @too_short;
 	foreach (@$query)
-	{	print STDERR "\$_: $_\n";
+	{	#print STDERR "\$_: $_\n";
 
 		#	remove anything that isn't a digit or a letter
 		#	and check the query length is long enough to be valid
@@ -678,7 +713,7 @@ sub _set_queryset {
 				}
 			}
 	
-			print STDERR "words: ".Dumper(\%words);
+		#	print STDERR "words: ".Dumper(\%words);
 	
 			foreach my $w (keys %words)
 			{	foreach (@{$words{$w}})
@@ -741,32 +776,11 @@ sub _set_queryset {
 	@match_h{@perl_qlist} = @qlist;
 	$self->{queryset}{unmatched} = \%match_h;
 
-	print STDERR "sql queryset: ".Dumper($self->{queryset}{sql})."\n";
-	print STDERR "perllist: ".Dumper($self->{queryset}{perllist})."\n";
+	foreach my $qset qw(orig perl perllist sql unmatched)
+	{	print STDERR "$qset queryset: ".Dumper($self->{queryset}{$qset})."\n";
+	}
 
 	return 1;
-}
-
-=head2 __get_min_q_length
-
-Internal method to get minimum query length
-
-=cut
-
-sub __get_min_q_length {
-	my $sc = shift;
-	my $exact = shift || undef;
-
-	my $min_q = {
-		gp_exact => 1,
-		gp => 2,
-		term_exact => 3,
-		term => 3,
-		spp => 3,
-		spp_exact => 3,
-	};
-
-	return $exact ? $min_q->{$sc.'_exact'} : $min_q->{$sc};
 }
 
 =head2 _set_filters
@@ -877,6 +891,7 @@ sub _set_filters {
 
 sub get_results_from_cache {
 	my $self = shift;
+#	my $option_h = shift;
 	my $cache = $self->cache;
 	my $sc = $self->get_param('search_constraint');
 	my $result_list = $cache->{result_list};
@@ -884,7 +899,7 @@ sub get_results_from_cache {
 	my $n_pages = get_n_pages(scalar @$result_list, $self->get_param('page_size'));
 	print STDERR "num page = $n_pages; result_list size: ".scalar @$result_list."\n";
 
-	if ($self->get_param('sort_me') && $self->get_param($sc.'sort') eq 'rel')
+	if ($self->get_param('sort_me') && $self->get_param($sc.'sort') && $self->get_param($sc.'sort') eq 'rel')
 	{	### new subroutine to sort by relevance
 		#	have a look at our cached results,
 		#	see if we already have the relevance info
@@ -893,6 +908,9 @@ sub get_results_from_cache {
 		{	#	Uh-oh! We need to find out the relevance scores.
 			$sorted = $self->get_relevance_of_cached_results;
 		}
+	}
+	else
+	{	$self->{results} = $cache;
 	}
 
 	if (!$sorted)
@@ -928,6 +946,7 @@ sub get_results_from_cache {
 			}
 		} else {
 		# get the subset for that page
+			print STDERR "Getting subset for page ".$self->get_param('page')."\n";
 			$result_list = get_subset($result_list, $self->get_param('page'));
 		}
 	
@@ -944,10 +963,7 @@ sub get_results_from_cache {
 		#	result_list has the correct order
 		#	put the data from result_h into sorted
 		foreach (@$result_list)
-		{	#if ($sc eq 'gp')
-			#{	$result_h->{$_->{id}}{full_name} = $result_h->{$_->{id}}{symbol} if !$result_h->{$_->{id}}{full_name};
-			#}
-			$result_h->{$_->{id}}{source} = $_->{src};
+		{	$result_h->{$_->{id}}{source} = $_->{src};
 			push @$sorted, $result_h->{$_->{id}};
 		}
 	}
@@ -985,6 +1001,14 @@ sub search {
 	my $filters = $self->get_param('filters') || undef;
 	my $exact = $self->get_param('exact_match') || undef;
 
+	my $to_check = {
+		gp => [ 'full_name', 'symbol'],
+		term => ['name', 'acc'],
+		spp => [],
+	};
+
+	my @fields = @{$to_check->{$sc}};
+
 	my $extra = '';
 	if ($subset)
 	{	$extra = " AND $sc.id IN (".join ",", @$subset.")";
@@ -1000,23 +1024,20 @@ sub search {
 	my $other_matches;
 	my @names;
 	my @others;
-	my $combo_fields = 0;
-	if ($sc eq 'gp')
-	{	#if ($selected->{seq_name} && $selected->{seq_xref})
-		#{	$combo_fields = 1;
-		#	$selected->{seq} = 1;
-		#	$where_phrases->{seq} = "(".$where_phrases->{seq_name}.") OR (". $where_phrases->{seq_xref}.")";
-		#	delete $selected->{seq_name};
-		#	delete $selected->{seq_xref};
-		#}
+	my $combo_fields;
 
-		foreach (keys %$selected)
-		{	($_ eq 'full_name' || $_ eq 'symbol')
-			?	push @names, $_
-			:	push @others, $_;
+	if ($sc eq 'gp' || $sc eq 'term')
+	{	foreach my $s (keys %$selected)
+		{	if ( grep { $_ eq $s } @fields)
+			{	push @names, $s;
+			}
+			else
+			{	push @others, $s;
+			}
 		}
 	}
-	elsif ($sc eq 'term')
+	
+	if ($sc eq 'term')
 	{	if ($selected->{definition} && $selected->{comment})
 		{	$combo_fields = 1;
 			$where_phrases->{def_comm} = "(".$where_phrases->{definition}.") OR (". $where_phrases->{comment}.")";
@@ -1026,11 +1047,6 @@ sub search {
 		}
 		if ($selected->{subset})
 		{	$combo_fields = 1;
-		}
-		foreach (keys %$selected)
-		{	($_ eq 'name' || $_ eq 'acc')
-			?	push @names, $_
-			:	push @others, $_;
 		}
 	}
 
@@ -1053,7 +1069,7 @@ sub search {
 		my $sth = $dbh->prepare($sql);
 		$sth->execute();
 
-		if ($combo_fields == 0)
+		if (!$combo_fields)
 		{	while (my $d = $sth->fetchrow_arrayref) {
 				push @{$other_matches->{$d->[0]}{$d->[1]}}, $d->[2];
 			}
@@ -1080,7 +1096,7 @@ sub search {
 		}
 		
 		if (!keys %$other_matches)
-		{	print STDERR "No results found.\n";
+		{	print STDERR "No results found in other fields.\n";
 		}
 	}
 	
@@ -1104,10 +1120,8 @@ sub search {
 	}
 	
 	if ($sc eq 'gp')
-	{	for ('full_name', 'symbol')
-		{	if ($where_phrases->{$_})
-			{	push @srch, $where_phrases->{$_};
-			}
+	{	foreach (@fields)
+		{	push @srch, $where_phrases->{$_} if $where_phrases->{$_};
 		}
 		#	retrieve species info if the sort parameter is species
 		if ($self->get_param('gpsort') && $self->get_param('gpsort') eq 'spp')
@@ -1119,10 +1133,8 @@ sub search {
 		}
 	}
 	elsif ($sc eq 'term')
-	{	for ('name', 'acc')
-		{	if ($where_phrases->{$_})
-			{	push @srch, $where_phrases->{$_};
-			}
+	{	foreach (@fields)
+		{	push @srch, $where_phrases->{$_} if $where_phrases->{$_};
 		}
 	}
 	# NEW
@@ -1156,6 +1168,114 @@ sub search {
 		my $sth = $dbh->prepare($sql);
 		$sth->execute();
 
+		my $queryset = $self->{queryset}{perllist};
+		my $field_list = $self->get_param('field_list');
+		
+		print STDERR "fieldlist: ".Dumper($field_list)."\n";
+		if (!$queryset || !$field_list)
+		{	print STDERR "WARNING! No queryset or fieldlist found!\n";
+		}
+
+		my $sub_h = {
+			std => sub {
+				my $d = shift;
+				$results->{$d->{id}} = $d;
+				if ($other_matches->{$d->{id}})
+				{	while ( my ($key, $val) = each %{$other_matches->{$d->{id}}})
+					{	$results->{$d->{id}}{$key} = $val;
+					}
+				}
+			},
+			obs_ignore => sub {
+				my $d = shift;
+			#	print STDERR "Doing ignore on $d...\n";
+				return 1 if $d->{is_obsolete} == 1;
+			},
+			obs_include_commented => sub {
+				my $d = shift;
+			#	print STDERR "Doing include_commented on $d...\n";
+				push @obs, $d->{id} if $d->{is_obsolete} == 1;
+			},
+			get_relevance => sub {
+				my $d = shift;
+			#	print STDERR "Doing get_relevance on $d...\n";
+				my $rel = $self->_get_relevance($results->{$d->{id}}, $sc, $queryset, $field_list, $exact);
+			#	print STDERR $d->{id}." relevance score = ".Dumper($rel)."\n";
+				
+				if (!$rel)
+				{	print STDERR "Error: no relevance scores returned for ".$d->{id}."!\n";
+				#	print STDERR "data: ".Dumper($d)."\n";
+					delete $results->{$d->{id}};
+					return 1;
+				}
+				else
+				{	$results->{$d->{id}}{source} = $rel;
+				}
+			},
+			get_match => sub {
+				my $d = shift;
+				my $match_fields = $self->_get_match($results->{$d->{id}}, $sc, $queryset, $field_list);
+				if (!$match_fields || !keys %$match_fields)
+				{	print STDERR "Error: no matches returned for ".$d->{id}."!\n";
+				#	print STDERR "data: ".Dumper($d)."\n";
+					delete $results->{$d->{id}};
+					return 1;
+				}
+				else
+				{	$results->{$d->{id}}{source} = $match_fields;
+				}
+			}
+		};
+
+		#	put together the subs to perform on each result
+		my @subs = ( $sub_h->{std} );
+
+		if ($sc eq 'term' && get_environment_param('obsolete_behaviour') eq 'ignore')
+		{	#push @subs, $sub_h->{obs_ignore};
+			unshift @subs, $sub_h->{obs_ignore};
+		}
+		if ($self->{get_relevance})
+		{	push @subs, $sub_h->{get_relevance};
+		}
+		else
+		{	push @subs, $sub_h->{get_match};
+		}
+		if ($sc eq 'term' && get_environment_param('obsolete_behaviour') eq 'include_commented')
+		{	print STDERR "Adding include commented to the sub list\n";
+			push @subs, $sub_h->{obs_include_commented};
+		}
+
+		print STDERR "subs: ".Dumper(\@subs)."\n";
+
+		while (my $d = $sth->fetchrow_hashref) {
+			foreach (@subs)
+			{	last if $_->($d) && $_->($d) == 1;
+			}
+		}
+
+=cut me!
+		#		if ($self->{get_relevance} == 1)
+		#		{	# calculate the relevance here
+					my $rel = $self->_get_relevance($results->{$d->{id}});
+				#	print STDERR $d->{id}." relevance score = ".Dumper($rel)."\n";
+					
+					if (!$rel)
+					{	print STDERR "Error: no relevance scores returned!\n";
+					#	print STDERR "data: ".Dumper($d)."\n";
+						delete $results->{$d->{id}};
+					}
+					else
+					{	$results->{$d->{id}}{source} = $rel;
+					}
+				#	check the obsolete status
+				if ($d->{is_obsolete} == 1)
+				{	push @obs, $d->{id};
+				}
+			}
+		}
+
+
+
 		print STDERR "Getting result relevance using queryset: ".Dumper($self->{queryset}{perllist});
 		if ($sc eq 'term')
 		{	while (my $d = $sth->fetchrow_hashref) {
@@ -1180,7 +1300,6 @@ sub search {
 					{	$results->{$d->{id}}{source} = $rel;
 					}
 		#		}
-=cut
 				else
 				{	#	check if there is a match in the acc / name
 					foreach my $f ('acc', 'name')
@@ -1195,7 +1314,6 @@ sub search {
 					{	@{$results->{$d->{id}}{src}}{keys %{$other_matches->{$d->{id}}}} = ();
 					}
 				}
-=cut
 				#	check the obsolete status
 				if ($d->{is_obsolete} == 1)
 				{	push @obs, $d->{id};
@@ -1227,7 +1345,6 @@ sub search {
 					{	$results->{$d->{id}}{source} = $rel;
 					}
 		#		}
-=cut
 				else
 				{	#	check if there is a match in the symbol / name
 					foreach my $f ('symbol', 'full_name')
@@ -1242,7 +1359,6 @@ sub search {
 					{	@{$results->{$d->{id}}{src}}{keys %{$other_matches->{$d->{id}}}} = ();
 					}
 				}
-=cut
 			}
 		}
 		elsif ($sc eq 'spp') # species search
@@ -1263,6 +1379,7 @@ sub search {
 				}
 			}
 		}
+=cut
 	}
 
 	if (keys %$results)
@@ -1274,7 +1391,9 @@ sub search {
 	}
 
 	if (@obs)
-	{	#	if we have terms, we need to check for obsoletes
+	{	print STDERR "Obsolete terms found: ".Dumper(\@obs)."\n";
+	
+		#	if we have terms, we need to check for obsoletes
 		return $self->_obsolete_check($results, \@obs);
 	}
 	return [values %$results];
@@ -1651,99 +1770,39 @@ select distinct dbxref.xref_dbname from gene_product, dbxref where gp.dbxref_id 
 	}
 }
 
-sub __search_field_weighting {
-	my $field = shift;
-	my %weighting = (
-	#	gp fields
-		product_synonym => 0.9,
-		seq_xref => 0.7,
-	#	term fields
-		narrow_term_synonym => 0.7,
-		broad_term_synonym => 0.7,
-		dbxref => 0.7,
-		def_xref => 0.5,
-		related_term_synonym => 0.5,
-		comment => 0.6,
-		subset_acc => 0.4,
-		subset_name => 0.4,
-	);
-	
-	return $weighting{$field} || 1;
+sub _get_match {
+	my $self = shift;
+	my ($data, $sc, $queryset, $field_list) = @_;
+
+#	print STDERR "field_list: ".Dumper(\@field_list)."\n";
+	my @match_fields;
+	FIELD_LOOP:
+	foreach my $f ( @$field_list )
+	{	if ($data->{$f})
+		{	my $matchset = $data->{$f};
+			if (ref($matchset ) ne 'ARRAY')
+			{	$matchset = [ $matchset ];
+			}
+			foreach my $m (@$matchset)
+			{	if ($self->__relevance_algorithm($m, $queryset, undef, { match_only => 1 }) == 1)
+				{	push @match_fields, __fieldname($f);
+				#	next FIELD_LOOP;
+					last;
+				}
+			}
+		}
+	}
+#	return @match_fields;
+	return { map { $_ => 'y' } @match_fields } || undef;
 }
 
 sub _get_relevance {
 	my $self = shift;
-	my $data = shift;
-
-	my $queryset = $self->{queryset}{perllist};
-	my $sc = $self->get_param('search_constraint');
-	my $field_list = $self->get_param('field_list');
-
-#	translate selected into a field list
-	if (!$field_list)
-	{	my $selected = $self->get_param('selected');
-		
-		if ($sc eq 'spp')
-		{	if ($selected->{common_name})
-			{	$selected->{binomial} = 1;
-			}
-		}
-		
-		my $order = {
-			term => ['acc', 'name', 'term_synonym', 'definition', 'dbxref', 'xref', 'comment', 'subset'],
-			gp => [ 'symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref'],
-			spp => ['ncbi_taxa_id', 'binomial', 'common_name'],
-		};
-
-	#	term_synonym is an alias for exact / narrow / broad / related syns
-	#	xref is an alias for dbxref and def_xref
-	#	seq is an alias for seq_name and seq_xref
-		my %alias = (
-			term_synonym => [ 'exact_term_synonym', 'narrow_term_synonym', 'broad_term_synonym', 'related_term_synonym', 'alt_id_term_synonym'],
-			xref => ['dbxref', 'def_xref'],
-			subset => ['subset_acc', 'subset_name'],
-		);
-
-		my @ordered_selected = grep { exists $selected->{$_} } @{$order->{$sc}};
-
-		print STDERR "ordered_selected: ".Dumper(\@ordered_selected)."\n";
-
-		foreach my $field (@ordered_selected)
-		{	if ($alias{$field})
-			{	foreach (@{$alias{$field}})
-				{	push @$field_list, [ $_, __search_field_weighting($_) ];
-				}
-			}
-			else
-			{	push @$field_list, [ $field, __search_field_weighting($field) ];
-			}
-		}
-		$self->set_param('field_list', $field_list);
-	}
-
-
-	if (!$data || !$queryset || !$field_list)
-	{	return undef;
-	}
-
-	my %fields = (
-		exact_term_synonym => 'term_synonym',
-		narrow_term_synonym => 'term_synonym',
-		broad_term_synonym => 'term_synonym',
-		related_term_synonym => 'term_synonym',
-		alt_id_term_synonym => 'term_synonym',
-		dbxref => 'xref',
-		def_xref => 'xref',
-		subset_name => 'subset',
-		subset_acc => 'subset',
-	);
-
-#	print STDERR "field_list: ".Dumper(\@field_list)."\n";
+	my ($data, $sc, $queryset, $field_list, $exact) = @_;
 
 #	print STDERR "\nget relevance: sc = $sc\n";
 #	print STDERR "data: ".Dumper($data)."\n";
 #	print STDERR "qset: ".Dumper($queryset)."\n";
-#	print STDERR "order: ".Dumper($order->{$sc});
 
 	my $best_match_rel = 0; #	relevance score for the best match
 	my $best_match_field;   #	field with the best match
@@ -1762,26 +1821,25 @@ sub _get_relevance {
 			}
 			
 			foreach my $m (@$matchset)
-			{	my $coeff = $self->__relevance_algorithm($queryset, $m, $factor);
-				next if (!$coeff);
-			#	print STDERR "coeff: $coeff; matchset: $m; match field: ".($fields{$f} || $f)."\n";
+			{	my $score = $self->__relevance_algorithm($m, $queryset, $factor, {relevance => 1}, $exact);
+				next if !$score;
+			#	print STDERR "score: $score; matchset: $m; match field: ".($fields{$f} || $f)."\n";
 				
-				$data->{all_rel_data}->{$m} = $coeff;
+				$data->{all_rel_data}->{$m} = $score;
 				
-				if ($coeff > $best_match_rel)
-				{	$best_match_rel = $coeff;
-					$best_match_field = $fields{$f} || $f;
+				if ($score > $best_match_rel)
+				{	$best_match_rel = $score;
+					$best_match_field = __fieldname($f);
 					$best_match_text = $m;
-					last if ($best_match_rel == 1);
+					last if $best_match_rel == 1;
 				}
 				
-			#	print STDERR "string: $matchstr\n";
+#				print STDERR "string: $matchstr\n";
 #				QUERY_LIST:
 #				foreach my $q (@$perl_list)
 #				{#	print STDERR "q: ".Dumper($q)."\n";
-#					next if ($coeff == 0);
-			#		print STDERR "coeff: $coeff\n";
-					
+#					next if ($score == 0);
+#					print STDERR "score: $score\n";
 #				}
 			}
 		}
@@ -1793,46 +1851,76 @@ sub _get_relevance {
 	if ($best_match_rel == 0)
 	{	print STDERR "qset: ".Dumper($queryset)."\n";
 		print STDERR "Data: ".Dumper($data)."\n";
-		return undef;
+		return;
 	}
-	elsif ($best_match_rel == 1)
-	{	return [$best_match_field, $best_match_rel, $best_match_text];
-	}
+#	elsif ($best_match_rel == 1)
+#	{	return [$best_match_field, $best_match_rel, $best_match_text];
+#	}
 	else
-	{	return [$best_match_field, $best_match_rel, $best_match_text];
+	{	return { $best_match_field => $best_match_rel };
+#	{	return [$best_match_field, $best_match_rel, $best_match_text];
 	}
+}
+
+sub _get_match_score_and_hilite {
+	my $self = shift;
+	my $matchstr = shift;
+	my $field = shift;
+	my $queryset = shift;
+
+	return $self->__relevance_algorithm($matchstr, $queryset, __search_field_weighting($field), { hilite => 1, relevance => 1 });
 }
 
 sub __relevance_algorithm {
 	my $self = shift;
-	my $queryset = shift;
 	my $original_matchstr = shift;
-	my $factor = shift || 1;
+	my $queryset = shift;
+	my $factor = shift || 1;  # weighting factor for the field
 	my $options = shift || {};
-	
-	my $rel = 0;  #	best relevance score
-	my $matchtxt; #	best matching test
+	my $exact = shift;
+
+	my $best_rel_score = 0;  #	best relevance score
+	my $matchtxt; #	best matching text
 	my $n;
-	
+
+
 	QUERY_LIST:
 	foreach my $q (@$queryset)
 	{	my $matchstr = $original_matchstr;
 		$n = 1;
 		foreach (@$q)
-#		{	next QUERY_LIST unless ($matchstr =~ s/($_->{value})/START_MATCH $n: $1END_MATCH/gi);
 		{	next QUERY_LIST unless ($matchstr =~ s/($_)/START_MATCH $n: $1END_MATCH/gi);
 			$n++;
 		}
 
-		my $coeff;
-		if ($self->get_param('exact_match'))
-		{	$coeff = 1;
-		}
-		else
-		{	my @matches = split('START_MATCH', $matchstr);
-		#	print STDERR "matches: ".Dumper(\@matches)."\n";
-			next QUERY_LIST if grep { /END_MATCH.*?END_MATCH/ } @matches;
+		#	check for overlapping matches
+		my @matches = split('START_MATCH', $matchstr);
+	#	print STDERR "matches: ".Dumper(\@matches)."\n";
+		next if grep { /END_MATCH.*?END_MATCH/ } @matches;
 
+		#	delete the query from {queryset}{unmatched} (if it still exists)
+		#	as we have found a match for it
+		delete $self->{queryset}{unmatched}{$q} if $self->{queryset}{unmatched}{$q};
+
+		if ($options->{match_only})
+		{	return 1;
+		}
+
+		if ($options->{relevance})
+		{	#	if we have a match and the match type is exact, we don't need
+			#	to check any of the other queries
+			if ($exact)
+			{	$best_rel_score = 1;
+			#	if the match is exact, end here
+				last QUERY_LIST;
+			}
+
+			my $score;
+			
+			#	my @matches = split('START_MATCH', $matchstr);
+			#	print STDERR "matches: ".Dumper(\@matches)."\n";
+			#	next QUERY_LIST if grep { /END_MATCH.*?END_MATCH/ } @matches;
+	
 			(my $match = $matchstr) =~ s/\s?(complex|activity)$//;
 			
 			$match =~ s/START_MATCH (\d+): .*?END_MATCH/START_MATCH$1END_MATCH/g;
@@ -1868,56 +1956,34 @@ sub __relevance_algorithm {
 			my $l_q = length (join "", @$q);
 		
 		#		print STDERR "l_q: $l_q, l_m = $l_m\n";
-		#		my $coeff = (2x$l_q)/(2 x $l_q + $l_m);
-			$coeff = $factor * (1 - ($l_m/($l_q + $l_m)));
-		}
+		#		my $score = (2x$l_q)/(2 x $l_q + $l_m);
+			$score = $factor * (1 - ($l_m/($l_q + $l_m)));
 
-		#	delete the query from {queryset}{unmatched} (if it still exists)
-		#	as we have found a match for it
-		delete $self->{queryset}{unmatched}{$q} if $self->{queryset}{unmatched}{$q};
-
-		if ($coeff > $rel)
-		{	$rel = $coeff;
-			if ($options->{hilite})
-			{	encode_entities($matchstr);
-				($matchtxt = $matchstr) =~ s/START_MATCH \d+: (.*?)END_MATCH/<em class="hilite">$1<\/em>/g;
+			if ($score > $best_rel_score)
+			{	$best_rel_score = $score;
+				$matchtxt = __hiliter($matchstr) if $options->{hilite};
+			#	if the match is exact, end here
+				last QUERY_LIST if $score == 1;
 			}
-			last QUERY_LIST if ($rel == 1);
+		}
+		elsif ($options->{hilite})
+		{	return __hiliter($matchstr);
 		}
 	}
-	if (!$rel)
-	{	return undef;
+
+	if ($options->{match_only})
+	{	return 0;
 	}
-	if (!$options->{hilite})
-	{	return sprintf("%.4f",$rel);
-	}
-	return [ $matchtxt, sprintf("%.4f",$rel) ];
-}
 
-sub _get_match {
-	my $self = shift;
-	my $matchstr = shift;
-
-	my $queryset = $self->{queryset}{perllist};
-
-	if (!$matchstr || !$queryset)
+	if (!$best_rel_score)
 	{	return;
 	}
 
-	QUERY_LIST:
-	foreach my $q (@$queryset)
-	{	foreach (@$q)
-#		{	next QUERY_LIST unless ($matchstr =~ s/($_->{value})//g);
-		{	next QUERY_LIST unless ($matchstr =~ s/($_)//g);
-		}
-		return 1;
+	if (!$options->{hilite})
+	{	return sprintf("%.4f", $best_rel_score);
 	}
-	return;
-}
-
-sub _get_match_and_hilite {
-	my $self = shift;
-	return $self->hilite(@_);
+	
+	return [ $matchtxt, sprintf("%.4f", $best_rel_score) ];
 }
 
 sub hilite {
@@ -1934,11 +2000,12 @@ sub hilite {
 		{	next QUERY_LIST unless $matchstr =~ s/($_)/START_MATCH$1END_MATCH/gi;
 		}
 		my @matches = split('START_MATCH', $matchstr);
-		next QUERY_LIST if grep { /END_MATCH.*?END_MATCH/ } @matches;
+		next if grep { /END_MATCH.*?END_MATCH/ } @matches;
 
-		encode_entities($matchstr);
-		$matchstr =~ s/START_MATCH(.*?)END_MATCH/<em class="hilite">$1<\/em>/g;
-		return $matchstr;
+#		encode_entities($matchstr);
+#		$matchstr =~ s/START_MATCH(.*?)END_MATCH/<em class="hilite">$1<\/em>/g;
+#		return $matchstr;
+		return __hiliter($matchstr);
 	}
 
 	return $text if $return_orig;
@@ -1946,61 +2013,101 @@ sub hilite {
 	return undef;
 }
 
-sub _get_match_score_and_hilite {
-	my $self = shift;
-	my $matchstr = shift;
-	my $field = shift;
-	my $queryset = shift;
-
-	return $self->__relevance_algorithm($queryset, $matchstr, __search_field_weighting($field), { hilite => 1 });
+sub __hiliter {
+	my $str = shift;
+	my $encoded = encode_entities($str);
+	$encoded =~ s/START_MATCH( \d+: )?(.*?)END_MATCH/<em class="hilite">$2<\/em>/g;
+	return $encoded;
 }
 
 sub _obsolete_check {
 	my $self = shift;
 	my $results = shift;
 	my $obs = shift;
+	
+	#	check what our obsoletes behaviour is
+	
+	print STDERR "Starting the obsolete check...\n";
+	print STDERR "obs terms are ".Dumper($obs)."\n";
 
 	my $apph = $self->apph;
 	my $dbh = $apph->dbh;
 
 	if (@$obs)
-	{	#	get the comments for the term; return only comments with GO IDs in them
-		my $sql =
-				"SELECT term_id, term_comment FROM term_definition WHERE term_id IN ("
-				.join(", ", @$obs).") AND term_comment REGEXP ".sql_quote(".*GO:[0-9]{7}.*");
-		print STDERR "sql: $sql\n";
+	{	#	get the comments for the term;
+		#	return only comments with GO IDs in them
+		my @terms_in_comments;
+		my %not_in_results;
+		my $comments;
+		my $comment_id_to_term_acc;
+		my $comment_id_to_term_id;
 
-		my $comments = $dbh->selectall_hashref($sql, 'term_id');
-
-		return {} if !keys %$comments;
-
-		print STDERR "comments: ".Dumper($comments)."\n";
-		#	Delete any terms which don't have a comment with a GOID in it
-		foreach my $id (@$obs)
-		{	#print STDERR "id: $id; ";
-			
-			if (!$comments->{$id})
-			{	#print STDERR "not found in comments arr\n";
-				delete $results->{$id};
+		if (get_environment_param("term2term_metadata_loaded"))
+		{	my $rels = $dbh->selectall_arrayref("SELECT id WHERE name IN (". join(", ", map { sql_quote($_) } qw(replaced_by consider) ).")");
+			my $sql = "SELECT term1_id, term2_id FROM term2term_metadata WHERE term_id IN ("
+			.join(", ", @$obs)
+			.") AND relationship_type_id IN ("
+			.join(",", map { $_->[0] } @$rels).")";
+			$comments = $dbh->selectall_hashref($sql, 'term_id');
+		#	transform into term id and acc (id?) of consider term
+			foreach (keys %$comments)
+			{	push @{$comment_id_to_term_id->{$_}}, $comments->{$_}{term_comment};
 			}
 		}
+		else
+		{	
+			my $sql =
+					"SELECT term_id, term_comment FROM term_definition WHERE term_id IN ("
+					.join(", ", @$obs).") AND term_comment REGEXP ".sql_quote(".*GO:[0-9]{7}.*");
+			print STDERR "sql: $sql\n";
+	
+			$comments = $dbh->selectall_hashref($sql, 'term_id');
+		#	transform into term id and acc (id?) of consider term
+
+			print STDERR "Comments: ".Dumper($comments);
+
+			foreach (keys %$comments)
+			{	my @cterms = grep { s/.*?(GO:\d{7}).*/$1/g } split(/\s/, $comments->{$_}{term_comment});
+				if (@cterms)
+				{	$comment_id_to_term_acc->{$_} = \@cterms;
+				}
+			}
+		#	print STDERR "comments: ".Dumper($comments)."\n";
+		}
+
+		foreach my $id (@$obs)
+		{	delete $results->{$id} if !$comments->{$id};
+		}
 		
-		my %not_in_results;
+
+		#	REWRITE!
+
+		#	Delete any terms which don't have a comment with a GOID in it
 		COMMENT_LOOP:
 		foreach my $id (keys %$comments)
-		{	my @cterms = grep { s/.*?(GO:\d{7}).*/$1/g } split(/\s/, $comments->{$id}{term_comment});
-			if (@cterms)
-			{	#print STDERR "$comments->{$id}{term_id} comments: ".join(", ", @cterms)."\n";
-				foreach my $c (@cterms)
-				{	if ($not_in_results{$c} || !grep { /$c/ } map { $results->{$_}{acc} } keys %$results)
-					{	$not_in_results{$c} = 1;
-						next COMMENT_LOOP;
+		{	if ($comment_id_to_term_acc->{$id} || $comment_id_to_term_id->{$id})
+			{	if ($comment_id_to_term_acc->{$id})
+				{	foreach my $c (@{$comment_id_to_term_acc->{$id}})
+					{	if ($not_in_results{$c} || !grep { /$c/ } map { $results->{$_}{acc} } keys %$results)
+						{	$not_in_results{$c} = 1;
+							next COMMENT_LOOP;
+						}
+					}
+				}
+				elsif ($comment_id_to_term_id->{$id})
+				{	foreach my $c (@{$comment_id_to_term_id->{$id}})
+					{	if ($not_in_results{$c} || !grep { /$c/ } keys %$results)
+						{	$not_in_results{$c} = 1;
+							next COMMENT_LOOP;
+						}
 					}
 				}
 			}
 			print STDERR "deleting $id\n";
 			delete $results->{$id};
 		}
+	
+
 	}
 	return [values %$results];
 }
@@ -2012,20 +2119,6 @@ sub _sort_results {
 
 #	print STDERR "results: ".Dumper($results)."\n";
 
-	my $sort_default = {
-		gp => ['rel', 'symbol', 'full_name'],
-		term => ['rel', 'name', 'acc', 'term_type'],
-		spp => ['rel', 'binomial', 'common_name'],
-	};
-
-#	gene products: possible sort values:
-#	full_name symbol spp relevance
-#	default: relevance, symbol, full_name (n.b. full name may be blank!)
-
-#	terms:
-#	name acc ontology relevance
-#	default: relevance, name, acc
-#	obsoletes get sent to the end
 
 #	if the action is to sort, leave the list in its initial order
 #	and sort by the new criteria
@@ -2042,24 +2135,28 @@ sub _sort_results {
 			push @$sortby, $sort_crit;
 		}
 		else
-		{	#	this is a fresh search, so we should sort by other criteria too
-			if ($sort_crit eq $sort_default->{$sc}[0])
-			{	#	just use the default sorting order
-				$sortby = $sort_default->{$sc};
+		{	#	this is a new search, so we should sort by other criteria too
+			my $default_sort = __sort_default($sc, $self->{get_relevance});
+			if ($sort_crit eq $default_sort->[0])
+			{	#	the default sorting order is OK here
+				$sortby = $default_sort;
 			}
 			else
-			{	push @$sortby, $sort_crit;
-				push @$sortby, grep { $_ ne 'rel' && $_ ne $sort_crit } @{$sort_default->{$sc}};
+			{	#	put the current sort criteria at the top of the list
+				#	leave the rest of the list in its current order
+				push @$sortby, $sort_crit;
+				foreach (@$default_sort)
+				{	push @$sortby, $_ if $_ ne $sort_crit;
+#				{	push @$sortby, $_ if ($_ ne $sort_crit && $_ ne 'rel');
+				}
 			}
 		}
 	}
 	else
-	{	$sortby = $sort_default->{$sc};
+	{	$sortby = __sort_default($sc, $self->{get_relevance});
 	}
 	
-	if ($sc eq 'term')
-	{	unshift @$sortby, 'is_obsolete';
-	}
+	unshift @$sortby, 'is_obsolete' if $sc eq 'term';
 	
 	print STDERR "sortby is ".Dumper($sortby)."\n";
 
@@ -2070,53 +2167,61 @@ sub _sort_results {
 
 	my @sorted = map { $refs{(split("\0", $_))[-1]} }
 					sort
-					map { __data($_, $sc, $sortby) }
+#					map { __data_for_sort($_, $sc, $sortby) }
+					map { my $obj = $_;
+					#	my $str = 
+						join("\0", 
+							map
+							{	if ($_ eq 'rel')
+								{	my @rel_sort = %{$obj->{source}};
+								#	my @pair = (sprintf( "%05d", (10000 - $rel_sort[1] * 10000)), 
+								#		__field_importance($rel_sort[0]));
+								#	print STDERR "pair: ".Dumper(\@pair)."\n";
+								#	@pair;
+									(sprintf( "%05d", (10000 - $rel_sort[1] * 10000)), 
+										__field_importance($rel_sort[0]));
+								}
+								elsif (($_ eq 'binomial' && $sc eq 'spp') || ($_ eq 'spp' && $sc eq 'gp'))
+								{	$obj->{genus}." ".$obj->{species};
+								}
+								else
+								{	if (exists $obj->{$_})
+									{	lc $obj->{$_};
+									}
+									else
+									{	print STDERR "Error: did not return a value for sorting! $sc, $_, $obj\n";
+										print STDERR Dumper($obj)."\n";
+										0;
+									}
+								}
+							} @$sortby) . "\0".$obj->{id};
+#						$obj->{id});
+				#		$str;
+					}
 					@$results;
 
 	return \@sorted;
 }
 
-sub __data {
+sub __data_for_sort {
 	my $obj = shift;
 	my $sc = shift;
 	my $crit = shift;
-	my %rel = (
-	#	term search fields
-				acc => 1,
-				name => 1,
-				term_synonym => 2,
-				definition => 3,
-				comment => 4,
-				xref => 4,
-				subset => 5,
-#				dbxref => 
 
-	#	gp search fields
-				symbol => 1,
-				full_name => 2,
-				gpxref => 3,
-				product_synonym => 4,
-				seq_name => 5,
-				seq_xref => 6,
-				
-	#	spp search fields
-				binomial => 1,
-				ncbi_taxa_id => 2,
-				common_name => 3,
-			);
-	
 	my @list = map
 	{	if ($_ eq 'rel')
 		{	#	print STDERR "keys: ".keys %{$obj->{src}}."\n";
-			if (!@{$obj->{source}})
+#			if (!@{$obj->{source}})
+			if (!$obj->{source})
 			{	(10000, 10);
 			}
 			else
 			{	#print STDERR "source: 0: ".$obj->{source}[0]."; 1: ".$obj->{source}[1]."\n";
-			
-				(sprintf( "%05d", (10000 - $obj->{source}[1] * 10000)), 
-					#$obj->{source}[1],
-					$rel{$obj->{source}[0]});
+				my @rel_sort = %{$obj->{source}};
+#				(sprintf( "%05d", (10000 - $obj->{source}[1] * 10000)), 
+#					$rel{$obj->{source}[0]});
+				(sprintf( "%05d", (10000 - $rel_sort[1] * 10000)), 
+					__field_importance($rel_sort[0]));
 			}
 		}
 		elsif (($_ eq 'binomial' && $sc eq 'spp') || ($_ eq 'spp' && $sc eq 'gp'))
@@ -2136,9 +2241,7 @@ sub __data {
 #	unshift @list, $obj;
 #	print STDERR Dumper(\@list);
 #	print STDERR Dumper($obj);
-#	my $ref = pack('N',$obj);
 	my $ref = $obj->{id};
-#	return [join "\0", (@list, pack('N',$obj))];
 	return join("\0", (@list, $ref));
 }
 
@@ -2191,12 +2294,12 @@ sub _get_term_details {
 	my $ont_list = $self->get_param('ont_list');
 	foreach (@$term_ref)
 	{	#print STDERR "term ref looks like this:\n".Dumper($_)."\n";
-	#	my $term = $apph->create_term_search_result_obj($_->{term});
 		my $term = $self->_create_term_search_result_obj($apph, $_);
 		$terms_by_id->[$term->id] = $term;
 		$term->is_ontology_term(1) if (grep { $_ eq $term->namespace } @$ont_list);
-		$term->source($_->{source}->[0]) if ($_->{source});
-		$term->best_match( [$_->{source}[1], $_->{source}[2]]) if ($_->{source});
+		$term->source($_->{source}) if $_->{source};
+#		$term->source($_->{source}->[0]) if $_->{source};
+#		$term->best_match( [$_->{source}[1], $_->{source}[2]]) if $_->{source};
 		$term->{all_rel_data} = $_->{all_rel_data};
 		$_ = $terms_by_id->[$term->id];
 	}
@@ -2213,12 +2316,14 @@ sub _get_term_details {
 	while (my $d = $sth->fetchrow_arrayref) {
 		if ($terms_by_id->[$d->[0]]) {
 			my $def = $d->[1];
-			if ($terms_by_id->[$d->[0]]->source eq 'definition')
+#			if ($terms_by_id->[$d->[0]]->source eq 'definition')
+			if (exists $terms_by_id->[$d->[0]]->source->{definition})
 			{	$def = $self->hilite($d->[1], 1, $queryset);
 			}
 			$terms_by_id->[$d->[0]]->definition($def);
 
-			if ($terms_by_id->[$d->[0]]->source eq 'comment')
+#			if ($terms_by_id->[$d->[0]]->source eq 'comment')
+			if ($terms_by_id->[$d->[0]]->source->{comment})
 			{	$terms_by_id->[$d->[0]]->comment($self->hilite($d->[2], 1, $queryset));
 			}
 
@@ -2231,7 +2336,8 @@ sub _get_term_details {
 #	if the search constraint includes syns, load 'em
 	if ($selected->{term_synonym}) {
 		print STDERR "Looking for synonyms...\n";
-		my @termset = map { $_->id } grep { $_->source eq 'term_synonym' } @$term_ref;
+#		my @termset = map { $_->id } grep { $_->source eq 'term_synonym' } @$term_ref;
+		my @termset = map { $_->id } grep { exists $_->source->{term_synonym} } @$term_ref;
 
 		if (@termset)
 		{	print STDERR "synonyms: termset: ".join(", ", @termset)."\n";
@@ -2239,14 +2345,6 @@ sub _get_term_details {
 			"SELECT term_id, term_synonym, term.name FROM term_synonym, term WHERE term.id=term_synonym.synonym_type_id AND term_id in (".join(", ", @termset).")";
 			my $sth = $dbh->prepare($sql);
 			$sth->execute();
-
-#			my $fn;
-#			if ($self->{get_relevance})
-#			{	$fn = $self->_get_match_score_and_hilite($_[1], $_[2]."_term_synonym", $queryset);
-#			}
-#			else
-#			{	$fn = $self->hilite($_[1], 0, $queryset);
-#			}
 
 			if ($self->{get_relevance})
 			{	while (my $d = $sth->fetchrow_arrayref)
@@ -2266,7 +2364,8 @@ sub _get_term_details {
 	if ($selected->{dbxref} || $selected->{xref}) {
 		print STDERR "looking at xrefs\n";
 #			my @termset = grep { (exists $term_h->{$_}{src}{dbxref} || exists $term_h->{$_}{src}{xref}) } keys %$term_h;
-		my @termset = map { $_->id } grep { ($_->source eq 'dbxref' || $_->source eq 'xref') } @$term_ref;
+#		my @termset = map { $_->id } grep { ($_->source eq 'dbxref' || $_->source eq 'xref') } @$term_ref;
+		my @termset = map { $_->id } grep { (exists $_->source->{dbxref} || exists $_->source->{xref}) } @$term_ref;
 		if (@termset)
 		{	print STDERR "dbxrefs: termset: ".join(", ", @termset)."\n";
 			my $sql=
@@ -2297,7 +2396,8 @@ sub _get_term_details {
 	if ($selected->{subset}) {
 		print STDERR "looking at subsets\n";
 #			my @termset = grep { exists $term_h->{$_}{src}{subset} } keys %$term_h;
-		my @termset = map { $_->id } grep { $_->source eq 'subset' } @$term_ref;
+#		my @termset = map { $_->id } grep { $_->source eq 'subset' } @$term_ref;
+		my @termset = map { $_->id } grep { exists $_->source->{subset} } @$term_ref;
 		if (@termset)
 		{	print STDERR "subset: termset: ".join(", ", @termset)."\n";
 			my $sql = "SELECT term_id, subset.acc, subset.name FROM term_subset, term AS subset WHERE subset.id=term_subset.subset_id AND term_id IN (".join(", ", @termset).") ORDER BY subset.acc, subset.name";
@@ -2338,17 +2438,18 @@ sub _get_term_details {
 	}
 
 #	if there are no association filters, get the number of associations
-	if ($self->get_param('gp_count_ok') == 1)
+	if ($self->get_param('show_term_counts') || $self->get_param('gp_count_ok') == 1)
 	{	print STDERR "Getting the deep product count!\n";
-		my $c = {
-			per_term=>1,
-			terms=> $term_ref
-		};
-		my $countl = $apph->get_deep_product_count($c);
+		get_gp_count_for_terms($apph, $term_ref, { show_all_ass => 1, use_filters => 1, gp_count_ok => $self->get_param('gp_count_ok') });
 
-		foreach (@$countl) 
-		{	$terms_by_id->[$_->{term_id}]->n_deep_products($_->{"c"}) if ($terms_by_id->[$_->{term_id}]);
-		}
+#		my $c = {
+#			per_term=>1,
+#			terms=> $term_ref
+#		};
+#		my $countl = $apph->get_deep_product_count($c);
+#		foreach (@$countl) 
+#		{	$terms_by_id->[$_->{term_id}]->n_deep_products($_->{"c"}) if ($terms_by_id->[$_->{term_id}]);
+#		}
 	}
 #	print STDERR "term_h:\n".Dumper($term_h)."\n";
 
@@ -2382,10 +2483,11 @@ sub _get_gp_details {
 		$hash{full_name} = $hash{symbol} if !$hash{full_name};
 		my $gp = $self->_create_gp_search_result_obj($apph, \%hash);
 		foreach ('species_id', 'type_id', 'product_synonym', 'seq_xref', 'seq_name')
-		{	$gp->{$_} = $hash{$_} if ($hash{$_});
+		{	$gp->{$_} = $hash{$_} if $hash{$_};
 		}
-		$gp->source($hash{source}->[0]) if ($hash{source});
-		$gp->best_match( [$hash{source}->[1], $hash{source}->[2]]) if ($hash{source});
+#		$gp->source($hash{source}->[0]) if $hash{source};
+		$gp->source($hash{source}) if $hash{source};
+#		$gp->best_match( [$hash{source}->[1], $hash{source}->[2]]) if $hash{source};
 	#	print STDERR "gp: ".Dumper($gp)."hash: ".Dumper(\%hash)."\n";
 		$gps_by_id->[$_->{id}] = $gp;
 		$_ = $gp;
@@ -2400,7 +2502,8 @@ sub _get_gp_details {
 	{	_get_products_seqs($apph, $gp_ref, 'has_seq');
 
 		if ($selected->{seq_name})
-		{	my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
+#		{	my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
+		{	my @list = grep { exists $_->source->{seq_name} } @$gp_ref;
 			if (@list)
 			{	if ($self->{get_relevance})
 				{	foreach my $gp (@list)
@@ -2421,7 +2524,8 @@ sub _get_gp_details {
 			}
 		}
 		if ($selected->{seq_xref})
-		{	my @list = grep { $_->source eq 'seq_xref' } @$gp_ref;
+#		{	my @list = grep { $_->source eq 'seq_xref' } @$gp_ref;
+		{	my @list = grep { exists $_->source->{seq_xref} } @$gp_ref;
 			if (@list)
 			{	if ($self->{get_relevance})
 				{	foreach my $gp (@list)
@@ -2453,7 +2557,8 @@ sub _get_gp_details {
 
 			my %gp_seq_name;
 			if ($selected->{seq_name}) {
-				my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
+				my @list = grep { exists $_->source->{seq_name} } @$gp_ref;
+#				my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
 				if (@list)
 				{	@gp_seq_name{ map { $_->id } @list } = (1) x @list;
 					$cols .= ", seq.display_id";
@@ -2462,7 +2567,8 @@ sub _get_gp_details {
 
 			my %gp_seq_xref;
 			if ($selected->{seq_xref}) {
-				my @list = grep { $_->source eq 'seq_xref' } @$gp_ref;
+#				my @list = grep { $_->source eq 'seq_xref' } @$gp_ref;
+				my @list = grep { exists $_->source->{seq_xref} } @$gp_ref;
 				if (@list)
 				{	@gp_seq_xref{ map { $_->id } @list} = (1) x @list;
 				}
@@ -2536,7 +2642,8 @@ sub _get_gp_details {
 
 	if ($selected->{product_synonym}) {
 		print STDERR "Looking for synonyms...\n";
-		my @gpset = grep { $_->source eq 'product_synonym' } @$gp_ref;
+#		my @gpset = grep { $_->source eq 'product_synonym' } @$gp_ref;
+		my @gpset = grep { exists $_->source->{product_synonym} } @$gp_ref;
 		if (@gpset)
 		{	if ($self->{from_cache})
 			{	#print STDERR "synonyms: gpset: ".join(", ", @gpset)."\n";
@@ -2576,21 +2683,22 @@ sub _get_gp_details {
 		}
 	}
 	
-	my $counts = GO::CGI::Query::_get_term_count_for_gps($apph, $gp_ref, 1);
-	print STDERR "counts: ".Dumper($counts)."\n";
-	my %count_h = @$counts;
-	foreach (@$gp_ref)
-	{	if ($count_h{$_->id})
-		{	$_->n_terms( $count_h{$_->id} );
-		}
-		else
-		{	$_->n_terms(0);
+	if ($self->get_param('show_gp_counts'))
+	{	my $counts = get_term_count_for_gps($apph, $gp_ref, 1);
+		print STDERR "counts: ".Dumper($counts)."\n";
+		my %count_h = @$counts;
+		foreach (@$gp_ref)
+		{	if ($count_h{$_->id})
+			{	$_->n_terms( $count_h{$_->id} );
+			}
+			else
+			{	$_->n_terms(0);
+			}
 		}
 	}
 #	} else {
 #		return [];
 #	}
-
 	return $gp_ref;
 }
 
@@ -2610,8 +2718,17 @@ sub _get_spp_details {
 sub _set_selected {
 	my $self = shift;
 	my $fields = shift;
+	my $option_h = shift;
 	my $sc = $self->get_param('search_constraint');
-	my $all_fields = _search_field_list($sc, 'all');
+	my $all_fields = __search_field_list($sc, 'all');
+
+	print STDERR "fields: ";
+	if ($fields && @$fields)
+	{	print STDERR join(", ", @$fields)."\n";
+	}
+	else
+	{	print STDERR "none set\n";
+	}
 
 	my $selected;
 	if ($fields)
@@ -2626,51 +2743,46 @@ sub _set_selected {
 		}
 	}
 	if (!$selected)
-	{	map { $selected->{$_} = 1 } @{_search_field_list($sc, 'default')};
+	{	map { $selected->{$_} = 1 } @{__search_field_list($sc, 'default')};
 	}
+
 	$self->set_param('selected', $selected);
-	return $selected;
-}
-
-sub _set_select_list {
-#	puts the selected fields in the order in which they should be
+	print STDERR "selected: ".Dumper($selected)."\n";
+	
+	if ($option_h && $option_h->{results_only})
+	{	return $selected;
+	}
+	
+#	put the selected fields in the order in which they should be
 #	checked when working out the relevance of the term results
-	my $self = shift;
-	my $selected = $self->get_param('selected');
-	my $ordered = _search_field_list($self->get_param('search_constraint'), 'ordered');
-	
-	$self->set_param('select_list', [ grep { exists $selected->{$_} } @$ordered ]);
+#	my @ordered_selected = grep { exists $selected->{$_} } @{$order->{$sc}};
+#	my $ordered = __search_field_list($sc, 'ordered');
 
-	return $self->get_param('select_list');
-}
+	my @ordered_selected = grep { exists $selected->{$_} } @{__search_field_list($sc, 'ordered')};
+	$self->set_param('select_list', \@ordered_selected);
+	print STDERR "ordered_selected: ".Dumper(\@ordered_selected)."\n";
 
-sub _search_field_list {
-	my $sc = shift;
-	my $list = shift;
+	my $field_list;
+	if ($sc eq 'spp')
+	{	if ($selected->{common_name})
+		{	$selected->{binomial} = 1;
+		}
+	}
 
-	my $hash = {
-		gp => {
-			all => [ 'symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref' ],
-			default => [ 'symbol', 'full_name', 'product_synonym' ],
-			srch_options => ['symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref'],
-			ordered => ['symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref'],
-		},
-		
-		term => {
-			all => [ 'name', 'term_synonym', 'definition', 'comment', 'xref', 'subset' ],
-			default => [ 'name', 'term_synonym' ],
-			srch_options => ['name', 'term_synonym', 'definition', 'comment', 'dbxref', 'subset'],
-			ordered => ['acc', 'name', 'term_synonym', 'definition', 'dbxref', 'subset', 'comment', 'xref'],
-		},
-		spp => {
-			all => ['binomial', 'common_name'],
-			default => ['binomial', 'common_name'],
-			srch_options => ['ncbi_taxa_id', 'binomial', 'common_name'],
-			ordered => ['ncbi_taxa_id', 'binomial', 'common_name'],
-		},
-	};
-	
-	return $hash->{$sc}{$list};
+	if ($self->{get_relevance})
+	{	foreach my $field (@ordered_selected)
+		{	push @$field_list, [ $_, __search_field_weighting($_) ] foreach @{__fieldname_alias($field)};
+		}
+	}
+	else
+	{	foreach my $field (@ordered_selected)
+		{	push @$field_list, $_ foreach @{__fieldname_alias($field)};
+		}
+	}
+
+	$self->set_param('field_list', $field_list);
+
+	return $selected;
 }
 
 sub _set_cache_results {
@@ -2689,11 +2801,12 @@ sub _set_cache_results {
 	if ($result_list)
 	{	#print STDERR "Source size: ".scalar @$result_list."\n";
 		#print STDERR "Source: ".Dumper($result_list)."\n";
-		$cache->{result_list} = [ map { 
-											{	id => $_->{id},
-												src => $_->{source}
-											}
-										} @$result_list ];
+		$cache->{result_list} =
+			[ map { 
+						{	id => $_->{id},
+							src => $_->{source}
+						}
+					} @$result_list ];
 	}
 #	elsif (!$cache)
 #	{	$cache = $session->get_all_caching_params;
@@ -2716,9 +2829,7 @@ sub _set_cache_results {
 	
 	print STDERR "queryset:\n".Dumper($self->{queryset}{orig})."\n";
 
-	if (!$self->get_param('select_list'))
-	{	$self->_set_select_list;
-	}
+#	$self->_set_select_list if !$self->get_param('select_list');
 	$cache->{$sc.'fields'} = $self->get_param('select_list');
 
 	$self->cache($cache);
@@ -2807,7 +2918,8 @@ sub get_results_list {
 	
 #	find out what fields we're going to search
 #	if nothing is specified, use the default
-	my $selected = $self->_set_selected($arg_h->{search_fields});
+	$self->_set_selected($arg_h->{search_fields}, { results_only => 1 } );
+	my $selected = $self->get_param('selected');
 
 	print STDERR "Selected:\n".Dumper($selected)."\n";
 
@@ -2881,81 +2993,172 @@ sub get_result_objects {
 	return $results;
 }
 
-=head2 set_msg
+### Data only ###
 
-	Set messages / errors
+sub __search_field_list {
+	my $sc = shift;
+	my $list = shift;
 
-	Arguments - self
-	            message class: fatal, warning or info
-	            message type: e.g. 'no_valid_query', 'no_results'
-	            what it affects (optional)
-
-	Updates self->{msg_h} with the message
-
-=cut
-
-sub set_msg {
-	my $self = shift;
-
-	print STDERR "\@_ = ".Dumper(\@_);
-
-	$self->{msg_h} = set_message($self->{msg_h}, @_);
-
-	print STDERR "self->{msg_h} = ".Dumper($self->{msg_h})."\n";
-
+	my $hash = {
+		gp => {
+			all => [ 'symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref' ],
+			default => [ 'symbol', 'full_name', 'product_synonym' ],
+			srch_options => ['symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref'],
+			ordered => ['symbol', 'full_name', 'product_synonym', 'gpxref', 'seq_name', 'seq_xref'],
+		},
+		
+		term => {
+			all => [ 'name', 'term_synonym', 'definition', 'comment', 'xref', 'subset' ],
+			default => [ 'name', 'term_synonym' ],
+			srch_options => ['name', 'term_synonym', 'definition', 'comment', 'dbxref', 'subset'],
+			ordered => ['acc', 'name', 'term_synonym', 'definition', 'dbxref', 'subset', 'comment', 'xref'],
+		},
+		spp => {
+			all => ['binomial', 'common_name'],
+			default => ['binomial', 'common_name'],
+			srch_options => ['ncbi_taxa_id', 'binomial', 'common_name'],
+			ordered => ['ncbi_taxa_id', 'binomial', 'common_name'],
+		},
+	};
+	
+	return $hash->{$sc}{$list};
 }
 
-=head2 get_msg
-
-	Retrieve messages / errors
-
-	Arguments - self
-	            message class (optional)
-	Returns the messages of that class (if there are any), or all messages
-
-=cut
-
-sub get_msg {
-	my $self = shift;
-	return get_message($self->{msg_h}, @_);
+sub __search_field_weighting {
+	my $field = shift;
+	my %weighting = (
+	#	gp fields
+		product_synonym => 0.9,
+		seq_xref => 0.7,
+	#	term fields
+		narrow_term_synonym => 0.7,
+		broad_term_synonym => 0.7,
+		related_term_synonym => 0.5,
+		dbxref => 0.7,
+		def_xref => 0.5,
+		comment => 0.6,
+		subset_acc => 0.4,
+		subset_name => 0.4,
+	);
+	
+	return $weighting{$field} || 1;
 }
 
-=head2 success
+#	fieldname from AmiGO search --> fieldname used by AmiGO cache
+sub __fieldname {
+	my $field = shift;
+	my %fields = (
+		exact_term_synonym => 'term_synonym',
+		narrow_term_synonym => 'term_synonym',
+		broad_term_synonym => 'term_synonym',
+		related_term_synonym => 'term_synonym',
+		alt_id_term_synonym => 'term_synonym',
+		dbxref => 'xref',
+		def_xref => 'xref',
+		subset_name => 'subset',
+		subset_acc => 'subset',
+	);
+	return $fields{$field} || $field;
+}
 
-	Get or set the success state of the search
+#	fieldname used by AmiGO cache --> fieldname from AmiGO search
+sub __fieldname_alias {
+	my $field = shift;
+#	term_synonym is an alias for exact / narrow / broad / related syns
+#	xref is an alias for dbxref and def_xref
+#	seq is an alias for seq_name and seq_xref
+	my %alias = (
+		term_synonym => [ 'exact_term_synonym', 'narrow_term_synonym', 'broad_term_synonym', 'related_term_synonym', 'alt_id_term_synonym'],
+		xref => ['dbxref', 'def_xref'],
+		subset => ['subset_acc', 'subset_name'],
+	);
+	return $alias{$field} || [ $field ];
+}
 
-	Arguments - search object, 1 or 0 (optional)
-	Returns   - 1 or undefined;
-	            1 means successful search,
-	            undef means there was some sort of error
+#	default sorting order for the various search types
+sub __sort_default {
+	my $sc = shift;
+	my $relevance = shift;
+	
+#	gene products: possible sort values:
+#	full_name symbol spp relevance
+#	default: relevance, symbol, full_name (n.b. full name may be blank!)
 
-=cut
+#	terms:
+#	name acc ontology relevance
+#	default: relevance, name, acc
+#	obsoletes get sent to the end
 
-sub success {
-	my $self = shift;
-	if (@_)
-	{	$self->{success} = shift;
+	my $sort_default = {
+		gp => ['symbol', 'full_name'],
+		term => ['name', 'acc', 'term_type'],
+		spp => ['binomial', 'common_name'],
+	};
+	
+	if ($relevance)
+	{	return [ 'rel', @{$sort_default->{$sc}} ];
 	}
-	return $self->{success};
+	else
+	{	return $sort_default->{$sc} || [];
+	}
+}
+
+#	'importance' of search field (1 = most important, 10 = least)
+sub __field_importance {
+	my $field = shift;
+	my %rel = (
+	#	term search fields
+		acc => 1,
+		name => 1,
+		term_synonym => 2,
+		definition => 3,
+		comment => 4,
+		xref => 4,
+		subset => 5,
+#		dbxref => 
+
+	#	gp search fields
+		symbol => 1,
+		full_name => 2,
+		gpxref => 3,
+		product_synonym => 4,
+		seq_name => 5,
+		seq_xref => 6,
+		
+	#	spp search fields
+		binomial => 1,
+		ncbi_taxa_id => 2,
+		common_name => 3,
+	);
+	return $rel{$field} || 10;
 }
 
 
-=head2 results
+=head2 __min_q_length
 
-	Arguments - search object, results set (optional)
-	Returns   - results set
+Internal method to get minimum query length
 
 =cut
 
-sub results {
-	my $self = shift;
-	if (@_)
-	{	$self->{results} = shift;
-	}
-	return $self->{results};
+sub __min_q_length {
+	my $sc = shift;
+	my $exact = shift || undef;
+
+	my $min_q = {
+		gp_exact => 1,
+		gp => 2,
+		term_exact => 3,
+		term => 3,
+		spp => 3,
+		spp_exact => 3,
+	};
+
+	return $exact ? $min_q->{$sc.'_exact'} : $min_q->{$sc};
 }
 
 
+
+# not used
 sub __search_constraint_specific_data {
 	my $data_to_get = shift;
 	my $sc = shift;
@@ -2968,9 +3171,9 @@ sub __search_constraint_specific_data {
 		},
 	};
 
-
-
 	return $data->{$data_to_get}{$sc} || undef;
 }
+
+
 
 1;

@@ -49,41 +49,46 @@ my $msg_h;
 #
 
 my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
-if (!@term_list || !$action)
-{	$session->suicide_message($msg_h, 'no_term') if !@term_list;
 
-	$session->suicide_message($msg_h, 'no_term_action') if !$action;
+my %action_hash = (
+	'plus_node' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&session_id=".$session->id."\n\n";
+	},
+	'reset-tree' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=reset-tree&term=".join("&term=", @term_list)."&session_id=".$session->id."\n\n";
+	},
+	'set-tree' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&session_id=".$session->id."\n\n";
+	},
+	'rdfxml' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=rdfxml&session_id=".$session->id."\n\n";
+	},
+	'obo' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=obo&session_id=".$session->id."\n\n";
+	},
+	'go_ont' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=go_ont&session_id=".$session->id."\n\n";
+	},
+	'tree' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=tree&session_id=".$session->id."\n\n";
+	},
+	'png' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=png&session_id=".$session->id."\n\n";
+	},
+	'ont' => sub {
+		print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?action=set-tree&term=".join("&term=", @term_list)."&format=ont&session_id=".$session->id."\n\n";
+	},
+);
+
+my $msg_h;
+
+if (!@term_list || !$action || !$action_hash{$action})
+{	$msg_h = set_message($msg_h, 'fatal', 'no_term') if !@term_list;
+	$msg_h = set_message($msg_h, 'fatal', 'no_term_action') if !$action;
+	$msg_h = set_message($msg_h, 'fatal', 'invalid_action') if ($action && !$action_hash{$action});
+	process_page_template({ msg_h => $msg_h }, $session);
 }
 else
-{	my $location = "term=" . join("&term=", @term_list);
-	if ($action eq 'plus_node')
-	{	$location .= "&action=set-tree";
-	}
-	elsif ($action eq 'reset-tree')
-	{	print STDERR "session before: ".Dumper($session)."\n";
-		$session->graph_sync;
-		print STDERR "session after: ".Dumper($session)."\n";
-		$session->save_session;
-		$location .= "&action=set-tree";
-	}
-	elsif ($action eq 'obo')
-	{
-	
-	}
-	elsif ($action eq 'rdfxml')
-	{	
-	
-	}
-	elsif ($action eq 'goslim')
-	{	#	use these terms as a GO slim
-	
-	}
-	else
-	{	$session->suicide_message($msg_h, 'no_term_action');
-	}
-
-	print "Location: ".$session->get_default_param('cgi_url')."/browse.cgi?$location&session_id=".$session->id."\n\n";
-	exit;
+{	$action_hash{$action}->($session, \@term_list, $msg_h);
 }
-$session->__save_session;
-
+exit;

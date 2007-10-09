@@ -49,90 +49,172 @@ use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
 my $q = new CGI;
 my $error = $q->cgi_error;
 my $msg_h;
+
+print STDERR "cgi: ".Dumper($q)."\n";
+
 if ($error)
-{	my $session = new GO::CGI::Session('-q'=>$q, -read_only=>1);
-	if ($error eq '413 Request entity too large')
+{	if ($error eq '413 Request entity too large')
 	{	$error .= '.<br>The maximum size for file uploads is '.$max_size.' Kb.';
 	}
 	$msg_h = set_message($msg_h, 'fatal', $error);
-	process_page_template({ msg_h => $msg_h}, $session, 'advanced_search');
+	my $session = new GO::CGI::Session(-temp => 1);
+	process_page_template({ msg_h => $msg_h, page_title => 'Search error' }, $session, 'advanced_search');
 	exit;
 }
 
 my %params = $q->Vars;
 my $ses_type = 'front';
+my @valid_search_constraints = qw(term gp); # spp);
 my $vars;
-if ($params{search_constraint})
-{	if ($params{search_constraint} eq 'term' || $params{search_constraint} eq 'gp' || $params{search_constraint} eq 'spp')
-	{	$ses_type = $params{search_constraint}."_search";
+my $query;
+
+if ($params{action})
+{	if ($params{action} eq 'advanced_query')
+	{	#	turn on the advanced query mode
+		$ses_type = 'advanced_query';
 	}
-	else
-	{	my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'amigo_message');
-		print STDERR "search constraint: ".$params{search_constraint}."\n";
-		$msg_h = set_message($msg_h, 'fatal', 'unknown_search_type', $params{search_constraint});
-		process_page_template({ msg_h => $msg_h }, $session, 'amigo_message');
-		exit;
+	elsif ($params{action} eq 'new-search')
+	{	$ses_type = 'search';
+		#	A new search. If a file was uploaded,
+		#	move the contents into the 'query' param
+		my %q_hash;
+		if ($params{search_query_file})
+		{	my $file = $params{search_query_file};
+			print STDERR "Found a search_query_file!\n";
+			while (<$file>) {
+				#	get rid of any tracts of whitespace
+				s/(\t|\s{2,})/ /g;
+				s/^\s*(\S+.*?)\s*$/$1/;
+				$q_hash{$_}++ if /\w/;
+			}
+		}
+		#	similarly if something was added to the query box
+		if ($params{search_query})
+		{	my @queries = split /(\n|\0)/, $params{search_query};
+			foreach my $q (@queries)
+			{	#	get rid of any tracts of whitespace
+				$q =~ s/(\t|\s{2,})/ /g;
+				$q =~ s/^\s*(\S+.*?)\s*$/$1/;
+				$q_hash{$q}++ if $q =~ /\w/;
+			}
+		}
+		
+		if (keys %q_hash)
+		{	#	put these values into the 'query' param of the cgi
+#			$q->param(-name=>'query', -'values'=>[ keys %q_hash ]);
+			$query = [ keys %q_hash ];
+		}
+		else
+		{	#	no valid query found! return an error
+			print STDERR "No query found!\n";
+			$msg_h = set_message($msg_h, 'fatal', 'no_valid_query');
+		}
 	}
 }
-elsif ($params{action} && $params{action} eq 'advanced_query')
-{	#	turn on the advanced query mode
-	$ses_type = 'advanced_query';
+
+#	if there's a query present, set the ses_type to search
+if ($params{query} && $ses_type eq 'front')
+{	$ses_type = 'search';
+	#	convert $params{query} into a list
+	$query = [ split(/\0|\n/, $params{query}) ];
+}
+
+#	check the search constraint is valid
+if ($params{search_constraint})
+{	if (!grep { $params{search_constraint} } @valid_search_constraints)
+	{	#	invalid search constraint
+		print STDERR "search constraint: ".$params{search_constraint}."\n";
+		$msg_h = set_message($msg_h, 'fatal', 'unknown_search_type', $params{search_constraint});
+	}
+}
+
+if ($msg_h->{fatal})
+{	my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'amigo_message', -temp => 1);
+	process_page_template({ msg_h => $msg_h, page_title => 'Search error' }, $session, 'amigo_message');
+	exit;
 }
 
 my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
 
-#print STDERR "session:\n".Dumper($session)."\n";
+if ($ses_type eq 'front' || $ses_type eq 'advanced_query')
+{	#	nothing to do for these pages
+	$vars->{search_constraint} = $params{search_constraint} || $session->get_param('search_constraint');
+	
+	if ($ses_type eq 'advanced_query')
+	{	$vars->{searchfields}{$_.'fields'} = $session->set_option($_.'fields') foreach @valid_search_constraints;
+	}
+	process_page_template($vars, $session);
+	exit;
+}
 
 #
 # Perform the query
 #
 
-if ($ses_type eq 'front')
-{	#	nothing to do for these pages
-	process_page_template({ search_constraint => $session->get_param('search_constraint') }, $session);
-	exit;
-}
-elsif ($ses_type eq 'advanced_query')
-{	$session->adv_search_sync;
-	$session->save_session;
-
-	foreach my $f ('termfields', 'gpfields')
-	{	$vars->{searchfields}{$f} = $session->set_option($f);
-	}
-	$vars->{search_constraint} = $session->get_param('search_constraint');
-	process_page_template($vars, $session);
-	exit;
-}
-
 #	Do the search
-$session->search_sync;
-$session->save_session;
-my $search = new GO::CGI::Search($session->apph);
+
+#my $search = new GO::CGI::Search({ get_relevance => 0 });
+
+my $search = new GO::CGI::Search;
+
+#	Get the various values for the search ready
+my $option_h;
+
+$option_h->{search_constraint} = $params{search_constraint} || $session->get_param('search_constraint');
+
+$session->ses_type($option_h->{search_constraint}."_search");
+
+if (($params{action} && $params{action} eq 'sort')
+	|| $params{page}
+	|| $params{page_size} && $params{page_size} eq 'all'
+	|| $params{'format'})
+{	#	this may well be a cached query. Load up the cache.
+	my $cache = $session->load_cached_results;
+
+	#	check the query is the same as that in params
+	if ($cache && $cache->{result_list} && $cache->{queryset})
+	{	print STDERR "queryset from cache: ".Dumper($cache->{queryset})."params{query}: ".Dumper($query)."\n";
+	#	if ($cache->{queryset} eq $query)
+	#	{	
+			$option_h->{cache} = $cache;
+	#	}
+	}
+}
+
+foreach ('exact_match', 'page', 'action') #, 'format')
+{	$option_h->{$_} = $params{$_} if $params{$_};
+}
+
+foreach ($option_h->{search_constraint}.'sort', 'page_size')
+{	$option_h->{$_} = $params{$_} || $session->get_param($_);
+}
+
+foreach (@valid_search_constraints)
+{	$option_h->{$_.'fields'} = [ split(/,|\0/, $params{$_.'fields'}) ] if $params{$_.'fields'};
+}
+
+foreach ('gp_count_ok', 'show_gp_counts', 'show_term_counts')
+{	$option_h->{$_} = $session->$_;
+}
+$option_h->{ontology_list} = $session->get_ontology_list;
 
 my $t0 = gettimeofday();
-#	my $n = 0;
-#	while ($n < 20)
-#	{	
+my $data = $search->getResultList($session->apph, $query, $option_h);
 
+print STDERR "results: ".Dumper($search->{results})."\n";
 
+#print STDERR "Search object: ".Dumper($search)."\n";
 
+#$session->search_sync($search);
 
+#if (!$data)
+#{	$vars->{msg_h} = $search->get_msg;
+#	print STDERR "msg: ".Dumper($vars->{msg_h})."\n";
+#	print STDERR "Errors!\n".Dumper($search->get_msg)."\n";
+#	process_page_template($vars, $session);
+#	exit;
+#}
 
-
-
-my $data = $search->getResultList(-query=>$session->get_current_param('query'), -session=>$session);
-
-if (!$data)
-{	my $msg = $search->get_msg;
-	print STDERR "msg: ".Dumper($msg)."\n";
-	print STDERR "Errors!\n".Dumper($search->get_msg)."\n";
-	if ($msg)
-	{	$vars->{msg_h} = $msg;
-	}
-	process_page_template($vars, $session);
-	exit;
-#		$n++;
-}
 print STDERR (gettimeofday() - $t0).": new search method done\n";
 
 #print STDERR "search object:\n".Dumper($search)."\n";
@@ -143,31 +225,44 @@ if ($search->{cache_me} && $search->cache)
 #	print STDERR "session object:\n".Dumper($session)."\n";
 
 if ($search->{results}{single_result})
-{	$vars = $data;
+{	print STDERR "data: ".Dumper($data);
+	print "Location: ".$session->get_param('cgi_url')."/".$data->{search_constraint}."-details.cgi?".$data->{search_constraint}."=".$data->{id}."&session_id=".$session->id."\n\n";
+	exit;
 }
 else
-{	$vars = {
-		data => $data,
+{
+	$vars = {
+#		data => $data,
 		search => $search,
-		n_results => $search->get_result_param('n_results'),
-		n_pages => $search->get_result_param('n_pages') || 1,
-#			search_fields => $search->{params}{select_list},
-		search_constraint => $search->{params}{search_constraint},
+		search_constraint => $search->get_param('search_constraint'),
 		cgi => 'search',
+		search_fields => [ map { GO::CGI::NameMunger::get_field_name(1, $_) } @{$search->get_param('select_list')} ],
+		n_results => $search->get_result_param('n_results') || 0,
 	};
-	#	prepare the data for the template
-	@{$vars->{search_fields}} = map { $session->munger->get_field_name($_) } @{$search->get_param('select_list')} if $search->get_param('select_list');
 
-
-	#	add the sort parameter and page_size
-
-	if ($search->get_param('exact_match'))
-	{	$vars->{exact_match} = 1;
+	if ($data)
+	{	$vars->{data} = $data;
+		$vars->{n_pages} = $search->get_result_param('n_pages') || 1;
+		$vars->{page} = $params{page} || 1;
+	}
+#	else
+#	{	$vars->{n_results} = 0;
+#	}
+	
+	foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
+	{	$vars->{$_} = 1 if $search->get_param($_);
 	}
 	
+	print STDERR "get query param: ".Dumper($search->get_query_param)."\n";
+#	my $q = $search->get_query_param;
+#	if ($q)
+#	
 	if ($search->get_query_param)
-	{	@{$vars->{querylist}} = map { join(" ", $_) } @{$search->get_query_param} ;
-		$vars->{query} = $vars->{querylist}[0];
+	{	$vars->{querylist} = [ map { join(" ", @$_) } @{$search->get_query_param} ];
+
+	print STDERR "querylist: ".Dumper($vars->{querylist})."\n";
+
+		$vars->{query} = join(" ", $vars->{querylist}[0]);
 		$vars->{querytext} = join(" or ", @{$vars->{querylist}});
 		$vars->{queryurl} = join("&amp;query=", map { encode_entities($_) } @{$vars->{querylist}});
 
@@ -175,125 +270,9 @@ else
 		{	$vars->{large_result_set} = 1;
 		}
 	}
+	$vars->{msg_h} = $search->get_msg;
 }
 
-my $msg = $search->get_msg;
-if ($msg)
-{	$vars->{msg_h} = $msg;
-}
-$session->__save_session(1);
+$session->save_session;
 process_page_template($vars, $session);
 exit;
-
-
-
-sub initialize_search {
-	my $self = shift;
-	my ($query, $session, $arg_h) = rearrange([qw(query session arg_h)], @_);
-
-###	Check we have a query
-	if (!$query)
-	{	$self->set_msg('fatal', 'missing_query');
-		print STDERR "No query found\n";
-#		$self->success(0);
-		return;
-	}
-	else
-	{	$self->set_param('query', $query);
-	}
-
-	my $sc = $arg_h->{search_constraint} || $session->get_param('search_constraint') || $global->{search_constraint};
-	$self->set_param('search_constraint', $sc);
-
-	foreach ($sc.'sort', 'exact_match', 'page_size', 'page') #, 'format')
-	{	my $p = $arg_h->{$_} || $session->get_current_param($_);
-		$self->set_param($_, $p) if $p;
-	}
-	
-	my $action = $arg_h->{'action'} || $session->get_param('action');
-	if ($action && $action eq 'sort')
-	{	$self->set_param('sort_me', 1);
-	}
-#	else
-#	{	$self->set_param('action', $action);
-#	}
-
-	#	see if we already have results from this query
-	if ($self->get_param('page_size') eq 'all' ||
-		$self->get_param('page') ||
-	#	$self->get_param('format') || #not implemented
-		$self->get_param('sort_me'))
-	{	#	this is likely to be a cached search.
-		my $cache = $session->get_all_caching_params;
-		last if (!$cache || !$cache->{result_list} || !$cache->{query});
-
-		#	check that the basic parameters are the same
-		#	Does query match?
-		
-		
-		#	Are the filters (and the search fields?) the same?
-		
-		
-
-		$self->_set_selected($cache->{$sc.'fields'});
-		$self->set_param('select_list', $cache->{$sc.'fields'});
-		$self->{queryset}{orig} = $cache->{queryset};
-		$self->{queryset}{perl} = $cache->{queryset_perl};
-
-		my @perl_qlist = 
-		map {
-			[
-			map { 
-				if ($self->{queryset}{perl}{$_})
-				{	qr/$self->{queryset}{perl}{$_}/i;
-				}
-				else
-				{	qr/$_/i;
-				}
-			} @$_ ];
-		} @{$self->{queryset}{orig}};
-	
-		$self->{queryset}{perllist} = \@perl_qlist;
-
-		print STDERR "Using results from cache...\n";
-		$self->{from_cache} = 1;
-		$self->cache($cache);
-	#	foreach (keys %$cache)
-	#	{	if ($_ ne 'result_list' && $self->get_param($_))
-	#		{	print STDERR "$_ => ".Dumper($self->get_param($_))."\n";
-	#		}
-	#	}
-	}
-
-	if (!$self->cache)
-	{	#	load the search fields
-		#	if nothing is specified, use the default
-		my $fields = $arg_h->{$sc.'fields'} || $session->get_current_params($sc.'fields');
-		$self->_set_selected($fields);
-
-		#	check the queryset and turn it into a structure that we can use
-		my $success = $self->_set_queryset;
-		if (!$success)
-		{	#$self->success(0);
-			return;
-		}
-	}
-
-	#	set the filters
-	$self->_set_filters;
-
-	if ($sc eq 'term')
-	{	$self->set_param('gp_count_ok', $session->gp_count_ok);
-		$self->set_param('ont_list', $session->get_ontology_list);
-	}
-	return 1;
-}
-
-our $global = {
-	page_size => 50,
-	max_search_results => 1000,
-	search_constraint => 'term',
-	termsort => 'rel',
-	gpsort => 'rel',
-	sppsort => 'rel',
-};

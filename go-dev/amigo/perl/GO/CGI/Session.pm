@@ -57,8 +57,8 @@ sub new {
 	
 	print STDERR "session type: ".$self->ses_type."\n";
 	
-	$self->__clear_sessions;
-	if ($q->param('session_id'))
+#	$self->__clear_sessions;
+	if ($q && $q->param('session_id'))
 	{	my $ses_id = $q->param('session_id');
 		#	check the session ID is OK before we do anything else
 		if ($self->is_valid_session_id($ses_id))
@@ -166,12 +166,43 @@ sub ses_type {
 #get / set gp_count_ok
 sub gp_count_ok {
 	my $self = shift;
-	$self->{_gp_count_ok} = shift @_ if (@_);
+	if (@_)
+	{	my $val = shift;
+		$self->{_gp_count_ok} = $val;
+		$self->show_gp_counts($val);
+	}
 	return $self->{_gp_count_ok};
 }
 
-sub default_val {
+sub show_gp_counts {
 	my $self = shift;
+	if (@_)
+	{	$self->{_show_gp_counts} = shift;
+	}
+	elsif ($self->{_show_gp_counts})
+	{	#
+	}
+	else
+	{	$self->{_show_gp_counts} = $self->get_saved_param('calculate_gp_counts') || 0;
+	}
+	return $self->{_show_gp_counts};
+}
+
+sub show_term_counts {
+	my $self = shift;
+	if (@_)
+	{	$self->{_show_term_counts} = shift;
+	}
+	elsif ($self->{_show_term_counts})
+	{	#
+	}
+	else
+	{	$self->{_show_term_counts} = $self->get_saved_param('calculate_term_counts') || 0;
+	}
+	return $self->{_show_term_counts};
+}
+
+sub amigo_default {
 	my $pname = shift;
 	
 #	print STDERR "pname: $pname\n";
@@ -183,9 +214,9 @@ sub default_val {
 		view => "tree",
 #		termfields => ['name', 'term_synonym'],
 #		gpfields => ['symbol', 'full_name', 'product_synonym'],
-		termsort => 'rel',
-		gpsort => 'rel',
-		sppsort => 'rel',
+#		termsort => 'rel',
+#		gpsort => 'rel',
+#		sppsort => 'rel',
 		term_assocs => 'all',
 		term_context => 'parents',
 		threshold => 0.1,
@@ -304,7 +335,15 @@ sub get_default_param {
 #	if (defined ($ENV{uc("GO_$param")}))
 #	{	return $ENV{uc("GO_$param")};
 #	}
-	return GO::CGI::Utilities::get_environment_param($param) || $self->default_val($param);
+#	return GO::CGI::Utilities::get_environment_param($param) || amigo_default($param);
+	return get_environment_param($param) || amigo_default($param);
+}
+
+#	non-OO version of the above
+sub get_amigo_default_param {
+	my $param = shift || return;
+#	return GO::CGI::Utilities::get_environment_param($param) || amigo_default($param);
+	return get_environment_param($param) || amigo_default($param);
 }
 
 =head2 set_current_param
@@ -852,7 +891,7 @@ sub get_species_hash {
 
 sub __synchronize_session {
 	my $self = shift;
-	my $q = shift || $self->get_cgi;
+	my $q = shift || $self->get_cgi || return;
 
 	print STDERR "Starting __sync_session\n";
 #	print STDERR "session before: ".Dumper($self)."\n";
@@ -864,7 +903,7 @@ sub __synchronize_session {
 #	}
 	my %params = $q->Vars;
 	my $ses_type = $self->ses_type;
-#	my $ses_params = $self->get_ses_type_params;
+	my $ses_params = $self->get_ses_type_params;
 	
 	#	set the persisting parameters in the 'saved' param hash
 	foreach my $p (keys %params) {
@@ -873,8 +912,8 @@ sub __synchronize_session {
 		{	$self->set_saved_param($p, $params{$p});
 			#$self->set_saved_param($p, \@values);
 		}
-		elsif (grep { $p eq $_ } &_current_params)
-	#	elsif (grep { $param eq $_ } @$ses_params)
+	#	elsif (grep { $p eq $_ } &_current_params)
+		elsif (grep { $p eq $_ } @$ses_params)
 		{	$self->set_current_param($p, $params{$p});
 		}
 	}
@@ -915,33 +954,33 @@ sub search_sync {
 		$self->set_current_param($p, [@list]) if @list;
 	}
 	
-	my %q_hash;
-	if ($params{query})
-	{	my @queries = split /(\n|\0)/, $params{query};
-		foreach my $q (@queries)
+#	my %q_hash;
+#	if ($params{query})
+#	{	my @queries = split /(\n|\0)/, $params{query};
+#		foreach my $q (@queries)
 #		{	foreach ( split /(\n|\0)/, $q )
-			{	#	get rid of any tracts of whitespace
-				$q =~ s/(\t|\s{2,})/ /g;
-				$q =~ s/^\s*(\S+.*?)\s*$/$1/;
-				$q_hash{$q}++ if $q =~ /\w/;
-			}
-		#}
-	}
+#			{	#	get rid of any tracts of whitespace
+#				$q =~ s/(\t|\s{2,})/ /g;
+#				$q =~ s/^\s*(\S+.*?)\s*$/$1/;
+#				$q_hash{$q}++ if $q =~ /\w/;
+#			}
+#		#}
+#	}
 
-	my $file = $q->param('idfile') || undef;
-	if ($file)
-	{	print STDERR "Found an idfile!\n";
-		while (<$file>) {
-			#	get rid of any tracts of whitespace
-			s/(\t|\s{2,})/ /g;
-			s/^\s*(\S+.*?)\s*$/$1/;
-			$q_hash{$_}++ if /\w/;
-		}
-	}
-	
-	if (keys %q_hash)
-	{	$self->set_current_param('query', \%q_hash);
-	}
+#	my $file = $q->param('idfile') || undef;
+#	if ($file)
+#	{	print STDERR "Found an idfile!\n";
+#		while (<$file>) {
+#			#	get rid of any tracts of whitespace
+#			s/(\t|\s{2,})/ /g;
+#			s/^\s*(\S+.*?)\s*$/$1/;
+#			$q_hash{$_}++ if /\w/;
+#		}
+#	}
+#	
+#	if (keys %q_hash)
+#	{	$self->set_current_param('query', \%q_hash);
+#	}
 }
 
 sub search_sync_old {
@@ -1033,7 +1072,8 @@ sub graph_sync {
 	if ($action) {
 		if ($action eq 'reset-tree') {
 			if ($cgi_params{term})
-			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
+#			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
+			{	$tree->{open_0} = get_valid_list($cgi_params{term});
 			}
 		}
 		elsif ($action eq 'set-tree') {
@@ -1042,12 +1082,14 @@ sub graph_sync {
 			foreach my $p (@tree_params)
 			{	#	move the params from the cgi in
 				if ($cgi_params{$p})
-				{	$tree->{$p} = GO::CGI::Utilities::get_valid_list($cgi_params{$p});
+#				{	$tree->{$p} = GO::CGI::Utilities::get_valid_list($cgi_params{$p});
+				{	$tree->{$p} = get_valid_list($cgi_params{$p});
 				}
 			}
 
 			if ($cgi_params{term})
-			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
+#			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
+			{	$tree->{open_0} = get_valid_list($cgi_params{term});
 			}
 
 		}
@@ -1056,18 +1098,22 @@ sub graph_sync {
 			my $target = $cgi->param('target');
 			print STDERR "closing node target, $target\n";
 			#	add it to the list of closed nodes
-			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+#			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+			$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
 			#	remove it from the open_1 node list (if it is present)
-			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+#			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+			$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
 		}
 		elsif ($action eq 'plus_node') {
 			#	the term in 'target' has been opened
 			my $target = $cgi->param('target');
 			print STDERR "opening node target, $target\n";
 			#	add it to the list of open nodes
-			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+#			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+			$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
 			#	remove it from the closed node list (if it is present)
-			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+#			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+			$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
 		}
 		#	other actions - e.g. filtering, permalink: do nothing
 	}
@@ -1172,12 +1218,17 @@ sub new_graph_sync {
 		undef $tree;
 	}
 	elsif ($action eq 'reset-tree') {
-		# this only happens in the term-details cgi
+		# this happens in the term-select cgi
+		undef $tree;
+#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($tree->{term}) if $tree->{term};
+		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
+		delete $tree->{term}
 #		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($params->{term}) if $params->{term};
 	}
 	elsif ($action eq 'set-tree') {
-		# this only happens in the term-details cgi
-		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($tree->{term}) if $tree->{term};
+		# this only happens in the term-details and term-select cgi
+#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($tree->{term}) if $tree->{term};
+		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
 		delete $tree->{term}
 	}
 	elsif ($action eq 'minus_node') {
@@ -1185,24 +1236,29 @@ sub new_graph_sync {
 		my $target = $params->{target};
 		print STDERR "closing node target, $target\n";
 		#	add it to the list of closed nodes
-		$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+#		$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+		$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
 		#	remove it from the open_1 node list (if it is present)
-		$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+#		$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+		$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
 	}
 	elsif ($action eq 'plus_node') {
 		#	the term in 'target' has been opened
 		my $target = $params->{target};
 		print STDERR "opening node target, $target\n";
 		#	add it to the list of open nodes
-		$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+#		$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+		$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
 		#	remove it from the closed node list (if it is present)
-		$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+#		$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+		$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
 	}
 	else #	other actions, e.g. filtering, permalink, set tree
 	{	#	get the params from the cgi
 		foreach my $p (@tree_params)
 		{	#	move the params from the cgi in
-			$tree->{$p} = GO::CGI::Utilities::get_valid_list($tree->{$p}) if $tree->{$p};
+#			$tree->{$p} = GO::CGI::Utilities::get_valid_list($tree->{$p}) if $tree->{$p};
+			$tree->{$p} = get_valid_list($tree->{$p}) if $tree->{$p};
 		}
 #		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($params->{term}) if ($params->{term});
 	}
@@ -1217,7 +1273,6 @@ sub new_graph_sync {
 #	$self->set_current_param($_, $tree->{$_}) foreach @tree_params;
 #	$self->save_cached_results($tree, 'tree');
 }
-
 
 sub term_sync {
 	my $self = shift;
@@ -1252,18 +1307,22 @@ sub term_sync {
 			my $target = $cgi->param('target');
 			print STDERR "closing node target, $target\n";
 			#	add it to the list of closed nodes
-			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+#			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
+			$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
 			#	remove it from the open_1 node list (if it is present)
-			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+#			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
+			$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
 		}
 		elsif ($action eq 'plus_node') {
 			#	the term in 'target' has been opened
 			my $target = $cgi->param('target');
 			print STDERR "opening node target, $target\n";
 			#	add it to the list of open nodes
-			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+#			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
+			$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
 			#	remove it from the closed node list (if it is present)
-			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+#			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
+			$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
 		}
 		#	other actions - e.g. set / reset filters: do nothing
 	} else {
@@ -1380,7 +1439,8 @@ sub __trim_and_set_filters {
 	my $active_filters = $self->get_active_filter_fields;
 
 	my $evcode = 0;
-	if (GO::CGI::Utilities::get_environment_param('ieas_loaded') && grep { 'evcode' } @$active_filters && $params{'evcode'})
+#	if (GO::CGI::Utilities::get_environment_param('ieas_loaded') && grep { 'evcode' } @$active_filters && $params{'evcode'})
+	if (get_environment_param('ieas_loaded') && grep { 'evcode' } @$active_filters && $params{'evcode'})
 	{	#	evcode has to be handled slightly differently if IEAs
 		#	are present, so remove it from the list of filters
 		$evcode = 1;
@@ -1397,7 +1457,8 @@ sub __trim_and_set_filters {
 			$filters{$f} = $self->get_saved_param($f) if $self->get_saved_param($f);
 			next;
 		}
-		my $p_list = GO::CGI::Utilities::get_valid_list( [split("\0", $params{$f})] );
+#		my $p_list = GO::CGI::Utilities::get_valid_list( [split("\0", $params{$f})] );
+		my $p_list = get_valid_list( [split("\0", $params{$f})] );
 		print STDERR "f: $f; list: ".Dumper($p_list)."\n";
 		if (!@$p_list  # no values present
 			|| grep { $_ eq 'all' } @$p_list)  # the list contains 'all'
@@ -1420,7 +1481,8 @@ sub __trim_and_set_filters {
 
 	#	evcode
 	if ($evcode)  # this will only be on if IEAs are loaded
-	{	my $p_list = GO::CGI::Utilities::get_valid_list( split("\0", $params{'evcode'}) );
+#	{	my $p_list = GO::CGI::Utilities::get_valid_list( split("\0", $params{'evcode'}) );
+	{	my $p_list = get_valid_list( split("\0", $params{'evcode'}) );
 			#	print STDERR "f: $f; list: ".join(", ", @{$p_list || []})."\n";
 		if (!@$p_list ||  # no values present
 			grep { $_ eq 'all' } @$p_list)  # the list contains 'all'
@@ -1462,6 +1524,8 @@ sub __trim_and_set_filters {
 	#	check whether it's going to be ok to get gp counts
 	if (!keys %filters)
 	{	$self->gp_count_ok(1);
+	#	$self->show_gp_counts(1);	#	done by gp_count_ok
+		$self->show_term_counts(1);
 	}
 	else
 	{	my @gp_count_correct_fields = &_gp_count_correct_fields;
@@ -1482,17 +1546,31 @@ sub __trim_and_set_filters {
 		$self->gp_count_ok(1) if !$set;
 	}
 	
+	
+	
 	print STDERR "gp_count_ok: ".$self->gp_count_ok."\n";
 	print STDERR "saved after: ".Dumper($self->{params}{saved});
 
 }
 
-
-
 ##### Useful parameter lists #####
 
 sub _global_current_params {
 	return (qw(page page_size format action term gp), &_filter_fields);
+}
+
+sub get_ses_type_params {
+	my $self = shift;
+	my $ses_type = shift || $self->ses_type;
+	my $current_params_by_ses_type = {
+			term_assoc => [ 'term_assocs' ],
+			gp_assoc => [ 'show_blast_scores' ],
+			term_details => [ 'term_context' ],
+			search => [ &_search_params ],
+			blast => [ &_blast_params ],
+	};
+	
+	return $current_params_by_ses_type->{$ses_type} || undef;
 }
 
 sub _current_params {
@@ -1601,7 +1679,8 @@ sub get_active_filter_fields {
 	print STDERR "getting active filter fields...\n";
 	my @active;
 	foreach (&_filter_fields)
-	{	push @active, $_ if (GO::CGI::Utilities::get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
+#	{	push @active, $_ if (GO::CGI::Utilities::get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
+	{	push @active, $_ if (get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
 	}
 	$self->{active_filter_fields} = [@active];
 	return $self->{active_filter_fields};
@@ -1615,7 +1694,7 @@ sub get_search_field_list {
 	require GO::CGI::Search;
 
 	$sc =~ s/fields//;
-	return GO::CGI::Search::_search_field_list($sc, $field) || undef;
+	return GO::CGI::Search::__search_field_list($sc, $field) || undef;
 }
 
 sub get_reltype_list {

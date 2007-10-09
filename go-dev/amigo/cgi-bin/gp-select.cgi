@@ -52,7 +52,12 @@ my %action_hash = (
 	'gp-assoc' => sub {
 		my $ses = shift;
 		my $gp_list = shift;
-		print "Location: ".$ses->get_default_param('cgi_url')."/gp-assoc.cgi?show_blast_scores=on&gp=".join("&gp=", @$gp_list)."&session_id=".$ses->id."\n\n";
+		my $url = $ses->get_default_param('cgi_url')."/gp-assoc.cgi?gp=".join("&gp=", @$gp_list);
+		if ($params{show_blast_scores} && $params{show_blast_scores} eq 'on')
+		{	$url .= "&show_blast_scores=on";
+		}
+		$url .= "&session_id=".$ses->id."\n\n";
+		print "Location: $url";
 	},
 	'rdfxml' => sub {
 		my $ses = shift;

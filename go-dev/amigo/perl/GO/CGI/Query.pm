@@ -23,7 +23,10 @@ $Data::Dumper::Sortkeys = 1;
 
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 @ISA = ('Exporter');
-@EXPORT_OK = qw(get_gp_details get_term_in_graph get_gp_assocs get_term_assocs get_nit get_permalink get_current_graph get_data_for_chart get_graph_for_gp _get_products_seqs get_fasta);
+@EXPORT_OK = qw(get_gp_details get_gp_assocs get_graph_for_gp
+	get_term_in_graph get_term_assocs get_current_graph get_data_for_chart
+	get_nit get_permalink get_fasta _get_products_seqs
+	get_gp_count_for_terms get_term_count_for_gps);
 
 =head2 get_gp_details
 
@@ -455,7 +458,7 @@ sub get_gp_assocs {
 		
 		my $terms = $apph->get_terms({accs=>[keys %terms_to_get]}, $tmpl);
 		
-		_get_gp_count_for_terms($apph, $terms, { use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} } ) if $get_n_deep;
+		get_gp_count_for_terms($apph, $terms, { use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} } ) if $get_n_deep;
 		
 		foreach (@$terms)
 		{	$term_h->{$_->acc} = $_;
@@ -476,7 +479,7 @@ sub get_gp_assocs {
 
 	#	get the association data
 	#	gps_to_get contains the GPs that are actually used in this annotation set
-	my $assocs = get_association_data(-apph=>$apph, -terms=>[values %$term_h], -products=>[map { $product_h->{$_} } keys %gps_to_get], -tmpl=>$option_h->{tmpl}{assoc});
+	my $assocs = get_association_data($apph, [values %$term_h], [map { $product_h->{$_} } keys %gps_to_get], $option_h->{tmpl}{assoc});
 
 	#	return the results if a format is specified
 	if ($option_h->{tmpl}{assoc}{return_graph})
@@ -558,7 +561,7 @@ sub gp_assoc_die {
 	#	if there are no associations, see if it is because
 	#	we have filters by getting the term count for the GPs
 	#	BUT WITHOUT FILTERS!!
-	my $gpid_termc = _get_term_count_for_gps($apph, [values %$product_h]);
+	my $gpid_termc = get_term_count_for_gps($apph, [values %$product_h]);
 	my %hash = (@$gpid_termc);
 	return { results => {
 					product_h => $product_h, 
@@ -778,7 +781,7 @@ sub get_term_assocs {
 #	print STDERR "product_h:\n".Dumper($product_h)."\n";
 
 	#	get the association data
-	my $assocs = get_association_data(-apph=>$apph, -terms=>[map { $term_h->{$_} } @$assoc_terms], -products=>[ values %$product_h ], -tmpl=>$option_h->{tmpl}{assoc});
+	my $assocs = get_association_data($apph, [map { $term_h->{$_} } @$assoc_terms], [ values %$product_h ], $option_h->{tmpl}{assoc});
 
 	#	return the results if a format is specified
 	if ($option_h->{tmpl}{assoc}{return_graph})
@@ -901,13 +904,13 @@ sub term_assoc_die {
 		if ($option_h->{show_all_ass}) # deep associations
 		{	print STDERR "Getting the direct GP count for the terms...\n";
 			#	get the direct GP count for the terms (WITH filters)
-			_get_gp_count_for_terms($apph, $term_l, { show_all_ass => 0, use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} } );
-			
-			foreach (@$term_l)
-			{	$n_direct += $_->n_products;
-			}
-			
+			get_gp_count_for_terms($apph, $term_l, { show_all_ass => 0, use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} } );
 		}
+			
+		foreach (@$term_l)
+		{	$n_direct += $_->n_products;
+		}
+			
 		#	get the no. of children of term
 		my $direct_children;
 		my $count_1 = $dbh->selectall_arrayref("SELECT term1_id, COUNT(DISTINCT term2_id) FROM term2term WHERE term1_id IN (".join(", ", map { $_->id } @$term_l).") GROUP BY term1_id");
@@ -928,7 +931,7 @@ sub term_assoc_die {
 		if (keys %{$apph->filters})
 		{	print STDERR "We have filters on!\n";
 			
-			_get_gp_count_for_terms($apph, $term_l, { show_all_ass => $option_h->{show_all_ass} });
+			get_gp_count_for_terms($apph, $term_l, { show_all_ass => $option_h->{show_all_ass} });
 			
 			if ($option_h->{show_all_ass})
 			{	$total += $_->n_deep_products foreach @$term_l;
@@ -1057,7 +1060,6 @@ Gets the associations for a list of terms and GPs
 	            terms => [list of term objs]
 	            products => [list of GP objs]
 	            tmpl, # template for the assoc data
-	            return_graph # if true, returns the assocs in a graph form
 
 	Returns   - either a graph or an array of association objects
 
@@ -1066,8 +1068,7 @@ Gets the associations for a list of terms and GPs
 sub get_association_data {
 #	my $self = shift;
 #	my $dbh = $self->dbh;
-	my ($apph, $terms, $products, $tmpl) =
-	  rearrange([qw(apph terms products tmpl)], @_);
+	my ($apph, $terms, $products, $tmpl) = @_;
 	my $dbh = $apph->dbh;
 
 #print STDERR "products: ".Dumper($products);
@@ -1267,7 +1268,7 @@ sub get_data_for_chart {
 	map { $_ = $_->[0] } @$child_accs;
 	my $children = $apph->get_terms({ accs => $child_accs }, { acc => 1 });
 
-	_get_gp_count_for_terms($apph, $children, { show_all_ass => 1, use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} });
+	get_gp_count_for_terms($apph, $children, { show_all_ass => 1, use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} });
 
 	my $data;
 	$data->{parent} = { name => $term->name, acc => $term->acc, count => $count};
@@ -2090,7 +2091,7 @@ sub _get_terms_with_checks {
 		foreach ('show_all_ass', 'gp_count_ok')
 		{	$hash{$_} = $option_h->{$_} if defined $option_h->{$_};
 		}
-		_get_gp_count_for_terms($apph, $term_l, \%hash);
+		get_gp_count_for_terms($apph, $term_l, \%hash);
 	}
 
 #	print STDERR "term_l: ".Dumper($term_l)."\n";
@@ -2098,14 +2099,14 @@ sub _get_terms_with_checks {
 	return { msg_h => $msg_h, results => $term_l };
 }
 
-=head2 _get_term_count_for_gps
+=head2 get_term_count_for_gps
 
   Arguments - apph, GP object list, boolean for whether or not to use filters
   Returns   - list of GP ID and term count
 
 =cut
 
-sub _get_term_count_for_gps {
+sub get_term_count_for_gps {
 	my $apph = shift;
 	my $gps = shift;
 	my $use_filters = shift;
@@ -2144,7 +2145,7 @@ sub _get_term_count_for_gps {
 	return [ map { ($_->[0], $_->[1]) } @$results ];
 }
 
-=head2 _get_gp_count_for_terms
+=head2 get_gp_count_for_terms
 
   Arguments - apph, term list, option hash containing booleans:
               show_all_ass - whether to get all assocs (1) or just direct (0),
@@ -2154,7 +2155,7 @@ sub _get_term_count_for_gps {
 
 =cut
 
-sub _get_gp_count_for_terms {
+sub get_gp_count_for_terms {
 	my ($apph, $terms, $option_h) = (@_);
 
 print STDERR "starting get_gp_count_for_terms\noption_h: ".Dumper($option_h)."\n";
@@ -2184,10 +2185,10 @@ my $t0 = gettimeofday();
 			my $count_l = $apph->get_deep_product_count({ per_term=>1, terms => $terms });
 			
 			print STDERR "Results: ".Dumper($count_l)."\n";
-			
 			foreach (@$count_l) 
 			{	$terms_by_id->[$_->{term_id}]->n_deep_products($_->{"c"}) if ($terms_by_id->[$_->{term_id}]);
 			}
+			print STDERR "terms: ".Dumper($terms)."\n";
 		}
 		else
 		{	print STDERR "Getting the deep product count using the new method\n";

@@ -2,7 +2,6 @@ package GO::CGI::NameMunger;
 
 use strict;
 #use GO::Utils qw(rearrange spell_greek);
-use GO::Utils qw(rearrange);
 use FreezeThaw qw(freeze thaw);
 use Data::Dumper;
 use HTML::Entities;
@@ -180,81 +179,39 @@ sub get_db_url {
 my $self = shift;
 my $db = lc(shift);
 
-my %db_hash = (
-agbase => "http://www.agbase.msstate.edu/",
-cgd => 'http://www.candidagenome.org/',
-dictybase => 'http://dictybase.org/',
-fb => 'http://flybase.bio.indiana.edu/',
-gdb => "http://www.gdb.org/",
-genedb_lmajor => 'http://www.genedb.org/',
-genedb_pfalciparum => 'http://www.genedb.org/',
-genedb_spombe => 'http://www.genedb.org/',
-genedb_tbrucei => 'http://www.genedb.org/',
-gr => 'http://www.gramene.org/',
-hgnc => "http://www.gene.ucl.ac.uk/nomenclature/",
-intact => "http://www.ebi.ac.uk/intact/",
-lifedb => "http://www.lifedb.de/",
-mgi => 'http://www.informatics.jax.org/',
-pinc => "http://www.proteome.com/",
-pseudocap => 'http://v2.pseudomonas.com/',
-reactome => 'http://www.reactome.org',
-rgd => 'http://rgd.mcw.edu/',
-roslin_institute => "http://www.roslin.ac.uk/",
-sgd => 'http://www.yeastgenome.org/',
-tair => 'http://www.tair.org/',
-tigr => 'http://www.tigr.org/',
-tigr_cmr => 'http://www.tigr.org/',
-tigr_tba1 => 'http://www.tigr.org/',
-uniprot => 'http://www.ebi.uniprot.org/',
-uniprotkb => 'http://www.ebi.uniprot.org/',
-wb => 'http://www.wormbase.org/',
-zfin => 'http://zfin.org/',
-);
+	my %db_hash = (
+	agbase => "http://www.agbase.msstate.edu/",
+	cgd => 'http://www.candidagenome.org/',
+	dictybase => 'http://dictybase.org/',
+	fb => 'http://flybase.bio.indiana.edu/',
+	gdb => "http://www.gdb.org/",
+	genedb_lmajor => 'http://www.genedb.org/',
+	genedb_pfalciparum => 'http://www.genedb.org/',
+	genedb_spombe => 'http://www.genedb.org/',
+	genedb_tbrucei => 'http://www.genedb.org/',
+	gr => 'http://www.gramene.org/',
+	hgnc => "http://www.gene.ucl.ac.uk/nomenclature/",
+	intact => "http://www.ebi.ac.uk/intact/",
+	lifedb => "http://www.lifedb.de/",
+	mgi => 'http://www.informatics.jax.org/',
+	pinc => "http://www.proteome.com/",
+	pseudocap => 'http://v2.pseudomonas.com/',
+	reactome => 'http://www.reactome.org',
+	rgd => 'http://rgd.mcw.edu/',
+	roslin_institute => "http://www.roslin.ac.uk/",
+	sgd => 'http://www.yeastgenome.org/',
+	tair => 'http://www.tair.org/',
+	tigr => 'http://www.tigr.org/',
+	tigr_cmr => 'http://www.tigr.org/',
+	tigr_tba1 => 'http://www.tigr.org/',
+	uniprot => 'http://www.ebi.uniprot.org/',
+	uniprotkb => 'http://www.ebi.uniprot.org/',
+	wb => 'http://www.wormbase.org/',
+	zfin => 'http://zfin.org/',
+	);
 
 	return $db_hash{$db} || undef;
 
-}
-
-# UNUSED
-sub get_link_to {
-  my $self = shift;
-  my ($session, $extension) =
-	rearrange(['session', 'extension'], @_);
-
-  my $url;
-
-  my $ref = $session->get_param('link_to');
-  if ($ref) {
-	return $ref.$extension;
-  }
-  return undef;
-}
-
-# UNUSED
-=head2 get_xref_image
-
-parameters: database_abbreviation, acc_no
-
-returns: path to the gif or png for each databases logo
-
-This is the picture shown for the link that gets the reciprocal
-terms for each xref.
-
-=cut
-
-sub get_xref_image {
-  my $self = shift;
-  my ($session, $database, $acc_no) =
-	rearrange(['session', 'database', 'acc_no'], @_);
-
-  my $image_dir = $session->get_param('image_dir') || "../images";
-
-
-  my $url;
-  if ($database eq "interpro") {
-	$url = "$image_dir/interpro.gif";
-  }
-	return $url;
 }
 
 =head2 get_human_name
@@ -269,10 +226,10 @@ and returns a human friendly name to the datasource.
 =cut
 
 sub get_human_name {
-  my $self = shift;
-  my $database = shift;
+	my $self = shift;
+	my $abbr = shift;
   
-  my $dbs = {
+	my $human_name = {
 		cgen => 'Compugen',
 		ddb => 'dictyBase',
 		ec => 'NiceZyme',
@@ -350,9 +307,9 @@ sub get_human_name {
 		skyblue => 'sky blue',
 	};
   
-  return $dbs->{lc($database)} if $dbs->{lc($database)};
-  $database =~ s/_/ /g;
-  return $database;
+  return $human_name->{lc($abbr)} if $human_name->{lc($abbr)};
+  $abbr =~ s/_/ /g;
+  return $abbr;
 }
 
 =head2 get_full_name
@@ -364,9 +321,10 @@ returns: Full name
 =cut
 
 sub get_full_name {
-  my $self = shift;
-  my ($acronym) =
-	rearrange(['acronym'], @_);
+	my $self = shift;
+	my $acronym = shift;
+#	my ($acronym) =
+#	rearrange(['acronym'], @_);
 
 	my %acronyms = 
 	(	IMP => 'Inferred from Mutant Phenotype',
@@ -681,6 +639,51 @@ sub get_GO_doc_url {
 
 
 =not used
+
+# UNUSED
+sub get_link_to {
+  my $self = shift;
+  my ($session, $extension) =
+	rearrange(['session', 'extension'], @_);
+
+  my $url;
+
+  my $ref = $session->get_param('link_to');
+  if ($ref) {
+	return $ref.$extension;
+  }
+  return undef;
+}
+
+# UNUSED
+=head2 get_xref_image
+
+parameters: database_abbreviation, acc_no
+
+returns: path to the gif or png for each databases logo
+
+This is the picture shown for the link that gets the reciprocal
+terms for each xref.
+
+=cut
+
+=not used
+
+sub get_xref_image {
+  my $self = shift;
+  my ($session, $database, $acc_no) =
+	rearrange(['session', 'database', 'acc_no'], @_);
+
+  my $image_dir = $session->get_param('image_dir') || "../images";
+
+
+  my $url;
+  if ($database eq "interpro") {
+	$url = "$image_dir/interpro.gif";
+  }
+	return $url;
+}
+
 # UNUSED
 sub get_matching_synonyms {
 	my $self = shift;

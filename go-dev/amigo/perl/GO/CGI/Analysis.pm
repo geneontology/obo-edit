@@ -2,7 +2,7 @@ package GO::CGI::Analysis;
 
 use strict;
 use Carp;
-use GO::Utils qw(rearrange);
+#use GO::Utils qw(rearrange);
 use GO::CGI::Utilities qw(:std);
 use GO::CGI::NameMunger qw(case_replace);
 use GO::CGI::Query qw(get_gp_details);
