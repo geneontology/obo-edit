@@ -3,14 +3,21 @@
 
 	<property name="developer_email" value="john.richter@aya.yale.edu" />
 
-	<property name="jarfile" location="bbop.jar" />
+	<!-- project variables -->
+	<property name="projectname" value="bbop" />
+	<property name="jarfile" location="${projectname}.jar" />
 	<property name="main_jar_manifest" location="jar_manifest" />
 	<property name="outputdir" value="classes" />
 	<property name="sourcedir" value="src" />
 	<property name="apidoc_dest" location="docs" />
 	<property name="librarydir" location="lib" />
 	<property name="releasenotes" location="CHANGES" />
-	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/bbop" />
+	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
+	<property name="tagprefix" value="${projectname}-" />
+	
+	<!-- utility program paths -->
+	<property name="svnpath" value="/usr/local/bin/svn" />
+	<property name="antpath" value="ant" />	
 
 	<path id="classpath">
 		<fileset dir="${librarydir}">
@@ -18,7 +25,7 @@
 		</fileset>
 	</path>
 
-	<!-- classes that should appear in the main bbop.jar file -->
+	<!-- classes that should appear in the main jar file -->
 	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
@@ -30,7 +37,7 @@
 
 	<target name="classes">
 		<mkdir dir="${outputdir}" />
-		<javac srcdir="${sourcedir}" destdir="${outputdir}" excludes="**/installer/**" debug="true">
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
@@ -67,9 +74,9 @@
 			<env key="RELEASENOTES" path="${releasenotes}"/>
 			<env key="USERNAME" value="${username}"/>
 			<env key="SVNREPOSITORY" value="${svn_repository_url}" />
-			<env key="TAGPREFIX" value="bbop-" />
-			<env key="SVN_PATH" value="/usr/local/bin/svn" />
-			<env key="ANT_PATH" value="ant" />
+			<env key="TAGPREFIX" value="${tagprefix}" />
+			<env key="SVN_PATH" value="${svnpath}" />
+			<env key="ANT_PATH" value="${antpath}" />
 			<arg value="${PASSWORD}"/>
 		</exec>
 	</target>

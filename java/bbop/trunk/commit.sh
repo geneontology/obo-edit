@@ -76,5 +76,8 @@ find ${SOURCEDIR} -regex ".*/resources/.*" -exec ${SVN_PATH} add -q {} \;
 #Commit the files
 ${SVN_PATH} commit --username ${USERNAME} --password $1 -F ${RELEASENOTES}
 
+#Delete any old tags
+${SVN_PATH} --username ${USERNAME} --password $1 delete ${SVNREPOSITORY}/tags/${TAGPREFIX}${VERSION} -m "Removing old tag ${TAGPREFIX}${VERSION}"
+
 #Tag the release
-${SVN_PATH} --username ${USERNAME} --password $1 copy ${SVNREPOSITORY}/trunk ${SVNREPOSITORY}/tags/${TAGPREFIX}${VERSION} -m "Tagging version ${VERSION}"
+${SVN_PATH} --username ${USERNAME} --password $1 copy ${SVNREPOSITORY}/trunk ${SVNREPOSITORY}/tags/${TAGPREFIX}${VERSION} -m "Tagging version ${TAGPREFIX}${VERSION}"
