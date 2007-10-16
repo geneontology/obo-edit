@@ -14,6 +14,9 @@
 	<property name="releasenotes" location="CHANGES" />
 	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
 	<property name="tagprefix" value="${projectname}-" />
+
+	<!-- dependency information -->
+	<property name="bbop_dest" location="../BBOP" />
 	
 	<!-- utility program paths -->
 	<property name="svnpath" value="/usr/local/bin/svn" />

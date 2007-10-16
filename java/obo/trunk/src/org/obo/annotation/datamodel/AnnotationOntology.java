@@ -51,7 +51,7 @@ public class AnnotationOntology {
 	protected static OBOSession loadSession() {
 		try {
 			URL url = AnnotationOntology.class.getResource(
-					"/org/geneontology/oboedit/annotation/resources/oban.obo");
+					"/org/oboedit/annotation/resources/oban.obo");
 			return TermUtil.getSession(url.toString());
 		} catch (Exception ex) {
 			return null;
