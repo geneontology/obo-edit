@@ -21,7 +21,6 @@ package org.bbop.framework.dock.idw;
  * MA 02111-1307, USA.
  */
 
-// $Id: OBOEditTheme.java,v 1.2 2007/07/30 20:56:12 jmr39 Exp $
 import net.infonode.gui.colorprovider.ColorBlender;
 import net.infonode.gui.colorprovider.ColorProvider;
 import net.infonode.gui.colorprovider.FixedColorProvider;

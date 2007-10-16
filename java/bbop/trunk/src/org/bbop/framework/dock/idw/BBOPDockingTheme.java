@@ -21,7 +21,6 @@ package org.bbop.framework.dock.idw;
  * MA 02111-1307, USA.
  */
 
-// $Id: OBOEditDockingTheme.java,v 1.3 2007/08/08 17:38:56 jmr39 Exp $
 import net.infonode.docking.properties.RootWindowProperties;
 import net.infonode.docking.theme.DockingWindowsTheme;
 import net.infonode.gui.colorprovider.ColorBlender;

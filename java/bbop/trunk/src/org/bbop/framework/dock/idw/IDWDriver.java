@@ -258,10 +258,6 @@ public class IDWDriver implements LayoutDriver {
 	}
 
 	protected String getResource(Perspective perspective) {
-		// String out = "org/oboedit/gui/dock/resources/"
-		// + perspective.getID() + ".idw";
-		// if (ClassLoader.getSystemClassLoader().getResource(out) == null)
-		// out = "org/oboedit/gui/dock/resources/default.idw";
 
 		String out = perspectiveResourceDir + "/" + perspective.getID()
 				+ ".idw";
@@ -332,25 +328,7 @@ public class IDWDriver implements LayoutDriver {
 		RootWindowProperties titleBarStyleProperties = PropertiesUtil
 				.createTitleBarStyleRootWindowProperties();
 		properties.addSuperObject(titleBarStyleProperties);
-		/*
-		 * DockingWindowsTheme[] themes = { new DefaultDockingTheme(), new
-		 * LookAndFeelDockingTheme(), new BlueHighlightDockingTheme(), new
-		 * SlimFlatDockingTheme(), new GradientDockingTheme(), new
-		 * ShapedGradientDockingTheme(), new SoftBlueIceDockingTheme(), new
-		 * ClassicDockingTheme() }; JMenu out = new JMenu("Theme", true);
-		 * out.setFont(Preferences.defaultFont()); out.setName("View"); for
-		 * (final DockingWindowsTheme theme : themes) { JMenuItem item = new
-		 * JMenuItem(theme.getName()); item.setFont(Preferences.defaultFont());
-		 * item.addActionListener(new ActionListener() { public void
-		 * actionPerformed(ActionEvent e) { setTheme(theme); } });
-		 * out.add(item); } out.add(new JMenuItem(new AbstractAction("OBO-Edit
-		 * Theme") {
-		 * 
-		 * public void actionPerformed(ActionEvent e) { setTheme(new
-		 * OBOEditDockingTheme()); }
-		 * 
-		 * })); GUIManager.getManager().installMenuItem(null, out);
-		 */
+
 		BBOPDockingTheme theme = new BBOPDockingTheme(new FixedColorProvider(
 				getDarkColor()), new FixedColorProvider(getLightColor()),
 				new FixedColorProvider(getBackground()), 4, getFont());
