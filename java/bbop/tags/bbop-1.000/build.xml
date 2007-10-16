@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BBOP Toolkit" default="all">
+
+	<property name="developer_email" value="john.richter@aya.yale.edu" />
+
+	<property name="jarfile" location="bbop.jar" />
+	<property name="main_jar_manifest" location="jar_manifest" />
+	<property name="outputdir" value="classes" />
+	<property name="sourcedir" value="src" />
+	<property name="apidoc_dest" location="docs" />
+	<property name="librarydir" location="lib" />
+	<property name="releasenotes" location="CHANGES" />
+
+	<path id="classpath">
+		<fileset dir="${librarydir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- classes that should appear in the main bbop.jar file -->
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
+
+	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
+	</target>
+
+	<target name="apidocs" description="Build API documentation">
+		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
+	</target>
+
+	<target name="classes">
+		<mkdir dir="${outputdir}" />
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" excludes="**/installer/**" debug="true">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="checkjar">
+		<condition property="main_jar_current">
+			<and>
+				<available file="${jarfile}" />
+				<available file="${main_jar_manifest}" />
+				<uptodate targetfile="${jarfile}">
+					<srcfiles refid="main_jar_contents" />
+				</uptodate>
+				<uptodate targetfile="${jarfile}" srcfile="${main_jar_manifest}" />
+			</and>
+		</condition>
+	</target>
+	
+	<target name="jar" depends="classes, checkjar" unless="main_jar_current" description="Generate jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+	
+	<target name="commit" description="Run the commit.sh script">
+		<input addproperty="username">Enter SVN Username</input>
+		<input addproperty="PASSWORD">Enter SVN Password</input>
+		<exec executable="./commit.sh">
+			<env key="JARFILE" path="${jarfile}"/>
+			<env key="JAR_MANIFEST" path="${main_jar_manifest}"/>
+			<env key="SOURCEDIR" path="${sourcedir}"/>
+			<env key="LIBRARYDIR" path="${librarydir}"/>
+			<env key="RELEASENOTES" path="${releasenotes}"/>
+			<env key="USERNAME" value="${username}"/>
+			<arg value="${PASSWORD}"/>
+		</exec>
+	</target>
+
+	<target name="clean" description="Delete all rebuildable resources">
+		<echo message="Deleting build directories..." />
+		<delete dir="${outputdir}" />
+		<delete file="${jarfile}" />
+		<delete dir="${runtimedir}" />
+		<delete dir="${apidoc_dest}" />
+	</target>
+
+</project>
