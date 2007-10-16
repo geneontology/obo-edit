@@ -21,7 +21,7 @@ import org.obo.util.TermUtil;
  * Writes out a reasoned link database as CHILD-REL-PARENT-ISIMPLIED tab delimited quads
  * TODO: Reasoner factory?
  */
-public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBOEditAdapter {
+public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBOAdapter {
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -98,11 +98,11 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 	}
 
 	public String getID() {
-		return "OBOEDIT:Serial";
+		return "OBO:SimpleLinkAdapter";
 	}
 
 	public String getName() {
-		return "OBO-Edit Serial Adapter";
+		return "OBO Simple Link Adapter";
 	}
 
 	public IOOperation[] getSupportedOperations() {

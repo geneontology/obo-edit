@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * http://www.geneontology.org/doc/GO.annotation.shtml#file
  * http://www.geneontology.org/GO.format.annotation.shtml
  */
-public class GOStyleAnnotationFileAdapter implements OBOEditAdapter {
+public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -71,7 +71,7 @@ public class GOStyleAnnotationFileAdapter implements OBOEditAdapter {
 		}
 		cancelled = false;
 		this.ioprofile = (OBOAdapterConfiguration) configuration;
-		if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 			try {
 				session = new OBOSessionImpl();
 				for (String fp : ioprofile.getReadPaths()) {
@@ -94,7 +94,7 @@ public class GOStyleAnnotationFileAdapter implements OBOEditAdapter {
 				// TODO
 			}
 			return session;
-		} else if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
 			if (ioprofile.getBasicSave()) {
@@ -205,15 +205,15 @@ public class GOStyleAnnotationFileAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBOEDIT:GOStyleAnnotation";
+		return "OBO:GOStyleAnnotation";
 	}
 
 	public String getName() {
-		return "OBO-Edit Annotation Adapter";
+		return "OBO Annotation Adapter";
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { OBOEditAdapter.READ_ONTOLOGY, OBOEditAdapter.WRITE_ONTOLOGY };
+		IOOperation[] supported = { OBOAdapter.READ_ONTOLOGY, OBOAdapter.WRITE_ONTOLOGY };
 		return supported;
 	}
 

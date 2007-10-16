@@ -15,7 +15,7 @@ import org.obo.util.TermUtil;
 
 import java.awt.Color;
 
-public class GOFlatFileAdapter implements OBOEditAdapter {
+public class GOFlatFileAdapter implements OBOAdapter {
 
 	Stack termStack;
 
@@ -941,10 +941,10 @@ public class GOFlatFileAdapter implements OBOEditAdapter {
 		}
 		cancelled = false;
 		this.config = (GOFlatFileConfiguration) config;
-		if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 			OBOSession session = getRoot();
 			return session;
-		} else if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			return write((OBOSession) input);
 		} else
 			throw new DataAdapterException("Unsupported operation " + op);
@@ -1826,7 +1826,7 @@ public class GOFlatFileAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBOEDIT:GOFlatFileAdapter";
+		return "OBO:GOFlatFileAdapter";
 	}
 
 	public String getName() {
@@ -1834,8 +1834,8 @@ public class GOFlatFileAdapter implements OBOEditAdapter {
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { OBOEditAdapter.READ_ONTOLOGY,
-				OBOEditAdapter.WRITE_ONTOLOGY };
+		IOOperation[] supported = { OBOAdapter.READ_ONTOLOGY,
+				OBOAdapter.WRITE_ONTOLOGY };
 
 		return supported;
 	}

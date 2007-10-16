@@ -9,7 +9,7 @@ import org.obo.datamodel.*;
 import java.io.*;
 import java.net.URLEncoder;
 
-public class OWLURLReaderAdapter implements OBOEditAdapter {
+public class OWLURLReaderAdapter implements OBOAdapter {
 
 	protected static final String RESTFUL_URL = "http://www.berkeleybop.org/obo-conv.cgi";
 
@@ -69,7 +69,7 @@ public class OWLURLReaderAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBOEDIT:OWLURL";
+		return "OBO:OWLURL";
 	}
 
 	public String getName() {

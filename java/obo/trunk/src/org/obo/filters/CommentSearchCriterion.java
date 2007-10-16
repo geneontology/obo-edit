@@ -2,7 +2,7 @@ package org.obo.filters;
 
 /*
  * Returns the comment for a given
- * {@link org.oboedit.datamodel.IdentifiedObject }
+ * {@link org.obo.datamodel.IdentifiedObject }
  * belongs.
  *
  */

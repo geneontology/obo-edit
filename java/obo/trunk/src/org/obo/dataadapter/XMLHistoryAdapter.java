@@ -14,7 +14,7 @@ import java.awt.Color;
 import org.xml.sax.*;
 import javax.xml.parsers.*;
 
-public class XMLHistoryAdapter implements OBOEditAdapter {
+public class XMLHistoryAdapter implements OBOAdapter {
 
 	protected String path;
 
@@ -59,8 +59,8 @@ public class XMLHistoryAdapter implements OBOEditAdapter {
 
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
-		ui.setReadOperation(OBOEditAdapter.READ_HISTORY);
-		ui.setWriteOperation(OBOEditAdapter.WRITE_HISTORY);
+		ui.setReadOperation(OBOAdapter.READ_HISTORY);
+		ui.setWriteOperation(OBOAdapter.WRITE_HISTORY);
 		ui.setMultiSelectEnabled(true);
 		return ui;
 	}
@@ -833,7 +833,7 @@ public class XMLHistoryAdapter implements OBOEditAdapter {
 	public Object doOperation(IOOperation op, AdapterConfiguration config,
 			Object o) throws DataAdapterException {
 		FileAdapterConfiguration fac = (FileAdapterConfiguration) config;
-		if (op.equals(OBOEditAdapter.WRITE_HISTORY)) {
+		if (op.equals(OBOAdapter.WRITE_HISTORY)) {
 			try {
 				this.config = config;
 				cancelled = false;
@@ -848,7 +848,7 @@ public class XMLHistoryAdapter implements OBOEditAdapter {
 			} catch (IOException ex) {
 				throw new DataAdapterException("Couldn't write file", ex);
 			}
-		} else if (op.equals(OBOEditAdapter.READ_HISTORY)) {
+		} else if (op.equals(OBOAdapter.READ_HISTORY)) {
 			try {
 				SAXParserFactory spfactory = SAXParserFactory.newInstance();
 				spfactory.setValidating(false);
@@ -869,16 +869,16 @@ public class XMLHistoryAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBOEDIT:XMLHistory";
+		return "OBO:XMLHistory";
 	}
 
 	public String getName() {
-		return "OBO-Edit XML History Adapter";
+		return "OBO XML History Adapter";
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { OBOEditAdapter.WRITE_HISTORY,
-				OBOEditAdapter.READ_HISTORY };
+		IOOperation[] supported = { OBOAdapter.WRITE_HISTORY,
+				OBOAdapter.READ_HISTORY };
 		return supported;
 	}
 

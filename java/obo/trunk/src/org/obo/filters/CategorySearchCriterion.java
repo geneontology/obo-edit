@@ -2,7 +2,7 @@ package org.obo.filters;
 
 /*
  * Returns the names of all the categories to which a given
- * {@link org.oboedit.datamodel.IdentifiedObject }
+ * {@link org.obo.datamodel.IdentifiedObject }
  * belongs.
  *
  */

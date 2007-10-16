@@ -4,7 +4,7 @@ package org.obo.filters;
  * This interface is used to choose a collection of values
  * (usually corresponding to the values of some property) from an object.
  * 
- * OBO-Edit's search system uses a {@link SearchAspect },
+ * OBO's search system uses a {@link SearchAspect },
  * {@link SearchComparison} and a value to check against to search the terms
  * and links in an ontology.
  *

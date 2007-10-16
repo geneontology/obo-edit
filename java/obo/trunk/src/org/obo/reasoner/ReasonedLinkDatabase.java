@@ -15,7 +15,7 @@ import org.obo.datamodel.PathCapable;
 /**
  * A {@link LinkDatabase} that is backed by a reasoner. A reasoner is an
  * algorithm that can derive implied information by examining the explicitly
- * stated information in an ontology. In OBO-Edit, that implied information
+ * stated information in an ontology. In this api, that implied information
  * takes the form of new links or terms that are added to the
  * ReasonedLinkDatabase.
  * 

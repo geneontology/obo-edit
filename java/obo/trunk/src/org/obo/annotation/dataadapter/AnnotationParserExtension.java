@@ -17,7 +17,7 @@ import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.DefaultOBOParser;
 import org.obo.dataadapter.OBOConstants;
-import org.obo.dataadapter.OBOEditAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOParseException;
 import org.obo.dataadapter.OBOSerializationEngine;

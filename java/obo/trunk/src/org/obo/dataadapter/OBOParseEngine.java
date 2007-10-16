@@ -1234,7 +1234,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.oboedit.dataadapter.ParseEngine#getLineNum()
+	 * @see org.obo.dataadapter.ParseEngine#getLineNum()
 	 */
 	public int getLineNum() {
 		return linenum;
@@ -1243,7 +1243,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.oboedit.dataadapter.ParseEngine#getCurrentLine()
+	 * @see org.obo.dataadapter.ParseEngine#getCurrentLine()
 	 */
 	public String getCurrentLine() {
 		return line;

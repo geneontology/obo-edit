@@ -9,7 +9,7 @@ import org.obo.datamodel.*;
 
 import java.io.*;
 
-public class SerialAdapter implements OBOEditAdapter {
+public class SerialAdapter implements OBOAdapter {
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -71,11 +71,11 @@ public class SerialAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBOEDIT:Serial";
+		return "OBO:Serial";
 	}
 
 	public String getName() {
-		return "OBO-Edit Serial Adapter";
+		return "OBO Serial Adapter";
 	}
 
 	public IOOperation[] getSupportedOperations() {

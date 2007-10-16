@@ -9,7 +9,7 @@ import java.util.*;
 import java.io.*;
 import java.awt.Color;
 
-public class DefaultHistoryDumper implements OBOEditAdapter, HistoryDumper {
+public class DefaultHistoryDumper implements OBOAdapter, HistoryDumper {
 
 	private static int SPACEPADDING = 2;
 
@@ -34,8 +34,8 @@ public class DefaultHistoryDumper implements OBOEditAdapter, HistoryDumper {
 
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
-		ui.setReadOperation(OBOEditAdapter.READ_HISTORY);
-		ui.setWriteOperation(OBOEditAdapter.WRITE_HISTORY);
+		ui.setReadOperation(OBOAdapter.READ_HISTORY);
+		ui.setWriteOperation(OBOAdapter.WRITE_HISTORY);
 		return ui;
 	}
 
@@ -262,7 +262,7 @@ public class DefaultHistoryDumper implements OBOEditAdapter, HistoryDumper {
 	}
 
 	public String getID() {
-		return "OBOEDIT:History_Dumper";
+		return "OBO:History_Dumper";
 	}
 
 	public Properties getStateInformation() {

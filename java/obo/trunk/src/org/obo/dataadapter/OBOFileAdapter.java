@@ -10,7 +10,7 @@ import org.obo.datamodel.*;
 import org.obo.datamodel.impl.WriteCachedOBOSession;
 import org.obo.identifier.IDProfile;
 
-public class OBOFileAdapter implements OBOEditAdapter {
+public class OBOFileAdapter implements OBOAdapter {
 
 	protected OBOAdapterConfiguration ioprofile;
 
@@ -131,7 +131,7 @@ public class OBOFileAdapter implements OBOEditAdapter {
 	}
 
 	public String getID() {
-		return "OBO_EDIT:OBO_Adapter";
+		return "OBO:OBO_Adapter";
 	}
 
 	public String getName() {

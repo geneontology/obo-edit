@@ -107,13 +107,13 @@ public class PostcompUtil {
 	 * This method will make an effort to create as few terms as possible. For
 	 * example, if the post-composition term "A^part_of(B^develops_from(C))"
 	 * already exists, and the new term "X^part_of(B^develops_from(C))" is
-	 * created, OBO-Edit will not re-create the "B^develops_from(C)" sub-term.
-	 * Instead, OBO-Edit will reuse the existing sub-term. However, there are
+	 * created, the method will not re-create the "B^develops_from(C)" sub-term.
+	 * Instead, the method will reuse the existing sub-term. However, there are
 	 * often multiple ways to decompose a post-composition expression
 	 * (particularly if parenthesis are not used when chaining together many
 	 * differentia). If there are multiple possible decompositions for a
-	 * post-composition expression, OBO-Edit will only check to see if the most
-	 * obvious parse of the expression has any existing sub-parts. OBO-Edit will
+	 * post-composition expression, the method will only check to see if the most
+	 * obvious parse of the expression has any existing sub-parts. The method will
 	 * not attempt the (computationally expensive) task of trying every possible
 	 * parse.
 	 * 
