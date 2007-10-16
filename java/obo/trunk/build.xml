@@ -3,13 +3,21 @@
 
 	<property name="developer_email" value="john.richter@aya.yale.edu" />
 
-	<property name="jarfile" location="obo.jar" />
+	<!-- project variables -->
+	<property name="projectname" value="obo" />
+	<property name="jarfile" location="${projectname}.jar" />
 	<property name="main_jar_manifest" location="jar_manifest" />
 	<property name="outputdir" value="classes" />
 	<property name="sourcedir" value="src" />
 	<property name="apidoc_dest" location="docs" />
-	<property name="bbop_dest" location="../BBOP" />
 	<property name="librarydir" location="lib" />
+	<property name="releasenotes" location="CHANGES" />
+	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
+	<property name="tagprefix" value="${projectname}-" />
+	
+	<!-- utility program paths -->
+	<property name="svnpath" value="/usr/local/bin/svn" />
+	<property name="antpath" value="ant" />	
 
 	<path id="classpath">
 		<fileset dir="${librarydir}">
@@ -17,7 +25,7 @@
 		</fileset>
 	</path>
 
-	<!-- classes that should appear in the main obo.jar file -->
+	<!-- classes that should appear in the main jar file -->
 	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
@@ -34,7 +42,7 @@
 
 	<target name="classes" depends="buildbbop">
 		<mkdir dir="${outputdir}" />
-		<javac srcdir="${sourcedir}" destdir="${outputdir}" excludes="**/installer/**" debug="true">
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
@@ -58,6 +66,24 @@
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
+	</target>
+	
+	<target name="commit" description="Run the commit.sh script">
+		<input addproperty="username">Enter SVN Username</input>
+		<input addproperty="PASSWORD">Enter SVN Password</input>
+		<exec executable="./commit.sh">
+			<env key="JARFILE" path="${jarfile}"/>
+			<env key="JAR_MANIFEST" path="${main_jar_manifest}"/>
+			<env key="SOURCEDIR" path="${sourcedir}"/>
+			<env key="LIBRARYDIR" path="${librarydir}"/>
+			<env key="RELEASENOTES" path="${releasenotes}"/>
+			<env key="USERNAME" value="${username}"/>
+			<env key="SVNREPOSITORY" value="${svn_repository_url}" />
+			<env key="TAGPREFIX" value="${tagprefix}" />
+			<env key="SVN_PATH" value="${svnpath}" />
+			<env key="ANT_PATH" value="${antpath}" />
+			<arg value="${PASSWORD}"/>
+		</exec>
 	</target>
 
 	<target name="clean" description="Delete all rebuildable resources">
