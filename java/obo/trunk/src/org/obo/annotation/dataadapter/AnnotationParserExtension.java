@@ -194,7 +194,9 @@ public class AnnotationParserExtension implements ParserExtension,
 									engine.getCurrentLine(), engine
 											.getLineNum());
 						}
-						annotation.setSubject((OBOClass) subject);
+						//CJM: subjects can be any kind of node
+						//annotation.setSubject((OBOClass) subject);
+						annotation.setSubject((LinkedObject) subject);
 					} else if (pv.getProperty().equals("object")) {
 						IdentifiedObject object = parser.getObject(pv
 								.getValue());
