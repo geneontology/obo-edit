@@ -1,0 +1,12 @@
+iconCount=11
+icon0=org/geneontology/oboedit/gui/resources/icons/isa.gif
+icon1=org/geneontology/oboedit/gui/resources/icons/partof.gif
+icon2=org/geneontology/oboedit/gui/resources/icons/develops.gif
+icon3=org/geneontology/oboedit/gui/resources/icons/isnot.gif
+icon4=org/geneontology/oboedit/gui/resources/icons/above.gif
+icon5=org/geneontology/oboedit/gui/resources/icons/time.gif
+icon6=org/geneontology/oboedit/gui/resources/icons/smile.gif
+icon7=org/geneontology/oboedit/gui/resources/icons/inv_and_nec_icon.gif
+icon8=org/geneontology/oboedit/gui/resources/icons/inv_icon.gif
+icon9=org/geneontology/oboedit/gui/resources/icons/nec_icon.gif
+icon9=org/geneontology/oboedit/gui/resources/icons/trashcan.gif
