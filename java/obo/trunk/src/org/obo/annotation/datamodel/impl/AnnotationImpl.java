@@ -96,6 +96,15 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Link link = lo.getLink();
 		return (LinkedObject) link.getChild();
 	}
+	
+	public boolean getIsNegated() {
+		String isNegatedStr = 
+			((String)TermUtil.getPropValue(this, AnnotationOntology.IS_NEGATED()));
+		if (isNegatedStr != null) {
+			return isNegatedStr.equals("true");
+		}
+		return false;
+	}
 
 	public HistoryItem getAssignedByChangeItem(String assignedBy) {
 		TermMacroHistoryItem item = new TermMacroHistoryItem();
@@ -310,6 +319,22 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		addPropertyValue(AnnotationOntology.POSITS_REL(), lo);
 		if (newLink.getChild() != null) {
 			newLink.getChild().addParent(newLink);
+		}
+	}
+
+	public void setIsNegated(boolean isNegated) {
+		for (Link link : getParents()) {
+			if (link.getType().equals(AnnotationOntology.IS_NEGATED())) {
+				removeParent(link);
+				break;
+			}
+		}
+		if (isNegated) {
+			Link link = new InstancePropertyValue(this, AnnotationOntology
+					.IS_NEGATED(), new DatatypeValueImpl(Datatype.BOOLEAN,
+					"true"));
+
+			addParent(link);
 		}
 	}
 

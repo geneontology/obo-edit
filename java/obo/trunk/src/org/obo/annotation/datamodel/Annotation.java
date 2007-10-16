@@ -25,6 +25,7 @@ public interface Annotation extends Instance {
 	public Collection<LinkedObject> getEvidence();
 	public Collection<String> getSources();
 	public OBOProperty getRelationship();
+	public boolean getIsNegated();
 	
 	public void setAssignedBy(String assignedBy);
 	public void setSubject(LinkedObject subject);
@@ -32,6 +33,7 @@ public interface Annotation extends Instance {
 	public void setObject(LinkedObject object);
 	public void addEvidence(LinkedObject evidence);
 	public void removeEvidence(LinkedObject evidence);
+	public void setIsNegated(boolean isNegated);
 	
 	public void addSource(String source);
 	public void removeSource(String source);
