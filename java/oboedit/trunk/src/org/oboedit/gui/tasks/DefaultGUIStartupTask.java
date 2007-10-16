@@ -45,12 +45,15 @@ import org.obo.dataadapter.SerialAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
+import org.obo.reasoner.impl.LinkPileReasoner;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.util.VersionNumber;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.IOManager;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AbstractSingleActionTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
@@ -157,6 +160,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 	}
 
 	public void run() {
+		SessionManager.getManager().setReasonerFactory(new LinkPileReasonerFactory());
 		configureLogging();
 		configureUI();
 		/*
@@ -247,8 +251,6 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 			}
 
 			public void viewDestroyed(View v, GUIComponent c) {
-				// TODO Auto-generated method stub
-
 			}
 
 		});

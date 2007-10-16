@@ -16,7 +16,7 @@ public class OBODiff {
 	public static void main(String[] args) throws IOException,
 			DataAdapterException {
 		Vector filelist = new Vector();
-		OBOEditAdapter historyAdapter = null;
+		OBOAdapter historyAdapter = null;
 		String outPath = null;
 		File outFile = null;
 
@@ -58,7 +58,7 @@ public class OBODiff {
 			}
 			FileAdapterConfiguration adapterConfig = new FileAdapterConfiguration();
 			adapterConfig.setWritePath(outPath);
-			historyAdapter.doOperation(OBOEditAdapter.WRITE_HISTORY,
+			historyAdapter.doOperation(OBOAdapter.WRITE_HISTORY,
 					adapterConfig, changes);
 			if (printResults) {
 				FileInputStream fis = new FileInputStream(outFile);
@@ -73,7 +73,7 @@ public class OBODiff {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
-		Object out = adapter.doOperation(OBOEditAdapter.READ_ONTOLOGY, config, null);
+		Object out = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		return (OBOSession) out;
 	}
 

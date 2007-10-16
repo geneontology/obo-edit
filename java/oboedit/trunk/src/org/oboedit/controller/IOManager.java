@@ -13,7 +13,7 @@ import org.bbop.dataadapter.DefaultAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.framework.GUIManager;
 import org.bbop.swing.BackgroundUtil;
-import org.obo.dataadapter.OBOEditAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
@@ -217,7 +217,7 @@ public class IOManager {
 			DataAdapterRegistry registry = getAdapterRegistry();
 
 			GraphicalAdapterChooser<OBOSession, OBOSession> gac = new GraphicalAdapterChooser<OBOSession, OBOSession>(
-					registry, OBOEditAdapter.WRITE_ONTOLOGY, GUIManager
+					registry, OBOAdapter.WRITE_ONTOLOGY, GUIManager
 							.getManager().getScreenLockQueue(), GUIManager
 							.getManager().getFrame(), Preferences
 							.getPreferences().getUseModalProgressMonitors(),
@@ -243,7 +243,7 @@ public class IOManager {
 		try {
 			DataAdapterRegistry registry = getAdapterRegistry();
 			GraphicalAdapterChooser<Void, OBOSession> gac = new GraphicalAdapterChooser<Void, OBOSession>(
-					registry, OBOEditAdapter.READ_ONTOLOGY, GUIManager
+					registry, OBOAdapter.READ_ONTOLOGY, GUIManager
 							.getManager().getScreenLockQueue(), GUIManager
 							.getManager().getFrame(), Preferences
 							.getPreferences().getUseModalProgressMonitors(),

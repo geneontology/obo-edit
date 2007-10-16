@@ -12,7 +12,7 @@ import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
 import org.bbop.util.*;
 import org.obo.dataadapter.GOFlatFileAdapter;
-import org.obo.dataadapter.OBOEditAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.oboedit.controller.SessionManager;
@@ -541,7 +541,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 
 		advancedButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-		if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 			add(fileList);
 		}
 		JPanel filenamePanel = new JPanel();
@@ -579,7 +579,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 		filenameLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		filenameButtonPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 
-		if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			add(saveList);
 		}
 		add(Box.createVerticalStrut(20));
@@ -598,7 +598,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 
 		boolean showingOptions = false;
 
-		if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 			showingOptions = true;
 			optionBox.add(hideDownstreamBox);
 			optionBox.add(Box.createHorizontalGlue());
@@ -613,7 +613,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 		optionBox.add(translateTypesBox);
 		optionBox.add(Box.createHorizontalGlue());
 
-		if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			showingOptions = true;
 			optionBox.add(reduceSizeBox);
 			optionBox.add(Box.createHorizontalGlue());
@@ -627,7 +627,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 			add(optionBox);
 		}
 
-		if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 
 			commentField.setText(SessionManager.getManager().getSession().getCurrentHistory()
 					.getComment());
@@ -666,10 +666,10 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 			v.addAll(config.getSaveRecords());
 			saveList.setData(v);
 
-			if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+			if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 				if (config.getDefFilename() != null)
 					definitionField.setText(config.getDefFilename());
-			} else if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+			} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 				if (config.getSaveDefFilename() != null)
 					definitionField.setText(config.getSaveDefFilename());
 			}
@@ -1051,7 +1051,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 		}
 		config.setReadPaths(loadFiles);
 
-		if (op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			config.setSaveDefFilename(definitionField.getText());
 		} else {
 			if (definitionField.getText().length() > 0)
@@ -1060,7 +1060,7 @@ public class GOFlatFileGUI extends JPanel implements GraphicalUI {
 				config.setDefFilename(null);
 		}
 
-		if (!storeonly && op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (!storeonly && op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			java.util.List overwriteFiles = new LinkedList();
 			if (preferences.getWarnBeforeDefinitionLoss()) {
 				if (config.getSaveDefFilename() == null

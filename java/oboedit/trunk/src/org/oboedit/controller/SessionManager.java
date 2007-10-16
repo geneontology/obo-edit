@@ -22,8 +22,10 @@ import org.obo.history.OperationModel;
 import org.obo.history.OperationWarning;
 import org.obo.query.QueryEngine;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasoner;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
@@ -54,6 +56,8 @@ public class SessionManager {
 	protected List<HistoryItem> redoHistoryItems = new LinkedList<HistoryItem>();
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
+	
+	protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
 
 	protected ReasonedLinkDatabase reasoner;
 
@@ -314,11 +318,10 @@ public class SessionManager {
 			}
 	}
 
-	public static ReasonedLinkDatabase createReasoner() {
-		return new ForwardChainingReasoner();
-//		return new LinkPileReasoner();
+	public ReasonedLinkDatabase createReasoner() {
+		return reasonerFactory.createReasoner();
 	}
-
+	
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}
@@ -421,5 +424,13 @@ public class SessionManager {
 		for (ReasonerStatusListener listener : reasonerStatusListeners) {
 			listener.statusChanged(e);
 		}
+	}
+
+	public ReasonerFactory getReasonerFactory() {
+		return reasonerFactory;
+	}
+
+	public void setReasonerFactory(ReasonerFactory reasonerFactory) {
+		this.reasonerFactory = reasonerFactory;
 	}
 }

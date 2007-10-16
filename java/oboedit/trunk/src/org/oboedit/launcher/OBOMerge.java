@@ -418,7 +418,7 @@ public class OBOMerge {
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.setWritePath(writePath);
 
-		adapter.doOperation(OBOEditAdapter.WRITE_ONTOLOGY, config, writeMe);
+		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, writeMe);
 	}
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
@@ -426,7 +426,7 @@ public class OBOMerge {
 		// OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
-		Object out = adapter.doOperation(OBOEditAdapter.READ_ONTOLOGY, config, null);
+		Object out = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		return (OBOSession) out;
 	}
 

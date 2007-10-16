@@ -12,7 +12,7 @@ import java.io.*;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.obo.dataadapter.OBOEditAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.*;
 import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
@@ -29,7 +29,7 @@ public class OBOEdit {
 
 		TagSpec loadAdapterSpec = CommandLineWidget.getTagSpec(registry,
 				IOManager.getManager().getDefaultReadAdapter(),
-				OBOEditAdapter.READ_ONTOLOGY, null);
+				OBOAdapter.READ_ONTOLOGY, null);
 		TagSpec vSpec = new TagSpec("-v");
 		TagSpec verboseSpec = new TagSpec("-verbose");
 		TagSpec listSpec = new TagSpec("--listadapters");
@@ -107,7 +107,7 @@ public class OBOEdit {
 						break;
 					} else if (t.getName().equals("--listadapters")) {
 						DataAdapter[] adapters = DataAdapterUtil.getAdapters(
-								registry, OBOEditAdapter.READ_ONTOLOGY, classes);
+								registry, OBOAdapter.READ_ONTOLOGY, classes);
 						System.err.println("Available load adapters...");
 						for (int i = 0; i < adapters.length; i++)
 							System.err.println("   -" + adapters[i].getID());
@@ -125,7 +125,7 @@ public class OBOEdit {
 
 			// Actually read in the command line file
 			OBOSession o = (OBOSession) CommandLineWidget.execute(registry,
-					OBOEditAdapter.READ_ONTOLOGY, loadTag, null);
+					OBOAdapter.READ_ONTOLOGY, loadTag, null);
 			actions.setLoadMe(o);
 			System.err.println("done");
 		}

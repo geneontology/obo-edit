@@ -66,7 +66,7 @@ public class OBO2OBO {
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
 			boolean fixDbxrefs, List scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
-		OBOSession session = (OBOSession) adapter.doOperation(OBOEditAdapter.READ_ONTOLOGY,
+		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
 		if (parseObsoleteComments) {
 			parseComments(session);
@@ -86,7 +86,7 @@ public class OBO2OBO {
 				+ session.getObjects().size());
 		System.err.println("writePath = " + writeConfig.getWritePath());
 		System.err.println("savePath = " + writeConfig.getSaveRecords());
-		adapter.doOperation(OBOEditAdapter.WRITE_ONTOLOGY, writeConfig, session);
+		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
 	public static void runScript(OBOSession session, String script, List args)

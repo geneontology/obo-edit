@@ -10,7 +10,7 @@ import java.util.*;
 import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
 import org.bbop.util.*;
-import org.obo.dataadapter.OBOEditAdapter;
+import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.datamodel.*;
@@ -102,7 +102,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	public void acceptComponentConfig(boolean storeonly)
 			throws DataAdapterUIException {
 		collectParams();
-		if (!storeonly && op.equals(OBOEditAdapter.WRITE_ONTOLOGY)) {
+		if (!storeonly && op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			java.util.List overwrite = new LinkedList();
 			Iterator it = currentProfile.getSaveRecords().iterator();
 			while (it.hasNext()) {
@@ -761,7 +761,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		// this.op = op;
 		pathBox.removeAll();
-		if (op.equals(OBOEditAdapter.READ_ONTOLOGY)) {
+		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
 			pathBox.add(pathList, "Center");
 			pathBox.add(allowDanglingBox, "South");
 		} else {

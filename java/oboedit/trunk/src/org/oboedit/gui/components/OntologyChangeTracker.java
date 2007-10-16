@@ -197,7 +197,7 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 						.getAdapterRegistry();
 
 				GraphicalAdapterChooser gac = new GraphicalAdapterChooser(
-						registry, OBOEditAdapter.WRITE_HISTORY,
+						registry, OBOAdapter.WRITE_HISTORY,
 						GUIManager.getManager().getScreenLockQueue(),
 						GUIManager.getManager().getFrame(), true,
 						generatedHistory);

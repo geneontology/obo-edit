@@ -206,7 +206,7 @@ public class OBOEditFrame extends MainFrame {
 					.getSession().getCurrentHistory();
 			historyList.setUser(Preferences.getPreferences().getUserName());
 			GraphicalAdapterChooser<HistoryList, Void> gac = new GraphicalAdapterChooser<HistoryList, Void>(
-					registry, OBOEditAdapter.WRITE_HISTORY, GUIManager
+					registry, OBOAdapter.WRITE_HISTORY, GUIManager
 							.getManager().getScreenLockQueue(), GUIManager
 							.getManager().getFrame(), Preferences
 							.getPreferences().getUseModalProgressMonitors(),
@@ -225,7 +225,7 @@ public class OBOEditFrame extends MainFrame {
 					.getAdapterRegistry();
 
 			GraphicalAdapterChooser<Void, List<HistoryList>> gac = new GraphicalAdapterChooser<Void, List<HistoryList>>(
-					registry, OBOEditAdapter.READ_HISTORY, GUIManager
+					registry, OBOAdapter.READ_HISTORY, GUIManager
 							.getManager().getScreenLockQueue(), GUIManager
 							.getManager().getFrame(), Preferences
 							.getPreferences().getUseModalProgressMonitors(),

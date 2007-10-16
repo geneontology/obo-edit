@@ -492,7 +492,7 @@ public class OBO2Flat {
 			System.err.flush();
 		}
 
-		OBOSession history = (OBOSession) adapter.doOperation(OBOEditAdapter.READ_ONTOLOGY,
+		OBOSession history = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				config, null);
 		if (cr.verbose) {
 			System.err.println("done");
@@ -587,7 +587,7 @@ public class OBO2Flat {
 		}
 
 		System.err.println("saveRecords = " + fconfig.getSaveRecords());
-		fadapter.doOperation(OBOEditAdapter.WRITE_ONTOLOGY, fconfig, history);
+		fadapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, fconfig, history);
 	}
 
 	public static TermMacroHistoryItem getChangeItem(OBOSession history,

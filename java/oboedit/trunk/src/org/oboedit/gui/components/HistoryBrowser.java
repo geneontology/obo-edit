@@ -109,7 +109,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 			DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
 
 			GraphicalAdapterChooser gac = new GraphicalAdapterChooser(registry,
-					OBOEditAdapter.WRITE_HISTORY,
+					OBOAdapter.WRITE_HISTORY,
 					GUIManager.getManager().getScreenLockQueue(),
 					GUIManager.getManager().getFrame(),
 					Preferences.getPreferences().getUseModalProgressMonitors(),
