@@ -1,7 +1,6 @@
 package org.oboedit.gui.tasks;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,7 +27,6 @@ import net.infonode.docking.View;
 import org.bbop.expression.ExpressionException;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.DockPanelFactory;
-import org.bbop.framework.FrameworkUtil;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.dock.LayoutDriver;
@@ -47,6 +45,7 @@ import org.obo.dataadapter.SerialAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
+import org.obo.util.VersionNumber;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.FocusMenuManager;
@@ -110,8 +109,6 @@ import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
 import org.oboedit.script.GUIScriptDelegate;
 
-import sun.font.AdvanceCache;
-
 public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 
 	public void installDefaultTasks() {
@@ -166,19 +163,20 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		 * SplashScreen splash = new SplashScreen(); splash.setSize(400, 400);
 		 * SwingUtil.center(splash); splash.start();
 		 */
-		GUIManager.setPrefsDir(new File(System.getProperty("user.home")
-				+ "/.oboedit"
-				+ (Preferences.getVersion().isBeta() ? "beta" : "") + "/"));
+		VersionNumber version = Preferences.getVersion();
+		File prefsDir = new File(System.getProperty("user.home") + "/.oboedit"
+				+ (version.isBeta() ? "beta" : "") + "/");
+		GUIManager.setPrefsDir(prefsDir);
 
 		OBOEditFrame frame = new OBOEditFrame();
 		GUIManager.getManager().setFrame(frame);
-		ComponentManager.getManager().setDriver(createLayoutDriver());
 		FocusMenuManager.install();
 		installDefaultDataAdapters();
 		installDefaultComponentFactories();
 		installDefaultTasks();
 		installDefaultActions();
 		installGlobalScriptObjects();
+		ComponentManager.getManager().setDriver(createLayoutDriver());
 		GhostImageController.enable();
 		showFrame();
 		// ÊRepaintManager.setCurrentManager(new
@@ -190,6 +188,12 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = new IDWDriver();
+		driver
+				.setDefaultPerspectiveResourcePath("org/oboedit/gui/dock/resources/"
+						+ "default.idw");
+		driver.setPerspectiveResourceDir("org/oboedit/gui/dock/resources");
+		driver.setPerspectiveListResourcePath("org/oboedit/gui/dock/resources/"
+				+ "perspectives.xml");
 		driver.setBackground(Preferences.defaultBackgroundColor());
 		driver.setDarkColor(Preferences.defaultButtonColor());
 		driver.setLightColor(Color.white);
@@ -244,7 +248,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 
 			public void viewDestroyed(View v, GUIComponent c) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 		});

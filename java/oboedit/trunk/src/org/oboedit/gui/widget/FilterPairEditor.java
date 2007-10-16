@@ -95,19 +95,19 @@ public class FilterPairEditor extends JPanel {
 			true);
 
 	protected URL loadIconURL = getClass().getClassLoader().getResource(
-			"org/geneontology/oboedit/gui/resources/icons/folder.gif");
+			"org/oboedit/gui/resources/icons/folder.gif");
 	protected URL diskIconURL = getClass().getClassLoader().getResource(
-			"org/geneontology/oboedit/gui/resources/icons/floppy.gif");
+			"org/oboedit/gui/resources/icons/floppy.gif");
 	protected URL fileIconURL = getClass().getClassLoader().getResource(
-			"org/geneontology/oboedit/gui/resources/icons/file.gif");
+			"org/oboedit/gui/resources/icons/file.gif");
 	protected URL customizeIconURL = getClass()
 			.getClassLoader()
 			.getResource(
-					"org/geneontology/oboedit/gui/resources/icons/customize.gif");
+					"org/oboedit/gui/resources/icons/customize.gif");
 	protected URL simpleIconURL = getClass()
 			.getClassLoader()
 			.getResource(
-					"org/geneontology/oboedit/gui/resources/icons/customize_simple.gif");
+					"org/oboedit/gui/resources/icons/customize_simple.gif");
 
 	protected Icon customizeIcon = new ImageIcon(customizeIconURL);
 	protected Icon simpleIcon = new ImageIcon(simpleIconURL);

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The window tag<window> Tag<window> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;window&gt; Tag</h1>
+<p>       The <font face="Courier">&lt;window&gt;</font> tag creates&nbsp;a new window 
+containing a component. When a window created by the <font 
+face="Courier">&lt;window&gt;</font>         
+               
+ tag is closed or minimized, a button appears at the bottom 
+of the main panel that can be used to restore the window.</p>
+<p>The window created by the <font face="Courier">&lt;window&gt;</font> tag is a 
+sub-dialog of the main OBO-Edit window. This means that it will always appear in 
+front of the OBO-Edit window on most platforms. On some windowing systems with 
+multiple desktops (like KDE), if the OBO-Edit window is moved to a new desktop, 
+any subwindows will move as well.</p>
+<p><font face="Courier">&lt;window&gt;</font> tags should be placed at the top level of the layout.</p>
+<h2>Parameters</h2>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">title</font></td>
+    <td>
+      <p>        
+                
+         
+             The window title.</p>
+      <p>This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A> .</p></td>
+    <td><font face="Courier">
+      <p><em>any text</em></p></font></td>
+    <td>
+      <p><font face="Arial"><em>none</em></font></p></td></tr>
+  <tr>
+    <td><font face="Courier">width</font></td>
+    <td>
+      <p>The default window width, in pixels.</p>
+      <p>This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A> .</p></td>
+    <td><em>any positive integer</em></td>
+    <td>300</td></tr>
+  <tr>
+    <td><font face="Courier">height</font></td>
+    <td>
+      <p>The default window height, in pixels.</p>
+      <p>This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A> .</p></td>
+    <td><em>any positive integer</em></td>
+    <td>300</td></tr>
+  <tr>
+    <td><font face="Courier">startminimized</font></td>
+    <td>
+      <p>        
+                    
+                   
+                     Whether the window starts out minimized.</p>
+      <p>This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A> .</p></td>
+    <td>
+      <p><font face="Courier">TRUE</font></p>
+      <p><font face="Courier">FALSE</font></p></td>
+    <td>
+      <p><font 
+face="Courier">FALSE</font></p></td></tr>
+</table></p>
+<p>Also see <A href="Common_Parameters.htm">common parameters</A> .</p>
+<p></p>
+<h2>Contents</h2>
+<p>The <font face="Courier">window</font><font face="Arial">&nbsp; tag contains a single 
+component to place inside the window.</font>           
+   </p>
+<h2>Example</h2><pre><font color="#000000">&lt;xmllayout&gt;<br><font color="#0000ff">&nbsp;&nbsp; &lt;window title="`if (GUI.getSubSelection() == null) 'No selection'; else GUI.getSubSelection().getName();`"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="plugin:org.geneontology.oboedit.plugin.DAGView"/&gt;<br>&nbsp;&nbsp; &lt;/window&gt;</font><br>&nbsp;&nbsp; &lt;divider orientation="HORZ"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;first&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="DAG" width="300"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/first&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;second&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="TEXTEDIT" width="320"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/second&gt;<br>&nbsp;&nbsp; &lt;/divider&gt;<br> &lt;/xmllayout&gt;<br></font></pre>
+<p><IMG height=510 hspace=0 
+src="../images/layout_window_component.gif" width=727 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+<p>&nbsp;</p>
+</body>
+</html>

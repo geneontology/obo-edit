@@ -17,7 +17,7 @@ public class SplashScreen extends JWindow {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BackgroundImagePanel bip;
-	private final static String splashscreen = "org/geneontology/oboedit/gui/resources/splash.gif";
+	private final static String splashscreen = "org/oboedit/gui/resources/splash.gif";
 
 	protected Thread thread;
 	protected long waitTime = 5000;

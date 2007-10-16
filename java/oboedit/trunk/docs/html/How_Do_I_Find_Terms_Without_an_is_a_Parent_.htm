@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>How Do I Find Terms Without an is_a Parent?</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>How Do I Find Terms Without an is_a Parent?</h1>
+<p>There are two ways to do this:</p>
+<h2>Method 1: Use the "Has isa parent" filter</h2>
+<ol>
+  <li>Click the Advanced Settings tab of the Search 
+  Control. 
+  <li>De-select every option but "Term filtering"<br>
+<IMG height=151 hspace=0 
+  src="../images/faq_isa_term_search_settings.gif" width=639 border=0>
+  <li>Click the Term filter tab.
+  <li>Set up the filter as [not] [Self] [Has is_a parent]<br><IMG height=114 hspace=0 
+  src="../images/faq_isa_term_filter_setup.gif" width=521 border=0>
+  <li>Press Search. A list of terms with no is_a parent will 
+  be displayed. Note that the ontology roots - having no parents at all - will 
+  also appear in this list.</li></ol>
+<h2>Method 2: Link Filtering</h2>
+<p>Set up a link filter to only only display is_a links.</p>
+<ol>
+  <li>Set your primary Ontology Editor Panel to use the GREEDY root algorithm by 
+  clicking the root algorithm selection button and picking "Show orphaned terms 
+  as roots" from the menu:<br><IMG height=262 hspace=0 
+  src="../images/faq_isa_root_algorithm.gif" width=472 border=0>
+  <li>Click the Advanced Settings tab of the Search 
+  Control. 
+  <li>De-select every option but "Link filtering"<br><IMG height=151 hspace=0 
+  src="../images/faq_isa_search_settings.gif" width=639 
+border=0>
+  <li>Click the Link filter tab.
+  <li>Set up the filter as <font face="Courier"><strong>[Type] [Self] [ID] 
+  [equals] "OBO_REL:is_a"<br><IMG height=151 hspace=0 
+  src="../images/faq_isa_link_filter_setup.gif" width=642 
+  border=0></strong></font>
+  <li><font face="Arial">Click the Filter button.</font></li></ol>
+<p>Any term without an is_a parent will now appear as a 
+root. This method has the advantage of being able to find terms without a parent 
+of any specified type. To find part_of orphans, just use 
+<strong>part_of</strong> instead of <strong>OBO_REL:is_a</strong>       in the link filter setup.</p>
+<p>&nbsp;</p>
+</body>
+</html>

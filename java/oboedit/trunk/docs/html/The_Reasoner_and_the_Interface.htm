@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>The Reasoner and the Interface</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>The Reasoner and the Interface</H1>
+<P>When the reasoner is running, it changes the way the 
+ontology is displayed in the ontology editor panel. Some of the implied links 
+discovered by the reasoner may be shown in the ontology editor panel. By default, 
+these implied links are displayed with a wavy blue arrow:</P>
+<P><IMG height=39 hspace=0 src="../images/reasoner_implied_arrow.gif" width=181 
+border=0></P>
+<H2>Trimming<A name=trimming></A></H2>
+<P>Not all implied links are shown in the ontology editor panel, because doing so 
+would quickly make the interface unmanagable. Consider our elephant ontology 
+once more:</P>
+<P><IMG height=94 hspace=0 src="../images/reasoner_elephant_ontology.gif" 
+width=181 border=0></P>
+<P>If every single implied link were shown, we would see:</P>
+<P><IMG height=171 hspace=0 src="../images/reasoner_elephant_notrimming.gif" 
+width=185 border=0></P>
+<P>It's easy to imagine how confusing this would get with an ontology of any 
+complexity.</P>
+<P>To reduce this complexity, OBO-Edit <STRONG>trims</STRONG> the ontology 
+before displaying it. Trimming&nbsp;hides links that would unhelpfully clutter 
+the display. The reasoner still knows about these links, but they are not shown 
+to the user.</P>
+<P>A link <STRONG>L</STRONG> is trimmed if it satisfies either of the following 
+conditions:</P>
+<UL>
+  <LI>All evidence for&nbsp;<STRONG>L</STRONG> is based on the transitivity rule 
+  <LI><STRONG>L</STRONG>'s child term has any grandparent link with the same 
+  relationship type and parent term as <STRONG>L</STRONG></LI></UL>
+<P>There is one exception: user-created links are never 
+trimmed. This means that redundant links are always visible, because all redundant links are 
+user-created.</P>
+</BODY>
+</html>

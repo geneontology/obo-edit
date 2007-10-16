@@ -412,14 +412,14 @@ public class Preferences {
 
 	protected Icon loadLibraryIconLocal(String name) {
 		URL url = getExtensionLoader().getResource(
-				"org/geneontology/oboedit/gui/resources/icons/" + name);
+				"org/oboedit/gui/resources/icons/" + name);
 
 		return new ImageIcon(url);
 	}
 
 	public static Image loadLibraryImage(String name) {
 		URL url = getExtensionLoader().getResource(
-				"org/geneontology/oboedit/gui/resources/icons/" + name);
+				"org/oboedit/gui/resources/icons/" + name);
 		return Toolkit.getDefaultToolkit().createImage(url);
 	}
 
@@ -615,7 +615,7 @@ public class Preferences {
 		List<URL> iconLib = new LinkedList<URL>();
 		try {
 			InputStream stream = getExtensionLoader().getResourceAsStream(
-					"org/geneontology/oboedit/gui/resources/" + "icons/dir");
+					"org/oboedit/gui/resources/" + "icons/dir");
 			Properties icons = new Properties();
 			icons.load(stream);
 			int size = Integer.parseInt(icons.getProperty("iconCount"));
@@ -679,7 +679,7 @@ public class Preferences {
 		if (version == null) {
 			try {
 				URL url = getExtensionLoader().getResource(
-						"org/geneontology/oboedit/resources/VERSION");
+						"org/oboedit/resources/VERSION");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(url.openStream()));
 				version = new VersionNumber(reader.readLine());
@@ -723,7 +723,7 @@ public class Preferences {
 
 	public static URL getLibraryIconURL(String name) {
 		URL url = getExtensionLoader().getResource(
-				"org/geneontology/oboedit/gui/resources/icons/" + name);
+				"org/oboedit/gui/resources/icons/" + name);
 		return url;
 	}
 

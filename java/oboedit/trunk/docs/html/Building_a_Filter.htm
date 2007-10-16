@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Building a Filter</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Building a Filter</h1>
+<h2>Setting the Filter Design Mode</h2>
+<p>There are a number of filter design modes in OBO-Edit. 
+Filters are used throughout OBO-Edit; sometimes the filter design mode can be 
+specified by the user, and sometimes the design mode is locked. (The latter case 
+tends to be seen in complex controls where a lot of fine control is needed; in 
+these cases, the filter design controls are usually locked into the most 
+advanced settings).</p>
+<p>When the filter design mode is user configurable, the 
+design mode can be set by clicking the "Advanced" tab of the filter designer. 
+For example, by default, OBO-Edit's search control looks like this:</p>
+<p>&nbsp;<IMG height=152 hspace=0 
+src="../images/filter_keyword.gif" width=408 border=0>  </p>
+<p>If you click the "Advanced" tab, the advanced interface appears:</p>
+<p>&nbsp;<IMG height=152 hspace=0 
+src="../images/filter_advanced_tab.gif" width=408 border=0>  </p>
+<p>By clicking combinations of the checkboxes in this panel, 
+you can select the filter design mode. The meanings of these checkboxes are discussed below.</p>
+<h2>Term&nbsp;Filters</h2>
+<p>In this discussion of filtering, we will begin with the simplest sort of 
+filtering, and work our way up to more complex filters.</p>
+<h3>Keyword Filtering</h3>
+<p>Keyword filtering is only possible for term filters. To enable keyword 
+filtering, click the "Keyword filtering" button in the "Advanced" tab. When 
+keyword filtering is enabled, the "Compound filtering" and "Link filtering" 
+options are disabled.</p>
+<p>Keyword filtering works like a google search. Type a list of keywords you 
+would like to match in the ontology, seperated by spaces. The filter will match 
+terms that contain all the keywords you specified.</p>
+<p>Keywords filtering searches not only the term name, but all synonyms, the 
+definition, the comments, and any dbxref descriptions.</p>
+<h3>Standard Filtering</h3>
+<p>Standard filtering is a much more powerful way of filtering an ontology, but 
+the interface is more complex. To enable standard filtering, make sure the "Term 
+filtering" checkbox is clicked and the "Keyword filtering" checkbox is 
+<em>unclicked</em> in the "Advanced" tab.</p>
+<p>The standard filtering control looks like this:</p>
+<p><IMG height=152 hspace=0 
+src="../images/filter_term_standard.gif" width=408 border=0></p>
+<p>The controls in this component have the following 
+names:</p>
+<p><IMG height=152 hspace=0 
+src="../images/filter_term_standard_labeled.gif" width=408 
+border=0></p>
+<p>The meaning of some of these components is not immediately obvious. The detailed discussion of 
+these components will occur out of order, with the more commonly used features 
+described first.</p>
+<h4>Overview of How Standard Filtering is Done</h4>
+<p>For each term in the ontology, the <em>aspect</em> control determine which 
+terms should be examined to establish a match. (Normally, the search aspect is 
+<em>self</em>, so only the term itself is examined.) The <em>attribute</em> 
+values are then fetched for each term to be examined. Sometimes there will be a 
+single&nbsp;<em>attribute</em> value (if the attribute is "name", for example) 
+or sometimes there will be several (if the attribute is "synonym" or "dbxref", 
+for example). Each <em>attribute</em> value is compared against the 
+user-provided <em>value</em> using the given <em>comparison</em>. If ANY of the 
+<em>attributes</em> match the <em>value</em>, the term matches the filter. 
+Finally, if the <em>NOT</em> box is selected, the result of the match is 
+inverted.</p>
+<h4>Attribute</h4>
+<p>The search attribute describes which part of the term should be comparied 
+against the contents of the <em>value</em> box. </p>
+<p>Different attributes contain different types of values. Some attributes 
+contain text values, some contain numeric values, and others contain boolean 
+(true/false) values. The type of an attribute determines the possible 
+<em>comparisons</em> that can be done on that attribute.</p>
+<p>Some attributes contain a single value (like "name" or "comment" or any 
+boolean attribute). Some attributes contain many values (like "id", "synonym", 
+and "dbxref"). Note that if an attribute contains many values, each attribute 
+value is compared against the user-provided <em>value</em>. Only one attribute 
+value needs to match for the whole filter to be considered a match.</p>
+<p>There are a number of built in attributes that can be searched:</p>
+<ul>
+  <li><strong>All Text Fields</strong> <em>(multiple text values) </em>- Searches the term name, 
+  id, synonyms, definition and comments 
+  <li><strong>Name or Synonym</strong> <em>(multiple text values)</em> - Searches the term name 
+  and synonyms 
+  <li><strong>ID</strong> <em>(multiple text values)</em> - Searches the term's primary 
+  id and secondary ids 
+  <li><strong>Category</strong> <em>(multiple text values)</em> - Searches the 
+  <em>ids</em> of the categories to which a term belongs. For example, if a term 
+  belongs to a category called "Plant GO Slim" with the id "goslim_plant" and a 
+  category called "Generic GO Slim" with the id "goslim_generic", the 
+  <em>category</em> attribute will 
+  contain "goslim_plant" and "goslim_generic". 
+  <li><strong>Name</strong> <em>(single text value)</em> - Searches the term name 
+  <li><strong>Synonym</strong><em> (multiple text values)</em> - Searches the term synonyms 
+
+  <li><strong>Comment</strong> <em>(single text value)</em> - Searches the term comment 
+  <li><strong>Definition</strong> <em>(single text value)</em> - Searches the term definition 
+  <li><strong>Namespace</strong>&nbsp;<em>(single text value)</em> - Searches the term namespace ID. So if a term belongs to a 
+  namespace called "Molecular function" with the id "molecular_function", this 
+  attribute will contain "molecular_function" 
+  <li><strong>Dbxref</strong> <em>(multiple text values)</em> - Searches all the term 
+  dbxrefs, including general dbxrefs, synonym dbxrefs, and definition dbxrefs. 
+  Dbxref searches only look at the dbxref itself, not the optional dbxref 
+  description text. 
+  <li><strong>General dbxref</strong> <em>(multiple text values)</em> - Searches all general 
+  term dbxrefs, but not synonym dbxrefs or definition dbxrefs. 
+  <li><strong>Definition dbxref</strong> <em>(multiple text values)</em> - 
+  Searches all definition dbxrefs, but not synonym dbxrefs or general dbxrefs. 
+  <li><strong>Synonym dbxref</strong> <em>(multiple text values)</em> - Searches all synonym 
+  dbxrefs, but not definition dbxrefs or general dbxrefs. 
+  <li><strong>Is intersection</strong> <em>(boolean value)</em> - Whether or not this term is an 
+  intersection (aka cross product) 
+  <li><strong>Is anonymous</strong> <em>(boolean value)</em> - Whether or not this term is 
+  anonymous. Currently, there is no way to create an anonymous term in OBO-Edit, 
+  so this will only find anonymous terms loaded from a file. 
+  <li><strong>Is class</strong> <em>(boolean value)</em> - Whether this term is a class. 
+  Instances and Relations will return false for this attribute. 
+  <li><strong>Is obsolete</strong> <em>(boolean value)</em> - Whether this term is obsolete. 
+  <li><strong>Is relation</strong> <em>(boolean value)</em> - Whether this term is a relation. 
+  Classes and instances will return false for this attribute. 
+  <li><strong>Parent count</strong> <em>(single numeric value)</em> - The number of parents a 
+  term has. Note that this is a numeric value, so the possible comparisons for 
+  this attribute will be different than for other attributes. 
+  <li><strong>Is implied</strong> <em>(boolean value)</em> - Whether this term was created by a 
+  reasoner. OBO-Edit's reasoner will never create new terms, so implied terms 
+  can only be loaded from a file that was created by an external reasoner, like 
+  OBOL. 
+  <li><strong>Is transitive</strong> <em>(boolean value)</em> - Whether a relation is marked 
+  transitive. This attribute will return false for all non-relations. 
+  <li><strong>Is built in</strong><em> (boolean value)</em> - Whether a term is 
+  one of the built-in OBO objects, like the <strong>is_a</strong> relation. Note 
+  that there are some built-in classes that are hidden by default.</li></ul>
+<h4>Comparison</h4>
+<p>The search comparison chooses the method that will be used to determine 
+whether the user-provided <em>value</em> matches the current <em>attribute</em>. 
+The possible comparisons change depending on the attribute type. If a boolean 
+attribute is selected, the comparison box (and the value box) are not shown at 
+all, because boolean attributes return true or false values, and no further 
+comparison needs to be done.</p>
+<p><strong>Text Attribute Comparisons</strong></p>
+<p>Text attribute comparisons are not case-sensitive.</p>
+<ul>
+  <li><strong>equals</strong> - 
+  Matches if an attribute value and the user value are exactly the same. 
+  <li><strong>contains</strong> - 
+  Matches if an attribute contains the user value. 
+  <li><strong>starts with</strong> - 
+  Matches if an attribute starts with the user value. 
+  <li><strong>ends with</strong> - Matches if an attribute ends with the user 
+  value.</li></ul>
+<p><strong>Numeric Attribute Comparisons</strong></p>
+<ul>
+  <li><strong>equals</strong> - 
+  Matches if the attribute value and the user value are exactly the same. 
+  <li><strong>&lt;</strong> - Matches 
+  if the attribute value is less than the user value 
+  <li><strong>&lt;=</strong> - Matches 
+  if the attribute value is less than or equal to the user value 
+  <li><strong>&gt;</strong> - Matches 
+  if the attribute value is greater than the user value. 
+  <li><strong>&gt;=</strong>&nbsp;- Matches if that attribute value is greater 
+  than or equals to the user value.</li></ul>
+<h4>Value</h4>
+<p>The <em>value</em> will be matched against the&nbsp;<em>attribute</em> value 
+using the <em>comparison</em>. If the <em>attribute</em> is a numeric attribute, 
+the <em>value</em> must be an integer, otherwise nothing will match.</p>
+<h4>NOT</h4>
+<p>This checkbox inverts the search. If a search would normally return all terms 
+with the word "kinase" in the name, but the <em>NOT</em> box was checked, the 
+search would find every term that does not have "kinase" in the name.</p>
+<h4>Aspect</h4>
+<p>Without a doubt, this is the most misunderstood aspect of OBO-Edit filtering, 
+but it is essential for doing powerful, complex searches.</p>
+<p>Normally when searching, every term in the ontology is 
+checked to see if it matches the current search criteria. But if a search aspect 
+is specified, each term is checked to see if <strong>other related 
+terms</strong>  match the search criteria. If one of the related terms 
+matches, the original search term is considered a match.</p>
+<p>            
+There are three possible values for the search aspect:</p>
+<ul>
+  <li>
+<div><strong>Self</strong>           - 
+The default behavior. Only the current term is examined.</div>
+  <li>
+<div><strong>Ancestor</strong>       - Instead of the current 
+term itself, examine the ancestors of the current term.</div>
+  <li>
+<div><strong>Descendant</strong>       - Instead of the current 
+term itself, examine the descendants of the current term.</div></li></ul>
+<p>To demonstrate how aspects work, let's consider a really simple 
+ontology...</p>
+<p><IMG height=117 hspace=0 src="../images/toy_ontology.jpg" width=158 
+border=0></p>
+<p>(Note that D has two parents, B &amp; C.)</p>
+<p>If we search for <strong>[Self] [Name] [equals] "B"</strong> (shorthand for 
+"use the aspect "Self", the attribute "Name", the comparison "equals" and the 
+search value "B"), we get a single result: <strong>B</strong>. Just as we'd 
+expect.</p>
+<p>But if we change the aspect to <strong>Descendant</strong>, we get a 
+different result: <strong>A</strong>. This is because term <strong>A</strong> 
+has a descendant whose name equals "B". No other term matches, because no other 
+term has a descendant with the name "B". <strong>B</strong> itself doesn't 
+match, because <strong>B</strong> is not a descendant of itself.</p>
+<p>If we change the search to <strong>[Descendant] [Name] [equals] "D"</strong>, 
+we get 3 results: <strong>A, B,</strong> and <strong>C.</strong> This is because 
+these terms are the only terms with a descendant named "D".</p>
+<p>The ancestor aspect works in a similar way. If we search for 
+<strong>[Ancestor] [Name] [equals] "B"</strong>, we get&nbsp;2 results: 
+<strong>D </strong>and <strong>F</strong>. These are the two terms that have an 
+ancestor with the name "B". <strong>E</strong> does not match, because none of 
+its ancestors (<strong>C</strong> and <strong>A</strong>) have a name that 
+equals "B".</p>
+<div class="sidebar">
+<h1>When will I ever use this?</h1>
+<hr>
+<p>
+People have been so confused by search aspects that you 
+may ask why we bother to include it at all. In fact, this feature was removed 
+from a few beta-test versions of OBO-Edit.
+</p>
+<p>It was then almost immediately reinstated, because it's the only way to do 
+really interesting searches.</p>
+<p>Search aspects are particularly useful for two things: filtering and compound 
+searches. When filtering, search aspects can help pick out subsections of an 
+ontology graph (you may, for example, decide you only want to see descendants of 
+the "molecular_function" term). When doing compound searches, search aspects can 
+help you narrow the search to a particular branch of the ontology.</p>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

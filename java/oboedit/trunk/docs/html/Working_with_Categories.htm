@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Working with Categories</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Working with Categories</h1>
+<p>  Every OBO ontology contains a set of 
+categories. Terms in the ontology can be assigned to one of the 
+<em>categories</em> in that set (see <A 
+href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO 
+Ontologies</A>, and <A href="Text_Editing.htm">Text Editing</A>&nbsp;for more information on how to assign entities to 
+categories).</p>
+<p>The built-in Category Manager Plugin allows users to manage the set of 
+available categories. To access the Category Manager Plugin, choose "Category 
+Manager Plugin" from the "Plugin" menu:</p>
+<p><IMG height=89 hspace=0 
+src="../images/category_plugin_menu_item.gif" width=199 border=0></p>
+<p>The Category Manager Plugin window will appear:</p>
+<p><IMG height=326 hspace=0 
+src="../images/category_plugin_window.gif" width=403 border=0></p>
+<h2>Committing Changes</h2>
+<p>Any changes made in the Category Manager Plugin are not saved until the 
+"Save Changes" button is clicked. If changes are made and the window is closed, 
+<strong>the changes will not be saved</strong>. To revert to the last committed 
+version of the category set, click the "Revert" button.</p>
+<h2>Editing An Existing Category</h2>
+<p>To edit an existing category, click the category to edit in the list on the 
+left. The category editor panel will appear:</p>
+<p><IMG height=327 hspace=0 
+src="../images/category_plugin_window_editing.gif" width=404 border=0></p>
+<p>Categories have two attributes: a short identifying name 
+and a longer descriptive name. To change the category name, click 
+the&nbsp;category name&nbsp;in the text field and type a new name. To change the 
+descriptive name, click the category description in the text field and type a new description.</p>
+<h2>Deleting an Existing Category</h2>
+<p>To delete an existing category, click the category to delete in the list on 
+the left. Click the Del button to remove the category.</p>
+<p>  Note that a category that is assigned to a term cannot be 
+deleted. If a category is deleted that is still in use, a warning will appear 
+when the "Save Changes" button is pressed. If a category must be deleted, first 
+<A href="Searching.htm">search</A> the ontology to make sure that the category 
+is not in use.</p>
+<h2>Adding a New Category</h2>
+<p>To add a new category, click the "Add" button. A new category will be created with the default name 
+"NEWCAT" and the default description "&lt;new term category&gt;":</p>
+<p><IMG height=325 hspace=0 
+src="../images/category_plugin_window_add.gif" width=402 border=0></p>
+<p>Edit the&nbsp;name and description&nbsp;as described above.</p>
+<div class="sidebar">
+<h1>Layout Information</h1>
+<hr>
+<p class="sidebar">This component's layout id is<br>
+<code><b>plugin:org.geneontology.oboedit.plugin.CategoryManagerPlugin</b></code></p>
+<p>See <A href="Customizing_the_Interface.htm">Customizing 
+the Interface</a> for more information </p>
+</div>
+</body>
+</html>

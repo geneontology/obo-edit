@@ -74,7 +74,7 @@ public class UserFilterButton implements GUIComponent {
 		/*
 		if (filterPath != null && filterPath.startsWith("resource:"))
 			return Controller.getController().getResourceURL(
-					"org/geneontology/oboedit/gui/resources/filters/"
+					"org/oboedit/gui/resources/filters/"
 							+ filterPath.substring(9, filterPath.length()))
 					.toString();
 		else

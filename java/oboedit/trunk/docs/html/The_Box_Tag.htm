@@ -1,0 +1,52 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The box tag<label> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;box&gt; Tag</h1>
+<p>The &lt;box&gt; tag creates&nbsp;a container for other 
+components. The components are displayed in the order they were added, in a 
+vertical stack or a horizontal line, depending on the value of the <font 
+face="Courier">orientation</font> parameter. If a component in a box is smaller 
+than the enclosing box, the component is centered inside the 
+extra space. Components inside a box will not be resized.</p>
+<h2>Parameters</h2>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">orientation</font></td>
+    <td>
+      <p>The direction in which enclosed components will be laid out.</p>   
+                      </td>
+    <td>
+      <ul>
+        <li>horz 
+        <li>vert</li></ul></td>
+    <td>
+      <p>vert</p></td></tr></table></p>
+<p>Also see <A href="Common_Parameters.htm">common 
+parameters</A>  .</p>
+
+<p></p>
+<h2>Contents</h2>
+<p>The box tag contains tags representing the components that should be added to 
+the box.</p>
+
+<h2>Example</h2><pre><FONT color=#0000ff>&lt;box orientation="horz"&gt;<BR>&nbsp; &lt;label text="Boxes"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR>&nbsp; &lt;label text="of"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR>&nbsp; &lt;label text="one"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR>&nbsp; &lt;label text="orientation"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR>&nbsp; &lt;label text="can"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR>&nbsp; &lt;label text="contain"/&gt;<BR>&nbsp; &lt;spacer size="15" orientation="horz"/&gt;<BR><FONT color=#0080ff>&nbsp; &lt;box orientation="vert"&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;label text="nested"/&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;label text="boxes"/&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;label text="of"/&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;label text="another"/&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;label text="orientation."/&gt;<BR>&nbsp; &lt;/box&gt;</FONT><BR>&lt;/box&gt;</FONT>
+
+</pre>
+<p><IMG height=136 hspace=0 
+src="../images/layout_box_component.gif" width=328 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+
+</body>
+</html>

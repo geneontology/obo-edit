@@ -219,7 +219,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			SpellDictionary dictionary = null;
 			try {
 				FileUtil.ensureExists(Preferences.getDictionaryFile(),
-						"org/geneontology/oboedit/resources/dictionary.dict");
+						"org/oboedit/resources/dictionary.dict");
 				dictionary = new SpellDictionaryHashMap(Preferences
 						.getDictionaryFile());
 			} catch (IOException e) {

@@ -4,6 +4,7 @@ import java.beans.*;
 import java.io.*;
 import java.util.*;
 
+import org.bbop.io.ExtensionFilenameFilter;
 import org.oboedit.gui.Preferences;
 
 public class Launcher {
@@ -14,13 +15,27 @@ public class Launcher {
 		System.err.println("Starting OBO-Edit using " + memsetting
 				+ " of memory");
 
-		List argList = new Vector();
+		List<String> argList = new LinkedList<String>();
 		argList.add("java");
 		if (memsetting != null)
-			argList.add("-mx" + memsetting);
-		argList.add("-jar");
-		argList.add(Preferences.getInstallationDirectory()
-				+ "/runtime/oboedit.jar");
+			argList.add("-Xmx" + memsetting);
+		StringBuffer classpath = new StringBuffer();
+		File runtimeDir = new File(Preferences.getInstallationDirectory(),
+				"runtime");
+		
+		for (File jarFile : runtimeDir.listFiles(new ExtensionFilenameFilter(
+				"jar"))) {
+			if (classpath.length() > 0)
+				classpath.append(System.getProperty("path.separator"));
+			String s = jarFile.toString().replace(
+					System.getProperty("path.separator"),
+					"\\" + System.getProperty("path.separator"));
+			classpath.append(s);
+		}
+		argList.add("-classpath");
+		argList.add(classpath.toString());
+		argList.add("org.oboedit.launcher.OBOEdit");
+		System.err.println(argList);
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
 		String[] newargs = new String[argList.size()];
@@ -41,9 +56,9 @@ public class Launcher {
 
 		// The code below was removed to try to hide the 2 launcher
 		// icons on MacOS
-		
-//		int exitVal = proc.waitFor();
-//		System.exit(exitVal);
+
+		// int exitVal = proc.waitFor();
+		// System.exit(exitVal);
 	}
 
 	protected static class StreamGobbler extends Thread {
