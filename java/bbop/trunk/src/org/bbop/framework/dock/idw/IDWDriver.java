@@ -84,6 +84,8 @@ public class IDWDriver implements LayoutDriver {
 
 	protected String defaultPerspectiveResourcePath;
 
+	protected String perspectiveListResourcePath;
+
 	public IDWDriver() {
 	}
 
@@ -108,8 +110,10 @@ public class IDWDriver implements LayoutDriver {
 	}
 
 	public void cleanup() {
-		savePerspectiveAs(currentPerspective, currentPerspective.getName());
-		savePerspectives();
+		if (currentPerspective != null) {
+			savePerspectiveAs(currentPerspective, currentPerspective.getName());
+			savePerspectives();
+		}
 	}
 
 	protected void savePerspectives() {
@@ -183,51 +187,81 @@ public class IDWDriver implements LayoutDriver {
 	@SuppressWarnings("unchecked")
 	protected void loadPerspectives() {
 		File file = getPerspectivesFile();
-		XMLDecoder d;
-		perspectives = null;
-		Perspective currentPerspective = null;
-		try {
-			d = new XMLDecoder(new BufferedInputStream(
-					new FileInputStream(file)));
-			perspectives = (List<Perspective>) d.readObject();
-			currentPerspective = (Perspective) d.readObject();
-			d.close();
-		} catch (Exception e) {
+		if (getPerspectiveListResourcePath() != null) {
+			try {
+				FileUtil.ensureExists(file, getPerspectiveListResourcePath());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
-		if (perspectives == null)
-			perspectives = new LinkedList<Perspective>();
-		else {
-			// delete any nulls or bad data that might have been added during a
-			// failed
-			// deserialization
-			Iterator<Perspective> it = perspectives.iterator();
-			while (it.hasNext()) {
-				Perspective p = it.next();
-				if (p == null)
-					it.remove();
-				else {
-					try {
-						InputStream s = getInputStream(getFile(p)
-								.getAbsolutePath());
-						s.close();
-					} catch (Throwable t) {
+		if (file.exists()) {
+
+			XMLDecoder d;
+			perspectives = null;
+			Perspective currentPerspective = null;
+			try {
+				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
+						file)));
+				perspectives = (List<Perspective>) d.readObject();
+				currentPerspective = (Perspective) d.readObject();
+				d.close();
+			} catch (Exception e) {
+			}
+			if (perspectives == null)
+				perspectives = new LinkedList<Perspective>();
+			else {
+				// delete any nulls or bad data that might have been added
+				// during a
+				// failed
+				// deserialization
+				Iterator<Perspective> it = perspectives.iterator();
+				while (it.hasNext()) {
+					Perspective p = it.next();
+					if (p == null)
 						it.remove();
+					else {
+						try {
+							InputStream s = getInputStream(getFile(p)
+									.getAbsolutePath());
+							s.close();
+						} catch (Throwable t) {
+							it.remove();
+						}
 					}
 				}
 			}
+			createDefaultPerspectives();
+			if (currentPerspective == null && perspectives.size() > 0)
+				currentPerspective = perspectives.get(0);
+			if (currentPerspective != null)
+				setPerspective(currentPerspective);
 		}
-		createDefaultPerspectives();
-		if (currentPerspective == null && perspectives.size() > 0)
-			currentPerspective = perspectives.get(0);
-		if (currentPerspective != null)
-			setPerspective(currentPerspective);
+	}
+
+	protected void createDefaultPerspectives() {
+		try {
+			FileUtil.ensureExists(getPerspectivesFile(),
+					getPerspectiveListResourcePath());
+			XMLDecoder d = new XMLDecoder(new BufferedInputStream(
+					new FileInputStream(getPerspectivesFile())));
+			List<Perspective> defaultPerspectiveList = (List<Perspective>) d
+					.readObject();
+			for (Perspective p : defaultPerspectiveList) {
+				if (!perspectives.contains(p))
+					perspectives.add(p);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected String getResource(Perspective perspective) {
-		// String out = "org/geneontology/oboedit/gui/dock/resources/"
+		// String out = "org/oboedit/gui/dock/resources/"
 		// + perspective.getID() + ".idw";
 		// if (ClassLoader.getSystemClassLoader().getResource(out) == null)
-		// out = "org/geneontology/oboedit/gui/dock/resources/default.idw";
+		// out = "org/oboedit/gui/dock/resources/default.idw";
 
 		String out = perspectiveResourceDir + "/" + perspective.getID()
 				+ ".idw";
@@ -251,7 +285,6 @@ public class IDWDriver implements LayoutDriver {
 			currentPerspective = perspective;
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
 			if (currentPerspective == null && perspectives.size() > 0) {
 				currentPerspective = perspectives.get(0);
 			} else
@@ -288,15 +321,6 @@ public class IDWDriver implements LayoutDriver {
 				new FileOutputStream(path)));
 	}
 
-	protected void createDefaultPerspectives() {
-		Perspective p = new Perspective("edit", "Edit", true);
-		if (!perspectives.contains(p))
-			perspectives.add(p);
-		p = new Perspective("verify", "Verify", true);
-		if (!perspectives.contains(p))
-			perspectives.add(p);
-	}
-
 	public void init() {
 		viewMap = new StringViewMap();
 		rootWindow = new RootWindow(new DefaultViewSerializer(viewMap, this));
@@ -327,10 +351,9 @@ public class IDWDriver implements LayoutDriver {
 		 * 
 		 * })); GUIManager.getManager().installMenuItem(null, out);
 		 */
-		BBOPDockingTheme theme = new BBOPDockingTheme(
-				new FixedColorProvider(getDarkColor()), new FixedColorProvider(
-						getLightColor()), new FixedColorProvider(
-						getBackground()), 4, getFont());
+		BBOPDockingTheme theme = new BBOPDockingTheme(new FixedColorProvider(
+				getDarkColor()), new FixedColorProvider(getLightColor()),
+				new FixedColorProvider(getBackground()), 4, getFont());
 		setTheme(theme);
 		loadPerspectives();
 	}
@@ -618,5 +641,14 @@ public class IDWDriver implements LayoutDriver {
 	public void setDefaultPerspectiveResourcePath(
 			String defaultPerspectiveResourcePath) {
 		this.defaultPerspectiveResourcePath = defaultPerspectiveResourcePath;
+	}
+
+	public String getPerspectiveListResourcePath() {
+		return perspectiveListResourcePath;
+	}
+
+	public void setPerspectiveListResourcePath(
+			String perspectiveListResourcePath) {
+		this.perspectiveListResourcePath = perspectiveListResourcePath;
 	}
 }
