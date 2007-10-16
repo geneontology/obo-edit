@@ -10,6 +10,7 @@
 	<property name="apidoc_dest" location="docs" />
 	<property name="librarydir" location="lib" />
 	<property name="releasenotes" location="CHANGES" />
+	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/bbop" />
 
 	<path id="classpath">
 		<fileset dir="${librarydir}">
@@ -65,6 +66,10 @@
 			<env key="LIBRARYDIR" path="${librarydir}"/>
 			<env key="RELEASENOTES" path="${releasenotes}"/>
 			<env key="USERNAME" value="${username}"/>
+			<env key="SVNREPOSITORY" value="${svn_repository_url}" />
+			<env key="TAGPREFIX" value="bbop-" />
+			<env key="SVN_PATH" value="/usr/local/bin/svn" />
+			<env key="ANT_PATH" value="ant" />
 			<arg value="${PASSWORD}"/>
 		</exec>
 	</target>
