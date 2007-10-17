@@ -1,10 +1,12 @@
 package org.obo.test;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
@@ -58,35 +60,53 @@ public abstract class AbstractReasonerFaceoffTest extends AbstractOBOTest {
 		System.out.println("setup complete.");
 	}
 
-	public void testLinks() {
+	protected static void hasAllLinks(ReasonedLinkDatabase checkme,
+			ReasonedLinkDatabase againstme, Collection<Link> alreadyChecked,
+			boolean checkExplanations) {
 		int i = 0;
-		for (IdentifiedObject io : reference.getObjects()) {
+		for (IdentifiedObject io : checkme.getObjects()) {
 			System.out.println("Checking term " + (i++) + " of "
-					+ reference.getObjects().size());
+					+ checkme.getObjects().size());
 			if (io instanceof LinkedObject) {
-				for (Link link : reference.getParents((LinkedObject) io)) {
-					Collection<Explanation> refExps = reference
+				for (Link link : checkme.getParents((LinkedObject) io)) {
+					if (alreadyChecked.contains(link))
+						continue;
+					else
+						alreadyChecked.add(link);
+					Collection<Explanation> refExps = checkme
 							.getExplanations(link);
-					for (ReasonedLinkDatabase reasoner : testReasoners) {
-						boolean contains = TermUtil
-								.containsLink(reasoner, link);
-						Collection<Explanation> exps = reasoner.getExplanations(link);
-						boolean containsExps = !TermUtil.isImplied(link) || exps.equals(refExps);
-						if (!contains) {
-							System.err.println("Reasoner " + reasoner
-									+ " does not contain reference " + link);
-							System.err.println("all parents of "
-									+ link.getChild() + ": ");
-							for (Link p : reasoner.getParents(link.getChild()))
-								System.err.println("   " + p);
-						}
-						assertTrue("Reasoner " + reasoner
-								+ " does not contain reference " + link,
-								contains);
-						// assertTrue("Reasoner " + reasoner +" has different explanations for "+link, containsExps);
+					boolean contains = TermUtil.containsLink(againstme, link);
+					Collection<Explanation> exps = againstme
+							.getExplanations(link);
+					boolean containsExps = !TermUtil.isImplied(link)
+							|| exps.equals(refExps);
+					if (!contains) {
+						System.err.println("Reasoner " + againstme
+								+ " does not contain reference " + link);
+						System.err.println("all parents of " + link.getChild()
+								+ ": ");
+						for (Link p : againstme.getParents(link.getChild()))
+							System.err.println("   " + p);
 					}
+					assertTrue("Reasoner " + againstme
+							+ " does not contain reference " + link, contains);
+					if (checkExplanations) {
+						assertTrue("Reasoner " + againstme
+								+ " has different explanations for " + link,
+								containsExps);
+					}
+
 				}
 			}
+		}
+	}
+
+	public void testLinks() {
+		boolean testExplanations = false;
+		for (ReasonedLinkDatabase reasoner : testReasoners) {
+			Collection<Link> checked = new HashSet<Link>();
+			hasAllLinks(reference, reasoner, checked, testExplanations);
+			hasAllLinks(reasoner, reference, checked, testExplanations);
 		}
 	}
 }

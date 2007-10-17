@@ -25,7 +25,7 @@ public class LinkPileReasonerTest extends AbstractReasonerFaceoffTest {
 
 	@Override
 	public Collection<String> getFilesToLoad() {
-			String[] files = { "gene_ontology_edit.obo" };
+			String[] files = { "so-xp.obo" };
 			return Arrays.asList(files);
 	}
 	public static Test suite() {

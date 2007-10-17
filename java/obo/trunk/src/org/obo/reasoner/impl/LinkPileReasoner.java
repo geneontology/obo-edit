@@ -19,6 +19,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 	protected Collection<Link> linkPile;
 	protected List<ReasonerRule> rules = new ArrayList<ReasonerRule>();
 	protected int maxLinkPileSize = 0;
+	protected int lastVal;
 
 	public LinkPileReasoner() {
 		setStoreGivenLinks(false);
@@ -34,15 +35,20 @@ public class LinkPileReasoner extends AbstractReasoner {
 
 	@Override
 	public Number getProgressValue() {
+		int val;
 		if (maxLinkPileSize == 0)
-			return 0;
-		int val = 100 * (maxLinkPileSize - linkPile.size()) / maxLinkPileSize;
-		if (val >= 100)
-			return 99;
-		if (val >= 0)
-			return val;
-
-		return 0;
+			val = 0;
+		else {
+			val = 100 * (maxLinkPileSize - linkPile.size()) / maxLinkPileSize;
+			if (val < lastVal)
+				val = lastVal;
+			else if (val > 99)
+				val = 99;
+			else if (val < 0)
+				val = 0;
+		}
+		lastVal = val;
+		return val;
 	}
 
 	@Override
