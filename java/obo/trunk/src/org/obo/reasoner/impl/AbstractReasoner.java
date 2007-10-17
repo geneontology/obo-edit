@@ -31,11 +31,9 @@ import org.obo.util.TermUtil;
 public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		ReasonedLinkDatabase {
 
-	private static final boolean TermU = false;
+	protected MultiMap<Link, Explanation> explanationMap;
 
-	protected MultiMap<Link, Explanation> explanationMap = new MultiHashMap<Link, Explanation>();
-
-	protected MultiMap<Link, Explanation> explanationDeps = new MultiHashMap<Link, Explanation>();
+	protected MultiMap<Link, Explanation> explanationDeps;
 
 	protected LinkDatabase linkDatabase;
 
@@ -161,7 +159,6 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
-		this.impliedLinkDatabase = createImpliedLinkDatabase(linkDatabase);
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
@@ -211,7 +208,11 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected void initReasoner() {
 		running = true;
 		fireStart();
-		impliedLinkDatabase.clear();
+		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
+		explanationMap =
+			new MultiHashSetMap<Link, Explanation>();
+		explanationDeps =
+			new MultiHashSetMap<Link, Explanation>();
 	}
 
 	protected void cleanupReasoner() {
@@ -306,14 +307,10 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected void explain(Link link, Explanation explanation) {
 		if (storeGivenLinks || !isGiven(explanation)) {
 			internalAddLink(link);
-			if (link.getChild().equals(link.getParent()))
-				System.err.println("OH NO!");
 			explanationMap.add(link, explanation);
-			/*
 			for (Link evidence : explanation.getEvidence()) {
 				explanationDeps.add(evidence, explanation);
 			}
-			*/
 		}
 	}
 
@@ -323,24 +320,26 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	public long recache() {
 		long time = System.currentTimeMillis();
+
 		initReasoner();
 		doReasoning();
-		createDepMap();
+		// createDepMap();
 		cleanupReasoner();
 		return System.currentTimeMillis() - time;
 	}
-	
+
 	protected void createDepMap() {
 		long time = System.nanoTime();
 		explanationDeps = createDepMap(explanationMap);
-		System.out.println("Created dep map in "+((System.nanoTime() - time) / 1000000d)+" ms");
+		System.out.println("Created dep map in "
+				+ ((System.nanoTime() - time) / 1000000d) + " ms");
 	}
 
 	public static MultiMap<Link, Explanation> createDepMap(
 			MultiMap<Link, Explanation> expMap) {
 		MultiMap<Link, Explanation> out = new MultiHashMap<Link, Explanation>();
-		for(Explanation exp : expMap.singleValues()) {
-			for(Link evidence : exp.getEvidence()) {
+		for (Explanation exp : expMap.singleValues()) {
+			for (Link evidence : exp.getEvidence()) {
 				out.add(evidence, exp);
 			}
 		}
