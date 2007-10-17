@@ -79,10 +79,14 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 						new LineNumberReader(new FileReader(fp));
 					for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
 
-						System.out.println("line= "+line);
+						System.err.println("line= "+line);
 						Pattern p = Pattern.compile("\t");
 						//parse based on tab...will be delimiter in future
-						String[] colvals = p.split(line);
+						String[] colvals1 = p.split(line);
+						String[] colvals = new String[16];
+						for (int i=0; i<colvals1.length; i++) {
+							colvals[i]=colvals1[i];
+						}
 						parseAnnotation(colvals);
 						System.out.println("parsed: "+line);
 
@@ -150,12 +154,9 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		if (subjectID != lastSubjectID) {
 			lastSubjectID = subjectID;
 			subj.setName(colvals[2]);
-			Synonym longname = new SynonymImpl(colvals[9]);
-			((OBOClass)subj).addSynonym(longname);
-			
-			LinkedObject tax = getSessionLinkedObject(taxID);
-			OBOProperty subj2taxRel = null;
-			Link subj2tax = new OBORestrictionImpl(subj, subj2taxRel, tax);
+			parseSynonymField(ann,colvals[9],subj);
+			parseSynonymField(ann,colvals[10],subj);
+						
 		}
 
 		LinkedObject obj = getSessionLinkedObject(objectID);
@@ -164,12 +165,49 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			lastObjectID = objectID;
 			
 		}
+		parseQualifierField(ann,colvals[4]);
+		parseTaxonField(ann,colvals[13]);
+		parseDateField(ann,colvals[14]);
+		parseAssignedByField(ann,colvals[15]);
+
 		System.out.println("  done ann");
 		//items.add(item);
 		//session.addObject(ann);
 		return ann;
 	}
 	
+	protected void parseQualifierField(Annotation ann, String qualField) {
+		for(String q : splitOn(qualField,"|")) {
+			if (q.equals("NOT")) {
+				ann.setIsNegated(true);
+			}
+			else {
+				System.err.println("Cannot handle qual:"+q);
+				// TODO
+			}
+		}
+	}
+	
+	protected void parseSynonymField(Annotation ann, String synField, LinkedObject ae) {
+		for(String s : splitOn(synField,"|")) {
+			Synonym longname = new SynonymImpl(s);
+			((SynonymedObject)ae).addSynonym(longname);
+		}
+	}
+
+	protected void parseReferenceField(Annotation ann, String refField) {
+		for(String s : splitOn(refField,"|")) {
+			// TODO
+		}
+	}
+
+	protected void parseDateField(Annotation ann, String dateField) {
+		// TODO
+	}
+
+	protected void parseAssignedByField(Annotation ann, String abField) {
+		// TODO
+	}
 	protected void parseEvidence(Annotation ann, String evCode, String withExpr) {
 		Pattern p = Pattern.compile("|");
 		String[] withVals = p.split(withExpr);
@@ -191,6 +229,29 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		ann.addEvidence(ev);
 	}
 
+	protected void parseTaxonField(Annotation ann, String taxVal) {
+		Pattern p = Pattern.compile("|");
+		String[] taxIDs = p.split(taxVal);
+		
+		for (int i=0; i<taxIDs.length; i++) {
+			String taxID = taxIDs[i];
+			LinkedObject taxObj = getSessionLinkedObject(taxID);
+			if (i==0) {
+				LinkedObject ae = ann.getSubject();
+				makeLink(ae,null,taxObj);
+				OBOProperty subj2taxRel = null;
+				Link subj2tax = new OBORestrictionImpl(ae, subj2taxRel, taxObj);
+			}
+			else {
+				makeLink(ann,null,taxObj);
+			}
+		}
+	}
+	
+	public void makeLink(LinkedObject su, String rel, LinkedObject ob) {
+		
+	}
+	
 	public LinkedObject getSessionLinkedObject(String id) {
 		System.out.println("getting/adding obj:"+id);
 		LinkedObject obj = (LinkedObject)session.getObject(id);
@@ -273,6 +334,12 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		} catch (IOException ex) {
 		}
 		return buffer.toString();
+	}
+
+	public String[] splitOn(String s, String delim) {
+		Pattern p = Pattern.compile("|");
+		return p.split(s);
+		
 	}
 
 	public String getProgressString() {

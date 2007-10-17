@@ -1129,17 +1129,25 @@ public class DefaultOBOParser implements OBOParser {
 						.getPath(), is.getLine(), is.getLineNum());
 			IdentifiableObject instanceOfObj = getObject(is.instanceOf);
 
-			if (instanceOfObj == null)
-				throw new OBOParseException("Unrecognized instance_of id "
-						+ is.instanceOf + " specified for " + "instance id "
-						+ id, is.getPath(), is.getLine(), is.getLineNum());
+			if (instanceOfObj == null) {
+				if (allowDanglingParents) {
+					instanceOfObj = objectFactory
+					.createDanglingObject(is.instanceOf, false);
+				}
+				else {
+					throw new OBOParseException("Unrecognized instance_of id "
+							+ is.instanceOf + " specified for " + "instance id "
+							+ id, is.getPath(), is.getLine(), is.getLineNum());
+				}
+			}
+			else {
+				if (!(instanceOfObj instanceof OBOClass))
+					throw new OBOParseException("Cannot use non-term value "
+							+ is.instanceOf + ", " + "for instance_of statement.",
+							is.getPath(), is.getLine(), is.getLineNum());
 
-			if (!(instanceOfObj instanceof OBOClass))
-				throw new OBOParseException("Cannot use non-term value "
-						+ is.instanceOf + ", " + "for instance_of statement.",
-						is.getPath(), is.getLine(), is.getLineNum());
-
-			((Instance) instance).setType((OBOClass) instanceOfObj);
+				((Instance) instance).setType((OBOClass) instanceOfObj);
+			}
 		}
 
 		it = propertyValSet.iterator();
