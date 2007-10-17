@@ -20,16 +20,17 @@ import javax.swing.event.*;
 
 public class CrossProductInfoComponent extends AbstractGUIComponent {
 
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7919246476674947971L;
 
 	protected JEditorPane crossProductPane = new JEditorPane("text/html",
-			"<html></html>");
+	"<html></html>");
 
 	protected JEditorPane referencePane = new JEditorPane("text/html",
-			"<html></html>");
+	"<html></html>");
 
 	protected HyperlinkListener linkListener = new HyperlinkListener() {
 		public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -82,155 +83,138 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 
 	protected void update() {
 		removeAll();
-		IdentifiedObject ss = SelectionManager.getGlobalSelection()
-				.getTermSubSelection();
-		if (!(ss instanceof LinkedObject))
-			return;
-		LinkedObject obj = (LinkedObject) ss;
-		Iterator it;
-		Set<LinkedObject> genus = new HashSet<LinkedObject>();
-		Set<Link> diff = new HashSet<Link>();
-		Set<Link> pdiff = new HashSet<Link>();
-		IdentifiedObject genusTerm = null;
+		Selection gs = SelectionManager.getGlobalSelection();
 
-		it = obj.getParents().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
-			if (TermUtil.isIntersection(link)) {
-				if (link.getType().equals(OBOProperty.IS_A)) {
-					genusTerm = link.getParent();
-				} else {
-					pdiff.add(link);
+		// objs that have xp definitions
+		TinySet<LinkedObject> xpObjs = new TinySet<LinkedObject>();
+
+		// objs that form the genus of other xp definitions
+		TinySet<LinkedObject> xpGenusObjs = new TinySet<LinkedObject>();
+		HashMap<LinkedObject, LinkedObject> objByGenus = new HashMap<LinkedObject, LinkedObject>();
+
+		// objs that form the differentium obj of other xp definitions
+		// we also include *potential* differentia
+		// (for making new xps)
+		// any selected obj (that is not itself an xp?) goes here
+		TinySet<LinkedObject> xpDiffObjs = new TinySet<LinkedObject>();
+		HashMap<LinkedObject, LinkedObject> objByDiff = new HashMap<LinkedObject, LinkedObject>();
+
+		// build sets
+		for (PathCapable io : gs.getAllSelectedObjects()) {
+			System.out.println("selected: " + io + " ? "+
+					(io instanceof LinkedObject));
+
+			if (io instanceof LinkedObject) {
+				LinkedObject lo = (LinkedObject)io;
+				if (TermUtil.isIntersection(lo)) {
+//					TermUtil.isGenusDifferentia(lo)) {
+					xpObjs.add(lo);
+					xpGenusObjs.add((LinkedObject)(ReasonerUtil.getGenus((OBOClass)lo)));
+					for (Link linkUp : lo.getChildren()) {
+						if (TermUtil.isIntersection(linkUp)) {
+							if (linkUp.getType().equals(OBOProperty.IS_A)) {
+								xpGenusObjs.add(linkUp.getChild());
+								objByGenus.put(linkUp.getChild(),lo);
+							}
+							else {
+								xpDiffObjs.add(linkUp.getChild());
+								objByDiff.put(linkUp.getChild(),lo);
+							}
+						}
+					}
+				}
+				else {
+					// treat as *potential* differentium
+					// TODO: decide, do this for all?
+					// we can have recursive differentia
+					xpDiffObjs.add(lo);
 				}
 			}
 		}
 
-		boolean showCrossProductPanel = genusTerm != null || pdiff.size() > 0;
+		int fontsize = getFont().getSize();
+		String fontname = getFont().getFamily();
+		StringBuffer out = new StringBuffer();
+		out.append("<html>\n");
+		out.append("<head>\n");
+		out.append("<style type='text/css'>\n");
+		out.append("  * { font-size: " + fontsize + "pt; "
+				+ "font-family: " + fontname + "; margin-top: 0; "
+				+ "padding-top: 0; }\n");
+		out.append("  body { font-size: " + fontsize + "pt; "
+				+ "font-family: " + fontname + "; }\n");
+		out.append("</style>\n");
+		out.append("</head>\n");
+		out.append("<body>\n");
+
+		boolean showCrossProductPanel = xpObjs.size() > 0;
 		if (showCrossProductPanel) {
-			int fontsize = getFont().getSize();
-			String fontname = getFont().getFamily();
-			StringBuffer out = new StringBuffer();
-			out.append("<html>\n");
-			out.append("<head>\n");
-			out.append("<style type='text/css'>\n");
-			out.append("  * { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; margin-top: 0; "
-					+ "padding-top: 0; }\n");
-			out.append("  body { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; }\n");
-			out.append("</style>\n");
-			out.append("</head>\n");
-			out.append("<body>\n");
-			if (genusTerm != null) {
-				out.append("<b>Genus</b> <a href='file:" + genusTerm.getID()
-						+ "'>" + genusTerm + " (" + genusTerm.getID()
-						+ ")</a><br><br>");
-			} else {
-				out.append("<b>No genus term defined!</b><br>");
-				out.append("<i>It is legal to define a cross product with no "
-						+ "genus (is_a) intersection defined in OBO-Edit, "
-						+ "but it is not recommended, and your ontology will"
-						+ "be incompatible with some tools.</i>");
-			}
-			if (pdiff.size() > 0) {
+
+			System.out.println("about to write xps.."+xpObjs);
+
+			for (LinkedObject xp : xpObjs) {
+
+				System.out.println("xp = "+xp);
+				IdentifiedObject xpGenus = ReasonerUtil.getGenus((OBOClass)xp);
+				System.out.println("genus = "+xpGenus);
+				Collection<Link> xpDiffs = ReasonerUtil.getDifferentia((OBOClass)xp);
+				System.out.println("diffs = "+xpDiffs);
+				out.append("<h3>" + xp + "</h3>");
+				out.append("<b>Genus:</b> " + objectHref(xpGenus)
+						+ "<br><br>");
 				out.append("<b>Discriminating Properties</b>\n");
-				it = pdiff.iterator();
 				out.append("<ul>");
-				while (it.hasNext()) {
-					Link link = (Link) it.next();
-					IdentifiedObject io = link.getParent();
-					out.append("<li><i><a href='file:" + link.getType().getID()
-							+ "'>" + link.getType().getID()
+
+				for (Link xpDiff : xpDiffs) {
+					LinkedObject io = xpDiff.getParent();
+
+					xpDiffObjs.add(io);
+					out.append("<li><i><a href='file:" + xpDiff.getType().getID()
+							+ "'>" + xpDiff.getType().getID()
 							+ "</a></i><br><a href='file:" + io.getID() + "'>"
 							+ io + " (" + io.getID() + ")</a>");
 				}
 				out.append("</ul>");
 			}
-			out.append("</body></html>");
-			crossProductPane.setText(out.toString());
-			add(crossProductPane);
+		}
+		else {
+			out.append("no xps");
 		}
 
-		it = obj.getChildren().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
-			if (TermUtil.isIntersection(link)) {
-				if (link.getType().equals(OBOProperty.IS_A)) {
-					genus.add(link.getChild());
-				} else
-					diff.add(link);
-			}
-		}
-		boolean showReferencePanel = genus.size() > 0 || diff.size() > 0;
+		out.append("<h3>In</h3>");
+		out.append("<ul>");
 
-		if (showReferencePanel) {
-			int fontsize = getFont().getSize();
-			String fontname = getFont().getFamily();
-			StringBuffer out = new StringBuffer();
-			out.append("<html>\n");
-			out.append("<head>\n");
-			out.append("<style type='text/css'>\n");
-			out.append("  * { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; margin-top: 0;"
-					+ "padding-top: 0; }\n");
-			out.append("  body { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; }\n");
-			out.append("</style>\n");
-			out.append("</head>\n");
-			out.append("<body>\n");
-			if (genus.size() > 0) {
-				out.append("<b>Genus of</b>\n");
-				it = genus.iterator();
-				out.append("<ul>");
-				while (it.hasNext()) {
-					IdentifiedObject io = (IdentifiedObject) it.next();
-					out.append("<li><a href='file:" + io.getID() + "'>" + io
-							+ " (" + io.getID() + ")</a>");
-				}
-				out.append("</ul>");
-			}
-			if (diff.size() > 0) {
-				out.append("<b>Differentiates</b>\n");
-				it = diff.iterator();
-				out.append("<ul>");
-				while (it.hasNext()) {
-					Link link = (Link) it.next();
-					IdentifiedObject io = link.getChild();
-					out.append("<li><a href='file:" + io.getID() + "'>" + io
-							+ " (" + io.getID() + ")</a> by <a href='file:"
-							+ link.getType().getID() + "'>"
-							+ link.getType().getID() + "</a>");
-				}
-				out.append("</ul>");
-			}
-			out.append("</body></html>");
-			referencePane.setText(out.toString());
-			add(referencePane);
-		}
+		// show xps in which this is a genus or differentium
+		for (PathCapable io : gs.getAllSelectedObjects()) {
+			System.out.println("selected: " + io + " ? "+
+					(io instanceof LinkedObject));
+			if (io instanceof LinkedObject) {
+				LinkedObject xo = (LinkedObject)io;
+				out.append("<li>");
+				out.append(objectHref(xo));
 
-		if (!showCrossProductPanel && !showReferencePanel) {
-			int fontsize = getFont().getSize();
-			String fontname = getFont().getFamily();
-			StringBuffer out = new StringBuffer();
-			out.append("<html>\n");
-			out.append("<head>\n");
-			out.append("<style type='text/css'>\n");
-			out.append("  * { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; margin-top: 0;"
-					+ "padding-top: 0; }\n");
-			out.append("  body { font-size: " + fontsize + "pt; "
-					+ "font-family: " + fontname + "; }\n");
-			out.append("</style>\n");
-			out.append("</head>\n");
-			out.append("<body>\n");
-			out.append("<b>No cross product definitions or references</b>");
-			out.append("</body></html>");
-			JLabel noDataLabel = new JLabel(out.toString());
-			add(noDataLabel);
+				out.append("</li>");
+			}
+
 		}
+		out.append("</ul>");
+
+		out.append("</body></html>");
+
+		crossProductPane.setText(out.toString());
+		//add(crossProductPane);
+		add(new JScrollPane(crossProductPane,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), "Center");
 
 		validate();
 		repaint();
+	}
+
+	public String objectHref(IdentifiedObject io) {
+		return "<a href='file:" + io.getID()
+		+ "'>" + io + " (" + io.getID()
+		+ ")</a>";
 	}
 
 	@Override
@@ -242,4 +226,5 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 	public String getName() {
 		return "Cross Product Info Plugin";
 	}
+
 }

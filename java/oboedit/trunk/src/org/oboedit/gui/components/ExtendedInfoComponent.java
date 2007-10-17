@@ -2,6 +2,7 @@ package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.obo.datamodel.*;
+import org.obo.util.AnnotationUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
@@ -44,7 +45,8 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 	public void update() {
 		removeAll();
 		scratch.clear();
-
+		OBOSession session = SessionManager.getManager().getSession();
+		
 		JLabel totalTermsLabel = new JLabel("Total terms = 00000000");
 		int totalTermCount = 0;
 		int definedTermCount = 0;
@@ -155,6 +157,22 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 					+ tcCount + " members");
 			catLabel.setFont(getFont());
 			labels.add(catLabel);
+		}
+
+		int numInstances = TermUtil.getInstances(session).size();
+		if (numInstances>0) {
+			JLabel instanceCountLabel = new JLabel(numInstances
+					+ " instances");
+			instanceCountLabel.setFont(getFont());
+			labels.add(instanceCountLabel);
+		}
+
+		int numAnnotations = AnnotationUtil.getAnnotations(session).size();
+		if (numAnnotations>0) {
+			JLabel annotCountLabel = new JLabel(numAnnotations
+					+ " annotations");
+			annotCountLabel.setFont(getFont());
+			labels.add(annotCountLabel);
 		}
 
 		int defPercent = (int) (100 * ((double) definedTermCount / (double) totalTermCount));
