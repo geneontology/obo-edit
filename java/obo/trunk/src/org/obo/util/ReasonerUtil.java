@@ -371,5 +371,28 @@ public class ReasonerUtil {
 		return out;
 
 	}
+	
+	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass, OBOProperty prop) {
+		Collection<OBOClass> out = new LinkedList<OBOClass>();
+		for (Link parentLink : oboClass.getParents()) {
+			if (parentLink.getType().equals(prop)
+					&& TermUtil.isIntersection(parentLink))
+				out.add(TermUtil.castToClass(parentLink.getParent()));
+		}
+		return out;
+
+	}
+
+	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass, String propName) {
+		Collection<OBOClass> out = new LinkedList<OBOClass>();
+		for (Link parentLink : oboClass.getParents()) {
+			if (parentLink.getType().getName().equals(propName)
+					&& TermUtil.isIntersection(parentLink))
+				out.add(TermUtil.castToClass(parentLink.getParent()));
+		}
+		return out;
+
+	}
+
 
 }
