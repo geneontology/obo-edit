@@ -312,9 +312,11 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	public void writeInstanceOfTag(Type type, NestedValue nv)
 			throws IOException {
-		print("instance_of: " + engine.mapID(type, type.getID()));
-		writeNestedValue(nv);
-		println();
+		if (type != null) {
+			print("instance_of: " + engine.mapID(type, type.getID()));
+			writeNestedValue(nv);
+			println();
+		}
 	}
 
 	public void writePropertyValueTag(PropertyValue pv, NestedValue nv,
