@@ -443,6 +443,21 @@ public class TermUtil {
 	public static Collection<ObsoletableObject> getObsoletes(OBOSession session) {
 		return getObsoletes(session.getLinkDatabase());
 	}
+	
+	/**
+	 * Returns the dangling terms in the given {@link LinkDatabase}
+	 */
+	public static Collection<DanglingObject> getDanglingObjects(
+			LinkDatabase session) {
+		Collection<DanglingObject> out = new LinkedList<DanglingObject>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (isDangling(io)) {
+				out.add((DanglingObject) io);
+			}
+		}
+		return out;
+	}
+
 
 	/**
 	 * Returns the number of parents for a term in the given
@@ -705,6 +720,20 @@ public class TermUtil {
 	 */
 	public static Collection<OBOClass> getTerms(OBOSession session) {
 		return getTerms(session.getLinkDatabase());
+	}
+
+	public static Collection<Instance> getInstances(LinkDatabase linkDatabase) {
+		Collection<Instance> out = new LinkedList<Instance>();
+		for (IdentifiedObject io : linkDatabase.getObjects()) {
+			if (isInstance(io)) {
+				out.add((Instance) io);
+			}
+		}
+		return out;
+	}
+	
+	public static Collection<Instance> getInstances(OBOSession session) {
+		return getInstances(session.getLinkDatabase());
 	}
 
 	/**
