@@ -1,13 +1,17 @@
 package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.util.TinySet;
 import org.obo.datamodel.*;
+import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
