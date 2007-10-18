@@ -8,6 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +22,7 @@ import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -131,6 +135,17 @@ public class TableList<T> extends JComponent {
 			return row;
 		}
 
+		public void add(Iterable t) {
+			int start = data.size();
+			int count = 0;
+			for (Object o : t) {
+				data.add((T) o);
+				count++;
+			}
+			if (count > 0)
+				fireTableRowsInserted(start, count);
+		}
+
 		public void deleteSelectedRows() {
 			int[] rows = table.getSelectedRows();
 			for (int i = rows.length - 1; i >= 0; i--) {
@@ -200,7 +215,7 @@ public class TableList<T> extends JComponent {
 	protected boolean completingEdit = false;
 	protected ListTableEditor<T> editor;
 	protected TableCellRenderer renderer = new HTMLTableRenderer();
-	protected List<T> data;
+	protected List<T> data = Collections.emptyList();
 	protected ActionListener commitListener = new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
@@ -210,6 +225,9 @@ public class TableList<T> extends JComponent {
 			editNext();
 		}
 	};
+
+	public TableList() {
+	}
 
 	public void setRenderer(TableCellRenderer renderer) {
 		this.renderer = renderer;
@@ -231,6 +249,42 @@ public class TableList<T> extends JComponent {
 		}
 	}
 
+	public void setSelectionMode(int mode) {
+		table.setSelectionMode(mode);
+	}
+
+	public void add() {
+		createNewRow();
+	}
+	
+	public void add(T... items) {
+		add(Arrays.asList(items));
+	}
+	
+	public int getSelectedRowCount() {
+		return getSelectedRows().length;
+	}
+
+	public void add(Iterable<T> items) {
+		((ListTableModel) table.getModel()).add(items);
+	}
+
+	public void deleteSelectedRows() {
+		((ListTableModel) table.getModel()).deleteSelectedRows();
+	}
+
+	public int getSelectionMode() {
+		return table.getSelectionModel().getSelectionMode();
+	}
+
+	public void addSelectionListener(ListSelectionListener listener) {
+		table.getSelectionModel().addListSelectionListener(listener);
+	}
+
+	public void removeSelectionListener(ListSelectionListener listener) {
+		table.getSelectionModel().removeListSelectionListener(listener);
+	}
+
 	protected void createNewRow() {
 		int row = ((ListTableModel) table.getModel()).addRow();
 		table.editCellAt(row, 0);
@@ -247,21 +301,41 @@ public class TableList<T> extends JComponent {
 		return editor;
 	}
 
-	public void setData(List<T> data) {
+	public int[] getSelectedRows() {
+		return table.getSelectedRows();
+	}
+
+	public List<T> getSelection() {
+		List<T> out = new ArrayList<T>();
+		int[] rows = getSelectedRows();
+		for (int row : rows) {
+			out.add(data.get(row));
+		}
+		return out;
+	}
+
+	public void setData(T... data) {
+		setData(Arrays.asList(data));
+	}
+	
+	public void setData(Collection<T> data) {
 		this.data = new ArrayList<T>(data);
 		((ListTableModel) table.getModel()).fireTableDataChanged();
 		repaint();
 	}
 
 	public List<T> getData() {
+		flushEdits();
 		return data;
 	}
 
 	protected void flushEdits() {
 		int row = table.getEditingRow();
-		((ListTableModel) table.getModel()).setValueAt(row, (T) editor
-				.getValue());
-		table.repaint();
+		if (row >= 0) {
+			((ListTableModel) table.getModel()).setValueAt(row, (T) editor
+					.getValue());
+			table.repaint();
+		}
 	}
 
 	private static class ListEditor extends AbstractListTableEditor<String> {
@@ -274,7 +348,7 @@ public class TableList<T> extends JComponent {
 			field.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					commit();
-				}				
+				}
 			});
 		}
 
