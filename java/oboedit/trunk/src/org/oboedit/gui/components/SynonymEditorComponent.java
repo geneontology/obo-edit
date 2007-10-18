@@ -13,19 +13,15 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 
-import org.bbop.swing.*;
+import org.bbop.swing.tablelist.AbstractListTableEditor;
+import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.SynonymImpl;
-import org.obo.filters.GeneralDbxrefSearchCriterion;
 import org.obo.filters.SynonymSearchCriterion;
 import org.obo.filters.SynonymTextSearchCriterion;
 import org.obo.history.*;
-import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
-import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RootTextEditComponent;
-import org.oboedit.gui.components.AbstractDbxrefEditorComponent.DbxrefTableRenderer;
-import org.oboedit.gui.widget.SynonymListEditor;
 
 public class SynonymEditorComponent extends AbstractTextEditComponent {
 
@@ -98,43 +94,11 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		out.setText(s.toString());
 	}
 
-	protected JTable table = new JTable() {
-		@Override
-		public Component prepareEditor(TableCellEditor editor, int row,
-				int column) {
-			Component out = super.prepareEditor(editor, row, column);
-			int requiredHeight = out.getPreferredSize().height * 2;
-			if (requiredHeight != getRowHeight(row)) {
-				setRowHeight(row, requiredHeight);
-			}
-			scrollRectToVisible(getCellRect(row, 0, true));
-			return out;
-		}
-
-		@Override
-		public void removeEditor() {
-			if (getDefaultEditor(Object.class) instanceof SynonymTableCellEditor) {
-				((SynonymTableCellEditor) getDefaultEditor(Object.class))
-						.notifyCancel();
-			}
-			super.removeEditor();
-		}
-
-		@Override
-		public void setCellEditor(TableCellEditor anEditor) {
-			super.setCellEditor(anEditor);
-			if (anEditor instanceof SynonymTableCellEditor)
-				((SynonymTableCellEditor) anEditor).notifyActive();
-		}
-	};
-
-	protected DefaultTableModel tableModel = new DefaultTableModel();
-
 	protected JButton addButton = new JButton("+");
 
 	protected JButton removeButton = new JButton("-");
 
-	protected SynonymTableCellEditor cellEditor = new SynonymTableCellEditor();
+	protected TableList<Synonym> synonymList;
 
 	@Override
 	public Component resolveName(String id, Properties props, String xml) {
@@ -142,27 +106,21 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public SynonymEditorComponent() {
-		table.setModel(tableModel);
-		table.setDefaultEditor(Object.class, cellEditor);
-		table.setDefaultRenderer(Object.class, new SynonymTableRenderer());
-		table.setTableHeader(null);
-		table.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
+		synonymList = new TableList<Synonym>();
+		synonymList.setEditor(new SynonymTableCellEditor());
+		synonymList.setRenderer(new SynonymTableRenderer());
+		synonymList.addSelectionListener(new ListSelectionListener() {
 
-					public void valueChanged(ListSelectionEvent e) {
-						removeButton
-								.setEnabled(table.getSelectedRowCount() > 0);
-					}
+			public void valueChanged(ListSelectionEvent e) {
+				removeButton.setEnabled(synonymList.getSelectedRowCount() > 0);
+			}
 
-				});
+		});
 
 		setLayout(new BorderLayout());
-		JScrollPane pane = new JScrollPane(table,
+		JScrollPane pane = new JScrollPane(synonymList,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		add(pane, "Center");
-		pane.setRowHeader(null);
-		pane.setColumnHeader(null);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setOpaque(false);
 		buttonPanel.setLayout(new GridLayout(1, 2));
@@ -182,20 +140,16 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		});
 		addButton.setToolTipText("Add new dbxref");
 		removeButton.setToolTipText("Remove selected dbxrefs");
+		add(pane, "Center");
 		add(buttonPanel, "South");
 	}
 
 	protected void addSynonym() {
-		Object[] data = { new SynonymImpl("<new synonym>") };
-		tableModel.addRow(data);
-		cellEditor.setCreation(true);
-		table.editCellAt(tableModel.getRowCount() - 1, 0);
+		synonymList.add();
 	}
 
 	protected void delSynonym() {
-		int[] rows = table.getSelectedRows();
-		for (int i = rows.length - 1; i >= 0; i--)
-			tableModel.removeRow(rows[i]);
+		synonymList.deleteSelectedRows();
 	}
 
 	@Override
@@ -211,16 +165,8 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	@Override
 	protected void loadGUI() {
 		if (currentObject instanceof SynonymedObject) {
-			Collection<Synonym> synonyms = ((SynonymedObject) currentObject)
-					.getSynonyms();
-			Object[] columnIdentifiers = { "Synonyms" };
-			Object[][] data = new Object[synonyms.size()][1];
-			int i = 0;
-
-			for (Synonym synonym : synonyms) {
-				data[i++][0] = synonym;
-			}
-			tableModel.setDataVector(data, columnIdentifiers);
+			synonymList
+					.setData(((SynonymedObject) currentObject).getSynonyms());
 		}
 	}
 
@@ -240,14 +186,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	protected Collection<Synonym> getEditedSynonyms() {
-		Collection<Synonym> out = new LinkedList<Synonym>();
-		for (int i = 0; i < tableModel.getRowCount(); i++) {
-			if (i == table.getEditingRow()) {
-				out.add((Synonym) cellEditor.getCellEditorValue());
-			} else
-				out.add((Synonym) tableModel.getValueAt(i, 0));
-		}
-		return out;
+		return synonymList.getData();
 	}
 
 	public java.util.List getChanges() {
@@ -341,16 +280,21 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	public void setRoot(RootTextEditComponent root) {
-		if (this.root != null) {
-			this.root.removeMapping(spec, table);
-			this.root.removeMapping(new FieldPathSpec(spec,
-					SynonymTextSearchCriterion.CRITERION),
-					cellEditor.synonymField);
-		}
+//		if (this.root != null) {
+//			this.root.removeMapping(spec, synonymList);
+//			this.root
+//					.removeMapping(
+//							new FieldPathSpec(spec,
+//									SynonymTextSearchCriterion.CRITERION),
+//							((SynonymTableCellEditor) synonymList.getEditor()).synonymField);
+//		}
 		super.setRoot(root);
-		getRoot().addMapping(spec, this, table);
-		getRoot().addMapping(
-				new FieldPathSpec(spec, SynonymTextSearchCriterion.CRITERION),
-				this, cellEditor.synonymField);
+//		getRoot().addMapping(spec, this, synonymList);
+//		getRoot()
+//				.addMapping(
+//						new FieldPathSpec(spec,
+//								SynonymTextSearchCriterion.CRITERION),
+//						this,
+//						((SynonymTableCellEditor) synonymList.getEditor()).synonymField);
 	}
 }

@@ -1155,9 +1155,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		TreePath[] paths = selection.getPaths(getRootAlgorithm(),
 				getLinkDatabase());
 		setSelectionPaths(paths);
-		System.err.println("set selection paths to:");
-		for (int i = 0; i < paths.length; i++)
-			System.err.println("  path[" + i + "] = " + paths[i]);
 		setSelectionPaths(paths);
 		if (paths.length > 0) {
 			makeVisible(paths[0]);

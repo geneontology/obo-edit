@@ -83,7 +83,6 @@ public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
 		}
 		if (specQuery != null)
 			paths = QueryUtil.query(getQueryEngine(), paths, specQuery);
-		System.err.println("paths = "+paths);
 		Collection<T> out = new LinkedHashSet<T>();
 		for(FieldPath p : paths) {
 			T val = (T) p.getLastValue();
