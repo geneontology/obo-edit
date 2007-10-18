@@ -1,11 +1,9 @@
 package org.obo.reasoner.impl;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.obo.datamodel.Link;
-import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -14,7 +12,7 @@ import org.obo.util.TermUtil;
 
 public class SimpleTransitivityRule extends AbstractReasonerRule {
 
-	protected static OBORestriction temp = new OBORestrictionImpl();
+	protected static Link temp = new OBORestrictionImpl();
 	long implicationTime;
 	long fetchTime;
 	long expConstructTime;
@@ -65,9 +63,9 @@ public class SimpleTransitivityRule extends AbstractReasonerRule {
 				out.add(exp);
 			}
 		}
-//		time = System.nanoTime();
-//		pushLinkDown(reasoner, link, out, new HashSet<Link>());
-//		implicationTime += System.nanoTime() - time;
+		// time = System.nanoTime();
+		// pushLinkDown(reasoner, link, out, new HashSet<Link>());
+		// implicationTime += System.nanoTime() - time;
 		return out;
 	}
 
@@ -75,9 +73,8 @@ public class SimpleTransitivityRule extends AbstractReasonerRule {
 
 	protected TransitivityExplanation createExplanation(
 			ReasonedLinkDatabase reasoner, Link temp, Link link, Link gpLink) {
-		return new TransitivityExplanation(new OBORestrictionImpl(temp
-				.getChild(), temp.getType(), temp.getParent(), true), link,
-				gpLink);
+		return new TransitivityExplanation(createLink(temp.getChild(), temp
+				.getType(), temp.getParent()), link, gpLink);
 	}
 
 	@Override
@@ -101,7 +98,8 @@ public class SimpleTransitivityRule extends AbstractReasonerRule {
 			if (ReasonerUtil.generateTransitiveImplication(reasoner, temp,
 					gcLink, link)) {
 				TransitivityExplanation exp = new TransitivityExplanation(
-						new OBORestrictionImpl(temp), gcLink, link);
+						createLink(temp.getChild(), temp.getType(), temp
+								.getParent()), gcLink, link);
 				if (!ReasonerUtil.containsExplanation(reasoner, exp)) {
 					out.add(exp);
 					pushLinkDown(reasoner, gcLink, out, seenem);

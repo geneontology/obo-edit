@@ -10,8 +10,6 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.OBORestriction;
-import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
@@ -68,8 +66,8 @@ public class IntersectionRule extends AbstractReasonerRule {
 				}
 			}
 			if (!failed) {
-				OBORestriction genLink = new OBORestrictionImpl(newLink
-						.getChild(), OBOProperty.IS_A, lo, true);
+				Link genLink = createLink(newLink
+						.getChild(), OBOProperty.IS_A, lo);
 				CompletenessExplanation exp = new CompletenessExplanation();
 				exp.setExplainedLink(genLink);
 				for(CompletenessMatch match : matchList) {

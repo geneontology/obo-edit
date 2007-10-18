@@ -8,7 +8,7 @@ import org.obo.reasoner.Explanation;
 
 public abstract class AbstractExplanation implements Explanation {
 
-	protected Collection<Link> supportingLinks = new LinkedList<Link>();
+	protected Collection<Link> supportingLinks;
 
 	protected Link explainedLink;
 
@@ -25,7 +25,10 @@ public abstract class AbstractExplanation implements Explanation {
 	}
 
 	public Collection<Link> getEvidence() {
-		return supportingLinks;
+		if (supportingLinks == null)
+			return Collections.emptySet();
+		else
+			return supportingLinks;
 	}
 
 	public String getDesc() {
@@ -42,12 +45,21 @@ public abstract class AbstractExplanation implements Explanation {
 	}
 
 	public void addEvidence(Link link) {
+		if (supportingLinks == null)
+			 supportingLinks = new ArrayList<Link>(1);
 		if (!supportingLinks.contains(link))
 			supportingLinks.add(link);
 	}
 
 	public boolean removeEvidence(Link link) {
-		return supportingLinks.remove(link);
+		boolean collapsed = false;
+		if (supportingLinks != null)
+			collapsed = supportingLinks.remove(link);
+		if (supportingLinks.isEmpty()) {
+			supportingLinks = null;
+			collapsed = true;
+		}
+		return collapsed;
 	}
 
 	public int hashCode() {

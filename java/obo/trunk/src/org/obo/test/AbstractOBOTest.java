@@ -39,8 +39,12 @@ public abstract class AbstractOBOTest extends TestCase {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		for (String f : names) {
-			config.getReadPaths().add(
-					getResourcePath()+"/" + f);
+			String path;
+			if (f.startsWith("/"))
+				path = f;
+			else
+				path = getResourcePath() + "/" +f;
+			config.getReadPaths().add(path);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);

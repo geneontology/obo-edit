@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.bbop.util.ObjectUtil;
 import org.bbop.util.VectorFilter;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
@@ -125,7 +124,7 @@ public class HistoryUtil {
 		Iterator it = t.getChildren().iterator();
 		while (it.hasNext()) {
 			Link ptr = (Link) it.next();
-			if (HistoryUtil.equals(ptr, tr))
+			if (TermUtil.equals(ptr, tr))
 				return ptr;
 		}
 		return null;
@@ -163,7 +162,7 @@ public class HistoryUtil {
 		Iterator it = t.getChildren().iterator();
 		while (it.hasNext()) {
 			Link ptr = (Link) it.next();
-			if (HistoryUtil.equalsWithoutIntersection(ptr, tr))
+			if (TermUtil.equalsWithoutIntersection(ptr, tr))
 				return ptr;
 		}
 		return null;
@@ -173,7 +172,7 @@ public class HistoryUtil {
 		Iterator it = t.getParents().iterator();
 		while (it.hasNext()) {
 			Link ctr = (Link) it.next();
-			if (HistoryUtil.equalsWithoutIntersection(ctr, tr))
+			if (TermUtil.equalsWithoutIntersection(ctr, tr))
 				return ctr;
 		}
 		return null;
@@ -183,29 +182,10 @@ public class HistoryUtil {
 		Iterator it = t.getParents().iterator();
 		while (it.hasNext()) {
 			Link ctr = (Link) it.next();
-			if (HistoryUtil.equals(ctr, tr))
+			if (TermUtil.equals(ctr, tr))
 				return ctr;
 		}
 		return null;
-	}
-
-	/**
-	 * Returns whether two links should be considered equal. This method ignores
-	 * the links' intersection property.
-	 */
-	public static boolean equalsWithoutIntersection(Link a, Link b) {
-		return ObjectUtil.equals(a.getChild(), b.getChild())
-				&& ObjectUtil.equals(a.getType(), b.getType())
-				&& ObjectUtil.equals(a.getParent(), b.getParent());
-	}
-
-	/**
-	 * Returns whether two links should be considered equal. This method takes
-	 * the links' intersection property into consideration.
-	 */
-	public static boolean equals(Link a, Link b) {
-		return equalsWithoutIntersection(a, b)
-				&& (TermUtil.isIntersection(a) == TermUtil.isIntersection(b));
 	}
 
 	public static Namespace findNamespace(Namespace ns, OBOSession session) {
