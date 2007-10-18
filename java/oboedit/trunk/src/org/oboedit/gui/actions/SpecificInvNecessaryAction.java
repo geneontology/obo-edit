@@ -2,6 +2,7 @@ package org.oboedit.gui.actions;
 
 
 import java.util.*;
+
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.gui.*;
@@ -46,14 +47,17 @@ public class SpecificInvNecessaryAction implements ClickMenuAction {
 			return;
 		}
 		boolean found = false;
-		Iterator it = sources.getLinks().iterator();
-		while(it.hasNext()) {
-			OBORestriction tr = (OBORestriction) it.next();
-			if (PathUtil.isFake(tr))
-				continue;
-			if (tr.isInverseNecessarilyTrue() != changeTo) {
-				found = true;
-				break;
+		Iterator<Link> it = sources.getLinks().iterator();
+		while (it.hasNext()) {
+			Link link = it.next();
+			if (link instanceof OBORestriction) {
+				OBORestriction tr = (OBORestriction) link;
+				if (PathUtil.isFake(tr))
+					continue;
+				if (tr.isInverseNecessarilyTrue() != changeTo) {
+					found = true;
+					break;
+				}
 			}
 		}
 		if (!found) {

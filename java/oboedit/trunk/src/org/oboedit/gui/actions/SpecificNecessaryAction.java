@@ -1,6 +1,5 @@
 package org.oboedit.gui.actions;
 
-
 import java.util.*;
 
 import org.obo.datamodel.*;
@@ -22,7 +21,7 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 	public SpecificNecessaryAction(boolean changeTo) {
 		this.changeTo = changeTo;
 	}
-	
+
 	public KeyStroke getKeyStroke() {
 		return null;
 	}
@@ -47,14 +46,17 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 			return;
 		}
 		boolean found = false;
-		Iterator it = sources.getLinks().iterator();
-		while(it.hasNext()) {
-			OBORestriction tr = (OBORestriction) it.next();
-			if (PathUtil.isFake(tr))
-				continue;
-			if (tr.isNecessarilyTrue() != changeTo) {
-				found = true;
-				break;
+		Iterator<Link> it = sources.getLinks().iterator();
+		while (it.hasNext()) {
+			Link link = it.next();
+			if (link instanceof OBORestriction) {
+				OBORestriction tr = (OBORestriction) link;
+				if (PathUtil.isFake(tr))
+					continue;
+				if (tr.isNecessarilyTrue() != changeTo) {
+					found = true;
+					break;
+				}
 			}
 		}
 		if (!found) {
@@ -71,7 +73,7 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 		Vector<HistoryItem> items = new Vector<HistoryItem>();
 
 		Iterator it = sources.getLinks().iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			OBORestriction tr = (OBORestriction) it.next();
 
 			if (tr.isInverseNecessarilyTrue() != changeTo) {
@@ -85,8 +87,8 @@ public class SpecificNecessaryAction implements ClickMenuAction {
 		else {
 			item = new TermMacroHistoryItem("Changed necessity");
 			for (int i = 0; i < items.size(); i++)
-				((TermMacroHistoryItem) item)
-						.addItem((HistoryItem) items.get(i));
+				((TermMacroHistoryItem) item).addItem((HistoryItem) items
+						.get(i));
 		}
 
 		GUIUtil.setSelections(item, sources, sources);
