@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Specification-Title: OBO API
+Sealed: true
+Specification-Version: 1.000
+Specification-Vendor: Open Biological Ontologies
+Implementation-Title: org.obo
+Implementation-Version: 1.000
+Implementation-Vendor: Berkeley Bioinfomatics and Ontologies Project
