@@ -1,0 +1,192 @@
+body {background-color: #FFFFFF;
+      font-size: 12pt;
+	font-family: SansSerif, Arial, Helvetica, sans-serif}       
+
+body .sidebar {
+     background-color:  #6495ED;
+     color: white;
+     margin: 10px 10px 10px 10px;
+     padding: 10px 10px 10px 10px;
+}
+
+body .tabbed {
+     margin: 0px 0px 0px 30px;
+}
+
+body .sidebar p {
+     font-size: 11pt;
+}
+
+body .sidebar h1 {
+     font-size: 16pt;
+     color: white;
+}
+
+h1  {font-size: 20pt;
+     font-weight: bold;
+     color: #8080C0;
+     margin-top: 0;
+     margin-bottom: 0}
+
+h1.cover {border-top="300em";
+	  margin-botttom="120";
+	  font-family: Palatino; font-size: 24pt; font-style: normal; font-weight: bold}
+
+h2 {font-size: 18pt;
+    font-weight: bold;
+    color: #8080C0;
+    margin-top: 15;
+    margin-bottom: -5}
+
+h3 {font-size: 14pt;
+    font-weight: bold;
+    color: #8080C0;
+    margin-top: 10;
+    margin-bottom: -5}
+
+h4 {font-size: 12pt;
+    font-weight: bold;
+    color: #8080C0;
+    margin-top: 10;
+    margin-bottom: -5}
+
+p   {font-size: 12pt;
+     font-family: SansSerif, Arial, Helvetica, sans-serif;       
+     margin-top: 10;
+     margin-bottom: 0}
+
+p.code {font-family: Monospaced;
+	margin-left: 22}
+
+p.glossTitle   {margin-top: 0;
+     		font-weight: bold;
+     	       	color: #8080C0;}
+
+p.indent1  {margin-left: 3}
+
+p.indent2  {margin-left: 12}
+
+p.indent3  {margin-left: 32}
+
+p.note {margin-top: -19;
+	margin-left: 22}
+
+p.table {font-size: 12pt;
+     font-family: SansSerif, Arial, Helvetica, sans-serif;
+     margin-top:0;
+     margin-bottom: 0}
+
+blockquote.menu {margin-left: 18;
+		margin-top: 10}
+
+center {margin-top: 10}
+
+dl {margin-left: 10;
+    margin-top: 10;
+    margin-bottom: 10}
+
+dd.hang {margin-left:15;
+	 margin-bottom:10}
+
+dd.hang_last {margin-left:15;
+	 margin-bottom:0}
+
+dd.next {margin-left: 31}
+
+dd p {margin-left: 20;
+    margin-top: 0;
+    margin-bottom: 0}
+
+ol {margin-top: 5;
+     margin-bottom: 0;
+     margin-left: 21}
+
+li {margin-top: 0;
+    margin-bottom: 5}
+        
+li p{font-size: 12pt;
+     font-family: SansSerif, Arial, Helvetica, sans-serif;
+     margin-top: 5;
+     margin-bottom: 0}
+
+ul {margin-top: 5;
+    margin-bottom: 0;
+    margin-left: 21;
+    list-style: circle}
+
+pre.code_table {font-size: x-small;
+	   margin-left: 10; font-family: Monospaced, "Courier New", Courier, mono}
+
+[border] {border: solid thin;
+       border-color: silver}
+
+table {border: none;
+       border-color: white;
+       margin-top: 5;
+       margin-bottom: 5}
+
+td {font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;} 
+
+
+th {padding-left: 1;
+    padding-right: 1;
+    padding-top: 1;
+    padding-bottom: 1}
+
+
+small {font-size: x-small}
+
+dl.see_also {margin-left: 0;
+    margin-top: 10;
+    margin-bottom: 10}
+a.nounderline {text-decoration: none }
+pre {  font-family: Monospaced, "Courier New", Courier, mono; font-size: x-small}
+code {  font-family: Monospaced, "Courier New", Courier, mono; font-size: x-small}
+
+table.bodyTable {
+  width: 100%;
+}
+
+table.bodyTable th {
+  color: white;
+  background-color: #bbb;
+  text-align: left;
+  font-weight: bold;
+}
+
+table.bodyTable th, table.bodyTable td {
+  font-size: 1em;
+  padding: 5px;
+  vertical-align: top;
+}
+
+table.bodyTable tr.a {
+  background-color: #ddd;
+}
+
+table.bodyTable tr.b {
+  background-color: #eee;
+}
+
+.source {
+  border: 1px solid #999;
+  padding: 12px;
+  margin: 1em 7px 1em 7px;
+  background-color: #ffffff;
+}
+
+.source pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+div.section {
+  background-color: #0000AA;
+  color: white;
+}
+
+div.section h2 {
+  color: white;
+  padding: 10px;
+}

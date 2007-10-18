@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>How ID Generation Works</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>How ID Generation Works</H1>
+<H2>The system</H2>
+<P>ID generation works differently for relations and 
+terms.</P>
+<P>When a new relation is created, OBO-Edit displays a prompt where the new 
+relation id can be entered. The user can type in anything they want, 
+provided:</P>
+<UL>
+  <LI>The characters in the id name are legal OBO 
+  identifier characters 
+  <LI>The id is not already in use.</LI></UL>
+<P>              
+         When a new term is created, 
+OBO-Edit determines what <STRONG>id generation rule</STRONG> to use (see <A 
+href="The_ID_Manager_Plugin.htm">The ID Manager Plugin</A> for how the 
+current rule is specified). This rule contains information about what new ids 
+should look like.</P>
+<P>At a minimum, an id generation rule specifies some fixed text that must 
+appear in a new id. Usually, the rule also specifies a fixed-length string of 
+numbers that may appear in the new id. The actual <EM>contents</EM> of this number 
+string are not specified; the rule just says that a number of a certain length 
+should appear at a certain position in a newly generated id.</P>
+<P>OBO-Edit then searches all the terms (live and obsolete) in the entire 
+ontology to see which ids are already in use. OBO-Edit then generates an id 
+satisfies the id generation rule. If the id rule requires a numeric sequence to 
+appear in new ids, OBO-Edit generates the lowest possible number that is not 
+already in use.</P>
+<P>In this way, OBO-Edit guarantees that no id is ever reused, and that the id 
+space is used efficiently. That is, if the ids "GO:003" and "GO:005" are in use, 
+but for some reason "GO:004" is not in use, the next term that OBO-Edit 
+generates will be "GO:004" (assuming that the id generation rule is 
+"GO:$sequence(3)$").</P>
+<H2>Limitations of the System</H2>
+<P>OBO-Edit can only work with what it's given. It assumes that if an id does 
+not appear in any of the currently loaded ontologies, that id is free to be 
+given to a new term.</P>
+<P>This is not always true.</P>
+<P>For example, an ontology may have been filtered in such a way that it was 
+saved into 2 or 3 files. Later, a user may load only one of those files. If the 
+pieces of the ontology in each file use the same namespace, a newly created term 
+could be assigned an id that is currently in use in a part of the ontology that 
+has not been loaded. This&nbsp;can have <EM>disastrous</EM> results when all the 
+pieces of the ontology are loaded again, since OBO-Edit will assume that the two 
+terms with the same id are actually the <EM>same</EM> term. At best, there will 
+be&nbsp;a load error. For this reason, one should never edit an ontology that is 
+only partially loaded.</P>
+<P>This is also why it is so dangerous to use the <A 
+href="Destroying.htm">Destroy</A>&nbsp;command. If&nbsp;a term is destroyed, its 
+id goes back into circulation for use in new term creation, and that id will 
+probably be reused immediately. If the term that was destroyed was 
+ever&nbsp;included in a publicly available version of your 
+ontology,&nbsp;external database and applications that use your ontology may 
+become confused by this id reuse. For example, tools like&nbsp;<A 
+href="obodiff.htm">obodiff</A>&nbsp;will think that instead of destroying a term 
+and creating a new term somewhere else, you have kept the old term in the 
+ontology but changed all its parents, children, its name, its defintion, and all 
+its other attributes.</P>
+<P>Applications assume that a term id will be used <EM>for a single term and 
+never again</EM>. That is why terms are obsoleted instead of destroyed: we need 
+to keep an audit trail of ids that have been used. If it is possible to reuse an 
+id through the use of the destroy command or ontology filtering, this assumption 
+does not hold, and applications everywhere become deeply 
+confused.</P>
+</BODY>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Expression Syntax</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Expression Syntax</h1>
+<p>Many thanks to the developers of Jexl. Much of this 
+documentation is stolen word-for-word from their documentation at <a 
+href="http://jakarta.apache.org/commons/jexl/reference/syntax.html">http://jakarta.apache.org/commons/jexl/reference/syntax.html</a></p>
+<p>&nbsp;</p>
+
+<div class="section"><a name="Language_Elements"></a><h2>Language Elements</h2>
+      <table class="bodyTable">
+        <tr class="a"><th width="15%">Item</th><th>Description</th></tr>
+        <tr class="b">
+          <td>Comments</td>
+          <td>
+      <p>There are 3 possible comment styles:</p>
+      <ul>
+        <li>
+            Specified using <code>##</code> and extend to 
+        the end of line, e.g. </li></ul>
+      <div class="source"><pre>## This is a comment</pre></div>
+      <ul>
+        <li>C-style&nbsp;single-line comments, specified using // and extend to 
+        the end of&nbsp;line, e.g.</li></ul>
+      <div class="source"><pre>// This is a comment too</pre></div>
+      <ul>
+        <li>C-style block comments, beginning with /* and ending 
+        with&nbsp;*/&nbsp;</li></ul>
+      <div class="source"><pre>/**
+ * This is a
+ * multi-line
+ * comment
+ */</pre></div>
+  
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Identifiers / variables</td>
+          <td>
+            Must start with <code>a-z</code>, <code>A-Z</code>, <code>_</code> or <code>$</code>.
+            Can then be followed by <code>0-9</code>, <code>a-z</code>, <code>A-Z</code>, <code>_</code> or <code>$</code>.
+            e.g.
+            <ul>
+
+              <li>Valid: <code>var1</code>,<code>_a99</code>,<code>$1</code>
+              <li>Invalid: <code>9v</code>,<code>!a99</code>,<code>1$</code></li>
+            </ul>
+
+            <p>
+              OSL also supports <code>ant-style</code> variables, e.g. 
+    <div class="source"><pre>my.dotted.var</pre></div>is a valid variable 
+      name. 
+      <p></p>
+            <p>
+              <strong>NOTE:</strong> OSL does not support variables with hyphens in them, e.g.
+              
+    <div class="source"><pre>commons-logging</pre></div>
+
+   is not a valid variable, but instead is treated as a
+              subtraction of the variable <code>logging</code> from the variable <code>commons</code> 
+      <p></p>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Scripts</td>
+
+          <td>
+                      A script in OSL is made up of zero or more statements.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Statements</td>
+          <td>
+            A statement can be the empty statement, the semicolon (<code>;</code>) ,  block, assignment or an expression.
+            Statements are optionally terminated with a semicolon.
+          </td>
+
+        </tr>
+        <tr class="b">
+          <td>Block</td>
+          <td>
+            A block is simply multiple statements inside curly braces (<code>{, }</code>).
+          </td>
+        </tr>
+      </table>
+
+    </div><div class="section"><a name="Literals"></a><h2>Literals</h2>
+      <table class="bodyTable">
+        <tr class="a"><th width="15%">Item</th><th>Description</th></tr>
+        <tr class="b">
+          <td>Integer Literals</td>
+          <td>1 or more digits from <code>0</code> to <code>9</code></td>
+
+        </tr>
+        <tr class="a">
+          <td>Floating point Literals</td>
+          <td>
+            1 or more digits from <code>0</code> to <code>9</code>, followed
+            by a decimal point and then one or more digits from
+            <code>0</code> to <code>9</code>. 
+          </td>
+
+        </tr>
+        <tr class="b">
+          <td>String literals</td>
+          <td>
+            Can start and end with either <code>'</code> or <code>"e;</code>, e.g.
+            
+    <div class="source"><pre>"Hello world"</pre></div>
+
+   and
+            
+    <div class="source"><pre>'Hello world'</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Boolean literals</td>
+          <td>
+            The literals <code>true</code> and <code>false</code> can be used, e.g.
+            
+    <div class="source"><pre>val1 == true</pre></div>
+
+  
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Null literal</td>
+          <td>
+            The null value is represented as in java using the literal <code>null</code>, e.g.
+            
+    <div class="source"><pre>val1 == null</pre></div>
+
+  
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  <div class="section"><a name="Function_Calls"></a><h2>Built-In Functions</h2>
+      <table class="bodyTable">
+        <tr class="a"><th width="15%">Function</th><th>Description</th></tr>
+        <tr class="b">
+
+          <td>empty</td>
+          <td>
+            Returns true if the expression following is either:
+            <ol>
+              <li><code>null</code>
+              <li>An empty string 
+              <li>An array of length zero 
+
+              <li>A collection of size zero 
+              <li>An empty map</li>
+            </ol>
+            
+    <div class="source"><pre>empty(var1)</pre></div>
+  
+          </td>
+        </tr>
+        <tr class="a">
+
+          <td>size</td>
+          <td>
+            Returns the information about the expression:
+            <ol>
+              <li>Length of an array 
+              <li>Size of a List 
+              <li>Size of a Map 
+
+              <li>Size of a Set 
+              <li>Length of a string</li>
+            </ol>
+            
+    <div class="source"><pre>size("Hello")</pre></div>
+   returns 5.
+          </td>
+        </tr>
+
+        <tr class="a">
+          <td>print</td>
+          <td>
+Prints a string to stdout.
+            
+    <div class="source"><pre>print("Hello world")</pre></div>Prints out the 
+      phrase <font style="BACKGROUND-COLOR: #dddddd"><font face="Courier">Hello 
+      world</font>. Returns <font face="Courier">null</font>. 
+</font>
+
+	       
+          </td>
+        </tr>
+
+        <tr class="a">
+          <td>println</td>
+          <td>
+Prints a string to stdout, followed by a newline.
+            
+    <div class="source"><pre>println("Hello world")</pre></div>Prints out the 
+      phrase <font style="BACKGROUND-COLOR: #dddddd"><font face="Courier">Hello 
+      world</font> and a newline. Returns <font face="Courier">null</font>. 
+</font>
+
+	       
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+
+  <div class="section"><a name="Function_Declarations"></a>
+      <h2>Function Declarations</h2>
+      <table class="bodyTable">
+        <tr class="a"><th width="15%">Item</th><th>Description</th></tr>
+        <tr class="b">
+
+          <td>function declarations</td>
+          <td>
+      <p>Functions are declared using one of the following forms:</p>
+      <ul>
+        <li>
+      <code>function <em>&lt;function_name&gt;</em> ( 
+        <em>&lt;argument1&gt;, &lt;argument2&gt;, ... &lt;argumentN&gt;</em>     
+        ) {<br>&nbsp; <em>&lt;function_body&gt;</em>
+<br>
+      }</code>
+        <li><code> function 
+        <em>&lt;function_name&gt;</em> ( <em>&lt;argument_list_name&gt;</em>    * ) {<br>
+&nbsp; <em>&lt;function_body&gt;</em><br>
+}
+</code>
+        <li><code> function 
+        <em>&lt;function_name&gt;</em> () {<br>
+&nbsp; <em>&lt;function_body&gt;</em><br>
+}
+</code></li></ul>
+      <p><code><font face="Arial" size="3">Function declarations must appear at the beginning of 
+      a file, before any other statements. See <A 
+      href="Language_Concepts.htm#functions">function calls and arguments</A> 
+      for more information on the use of these different forms.</font></code></p>
+  
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  <div class="section"><a name="Scope_Modifiers"></a>
+      <h2>Scope Modifiers</h2>
+      <table class="bodyTable">
+        <tr class="a"><th width="15%">Item</th><th>Description</th></tr>
+        <tr class="b">
+
+          <td>export</td>
+          <td>
+      <p>Makes a local variable into a global variable.</p>
+      <div class="source"><pre>USER_NAME = "jrichter";
+export USER_NAME;</pre></div>
+      <p>Makes <code>USER_NAME</code> a global variable with the value "jrichter".</p>  
+          </td>
+        </tr>
+        <tr class="a">
+
+          <td>global</td>
+          <td>
+      <p>
+Declares that a function is global, rather than 
+      local. This keyword can only appear immediately before a function 
+      
+declaration.</p>
+  
+          </td>
+        </tr>
+      </table>
+    </div>
+
+<div class="section"><a name="Operators"></a><h2>Operators</h2>
+      <table class="bodyTable">
+        <tr class="b"><th width="15%">Operator</th><th>Description</th></tr>
+        <tr class="a">
+          <td>Boolean <code>and</code></td>
+          <td>
+
+            The usual <code>&amp;&amp;</code> operator can be used as well as the word <code>and</code>, e.g.
+            
+    <div class="source"><pre>cond1 and cond2</pre></div>
+   and
+            
+    <div class="source"><pre>cond1 &amp;&amp; cond2</pre></div>
+   are equivalent
+          </td>
+
+        </tr>
+        <tr class="b">
+          <td>Boolean <code>or</code></td>
+          <td>
+            The usual <code>||</code> operator can be used as well as the word <code>or</code>, e.g.
+            
+    <div class="source"><pre>cond1 or cond2</pre></div>
+
+   and
+            
+    <div class="source"><pre>cond1 || cond2</pre></div>
+   are equivalent
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Boolean <code>not</code></td>
+          <td>
+
+            The usual <code>!</code> operator can be used as well as the word <code>not</code>, e.g.
+            
+    <div class="source"><pre>!cond1</pre></div>
+   and
+            
+    <div class="source"><pre>not cond1</pre></div>
+   are equivalent
+          </td>
+        </tr>
+
+        <tr class="b">
+          <td>Bitwise <code>and</code></td>
+          <td>
+            The usual <code>&amp;</code> operator is used, e.g. 
+            
+    <div class="source"><pre>33 &amp; 4</pre></div>
+  , 0010 0001 &amp; 0000 0100 = 0.
+          </td>
+
+        </tr>
+        <tr class="a">
+          <td>Bitwise <code>or</code></td>
+          <td>
+            The usual <code>|</code> operator is used, e.g.
+            
+    <div class="source"><pre>33 | 4</pre></div>
+
+  , 0010 0001 | 0000 0100 = 0010 0101 = 37.
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Bitwise <code>xor</code></td>
+          <td>
+            The usual <code>^</code> operator is used, e.g.
+            
+    <div class="source"><pre>33 ^ 4</pre></div>
+
+  , 0010 0001 ^ 0000 0100 = 0010 0100 = 37.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Bitwise <code>complement</code></td>
+          <td>
+            The usual <code>~</code> operator is used, e.g.
+            
+    <div class="source"><pre>~33</pre></div>
+
+  , ~0010 0001 = 1101 1110 = -34.
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Equality</td>
+          <td>
+            The usual <code>==</code> operator can be used as well as the abbreviation <code>eq</code>.
+            For example 
+            
+    <div class="source"><pre>val1 == val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 eq val2</pre></div>
+   are equivalent.
+            <ol>
+              <li>
+                <code>null</code> is only 
+        ever equal to null, that is if you compare null to any non-null value, 
+        the result is false. 
+              <li>Equality uses the java <code>equals</code> method</li>
+
+            </ol>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Inequality</td>
+          <td>
+            The usual <code>!=</code> operator can be used as well as the abbreviation <code>ne</code>.
+            For example
+            
+    <div class="source"><pre>val1 != val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 ne val2</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Less Than</td>
+          <td>
+            The usual <code>&lt;</code> operator can be used as well as the abbreviation <code>lt</code>.
+            For example
+            
+    <div class="source"><pre>val1 &lt; val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 lt val2</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Less Than Or Equal To</td>
+          <td>
+            The usual <code>&lt;=</code> operator can be used as well as the abbreviation <code>le</code>.
+            For example
+            
+    <div class="source"><pre>val1 &lt;= val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 le val2</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Greater Than</td>
+          <td>
+            The usual <code>&gt;</code> operator can be used as well as the abbreviation <code>gt</code>.
+            For example
+            
+    <div class="source"><pre>val1 &gt; val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 gt val2</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Greater Than Or Equal To</td>
+          <td>
+            The usual <code>&gt;=</code> operator can be used as well as the abbreviation <code>ge</code>.
+            For example
+            
+    <div class="source"><pre>val1 &gt;= val2</pre></div>
+
+   and
+            
+    <div class="source"><pre>val1 ge val2</pre></div>
+   are equivalent.
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Addition</td>
+          <td>
+            The usual <code>+</code> operator is used.
+            For example
+            
+    <div class="source"><pre>val1 + val2</pre></div>
+
+  
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Subtraction</td>
+          <td>
+            The usual <code>-</code> operator is used.
+            For example
+            
+    <div class="source"><pre>val1 - val2</pre></div>
+
+  
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Multiplication</td>
+          <td>
+            The usual <code>*</code> operator is used.
+            For example
+            
+    <div class="source"><pre>val1 * val2</pre></div>
+
+  
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Division</td>
+          <td>
+            The usual <code>/</code> operator is used.
+            For example
+            
+    <div class="source"><pre>val1 / val2</pre></div>
+
+  
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Integer Division</td>
+          <td>
+            The <code>div</code> operator is used.
+            For example
+            
+    <div class="source"><pre>4 div 3</pre></div>
+
+   gives 1.
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Modulus (or remainder)</td>
+          <td>
+            The <code>%</code> operator is used. An alternative is the <code>mod</code>
+
+            operator.
+            For example
+            
+    <div class="source"><pre>5 mod 2</pre></div>
+   gives 1 and is equivalent to 
+    <div class="source"><pre>5 % 2</pre></div>
+  
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Negation</td>
+
+          <td>
+            The unary <code>-</code> operator is used.
+            For example
+            
+    <div class="source"><pre>-12</pre></div>
+  
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Array access</td>
+
+          <td>
+            Array elements may be accessed using either square brackets or a dotted numeral, e.g.
+            
+    <div class="source"><pre>arr1[0]</pre></div>
+   and 
+    <div class="source"><pre>arr1.0</pre></div>
+   are equivalent
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Assignment</td>
+
+          <td>
+            The usual <code>=</code> operator is used. The item to the left of the <code>=</code> must be a variable name or array reference. The value to the right may be any expression.
+            For example
+            
+    <div class="source"><pre>x = 3</pre></div>
+  
+          </td>
+        </tr>
+        <tr class="a">
+          <td>Post-increment (++)</td>
+
+          <td>
+            The post increment <FONT face="Courier New" 
+      size=2>++ </FONT>
+               operator&nbsp;adds 1 to a 
+      variable. The value of a post-incremented variable is the variable's value 
+      <em>before</em>
+                     1 was added. For example:
+            
+    <div class="source"><pre>x = 3;</pre><pre>print(x++);</pre><pre>print(x);</pre></div>
+   would print:
+<pre><strong>3
+4</strong>
+
+
+</pre>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>Post-decrement (--)</td>
+
+          <td>
+            The post decrement&nbsp;&nbsp;--<FONT 
+      face="Courier New" size=2> </FONT>
+                operator&nbsp;subtracts 1&nbsp;from a 
+      variable. The value of a post-decremented variable is the variable's value 
+      <em>before</em>
+                     1 was subtracted. For example:
+            
+    <div class="source"><pre>x = 3;</pre><pre>print(x--);</pre><pre>print(x);</pre></div>
+   would print:
+<pre><STRONG>3
+2s</STRONG>
+
+
+</pre>
+          </td>
+        </tr>
+        <tr class="a">
+          <td>(++) Pre-increment</td>
+
+          <td>
+            The <FONT face="Courier New" size=2>++ </FONT>pre 
+      increment operator&nbsp;adds 1 to a variable. The value of a 
+      post-incremented variable is the variable's
+                     value plus 1. For example:
+            
+    <div class="source"><pre>x = 3;</pre><pre>print(++x);</pre><pre>print(x);</pre></div>
+   would print:
+<pre><strong>4
+4</strong>
+
+
+</pre>
+          </td>
+        </tr>
+        <tr class="b">
+          <td>(--) Pre-decrement</td>
+
+          <td>
+            The pre decrement operator&nbsp;subtracts 
+      1&nbsp;from a variable. The value of a pre-decremented variable is the 
+      variable's
+                     value minus 1. For example:
+            
+    <div class="source"><pre>x = 3;</pre><pre>print(--x);</pre><pre>print(x);</pre></div>
+   would print:
+<pre><STRONG>2
+2</STRONG>
+
+
+</pre>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+<div class="section"><a name="Flow_control"></a><h2>Flow Control</h2>
+      <table class="bodyTable">
+        <tr class="b"><th width="15%">Operator</th><th>Description</th></tr>
+        <tr class="a">
+          <td>if</td>
+          <td>
+            Classic, if/else statement, e.g.
+            <code>if ((x * 2) == 5) {y = 1;} else {y = 2;}</code>
+
+          </td>
+        </tr>
+        <tr class="b">
+          <td>foreach</td>
+          <td>
+            Loop through items of an Array, Collection, Map, Iterator or Enumeration, e.g.
+            <code>foreach (item in list) { x = x + item; }</code>
+            Where <code>item</code> and <code>list</code> are variables.
+          </td>
+
+        </tr>
+        <tr class="b">
+          <td>for</td>
+          <td>
+            Loops while updating the value of an iterator variable until a condition is satisfied. This statement works exactly like a Java or C for statement, e.g.
+<div class="source"><pre>for (i= 0;i &lt;  10; i=i+1) {
+  print(x+" squared = "+(x*x));
+}</pre></div>
+      <p>
+
+            Where <code>i</code> is the iteration variable. 
+      The code above prints the numbers from zero to 9 and their squares.</p>
+      <p>                 <br>
+Note that both the initializer and the 
+      increment section of the for statement can be left blank. The condition 
+      does not need to refer to the increment variable. </p>
+                           
+          </td>
+
+        </tr>
+        <tr class="a">
+          <td>while</td>
+          <td>
+            Loop until a condition is satisfied, e.g.
+            <code>while (x lt 10) { x = x + 2; }</code>
+          </td>
+        </tr>
+
+        <tr class="a">
+          <td>break</td>
+          <td>
+            Immediately breaks execution of the current loop, and jumps to the end of the loop structure. This must be used inside of a <code>for</code>,
+            <code>foreach</code>, or <code>while</code> loop.
+<div class="source"><pre>for (i= 0;i &lt;  10; i=     i+1){ if
+  (x*x &gt;  20)
+    break;
+  print(x+" squared = "+(x*x));
+}</pre></div>
+            The code above prints the numbers from zero to 4 and their squares. The loop is halted when
+            x equals 4, because of the break statement. The break statement always returns null.
+          </td>
+        </tr>
+
+        <tr class="a">
+          <td>return</td>
+          <td>
+            Immediately ends execution of the current code context and returns a value.
+
+<div class="source"><pre>function factorial(x) { if
+  (x &lt; = 2)
+    return x;
+  else
+    return x * factorial(x - 1);
+}
+
+return factorial(5);
+factorial(4);
+</pre></div>
+            The code above returns the value 120. The final statement (<code>factorial(4)</code>) is never executed, because the statement <code>return factorial(5)</code> halts the program immediately.
+          </td>
+        </tr>
+
+      </table>
+    </div>
+
+
+</body>
+</html>

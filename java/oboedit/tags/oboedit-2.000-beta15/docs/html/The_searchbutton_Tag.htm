@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>The searchbutton Tag</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>The &lt;searchbutton&gt; Tag</H1>
+<P>The &lt;search_button&gt; tag creates&nbsp;a <A 
+href="Custom_Search_Buttons.htm">custom search button</A>.&nbsp;See <A 
+href="Custom_Search_Buttons.htm">Custom Search Buttons</A> for more information 
+about how these versatile components work.</P>
+<H2>Parameters</H2>
+<P>
+<TABLE borderColor=#000000 cellPadding=5 width="100%" align=center border=1>
+  
+  <TR>
+    <TD align=middle><STRONG>Name</STRONG></TD>
+    <TD align=middle><STRONG>Description</STRONG></TD>
+    <TD align=middle><STRONG>Legal Values</STRONG></TD>
+    <TD align=middle><STRONG>Default</STRONG></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>method</FONT></TD>
+    <TD>
+      <P>Specifies the type of search button this is.</P></TD>
+    <TD>
+      <P><FONT face=Courier>SEARCH</FONT></P>
+      <P><FONT face=Courier>FILTER</FONT></P>
+      <P><FONT face=Courier>RENDER</FONT></P>
+      <P><FONT face=Courier>MODIFY</FONT></P></TD>
+    <TD>
+      <P>SEARCH</P></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>filter</FONT></TD>
+    <TD>
+      <P>Specifies a filter for this button to use. The value is either a path 
+      to a saved filter file on the disk, or a <A 
+      href="Custom_Search_Buttons.htm#bultin_filters">built-in filter</A> specifier. This parameter must be specified unless the method 
+      paramter is set to MODIFY. If a MODIFY button is selected with no filter 
+      set, 
+      no modification filter will be applied.</P></TD>
+    <TD>
+      <P><EM>any filter path or a valid </EM><A 
+      href="Custom_Search_Buttons.htm#bultin_filters"><EM>built-in 
+      filter</EM></A><EM>&nbsp;specifier</EM></P></TD>
+    <TD>
+      <P><EM>none</EM></P></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>label</FONT></TD>
+    <TD>The text label that appears on the button. This may be left blank if 
+      the <FONT face=Courier>icon</FONT> parameter is defined.</TD>
+    <TD><EM>any string</EM></TD>
+    <TD><EM>none</EM></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>icon</FONT></TD>
+    <TD>An icon that should appear on the button. The value is either a path 
+      to a .gif file on disk. This may be left blank if the <FONT 
+      face=Courier>label</FONT> parameter is defined.</TD>
+    <TD>
+      <P><EM>the path to a .gif file on disk</EM></P></TD>
+    <TD><EM>none</EM></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>tooltip</FONT></TD>
+    <TD>Tooltip text that will appear when the mouse hovers over this button. 
+      This parameter is optional.</TD>
+    <TD><EM>any string</EM></TD>
+    <TD><EM>none</EM></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>selected</FONT></TD>
+    <TD>Whether or not this button is selected by default. This parameter only 
+      makes sense if the <FONT face=Courier>method</FONT> parameter is set to 
+      <FONT face=Courier>MODIFY</FONT>.</TD>
+    <TD>
+      <P><FONT face=Courier>true</FONT></P>
+      <P><FONT face=Courier>false</FONT></P></TD>
+    <TD><FONT face=Courier>false</FONT></TD></TR>
+  <TR>
+    <TD><FONT face=Courier>buttonGroup</FONT></TD>
+    <TD>
+      An identifier for this button's buttonGroup. It can 
+      be any string, but if multiple buttons have the same buttonGroup, only one 
+      button in that group can be selected at a time. Whenever a button in the 
+      buttonGroup is selected, all other buttons in the group are deselected.</TD>
+    <TD>
+      <P><EM>any string</EM></P></TD>
+    <TD>
+      <P><EM>none</EM></P></TD></TR></TABLE></P>
+<H2> Examples</H2>
+<P>See <A href="Custom_Search_Buttons.htm#examples">Custom 
+Search Buttons</A> for examples.</P>
+</BODY>
+</HTML>

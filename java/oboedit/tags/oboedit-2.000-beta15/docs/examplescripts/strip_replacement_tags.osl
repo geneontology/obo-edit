@@ -1,0 +1,7 @@
+// Erases all term replacement info from a file
+foreach (term in session.getObjects()) {
+  if (TermUtil.isObsolete(term)) {
+    term.getReplacedBy().clear();
+    term.getConsiderReplacements().clear();
+  }
+}
