@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+
+  <meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+
+
+  <title>The DAG Viewer</title>
+  <link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+
+
+<body bgcolor="#ffffff">
+
+<h1>The DAG Viewer</h1>
+
+<p>The DAG Viewer is a plugin that displays all the possible paths to the 
+currently selected term (or terms):</p>
+
+<p><IMG height=298 hspace=0 src="../images/dagview.gif" 
+width=328 border=0></p>
+
+<p>This display shows a view of the ontology where every link that does not end 
+in the selected term has been removed. Hence, every leaf in this tree is the 
+currently selected term.</p>
+
+<p>At the bottom left of the screen is a summary of the number of 
+<strong>paths</strong> in the trimmed view. A <strong>path</strong> is a unique 
+collection of links that leads from the selected term to the ontology root. In 
+the example above, there are 5 paths to the root from "virion transport 
+vesicle". Note that even if a term only has one parent, it may have multiple 
+paths to the root if one of its ancestor has multiple parents.</p>
+
+<p>    
+              
+             
+             To configure 
+the DAG Viewer, press the "Config" button. A configuration window will appear:</p>
+
+<p><IMG height=153 hspace=0 
+src="../images/dagview_config.gif" width=238 border=0>    
+              
+             
+               
+           </p>
+
+<p>This plugin can be configured via the two checkboxes in the lower right:</p>
+
+<ul>
+
+  <li><strong>Show paths to multiple 
+  selected terms</strong>- If this checkbox is unchecked, the DAG Viewer only 
+  displays paths to a single term (the current sub-selection). If this box is 
+  checked, the DAG Viewer will show paths to all the currently selected terms. 
+  <li><strong>Collapse&nbsp;already 
+  shown paths</strong> &nbsp;- In ontologies with lots of multiple 
+  parentage, there may be thousands of paths to a single term. All these paths 
+  can lead to a huge, jumbled and slow display. If the "Collapse" checkbox is 
+  activated, any given subpath is completely expanded only once. If a subpath 
+  appears again, it is collapsed. (See the screenshot above for an example. At 
+  the top of the display, the relationship"virion transport vesicle 
+  -<strong>is_a</strong>-&gt; intracellular membrane-bound 
+  organelle" is displayed. Since that relationship has already been shown, the 
+  children of "intracellular membrane-bound organelle" are collapsed near the 
+  bottom of the display to save space. 
+  <li><span style="FONT-WEIGHT: bold">Calculate paths based on primary selector</span> - Normally,
+OBO-Edit shows the "global" path structure, ignoring any filters. If
+"Local" is checked, OBO-Edit shows the path structure based on the
+current <A href="Working_with_Selections.htm">primary selector</A>'s version of 
+  the ontology. Any filters that have been applied to the primary selector will 
+  be used when displaying the path structure.
+  <li><STRONG>Show non-transitive paths</STRONG>&nbsp;- The 
+  DAG Viewer normally doesn't show paths that include non-transitive 
+  relationship types. If this&nbsp;box is selected, paths with non-transitive relationships
+will be shown.&nbsp;This often leads to a highly cluttered display.</li>
+</ul>
+
+
+<div class="sidebar">
+<h1>Layout Information</h1>
+
+<hr>
+
+<p class="sidebar">This component's layout id is<br>
+
+<code><b>plugin:org.geneontology.oboedit.plugin.DAGView</b></code></p>
+
+<p>See <A href="Customizing_the_Interface.htm">Customizing 
+the Interface</A> for more information </p>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

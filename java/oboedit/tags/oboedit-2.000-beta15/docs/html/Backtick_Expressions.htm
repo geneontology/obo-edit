@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Backtick Expressions</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Backtick Expressions</H1>
+<P>Some fields in OBO-Edit allow the use of 
+<STRONG>backtick expressions</STRONG>. Backtick expressions are OSL expressions 
+enclosed in ` (backtick) characters.</P>
+<P>When a backtick expression is encountered in an appropriate context, the OSL 
+expression is evaluated, and the backtick expression is replaced with the value 
+of the expression.</P>
+<P>For example, the following term filter will find all descendants of the 
+currently selected term:</P>
+<P><FONT face=Courier>[Ancestor] [ID] [equals] 
+"`GUI.getSubSelection().getID()`"</FONT></P>
+<P>The backtick expression <FONT 
+face=Courier>`GUI.getSubSelection().getID()`</FONT><FONT face=Arial> will be 
+evaluated and replaced with the ID of the currently selected term.</FONT></P>
+<P>Backtick expression are allowed in the "value" field of a <A 
+href="Filters.htm">filter</A> and in certain places within an <A 
+href="Working_with_XML_Layouts.htm">XML screen layout</A>. See the documentation 
+for each layout tag to determine the specific places where backtick expressions 
+are allowed.</P>
+</BODY>
+</HTML>

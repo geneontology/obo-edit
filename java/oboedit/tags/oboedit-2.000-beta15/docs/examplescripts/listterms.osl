@@ -1,0 +1,3 @@
+foreach (term in session.getObjects()) {
+    println(term.getName());
+}

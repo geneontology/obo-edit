@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The Ontology Editor Panel</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The Ontology Editor Panel</h1>
+<p>Once an ontology is loaded, there are a number of ways to view it. The ontology editor panel is the main view 
+of the classes in your ontology.</p>
+<p><IMG height=318 hspace=0 src="../images/term_editor_panel.gif" width=448 
+border=0></p>
+<h2>Top Level Nodes</h2>
+<p>Whenever OBO-Edit loads an ontology, the ontology editor panel always contains 
+three root nodes named "Classes", "Relations", and "Obsolete":</p>
+<p><IMG height=318 hspace=0 src="../images/term_editor_panel_roots.gif" 
+width=448 border=0></p>
+<p>All of the classes (aka "terms") in your ontology are listed beneath the 
+"Classes" nodes. Relations (aka relationship types) are listed beneath 
+"Relations", and all obsolete objects (which may be classes, relations, or 
+instances) will be listed under the Obsolete node.</p>
+<p>These top level nodes <strong>do not represent objects in the 
+ontology</strong>. They exist simply to help organize the display. You cannot 
+select these top-level nodes or modify them in any way.</p>
+
+<h2>Expanding/Collapsing Nodes</h2>
+<p>The ontology editor panel displays the ontology as a tree. Branches of the tree 
+can be expanded or collapsed, so that only a part of the tree is visible at any 
+one time. The expand/collapse controls look like boxes containing a plus or 
+minus sign:</p>
+<p><IMG height=318 hspace=0 src="../images/term_editor_panel_collapse.gif" 
+width=448 border=0></p>
+<p>If expand/collapse control is marked with a plus, that means that there are 
+other branches of the tree below, and clicking on the control will cause those 
+branches to become visible. If the control is marked with a minus, it means that 
+child branches are already visible, and clicking on the control will cause them 
+to be collapsed. If a line in the display has no expand/collapse control (like 
+"cellular component unknown" in the image above), it means that there are no 
+branches beneath that node.</p>
+
+<h2>Representing Relationships</h2>
+<p>The ontology editor panel displays the ontology as a tree, with "child" nodes 
+appearing beneath their "parent" nodes. Each node in the display represents a 
+relationship between two terms. Consider this small piece of the display:</p>
+<p><IMG height=24 hspace=0 src="../images/term_editor_panel_link.gif" width=181 
+border=0></p>
+<p>Here, "extracellular organelle" is beneath "organelle" and is indented to the 
+right. This indicates that "extracellular organelle" is a <em>child</em> of 
+organelle.</p>
+<p>Each line of the display describes a relationship between a child term and 
+its parents. The arrow is there as a reminder that these relationships are to be 
+read from <strong>right-to-left</strong>. The <IMG height=12 hspace=0 
+src="../images/is_a.gif" width=13 border=0>&nbsp;symbol means that the 
+relationship type is <strong>is_a</strong>, so the example above means:</p><pre>extracellular organelle <strong>is_a</strong> organelle</pre>
+<p>We understand the relationships the same way if a node has multiple 
+children:</p>
+<p><IMG height=318 hspace=0 src="../images/term_editor_panel_links.gif" 
+width=448 border=0></p>
+<p>The highlighed section means:</p>
+<ul>
+  <li><font face="Courier">extracellular organelle <strong>is_a</strong> 
+  organelle</font>
+  <li><font face="Courier">intracellular organelle <strong>is_a</strong> 
+  organelle</font>
+  <li><font face="Courier">membrane-bound organelle <strong>is_a</strong> 
+  organelle</font>
+  <li><font face="Courier">non-membrance-bound organelle <strong>is_a</strong> 
+  organelle</font>
+  <li><font face="Courier">organelle lumen <strong>part_of</strong> 
+  organelle</font>
+  <li><font face="Courier">organelle <strong>is_a</strong> cellular 
+  component</font></li></ul>
+<h2>Relationship Types</h2>
+<p>Relationship types are represented as icons that appear between a parent and 
+child term:</p>
+<p><IMG height=318 hspace=0 src="../images/term_editor_panel_types.gif" 
+width=448 border=0></p>
+<p>A few icons for common relationship types are provided by 
+OBO-Edit by default. (See <A href="The_Configuration_Plugin.htm">The 
+Configuration Plugin</A> for information on customizing these icons.)</p>
+<p>Note that root classes, root relations, and obsolete terms do not have a 
+relationship type where the connect to the root display nodes. For example, 
+there is no relationship type icon between "biological process" and "Classes" in 
+the above example. That is because relationship types only exist between 
+entities in the ontology. Since the top level nodes are simply to organize the 
+display, entities in the ontology have no named relationship to them.</p>
+<h2>Viewing Obsoletes</h2>
+<p>Obsolete terms appear under the "Obsolete" node. 
+Although obsolete terms cannot have parents or children,&nbsp;if an obsolete 
+term has replacement or "consider" terms specified, they will appear underneath the 
+obsolete term:</p>
+<p><IMG height=79 hspace=0 
+src="../images/obsolete_replacement_view.gif" width=332 border=0>            
+ </p>
+<p>In this case, the view means that the obsolete term 
+"2-nitropropane biosynthesis" has been replaced by "2-nitroproppane metabolism". 
+The obsolete "26S proteasome" does not have an exact replacement, but the, 
+depending on context, one of the terms "proteasome complex (sensu Eukaryota)", 
+"proteasome core complex (sensu Bacteria)" and "proteasome regulatory particle (sensu Bacteria)" might be a 
+valid replacement.</p>
+<p>Note that "replaced by" and "consider" <em>are not real 
+relationship types.</em> There is no relation named "replaced by" or "consider". 
+These lines appear in the ontology editor panel as a viewing convenience, but they 
+do not represent real relationships in the ontology. They merely represent assignments to the OBO&nbsp;tags named&nbsp;"consider" 
+and "replaced-by".</p>
+<p>See <A href="Assigning_Replacement_Terms.htm">Assigning Replacement Terms</A> 
+for more information about "consider" and "replaced-by".</p>
+<h2>Working with Multiple ontology editor panels</h2>
+<p>There can be several ontology editor panels on screen at once (to learn how to 
+add more ontology editor panels to your interface, see the "Display Controls" 
+section below and the <A href="Customizing_the_Interface.htm">Customizing the 
+Interface</A> section).</p>
+<p>If there is more than one ontology editor panel, each panel's display is entirely 
+independent. Each panel may display a different section of the ontology, may be 
+filtered differently, may have different rendering settings, and may have a 
+different collection of terms selected (kind of - see <A 
+href="Working_with_Selections.htm">Working with Selections</A> for a 
+clarification).</p>
+<p>However, no matter how many ontology editor panels are on screen, each is 
+displaying a different view <em>of the <strong>same</strong> ontology</em>. 
+Edits that are executed on one ontology editor panel will affect the contents of 
+<strong>all</strong> ontology editor panels.</p>
+<h2><A name=display_controls></A>Display Controls</h2>
+<p>There are a number of buttons at the bottom of each ontology editor panel:</p>
+<ul>
+  <li><IMG height=17 hspace=0 src="../images/term_editor_panel_corner.gif" 
+  width=17 border=0>&nbsp;This button is 
+  used to hide the button panel that contains the rest of the ontology editor panel 
+  buttons. If the button panel is hidden, this button contains a + icon. 
+  <li><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_primary_button.gif" width=20 
+  border=0>&nbsp;This button indicates whether the current ontology editor panel is 
+  the <em>primary selection panel </em>(see <A 
+  href="Working_with_Selections.htm">Working with Selections</A>). If 
+  the current panel is primary, the circle icon will be green. If it is not, the 
+  circle icon will be blue. Clicking this button will make this panel the 
+  primary panel. If this panel is already the primary panel, pressing this 
+  button will select another panel.
+  <LI><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_left_button.gif" width=20 border=0>&nbsp;This 
+  button is used to change the current sub-selection (see <A 
+  href="Working_with_Selections.htm">Working with Selections</A>  
+                  
+    ). If more than one term is selected in the ontology 
+  editor panel, this button will step backward through the currently selected terms 
+  to pick a new sub-selection.
+  <LI><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_right_button.gif" width=20 
+  border=0>&nbsp;This button is used to change the current sub-selection (see <A 
+  href="Working_with_Selections.htm">Working with Selections</A>). If 
+  more than one term is selected in the ontology editor panel, this button will 
+  step forward through the currently selected terms to pick a new sub-selection.  
+                 
+                  
+                  
+    
+  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_horz_split.gif" 
+  width=20 border=0>&nbsp;This button 
+  splits the current ontology editor panel horizontally to create two ontology 
+  editor panels. A ontology editor panel may be split any number of 
+  times. 
+  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_vert_split.gif" 
+  width=20 border=0>&nbsp;This button 
+  splits the current ontology editor panel vertically to create two ontology 
+  editor panels. A ontology editor panel may be split any number of 
+  times. 
+  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_merge_button.gif" 
+  width=20 border=0>&nbsp;If the 
+  current ontology editor panel was created by splitting an existing ontology editor 
+  panel, this button will merge the two panels. Two panels can also be merged by 
+  right-clicking the divider between two panels. 
+  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_lock_button.gif" 
+  width=20 border=0>&nbsp;This button 
+  locks the scrollbars of the current ontology editor panel. When a ontology editor 
+  panel is locked, it is still possible to edit terms, make new selections, 
+  expand/collapse nodes, etc, but it becomes impossible to scroll the window. 
+  <li><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_refresh_button.gif" width=20 
+  border=0>&nbsp;This 
+  button forces the ontology editor panel to refresh the screen. This can be useful 
+  if the view becomes corrupted due to a bug or out of memory condition. 
+  <li><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_filter_button.gif" width=20 
+  border=0>&nbsp;This 
+  button pops up the filter management menu. This menu allows you to remove the 
+  current filter and remove some or all of the current renderers on this ontology 
+  editor panel. See <A href="Filtering.htm">Filtering</A> and <A 
+  href="Rendering.htm">Rendering</A> for more 
+  information.
+  <li><IMG height=20 hspace=0 
+  src="../images/term_editor_panel_prefilter_button.gif" width=20 
+  border=0>&nbsp;This button displays a popup menu containing all the available 
+  properties in the ontology.&nbsp;Select a property from the menu to specify a 
+  <A href="Reasoner_Prefilters.htm">prefilter property</A> for the editor panel. 
+  This button&nbsp;is only enabled when the reasoner is active.   
+   
+  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_root_button.gif" 
+  width=20 border=0>&nbsp;<a 
+  name=root_algorithm></a>This button allows you to choose the <em>root 
+  picking algorithm</em>. 
+  Two methods are available: 
+  <ul>
+    <li> GREEDY - This algorithm treats any class or 
+    relation with no <em>available</em> parents as a root 
+    term. If a term has been orphaned because a filter has hidden its parents 
+    (see <A href="Filtering.htm#root_picking">Orphaned Terms and the Root 
+    Picking Algorithm</A>), the term will appear as a root term 
+    using this algorithm.
+    <li> STRICT - This algorithm treats any class or 
+    relation with no <em>defined</em> parents as a root 
+    term. If a term has been orphaned because a filter has hidden its parents 
+    (see <A href="Filtering.htm#root_picking">Orphaned Terms and the Root 
+    Picking Algorithm</A>), this algorithm will <em>not</em> treat 
+    the term as a root. The term simply will not be visible until the filter is removed. </li></ul></li></ul>
+<p>Note that many of these display options can also be modified via the ontology 
+editor panel right-click menu. Right-click (or command-click on MacOS) within 
+the ontology editor panel to bring up the right-click menu.</p>
+<h2>              
+          
+     Other Views of the Ontology</h2>
+<p>The ontology editor panel isn't the only way to view an 
+ontology. See <A href="The_DAG_Viewer.htm">The DAG Viewer</A>, <A 
+href="The_Graph_Viewer_Plugin.htm">The Graph Viewer Plugin</A> and <A 
+href="The_Parent_Plugin.htm">The Parent Plugin</A>              
+         to 
+learn more about other ways to look at your ontology.</p>
+<h2>&nbsp;</h2>
+<p>&nbsp;</p>
+</body>
+</html>

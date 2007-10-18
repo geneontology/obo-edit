@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Custom Search Buttons</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Custom Search Buttons</h1>
+<p>Custom search buttons are extremely powerful, but 
+tricky, additions to any OBO-Edit user's toolkit. Custom search buttons can be 
+used to automatically launch a pre-defined <A href="Searching.htm">search</A>, 
+set a pre-defined <A href="Filtering.htm">filter</A> on the default <A 
+href="The_Term_Editor_Panel.htm">Ontology Editor Panel</A>, set a pre-defined <A 
+href="Rendering.htm">renderer</A>&nbsp;on the default <A 
+href="The_Term_Editor_Panel.htm">Ontology Editor Panel</A>, or (most 
+importantly) set a modifying <A href="Filters.htm">filter</A>&nbsp;that will 
+modify any <A href="Searching.htm">search</A>,&nbsp; <A 
+href="Rendering.htm">render</A>&nbsp;or <A 
+href="Filters.htm">filter</A>&nbsp;operation that is performed while the 
+modifying filter is enabled.</p>
+<p>Custom search buttons can only be placed in the interface by modifying the <A 
+href="Working_with_XML_Layouts.htm">xml interface layout</A>. See&nbsp;<A 
+href="Working_with_XML_Layouts.htm">Working with XML Layouts</A> for general 
+information about layout modification; this section only deals with the tags for 
+custom search buttons.</p>
+<H2>Specifying a Filter</H2>
+<P>A custom search button is normally associated with a filter (see the modify 
+method for the single example where a filter need not be specified). A filter is 
+specified using the <FONT face=Courier>filter</FONT> attribute.</P>
+<P>The value of the filter attribute is either the path to a saved filter file, 
+or an identifier for one of the three built-in filters.</P>
+<H3>Built-In Filters</H3>
+<P><A name=bultin_filters></A>The following built-in filters are defined:</P>
+<UL>
+  <LI><STRONG>resource:noobsoletes.filter.xml</STRONG> - Matches non-obsolete 
+  terms 
+  <LI><STRONG>resource:selection_children.filter.xml</STRONG> - Matches 
+  the&nbsp;descendants of the current selection 
+  <LI><STRONG>resource:selection_root.filter.xml</STRONG> - Matches the 
+  descendants of the root of the current selection</LI></UL>
+<H2>Methods</H2>
+<P>What a custom search button actually does is determined by the contents of 
+the method attribute. The method attribute may have one of four values:</P>
+<UL>
+  <LI>SEARCH - Creates a button that runs a search using the 
+  specified filter. 
+  <LI>FILTER - Creates a button that applies the specified 
+  filter to the primary selector 
+  <LI>RENDER - Creates a button that applies the specified 
+  renderer to the primary selector 
+  <LI>MODIFY - See the <A href="#modify_method">modify method</A> below</LI></UL>
+<H2>The Modify Method</H2>
+<P>The <FONT face=Courier>modify</FONT> method creates a 
+different kind of button than the other methods. The <FONT 
+face=Courier>modify</FONT> method creates a checkbox or radio button, rather 
+than a standard push button. When a modify button is pressed, it stays pressed 
+until it is de-selected.</P>
+<P>If a modify button is selected, the associated filter will be automatically 
+combined with any filter created by the filter editor. It is as if every filter 
+created in the filter editor is an <FONT face=Courier>AND</FONT> compound filter 
+consisting of the filter editor's filter and any filters from selected <FONT 
+face=Courier>MODIFY</FONT> buttons.</P>
+<P>It is legal to define a <FONT face=Courier>MODIFY</FONT> button with no 
+filter attribute. This means "do nothing", and can be used within a button group 
+to create a button that represents the default behavior.</P>
+<P>These buttons make it possible to re-use commonly used pieces of compound 
+filters, without having to mess with the compound filter editor.</P>
+<H2>Button Groups</H2>
+<P><FONT face=Courier>Modify</FONT> buttons can be associated with a button 
+group. If multiple <FONT face=Courier>modify</FONT> buttons are in the same 
+button group, only one button may be selected at a time. If a button in the 
+button group is selected, all other buttons are automatically deselected.</P>
+<P>Buttons may be assigned to a button group by giving all the buttons the same 
+value for their <FONT face=Courier>buttongroup</FONT> attribute. Any value is 
+allowed, it just needs to be the same for all buttons in the same group.</P>
+<P>If a <FONT face=Courier>modify</FONT> button is assigned to a button group, 
+it will be displayed as a radio button. If it does not belong to a button group, 
+it will be displayed as a checkbox.</P>
+<H2><A name=examples></A>Examples</H2>
+<H3>Example 1</H3>
+<P>The following code creates a checkbox that causes all searches, filters and 
+renderers to ignore obsolete terms</P>
+<P>&nbsp;</P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" 
+label=\"Ignore obsoletes\" method=\"MODIFY\" 
+filter=\"resource:noobsoletes.filter.xml\"/&gt; </FONT>
+<H3>Example 2</H3>
+<P>The following code creates 3 radio buttons. If the first button, labeled 
+"Search all", is selected filtering behavior remains unchanged. If the second 
+button, labeled "Search children of selection" is selected, only children of the 
+current selection will be searched. If the third button, labeled "Search 
+ontology of selection" is selected, only the ontology to which the current 
+selection belongs will be searched.</P>
+<P>All three buttons belong to the same button group, so only one may be 
+selected at a time.</P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" label=\"Search all\" 
+method=\"MODIFY\" buttonGroup=\"SearchScope\" selected=\"true\"/&gt;</FONT></P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" 
+label=\"Search children of selection\" method=\"MODIFY\" buttonGroup=  
+ \"SearchScope\" filter= \"resource:selection_children.filter.xml\"/&gt;< 
+/FONT></P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" 
+label=\"Search ontology of selection\" method=\"MODIFY\" buttonGroup=  
+ \"SearchScope\" filter= \"resource:selection_root.filter.xml\"/&gt;< 
+/FONT></P>
+<H3>Example 3</H3>
+<P>The following code assumes that we have created 3 filter files in our 
+OBO-Edit installation directory called "process.filter.xml", 
+"component.filter.xml", and "function.filter.xml". These are saved filter files 
+for filters that search the GO process ontology, component ontology, and 
+function ontology respectively. The code below creates 4 buttons that allow the 
+user to specify whether to search all ontologies, just the process ontology, 
+just the function ontology, or just the component ontology:</P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" label=\"Search all\" 
+method=\"MODIFY\" buttonGroup=\"GOOntology\" selected=\"true\"/&gt;</FONT></P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" label=\"Search 
+process\" method=\"MODIFY\" buttonGroup=\"GOOntology\" 
+filter=\"process.filter.xml\"/&gt;</FONT></P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" label=\"Search 
+function\" method=\"MODIFY\" buttonGroup=\"GOOntology\" 
+filter=\"process.filter.xml\"/&gt;</FONT></P>
+<P><FONT face=Courier>&lt;component id=\"SEARCH_BUTTON\" label=\"Search 
+component\" method=\"MODIFY\" buttonGroup=\"GOOntology\" 
+filter=\"component.filter.xml\"/&gt;</FONT></P>
+</body>
+</html>

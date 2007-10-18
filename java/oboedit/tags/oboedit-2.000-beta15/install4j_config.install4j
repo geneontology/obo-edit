@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<install4j version="4.0.6" transformSequenceNumber="1">
+  <directoryPresets config="." />
+  <application name="OBO-Edit" distributionSourceDir="" applicationId="7283-8148-3557-0894" mediaDir="./releases" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.version}_${compiler:sys.platform}_install4j" compression="9" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="oboedit" publisher="Gene Ontology Consortium" publisherWeb="http://www.geneontology.org" version="0.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="" allowBetaVM="true">
+    <languages skipLanguageSelection="false">
+      <principalLanguage id="en" customLocalizationFile="" />
+      <additionalLanguages />
+    </languages>
+    <searchSequence>
+      <registry />
+      <envVar name="JAVA_HOME" />
+      <envVar name="JDK_HOME" />
+    </searchSequence>
+    <variables />
+  </application>
+  <files>
+    <roots />
+    <mountPoints>
+      <mountPoint id="2" root="" location="extensions" mode="755" />
+      <mountPoint id="3" root="" location="runtime" mode="755" />
+      <mountPoint id="4" root="" location="docs" mode="755" />
+      <mountPoint id="118" root="" location="apidocs" mode="755" />
+      <mountPoint id="1" root="" location="" mode="755" />
+    </mountPoints>
+    <entries>
+      <dirEntry mountPoint="3" file="./runtime" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
+        <exclude />
+      </dirEntry>
+      <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS" dirMode="755">
+        <exclude>
+          <entry location="CVS" launcher="false" />
+          <entry location="api" launcher="false" />
+        </exclude>
+      </dirEntry>
+      <dirEntry mountPoint="118" file="./apidocs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
+        <exclude />
+      </dirEntry>
+      <dirEntry mountPoint="1" file="./release_resources" overwrite="1" shared="false" mode="644" uninstallMode="2" excludeSuffixes="" dirMode="755">
+        <exclude />
+      </dirEntry>
+    </entries>
+    <components>
+      <component name="OBO-Edit" id="61" displayDescription="false" selected="true" mandatory="true" downloadable="false">
+        <description>The OBO-Edit application.</description>
+        <include all="false">
+          <entry location="extensions" launcher="false" />
+          <entry location="runtime" launcher="false" />
+          <entry location="docs" launcher="false" />
+          <entry location="ARTISTIC_LICENSE" launcher="false" />
+          <entry location="LICENSE" launcher="false" />
+          <entry location="README" launcher="false" />
+          <entry location="oboedit.vmoptions" launcher="false" />
+          <entry location="oboedit" launcher="true" />
+          <entry location="obo2obo" launcher="true" />
+          <entry location="obodiff" launcher="true" />
+          <entry location="obomerge" launcher="true" />
+          <entry location="obo2flat" launcher="true" />
+        </include>
+        <dependencies />
+      </component>
+      <component name="API Documentation" id="89" displayDescription="false" selected="false" mandatory="false" downloadable="false">
+        <description>API Documentation. This documentation describes the Java class files used by OBO-Edit. This documentation is useful to script developers, but not terribly useful for anyone else.</description>
+        <include all="false">
+          <entry location="apidocs" launcher="false" />
+        </include>
+        <dependencies>
+          <component id="61" />
+        </dependencies>
+      </component>
+    </components>
+  </files>
+  <launchers>
+    <launcher name="oboedit" id="8" external="false" excludeFromMenu="false" menuName="OBO-Edit" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="oboedit" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="false" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBOEdit" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=oboedit&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+    <launcher name="obo2obo" id="9" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="obo2obo" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBO2OBO" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obo2obo&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+    <launcher name="obodiff" id="12" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="obodiff" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBODiff" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obodiff&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+    <launcher name="obomerge" id="17" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="obomerge" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBOMerge" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obomerge&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+    <launcher name="obo2flat" id="19" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="obo2flat" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBO2Flat" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obo2flat&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+  </launchers>
+  <installerGui installerType="1" suggestPreviousProgramGroup="true" addOnAppId="" suggestPreviousLocations="true" allowUnattended="true" allowConsole="true" useCustomInstallerHeaderImage="false" customInstallerHeaderImage="" useCustomUninstallerHeaderImage="false" customUninstallerHeaderImage="" customSize="false" customWidth="500" customHeight="390" useCustomIcon="false" customIcnsFile="" customPngIcon16File="" customPngIcon32File="" customIcoFile="" vmParameters="" watermark="true" resizable="true" suppressProgressDialog="false">
+    <customCode useInstalledFiles="false" />
+    <installerScreens>
+      <screen name="" id="26" beanClass="com.install4j.runtime.beans.screens.WelcomeScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.WelcomeScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="27" beanClass="com.install4j.runtime.beans.screens.InstallationDirectoryScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.InstallationDirectoryScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="28" beanClass="com.install4j.runtime.beans.screens.ComponentsScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.ComponentsScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="29" beanClass="com.install4j.runtime.beans.screens.StandardProgramGroupScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.StandardProgramGroupScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="30" beanClass="com.install4j.runtime.beans.screens.FileAssociationsScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.FileAssociationsScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="8729" beanClass="com.install4j.runtime.beans.screens.FormScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.FormScreen">
+              <void property="subTitle">
+                <string>Maximum Memory for OBO-Edit</string>
+              </void>
+              <void property="title">
+                <string>Memory Settings</string>
+              </void>
+            </object>
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents>
+          <formComponent name="" id="8731" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
+                  <void property="labelText">
+                    <string>Because OBO-Edit is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit can use. OBO-Edit will crash if it needs more memory than the amount you have allocated.
+
+It is recommended that you allocate as much memory as possible. The installer has attempted to suggest a reasonable value for your system. This value may not be accurate on all platforms, so review the suggestion carefully. Due to limitations in Java itself, you must choose a value that is less than 2048 Mb, even if you are using a computer with more memory.</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript />
+          </formComponent>
+          <formComponent name="" id="8733" beanClass="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent">
+                  <void property="initialValue">
+                    <int>512</int>
+                  </void>
+                  <void property="labelText">
+                    <string>Maximum Memory for OBO-Edit (in Mb)</string>
+                  </void>
+                  <void property="maxValue">
+                    <int>2048</int>
+                  </void>
+                  <void property="minValue">
+                    <int>256</int>
+                  </void>
+                  <void property="stepSize">
+                    <int>128</int>
+                  </void>
+                  <void property="variableName">
+                    <string>oboedit.memoryAlloc</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript>Integer val;
+val = new Integer((int) Math.max(512,
+(Math.round(SystemInfo.getPhysicalMemory() * 0.8 / 1024 / 1024) / 128) * 128));
+configurationObject.setValue(val);</initScript>
+          </formComponent>
+        </formComponents>
+      </screen>
+      <screen name="" id="8712" beanClass="com.install4j.runtime.beans.screens.AdditionalConfirmationsScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.AdditionalConfirmationsScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents>
+          <formComponent name="Add a desktop link" id="8713" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                  <void property="checkboxText">
+                    <string>${i18n:CreateDesktopIcon}</string>
+                  </void>
+                  <void property="initiallySelected">
+                    <boolean>true</boolean>
+                  </void>
+                  <void property="variableName">
+                    <string>createDesktopLinkAction</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <initScript />
+          </formComponent>
+        </formComponents>
+      </screen>
+      <screen name="" id="31" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" rollbackBarrier="true" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.InstallationScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions>
+          <action name="" id="32" beanClass="com.install4j.runtime.beans.actions.UninstallPreviousAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.UninstallPreviousAction" />
+              </java>
+            </serializedBean>
+            <condition />
+          </action>
+          <action name="" id="33" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.InstallFilesAction" />
+              </java>
+            </serializedBean>
+            <condition />
+          </action>
+          <action name="" id="34" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction">
+                  <void property="programGroupName">
+                    <string>${compiler:sys.fullName}</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition />
+          </action>
+          <action name="" id="35" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction">
+                  <void property="itemName">
+                    <string>${compiler:sys.fullName} ${compiler:sys.version}</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition />
+          </action>
+          <action name="" id="8738" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
+                  <void property="launcherId">
+                    <string>8</string>
+                  </void>
+                  <void property="vmOptions">
+                    <array class="java.lang.String" length="1">
+                      <void index="0">
+                        <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                      </void>
+                    </array>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="8739" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
+                  <void property="launcherId">
+                    <string>9</string>
+                  </void>
+                  <void property="vmOptions">
+                    <array class="java.lang.String" length="1">
+                      <void index="0">
+                        <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                      </void>
+                    </array>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="8740" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
+                  <void property="launcherId">
+                    <string>12</string>
+                  </void>
+                  <void property="vmOptions">
+                    <array class="java.lang.String" length="1">
+                      <void index="0">
+                        <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                      </void>
+                    </array>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="8741" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
+                  <void property="launcherId">
+                    <string>17</string>
+                  </void>
+                  <void property="vmOptions">
+                    <array class="java.lang.String" length="1">
+                      <void index="0">
+                        <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                      </void>
+                    </array>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="8742" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
+                  <void property="launcherId">
+                    <string>19</string>
+                  </void>
+                  <void property="vmOptions">
+                    <array class="java.lang.String" length="1">
+                      <void index="0">
+                        <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                      </void>
+                    </array>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+        </actions>
+        <formComponents />
+      </screen>
+      <screen name="" id="36" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" rollbackBarrier="false" backButton="2" finishScreen="true">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.FinishedScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+    </installerScreens>
+    <uninstallerScreens>
+      <screen name="" id="37" beanClass="com.install4j.runtime.beans.screens.UninstallWelcomeScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.UninstallWelcomeScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="38" beanClass="com.install4j.runtime.beans.screens.UninstallationScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.UninstallationScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions>
+          <action name="" id="39" beanClass="com.install4j.runtime.beans.actions.UninstallFilesAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.UninstallFilesAction" />
+              </java>
+            </serializedBean>
+            <condition />
+          </action>
+        </actions>
+        <formComponents />
+      </screen>
+      <screen name="" id="40" beanClass="com.install4j.runtime.beans.screens.UninstallFailureScreen" rollbackBarrier="false" backButton="2" finishScreen="true">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.UninstallFailureScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+      <screen name="" id="41" beanClass="com.install4j.runtime.beans.screens.UninstallSuccessScreen" rollbackBarrier="false" backButton="2" finishScreen="true">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.UninstallSuccessScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+    </uninstallerScreens>
+    <installerStartup>
+      <screen name="" id="15" beanClass="com.install4j.runtime.beans.screens.StartupScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.StartupScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+    </installerStartup>
+    <uninstallerStartup>
+      <screen name="" id="16" beanClass="com.install4j.runtime.beans.screens.StartupScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
+        <serializedBean>
+          <java class="java.beans.XMLDecoder">
+            <object class="com.install4j.runtime.beans.screens.StartupScreen" />
+          </java>
+        </serializedBean>
+        <condition />
+        <validation />
+        <actions />
+        <formComponents />
+      </screen>
+    </uninstallerStartup>
+  </installerGui>
+  <mediaSets>
+    <win32 name="Windows" id="21" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
+      <excludedLaunchers />
+      <excludedComponents />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <excludedInstallerScreens />
+      <excludedUninstallerScreens />
+    </win32>
+    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+      <excludedLaunchers />
+      <excludedComponents />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <excludedInstallerScreens />
+      <excludedUninstallerScreens />
+    </macosFolder>
+    <unixInstaller name="Unix Installer" id="25" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+      <excludedLaunchers />
+      <excludedComponents />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <excludedInstallerScreens />
+      <excludedUninstallerScreens />
+      <installerScript mode="1" file="">
+        <scriptLines />
+      </installerScript>
+    </unixInstaller>
+    <linuxRPM name="Linux RPM" id="35" mediaFileName="" installDir="/opt/OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
+      <excludedLaunchers />
+      <excludedComponents />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+      <preInstallScript mode="1" file="">
+        <scriptLines />
+      </preInstallScript>
+      <postInstallScript mode="1" file="">
+        <scriptLines />
+      </postInstallScript>
+      <preUninstallScript mode="1" file="">
+        <scriptLines />
+      </preUninstallScript>
+      <postUninstallScript mode="1" file="">
+        <scriptLines />
+      </postUninstallScript>
+    </linuxRPM>
+  </mediaSets>
+  <buildIds buildAll="false">
+    <mediaSet refId="25" />
+  </buildIds>
+</install4j>
+

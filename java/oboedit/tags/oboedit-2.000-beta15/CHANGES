@@ -1,0 +1,10 @@
+	* Added ability to remove consider/replaced-by terms with the right-click "delete" option
+	* Added in-panel "popup-window" that appears when a parent/child expansion control
+	  is clicked in the graph editor
+	* Disabled default spell checking when saving
+	* Fixed icon configuration bugs
+	* Fixed text editor bugs
+	* Fixed drag and drop bugs
+	* Fixed autocommit bugs
+	* Fixed right-click editing menu bugs
+	* Fixed expanding children when right-clicking in graph editor

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The tabs tag<compactgrid> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;tabs&gt; Tag</h1>
+<p>       The <font face="Courier">&lt;tabs&gt;</font>        
+   tag creates&nbsp;a tabbed pane, consisting of a number of stacked panels, one 
+of which is visible at any one time. Panels are made visible 
+by clicking the associated tab at the top of the tabbed pane.</p>
+<h2>Parameters</h2>
+<p> See <A href="Common_Parameters.htm">common parameters</A> .</p>
+<p></p>
+<h2>Contents</h2>
+<p>The <font face="Courier">tabs</font>tag contains a collection of &lt;tab&gt; tags. Each <font 
+face="Courier">&lt;tab&gt;</font> tag contains the single component that 
+will be displayed in that tab. A tab tag 
+has the following           
+   parameters:</p>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">name</font></td>
+    <td>
+      <p>The name that appears on the tab. 
+      This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A>      . </p></td>
+    <td>
+      <p><em>Any string</em></p></td>
+    <td>
+      <p><em>none</em></p></td></tr>
+  <tr>
+    <td><font face="Courier">selected</font></td>
+    <td>
+      <p>Whether or not this tab should be selected 
+      initially. If no tab is marked selected, the first tab will be selected. 
+      If multiple tabs are marked selected, the marked tab will be selected. 
+      This&nbsp;attribute&nbsp;may contain&nbsp;<A 
+      href="Backtick_Expressions.htm">backtick expressions</A>           
+                    
+                   
+                      
+       .</p></td>
+    <td>
+      <p>true</p>
+      <p>false</p></td>
+    <td>
+      <p>false</p></td></tr></table></p>
+<h2>Example</h2><pre><font color="#000000">&lt;xmllayout&gt;<br>&nbsp;&nbsp; &lt;tabs&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;tab name="Ontology"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="DAG" width="300"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/tab&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;tab name="Text Editor"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="TEXTEDIT" width="320"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/tab&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;tab name="Search"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="FIND" width="320"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/tab&gt;<br>&nbsp;&nbsp; &lt;/tabs&gt;<br>&lt;/xmllayout&gt;</font></pre>
+<p><IMG height=271 hspace=0 
+src="../images/layout_tabs_component.gif" width=386 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+<p>&nbsp;</p>
+</body>
+</html>

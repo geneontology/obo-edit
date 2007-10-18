@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OBO-Edit" default="all">
+
+	<property name="developer_email" value="john.richter@aya.yale.edu" />
+
+	<!-- project variables -->
+	<property name="projectname" value="oboedit" />
+	<property name="runtimedir_name" value="runtime" />
+	<property name="runtimedir" location="${runtimedir_name}" />
+	<property name="release_path" location="releases" />
+	<property name="jarfile" location="${runtimedir}/${projectname}.jar" />
+	<property name="main_jar_manifest" location="jar_manifest" />
+	<property name="outputdir" value="classes" />
+	<property name="sourcedir" value="src" />
+	<property name="apidoc_dest" location="docs/api" />
+	<property name="librarydir" location="lib" />
+	<property name="releasenotes" location="CHANGES" />
+	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
+	<property name="tagprefix" value="${projectname}-" />
+	<property name="version_file" value="${sourcedir}/org/oboedit/resources/VERSION" />
+
+	<property name="main_jar_manifest_template" location="templates/jar_manifest.template" />
+
+	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
+	<property name="install4j_installation_path" location="/Applications/install4j 4" />
+	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
+	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
+
+	<!-- dependency information -->
+	<property name="bbop_dest" location="../BBOP" />
+	<property name="obo_dest" location="../OBO" />
+
+	<!-- utility program paths -->
+	<property name="svnpath" value="/usr/local/bin/svn" />
+	<property name="antpath" value="ant" />
+	<property name="javahelp_indexer" location="/Applications/javahelp/bin/jhindexer" />
+
+	<!-- test to see if optional regular expression targets are available -->
+	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+
+	<!-- library jars that should appear in the final runtime directory -->
+	<fileset dir="${librarydir}/runlibs" id="library_jars">
+		<include name="*.jar" />
+	</fileset>
+
+	<path id="classpath">
+		<fileset refid="library_jars" />
+		<fileset dir="${librarydir}/buildlibs">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<fileset dir="${sourcedir}" id="resource_files">
+		<include name="**/resources/**" />
+	</fileset>
+
+	<target name="checkjar">
+		<condition property="main_jar_current">
+			<and>
+				<available file="${jarfile}" />
+				<available file="${main_jar_manifest}" />
+				<uptodate targetfile="${jarfile}">
+					<srcfiles refid="main_jar_contents" />
+				</uptodate>
+				<uptodate targetfile="${jarfile}" srcfile="${main_jar_manifest_template}" />
+			</and>
+		</condition>
+	</target>
+
+	<!-- classes that should appear in the main jar file -->
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
+
+	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
+	</target>
+
+	<target name="apidocs" description="Build API documentation">
+		<mkdir dir="${apidoc_dest}" />
+		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
+	</target>
+
+	<target name="buildbbop" if="bbop_dest">
+		<ant dir="${bbop_dest}" target="jar" inheritAll="false" />
+		<copy file="${bbop_dest}/bbop.jar" todir="${librarydir}/runlibs" />
+	</target>
+
+	<target name="-releasenotesuptodate">
+		<condition property="-releasenotes_current">
+			<and>
+				<uptodate targetfile="${version_file}">
+					<srcfiles dir="${sourcedir}">
+						<include name="**/*.java" />
+					</srcfiles>
+				</uptodate>
+				<uptodate targetfile="CHANGES">
+
+					<srcfiles dir="${sourcedir}">
+						<include name="**/*.java" />
+					</srcfiles>
+
+				</uptodate>
+			</and>
+		</condition>
+	</target>
+
+	<target name="-releasenotestouch" unless="releasenotes_current">
+		<touch file="${version_file}" />
+		<touch file="CHANGES" />
+	</target>
+
+	<target name="-releasenotesprompt" unless="releasenotes_current">
+		<input validargs="y,n" defaultvalue="y" addproperty="releasenotes.userinput">The release notes do not seem to be up to date. Continue with release?</input>
+		<echo message="userinput = ${releasenotes.userinput}" />
+		<condition property="releasenotes.continue_with_old_notes">
+			<equals arg1="${releasenotes.userinput}" arg2="y" casesensitive="false" trim="true" />
+		</condition>
+		<fail message="Release notes or version number is out of date" unless="releasenotes.continue_with_old_notes" />
+	</target>
+
+	<target name="-releasenotes" depends="-releasenotesuptodate, -releasenotesprompt, -releasenotestouch" />
+
+	<!-- add apidocs dep -->
+	<target name="platform_independent_installer" depends="-releasenotes, versionnumbers, textfiles, classes, jar, library_jars">
+		<mkdir dir="${release_path}" />
+		<tar compression="gzip" destfile="${release_path}/oboedit_${major_version}_${minor-beta_version}.tar.gz">
+			<tarfileset dir=".">
+				<include name="${runtimedir_name}/*" />
+				<include name="docs/**" />
+				<include name="extensions" />
+				<include name="${launcher_jar_name}" />
+			</tarfileset>
+			<tarfileset dir="release_resources">
+				<include name="*" />
+			</tarfileset>
+			<tarfileset dir="launch_scripts" mode="755">
+				<include name="*" />
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="-check_install4j_available" if="install4j_installation_path">
+		<condition property="install4j_available">
+			<and>
+				<available file="${install4j_ant_library_path}" />
+				<available file="${install4j_api_library_path}" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="-install4j_custom_actions" depends="-check_install4j_available" if="install4j_available">
+
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" includes="**/installer/**" debug="true" debuglevel="lines,vars,source">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement location="${install4j_api_library_path}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="-install4j_installers" depends="-check_install4j_available, -install4j_custom_actions, versionnumbers" if="install4j_available">
+		<mkdir dir="${release_path}" />
+		<taskdef name="install4j" classname="com.install4j.Install4JTask" classpath="${install4j_ant_library_path}" />
+		<condition property="install4j_formatted_version_number" value="${major_version}.${minor_version}.${beta_version}" else="${major_version}.${minor_version}">
+			<isset property="beta_version" />
+		</condition>
+		<echo message="install4J version = ${install4j_formatted_version_number}" />
+		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
+	</target>
+
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, -docindex, apidocs, platform_independent_installer, -install4j_installers" description="Build installers">
+	</target>
+
+	<target name="buildobo" if="obo_dest">
+		<ant dir="${obo_dest}" target="jar" inheritAll="false" />
+		<copy file="${obo_dest}/obo.jar" todir="${librarydir}/runlibs" />
+	</target>
+
+	<target name="library_jars" depends="buildbbop, buildobo">
+		<mkdir dir="${runtimedir}" />
+		<sync todir="${runtimedir}">
+			<fileset refid="library_jars" />
+		</sync>
+	</target>
+
+	<target name="buildnum">
+		<echo message="updated buildnum" />
+		<buildnumber file="BUILDNUM" />
+	</target>
+
+	<target name="-optional_message" unless="regexp_replace_available">
+		<echo message="The optional regexp_replace ANT target is not available, so version numbers will not be added to installers and readme files..." />
+	</target>
+
+	<target name="versionnumbers" depends="-optional_message" if="regexp_replace_available" unless="eclipse_autojar">
+		<echo message="Reading version numbers..." />
+		<loadfile property="version" srcfile="${version_file}" />
+		<tempfile property="temp.file" prefix="temp" suffix="file" />
+		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
+		<replaceregexp file="${temp.file}" match="(.*)\..*" replace="\1" />
+		<loadfile property="major_version" srcfile="${temp.file}" />
+		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
+		<replaceregexp file="${temp.file}" match=".*\.(.*)" replace="\1" />
+		<loadfile property="minor-beta_version" srcfile="${temp.file}" />
+
+		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
+		<replaceregexp file="${temp.file}" match="[0-9]+\.[0-9]+-beta([0-9]*)" replace="\1" />
+		<loadfile property="t_beta_version" srcfile="${temp.file}" />
+		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
+		<replaceregexp file="${temp.file}" match="[0-9]+\.([0-9]+)-beta[0-9]*" replace="\1" />
+		<loadfile property="t_minor_version_w_beta" srcfile="${temp.file}" />
+		<copy file="${version_file}" tofile="${temp.file}" overwrite="true" />
+		<replaceregexp file="${temp.file}" match="[0-9]+\.([0-9]+)" replace="\1" />
+		<loadfile property="t_minor_version" srcfile="${temp.file}" />
+		<delete file="${temp.file}" />
+		<condition property="beta_version" value="" else="${t_beta_version}">
+			<equals arg1="${version}" arg2="${t_beta_version}" />
+		</condition>
+		<condition property="minor_version" value="${t_minor_version}" else="${t_minor_version_w_beta}">
+			<equals arg1="${version}" arg2="${t_beta_version}" />
+		</condition>
+		<delete file="${temp.file}" />
+		<tstamp>
+			<format property="build_date" pattern="MMddyyyy_hhmmss" locale="en" />
+			<format property="pretty_date" pattern="MMMM dd, yyyy" locale="en" />
+		</tstamp>
+	</target>
+
+	<target name="jarmanifest" depends="library_jars, checkjar, buildnum, versionnumbers" unless="main_jar_current">
+		<echo message="Rebuilding jar manifest" />
+		<copy file="${main_jar_manifest_template}" tofile="${main_jar_manifest}" overwrite="true" />
+		<pathconvert property="runtime_classpath" pathsep=" ">
+			<path>
+				<fileset dir="${runtimedir}">
+					<include name="*.jar" />
+				</fileset>
+			</path>
+			<map from="${runtimedir}/" to="" />
+		</pathconvert>
+		<replace file="${main_jar_manifest}">
+			<replacefilter token="$VERSION$" value="${version}" />
+			<replacefilter token="$BUILDNUM$" value="${build.number}" />
+			<replacefilter token="$BUILDDATE$" value="${build_date}" />
+			<replacefilter token="$RUNTIMECLASSPATH$" value="${runtime_classpath}" />
+		</replace>
+	</target>
+
+	<target name="checktextfiles">
+		<condition property="textfiles_current">
+			<or>
+				<isset property="eclipse_autojar" />
+				<uptodate targetfile="release_resources/README" property="textfiles_current">
+					<srcfiles dir="." includes="templates/README.template,CHANGES,${version_file}" />
+				</uptodate>
+			</or>
+		</condition>
+	</target>
+
+	<target name="textfiles" depends="checktextfiles, versionnumbers" unless="textfiles_current">
+		<echo message="Rebuilding textfiles..." />
+		<concat destfile="release_resources/README">
+			<filelist dir="." files="templates/README.template, CHANGES" />
+		</concat>
+		<replace file="release_resources/README">
+			<replacefilter token="$VERSION$" value="${version}" />
+			<replacefilter token="$DATE$" value="${pretty_date}" />
+		</replace>
+		<touch file="oboedit.vmoptions" />
+	</target>
+
+	<target name="-dojhindex" if="javahelp_indexer">
+		<delete dir="docs/JavaHelpSearch" />
+		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="false" failifexecutionfails="true">
+			<arg value="." />
+			<arg value="-db" />
+			<arg value="JavaHelpSearch" />
+		</exec>
+	</target>
+
+	<target name="-docindex" depends="-dojhindex">
+		<xslt out="docs/toc.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
+			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
+		</xslt>
+	</target>
+
+	<target name="resources">
+		<copy todir="${outputdir}">
+			<fileset refid="resource_files" />
+		</copy>
+	</target>
+
+	<target name="classes" depends="buildbbop, buildobo, resources">
+		<pathconvert property="ctemp" pathsep=" ">
+			<path refid="classpath" />
+		</pathconvert>
+		<echo message="classpath = ${ctemp}" />
+		<mkdir dir="${outputdir}" />
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="classes, jarmanifest, checkjar" unless="main_jar_current" description="Generate jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+
+	<target name="commit" description="Run the commit.sh script">
+		<input addproperty="username">Enter SVN Username</input>
+		<input addproperty="PASSWORD">Enter SVN Password</input>
+		<exec executable="./commit.sh">
+			<env key="JARFILE" path="${jarfile}" />
+			<env key="VERSIONPATH" path="${version_file}" />
+			<env key="SOURCEDIR" path="${sourcedir}" />
+			<env key="LIBRARYDIR" path="${librarydir}" />
+			<env key="RELEASENOTES" path="${releasenotes}" />
+			<env key="USERNAME" value="${username}" />
+			<env key="SVNREPOSITORY" value="${svn_repository_url}" />
+			<env key="TAGPREFIX" value="${tagprefix}" />
+			<env key="SVN_PATH" value="${svnpath}" />
+			<env key="ANT_PATH" value="${antpath}" />
+			<env key="DOCSDIR" value="${docs}" />
+			<arg value="${PASSWORD}" />
+		</exec>
+	</target>
+
+	<target name="clean" description="Delete all rebuildable resources">
+		<echo message="Deleting build directories..." />
+		<delete dir="${outputdir}" />
+		<delete file="${jarfile}" />
+		<delete file="${main_jar_manifest}" />
+		<delete file="docs/toc.html" />
+		<delete dir="${apidoc_dest}" />
+		<delete dir="${runtimedir}" />
+		<delete dir="${release_path}" />
+		<delete file="release_resources/README" />
+		<delete>
+			<fileset dir="." includes="*.vmoptions" />
+		</delete>
+	</target>
+
+</project>
