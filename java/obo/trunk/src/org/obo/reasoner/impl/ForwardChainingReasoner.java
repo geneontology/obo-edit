@@ -734,9 +734,6 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 					exp.addMatch(cm);
 				}
 
-				exp.setMatchDefinition(new LinkedList<Link>(
-						getIntersectionMap().get(matchParent)));
-
 				// all complete defs match their genus (by the GENUS rule)
 				// but sometimes they also match their genus via the
 				// completeness definition. That can lead to a proliferation

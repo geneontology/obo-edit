@@ -4,7 +4,7 @@ import java.io.*;
 
 import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.util.HistoryUtil;
+import org.obo.util.TermUtil;
 
 public class OBORestrictionImpl implements OBORestriction {
 
@@ -251,7 +251,7 @@ public class OBORestrictionImpl implements OBORestriction {
 		if (o == null) {
 			return false;
 		} else if (o instanceof Link) {
-			return HistoryUtil.equals(this, (Link) o);
+			return TermUtil.equals(this, (Link) o);
 		} else
 			return false;
 	}

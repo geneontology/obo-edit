@@ -8,14 +8,14 @@ import org.obo.datamodel.OBOProperty;
 
 public class DanglingLinkImpl implements Link {
 	
-	protected LinkedObject child;
-	protected LinkedObject parent;
-	protected OBOProperty type;
+	protected String childID;
+	protected String parentID;
+	protected String typeID;
 	
 	public DanglingLinkImpl(String childID, String typeID, String parentID) {
-		this.child = new DanglingObjectImpl(childID);
-		this.parent = new DanglingObjectImpl(parentID);
-		this.type = new DanglingPropertyImpl(typeID);
+		this.childID = childID;
+		this.typeID = typeID;
+		this.parentID = parentID;
 	}
 	
 	public boolean isAnonymous() {
@@ -27,11 +27,11 @@ public class DanglingLinkImpl implements Link {
 	}
 
 	public LinkedObject getParent() {
-		return parent;
+		return new DanglingObjectImpl(parentID);
 	}
 
 	public LinkedObject getChild() {
-		return child;
+		return new DanglingObjectImpl(childID);
 	}
 	
 	@Override
@@ -39,16 +39,16 @@ public class DanglingLinkImpl implements Link {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException ex) {
-			return new DanglingLinkImpl(child.getID(), type.getID(), parent.getID());
+			return new DanglingLinkImpl(childID, typeID, parentID);
 		}
 	}
 	
 	public String toString() {
-		return "..."+child+" -"+type+"-> "+parent+"...";
+		return "..."+getID()+"...";
 	}
 
 	public OBOProperty getType() {
-		return type;
+		return new DanglingPropertyImpl(typeID);
 	}
 
 	public NestedValue getNestedValue() {
@@ -70,6 +70,18 @@ public class DanglingLinkImpl implements Link {
 	public void setType(OBOProperty type) {
 		throw new UnsupportedOperationException();
 	}
+	
+	public void setChild(String childID) {
+		this.childID = childID;
+	}
+	
+	public void setParent(String parentID) {
+		this.parentID = parentID;
+	}
+	
+	public void setType(String typeID) {
+		this.typeID = typeID;
+	}
 
 	public void setNamespace(Namespace namespace) {
 		throw new UnsupportedOperationException();
@@ -81,6 +93,6 @@ public class DanglingLinkImpl implements Link {
 	
 	public String getID() {
 		char sepChar = '-';
-		return getChild().getID()+' '+sepChar+getType().getID()+sepChar+'>'+ ' '+getParent().getID();
+		return childID+' '+sepChar+typeID+sepChar+'>'+ ' '+parentID;
 	}
 }

@@ -242,7 +242,9 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		explanationMap.remove(link);
 
 		// find all the explanations that depend on the dead link
-		Collection<Explanation> deps = getDependentExplanations(link);
+		Collection<Explanation> deps = explanationDeps.get(link);
+		if (deps == null)
+			return;
 		for (Explanation exp : deps) {
 			// remove the now-defunct link as supporting evidence for the
 			// dependent
@@ -253,51 +255,44 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 			// the explanation, so that explanation needs to be removed
 			if (dead) {
 				// ditch the explanation
-				reasonRemoval(exp);
-			}
-		}
-	}
+				
+				// Since we're removing this explanation, this explanation no longer
+				// relies
+				// on any supporting links, so it needs to be removed from
+				// explanationDeps.
+				// Therefore, iterate through all the other links that support this
+				// evidence
+				// For each of those links, remove the now-defunct explanation from the
+				// list
+				// of explanations that relies on that link
+				for (Link ev : exp.getEvidence()) {
+					Collection<Explanation> exps = explanationDeps.get(ev);
+					if (exps != null) {
+						exps.remove(exp);
+						if (exps.size() == 0)
+							explanationDeps.remove(ev);
+					}
+				}
 
-	protected void reasonRemoval(Explanation exp) {
-		// Since we're removing this explanation, this explanation no longer
-		// relies
-		// on any supporting links, so it needs to be removed from
-		// explanationDeps.
-		// Therefore, iterate through all the other links that support this
-		// evidence
-		// For each of those links, remove the now-defunct explanation from the
-		// list
-		// of explanations that relies on that link
-		for (Link link : exp.getEvidence()) {
-			Collection<Explanation> exps = explanationDeps.get(link);
-			if (exps != null) {
+				// get the object that was explained by this explanation
+				PathCapable explainedObject = exp.getExplainedObject();
+
+				// Fetch all the explanations (including the one we're about to remove)
+				// for explainedObject
+				Collection<Explanation> exps = getExplanations(explainedObject);
+				// remove the now-defunct explanation from the set of explanations
 				exps.remove(exp);
+				// if there are no explanations left for explainedObject, it needs
+				// to be removed too
 				if (exps.size() == 0)
-					explanationDeps.remove(link);
+					reasonRemoval(exp.getExplainedObject());			
 			}
 		}
-
-		// get the object that was explained by this explanation
-		PathCapable explainedObject = exp.getExplainedObject();
-
-		// Fetch all the explanations (including the one we're about to remove)
-		// for explainedObject
-		Collection<Explanation> exps = getExplanations(explainedObject);
-		// remove the now-defunct explanation from the set of explanations
-		exps.remove(exp);
-		// if there are no explanations left for explainedObject, it needs
-		// to be removed too
-		if (exps.size() == 0)
-			reasonRemoval(exp.getExplainedObject());
 	}
 
 	protected void reasonRemoval(PathCapable pc) {
 		if (pc instanceof Link)
 			reasonRemoval((Link) pc);
-	}
-
-	protected Collection<Explanation> getDependentExplanations(Link link) {
-		return explanationDeps.get(link);
 	}
 
 	protected static boolean isGiven(Explanation exp) {
@@ -307,11 +302,18 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected void explain(Link link, Explanation explanation) {
 		if (storeGivenLinks || !isGiven(explanation)) {
 			internalAddLink(link);
-			explanationMap.add(link, explanation);
-			for (Link evidence : explanation.getEvidence()) {
-				explanationDeps.add(evidence, explanation);
-			}
+			internalAddExplanation(link, explanation);
 		}
+	}
+	
+	long expTime = 0;
+	protected void internalAddExplanation(Link link, Explanation explanation) {
+		long time = System.nanoTime();
+		explanationMap.add(link, explanation);
+		for (Link evidence : explanation.getEvidence()) {
+			explanationDeps.add(evidence, explanation);
+		}
+		expTime += System.nanoTime() - time;
 	}
 
 	protected void internalAddLink(Link link) {
@@ -326,13 +328,6 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		// createDepMap();
 		cleanupReasoner();
 		return System.currentTimeMillis() - time;
-	}
-
-	protected void createDepMap() {
-		long time = System.nanoTime();
-		explanationDeps = createDepMap(explanationMap);
-		System.out.println("Created dep map in "
-				+ ((System.nanoTime() - time) / 1000000d) + " ms");
 	}
 
 	public static MultiMap<Link, Explanation> createDepMap(

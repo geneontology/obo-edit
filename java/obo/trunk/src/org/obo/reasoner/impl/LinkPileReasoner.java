@@ -2,6 +2,8 @@ package org.obo.reasoner.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -11,6 +13,11 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
+import org.obo.datamodel.NestedValue;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.PathCapable;
 import org.obo.reasoner.Explanation;
 import org.obo.util.TermUtil;
 
@@ -20,6 +27,125 @@ public class LinkPileReasoner extends AbstractReasoner {
 	protected List<ReasonerRule> rules = new ArrayList<ReasonerRule>();
 	protected int maxLinkPileSize = 0;
 	protected int lastVal;
+	protected HashMap<Link, Link> linkMap;
+	protected boolean lowMemoryMode = false;
+
+	public static class ReasonerLink implements Link {
+
+		protected LinkedObject child;
+		protected LinkedObject parent;
+		protected OBOProperty type;
+		protected boolean lookedAt;
+		protected ArrayList<AbstractExplanation> explanations;
+		protected String id;
+		protected int hash;
+
+		public ReasonerLink(LinkedObject child, OBOProperty type,
+				LinkedObject parent) {
+			this.child = child;
+			this.type = type;
+			this.parent = parent;
+			id = child.getID() + '-' + type.getID() + "->" + parent.getID();
+			hash = child.hashCode() + type.hashCode() + parent.hashCode();
+		}
+
+		public Collection<AbstractExplanation> getExplanations() {
+			if (explanations == null)
+				return Collections.emptyList();
+			else
+				return explanations;
+		}
+
+		public Object clone() {
+			throw new UnsupportedOperationException();
+		}
+
+		public void addExplanation(AbstractExplanation exp) {
+			exp.setExplainedLink(this);
+			if (explanations == null) {
+				explanations = new ArrayList<AbstractExplanation>(5);
+			}
+			explanations.add(exp);
+		}
+
+		public void removeExplanation(AbstractExplanation exp) {
+			if (explanations != null)
+				explanations.remove(exp);
+		}
+
+		public boolean isImplied() {
+			return true;
+		}
+
+		public String getID() {
+			return id;
+		}
+
+		@Override
+		public int hashCode() {
+			return hash;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) {
+				return false;
+			} else if (o instanceof Link) {
+				return TermUtil.equals(this, (Link) o);
+			} else
+				return false;
+		}
+
+		public void setNestedValue(NestedValue nv) {
+		}
+
+		public NestedValue getNestedValue() {
+			return null;
+		}
+
+		public boolean isAnonymous() {
+			return false;
+		}
+
+		public void setNamespace(Namespace namespace) {
+		}
+
+		public Namespace getNamespace() {
+			return null;
+		}
+
+		public LinkedObject getChild() {
+			return child;
+		}
+
+		public void setChild(LinkedObject child) {
+			throw new UnsupportedOperationException();
+		}
+
+		public LinkedObject getParent() {
+			return parent;
+		}
+
+		public void setParent(LinkedObject parent) {
+			throw new UnsupportedOperationException();
+		}
+
+		public OBOProperty getType() {
+			return type;
+		}
+
+		public void setType(OBOProperty type) {
+			throw new UnsupportedOperationException();
+		}
+
+		public boolean isLookedAt() {
+			return lookedAt;
+		}
+
+		public void setLookedAt(boolean lookedAt) {
+			this.lookedAt = lookedAt;
+		}
+	}
 
 	public LinkPileReasoner() {
 		setStoreGivenLinks(false);
@@ -57,8 +183,8 @@ public class LinkPileReasoner extends AbstractReasoner {
 			rule.init(this);
 		}
 		setProgressString("Initializing reasoner...");
-		 linkPile = new LinkedHashSet<Link>();
-		//linkPile = new LinkedList<Link>();
+		linkPile = new LinkedHashSet<Link>();
+		// linkPile = new LinkedList<Link>();
 		Iterator<Link> it = TermUtil.getAllLinks(linkDatabase);
 		while (it.hasNext()) {
 			Link link = it.next();
@@ -98,7 +224,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 	protected Collection<Link> getLinkPile() {
 		return linkPile;
 	}
-	
+
 	protected Link popLink() {
 		if (linkPile instanceof Queue)
 			return ((Queue<Link>) linkPile).poll();
@@ -119,7 +245,6 @@ public class LinkPileReasoner extends AbstractReasoner {
 		int readdedCount = 0;
 		int newaddedCount = 0;
 		long pilePullTime = 0;
-		Set<Link> lookedat = new HashSet<Link>();
 		while (!linkPile.isEmpty()) {
 			if (isCancelled())
 				return;
@@ -130,10 +255,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 			 */
 			Link link = popLink();
 			pilePullTime += System.nanoTime() - time;
-			if (lookedat.contains(link))
+			if (isLookedAt(link))
 				continue;
 			else
-				lookedat.add(link);
+				setLookedAt(link);
 			for (ReasonerRule rule : rules) {
 				Collection<Explanation> exps = rule.getImplications(this, link);
 				if (exps == null)
@@ -142,20 +267,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 					time = System.nanoTime();
 					boolean added = addExplanation(e);
 					addTimeTrue += System.nanoTime() - time;
-					/*
-					 * addCount++; if (added) { addTimeTrue += System.nanoTime() -
-					 * time; addTrueCount++; } else addTimeFalse +=
-					 * System.nanoTime() - time;
-					 */
 					if (added) {
 						if (e.getExplainedObject() instanceof Link) {
 							Link newLink = (Link) e.getExplainedObject();
-							// if (!TermUtil.containsLink(this, newLink))
-							/*
-							 * if (linkPile.contains(newLink)) readdedCount++;
-							 * else newaddedCount++;
-							 */
-							if (!lookedat.contains(newLink)) {
+							if (!isLookedAt(newLink)) {
 								linkPile.add(newLink);
 								if (linkPile.size() >= maxLinkPileSize)
 									maxLinkPileSize = linkPile.size();
@@ -166,6 +281,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 			}
 			// setProgressString(linkPile.size() + "");
 		}
+
 		System.err.println("   Add time(true(" + addTrueCount + ")) = "
 				+ (addTimeTrue / 1000000d) + " ms");
 		System.err.println("   Add time(false(" + (addCount - addTrueCount)
@@ -185,12 +301,90 @@ public class LinkPileReasoner extends AbstractReasoner {
 
 	protected boolean addExplanation(Explanation explanation) {
 		Link link = (Link) explanation.getExplainedObject();
-		/*
-		 * Collection<Explanation> exps = getExplanations(link); if
-		 * ((storeGivenLinks || !isGiven(explanation)) &&
-		 * exps.contains(explanation)) return false;
-		 */
 		explain(link, explanation);
 		return true;
+	}
+
+	protected boolean isLookedAt(Link link) {
+		if (link instanceof ReasonerLink)
+			return ((ReasonerLink) link).isLookedAt();
+		else
+			return false;
+	}
+
+	protected void setLookedAt(Link link) {
+		if (link instanceof ReasonerLink) {
+			((ReasonerLink) link).setLookedAt(true);
+		}
+	}
+	
+	protected void reasonRemoval(Link link) {
+		// actually remove the dead link from the various caches
+		impliedLinkDatabase.removeParent(link);
+		// re-generate all the implications of the now-removed link
+		Collection<Explanation> deps = new ArrayList<Explanation>();
+		for (ReasonerRule rule : rules) {
+			Collection<Explanation> temp = rule.getImplications(this, link);
+			if (temp != null)
+				deps.addAll(temp);
+		}
+		for (Explanation exp : deps) {
+			// get all the other explanations for the explained object
+			Collection<Explanation> exps = getExplanations(exp.getExplainedObject());
+			// pre-emptively remove this explanation from the set (although we may add
+			// it back later, we have to do this now, because once we remove evidence
+			// from the explanation we change its identity, and the remove() method
+			// won't work right)
+			exps.remove(exp);
+			// remove the now-defunct link as supporting evidence for the
+			// dependent explanation
+			boolean dead = exp.removeEvidence(link);
+			// if dead == true, it means that removing the defunct link
+			// invalidated the explanation
+			if (dead) {
+				if (exps.isEmpty())
+					reasonRemoval(exp.getExplainedObject());
+			} else
+				exps.add(exp);
+		}
+	}
+
+	@Override
+	public Collection<Explanation> getExplanations(PathCapable link) {
+		if (link instanceof ReasonerLink) {
+			ReasonerLink rl = (ReasonerLink) link;
+			if (!rl.isLookedAt())
+				rl = (ReasonerLink) findRealLink(rl);
+			return (Collection) rl.getExplanations();
+		} else if (link instanceof Link && !TermUtil.isImplied(link)) {
+			return (Collection) Collections.singleton(new GenusExplanation(
+					(Link) link));
+		} else
+			return Collections.emptySet();
+	}
+
+	protected Link findRealLink(Link link) {
+		if (lowMemoryMode) {
+			return TermUtil.getLink(impliedLinkDatabase, link);
+		} else {
+			if (linkMap == null)
+				linkMap = new HashMap<Link, Link>();
+			Link candidate = linkMap.get(link);
+			if (candidate == null)
+				linkMap.put(link, link);
+			else
+				link = candidate;
+			return link;
+		}
+	}
+
+	@Override
+	protected void internalAddExplanation(Link link, Explanation explanation) {
+		if (link instanceof ReasonerLink
+				&& explanation instanceof AbstractExplanation) {
+			link = findRealLink(link);
+			((ReasonerLink) link)
+					.addExplanation((AbstractExplanation) explanation);
+		}
 	}
 }
