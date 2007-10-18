@@ -1,9 +1,8 @@
 package org.bbop.util;
 
 import java.util.Collection;
-import java.util.Map;
 
-public interface MultiMap<K, V> extends Map<K, Collection<V>> {
+public interface MultiMap<K, V> extends ImprovedMap<K, Collection<V>> {
 	
 	public boolean containsSingleValue(Object value);
 	public Collection<V> singleValues();

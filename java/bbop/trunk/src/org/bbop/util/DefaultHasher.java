@@ -11,6 +11,9 @@ public class DefaultHasher implements Hasher {
 		return instance;
 	}
 	
+	public DefaultHasher() {
+	}
+	
 	public boolean equals(Object a, Object b) {
 		return ObjectUtil.equals(a, b);
 	}
