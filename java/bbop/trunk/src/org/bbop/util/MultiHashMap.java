@@ -1,18 +1,14 @@
 package org.bbop.util;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 public class MultiHashMap<K,V> implements MultiMap<K,V> {
 
-	protected Map<K,Collection<V>> map = new HashMap<K,Collection<V>>();
+	protected ImprovedMap<K,Collection<V>> map = new ImprovedHashMap<K,Collection<V>>();
 
 	public void clear() {
 		map.clear();
@@ -36,6 +32,10 @@ public class MultiHashMap<K,V> implements MultiMap<K,V> {
 			out.addAll(values);
 		}
 		return out;
+	}
+	
+	public K getKey(Object key) {
+		return map.getKey(key);
 	}
 
 	public Set<Entry<K, Collection<V>>> entrySet() {

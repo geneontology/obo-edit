@@ -1,8 +1,8 @@
 package org.bbop.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
 
 public class TinySet<T> implements Set<T> {
@@ -11,7 +11,7 @@ public class TinySet<T> implements Set<T> {
 
 	protected void forceCollection() {
 		if (list == null)
-			list = new LinkedList<T>();
+			list = new ArrayList<T>(1);
 	}
 
 	public boolean add(T o) {
