@@ -63,9 +63,13 @@ public abstract class AbstractPeriodicUpdateRunnable implements Runnable {
 		} else
 			cleanupUpdate();
 	}
+	
+	protected TaskDelegate<?> getCurrentTask() {
+		return queue.getCurrentTask();
+	}
 
 	protected void updateStep() {
-		final TaskDelegate<?> currentTask = queue.getCurrentTask();
+		final TaskDelegate<?> currentTask = getCurrentTask();
 		if (currentTask == null) {
 			clearTimer();
 		} else {

@@ -174,7 +174,8 @@ public class TableList<T> extends JComponent {
 		@Override
 		public boolean editCellAt(int row, int column, EventObject e) {
 			lastEditRow = row;
-			return super.editCellAt(row, column, e);
+			super.editCellAt(row, column, e);
+			return false;
 		}
 
 		@Override
