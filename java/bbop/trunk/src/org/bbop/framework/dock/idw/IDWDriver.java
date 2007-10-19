@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
@@ -39,11 +38,11 @@ import net.infonode.docking.theme.DockingWindowsTheme;
 import net.infonode.docking.theme.ShapedGradientDockingTheme;
 import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.docking.util.StringViewMap;
-import net.infonode.gui.colorprovider.ColorProvider;
 import net.infonode.gui.colorprovider.FixedColorProvider;
 import net.infonode.util.Direction;
 
 import org.bbop.framework.ComponentManager;
+import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.FrameworkUtil;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
@@ -53,8 +52,6 @@ import org.bbop.framework.dock.Perspective;
 import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.util.ObjectUtil;
-
-import sun.rmi.runtime.GetThreadPoolAction;
 
 public class IDWDriver implements LayoutDriver {
 
@@ -400,7 +397,12 @@ public class IDWDriver implements LayoutDriver {
 		if (label == null)
 			label = c.getTitle();
 		final String flabel = label;
-		final View v = new View(label, null, (JComponent) card);
+		final View v = new View(label, null, (JComponent) card) {
+			@Override
+			protected void finalize() throws Throwable {
+				super.finalize();
+			}
+		};
 		v.addListener(new DockingWindowAdapter() {
 
 			@Override
@@ -556,7 +558,9 @@ public class IDWDriver implements LayoutDriver {
 		if (button.isSelected()) {
 			v.getViewProperties().setTitle(
 					"Configuring: " + card.getComponent().getTitle());
-			card.getConfigScreen().init();
+			ConfigurationPanel panel = card.getConfigScreen();
+			panel.setComponent(card.getComponent());
+			panel.init();
 		} else {
 			v.getViewProperties().setTitle(card.getComponent().getTitle());
 			card.getConfigScreen().commit();
