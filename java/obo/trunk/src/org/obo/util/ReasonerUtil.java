@@ -27,7 +27,7 @@ public class ReasonerUtil {
 	}
 
 	public static boolean generateTransitiveImplication(
-			ReasonedLinkDatabase reasoner, OBORestriction out, Link link,
+			ReasonedLinkDatabase reasoner, Link out, Link link,
 			Link gpLink) {
 
 		if (gpLink.getType().isNonInheritable()

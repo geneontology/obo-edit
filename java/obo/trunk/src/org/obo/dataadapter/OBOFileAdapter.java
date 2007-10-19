@@ -121,7 +121,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 		};
 		ui.setReadOperation(READ_ONTOLOGY);
-		ui.setReadOperation(WRITE_ONTOLOGY);
+		ui.setWriteOperation(WRITE_ONTOLOGY);
 		GraphicalUI advancedUI = getAdvancedUI();
 		if (advancedUI != null) {
 			advancedUI.setSimpleUI(ui);
