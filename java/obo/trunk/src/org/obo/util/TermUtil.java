@@ -23,6 +23,7 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
+import org.obo.datamodel.Synonym;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -1082,6 +1083,26 @@ public class TermUtil {
 				return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * maps enum int to string
+	 * (lifted from OBO_1_2_Serializer by cjm)
+	 * TODO: DRY
+	 * @param scope
+	 * @return
+	 */
+	public static String getScopeLabel(int scope) {
+		if (scope == Synonym.UNKNOWN_SCOPE || scope == Synonym.RELATED_SYNONYM)
+			return "RELATED";
+		else if (scope == Synonym.EXACT_SYNONYM)
+			return "EXACT";
+		else if (scope == Synonym.BROAD_SYNONYM)
+			return "BROAD";
+		else if (scope == Synonym.NARROW_SYNONYM)
+			return "NARROW";
+		else
+			return null;
 	}
 
 	public static OBOClass castToClass(LinkedObject lo) {
