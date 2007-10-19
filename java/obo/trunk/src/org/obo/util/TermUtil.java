@@ -761,6 +761,13 @@ public class TermUtil {
 		}
 		return false;
 	}
+	
+	public static Link getLink(LinkDatabase linkDatabase, Link link) {
+		for(Link l : linkDatabase.getParents(link.getChild()))
+			if (l.equals(link))
+				return l;
+		return null;
+	}
 
 	public static boolean containsLink(LinkDatabase linkDatabase, Link link) {
 		Collection<Link> parents = linkDatabase.getParents(link.getChild());
@@ -1131,5 +1138,24 @@ public class TermUtil {
 		};
 		return new SuperIterator<LinkDatabase, Link>(linkDatabase,
 				objIteratorFactory, linkIteratorFactory);
+	}
+
+	/**
+	 * Returns whether two links should be considered equal. This method takes
+	 * the links' intersection property into consideration.
+	 */
+	public static boolean equals(Link a, Link b) {
+		return TermUtil.equalsWithoutIntersection(a, b)
+				&& (isIntersection(a) == isIntersection(b));
+	}
+
+	/**
+	 * Returns whether two links should be considered equal. This method ignores
+	 * the links' intersection property.
+	 */
+	public static boolean equalsWithoutIntersection(Link a, Link b) {
+		return ObjectUtil.equals(a.getChild(), b.getChild())
+				&& ObjectUtil.equals(a.getType(), b.getType())
+				&& ObjectUtil.equals(a.getParent(), b.getParent());
 	}
 }

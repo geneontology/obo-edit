@@ -19,5 +19,5 @@ public interface OBOAdapter extends DataAdapter {
 			OBOSession.class);
 
 	public static final IOOperation<Void, OBOSession> READ_ONTOLOGY = new DefaultIOOperation<Void, OBOSession>(
-			"WRITE_ONTOLOGY", "write ontology", Void.class, OBOSession.class);
+			"READ_ONTOLOGY", "read ontology", Void.class, OBOSession.class);
 }
