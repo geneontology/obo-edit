@@ -304,20 +304,86 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 	
 	protected void writeAnnotation(PrintStream stream, Annotation annot) {
+		String[] colvals = new String[16];
 		System.out.println("writing annot= "+annot);
 		IdentifiedObject su = annot.getSubject();
-		stream.print(su);
-		
-		stream.print("\t");
+
+		// TODO: split
+		colvals[0] = su.getID();
+		colvals[1] = su.getID();
 		IdentifiedObject ob = annot.getObject();
-		stream.print(ob);
-		stream.print("\t");
-		stream.print("\n");
+
+		colvals[2] = su.getName();
 		
+		//TODO: qualifiers
+		if (annot.getIsNegated()) {
+			colvals[3] = "NOT";
+		}
+		
+		colvals[4] = ob.getID();
+
+		Collection<String> sources = annot.getSources();
+		colvals[5] = sources.toString();
+
+		Collection<LinkedObject> evs = annot.getEvidence();
+		//LinkedObject ev = evs.
+		// TODO evid 6
+		// with: TODO 7
+
+		colvals[8] = getAspect(ob);
+		
+		colvals[9] = ""; // TODO - synonym category
+		colvals[10] = "";
+		if (ob instanceof SynonymedObject) {
+			Set<Synonym> syns = ((SynonymedObject)ob).getSynonyms();
+			colvals[10] = flattenSet(syns);
+		}
+		// type
+		colvals[11]="";
+		
+		// taxa
+		colvals[12]="";
+		
+		colvals[13] = annot.getModificationDate() == null ?
+				"" : annot.getModificationDate().toString();
+		
+		colvals[14] = annot.getAssignedBy();
+		
+		colvals[15] = "";
+		
+		// write entire line
+		stream.print(colvals[0]);
+		for (int i=1; i<16; i++) {
+			stream.print("\t");
+			stream.print(colvals[i]);
+		}
+		stream.print("\n");
 		System.out.println(" su+ob "+su+" "+ob);
 	}
 	
+	protected String flattenSet(Set set) {
+		StringBuffer s = new StringBuffer();
+		for (Object o : set) {
+			if (s.length() == 0) {
+				s.append((String)o);
+			}
+			else {
+				s.append("|");
+				s.append((String)o);
+			}
+		}
+		return s.toString();
+	}
 	
+	protected String getAspect (IdentifiedObject io) {
+		Namespace ns = io.getNamespace();
+		if (ns == null) {
+			return "";
+		}
+		return ns.getID();
+	}
+	
+		
 
 	public String getTermText(IdentifiedObject term)
 			throws DataAdapterException {
