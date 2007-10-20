@@ -267,7 +267,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		AnnotationSummaryTableModel(OBOSession session) {
 			
 			boolean isTransitiveIncluded = true;
-			boolean isFilteredToMinimalSet = true; //todo
+			boolean isFilteredToMinimalSet = true; //TODO
 			
 			Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 			Collection<LinkedObject> subjs =  AnnotationUtil.getAnnotationSubjects(session);
@@ -276,6 +276,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			if (isTransitiveIncluded) {
 				Collection<LinkedObject> ancs = new HashSet<LinkedObject>();
 				for (LinkedObject obj : objs) {
+					System.out.println("getting ancestors of "+obj);
 					ancs.addAll(TermUtil.getAncestors(obj,true));
 				}
 				objs = ancs;
