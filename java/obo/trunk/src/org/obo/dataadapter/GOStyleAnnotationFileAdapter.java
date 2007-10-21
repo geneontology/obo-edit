@@ -95,7 +95,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 				}
 			}
 			catch (Exception e) {
-				// TODO
+				System.out.println(e);
+				throw new DataAdapterException(e, "read error");
 			}
 			return session;
 		} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
