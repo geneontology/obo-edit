@@ -53,7 +53,9 @@ import org.obo.datamodel.PathCapable;
 import org.obo.filters.CompoundFilter;
 import org.obo.filters.CompoundFilterImpl;
 import org.obo.filters.Filter;
+import org.obo.filters.PathCapableFilter;
 import org.oboedit.controller.SelectionManager;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
 
@@ -107,7 +109,6 @@ public class SearchPanel extends JPanel {
 
 	@Override
 	public void validate() {
-		System.err.println("validating SearchPanel");
 		super.validate();
 	}
 
@@ -539,6 +540,12 @@ public class SearchPanel extends JPanel {
 			if (panel != null) {
 				SearchComponentFactory factory = panel.factory;
 				Filter f = getFilter(factory, component);
+				if (f instanceof PathCapableFilter
+						&& SessionManager.getManager().getUseReasoner()) {
+					((PathCapableFilter) f)
+							.setReasonedLinkDatabase(SessionManager
+									.getManager().getReasoner());
+				}
 				boolean matches = false;
 				if (f != null) {
 					Collection<PathCapable> pcs = factory

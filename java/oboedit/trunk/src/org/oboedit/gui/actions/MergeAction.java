@@ -3,6 +3,7 @@ package org.oboedit.gui.actions;
 import org.bbop.swing.KeyRecorder;
 
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.tree.TreePath;
@@ -32,7 +33,8 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 	protected boolean isLegal = false;
 
 	protected KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_M,
-			KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
+			Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+					| KeyEvent.SHIFT_MASK);
 
 	public boolean isDropAllowed() {
 		return true;
@@ -60,7 +62,7 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if ((o instanceof Selection && keyChecker.isDown(KeyEvent.VK_M))) {
+		if (o instanceof Selection) {
 			init((Selection) o, dest);
 			// sourcePanel.setDragTitle("Merge");
 			if (isLegal()) {
@@ -150,5 +152,15 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 
 	public String getDragDesc() {
 		return "Merge";
+	}
+
+	public String getID() {
+		return "merge";
+	}
+
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_M, java.awt.Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask());
+
 	}
 }

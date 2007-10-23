@@ -52,37 +52,37 @@ import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.FieldCheck;
 import org.oboedit.verify.OntologyCheck;
 
-public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCheck {
+public class DbxrefCheck extends AbstractCheck implements FieldCheck,
+		OntologyCheck {
 	public static final FieldPathSpec DEF_DBXREF_PATH_SPEC = new FieldPathSpec(
 			DefinitionDbxrefSearchCriterion.CRITERION);
 
 	public static final FieldPathSpec DBXREF_PATH_SPEC = new FieldPathSpec(
 			GeneralDbxrefSearchCriterion.CRITERION);
-	
+
 	public static final FieldPathSpec SYNONYM_DBXREF_PATH_SPEC = new FieldPathSpec(
 			SynonymSearchCriterion.CRITERION,
 			SynonymDbxrefSearchCriterion.CRITERION);
 
-	protected static Collection<FieldPathSpec> PATH_SPECS =
-		new LinkedList<FieldPathSpec>();
-	
+	protected static Collection<FieldPathSpec> PATH_SPECS = new LinkedList<FieldPathSpec>();
+
 	static {
 		PATH_SPECS.add(DEF_DBXREF_PATH_SPEC);
 		PATH_SPECS.add(SYNONYM_DBXREF_PATH_SPEC);
 		PATH_SPECS.add(DBXREF_PATH_SPEC);
 	}
 
-	protected JCheckBox missingDbCheckBox = new JCheckBox("Check for missing "+
-			"database");
-	protected JCheckBox missingIDCheckBox = new JCheckBox("Check for missing "+
-			"id");
-	protected JCheckBox badCharacterCheckBox = new JCheckBox("Check for non-URL " +
-			"characters");
-	protected JCheckBox validURLCheckBox = new JCheckBox("Check that URL dbxrefs " +
-			"are valid URLs");
-	protected JCheckBox descriptionCheckBox = new JCheckBox("Check for " +
-			"consistency in dbxref descriptions");
-	
+	protected JCheckBox missingDbCheckBox = new JCheckBox("Check for missing "
+			+ "database");
+	protected JCheckBox missingIDCheckBox = new JCheckBox("Check for missing "
+			+ "id");
+	protected JCheckBox badCharacterCheckBox = new JCheckBox(
+			"Check for non-URL " + "characters");
+	protected JCheckBox validURLCheckBox = new JCheckBox(
+			"Check that URL dbxrefs " + "are valid URLs");
+	protected JCheckBox descriptionCheckBox = new JCheckBox("Check for "
+			+ "consistency in dbxref descriptions");
+
 	protected class ConfigurationPanel extends JPanel implements ActionListener {
 		/**
 		 * 
@@ -93,9 +93,9 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 			updateConfiguration();
 		}
 	}
-	
+
 	protected ConfigurationPanel configurationPanel = new ConfigurationPanel();
-	
+
 	public static class DbxrefCheckConfiguration extends CheckConfiguration {
 		protected boolean doMissingDbCheck = true;
 		protected boolean doMissingIDCheck = true;
@@ -150,7 +150,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 
 	public DbxrefCheck() {
 	}
-	
+
 	protected void updateConfiguration() {
 		DbxrefCheckConfiguration dbc = (DbxrefCheckConfiguration) configuration;
 		dbc.setDoMissingDbCheck(missingDbCheckBox.isSelected());
@@ -159,7 +159,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 		dbc.setDoValidURLCheck(validURLCheckBox.isSelected());
 		dbc.setDoDescriptionsCheck(descriptionCheckBox.isSelected());
 	}
-	
+
 	@Override
 	protected void initConfiguration() {
 		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_COMMIT
@@ -170,31 +170,32 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 	protected CheckConfiguration createConfiguration() {
 		return new DbxrefCheckConfiguration();
 	}
-	
+
 	@Override
 	public JComponent getConfigurationPanel() {
 		configurationPanel.removeAll();
-		configurationPanel.setLayout(new BoxLayout(configurationPanel, BoxLayout.Y_AXIS));
-		
+		configurationPanel.setLayout(new BoxLayout(configurationPanel,
+				BoxLayout.Y_AXIS));
+
 		missingDbCheckBox.setOpaque(false);
 		missingIDCheckBox.setOpaque(false);
 		badCharacterCheckBox.setOpaque(false);
 		validURLCheckBox.setOpaque(false);
 		descriptionCheckBox.setOpaque(false);
-		
+
 		DbxrefCheckConfiguration dbc = (DbxrefCheckConfiguration) configuration;
 		missingDbCheckBox.setSelected(dbc.getDoMissingDbCheck());
 		missingIDCheckBox.setSelected(dbc.getDoMissingIDCheck());
 		badCharacterCheckBox.setSelected(dbc.getDoBadCharactersCheck());
 		validURLCheckBox.setSelected(dbc.getDoValidURLCheck());
 		descriptionCheckBox.setSelected(dbc.getDoDescriptionsCheck());
-		
+
 		configurationPanel.add(missingDbCheckBox);
 		configurationPanel.add(missingIDCheckBox);
 		configurationPanel.add(badCharacterCheckBox);
 		configurationPanel.add(validURLCheckBox);
 		configurationPanel.add(descriptionCheckBox);
-		
+
 		return configurationPanel;
 	}
 
@@ -219,7 +220,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 			int percentage = 100 * i / session.getObjects().size();
 			setProgressValue(percentage);
 			setProgressString("checking object " + (i + 1) + " of "
-							+ session.getObjects().size());
+					+ session.getObjects().size());
 			if (!checkObsoletes && TermUtil.isObsolete(io))
 				continue;
 			if (doDescCheck) {
@@ -243,7 +244,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 							+ " dbxref ");
 				}
 			}
-			if (out.size() > VerificationManager.MAX_WARNINGS)
+			if (isCancelled() || out.size() > VerificationManager.MAX_WARNINGS)
 				return out;
 
 		}
@@ -258,8 +259,8 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 					Iterator it2 = c.iterator();
 					while (it2.hasNext()) {
 						DbxrefDescRecord record = (DbxrefDescRecord) it2.next();
-						if (currentObject != null &&
-							!currentObject.equals(record.getObj()))
+						if (currentObject != null
+								&& !currentObject.equals(record.getObj()))
 							continue;
 						Collection records = (Collection) textMap.get(record
 								.getDesc());
@@ -269,7 +270,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 						}
 						records.add(record);
 					}
-					if (textMap.size() > 1 ) {
+					if (textMap.size() > 1) {
 						StringBuffer message = new StringBuffer("The dbxref "
 								+ key + " has several different descriptions: ");
 						it2 = textMap.keySet().iterator();
@@ -352,9 +353,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 					Iterator dit = dbo.getDbxrefs().iterator();
 					while (dit.hasNext()) {
 						Dbxref ref = (Dbxref) dit.next();
-						String key = ref.getDatabase() + ":" + ref.getDatabaseID();
-						if (key.equals(record.getDbxref()) &&
-								!ObjectUtil.equals(ref.getDesc(), desc)) {
+						String key = ref.getDatabase() + ":"
+								+ ref.getDatabaseID();
+						if (key.equals(record.getDbxref())
+								&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 							HistoryItem item = new DelDbxrefHistoryItem(record
 									.getObj().getID(), ref, false, null);
 							mitem.addItem(item);
@@ -371,9 +373,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 					Iterator dit = dbo.getDefDbxrefs().iterator();
 					while (dit.hasNext()) {
 						Dbxref ref = (Dbxref) dit.next();
-						String key = ref.getDatabase() + ":" + ref.getDatabaseID();
-						if (key.equals(record.getDbxref()) &&
-								!ObjectUtil.equals(ref.getDesc(), desc)) {
+						String key = ref.getDatabase() + ":"
+								+ ref.getDatabaseID();
+						if (key.equals(record.getDbxref())
+								&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 							HistoryItem item = new DelDbxrefHistoryItem(record
 									.getObj().getID(), ref, true, null);
 							mitem.addItem(item);
@@ -393,9 +396,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 						Iterator dit = s.getDbxrefs().iterator();
 						while (dit.hasNext()) {
 							Dbxref ref = (Dbxref) dit.next();
-							String key = ref.getDatabase() + ":" + ref.getDatabaseID();
-							if (key.equals(record.getDbxref()) &&
-									!ObjectUtil.equals(ref.getDesc(), desc)) {
+							String key = ref.getDatabase() + ":"
+									+ ref.getDatabaseID();
+							if (key.equals(record.getDbxref())
+									&& !ObjectUtil.equals(ref.getDesc(), desc)) {
 								HistoryItem item = new DelDbxrefHistoryItem(
 										record.getObj().getID(), ref, false, s
 												.getText());
@@ -434,10 +438,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 		c.add(record);
 	}
 
-	protected void checkDbxrefs(Collection<Dbxref> dbxrefs, IdentifiedObject currentObject,
-			LinkedList out, String title) {
-		int i=0;
-		for (Dbxref ref: dbxrefs) {
+	protected void checkDbxrefs(Collection<Dbxref> dbxrefs,
+			IdentifiedObject currentObject, LinkedList out, String title) {
+		int i = 0;
+		for (Dbxref ref : dbxrefs) {
 			checkDbxref(ref, currentObject, out, i++, title);
 		}
 	}
@@ -503,23 +507,23 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 			this.obj = obj;
 		}
 	}
-	
+
 	protected void checkDbxref(Dbxref ref, IdentifiedObject currentObject,
 			LinkedList out, int index, String title) {
 		checkDbxref(ref, new FieldPath(currentObject), out, index, title);
 	}
 
-	protected void checkDbxref(Dbxref ref, FieldPath field,
-			LinkedList out, int index, String title) {
+	protected void checkDbxref(Dbxref ref, FieldPath field, LinkedList out,
+			int index, String title) {
 		DbxrefCheckConfiguration dbconfig = (DbxrefCheckConfiguration) configuration;
 		if (dbconfig.getDoMissingDbCheck() && ref.getDatabase().length() == 0) {
-			out.add(new CheckWarning(getWarningHeader(title, index,
-					field.getObject())
+			out.add(new CheckWarning(getWarningHeader(title, index, field
+					.getObject())
 					+ " has no database name.", false, this, field));
 		}
 		if (dbconfig.getDoMissingIDCheck() && ref.getDatabaseID().length() == 0) {
-			out.add(new CheckWarning(getWarningHeader(title, index,
-					field.getObject())
+			out.add(new CheckWarning(getWarningHeader(title, index, field
+					.getObject())
 					+ " has no id string.", false, this, field));
 		}
 		if (dbconfig.getDoValidURLCheck() && isURLStarter(ref.getDatabase())) {
@@ -528,8 +532,8 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 			} catch (MalformedURLException ex) {
 				out
 						.add(new CheckWarning(
-								getWarningHeader(title, index,
-										field.getObject())
+								getWarningHeader(title, index, field
+										.getObject())
 										+ " has a database prefix that looks like a URL prefix, but is not a valid URL.",
 								false, this, field));
 			}
@@ -538,10 +542,9 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 			if (!StringUtil.containsOnlyValidURICharacters(ref.getDatabaseID())
 					|| !StringUtil.containsOnlyValidURICharacters(ref
 							.getDatabase()))
-				out.add(new CheckWarning(getWarningHeader(title, index,
-						field.getObject())
-						+ " contains non-URI characters.", false, this,
-						field));
+				out.add(new CheckWarning(getWarningHeader(title, index, field
+						.getObject())
+						+ " contains non-URI characters.", false, this, field));
 		}
 	}
 
@@ -554,9 +557,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck, OntologyCh
 		return "Dbxref check";
 	}
 
-	public Collection<CheckWarning> check(OBOSession session, FieldPath path, byte condition, boolean checkObsoletes) {
+	public Collection<CheckWarning> check(OBOSession session, FieldPath path,
+			byte condition, boolean checkObsoletes) {
 		LinkedList<CheckWarning> out = new LinkedList<CheckWarning>();
-		
+
 		if (path.getLastValue() instanceof Dbxref) {
 			checkDbxref((Dbxref) path.getLastValue(), path, out, 0, "Dbxref");
 		}

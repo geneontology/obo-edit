@@ -184,14 +184,13 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		if (currentCheck instanceof ObjectCheck
 				|| currentCheck instanceof FieldCheck) {
 			int percentage = 100 * checkIndex / liveChecks.size();
-			int newVal = percentage
-					+ ((100 * oindex / liveChecks.size()) / session
-							.getObjects().size());
+			int newVal = percentage + (100 * oindex
+					/ session.getObjects().size()) / liveChecks.size();
 			return newVal;
 		} else if (currentCheck instanceof OntologyCheck) {
 			int percentage = 100 * checkIndex / liveChecks.size();
 			Number n = currentCheck.getProgressValue();
-			int newVal = percentage + (n == null ? 0 : n.intValue());
+			int newVal = percentage + (n == null ? 0 : n.intValue()) / liveChecks.size();
 			return newVal;
 		} else
 			return 100 * checkIndex / liveChecks.size();
@@ -209,10 +208,12 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 			return "<html>Running " + currentCheck.getDescription() + " ("
 					+ (checkIndex + 1) + " of " + liveChecks.size() + ") "
 					+ "; checking object " + oindex + " of "
-					+ session.getObjects().size()+"<br><i>"+note+"</i></html>";
+					+ session.getObjects().size() + "<br><i>" + note
+					+ "</i></html>";
 		} else
 			return "<html>Running " + currentCheck.getDescription() + " ("
-					+ (checkIndex + 1) + " of " + liveChecks.size() + ")<br><i>"+note+"</i></html>";
+					+ (checkIndex + 1) + " of " + liveChecks.size()
+					+ ")<br><i>" + note + "</i></html>";
 	}
 
 	protected void fireVerificationStartingEvent(final VerificationEvent ve) {
@@ -227,6 +228,13 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 			};
 			SwingUtilities.invokeLater(r);
 		}
+	}
+	
+	@Override
+	public void cancel() {
+		super.cancel();
+		if (currentCheck != null)
+			currentCheck.cancel();
 	}
 
 	protected void fireVerificationCompleteEvent(final VerificationEvent ve) {

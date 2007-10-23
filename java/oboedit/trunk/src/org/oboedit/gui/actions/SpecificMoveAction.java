@@ -1,6 +1,7 @@
 package org.oboedit.gui.actions;
 
-
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.util.*;
 
 import javax.swing.tree.TreePath;
@@ -33,7 +34,14 @@ public class SpecificMoveAction implements ClickMenuAction {
 	}
 
 	public KeyStroke getKeyStroke() {
-		return null;
+		if (type == null)
+			return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask());
+		else if (type.equals(OBOProperty.IS_A))
+			return KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask());
+		else
+			return null;
 	}
 
 	public OBOProperty getType() {

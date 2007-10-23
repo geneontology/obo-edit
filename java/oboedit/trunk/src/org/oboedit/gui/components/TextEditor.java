@@ -1,8 +1,10 @@
 package org.oboedit.gui.components;
 
 import java.awt.Component;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,11 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -23,6 +27,7 @@ import org.bbop.framework.ComponentManager;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
+import org.bbop.swing.SwingUtil;
 import org.bbop.swing.XMLLayoutUtil;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
@@ -393,6 +398,17 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	public TextEditor(String id) {
 		super(id);
+		SwingUtil.mapAction(this,
+				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, KeyStroke
+						.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
+								.getDefaultToolkit().getMenuShortcutKeyMask()),
+				new AbstractAction("commit") {
+
+					public void actionPerformed(ActionEvent e) {
+						commit();
+					}
+
+				});
 		setObjectSelector(SelectionManager.getManager());
 		errorPanel.add(errorLabel);
 		errorPanel.setVisible(false);

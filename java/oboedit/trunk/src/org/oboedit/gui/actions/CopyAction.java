@@ -41,11 +41,8 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 
 	protected String dragTitle;
 
-	protected int dragKeyCode;
-
 	public CopyAction() {
 		copyChild = true;
-		dragKeyCode = KeyEvent.VK_C;
 		dragTitle = "Add child";
 	}
 
@@ -65,8 +62,15 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 		public int compare(SpecificCopyAction a, SpecificCopyAction b) {
 			SpecificCopyAction sa = a;
 			SpecificCopyAction sb = b;
-			return sa.getType().getID().compareToIgnoreCase(
-					sb.getType().getID());
+			if (sa.getType().equals(OBOProperty.IS_A))
+				return -1;
+			if (sb.getType().equals(OBOProperty.IS_A))
+				return 1;
+			if (sa.getType().isBuiltIn())
+				return 1;
+			if (sb.getType().isBuiltIn())
+				return -1;
+			return sa.getName().compareToIgnoreCase(sb.getName());
 		}
 	};
 
@@ -85,7 +89,7 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if ((o instanceof Selection && keyChecker.isDown(dragKeyCode))) {
+		if ((o instanceof Selection)) {
 			dropInit((Selection) o, dest);
 			if (isLegal()) {
 				return InputHandlerI.ACCEPT_DROP;
@@ -97,7 +101,7 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 
 	public boolean drop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if (o instanceof Selection && keyChecker.isDown(dragKeyCode)) {
+		if (o instanceof Selection) {
 			type = null;
 			dropInit((Selection) o, dest);
 			if (!isLegal())
@@ -170,5 +174,15 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 
 	public String getDragDesc() {
 		return dragTitle + "...";
+	}
+
+	public String getID() {
+		return "add_child";
+	}
+
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask());
+
 	}
 }

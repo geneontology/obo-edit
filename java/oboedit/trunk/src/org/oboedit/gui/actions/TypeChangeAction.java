@@ -34,7 +34,7 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if ((o instanceof Selection && keyChecker.isDown(KeyEvent.VK_T))) {
+		if (o instanceof Selection) {
 
 			Selection paths = (Selection) o;
 
@@ -201,5 +201,15 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 
 	public String getDragDesc() {
 		return "Setting type...";
+	}
+	
+	public String getID() {
+		return "type_change";
+	}
+	
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_T,
+				java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+
 	}
 }

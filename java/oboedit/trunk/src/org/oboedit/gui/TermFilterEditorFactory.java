@@ -11,24 +11,73 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
 import org.obo.filters.RenderSpec;
+import org.obo.query.impl.SearchHit;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
-public class TermFilterEditorFactory implements SearchComponentFactory {
+public class TermFilterEditorFactory implements SearchComponentFactory<IdentifiedObject> {
+	
+	protected static class IdentifiedObjectModel extends
+			AbstractSearchResultsTableModel<IdentifiedObject> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public IdentifiedObjectModel() {
+			super(IdentifiedObject.class);
+			setSortColumn(1, true);
+		}
+
+		@Override
+		public boolean columnHasMaxWidth(int column) {
+			if (column == 0)
+				return true;
+			else
+				return false;
+		}
+
+		public int getColumnCount() {
+			return 2;
+		}
+
+		@Override
+		public Object getColumnVal(Object row, int column) {
+			IdentifiedObject obj = (IdentifiedObject) row;
+			if (column == 0)
+				return obj.getID();
+			else if (column == 1)
+				return obj.getName();
+			else
+				throw new IllegalArgumentException("column out of range");
+		}
+
+		@Override
+		public String getColumnName(int index) {
+			if (index == 0)
+				return "ID";
+			else if (index == 1)
+				return "Name";
+			else
+				return "?!";
+		}
+	};
+	
 	public JComponent createSubEditor() {
 		return new TermFilterEditor();
 	}
 
-	public Filter<?> getFilter(Component editor) {
+	public Filter<IdentifiedObject> getFilter(Component editor) {
 		return ((TermFilterEditor) editor).getFilter();
 	}
 
-	public Collection<PathCapable> getRelevantValues(
-			Collection<PathCapable> items) {
-		Collection<PathCapable> pcs = new LinkedList<PathCapable>();
-		for (PathCapable pc : items) {
+	public Collection<IdentifiedObject> getRelevantValues(
+			Collection<?> items) {
+		Collection<IdentifiedObject> pcs = new LinkedList<IdentifiedObject>();
+		for (Object pc : items) {
 			if (pc instanceof IdentifiedObject) {
-				pcs.add(pc);
+				pcs.add((IdentifiedObject) pc);
 			}
 		}
 		return pcs;
@@ -72,5 +121,13 @@ public class TermFilterEditorFactory implements SearchComponentFactory {
 		if (c instanceof TermFilterEditor) {
 			((TermFilterEditor) c).removeActionListener(listener);
 		}
+	}
+	
+	public JComponent getResultsDisplay(Collection<SearchHit<?>> results) {
+		return new SearchResultsTable(new IdentifiedObjectModel(), results);
+	}
+
+	public Class<IdentifiedObject> getResultType() {
+		return IdentifiedObject.class;
 	}
 }

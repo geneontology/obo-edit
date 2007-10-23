@@ -73,7 +73,8 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 										+ "share the name or synonym \"" + name
 										+ "\".", false, this, io);
 						out.add(warning);
-						if (out.size() > VerificationManager.MAX_WARNINGS)
+						if (isCancelled()
+								|| out.size() > VerificationManager.MAX_WARNINGS)
 							return out;
 					}
 				}
@@ -121,7 +122,8 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 											+ io.getName() + " (" + io.getID()
 											+ ")", false, this, currentObject);
 							out.add(warning);
-							if (out.size() > VerificationManager.MAX_WARNINGS)
+							if (isCancelled()
+									|| out.size() > VerificationManager.MAX_WARNINGS)
 								return out;
 						}
 						/*

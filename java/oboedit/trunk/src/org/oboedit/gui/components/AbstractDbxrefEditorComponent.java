@@ -38,8 +38,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 
 import org.bbop.framework.GUIManager;
-import org.bbop.framework.UserEvent;
-import org.bbop.framework.UserListener;
+import org.bbop.framework.event.UserEvent;
+import org.bbop.framework.event.UserListener;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.Dbxref;

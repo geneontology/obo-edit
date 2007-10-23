@@ -2,6 +2,7 @@ package org.oboedit.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 
@@ -62,11 +63,14 @@ public class DefaultInputHandler implements InputHandlerI {
 			selected = SelectionManager.getGlobalSelection();
 
 		Iterator it = editActions.iterator();
+		Set<Character> inUseSet = new HashSet<Character>();
 		int enabledCount = 0;
+		int[] index = { 0 };
 		while (it.hasNext()) {
 			ClickMenuAction editAction = (ClickMenuAction) it.next();
 			JMenuItem item = getMenuItem(selected, dest, editAction,
-					liveSelection, fromDrop);
+					liveSelection, fromDrop, (fromDrop ? index : null),
+					inUseSet);
 			System.err.println("item = " + item);
 			if (item.isEnabled()) {
 				enabledCount++;
@@ -79,7 +83,8 @@ public class DefaultInputHandler implements InputHandlerI {
 
 	public static JMenuItem getMenuItem(final Selection selection,
 			final GestureTarget dest, final EditAction editAction,
-			final boolean liveSelection, final boolean fromDrop) {
+			final boolean liveSelection, final boolean fromDrop, int[] index,
+			Set<Character> inUse) {
 
 		if (editAction instanceof DropMenuAction
 				&& editAction instanceof ClickMenuAction) {
@@ -104,7 +109,7 @@ public class DefaultInputHandler implements InputHandlerI {
 				while (it.hasNext()) {
 					ClickMenuAction ea = (ClickMenuAction) it.next();
 					JMenuItem subItem = getMenuItem(selection, dest, ea,
-							liveSelection, fromDrop);
+							liveSelection, fromDrop, null, inUse);
 					if (subItem.isEnabled())
 						foundEnabled = true;
 					item.add(subItem);
@@ -146,7 +151,34 @@ public class DefaultInputHandler implements InputHandlerI {
 			}
 
 		}
+		KeyStroke key = editAction.getKeyStroke();
+		if (index != null && index[0] >= 0 && index[0] <= 9 && item.isEnabled()) {
+			if (!(item instanceof JMenu)) {
+				if (key == null)
+					key = KeyStroke.getKeyStroke(("" + index[0]++).charAt(0),
+							Toolkit.getDefaultToolkit()
+									.getMenuShortcutKeyMask());
+			}
+			Character c = getMnemonicKey(editAction.getName(), inUse);
+			if (c != null)
+				item.setMnemonic(c);
+		}
+		if (key != null)
+			item.setAccelerator(key);
 		return item;
+	}
+
+	protected static Character getMnemonicKey(String name, Set<Character> inUse) {
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (Character.isLetterOrDigit(c)) {
+				if (!inUse.contains(c)) {
+					inUse.add(c);
+					return c;
+				}
+			}
+		}
+		return null;
 	}
 
 	// 
@@ -171,11 +203,11 @@ public class DefaultInputHandler implements InputHandlerI {
 			return false;
 
 		dragMenu.removeAll();
-		Iterator it = EditActionManager.getManager().getDropMenuActions()
-				.iterator();
 		int enabledCount = 0;
-		while (it.hasNext()) {
-			final DropMenuAction editAction = (DropMenuAction) it.next();
+		int[] index = { 0 };
+		Set<Character> inUseSet = new HashSet<Character>();
+		for (final DropMenuAction editAction : EditActionManager.getManager()
+				.getDropMenuActions()) {
 
 			editAction.dropInit(selection, dest);
 			if (!editAction.isLegal())
@@ -189,7 +221,10 @@ public class DefaultInputHandler implements InputHandlerI {
 			 * actionPerformed(ActionEvent e) {
 			 * controller.apply(editAction.execute()); } }); dragMenu.add(item);
 			 */
-			dragMenu.add(getMenuItem(selection, dest, editAction, false, true));
+			JMenuItem item = getMenuItem(selection, dest, editAction, false,
+					true, index, inUseSet);
+			dragMenu.add(item);
+
 		}
 		if (enabledCount > 0) {
 			dragMenu.show(dropPanel, (int) p.getX(), (int) p.getY());
@@ -232,7 +267,21 @@ public class DefaultInputHandler implements InputHandlerI {
 		return false;
 	}
 
+	public String getName() {
+		return "All edits";
+	}
+
 	public String getDragDesc() {
 		return "Dragging...";
 	}
-};
+
+	public String getID() {
+		return "default";
+	}
+
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_D, java.awt.Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask());
+
+	}
+}

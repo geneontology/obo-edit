@@ -68,9 +68,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 		protected byte finalPunctuationCondition = VerificationManager.ALL;
 
-		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_COMMIT
-				| VerificationManager.TEXT_EDIT_THREAD
-				| VerificationManager.MANUAL;
+		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_THREAD;
 
 		public AbstractCheckConfiguration() {
 			super();
@@ -173,8 +171,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	}
 
-	protected String[] selections = { "On Text Edit / Manual", "Always",
-			"Never" };
+	protected String[] selections = { "Threaded checks only",
+			"On Text Edit / Manual", "Always", "Never" };
 
 	protected JComboBox finalPunctuationList = new JComboBox(selections);
 
@@ -294,20 +292,23 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 	}
 
 	protected static String getConditionWord(int condition) {
-		if ((condition & VerificationManager.TEXT_EDIT_COMMIT) > 0) {
-			if (condition == (VerificationManager.TEXT_EDIT_COMMIT
-					| VerificationManager.TEXT_EDIT_THREAD | VerificationManager.MANUAL))
-				return "On Text Edit / Manual";
-			else
-				return "Always";
-		} else
+
+		if (condition == 0)
 			return "Never";
+		if (condition == VerificationManager.TEXT_EDIT_THREAD)
+			return "Threaded checks only";
+		if (condition == (VerificationManager.TEXT_EDIT_COMMIT
+				| VerificationManager.TEXT_EDIT_THREAD | VerificationManager.MANUAL))
+			return "On Text Edit / Manual";
+		return "Always";
 	}
 
 	protected static byte getCondition(String word) {
 		if (word.equals("Always")) {
 			return VerificationManager.ALL;
-		} else if (word.equals("On Text Edit")) {
+		} else if (word.equals("Threaded checks only")) {
+			return VerificationManager.TEXT_EDIT_THREAD;
+		} else if (word.equals("On Text Edit / Manual")) {
 			return VerificationManager.TEXT_EDIT_COMMIT
 					| VerificationManager.TEXT_EDIT_THREAD
 					| VerificationManager.MANUAL;
@@ -466,6 +467,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	public Collection<CheckWarning> check(OBOSession session, FieldPath path,
 			byte condition, boolean checkObsoletes) {
+		cancelled = false;
 		if (!checkObsoletes && TermUtil.isObsolete(path.getObject()))
 			return Collections.emptyList();
 

@@ -3,6 +3,9 @@ package org.oboedit.gui.actions;
 import org.bbop.util.*;
 
 import java.util.*;
+
+import javax.swing.KeyStroke;
+
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
@@ -69,4 +72,9 @@ public class RangeChangeAction implements DropMenuAction {
 				.createSelectionFromTarget(dest));
 		return item;
 	}
+
+	public KeyStroke getKeyStroke() {
+		return null;
+	}
+
 }

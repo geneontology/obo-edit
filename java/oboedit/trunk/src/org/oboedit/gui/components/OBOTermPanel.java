@@ -32,7 +32,9 @@ import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AbstractInputHandlerBridge;
+import org.oboedit.gui.AbstractSelectableHandlerBridge;
 import org.oboedit.gui.DefaultTermModel;
+import org.oboedit.gui.EditActionToolbar;
 import org.oboedit.gui.Filterable;
 import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.GestureTarget;
@@ -44,6 +46,7 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RightClickMenuProvider;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.SelectionTransferHandler;
+import org.oboedit.gui.TermModel;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
@@ -60,62 +63,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	protected String title;
 
 	public static Border EMPTY_BORDER = new EmptyBorder(1, 1, 1, 1);
-
-	public static class OBOPanelConfiguration implements ComponentConfiguration {
-
-		protected boolean isLive;
-
-		protected boolean buttonsVisible = false;
-
-		protected String filterPropID;
-
-		protected String rootAlgorithm;
-
-		protected FilterPair filter;
-
-		public OBOPanelConfiguration() {
-		}
-
-		public void setFilterPropID(String filterPropID) {
-			this.filterPropID = filterPropID;
-		}
-
-		public String getFilterPropID() {
-			return filterPropID;
-		}
-
-		public void setLive(boolean isLive) {
-			this.isLive = isLive;
-		}
-
-		public boolean isLive() {
-			return isLive;
-		}
-
-		public boolean getButtonsVisible() {
-			return buttonsVisible;
-		}
-
-		public void setRootAlgorithm(String rootAlgorithm) {
-			this.rootAlgorithm = rootAlgorithm;
-		}
-
-		public String getRootAlgorithm() {
-			return rootAlgorithm;
-		}
-
-		public void setButtonsVisible(boolean buttonsVisible) {
-			this.buttonsVisible = buttonsVisible;
-		}
-
-		public void setFilter(FilterPair filter) {
-			this.filter = filter;
-		}
-
-		public FilterPair getFilter() {
-			return filter;
-		}
-	}
 
 	// protected OBO_1_2_FileSerializer oboAdapter =
 	// new OBO_1_2_FileSerializer();
@@ -136,8 +83,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected InputListener inputListener = new InputListener();
 
-	protected InputHandlerI currentDragHandler;
-
 	protected DragSourceDragEvent currentDragEvent;
 
 	protected String dragTitle = "";
@@ -146,7 +91,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected java.util.List<RenderedFilter> linkRenderers = new ArrayList<RenderedFilter>();
 
-	protected FilterPair filter;
+	// protected FilterPair filter;
 
 	protected boolean dragging = false;
 
@@ -162,6 +107,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected String id;
 
+	protected boolean revertToDefaultAction = true;
+	
+	protected EditActionToolbar toolbar;
+
 	TreeSelectionListener treeSelectionListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
 			sortedSelectionRows = getSortedSelectionRows();
@@ -175,7 +124,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
 				TermUtil.detectRoots(roots, getLinkDatabase(),
 						getRootAlgorithm());
-				TreePath rootPath = new TreePath(TermModel.ROOT);
+				TreePath rootPath = new TreePath(PathUtil.ROOT);
 				Iterator it = roots.iterator();
 				while (it.hasNext()) {
 					OBORestriction tr = new OBORestrictionImpl(
@@ -191,7 +140,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	};
 
 	public ConfigurationPanel getConfigurationPanel() {
-		return null;
+		return new OntologyEditorConfigEditor();
 	}
 
 	SelectionListener selectionListener = new SelectionListener() {
@@ -389,59 +338,37 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 	}
 
-	/*
-	 * boolean dragging = false;
-	 * 
-	 * public void drop(DropTargetDropEvent e) { highlightDropTarget(-1);
-	 * indicateClickTarget(-1);
-	 * 
-	 * Point myPoint = e.getLocation(); TreePath dest = getPath(myPoint);
-	 * GestureTarget target = SelectionManager.createGestureTarget(
-	 * OBOTermPanel.this, dest, true);
-	 * 
-	 * Object transferData = DropUtil.getSelection(e);
-	 * 
-	 * currentDragHandler.drop(OBOTermPanel.this, transferData, target, e
-	 * .getLocation(), Controller.getController().getKeyRecorder()
-	 * .getKeyChecker());
-	 * 
-	 * dragging = false; }
-	 * 
-	 * public void dragOver(DropTargetDragEvent e) { if (!allowDrop(e)) {
-	 * e.rejectDrag(); return; } else
-	 * e.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
-	 * 
-	 * int row = getRowForLocation((int) e.getLocation().getX(), (int) e
-	 * .getLocation().getY()); highlightDropTarget(row); }
-	 * 
-	 * public boolean allowDrop(DropTargetDragEvent e) { Object data =
-	 * DropUtil.getSelection(e); if (data != null) { TreePath dest =
-	 * getPath(e.getLocation()); if (dest == null) return false; GestureTarget
-	 * target = SelectionManager.createGestureTarget( OBOTermPanel.this, dest,
-	 * true); java.util.List l = Controller.getController() .getInputHandlers();
-	 * for (int i = 0; i < l.size(); i++) { InputHandlerI handler =
-	 * (InputHandlerI) l.get(i); int allowDropVal =
-	 * handler.allowDrop(OBOTermPanel.this, data, target, e.getLocation(),
-	 * Controller .getController().getKeyRecorder() .getKeyChecker());
-	 * System.err.println(" handler = " + handler.getClass() + ", allowDropVal = " +
-	 * allowDropVal); if (allowDropVal == InputHandlerI.ALMOST_ACCEPT_DROP ||
-	 * allowDropVal == InputHandlerI.ACCEPT_DROP) {
-	 * setDragTitle(handler.getDragDesc()); currentDragHandler = handler; return
-	 * allowDropVal == InputHandlerI.ACCEPT_DROP; } } System.err.println();
-	 * return false; } return false; }
-	 * 
-	 * public void dragEnter(DropTargetDragEvent e) { if (!allowDrop(e)) {
-	 * e.rejectDrag(); return; } else
-	 * e.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE); }
-	 * 
-	 * public void dragExit(DropTargetEvent e) { highlightDropTarget(-1); }
-	 * 
-	 * public void dropActionChanged(DropTargetDragEvent dtde) { }
-	 */
+	protected class InputListener extends AbstractSelectableHandlerBridge {
+		
+		protected HistoryListener historyListener = new HistoryListener() {
 
-	protected class InputListener extends AbstractInputHandlerBridge {
+			public void applied(HistoryAppliedEvent event) {
+				updateFromHistory();
+			}
+
+			public void reversed(HistoryAppliedEvent event) {
+				updateFromHistory();
+			}
+			
+		};
+		
 		public InputListener() {
 			setComponent(OBOTermPanel.this);
+		}
+		
+		public void install() {
+			SessionManager.getManager().addHistoryListener(historyListener);
+		}
+		
+		public void uninstall() {
+			SessionManager.getManager().removeHistoryListener(historyListener);
+		}
+
+		protected void updateFromHistory() {
+			if (revertToDefaultAction) {
+				toolbar.setCurrentHandler(EditActionManager
+						.getManager().getDefaultInputHandler());
+			}
 		}
 
 		@Override
@@ -474,8 +401,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 
 		@Override
-		protected void almostDropDelegate(InputHandlerI handler) {
-			setDragTitle(handler.getDragDesc());
+		public void setCurrentHandler(InputHandlerI handler) {
+			super.setCurrentHandler(handler);
+			if (handler != null)
+				setDragTitle(handler.getDragDesc());
 		}
 
 		public void dragExit(DropTargetEvent e) {
@@ -615,62 +544,12 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				// y = getRowHeight() / 2;
 				lineRenderer.paintLine(g, c, y, left, right, isLeaf, path);
 			} else {
-				/*
-				 * g.drawLine(left, y, right, y); if (drawArrowhead &&
-				 * path.getPathCount() > 3) { triangleYBuffer[0] = y -
-				 * triangleYSize; triangleYBuffer[1] = y + triangleYSize;
-				 * triangleYBuffer[2] = y;
-				 * 
-				 * int xoffset = triangleOffset; if (!isLeaf) { xoffset += 2 +
-				 * controlWidth / 2; } if (arrowheadLeft) { triangleXBuffer[0] =
-				 * left + xoffset + triangleXSize; triangleXBuffer[1] = left +
-				 * xoffset + triangleXSize; triangleXBuffer[2] = left + xoffset; }
-				 * else { triangleXBuffer[0] = right - xoffset - triangleXSize;
-				 * triangleXBuffer[1] = right - xoffset - triangleXSize;
-				 * triangleXBuffer[2] = right - xoffset; }
-				 * g.fillPolygon(triangleXBuffer, triangleYBuffer, 3); }
-				 */
+
 			}
 		}
 
 	}
 
-	/*
-	 * protected KeyListener draggingKeyListener = new KeyListener() { protected
-	 * void processDraggingKey(KeyEvent e) { Component comp =
-	 * currentDragEvent.getDragSourceContext() .getComponent(); Point myPoint =
-	 * SwingUtilities.convertPoint(comp, currentDragEvent .getX(),
-	 * currentDragEvent.getY(), OBOTermPanel.this); TreePath dest =
-	 * getPath(myPoint); GestureTarget target =
-	 * SelectionManager.createGestureTarget( OBOTermPanel.this, dest, true);
-	 * 
-	 * OBOTermPanel dragComp = comp instanceof OBOTermPanel ? (OBOTermPanel)
-	 * comp : null;
-	 * 
-	 * Controller controller = Controller.getController();
-	 * 
-	 * Object transferData = null; try { transferData =
-	 * currentDragEvent.getDragSourceContext()
-	 * .getTransferable().getTransferData( new DataFlavor(
-	 * DataFlavor.javaJVMLocalObjectMimeType)); } catch
-	 * (UnsupportedFlavorException e1) { e1.printStackTrace(); } catch
-	 * (IOException e1) { e1.printStackTrace(); } catch (ClassNotFoundException
-	 * e1) { e1.printStackTrace(); }
-	 * 
-	 * java.util.List l = controller.getInputHandlers(); for (int i = 0; i <
-	 * l.size(); i++) { InputHandlerI handler = (InputHandlerI) l.get(i); int
-	 * allowDropVal = handler.allowDrop(dragComp, OBOTermPanel.this, controller,
-	 * transferData, target, currentDragEvent, controller.getKeyRecorder()
-	 * .getKeyChecker()); if (allowDropVal == InputHandlerI.ALMOST_ACCEPT_DROP ||
-	 * allowDropVal == InputHandlerI.ACCEPT_DROP) { currentDragHandler =
-	 * handler; break; } } }
-	 * 
-	 * public void keyTyped(KeyEvent e) { }
-	 * 
-	 * public void keyReleased(KeyEvent e) { processDraggingKey(e); }
-	 * 
-	 * public void keyPressed(KeyEvent e) { processDraggingKey(e); } };
-	 */
 	protected Collection<SelectionListener> selectionListeners = new LinkedList<SelectionListener>();
 
 	protected JScrollPane scrollPane;
@@ -701,13 +580,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 		if (updateImage) {
 			GhostImageController.getInstance().forceImageUpdate();
-			/*
-			 * ((OBODragListener) (dragSource.getListener())).clearImageCache();
-			 * controller.getDragController().updateDragImage(dragSource,
-			 * false);
-			 * 
-			 * ((new Exception("Should update drag image"))).printStackTrace();
-			 */
 		}
 	}
 
@@ -719,38 +591,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return ((TermModel) getModel()).getRootAlgorithm();
 	}
 
-	/*
-	 * public TreePath [] getFilteredPathsFromTerms(Collection terms) { return
-	 * getFilteredPaths(terms); }
-	 * 
-	 * public TreePath [] getFilteredPaths(Collection terms) {
-	 * 
-	 * Set pathVector = new HashSet(); Iterator it = terms.iterator();
-	 * while(it.hasNext()) { PathCapable lo = (PathCapable) it.next(); if
-	 * (controller.selectShortestPathOnly()) { TreePath path = TermUtil.
-	 * getShortestPath(lo, ((TermModel) getModel()). getRootAlgorithm(),
-	 * ((TermModel) getModel()). getLinkDatabase()); pathVector.add(path); }
-	 * else { pathVector.addAll(TermUtil. getPathsAsVector(lo, ((TermModel)
-	 * getModel()). getRootAlgorithm(), ((TermModel) getModel()).
-	 * getLinkDatabase())); } }
-	 * 
-	 * TreePath [] selectPaths = new TreePath[pathVector.size()]; it =
-	 * pathVector.iterator(); for(int i=0; it.hasNext(); i++) { selectPaths[i] =
-	 * (TreePath) it.next(); }
-	 * 
-	 * return selectPaths; }
-	 * 
-	 * public TreePath [] getFilteredPathsFromLinksOrTerms(Collection objects) {
-	 * Set terms = new HashSet(); Iterator it = objects.iterator();
-	 * while(it.hasNext()) { Object o = it.next(); if (o instanceof Link)
-	 * terms.add(((Link) o).getChild()); else if (o instanceof LinkedObject)
-	 * terms.add(o); } return getFilteredPathsFromTerms(terms); }
-	 * 
-	 * public TreePath [] getFilteredPathsFromLinks(Collection links) { Set
-	 * terms = new HashSet(); Iterator it = links.iterator();
-	 * while(it.hasNext()) { Link link = (Link) it.next();
-	 * terms.add(link.getChild()); } return getFilteredPathsFromTerms(terms); }
-	 */
 	public int getHighlightRow() {
 		return highlightedRow;
 	}
@@ -769,22 +609,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		repaintRow(oldClickTarget);
 	}
 
-	/*
-	 * public void cleanupDragController() { Controller controller =
-	 * Controller.getController();
-	 * controller.getDragController().unregisterDropTarget(dropTarget);
-	 * controller.getDragController().unregisterDragSource(dragSource); }
-	 * 
-	 * public void initDragController() {
-	 * 
-	 * Controller controller = Controller.getController(); if (dropTarget ==
-	 * null) { inputListener = new InputListener(); dropTarget = new
-	 * DropTarget(this, inputListener); } if (dragSource == null) { dragSource =
-	 * new DragSource(this, new OBODragListener(this)); }
-	 * 
-	 * controller.getDragController().registerDropTarget(dropTarget);
-	 * controller.getDragController().registerDragSource(dragSource); }
-	 */
 	public void setScrollOnSelection(boolean scrollOnSelection) {
 		this.scrollOnSelection = scrollOnSelection;
 	}
@@ -849,33 +673,41 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 	}
 
-	public void setFilter(FilterPair filter) {
+	public void setLinkFilter(Filter<?> linkFilter) {
 		if (getModel() instanceof TermModel) {
-			this.filter = filter;
-			if (filter != null) {
-				((TermModel) getModel())
-						.setTermFilter(filter.getObjectFilter());
-				((TermModel) getModel()).setLinkFilter(filter.getLinkFilter());
-			} else {
-				((TermModel) getModel()).setTermFilter(null);
-				((TermModel) getModel()).setLinkFilter(null);
-			}
+			((TermModel) getModel()).setLinkFilter(linkFilter);
 			reload();
 		}
 	}
 
-	public FilterPair getFilter() {
+	public void setTermFilter(Filter<?> termFilter) {
 		if (getModel() instanceof TermModel) {
-			return filter;
-		} else
+			((TermModel) getModel()).setTermFilter(termFilter);
+			reload();
+		}
+	}
+
+	public void setFilters(Filter<?> termFilter, Filter<?> linkFilter) {
+		if (getModel() instanceof TermModel) {
+			((TermModel) getModel()).setLinkFilter(linkFilter);
+			((TermModel) getModel()).setTermFilter(termFilter);
+			reload();
+		}
+	}
+
+	public Filter<?> getLinkFilter() {
+		if (getModel() instanceof TermModel)
+			return ((TermModel) getModel()).getLinkFilter();
+		else
 			return null;
 	}
 
-	/*
-	 * public void setTermFilter(VectorFilter filter) { if (getModel()
-	 * instanceof TermModel) { ((TermModel) getModel()).setTermFilter(filter);
-	 * formatCornerComponent(); reload(); } }
-	 */
+	public Filter<?> getTermFilter() {
+		if (getModel() instanceof TermModel)
+			return ((TermModel) getModel()).getTermFilter();
+		else
+			return null;
+	}
 
 	public void setPropertyFilter(OBOProperty type) {
 		if (getModel() instanceof DefaultTermModel) {
@@ -912,15 +744,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return objectRenderers;
 	}
 
-	/*
-	 * public void addFilteredRenderer(FilteredRenderer renderer) {
-	 * filteredRenderers.add(renderer); formatCornerComponent(); reload(); }
-	 * 
-	 * public void removeFilteredRenderer(FilteredRenderer renderer) {
-	 * filteredRenderers.remove(renderer); formatCornerComponent(); reload(); }
-	 * 
-	 * public Vector getFilteredRenderers() { return filteredRenderers; }
-	 */
 	public void setIgnoreSelection(boolean ignoreSelection) {
 		this.ignoreSelection = ignoreSelection;
 	}
@@ -1059,12 +882,13 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				EditActionManager.getManager().getKeyRecorder().removeKeyListener(
-						focusKeyListener);
+				EditActionManager.getManager().getKeyRecorder()
+						.removeKeyListener(focusKeyListener);
 			}
 		});
 		addMouseListener(inputListener);
 		addKeyListener(inputListener);
+		inputListener.install();
 		addFocusListener(focusListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		GUIUtil.addReloadListener(reloadListener);
@@ -1074,11 +898,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void cleanup() {
-
 		ToolTipManager.sharedInstance().unregisterComponent(this);
 		// controller.removeListener(termSelectListener);
 		EditActionManager.getManager().getKeyRecorder().removeKeyListener(
 				focusKeyListener);
+		inputListener.uninstall();
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
 		GUIUtil.removeReloadListener(reloadListener);
 		SelectionManager.getManager()
@@ -1087,6 +911,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		SelectionTransferHandler.removeHandler(selectionTransferHandler);
 		setDropTarget(null);
 	}
+
+	protected JPanel panel;
+	// protected JToolBar toolbar;
+	// protected JComboBox gestureBox = new JComboBox();
 
 	public OBOTermPanel(String id) {
 		this.id = id;
@@ -1100,7 +928,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		 * });
 		 */
 		scrollPane = new JScrollPane(this);
-
+		panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(scrollPane, "Center");
+		toolbar = new EditActionToolbar(panel, inputListener, true);
 		DragFriendlyTreeUI ui = getDefaultUI();
 		setUI(ui);
 		ui.setRightChildIndent(20);
@@ -1108,7 +939,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		DefaultTermModel model = new DefaultTermModel();
 		setModel(model);
 		model.init();
+		setActionMap(new ActionMap());
 	}
+
+	// protected boolean showToolbar = false;
 
 	@Override
 	public void setUI(TreeUI ui) {
@@ -1137,8 +971,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 					break;
 				}
 			}
-			// if the lead index isn't the first item in the list of paths
-			// move it up
 			if (leadIndex > 0) {
 				TreePath temp = paths[0];
 				paths[0] = lead;
@@ -1259,7 +1091,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void synchronize(OBOTermPanel panel) {
-		TreePath rootPath = new TreePath(TermModel.ROOT);
+		TreePath rootPath = new TreePath(PathUtil.ROOT);
 		Enumeration e = panel.getExpandedDescendants(rootPath);
 		while (e.hasMoreElements()) {
 			expandPath((TreePath) e.nextElement());
@@ -1375,12 +1207,13 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		JMenuItem removeAllDecorationAndFilters = new JMenuItem(
 				"Remove all renderers and filters");
 		removeAllDecorationAndFilters.setEnabled(objectRenderers.size() > 0
-				|| getFilter() != null);
+				|| getLinkFilter() != null || getTermFilter() != null);
 		removeAllDecorationAndFilters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				objectRenderers.clear();
-				if (getFilter() != null) {
-					setFilter(null);
+				if (getLinkFilter() != null || getTermFilter() != null) {
+					setLinkFilter(null);
+					setTermFilter(null);
 					reload();
 				}
 				repaint();
@@ -1420,14 +1253,23 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 		v.add(renderMenu);
 
-		JMenuItem filterMenuItem = new JMenuItem("Remove filter");
-		filterMenuItem.setEnabled(getFilter() != null);
-		filterMenuItem.addActionListener(new ActionListener() {
+		JMenuItem linkFilterMenuItem = new JMenuItem("Remove link filter");
+		linkFilterMenuItem.setEnabled(getLinkFilter() != null);
+		linkFilterMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setFilter(null);
+				setLinkFilter(null);
 			}
 		});
-		v.add(filterMenuItem);
+		v.add(linkFilterMenuItem);
+
+		JMenuItem termFilterMenuItem = new JMenuItem("Remove term filter");
+		termFilterMenuItem.setEnabled(getTermFilter() != null);
+		termFilterMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setTermFilter(null);
+			}
+		});
+		v.add(termFilterMenuItem);
 
 		return v;
 	}
@@ -1470,38 +1312,28 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public JComponent getComponent() {
-		return scrollPane;
+		// return scrollPane;
+		return panel;
 	}
 
 	public ComponentConfiguration getConfiguration() {
-		OBOPanelConfiguration config = new OBOPanelConfiguration();
-
-		config.setLive(isLive());
-
-		config.setFilter(getFilter());
-
-		if (getModel() instanceof DefaultTermModel) {
-			OBOProperty filterProperty = ((DefaultTermModel) getModel())
-					.getPropertyFilter();
-			if (filterProperty == null)
-				config.setFilterPropID(null);
-			else
-				config.setFilterPropID(filterProperty.getID());
-		}
-
+		String rootStr = null;
 		if (getRootAlgorithm() == RootAlgorithm.STRICT)
-			config.setRootAlgorithm("STRICT");
+			rootStr = "STRICT";
 		else if (getRootAlgorithm() == RootAlgorithm.GREEDY)
-			config.setRootAlgorithm("GREEDY");
-		return config;
+			rootStr = "GREEDY";
+		return new OntologyEditorConfiguration(getTermFilter(),
+				getLinkFilter(), toolbar.getShowToolbar(), toolbar.getToolbarPosition(),
+				toolbar.getCurrentHandler().getID(), isRevertToDefaultAction(),
+				isLive(), rootStr);
 	}
 
 	public void setConfiguration(ComponentConfiguration c) {
-		if (c instanceof OBOPanelConfiguration) {
-			OBOPanelConfiguration config = (OBOPanelConfiguration) c;
+		if (c instanceof OntologyEditorConfiguration) {
+			OntologyEditorConfiguration config = (OntologyEditorConfiguration) c;
 			setLive(config.isLive());
-			if (config.getFilter() != null)
-				setFilter(config.getFilter());
+			setLinkFilter(config.getLinkFilter());
+			setTermFilter(config.getTermFilter());
 			if (config.getRootAlgorithm() != null) {
 				if (config.getRootAlgorithm().equals("STRICT")) {
 					setRootAlgorithm(RootAlgorithm.STRICT);
@@ -1509,14 +1341,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 					setRootAlgorithm(RootAlgorithm.GREEDY);
 				}
 			}
-			if (config.getFilterPropID() == null)
-				setPropertyFilter(null);
-			else {
-				IdentifiedObject obj = sessionManager.getSession().getObject(
-						config.getFilterPropID());
-				OBOProperty type = (OBOProperty) obj;
-				setPropertyFilter(type);
-			}
+			toolbar.setShowToolbar(config.getShowToolbar());
+			setRevertToDefaultAction(config.isRevertToDefaultAction());
+			toolbar.setCurrentHandler(EditActionManager.getManager().
+					getInputHandler(config.getDragActionID()));
+			toolbar.setToolbarPosition(config.getToolbarPosition());
 		}
 	}
 
@@ -1532,6 +1361,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	protected DropTarget dropTarget = new DropTarget(this, inputListener);
+	// protected String toolbarPosition = BorderLayout.NORTH;
 
 	protected SelectionTransferHandler selectionTransferHandler;
 
@@ -1542,6 +1372,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		attachListeners();
 		setToolTips();
 		setCellRenderer(new OBOCellRenderer());
+
+		toolbar.updateGestureList();
 	}
 
 	public String getID() {
@@ -1580,4 +1412,15 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	public void removeLinkRenderer(RenderedFilter renderer) {
 		linkRenderers.remove(renderer);
 	}
+
+	public boolean isRevertToDefaultAction() {
+		return revertToDefaultAction;
+	}
+
+	public void setRevertToDefaultAction(boolean revertToDefaultAction) {
+		this.revertToDefaultAction = revertToDefaultAction;
+		inputListener.setRevertToDefaultAction(revertToDefaultAction);
+	}
+
+
 }

@@ -1,9 +1,10 @@
 package org.oboedit.gui;
 
-import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 
 import java.util.List;
+
+import javax.swing.KeyStroke;
 
 public interface EditAction {
 
@@ -16,4 +17,6 @@ public interface EditAction {
 	public boolean isLegal();
 
 	public HistoryItem execute();
+	
+	public KeyStroke getKeyStroke();
 }

@@ -60,8 +60,15 @@ public class MoveAction implements ClickMenuAction, DropMenuAction,
 				return -1;
 			if (sb.getUseOriginalType())
 				return 1;
-			return sa.getType().getID().compareToIgnoreCase(
-					sb.getType().getID());
+			if (sa.getType().equals(OBOProperty.IS_A))
+				return -1;
+			if (sb.getType().equals(OBOProperty.IS_A))
+				return 1;
+			if (sa.getType().isBuiltIn())
+				return 1;
+			if (sb.getType().isBuiltIn())
+				return -1;
+			return sa.getName().compareToIgnoreCase(sb.getName());
 		}
 	};
 
@@ -83,7 +90,7 @@ public class MoveAction implements ClickMenuAction, DropMenuAction,
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if ((o instanceof Selection && keyChecker.isDown(KeyEvent.VK_X))) {
+		if (o instanceof Selection) {
 			useOriginalType = keyChecker.isDown(KeyEvent.VK_SHIFT);
 			dropInit((Selection) o, dest);
 			/*
@@ -100,7 +107,7 @@ public class MoveAction implements ClickMenuAction, DropMenuAction,
 
 	public boolean drop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
-		if (o instanceof Selection && keyChecker.isDown(KeyEvent.VK_X)) {
+		if (o instanceof Selection) {
 			useOriginalType = keyChecker.isDown(KeyEvent.VK_SHIFT);
 			type = null;
 			dropInit((Selection) o, dest);
@@ -190,5 +197,14 @@ public class MoveAction implements ClickMenuAction, DropMenuAction,
 
 	public String getDragDesc() {
 		return "Move" + (useOriginalType ? " (original * type)" : "...");
+	}
+	
+	public String getID() {
+		return "move";
+	}
+	
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_X,
+				java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 	}
 }

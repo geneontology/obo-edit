@@ -3,6 +3,9 @@ package org.oboedit.gui.actions;
 import org.bbop.util.*;
 
 import java.util.*;
+
+import javax.swing.KeyStroke;
+
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
@@ -71,5 +74,9 @@ public class DomainChangeAction implements DropMenuAction {
 		GUIUtil.setSelections(item, sources, SelectionManager
 				.createSelectionFromTarget(dest));
 		return item;
+	}
+	
+	public KeyStroke getKeyStroke() {
+		return null;
 	}
 }

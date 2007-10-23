@@ -346,7 +346,8 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 						KeyEvent.SHIFT_DOWN_MASK), "tabBackward");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
-						KeyEvent.CTRL_DOWN_MASK), "commit");
+						Toolkit.getDefaultToolkit()
+						.getMenuShortcutKeyMask()), "commit");
 
 		getActionMap().put("tabForward", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {

@@ -47,6 +47,7 @@ import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.swing.tree.TreePath;
 
 import org.bbop.framework.GUIManager;
 import org.bbop.swing.DropTargetListenerMulticaster;
@@ -61,6 +62,7 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
+import org.obo.filters.Filter;
 import org.obo.filters.FilterPair;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
@@ -101,6 +103,7 @@ import org.oboedit.piccolo.FullPaintCamera;
 import org.oboedit.piccolo.NamedChildMorpher;
 import org.oboedit.piccolo.PCompoundActivity;
 import org.oboedit.piccolo.PiccoloUtil;
+import org.oboedit.util.PathUtil;
 
 import edu.umd.cs.piccolo.PCamera;
 import edu.umd.cs.piccolo.PCanvas;
@@ -253,12 +256,13 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		public void focusLost(FocusEvent e) {
 			destroyPopupFrame();
 		}
-		
+
 	};
-	
+
 	public void destroyPopupFrame() {
 		if (internalFrame != null) {
-			FocusHierarchyManager.removeFocusHierarchyListener(internalFrame, internalFrameFocusListener);
+			FocusHierarchyManager.removeFocusHierarchyListener(internalFrame,
+					internalFrameFocusListener);
 			remove(internalFrame);
 			internalFrame.dispose();
 			internalFrame = null;
@@ -277,15 +281,18 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			 * .5f)); super.paint(g); g2.setComposite(c); paintChildren(g); }
 			 */
 		};
-		internalFrame.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
+		internalFrame
+				.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
 			public void internalFrameClosing(InternalFrameEvent e) {
 				destroyPopupFrame();
 			}
 		});
-		FocusHierarchyManager.addFocusHierarchyListener(internalFrame, internalFrameFocusListener);
-		JScrollPane pane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		FocusHierarchyManager.addFocusHierarchyListener(internalFrame,
+				internalFrameFocusListener);
+		JScrollPane pane = new JScrollPane(
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 		pane.setViewportView(component);
@@ -852,8 +859,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		if (this.linkDatabase == null) {
 			this.filteredLinkDatabase = new FilteredLinkDatabase(linkDatabase);
-			filteredLinkDatabase.setFilterPair(FilterManager.getManager()
-					.getAugmentedFilterPair(filterPair));
 			this.linkDatabase = new CollapsibleLinkDatabase(
 					filteredLinkDatabase);
 			this.linkDatabase.addListener(expandCollapseListener);
@@ -861,17 +866,11 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				layoutEngine.setLinkDatabase(this.linkDatabase);
 		} else {
 			this.filteredLinkDatabase.setLinkDatabase(linkDatabase);
-			this.filteredLinkDatabase.setFilterPair(FilterManager.getManager()
-					.getAugmentedFilterPair(filterPair));
 		}
-		/*
-		 * if (this.linkDatabase != null)
-		 * this.linkDatabase.removeListener(expandCollapseListener);
-		 * this.linkDatabase = new CollapsibleLinkDatabase(linkDatabase);
-		 * this.linkDatabase.addListener(expandCollapseListener); if
-		 * (layoutEngine != null)
-		 * layoutEngine.setLinkDatabase(this.linkDatabase);
-		 */
+		filteredLinkDatabase.setLinkFilter(FilterManager.getManager()
+				.getAugmentedLinkFilter(getLinkFilter()));
+		filteredLinkDatabase.setTermFilter(FilterManager.getManager()
+				.getAugmentedTermFilter(getTermFilter()));
 	}
 
 	public float getMinZoom() {
@@ -1285,6 +1284,24 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			 * addRelayoutListener(listener);
 			 */
 		}
+		if (isExpandSelectionPaths()) {
+			TreePath[] paths = selection.getPaths();
+			if (paths == null || paths.length == 0) {
+				paths = new TreePath[1];
+				paths = PathUtil.getBestPaths(selection.getAllSelectedObjects(),
+						getRootAlgorithm(), getLinkDatabase());
+			}
+			Collection<PathCapable> pathc = new LinkedList<PathCapable>();
+			for(TreePath path : paths) {
+				Object [] os = path.getPath();
+				for(Object o : os) {
+					if (o instanceof PathCapable) {
+						pathc.add((PathCapable) o);
+					}
+				}
+			}
+			addVisibleObjects(pathc);
+		}
 	}
 
 	public boolean isLive() {
@@ -1378,17 +1395,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		return new FullPaintCamera();
 	}
 
-	protected FilterPair filterPair;
-
-	public FilterPair getFilter() {
-		return filterPair;
-	}
-
-	public void setFilter(FilterPair filter) {
-		this.filterPair = filter;
-		updateDatasources();
-	}
-
 	public boolean getDisableAnimations() {
 		return disableAnimations;
 	}
@@ -1396,5 +1402,42 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void setDisableAnimations(boolean disableAnimations) {
 		this.disableAnimations = disableAnimations;
 		((ExtensibleRoot) getRoot()).setNoAnimations(disableAnimations);
+	}
+
+	protected Filter<?> termFilter;
+	protected Filter<?> linkFilter;
+
+	protected boolean expandSelectionPaths = true;
+
+	public void setFilters(Filter<?> termFilter, Filter<?> linkFilter) {
+		this.termFilter = termFilter;
+		this.linkFilter = linkFilter;
+		updateDatasources();
+	}
+
+	public Filter<?> getTermFilter() {
+		return termFilter;
+	}
+
+	public void setTermFilter(Filter<?> termFilter) {
+		this.termFilter = termFilter;
+		updateDatasources();
+	}
+
+	public Filter<?> getLinkFilter() {
+		return linkFilter;
+	}
+
+	public void setLinkFilter(Filter<?> linkFilter) {
+		this.linkFilter = linkFilter;
+		updateDatasources();
+	}
+
+	protected boolean isExpandSelectionPaths() {
+		return expandSelectionPaths;
+	}
+
+	protected void setExpandSelectionPaths(boolean expandSelectionPaths) {
+		this.expandSelectionPaths = expandSelectionPaths;
 	}
 }

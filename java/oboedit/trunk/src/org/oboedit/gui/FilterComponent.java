@@ -14,10 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.obo.filters.Filter;
+import org.obo.filters.PathCapableFilter;
 import org.obo.filters.RenderSpec;
 import org.obo.filters.SpecEditor;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SelectionManager;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.event.SelectionEvent;
@@ -35,16 +37,16 @@ public class FilterComponent extends JPanel {
 	};
 	protected SearchPanel contentPanel;
 	protected JComponent rendererEditor;
-	
+
 	protected Collection<ActionListener> listeners = new LinkedList<ActionListener>();
 	protected JButton searchButton = new JButton("Search");
 	protected boolean showRendererControls = false;
-	
+
 	public void showRendererControls(boolean showRendererControls) {
 		this.showRendererControls = showRendererControls;
 		updateRendererControls();
 	}
-	
+
 	protected void updateRendererControls() {
 		if (showRendererControls)
 			remove(rendererEditor);
@@ -53,7 +55,7 @@ public class FilterComponent extends JPanel {
 		validate();
 		repaint();
 	}
-	
+
 	public boolean rendererControlsShowing() {
 		return showRendererControls;
 	}
@@ -75,18 +77,24 @@ public class FilterComponent extends JPanel {
 	}
 
 	public Filter<?> getFilter() {
-		return contentPanel.getFilter();
+		Filter<?> out = contentPanel.getFilter();
+		if (out instanceof PathCapableFilter
+				&& SessionManager.getManager().getUseReasoner()) {
+			((PathCapableFilter) out).setReasonedLinkDatabase(SessionManager
+					.getManager().getReasoner());
+		}
+		return out;
 	}
 
 	public void setFilter(Filter<?> filter) {
 		contentPanel.setFilter(filter);
 	}
-	
+
 	public void setRenderSpec(RenderSpec spec) {
 		if (showRendererControls)
 			factory.setRenderSpec(rendererEditor, spec);
 	}
-	
+
 	public RenderSpec getRenderSpec() {
 		if (showRendererControls)
 			return factory.getRenderSpec(rendererEditor);
@@ -144,7 +152,7 @@ public class FilterComponent extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				fireActionEvent(e);
 			}
-		}; 
+		};
 		searchButton.addActionListener(actionListener);
 		contentPanel.addActionListener(actionListener);
 		JButton newButton = new JButton(Preferences.loadLibraryIcon("file.gif"));

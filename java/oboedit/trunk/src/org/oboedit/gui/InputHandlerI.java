@@ -6,6 +6,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.event.*;
 
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 import org.bbop.swing.KeyRecorder;
 
@@ -29,5 +30,11 @@ public interface InputHandlerI {
 	public boolean press(JComponent panel, KeyEvent e,
 			KeyRecorder.KeyChecker keyChecker);
 	
+	public String getName();
+	
+	public KeyStroke getShortcut();
+	
 	public String getDragDesc();
+	
+	public String getID();
 }

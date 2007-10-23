@@ -67,7 +67,6 @@ import org.oboedit.gui.actions.AddConsiderAction;
 import org.oboedit.gui.actions.AddParentAction;
 import org.oboedit.gui.actions.AddReplacementAction;
 import org.oboedit.gui.actions.AddRootAction;
-import org.oboedit.gui.actions.ApplyFilterAction;
 import org.oboedit.gui.actions.AssertImpliedAction;
 import org.oboedit.gui.actions.CloneAction;
 import org.oboedit.gui.actions.CompletesAction;
@@ -102,6 +101,7 @@ import org.oboedit.gui.factory.GraphEditorFactory;
 import org.oboedit.gui.factory.HistoryBrowserFactory;
 import org.oboedit.gui.factory.IDManagerFactory;
 import org.oboedit.gui.factory.IntersectionEditorFactory;
+import org.oboedit.gui.factory.LinkSearchComponentFactory;
 import org.oboedit.gui.factory.NamespaceManagerFactory;
 import org.oboedit.gui.factory.OntologyChangeTrackerFactory;
 import org.oboedit.gui.factory.ParentEditorFactory;
@@ -133,6 +133,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		ComponentManager.getManager().install(new DAGViewFactory());
 		ComponentManager.getManager().install(new GraphDAGViewFactory());
 		ComponentManager.getManager().install(new SearchComponentFactory());
+		ComponentManager.getManager().install(new LinkSearchComponentFactory());
 		ComponentManager.getManager().install(new IntersectionEditorFactory());
 		ComponentManager.getManager().install(new CategoryManagerFactory());
 		ComponentManager.getManager().install(
@@ -164,7 +165,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 	}
 
 	public void run() {
-		SessionManager.getManager().setReasonerFactory(new LinkPileReasonerFactory());
+		// SessionManager.getManager().setReasonerFactory(new LinkPileReasonerFactory());
 		configureLogging();
 		configureUI();
 		/*
@@ -301,14 +302,12 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 	}
 
 	protected void installDefaultInputHandlers() {
-		DefaultInputHandler defaultInputHandler = new DefaultInputHandler();
+		EditActionManager.getManager().addInputHandler(new DefaultInputHandler());
 		EditActionManager.getManager().addInputHandler(new CopyAction());
 		EditActionManager.getManager().addInputHandler(new AddParentAction());
 		EditActionManager.getManager().addInputHandler(new MoveAction());
 		EditActionManager.getManager().addInputHandler(new MergeAction());
 		EditActionManager.getManager().addInputHandler(new TypeChangeAction());
-		EditActionManager.getManager().addInputHandler(new ApplyFilterAction());
-		EditActionManager.getManager().addInputHandler(defaultInputHandler);
 	}
 
 	protected void installDefaultDropMenuActions() {
