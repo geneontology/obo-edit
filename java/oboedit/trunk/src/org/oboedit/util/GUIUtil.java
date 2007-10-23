@@ -182,85 +182,85 @@ public class GUIUtil {
 		}
 	}
 
-	public static JPopupMenu getFilterMenu(final JComponent c) {
-		if (!(c instanceof Filterable || c instanceof FilteredRenderable))
-			return null;
-		JPopupMenu v = new JPopupMenu("Filter");
-		JMenuItem removeAllDecorationAndFilters = new JMenuItem(
-				"Remove all renderers and filters");
-		Filterable tf = null;
-		FilteredRenderable tfr = null;
-		if (c instanceof FilteredRenderable)
-			tfr = (FilteredRenderable) c;
-		if (c instanceof Filterable)
-			tf = (Filterable) c;
-		final Filterable f = tf;
-		final FilteredRenderable fr = tfr;
-
-		if (fr != null && f != null) {
-			removeAllDecorationAndFilters.setEnabled((fr.getObjectRenderers()
-					.size() > 0 || f.getFilter() != null));
-
-			removeAllDecorationAndFilters
-					.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							fr.getObjectRenderers().clear();
-							if (f.getFilter() != null) {
-								f.setFilter(null);
-							}
-							c.repaint();
-						}
-					});
-			v.add(removeAllDecorationAndFilters);
-		}
-
-		if (fr != null) {
-			JMenuItem removeAllDecoration = new JMenuItem(
-					"Remove all renderers");
-			removeAllDecoration.setEnabled(fr.getObjectRenderers().size() > 0);
-			removeAllDecoration.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					fr.getObjectRenderers().clear();
-					c.repaint();
-				}
-			});
-			v.add(removeAllDecoration);
-
-			JMenu renderMenu = new JMenu("Remove specific renderer");
-			renderMenu.setEnabled(fr.getObjectRenderers().size() > 0);
-			for (final RenderedFilter renderer : fr.getObjectRenderers()) {
-				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
-				ritem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						fr.removeObjectRenderer(renderer);
-					}
-				});
-				renderMenu.add(ritem);
-			}
-			for (final RenderedFilter renderer : fr.getLinkRenderers()) {
-				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
-				ritem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						fr.removeLinkRenderer(renderer);
-					}
-				});
-				renderMenu.add(ritem);
-			}
-			v.add(renderMenu);
-		}
-
-		if (f != null) {
-			JMenuItem filterMenuItem = new JMenuItem("Remove filter");
-			filterMenuItem.setEnabled(f.getFilter() != null);
-			filterMenuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					f.setFilter(null);
-				}
-			});
-			v.add(filterMenuItem);
-		}
-		return v;
-	}
+//	public static JPopupMenu getFilterMenu(final JComponent c) {
+//		if (!(c instanceof Filterable || c instanceof FilteredRenderable))
+//			return null;
+//		JPopupMenu v = new JPopupMenu("Filter");
+//		JMenuItem removeAllDecorationAndFilters = new JMenuItem(
+//				"Remove all renderers and filters");
+//		Filterable tf = null;
+//		FilteredRenderable tfr = null;
+//		if (c instanceof FilteredRenderable)
+//			tfr = (FilteredRenderable) c;
+//		if (c instanceof Filterable)
+//			tf = (Filterable) c;
+//		final Filterable f = tf;
+//		final FilteredRenderable fr = tfr;
+//
+//		if (fr != null && f != null) {
+//			removeAllDecorationAndFilters.setEnabled((fr.getObjectRenderers()
+//					.size() > 0 || f.getFilter() != null));
+//
+//			removeAllDecorationAndFilters
+//					.addActionListener(new ActionListener() {
+//						public void actionPerformed(ActionEvent e) {
+//							fr.getObjectRenderers().clear();
+//							if (f.getFilter() != null) {
+//								f.setFilter(null);
+//							}
+//							c.repaint();
+//						}
+//					});
+//			v.add(removeAllDecorationAndFilters);
+//		}
+//
+//		if (fr != null) {
+//			JMenuItem removeAllDecoration = new JMenuItem(
+//					"Remove all renderers");
+//			removeAllDecoration.setEnabled(fr.getObjectRenderers().size() > 0);
+//			removeAllDecoration.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					fr.getObjectRenderers().clear();
+//					c.repaint();
+//				}
+//			});
+//			v.add(removeAllDecoration);
+//
+//			JMenu renderMenu = new JMenu("Remove specific renderer");
+//			renderMenu.setEnabled(fr.getObjectRenderers().size() > 0);
+//			for (final RenderedFilter renderer : fr.getObjectRenderers()) {
+//				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
+//				ritem.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						fr.removeObjectRenderer(renderer);
+//					}
+//				});
+//				renderMenu.add(ritem);
+//			}
+//			for (final RenderedFilter renderer : fr.getLinkRenderers()) {
+//				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
+//				ritem.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						fr.removeLinkRenderer(renderer);
+//					}
+//				});
+//				renderMenu.add(ritem);
+//			}
+//			v.add(renderMenu);
+//		}
+//
+//		if (f != null) {
+//			JMenuItem filterMenuItem = new JMenuItem("Remove filter");
+//			filterMenuItem.setEnabled(f.getFilter() != null);
+//			filterMenuItem.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					f.setFilter(null);
+//				}
+//			});
+//			v.add(filterMenuItem);
+//		}
+//		return v;
+//	}
 	
 	public static final Object PRE_SELECTION_KEY = new Object();
 	public static final Object POST_SELECTION_KEY = new Object();

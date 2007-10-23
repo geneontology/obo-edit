@@ -29,7 +29,8 @@ public class DanglingIntersectionCheck extends AbstractCheck implements
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
 					check(lo, out);
-					if (out.size() > VerificationManager.MAX_WARNINGS)
+					if (isCancelled()
+							|| out.size() > VerificationManager.MAX_WARNINGS)
 						return out;
 				}
 			}
@@ -52,7 +53,8 @@ public class DanglingIntersectionCheck extends AbstractCheck implements
 								+ "definition will not be used.", false, this,
 						object);
 				warnings.add(warning);
-				if (warnings.size() > VerificationManager.MAX_WARNINGS)
+				if (isCancelled()
+						|| warnings.size() > VerificationManager.MAX_WARNINGS)
 					return;
 			}
 		}

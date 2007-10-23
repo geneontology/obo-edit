@@ -8,9 +8,11 @@ import java.util.LinkedList;
 import javax.swing.JOptionPane;
 
 import org.bbop.dataadapter.DataAdapter;
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.dataadapter.DefaultAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
+import org.bbop.dataadapter.IOOperation;
 import org.bbop.framework.GUIManager;
 import org.bbop.swing.BackgroundUtil;
 import org.obo.dataadapter.OBOAdapter;
@@ -239,15 +241,31 @@ public class IOManager {
 
 	}
 
+	public static <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
+			IOOperation<INPUT_TYPE, OUTPUT_TYPE> op, INPUT_TYPE input)
+			throws DataAdapterException {
+		DataAdapterRegistry registry = getManager().getAdapterRegistry();
+		GraphicalAdapterChooser<INPUT_TYPE, OUTPUT_TYPE> gac = new GraphicalAdapterChooser<INPUT_TYPE, OUTPUT_TYPE>(
+				registry, op, GUIManager.getManager().getScreenLockQueue(),
+				GUIManager.getManager().getFrame(), Preferences
+						.getPreferences().getUseModalProgressMonitors(), input);
+
+		gac.setHistoryPath(Preferences.getPreferences().getHistoryFilePath());
+		boolean worked = gac.showDialog(op.getName(), null);
+		if (worked) {
+			return gac.getResult();
+		} else
+			return null;
+	}
+
 	public OBOSession showLoadDialog() {
 		try {
 			DataAdapterRegistry registry = getAdapterRegistry();
 			GraphicalAdapterChooser<Void, OBOSession> gac = new GraphicalAdapterChooser<Void, OBOSession>(
-					registry, OBOAdapter.READ_ONTOLOGY, GUIManager
-							.getManager().getScreenLockQueue(), GUIManager
-							.getManager().getFrame(), Preferences
-							.getPreferences().getUseModalProgressMonitors(),
-					null);
+					registry, OBOAdapter.READ_ONTOLOGY, GUIManager.getManager()
+							.getScreenLockQueue(), GUIManager.getManager()
+							.getFrame(), Preferences.getPreferences()
+							.getUseModalProgressMonitors(), null);
 
 			gac.setHistoryPath(Preferences.getPreferences()
 					.getHistoryFilePath());

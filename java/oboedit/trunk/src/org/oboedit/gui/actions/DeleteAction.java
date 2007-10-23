@@ -38,8 +38,7 @@ public class DeleteAction implements ClickMenuAction {
 
 	protected boolean isLegal = false;
 
-	protected static KeyStroke keyStroke = KeyStroke.getKeyStroke(
-			KeyEvent.VK_DELETE, 0);
+	protected KeyStroke keyStroke;
 
 	protected boolean shouldDestroy = false;
 
@@ -68,6 +67,8 @@ public class DeleteAction implements ClickMenuAction {
 
 	public void setShouldDestroy(boolean shouldDestroy) {
 		this.shouldDestroy = shouldDestroy;
+		keyStroke = KeyStroke.getKeyStroke(
+				KeyEvent.VK_DELETE, (shouldDestroy ? KeyEvent.SHIFT_DOWN_MASK : 0));
 	}
 
 	public void clickInit(Selection selection, GestureTarget destItem) {
@@ -188,8 +189,7 @@ public class DeleteAction implements ClickMenuAction {
 							.getFrame(), "These are the last appearances "
 							+ "the following terms\n" + instanceString
 							+ "Are you sure you want to "
-							+ "permanently remove these terms from "
-							+ "the ontology?", "Delete warning",
+							+ "make these terms permanently obsolete?", "Delete warning",
 							JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 						return null;
 				}

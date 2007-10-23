@@ -20,6 +20,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
+import org.oboedit.util.PathUtil;
 
 public class DefaultTermModel implements TermModel {
 
@@ -161,13 +162,13 @@ public class DefaultTermModel implements TermModel {
 		protected static int getObjectRanking(Object a) {
 			if (a instanceof Link)
 				return 0;
-			else if (a.equals(TermModel.ROOT))
+			else if (a.equals(PathUtil.ROOT))
 				return 1;
-			else if (a.equals(TermModel.TYPES))
+			else if (a.equals(PathUtil.TYPES))
 				return 2;
-			else if (a.equals(TermModel.OBSOLETE))
+			else if (a.equals(PathUtil.OBSOLETE))
 				return 3;
-			else if (a.equals(TermModel.INSTANCES))
+			else if (a.equals(PathUtil.INSTANCES))
 				return 4;
 			else
 				return -1;
@@ -211,13 +212,13 @@ public class DefaultTermModel implements TermModel {
 	protected void buildTopLevel() {
 		topLevel.clear();
 		if (showTerms)
-			topLevel.add(TermModel.CLASSES);
+			topLevel.add(PathUtil.CLASSES);
 		if (showTypes)
-			topLevel.add(TermModel.TYPES);
+			topLevel.add(PathUtil.TYPES);
 		if (showInstances)
-			topLevel.add(TermModel.INSTANCES);
+			topLevel.add(PathUtil.INSTANCES);
 		if (showObsoletes)
-			topLevel.add(TermModel.OBSOLETE);
+			topLevel.add(PathUtil.OBSOLETE);
 	}
 
 	public DefaultTermModel() {
@@ -320,7 +321,7 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	public Object getRoot() {
-		return TermModel.ROOT;
+		return PathUtil.ROOT;
 	}
 
 	public boolean isLeaf(Object parent) {
@@ -463,7 +464,7 @@ public class DefaultTermModel implements TermModel {
 		}
 
 		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(
-				TermModel.ROOT)));
+				PathUtil.ROOT)));
 	}
 
 	protected void fireTreeStructureChanged(TreeModelEvent e) {
@@ -549,13 +550,13 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	public List getChildren(Object parent) {
-		if (parent.equals(TermModel.ROOT))
+		if (parent.equals(PathUtil.ROOT))
 			return topLevel;
-		else if (parent.equals(TermModel.CLASSES)) {
+		else if (parent.equals(PathUtil.CLASSES)) {
 			return classRoots;
-		} else if (parent.equals(TermModel.TYPES))
+		} else if (parent.equals(PathUtil.TYPES))
 			return typeRoots;
-		else if (parent.equals(TermModel.OBSOLETE))
+		else if (parent.equals(PathUtil.OBSOLETE))
 			return obsoleteRoots;
 		else if (parent instanceof Relationship) {
 			LinkedObject lo = ((Relationship) parent).getChild();

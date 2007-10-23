@@ -2,11 +2,12 @@ package org.oboedit.gui.actions;
 
 import java.awt.event.*;
 
+import javax.swing.KeyStroke;
+
 public class AddParentAction extends CopyAction {
 
 	public AddParentAction() {
 		copyChild = false;
-		dragKeyCode = KeyEvent.VK_P;
 		dragTitle = "Add parent";
 	}
 
@@ -18,5 +19,16 @@ public class AddParentAction extends CopyAction {
 	@Override
 	public String getDesc() {
 		return "Add parent term";
+	}
+	
+	@Override
+	public String getID() {
+		return "add_parent";
+	}
+	
+	public KeyStroke getShortcut() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_P,
+				java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+
 	}
 }

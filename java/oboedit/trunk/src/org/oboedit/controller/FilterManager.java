@@ -196,21 +196,15 @@ public class FilterManager {
 		});
 		return manager;
 	}
-
-	public FilterPair getAugmentedFilterPair(FilterPair pair) {
-		FilterPair out = new FilterPairImpl();
-		Filter<?> linkFilter = getGlobalLinkFilter();
-		Filter<?> termFilter = getGlobalTermFilter();
-		if (pair == null) {
-			out.setObjectFilter(termFilter);
-			out.setLinkFilter(linkFilter);
-		} else {
-			out.setObjectFilter(FilterUtil.mergeFilters(pair.getObjectFilter(),
-					termFilter));
-			out.setLinkFilter(FilterUtil.mergeFilters(pair.getLinkFilter(),
-					linkFilter));
-		}
-		return out;
+	
+	@SuppressWarnings("unchecked")
+	public Filter<?> getAugmentedLinkFilter(Filter linkFilter) {
+		return FilterUtil.mergeFilters(linkFilter, getGlobalLinkFilter());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Filter<?> getAugmentedTermFilter(Filter termFilter) {
+		return FilterUtil.mergeFilters(termFilter, getGlobalTermFilter());
 	}
 
 	public void addCriterion(SearchCriterion c) {
@@ -369,7 +363,7 @@ public class FilterManager {
 		this.globalLinkFilter = linkFilter;
 	}
 
-	public Filter getGlobalLinkFilter() {
+	public Filter<?> getGlobalLinkFilter() {
 		return globalLinkFilter;
 	}
 
@@ -377,7 +371,7 @@ public class FilterManager {
 		return globalLinkRenderers;
 	}
 
-	public Filter getGlobalTermFilter() {
+	public Filter<?> getGlobalTermFilter() {
 		return globalTermFilter;
 	}
 

@@ -12,13 +12,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.List;
 
 import javax.swing.JComponent;
-import javax.swing.tree.TreePath;
 
-import org.bbop.framework.GUIManager;
+import org.bbop.util.ObjectUtil;
 import org.oboedit.controller.EditActionManager;
-import org.oboedit.controller.SelectionManager;
 
 public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 		MouseListener, KeyListener, MouseMotionListener {
@@ -69,24 +68,81 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 		if (data != null) {
 			GestureTarget target = getTarget(e.getLocation().getX(), e
 					.getLocation().getY());
-			java.util.List<InputHandlerI> l = EditActionManager.getManager()
-					.getInputHandlers();
-			for (int i = 0; i < l.size(); i++) {
-				InputHandlerI handler = (InputHandlerI) l.get(i);
-				int allowDropVal = handler.allowDrop(component, data, target, e
-						.getLocation(), EditActionManager.getManager()
-						.getKeyRecorder().getKeyChecker());
-				if (allowDropVal == InputHandlerI.ALMOST_ACCEPT_DROP
-						|| allowDropVal == InputHandlerI.ACCEPT_DROP) {
-					almostDropDelegate(handler);
-					currentDragHandler = handler;
-					return allowDropVal == InputHandlerI.ACCEPT_DROP;
-				}
+			int allowDropVal = setCurrentHandler(data, target, e);
+			if (allowDropVal != InputHandlerI.REJECT_DROP) {
+				almostDropDelegate(getCurrentHandler());
+				return true;
 			}
+			// java.util.List<InputHandlerI> l = EditActionManager.getManager()
+			// .getInputHandlers();
+			// for (int i = 0; i < l.size(); i++) {
+			// InputHandlerI handler = (InputHandlerI) l.get(i);
+			// int allowDropVal = handler.allowDrop(component, data, target, e
+			// .getLocation(), EditActionManager.getManager()
+			// .getKeyRecorder().getKeyChecker());
+			// if (allowDropVal == InputHandlerI.ALMOST_ACCEPT_DROP
+			// || allowDropVal == InputHandlerI.ACCEPT_DROP) {
+			// almostDropDelegate(handler);
+			// currentDragHandler = handler;
+			// return allowDropVal == InputHandlerI.ACCEPT_DROP;
+			// }
+			// }
 			return false;
 
 		}
 		return false;
+	}
+
+	public InputHandlerI getCurrentHandler() {
+		return currentDragHandler;
+	}
+
+	public void setCurrentHandler(InputHandlerI handler) {
+		this.currentDragHandler = handler;
+	}
+
+	protected List<InputHandlerI> getAllDragInputHandlers() {
+		return EditActionManager.getManager().getInputHandlers();
+	}
+	
+	protected List<InputHandlerI> getAllClickInputHandlers() {
+		return EditActionManager.getManager().getInputHandlers();
+	}
+
+	protected InputHandlerI getDefaultInputHandler() {
+		return EditActionManager.getManager().getDefaultInputHandler();
+	}
+
+	protected int setCurrentHandler(Object data, GestureTarget target,
+			DropTargetDragEvent e) {
+		setCurrentHandler(null);
+		java.util.List<InputHandlerI> l = getAllDragInputHandlers();
+		for (int i = 0; i < l.size(); i++) {
+			InputHandlerI handler = (InputHandlerI) l.get(i);
+			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
+				continue;
+			int allowDropVal = handler.allowDrop(component, data, target, e
+					.getLocation(), EditActionManager.getManager()
+					.getKeyRecorder().getKeyChecker());
+			if (allowDropVal == InputHandlerI.ALMOST_ACCEPT_DROP
+					|| allowDropVal == InputHandlerI.ACCEPT_DROP) {
+				setCurrentHandler(handler);
+				return allowDropVal;
+			}
+		}
+		if (getDefaultInputHandler() != null) {
+			InputHandlerI handler = getDefaultInputHandler();
+			int allowDropVal = handler.allowDrop(
+					component,
+					data,
+					target,
+					e.getLocation(),
+					EditActionManager.getManager().getKeyRecorder()
+							.getKeyChecker());
+			setCurrentHandler(getDefaultInputHandler());
+			return allowDropVal;
+		}
+		return InputHandlerI.REJECT_DROP;
 	}
 
 	protected void almostDropDelegate(InputHandlerI handler) {
@@ -118,14 +174,22 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 		if (dragged)
 			return;
 		GestureTarget target = getTarget(e.getX(), e.getY());
-		java.util.List<InputHandlerI> l = EditActionManager.getManager()
-				.getInputHandlers();
+		java.util.List<InputHandlerI> l = getAllClickInputHandlers();
 		for (int i = 0; i < l.size(); i++) {
 			InputHandlerI handler = (InputHandlerI) l.get(i);
-			if (handler.click(component, target, e, EditActionManager.getManager()
-					.getKeyRecorder().getKeyChecker()))
+			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
+				continue;
+			if (handler.click(component, target, e, EditActionManager
+					.getManager().getKeyRecorder().getKeyChecker()))
 				return;
 		}
+		if (getDefaultInputHandler() != null)
+			getDefaultInputHandler().click(
+					component,
+					target,
+					e,
+					EditActionManager.getManager().getKeyRecorder()
+							.getKeyChecker());
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -156,15 +220,21 @@ public abstract class AbstractInputHandlerBridge implements DropTargetListener,
 	}
 
 	protected void processPress(KeyEvent e) {
-		java.util.List<InputHandlerI> l = EditActionManager.getManager()
-				.getInputHandlers();
+		java.util.List<InputHandlerI> l = getAllClickInputHandlers();
 		for (int i = 0; i < l.size(); i++) {
 			InputHandlerI handler = (InputHandlerI) l.get(i);
+			if (ObjectUtil.equals(handler, getDefaultInputHandler()))
+				continue;
 			if (handler.press(component, e, EditActionManager.getManager()
 					.getKeyRecorder().getKeyChecker()))
 				return;
 		}
-		return;
+		if (getDefaultInputHandler() != null)
+			getDefaultInputHandler().press(
+					component,
+					e,
+					EditActionManager.getManager().getKeyRecorder()
+							.getKeyChecker());
 	}
 
 	public void mouseDragged(MouseEvent e) {

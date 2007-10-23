@@ -26,7 +26,6 @@ import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
-import org.obo.datamodel.TermModel;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.HistoryItem;
@@ -245,15 +244,15 @@ public class PathUtil {
 
 		if (rootAlgorithm.isRoot(lo)) {
 			Object[] os = new Object[3];
-			os[0] = TermModel.ROOT;
+			os[0] = PathUtil.ROOT;
 			if (TermUtil.isObsolete(lo))
-				os[1] = TermModel.OBSOLETE;
+				os[1] = PathUtil.OBSOLETE;
 			else if (TermUtil.isProperty(lo))
-				os[1] = TermModel.TYPES;
+				os[1] = PathUtil.TYPES;
 			else if (TermUtil.isClass(lo))
-				os[1] = TermModel.CLASSES;
+				os[1] = PathUtil.CLASSES;
 			else if (TermUtil.isInstance(lo))
-				os[1] = TermModel.INSTANCES;
+				os[1] = PathUtil.INSTANCES;
 			else
 				throw new RuntimeException(
 						"Could not determine type of object " + lo
@@ -334,15 +333,15 @@ public class PathUtil {
 
 		if (link.getParent() == null) {
 			Object[] os = new Object[3];
-			os[0] = TermModel.ROOT;
+			os[0] = PathUtil.ROOT;
 			if (TermUtil.isObsolete(link.getChild()))
-				os[1] = TermModel.OBSOLETE;
+				os[1] = PathUtil.OBSOLETE;
 			else if (TermUtil.isProperty(link.getChild()))
-				os[1] = TermModel.TYPES;
+				os[1] = PathUtil.TYPES;
 			else if (TermUtil.isClass(link.getChild()))
-				os[1] = TermModel.CLASSES;
+				os[1] = PathUtil.CLASSES;
 			else if (TermUtil.isInstance(link.getChild()))
-				os[1] = TermModel.INSTANCES;
+				os[1] = PathUtil.INSTANCES;
 			else
 				throw new RuntimeException(
 						"Could not determine type of link child "
@@ -429,15 +428,15 @@ public class PathUtil {
 
 		if (link.getParent() == null) {
 			Object[] os = new Object[3];
-			os[0] = TermModel.ROOT;
+			os[0] = PathUtil.ROOT;
 			if (TermUtil.isObsolete(link.getChild()))
-				os[1] = TermModel.OBSOLETE;
+				os[1] = PathUtil.OBSOLETE;
 			else if (TermUtil.isProperty(link.getChild()))
-				os[1] = TermModel.TYPES;
+				os[1] = PathUtil.TYPES;
 			else if (TermUtil.isClass(link.getChild()))
-				os[1] = TermModel.CLASSES;
+				os[1] = PathUtil.CLASSES;
 			else
-				os[1] = TermModel.INSTANCES;
+				os[1] = PathUtil.INSTANCES;
 			os[2] = link;
 			out.add(new TreePath(os));
 			return out;
@@ -501,15 +500,15 @@ public class PathUtil {
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 		if (rootAlgorithm.isRoot(term)) {
 			Object[] os = new Object[3];
-			os[0] = TermModel.ROOT;
+			os[0] = PathUtil.ROOT;
 			if (TermUtil.isObsolete(term))
-				os[1] = TermModel.OBSOLETE;
+				os[1] = PathUtil.OBSOLETE;
 			else if (TermUtil.isProperty(term))
-				os[1] = TermModel.TYPES;
+				os[1] = PathUtil.TYPES;
 			else if (TermUtil.isClass(term))
-				os[1] = TermModel.CLASSES;
+				os[1] = PathUtil.CLASSES;
 			else
-				os[1] = TermModel.INSTANCES;
+				os[1] = PathUtil.INSTANCES;
 			os[2] = new OBORestrictionImpl(term);
 			out.add(new TreePath(os));
 		} else {
@@ -566,7 +565,7 @@ public class PathUtil {
 		if (pathobs.length == 0)
 			return path;
 		Object[] obj = new Object[pathobs.length + 1];
-		obj[0] = TermModel.ROOT;
+		obj[0] = PathUtil.ROOT;
 		for (int i = 0; i < pathobs.length; i++) {
 			if (pathobs[i] == null)
 				return null;
@@ -686,5 +685,15 @@ public class PathUtil {
 		TreePath newpath = new TreePath(objects);
 		return newpath;
 	}
+
+	public static final Object CLASSES = "CLASSES";
+
+	public static final Object OBSOLETE = "OBSOLETE";
+
+	public static final Object ROOT = "ROOT";
+
+	public static final Object TYPES = "PROPERTIES";
+
+	public static final Object INSTANCES = "INSTANCES";
 
 }

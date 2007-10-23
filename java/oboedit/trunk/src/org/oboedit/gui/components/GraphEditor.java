@@ -24,9 +24,12 @@ import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.RootAlgorithm;
+import org.obo.filters.Filter;
 import org.obo.filters.FilterPair;
 import org.obo.filters.FilterPairImpl;
 import org.obo.util.TermUtil;
+import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.graph.BoundsGuarantor;
 import org.oboedit.graph.DragDropEditBehavior;
@@ -38,13 +41,13 @@ import org.oboedit.graph.LinkExpanderRightClickMenuFactory;
 import org.oboedit.graph.OverviewCameraBehavior;
 import org.oboedit.graph.QuickSearchBehavior;
 import org.oboedit.graph.RootDisplayRightClickMenuFactory;
-import org.oboedit.graph.SaveScreenMenuFactory;
 import org.oboedit.graph.SelectionBehavior;
 import org.oboedit.graph.ToolbarBehavior;
 import org.oboedit.graph.TooltipBehavior;
 import org.oboedit.graph.ViewBehavior;
 import org.oboedit.graph.VisibilityDropBehavior;
 import org.oboedit.graph.ZoomWidgetBehavior;
+import org.oboedit.gui.EditActionToolbar;
 import org.oboedit.gui.FilterComponent;
 import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
@@ -56,11 +59,11 @@ import org.oboedit.util.GUIUtil;
 
 public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
-	public static class GraphEditorConfiguration implements
-			ComponentConfiguration {
-		protected FilterPair filterPair;
+	public static class GraphEditorConfiguration extends
+			OntologyEditorConfiguration {
 		protected boolean disableAnimations;
 		protected long layoutDuration = 1000;
+		protected boolean expandPaths = true;
 
 		public GraphEditorConfiguration() {
 		}
@@ -73,20 +76,16 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			this.disableAnimations = disableAnimations;
 		}
 
-		public FilterPair getFilterPair() {
-			return filterPair;
-		}
-
-		public void setFilterPair(FilterPair filterPair) {
-			this.filterPair = filterPair;
-		}
-
-		public GraphEditorConfiguration(FilterPair filterPair,
-				boolean disableAnimations, long layoutDuration) {
-			super();
-			this.filterPair = filterPair;
+		public GraphEditorConfiguration(Filter<?> termFilter,
+				Filter<?> linkFilter, boolean disableAnimations,
+				long layoutDuration, int showToolbar, String toolbarPosition,
+				String dragActionID, boolean revert, boolean live,
+				String rootAlgorithm, boolean expandPaths) {
+			super(termFilter, linkFilter, showToolbar, toolbarPosition,
+					dragActionID, revert, live, rootAlgorithm);
 			this.disableAnimations = disableAnimations;
 			this.layoutDuration = layoutDuration;
+			this.expandPaths = expandPaths;
 		}
 
 		public long getLayoutDuration() {
@@ -97,6 +96,18 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			this.layoutDuration = layoutDuration;
 		}
 
+		@Override
+		public String getToolbarPosition() {
+			return BorderLayout.SOUTH;
+		}
+
+		protected boolean isExpandPaths() {
+			return expandPaths;
+		}
+
+		protected void setExpandPaths(boolean expandPaths) {
+			this.expandPaths = expandPaths;
+		}
 	}
 
 	protected String id;
@@ -139,31 +150,13 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		this.title = title;
 	}
 
-	protected ConfigurationPanel configPanel = new ConfigurationPanel() {
-
-		@Override
-		public void commit() {
-			commitConfig();
-		}
-
-		@Override
-		public void init() {
-			initConfig();
-		}
-
-	};
-
-	protected JCheckBox animationsBox = new JCheckBox("Enable animations");
-	protected JSpinner animationDurationSpinner = new JSpinner(
-			new SpinnerNumberModel(1000, 1, null, 100));
-
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			if (e.isHistory() || e.isRoot() || e.isReasoner()) {
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
 					Collection<? extends LinkedObject> roots = TermUtil
-							.getRoots(getLinkDatabase());
+							.getRoots(getRootAlgorithm(), getLinkDatabase());
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
@@ -180,142 +173,72 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	};
 
 	protected JPanel panel;
-	protected FilterComponent termFilterComponent;
-	protected FilterComponent linkFilterComponent;
-	protected JTabbedPane configTabbedPane = new JTabbedPane();
-	protected JCheckBox linkFilterButton = new JCheckBox("Filter links");
-	protected JCheckBox termFilterButton = new JCheckBox("Filter terms");
-	protected JPanel termFilterPanel = new JPanel();
-	protected JPanel linkFilterPanel = new JPanel();
-
+	protected RootAlgorithm rootAlgorithm = RootAlgorithm.GREEDY;
+	protected EditActionToolbar toolbar;
+	protected DragDropEditBehavior dragDropBehavior;
+	protected boolean revertToDefaultAction = false;
 	public ConfigurationPanel getConfigurationPanel() {
-		return configPanel;
-	}
+		return new OntologyEditorConfigEditor() {
+			protected JCheckBox animationsBox;
+			protected JSpinner animationDurationSpinner;
+			protected JCheckBox expandSelectionPathsBox;
 
-	protected void createConfigurationPanel() {
-		configPanel.setLayout(new BorderLayout());
-		configPanel.removeAll();
-		configPanel.add(configTabbedPane, "Center");
-		configPanel.validate();
+			@Override
+			protected JComponent createGUIConfigPanel() {
+				animationDurationSpinner = new JSpinner(new SpinnerNumberModel(
+						1000, 1, null, 100));
+				animationsBox = new JCheckBox("Enable animations");
+				JComponent out = super.createGUIConfigPanel();
+				int durationHeight = (int) animationDurationSpinner
+						.getPreferredSize().getHeight();
+				final Box animationDurationBox = new Box(BoxLayout.X_AXIS);
+				animationDurationBox.add(new JLabel("Animation duration"));
+				animationDurationBox.add(Box.createHorizontalStrut(10));
+				animationDurationBox.add(animationDurationSpinner);
+				animationDurationBox.add(new JLabel("ms"));
+				animationDurationBox.add(Box.createHorizontalGlue());
+				animationDurationBox.setMaximumSize(new Dimension(
+						Integer.MAX_VALUE, durationHeight));
 
-		termFilterPanel.setLayout(new BorderLayout());
-		termFilterPanel.add(termFilterButton, "North");
+				animationsBox.addActionListener(new ActionListener() {
 
-		linkFilterPanel.setLayout(new BorderLayout());
-		linkFilterPanel.add(linkFilterButton, "North");
+					public void actionPerformed(ActionEvent e) {
+						animationDurationBox.setEnabled(animationsBox
+								.isSelected());
+						animationDurationSpinner.setEnabled(animationsBox
+								.isSelected());
+					}
 
-		int durationHeight = (int) animationDurationSpinner.getPreferredSize()
-				.getHeight();
-		final Box animationDurationBox = new Box(BoxLayout.X_AXIS);
-		animationDurationBox.add(new JLabel("Animation duration"));
-		animationDurationBox.add(Box.createHorizontalStrut(10));
-		animationDurationBox.add(animationDurationSpinner);
-		animationDurationBox.add(new JLabel("ms"));
-		animationDurationBox.add(Box.createHorizontalGlue());
-		animationDurationBox.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-				durationHeight));
-		// animationDurationSpinner.setMaximumSize(new Dimension(
-		// Integer.MAX_VALUE, durationHeight));
+				});
+				expandSelectionPathsBox = new JCheckBox(
+						"Expand full path of selected terms");
 
-		final JPanel guiConfigPanel = new JPanel();
-		guiConfigPanel
-				.setLayout(new BoxLayout(guiConfigPanel, BoxLayout.Y_AXIS));
-		guiConfigPanel.add(animationsBox);
-		guiConfigPanel.add(animationDurationBox);
-		guiConfigPanel.add(Box.createVerticalGlue());
-
-		animationsBox.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				animationDurationBox.setEnabled(animationsBox.isSelected());
-				animationDurationSpinner.setEnabled(animationsBox.isSelected());
+				out.add(animationsBox);
+				out.add(animationDurationBox);
+				out.add(expandSelectionPathsBox);
+				out.validate();
+				return out;
 			}
 
-		});
-
-		termFilterComponent = new FilterComponent(new TermFilterEditorFactory());
-		termFilterComponent.setBorder(new TitledBorder("Term Filter"));
-		linkFilterComponent = new FilterComponent(new LinkFilterEditorFactory());
-		linkFilterComponent.setBorder(new TitledBorder("Link Filter"));
-
-		termFilterComponent.setButtonVisible(false);
-		linkFilterComponent.setButtonVisible(false);
-
-		termFilterComponent.setShowButton(false);
-
-		termFilterButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				updateConfigFilterPanels();
+			@Override
+			public void commitConfig(OntologyEditorConfiguration c) {
+				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
+				config.setDisableAnimations(!animationsBox.isSelected());
+				config.setLayoutDuration(((Number) animationDurationSpinner
+						.getValue()).longValue());
+				config.setExpandPaths(expandSelectionPathsBox.isSelected());
+				super.commitConfig(c);
 			}
-		});
-		linkFilterButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				updateConfigFilterPanels();
+
+			@Override
+			protected void initConfig(OntologyEditorConfiguration c) {
+				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
+				animationsBox.setSelected(!config.getDisableAnimations());
+				animationDurationSpinner.setValue(config.getLayoutDuration());
+				expandSelectionPathsBox.setSelected(config.isExpandPaths());
+				super.initConfig(config);
 			}
-		});
-		configTabbedPane.add(guiConfigPanel, "GUI Settings");
-		configTabbedPane.add(termFilterPanel, "Term filtering");
-		configTabbedPane.add(linkFilterPanel, "Link filtering");
-	}
-
-	protected void initConfig() {
-		animationsBox.setSelected(!getDisableAnimations());
-		animationDurationSpinner.setValue(getLayoutDuration());
-		FilterPair pair = getFilter();
-		linkFilterButton.setSelected(pair != null
-				&& pair.getLinkFilter() != null);
-		termFilterButton.setSelected(pair != null
-				&& pair.getObjectFilter() != null);
-		if (pair != null && pair.getLinkFilter() != null)
-			linkFilterComponent.setFilter(pair.getLinkFilter());
-		if (pair != null && pair.getObjectFilter() != null)
-			termFilterComponent.setFilter(pair.getObjectFilter());
-		updateConfigFilterPanels();
-	}
-
-	protected void commitConfig() {
-		// animationsBox.addActionListener(new ActionListener() {
-		//
-		// public void actionPerformed(ActionEvent e) {
-		// TooltipBehavior behavior = null;
-		// for (ViewBehavior viewBehavior : getViewBehaviors()) {
-		// if (viewBehavior instanceof TooltipBehavior) {
-		// behavior = (TooltipBehavior) viewBehavior;
-		// }
-		// }
-		// setDisableAnimations(!animationsBox.isSelected());
-		// if (behavior != null) {
-		// behavior
-		// .setTooltipVisibleDelay(TooltipBehavior.DEFAULT_TOOLTIP_VISIBILITY_DELAY);
-		// }
-		// }
-		// });
-		setDisableAnimations(!animationsBox.isSelected());
-		setLayoutDuration(((Number) animationDurationSpinner.getValue())
-				.longValue());
-		FilterPair filterPair = new FilterPairImpl();
-		if (termFilterButton.isSelected()) {
-			filterPair.setObjectFilter(termFilterComponent.getFilter());
-		}
-		if (linkFilterButton.isSelected()) {
-			filterPair.setLinkFilter(linkFilterComponent.getFilter());
-		}
-		setFilter(filterPair);
-	}
-
-	protected void updateConfigFilterPanels() {
-		if (termFilterButton.isSelected())
-			termFilterPanel.add(termFilterComponent, "Center");
-		else
-			termFilterPanel.remove(termFilterComponent);
-		if (linkFilterButton.isSelected())
-			linkFilterPanel.add(linkFilterComponent, "Center");
-		else
-			linkFilterPanel.remove(linkFilterComponent);
-		// termFilterPanel.validate();
-		// linkFilterPanel.validate();
-		configPanel.validate();
-		configPanel.repaint();
+		};
 	}
 
 	public GraphEditor(String id) {
@@ -325,10 +248,22 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	public GraphEditor(String id, GraphLayout graphLayout) {
 		super(graphLayout);
 		this.id = id;
-		createConfigurationPanel();
+	}
+
+	public void completeDrop() {
+		if (isRevertToDefaultAction()) {
+			toolbar.setCurrentHandler(EditActionManager.getManager()
+					.getDefaultInputHandler());
+		}
+	}
+
+	public DragDropEditBehavior getDragDropEditBehavior() {
+		return dragDropBehavior;
 	}
 
 	protected void addDefaultBehaviors() {
+		dragDropBehavior = new DragDropEditBehavior();
+		addViewBehavior(dragDropBehavior);
 		addViewBehavior(getRightClickBehavior());
 		addViewBehavior(new ToolbarBehavior());
 		addViewBehavior(new BoundsGuarantor());
@@ -340,14 +275,13 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		addViewBehavior(new ZoomWidgetBehavior());
 		addViewBehavior(new TooltipBehavior());
 		addViewBehavior(new VisibilityDropBehavior());
-		addViewBehavior(new DragDropEditBehavior());
 		addViewBehavior(new OverviewCameraBehavior());
 	}
 
 	protected void installRightClickBehaviors() {
 		addMenuFactory(new LinkExpanderRightClickMenuFactory());
 		addMenuFactory(new RootDisplayRightClickMenuFactory());
-		addMenuFactory(new SaveScreenMenuFactory());
+//		addMenuFactory(new SaveScreenMenuFactory());
 	}
 
 	public void init() {
@@ -357,6 +291,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		addSelectionListener(globalSelectionNotifier);
 		GUIUtil.addReloadListener(reloadListener);
 		updateDatasources();
+		toolbar.updateGestureList();
 	}
 
 	public void cleanup() {
@@ -378,13 +313,24 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			panel = new JPanel();
 			panel.setLayout(new BorderLayout());
 			panel.add(this, "Center");
+			toolbar = new EditActionToolbar(panel, getDragDropEditBehavior()
+					.getInputListener(), false);
+			toolbar.setToolbarPosition(BorderLayout.SOUTH);
 		}
 		return panel;
 	}
 
 	public ComponentConfiguration getConfiguration() {
-		return new GraphEditorConfiguration(getFilter(),
-				getDisableAnimations(), getLayoutDuration());
+		String algorithmStr = null;
+		if (getRootAlgorithm() == RootAlgorithm.STRICT)
+			algorithmStr = "STRICT";
+		else if (getRootAlgorithm() == RootAlgorithm.GREEDY)
+			algorithmStr = "GREEDY";
+		return new GraphEditorConfiguration(getTermFilter(), getLinkFilter(),
+				getDisableAnimations(), getLayoutDuration(), toolbar
+						.getShowToolbar(), toolbar.getToolbarPosition(),
+				toolbar.getCurrentHandler().getID(), isRevertToDefaultAction(),
+				isLive(), algorithmStr, isExpandSelectionPaths());
 	}
 
 	public String getID() {
@@ -398,9 +344,21 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	public void setConfiguration(ComponentConfiguration config) {
 		if (config instanceof GraphEditorConfiguration) {
 			GraphEditorConfiguration gec = (GraphEditorConfiguration) config;
-			setFilter(gec.getFilterPair());
+			setLinkFilter(gec.getLinkFilter());
+			setTermFilter(gec.getTermFilter());
 			setDisableAnimations(gec.getDisableAnimations());
 			setLayoutDuration(gec.getLayoutDuration());
+			setExpandSelectionPaths(gec.isExpandPaths());
+			setLive(gec.isLive());
+			if (gec.getRootAlgorithm() != null) {
+				if (gec.getRootAlgorithm().equals("STRICT")) {
+					setRootAlgorithm(RootAlgorithm.STRICT);
+				} else if (gec.getRootAlgorithm().equals("GREEDY")) {
+					setRootAlgorithm(RootAlgorithm.GREEDY);
+				}
+			}
+			setRevertToDefaultAction(gec.isRevertToDefaultAction());
+			toolbar.setShowToolbar(gec.getShowToolbar());
 		}
 	}
 
@@ -409,5 +367,21 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	public boolean isXMLSettable() {
 		return false;
+	}
+
+	public RootAlgorithm getRootAlgorithm() {
+		return rootAlgorithm;
+	}
+
+	public void setRootAlgorithm(RootAlgorithm rootAlgorithm) {
+		this.rootAlgorithm = rootAlgorithm;
+	}
+
+	protected boolean isRevertToDefaultAction() {
+		return revertToDefaultAction;
+	}
+
+	protected void setRevertToDefaultAction(boolean revertToDefaultAction) {
+		this.revertToDefaultAction = revertToDefaultAction;
 	}
 }

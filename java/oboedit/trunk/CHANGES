@@ -1,10 +1,15 @@
-	* Added ability to remove consider/replaced-by terms with the right-click "delete" option
-	* Added in-panel "popup-window" that appears when a parent/child expansion control
-	  is clicked in the graph editor
-	* Disabled default spell checking when saving
-	* Fixed icon configuration bugs
-	* Fixed text editor bugs
-	* Fixed drag and drop bugs
-	* Fixed autocommit bugs
-	* Fixed right-click editing menu bugs
-	* Fixed expanding children when right-clicking in graph editor
+	* Added lots o' hotkeys, see release notes on sourceforge
+	* Reworded obsolete warning message (SF 1810837)
+	
+	* Fixed bugs in ancestor & descendant searching (SF 1811624)
+	* Fixed commit keyboard shortcut (SF 1811771)
+	* Fixed save bug (SF 1811658)
+	* Added ability to expand the full path to a term in the Graph Editor
+	  (this can be disabled in the configuration screen) (SF 1811581)
+	* When multiple child terms are added, they are assigned to the parent namespace
+	  (SF 1814547)
+	* Default id rule is no longer broken (SF 1811685)
+	* Text edit hotkey now works (SF 1811771)
+	* Fixed problem where table lists in the text editor did not autocommit
+	  pending edits when their values are requested. This manifested as bugs
+	  in the dbxref and synonym editing lists (SF 1814568).

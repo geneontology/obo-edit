@@ -293,28 +293,28 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			boolean ignoreSelection, int row, boolean hasFocus) {
 		try {
 			multiIcon.clearIcons();
-			if (value.equals(TermModel.OBSOLETE)) {
+			if (value.equals(PathUtil.OBSOLETE)) {
 				setText("Obsolete");
 				setForeground(Color.red);
 				setBorder(null);
 				setOpaque(false);
 				setBackground(null);
 				return this;
-			} else if (value.equals(TermModel.TYPES)) {
+			} else if (value.equals(PathUtil.TYPES)) {
 				setText("Relations");
 				setForeground(Color.blue);
 				setBorder(null);
 				setOpaque(false);
 				setBackground(null);
 				return this;
-			} else if (value.equals(TermModel.INSTANCES)) {
+			} else if (value.equals(PathUtil.INSTANCES)) {
 				setText("Instances");
 				setForeground(Color.green);
 				setBorder(null);
 				setOpaque(false);
 				setBackground(null);
 				return this;
-			} else if (value.equals(TermModel.CLASSES)) {
+			} else if (value.equals(PathUtil.CLASSES)) {
 				setText("Classes");
 				setForeground(Color.black);
 				setBorder(null);

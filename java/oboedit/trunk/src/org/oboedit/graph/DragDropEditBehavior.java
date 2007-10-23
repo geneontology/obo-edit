@@ -1,13 +1,16 @@
 package org.oboedit.graph;
 
 import java.awt.Point;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
 import org.oboedit.gui.AbstractInputHandlerBridge;
+import org.oboedit.gui.AbstractSelectableHandlerBridge;
 import org.oboedit.gui.GestureTarget;
+import org.oboedit.gui.components.GraphEditor;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.PiccoloUtil;
 
@@ -17,7 +20,7 @@ import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.util.PPickPath;
 
 public class DragDropEditBehavior implements ViewBehavior {
-	protected class InputListener extends AbstractInputHandlerBridge implements
+	protected class InputListener extends AbstractSelectableHandlerBridge implements
 			PInputEventListener {
 		LinkDatabaseCanvas canvas;
 
@@ -31,6 +34,15 @@ public class DragDropEditBehavior implements ViewBehavior {
 			GestureTarget target = ((LinkDatabaseCanvas) getComponent())
 					.getTarget((int) x, (int) y);
 			return target;
+		}
+		
+		@Override
+		public void drop(DropTargetDropEvent e) {
+			super.drop(e);
+			if (canvas instanceof GraphEditor) {
+				GraphEditor editor = (GraphEditor) canvas;
+				editor.completeDrop();
+			}
 		}
 
 		public void processEvent(PInputEvent event, int type) {
@@ -84,6 +96,10 @@ public class DragDropEditBehavior implements ViewBehavior {
 	};
 
 	protected InputListener inputListener;
+	
+	public InputListener getInputListener() {
+		return inputListener;
+	}
 
 	public void install(LinkDatabaseCanvas canvas) {
 		inputListener = new InputListener(canvas);

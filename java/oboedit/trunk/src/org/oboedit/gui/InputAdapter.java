@@ -7,7 +7,7 @@ import javax.swing.JComponent;
 
 import org.bbop.swing.KeyRecorder.KeyChecker;
 
-public class InputAdapter implements InputHandlerI {
+public abstract class InputAdapter implements InputHandlerI {
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest, Point p, KeyChecker keyChecker) {
 		return InputHandlerI.REJECT_DROP;

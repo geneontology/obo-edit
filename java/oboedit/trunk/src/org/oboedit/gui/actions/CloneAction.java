@@ -1,6 +1,7 @@
 package org.oboedit.gui.actions;
 
 
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.*;
 import org.obo.datamodel.*;
@@ -22,7 +23,8 @@ public class CloneAction implements ClickMenuAction {
 	protected boolean isLegal = false;
 
 	protected static KeyStroke keyStroke = KeyStroke.getKeyStroke(
-			KeyEvent.VK_L, InputEvent.CTRL_MASK);
+			KeyEvent.VK_L, Toolkit.getDefaultToolkit()
+			.getMenuShortcutKeyMask());
 
 	public KeyStroke getKeyStroke() {
 		return keyStroke;

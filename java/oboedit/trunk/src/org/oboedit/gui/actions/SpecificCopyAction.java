@@ -1,6 +1,7 @@
 package org.oboedit.gui.actions;
 
-
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.util.*;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
@@ -36,7 +37,11 @@ public class SpecificCopyAction implements ClickMenuAction {
 	}
 
 	public KeyStroke getKeyStroke() {
-		return null;
+		if (type.equals(OBOProperty.IS_A))
+			return KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask());
+		else
+			return null;
 	}
 
 	public OBOProperty getType() {

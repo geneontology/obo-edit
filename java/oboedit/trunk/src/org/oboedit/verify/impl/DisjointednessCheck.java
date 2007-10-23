@@ -70,7 +70,8 @@ public class DisjointednessCheck extends AbstractCheck implements OntologyCheck 
 									+ oboClass
 									+ " and " + oboClass2, true, this, lo);
 							out.add(warning);
-							if (out.size() > VerificationManager.MAX_WARNINGS)
+							if (isCancelled()
+									|| out.size() > VerificationManager.MAX_WARNINGS)
 								return out;
 						}
 					}

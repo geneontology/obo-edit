@@ -45,7 +45,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 				if (o instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) o;
 					check(lo, properties, out);
-					if (out.size() > VerificationManager.MAX_WARNINGS)
+					if (isCancelled() || out.size() > VerificationManager.MAX_WARNINGS)
 						return out;
 				}
 			}

@@ -89,7 +89,7 @@ public class IDManager {
 		} else {
 			IDProfile defaultProfile = new NamedIDProfile("default");
 			currentProfile = defaultProfile;
-			defaultProfile.setDefaultRule("ID:$sequence(7,9999999)$");
+			defaultProfile.setDefaultRule("ID:$sequence(7,0,9999999)$");
 		}
 
 		return currentProfile;
@@ -112,7 +112,7 @@ public class IDManager {
 		if (profiles == null) {
 			profiles = new LinkedList<IDProfile>();
 			IDProfile defaultProfile = new NamedIDProfile("default");
-			defaultProfile.setDefaultRule("ID:$sequence(7,9999999)$");
+			defaultProfile.setDefaultRule("ID:$sequence(7,0,9999999)$");
 			profiles.add(defaultProfile);
 		}
 		return profiles;

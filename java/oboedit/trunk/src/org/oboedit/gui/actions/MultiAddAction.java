@@ -327,6 +327,7 @@ public class MultiAddAction implements ClickMenuAction {
 						.getID(), dest.getTerm().getID()));
 				item.addItem(new NameChangeHistoryItem(nameList.get(i), ids[i],
 						ids[i]));
+				item.addItem(new NamespaceHistoryItem(null, dest.getTerm().getNamespace(), ids[i]));
 			}
 			GUIUtil.setPreSelection(item, selection);
 			TreePath[] postPaths = new TreePath[ids.length];
@@ -335,7 +336,7 @@ public class MultiAddAction implements ClickMenuAction {
 						new DanglingLinkImpl(ids[i], OBOProperty.IS_A.getID(),
 								target.getID()));
 			}
-			GUIUtil.setPreSelection(item, SelectionManager.createSelectionFromPaths(
+			GUIUtil.setPostSelection(item, SelectionManager.createSelectionFromPaths(
 					null, postPaths, null, SessionManager.getManager()
 							.getCurrentLinkDatabase(), RootAlgorithm.GREEDY,
 					true));

@@ -19,6 +19,8 @@ public class EditActionManager {
 
 	protected KeyRecorder keyRecorder = new KeyRecorder();
 
+	protected InputHandlerI defaultInputHandler;
+
 	public KeyRecorder getKeyRecorder() {
 		return keyRecorder;
 	}
@@ -63,6 +65,8 @@ public class EditActionManager {
 	}
 
 	public void addInputHandler(InputHandlerI handler) {
+		if (defaultInputHandler == null)
+			setDefaultInputHandler(handler);
 		inputHandlers.add(handler);
 	}
 
@@ -70,7 +74,23 @@ public class EditActionManager {
 		inputHandlers.remove(handler);
 	}
 
+	public InputHandlerI getInputHandler(String id) {
+		for (InputHandlerI handler : inputHandlers) {
+			if (handler.getID().equals(id))
+				return handler;
+		}
+		return null;
+	}
+
 	public List<InputHandlerI> getInputHandlers() {
 		return inputHandlers;
+	}
+
+	public void setDefaultInputHandler(InputHandlerI defaultInputHandler) {
+		this.defaultInputHandler = defaultInputHandler;
+	}
+
+	public InputHandlerI getDefaultInputHandler() {
+		return defaultInputHandler;
 	}
 }

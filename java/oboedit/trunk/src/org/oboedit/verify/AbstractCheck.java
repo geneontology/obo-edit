@@ -15,6 +15,15 @@ public abstract class AbstractCheck implements Check {
 
 	protected String progressString = "";
 	protected int progressValue = -1;
+	protected boolean cancelled;
+
+	public void cancel() {
+		cancelled = true;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
 	{
 		initConfiguration();
@@ -50,10 +59,9 @@ public abstract class AbstractCheck implements Check {
 	}
 
 	public void setConfiguration(CheckConfiguration configuration) {
-/*
-if (configuration == null)
-			configuration = createConfiguration();
-			*/
+		/*
+		 * if (configuration == null) configuration = createConfiguration();
+		 */
 		this.configuration = configuration;
 	}
 
@@ -61,19 +69,19 @@ if (configuration == null)
 	public String toString() {
 		return getID() + ": " + configuration;
 	}
-	
+
 	public void setProgressString(String progressString) {
 		this.progressString = progressString;
 	}
-	
+
 	public void setProgressValue(int progressValue) {
 		this.progressValue = progressValue;
 	}
-	
+
 	public String getProgressString() {
 		return progressString;
 	}
-	
+
 	public Number getProgressValue() {
 		return progressValue;
 	}

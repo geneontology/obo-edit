@@ -18,6 +18,7 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
+import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.util.TermUtil;
 import org.oboedit.gui.DefaultGestureTarget;
 import org.oboedit.gui.DefaultSelection;
@@ -184,7 +185,8 @@ public class SelectionManager implements ObjectSelector {
 				subSelection = terms.iterator().next();
 		if (linkSubSelection == null && links.size() > 0)
 			linkSubSelection = links.iterator().next();
-		return new DefaultSelection(component, links, terms, paths, rootAlgorithm, linkDatabase,
+		return new DefaultSelection(component, links, terms, paths,
+				rootAlgorithm, linkDatabase,
 				DefaultSelection.PathCalcMode.DONT_CALCULATE, linkSubSelection,
 				subSelection);
 	}
@@ -535,6 +537,12 @@ public class SelectionManager implements ObjectSelector {
 		return SelectionManager.createSelection(component, links, terms, null,
 				rootAlgorithm, linkDatabase,
 				PathCalcMode.CALCULATE_FROM_TERMS_AND_LINKS, subLink, subTerm);
+	}
+
+	public static Selection createSelection(JComponent component,
+			Collection<? extends PathCapable> pcs) {
+		return createSelection(component, pcs, null, null, RootAlgorithm.GREEDY,
+				DefaultLinkDatabase.getDefault());
 	}
 
 	public static Selection createSelection(JComponent component,

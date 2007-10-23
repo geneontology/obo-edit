@@ -9,16 +9,17 @@ import javax.swing.JComponent;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
 import org.obo.filters.RenderSpec;
+import org.obo.query.impl.SearchHit;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
 import com.sun.jndi.toolkit.dir.SearchFilter;
 
-public class SearchPanelFactory implements SearchComponentFactory {
+public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 
-	protected SearchComponentFactory subComponentFactory;
+	protected SearchComponentFactory<T> subComponentFactory;
 	
-	public SearchPanelFactory(SearchComponentFactory subComponentFactory) {
+	public SearchPanelFactory(SearchComponentFactory<T> subComponentFactory) {
 		this.subComponentFactory = subComponentFactory;
 	}
 		
@@ -35,8 +36,8 @@ public class SearchPanelFactory implements SearchComponentFactory {
 		((SearchPanel) editor).setFilter(filter);
 	}
 
-	public Collection<PathCapable> getRelevantValues(
-			Collection<PathCapable> items) {
+	public Collection<T> getRelevantValues(
+			Collection<?> items) {
 		return subComponentFactory.getRelevantValues(items);
 	}
 
@@ -77,6 +78,14 @@ public class SearchPanelFactory implements SearchComponentFactory {
 			((SearchPanel) c).removeActionListener(listener);
 		}
 		
+	}
+	
+	public Class<T> getResultType() {
+		return subComponentFactory.getResultType();
+	}
+
+	public JComponent getResultsDisplay(Collection<SearchHit<?>> results) {
+		return subComponentFactory.getResultsDisplay(results);
 	}
 
 }

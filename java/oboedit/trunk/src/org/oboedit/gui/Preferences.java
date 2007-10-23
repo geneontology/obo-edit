@@ -125,18 +125,20 @@ public class Preferences {
 
 	protected static File installationDir;
 
-	protected static final File stderrFile = new File(
-			GUIManager.getPrefsDir(), "stderr");
-
-	protected static final File prefsXMLFile = new File(GUIManager
-			.getPrefsDir(), "config.xml");
-
-	protected static final File prefsFile = new File(GUIManager.getPrefsDir(),
-			"config");
-
-	protected File historyFilePath = new File(GUIManager.getPrefsDir(), "history.xml");
-
-	protected File autosavePath = new File(GUIManager.getPrefsDir(), "autosave");
+	// protected static final File stderrFile = new File(
+	// GUIManager.getPrefsDir(), "stderr");
+	//
+	// protected static final File prefsXMLFile = new File(GUIManager
+	// .getPrefsDir(), "config.xml");
+	//
+	// protected static final File prefsFile = new
+	// File(GUIManager.getPrefsDir(),
+	// "config");
+	//
+	// protected File historyFilePath = new File(GUIManager.getPrefsDir(),
+	// "history.xml");
+	//
+	protected File autosavePath;
 
 	protected Map<String, Icon> iconIndex = new HashMap<String, Icon>();
 	protected Map<String, String> iconURLIndex = new HashMap<String, String>();
@@ -183,8 +185,8 @@ public class Preferences {
 			+ "    </xsl:copy>\n"
 			+ "  </xsl:template>\n" + "</xsl:stylesheet>";
 
-	protected static final File filterFile = new File(
-			GUIManager.getPrefsDir(), "filters/");
+	protected static final File filterFile = new File(GUIManager.getPrefsDir(),
+			"filters/");
 
 	protected static Preferences preferences;
 
@@ -252,12 +254,8 @@ public class Preferences {
 		return allowExtendedCharacters;
 	}
 
-	public void setHistoryFilePath(String historyFilePath) {
-		this.historyFilePath = new File(historyFilePath);
-	}
-
 	public String getHistoryFilePath() {
-		return historyFilePath.getAbsolutePath();
+		return new File(GUIManager.getPrefsDir(), "history.xml").getAbsolutePath();
 	}
 
 	public void setSelectionBatchSize(int selectionBatchSize) {
@@ -342,6 +340,8 @@ public class Preferences {
 	}
 
 	public File getAutosavePath() {
+		if (autosavePath == null)
+			autosavePath = new File(GUIManager.getPrefsDir(), "autosave");
 		return autosavePath;
 	}
 
@@ -702,15 +702,15 @@ public class Preferences {
 	}
 
 	public static File getStderrFile() {
-		return stderrFile;
+		return new File(GUIManager.getPrefsDir(), "stderr");
 	}
 
 	public static File getPrefsXMLFile() {
-		return prefsXMLFile;
+		return new File(GUIManager.getPrefsDir(), "config.xml");
 	}
 
 	public static File getPrefsFile() {
-		return prefsFile;
+		return new File(GUIManager.getPrefsDir(), "config");
 	}
 
 	public static File getFiltersDir() {

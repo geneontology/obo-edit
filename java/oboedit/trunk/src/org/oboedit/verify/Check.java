@@ -24,4 +24,6 @@ public interface Check extends ProgressValued {
 	public CheckConfiguration getConfiguration();
 
 	public void setConfiguration(CheckConfiguration config);
+	
+	public void cancel();
 }

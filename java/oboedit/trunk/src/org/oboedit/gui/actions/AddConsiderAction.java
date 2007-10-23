@@ -2,6 +2,9 @@ package org.oboedit.gui.actions;
 
 
 import java.util.*;
+
+import javax.swing.KeyStroke;
+
 import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.oboedit.controller.SelectionManager;
@@ -82,5 +85,9 @@ public class AddConsiderAction implements DropMenuAction {
 				.createSelectionFromTarget(destItem));
 
 		return item;
+	}
+
+	public KeyStroke getKeyStroke() {
+		return null;
 	}
 }

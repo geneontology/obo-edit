@@ -326,7 +326,7 @@ public class TermFilterEditor extends JPanel {
 		super.validate();
 	}
 
-	public Filter<?> getFilter() {
+	public Filter<IdentifiedObject> getFilter() {
 		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());

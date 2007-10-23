@@ -206,11 +206,10 @@ public class OBOEditFrame extends MainFrame {
 					.getSession().getCurrentHistory();
 			historyList.setUser(Preferences.getPreferences().getUserName());
 			GraphicalAdapterChooser<HistoryList, Void> gac = new GraphicalAdapterChooser<HistoryList, Void>(
-					registry, OBOAdapter.WRITE_HISTORY, GUIManager
-							.getManager().getScreenLockQueue(), GUIManager
-							.getManager().getFrame(), Preferences
-							.getPreferences().getUseModalProgressMonitors(),
-					historyList);
+					registry, OBOAdapter.WRITE_HISTORY, GUIManager.getManager()
+							.getScreenLockQueue(), GUIManager.getManager()
+							.getFrame(), Preferences.getPreferences()
+							.getUseModalProgressMonitors(), historyList);
 			gac.setHistoryPath(Preferences.getPreferences()
 					.getHistoryFilePath());
 			gac.showDialog("Save history", GUIManager.getManager().getFrame());
@@ -225,11 +224,10 @@ public class OBOEditFrame extends MainFrame {
 					.getAdapterRegistry();
 
 			GraphicalAdapterChooser<Void, List<HistoryList>> gac = new GraphicalAdapterChooser<Void, List<HistoryList>>(
-					registry, OBOAdapter.READ_HISTORY, GUIManager
-							.getManager().getScreenLockQueue(), GUIManager
-							.getManager().getFrame(), Preferences
-							.getPreferences().getUseModalProgressMonitors(),
-					null);
+					registry, OBOAdapter.READ_HISTORY, GUIManager.getManager()
+							.getScreenLockQueue(), GUIManager.getManager()
+							.getFrame(), Preferences.getPreferences()
+							.getUseModalProgressMonitors(), null);
 			gac.setHistoryPath(Preferences.getPreferences()
 					.getHistoryFilePath());
 			boolean worked = gac.showDialog("Load history", this);
@@ -391,7 +389,12 @@ public class OBOEditFrame extends MainFrame {
 
 	public void buildEditMenu(JMenu editMenu) {
 		undoItem = new JMenuItem("Undo");
+		undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		redoItem = new JMenuItem("Redo");
+		redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()
+				| KeyEvent.SHIFT_DOWN_MASK));
 
 		changeDefaultNamespaceItem = getNamespaceChangeMenu(
 				"Set default namespace ", false, new NamespaceChanger() {

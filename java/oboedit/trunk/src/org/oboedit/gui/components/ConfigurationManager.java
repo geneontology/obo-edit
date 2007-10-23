@@ -58,8 +58,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JCheckBox warnBeforeDiscardingEditsBox;
 
-	JTextField historyFilePath;
-
 	JButton commitButton;
 	
 	JTabbedPane mainPanel;
@@ -585,21 +583,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JLabel configFileLabel = new JLabel("Config file");
 		JLabel configFilePath = new JLabel(System.getProperty("user.home")
 				+ "/.oboedit");
-		JLabel historyFileLabel = new JLabel("History file");
-		historyFilePath = new JTextField(40);
-		historyFilePath.setText(Preferences.getPreferences()
-				.getHistoryFilePath());
 
 		configFileLabelBox.add(configFileLabel);
 		configFileLabelBox.add(Box.createHorizontalStrut(20));
 		configFileLabelBox.add(Box.createHorizontalGlue());
 		configFileLabelBox.add(configFilePath);
-
-		Box historyFileLabelBox = new Box(BoxLayout.X_AXIS);
-		historyFileLabelBox.add(historyFileLabel);
-		historyFileLabelBox.add(Box.createHorizontalStrut(20));
-		historyFileLabelBox.add(Box.createHorizontalGlue());
-		historyFileLabelBox.add(historyFilePath);
 
 		Box autosaveEnabledBox = new Box(BoxLayout.X_AXIS);
 		autosaveEnabledBox.add(autosaveEnabledCheckBox);
@@ -666,7 +654,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Box pathBox = new Box(BoxLayout.Y_AXIS);
 
 		pathBox.add(configFileLabelBox);
-		pathBox.add(historyFileLabelBox);
 		pathBox.add(Box.createVerticalStrut(5));
 		pathBox.add(autosavePanel);
 
@@ -990,7 +977,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		preferences.setAutosavePath(new File(autosavePathField.getText()));
-		preferences.setHistoryFilePath(historyFilePath.getText());
 		preferences.setFont(GUIUtil.decodeFont((String) fontNameList
 				.getSelectedItem(), (String) fontSizeList.getSelectedItem(),
 				(String) fontTypeList.getSelectedItem()));
