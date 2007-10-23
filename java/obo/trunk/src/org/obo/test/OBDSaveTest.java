@@ -55,11 +55,16 @@ public class OBDSaveTest extends AbstractOBOTest {
 		adapter.setReasoner(reasoner);
 		reasoner.recache();
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
+		System.err.println("saved");
+		
+		System.err.println("reading");
+		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
+		System.err.println("read");
 	}
 
 	public void testHasLoaded() {
 		// TODO
-		assertTrue(true);
+		testForIsA("GO:0005634","GO:0043231");
 	}
 	
 	public boolean testForAnnotation(String su, String ob) {
