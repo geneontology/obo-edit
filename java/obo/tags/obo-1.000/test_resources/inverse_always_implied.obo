@@ -1,0 +1,58 @@
+! B J D E
+!   A
+!   T
+
+
+[Term]
+id: Bob
+relationship: is_left_of Jane
+
+[Term]
+id: Jane
+relationship: is_in_front_of Alan
+relationship: is_left_of Dan
+
+[Term]
+id: Alan
+relationship: is_in_front_of Timothy
+
+[Term]
+id: Emily
+
+[Term]
+id: Timothy
+
+[Term]
+id: Dan
+relationship: is_left_of Emily
+
+[Typedef]
+id: is_in_series_with
+is_symmetric: true
+is_transitive: true
+
+[Typedef]
+id: is_left_of
+is_transitive: true
+is_a: is_in_series_with
+inverse_of: is_right_of
+always_implies_inverse: true
+
+[Typedef]
+id: is_in_front_of
+is_transitive: true
+is_a: is_in_series_with
+inverse_of: is_behind
+always_implies_inverse: true
+
+[Typedef]
+id: is_behind
+is_transitive: true
+is_a: is_in_series_with
+always_implies_inverse: true
+
+[Typedef]
+id: is_right_of
+is_transitive: true
+is_a: is_in_series_with
+always_implies_inverse: true
