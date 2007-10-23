@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Specification-Title: BBOP Toolkit
+Sealed: true
+Specification-Version: 1.000
+Specification-Vendor: Berkeley Bioinfomatics and Ontologies Project
+Implementation-Title: org.bbop
+Implementation-Version: 1.000
+Implementation-Vendor: Berkeley Bioinfomatics and Ontologies Project
