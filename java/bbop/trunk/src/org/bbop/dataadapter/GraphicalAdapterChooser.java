@@ -888,20 +888,28 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 
 				public void run() {
 					committed = true;
-					chooserConfig.getOperationToLastAdapterMap().put(op.getID(),
-							currentAdapter.getID());
+					chooserConfig.getOperationToLastAdapterMap().put(
+							op.getID(), currentAdapter.getID());
 					storeCurrentProfile();
 					storeProfileList();
 					flushConfiguration();
-					if (task.isFailed()) {
-						showExceptionGUI(task.getException());
-					} else if (task.isCancelled()) {
-						restoreGUI();
-					} else if (dialog != null) {
+					if (dialog != null) {
 						dialog.dispose();
 					}
 				}
-				
+
+			});
+			task.addFailedRunnable(new Runnable() {
+				public void run() {
+					showExceptionGUI(task.getException());
+				}
+			});
+			task.addCancelledRunnable(new Runnable() {
+
+				public void run() {
+					restoreGUI();
+				}
+
 			});
 			queue.scheduleTask(task);
 		} catch (DataAdapterUIException ex) {
