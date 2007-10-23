@@ -12,7 +12,15 @@ import org.bbop.util.StringUtil;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
+import org.obo.datamodel.impl.DanglingObjectImpl;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
+import org.obo.datamodel.impl.DefaultObjectFactory;
+import org.obo.datamodel.impl.InstanceImpl;
+import org.obo.datamodel.impl.InstancePropertyValue;
+import org.obo.datamodel.impl.OBOClassImpl;
+import org.obo.datamodel.impl.OBOPropertyImpl;
+import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
@@ -58,6 +66,14 @@ import org.obo.util.TermUtil;
  * this will bring various advantages:
  *  - using a RDBMS as a reasoner
  *  - using MergedLinkDatabase to wrap multiple sources
+ *  
+ *  Seel also:
+ *  "Perhaps more importantly, the OBO-Edit editing paradigm is non-interactive.
+ *   That is, we do not want immediate database writeback; we want to write the data back when the user chooses. 
+ *   We already have a robust, well-tested way of tracking ontology changes and merging those changes with changes
+ *   made by other users
+ *   - all this code could readily and easily be reused to implement a check-in/check-out system for a database adapter."
+ *  TODO: use history objects
  * 
  */
 public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBOAdapter {
@@ -68,6 +84,14 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	protected boolean cancelled = false;
 	protected OBDSQLDatabaseAdapterConfiguration ioprofile;
 	protected List streams = new LinkedList();
+	protected ObjectFactory objectFactory = new DefaultObjectFactory();
+	
+	protected HashMap<Connection,HashMap<Integer,IdentifiedObject>> conn2objmap =
+		new HashMap <Connection,HashMap<Integer,IdentifiedObject>>();
+	protected HashMap<Integer,IdentifiedObject> iid2obj =
+		new HashMap <Integer,IdentifiedObject>();
+	protected HashMap<IdentifiedObject,Integer> obj2iid =
+		new HashMap <IdentifiedObject,Integer>();
 	
 	protected Connection conn;
 
@@ -163,8 +187,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return config;
 	}
 		
-	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
-			Object o) throws DataAdapterException {
+	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
+			IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
+			AdapterConfiguration configuration, INPUT_TYPE input)
+//	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
+//			Object o)
+		throws DataAdapterException {
 		if (!(configuration instanceof OBDSQLDatabaseAdapterConfiguration)) {
 			throw new DataAdapterException("Invalid configuration; this "
 					+ "adapter requires an "
@@ -173,7 +201,16 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		cancelled = false;
 		this.ioprofile = (OBDSQLDatabaseAdapterConfiguration) configuration;
 		if (op.equals(READ_ONTOLOGY)) {
-			return null;
+			OBOSession session = objectFactory.createSession();
+			try {
+				fetchAll(session);
+				return (OUTPUT_TYPE) session;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new DataAdapterException("SQL error");
+			}
+			
 		} else if (op.equals(WRITE_ONTOLOGY)) {
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
@@ -187,7 +224,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			streams.clear();
 			Iterator<FilteredPath> it = filteredPaths.iterator();
 
-			OBOSession session = (OBOSession) o;
+			OBOSession session = (OBOSession) input;
 			while (it.hasNext()) {
 				FilteredPath filteredPath = it.next();
 				LinkDatabase ldb = session.getLinkDatabase();
@@ -207,7 +244,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					System.out.println("conn="+conn);
 					
 					storeAll(session,ldb);
-					return o;
+					return (OUTPUT_TYPE) input;
 				}  catch (Exception ex) {
 					System.err.println(ex);
 					
@@ -228,7 +265,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { WRITE_ONTOLOGY };
+		IOOperation[] supported = { READ_ONTOLOGY, WRITE_ONTOLOGY };
 		return supported;
 	}
 
@@ -242,7 +279,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return reasoner;
 	}
 
-	public OBOSession storeAll(OBOSession session, LinkDatabase ldb) throws DataAdapterException {
+	public void storeAll(OBOSession session, LinkDatabase ldb) throws DataAdapterException {
 		try {
 			setProgressString("Saving to db...");
 
@@ -262,11 +299,128 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				}
 			}
 			
-			return session;
+		
 		} catch (Exception e) {
 			System.out.println(e);
 			throw new DataAdapterException(e, "Write error");
 		}
+	}
+	
+	public void fetchAll(OBOSession session) throws SQLException {
+		
+		// TODO : add filters
+		// for now we just slurp everything
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("select * FROM node_with_source");
+		while (rs.next()) {
+			IdentifiedObject io = fetchObject(rs);
+			session.addObject(io);
+		}
+		rs = stmt.executeQuery("select * FROM description_d");
+		while (rs.next()) {
+			IdentifiedObject io = attachDescription(session, rs);
+		}
+		rs = stmt.executeQuery("select * FROM alias_d");
+		while (rs.next()) {
+			IdentifiedObject io = attachAlias(session, rs);
+		}
+		rs = stmt.executeQuery("select * FROM node_link_node_with_pred_and_source");
+		while (rs.next()) {
+			Link link = fetchLink(session, rs);
+		}
+
+	}
+	
+	public IdentifiedObject fetchObject(ResultSet rs) throws SQLException {
+		IdentifiedObject io;
+		String metatype = rs.getString("metatype");
+		if (metatype == null)
+			metatype="";
+		Integer iid = rs.getInt("node_id");
+		String id = rs.getString("uid");
+		System.err.println(id);
+		if (metatype.equals("C")) {
+			io = new OBOClassImpl(id);
+		}
+		else if (metatype.equals("R")) {
+			io = new OBOPropertyImpl(id);
+		}
+		else {
+			io = new InstanceImpl(id);
+		}
+		io.setName(rs.getString("label"));
+		//conn2objmap.get(conn).put(iid, io);
+		iid2obj.put(iid,io);
+		obj2iid.put(io,iid);
+		return io;
+	}
+	
+	public IdentifiedObject attachDescription(OBOSession session, ResultSet rs) throws SQLException {
+		IdentifiedObject io;
+		String id = rs.getString("uid");
+		io = session.getObject(id);
+		String type = rs.getString("type");
+		String label = rs.getString("label");
+		if (type == "definition") {
+			((DefinedObject)io).setDefinition(label);
+		}
+		else {
+			// TODO
+		}
+		return io;
+	}
+	
+	public IdentifiedObject attachAlias(OBOSession session, ResultSet rs) throws SQLException {
+		IdentifiedObject io;
+		String id = rs.getString("uid");
+		io = session.getObject(id);
+		String scope = rs.getString("scope");
+		String category = rs.getString("type");
+		String label = rs.getString("label");
+		int scopeEnum = TermUtil.getScopeEnum(scope);
+		Synonym syn = objectFactory.createSynonym(label, scopeEnum);
+		if (category != null) {
+			SynonymCategory categoryObj = objectFactory.createSynonymCategory(category, "", 0);
+			syn.setSynonymCategory(categoryObj);
+		}
+		((SynonymedObject)io).addSynonym(syn);
+		return io;
+	}
+	
+	public void attachMetadata(IdentifiedObject io) throws SQLException {
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("select * FROM description");
+		
+	}
+	
+	public Link fetchLink(OBOSession session, ResultSet rs) throws SQLException {
+		Link link;
+		LinkedObject node = (LinkedObject) lookupObject(session, rs.getString("node_uid"));
+		OBOProperty pred = (OBOProperty) lookupObject(session, rs.getString("pred_uid"));
+		LinkedObject obj = (LinkedObject) lookupObject(session, rs.getString("object_uid"));
+		Namespace source = (Namespace) lookupObject(session, rs.getString("source_uid"));
+		String metatype = rs.getString("node_metatype"); 
+		if (metatype.equals("C")) {
+			link = new OBORestrictionImpl(node,pred,obj);
+		}
+		else {
+			link = new InstancePropertyValue(node,pred,obj);
+		}
+		link.setNamespace(source);
+		node.addParent(link);
+		return link;
+	}
+	
+	public IdentifiedObject xxxlookupObject(String id) {
+		IdentifiedObject lo = conn2objmap.get(conn).get(id);
+		if (lo == null) {
+			lo = new DanglingObjectImpl(id);
+		}
+		return lo;
+	}
+	
+	public IdentifiedObject lookupObject(OBOSession session, String id) {
+		return session.getObject(id);
 	}
 
 	
