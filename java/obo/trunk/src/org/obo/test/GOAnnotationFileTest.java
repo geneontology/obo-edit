@@ -32,6 +32,7 @@ public class GOAnnotationFileTest extends AbstractOBOTest {
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
+			System.err.println(f);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);
