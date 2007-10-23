@@ -202,14 +202,6 @@ public class TableList<T> extends JComponent {
 		table.setDefaultEditor(Object.class, new ListTableCellEditor());
 		table.setDefaultRenderer(Object.class, new ListTableCellRenderer());
 		table.setModel(new ListTableModel());
-		table.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
-						KeyEvent.CTRL_DOWN_MASK), "commit");
-		table.getActionMap().put("commit", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				System.err.println("It happened!");
-			}
-		});
 		add(table);
 	}
 

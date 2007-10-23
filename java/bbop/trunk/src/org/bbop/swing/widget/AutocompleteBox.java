@@ -2,6 +2,7 @@ package org.bbop.swing.widget;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Toolkit;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -107,7 +108,8 @@ public class AutocompleteBox<T> extends JComboBox {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE
-						&& (e.getModifiers() & KeyEvent.CTRL_MASK) > 0) {
+						&& (e.getModifiers() & Toolkit.getDefaultToolkit()
+								.getMenuShortcutKeyMask()) > 0) {
 					autocompleteSingleWord();
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					boolean isVisible = isPopupVisible();
@@ -172,8 +174,8 @@ public class AutocompleteBox<T> extends JComboBox {
 			killPendingTasks();
 			if (getText().length() == 0)
 				setSelectedItem(null);
-			else if ((!focusCommit || !allowNonModelValues)
-					&& lastHits != null && lastHits.size() > 0) {
+			else if ((!focusCommit || !allowNonModelValues) && lastHits != null
+					&& lastHits.size() > 0) {
 				setSelectedItem(list.getSelectedValue());
 			} else if (allowNonModelValues) {
 				setSelectedItem(autocompleteModel.createValue(getText()));
