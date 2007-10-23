@@ -31,6 +31,8 @@ import javax.swing.JRadioButtonMenuItem;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.Perspective;
 import org.bbop.framework.dock.idw.IDWDriver;
+import org.bbop.framework.event.GUIComponentEvent;
+import org.bbop.framework.event.GUIComponentListener;
 import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.util.ObjectUtil;
@@ -49,9 +51,19 @@ public class ComponentManager {
 
 	public Map<String, GUIComponent> activeComponents = new HashMap<String, GUIComponent>();
 
+	protected List<GUIComponentListener> componentListeners = new LinkedList<GUIComponentListener>();
+
 	protected static int idgen = 0;
 
 	protected LayoutDriver driver;
+
+	public void addComponentListener(GUIComponentListener listener) {
+		componentListeners.add(listener);
+	}
+
+	public void removeComponentListener(GUIComponentListener listener) {
+		componentListeners.remove(listener);
+	}
 
 	public void setDriver(LayoutDriver driver) {
 		if (this.driver != null) {
@@ -236,8 +248,7 @@ public class ComponentManager {
 		return out;
 	}
 
-	public String showComponent(GUIComponentFactory factory,
-			GUIComponent target) {
+	public String showComponent(GUIComponentFactory factory, GUIComponent target) {
 		return showComponent(factory, target, null);
 	}
 
@@ -336,8 +347,7 @@ public class ComponentManager {
 	public void destroyComponent(GUIComponent c) {
 		GUIComponentFactory<?> factory = componentToFactoryMap.get(c);
 		if (factory != null) {
-			List<GUIComponent> l = currentConfig.get(factory.getIDs()
-					.get(0));
+			List<GUIComponent> l = currentConfig.get(factory.getIDs().get(0));
 			if (l != null) {
 				l.remove(c);
 			}
@@ -347,8 +357,8 @@ public class ComponentManager {
 	}
 
 	public Collection<GUIComponentFactory<?>> getFactories() {
-		Collection<GUIComponentFactory<?>> out = new LinkedHashSet(
-				factoryMap.values());
+		Collection<GUIComponentFactory<?>> out = new LinkedHashSet(factoryMap
+				.values());
 		return out;
 	}
 
@@ -380,19 +390,24 @@ public class ComponentManager {
 
 	public void addActiveComponent(GUIComponent comp) {
 		activeComponents.put(comp.getID(), comp);
+		ComponentConfiguration config = comp.getConfiguration();
 		File f = getFile(comp);
 		if (f.exists()) {
 			try {
 				XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 						new FileInputStream(f)));
-				ComponentConfiguration c = (ComponentConfiguration) decoder
+				config = (ComponentConfiguration) decoder
 						.readObject();
-				comp.setConfiguration(c);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
+		comp.setConfiguration(config);
 		comp.init();
+		for (GUIComponentListener listener : componentListeners) {
+			listener.componentShown(new GUIComponentEvent(this, comp, true,
+					false));
+		}
 	}
 
 	public void removeActiveComponent(GUIComponent comp) {
@@ -407,6 +422,10 @@ public class ComponentManager {
 			System.err.println("Couldn't flush component config successfully");
 		}
 		comp.cleanup();
+		for (GUIComponentListener listener : componentListeners) {
+			listener.componentHidden(new GUIComponentEvent(this, comp, false,
+					true));
+		}
 	}
 
 	public GUIComponent getActiveComponent(String id) {

@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import org.bbop.framework.event.UserEvent;
+import org.bbop.framework.event.UserListener;
 import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.ComponentPath;
 import org.bbop.util.MultiHashMap;
