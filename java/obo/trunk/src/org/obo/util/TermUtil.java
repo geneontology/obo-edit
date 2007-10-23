@@ -1104,6 +1104,18 @@ public class TermUtil {
 		else
 			return null;
 	}
+	
+	public static int getScopeEnum(String label) {
+		String code = (String) label.toLowerCase().subSequence(0, 1);
+		if (code.equals("e"))
+			return Synonym.EXACT_SYNONYM;
+		else if (code.equals("b"))
+			return Synonym.BROAD_SYNONYM;
+		else if (code.equals("n"))
+			return Synonym.NARROW_SYNONYM;
+		else
+			return Synonym.RELATED_SYNONYM;
+	}
 
 	public static OBOClass castToClass(LinkedObject lo) {
 		if (lo instanceof OBOClass) {
