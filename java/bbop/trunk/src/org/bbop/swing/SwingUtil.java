@@ -148,6 +148,21 @@ public class SwingUtil {
 		return out;
 	}
 
+	public static void mapAction(JComponent c, int condition,
+			KeyStroke keyStroke, Action action) {
+		Object key = action.getValue(Action.NAME);
+		if (key == null)
+			throw new IllegalArgumentException("The provided action must " +
+					"have a name defined");
+		mapAction(c, condition, key, keyStroke, action);
+	}
+
+	public static void mapAction(JComponent c, int condition, Object key,
+			KeyStroke keyStroke, Action action) {
+		c.getActionMap().put(key, action);
+		c.getInputMap(condition).put(keyStroke, key);
+	}
+
 	public static Image getImage(Component c) {
 		GraphicsEnvironment ge = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();

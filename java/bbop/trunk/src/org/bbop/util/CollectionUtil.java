@@ -20,6 +20,10 @@ public class CollectionUtil {
 
 	private CollectionUtil() {
 	}
+	
+	public static <T> T[] array(T... in) {
+		return in;
+	}
 
 	public static <K, V> MultiMap<V, K> invertMap(
 			MultiMap<K, V> map) {

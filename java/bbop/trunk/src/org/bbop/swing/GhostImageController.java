@@ -100,8 +100,7 @@ public class GhostImageController implements DragSourceListener,
 	}
 	
 	public void forceImageUpdate() {
-		System.err.println("FORCING IMAGE UPDATE");
-		if (lastEvent != null) {
+		if (lastEvent != null && ghost != null) {
 			ghost.dispose();
 			ghost = null;
 			check(lastEvent);
