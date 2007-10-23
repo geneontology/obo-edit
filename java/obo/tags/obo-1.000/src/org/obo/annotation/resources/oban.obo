@@ -1,0 +1,25 @@
+default-namespace: oban
+
+[Term]
+id: oban:annotation
+name: Annotation
+
+[Typedef]
+id: oban:has_data_source
+name: has data source
+domain: oban:annotation
+
+[Typedef]
+id: oban:has_evidence
+name: has evidence
+domain: oban:annotation
+range: oban:evidence
+
+[Term]
+id: oban:evidence
+name: Evidence
+
+[Typedef]
+id: oban:posits
+name: posits
+domain: oban:annotation
