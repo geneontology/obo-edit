@@ -158,16 +158,6 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 		return termFilter == null || termFilter.satisfies(lo);
 	}
 
-	public void setFilterPair(FilterPair filterPair) {
-		if (filterPair != null) {
-			setTermFilter(filterPair.getObjectFilter());
-			setLinkFilter(filterPair.getLinkFilter());
-		} else {
-			setTermFilter(null);
-			setLinkFilter(null);
-		}
-	}
-
 	public void setTermFilter(Filter termFilter, Filter linkFilter) {
 		this.termFilter = termFilter;
 		this.linkFilter = linkFilter;

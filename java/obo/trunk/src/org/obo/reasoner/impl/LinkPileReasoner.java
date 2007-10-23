@@ -317,8 +317,21 @@ public class LinkPileReasoner extends AbstractReasoner {
 			((ReasonerLink) link).setLookedAt(true);
 		}
 	}
-	
+
 	protected void reasonRemoval(Link link) {
+		reasonRemoval(link, new HashSet<Link>());
+	}
+
+	protected void reasonRemoval(PathCapable pc, Collection<Link> seenem) {
+		if (pc instanceof Link)
+			reasonRemoval((Link) pc, seenem);
+	}
+
+	protected void reasonRemoval(Link link, Collection<Link> seenem) {
+		if (seenem.contains(link))
+			return;
+		else
+			seenem.add(link);
 		// actually remove the dead link from the various caches
 		impliedLinkDatabase.removeParent(link);
 		// re-generate all the implications of the now-removed link
@@ -330,10 +343,14 @@ public class LinkPileReasoner extends AbstractReasoner {
 		}
 		for (Explanation exp : deps) {
 			// get all the other explanations for the explained object
-			Collection<Explanation> exps = getExplanations(exp.getExplainedObject());
-			// pre-emptively remove this explanation from the set (although we may add
-			// it back later, we have to do this now, because once we remove evidence
-			// from the explanation we change its identity, and the remove() method
+			Collection<Explanation> exps = getExplanations(exp
+					.getExplainedObject());
+			// pre-emptively remove this explanation from the set (although we
+			// may add
+			// it back later, we have to do this now, because once we remove
+			// evidence
+			// from the explanation we change its identity, and the remove()
+			// method
 			// won't work right)
 			exps.remove(exp);
 			// remove the now-defunct link as supporting evidence for the
@@ -343,7 +360,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 			// invalidated the explanation
 			if (dead) {
 				if (exps.isEmpty())
-					reasonRemoval(exp.getExplainedObject());
+					reasonRemoval(exp.getExplainedObject(), seenem);
 			} else
 				exps.add(exp);
 		}

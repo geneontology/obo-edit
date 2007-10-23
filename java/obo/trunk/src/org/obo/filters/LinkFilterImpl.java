@@ -2,6 +2,7 @@ package org.obo.filters;
 
 import org.bbop.expression.JexlContext;
 import org.obo.datamodel.*;
+import org.obo.reasoner.ReasonedLinkDatabase;
 
 public class LinkFilterImpl implements LinkFilter {
 
@@ -89,5 +90,9 @@ public class LinkFilterImpl implements LinkFilter {
 			return filter.satisfies(link);
 		else
 			return false;
+	}
+
+	public void setReasonedLinkDatabase(ReasonedLinkDatabase reasoner) {
+		filter.setReasonedLinkDatabase(reasoner);
 	}
 }

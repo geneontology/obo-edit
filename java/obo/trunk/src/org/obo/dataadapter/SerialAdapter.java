@@ -19,7 +19,7 @@ public class SerialAdapter implements OBOAdapter {
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
 		ui.setReadOperation(READ_ONTOLOGY);
-		ui.setReadOperation(WRITE_ONTOLOGY);
+		ui.setWriteOperation(WRITE_ONTOLOGY);
 		return ui;
 	}
 

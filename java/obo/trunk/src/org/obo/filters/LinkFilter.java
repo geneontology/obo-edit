@@ -2,7 +2,7 @@ package org.obo.filters;
 
 import org.obo.datamodel.Link;
 
-public interface LinkFilter extends Filter<Link> {
+public interface LinkFilter extends PathCapableFilter<Link> {
 
 	public static final int CHILD = 1;
 	public static final int TYPE = 2;
