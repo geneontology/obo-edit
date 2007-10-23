@@ -1,6 +1,6 @@
 package org.obo.filters;
 
-public interface ObjectFilter extends Filter {
+public interface ObjectFilter extends PathCapableFilter {
 
 	public boolean getNegate();
 

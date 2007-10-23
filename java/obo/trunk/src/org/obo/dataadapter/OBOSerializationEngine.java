@@ -1027,7 +1027,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		if (filterPair != null) {
 			database = new FilteredLinkDatabase(database);
-			((FilteredLinkDatabase) database).setFilterPair(filterPair);
+			((FilteredLinkDatabase) database).setLinkFilter(filterPair.getLinkFilter());
+			((FilteredLinkDatabase) database).setTermFilter(filterPair.getObjectFilter());
 			((FilteredLinkDatabase) database).setAllowDangling(allowDangling);
 		}
 

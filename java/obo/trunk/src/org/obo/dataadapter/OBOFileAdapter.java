@@ -25,12 +25,14 @@ public class OBOFileAdapter implements OBOAdapter {
 	protected boolean cancelled = false;
 
 	protected OBOMetaData metaData;
-	
+
 	protected GraphicalUI advancedUI;
-	
+
 	protected String userName;
 	protected String autogenString;
 	protected IDProfile idProfile;
+
+	protected IOOperation<?, ?> op;
 
 	public OBOFileAdapter() {
 	}
@@ -148,21 +150,31 @@ public class OBOFileAdapter implements OBOAdapter {
 	}
 
 	public String getProgressString() {
-		if (engine != null)
-			return engine.getProgressString();
-		else if (serializeEngine != null)
-			return serializeEngine.getProgressString();
-		else
-			return null;
+		if (op.equals(READ_ONTOLOGY)) {
+			if (engine != null)
+				return engine.getProgressString();
+		}
+
+		if (op.equals(WRITE_ONTOLOGY)) {
+			if (serializeEngine != null)
+				return serializeEngine.getProgressString();
+		}
+
+		return null;
 	}
 
 	public Number getProgressValue() {
-		if (engine != null)
-			return engine.getProgressValue();
-		else if (serializeEngine != null)
-			return serializeEngine.getProgressValue();
-		else
-			return null;
+		if (op.equals(READ_ONTOLOGY)) {
+			if (engine != null)
+				return engine.getProgressValue();
+		}
+
+		if (op.equals(WRITE_ONTOLOGY)) {
+			if (serializeEngine != null)
+				return serializeEngine.getProgressValue();
+		}
+
+		return null;
 	}
 
 	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
@@ -174,6 +186,7 @@ public class OBOFileAdapter implements OBOAdapter {
 					+ "adapter requires an "
 					+ "OBOAdapterConfiguration object.");
 		}
+		this.op = op;
 		if (op.equals(READ_ONTOLOGY)) {
 			try {
 				cancelled = false;

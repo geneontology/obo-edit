@@ -1,17 +1,26 @@
 package org.obo.query.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.filters.Filter;
+import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.Query;
 
 public class FilterQuery<T> implements Query<T, SearchHit<T>> {
 
 	protected Filter<T> filter;
 	protected Class<T> inputType;
+	protected static Collection<FieldPathSpec> inputPaths;
+	
+	static {
+		 inputPaths = new ArrayList<FieldPathSpec>();
+		 inputPaths.add(new FieldPathSpec());
+		 inputPaths.add(new FieldPathSpec(new ParentSearchCriterion()));
+	}
 	
 	public FilterQuery(Filter<T> filter, Class<T> inputType) {
 		this.filter = filter;
@@ -46,7 +55,7 @@ public class FilterQuery<T> implements Query<T, SearchHit<T>> {
 	}
 
 	public Collection<FieldPathSpec> getInputPaths() {
-		return null;
+		return inputPaths;
 	}
 
 	public void setFieldPath(FieldPath path) {}
