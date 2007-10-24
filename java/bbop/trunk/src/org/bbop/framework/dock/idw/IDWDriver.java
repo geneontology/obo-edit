@@ -468,6 +468,10 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
+	public static GUIComponent getComponent(View v) {
+		return ((ComponentConfigCard) v.getComponent()).getComponent();
+	}
+
 	protected void addView(View v) {
 		GUIComponent c = ((ComponentConfigCard) v.getComponent())
 				.getComponent();
@@ -492,6 +496,18 @@ public class IDWDriver implements LayoutDriver {
 			viewMap.removeView(c.getID());
 		}
 		fireDestroyedView(v, c);
+	}
+
+	public View getView(GUIComponent c) {
+		return viewMap.getView(c.getID());
+	}
+
+	public Collection<View> getAllViews() {
+		List<View> out = new LinkedList<View>();
+		for(GUIComponent c : ComponentManager.getManager().getActiveComponents()) {
+			out.add(getView(c));
+		}
+		return out;
 	}
 
 	public String showComponent(GUIComponentFactory factory,

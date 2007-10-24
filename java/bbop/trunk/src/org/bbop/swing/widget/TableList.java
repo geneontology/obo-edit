@@ -17,11 +17,20 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.OverlayLayout;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -34,7 +43,22 @@ import org.bbop.swing.tablelist.ListTableEditor;
 
 public class TableList<T> extends JComponent {
 
+	protected boolean completingEdit = false;
+	protected ListTableEditor<T> editor;
+	protected TableCellRenderer renderer = new HTMLTableRenderer();
+	protected List<T> data = Collections.emptyList();
+	protected ActionListener commitListener = new ActionListener() {
+
+		public void actionPerformed(ActionEvent e) {
+			ListTableCellEditor tce = (ListTableCellEditor) table
+					.getDefaultEditor(Object.class);
+			tce.stopCellEditing();
+			editNext();
+		}
+	};
+
 	protected JTable table;
+	protected int lastEditRow = -1;
 
 	protected class ListTableCellRenderer extends DefaultTableCellRenderer {
 		@Override
@@ -153,9 +177,12 @@ public class TableList<T> extends JComponent {
 			}
 			fireTableStructureChanged();
 		}
+		
+		@Override
+		public String getColumnName(int column) {
+			return null;
+		}
 	}
-
-	protected int lastEditRow = -1;
 
 	protected class ListTable extends JTable {
 
@@ -195,31 +222,60 @@ public class TableList<T> extends JComponent {
 
 	}
 
-	{
+	public TableList() {
+		this(false, false);
+	}
+
+	public TableList(boolean wrapInScroller, boolean installButtons) {
+		setOpaque(false);
 		table = new ListTable();
 
-		setLayout(new GridLayout(1, 1));
+		setLayout(new BorderLayout());
 		table.setDefaultEditor(Object.class, new ListTableCellEditor());
 		table.setDefaultRenderer(Object.class, new ListTableCellRenderer());
 		table.setModel(new ListTableModel());
-		add(table);
+		if (wrapInScroller)
+			add(new JScrollPane(table), "Center");
+		else
+			add(table, "Center");
+		
+		if (installButtons)
+			installDefaultButtons();
 	}
 
-	protected boolean completingEdit = false;
-	protected ListTableEditor<T> editor;
-	protected TableCellRenderer renderer = new HTMLTableRenderer();
-	protected List<T> data = Collections.emptyList();
-	protected ActionListener commitListener = new ActionListener() {
+	public void installDefaultButtons() {
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		Icon plusIcon = new ImageIcon(getClass().getResource(
+				"/org/bbop/swing/tablelist/resources/plus.gif"));
+		Icon minusIcon = new ImageIcon(getClass().getResource(
+		"/org/bbop/swing/tablelist/resources/minus.gif"));
+		
+		final JButton add = new JButton(plusIcon);
+		final JButton remove = new JButton(minusIcon);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		panel.add(add);
+		panel.add(remove);
+		add(panel, "South");
+		add.addActionListener(new ActionListener() {
 
-		public void actionPerformed(ActionEvent e) {
-			ListTableCellEditor tce = (ListTableCellEditor) table
-					.getDefaultEditor(Object.class);
-			tce.stopCellEditing();
-			editNext();
-		}
-	};
+			public void actionPerformed(ActionEvent e) {
+				add();
+			}
+		});
+		remove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteSelectedRows();
+			}
+		});
+		addSelectionListener(new ListSelectionListener() {
 
-	public TableList() {
+			public void valueChanged(ListSelectionEvent e) {
+				remove.setEnabled(getSelectedRowCount() > 0);
+			}
+			
+		});
+		remove.setEnabled(getSelectedRowCount() > 0);
 	}
 
 	public void setRenderer(TableCellRenderer renderer) {
@@ -249,11 +305,11 @@ public class TableList<T> extends JComponent {
 	public void add() {
 		createNewRow();
 	}
-	
+
 	public void add(T... items) {
 		add(Arrays.asList(items));
 	}
-	
+
 	public int getSelectedRowCount() {
 		return getSelectedRows().length;
 	}
@@ -310,7 +366,7 @@ public class TableList<T> extends JComponent {
 	public void setData(T... data) {
 		setData(Arrays.asList(data));
 	}
-	
+
 	public void setData(Collection<T> data) {
 		this.data = new ArrayList<T>(data);
 		((ListTableModel) table.getModel()).fireTableDataChanged();
