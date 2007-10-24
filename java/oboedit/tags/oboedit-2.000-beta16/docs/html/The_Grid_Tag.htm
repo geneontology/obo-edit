@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The grid tag<grid> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;grid&gt; Tag</h1>
+<p>The &lt;grid&gt; tag creates&nbsp;a container for other 
+components. The components are displayed in a grid with the given number of rows 
+and columns. Components are added to the uppermost 
+available row from left-to-right. If there are more cells in the grid 
+than components, the remaining cells are left blank.</p>
+<p>Every&nbsp;cell in a grid&nbsp;is exactly the same size. Components in a grid 
+will be resized to fit perfectly within their cell.</p>
+<h2>Parameters</h2>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">cols</font></td>
+    <td>
+      <p>The number of columns in the grid.</p></td>
+    <td>
+      <p><em>any positive integer</em></p></td>
+    <td>
+      <p>1</p></td></tr>
+  <tr>
+    <td><font face="Courier">rows</font></td>
+    <td>
+      <p>The number of rows in the grid. </p></td>
+    <td>
+      <p><em>any positive integer</em></p></td>
+    <td>
+      <p>1</p></td></tr></table></p>
+<p>Also see <A href="Common_Parameters.htm">common parameters</a> .</p>
+<p></p>
+<h2>Contents</h2>
+<p>The grid tag contains tags representing the components that should be added to 
+the grid.</p>
+<h2>Example</h2><pre>&lt;xmllayout&gt;<br><font color="#0000ff">&lt;grid rows="3" cols="3"&gt;<br>&nbsp;&nbsp; &lt;label text="All the components" bordertitle="Cell 1"/&gt;<br>&nbsp;&nbsp; &lt;label text="in a grid" bordertitle="Cell 2"/&gt;<br>&nbsp;&nbsp; &lt;label text="are" bordertitle="Cell 3"/&gt;<br>&nbsp;&nbsp; &lt;label text="the" bordertitle="Cell 4"/&gt;<br>&nbsp;&nbsp; &lt;label text="same" bordertitle="Cell 5"/&gt;<br>&nbsp;&nbsp; &lt;label text="size" bordertitle="Cell 6"/&gt;<br>&nbsp;&nbsp; &lt;label text="no matter what they are." bordertitle="Cell 7"/&gt;<br>&nbsp;&nbsp; &lt;component id="DAG" bordertitle="Cell 8"/&gt;<br>&lt;/grid&gt;</font><br>&lt;/xmllayout&gt;
+</pre>
+<p><IMG height=355 hspace=0 
+src="../images/layout_grid_component.gif" width=437 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+<p>&nbsp;</p>
+</body>
+</html>

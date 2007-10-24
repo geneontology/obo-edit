@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Text Editing</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Text Editing</h1>
+<p>When a term is <A 
+href="Working_with_Selections.htm">sub-selected</A>    , it is loaded into the text 
+editor:</p>
+<p><IMG height=453 hspace=0 
+src="../images/subselection.gif" width=624 border=0></p>
+<p>               
+              
+         In this panel, you 
+can edit all the attributes of a term.</p>
+<H2>Committing Your Changes</H2>
+<P>OBO-Edit does not immediately apply text edits. OBO-Edit tries to group edits 
+together so that the behavior of "Undo" makes more sense (you wouldn't want to 
+have to undo each and every letter typed, for example). OBO-Edit has two modes 
+for making text edits permanent, <STRONG>auto-commit mode</STRONG> and 
+<STRONG>manual commit mode.</STRONG></P>
+<P>In <STRONG>auto-commit mode</STRONG>, text edits are applied as soon as a new 
+term is selected or the ontology is saved. To commit edits immediately, press 
+Ctrl+Enter.</P>
+<P>In <STRONG>manual commit mode</STRONG>, text edits are applied when the 
+"Commit" button is pressed. The "Commit" button is only visible in manual commit 
+mode.</P>
+<P>See the <A href="The_Configuration_Plugin.htm#textedit">Text Editing section 
+of the Configuration Plugin</A> for information about choosing the text editing 
+mode.</P>
+<h2>Basic Attributes</h2>
+<ul>
+  <li><strong>ID</strong> - The id of 
+  the term. The id cannot be edited. 
+  <li><strong>Namespace</strong> - The 
+  namespace (aka the ontology name) of this term. The namespace can be changed 
+  by selecting a different namespace from the dropdown list. The list of 
+  available namespaces can be edited using <A 
+  href="Working_with_Namespaces.htm">the Namespace Manager Plugin</A>.
+  <li><strong>Term Name</strong> - The term's display name can be edited in this 
+  text box.</li></ul>
+<h2>Tabs</h2>
+<p>In order to fit all of the possible editing options onto 
+one screen, some editing options are organized into tabs. To access a tab, click 
+the tab name. Tabs that currently contain information are marked with an 
+asterick.</p>
+<p><strong>Dbxref Tab</strong> -<a 
+name="dbxref"></a> </p>
+<p><IMG height=182 hspace=0 src="../images/dbxref_tab.gif" width=400 
+border=0></p>
+<p>This tab allows the user to add, edit, and remove general dbxrefs. General 
+dbxrefs are used to provide mappings between a term and a term in another 
+vocabulary.</p>
+<p>To edit a dbxref, click it on the list to left. When the dbxref is selected, 
+it will be loaded in the editor to the right. The editor contains the following 
+fields:</p>
+<ul>
+  <li><strong>Database name</strong> - 
+  Contains the dbxref database name. The dbxref name is the part of the dbxref 
+  that appears to the left of the colon. For example, in the dbxref 
+  "EC:1.8.1.7", the database name is "EC". 
+  <li><strong>Database id</strong> - 
+  Contains the dbxref database id. The dbxref id is the part of the dbxref that 
+  appears to the right of the colon. For example, in the dbxref "EC:1.8.1.7", 
+  the database id is "1.8.1.7". 
+  <li><strong>Database desc</strong> - A descriptive name for the 
+dbxref.</li></ul>
+<p>To add a new dbxref, click the "Add" button. A new dbxref "XX:&lt;new 
+dbxref&gt;" will be created.</p>
+<p>To remove a dbxref, select the dbxref to remove, click the "Del" button. The 
+dbxref will be removed.</p>
+<p><strong>Definition Tab</strong> -</p>
+<p><IMG height=124 hspace=0 src="../images/definition_tab.gif" width=403 
+border=0></p>
+<p>Definition text and definition dbxrefs can be edited here. There are two 
+fields:</p>
+<ul>
+  <li><strong>Text</strong> - This 
+  contains the definition text. 
+  <li><strong>Dbxref List</strong> 
+  -&nbsp;Definition dbxrefs provide a reference explaining the origin of the 
+  definition. To add a new dbxref, drag a dbxref 
+  onto the list. To delete a dbxref, first click it to select the dbxref. Then 
+  press the "Delete" key on the keyboard. To edit a dbxref, or to have the full 
+  set of dbxref editing tools, click the "Edit" button. The following window 
+  will appear:<br>
+  <IMG height=246 hspace=0 src="../images/dbxref_edit_window.gif" 
+    width=300 border=0><br>
+  The interface for modifying the definition dbxref list is 
+  exactly the same as the interface for modifying general dbxrefs (described 
+  above). Click "Ok" to accept the
+  changes.
+  </li></ul>
+<p><strong>Comment Tab</strong> -</p>
+<p><IMG height=124 hspace=0 src="../images/comment_tab.gif" width=401 
+border=0></p>
+<p>The comment can be viewed and modified in this text area.</p>
+<p><strong>Cross Product Tab</strong> -</p>
+<p>See <A href="Cross_Products_in_the_Text_Editor.htm">Cross Products in the 
+Text Editor</A></p>
+<p><strong>Synonyms Tab</strong> -</p>
+<p><IMG height=184 hspace=0 src="../images/synonym_tab.gif" width=401 
+border=0></p>
+<p>Synonyms are alternate names for a term.</p>
+<p>To edit a synonym, click it on the list to left. When the synonym is 
+selected, it will be loaded in the editor to the right. The editor contains the 
+following fields:</p>
+<ul>
+  <li><strong>Synonym text</strong> - 
+  The actual synonym name. 
+  <li><strong>Synonym scope</strong> - The synonym scope indicates how specific 
+  this synonym is. To choose a new scope, select it from the drop down list. The 
+  possible values are:
+   <ul>
+     <li><strong>Related synonym</strong> 
+    - The catch all scope. This means that this synonym has a slightly different 
+    meaning than the term name, so it can't be said to be more or less specific 
+    in scope. Related synonyms are often phrases that a user might use when 
+    searching for a term. For example, sometimes the Gene Ontology 
+    will specify a well-known gene product name as a related synonym of&nbsp;the associated&nbsp;function or 
+    process term to aid in searching.&nbsp; 
+     <li><strong>Exact synonym</strong> 
+    - Indicates that this synonym means exactly the same thing as the term name.
+     <li><strong>Narrow synonym</strong> - Indicates that this synonym means something more specific 
+    than the term name.
+     <li><strong>Broad synonym</strong> 
+    - Indicates that this synonym means something less specific than the term 
+    name. </li>
+   </ul>Note that some synonym categories have a built-in scope (for 
+  example, a category like "UK Spelling" would have a built-in scope of "exact", 
+  because every synonym in this category would be an exact synonym; see <A 
+  href="Working_with_Synonym_Categories.htm">Working with Synonym Categories</A>      for more information). If 
+  the synonym belongs to&nbsp;a category with a built-in scope, the scope cannot 
+  be edited. 
+  <li><strong>Synonym type</strong> - 
+  Indicates the synonym category to which this synonym belongs. Synonym 
+  categories allow synonyms to be grouped into different types. To choose a new 
+  synonym category, select it from the dropdown list. To add, edit, or delete a 
+  synonym category, use <A href="Working_with_Synonym_Categories.htm">the 
+  Synonym Category Manager Plugin</A>.
+  <li><strong>DbXrefs</strong> - Synonym dbxrefs indicate a literature reference 
+  that explains the origin of the synonym. To add a new dbxref, drag a dbxref 
+  onto the list. To delete a dbxref, first click it to select the dbxref. Then 
+  press the "Delete" key on the keyboard. To edit a dbxref, or to have the full 
+  set of dbxref editing tools, click the "Edit" button. The following window 
+  will appear:<br>
+  <IMG 
+  height=246 hspace=0 src="../images/synonym_edit_window.gif" width=300 
+  border=0><br>
+  The interface for modifying the synonym dbxref list is exactly 
+  the same as the interface for modifying general dbxrefs (described above). 
+  Click "Ok" to accept the changes.
+<p>To add a 
+new dbxref, click the "Add" button. A new dbxref "XX:&lt;new dbxref&gt;" will be 
+created.</p>
+<p>To remove a dbxref, select the dbxref to remove, click the "Del" button. The 
+dbxref will be removed.</p>
+
+</li></ul>
+<p><strong>Category Tab</strong> -</p>
+<p><IMG height=185 hspace=0 src="../images/category_tab.gif" width=401 
+border=0></p>
+<p>Categories are used to designate subsets of terms within an ontology. The 
+category tab contains a list of the available categories in the ontology. If the 
+selected term is a member of a category, the checkbox to the right will be 
+checked. To change whether the term belongs to a particular category, check or 
+uncheck the appropriate checkbox.</p>
+<p>To edit the list of available categories, use <A 
+href="Working_with_Categories.htm">the Category Manager 
+Plugin</A>           
+.</p>
+<h2>Relation-Specific Attributes</h2>
+<p>The display is slightly different when a relation (rather than a class) has 
+been selected.</p>
+<p><IMG height=115 hspace=0 src="../images/prop_text_editor.gif" width=419 
+border=0></p>
+<ul>
+  <li><strong>Range</strong> - The 
+  relation range restricts the possible parents for any relationship that uses 
+  this relation. If this relation is listed as a relationship type in a given 
+  relationship, the parent of that relationship must be a subclass of this 
+  relation's range. To set a new range, drag a term onto the blue range button. 
+  To clear the range, click the blue range button. See <A 
+  href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO 
+  Ontologies</A> for more information about range.
+  <li><strong>Domain</strong> - The 
+  relation domain restricts the possible children for any relationship that uses 
+  this relation. If this relation is listed as a relationship type in a given 
+  relationship, the child of that relationship must be a subclass of this 
+  relation's domain. To set a new domain, drag a term onto the blue&nbsp;domain 
+  button. To clear the domain, click the blue&nbsp;domain button. See <A 
+  href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO 
+  Ontologies</A> for more information about domain.
+  <li><strong>Is cyclic</strong> -<a 
+  name=is_cyclic></a>  <a 
+  name=is_cyclic></a>  If this 
+  box is checked, it is legal to create cycles out of this relationship type. 
+  That is, it is legal to say that a term has a relationship to itself over this 
+  relation. Note that if "Is cyclic" isn't selected, even indirect cycles (that 
+  is, cycles that are made of implied relationships) are illegal. 
+  <li><strong>Is transitive</strong> - If 
+  this box is checked, the relationship type is transitive. It is very important 
+  to that this box is marked correctly; the OBO-Edit reasoner makes extensive 
+  use of this information. If the transitive status of a relation is incorrectly 
+  indicated, the reasoner may make many incorrect inferences. 
+  <li><strong>Is symmetric</strong> - If this box is checked, the relationship 
+  type is symmetric. It is very important to that this box is marked correctly; 
+  the OBO-Edit reasoner makes extensive use of this information. If the 
+  symmetric status of a relation is incorrectly indicated, the reasoner may make 
+  many incorrect inferences.</li></ul>
+
+<div class="sidebar">
+<h1>Layout Information</h1>
+<hr>
+<p class="sidebar">The text editor's layout id is<br>
+<code><b>TEXTEDIT</b></code></p>
+<p>See <A href="Customizing_the_Interface.htm">Customizing 
+the Interface</A> for more information </p>
+</div>
+  
+</body>
+</html>

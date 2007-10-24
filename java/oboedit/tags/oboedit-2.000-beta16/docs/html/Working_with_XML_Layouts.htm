@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Working with XML Layouts</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Working with XML Layouts</h1>
+<h2>
+The OBO-Edit Layout Editor</h2>
+
+<p>OBO-Edit uses xml documents called screen layouts to 
+determine how the main gui is set up. To edit the gui layout,&nbsp;open <A href="The_Configuration_Plugin.htm">The Configuration Manager Plugin</A> and 
+
+click the "Display Layout" tab:</p>
+<p><IMG height=510 hspace=0 
+src="../images/config_plugin_layout.gif" width=608 border=0></p>
+
+<p>              
+              
+See <A 
+href="The_Configuration_Plugin.htm#display_layout">The Display Layout</A> for 
+information on using the layout              
+              
+editor.</p>
+
+<div class="sidebar">
+<h1>Make a backup - your future self will thank you</h1>
+<hr>
+<p>It's not always easy to edit raw XML code correctly the first time through. It's usually a good idea to use "Export XML File..." to backup the current layout before you make any changes. That way you can revert to your original layout if something goes wrong.</p>
+</div>
+<h2>
+
+<tr>
+<td width="10"></td>Screen Layout&nbsp;XML Syntax</h2>
+<p>Screen layouts conform to the standard rules for well-formed xml documents: 
+tags may be nested, tags must be closed, attribute values must be enclosed in 
+quotes, etc.</p>
+
+          
+             
+ <p>
+
+A screen layout consists of an &lt;xmllayout&gt; tag surroundning&nbsp;a single component (although that
+component may contain subcomponents, as we'll see below). So the following is
+a perfectly acceptable screen layout:<p>
+
+  <table cellspacing="0" cellpadding="5" border="1">
+
+    <tr><td align="middle"><b>Layout code</b></td>
+        <td align="middle"><b>Resulting gui</b></td>
+    <tr valign="top"><td>
+      <p><code>&lt;xmllayout&gt;<br>&nbsp;&nbsp;&nbsp;&lt;component id="DAG"/&gt;<br>&lt;xmllayout&gt;<br></code></p></td>
+        <td><IMG height=236 hspace=0       src="../images/component_dag.gif" width=298 border=0></td></tr>
+
+  </table><p>
+
+Of course, that's not very useful, because we haven't 
+included a text editor panel, so there's no way to edit the term text or see 
+term details.&nbsp;If we add some sub-components, though,&nbsp;the layout starts 
+to look a little more useful:
+<p>
+
+  <table cellspacing="0" cellpadding="5" border="1">
+
+    <tr><td align="middle"><b>Layout code</b></td>
+        <td align="middle"><b>Resulting gui</b></td>
+    <tr valign="top"><td>
+      <p><code>&lt;xmllayout&gt;<br>&nbsp; &lt;divider 
+      orientation="HORZ"&gt;<br>&nbsp;&nbsp;&nbsp; 
+      &lt;first&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="DAG" 
+      width="300"/&gt;<br>&nbsp;&nbsp;&nbsp; 
+      &lt;/first&gt;<br>&nbsp;&nbsp;&nbsp; 
+      &lt;second&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component 
+      id="TEXTEDIT" width="320"/&gt;<br>&nbsp;&nbsp;&nbsp; 
+      &lt;/second&gt;<br>&nbsp; &lt;/divider&gt;<br>&lt;/xmllayout&gt;<br></code></p></td>
+        <td><IMG height=398 hspace=0 
+      src="../images/layout_basic.gif" width=503 border=0></td></tr>
+
+  </table>
+<p>See the individual tag descriptions to see which tags allow nested tags.
+<p>&nbsp;<p>              
+     
+<h2>Supported Tags</h2>
+<ul> 
+
+  <li><strong><A   href="The_Glue_Tag.htm">&lt;glue&gt;</A></strong> 
+
+  <li><strong><A   href="The_Spacer_Tag.htm">&lt;spacer&gt;</A></strong> 
+  <li><A href="The_Label_Tag.htm"><strong>&lt;label&gt;</strong></A>
+  <li><A href="The_Box_Tag.htm"><strong>&lt;box&gt;</strong></A> 
+
+  <li><strong><A   href="The_Grid_Tag.htm">&lt;grid&gt;</A></strong> 
+
+  <li><A   href="The_Panel_Tag.htm"><strong>&lt;panel&gt;</strong></A> 
+
+  <li><strong><A   href="The_Compactgrid_Tag.htm">&lt;compactgrid&gt;</A></strong> 
+
+  <li><A   href="The_Divider_Tag.htm"><strong>&lt;divider&gt;</strong></A> 
+
+  <li><A   href="The_Tabs_Tag.htm"><strong>&lt;tabs&gt;</strong></A><strong> 
+
+  <li><strong><A   href="The_Scroller_Tag.htm">&lt;scroller&gt;</A></strong>
+  <li><A 
+href="The_Window_Tag.htm"><strong>&lt;window&gt;</strong></A> 
+
+  <li><A   href="The_If_Tag.htm">&lt;if&gt;</A></strong> 
+
+  <li><strong><A   href="The_Component_Tag.htm">&lt;component&gt;</A></strong></li></ul>
+
+</body>
+</html>

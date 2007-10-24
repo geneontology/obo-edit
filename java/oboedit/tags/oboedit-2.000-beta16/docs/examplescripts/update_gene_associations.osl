@@ -1,0 +1,157 @@
+/**
+ * Parses a tabbed delimited line into a list where each field becomes an item in the list
+ */
+function parseTabDelimitedLine(line) {
+    // things are a little simpler if we convert
+    // the array from line.split() into a List
+    out = Util.createList();
+    foreach (x in line.split("	")) {
+      out.add(x);
+    }
+    return out;
+}
+
+/**
+ * Associates one or more terms with an id in a map.
+ * This method makes sure that each id in the map is associated with
+ * a list of terms.
+ */
+function mapID(map, id, term) {
+  mappings = map.get(id);
+  if (mappings == null) {
+    mappings = Util.createSet();
+    map.put(id, mappings);
+  }
+  mappings.add(term);
+}
+
+/**
+ * Builds a map where all the primary and secondary ids in an ontology are associated
+ * with one or more terms in a map.
+ */
+function buildIDMap(session) {
+  out = Util.createMap();
+  it = session.getObjects().iterator();
+  while(it.hasNext()) {
+     term = it.next();
+     if (TermUtil.isTerm(term)) {
+        mapID(out, term.getID(), term);
+     	foreach (id in term.getSecondaryIDs()) {
+     	   mapID(out, id, term);
+     	}     	
+     }
+  }
+  return out;
+}
+
+/**
+ * Writes a list of fields as a tab-delimited line in a file.
+ */
+function writeLine(writer, vals) {
+  for(i=0; i < vals.size(); i++) {
+    if (i > 0) {
+    	writer.print("	");
+    }
+    writer.print(vals[i].toString());
+  }
+  writer.println();
+}
+
+// create an id map for the session
+idmap = buildIDMap(session);
+// open a file reader for the current gene association file
+reader = Util.getFileReader(args[0]);
+// open a file writer for the output file
+writer = Util.getFileWriter(args[1]);
+
+// keep track of our current line in the file
+lineNum = 1;
+
+// for every line in the file...
+while((line = reader.readLine()) != null) {
+   if (line.startsWith("!")) {
+       // write all the original comment lines without modification
+       writer.println(line);
+   } else {
+       // parse each line
+       vals = parseTabDelimitedLine(line);
+       
+       // pull out column 5, since that contains the term id
+       // note that since arrays are zero-indexed, we ask for index 4 to get
+       // column five
+       termID = vals[4];
+       
+       // see if the termID from column 5 is a primary id in the current ontology
+       term = session.getObject(termID);
+       
+       // if term is null, that means that there is no term with that primary id
+       // in the ontology
+       if (term == null) {
+       	  // if the idmap contains the id, it means that the gene association file is
+       	  // referring to a secondary id
+          if (idmap.containsKey(termID)) {
+            // get all the terms mapped to that id
+            // there may be more than one, because merges and splits can
+            // cause a secondary id to appear for several terms.
+            // our policy is to remap secondary terms to *every* primary term
+            // that has the secondary id.
+            mappedterms = idmap.get(termID);
+            
+            // if any terms are mapped to that id...
+            if (mappedterms != null) {
+            
+              // for each mapped term...
+              foreach (mapterm in mappedterms) {
+                
+                // create a line for the output file where all the fields are
+                // identical...
+              	mapLine = vals.clone();
+
+              	// but set field 5 to the primary term id, instead of the current value
+              	mapLine[4] = mapterm;
+              	
+              	// write the modified line to the output file
+              	writeLine(writer, mapLine);
+              	
+              	// print a message for the user
+          	    println(lineNum+": * Remapped annotation of "+vals[1]+" from secondary id "+termID+" to "+mapterm.getID());
+              }
+            }
+          } else {
+            // if the id map didn't contain the id, it means that there are annotations
+            // to terms that are nowhere in this ontology. In this example, we delete
+            // such annotations.
+	   		println(lineNum+"!! Deleted annotation to unknown term "+termID);
+	   	  }
+       } else if (TermUtil.isObsolete(term)) {
+          // if the id is a primary id but refers to an obsolete term...
+          
+          // print a warning message
+          println("!!! found annotation to obsolete term "+term);
+          
+          // remap the association to any specified replacement terms
+       	  foreach (replacement in term.getReplacedBy()) {
+       	     mapLine = vals.clone();
+       	     mapLine[4] = replacement.getID();
+       	     writeLine(writer, mapLine);
+       	     println(lineNum+": * Remmaped annotation of "+vals[1]+" from obsolete term "+term+" to "+replacement);
+       	  }
+       	  
+       	  // print a message for any consider terms that should be looked at
+       	  // by a curator
+       	  foreach (consideration in term.getConsiderReplacements()) {
+       	     println(lineNum+": *** Consider annotating "+vals[1]+" to "+consideration);
+       	  }
+       } else {
+          // any other lines are fine and should be output exactly as they came in
+       	  writeLine(writer, vals);
+       }
+   }
+   // update the line number
+   lineNum++;
+}
+// when we're done, close the reader (not really necessary, just neater)
+reader.close();
+// and close the writer (absolutely necessary! otherwise the file may not contain
+// all the data we've written)
+writer.close();

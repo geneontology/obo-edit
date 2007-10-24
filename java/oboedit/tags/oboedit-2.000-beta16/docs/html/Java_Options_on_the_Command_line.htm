@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Java Options on the Command Line<compactgrid> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Java Options on the Command Line</h1>
+<p>The command line tools (obomerge, obo2obo, obo2flat, 
+obodiff) do not use the same memory management settings as OBO-Edit. Their 
+memory settings are configured independently by passing options directly to the Java interpreter.</p>
+<p>This is done through the use of a <font face="Courier">.vmoptions</font> file. 
+Each command-line utility may have a file named <font face="Courier">&lt;utility 
+name&gt;.vmoptions</font> in the same directory as the utility. Each line of 
+this file should contain a single option to be passed directly to the Java 
+virtual machine. <strong><em>The last line of this file MUST BE 
+BLANK!</em></strong> Otherwise the options file will not be read correctly.</p>
+<h2>Example - Running obomerge with 1024M of memory</h2>
+<p>To run obomerge with 1024M of memory,&nbsp;create a text file named 
+obomerge.vmoptions in the same directory as the obomerge utility with the 
+following contents:</p>
+<pre style="BORDER-RIGHT: 1px dashed; BORDER-TOP: 1px dashed; BORDER-LEFT: 1px dashed; WIDTH: 200px; BORDER-BOTTOM: 1px dashed; BACKGROUND-COLOR: #eeeeee">
+-Xmx1024M
+
+</pre>
+<p>Note the blank line at the end of the file.</p>
+<P>&nbsp;</P>
+</body>
+</html>
