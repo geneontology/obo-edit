@@ -149,8 +149,29 @@ public class IDWUtil {
 						new SolidColorComponentPainter(new FixedColorProvider(
 								focused))).setOpaque(false);
 	}
+	
+	public static JButton createFlatHighlightButton(Icon icon,
+			String tooltipText, int padding, ActionListener action) {
+		final JButton b = new JButton(icon) {
+			public void setUI(ButtonUI ui) {
+				super.setUI(new FlatIconButtonUI());
+			}
+		};
+		b.setFocusable(false);
+		b.setVerticalAlignment(SwingConstants.CENTER);
+		b.setToolTipText(tooltipText);
+		b.setMargin(new Insets(0, 0, 0, 0));
+		new ButtonHighlighter(b, padding);
 
-	public static final JToggleButton createFlatHighlightToggleButton(Icon icon,
+		b.setRolloverEnabled(true);
+
+		if (action != null)
+			b.addActionListener(action);
+
+		return b;
+	}
+
+	public static JToggleButton createFlatHighlightToggleButton(Icon icon,
 			String tooltipText, int padding, ActionListener action) {
 		final JToggleButton b = new JToggleButton(icon) {
 			public void setUI(ButtonUI ui) {
