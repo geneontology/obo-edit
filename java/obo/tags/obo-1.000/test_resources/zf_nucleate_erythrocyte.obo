@@ -1,0 +1,23 @@
+import: http://purl.org/obo/obo-all/cellular_component/cellular_component.obo
+import: http://www.obofoundry.org/ro/ro.obo
+default-namespace: test
+
+[Term]
+id: CL:erythrocyte
+name: erythrocyte
+
+! anything that is an erythrocyte and has a nucleus is a nucleate_erythrocyte
+! (necessary and sufficient conditions, so we use intersection_of)
+[Term]
+id: CL:nucleate_erythrocyte
+name: nucleate erythrocyte
+intersection_of: CL:erythrocyte
+intersection_of: OBO_REL:has_part GO:0005634 ! nucleus
+
+! all zebrafish erythrocytes have a nucleus
+! (necessary conditions, so we use normal DAG links)
+[Term]
+id: ZF:erythrocyte
+name: erythrocyte (fish)
+is_a: CL:erythrocyte
+relationship: OBO_REL:has_part GO:0005634 ! nucleus
