@@ -1,6 +1,5 @@
 	* Added lots o' hotkeys, see release notes on sourceforge
 	* Reworded obsolete warning message (SF 1810837)
-	
 	* Fixed bugs in ancestor & descendant searching (SF 1811624)
 	* Fixed commit keyboard shortcut (SF 1811771)
 	* Fixed save bug (SF 1811658)
@@ -13,3 +12,8 @@
 	* Fixed problem where table lists in the text editor did not autocommit
 	  pending edits when their values are requested. This manifested as bugs
 	  in the dbxref and synonym editing lists (SF 1814568).
+	* Added add/remove buttons to renderer lists in Global Filter Manager
+	* Load/save error details are once again displayed
+	* Created image saving plugin
+	* No more flickers of movement in graph no-animations mode
+	* Added option to hide "Search results" prefix for search results (SF 1816398)

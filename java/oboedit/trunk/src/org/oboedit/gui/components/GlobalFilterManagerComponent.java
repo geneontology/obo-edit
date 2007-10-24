@@ -20,7 +20,9 @@ import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.bbop.util.CollectionUtil;
 import org.obo.filters.Filter;
+import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.LinkRenderSpec;
+import org.obo.filters.ObjectFilterImpl;
 import org.obo.filters.ObjectRenderSpec;
 import org.obo.filters.RenderSpec;
 import org.obo.filters.RenderedFilter;
@@ -59,10 +61,10 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 							+ "</i></html>";
 				else
 					return "<html>Display terms lines as <b>"
-					+ fr.getSpec().toString()
-					+ "</b> for terms that match<br><i>"
-					+ FilterUtil.getOBOFilterExpression(fr.getFilter())
-					+ "</i></html>";
+							+ fr.getSpec().toString()
+							+ "</b> for terms that match<br><i>"
+							+ FilterUtil.getOBOFilterExpression(fr.getFilter())
+							+ "</i></html>";
 			} else
 				return "<html>" + value.toString() + "</value>";
 		}
@@ -97,7 +99,8 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 		}
 
 		public RenderedFilter createNewValue() {
-			return new RenderedFilter(null,
+			return new RenderedFilter((isLinkRenderer ? new LinkFilterImpl()
+					: new ObjectFilterImpl()),
 					isLinkRenderer ? new LinkRenderSpec()
 							: new ObjectRenderSpec());
 		}
@@ -120,10 +123,10 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 		termFilterComponent.setButtonVisible(false);
 		linkFilterComponent = new FilterComponent(new LinkFilterEditorFactory());
 		linkFilterComponent.setButtonVisible(false);
-		termRendererList = new TableList();
+		termRendererList = new TableList(true, true);
 		termRendererList.setRenderer(new RendererRenderer(false));
 		termRendererList.setEditor(new RendererEditor(false));
-		linkRendererList = new TableList();
+		linkRendererList = new TableList(true, true);
 		linkRendererList.setRenderer(new RendererRenderer(true));
 		linkRendererList.setEditor(new RendererEditor(true));
 
@@ -168,7 +171,7 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 		super.init();
 		loadFilters();
 	}
-	
+
 	@Override
 	public void cleanup() {
 		commit();
@@ -180,7 +183,7 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 				.getGlobalTermFilter());
 		linkFilterComponent.setFilter(FilterManager.getManager()
 				.getGlobalLinkFilter());
-		
+
 		termRendererList.setData(CollectionUtil.deepCopy(FilterManager
 				.getManager().getGlobalTermRenderers()));
 		linkRendererList.setData(CollectionUtil.deepCopy(FilterManager
