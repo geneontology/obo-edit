@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The panel tag<panel> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;panel&gt; Tag</h1>
+<p>The &lt;panel&gt; tag creates&nbsp;a container for other components. A panel 
+consists of 5 cells, named <em>center, north, south, east, </em>and <em>west, 
+</em>each of which has a particular location and resizing strategy.&nbsp;The 
+locations are mapped as follows:</p>
+<p><IMG height=113 hspace=0 src="../images/layout_panel_map.gif" width=314 
+border=0></p>
+<ul>
+  <li><strong>North</strong> - Always 
+  appears at the top of the panel. The north component will retain its original 
+  height, but its width will be adjusted to fill all the available space. 
+  <li><strong>South</strong> - Always 
+  appears at the bottom of the panel. The south component will retain its 
+  original height, but its width will be adjusted to fill all the available 
+  space. 
+  <li><strong>East </strong>- Always 
+  appears at the right of the panel. The east component will retain its original 
+  width, but its height will be adjusted to fill all the available space. 
+  <li><strong>West </strong>- Always 
+  appears at the left of the panel. The west component will retain its original 
+  width, but its height will be adjusted to fill all the available space. 
+  <li><strong>Center </strong>- Always appears in the center of the panel. The 
+  center component will be resized to fill all the available space.</li></ul>
+<p>There does not need to be a component in each cell. Cells that do not contain 
+a component are not displayed.</p>
+<h2>Parameters</h2>
+<p>See <A href="Common_Parameters.htm">common parameters</A> .</p>
+<p></p>
+<h2>Contents</h2>
+<p>The grid tag contains some combination of the tags <font 
+face="Courier">&lt;north&gt;, &lt;south&gt;, &lt;east&gt;, &lt;west&gt;,</font> 
+and &lt;<font face="Courier">center&gt;.</font> Each of those tags contains a 
+<strong>single</strong> tag specifying the component to display in the 
+corresponding cell. Multiple components can be displayed in a single cell by 
+wrapping them in a container tag (like <font face="Courier">&lt;box&gt;, 
+&lt;grid&gt;, &lt;compactgrid&gt;, &lt;divider&gt;,</font> or another <font 
+face="Courier">&lt;panel&gt;</font>).</p>
+<h2>Example</h2><pre>&lt;xmllayout&gt;<br><font color="#0000ff">&lt;panel&gt;<br>&nbsp;&nbsp; &lt;north&gt;<br>&nbsp;&nbsp;&nbsp; &lt;component id="FIND"/&gt;<br>&nbsp;&nbsp; &lt;/north&gt;<br>&nbsp;&nbsp; &lt;east&gt;<br><font color="#0080c0">&nbsp;&nbsp;&nbsp;&nbsp; &lt;panel&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;center&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="TEXTEDIT" width="200"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/center&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;south&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="plugin:org.geneontology.oboedit.plugin.DAGView"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/south&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/panel&gt;</font><br>&nbsp;&nbsp; &lt;/east&gt;<br>&nbsp;&nbsp; &lt;center&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="DAG"/&gt;<br>&nbsp;&nbsp; &lt;/center&gt;<br>&lt;/panel&gt;</font><br>&lt;/xmllayout&gt;
+</pre>
+<p><IMG height=726 hspace=0 
+src="../images/layout_panel_component.gif" width=729 border=0></p>
+<h2>Example 2</h2>
+<p>The panel map at the top of the page was created using the following 
+layout:</p><pre>&lt;xmllayout&gt;<br>&lt;panel&gt;<br>&nbsp;&nbsp; &lt;north&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;box orientation="horz" background="128, 128, 255"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;label text="North"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/box&gt;<br>&nbsp;&nbsp; &lt;/north&gt;<br>&nbsp;&nbsp; &lt;south&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;box orientation="horz" background="128, 128, 255"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;label text="South"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/box&gt;<br>&nbsp;&nbsp; &lt;/south&gt;<br>&nbsp;&nbsp; &lt;east&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;box orientation="horz" background="255, 255, 128"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;label text="East"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/box&gt;<br>&nbsp;&nbsp; &lt;/east&gt;<br>&nbsp;&nbsp; &lt;west&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;box orientation="horz" background="255, 255, 128"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;label text="West"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/box&gt;<br>&nbsp;&nbsp; &lt;/west&gt;<br>&nbsp;&nbsp; &lt;center&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;box orientation="horz" background="255, 128, 128"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;label text="Center"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;glue/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;/box&gt;<br>&nbsp;&nbsp; &lt;/center&gt;<br>&lt;/panel&gt;<br>&lt;/xmllayout&gt;</pre></LABEL></LABEL></STRONG></FONT>
+<p>&nbsp;</p>
+</body>
+</html>

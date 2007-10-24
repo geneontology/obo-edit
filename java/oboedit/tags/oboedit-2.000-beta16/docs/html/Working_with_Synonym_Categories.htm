@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Working with Synonym Categories</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Working with Synonym Categories</h1>
+<p>  Every  OBO ontology contains a set of synonym 
+categories. Synonyms in the ontology can be assigned to one of the 
+<em>synonym categories</em> in that set (see <A 
+href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO 
+Ontologies</A>, and <A href="Text_Editing.htm">Text Editing</A>&nbsp;for 
+more information on how to assign synonyms to synonym 
+categories).</p>
+<p>The built-in Synonym Category Manager Plugin allows users to manage the set of available synonym categories. 
+To access the Synonym Category Manager Plugin, choose "Synonym Category 
+Manager Plugin" from the "Plugin" menu:</p>
+<p><IMG height=108 hspace=0 
+src="../images/synonym_category_plugin_men.gif" width=198 border=0></p>
+<p>The Synonym Category Manager Plugin window will appear:</p>
+<p><IMG height=326 hspace=0 
+src="../images/synonym_category_plugin_window.gif" width=403 border=0></p>
+<h2>Committing Changes</h2>
+<p>Any changes made in the Synonym Category Manager Plugin are not saved until the 
+"Save Changes" button is clicked. If changes are made and the window is closed, 
+<strong>the changes will not be saved</strong>. To revert to the last committed version 
+of the synonym category set, click the "Revert" button.</p>
+<h2>Editing An Existing Synonym Category</h2>
+<p>To edit an existing synonym category, click the synonym category to edit in the list on the left. 
+The synonym category editor panel will appear:</p>
+<p><IMG height=325 hspace=0 
+src="../images/synonym_category_plugin_window_editing.gif" width=403 
+border=0></p>
+<p>Synonym Categories have three attributes: a&nbsp;category 
+id, a descriptive name, and a synonym scope. To change the synonym category id, 
+click the&nbsp;synonym category id in the text field and type a new name. To 
+change the descriptive name, click the synonym category description in the text 
+field and type a new description. To change the category scope, select a new scope from the 
+dropdown menu. If the synonym category should not have a required 
+scope, choose "&lt;unspecified scope&gt;" from the dropdown. Synonyms that use this category will 
+be able to specify a scope, rather than automatically using the built-in synonym category scope.</p>
+<h2>Deleting an Existing Synonym Category</h2>
+<p>To delete an existing synonym category, click the synonym category to delete in the list on the 
+left. Click the Del button to remove the synonym category.</p>
+<p>  Note that a synonym category that is assigned to a term cannot be deleted. If 
+a synonym category is deleted that is still in use, a warning will appear when 
+the "Save Changes" button is pressed. If a synonym category must be deleted, first 
+<A href="Searching.htm">search</A> the ontology to make sure that the synonym category 
+is not in use.</p>
+<h2>Adding a New Synonym Category</h2>
+<p>To add a new synonym synonym category, click the "Add" 
+button. A new synonym synonym category will be created with the default name "NEWSYNCAT", the default description "&lt;new synonym 
+category&gt;" and a scope set to "&lt;unspecified scope&gt;":</p>
+<p><IMG height=325 hspace=0 
+src="../images/synonym_category_plugin_window_add.gif" width=403 border=0></p>
+<p>Edit the&nbsp;name and description&nbsp;as described above.</p>
+<div class="sidebar">
+<h1>Layout Information</h1>
+<hr>
+<p class="sidebar">This component's layout id is<br>
+<code><b>plugin:org.geneontology.oboedit.plugin.SynonymCategoryManagerPlugin</b></code></p>
+<p>See <A href="Customizing_the_Interface.htm">Customizing 
+the Interface</a> for more information </p>
+</div>
+</body>
+</html>

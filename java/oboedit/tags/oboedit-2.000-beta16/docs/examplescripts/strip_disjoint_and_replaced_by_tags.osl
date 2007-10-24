@@ -1,0 +1,17 @@
+foreach (term in session.getObjects()) {
+  // Erases all term replacement info from a file
+  if (TermUtil.isObsolete(term)) {
+    term.getReplacedBy().clear();
+    term.getConsiderReplacements().clear();
+  }
+  // Erases all disjoint info from a file
+  if (TermUtil.isTerm(term)) {
+    it = term.getParents().iterator();
+    while(it.hasNext()) {
+      link = it.next();
+      if (link.getType().getID().equals("disjoint_from")) {
+         it.remove();
+      }
+    }
+  }
+}

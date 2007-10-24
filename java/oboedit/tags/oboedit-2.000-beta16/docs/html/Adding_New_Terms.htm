@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Adding New Terms</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Adding New Terms</h1>
+<p><strong>IMPORTANT: </strong>When adding a new&nbsp;class 
+(or property, or any other item with an identifier), it is very important that 
+the id is generated correctly! See <A href="How_ID_Generation_Works.htm">How ID 
+Generation Works</A> for a discussion of how to make sure your new item will 
+have the id you want. In particular, make sure to select the correct ID profile
+<strong>before</strong> adding terms.</p>
+<p>New&nbsp;classes and properties can be added from the 
+right-click menu or the edit menu. There is no way to create a new class or 
+property using drag-and-drop.&nbsp;Newly created terms are given a default name, 
+and may be given a default definition and definition dbxrefs if a "personal 
+definition" has been specified in the <A 
+href="The_Configuration_Plugin.htm#textedit">Configuration Plugin</A>            
+              
+.</p>
+<h2>Adding new roots</h2>
+<div class="tabbed">
+<p><strong>Works by</strong>: Edit menu, right-click</p>
+<p><strong>Hot keys</strong>: None</p>
+<p><strong>Source requirements</strong>: No sources required</p>
+<p><strong>Target requirement</strong>: No target required</p>
+</div>
+<p>To add a new root, choose "Add root" from the edit menu or the right-click 
+menu. A flyout menu will appear:</p>
+<p><IMG height=104 hspace=0 src="../images/add_root_menu.gif" width=275 
+border=0></p>
+<p>To add a new root class, choose "Add root". An id will be assigned 
+automatically using the current id assignment rules.</p>
+<p>To add a new property, choose "Add type root". A popup window will appear 
+where you can type in the id for the new property.</p>
+<h2>Adding new terms to an existing parent</h2>
+<div class="tabbed">
+<p><strong>Works by</strong>: Edit menu, right-click</p>
+<p><strong>Hot keys</strong>: None</p>
+<p><strong>Source requirements</strong>: Exactly one source relationship 
+required</p>
+<p><strong>Target requirement</strong>: No target required</p>
+</div>
+<p>New terms can be created under and existing parent. To add a new term, select the 
+parent term under which the new term will be added. Then, choose "Create new 
+child" from the edit menu or the right-click menu.</p>
+<p>If the selected parent is a class, the id of the new class will be assigned 
+automatically using the current id assignment rules. If the selected parent is a 
+property, the a popup window will appear where the id of the new property can be 
+entered.</p>
+<p>The new class or property will have an <strong>is_a</strong> relationship to 
+its parent. See <A href="Changing_Relationship_Types.htm">Changing Relationship 
+Types</A> for information on how to change this relationship after it is 
+created.</p>
+</body>
+</html>
