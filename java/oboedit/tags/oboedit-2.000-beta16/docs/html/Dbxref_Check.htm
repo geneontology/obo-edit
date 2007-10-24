@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Dbxref Check</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Dbxref Check</H1>
+<P>Until recently, OBO-Edit did not strictly enfore the OBO 
+format restrictions on dbxrefs. Many ontologies now contain dbxrefs that are not 
+OBO compatible. The Dbxref Check will display a warning if a dbxref is not 
+OBO-compatible. It checks for:</P>
+<UL>
+  <LI>
+<DIV><STRONG>Missing database identifiers</STRONG> - This 
+  includes dbxrefs with no characters before the colon (or dbxrefs with no colon 
+  at all)</DIV>
+  <LI>
+<DIV><STRONG>Missing database identifiers</STRONG> - 
+  This&nbsp;includes dbxrefs with no characters after the colon</DIV>
+  <LI>
+<DIV><STRONG>Non-URI characters</STRONG> - This includes 
+  dbxrefs with characters that are not defined as legal URI characters by the 
+  w3c. Legal URI characters are:</DIV>
+  <UL>
+    <LI>
+<DIV> letters</DIV>
+    <LI>
+<DIV> digits</DIV>
+    <LI>
+<DIV>_ (underscore)</DIV>
+    <LI>
+<DIV>- (dash)</DIV>
+    <LI>
+<DIV>! (exlamation point)</DIV>
+    <LI>
+<DIV>. (period)</DIV>
+    <LI>
+<DIV>~ (tilde)</DIV>
+    <LI>
+<DIV>\ (backslash)</DIV>
+    <LI>
+<DIV>' (single quote)</DIV>
+    <LI>
+<DIV>( (open parenthesis)</DIV>
+    <LI>
+<DIV>) (close parenthesis)</DIV>
+    <LI>
+<DIV>* (asterisk)</DIV>
+    <LI>
+<DIV>, (comma)</DIV>
+    <LI>
+<DIV>; (semicolon)</DIV>
+    <LI>
+<DIV># (pound/number sign)</DIV>
+    <LI>
+<DIV>: (colon)</DIV>
+    <LI>
+<DIV>$ (dollar sign)</DIV>
+    <LI>
+<DIV>&amp; (ampersand)</DIV>
+    <LI>
+<DIV>+ (plus sign)</DIV>
+    <LI>
+<DIV>= (equals sign)</DIV>
+    <LI>
+<DIV>? (question mark)</DIV>
+    <LI>
+<DIV>/ (forward slash)</DIV>
+    <LI>
+<DIV>[ (open bracket)</DIV>
+    <LI>
+<DIV>] (close bracket)</DIV>
+    <LI>
+<DIV>@ (at sign / arobase)</DIV></LI></UL>
+  <LI>
+<DIV><STRONG>Invalid URLs</STRONG> - This includes dbxrefs 
+  that look like URLs, but are not valid urls. OBO-Edit thinks a dbxref "looks 
+  like a URL" if the dbxref database is <STRONG>http</STRONG>, 
+  <STRONG>https</STRONG>, <STRONG>ftp</STRONG>, <STRONG>telnet</STRONG> 
+  or&nbsp;<STRONG>ssh</STRONG>. OBO-Edit checks whether the URL is valid using 
+  the built-in Java URL syntax checker.</DIV>
+  <LI>
+<DIV><STRONG>Description consitency</STRONG> - This 
+  includes dbxrefs that are used elsewhere in the ontology, but with a different 
+  description. OBO-Edit provides a <A 
+  href="The_Verification_Plugin.htm#quickfix">quick fix</A> that will change all 
+  matching dbxrefs to use the same description.</DIV></LI></UL>
+<P> A dbxref can be configured to only perform some of the 
+checks above by clicking the "configure" button in the Verification Plugin:</P>
+<P><IMG height=158 hspace=0 
+src="../images/verification_plugin_dbxref_config.gif" width=248 
+border=0></P>
+<P>Deselect&nbsp;a sub-check to disable it.</P>
+</BODY>
+</HTML>

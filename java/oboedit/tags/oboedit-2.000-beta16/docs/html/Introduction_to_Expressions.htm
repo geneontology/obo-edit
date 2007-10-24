@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Introduction to Expressions</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Introduction to Expressions</H1>
+<P>&nbsp;OBO-Edit includes a powerful scripting language 
+called OSL, the OBO Scripting Language. This language is a heavily extended 
+version of the Java Expression Language (Jexl) from the Apache Commons Project 
+(<A 
+href="http://jakarta.apache.org/commons/jexl/index.html">http://jakarta.apache.org/commons/jexl/index.html</A>).</P>
+<P>OSL extends Jexl with the following features:</P>
+<UL>
+  <LI>user-defined functions 
+  <LI>extendable built-in functions (that may call static 
+  methods) 
+  <LI>variable scoping 
+  <LI>break statement 
+  <LI>return statement 
+  <LI>for statement
+  <LI>C-style comments</LI></UL>
+<P>In this guide, the terms "script" and "expression" are used more or less 
+interchangably, with "expression" usually referring to a shorter, single-line 
+script used inside a layout or search.</P>
+<H2>What Do They Do?</H2>
+<P>Currently, OSL expressions can be used in 3 places:</P>
+<UL>
+  <LI><STRONG>Layouts</STRONG> - OSL expressions can appear in <A 
+  href="Backtick_Expressions.htm">backtick expressions</A> inside a <A 
+  href="Working_with_XML_Layouts.htm">screen layout</A>&nbsp;and control whether 
+  the contents of an <A href="The_If_Tag.htm"><FONT 
+  face=Courier>&lt;if&gt;</FONT> t<IF>ag</A>&nbsp;are displayed. 
+  <LI><STRONG>Filter&nbsp;Values</STRONG> - OSL expressions can appear within <A 
+  href="Backtick_Expressions.htm">backtick expressions</A> inside 
+  of&nbsp;a filter value. 
+  <LI><STRONG>obo2obo scripts</STRONG> - The <A href="obo2obo.htm">obo2obo</A> 
+  command-line utility can run a script as part of its ontology-processing step. 
+  These scripts can report information about the contents of an ontology or 
+  modify the ontology before the ontology is written to disk.</LI></UL>
+<P>Future versions of OBO-Edit will have many more uses for scripts.</P>
+<H2>What You Need to Know to Use OSL</H2>
+<P>OSL is a powerful, full-featured scripting language. OSL users should be 
+comfortable programming in a complex scripting language (OSL's syntax and 
+features are very similar to JavaScript). OSL scripts in OBO-Edit have direct 
+access to somes of OBO-Edit's Java datamodels, so some familiarity with Java and 
+the conventions of javadoc are also very useful.</P>
+</BODY>
+</HTML>

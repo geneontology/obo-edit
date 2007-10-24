@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Link Filters vs Term Filters</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY bgColor=#ffffff>
+<H1>Link Filters vs Term Filters</H1>
+<P>There are two kinds of filters in OBO-Edit: <STRONG>term 
+filters</STRONG> and <STRONG>link filters</STRONG>.</P>
+<P><STRONG>Term filters</STRONG> match ontology "terms". Things like relations, 
+instances and classes can be matched by a term filter.</P>
+<P><STRONG>Link filters</STRONG> match links <EM>between</EM> terms. This does 
+<EM>not</EM> mean that a link filter matches two terms. A link filter will never 
+match any terms. It will only match&nbsp;links between terms.</P>
+<P>A link can be thought of as a triplet that consists of a child term, a 
+relationship type, and a parent term. This guide uses the following notation for 
+describing a link: <STRONG>[child term] --[type]--&gt; [parent term]</STRONG>. 
+An is_a link between "organ growth" and "growth" would be written as: 
+<STRONG>"organ growth" --<EM>is_a</EM>--&gt; 
+"growth"</STRONG>.</P>
+</BODY>
+</html>

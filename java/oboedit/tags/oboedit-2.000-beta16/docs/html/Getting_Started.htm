@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>Getting OBO-Edit Started</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>Getting OBO-Edit Started</h1>
+<h2>1) Install Java 1.4 or higher</h2>
+<p>On Macs, Java 1.4 can be installed automatically by doing a system software 
+update. On any other platform, download the appropriate binaries from <a 
+href="http://java.sun.com/j2se/1.4.2/download.html">http://java.sun.com/j2se/1.4.2/download.html</a>. 
+To run Java applications, all you need is the JRE (Java Runtime Environment). If 
+you need all the tools to run and <em>create</em> Java applications, download 
+the J2SE SDK (Software Development Kit).</p>
+
+<div class="sidebar">
+<h1>What version of Java do I have?</h1>
+<hr>
+<p>Most new computers come with some version of Java 
+already installed. To figure out what version you have, open up a command 
+prompt, or console, or terminal, or whatever you use on your platform to type 
+commands onto a command-line. Then type:</p>
+<code><b>java -version</b></code> 
+<p>and press enter. You should get a response like:</p>
+<p>&nbsp;</p>
+<code><b>java version "1.5.0_06"<br>
+Java(TM) 2 Runtime Environment, Standard 
+Edition (build 1.5.0_06-b05)<br>
+Java HotSpot(TM) Client VM (build 1.5.0_06-b05, 
+mixed mode, sharing)</b></code>
+<p>The very first line tells you which version of Java is installed.</p>
+<p>If you get a response like:</p>
+<p>&nbsp;</p>
+<code><b>'java' is not recognized as an internal or external command, operable program or batch file.</b></code>
+<p>or</p>
+<p>&nbsp;</p>
+<code><b>bash: java: command not found</b></code>
+<p>Check that you typed a space after "java" and before 
+"-version". If you entered the command correctly but still do not get a response 
+indicating a specific version of Java, then Java is not installed, and you need to follow the installation instructions above.</p>
+</div>
+
+<p>&nbsp;</p>
+<h2>2) Get OBO-Edit</h2>
+<p>Download the latest version of OBO-Edit from our Sourceforge project 
+at&nbsp;<a 
+href="http://sourceforge.net/projects/geneontology">http://sourceforge.net/projects/geneontology</a></p>
+<p>There will be several downloads to choose from.</p>
+<ul>
+  <li>If you are a Windows user: Always download the Windows installer 
+  <li>If you are a Mac user: You can either use the Mac installer or the 
+  platform independent installation. The Mac installer is easy to use, and will 
+  create a shortcut in the Mac OS dock for you. However, the installer software 
+  we use seems to introduce a lot of memory overhead. Many Mac users have 
+  reported better performance from the platform independent release. 
+  <li>If you are a Linux user: Choose between the platform independent release, 
+  the Linux release, or the general Unix release. OBO-Edit is developed and 
+  tested using the platform independent release on a Suse Linux machine, so the 
+  platform independent release is probably your most reliable choice.</li></ul>
+<h2>3) Install and Launch OBO-Edit</h2>
+<ul>
+  <li>If you are using a platform-specific installer: Run the installer program 
+  and follow the onscreen prompts. It's simple. Icons for running/uninstalling 
+  the program will be created on your start menu (or dock, or whatever). 
+  <li>If you are using the platform independent version: 
+  Unzip the .tar.gz archive you downloaded (on unix platforms, run "tar zxvf &lt;filename&gt;") into the directory of your 
+  choice. On unix platforms (including Mac OS), run the "oboedit" 
+  shell script to start the program (to do this on most Unix platforms, 
+  change to the OBO-Edit directory and type "./oboedit"). On other platforms, launch 
+  the oboedit.jar file in the OBO-Edit installation directory. This can be done 
+  either by double-clicking, or by running the command "java -jar oboedit.jar" 
+  at a command prompt.</li></ul>
+<h2>4) Get an ontology</h2>
+<p>Download an ontology from the Open Biological Ontologies site at <a 
+href="http://obo.sourceforge.net/">http://obo.sourceforge.net/</a></p>
+<h2>5) Open the ontology</h2>
+<p>Go to the "File" menu and choose "Load...". A box will appear that looks like 
+this...</p>
+<p><IMG height=180 hspace=0 src="../images/simple_load.gif" width=441 align=center border=0></p>
+<p>Choose "OBO Flat File Adapter" from the "Data adapter" dropdown list. Click 
+the browse button and find your ontology file on the disk, or type the path to 
+the file you want to load into the "Load files" field. Click the "Ok" 
+button.</p>
+<p>Your file is loaded! Tinker away.</p>
+</body>
+</html>

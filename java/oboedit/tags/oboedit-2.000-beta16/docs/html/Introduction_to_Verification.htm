@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Introduction to Verification</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Introduction to Verification</H1>
+<P>It's not easy to create a well formed OBO ontology. In a 
+large ontology, it's easy to make mistakes, from large logical or structural 
+errors to small grammatical mistakes in a comment.</P>
+<P>The OBO-Edit verification system helps keep these mistakes under control by 
+performing error checks at several stages of editing. Fatal errors and non-fatal 
+warnings are immediately reported to the user. Many common mistakes can be 
+automatically corrected by the verification system.</P>
+<H2>Verification Events: How OBO-Edit decides when to check your ontology</H2>
+<P>The OBO-Edit verification system performs some checks during each of five 
+events:</P>
+<UL>
+  <LI><STRONG>Load</STRONG> - This 
+  event occurs&nbsp;after an ontology is loaded 
+  <LI><STRONG>Text Edit</STRONG> - 
+  This event occurs whenever term text is edited, immediately before 
+  the&nbsp;changes are&nbsp;applied to the ontology. 
+  <LI><STRONG>Reasoner</STRONG> - This 
+  event occurs when the reasoner is run 
+  <LI><STRONG>Save</STRONG>&nbsp; - 
+  This event occurs before an ontology is saved 
+  <LI><STRONG>Manual Check</STRONG>&nbsp;- This event occurs when a user forces 
+  an ontology check from <A href="The_Verification_Plugin.htm">the Verification 
+  Plugin</A></LI></UL>
+<P>Note that not all checks are performed during each event. Some checks are 
+only performed during certain events. The events during which each check is 
+performed can be configured in <A href="The_Verification_Plugin.htm">The 
+Verification Plugin</A>, but the default settings will work well for most 
+ontologies.</P>
+<H2>The Special Case of Text Edits</H2>
+<P>Some ontology checks can take a long time to run, mostly because each term in 
+the ontology must be checked. To keep text edits quick (and error reports easier 
+to read), when checks are&nbsp;initiated by the <STRONG>Text Edit</STRONG> 
+event, only the currently selected term is checked.</P>
+<H2>What OBO-Edit Checks For</H2>
+<P>Currently, OBO-Edit can perform the following checks:</P>
+<UL>
+  <LI><A href="Text_Checks.htm">Comment Check</A>
+  <LI><A href="Definition_Check.htm">Definition Check</A>
+  <LI><A href="Text_Checks.htm">Name Check</A>
+  <LI><A href="Text_Checks.htm">Synonym Check</A>
+  <LI><A href="Dangling_Intersection_Check.htm">Dangling Intersection Check</A>
+  <LI><A href="Dbxref_Check.htm">Dbxref Check</A>
+  <LI><A href="Disjointedness_Check.htm">Disjointedness Check</A>
+  <LI><A href="ISA_Cycle_Check.htm"> Cycle Check</A>
+  <LI><A href="Name_Redundancy_Check.htm">Name Redundancy Check</A>
+  <LI><A href="User_Defined_Checks.htm">User Defined Checks</A> 
+</LI></UL>
+</BODY>
+</HTML>

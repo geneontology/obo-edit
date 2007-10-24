@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The divider tag<compactgrid> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;divider&gt; Tag</h1>
+<p>       The 
+&lt;divider&gt; tag creates&nbsp;a split pane containing two components, with a movable dividing bar that can 
+be used to specify how much of the available space should be 
+allocated to each component. The divider can be oriented horizontally or vertically.</p>
+<h2>Parameters</h2>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">orientation</font></td>
+    <td>
+      <p>The orientation of the divider. In the "vertical" 
+      orientation, one component appears above the other. In the horizontal 
+      orientation, components are 
+      laid out to the left and right of each other.</p></td>
+    <td>
+      <p><font face="Courier">HORZ</font></p>
+      <p><font face="Courier">VERT</font></p></td>
+    <td>
+      <p><font face="Courier">VERT</font></p></td></tr>
+  <tr>
+    <td><font face="Courier">dividerloc</font></td>
+    <td>
+      <p>The initial position of the divider. If the 
+      divider position is followed by a % sign, the value is interpreted as the 
+      percentage of the available space to use for the first component. If the 
+      divider position is not followed by a % sign, it is interpreted as the size, in pixels, of the first component.</p></td>
+    <td>
+      <p><em>either a percentage 
+      between 0-100, followed by a percent sign, or a positive number of pixels</em></p></td>
+    <td>
+      <p>50%</p></td></tr>
+</table></p>
+<p>Also see <A href="Common_Parameters.htm">common parameters</A> .</p>
+<p></p>
+<h2>Contents</h2>
+<p>The <font face="Courier">divider</font> tag contains two tags, <font 
+face="Courier">&lt;first&gt;</font> and <font face="Courier">&lt;second&gt;,</font> 
+each of which contains a single component. If the orientation is <font 
+face="Courier">HORZ</font>, the component in the <font 
+face="Courier">&lt;first&gt;</font> tag will appear to the left of the component 
+in the <font face="Courier">&lt;second&gt;</font> tag. If the orientation is <font 
+face="Courier">VERT</font>, the component in the <font 
+face="Courier">&lt;first&gt;</font> tag will appear above the component in the 
+<font face="Courier">&lt;second&gt;</font>           
+   tag.</p>
+<h2>Example</h2><pre><font color="#000000">&lt;xmllayout&gt;<br>&nbsp;&nbsp; &lt;divider orientation="HORZ"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;first&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="DAG" /&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/first&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;second&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;component id="TEXTEDIT" /&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/second&gt;<br>&nbsp;&nbsp; &lt;/divider&gt;<br>&lt;/xmllayout&gt;</font></pre>
+<p><IMG height=396 hspace=0 
+src="../images/layout_divider_component.gif" width=583 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+<p>&nbsp;</p>
+</body>
+</html>
