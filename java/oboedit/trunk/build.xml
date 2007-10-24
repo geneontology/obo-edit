@@ -68,7 +68,7 @@
 	</target>
 
 	<!-- classes that should appear in the main jar file -->
-	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/.svn/*" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
 	</target>

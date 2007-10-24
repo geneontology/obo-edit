@@ -26,16 +26,16 @@
       <dirEntry mountPoint="3" file="./runtime" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS" dirMode="755">
+      <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn" dirMode="755">
         <exclude>
-          <entry location="CVS" launcher="false" />
           <entry location="api" launcher="false" />
+          <entry location="CVS" launcher="false" />
         </exclude>
       </dirEntry>
       <dirEntry mountPoint="118" file="./apidocs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="1" file="./release_resources" overwrite="1" shared="false" mode="644" uninstallMode="2" excludeSuffixes="" dirMode="755">
+      <dirEntry mountPoint="1" file="./release_resources" overwrite="1" shared="false" mode="644" uninstallMode="2" excludeSuffixes="CVS,.svn" dirMode="755">
         <exclude />
       </dirEntry>
     </entries>

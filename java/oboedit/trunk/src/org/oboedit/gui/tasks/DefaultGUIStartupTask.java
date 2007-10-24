@@ -165,28 +165,20 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 	}
 
 	public void run() {
-		// SessionManager.getManager().setReasonerFactory(new LinkPileReasonerFactory());
-		configureLogging();
-		configureUI();
-		/*
-		 * SplashScreen splash = new SplashScreen(); splash.setSize(400, 400);
-		 * SwingUtil.center(splash); splash.start();
-		 */
-		VersionNumber version = Preferences.getVersion();
-		File prefsDir = new File(System.getProperty("user.home") + "/.oboedit"
-				+ (version.isBeta() ? "beta" : "") + "/");
-		GUIManager.setPrefsDir(prefsDir);
-
 		OBOEditFrame frame = new OBOEditFrame();
 		GUIManager.getManager().setFrame(frame);
+
+		configureUI();
 		FocusMenuManager.install();
 		installDefaultDataAdapters();
 		installDefaultComponentFactories();
 		installDefaultTasks();
 		installDefaultActions();
 		installGlobalScriptObjects();
+		
 		ComponentManager.getManager().setDriver(createLayoutDriver());
 		GhostImageController.enable();
+		
 		showFrame();
 		// ÊRepaintManager.setCurrentManager(new
 		// CheckThreadViolationRepaintManager());
@@ -194,7 +186,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		 * splash.join(); splash.dispose();
 		 */
 	}
-
+	
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = new IDWDriver();
 		driver
@@ -261,6 +253,7 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		});
 		return driver;
 	}
+
 
 	protected void installDefaultDataAdapters() {
 		final OBOFileAdapter oboadapter = new OBOFileAdapter();
@@ -395,43 +388,6 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		} catch (ExpressionException ex) {
 			// do nothing; this will always work
 		}
-	}
-
-	protected void configureLogging() {
-		LogManager.getLogManager().reset();
-		final Logger global = Logger.getLogger("");
-		try {
-			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
-					"oboedit-" + Preferences.getVersion() + "-%g%u.log")
-					.getAbsolutePath(), 10485760, 1);
-			fh.setLevel(Level.ALL);
-			global.addHandler(fh);
-
-			Handler eh = new StreamHandler(System.err, new SimpleFormatter());
-			eh.setLevel(Level.WARNING);
-			global.addHandler(eh);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		MultiOutputStream stream = new MultiOutputStream();
-		stream.addOutputStream(System.err);
-		stream.addOutputStream(new LoggerStream(global, Level.INFO));
-		System.setErr(new PrintStream(stream));
-		Thread
-				.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
-					public void uncaughtException(Thread t, Throwable e) {
-						Logger global = Logger.getLogger("");
-						global.log(Level.SEVERE,
-								"Uncaught event dispatch exception", e);
-					}
-
-				});
-		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
-				.getName());
 	}
 
 	protected void showFrame() {

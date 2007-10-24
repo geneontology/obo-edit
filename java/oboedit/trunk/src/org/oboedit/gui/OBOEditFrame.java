@@ -257,7 +257,8 @@ public class OBOEditFrame extends MainFrame {
 		exportItem = new JMenuItem("Export Terms...");
 		exitItem = new JMenuItem("Exit");
 
-		loadItem.setAccelerator(KeyStroke.getKeyStroke("control O"));
+		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		saveItem.setAccelerator(KeyStroke.getKeyStroke("control S"));
 
 		fileMenu.add(newItem);

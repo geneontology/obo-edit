@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionListener;
@@ -24,6 +25,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -1038,6 +1040,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected TaskDelegate<Void> layoutTask;
 
+	protected Image layoutCacheImage;
+
 	public void dim() {
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	}
@@ -1066,10 +1070,24 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	};
 
+	@Override
+	public void paint(Graphics g) {
+		if (getDisableAnimations() && isLayingOut() && layoutCacheImage != null) {
+			g.drawImage(layoutCacheImage, 0, 0, null);
+		} else
+			super.paint(g);
+	}
+
 	public void relayout() {
+		isLayingOut = true;
 		dim();
-		if (getDisableAnimations())
+		if (getDisableAnimations()) {
 			((ExtensibleRoot) getRoot()).setDisableUpdates(true);
+			layoutCacheImage = new BufferedImage(getWidth(), getHeight(),
+					BufferedImage.TYPE_INT_ARGB);
+			paint(layoutCacheImage.getGraphics());
+			repaint();
+		}
 		if (relayoutActivity != null) {
 			relayoutActivity.terminate(PActivity.TERMINATE_WITHOUT_FINISHING);
 			relayoutActivity = null;
@@ -1107,7 +1125,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			}
 
 			public void activityStarted(PActivity activity) {
-				isLayingOut = true;
 				// Collections.sort(getLayer().getChildrenReference(),
 				// LAYOUT_ORDERING_COMPARATOR);
 
@@ -1288,13 +1305,14 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			TreePath[] paths = selection.getPaths();
 			if (paths == null || paths.length == 0) {
 				paths = new TreePath[1];
-				paths = PathUtil.getBestPaths(selection.getAllSelectedObjects(),
-						getRootAlgorithm(), getLinkDatabase());
+				paths = PathUtil.getBestPaths(
+						selection.getAllSelectedObjects(), getRootAlgorithm(),
+						getLinkDatabase());
 			}
 			Collection<PathCapable> pathc = new LinkedList<PathCapable>();
-			for(TreePath path : paths) {
-				Object [] os = path.getPath();
-				for(Object o : os) {
+			for (TreePath path : paths) {
+				Object[] os = path.getPath();
+				for (Object o : os) {
 					if (o instanceof PathCapable) {
 						pathc.add((PathCapable) o);
 					}
