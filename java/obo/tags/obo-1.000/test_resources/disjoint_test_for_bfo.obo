@@ -1,6 +1,0 @@
-
-[Term]
-id: unsatisfiable
-name: not real
-is_a: span:TemporalRegion
-is_a: snap:Continuant

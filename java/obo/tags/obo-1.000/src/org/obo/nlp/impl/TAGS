@@ -1,28 +1,0 @@
-
-DefaultNamer.java,332
-public class DefaultNamer DefaultNamer13,401
-	public DefaultNamer(DefaultNamer.DefaultNamer15,447
-	public Collection<String> constructNames(DefaultNamer.constructNames19,518
-	protected String constructName(DefaultNamer.constructName33,963
-	public Collection<String> constructTextDefs(DefaultNamer.constructTextDefs37,1082
-
-PassThroughNamer.java,476
-public class PassThroughNamer PassThroughNamer9,203
-	public PassThroughNamer(PassThroughNamer.PassThroughNamer13,290
-	public Collection<String> constructNames(PassThroughNamer.constructNames17,359
-	public Collection<String> constructTextDefs(PassThroughNamer.constructTextDefs25,573
-	public Collection<Namer> getNamers(PassThroughNamer.getNamers33,790
-	public void setNamers(PassThroughNamer.setNamers37,851
-	public void addNamer(PassThroughNamer.addNamer41,930
-
-PhenotypeNamer.java,295
-public class PhenotypeNamer PhenotypeNamer15,483
-	public Collection<String> constructNames(PhenotypeNamer.constructNames17,531
-	public Collection<String> constructTextDefs(PhenotypeNamer.constructTextDefs43,1324
-	protected boolean isSubclassByName(PhenotypeNamer.isSubclassByName48,1445
-
-SimpleLossyNamer.java,293
-public class SimpleLossyNamer SimpleLossyNamer13,401
-	public SimpleLossyNamer(SimpleLossyNamer.SimpleLossyNamer15,451
-	public Collection<String> constructNames(SimpleLossyNamer.constructNames19,526
-	public Collection<String> constructTextDefs(SimpleLossyNamer.constructTextDefs35,1022
