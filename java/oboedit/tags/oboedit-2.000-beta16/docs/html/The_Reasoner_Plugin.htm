@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The Reasoner Plugin</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The Reasoner Plugin</h1>
+<p>The reasoner is activated and deactivated via the 
+reasoner plugin. If the reasoner is inactive, the plugin looks like this:</p>
+<p><IMG height=106 hspace=0 src="../images/reasoner_plugin.gif" width=192 
+border=0></p>
+<p>To activate the reasoner, click the "Use reasoner" button.</p>
+<p>When this button is pressed, the reasoner starts up and begins reasoning. The 
+progress bar may fill up several times before reasoning is complete; there is no 
+way to predict in advance how many reasoner passes will be necessary to reason 
+over an ontology, so the progress bar simply shows the progress of the current 
+reasoner pass.</p>
+<p>Once reasoning is complete, a status message appears:</p>
+<p><IMG height=174 hspace=0 src="../images/reasoner_plugin_status.gif" width=346 
+border=0></p>
+<p>The first line gives the number of milliseconds elapsed during reasoning.</p>
+<p>The second line shows how many implied links were discovered.</p>
+<p>The third line shows how many implied links are actually <em>shown</em>. Most implied links are trimmed (see <A 
+href="The_Reasoner_and_the_Interface.htm#trimming">trimming</A>). This line 
+shows how many implied links were <em>not</em>  
+    trimmed. </p>
+<p>The final line shows how many redundant links were found in the ontology.</p>
+<p>To turn off the reasoner, unclick the "Use reasoner" box.</p>
+<div class="sidebar">
+<h1>Wait... Did I Leave the Reasoner On?</h1>
+<hr>
+
+<p>     Like any other 
+plugin, the reasoner plugin remembers its state when OBO-Edit is exited. This 
+means that if the reasoner is on when you exit OBO-Edit, 
+it will be on the next time you start OBO-Edit. </p>
+<p>This entire application runs more slowly when the reasoner is running, so 
+enable it with caution.</p></div>
+
+<div class="sidebar">
+<h1>Layout Information</h1>
+<hr>
+<p class="sidebar">This component's layout id is<br>
+<code><b>plugin:org.geneontology.oboedit.plugin.ReasonerPlugin</b></code></p>
+<p>See <A href="Customizing_the_Interface.htm">Customizing 
+the Interface</A> for more information </p>
+</div>
+</body>
+</html>

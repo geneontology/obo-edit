@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The OBO Adapter</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The OBO Adapter</h1>
+<h2>Overview</h2>
+<p><strong>What it does:</strong> Reads 
+and writes files in the <A href="An_Introduction_to_OBO_Ontologies.htm">OBO flat 
+file format</A>      
+    . All versions of the OBO format are supported. Files 
+can be read from disk or a URL, but files must be written to disk.</p>
+<p><strong>Supported features:</strong>The OBO Adapter can save two different version of the flat file 
+specification, OBO 1.0 and OBO 1.2. The two versions support slightly different 
+ontology features.</p>
+<p><em>OBO 1.2</em> - This format can save the entire contents of an OBO-Edit 
+ontology, no matter what features are used.</p>
+<p><em>OBO 1.0</em> - OBO 1.0 does not support:</p>
+<ul>
+  <li>synonym types
+  <li>obsolete replacement
+  <li>instances
+  <li>non-class domain/range specifiers
+  <li>some uses of union_of and disjoint_from</li></ul>
+<h2>Operation</h2>
+<h3>Basic Operation</h3>
+<p>The OBO Flat File adapter's basic mode conforms to the interface described 
+in&nbsp;<A href="The_Basic_Flat_File_Interface.htm">The Basic Flat File 
+Interface</A>.</p>
+<h3>Advanced Operation</h3>
+<h4>Loading</h4>
+<p>When the "Advanced" button is pressed, the load dialog 
+changes to look like this:</p>
+<p><IMG height=285 hspace=0 src="../images/load_obo_advanced.gif" width=554 
+border=0></p>
+<p>This interface allows fine control over which files are loaded. The list to 
+the left contains all the files to be loaded by the OBO Adapter.</p>
+<p>To edit a file in the list, left-click the file to select it. The file will 
+be loaded into an editor to the right:</p>
+<p><IMG height=275 hspace=0 src="../images/load_obo_editor.gif" width=553 
+border=0></p>
+<p>To change the path, type a new path into the text box, or select a file from 
+the disk by clicking the "Browse..." button.</p>
+<p>To add a new file path, press the "Add" button. A new path will appear with 
+the path set to "&lt;new path&gt;". Edit the path as described above.</p>
+<p>To delete a path, select it from the list and press the "Del" button.</p>
+<p>The "Allow dangling references" box enables the OBO Adapter to load 
+ontologies that contain dangling references. Dangling references occur when an 
+ontology term contains a link to a term that does not exist. This can happen if 
+an ontology contains links to another ontology, but the second ontology is not 
+loaded.</p>
+<p>If dangling references are loaded, OBO-Edit records the references and writes 
+them out when the file is saved. The dangling references cannot be changed or 
+deleted within the normal OBO-Edit interface (although external plugins may 
+allow you to edit the references).</p>
+
+<div class="sidebar">
+<h1>I Can't See the Add/Del/Whatever button!</h1>
+<hr>
+<p class="sidebar">Many OBO-Edit controls (like all editable 
+lists) contain a resizable divider. Some platforms (&lt;cough&gt; 
+&lt;Macintosh!&gt;) have odd ideas about how to initially place these dividers. 
+Sometimes this means that a divider starts so far over to the left that a button 
+is initially hidden. This most often effects the "Del" button of an editable 
+list.</p>
+<p class="sidebar">We're actively seeking a cure for this problem. Until then, try 
+resizing a divider if some controls are hidden.</p>
+</div>
+
+<h4>Saving</h4>
+<p>When the "Advanced" button is pressed, the save dialog changes to look like 
+this:</p>
+<p><IMG height=265 hspace=0 src="../images/save_obo_advanced.gif" width=390 
+border=0></p>
+<p>The dropdown box at the bottom of the dialog selects which version of the OBO 
+format to use. The default is OBO version 1.0, but OBO 1.2 should be used for 
+maximum expressivity.</p>
+<p>The OBO Adapter can save an ontology to several different files. The contents 
+of the save files may overlap, or may be entirely disjoint. The save can be 
+configured so that some terms or links don't get saved at all.</p>
+<p>The list to the left contains all the files that will be saved. To add a new 
+save file, press the "Add" button. A new file will be created&nbsp;with the 
+path&nbsp;"&lt;new save path&gt;".</p>
+<p>To delete a save file, click it to select the file, and press the "Del" 
+button.</p>
+<p>To edit a save file, click it to select the file. An editor will appear to 
+the right of the file list that looks like this:</p>
+<p><IMG height=413 hspace=0 
+src="../images/save_obo_editor.gif" width=1116 border=0></p>
+<p>The line at the top contains the path of the save file. To change the save 
+path, type a new path into the text box or click the Browse button to select a 
+file from the disk as a save location.</p>
+<p>The middle 2 rows of controls contains filtering settings. These are very 
+important, and are addressed in their own section below.</p>
+<p><A name=implied_links></A>Below the filtering controls is a checkbox labeled "Save implied links". If 
+this box is selected, implied links that were generated by a reasoner&nbsp;will 
+be included in the save file. When implied links are saved, a dropdown box is 
+enabled that specifies <em>how</em> the implied links should be saved. The 
+possible settings are:</p>
+<ul>
+  <li><strong>Save for presentation</strong> - Saves the links that would appear 
+  in the OBO-Edit interface. Most links generated by the reasoner are not useful 
+  to users and are not shown in the interface. "Save for presentation" only 
+  saves those non-hidden links. For more information on which links are hidden 
+  and which are not, see <A href="The_Reasoner_and_the_Interface.htm">The 
+  Reasoner and the Interface</A>. 
+  <li><strong>Save all links</strong> - Saves every link inferred by the 
+  reasoner. This will be a very, <strong>very</strong> large number of links, 
+  most of which will not be useful to users. This mode should only be used for 
+  populating database or other tasks where every bit of data is needed.</li></ul> 
+  <p>If the "Realize implied links" checkbox, implied links will 
+  be stripped of the label that identifies them as reasoner-generated links. These implied links will be 
+  saved as if they were regular links created by a human user.</p>
+<p>   On the next line&nbsp;is a dropdown box containing the id generation 
+rules settings. OBO files can store certain kinds of id generation rules. This 
+box specifies which id rules (if any) to write for this file. There are three 
+settings:</p>
+<ul>
+  <li><strong>Don't write id rules</strong> - No id rules are written to the file 
+  <li><strong>Write current id rules</strong> -&nbsp;Writes the&nbsp;current id 
+  rules (specified in <A href="The_ID_Manager_Plugin.htm">the ID Manager 
+  Plugin</A>) 
+  <li><strong>Write originally loaded id rules</strong> - Writes the rules that 
+  were originally loaded with this ontology (if there were any)</li></ul> 
+  <p>At the bottom of the panel is a dropdown labeled "Output 
+type". This dropdown allows the user to select 
+  whether to save in OBO 1.0 or OBO 1.2 format.</p> 
+  <p>To the right of all these controls is the OBO File Remark 
+text field. This field will be converted into a comment in the OBO file header. 
+Note that even though text wraps in this field, 
+  the wrapping will not be preserved in the OBO file.</p>
+<p><strong>Filtering Output Files<a 
+name="filtering"></a>  </strong></p>
+<p>The contents of the saved files can be controlled by the use of filters. To 
+filter an ontology, click the "Filter terms" or "Filter links" checkboxes. 
+Filter editors will appear, and the interface will look like this:</p>
+<p><IMG height=328 hspace=0 
+src="../images/save_obo_filtered.gif" width=894 border=0></p>
+<p>If "Filter terms" is checked, a term filter editor appears. If "Filter links" 
+is checked, a link filter editor appears. If both are checked, a term filter 
+editor and link filter editor appear. There is a small label above each to 
+indicate which is which.</p>
+<p>The filter editors are configured as described in the <A 
+href="Term_Filters.htm">Term Filters</A>&nbsp;and&nbsp;<A 
+href="Link_Filters.htm">Link Filters</A>&nbsp;section.</p>
+<p>When link filtering is enabled, only links that match the filter will be 
+written to the file. When term filtering is enabled, only term that match the 
+filter will be written to the file. If term filtering is enabled and link 
+filtering is not, if a term does not match the filter, no links to that term 
+will be written to the file.</p>
+<p><em>But</em>, if term filtering and link filtering are enabled and a term 
+does not match the filter, the term is not written, but <em>links to that term 
+can be written</em>. To write these dangling links to the file, click the "Allow 
+dangling parents" checkbox. If the checkbox is not selected, the dangling links 
+will not be written out.</p>
+<P>If the "Always save properties" box is checked, the term filter will be 
+extended so that it properties are always saved, even if the term filter would 
+normally drop them. This is done by changing your specified filter into <FONT 
+face=Courier>[Self] [Is Property] OR &lt;your filter&gt;. </FONT><FONT 
+face=Arial>Note that this has no effect on link filtering at all. If you are 
+doing link filtering, make sure to take steps to preserve links between 
+properties or they will be lost.</FONT></P>
+<P>If the "Do type prefiltering" box is checked, a dropdown will be enabled that 
+allows the user to select a pre-filter property. The pre-filter will be applied 
+before the ontology is saved. See <A href="Reasoner_Prefilters.htm">Reasoner 
+Prefilters</A> for more information.</P>
+<P>If the "Discard unused categories" box is checked, <A 
+href="Working_with_Synonym_Categories.htm">Synonym Categories</A> and <A 
+href="Working_with_Categories.htm">Categories</A> that are not used in the 
+ontology after filtering is applied will not appear in the file header. This 
+option is only available if filtering, link filtering or prefiltering is 
+enabled.</P>
+<P>The "Root selection algorithm" dropdown allows the user 
+to choose a root selection algorithm to use when filtering the saved file. See 
+<A href="Filtering.htm#root_picking">Orphaned Terms and the Root Picking 
+Algorithm</A>            
+      &nbsp;for more information. </P>
+<p> 
+  Once all your save files have been configured, press the ok 
+button to save. </p>
+<div class="sidebar">
+<h1>Tips for a Successful Filtered Save</h1>
+<hr>
+<p>
+Filters are always a little tricky to design. The easiest way to design a 
+save filter is to use the OBO-Edit&nbsp;<A href="Filtering.htm">filtering</A> 
+interface to design the filter and test it on the currently loaded 
+ontology.&nbsp;When the filter is working correctly, save it (see <A 
+href="Reusing_Filters.htm">Reusing Filters</A> for information on how to save 
+and load filters), bring up the advanced OBO adapter save dialog, and load the 
+saved filter using the <IMG height=20 hspace=0 
+src="../images/filter_load_save_buttons.gif" width=83 border=0> &nbsp;buttons. 
+</p></div>
+</body>
+</html>

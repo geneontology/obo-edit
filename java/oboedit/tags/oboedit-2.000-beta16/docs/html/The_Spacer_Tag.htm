@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+<title>The spacer tag<spacer> Tag</title>
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+</head>
+<body bgcolor="#ffffff">
+<h1>The &lt;spacer&gt; Tag</h1>
+<p>The &lt;spacer&gt; tag creates an empty area of fixed size.</p>
+<h2>Parameters</h2>
+<p>
+<table bordercolor="#000000" cellpadding="5" width="100%" align="center" border="1">
+  
+  <tr>
+    <td align="middle"><strong>Name</strong></td>
+    <td align="middle"><strong>Description</strong></td>
+    <td align="middle"><strong>Legal Values</strong></td>
+    <td align="middle"><strong>Default</strong></td></tr>
+  <tr>
+    <td><font face="Courier">orientation</font></td>
+    <td>The direction in which this component's size is 
+      fixed. If a direction besides <strong><em>both</em></strong> is chosen, 
+      the component has the given size in the given direction, and size zero in the other direction.</td>
+    <td>
+      <ul>
+        <li>both 
+        <li>horz 
+        <li>vert</li></ul></td>
+    <td>
+      <p>vert</p></td></tr></table></p>
+<p>Also see <A href="Common_Parameters.htm">common parameters</A>.</p>
+<h2>Contents</h2>
+<p>none</p>
+<h2>Example</h2>
+<pre>&lt;box orientation="vert"&gt;<br>  &lt;box orientation="horz"&gt;<br>    &lt;label text="A"/&gt;<br>    <font color="#0000ff">&lt;spacer orientation="horz" size="10"/&gt;<br></font>    &lt;label text="B"/&gt;<br>    <font color="#0000ff">&lt;spacer orientation="horz" size="20"/&gt;</font><br>    &lt;label text="C"/&gt;<br>    &lt;glue/&gt;<br>  &lt;/box&gt;<br>  &lt;box orientation="horz"&gt;<br>    &lt;label text="D"/&gt;<br>    <font color="#0000ff">&lt;spacer orientation="vert" size="40"/&gt;<br></font>    &lt;label text="E"/&gt;<br><font color="#0000ff">    &lt;spacer orientation="horz" size="20"/&gt;<br></font>    &lt;label text="F"/&gt;<br>    &lt;glue/&gt;<br>  &lt;/box&gt;<br>&lt;/box&gt;
+
+</pre>
+<p><IMG height=96 hspace=0 src="../images/layout_spacer_component.gif" width=339 
+border=0></p></LABEL></LABEL></STRONG></FONT>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Solutionsoft HelpBreeze JavaHelp Edition">
+<TITLE>Dangling Intersection Check</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<H1>Dangling Intersection Check</H1>
+<P>This check displays a warning if one of the links that 
+defines an intersection is a dangling link. This can only happen if:</P>
+<P>&nbsp;</P>
+<OL>
+  <LI>intersections are defined across multiple ontologies</LI>
+  <LI>the ontologies are saved into different files</LI>
+  <LI>some, but not all, of those files are loaded back in</LI></OL>
+<P>This can lead to highly unexpected results from the reasoner, because the 
+reasoner will ignore any cross product with dangling links. If a warning of this 
+kind appears, reload all the required ontology files before using the 
+reasoner.</P>
+</BODY>
+</HTML>
