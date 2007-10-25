@@ -4,7 +4,7 @@
 	<head>
 	<title>AmiGO! Your friend in the Gene Ontology.</title>
 		[% INCLUDE header_info.tmpl %]
-		[% INCLUDE javascript_front.tmpl %]
+		[%# INCLUDE javascript_front.tmpl %]
 	</head>
 	<body>
 		<div id="header">
@@ -13,12 +13,13 @@
 		</div>
 		<div class="contents">
 <h1 id="amigo-logo">AmiGO</h1>
-<form action="search.cgi" name="frontForm" id="frontForm">
+<form action="search.cgi" name="frontForm" id="frontForm" method="POST">
 	<fieldset class="C">
 		<legend>Search</legend>
 		<input type="hidden" name="session_id" value="[% session_id %]">
 		<p><label for="query">Search the Gene Ontology database</label></p>
-		<input type="text" name="query" size="55" value="[% query %]" class="textBox" id="query">
+		<input type="text" name="search_query" size="55" value="[% query %]" class="textBox" id="query">
+		<input type="hidden" name="action" value="new-search">
 		<fieldset>
 		<legend>Search type</legend>
 		 <span><input type="radio" name="search_constraint" value="term" checked id="term"><label for="term">GO terms</label></span>

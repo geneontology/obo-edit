@@ -4,7 +4,7 @@
 	<head>
 	<title>AmiGO: Species Search Results</title>
 		[% INCLUDE header_info.tmpl %]
-		[% INCLUDE javascript_term_search.tmpl %]
+		[%# INCLUDE javascript_term_search.tmpl %]
 		<meta name="keywords" content="[% querylist.join(', ') %]">
 	</head>
 	<body>
@@ -18,11 +18,11 @@
 		INCLUDE query_summary.tmpl;
 		IF data.size > 0;
 			IF n_pages > 1;
-				INCLUDE web_paging.tmpl;
+				INCLUDE paging.tmpl;
 			END;
 			INCLUDE spp_search_results.tmpl;
 			IF n_pages > 1;
-				INCLUDE web_paging.tmpl;
+				INCLUDE paging.tmpl;
 			END;
 		END;
 	CATCH;

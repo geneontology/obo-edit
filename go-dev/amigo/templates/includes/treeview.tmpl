@@ -1,3 +1,8 @@
+[% IF page_name == 'term_details';
+		anchor = '#lineage';
+		IF term_context && term_context == 'sibling';
+			context = '&amp;term_context=sibling';
+	END; END %]
 <div class="treeview">
 
 	[%# IF page_name == 'browse' || page_name == 'term_details' %]
@@ -5,21 +10,24 @@
 		<ul>
 			<li>Actions...</li>
 			<li>Last action: [% last_action || 'unknown' %]</li>
-			<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %][% IF term_context && term_context == 'sibling' %]&amp;term_context=sibling[% END %]&amp;format=png" title="View the tree in graph form">Graphical View</a></li>
+		[% IF show_graphviz == 1 %]
+			<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink _ context %]&amp;format=png" title="View the tree in graph form">Graphical View</a></li>
+		[% END %]
 		[% IF page_name == 'browse' %]
 			<li><a href="[% cgi %].cgi?action=permalink[% permalink %]" title="Permanent link to this tree">Permalink</a></li>
-		[% ELSIF page_name == 'term_details' %]
-			<li><a href="term-details.cgi?action=reset-tree&amp;term=[% term_acc %]&amp;session_id=[% session_id %][% IF term_context && term_context == 'sibling' %]&amp;term_context=sibling[% END %]" title="Reset the tree to the initial view">Reset tree</a></li>
+		[% ELSIF page_name == 'term_details' && show_reset_link %]
+			<li><a href="term-details.cgi?action=reset-tree&amp;term=[% term_acc %]&amp;session_id=[% session_id _ context _ anchor %]" title="Reset the tree to the initial view">Reset tree</a></li>
 		[% END %]
 		[% IF page_name == 'term_details' || page_name == 'subset_details' %]
 			<li><a href="browse.cgi?action=set-tree[% link %]&amp;session_id=[% session_id %]" title="View tree in GO browser">View in tree browser</a></li>
 		[% END %]
 		[% UNLESS page_name == 'term_details' && term_context == 'sibling' %]
 			<li>Download...</li>
-			<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
-			<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
-			<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
-		[% END %]
+			<li><a href="[% cgi %].cgi?session_id=[% session_id _ permalink %]&amp;format=obo" title="Download the tree in OBO text format">OBO</a></li>
+			<li><a href="[% cgi %].cgi?session_id=[% session_id _ permalink %]&amp;format=rdfxml" title="Download the tree in RDF-XML format">RDF-XML</a></li>
+			[% IF show_graphviz == 1 %]
+			<li><a href="[% cgi %].cgi?session_id=[% session_id _ permalink %]&amp;format=dot" title="Download the tree in GraphViz dot format">GraphViz dot</a></li>
+		[% END; END %]
 		<!--	<li><a href="graphviz.cgi?gp=[% session.get_param('gp') %]&amp;session_id=[% session_id %]" title="View the tree in graph form">Graphical View</a></li> -->
 		</ul>
 	</div>
@@ -60,6 +68,9 @@
 
 				#	start plus/minus/leaf node options
 				IF page_name == 'browse' || page_name == 'term_details';
+					IF page_name == 'term_details';
+						anchor = '#lineage';
+					END;
 
 					IF graph.n_children(t.acc) == 0;
 						leaf = 1 %]
@@ -67,20 +78,16 @@
 				[% ELSE;
 						IF graph.is_focus_node(t) && graph.n_children(t.acc) == graph.get_child_relationships(t).size;
 							minus = "action=minus_node&amp;target=" _ t.acc _ link;
-							IF page_name == 'term_details';
-								IF term_context && term_context == 'sibling';
-									minus = minus _ "&amp;term_context=sibling";
-								END;
+							IF page_name == 'term_details' && term_context && term_context == 'sibling';
+								minus = minus _ "&amp;term_context=sibling";
 							END; %]
-	<a class="img" href="[% page_name.replace('_','-') %].cgi?[% minus %]&amp;session_id=[% session_id %]" title="Close this node"><img src="[% image_dir %]/ominus.png" alt="close"></a>
+	<a class="img" href="[% page_name.replace('_','-') %].cgi?[% minus %]&amp;session_id=[% session_id _ anchor %]" title="Close this node"><img src="[% image_dir %]/ominus.png" alt="close"></a>
 					[% ELSE;
 							plus = "action=plus_node&amp;target=" _ t.acc _ link;
-							IF page_name == 'term_details';
-								IF term_context && term_context == 'sibling';
-									plus = plus _ "&amp;term_context=sibling";
-								END;
+							IF page_name == 'term_details' && term_context && term_context == 'sibling';
+								plus = plus _ "&amp;term_context=sibling";
 							END; %]
-	<a class="img" href="[% page_name.replace('_','-') %].cgi?[% plus %]&amp;session_id=[% session_id %]" title="Open this node"><img src="[% image_dir %]/plus.png" alt="open"></a>
+	<a class="img" href="[% page_name.replace('_','-') %].cgi?[% plus %]&amp;session_id=[% session_id _ anchor %]" title="Open this node"><img src="[% image_dir %]/plus.png" alt="open"></a>
 					[% END;
 					END;
 
@@ -101,6 +108,8 @@
 			[% END;
 				IF page_name == 'subset_details' && is_term_node == 1;
 				#don't show annot count as there's no number
+				ELSIF !show_gp_options || show_gp_options != 1;
+				#	don't show 'em!
 				ELSIF page_name == 'gp_assoc_view';
 					IF graph.is_focus_node(t);
 						prod_ev = {};
@@ -118,26 +127,22 @@
 								<a href="gp-details.cgi?gp=[% gpxref %]&amp;session_id=[% session_id %]" class="gp" title="[% gp_symbol %] annotations: [% prod_ev.$gp_symbol.$gpxref.keys.join(", ") %]">[% gp_symbol %]</a>
 						[% END;
 						END;
-						
 					END;
 				ELSE;
-					assocs = 'view associations';
-					filter_text = 'View gene product associations to ' _ t.name;
-					IF gp_count_ok == 0;
-						filter_text = filter_text _ ' (number unavailable)';
-					ELSE;
-						assocs = t.n_deep_products;
-						filter_text = 'View ' _ assocs _ ' gene product associations to ' _ t.name;
-					END;
-					IF !leaf;
-						filter_text = filter_text _ ' and/or its children';
-					END %]
-&nbsp;<a href="term-assoc.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]" title="[% filter_text %]">[[% assocs %]]</a>
-			[% END;
-				IF gp_count_ok == 1 && page_name == 'browse';
-					IF graph.is_focus_node(t) and graph.n_children(t.acc) == graph.get_child_relationships(t).size && graph.n_children(t.acc) > 0 and t.n_deep_products > 0 %]
-<a class="img" href="term-chart.cgi?term=[% t.acc %]&amp;session_id=[%  session_id %]" title="Click for pie chart of gene product association distribution among [% t.name %]"><img alt="Graph view for [% t.name %]" src="[% image_dir %]/piecon.gif"></a>
-			[% END; END;
+					gp_assoc_text = 'view gene products';
+					IF show_gp_counts == 1;
+						gp_assoc_text = t.n_deep_products _ ' gene product';
+						IF t.n_deep_products != 1;
+							gp_assoc_text = gp_assoc_text _ 's';
+					END; END %]
+			 <a href="term-assoc.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">[[% gp_assoc_text %]]</a>
+				[% IF show_gp_counts == 1 && page_name == 'browse';
+						IF graph.is_focus_node(t) &&
+						graph.n_children(t.acc) == graph.get_child_relationships(t).size &&
+						graph.n_children(t.acc) > 0 and t.n_deep_products > 0 %]
+<a class="img" href="term-chart.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]" title="Click for pie chart of gene product association distribution among [% t.name %]"><img alt="Graph view for [% t.name %]" src="[% image_dir %]/piecon.gif"></a>
+				[% END; END;
+				END;
 				seenem.$t.acc = 1;
 				count = count + 1;
 				BREAK IF count > 500 %]
@@ -154,7 +159,7 @@
 	END;
 	IF count > 500; %]
 <p>Tree view limited to 500 lines. [% IF tree_view && tree_view == 'full' %]<a href="[% cgi %].cgi?action=filter&amp;tree_view=compact[% link %]&amp;session_id=[% session_id %]" title="View this graph in compact form">Try the compact view of the graph</a>.[% END %]
-[% IF page_name == 'browse' %]; try the <a href="graphviz.cgi?session_id=[% session_id %][% permalink %]" title="View the tree in graph form">graphical view</a> to see all the term relationships[% END %].
+[% IF page_name == 'browse' && show_graphviz == 1 %]; try the <a href="graphviz.cgi?session_id=[% session_id %][% permalink %]" title="View the tree in graph form">graphical view</a> to see all the term relationships[% END %].
 </p>
 <ul>
 <li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]&amp;format=rdfxml" title="Download the graph as RDF-XML"> <img src="[% image_dir %]/dl.png" alt="download link"> Download as RDF-XML</a></li>

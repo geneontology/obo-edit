@@ -1,23 +1,18 @@
 <div class="filters">
-[% #IF session.apph.filters.size > 0;
-	#	'found filters!';
-	#END;
-	INCLUDE filters.tmpl;
-	a_filters = ['ont', 'evcode', 'qual', 'assby'];
-	filters = [];
-	FOREACH f = a_filters;
-		IF filterdata.$f;
-			filters.push(f);
-		END;
-	END;
-	IF filters.size > 0 %]
+[% INCLUDE filters.tmpl;
+	a_filters = [];
+	FOREACH f = filterdata.keys;
+		IF filterdata.$f.filtertype == 'ont' || filterdata.$f.filtertype == 'assoc';
+			a_filters.push(f);
+	END; END;
+	IF a_filters.size > 0 %]
 <dl>
 	<dt id="filterToggle" class="toggle">Filter associations displayed <a href="http://www.geneontology.org/amigo/help-filter_gp_details.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
 	<dd id="filterDiv">
 		<form action="[% cgi %].cgi">
 			<fieldset class="floatL block">
 				<legend>Filter Associations</legend> 
-			[% FOREACH opt_name = filters;
+			[% FOREACH opt_name = a_filters;
 					INCLUDE options_select.tmpl;
 				END; %]
 			</fieldset>

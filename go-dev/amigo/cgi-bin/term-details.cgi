@@ -1,4 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting term-details.cgi\n";
@@ -32,6 +34,7 @@ use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 use GO::Template::Template;
 use GO::Dotty::Dotty;
+use GO::Parser;
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
 
@@ -59,18 +62,27 @@ if (scalar @term_list > 1)
 }
 $vars->{term_acc} = $term_list[0];
 
+my @valid_formats = qw(rdfxml obo go_ont tree);
+if ($session->get_default_param('show_graphviz'))
+{	push @valid_formats, ('png', 'dot');
+	$vars->{show_graphviz} = 1;
+}
+
+$vars->{gp_count_ok} = $session->gp_count_ok;
+$vars->{show_gp_counts} = $session->show_counts('gp');
+
 my $tmpl;
 if ($params{'format'})
 {	#	what are the other valid formats?
-	if (!grep { $params{'format'} eq $_ } qw(png dot))
+	if (!grep { $params{'format'} eq $_ } @valid_formats)
 	{	$msg_h = set_message($msg_h, 'fatal', 'bad_format', $params{'format'});
 		process_page_template({ msg_h => $msg_h }, $session);
 		exit;
 	}
-	$tmpl->{graph} = get_tmpl($params{'format'}, 'term', $session->gp_count_ok);
+	$tmpl->{graph} = get_tmpl($params{'format'}, 'term', $vars->{show_gp_counts});
 }
 else
-{	$tmpl = get_tmpl('term_details_cgi', undef, $session->gp_count_ok);
+{	$tmpl = get_tmpl('term_details_cgi', undef, $vars->{show_gp_counts});
 }
 
 my $graph_sync_h;
@@ -83,14 +95,14 @@ foreach ('target', 'action', 'format')
 {	$graph_sync_h->{$_} = $params{$_} if $params{$_};
 }
 
-my $tree = $session->new_graph_sync($graph_sync_h);
+my $sync_h = $session->graph_sync($graph_sync_h);
+my $tree = $sync_h->{tree};
 print STDERR "tree: ".Dumper($tree)."\n";
 
 #$session->term_sync;
 $session->save_session;
 
-$vars->{gp_count_ok} = $session->gp_count_ok;
-my $term_context = $q->param('term_context') || $session->get_default_param('term_context');
+$vars->{term_context} = $q->param('term_context') || $session->get_default_param('term_context');
 
 #
 # Perform the query
@@ -103,14 +115,15 @@ my $result_h = get_term_in_graph(
 	{	tree => $tree, 	# option_h
 		tmpl => $tmpl,
 		cgi => 'term-details',
-		term_context => $term_context,
+		term_context => $vars->{term_context},
 		session_id => $session->id,
 		gp_count_ok => $vars->{gp_count_ok},
+		show_gp_count => $vars->{show_gp_counts},
 	}
 );
 
 $vars->{msg_h} = $result_h->{msg_h};
-if (!$result_h->{results})
+if ($vars->{msg_h}{fatal} || !$result_h->{results})	# a fatal error
 {	process_page_template($vars, $session);
 	exit;
 }
@@ -121,6 +134,58 @@ print STDERR "Found the graph. Hurrah!\n";#graph: ".Dumper($vars->{graph});
 
 $session->ses_type($result_h->{ses_type}) if defined $result_h->{ses_type};
 
+if ($params{'format'})
+{	if (!$vars->{graph})
+	{	$vars->{msg_h} = set_message($msg_h, 'fatal', 'no_ont_term', $vars->{term}->name." ; ".$vars->{term}->acc);
+		process_page_template($vars, $session, 'amigo_message');
+		exit;
+	}
+	
+	if ($params{'format'} eq 'png' || $params{'format'} eq 'dot')
+	{	print STDERR "creating GraphViz...\n";
+		my $base = {};
+		if ($params{'format'} eq 'png')
+		{	$base->{base_url} = "term-details.cgi?session_id=".$session->id."&amp;term=";
+		}
+		my $graphviz = GO::Dotty::Dotty::go_graph_to_graphviz
+		(	$vars->{graph},
+			{	fillcolor => $session->get_saved_param('graph_bgcolor') || undef,
+				fontcolor => $session->get_saved_param('graph_textcolor') || undef,
+				layout => $session->get_saved_param('layout') || undef,
+			},
+			$base);
+
+		if ($params{'format'} eq 'png') # a graphviz image
+		{	foreach my $x ('graph_bgcolor', 'graph_textcolor', 'layout')
+			{	$vars->{extra_filter}{$x} = $session->set_option($x);
+			#	print STDERR "extra filter: ".Dumper($vars->{extra_filter}{$x});
+			}
+
+			#	add the term parameter to the tree for link-making purposes
+			$tree->{term} = [ $term_list[0] ];
+			$vars->{tree} = $tree;
+
+			my $links = get_permalink($vars->{graph}, $tree);
+
+			foreach (keys %$links)
+			{	$vars->{$_} = $links->{$_};
+			}
+			($vars->{image_url}, $vars->{image_map_html}) = $session->save_graphviz_image($graphviz);
+			print STDERR "done!\n";
+			$vars->{graph_title} = $vars->{term_acc};
+		
+			$vars->{cgi} = 'browse';
+			process_page_template($vars, $session, 'graphviz');
+			exit;
+		}
+		else
+		{	render_data_in_format($graphviz, 'dot');
+		}
+	}
+	render_data_in_format($vars->{graph}, $params{'format'});
+}
+
+=cut
 if ($params{'format'} && ($params{'format'} eq 'png' || $params{'format'} eq 'dot'))
 {	if (!$vars->{graph})
 	{	$vars->{msg_h} = set_message($msg_h, 'fatal', 'no_ont_term', $vars->{term}->name." ; ".$vars->{term}->acc);
@@ -128,7 +193,7 @@ if ($params{'format'} && ($params{'format'} eq 'png' || $params{'format'} eq 'do
 		exit;
 	}
 	
-	$ENV{PATH} .= ':/usr/local/graphviz/bin';
+	#$ENV{PATH} .= ':/usr/local/graphviz/bin';
 	my $base = {};
 	if ($params{'format'} eq 'png')
 	{	$base->{base_url} = "term-details.cgi?session_id=".$session->id."&amp;term=";
@@ -150,11 +215,17 @@ if ($params{'format'} && ($params{'format'} eq 'png' || $params{'format'} eq 'do
 		foreach my $x ('graph_bgcolor', 'graph_textcolor', 'layout')
 		{	$vars->{extra_filter}{$x} = $session->set_option($x);
 		}
+		my $links = get_permalink($vars->{graph}, $tree);
+		print STDERR "Links: ".Dumper($links);
+		foreach (keys %$links)
+		{	$vars->{$_} = $links->{$_};
+		}
 		process_page_template($vars, $session, 'graphviz');
 #		$session->__save_session;
 	}
 	exit;
 }
+=cut
 
 if ($session->ses_type ne 'vocab_details')
 {	#	add the term parameter to the tree for link-making purposes
@@ -170,19 +241,21 @@ if ($session->ses_type ne 'vocab_details')
 
 	if ($session->ses_type eq 'term_details')
 	{	
-
 		my $links = get_permalink($vars->{graph}, $tree);
 		print STDERR "Links: ".Dumper($links);
 		foreach (keys %$links)
 		{	$vars->{$_} = $links->{$_};
 		}
+		
+		$vars->{last_action} = $sync_h->{last_action} || undef;
+		$vars->{action_node_list} = $sync_h->{action_node_list} || undef;
 
-		#	if we just performed some sort of action, see what the target of
-		#	the action was and put it in the action node list
-		if ($params{'action'} && $params{'target'})
-		{	$vars->{action_node_list} = [ split "\0", $params{'target'} ];
-		}
-		print STDERR "action node list: ".Dumper($vars->{action_node_list})."\n";
+#		#	if we just performed some sort of action, see what the target of
+#		#	the action was and put it in the action node list
+#		if ($params{'action'} && $params{'target'})
+#		{	$vars->{action_node_list} = [ split "\0", $params{'target'} ];
+#		}
+#		print STDERR "action node list: ".Dumper($vars->{action_node_list})."\n";
 	}
 	else
 	{	#	this is a subset graph. Find all the focus nodes and put them into open_0
@@ -197,8 +270,12 @@ if ($session->ses_type ne 'vocab_details')
 	$vars->{extra_filter}{term_context} = $session->set_option('term_context');
 	$vars->{extra_filter}{tree_view} = $session->set_option('tree_view');
 	$vars->{term_node_list} = [ $vars->{term_acc} ];
-	$vars->{term_context} = $term_context;
+
+	if ($params{'action'} && ($params{'action'} eq 'plus_node' || $params{'action'} eq 'minus_node'))
+	{	$vars->{show_reset_link} = 1;
+	}
 }
+
 
 $vars->{cgi} = 'term-details';
 #print STDERR "extra_filter: ".Dumper($vars->{extra_filter});

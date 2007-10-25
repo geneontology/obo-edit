@@ -2,18 +2,35 @@
 
 #generated key val pair for various options display in AmiGO
 
-use lib qw( /Library/WebServer/cvs/go-dev/new-amigo/perl /Library/WebServer/cvs/go-dev/go-perl /Library/WebServer/cvs/go-dev/go-db-perl );
+BEGIN {
 
-use FindBin qw($RealBin);
-use lib (($ENV{GO_ROOT})
-         ? "$ENV{GO_ROOT}/go-db-perl" : "$RealBin/../../go-db-perl");
-use lib (($ENV{GO_ROOT})
-         ? "$ENV{GO_ROOT}/amigo/perl" : "$RealBin/../perl");
+	if (-f "config.pl") {
+		require "config.pl";
+	}
+
+	if (defined($ENV{GO_ROOT})) {
+	} elsif (-f "../cvs/go-dev/") {
+		$ENV{GO_ROOT} = "../cvs/go-dev";
+	}
+}
+
+use lib "$ENV{GO_ROOT}/go-perl";
+use lib "$ENV{GO_ROOT}/go-db-perl";
+use lib "$ENV{GO_ROOT}/new-amigo/perl";
+
+
+#use lib qw( /Library/WebServer/cvs/go-dev/new-amigo/perl /Library/WebServer/cvs/go-dev/go-perl /Library/WebServer/cvs/go-dev/go-db-perl );
+
+#use FindBin qw($RealBin);
+#use lib (($ENV{GO_ROOT})
+#         ? "$ENV{GO_ROOT}/go-db-perl" : "$RealBin/../../go-db-perl");
+#use lib (($ENV{GO_ROOT})
+#         ? "$ENV{GO_ROOT}/amigo/perl" : "$RealBin/../perl");
 
 use strict;
+use FreezeThaw qw(freeze thaw);
 use GO::SqlWrapper qw(:all);
 use GO::CGI::Session;
-use FreezeThaw qw(freeze thaw);
 
 my $cgi_path = shift @ARGV;
 unless ($cgi_path) {
@@ -24,7 +41,7 @@ unless ($cgi_path) {
 eval {
     require "$cgi_path/config.pl";
 };
-my $session = new GO::CGI::Session(-no_update=>1);
+my $session = new GO::CGI::Session(-read_only=>1);
 
 
 my $dbh = $session->apph->dbh;
@@ -170,6 +187,6 @@ exit;
 sub help {
     print <<EOM;
   make_misc_key.pl amigo_cgi_dir
-    where amigo_cgi_dir is full_dir_path where go.cgi resides,
+    where amigo_cgi_dir is the full path to the cgi directory where the AmiGO cgis reside
 EOM
 }

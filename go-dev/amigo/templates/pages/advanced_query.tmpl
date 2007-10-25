@@ -31,8 +31,8 @@
 		<li><kbd>mal* transporter</kbd> would retrieve the results <span class="term">malate transporter</span>, <span class="term">maltodextrin transporter</span> and <span class="term">maltose transporter</span>.
 		</li>
 		</ul> -->
-			<textarea id="query" name="query" cols="55" rows="4"></textarea>
-		<p><em>OR</em> <label for="idfile">upload a text file of queries</label> (maximum file size [% max_upload_size %]K): <input type="file" name="idfile" id="idfile" title="Upload a text file for AmiGO to use as input" class="button">
+			<textarea id="query" name="search_query" cols="55" rows="4"></textarea>
+		<p><em>OR</em> <label for="search_query_file">upload a text file of queries</label> (maximum file size [% max_upload_size %]K): <input type="file" name="search_query_file" id="search_query_file" title="Upload a text file for AmiGO to use as input" class="button">
 		</p>
 		
 		<p><input type="checkbox" id="exact_match" name="exact_match" value="1" class="cbox"><label for="exact_match">Exact match</label></p>
@@ -59,20 +59,14 @@
 		</div>
 		<h3 class="clearL">Filter results <a href="http://www.geneontology.org/amigo/help-filter_adv.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
 		[% PROCESS filters.tmpl;
-			all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
-			all_a_filters = ['evcode', 'qual', 'assby'];
-			gp_filters = [];
-			a_filters = [];
-			FOREACH f = all_gp_filters;
-				IF filterdata.$f;
-					gp_filters.push(f);
-				END;
-			END;
-			FOREACH f = all_a_filters;
-				IF filterdata.$f;
-					a_filters.push(f);
-				END;
-			END %]
+		gp_filters = [];
+		a_filters = [];
+		FOREACH f = filterdata.keys;
+			IF filterdata.$f.filtertype == 'gp';
+				gp_filters.push(f);
+			ELSIF filterdata.$f.filtertype == 'assoc';
+				a_filters.push(f);
+		END; END %]
 		<fieldset class="block"><legend>Filter by Ontology</legend>
 			[% opt_name = 'ont';
 				title = filterdata.$opt_name.title;

@@ -26,7 +26,7 @@
 
 <!-- <label for="[% opt_name %]" class="inline">[% title %]</label> -->
 <select id="[% opt_name %]" name="[% opt_name %]">
-	<option value="0">Choose an action...</option>
+	<option value="0">Perform an action with selected gene products...</option>
 [% FOREACH opt = select_set.keys.sort; %]
 		<optgroup label="[% select_set.$opt.title %]">
 		[% FOREACH poss = select_set.$opt.options; %]

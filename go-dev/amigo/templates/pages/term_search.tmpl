@@ -2,6 +2,7 @@
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 	<head>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<title>AmiGO: Term Search Results</title>
 		[% INCLUDE header_info.tmpl %]
 		[%# INCLUDE javascript_term_search.tmpl %]
@@ -17,13 +18,7 @@
 [% TRY;
 		INCLUDE query_summary.tmpl;
 		IF data.size && data.size > 0;
-			IF n_pages > 1;
-				INCLUDE web_paging.tmpl;
-			END;
 			INCLUDE term_search_results.tmpl;
-			IF n_pages > 1;
-				INCLUDE web_paging.tmpl;
-			END;
 		END;
 	CATCH;
 		PROCESS error.tmpl;

@@ -7,7 +7,7 @@
 		assoc => {
 			title => 'Tree options',
 			options => [
-			{ value => 'plus_node', label => 'add selected terms to the tree' },
+	#		{ value => 'plus_node', label => 'add selected terms to the tree' },
 			{ value => 'set-tree', label => 'create a new tree with these terms' },
 			],
 		},
@@ -21,7 +21,7 @@
 	}; %]
 
 <select name="[% opt_name %]">
-	<option value="0">Choose an action...</option>
+	<option value="0">Perform an action with selected terms...</option>
 [% FOREACH opt = select_set.keys.sort; %]
 		<optgroup label="[% select_set.$opt.title %]">
 		[% FOREACH poss = select_set.$opt.options; %]

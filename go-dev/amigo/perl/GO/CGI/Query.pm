@@ -25,7 +25,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 @ISA = ('Exporter');
 @EXPORT_OK = qw(get_gp_details get_gp_assocs get_graph_for_gp
 	get_term_in_graph get_term_assocs get_current_graph get_data_for_chart
-	get_nit get_permalink get_fasta _get_products_seqs
+	get_nit get_permalink get_fasta get_seqs_for_gps
 	get_gp_count_for_terms get_term_count_for_gps);
 
 =head2 get_gp_details
@@ -208,11 +208,11 @@ sub get_gp_details {
 		if (!$tmpl->{seq})
 		{	if ($tmpl->{has_seq})
 			{	#	just see if it has a sequence, don't retrieve the seq
-				_get_products_seqs($apph, [values %gp_h], 'has_seq');
+				get_seqs_for_gps($apph, [values %gp_h], 'has_seq');
 			}
 		}
 		else {
-			_get_products_seqs($apph, [values %gp_h] );
+			get_seqs_for_gps($apph, [values %gp_h] );
 		}
 #		return [values %gp_h];
 		return { msg_h => $msg_h, results => [values %gp_h ] };
@@ -762,7 +762,16 @@ sub get_term_assocs {
 
 
 	if (keys %terms_to_get)
-	{	my $terms = $apph->get_terms({accs => [keys %terms_to_get]}, $tmpl);
+	{	my $get_n_deep = 0;
+		if ($tmpl->{n_deep_products})
+		{	$get_n_deep = 1;
+			delete $tmpl->{n_deep_products};
+		}
+		
+		my $terms = $apph->get_terms({accs=>[keys %terms_to_get]}, $tmpl);
+		#	get the gp count if appropriate
+		get_gp_count_for_terms($apph, $terms, { use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} } ) if $get_n_deep;
+
 		#	put the info into term_h
 		$term_h->{$_->acc} = $_ foreach @$terms;
 		#	put the query terms in q_term_l
@@ -777,6 +786,14 @@ sub get_term_assocs {
 	my $res_h = get_gp_details($apph, $msg_h, { id => [keys %gps_to_get]}, $gp_opts);
 	$msg_h = $res_h->{msg_h};
 	map { $product_h->{$_->id} = $_ } @{$res_h->{results}};
+	
+	# if appropriate, create a hash with the number of terms annotated per GP
+	my $counts;
+	if ($option_h->{show_term_counts} )
+	{	my $list = get_term_count_for_gps($apph, [values %$product_h], 1);
+		print STDERR "results of get_term_count_for_gps: ".Dumper($list);
+		%$counts = (@$list);
+	}
 	
 #	print STDERR "product_h:\n".Dumper($product_h)."\n";
 
@@ -862,6 +879,7 @@ sub get_term_assocs {
 			term_h => $term_h,
 			parent_h => $parent,
 			n_pages => $n_pages,
+			n_terms => $counts,
 		},
 		to_cache => $to_cache,
 		msg_h => $msg_h };
@@ -896,10 +914,11 @@ sub term_assoc_die {
 	my $term_h;
 	map { $term_h->{$_->acc} = $_ } @$term_l;
 
-	print STDERR "Doing the die nicely routine\n";
+	print STDERR "Doing the die nicely routine: ";
 
 	if ($option_h->{n_results} != 0)
 	{	#	we found too many associations. Get some useful info
+		print STDERR "too many associations found.\n";
 		my $n_direct;
 		if ($option_h->{show_all_ass}) # deep associations
 		{	print STDERR "Getting the direct GP count for the terms...\n";
@@ -923,7 +942,8 @@ sub term_assoc_die {
 		return { results => { term_h => $term_h, direct_children => $direct_children, n_pages_all => get_n_pages($option_h->{n_results}), n_pages_direct => get_n_pages($n_direct) }, msg_h => $msg_h };
 	}
 	else
-	{	#	if there are no associations, see if it is because
+	{	print STDERR "no associations found.\n";
+		#	if there are no associations, see if it is because
 		#	we have filters by getting the product count
 
 		my $total;
@@ -948,17 +968,27 @@ sub term_assoc_die {
 			if ($option_h->{show_all_ass})
 			{	print STDERR "Getting deep product count for terms...\n";
 				$total = $apph->get_deep_product_count({terms => $term_l});
-				print STDERR "results: ".Dumper($total)."\n";
+			#	print STDERR "results: ".Dumper($total)."\n";
 	
 			}
 			else
 			{	print STDERR "Getting product count for terms...\n";
 				$total = $apph->get_product_count({terms => $term_l});
-				print STDERR "results: ".Dumper($total)."\n";
+			#	print STDERR "results: ".Dumper($total)."\n";
 			}
 			
 			$apph->filters($filter_h);
 		#	print STDERR "filters: ".Dumper($apph->filters)."\n";
+		}
+		else
+		{	#	no filters on. If we're not showing all associations, try that
+			if (!$option_h->{show_all_ass})
+			{	get_gp_count_for_terms($apph, $term_l, { show_all_ass => 1, gp_count_ok => 1 });
+				
+				$total += $_->n_deep_products foreach @$term_l;
+				print STDERR "total n_products: $total\n";
+			}
+			#	otherwise... what else can we do?
 		}
 		
 		return { results => { term_h => $term_h, total => $total }, msg_h => $msg_h };
@@ -1355,40 +1385,6 @@ sub get_term_in_graph {
 		
 	#	print STDERR "graph: ".Dumper($graph);
 		
-=cut
-
-
-
-		my $open_1 = $tree->{open_1} if $tree->{open_1};
-		$g_option_h->{tmpl} = 
-
-		if ($option_h->{term_context} && $option_h->{term_context} eq 'sibling')
-		{	print STDERR "Doing the DPSC routine. Accs: ".Dumper($open_1)."\n";
-
-			my $open_terms = $apph->get_terms({acc=>$open_1}, $option_h->{tmpl}{graph}) if ($open_1 && @$open_1);
-
-			$graph = $apph->get_graph_DPSC(-term=>$term, -termh=>{open_terms=>$open_terms}, -template=>{terms=>$option_h->{tmpl}{graph}});
-
-		} else {
-			print STDERR "Getting the graph... ";
-			$graph = $apph->get_graph_by_terms(-terms=>[$term], -depth=>0, -template=>{terms=>$option_h->{tmpl}{graph}});
-
-			if ($open_1 && @$open_1)
-			{	foreach my $open_term (@{$open_1 || []}) {
-					$apph->extend_graph(-graph=>$graph, -acc=>$open_term, -depth=>1, -template=>{terms=>$option_h->{tmpl}{graph}});
-				}
-			}
-			print STDERR "Got graph. Wikkid!\n";
-		}
-	
-		if ($tree->{closed})
-		{	foreach my $close_below (@{$tree->{closed}}) {
-				eval {
-					$graph->close_below($close_below, 'close_iff_no_parent');
-				};
-			}
-		}
-=cut
 	}
 	#	if it's a goslim, we can make a pretty graph for it
 	elsif ($term->namespace eq 'subset' && $term->acc =~ /goslim/)
@@ -1438,9 +1434,18 @@ sub get_current_graph {
 
 	my $tmpl = $option_h->{tmpl};
 	print STDERR "tmpl (from Query):\n".Dumper($tmpl)."\n";
+
+#	remove the get_n_deep_products bit as we will add that later
+	my $get_n_deep_products;
+	if ($tmpl->{n_deep_products})
+	{	print STDERR "We need to get all products.\n";
+		$get_n_deep_products = 1;
+		delete $tmpl->{n_deep_products};
+	}
+
 	my $root = $apph->get_root_term(-template => $tmpl);
 	print STDERR "Got root.\n";
-	print STDERR "tree: ".Dumper($tree)."\n";
+#	print STDERR "tree: ".Dumper($tree)."\n";
 	my $graph_type;
 	my $terms;
 
@@ -1488,8 +1493,9 @@ sub get_current_graph {
 
 	my $graph = _get_graph(-apph => $apph, -tree => $tree, -terms => $terms, -option_h => { graph_type => $graph_type, root => $root, tmpl => $tmpl});
 
-	print STDERR "seeding nodes...\n";
-	$graph->seed_nodes($terms);
+#	print STDERR "seeding nodes...\n";
+#	$graph->seed_nodes($terms);
+
 
 #	print STDERR "Graph: ".Dumper($graph)."\n";
 
@@ -1505,6 +1511,10 @@ sub get_current_graph {
 	}
 	print STDERR "Finished.\n";
 
+	if ($get_n_deep_products)
+	{	my $terms = $graph->get_all_terms;
+		get_gp_count_for_terms($apph, $graph->get_all_terms, { use_filters => 1, gp_count_ok => $option_h->{gp_count_ok} });
+	}
 #	print STDERR "Doing get children in the get_current_graph query\n";
 #	$apph->_get_n_children_h($graph);
 	return { results => $graph, msg_h => $msg_h };
@@ -1537,7 +1547,18 @@ sub _get_graph {
 	#	print STDERR "graph: ".Dumper($graph)."\n";
 	}
 	elsif ($graph_type eq 'DPSC')
-	{	my $open_terms = $apph->get_terms({acc=>$tree->{open_1}}, $tmpl) if ($tree->{open_1} && @{$tree->{open_1}});
+	{	#my $open_terms = $apph->get_terms({acc=>$tree->{open_1}}, $tmpl) if ($tree->{open_1} && @{$tree->{open_1}});
+		my $open_terms;
+	
+		if ($tree->{open_1} && @{$tree->{open_1}})
+		{	my $result_h = _get_terms_with_checks(
+				-apph => $apph,
+				-accs => $tree->{open_1},
+				-msg_h => undef,
+				-option_h => { tmpl => $tmpl, is_ont_term => 1 });
+			$open_terms = $result_h->{results} if $result_h->{results};
+		}
+
 		$graph = $apph->get_graph_DPSC(-term=>$terms, -termh=>{open_terms=>$open_terms}, -template=>{terms=>$tmpl});
 	}
 	else
@@ -1545,9 +1566,20 @@ sub _get_graph {
 		print STDERR "open_0: ".join(", ", map { $_->acc } @$terms)."\n";
 
 		$graph = $apph->get_graph_by_terms(-terms=>$terms, -depth=>0, -template=>{terms => $tmpl});
-	
+
+#		my $open_terms;
+#	
+#		if ($tree->{open_1} && @{$tree->{open_1}})
+#		{	my $result_h = _get_terms_with_checks(
+#				-apph => $apph,
+#				-accs => $tree->{open_1},
+#				-msg_h => $msg_h,
+#				-option_h => { tmpl => $tmpl, is_ont_term => 1 });
+#			$open_terms = $result_h->{results} if $result_h->{results};
+#		}
+
 		if ($tree->{open_1} && @{$tree->{open_1}})
-		{	$apph->extend_graph(-graph=>$graph, -acc=>$_, -depth=>1, -template=>{terms => $tmpl}) foreach (@{$tree->{open_1}});
+		{	$apph->extend_graph(-graph=>$graph, -acc=>$_, -depth=>1, -template=>{terms => $tmpl}) foreach @{$tree->{open_1}};
 		}
 		print STDERR "Doing get children in the open_0 subroutine\n";
 		$apph->_get_n_children_h($graph);
@@ -1560,6 +1592,8 @@ sub _get_graph {
 			};
 		}
 	}
+	
+	print STDERR "seeding nodes...\n";
 	$graph->seed_nodes($terms);
 	return $graph;
 }
@@ -1710,11 +1744,11 @@ sub get_permalink {
 			{	my @temp;
 				my @all;
 				foreach my $acc (@{$tree->{$o}})
-				{	print STDERR "looking for $acc...\n";
+				{	#print STDERR "looking for $acc...\n";
 					my $t = $graph->get_term({acc => $acc});
 					push @temp, $acc if $t;
 					push @all, $acc;
-					print STDERR "found... ".Dumper($t)."\n";
+					#print STDERR "found... ".Dumper($t)."\n";
 				}
 				$permalink .= "&amp;$o=" . join(",", @temp) if @temp;
 				$link .= "&amp;$o=" . join(",", @all) if @all;
@@ -1722,61 +1756,6 @@ sub get_permalink {
 		}
 	}
 	return { 'link' => $link, permalink => $permalink };
-}
-
-sub get_nit_old {
-	my $session = shift;
-	my $graph = shift;
-	my $compact_tree_view = shift || 0;
-
-	my $open_0 = [];
-	my $open_1 = [];
-	my $closed = $session->get_param_values(-field=>'closed') || [];
-	if ($session->get_param('closed')) {
-		my @no_trim_tops;
-		my @closed;
-		my @all_closed;
-		foreach my $t (@$closed) {
-			push @all_closed, $t;
-			push @closed, [$t];
-		}
-
-		foreach my $n (@{$graph->get_all_nodes || []}) {
-			my $n_child = $graph->n_children($n->acc);
-			if ($n_child && $n_child == @{$graph->get_child_relationships($n) || []}) {
-				push @no_trim_tops, $n->acc if (grep {$n->acc ne $_} @all_closed);
-			}
-		}
-		$open_1 = [@no_trim_tops];
-	} else {
-		$closed = [];
-	}
-	my @closed;
-	foreach my $t (@$closed) {
-		push @closed, [$t];
-	}
-	my @terms;
-	foreach my $t (@$open_0) {
-		push @terms, [$t];
-	}
-	my @op_1;
-	foreach my $t (@$open_1) {
-		push @op_1, [$t];
-		push @terms, [$t];
-	}
-
-	require "GO/Model/TreeIterator.pm";
-
-	my $nit = GO::Model::TreeIterator->new($graph, \@terms, \@op_1, \@closed, $compact_tree_view);
-	
-#	my $relt_filters = $session->get_param_list('reltype');
-#	if (scalar(@{$relt_filters || []}) && grep{lc($_) ne 'all'}@{$relt_filters || []}) {
-#		printf STDERR "GET only: %s\n",join("\t",@$relt_filters);
-#		$nit->reltype_filter($relt_filters);
-#	}	
-	$nit->set_bootstrap_mode;
-	$nit->close_below;
-	return $nit;
 }
 
 =head2 get_fasta
@@ -1881,6 +1860,10 @@ sub _get_terms_with_checks {
 	#	create a hash with the accs as keys that we can use for various checks
 	#	check for / remove dups and blank entries
 	my %acc_hash;
+	if (!ref($accs))
+	{	$accs = [$accs];
+	}
+
 	foreach (@$accs)
 	{	$acc_hash{$_} = 1 if defined $_;
 	}
@@ -2118,16 +2101,9 @@ sub get_term_count_for_gps {
 	my $tables = ["association"];
 	my $where = ["association.gene_product_id IN (".join(",", map{ $_->id } @$gps).")"];
 
-#	if ($use_filters && $use_filters == 1)
-#	{	my $filters = $apph->filters || {};
-#		if ($filters && keys %{$filters})
-#		{	#	set the filters
-#			_set_filters($filters, $dbh, $tables, $where, ['assoc', 'term']);
-#		}
-#	}
-
 	#	set the filters
 	_set_filters($apph->filters, $dbh, $tables, $where, ['assoc', 'term']) if $use_filters;
+
 
 
 	my $sql = "SELECT association.gene_product_id, COUNT(DISTINCT association.term_id) FROM "
@@ -2171,24 +2147,28 @@ my $t0 = gettimeofday();
 	my $use_filters = $option_h->{use_filters};
 	my $gp_count_ok = $option_h->{gp_count_ok};
 
+	if (!defined $option_h->{gp_count_ok} && (!keys %{$apph->filters} || !$option_h->{use_filters}))
+	{	$gp_count_ok = 1;
+	}
+
 	my $dbh = $apph->dbh;
 	
 	#	get deep associations
 	if ($show_all_ass)
-	{	if ($gp_count_ok || !$use_filters)
+	{	my @result_l;
+		if ($gp_count_ok || !$use_filters)
 		{	#	if gp_count_ok is on or we're not using filters,
 			#	we can use apph->get_deep_product_count
 			print STDERR "Getting the deep product count using the apph method\n";
 		#	print STDERR "terms: ".Dumper($terms)."\n";
-			my $terms_by_id;
-			$terms_by_id->[$_->id] = $_ foreach (@$terms);
-			my $count_l = $apph->get_deep_product_count({ per_term=>1, terms => $terms });
-			
-			print STDERR "Results: ".Dumper($count_l)."\n";
-			foreach (@$count_l) 
-			{	$terms_by_id->[$_->{term_id}]->n_deep_products($_->{"c"}) if ($terms_by_id->[$_->{term_id}]);
+#			my $terms_by_id;
+#			$terms_by_id->[$_->id] = $_ foreach (@$terms);
+			my $results = $apph->get_deep_product_count({ per_term=>1, terms => $terms });
+			#	pop the results into a list and add 'em to the terms
+			if (@$results)
+			{	$result_l[$_->{term_id}] = $_->{c} foreach @$results;
 			}
-			print STDERR "terms: ".Dumper($terms)."\n";
+		#	print STDERR "Results: ".Dumper($results)."\n";
 		}
 		else
 		{	print STDERR "Getting the deep product count using the new method\n";
@@ -2197,7 +2177,9 @@ my $t0 = gettimeofday();
 			my $where = ["association.term_id=graph_path.term2_id", "graph_path.term1_id IN (".join(",", map { $_->id } @$terms).")"];
 
 			_set_filters($apph->filters, $dbh, $tables, $where, ['assoc', 'gp']) if $use_filters;
-			
+
+			push @$where, "association.is_not=0";
+
 			#	now count the number of distinct GPs annot'd to each term set
 			my $sql = "SELECT graph_path.term1_id, COUNT(DISTINCT association.gene_product_id) FROM "
 			.join(", ", @$tables) . " WHERE "
@@ -2206,22 +2188,22 @@ my $t0 = gettimeofday();
 
 			print STDERR "SQL: $sql\n";
 			my $results = $dbh->selectall_arrayref($sql);
-			print STDERR "Results: ".Dumper($results)."\n";
-			my @result_l;
 			#	pop the results into a list and add 'em to the terms
 			if (@$results)
-			{	$result_l[$_->[0]] = $_->[1] foreach (@$results);
+			{	$result_l[$_->[0]] = $_->[1] foreach @$results;
 			}
-			foreach (@$terms)
-			{	if ($result_l[$_->id])
-				{	$_->n_deep_products($result_l[$_->id]);
-				}
-				else
-				{	$_->n_deep_products(0);
-				}
-				print STDERR "n_deep_products: ".$_->n_deep_products."\n";
-			}
+		#	print STDERR "Results: ".Dumper($results)."\n";
 		}
+		foreach (@$terms)
+		{	if ($result_l[$_->id])
+			{	$_->n_deep_products($result_l[$_->id]);
+			}
+			else
+			{	$_->n_deep_products(0);
+			}
+		#	print STDERR "n_deep_products: ".$_->n_deep_products."\n";
+		}
+	#	print STDERR "terms: ".Dumper($terms)."\n";
 	}
 	else
 	#	just get associations to the term itself
@@ -2229,7 +2211,8 @@ my $t0 = gettimeofday();
 		my $tables = ["association"];
 		my $where = ["association.term_id IN (".join(",", map{ $_->id } @$terms).")"];
 
-		
+		push @$where, "association.is_not=0";
+
 		_set_filters($apph->filters, $dbh, $tables, $where, ['assoc', 'gp']) if $use_filters;
 		my $sql = "SELECT association.term_id, COUNT(DISTINCT association.gene_product_id) FROM "
 				.join(", ", @$tables) . " WHERE "
@@ -2262,7 +2245,7 @@ my $t0 = gettimeofday();
 }
 
 
-=head2 _get_products_seqs
+=head2 get_seqs_for_gps
 
   Arguments - apph, list of gps, template (optional)
   returns   - the GPs with sequences added
@@ -2274,7 +2257,7 @@ my $t0 = gettimeofday();
 
 =cut
 
-sub _get_products_seqs {
+sub get_seqs_for_gps {
 	my $apph = shift;
 	my $gps = shift || return;
 	my $tmpl = shift || 'full';

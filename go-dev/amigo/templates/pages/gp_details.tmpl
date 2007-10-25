@@ -18,7 +18,7 @@
 	<head>
 	<title>AmiGO: [% page_title %] Details</title>
 		[% INCLUDE header_info.tmpl;
-			INCLUDE javascript_gp_details.tmpl %]
+			#INCLUDE javascript_gp_details.tmpl %]
 	</head>
 	<body>
 		<div id="header">
@@ -39,7 +39,14 @@
 <li><a href="#sequence" title="View peptide sequence">Peptide sequence <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 <li><a href="#seq-info" title="View sequence information">Sequence information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 [% END %]
-<li><a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations for this gene product">Term associations <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+[% term_assoc_link = 'Term associations';
+	IF term_count && term_count > 0;
+		term_assoc_link = term_count _ ' term association';
+		IF term_count != 1;
+			term_assoc_link = term_assoc_link _ 's';
+		END;
+	END %]
+<li><a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations for this gene product">[% term_assoc_link %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
 </ul>
 		<div class="block" id="info">
 		<h2>Information</h2>

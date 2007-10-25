@@ -47,15 +47,10 @@
 			IF term_assocs != 'direct';
 				message = message _ " or " _ pronoun _ " children";
 			END;
-			IF data.total && session.apph.filters.keys.size > 0;
-				message = message _ " with the current filter settings.";
-				IF data.total == 1;
-					data.total = "1 gene product";
-				ELSE;
-					data.total = data.total _ " gene products";
-				END;
-				message = message _ " Without filters, there are " _ data.total _ " associated with the terms selected.";
+			IF session.apph.filters.keys.size > 0;
+				message = message _ " with the current filter settings";
 			END;
+			message = message _ ".";
 
 		CASE 'too_many_assocs';
 			tmpl = 'too_many_assocs';
@@ -109,16 +104,8 @@
 					children = n_children _ ' children';
 				END;
 			END;
-				%]
-	<ul>
-		<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;action=override">View associations anyway</a>[% IF n_pages_all %] ([% n_pages %] pages)[% END %].</li>
-		<li id="show_hide">Set filters to limit the data displayed by AmiGO
-		[% INCLUDE filter_term_assoc.tmpl %]
-		</li>
-		[% IF children != '' %]
-		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% target.acc %]&amp;open_1=[% target.acc %]&amp;session_id=[% session_id %]">View the [% children %] of [% target.name %]</a> and select a more specific GO term.</li>
-		[% END %]
-	[% IF term_assocs == 'all';
+
+		IF term_assocs == 'all';
 			show_url = 1;
 			prods = 'gene products';
 			n_prods = target.n_products;
@@ -129,20 +116,42 @@
 				prods = 'one gene product';
 			ELSIF n_prods > 1;
 				prods = n_prods _ ' ' _ prods;
-			END;
-				%]
-		<li>There are [% prods %] annotated directly to [% target.name %]. [% IF show_url == 1 %]<a href="term-assoc.cgi?term=[% target.acc %]&amp;term_assocs=direct&amp;session_id=[% session_id %]">View direct associations</a>[% IF n_pages_direct && n_pages_direct != 1 %] ([% n_pages_direct %] pages)[% END %].[% END %]</li>
-	[% END %]
+			END;	%]
+	<ul>
+		<li><a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;action=override">View associations</a>[% IF n_pages_all %] ([% n_pages %] pages)[% END %].</li>
 		<li>Download association data in <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;format=go_assoc">tab-delimited gene association format</a>.</li>
+		<li id="show_hide">Set filters to limit the data displayed by AmiGO
+		[% INCLUDE filter_term_assoc.tmpl %]
+		</li>
+		<li>There are [% prods %] annotated directly to [% target.name %]. [% IF show_url == 1 %]<a href="term-assoc.cgi?term=[% target.acc %]&amp;term_assocs=direct&amp;session_id=[% session_id %]&amp;action=override">View direct associations</a>[% IF n_pages_direct && n_pages_direct != 1 %] ([% n_pages_direct %] pages)[% END %] or download as <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;term_assocs=direct&amp;format=rdfxml">RDF-XML</a> or <a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;term_assocs=direct&amp;format=go_assoc">tab-delimited gene association format</a>.[% END %]</li>
+		[% IF children != '' %]
+		<li><a href="browse.cgi?action=set-tree&amp;open_0=[% target.acc %]&amp;open_1=[% target.acc %]&amp;session_id=[% session_id %]">View the [% children %] of [% target.name %]</a> and select a more specific GO term.</li>
+		[% END %]
+	[% END %]
 		<li><a href="http://www.geneontology.org/GO.current.annotations.shtml">Download files containing all gene product associations</a> from the Gene Ontology website.</li>
 	</ul>
 	[% ELSIF tmpl == 'no_assocs';
-			IF data.total %]
+			IF data.total;
+				IF data.total == 1;
+					data.total = "1 gene product";
+				ELSE;
+					data.total = data.total _ " gene products";
+				END;
+				IF data.total != 0;
+					show_url = 1;
+				END;
+				IF session.apph.filters.keys.size > 0 %]
+		<p>Without filters, there are [% data.total %] associated with the terms selected.</p>
 		<ul>
-		<li>Set different filters or remove all filters.
-		[% INCLUDE filter_term_assoc.tmpl %]
+		<li>Set different filters or <a href="term-assoc?term=[% target.acc %]&amp;session_id=[% session_id %]&amp;action=reset-filters" title="Reset filters">remove all filters</a>.
+			[% INCLUDE filter_term_assoc.tmpl %]
 		</li>
 		</ul>
-		[% END; END %]
+			[% ELSIF term_assocs == 'direct' %]
+		<p>There are [% data.total %] associated with children of the selected terms. [% IF show_url == 1 %]<a href="term-assoc.cgi?term=[% target.acc %]&amp;session_id=[% session_id %]">View associations</a>[% IF n_pages_direct && n_pages_direct != 1 %] ([% n_pages_direct %] pages)[% END %].
+			[% END;
+			END %]
+
+	[% END; END %]
 </div>
 [% END %]

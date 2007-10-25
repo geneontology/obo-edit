@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\n";

@@ -74,11 +74,12 @@
 			IF assoc_view == 'summary';
 				colspan = 5;
 			END %]
-			<form action="term-select.cgi">
+			<form action="term-select.cgi" method="POST">
 			<table summary="Terms associated with the [% gp.type %] [% gp.symbol %]">
 			<thead>
 			<tr>
-			[% PROCESS assoc_table_head.tmpl %]
+			[% table_type = 'term';
+				PROCESS assoc_table_head.tmpl %]
 			</tr>
 		</thead>
 		<tbody>
@@ -95,7 +96,7 @@
 		</table>
 		</form>
 	[%	IF n_pages && n_pages > 1;
-			INCLUDE web_paging.tmpl;
+			INCLUDE paging.tmpl;
 		END %]
 		<p class="toTop">
 			<a href="#top" title="Back to the top of the page">Back to top</a> 

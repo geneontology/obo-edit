@@ -58,7 +58,7 @@
 		INCLUDE filters.tmpl;
 	END;
 	IF page_name != 'blast_submit' && n_seqs > 1;
-		INCLUDE web_paging.tmpl;
+		INCLUDE paging.tmpl;
 	END;
 	
 	IF msg_h.warning %]

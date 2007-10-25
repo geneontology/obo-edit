@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting term-assoc.cgi\n";
@@ -50,8 +52,8 @@ my $msg_h;
 
 print STDERR "cgi: ".Dumper(\%params)."\n";
 
-
 my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>$ses_type, -read_only=>1);
+
 $session->term_assoc_sync;
 $session->save_session;
 
@@ -70,6 +72,9 @@ foreach ('action', 'page', 'page_size')
 	}
 }
 
+$vars->{gp_count_ok} = $option_h->{gp_count_ok} = $session->gp_count_ok;
+$vars->{show_gp_counts} = $option_h->{show_gp_counts} = $session->show_counts('gp');
+
 if ($params{'format'})
 {	$use_cache ||= 1;
 	#	check we understand the format
@@ -80,12 +85,12 @@ if ($params{'format'})
 	}
 	
 	#	get the template for the format
-	$option_h->{tmpl} = get_tmpl($params{'format'}, undef, $session->gp_count_ok);
+	$option_h->{tmpl} = get_tmpl($params{'format'}, undef, $vars->{show_gp_counts});
 	
 	$option_h->{page_size} = 'all';
 }
 else
-{	$option_h->{tmpl} = get_tmpl('term_assoc_cgi', undef, $session->gp_count_ok);
+{	$option_h->{tmpl} = get_tmpl('term_assoc_cgi', undef, $vars->{show_gp_counts});
 	$option_h->{die_nicely} = 1;
 #	if we are doing a standard html query, we need to sort the terms and gps
 #	terms are sorted by name, and GPs are sorted by symbol then name
@@ -115,7 +120,6 @@ if ($use_cache)
 	}
 }
 
-$option_h->{gp_count_ok} = $session->gp_count_ok;
 $option_h->{cgi} = 'term-assoc';
 $option_h->{session_id} = $session->id;
 
@@ -162,20 +166,7 @@ if ($params{'format'})
 	}
 	else
 	{	#	write out the files if the data is in a specific format
-		if ($params{'format'} eq 'rdfxml')
-		{	print "Content-type:text/plain\n\n";
-			my $out = new FileHandle(">-");
-			$vars->{data}->to_xml($out, -show_associations=>'yes');
-		}
-		elsif ($params{'format'} eq 'go_assoc')
-		{	my $out = new FileHandle(">-");
-			my $ga_out = GO::IO::go_assoc->new($out);
-			$ga_out->cgi_header;
-			$ga_out->write_graph($vars->{data});
-		#	print "Content-type:text/plain\n\n";
-		#	my $out = new FileHandle(">-");
-		#	$graph->export({ format => 'go_assoc' });
-		}
+		render_data_in_format($vars->{data}, $params{'format'});
 	}
 	exit;
 }

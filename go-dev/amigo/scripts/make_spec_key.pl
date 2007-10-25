@@ -1,12 +1,31 @@
 #!/usr/local/bin/perl
 
-use lib qw( /Library/WebServer/cvs/go-dev/amigo/perl /Library/WebServer/cvs/go-dev/go-perl /Library/WebServer/cvs/go-dev/go-db-perl );
+BEGIN {
 
-use FindBin qw($RealBin);
-use lib (($ENV{GO_ROOT})
-         ? "$ENV{GO_ROOT}/go-db-perl" : "$RealBin/../../go-db-perl");
-use lib (($ENV{GO_ROOT})
-         ? "$ENV{GO_ROOT}/amigo/perl" : "$RealBin/../perl");
+	if (-f "config.pl") {
+		require "config.pl";
+	}
+
+		if (defined($ENV{GO_ROOT})) {
+		} elsif (-f "../cvs/go-dev/") {
+		$ENV{GO_ROOT} = "../cvs/go-dev";
+		}
+}
+
+use lib "$ENV{GO_ROOT}/go-perl";
+use lib "$ENV{GO_ROOT}/go-db-perl";
+use lib "$ENV{GO_ROOT}/new-amigo/perl";
+
+#use lib qw(
+#	/Library/WebServer/svn/geneontology/go-dev/amigo/perl
+#	/Library/WebServer/svn/geneontology/go-dev/go-perl
+#	/Library/WebServer/svn/geneontology/go-dev/go-db-perl );
+
+#use FindBin qw($RealBin);
+#use lib (($ENV{GO_ROOT})
+#         ? "$ENV{GO_ROOT}/go-db-perl" : "$RealBin/../../go-db-perl");
+#use lib (($ENV{GO_ROOT})
+#         ? "$ENV{GO_ROOT}/amigo/perl" : "$RealBin/../perl");
 
 use strict;
 use GO::SqlWrapper qw(:all);
@@ -22,7 +41,7 @@ unless ($cgi_path) {
 eval {
     require "$cgi_path/config.pl";
 };
-my $session = new GO::CGI::Session(-no_update=>1);
+my $session = new GO::CGI::Session(-read_only=>1);
 
 
 my $dbh = $session->apph->dbh;

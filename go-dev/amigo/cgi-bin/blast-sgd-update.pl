@@ -1,28 +1,23 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
 
-use strict;
-use warnings;
+require 5.8.0;
 
-#
-# Must basically launch blast command contained in a file
-# and write results back to a file in the same directory
-#
+use CGI qw(:standard) ;
+$CGI::DISABLE_UPLOADS = 1;
+use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
 
-use CGI qw(:standard);
+my $blast_dir = param('blast_dir') || die("blast dir not defined!");
+print STDERR "blast dir: ".$blast_dir."\n";
+#my $output_file = "$blast_dir/result";
+#my $tmp_file = $tmp_dir."/$$.blast";
 
-#system ("touch /tmp/gost-sgd_started");
-my $tmp_dir = $ENV{DOCUMENT_ROOT}."/tmp";
-#my $data_dir = param('data_dir');
-my $blast_dir = param('blast_dir');
+#my $temp_dir = param('temp_dir');
+#my $command_file = "$temp_dir/command.sh";
 my $command_file = "$blast_dir/command.sh";
-my $output_file = "$blast_dir/result";
-
-my $tmp_file = $tmp_dir."/$$.blast";
 
 print header;
 print start_html();
-system ("/bin/sh $command_file &");
-
+system ("/bin/sh $command_file &"); # or die("Error: $?");
 print $?, "\n";
 print end_html();
 

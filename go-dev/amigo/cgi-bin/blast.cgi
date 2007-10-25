@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting blast.cgi\n";
@@ -163,13 +165,12 @@ elsif ($ses_type eq 'blast')
 
 # get the blast bits for the form
 #$vars->{extra_filter} = $session->get_blast_data if $ses_type eq 'blast_query';
-if ($ses_type eq 'blast_query')
-{	$vars->{extra_filter}{blast_filter} = $session->set_option('blast_filter');
-	$vars->{extra_filter}{threshold} = $session->set_option('threshold');
-	$vars->{extra_filter}{maxhits} = $session->set_option('maxhits');
-	#foreach ('maxhits', 'threshold', 'blast_filter')
-	#{	$vars->{extra_filter}{$_} = $session->set_option($_);
-	#}
+if ($session->ses_type eq 'blast_query')
+{	print STDERR "getting the bits for the BLAST query form\n";
+	foreach my $x ('blast_filter', 'threshold', 'maxhits')
+	{	$vars->{extra_filter}{$x} = $session->set_option($x);
+	#	print STDERR "extra filter: ".Dumper($vars->{extra_filter}{$x});
+	}
 }
 
 

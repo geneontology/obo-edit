@@ -1,4 +1,3 @@
-[% IF session.get_param('page_size') != 'all' %]
 <ul class="paging">
 	[% href = cgi _ '.cgi?';
 		
@@ -8,9 +7,6 @@
 			IF (page_name == 'gp_search' || page_name == 'term_search' || page_name == 'spp_search');
 				
 				href = href _ 'query=' _ queryurl _ '&amp;search_constraint=' _ search_constraint _ '&amp;session_id=' _ session_id;
-				IF session.get_param('sort');
-					href = href _ '&amp;sort=' _ session.get_param('sort');
-				END;
 		#	ELSIF page_name == 'gp_assoc';
 		#		href = 'gp-assoc.cgi?gp=' _ gplist_str _ '&amp;session_id=' _ session_id;
 			ELSIF page_name == 'blast_results';
@@ -19,9 +15,12 @@
 		END;
 		
 		IF page;
-		p = page;
+			p = page;
+			IF p > n_pages;
+				p = n_pages;
+			END;
 		ELSE;
-		p = 1;
+			p = 1;
 		END;
 		s = p - 8;
 		IF s < 1;
@@ -29,7 +28,7 @@
 		END;
 		IF s > 1;
 		#	include a ref to the first page %]
-	<li><a href="[% href %]&amp;page=1[% IF name_anchor %]#[% name_anchor; END; %]">1</a></li>
+	<li><a href="[% href | url %]&amp;page=1[% IF name_anchor %]#[% name_anchor; END; %]">1</a></li>
 	<li>...</li>
 	[% END;
 		e = s + 16;
@@ -41,7 +40,7 @@
 			IF i == p %]
 				<li><em>[% i %]</em></li>
 		[% ELSE %]
-				<li><a href="[% href %]&amp;page=[% i; IF name_anchor %]#[% name_anchor; END; %]">[% i %]</a></li>
+				<li><a href="[% href | url %]&amp;page=[% i; IF name_anchor %]#[% name_anchor; END; %]">[% i %]</a></li>
 		[% END;
 			i = i + 1;
 		END;
@@ -49,10 +48,9 @@
 		#	include a ref to the last page
 			last = n_pages %]
 	<li>...</li>
-	<li><a href="[% href %]&amp;page=[% last; IF name_anchor %]#[% name_anchor; END; %]">[% last %]</a></li>
+	<li><a href="[% href | url %]&amp;page=[% last; IF name_anchor %]#[% name_anchor; END; %]">[% last %]</a></li>
 	[% END;
 		UNLESS page_name == 'blast_results' %]
-	<li><a href="[% href %]&amp;page_size=all">View all results</a></li>
+	<li><a href="[% href | url %]&amp;page_size=all">View all results</a></li>
 	[% END %]
 </ul>
-[% END %]

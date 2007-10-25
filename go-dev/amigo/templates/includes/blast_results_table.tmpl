@@ -3,7 +3,12 @@
 [% counter = 1;
 	IF data.gplist;
 		IF data.product_h.size > 0 %]
-<form action="gp-select.cgi">
+<form action="gp-select.cgi" method="POST">
+<input type="hidden" name="show_blast_scores" value="on">
+[% IF !use_filters %]
+<input type="hidden" name="action" value="reset-filters">
+[% END %]
+
 	<table id="blast_hits">
 		<thead>
 			<tr>
@@ -19,13 +24,13 @@
 			IF gp %]
 			<tr class="[% IF counter % 2 == 0; 'even_row '; END %]gp">
 			<td>
-			<input type="checkbox" name="gp" value="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]" id="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]-cbox">
+			<input type="checkbox" name="item" value="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]" id="[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]-cbox">
 			</td>
 			<td>
 				<div class="floatR R" style="margin: 0">
 				<a href="gp-details.cgi?[% gp.xref.xref_dbname %]:[% gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View gene product information" class="assoc-link">[% gp.symbol %] details <img src="[% image_dir %]/left.png" alt="link to another page"></a>
 				<br>
-				<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations for this gene product" class="assoc-link">[% gp.symbol %] associations <img src="[% image_dir %]/left.png" alt="link to another page"></a>
+				<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations for this gene product" class="assoc-link">[% gp.symbol %] terms <img src="[% image_dir %]/left.png" alt="link to another page"></a>
 				<br>
 				<a href="#[% gpitem.0
 								#gpitem.0 _ '-' _ seq_no %]" class="assoc-link">BLAST match <img src="[% image_dir %]/down.png" alt="in-page link"></a>

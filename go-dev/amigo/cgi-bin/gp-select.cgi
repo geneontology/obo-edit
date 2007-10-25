@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\n";
@@ -42,7 +44,7 @@ $Data::Dumper::Sortkeys = 1;
 
 my $q = new CGI;
 my %params = $q->Vars;
-my @gp_list = split "\0", $params{gp};
+my @gp_list = split "\0", $params{item};
 my $action = $params{action};
 my $ses_type = 'amigo_message';
 
