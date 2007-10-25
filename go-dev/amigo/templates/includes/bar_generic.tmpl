@@ -27,8 +27,8 @@
 	</ul>
 	[% IF page_name != 'front' %]
 	<div id="menuSearchForm">
-		<form action="search.cgi" id="bar-form">
-			<p><label for="bar-query">Search GO</label><input class="textBox" type="text" name="query" size="25" value="[% query %]" id="bar-query">
+		<form action="search.cgi" id="bar-form" method='POST'>
+			<p><label for="bar-query">Search GO</label><input class="textBox" type="text" name="search_query" size="25" value="[% query %]" id="bar-query">
 			[% opt_name = 'search_constraint';
 				option = search_constraint_data.data;
 				INCLUDE options_radio.tmpl %]

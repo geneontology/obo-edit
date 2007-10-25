@@ -55,6 +55,7 @@
 	[% END %]
 	</ul>
 [% IF tmpl;
+		USE Dumper; '<pre>'; Dumper.dump(tmpl); '</pre>';
 		tmpl = tmpl _ ".tmpl" %]
 		<form action="blast.cgi" enctype="multipart/form-data" method="POST" name="blast_form" id="blast_form">
 		[% PROCESS $tmpl %]

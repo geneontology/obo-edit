@@ -8,29 +8,26 @@
 			<input type="hidden" name="[% p %]" value="[% tree.$p.join(',') %]">
 			[% END; END %]
 
-			[% all_filters = ['taxid', 'gptype', 'evcode', 'qual', 'assby'];
-				active = [];
-				FOREACH f = all_filters;
-					IF filterdata.$f;
-						active.push(f);
-				END; END;
-				spdb = 0;
-				IF filterdata.speciesdb;
-					spdb = 1;
-				END;
-
-				IF filterdata.keys.size > 0 %]
+			[% gp_ok = [];
+				all = [];
+				FOREACH f = filterdata.keys;
+					IF filterdata.$f.filtertype == 'gp' || filterdata.$f.filtertype == 'assoc';
+						IF filterdata.$f.gp_count_ok;
+							gp_ok.push(f);
+						ELSE;
+							all.push(f);
+				END; END; END;
+				IF all.size > 0 || gp_ok.size > 0 %]
 				<fieldset class="floatL block">
 					<legend>Filter Gene Product Counts</legend>
-				[% IF filterdata.speciesdb;
-						opt_name = 'speciesdb';
+				[% FOREACH opt_name = gp_ok;
 						INCLUDE options_select.tmpl;
 					END;
-					IF active.size > 0; %]
+					IF all.size > 0; %]
 					<ul class="floatL">
-					[% FOREACH opt_name = active;
-						title = filterdata.$opt_name.title;
-						IF opt_name != 'taxid'; title = title _ 's'; END; %]
+					[% FOREACH opt_name = all;
+							title = filterdata.$opt_name.title;
+							IF opt_name != 'taxid'; title = title _ 's'; END; %]
 					<li>[% INCLUDE options_checkbox_all.tmpl %]</li>
 					[% END %]
 					</ul>
@@ -39,7 +36,7 @@
 			[% END %]
 			<fieldset class="floatL block">
 				<legend>View Options</legend>
-			[% FOREACH opt_name = ['term_context', 'tree_view'];
+			[% FOREACH opt_name = ['tree_view']; #['term_context', 'tree_view'];
 					option = extra_filter.$opt_name.data %]
 				<p>[% extra_filter.$opt_name.title %] 
 				[% INCLUDE options_radio.tmpl %]

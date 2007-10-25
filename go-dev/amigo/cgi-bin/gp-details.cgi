@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting gp-details.cgi\n";
@@ -23,7 +25,7 @@ use lib "$ENV{GO_ROOT}/new-amigo/perl";
 
 use strict;
 use FileHandle;
-use GO::CGI::Query qw(get_gp_details);
+use GO::CGI::Query qw(get_gp_details get_term_count_for_gps);
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 #use GO::CGI::NameMunger;
@@ -69,6 +71,12 @@ else
 	my $result_h = get_gp_details( -apph => $session->apph, -msg_h => $msg_h, -constr => { gpxref => $gp_list[0] } );
 	$vars->{msg_h} = $result_h->{msg_h};
 	$vars->{gp} = $result_h->{results}[0] if $result_h->{results};
+}
+
+if ($session->show_counts('gp') == 1)
+{	my $count = get_term_count_for_gps($session->apph, [ $vars->{gp} ], 1);
+	print STDERR "Count: ".Dumper($count);
+	$vars->{term_count} = $count->[1];
 }
 
 print STDERR "msg_h: ".Dumper($msg_h);

@@ -12,11 +12,9 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 #use Carp;
 use DBI;
 use GO::AppHandle;
-#use GO::Utils qw(rearrange);
 use GO::CGI::Utilities qw(:all);
 use GO::SqlWrapper qw(sql_quote select_hashlist);
 use HTML::Entities;
-#use Digest::MD5;
 
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
@@ -25,7 +23,7 @@ $Data::Dumper::Indent = 1;
 use GO::Object::TermSearchResult;
 use GO::Object::GeneProductSearchResult;
 
-use GO::CGI::Query qw(get_gp_details get_term_in_graph _get_products_seqs get_nit get_gp_count_for_terms get_term_count_for_gps);
+use GO::CGI::Query qw(get_gp_details get_term_in_graph get_seqs_for_gps get_nit get_gp_count_for_terms get_term_count_for_gps);
 
 =head2 new
 
@@ -48,8 +46,6 @@ sub new {
 		{	$self->{$_} = 1;
 		}
 	}
-
-	print STDERR "search object: ". Dumper($self) ."\n";
 	return $self;
 }
 
@@ -145,12 +141,10 @@ sub get_result_param {
 
 sub set_msg {
 	my $self = shift;
-
-	print STDERR "\@_ = ".Dumper(\@_);
-
 	$self->{msg_h} = set_message($self->{msg_h}, @_);
 
-	print STDERR "self->{msg_h} = ".Dumper($self->{msg_h})."\n";
+#	print STDERR "\@_ = ".Dumper(\@_);
+#	print STDERR "self->{msg_h} = ".Dumper($self->{msg_h})."\n";
 
 }
 
@@ -204,13 +198,13 @@ sub results {
 	return $self->{results};
 }
 
-=head2 __get_accs
+=head2 _get_accs
 
 Examines the queryset and puts anything resembling an accession in an array
 
 =cut
 
-sub __get_accs {
+sub _get_accs {
 	my $self = shift;
 	my $queryset = $self->{queryset}{orig};
 
@@ -218,9 +212,7 @@ sub __get_accs {
 	#	put it on a list of accs to search
 	#	ignore any zeros as padding and allow wildcards
 
-	my $acc_like = [
-			["(GO)?[: ]?0*([1-9][0-9%\?]{0,6})", "GO:%07d"],
-	];
+	my $acc_like = __accession_forms();
 
 	my @list;
 	foreach my $q (@$queryset)
@@ -267,7 +259,10 @@ sub getResultList {
 
 #	print STDERR Dumper($apph);
 	print STDERR "query: ". Dumper($query);
-	print STDERR "option_h: ". Dumper($option_h);
+	foreach (keys %$option_h)
+	{	print STDERR "$_: ".Dumper($option_h->{$_}) unless $_ eq 'cache';
+	}
+#	print STDERR "option_h: ". Dumper($option_h);
 
 	if (!$apph)
 	{	$self->set_msg('fatal', 'missing_apph');
@@ -447,6 +442,7 @@ sub get_results_from_db {
 		#	try a name / acc / symbol search for the other search constraint
 
 		$self->set_param('selected', $selected);
+		$self->_set_selected([keys %$selected]);
 	}
 
 	if (!@$results)
@@ -1659,7 +1655,7 @@ sub _where {
 	}
 
 	if ($sc eq 'term')
-	{	my $acc_like = $self->__get_accs;
+	{	my $acc_like = $self->_get_accs;
 		print STDERR "acc_like: ".Dumper($acc_like)."\n";
 		if (@$acc_like)
 		{	$selected->{acc} = 1;
@@ -2499,7 +2495,7 @@ sub _get_gp_details {
 	
 	use GO::CGI::Query;
 	if ((!$selected->{seq_name} && !$selected->{seq_xref}) || !$self->{from_cache})
-	{	_get_products_seqs($apph, $gp_ref, 'has_seq');
+	{	get_seqs_for_gps($apph, $gp_ref, 'has_seq');
 
 		if ($selected->{seq_name})
 #		{	my @list = grep { $_->source eq 'seq_name' } @$gp_ref;
@@ -2747,7 +2743,7 @@ sub _set_selected {
 	}
 
 	$self->set_param('selected', $selected);
-	print STDERR "selected: ".Dumper($selected)."\n";
+#	print STDERR "selected: ".Dumper($selected)."\n";
 	
 	if ($option_h && $option_h->{results_only})
 	{	return $selected;
@@ -2760,7 +2756,7 @@ sub _set_selected {
 
 	my @ordered_selected = grep { exists $selected->{$_} } @{__search_field_list($sc, 'ordered')};
 	$self->set_param('select_list', \@ordered_selected);
-	print STDERR "ordered_selected: ".Dumper(\@ordered_selected)."\n";
+#	print STDERR "ordered_selected: ".Dumper(\@ordered_selected)."\n";
 
 	my $field_list;
 	if ($sc eq 'spp')
@@ -3133,7 +3129,6 @@ sub __field_importance {
 	return $rel{$field} || 10;
 }
 
-
 =head2 __min_q_length
 
 Internal method to get minimum query length
@@ -3172,6 +3167,20 @@ sub __search_constraint_specific_data {
 	};
 
 	return $data->{$data_to_get}{$sc} || undef;
+}
+
+=head2 __accession_forms
+
+array containing regexps - the first is what will be accepted as an accession,
+and the second is the format into which they should be formatted
+
+=cut
+
+sub __accession_forms {
+	return [
+		["(GO)?[: ]?0*([1-9][0-9%\?]{0,6})", "GO:%07d"],
+	];
+
 }
 
 

@@ -4,7 +4,7 @@
 	<head>
 	<title>AmiGO: Term Association Details</title>
 		[% INCLUDE header_info.tmpl;
-		# INCLUDE javascript_term_assoc.tmpl %]
+			#INCLUDE javascript_term_assoc.tmpl %]
 	</head>
 	<body>
 		<div id="header">
@@ -73,7 +73,7 @@
 
 	[% INCLUDE filter_term_assoc.tmpl;
 		table_type = 'term' %]
-		<form action="gp-select.cgi">
+		<form action="gp-select.cgi" method="POST">
 			<table summary="Gene products annotated to [% target.name %]" id="results">
 				<tbody class="assoc">
 				[%# pos = 'top' %]
@@ -91,7 +91,7 @@
 				counter = counter + 1;
 			END;
 			%]
-		<tr><td colspan="[% colspan || 7 %]"><h3 class="term"><a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]"  title="Click to view details of [% t.name %]" class='name'>[% t.name %] ; [% t.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% t.acc %]&amp;session_id=[% session_id %]" title="View term in the tree browser">View term in tree</a></h3>
+		<tr><td colspan="[% colspan || 7 %]"><h3 class="term"><a href="term-details.cgi?term=[% t.acc %]&amp;session_id=[% session_id %]"  title="Click to view details of [% t.name %]" class='name'>[% t.name %] ; [% t.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% t.acc %]&amp;session_id=[% session_id %]" title="View term in the tree browser" class="assoc-link">View term in tree</a></h3>
 		[% IF t.definition %]
 			<p class="toggleable def" id="[% t.acc %]-def">[% t.definition %]</p>
 		[% END;
@@ -109,7 +109,8 @@
 		%]
 			</td></tr>
 		<tr class="thead">
-		[% PROCESS assoc_table_head.tmpl %]
+		[% table_type = 'gp';
+			PROCESS assoc_table_head.tmpl %]
 		</tr>
 		[% PROCESS term_assoc_table.tmpl;
 		END %]
@@ -120,7 +121,7 @@
 			</table>
 		</form>
 	[% IF data.n_pages && data.n_pages > 1;
-			INCLUDE web_paging.tmpl;
+			INCLUDE paging.tmpl;
 		END %]
 		<p class="toTop">
 			<a href="#top" title="Back to the top of the page">Back to top</a> 

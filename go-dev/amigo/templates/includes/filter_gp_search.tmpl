@@ -2,20 +2,14 @@
 <dl>
 	<dt id="filterToggle" class="toggle">Filter search results <a href="http://www.geneontology.org/amigo/help-filter_gp_search.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
 	<dd id="filterDiv">
-	[% all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
-		all_a_filters = ['ont', 'evcode', 'qual', 'assby'];
-		gp_filters = [];
+	[% gp_filters = [];
 		a_filters = [];
-		FOREACH f = all_gp_filters;
-			IF filterdata.$f;
+		FOREACH f = filterdata.keys;
+			IF filterdata.$f.filtertype == 'gp';
 				gp_filters.push(f);
-			END;
-		END;
-		FOREACH f = all_a_filters;
-			IF filterdata.$f;
+			ELSIF filterdata.$f.filtertype == 'ont' || filterdata.$f.filtertype == 'assoc';
 				a_filters.push(f);
-			END;
-		END %]
+		END; END %]
 		<form action="search.cgi">
 		[% s = 4;
 			IF gp_filters.size != 0 %]

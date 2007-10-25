@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting gp-assoc.cgi\n";
@@ -76,6 +78,15 @@ foreach ('action', 'page', 'page_size')
 	}
 }
 
+for ('gp', 'term')
+{	$option_h->{"show_".$_."_counts"} = $session->show_counts($_);
+}
+$option_h->{gp_count_ok} = $session->gp_count_ok;
+
+foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
+{	$vars->{$_} = 1 if $option_h->{$_};
+}
+
 if ($params{'format'})
 {	$cache ||= 1;
 	#	check we understand the format
@@ -86,14 +97,14 @@ if ($params{'format'})
 	}
 	
 	#	get the template for the format
-	$option_h->{tmpl} = get_tmpl($params{'format'}, undef, $session->gp_count_ok);
+	$option_h->{tmpl} = get_tmpl($params{'format'}, undef, $session->show_counts('term'));
 	$option_h->{tmpl}{return_graph} = 1;
 
 	$option_h->{page_size} = 'all';
 }
 else
 {	#	we're doing a standard html query
-	$option_h->{tmpl} = get_tmpl('gp_assoc_cgi', undef, $session->gp_count_ok);
+	$option_h->{tmpl} = get_tmpl('gp_assoc_cgi', undef, $session->show_counts('term'));
 	$option_h->{die_nicely} = 1;
 }
 
@@ -181,8 +192,9 @@ if (!$params{'format'})
 #print STDERR "template: ". Dumper($option_h->{tmpl})."\n";
 
 $option_h->{page_size} = $session->get_saved_param('page_size') if !$option_h->{page_size};
-$option_h->{gp_count_ok} = $session->gp_count_ok;
-$vars->{gp_count_ok} = $option_h->{gp_count_ok};
+#$option_h->{gp_count_ok} = $session->gp_count_ok;
+#$vars->{gp_count_ok} = $option_h->{gp_count_ok};
+#$vars->{show_term_counts} = $option_h->{show_term_counts} = $session->show_counts('term');
 $vars->{cgi} = 'gp-assoc';
 
 my $result_h = get_gp_assocs(
@@ -201,7 +213,6 @@ if (!$result_h->{results})
 }
 
 $vars->{data} = $result_h->{results};
-
 #print STDERR "data: ".Dumper($vars->{data});
 
 if ($result_h->{to_cache})
@@ -219,19 +230,9 @@ if ($params{'format'})
 	}
 	else
 	{	#	write out the files if the data is in a specific format
-		if ($params{'format'} eq 'rdfxml')
-		{	print "Content-type:text/plain\n\n";
-			my $out = new FileHandle(">-");
-				$vars->{data}->to_xml($out, -show_associations=>'yes');
-		}
-		elsif ($params{'format'} eq 'go_assoc')
-		{	my $out = new FileHandle(">-");
-			my $ga_out = GO::IO::go_assoc->new($out);
-			$ga_out->cgi_header;
-			$ga_out->write_graph($vars->{data});
-		}
-		exit;
+		render_data_in_format($vars->{data}, $params{'format'});
 	}
+	exit;
 }
 
 #

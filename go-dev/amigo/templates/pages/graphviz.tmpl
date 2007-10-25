@@ -17,17 +17,17 @@
 <h1>[% graph_title %] Graphical View</h1>
 
 <ul class="download">
-<li><a href="[% cgi %].cgi?session_id=[% session_id %][% permalink %]" title="Standard AmiGO view of this graph">AmiGO view</a></li>
-<li><a href="[% cgi %].cgi?format=dot&amp;session_id=[% session_id %][% permalink %]" title="Download graph in dot format"> <img src="[% image_dir %]/dl.png" alt="download link"> dot text</a></li>
-<li><a href="[% cgi %].cgi?format=obo&amp;session_id=[% session_id %][% permalink %]" title="Download graph in OBO format"> <img src="[% image_dir %]/dl.png" alt="download link"> OBO</a></li>
-<li><a href="[% cgi %].cgi?format=rdfxml&amp;session_id=[% session_id %][% permalink %]" title="Download graph in RDF-XML format"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
+<li><a href="browse.cgi?session_id=[% session_id %][% permalink %]&amp;action=set-tree" title="Standard AmiGO view of this graph">AmiGO view</a></li>
+<li><a href="browse.cgi?format=dot&amp;session_id=[% session_id %][% permalink %]" title="Download graph in dot format"> <img src="[% image_dir %]/dl.png" alt="download link"> dot text</a></li>
+<li><a href="browse.cgi?format=obo&amp;session_id=[% session_id %][% permalink %]" title="Download graph in OBO format"> <img src="[% image_dir %]/dl.png" alt="download link"> OBO</a></li>
+<li><a href="browse.cgi?format=rdfxml&amp;session_id=[% session_id %][% permalink %]" title="Download graph in RDF-XML format"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
 </ul>
 
 <form action="[% cgi %].cgi" id="graph">
 	<fieldset class="filters"><legend>Graph View Options</legend>
 	<ul class="inline">
 	[% opt_name = 'layout';
-		option = extra_filter.$opt_name %]
+		option = extra_filter.$opt_name.data %]
 	<li><label for="[% opt_name %]">[% opt_name | ucfirst %]</label>
 	[% INCLUDE options_radio.tmpl %]
 	</li>

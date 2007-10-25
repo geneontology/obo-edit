@@ -160,10 +160,11 @@ fieldset.blast-form { padding: 0; }
 fieldset .cbox { margin: 0 5px 0 0; }
 fieldset ul { margin: 5px; }
 
-div.searchType { float: left; width: 30%; margin: 0 0 5px 0; }
-.searchType h4 { margin: 0 0 5px 0; }
-.searchType fieldset { background: #e9effa; }
-
+#searchType { margin: 0; }
+#searchType div { float: left; width: 30%; margin: 0 0 5px 0; }
+#searchType h4 { margin: 0 0 5px 0; }
+#searchType fieldset { background: #e9effa; }
+#searchType .deselected fieldset { background: #fff; }
 select { min-width: 1.5em; border: 1px solid #3875D7; }
 
 p select { margin-left: 5px; }
@@ -330,3 +331,5 @@ ul.info { padding: 10px 0 10px 35px; background: url(../images/info.png) 0 50% n
 #id-bar-query { margin: 0 5px; }
 
 #messages { padding: 0 10px; }
+
+.transparent { padding: 0 !important; border: 0 !important; margin: 0 !important; } 

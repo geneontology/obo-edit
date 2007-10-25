@@ -1,14 +1,17 @@
 <div class="filters">
+
+[%# USE Dumper; '<pre>'; Dumper.dump(search); '</pre>' %]
+
 [% IF !querylist || querylist.0 == '' %]
 	<p>No search text entered. Please enter some text and try again.</p>
 [% ELSE %]
 	<p>
-		<em>[% n_results %]</em> result[% IF n_results != 1 -%]s [% END %]
-	for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span> 
+		<em>[% n_results || 0 %]</em> result[% IF n_results != 1 -%]s [% END %]
+	for <em class="hilite">[% querylist.join('</em> or <em class="hilite">') %]</em> 
 	[% IF exact_match == '1' %]
 		 [exact match] 
 	[% END %]
-		 in field[% IF search_fields.size != 1 %]s[% END %] <span class="type">
+		 in [% search_constraint %] field[% IF search_fields.size != 1 %]s[% END %] <span class="type">
 	[% str = search_fields.join(', ');
 		IF str.size > 0;
 			str;
@@ -22,11 +25,11 @@
 		<p><a href="search.cgi?query=[% queryurl %]&amp;search_constraint=[% search_constraint %]&amp;session_id=[% session_id %]&amp;page=1&amp;action=sort" title="View results">View results</a></p>
 		<p>Refine query:</p>
 		<form action="search.cgi">
-			<p><label for="query">Search GO</label><input class="textBox" type="text" name="query" size="18" value="[% query %]" id="query">
+			<p><label for="search_query">Search GO</label><input class="textBox" type="text" name="search_query" size="18" value="[% query %]" id="search_query">
 				<input type="checkbox" id="exact_match" name="exact_match" value="1" class="cbox"><label for="exact_match">Exact Match</label>
 			<input type="hidden" name="session_id" value="[% session_id %]">
 			<input type="hidden" name="search_constraint" value="[% search_constraint %]">
-			<input type="hidden" name="action" value="filter">
+			<input type="hidden" name="action" value="new-search">
 			<input type="submit" class="button"></p>
 		</form>
 	[% ELSIF message;
@@ -36,6 +39,7 @@
 		IF session.apph.filters.size != 0;
 			filters_on = 1;
 		END;
+		
 		UNLESS filters_on == 0 && n_results == 0;
 			INCLUDE filters.tmpl;
 			IF page_name == 'gp_search';
@@ -51,18 +55,18 @@
 		<ul>
 			[% IF filters_on == 1 %]
 			<li>
-				<a href="search.cgi?query=[% queryurl %]&amp;search_constraint=[% search_constraint %]&amp;session_id=[% session_id %]&amp;action=reset-filters">Repeat your search with filters turned off.</a>
+				<a href="search.cgi?search_query=[% queryurl %]&amp;search_constraint=[% search_constraint %]&amp;session_id=[% session_id %]&amp;action=reset-filters">Repeat your search with filters turned off.</a>
 			</li>
 			[% END %]
 			<li>
 				<a href="search.cgi?action=advanced_query&amp;session_id=[% session_id %]">Perform an advanced query</a>
 			</li>
 			[% IF search_constraint == 'gp' %]
-				<li><a href="search.cgi?query=[% queryurl %]&amp;search_constraint=term&amp;session_id=[% session_id %]" title="Search for [% querytext %] in term names">Search for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span> in term names</a></li>
+				<li><a href="search.cgi?search_query=[% queryurl %]&amp;search_constraint=term&amp;session_id=[% session_id %]&amp;action=new-search" title="Search for [% querytext %] in term names">Search for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span> in term names</a></li>
 			<li>If you are interested in annotating this gene product, please <a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact the GO helpdesk">contact the GO helpdesk</a>.
 			</li>
 			[% ELSIF search_constraint == 'term' %]
-				<li><a href="search.cgi?query=[% queryurl %]&amp;search_constraint=gp&amp;session_id=[% session_id %]" title="Search for [% querytext %] in gene product names or symbols">Search for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span> in gene product names</a></li>
+				<li><a href="search.cgi?search_query=[% queryurl %]&amp;search_constraint=gp&amp;session_id=[% session_id %]&amp;action=new-search" title="Search for [% querytext %] in gene product names or symbols">Search for <span class="hilite">[% querylist.join('</span> or <span class="hilite">') %]</span> in gene product names</a></li>
 			<li>If you would like to request a new term to cover this concept, please <a href="http://www.geneontology.org/GO.contacts.shtml" title="Contact the GO helpdesk">contact the GO helpdesk</a>.
 			</li>
 			[% END %]

@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 	<head>
-		<title>AmiGO: BLAST Query Submission</title>
+		<title>AmiGO: BLAST Query</title>
 		[% INCLUDE header_info.tmpl %]
 	</head>
 	<body>
@@ -16,28 +16,12 @@
 			The sequence search is performed using either BLASTP or BLASTX (from the <a href="http://blast.wustl.edu/">WU-BLAST</a> package), depending on the type of the input sequence.
 			</p>
 [% TRY %]
-
-
-	[% PROCESS blast_error.tmpl
-	#	IF tmpl;
-	#	USE Dumper; '<pre>'; Dumper.dump(tmpl); '</pre>'
+	[% PROCESS blast_error.tmpl;
 		%]
 		<div class="block">
 			<form action="blast.cgi" enctype="multipart/form-data" method="POST" name="blast_form" id="blast_form">
 			<h2>BLAST Query</h2>
-			<h3><label for="query">Enter your query</label> <a href="http://www.geneontology.org/amigo/help-blast_query.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
-			<fieldset class="blast-form"><legend>Enter a UniProt accession <em>or</em> upload a text file of queries <em>or</em> paste in FASTA sequence(s) </legend>
-				<p><label for="sptr_id">UniProt accession</label>: <input type="text" name="sptr_id" id="sptr_id" class="textBox">
-				</p>
-				<p><label for="upfile">Text file</label> (maximum file size [% max_upload_size %]K): <input type="file" name="upfile" id="upfile" title="Upload a text file to use as input" class="button">
-				</p>
-				<p><label for="seq">FASTA sequence(s):</label><br>Sequences should be separated with an empty line.</p>
-				<textarea name="seq" id="seq" cols="50" rows="20"></textarea>
-			</fieldset>
-			<ul>
-				<li>Maximum number of sequences: [% max_seq_num %]</li>
-				<li>Maximum total length of sequence: [% max_seq_length.chunk(-3).join(',') %] residues</li>
-			</ul>
+		[% PROCESS blast_query_entry.tmpl %]
 			<h3>BLAST settings <a href="http://www.geneontology.org/amigo/help-blast_settings.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></h3>
 		[% FOREACH opt_name = ['threshold', 'maxhits'];
 				title = extra_filter.$opt_name.title %]
@@ -67,22 +51,17 @@
 
 		[% PROCESS filters.tmpl;
 			
-			#USE Dumper; '<pre>'; Dumper.dump(filterdata); '</pre>';
+		#	USE Dumper; '<pre>'; Dumper.dump(filterdata); '</pre>';
 			
-			all_gp_filters = ['taxid', 'gptype', 'speciesdb'];
-			all_a_filters = ['evcode', 'ont', 'qual', 'assby'];
 			gp_filters = [];
 			a_filters = [];
-			FOREACH f = all_gp_filters;
-				IF filterdata.$f;
+			FOREACH f = filterdata.keys;
+				IF filterdata.$f.filtertype == 'gp';
 					gp_filters.push(f);
-				END;
-			END;
-			FOREACH f = all_a_filters;
-				IF filterdata.$f;
+				ELSIF filterdata.$f.filtertype == 'ont' || filterdata.$f.filtertype == 'assoc';
 					a_filters.push(f);
-				END;
-			END;
+			END; END;
+	
 			IF gp_filters.size != 0 || a_filters.size != 0;
 			class = 'block floatL' %]
 			[% IF gp_filters.size != 0 %]
@@ -94,6 +73,8 @@
 				END; END; END;
 				FOREACH opt_name = gp_filters;
 					IF opt_name == 'taxid';
+						title = filterdata.$opt_name.title;
+						option = filterdata.$opt_name.data;
 						PROCESS options_select.tmpl;
 					ELSE;
 						title = filterdata.$opt_name.title;

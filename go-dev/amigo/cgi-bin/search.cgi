@@ -1,4 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting search.cgi\n";
@@ -193,15 +195,16 @@ foreach (@valid_search_constraints)
 {	$option_h->{$_.'fields'} = [ split(/,|\0/, $params{$_.'fields'}) ] if $params{$_.'fields'};
 }
 
-foreach ('gp_count_ok', 'show_gp_counts', 'show_term_counts')
-{	$option_h->{$_} = $session->$_;
+for ('gp', 'term')
+{	$vars->{"show_".$_."_counts"} = $option_h->{"show_".$_."_counts"} = $session->show_counts($_);
 }
+$vars->{gp_count_ok} = $option_h->{gp_count_ok} = $session->gp_count_ok;
 $option_h->{ontology_list} = $session->get_ontology_list;
 
 my $t0 = gettimeofday();
 my $data = $search->getResultList($session->apph, $query, $option_h);
 
-print STDERR "results: ".Dumper($search->{results})."\n";
+#print STDERR "results: ".Dumper($search->{results})."\n";
 
 #print STDERR "Search object: ".Dumper($search)."\n";
 
@@ -225,12 +228,12 @@ if ($search->{cache_me} && $search->cache)
 #	print STDERR "session object:\n".Dumper($session)."\n";
 
 if ($search->{results}{single_result})
-{	print STDERR "data: ".Dumper($data);
+{	#print STDERR "data: ".Dumper($data);
 	print "Location: ".$session->get_param('cgi_url')."/".$data->{search_constraint}."-details.cgi?".$data->{search_constraint}."=".$data->{id}."&session_id=".$session->id."\n\n";
 	exit;
 }
 else
-{
+{	print STDERR "Search fields: ".Dumper($search->get_param('select_list'))."\n";
 	$vars = {
 #		data => $data,
 		search => $search,
@@ -240,18 +243,9 @@ else
 		n_results => $search->get_result_param('n_results') || 0,
 	};
 
-	if ($data)
-	{	$vars->{data} = $data;
-		$vars->{n_pages} = $search->get_result_param('n_pages') || 1;
-		$vars->{page} = $params{page} || 1;
-	}
-#	else
-#	{	$vars->{n_results} = 0;
+#	foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
+#	{	$vars->{$_} = 1 if $option_h->{$_};
 #	}
-	
-	foreach ('exact_match', 'show_gp_counts', 'show_term_counts')
-	{	$vars->{$_} = 1 if $search->get_param($_);
-	}
 	
 	print STDERR "get query param: ".Dumper($search->get_query_param)."\n";
 #	my $q = $search->get_query_param;
@@ -264,12 +258,24 @@ else
 
 		$vars->{query} = join(" ", $vars->{querylist}[0]);
 		$vars->{querytext} = join(" or ", @{$vars->{querylist}});
-		$vars->{queryurl} = join("&amp;query=", map { encode_entities($_) } @{$vars->{querylist}});
+		$vars->{queryurl} = CGI::escape( join("&amp;query=", @{$vars->{querylist}}) );
 
 		if ($search->get_result_param('large_result_set'))
 		{	$vars->{large_result_set} = 1;
 		}
+
+		if ($data)
+		{	$vars->{data} = $data;
+			$vars->{n_pages} = $search->get_result_param('n_pages') || 1;
+			$vars->{page} = $params{page} || 1;
+			$vars->{url_string} = "query=".$vars->{queryurl} ."&amp;search_constraint=".$vars->{search_constraint};
+		}
 	}
+
+#	else
+#	{	$vars->{n_results} = 0;
+#	}
+	
 	$vars->{msg_h} = $search->get_msg;
 }
 

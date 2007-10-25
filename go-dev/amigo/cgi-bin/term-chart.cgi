@@ -1,4 +1,6 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting term-chart.cgi\n";
@@ -51,12 +53,12 @@ my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'term_chart');
 #
 
 my $vars;
-my $gp_count_ok = $session->gp_count_ok;
+my $show_term_counts = $session->show_counts('term');
 
 if (!@term_list)
 {	$vars->{msg_h} = set_message($msg_h, 'fatal', 'no_term');
 }
-elsif (!$gp_count_ok)
+elsif (!$show_term_counts)
 {	$vars->{msg_h} = set_message($msg_h, 'fatal', 'bad_filters');
 	$vars->{term} = $term_list[0];
 }
@@ -70,7 +72,9 @@ else
 			$term_list[0],      # acc
 			$msg_h,             # msg_h
 			{ session_id => $session->id,
-			  gp_count_ok => $gp_count_ok }
+			  gp_count_ok => $session->gp_count_ok,
+			  show_term_counts => $show_term_counts,
+			}
 	);
 	$vars->{msg_h} = $result_h->{msg_h};
 	$vars->{data} = $result_h->{results} if $result_h->{results};

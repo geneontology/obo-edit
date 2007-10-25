@@ -169,37 +169,24 @@ sub gp_count_ok {
 	if (@_)
 	{	my $val = shift;
 		$self->{_gp_count_ok} = $val;
-		$self->show_gp_counts($val);
+		$self->show_counts('gp', $val) if $val == 1;
 	}
 	return $self->{_gp_count_ok};
 }
 
-sub show_gp_counts {
+sub show_counts {
 	my $self = shift;
+	my $count_type = shift;
 	if (@_)
-	{	$self->{_show_gp_counts} = shift;
+	{	$self->{"_show_".$count_type."_counts"} = shift;
 	}
-	elsif ($self->{_show_gp_counts})
+	elsif ($self->{"_show_".$count_type."_counts"})
 	{	#
 	}
 	else
-	{	$self->{_show_gp_counts} = $self->get_saved_param('calculate_gp_counts') || 0;
+	{	$self->{"_show_".$count_type."_counts"} = $self->get_saved_param("calculate_".$count_type."_counts") || 0;
 	}
-	return $self->{_show_gp_counts};
-}
-
-sub show_term_counts {
-	my $self = shift;
-	if (@_)
-	{	$self->{_show_term_counts} = shift;
-	}
-	elsif ($self->{_show_term_counts})
-	{	#
-	}
-	else
-	{	$self->{_show_term_counts} = $self->get_saved_param('calculate_term_counts') || 0;
-	}
-	return $self->{_show_term_counts};
+	return $self->{"_show_".$count_type."_counts"};
 }
 
 sub amigo_default {
@@ -546,7 +533,7 @@ sub get_session_data_dir {
 	my $ses_data_dir = $ses_dir.'/'.$ses_id.'_data';
 
 	if (!new DirHandle($ses_data_dir)) {
-		print STDERR "Eval-ing the create data_dir command\n";
+		print STDERR "Eval-ing the create dir command\n";
 		eval {
 			mkdir($ses_data_dir, 0755);
 			`chmod a+rw $ses_data_dir`;
@@ -573,7 +560,7 @@ sub get_blast_results_dir {
 	my $blast_dir = $ses_data_dir.'/blast_dir';
 
 	if (!new DirHandle($blast_dir)) {
-		print STDERR "Eval-ing the create data_dir command\n";
+		print STDERR "Eval-ing the create dir ( $blast_dir ) command\n";
 		eval {
 			mkdir($blast_dir, 0755);
 			`chmod a+rw $blast_dir`;
@@ -584,6 +571,29 @@ sub get_blast_results_dir {
 		}
 	}
 	return $blast_dir;
+}
+
+=head2 get_tmp_images_dir
+
+usage : my $tmp_images_dir = $session->get_tmp_images_dir;
+
+Returns the location of the temporary images directory
+(for storing GraphViz images)
+
+=cut
+
+sub get_tmp_images_dir {
+	my $self = shift;
+	my $tmp_images_dir = $self->get_default_param('html_dir');
+	return $tmp_images_dir."/tmp_images";
+}
+
+sub suicide_message {
+	my $self = shift;
+	
+	die(shift);
+	
+	exit;
 }
 
 sub __clear_sessions {
@@ -783,29 +793,16 @@ sub save_graphviz_image {
 	my $self = shift;
 	my $graphviz = shift;
 	my $ses_id = $self->id;
-	my $html_dir = $self->get_default_param('html_dir');
 
-	if (!$ses_id || !$html_dir)
-	{	print STDERR "Session ID or html directory not set!\n";
+	if (!$ses_id)
+	{	print STDERR "Session ID not set!\n";
 		$self->suicide_message("AmiGO configuration error.");
 	}
 
+	my $tmp_img_dir = $self->get_tmp_images_dir;
 	my $num = int(rand(1000));
-	my $file_name = $ses_id."$num.png";
-	my $tmp_img_dir = $html_dir.'/tmp_images/'.$ses_id;
-
-	if (!new DirHandle($tmp_img_dir)) {
-		print STDERR "Eval-ing the create tmp_img_dir command\n";
-		eval {
-			mkdir($tmp_img_dir, 0755);
-			`chmod a+rw $tmp_img_dir`;
-		};
-		if ($@)
-		{	print STDERR "Error: $@";
-			$self->suicide_message("AmiGO configuration error: $@");
-		}
-	}
-
+	my $file_name = $ses_id;
+	$file_name .= time() . ".png";
 	my $img_url;
 	my $html;
 
@@ -813,16 +810,12 @@ sub save_graphviz_image {
 	print $fh $graphviz->as_png;
 	$fh->close;
 	chmod (0666, "$tmp_img_dir/$file_name");
-	$img_url = "tmp_images/$ses_id/$file_name";
-
-	print STDERR "img_url: $img_url\n";
+	$img_url = "tmp_images/$file_name";
+#	print STDERR "img_url: $img_url\n";
 
 	$html = $graphviz->as_cmapx;
 	#	remove the \ns from the title attributes
 	$html =~ s/\\n/ /g;
-#	if ($@)
-#	{	print STDERR "Error!" . $@ ;
-#	}
 	
 	return ($img_url, $html);
 }
@@ -1032,6 +1025,103 @@ sub search_sync_old {
 
 sub graph_sync {
 	my $self = shift;
+	my $params = shift;
+	my $last_action;
+	my $action_node_list;
+
+#	if we just performed some sort of action, see what the target of
+#	the action was and put it in the action node list
+
+	#	the params that we are interested in are
+	#	action, format, term, open_0, open_1, closed
+
+	print STDERR "params in: ".Dumper($params)."\n";
+
+	my $action = $params->{action};
+
+	my $tree = $params->{tree};
+	
+	if (!$action && ($params->{'format'} || $self->ses_type eq 'graphviz'))
+	{	$action = 'permalink';
+	}
+	print STDERR "action: ". ( $action || 'undefined' )."\n";
+
+	my @tree_params = &_tree_params;
+
+	if (!$action)
+	{	#	dump the tree
+		print STDERR "no action: dumping the tree\n";
+		undef $tree;
+	}
+	elsif ($action eq 'reset-tree') {
+		# this happens in the term-select cgi
+		undef $tree;
+		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
+		delete $tree->{term}
+#		$tree->{open_0} = get_valid_list($params->{term}) if $params->{term};
+	}
+	elsif ($action eq 'set-tree') {
+		# this only happens in the term-details and term-select cgi
+		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
+		delete $tree->{term}
+	}
+	elsif ($action eq 'minus_node') {
+		#	the term in 'target' has been closed
+		my $target = $params->{target};
+		print STDERR "closing node target, $target\n";
+		$last_action = 'Closed '.$target;
+		$action_node_list = [ split "\0", $params->{'target'} ];
+		#	add it to the list of closed nodes
+		$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
+		#	remove it from the open_1 node list (if it is present)
+		$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
+	}
+	elsif ($action eq 'plus_node') {
+		#	the term in 'target' has been opened
+		my $target = $params->{target};
+		print STDERR "opening node target, $target\n";
+		$last_action = 'Opened '.$target;
+		$action_node_list = [ split "\0", $params->{'target'} ];
+		#	add it to the list of open nodes
+		$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
+		#	remove it from the closed node list (if it is present)
+		$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
+	}
+	else #	other actions, e.g. filtering, permalink, set tree
+	{	#	get the params from the cgi
+		foreach my $p (@tree_params)
+		{	#	move the params from the cgi in
+			$tree->{$p} = get_valid_list($tree->{$p}) if $tree->{$p};
+		}
+		if ($action eq 'reset-filters')
+		{	$last_action = 'Reset filters';
+		}
+		elsif ($action eq 'filter')
+		{	$last_action = 'Set filters';
+		}
+		elsif ($action eq 'permalink')
+		{	$last_action = 'Created permalink';
+		}
+		elsif ($action eq 'set-tree')
+		{	$last_action = 'Set the tree';
+		}
+	}
+
+	foreach (keys %$tree)
+	{	delete $tree->{$_} unless defined $tree->{$_};
+	}
+	
+	print STDERR "tree post: ".Dumper($tree)."\n";
+
+#	END BIG INSERT!
+
+	return { tree => $tree, last_action => $last_action || 'Reset the tree', action_node_list => $action_node_list };
+#	$self->set_current_param($_, $tree->{$_}) foreach @tree_params;
+#	$self->save_cached_results($tree, 'tree');
+}
+
+sub graph_sync_old {
+	my $self = shift;
 
 	#	the params that we are interested in are
 	#	action, format, term, open_0, open_1, closed
@@ -1072,7 +1162,6 @@ sub graph_sync {
 	if ($action) {
 		if ($action eq 'reset-tree') {
 			if ($cgi_params{term})
-#			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
 			{	$tree->{open_0} = get_valid_list($cgi_params{term});
 			}
 		}
@@ -1082,13 +1171,11 @@ sub graph_sync {
 			foreach my $p (@tree_params)
 			{	#	move the params from the cgi in
 				if ($cgi_params{$p})
-#				{	$tree->{$p} = GO::CGI::Utilities::get_valid_list($cgi_params{$p});
 				{	$tree->{$p} = get_valid_list($cgi_params{$p});
 				}
 			}
 
 			if ($cgi_params{term})
-#			{	$tree->{open_0} = GO::CGI::Utilities::get_valid_list($cgi_params{term});
 			{	$tree->{open_0} = get_valid_list($cgi_params{term});
 			}
 
@@ -1098,10 +1185,8 @@ sub graph_sync {
 			my $target = $cgi->param('target');
 			print STDERR "closing node target, $target\n";
 			#	add it to the list of closed nodes
-#			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
 			$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
 			#	remove it from the open_1 node list (if it is present)
-#			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
 			$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
 		}
 		elsif ($action eq 'plus_node') {
@@ -1109,10 +1194,8 @@ sub graph_sync {
 			my $target = $cgi->param('target');
 			print STDERR "opening node target, $target\n";
 			#	add it to the list of open nodes
-#			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
 			$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
 			#	remove it from the closed node list (if it is present)
-#			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
 			$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
 		}
 		#	other actions - e.g. filtering, permalink: do nothing
@@ -1192,88 +1275,6 @@ sub graph_sync {
 =cut
 }
 
-sub new_graph_sync {
-	my $self = shift;
-	my $params = shift;
-
-	#	the params that we are interested in are
-	#	action, format, term, open_0, open_1, closed
-
-	print STDERR "params in: ".Dumper($params)."\n";
-
-	my $action = $params->{action};
-
-	my $tree = $params->{tree};
-	
-	if (!$action && ($params->{'format'} || $self->ses_type eq 'graphviz'))
-	{	$action = 'permalink';
-	}
-	print STDERR "action: ". ( $action || 'undefined' )."\n";
-
-	my @tree_params = &_tree_params;
-
-	if (!$action)
-	{	#	dump the tree
-		print STDERR "no action: dumping the tree\n";
-		undef $tree;
-	}
-	elsif ($action eq 'reset-tree') {
-		# this happens in the term-select cgi
-		undef $tree;
-#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($tree->{term}) if $tree->{term};
-		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
-		delete $tree->{term}
-#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($params->{term}) if $params->{term};
-	}
-	elsif ($action eq 'set-tree') {
-		# this only happens in the term-details and term-select cgi
-#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($tree->{term}) if $tree->{term};
-		$tree->{open_0} = get_valid_list($tree->{term}) if $tree->{term};
-		delete $tree->{term}
-	}
-	elsif ($action eq 'minus_node') {
-		#	the term in 'target' has been closed
-		my $target = $params->{target};
-		print STDERR "closing node target, $target\n";
-		#	add it to the list of closed nodes
-#		$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
-		$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
-		#	remove it from the open_1 node list (if it is present)
-#		$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
-		$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
-	}
-	elsif ($action eq 'plus_node') {
-		#	the term in 'target' has been opened
-		my $target = $params->{target};
-		print STDERR "opening node target, $target\n";
-		#	add it to the list of open nodes
-#		$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
-		$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
-		#	remove it from the closed node list (if it is present)
-#		$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
-		$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
-	}
-	else #	other actions, e.g. filtering, permalink, set tree
-	{	#	get the params from the cgi
-		foreach my $p (@tree_params)
-		{	#	move the params from the cgi in
-#			$tree->{$p} = GO::CGI::Utilities::get_valid_list($tree->{$p}) if $tree->{$p};
-			$tree->{$p} = get_valid_list($tree->{$p}) if $tree->{$p};
-		}
-#		$tree->{open_0} = GO::CGI::Utilities::get_valid_list($params->{term}) if ($params->{term});
-	}
-
-	foreach (keys %$tree)
-	{	delete $tree->{$_} unless defined $tree->{$_};
-	}
-	
-	print STDERR "tree post: ".Dumper($tree)."\n";
-
-	return $tree;
-#	$self->set_current_param($_, $tree->{$_}) foreach @tree_params;
-#	$self->save_cached_results($tree, 'tree');
-}
-
 sub term_sync {
 	my $self = shift;
 #	print STDERR "session before sync:\n".Dumper($self)."\n";
@@ -1307,10 +1308,8 @@ sub term_sync {
 			my $target = $cgi->param('target');
 			print STDERR "closing node target, $target\n";
 			#	add it to the list of closed nodes
-#			$tree->{closed} = GO::CGI::Utilities::add_value_to_list($tree->{closed} || undef, $target);
 			$tree->{closed} = add_value_to_list($tree->{closed} || undef, $target);
 			#	remove it from the open_1 node list (if it is present)
-#			$tree->{open_1} = GO::CGI::Utilities::remove_value_from_list($tree->{open_1} || undef, $target);
 			$tree->{open_1} = remove_value_from_list($tree->{open_1} || undef, $target);
 		}
 		elsif ($action eq 'plus_node') {
@@ -1318,23 +1317,15 @@ sub term_sync {
 			my $target = $cgi->param('target');
 			print STDERR "opening node target, $target\n";
 			#	add it to the list of open nodes
-#			$tree->{closed} = GO::CGI::Utilities::remove_value_from_list($tree->{closed} || undef, $target);
 			$tree->{closed} = remove_value_from_list($tree->{closed} || undef, $target);
 			#	remove it from the closed node list (if it is present)
-#			$tree->{open_1} = GO::CGI::Utilities::add_value_to_list($tree->{open_1} || undef, $target);
 			$tree->{open_1} = add_value_to_list($tree->{open_1} || undef, $target);
 		}
 		#	other actions - e.g. set / reset filters: do nothing
 	} else {
 		#hmm when to clear up, change filter should not!! how to check that?
 		unless ($self->get_cgi->param('ch_filter')) {
-
 			undef $tree;
-		#	$self->__remove_values(-field=>'closed',-to_field=>'closed');
-		#	$self->__delete_fields(-query=>'1',-fields=>['closed']);
-
-		#	$self->__remove_values(-field=>'open_1',-to_field=>'open_1');
-		#	$self->__delete_fields(-query=>'1',-fields=>['open_1']);
 		}
 	}
 	
@@ -1427,7 +1418,7 @@ sub __trim_and_set_filters {
 			$self->delete_param($_) foreach &_filter_fields;
 			#	delete any cached results
 			$self->delete_cached_results;
-			return;
+			undef %params;
 		}
 		elsif ($action eq 'filter')
 		{	#	delete any cached results
@@ -1439,7 +1430,6 @@ sub __trim_and_set_filters {
 	my $active_filters = $self->get_active_filter_fields;
 
 	my $evcode = 0;
-#	if (GO::CGI::Utilities::get_environment_param('ieas_loaded') && grep { 'evcode' } @$active_filters && $params{'evcode'})
 	if (get_environment_param('ieas_loaded') && grep { 'evcode' } @$active_filters && $params{'evcode'})
 	{	#	evcode has to be handled slightly differently if IEAs
 		#	are present, so remove it from the list of filters
@@ -1447,8 +1437,7 @@ sub __trim_and_set_filters {
 		my @other_filters = grep { $_ ne 'evcode' } @$active_filters;
 		$active_filters = [ @other_filters ];
 	}
-	
-	print STDERR "active filters (possibly minus evcode): ".Dumper($active_filters)."\n";
+		print STDERR "active filters (possibly minus evcode): ".Dumper($active_filters)."\n";
 
 	my $to_delete;
 	foreach my $f (@$active_filters)
@@ -1457,7 +1446,6 @@ sub __trim_and_set_filters {
 			$filters{$f} = $self->get_saved_param($f) if $self->get_saved_param($f);
 			next;
 		}
-#		my $p_list = GO::CGI::Utilities::get_valid_list( [split("\0", $params{$f})] );
 		my $p_list = get_valid_list( [split("\0", $params{$f})] );
 		print STDERR "f: $f; list: ".Dumper($p_list)."\n";
 		if (!@$p_list  # no values present
@@ -1471,17 +1459,14 @@ sub __trim_and_set_filters {
 		{	push @$to_delete, $f;
 		}
 		else
-		{#	print STDERR "p_list size: ".(scalar @$p_list)."; param list size: ".$self->get_param_list_size($f)."\n";
-			$filters{$f} = \@$p_list;
+		{	$filters{$f} = \@$p_list;
 			$self->set_saved_param($f, \@$p_list);
-#			$self->set_param(-query=>'1', -field=>$f, -value=>$p_list);
 			print STDERR "set $f filters.\n";
 		}
 	}
 
 	#	evcode
 	if ($evcode)  # this will only be on if IEAs are loaded
-#	{	my $p_list = GO::CGI::Utilities::get_valid_list( split("\0", $params{'evcode'}) );
 	{	my $p_list = get_valid_list( split("\0", $params{'evcode'}) );
 			#	print STDERR "f: $f; list: ".join(", ", @{$p_list || []})."\n";
 		if (!@$p_list ||  # no values present
@@ -1512,10 +1497,6 @@ sub __trim_and_set_filters {
 	}
 
 	$self->delete_saved_param($_) foreach @$to_delete;
-	
-#	$self->get_cgi->delete($_) foreach @$to_delete;
-	
-#	$self->delete_current_param($_) foreach @$active_filters;
 	$apph->filters(\%filters);
 
 	print STDERR "apph filters: ".Dumper(\%filters);
@@ -1524,8 +1505,8 @@ sub __trim_and_set_filters {
 	#	check whether it's going to be ok to get gp counts
 	if (!keys %filters)
 	{	$self->gp_count_ok(1);
-	#	$self->show_gp_counts(1);	#	done by gp_count_ok
-		$self->show_term_counts(1);
+	#	$self->show_counts('gp', 1);	#	done by gp_count_ok
+		$self->show_counts('term', 1);
 	}
 	else
 	{	my @gp_count_correct_fields = &_gp_count_correct_fields;
@@ -1545,8 +1526,6 @@ sub __trim_and_set_filters {
 		}
 		$self->gp_count_ok(1) if !$set;
 	}
-	
-	
 	
 	print STDERR "gp_count_ok: ".$self->gp_count_ok."\n";
 	print STDERR "saved after: ".Dumper($self->{params}{saved});
@@ -1606,16 +1585,6 @@ sub _term_assoc_params {
 	
 }
 
-=head2 _filter_fields
-
-A list of all the fields that can be filtered by AmiGO
-
-=cut
-
-sub _filter_fields {
-	return (&_gp_filters, &_assoc_filters, &_ont_filters);
-}
-
 =head2 _gp_count_correct_fields
 
 The fields for which the gp count is correctly calculated
@@ -1623,40 +1592,107 @@ The fields for which the gp count is correctly calculated
 =cut
 
 sub _gp_count_correct_fields {
-
-	return qw(ont speciesdb); # taxid);
-
+	my @fields = qw(ont speciesdb);
+	
+	if ($ENV{POPULATE_COUNT_BY_SPECIES} && $ENV{POPULATE_COUNT_BY_SPECIES} == 1)
+	{	return (@fields, 'taxid');
+	}
+	return @fields;
 }
+
+=head2 _filter_fields_by_type
+
+Filterable fields organized by the aspect that they filter
+
+=cut
+
+sub _filter_fields_by_type {
+
+	return 
+	{	gp => ['speciesdb', 'taxid', 'gptype'],
+		assoc => ['evcode', 'assby', 'qual'],
+		ont => ['ont'],
+	};
+}
+
+=head2 _filter_fields
+
+All filterable fields
+
+=cut
+
+sub _filter_fields {
+	my $filters = &_filter_fields_by_type;
+	return (map { @$_ } values %$filters);
+}
+
+=head2 get_filters_by_type
+
+Gets all the filter fields of a certain type
+If no argument is passed, it returns a list of all the filterable fields
+
+=cut
+
+sub get_filters_by_type {
+	my $f_type = shift;
+	my $filters = _filter_fields_by_type;
+	
+	if ($f_type && $filters->{$f_type})
+	{	return $filters->{$f_type};
+	}
+	
+	return [ map { @$_ } values %$filters ];
+	
+}
+
+=head2 get_type_of_filter
+
+Gets the aspect that the filter applies to
+
+=cut
+
+sub get_type_of_filter {
+	my $filter = shift || return;
+	my $filters = _filter_fields_by_type;
+	my $filter_h;
+	foreach my $f (keys %$filters)
+	{	$filter_h->{$_} = $f foreach @{$filters->{$f}};
+	}
+	
+	return $filter_h->{$filter} || undef;
+}
+
 
 =head2 _gp_filters
 
 Filterable gene product fields
 
-=cut
 
 sub _gp_filters {
 	return qw(speciesdb taxid gptype);
 }
 
+=cut
+
 =head2 _assoc_filters
 
 Filterable association fields
-
-=cut
 
 sub _assoc_filters {
 	return qw(evcode qual assby); #assocdate);
 }
 
+=cut
+
 =head2 _ont_filters
 
 Filterable ontology fields
 
-=cut
-
 sub _ont_filters {
 	return ('ont');
 }
+
+=cut
 
 
 ##### Getting parameter lists #####
@@ -1678,11 +1714,17 @@ sub get_active_filter_fields {
 	
 	print STDERR "getting active filter fields...\n";
 	my @active;
+
+	my @fields = &_filter_fields;
+	print STDERR "All filter fields: ".Dumper(\@fields);
+
 	foreach (&_filter_fields)
-#	{	push @active, $_ if (GO::CGI::Utilities::get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
-	{	push @active, $_ if (get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
+	{	print STDERR "field: $_\n";
+	
+		push @active, $_ if (get_environment_param('show_'.$_.'_filter') && !$self->get_saved_param('disable_'.$_.'_filter'));
 	}
 	$self->{active_filter_fields} = [@active];
+	print STDERR "active filter fields: ".join(", ", @active)."\n";
 	return $self->{active_filter_fields};
 }
 
@@ -1857,8 +1899,8 @@ sub get_list {
 		blast_filter => ['on', 'off'],
 		use_filters => ['on', 'off'],
 		layout => ['vertical', 'horizontal'],
-#		graph_bgcolor => $self->get_list('color'),
-#		graph_textcolor => $self->get_list('color'),
+		graph_bgcolor => [ 'beige', 'black', 'blue', 'forestgreen', 'maroon', 'navy', 'pink', 'purple', 'red', 'skyblue', 'white', 'yellow' ],
+		graph_textcolor => [ 'beige', 'black', 'blue', 'forestgreen', 'maroon', 'navy', 'pink', 'purple', 'red', 'skyblue', 'white', 'yellow' ],
 	);
 	
 #	print STDERR "lists{param} = ".Dumper($lists{$param})."\n";
@@ -1931,67 +1973,32 @@ sub process_page_template {
 		page_name => $self->ses_type,
 		release_date => $self->{release_date},
 		's' => 4,
+		amigo_url => $self->get_default_param('cgi_url'),     # environment
 		html_url => $self->get_default_param('html_url'),     # environment
 		show_blast => $self->get_default_param('show_blast'), # environment
-		amigo_url => $self->get_default_param('cgi_url'),
+		show_graphviz => $self->get_default_param('show_graphviz'),   # env
 		image_dir => $self->get_default_param('html_url').'/images',  # env
 		template_paths => $self->get_default_param('template_paths'), # env
 	};
+
+	if ($self->get_default_param('show_gp_options'))
+	{	$tmpl_vars->{show_gp_options} = 1;
+		for ('gp', 'term')
+		{	$tmpl_vars->{"show_".$_."_counts"} = $self->show_counts($_);
+		}
+	}
 
 	print "Content-type:text/html\n\n";
 	GO::Template::Template->process_template($ses_type.".tmpl", $tmpl_vars);
 }
 
-
-=cut
-sub set_single_option {
-	my $self = shift;
-	my $param = shift;
-	my $data;
-
-	my $option_h = {
-		term_context => ['parents', 'sibling'],
-		search_constraint => ['term', 'gp'],
-		term_assocs => ['all','direct'],
-		tree_view => ['full', 'compact'],
-		blast_filter => ['on', 'off'],
-		use_filters => ['on', 'off'],
-		layout => ['vertical', 'horizontal'],
-		
-	};
-	
-	if (!$option_h->{$param})
-	{	return;
-	}
-	
-	#	get the params and the human names
-	my @option_l = map { $_ = { value => $_, label => $self->munger->get_human_name($_) } } @{$option_h->{$param}};
-
-	my @select;
-	my $selected = $self->get_param($param);
-	if ($selected)
-	{	@select = grep { $_->{value} eq $selected } @option_l;
-	}
-
-	if (!@select)
-	{	#	use the first value in the list
-		$option_l[0]{selected} = 1;
-	}
-	else
-	{	$select[0]{selected} = 1;
-	}
-
-#	print STDERR "data: ".Dumper(\@option_l)."\n";
-	return \@option_l;
-}
-=cut
 sub set_option {
 	my $self = shift;
 	my $param = shift;
 	my $selected_only = shift || undef;
 	my $all = 0;
 
-	print STDERR "param: $param". ($selected_only ? " selected_only" : "") . "\n";
+#	print STDERR "param: $param". ($selected_only ? " selected_only" : "") . "\n";
 
 	#	get the current values of the parameter
 	my $selected = $self->get_param($param) || $self->get_cgi_param($param);
@@ -2108,7 +2115,7 @@ sub set_option {
 		
 		if (!@select)
 		{	$all = 1;
-			last;
+	#		last;
 		}
 		foreach (@select)
 		{	$_->{selected} = 1;
@@ -2129,20 +2136,22 @@ sub set_option {
 	my $param_data = { title => $self->munger->get_human_name($param) };
 	$param_data->{selected} = \@select unless (!@select);
 
-	if ($selected_only)
-	{	return $param_data;
-	}
-
 	#	Add an 'all' option if appropriate
 	if (grep { $_ eq $param } (@{$self->get_active_filter_fields}))#, 'termfields', 'gpfields', 'sppfields'))
-	{	if ($all == 1)
+	{	if ($all == 1 && !$selected_only)
 		{	unshift @$option_l, { value => 'all', label => 'All', selected => 1 };
 		}
 		else
 		{	unshift @$option_l, { value => 'all', label => 'All'};
 		}
+		$param_data->{filtertype} = get_type_of_filter($param);
+		$param_data->{gp_count_ok} = 1 if grep { $param eq $_ } &_gp_count_correct_fields;
 	}
-	
+
+	if ($selected_only)
+	{	return $param_data;
+	}
+
 	$param_data->{data} = $option_l;
 	return $param_data;
 }
@@ -2188,7 +2197,7 @@ sub get_data_for_filters {
 #	active filters
 	my @active = @{$self->get_active_filter_fields};
 
-	print STDERR "active filters: ".join(", ", @active)."\n";
+#	print STDERR "active filters: ".join(", ", @active)."\n";
 
 #	not all pages need all the filter data
 #	any page which shows the current filters needs the 'selected' filter data

@@ -2,36 +2,38 @@
 <dl>
 	<dt id="filterToggle" class="toggle">Filter tree view <a href="http://www.geneontology.org/amigo/help-filter_browse.shtml" class="help-link"><img src="[% image_dir %]/help.png" alt="help!"></a></dt>
 
-
 	<dd id="filterDiv">
-[%# USE Dumper; '<pre>'; Dumper.dump(tree); '</pre>' %]
 		<form action="[% cgi %].cgi">
+
+[%# USE Dumper; '<pre>'; Dumper.dump(filterdata); '</pre>' %]
+
 			[% FOREACH p IN tree.keys;
 					IF tree.$p.size > 0; %]
 			<input type="hidden" name="[% p %]" value="[% tree.$p.join(',') %]">
 			[% END; END %]
-					
 			<fieldset class="floatL block"><legend>Filter by ontology</legend>
 			[% opt_name = 'ont';
 				INCLUDE options_select.tmpl %]
 			</fieldset>
-			[% all_filters = ['evcode', 'taxid', 'gptype', 'qual', 'assby'];
-				active = [];
-				FOREACH f = all_filters;
-					IF filterdata.$f;
-						active.push(f);
-				END; END;
-
-				IF filterdata.keys.size > 0 %]
+			[% gp_ok = [];
+				all = [];
+				FOREACH f = filterdata.keys;
+					IF filterdata.$f.data && (filterdata.$f.filtertype == 'gp' || filterdata.$f.filtertype == 'assoc');
+						IF filterdata.$f.gp_count_ok;
+							gp_ok.push(f);
+						ELSE;
+							all.push(f);
+				END; END; END;
+				
+				IF all.size > 0 || gp_ok.size > 0 %]
 				<fieldset class="floatL block">
 					<legend>Filter Gene Product Counts</legend>
-				[% IF filterdata.speciesdb;
-						opt_name = 'speciesdb';
+				[% FOREACH opt_name = gp_ok;
 						INCLUDE options_select.tmpl;
 					END;
-					IF active.size > 0; %]
+					IF all.size > 0; %]
 					<ul class="floatL">
-					[% FOREACH opt_name = active;
+					[% FOREACH opt_name = all;
 							title = filterdata.$opt_name.title;
 							IF opt_name != 'taxid'; title = title _ 's'; END; %]
 					<li>[% INCLUDE options_checkbox_all.tmpl %]</li>

@@ -91,7 +91,7 @@ dl, dt, dd { display: inline }
 		<tr>
 		[% END %]
 			<td><a href="term-details.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View details of [% term.name %]" class="term">[% term.name %] ; [% term.acc %]</a> <a href="browse.cgi?action=set-tree&amp;term=[% term.acc %]&amp;session_id=[% session_id %]" title="View [% term.name %] in the tree browser" class="tree-link">[view in tree]</a></td>
-			<td class="R">[% term.count %] <a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View associations to [% term.name %]" class="assoc-link">[view associations]</a></td>
+			<td class="R">[% term.count %] <a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene product associations to [% term.name %]" class="assoc-link">[view gene products]</a></td>
 		</tr>
 	[% counter = counter + 1;
 		END; %]
@@ -99,7 +99,7 @@ dl, dt, dd { display: inline }
 	<tfoot>
 	<tr>
 		<td>Distinct gene products annotated to or below <a href="term-details.cgi?term=[% data.parent.acc %]&amp;session_id=[% session_id %]" title="View details of [% data.parent.name %]" class="term">[% data.parent.name %] ; [% data.parent.acc %]</a></td>
-		<td class="R">[% data.parent.count %] <a href="term-assoc.cgi?term=[% data.parent.acc %]&amp;session_id=[% session_id %]" title="View associations to [% data.parent.name %]" class="assoc-link">[view associations]</a></td>
+		<td class="R">[% data.parent.count %] <a href="term-assoc.cgi?term=[% data.parent.acc %]&amp;session_id=[% session_id %]" title="View associations to [% data.parent.name %]" class="assoc-link">[view gene products]</a></td>
 	</tr>
 	</tfoot>
 </table>

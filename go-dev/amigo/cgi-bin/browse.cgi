@@ -1,4 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
+
+#	#!/usr/bin/perl -w
 require 5.8.0;
 
 print STDERR "\n\nStarting browse.cgi\n";
@@ -43,6 +45,29 @@ my %params = $q->Vars;
 my $vars;
 
 my $session = new GO::CGI::Session('-q'=>$q, -ses_type=>'browse', -read_only=>1);
+my @valid_formats = qw(rdfxml obo go_ont tree);
+if ($session->get_default_param('show_graphviz'))
+{	push @valid_formats, ('png', 'dot');
+	$vars->{show_graphviz} = 1;
+}
+
+$vars->{gp_count_ok} = $session->gp_count_ok;
+$vars->{show_gp_counts} = $session->show_counts('gp');
+
+my $tmpl;
+if ($params{'format'})
+{	#	check we understand the format
+	if (!grep { $params{'format'} eq $_ } @valid_formats)
+	{	#	exit!
+		$vars->{msg_h} = set_message($vars->{msg_h}, 'fatal', 'bad_format', $params{'format'});
+		process_page_template($vars, $session);
+		exit;
+	}
+	$tmpl = get_tmpl($params{'format'}, 'term', $vars->{show_gp_counts});
+}
+else
+{	$tmpl = get_tmpl('html', 'graph', $vars->{show_gp_counts});
+}
 
 my $graph_sync_h;
 foreach ('target', 'action', 'format')
@@ -55,7 +80,8 @@ foreach ('open_0', 'open_1', 'closed', 'term')
 	}
 }
 
-my $tree = $session->new_graph_sync($graph_sync_h);
+my $sync_h = $session->graph_sync($graph_sync_h);
+my $tree = $sync_h->{tree};
 print STDERR "tree: ".Dumper($tree)."\n";
 
 #$session->graph_sync;
@@ -65,24 +91,6 @@ print STDERR "tree: ".Dumper($tree)."\n";
 $session->save_session;
 
 #print STDERR "ENV{PATH} = ".Dumper($ENV{PATH})."\n";
-
-my $tmpl;
-if ($params{'format'})
-{	#	check we understand the format
-	if (!grep { $params{'format'} eq $_ } qw(rdfxml obo go_ont tree png dot))
-	{	#	exit!
-		$vars->{msg_h} = set_message($vars->{msg_h}, 'fatal', 'bad_format', $params{'format'});
-		process_page_template($vars, $session);
-		exit;
-	}
-	$tmpl = get_tmpl($params{'format'}, 'term', $session->gp_count_ok);
-}
-else
-{	$tmpl = get_tmpl('html', 'graph', $session->gp_count_ok);
-}
-
-$vars->{gp_count_ok} = $session->gp_count_ok;
-
 #
 # Perform the query
 #
@@ -91,7 +99,7 @@ my $result_h = get_current_graph(
 	-apph => $session->apph,
 	-msg_h => $vars->{msg_h},
 	-tree => $tree,
-	-option_h => { tmpl => $tmpl, gp_count_ok => $vars->{gp_count_ok} });
+	-option_h => { tmpl => $tmpl, gp_count_ok => $vars->{gp_count_ok}, show_gp_counts => $vars->{show_gp_counts} });
 
 $vars->{msg_h} = $result_h->{msg_h};
 if (!$result_h->{results})
@@ -102,30 +110,12 @@ if (!$result_h->{results})
 $vars->{graph} = $result_h->{results};
 
 if ($params{'format'})
-{	if ($params{'format'} eq 'rdfxml')
-	{	print "Content-type:text/plain\n\n";
-		my $out = new FileHandle(">-");
-		$vars->{graph}->to_xml($out);
-	}
-	elsif ($params{'format'} eq 'obo')
-	{	print "Content-type:text/plain\n\n";
-		$vars->{graph}->export({ format => 'obo' });
-	}
-	elsif ($params{'format'} eq 'go_ont')
-	{	print "Content-type:text/plain\n\n";
-		$vars->{graph}->to_text_output(-fmt=>'gotext');
-	}
-	elsif ($params{'format'} eq 'tree')
-	{	print "Content-type:text/plain\n\n";
-		$vars->{graph}->to_text_output(-fmt=>'tree');
-	}
-	else # graphviz formats
-	{	$ENV{PATH} .= ':/usr/local/graphviz/bin';
-		$session->ses_type('graphviz');
-		my $base = {};
+{	if ($params{'format'} eq 'png' || $params{'format'} eq 'dot')
+	{	my $base = {};
 		if ($params{'format'} eq 'png')
 		{	$base->{base_url} = "term-details.cgi?session_id=".$session->id."&amp;term=";
 		}
+
 		my $graphviz = GO::Dotty::Dotty::go_graph_to_graphviz
 		(	$vars->{graph},
 			{	fillcolor => $session->get_saved_param('graph_bgcolor') || undef,
@@ -133,25 +123,28 @@ if ($params{'format'})
 				layout => $session->get_saved_param('layout') || undef,
 			},
 			$base);
-		if ($params{'format'} eq 'dot')
-		{	print "Content-type:text/plain\n\n";
-			print $graphviz->as_text;
-		}
-		else # a graphviz image
-		{	($vars->{image_url}, $vars->{image_map_html}) = $session->save_graphviz_image($graphviz);
-			
-		#	foreach (keys %$vars)
-		#	{	print STDERR "vars->{".$_."}: ".$vars->{$_}."\n";
-		#	}
-			foreach my $x ('graph_bgcolor', 'graph_textcolor', 'layout')
+
+		if ($params{'format'} eq 'png') # a graphviz image
+		{	foreach my $x ('graph_bgcolor', 'graph_textcolor', 'layout')
 			{	$vars->{extra_filter}{$x} = $session->set_option($x);
+			#	print STDERR "extra filter: ".Dumper($vars->{extra_filter}{$x});
 			}
-		#	$vars->{permalink} = get_permalink();
+		
+			my $links = get_permalink($vars->{graph}, $tree);
+			foreach (keys %$links)
+			{	$vars->{$_} = $links->{$_};
+			}
+			($vars->{image_url}, $vars->{image_map_html}) = $session->save_graphviz_image($graphviz);
+			
 			$vars->{cgi} = 'browse';
-			process_page_template($vars, $session);
+			process_page_template($vars, $session, 'graphviz');
+			exit;
+		}
+		else
+		{	render_data_in_format($graphviz, 'dot');
 		}
 	}
-	exit;
+	render_data_in_format($vars->{graph}, $params{'format'});
 }
 
 my $compact;
@@ -165,6 +158,9 @@ my $links = get_permalink($vars->{graph}, $tree);
 foreach (keys %$links)
 {	$vars->{$_} = $links->{$_};
 }
+
+
+=remove this
 
 #	if we just performed some sort of action, see what the target of
 #	the action was and put it in the action node list
@@ -197,10 +193,13 @@ else
 {	$vars->{last_action} = 'Reset the tree';
 }
 
+=cut
+
+$vars->{last_action} = $sync_h->{last_action};
+$vars->{action_node_list} = $sync_h->{action_node_list} if $sync_h->{action_node_list};
 
 #print STDERR "action node list: ".Dumper($vars->{action_node_list})."\n";
 $vars->{cgi} = 'browse';
-$vars->{term_node_list} = undef;
 $vars->{extra_filter}{tree_view} = $session->set_option('tree_view');
 $vars->{tree_view} = $session->get_saved_param('tree_view');
 $vars->{tree} = $tree;

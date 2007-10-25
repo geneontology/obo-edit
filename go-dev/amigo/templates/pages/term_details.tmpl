@@ -6,7 +6,7 @@
 		[% INCLUDE header_info.tmpl %]
 		[%# INCLUDE term_detail_header_info.tmpl %]
 <link href="[% cgi_url %]/term-details?term=[% term_acc %]&amp;format=rdfxml&amp;session_id=[% session_id %]" rel="meta" type="application/rdf+xml" title="RDF XML data for [% term_acc %]">
-		[% INCLUDE javascript_term_details.tmpl %]
+		[%# INCLUDE javascript_term_details.tmpl %]
 	</head>
 	<body>
 		<div id="header">
@@ -31,15 +31,15 @@
 		<li><a href="#info" title="View term information">Term information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 		<li><a href="#lineage" title="View the placement of the term in the tree">Term lineage <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 		<li><a href="#xrefs" title="View cross-references to external databases">External references <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
-		<li><a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">
-	[% gpa = 'Gene product associations';
-		IF gp_count_ok;
-			gpa = term.n_deep_products _ ' gene product association';
-			IF term.n_deep_products != 1;
-				gpa = gpa _ 's';
-			END;
-		END;
-		gpa %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+	[% IF show_gp_options;
+			gp_assoc_text = 'Gene product associations';
+			IF show_gp_counts;
+				gp_assoc_text = term.n_deep_products _ ' gene product association';
+				IF term.n_deep_products != 1;
+					gp_assoc_text = gp_assoc_text _ 's';
+			END; END %]
+		<li><a href="term-assoc.cgi?term=[% term.acc %]&amp;session_id=[% session_id %]" title="View gene products associated with this term">[% gp_assoc_text %] <img src="[% image_dir %]/left.png" alt="link to another page"></a></li>
+	[% END %]
 	</ul>
 <div class="block" id="info">
 [% END %]
@@ -121,19 +121,23 @@
 
 
 			[% UNLESS term.is_obsolete %]
-
+[% IF graph %]
 <div class="block" id="lineage">
 	<h2>Term Lineage</h2>
-	[% IF graph %]
+[% IF term_context && term_context == 'sibling' %]
+<p><a href="term-details.cgi?term=[% term.acc %]&amp;term_context=parents&amp;session_id=[% session_id %]#lineage" title="View the term and its ancestors">Switch to viewing term ancestors</a></p>
+[% ELSE %]
+<p><a href="term-details.cgi?term=[% term.acc %]&amp;term_context=sibling&amp;session_id=[% session_id %]#lineage" title="View the parents, siblings and children of the term">Switch to viewing term parents, siblings and children</a></p>
+[% END %]
 	<div class="filters">
 		[% INCLUDE filter_term_details.tmpl %]
 	</div>
 	[% INCLUDE treeview.tmpl %]
-	[% END %]
 	<p class="toTop">
 		<a href="#top" title="Back to the top of the page">Back to top</a> 
 	</p>
 </div>
+[% END %]
 
 <div class="block" id="xrefs">
 <h2>External References</h2>
@@ -153,7 +157,7 @@
 	<dl class="ext-ref">
 	[% FOREACH db =  xref_hash.keys.sort %]
 		<dt>
-			<a class="img" href="#[% db %]"><img src="[% image_dir %]/ominus.png" alt="close" id="[% db %]Img"></a>
+			<a class="img" href="#[% db %]"><img src="[% image_dir %]/open.gif" alt="close" id="[% db %]Img"></a>
 				[% db %] ([% xref_hash.$db.size %])
 		</dt>
 		<dd id="[% db %]"><ul>

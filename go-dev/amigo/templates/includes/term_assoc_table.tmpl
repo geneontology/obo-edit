@@ -12,7 +12,7 @@
 <tr class="assoc">
 			[% END; %]
 	<td rowspan="[% rowspan %]">
-		<input type="checkbox" name="gp" value="[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]" id="gp-[% counter %]">
+		<input type="checkbox" name="item" value="[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]" id="gp-[% counter %]">
 	</td>
 	<td rowspan="[% rowspan %]">
 		[% IF a_list.0.is_not == 1 %]
@@ -34,7 +34,15 @@
 		[% IF full_name != '' && full_name != symbol %]
 			<br><a href="gp-details.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View gene product details" class="name">[% gp.full_name %]</a>
 		[% END %]
-			<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations" class="assoc-link">[view associations]</a>
+
+[% term_assoc_text = "view terms";
+	IF show_term_counts == 1 && data.n_terms;
+		gpid = gp.id
+		term_assoc_text = data.n_terms.$gpid _ ' term';
+		IF data.n_terms.$gpid != 1;
+			term_assoc_text = term_assoc_text _ 's';
+	END; END %]
+			<a href="gp-assoc.cgi?gp=[% gp.xref.xref_dbname _ ':' _ gp.xref.xref_key %]&amp;session_id=[% session_id %]" title="View term associations" class="assoc-link">[[% term_assoc_text %]]</a>
 	</td>
 	<td rowspan="[% rowspan %]" class="gp">
 		<span class="type">[% gp.type %]</span>

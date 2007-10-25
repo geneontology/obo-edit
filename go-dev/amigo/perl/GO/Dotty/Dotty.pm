@@ -41,6 +41,7 @@ sub go_graph_to_graphviz {
 	my $gopts = shift;
 	my $opts = shift;
 	my $it = $graph->create_iterator;
+	$it->compact(1);
 	my %relationships;
 	my %labellednodes;
 	
@@ -79,13 +80,15 @@ print STDERR Dumper($gopts);
 		},
 	);
 	
+	print STDERR "creating new GraphViz graph...\n";
 	my $graphviz = GraphViz->new(%default_graph);
-	
+	print STDERR "done!\n";
 	#new
 	my %term_h;
 	my $terms = $graph->get_all_nodes;
 	map { $term_h{$_->acc} = $_ } @$terms;
-	
+
+	print STDERR "Iterating through graph...\n";
 	while (my $ni = $it->next_node_instance ) {
 		my $term = $ni->term;
 	#	print STDERR "\nterm: ".$term->acc."\n";
@@ -134,6 +137,7 @@ print STDERR Dumper($gopts);
 			}
 		}
 	}
+	print STDERR "Done!\n";
 	return $graphviz;
 }
 

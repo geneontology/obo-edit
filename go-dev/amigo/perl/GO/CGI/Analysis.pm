@@ -1,4 +1,4 @@
-package GO::CGI::Analysis;
+﻿package GO::CGI::Analysis;
 
 use strict;
 use Carp;
@@ -9,6 +9,7 @@ use GO::CGI::Query qw(get_gp_details);
 use DirHandle;
 use FileHandle;
 use Exporter;
+use File::Temp;
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
 @ISA = ('Exporter');
 @EXPORT_OK = qw(set_off_blast launch_job check_blast get_blast_results);
@@ -289,31 +290,30 @@ sub set_off_blast {
 
 	## Save session to disk.
 	my $file = new FileHandle;
-	print STDERR "Eval-ing the blast_dir command\n";
+	print STDERR "Eval-ing the find blast_dir command\n";
 	eval {
 		#	`find $data_dir/$blast_dir -name "*" -exec rm -f {} \\;`;
-			`find $blast_dir -name "*" -exec rm -rf {} \\;`;
+			`find $blast_dir -mindepth 1 -name "*" -exec rm -rf {} \\;`;
 	};
 	
 	if ($@)
 	{	print STDERR "Error: $@";
 	}
 	
-	if (!new DirHandle($blast_dir)) {
-		print STDERR "Eval-ing the create blast_dir command\n";
-		eval {
-			mkdir($blast_dir, 0755);
-			`chmod a+rw $blast_dir`;
-		};
-		if ($@)
-		{	print STDERR "Error: $@";
-			$msg_h = set_message($msg_h, 'fatal', 'config_error', $@);
-			return { msg_h => $msg_h };
-		}
-	}
+#	if (!new DirHandle($blast_dir)) {
+#		print STDERR "Eval-ing the create blast_dir ($blast_dir) command\n";
+#		eval {
+#			mkdir($blast_dir, 0755);
+#			`chmod a+rw $blast_dir` or die($!);
+#		};
+#		if ($@)
+#		{	print STDERR "Error: $@";
+#			$msg_h = set_message($msg_h, 'fatal', 'config_error', $@);
+#			return { msg_h => $msg_h };
+#		}
+#	}
 
 	my $i = 0;
-	my $cmd_file = "$blast_dir/command.sh";
 	my $program_bin = get_environment_param($program);
 	
 	foreach my $p qw(maxhits threshold blast_filter)
@@ -325,12 +325,17 @@ sub set_off_blast {
 	$bfilter_opt = " -filter SEG" if ($blast_options->{blast_filter} eq 'on');
 	my $ncpus = 1; #restrict blast load on servers
 
+#	my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
+#	my $cmd_file = "$tmpdir/command.sh";
+	my $cmd_file = "$blast_dir/command.sh";
+
 	for my $seq (@seqs) {
 		$i++;
 		my $seq_file = "$blast_dir/current_seq.$i";
 		my $result = "$blast_dir/result.$i";
 		my $result_tmp = "$blast_dir/result_tmp.$i";
 		my $error = "$blast_dir/error.$i";
+		
 		my $seqfile = new FileHandle("> $seq_file");
 		$seqfile->print($seq);
 		$seqfile->close;
@@ -375,10 +380,12 @@ sub set_off_blast {
 	{	require LWP::UserAgent;
 		my $ua = LWP::UserAgent->new;
 		my $blast_url = get_environment_param('blast_url');
-		my %form = ( blast_dir => $blast_dir );
+		print STDERR "blast url: $blast_url\n";
+		my %form = ( blast_dir => $blast_dir); #, temp_dir => $tmpdir );
 
 		print STDERR "starting post at ".localtime()."\n";
 		my $response = $ua->post($blast_url, \%form);
+#		print STDERR "response: ".Dumper($response)."\n";
 		print STDERR "finished post at ".localtime()."\n";
 	}
 	return { msg_h => $msg_h, results => $input_seqs };

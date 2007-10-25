@@ -10,7 +10,7 @@
 	ELSE;
 		link = link _ "&amp;page=1";
 	END %]
-<form action="spp-select.cgi">
+<form action="spp-select.cgi" method="POST">
 <table id="results" summary="Species search results for [% querytext %]">
 <thead>
 <tr>
@@ -32,7 +32,7 @@
 	[% ELSE %]
 			<tr class="species" id="t-[% counter %]">
 	[% END %]
-		<td><input class="cbox" type="checkbox" id="spp-[% counter %]" value="[% spp.ncbi_taxa_id %]" name="spp"></td>
+		<td><input class="cbox" type="checkbox" id="spp-[% counter %]" value="[% spp.ncbi_taxa_id %]" name="item"></td>
 		<td>
 			<label for="spp-[% counter %]" class="ncbi_taxa_id"><i class="spp">[% spp.genus %]&nbsp;[% spp.species %]</i></label>
 			[% IF spp.common_name %]
