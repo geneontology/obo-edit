@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.bbop.framework.event.UserEvent;
@@ -21,16 +22,24 @@ import org.bbop.util.TaskDelegate;
 public class GUIManager {
 
 	protected static GUIManager manager;
+
 	protected final static String PREFS_DIR_PROPERTY = "prefsdir";
 
 	protected BackgroundEventQueue screenLockQueue;
 
 	protected BackgroundEventQueue backgroundQueue;
+
 	protected JFrame frame;
+
 	protected boolean started = false;
+
 	protected List<GUITask> activeTasks = new ArrayList<GUITask>();
+
 	protected LinkedList<GUITask> startupTasks = new LinkedList<GUITask>();
+
 	protected MultiMap<String, UserListener> userListeners = new MultiHashMap<String, UserListener>();
+
+	protected static boolean confirmOnExit = true;
 
 	protected static File prefsDir;
 
@@ -124,7 +133,7 @@ public class GUIManager {
 	public JFrame getFrame() {
 		return frame;
 	}
-	
+
 	public void setFrame(JFrame frame) {
 		this.frame = frame;
 	}
@@ -145,15 +154,13 @@ public class GUIManager {
 				shutdown();
 			}
 		});
-		
+
 		while (startupTasks.size() > 0) {
 			GUITask startupTask = popTask();
 			installTask(startupTask);
 		}
 		started = true;
 	}
-	
-	
 
 	public void shutdown() {
 		List<GUITask> taskList = new LinkedList<GUITask>(activeTasks);
@@ -162,7 +169,7 @@ public class GUIManager {
 		}
 		started = false;
 	}
-	
+
 	public static final File readPrefsDir() {
 		File prefsDir = null;
 		if (System.getProperty(PREFS_DIR_PROPERTY) != null) {
@@ -174,11 +181,12 @@ public class GUIManager {
 				prefsDir = null;
 		}
 		if (prefsDir == null) {
-			prefsDir = new File(System.getProperty("user.home") + "/.bbopframework");
+			prefsDir = new File(System.getProperty("user.home")
+					+ "/.bbopframework");
 			if (!prefsDir.exists())
 				prefsDir.mkdirs();
 		}
-		
+
 		return prefsDir;
 	}
 
@@ -188,7 +196,7 @@ public class GUIManager {
 		}
 		return prefsDir;
 	}
-	
+
 	public static void setPrefsDir(File dir) {
 		prefsDir = dir;
 		boolean worked = true;
@@ -203,13 +211,20 @@ public class GUIManager {
 	public static void addShutdownHook(Runnable r) {
 		hooks.add(r);
 	}
-	
+
 	public static void removeShutdownHook(Runnable r) {
 		hooks.remove(r);
 	}
-	
+
 	public static void exit(final int status) {
-		for(Runnable r : hooks) {
+		if (GUIManager.getManager().getFrame() != null && isConfirmOnExit()) {
+			if (JOptionPane.showConfirmDialog(GUIManager.getManager()
+					.getFrame(), "Really quit?", "Exit?",
+					JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+				return;
+		}
+
+		for (Runnable r : hooks) {
 			SwingUtilities.invokeLater(r);
 		}
 		SwingUtilities.invokeLater(new Runnable() {
@@ -217,5 +232,13 @@ public class GUIManager {
 				System.exit(status);
 			}
 		});
+	}
+
+	public static boolean isConfirmOnExit() {
+		return confirmOnExit;
+	}
+
+	public static void setConfirmOnExit(boolean confirmOnExit) {
+		GUIManager.confirmOnExit = confirmOnExit;
 	}
 }

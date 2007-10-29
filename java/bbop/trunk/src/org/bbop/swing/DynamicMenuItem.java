@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DynamicMenuItem {
 
-	public List<Component> getItems();
+	public List<? extends Component> getItems();
 	
 	public boolean getMerge();
 	

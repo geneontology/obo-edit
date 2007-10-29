@@ -27,6 +27,10 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public List<Component> getItems() {
 		return items;
 	}
+	
+	public List<Component> getDynamicItems() {
+		return null;
+	}
 
 	@Override
 	public void addSeparator() {

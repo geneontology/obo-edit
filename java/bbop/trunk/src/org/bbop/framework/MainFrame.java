@@ -16,22 +16,16 @@ import org.bbop.swing.EnhancedMenuBar;
 
 public class MainFrame extends JFrame {
 	private EnhancedMenuBar menubar;
-	
-	protected boolean confirmOnExit = true;
 
 	protected JPanel mainPanel;
-	
+
 	private int[][] dimensionInfo = { { 620, 460, 160 }, { 760, 560, 300 },
 			{ 960, 700, 400 } };
-	
+
 	private class WindowCloser extends WindowAdapter {
 		@Override
 		public void windowClosing(WindowEvent e) {
-			if (!isConfirmOnExit()
-					|| JOptionPane.showConfirmDialog(MainFrame.this,
-							"Really quit?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-				GUIManager.exit(0);
-
+			GUIManager.exit(0);
 		}
 	}
 
@@ -47,17 +41,16 @@ public class MainFrame extends JFrame {
 			setJMenuBar(menubar);
 			addMenus();
 			createListeners();
-			initGUI();
-			// setXMLLayout(Preferences.getPreferences().getLayout());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void setVisible(boolean b) {
-		setupFrame();
-		super.setVisible(b);
+	public void setVisible(boolean arg0) {
+		if (true)
+			initGUI();
+		super.setVisible(arg0);
 	}
 
 	protected void setupFrame() {
@@ -66,27 +59,27 @@ public class MainFrame extends JFrame {
 		c.init();
 		mainPanel.add((Component) c);
 	}
-	
+
 	public void addMenu(JMenu menu) {
 		menubar.add(menu);
 	}
-	
+
 	public void setHelpMenu(JMenu menu) {
 		menubar.add(menu);
 	}
-	
+
 	protected void addMenus() {
-		
+
 	}
-	
+
 	protected void createListeners() {
 	}
-	
+
 	protected void initGUI() {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(1, 1));
 		setContentPane(mainPanel);
-
+		setupFrame();
 		int i;
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		for (i = 1; i < dimensionInfo.length; i++) {
@@ -96,13 +89,5 @@ public class MainFrame extends JFrame {
 
 		}
 		setSize(dimensionInfo[i - 1][0], dimensionInfo[i - 1][1]);
-	}
-
-	public boolean isConfirmOnExit() {
-		return confirmOnExit;
-	}
-
-	public void setConfirmOnExit(boolean confirmOnExit) {
-		this.confirmOnExit = confirmOnExit;
 	}
 }

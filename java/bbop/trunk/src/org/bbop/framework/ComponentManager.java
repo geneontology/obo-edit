@@ -83,8 +83,6 @@ public class ComponentManager {
 	public static ComponentManager getManager() {
 		if (manager == null) {
 			manager = new ComponentManager();
-			JMenu viewMenu = createShowMenu();
-			GUIManager.getManager().installMenuItem(null, viewMenu);
 			GUIManager.addShutdownHook(new Runnable() {
 				public void run() {
 					manager.cleanup();
@@ -134,118 +132,6 @@ public class ComponentManager {
 
 	public void savePerspectiveAs(Perspective p, String name) {
 		driver.savePerspectiveAs(p, name);
-	}
-
-	protected static JMenu createShowMenu() {
-		JMenu out = new JMenu("View", true);
-		out.setName("View");
-		DynamicMenu perspectivesMenu = new DynamicMenu("Layouts");
-		perspectivesMenu.add(new AbstractDynamicMenuItem("Layouts", true, true,
-				true) {
-			public List<Component> getItems() {
-				ButtonGroup group = new ButtonGroup();
-				List<Component> out = new LinkedList<Component>();
-				for (final Perspective perspective : getManager()
-						.getPerspectives()) {
-					JRadioButtonMenuItem item = new JRadioButtonMenuItem(
-							new AbstractAction(perspective.getName()) {
-								public void actionPerformed(ActionEvent e) {
-									getManager().setPerspective(perspective);
-								}
-							});
-					group.add(item);
-					if (ObjectUtil.equals(getManager().getCurrentPerspective(),
-							perspective))
-						item.setSelected(true);
-					out.add(item);
-				}
-				return out;
-			}
-		});
-		AbstractDynamicMenuItem ioOps = new AbstractDynamicMenuItem("Show",
-				true, true, true) {
-			public List<Component> getItems() {
-				final Perspective current = getManager().getDriver()
-						.getCurrentPerspective();
-				List<Component> out = new LinkedList<Component>();
-				JMenuItem savePerspectiveAsItem = new JMenuItem(
-						new AbstractAction("Save current perspective as...") {
-							public void actionPerformed(ActionEvent e) {
-								String name = JOptionPane
-										.showInputDialog("New perspective name");
-								if (name != null) {
-									getManager().savePerspectiveAs(current,
-											name);
-								}
-							}
-						});
-				JMenuItem deleteItem = new JMenuItem(new AbstractAction(
-						"Delete current perspective") {
-					public void actionPerformed(ActionEvent e) {
-						getManager().deletePerspective(current);
-					}
-				});
-				boolean builtin = current == null ? false : current
-						.getBuiltIn();
-				deleteItem.setEnabled(!builtin);
-				out.add(savePerspectiveAsItem);
-				out.add(deleteItem);
-				return out;
-			}
-		};
-
-		perspectivesMenu.add(ioOps);
-		DynamicMenu showMenu = new DynamicMenu("Show");
-		showMenu.add(new AbstractDynamicMenuItem("Show") {
-			public List<Component> getItems() {
-				List<Component> out = new LinkedList<Component>();
-				Map<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>> factoryMap = new HashMap<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>>();
-				for (final GUIComponentFactory factory : ComponentManager
-						.getManager().getFactories()) {
-					if (!factory.showInMenus())
-						continue;
-					List<GUIComponentFactory> factories = factoryMap
-							.get(factory.getCategory());
-					if (factories == null) {
-						factories = new ArrayList<GUIComponentFactory>();
-						factoryMap.put(factory.getCategory(), factories);
-					}
-					factories.add(factory);
-				}
-				Comparator<GUIComponentFactory> factoryComparator = new Comparator<GUIComponentFactory>() {
-
-					public int compare(GUIComponentFactory o1,
-							GUIComponentFactory o2) {
-						return o1.toString().compareTo(o2.toString());
-					}
-
-				};
-				for (GUIComponentFactory.FactoryCategory category : GUIComponentFactory.FactoryCategory
-						.values()) {
-					List<GUIComponentFactory> factories = factoryMap
-							.get(category);
-					if (factories != null && factories.size() > 0) {
-						Collections.sort(factories, factoryComparator);
-						DynamicMenu subMenu = new DynamicMenu(category
-								.toString());
-						for (final GUIComponentFactory factory : factories) {
-							JMenuItem item = new JMenuItem(new AbstractAction(
-									factory.getName()) {
-								public void actionPerformed(ActionEvent e) {
-									getManager().showComponent(factory, null);
-								}
-							});
-							subMenu.add(item);
-						}
-						out.add(subMenu);
-					}
-				}
-				return out;
-			}
-		});
-		out.add(perspectivesMenu);
-		out.add(showMenu);
-		return out;
 	}
 
 	public String showComponent(GUIComponentFactory factory, GUIComponent target) {

@@ -67,13 +67,13 @@ public class IDWDriver implements LayoutDriver {
 
 	protected Perspective currentPerspective;
 
-	protected Color background;
+	protected Color background = Color.lightGray;
 
-	protected Font font;
+	protected Font font = new Font("Arial", 0, 10);
 
-	protected Color darkColor;
+	protected Color darkColor = Color.blue;
 
-	protected Color lightColor;
+	protected Color lightColor = Color.white;
 
 	protected Collection<ViewListener> viewListeners = new LinkedList<ViewListener>();
 
