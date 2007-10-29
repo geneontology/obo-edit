@@ -20,6 +20,6 @@ public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
 	
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.EDIT;
+		return FactoryCategory.ONTOLOGY;
 	}
 }
