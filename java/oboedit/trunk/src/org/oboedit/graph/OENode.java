@@ -1,18 +1,13 @@
 package org.oboedit.graph;
 
 import java.awt.Shape;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Iterator;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.bbop.swing.ShapeUtil;
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.components.TermImageDisplayComponent;
 import org.oboedit.piccolo.Morphable;
 import org.oboedit.piccolo.PiccoloUtil;
 import org.oboedit.piccolo.TransitionText;
@@ -74,9 +69,19 @@ public class OENode extends PCNode implements Morphable {
 		return out.toString();
 	}
 
-	public static String getLabelAsHTML(String field) {
-		field = "<html><center><font face='Arial' color='black'>"
-				+ escapeHTML(field) + "</font></center></html>";
+	public static String getLabelAsHTML(IdentifiedObject io, String field) {
+		String imgURL = TermImageDisplayComponent.getFile((LinkedObject) io);
+		if (imgURL == null) {
+			field = "<html><center><font face='Arial' color='black'>"
+					+ escapeHTML(field) + "</font></center></html>";
+		} else {
+			field = "<html><table border=0><tr valign=center><td><img align=left src='" + imgURL
+					+ "' width='50'></td><td><font face='Arial' color='black'>"
+					+ escapeHTML(field) + "</font></td></table></html>";
+//			field = "<html><img align=left src='" + imgURL
+//					+ "' width='50'><font face='Arial' color='black'>"
+//					+ escapeHTML(field) + "</font></html>";
+		}
 		return field;
 	}
 
@@ -90,7 +95,7 @@ public class OENode extends PCNode implements Morphable {
 
 	public void setLabel(String field) {
 		this.field.setWidth(getInitialNodeWidth());
-		String s = getLabelAsHTML(field);
+		String s = getLabelAsHTML((IdentifiedObject) getObject(), field);
 		this.field.setText(s);
 
 		// if (this.field.getHeight() > getPreferredHeight()

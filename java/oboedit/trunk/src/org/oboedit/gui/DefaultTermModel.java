@@ -55,6 +55,7 @@ public class DefaultTermModel implements TermModel {
 	protected List obsoleteRoots = new Vector();
 
 	protected LinkDatabase linkDatabase;
+
 	protected TrimmedLinkDatabase trimmedLinkDB;
 
 	protected Filter userTermFilter;
@@ -68,8 +69,6 @@ public class DefaultTermModel implements TermModel {
 	protected RootAlgorithm rootAlgorithm = RootAlgorithm.GREEDY;
 
 	protected TermSorter comparator = new TermSorter(true);
-
-	protected OBOProperty filterProperty = null;
 
 	// JTree does some unnecessary checks when expanding paths to make sure that
 	// you are only expanding a valid path. We don't have time for this,
@@ -352,53 +351,33 @@ public class DefaultTermModel implements TermModel {
 		listeners.addElement(l);
 	}
 
-	public OBOProperty getPropertyFilter() {
-		return filterProperty;
-	}
-
-	public void setPropertyFilter(OBOProperty property) {
-		if (property != filterProperty) {
-			filterProperty = property;
-			// buildFilteredDatabase();
-			reload();
-		}
-	}
-
-	protected LinkFilter getPropertyLinkFilter() {
-		org.obo.filters.LinkFilter basicLinkFilter = new LinkFilterImpl();
-		basicLinkFilter
-				.setAspect(org.obo.filters.LinkFilter.TYPE);
-
-		ObjectFilter idfilter = new ObjectFilterImpl();
-		idfilter.setCriterion(new IDSearchCriterion());
-		idfilter.setComparison(new EqualsComparison());
-		idfilter.setValue(filterProperty.getID());
-		basicLinkFilter.setFilter(idfilter);
-
-		return basicLinkFilter;
-	}
-
 	protected void buildFilteredDatabase() {
-		FilteredLinkDatabase filteredLinkDatabase;
+		FilteredLinkDatabase filteredLinkDatabase = new FilteredLinkDatabase(
+				SessionManager.getManager().getSession().getLinkDatabase());
 		if (SessionManager.getManager().getUseReasoner()) {
-			if (filterProperty == null)
-				trimmedLinkDB = new TrimmedLinkDatabase(SessionManager
-						.getManager().getReasoner());
-			else {
-				final ReasonedLinkDatabase ldb = SessionManager.getManager()
-						.getReasoner();
-				final FilteredLinkDatabase propertyFiltered = new FilteredLinkDatabase(
-						ldb);
-				/*
-				 * propertyFiltered
-				 * .setFilterMethod(FilteredLinkDatabase.REUSABLE_ITERATOR);
-				 */
-				propertyFiltered.setLinkFilter(getPropertyLinkFilter());
-
-				trimmedLinkDB = new TrimmedLinkDatabase(propertyFiltered);
-			}
-			filteredLinkDatabase = new FilteredLinkDatabase(trimmedLinkDB);
-			linkDatabase = filteredLinkDatabase;
+			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
+					.getManager().getReasoner());
+			trimmedLinkDB = new TrimmedLinkDatabase(filteredLinkDatabase);
+			linkDatabase = trimmedLinkDB;
+			// if (filterProperty == null)
+			// trimmedLinkDB = new TrimmedLinkDatabase(SessionManager
+			// .getManager().getReasoner());
+			// else {
+			// final ReasonedLinkDatabase ldb = SessionManager.getManager()
+			// .getReasoner();
+			// final FilteredLinkDatabase propertyFiltered = new
+			// FilteredLinkDatabase(
+			// ldb);
+			// /*
+			// * propertyFiltered
+			// * .setFilterMethod(FilteredLinkDatabase.REUSABLE_ITERATOR);
+			// */
+			// propertyFiltered.setLinkFilter(getPropertyLinkFilter());
+			//
+			// trimmedLinkDB = new TrimmedLinkDatabase(propertyFiltered);
+			// }
+			// filteredLinkDatabase = new FilteredLinkDatabase(trimmedLinkDB);
+			// linkDatabase = filteredLinkDatabase;
 		} else {
 			trimmedLinkDB = null;
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
@@ -406,7 +385,8 @@ public class DefaultTermModel implements TermModel {
 			linkDatabase = filteredLinkDatabase;
 		}
 
-		filteredLinkDatabase.setTermFilter(getMergedTermFilter(), getMergedLinkFilter());
+		filteredLinkDatabase.setFilters(getMergedTermFilter(),
+				getMergedLinkFilter());
 	}
 
 	protected Filter getMergedTermFilter() {

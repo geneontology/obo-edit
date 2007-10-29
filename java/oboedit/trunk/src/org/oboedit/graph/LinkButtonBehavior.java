@@ -26,8 +26,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.ShapeUtil;
+import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
@@ -94,6 +97,12 @@ public class LinkButtonBehavior implements ViewBehavior {
 
 	protected OENode currentNode;
 
+	protected BackgroundEventQueue queue;
+
+	public LinkButtonBehavior() {
+		queue = new BackgroundEventQueue();
+	}
+
 	public void install(LinkDatabaseCanvas canvas) {
 		this.canvas = canvas;
 		canvas.addInputEventListener(new PBasicInputEventHandler() {
@@ -105,6 +114,7 @@ public class LinkButtonBehavior implements ViewBehavior {
 				currentNode = PiccoloUtil.getNodeOfClass(event.getPath(),
 						OENode.class);
 				if (!ObjectUtil.equals(oldNode, currentNode)) {
+					queue.cancelAll();
 					if (oldNode != null) {
 						removeButtons(oldNode);
 					}
@@ -130,7 +140,7 @@ public class LinkButtonBehavior implements ViewBehavior {
 
 	public void addButtons(OENode oenode) {
 		for (ButtonLocations loc : ButtonLocations.values()) {
-			placeButton(loc, oenode);
+			queue.scheduleTask(new ButtonPlacementTask(loc, oenode));
 		}
 	}
 
@@ -170,17 +180,17 @@ public class LinkButtonBehavior implements ViewBehavior {
 			if (event.isRightMouseButton()) {
 				MouseEvent me = (MouseEvent) event.getSourceSwingEvent();
 				JPanel panel = new JPanel() {
-					
+
 					@Override
 					public void paint(Graphics g) {
 						super.paint(g);
 					}
-					
+
 					@Override
 					protected void paintChildren(Graphics g) {
 						super.paintChildren(g);
 					}
-					
+
 					public void paintComponent(Graphics g) {
 						Graphics2D g2 = (Graphics2D) g;
 						Composite c = g2.getComposite();
@@ -191,8 +201,8 @@ public class LinkButtonBehavior implements ViewBehavior {
 					}
 				};
 				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-				List<Link> showThese = new ArrayList<Link>(getLinksToShow(lo, loc
-						.isChildren()));
+				List<Link> showThese = new ArrayList<Link>(getLinksToShow(lo,
+						loc.isChildren()));
 				Collections.sort(showThese, new Comparator<Link>() {
 
 					public int compare(Link o1, Link o2) {
@@ -207,7 +217,7 @@ public class LinkButtonBehavior implements ViewBehavior {
 						}
 						return lo1.getName().compareToIgnoreCase(lo2.getName());
 					}
-					
+
 				});
 				for (Link link : showThese) {
 					LinkedObject obj;
@@ -274,145 +284,171 @@ public class LinkButtonBehavior implements ViewBehavior {
 		return showThese;
 	}
 
-	protected void placeButton(ButtonLocations loc, final OENode oenode) {
-		// int buttonSize = (int) (Math.min(oenode.getFullBoundsReference()
-		// .getWidth(), oenode.getFullBoundsReference().getHeight()) / 3);
-		int buttonSize = 12;
-		int width = buttonSize;
-		int height = buttonSize;
-		PPath button = new PPath(new Ellipse2D.Double(0, 0, width, height));
-		button.addAttribute(PiccoloUtil.NO_RIGHT_CLICK_MENU, true);
-		Shape iconShape;
-		if (!loc.isClose()) {
-			iconShape = getTriangle(height * 2 / 3, loc.isChildren() != loc
-					.isExpand());
-		} else {
-			iconShape = getPlusShape(height * 2 / 3);
+	protected class ButtonPlacementTask extends AbstractTaskDelegate<Void> {
+
+		protected ButtonLocations loc;
+
+		protected OENode oenode;
+
+		public ButtonPlacementTask(ButtonLocations loc, OENode node) {
+			this.loc = loc;
+			this.oenode = node;
 		}
-		PPath icon = new PPath(iconShape);
-		icon.setPaint(Color.white);
-		icon.setStroke(null);
-		button.addChild(icon);
-		icon.setPickable(false);
-		PiccoloUtil.centerInParent(icon, true, true);
-		button.addAttribute(TooltipFactory.KEY, SimpleTooltipFactory
-				.getInstance());
-		button.addAttribute("buttonType", loc);
-		button.addAttribute("node", oenode.getObject());
-		button.addInputEventListener(buttonListener);
-		oenode.setNamedChild(loc, button);
-		button.setStroke(null);
-		button.setPaint(Color.blue);
-		button.setTransparency(.5f);
 
-		setVisibility(loc, button, oenode);
+		@Override
+		public void execute() throws Exception {
+			int buttonSize = 12;
+			int width = buttonSize;
+			int height = buttonSize;
+			final PPath button = new PPath(new Ellipse2D.Double(0, 0, width,
+					height));
+			button.addAttribute(PiccoloUtil.NO_RIGHT_CLICK_MENU, true);
+			Shape iconShape;
+			if (!loc.isClose()) {
+				iconShape = getTriangle(height * 2 / 3, loc.isChildren() != loc
+						.isExpand());
+			} else {
+				iconShape = getPlusShape(height * 2 / 3);
+			}
+			PPath icon = new PPath(iconShape);
+			icon.setPaint(Color.white);
+			icon.setStroke(null);
+			button.addChild(icon);
+			icon.setPickable(false);
+			PiccoloUtil.centerInParent(icon, true, true);
+			button.addAttribute(TooltipFactory.KEY, SimpleTooltipFactory
+					.getInstance());
+			button.addAttribute("buttonType", loc);
+			button.addAttribute("node", oenode.getObject());
+			button.addInputEventListener(buttonListener);
+			button.setStroke(null);
+			button.setPaint(Color.blue);
+			button.setTransparency(.5f);
+			if (!loc.isClose()) {
+				boolean grayedOut = true;
+				Collection<LinkedObject> expandThese = new LinkedList<LinkedObject>();
+				Collection<Link> links = null;
 
-		if (loc.isClose()) {
-			button.setOffset((oenode.getWidth() - width) / 2, oenode
-					.getHeight()
-					- height);
-			button.setPaint(Color.red);
-			button.addAttribute(TooltipFactory.TEXT_KEY, "Hide only this term");
-		} else {
-			if (loc.isChildren())
-				button.setOffset(0, oenode.getHeight() - height);
-			else
-				button.setOffset(0, 0);
-			if (loc.isExpand())
-				button
-						.setOffset(oenode.getWidth() - width, button
-								.getYOffset());
+				// boolean tooManyLinks = canvas.getReasoner() != null
+				// && ((loc.isChildren() && canvas.getReasoner()
+				// .getChildren((LinkedObject) oenode.getObject())
+				// .size() > 100) || (!loc.isChildren() && canvas
+				// .getReasoner().getParents(
+				// (LinkedObject) oenode.getObject())
+				// .size() > 100));
+				boolean tooManyLinks = false;
+				if (!tooManyLinks) {
+					if (loc.isChildren()) {
+						if (isCancelled())
+							return;
+						links = canvas.getLinkProviderDatabase().getChildren(
+								(LinkedObject) oenode.getObject());
+						if (links.isEmpty()) {
+							button.setVisible(false);
+							return;
+						}
+						for (Link link : links) {
+							expandThese.add(link.getChild());
+						}
+					} else {
+						if (isCancelled())
+							return;
+						links = canvas.getLinkProviderDatabase().getParents(
+								(LinkedObject) oenode.getObject());
+						if (links.isEmpty()) {
+							button.setVisible(false);
+							return;
+						}
+						for (Link link : links) {
+							expandThese.add(link.getParent());
+						}
+					}
+				}
+				Collection<PathCapable> visible = canvas.getVisibleObjects();
+				if (loc.isExpand()) {
+					Iterator<LinkedObject> it = expandThese.iterator();
+					while (it.hasNext()) {
+						LinkedObject lo = it.next();
+						if (isCancelled())
+							return;
+						if (visible.contains(lo))
+							it.remove();
+					}
+				} else {
+					Iterator<LinkedObject> it = expandThese.iterator();
+					while (it.hasNext()) {
+						LinkedObject lo = it.next();
+						if (isCancelled())
+							return;
+						if (!visible.contains(lo))
+							it.remove();
+					}
+				}
+				if (!tooManyLinks && expandThese.isEmpty())
+					button.setPaint(Color.gray);
+				else {
+					String connectingWord;
+					if (tooManyLinks) {
+						connectingWord = " many ";
+					} else if (expandThese.size() == links.size()) {
+						if (expandThese.size() == 1)
+							connectingWord = " 1 ";
+						else if (expandThese.size() == 2)
+							connectingWord = " both ";
+						else
+							connectingWord = " all " + expandThese.size() + " ";
+					} else if (loc.isExpand()) {
+						connectingWord = " " + expandThese.size()
+								+ " hidden (of " + links.size() + " total) ";
+					} else {
+						connectingWord = " " + expandThese.size()
+								+ " visible (of " + links.size() + " total) ";
+					}
+					String tooltip;
+					if (tooManyLinks)
+						tooltip = (loc.isExpand() ? "Expand" : "Collapse")
+								+ " "
+								+ (loc.isChildren() ? "children" : "parents");
+					else
+						tooltip = (loc.isExpand() ? "Expand" : "Collapse")
+								+ connectingWord
+								+ (loc.isChildren() ? (expandThese.size() == 1 ? "child"
+										: "children")
+										: (expandThese.size() == 1 ? "parent"
+												: "parents"));
+					button.addAttribute(TooltipFactory.TEXT_KEY, tooltip);
+
+				}
+			}
+
+			if (loc.isClose()) {
+				button.setOffset((oenode.getWidth() - width) / 2, oenode
+						.getHeight()
+						- height);
+				button.setPaint(Color.red);
+				button.addAttribute(TooltipFactory.TEXT_KEY,
+						"Hide only this term");
+			} else {
+				if (loc.isChildren())
+					button.setOffset(0, oenode.getHeight() - height);
+				else
+					button.setOffset(0, 0);
+				if (loc.isExpand())
+					button.setOffset(oenode.getWidth() - width, button
+							.getYOffset());
+			}
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!isCancelled())
+						oenode.setNamedChild(loc, button);
+				}
+			});
 		}
 	}
 
-	protected void setVisibility(ButtonLocations loc, PNode button,
-			OENode oenode) {
-		if (loc.isClose())
-			return;
-		boolean grayedOut = true;
-		Collection<LinkedObject> expandThese = new LinkedList<LinkedObject>();
-		Collection<Link> links = null;
-
-		boolean tooManyLinks = canvas.getReasoner() != null
-				&& ((loc.isChildren() && canvas.getReasoner().getChildren(
-						(LinkedObject) oenode.getObject()).size() > 100) || (!loc
-						.isChildren() && canvas.getReasoner().getParents(
-						(LinkedObject) oenode.getObject()).size() > 100));
-		tooManyLinks = false;
-		if (!tooManyLinks) {
-			if (loc.isChildren()) {
-				links = canvas.getLinkProviderDatabase().getChildren(
-						(LinkedObject) oenode.getObject());
-				if (links.isEmpty()) {
-					button.setVisible(false);
-					return;
-				}
-				for (Link link : links) {
-					expandThese.add(link.getChild());
-				}
-			} else {
-				links = canvas.getLinkProviderDatabase().getParents(
-						(LinkedObject) oenode.getObject());
-				if (links.isEmpty()) {
-					button.setVisible(false);
-					return;
-				}
-				for (Link link : links) {
-					expandThese.add(link.getParent());
-				}
-			}
-		}
-		Collection<PathCapable> visible = canvas.getVisibleObjects();
-		if (loc.isExpand()) {
-			Iterator<LinkedObject> it = expandThese.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = it.next();
-				if (visible.contains(lo))
-					it.remove();
-			}
-		} else {
-			Iterator<LinkedObject> it = expandThese.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = it.next();
-				if (!visible.contains(lo))
-					it.remove();
-			}
-		}
-		if (!tooManyLinks && expandThese.isEmpty())
-			button.setPaint(Color.gray);
-		else {
-			String connectingWord;
-			if (tooManyLinks) {
-				connectingWord = " many ";
-			} else if (expandThese.size() == links.size()) {
-				if (expandThese.size() == 1)
-					connectingWord = " 1 ";
-				else if (expandThese.size() == 2)
-					connectingWord = " both ";
-				else
-					connectingWord = " all " + expandThese.size() + " ";
-			} else if (loc.isExpand()) {
-				connectingWord = " " + expandThese.size() + " hidden (of "
-						+ links.size() + " total) ";
-			} else {
-				connectingWord = " " + expandThese.size() + " visible (of "
-						+ links.size() + " total) ";
-			}
-			String tooltip;
-			if (tooManyLinks)
-				tooltip = (loc.isExpand() ? "Expand" : "Collapse") + " "
-						+ (loc.isChildren() ? "children" : "parents");
-			else
-				tooltip = (loc.isExpand() ? "Expand" : "Collapse")
-						+ connectingWord
-						+ (loc.isChildren() ? (expandThese.size() == 1 ? "child"
-								: "children")
-								: (expandThese.size() == 1 ? "parent"
-										: "parents"));
-			button.addAttribute(TooltipFactory.TEXT_KEY, tooltip);
-
-		}
-
+	protected void placeButton(ButtonLocations loc, final OENode oenode) {
+		// int buttonSize = (int) (Math.min(oenode.getFullBoundsReference()
+		// .getWidth(), oenode.getFullBoundsReference().getHeight()) / 3);
 	}
 
 	protected static Shape getTriangle(float size, boolean up) {

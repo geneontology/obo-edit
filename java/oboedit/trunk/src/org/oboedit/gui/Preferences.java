@@ -476,6 +476,7 @@ public class Preferences {
 
 	public void setConfirmOnExit(boolean confirmOnExit) {
 		this.confirmOnExit = confirmOnExit;
+		GUIManager.setConfirmOnExit(confirmOnExit);
 	}
 
 	public Color getLightSelectionColor() {

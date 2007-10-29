@@ -1082,8 +1082,14 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		isLayingOut = true;
 		dim();
 		if (getDisableAnimations()) {
+			int width = getWidth();
+			int height = getHeight();
+			if (width < 1)
+				width = 1;
+			if (height < 1)
+				height = 1;
 			((ExtensibleRoot) getRoot()).setDisableUpdates(true);
-			layoutCacheImage = new BufferedImage(getWidth(), getHeight(),
+			layoutCacheImage = new BufferedImage(width, height,
 					BufferedImage.TYPE_INT_ARGB);
 			paint(layoutCacheImage.getGraphics());
 			repaint();
