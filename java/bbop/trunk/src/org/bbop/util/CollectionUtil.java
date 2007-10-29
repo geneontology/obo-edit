@@ -343,6 +343,12 @@ public class CollectionUtil {
 	}
 
 	public static <T> List<T> list(T... items) {
-		return Arrays.asList(items);
+		ArrayList<T> out = new ArrayList<T>();
+		
+		for(T t : items) {
+			out.add(t);
+		}
+		
+		return out;
 	}
 }

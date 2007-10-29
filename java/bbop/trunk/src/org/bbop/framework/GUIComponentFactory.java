@@ -9,7 +9,7 @@ import org.bbop.util.StringUtil;
 public interface GUIComponentFactory<T extends GUIComponent> {
 
 	public static enum FactoryCategory {
-		EDIT, SEARCH, INFO, REASONER, HISTORY, METADATA, CONFIG, TOOLS, MISC;
+		ONTOLOGY, ANNOTATION, SEARCH, INFO, REASONER, HISTORY, METADATA, CONFIG, TOOLS, MISC;
 
 		public String toString() {
 			return StringUtil.toTitleCase(name().toLowerCase());
@@ -23,7 +23,7 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 	public String getName();
 
 	public T createComponent(String id);
-	
+
 	public boolean getPreferSeparateWindow();
 
 	public boolean isSingleton();
