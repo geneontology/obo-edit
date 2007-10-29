@@ -47,25 +47,42 @@ public class TermFilterEditor extends JPanel {
 	protected static final String[] values = { "have", "don't have" };
 
 	protected JComboBox aspectBox = new JComboBox();
+
 	protected JComboBox comparisonBox = new JComboBox();
+
 	protected JComboBox criterionBox = new JComboBox();
+
 	protected JComboBox notBox = new JComboBox(values);
+
 	protected JComboBox typeBox = new JComboBox();
+
 	protected Box aspectLineBox = new Box(BoxLayout.X_AXIS);
+
 	protected Box valueBox = new Box(BoxLayout.X_AXIS);
+
 	protected FieldAutocompleteModel<String> model = new FieldAutocompleteModel<String>(
 			String.class);
+
 	protected AutocompleteBox<String> valueField;
+
 	protected JButton advancedButton = new JButton();
+
 	protected MultiIcon rightIcon;
+
 	protected MultiIcon leftIcon;
+
 	protected GUIUpdateEvent updateEvent = new GUIUpdateEvent(this);
+
 	protected Collection<GUIUpdateListener> updateListeners = new LinkedList<GUIUpdateListener>();
+
 	protected JPanel mainPanel = new JPanel();
+
 	protected JLabel selectTermsLabel = new JLabel("Select terms that ");
 
 	protected Box comparisonPanel = new Box(BoxLayout.X_AXIS);
+
 	protected Box valuePanel = new Box(BoxLayout.X_AXIS);
+
 	protected JLabel reachedViaLabel = new JLabel("that can be reached via ");
 
 	protected class BasicActionListener implements ActionListener {
@@ -77,10 +94,15 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	protected ActionListener aspectBoxListener = new BasicActionListener();
+
 	protected ActionListener comparisonBoxListener = new BasicActionListener();
+
 	protected ActionListener criterionBoxListener = new BasicActionListener();
+
 	protected ActionListener notBoxListener = new BasicActionListener();
+
 	protected ActionListener typeBoxListener = new BasicActionListener();
+
 	protected ActionListener valueFieldListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			fireUpdateEvent();
@@ -165,13 +187,17 @@ public class TermFilterEditor extends JPanel {
 		typeBox.setVisible(showTypeBox);
 
 		containsCurrentSelection = false;
-		for (SearchComparison c : FilterManager.getManager().getComparisons()) {
+		Collection<SearchComparison> comparisons = FilterManager.getManager()
+				.getComparisons();
+		for (SearchComparison c : comparisons) {
 			Class[] acceptedTypes = c.getAcceptedTypes();
 			boolean match = false;
 			for (Class atype : acceptedTypes) {
+				boolean isNumeric = Number.class.isAssignableFrom(criterion.getReturnType());
+				boolean isString = String.class.isAssignableFrom(atype);
 				if (criterion != null
-						&& (atype.isAssignableFrom(criterion.getReturnType()) || atype
-								.isAssignableFrom(String.class))) {
+						&& (atype.isAssignableFrom(criterion.getReturnType()) ||
+								(!isNumeric && isString))) {
 					match = true;
 					break;
 				}

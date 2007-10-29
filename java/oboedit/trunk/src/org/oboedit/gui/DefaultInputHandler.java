@@ -10,6 +10,7 @@ import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
 
 import java.util.*;
+import java.util.List;
 
 import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
@@ -46,6 +47,49 @@ public class DefaultInputHandler implements InputHandlerI {
 			return true;
 		} else
 			return false;
+	}
+
+	public static JMenu getMenu(final java.util.List editActions,
+			final boolean fromDrop) {
+		return getMenu(editActions, SelectionManager.createEmptyTarget(), true,
+				fromDrop);
+	}
+
+	public static JMenu getMenu(final java.util.List editActions,
+			final GestureTarget dest, final boolean showDisabled,
+			final boolean fromDrop) {
+		AbstractDynamicMenuItem menu = new AbstractDynamicMenuItem(
+				"Edit operations", true, true, true) {
+
+			public List<Component> getItems() {
+				List<Component> out = new ArrayList<Component>();
+				Selection selected = SelectionManager.getGlobalSelection();
+				boolean liveSelection = (selected == null);
+				if (selected == null)
+					selected = SelectionManager.getGlobalSelection();
+
+				Iterator it = editActions.iterator();
+				Set<Character> inUseSet = new HashSet<Character>();
+				int enabledCount = 0;
+				int[] index = { 0 };
+				while (it.hasNext()) {
+					ClickMenuAction editAction = (ClickMenuAction) it.next();
+					JMenuItem item = getMenuItem(selected, dest, editAction,
+							liveSelection, fromDrop, (fromDrop ? index : null),
+							inUseSet);
+
+					if (item.isEnabled()) {
+						enabledCount++;
+						out.add(item);
+					} else if (showDisabled)
+						out.add(item);
+				}
+				return out;
+			}
+		};
+
+		buildMenu(menu, editActions, fromDrop);
+		return menu;
 	}
 
 	public static void buildMenu(JComponent menu, java.util.List editActions,
@@ -124,7 +168,8 @@ public class DefaultInputHandler implements InputHandlerI {
 			 * if (editAction.getKeyStroke() != null)
 			 * item.setAccelerator(editAction.getKeyStroke());
 			 */
-			item.setEnabled(editAction.isLegal());
+			boolean isLegal = editAction.isLegal();
+			item.setEnabled(isLegal);
 			if (editAction.isLegal()) {
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {

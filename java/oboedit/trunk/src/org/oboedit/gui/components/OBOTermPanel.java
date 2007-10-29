@@ -709,16 +709,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			return null;
 	}
 
-	public void setPropertyFilter(OBOProperty type) {
-		if (getModel() instanceof DefaultTermModel) {
-			((DefaultTermModel) getModel()).setPropertyFilter(type);
-		}
-	}
-
-	public OBOProperty getPropertyFilter() {
-		return ((DefaultTermModel) getModel()).getPropertyFilter();
-	}
-
 	public void addObjectRenderer(RenderedFilter pair) {
 		objectRenderers.add(pair);
 		repaint();

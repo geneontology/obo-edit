@@ -27,7 +27,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	protected SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			loadTerm(SelectionManager.getGlobalSelection()
@@ -338,69 +338,69 @@ public class ParentEditor extends AbstractGUIComponent {
 				panel.add(field);
 				panel.add(Box.createHorizontalGlue());
 				if (!TermUtil.isProperty(tr.getParent())) {
-					JLabel completesLabel = new JLabel(completes_icon);
-					final JCheckBox completesBox = new JCheckBox("");
-					completesBox.setSelected(tr.completes());
-					completesBox.setFont(font);
-					completesBox.setToolTipText("Completes");
-					completesBox.setEnabled(enabled);
-					panel.add(completesLabel);
-					panel.add(completesBox);
-					panel.add(Box.createHorizontalStrut(5));
-					completesBox.setOpaque(false);
-					completesBox.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							CompletesHistoryItem item = new CompletesHistoryItem(
-									tr);
-							GUIUtil.setSelections(item, SelectionManager
-									.getGlobalSelection(), SelectionManager
-									.getGlobalSelection());
-							SessionManager.getManager().apply(item);
-						}
-					});
-
-					JLabel necLabel = new JLabel(nec_icon);
-					final JCheckBox necessaryBox = new JCheckBox("");
-					necessaryBox.setSelected(tr.isNecessarilyTrue());
-					necessaryBox.setFont(font);
-					necessaryBox.setToolTipText("Necessarily true");
-					necessaryBox.setEnabled(enabled);
-					panel.add(necLabel);
-					panel.add(necessaryBox);
-					panel.add(Box.createHorizontalStrut(5));
-					necessaryBox.setOpaque(false);
-					necessaryBox.setEnabled(enabled);
-					necessaryBox.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							NecessarilyTrueHistoryItem item = new NecessarilyTrueHistoryItem(
-									tr);
-							GUIUtil.setSelections(item, SelectionManager
-									.getGlobalSelection(), SelectionManager
-									.getGlobalSelection());
-							SessionManager.getManager().apply(item);
-						}
-					});
-
-					JLabel invLabel = new JLabel(inv_icon);
-					JCheckBox invNecessaryBox = new JCheckBox("");
-					invNecessaryBox.setSelected(tr.isInverseNecessarilyTrue());
-					invNecessaryBox.setFont(font);
-					invNecessaryBox.setToolTipText("Inverse necessarily true");
-					invNecessaryBox.setEnabled(enabled);
-					panel.add(invLabel);
-					panel.add(invNecessaryBox);
-					panel.add(Box.createHorizontalStrut(5));
-					invNecessaryBox.setOpaque(false);
-					invNecessaryBox.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							InverseNecHistoryItem item = new InverseNecHistoryItem(
-									tr);
-							GUIUtil.setSelections(item, SelectionManager
-									.getGlobalSelection(), SelectionManager
-									.getGlobalSelection());
-							SessionManager.getManager().apply(item);
-						}
-					});
+//					JLabel completesLabel = new JLabel(completes_icon);
+//					final JCheckBox completesBox = new JCheckBox("");
+//					completesBox.setSelected(tr.completes());
+//					completesBox.setFont(font);
+//					completesBox.setToolTipText("Completes");
+//					completesBox.setEnabled(enabled);
+//					panel.add(completesLabel);
+//					panel.add(completesBox);
+//					panel.add(Box.createHorizontalStrut(5));
+//					completesBox.setOpaque(false);
+//					completesBox.addActionListener(new ActionListener() {
+//						public void actionPerformed(ActionEvent e) {
+//							CompletesHistoryItem item = new CompletesHistoryItem(
+//									tr);
+//							GUIUtil.setSelections(item, SelectionManager
+//									.getGlobalSelection(), SelectionManager
+//									.getGlobalSelection());
+//							SessionManager.getManager().apply(item);
+//						}
+//					});
+//
+//					JLabel necLabel = new JLabel(nec_icon);
+//					final JCheckBox necessaryBox = new JCheckBox("");
+//					necessaryBox.setSelected(tr.isNecessarilyTrue());
+//					necessaryBox.setFont(font);
+//					necessaryBox.setToolTipText("Necessarily true");
+//					necessaryBox.setEnabled(enabled);
+//					panel.add(necLabel);
+//					panel.add(necessaryBox);
+//					panel.add(Box.createHorizontalStrut(5));
+//					necessaryBox.setOpaque(false);
+//					necessaryBox.setEnabled(enabled);
+//					necessaryBox.addActionListener(new ActionListener() {
+//						public void actionPerformed(ActionEvent e) {
+//							NecessarilyTrueHistoryItem item = new NecessarilyTrueHistoryItem(
+//									tr);
+//							GUIUtil.setSelections(item, SelectionManager
+//									.getGlobalSelection(), SelectionManager
+//									.getGlobalSelection());
+//							SessionManager.getManager().apply(item);
+//						}
+//					});
+//
+//					JLabel invLabel = new JLabel(inv_icon);
+//					JCheckBox invNecessaryBox = new JCheckBox("");
+//					invNecessaryBox.setSelected(tr.isInverseNecessarilyTrue());
+//					invNecessaryBox.setFont(font);
+//					invNecessaryBox.setToolTipText("Inverse necessarily true");
+//					invNecessaryBox.setEnabled(enabled);
+//					panel.add(invLabel);
+//					panel.add(invNecessaryBox);
+//					panel.add(Box.createHorizontalStrut(5));
+//					invNecessaryBox.setOpaque(false);
+//					invNecessaryBox.addActionListener(new ActionListener() {
+//						public void actionPerformed(ActionEvent e) {
+//							InverseNecHistoryItem item = new InverseNecHistoryItem(
+//									tr);
+//							GUIUtil.setSelections(item, SelectionManager
+//									.getGlobalSelection(), SelectionManager
+//									.getGlobalSelection());
+//							SessionManager.getManager().apply(item);
+//						}
+//					});
 
 					JButton cardinalityButton = new JButton();
 					cardinalityButton.setFont(font);

@@ -17,9 +17,7 @@ import org.obo.datamodel.*;
 import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
-import org.oboedit.gui.tasks.BasicInitStartupTask;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
-import org.oboedit.gui.tasks.PluginInitStartupTask;
 
 public class OBOEdit {
 
@@ -141,10 +139,10 @@ public class OBOEdit {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					GUIManager.getManager().addStartupTask(
-							new BasicInitStartupTask());
-					GUIManager.getManager().addStartupTask(
-							new PluginInitStartupTask());
+//					GUIManager.getManager().addStartupTask(
+//							new BasicInitStartupTask());
+//					GUIManager.getManager().addStartupTask(
+//							new PluginInitStartupTask());
 					GUIManager.getManager().addStartupTask(
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();

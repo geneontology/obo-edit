@@ -86,7 +86,7 @@ public class LinkDatabaseLayoutEngine {
 				text = new ViewRenderedStyleText();
 
 			text.setWidth(width);
-			text.setText(OENode.getLabelAsHTML(getLabel(io)));
+			text.setText(OENode.getLabelAsHTML(io, getLabel(io)));
 			height = (int) text.getHeight() + OENode.MARGIN;
 			width = (int) text.getWidth() + OENode.MARGIN;
 			

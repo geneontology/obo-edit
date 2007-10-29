@@ -1,12 +1,19 @@
 package org.oboedit.gui.tasks;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -17,18 +24,31 @@ import java.util.logging.StreamHandler;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
 import net.infonode.docking.View;
 
+import org.bbop.dataadapter.DataAdapter;
+import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.expression.ExpressionException;
+import org.bbop.framework.AbstractApplicationStartupTask;
+import org.bbop.framework.AbstractSingleActionTask;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.DockPanelFactory;
 import org.bbop.framework.GUIComponent;
+import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
+import org.bbop.framework.GUITask;
+import org.bbop.framework.ViewMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
 import org.bbop.framework.dock.idw.IDWDriver;
@@ -38,15 +58,22 @@ import org.bbop.io.LoggerStream;
 import org.bbop.io.MultiOutputStream;
 import org.bbop.swing.GhostImageController;
 import org.bbop.swing.SwingUtil;
+import org.bbop.util.CollectionUtil;
+import org.bbop.util.ExceptionLogger;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OWLURLReaderAdapter;
 import org.obo.dataadapter.SerialAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
+import org.obo.datamodel.OBOProperty;
+import org.obo.filters.Filter;
+import org.obo.filters.LinkFilter;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
 import org.obo.reasoner.impl.LinkPileReasoner;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
+import org.obo.util.FilterUtil;
+import org.obo.util.TermUtil;
 import org.obo.util.VersionNumber;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.ExpressionManager;
@@ -54,12 +81,10 @@ import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.AbstractSingleActionTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
-import org.oboedit.gui.ExceptionLogger;
+import org.oboedit.gui.Filterable;
 import org.oboedit.gui.GOFlatFileGUI;
-import org.oboedit.gui.OBOEditFrame;
 import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.actions.AddAction;
@@ -84,8 +109,10 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
+import org.oboedit.gui.components.AcknowledgementsComponent;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
+import org.oboedit.gui.factory.AcknowledgementsFactory;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
 import org.oboedit.gui.factory.CategoryManagerFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
@@ -108,97 +135,97 @@ import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
+import org.oboedit.gui.factory.TermImageComponentFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
+import org.oboedit.gui.menu.EditMenu;
+import org.oboedit.gui.menu.FileMenu;
+import org.oboedit.gui.menu.OEHelpMenu;
 import org.oboedit.script.GUIScriptDelegate;
 
-public class DefaultGUIStartupTask extends AbstractSingleActionTask {
+public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
-	public void installDefaultTasks() {
-		getManager().installTask(new AutosaveTask());
-		getManager().installTask(new PostLoadVerifyTask());
-		getManager()
-				.installTask(
-						new ScreenLockTask(GUIManager.getManager()
-								.getScreenLockQueue(), GUIManager.getManager()
-								.getFrame(), Preferences.getPreferences()
-								.getUseModalProgressMonitors()));
+	@Override
+	protected Collection<GUITask> getDefaultTasks() {
+		ScreenLockTask screenLockTask = new ScreenLockTask(GUIManager
+				.getManager().getScreenLockQueue(), GUIManager.getManager()
+				.getFrame(), Preferences.getPreferences()
+				.getUseModalProgressMonitors());
+		return CollectionUtil.list(new AutosaveTask(),
+				new PostLoadVerifyTask(), new FrameNameUpdateTask(),
+				screenLockTask);
 	}
 
-	protected void installDefaultComponentFactories() {
-		ComponentManager.getManager().install(new TermPanelFactory());
-		ComponentManager.getManager().install(new GraphEditorFactory());
-		ComponentManager.getManager().install(new TextEditorFactory());
-		ComponentManager.getManager().install(new DAGViewFactory());
-		ComponentManager.getManager().install(new GraphDAGViewFactory());
-		ComponentManager.getManager().install(new SearchComponentFactory());
-		ComponentManager.getManager().install(new LinkSearchComponentFactory());
-		ComponentManager.getManager().install(new IntersectionEditorFactory());
-		ComponentManager.getManager().install(new CategoryManagerFactory());
-		ComponentManager.getManager().install(
-				new SynonymCategoryManagerFactory());
-		ComponentManager.getManager().install(new CrossProductInfoFactory());
-		ComponentManager.getManager().install(new DbxrefLibraryFactory());
-		ComponentManager.getManager().install(new ExtendedInfoFactory());
-		// ComponentManager.getManager().install(new GraphVizViewerFactory());
-		ComponentManager.getManager().install(new HistoryBrowserFactory());
-		ComponentManager.getManager().install(new IDManagerFactory());
-		ComponentManager.getManager().install(new ReasonerManagerFactory());
-		ComponentManager.getManager().install(new NamespaceManagerFactory());
-		ComponentManager.getManager().install(
-				new OntologyChangeTrackerFactory());
-		ComponentManager.getManager().install(new ParentEditorFactory());
-		ComponentManager.getManager().install(
-				new CrossProductMatrixEditorFactory());
+	@Override
+	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
+		return (Collection) CollectionUtil.list(new TermPanelFactory(),
+				new GraphEditorFactory(), new TextEditorFactory(),
+				new DAGViewFactory(), new GraphDAGViewFactory(),
+				new SearchComponentFactory(), new LinkSearchComponentFactory(),
+				new IntersectionEditorFactory(), new CategoryManagerFactory(),
 
-		ComponentManager.getManager().install(
-				new AnnotationSummaryComponentFactory());
+				new SynonymCategoryManagerFactory(),
+				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
+				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
+				new IDManagerFactory(), new ReasonerManagerFactory(),
+				new NamespaceManagerFactory(),
 
-		ComponentManager.getManager().install(new GlobalFilterManagerFactory());
-		ComponentManager.getManager()
-				.install(new ExplanationComponentFactory());
-		ComponentManager.getManager()
-				.install(new ConfigurationManagerFactory());
-		ComponentManager.getManager().install(new VerificationManagerFactory());
-		ComponentManager.getManager().install(new DockPanelFactory());
+				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
+
+				new CrossProductMatrixEditorFactory(),
+
+				new AnnotationSummaryComponentFactory(),
+
+				new GlobalFilterManagerFactory(),
+				new ExplanationComponentFactory(),
+				new ConfigurationManagerFactory(),
+				new VerificationManagerFactory(), new DockPanelFactory(),
+				new TermImageComponentFactory(), new AcknowledgementsFactory());
+
 	}
 
-	public void run() {
-		OBOEditFrame frame = new OBOEditFrame();
-		GUIManager.getManager().setFrame(frame);
-
-		configureUI();
+	@Override
+	protected void doOtherInstallations() {
 		FocusMenuManager.install();
-		installDefaultDataAdapters();
-		installDefaultComponentFactories();
-		installDefaultTasks();
 		installDefaultActions();
 		installGlobalScriptObjects();
-		
-		ComponentManager.getManager().setDriver(createLayoutDriver());
 		GhostImageController.enable();
-		
-		showFrame();
-		// ÊRepaintManager.setCurrentManager(new
-		// CheckThreadViolationRepaintManager());
-		/*
-		 * splash.join(); splash.dispose();
-		 */
 	}
-	
+
+	@Override
+	protected JFrame createFrame() {
+		JFrame frame = super.createFrame();
+		frame.setTitle("OBO-Edit version " + Preferences.getVersion());
+		return frame;
+	}
+
+	@Override
+	protected String getPerspectiveResourceDir() {
+		return "org/oboedit/gui/dock/resources";
+	}
+
+	@Override
+	protected Color getBackgroundColor() {
+		return Preferences.defaultBackgroundColor();
+	}
+
+	@Override
+	protected Color getButtonColor() {
+		return Preferences.defaultButtonColor();
+	}
+
+	@Override
+	protected Color getLightColor() {
+		return Color.white;
+	}
+
+	protected Font getFont() {
+		return Preferences.getPreferences().getFont();
+	}
+
 	protected LayoutDriver createLayoutDriver() {
-		IDWDriver driver = new IDWDriver();
-		driver
-				.setDefaultPerspectiveResourcePath("org/oboedit/gui/dock/resources/"
-						+ "default.idw");
-		driver.setPerspectiveResourceDir("org/oboedit/gui/dock/resources");
-		driver.setPerspectiveListResourcePath("org/oboedit/gui/dock/resources/"
-				+ "perspectives.xml");
-		driver.setBackground(Preferences.defaultBackgroundColor());
-		driver.setDarkColor(Preferences.defaultButtonColor());
-		driver.setLightColor(Color.white);
-		driver.setFont(Preferences.getPreferences().getFont());
+		IDWDriver driver = (IDWDriver) super.createLayoutDriver();
 		driver.addViewListener(new ViewListener() {
 			protected Icon globeIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_globe_icon.gif"));
@@ -209,8 +236,87 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 			protected Icon filterIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
 
+			protected Icon filterInvIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("tiny_filter_icon.gif"));
+
 			public void viewCreated(View v, final GUIComponent c) {
+				if (c instanceof Filterable) {
+					final JButton filterButton = IDWUtil
+							.createFlatHighlightButton(filterIcon,
+									"Quick filtering", 0, null);
+					filterButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							JPopupMenu menu = new JPopupMenu();
+							JLabel label = new JLabel("Quick filtering");
+							label
+									.setFont(label.getFont().deriveFont(
+											Font.BOLD));
+
+							menu.add(label);
+							menu.addSeparator();
+							JMenuItem showAllItem = new JMenuItem(
+									"Show all relationship types");
+							showAllItem.addActionListener(new ActionListener() {
+
+								public void actionPerformed(ActionEvent arg0) {
+									((Filterable) c).setLinkFilter(null);
+								}
+							});
+							menu.add(showAllItem);
+							JMenu showOnlyMenu = new JMenu(
+									"Show a single relationship");
+							menu.add(showOnlyMenu);
+							JMenu showParticularMenu = new JMenu(
+									"Show particular relationships");
+							menu.add(showParticularMenu);
+							final Map<JCheckBoxMenuItem, OBOProperty> items = new HashMap<JCheckBoxMenuItem, OBOProperty>();
+							Filter f = ((Filterable) c).getLinkFilter();
+							for (final OBOProperty p : TermUtil
+									.getRelationshipTypes(SessionManager
+											.getManager().getSession())) {
+								JMenuItem onlyItem = new JMenuItem(p.toString());
+								onlyItem
+										.addActionListener(new ActionListener() {
+											public void actionPerformed(
+													ActionEvent arg0) {
+												((Filterable) c)
+														.setLinkFilter(FilterUtil
+																.getTypeFilter(p));
+											}
+										});
+								showOnlyMenu.add(onlyItem);
+								JCheckBoxMenuItem item = new JCheckBoxMenuItem(
+										"Show " + p);
+								items.put(item, p);
+								item.setSelected(f == null
+										|| FilterUtil.filtersOn(f, p));
+								item.addActionListener(new ActionListener() {
+
+									public void actionPerformed(ActionEvent arg0) {
+										List<OBOProperty> selected = new ArrayList<OBOProperty>();
+										for (JCheckBoxMenuItem item : items
+												.keySet()) {
+											if (item.isSelected())
+												selected.add(items.get(item));
+										}
+										((Filterable) c)
+												.setLinkFilter(FilterUtil
+														.getTypeFilter(selected
+																.toArray(new OBOProperty[0])));
+									}
+								});
+								showParticularMenu.add(item);
+							}
+							menu.show(filterButton,
+									filterButton.getWidth() / 2, filterButton
+											.getHeight() / 2);
+
+						}
+					});
+					v.getCustomTitleBarComponents().add(filterButton);
+				}
 				if (c instanceof ObjectSelector) {
+
 					final JToggleButton liveButton = IDWUtil
 							.createFlatHighlightToggleButton(
 									// final JButton custom =
@@ -254,8 +360,9 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		return driver;
 	}
 
-
-	protected void installDefaultDataAdapters() {
+	@Override
+	protected Collection<DataAdapter> getDefaultDataAdapters() {
+		List<DataAdapter> adapters = new LinkedList();
 		final OBOFileAdapter oboadapter = new OBOFileAdapter();
 		oboadapter.setAdvancedUI(new AdvancedOBOUI());
 		final GOFlatFileAdapter goadapter = new GOFlatFileAdapter();
@@ -280,12 +387,12 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 				+ Preferences.getVersion().toString());
 		oboadapter.setAutogenString("OBO-Edit "
 				+ Preferences.getVersion().toString());
-
-		IOManager.getManager().installDataAdapter(oboadapter);
-		IOManager.getManager().installDataAdapter(new OWLURLReaderAdapter());
-		IOManager.getManager().installDataAdapter(goadapter);
-		IOManager.getManager().installDataAdapter(new SerialAdapter());
-		IOManager.getManager().installDataAdapter(new XMLHistoryAdapter());
+		adapters.add(oboadapter);
+		adapters.add(goadapter);
+		adapters.add(new OWLURLReaderAdapter());
+		adapters.add(new SerialAdapter());
+		adapters.add(new XMLHistoryAdapter());
+		return adapters;
 	}
 
 	protected void installDefaultActions() {
@@ -295,7 +402,8 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 	}
 
 	protected void installDefaultInputHandlers() {
-		EditActionManager.getManager().addInputHandler(new DefaultInputHandler());
+		EditActionManager.getManager().addInputHandler(
+				new DefaultInputHandler());
 		EditActionManager.getManager().addInputHandler(new CopyAction());
 		EditActionManager.getManager().addInputHandler(new AddParentAction());
 		EditActionManager.getManager().addInputHandler(new MoveAction());
@@ -346,39 +454,10 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 				new RemoveReplacementAction());
 	}
 
-	protected void configureUI() {
-		LookAndFeel lf = UIManager.getLookAndFeel();
-		if (!lf.getName().startsWith("Mac OS X Aqua")) {
-			UIManager.put("ComboBox.selectionBackground", Preferences
-					.defaultButtonColor());
-			UIManager.put("ComboBox.buttonBackground", Preferences
-					.defaultButtonColor());
-			UIManager
-					.put("Button.background", Preferences.defaultButtonColor());
-			UIManager.put("ToggleButton.background", Preferences
-					.defaultButtonColor());
-			UIManager.put("Panel.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("Label.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("OptionPane.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("ScrollPane.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("SplitPane.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("TabbedPane.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("ToolBar.background", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("ToolBar.dockingBackground", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("ToolBar.floatingBackground", Preferences
-					.defaultBackgroundColor());
-			UIManager.put("ToolBar.viewportBackground", Preferences
-					.defaultBackgroundColor());
-		}
-
+	@Override
+	protected Collection<? extends JMenuItem> getDefaultMenus() {
+		return CollectionUtil.list(new FileMenu(), new EditMenu(),
+				new ViewMenu(), new OEHelpMenu());
 	}
 
 	protected void installGlobalScriptObjects() {
@@ -390,10 +469,22 @@ public class DefaultGUIStartupTask extends AbstractSingleActionTask {
 		}
 	}
 
-	protected void showFrame() {
-		JFrame frame = getManager().getFrame();
-		SwingUtil.center(frame);
-		frame.setVisible(true);
+	@Override
+	protected DataAdapterRegistry getAdapterRegistry() {
+		return IOManager.getManager().getAdapterRegistry();
 	}
 
+	@Override
+	protected String getAppName() {
+		// TODO Auto-generated method stub
+		return "oboedit";
+	}
+
+	@Override
+	protected File getPrefsDir() {
+		VersionNumber version = Preferences.getVersion();
+		File prefsDir = new File(System.getProperty("user.home") + "/.oboedit"
+				+ (version.isBeta() ? "beta" : "") + "/");
+		return prefsDir;
+	}
 }
