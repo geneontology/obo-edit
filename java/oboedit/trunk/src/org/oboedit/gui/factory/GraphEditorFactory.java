@@ -19,6 +19,6 @@ public class GraphEditorFactory extends AbstractComponentFactory<GraphEditor> {
 	}
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.EDIT;
+		return FactoryCategory.ONTOLOGY;
 	}
 }

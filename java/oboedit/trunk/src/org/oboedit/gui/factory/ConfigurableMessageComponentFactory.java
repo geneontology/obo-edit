@@ -2,17 +2,17 @@ package org.oboedit.gui.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.GUIComponent;
-import org.oboedit.gui.components.AcknowledgementsComponent;
+import org.oboedit.gui.components.ConfigurableTextComponent;
 
-public class AcknowledgementsFactory extends AbstractComponentFactory {
+public class ConfigurableMessageComponentFactory extends AbstractComponentFactory {
 
-	public AcknowledgementsFactory() {
-		addID("ACKNOWLEDGEMENTS");
+	public ConfigurableMessageComponentFactory() {
+		addID("MESSAGE");
 	}
 	
 	@Override
 	public GUIComponent doCreateComponent(String id) {
-		return new AcknowledgementsComponent(id);
+		return new ConfigurableTextComponent(id);
 	}
 
 	public FactoryCategory getCategory() {
@@ -20,7 +20,7 @@ public class AcknowledgementsFactory extends AbstractComponentFactory {
 	}
 
 	public String getName() {
-		return "Acknowledgements";
+		return "Configurable Message";
 	}
 
 }

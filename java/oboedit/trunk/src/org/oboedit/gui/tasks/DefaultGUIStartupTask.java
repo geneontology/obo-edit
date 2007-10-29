@@ -109,10 +109,10 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
-import org.oboedit.gui.components.AcknowledgementsComponent;
+import org.oboedit.gui.components.ConfigurableTextComponent;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
-import org.oboedit.gui.factory.AcknowledgementsFactory;
+import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
 import org.oboedit.gui.factory.CategoryManagerFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
@@ -156,6 +156,11 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new PostLoadVerifyTask(), new FrameNameUpdateTask(),
 				screenLockTask);
 	}
+	
+	@Override
+	protected String getAppName() {
+		return "OBO-Edit version " + Preferences.getVersion();
+	}
 
 	@Override
 	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
@@ -181,7 +186,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ExplanationComponentFactory(),
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
-				new TermImageComponentFactory(), new AcknowledgementsFactory());
+				new TermImageComponentFactory(), new ConfigurableMessageComponentFactory());
 
 	}
 
@@ -191,13 +196,6 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		installDefaultActions();
 		installGlobalScriptObjects();
 		GhostImageController.enable();
-	}
-
-	@Override
-	protected JFrame createFrame() {
-		JFrame frame = super.createFrame();
-		frame.setTitle("OBO-Edit version " + Preferences.getVersion());
-		return frame;
 	}
 
 	@Override
@@ -475,7 +473,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	}
 
 	@Override
-	protected String getAppName() {
+	protected String getAppID() {
 		// TODO Auto-generated method stub
 		return "oboedit";
 	}
