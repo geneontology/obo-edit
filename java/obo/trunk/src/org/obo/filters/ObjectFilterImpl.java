@@ -22,7 +22,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 
 	protected SearchAspect aspect = new SelfSearchAspect();
 
-	protected SearchCriterion<?,?> criterion = new AllTextFieldsCriterion();
+	protected SearchCriterion<?, ?> criterion = new AllTextFieldsCriterion();
 
 	protected SearchCriterion wrappedCriterion = new StringCriterionWrapper(
 			criterion, StringConverter.DEFAULT);
@@ -76,16 +76,16 @@ public class ObjectFilterImpl implements ObjectFilter {
 	}
 
 	public static long allocTime = 0;
-	
+
 	protected ReasonedLinkDatabase reasoner;
-	
+
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}
-	
+
 	public void setReasonedLinkDatabase(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
-	}	
+	}
 
 	public boolean satisfies(Object object) {
 		if (!criterion.getInputType().isAssignableFrom(object.getClass()))
@@ -113,9 +113,14 @@ public class ObjectFilterImpl implements ObjectFilter {
 						continue;
 				}
 
-				List c = new LinkedList();
+				List<?> c = new LinkedList();
 				boolean b = false;
-				Collection values = wrappedCriterion.getValues(c, o);
+				Collection values;
+				if (criterion instanceof AbstractNumberCriterion)
+					values = ((AbstractNumberCriterion) criterion)
+							.getValues(c, o);
+				else
+					values = wrappedCriterion.getValues(c, o);
 
 				b = comparison.matches(values, matchVal);
 

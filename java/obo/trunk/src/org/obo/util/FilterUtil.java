@@ -40,6 +40,35 @@ public class FilterUtil {
 		} else
 			return null;
 	}
+	
+	public static Filter getTypeFilter(OBOProperty... types) {
+		return getTypeFilter(CompoundFilter.OR, types);
+	}
+	
+	public static Filter getTypeFilter(int operation, OBOProperty... types) {
+		CompoundFilter filter = new CompoundFilterImpl(operation);
+		for(OBOProperty p : types) {
+			filter.addFilter(getTypeFilter(p));
+		}
+		return filter;
+	}
+	
+	public static boolean filtersOn(Filter f, OBOProperty prop) {
+		if (f == null)
+			return false;
+		if (f instanceof LinkFilter) {
+			String id = getTypeOnlyPropertyID((LinkFilter) f);
+			return id != null && id.equals(prop.getID());
+		} else if (f instanceof CompoundFilter) {
+			CompoundFilter comp = (CompoundFilter) f;
+			for(Filter<?> filter : comp.getFilters()) {
+				if (filtersOn(filter, prop))
+					return true;
+			}
+			return false;
+		}
+		return false;
+	}
 
 	public static LinkFilter getTypeFilter(OBOProperty type) {
 		LinkFilter basicLinkFilter = new LinkFilterImpl();

@@ -37,6 +37,12 @@ public class TransitivityExplanation extends AbstractExplanation {
 	}
 	
 	@Override
+	public void addEvidence(Link link) {
+		// TODO Auto-generated method stub
+		super.addEvidence(link);
+	}
+	
+	@Override
 	public boolean removeEvidence(Link link) {
 		if (directLink.equals(link)) {
 			directLink = null;

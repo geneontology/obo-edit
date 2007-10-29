@@ -1,9 +1,11 @@
 package org.obo.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
@@ -27,8 +29,7 @@ public class ReasonerUtil {
 	}
 
 	public static boolean generateTransitiveImplication(
-			ReasonedLinkDatabase reasoner, Link out, Link link,
-			Link gpLink) {
+			ReasonedLinkDatabase reasoner, Link out, Link link, Link gpLink) {
 
 		if (gpLink.getType().isNonInheritable()
 				|| link.getType().isNonInheritable())
@@ -212,6 +213,28 @@ public class ReasonerUtil {
 		}
 		return out;
 	}
+	
+	public static List<LinkedObject> getMostSpecific(
+			ReasonedLinkDatabase reasoner, Collection<LinkedObject> objects,
+			OBOProperty property) {
+		List<LinkedObject> out = new ArrayList<LinkedObject>();
+		List<LinkedObject> in = new ArrayList<LinkedObject>(objects);
+		for (int i = 0; i < in.size(); i++) {
+			LinkedObject a = in.get(i);
+			boolean found = false;
+			for (int j = i + 1; j < in.size(); j++) {
+				LinkedObject b = in.get(j);
+				if (reasoner.hasRelationship(b, property, a) != null) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				out.add(a);
+			}
+		}
+		return out;
+	}
 
 	public static boolean isDisjoint(ReasonedLinkDatabase linkDatabase,
 			OBOClass a, OBOClass b, boolean siblingsAreDisjoint) {
@@ -371,8 +394,9 @@ public class ReasonerUtil {
 		return out;
 
 	}
-	
-	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass, OBOProperty prop) {
+
+	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass,
+			OBOProperty prop) {
 		Collection<OBOClass> out = new LinkedList<OBOClass>();
 		for (Link parentLink : oboClass.getParents()) {
 			if (parentLink.getType().equals(prop)
@@ -383,7 +407,8 @@ public class ReasonerUtil {
 
 	}
 
-	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass, String propName) {
+	public static Collection<OBOClass> getDifferentiaByType(OBOClass oboClass,
+			String propName) {
 		Collection<OBOClass> out = new LinkedList<OBOClass>();
 		for (Link parentLink : oboClass.getParents()) {
 			if (parentLink.getType().getName().equals(propName)
@@ -393,6 +418,5 @@ public class ReasonerUtil {
 		return out;
 
 	}
-
 
 }
