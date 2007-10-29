@@ -25,6 +25,18 @@ public class EnhancedMenuBar extends JMenuBar {
 
 	@Override
 	public JMenu getHelpMenu() {
+		if (helpMenu == null) {
+			for (int i = 0; i < getMenuCount(); i++) {
+				JMenu menu = getMenu(i);
+				if (menu != null) {
+					if (menu.getText() != null
+							&& menu.getText().equalsIgnoreCase("help")) {
+						helpMenu = menu;
+						break;
+					}
+				}
+			}
+		}
 		return helpMenu;
 	}
 
@@ -37,11 +49,11 @@ public class EnhancedMenuBar extends JMenuBar {
 
 	protected void rearrange() {
 		remove(spacer);
-		if (helpMenu != null)
-			remove(helpMenu);
+		if (getHelpMenu() != null)
+			remove(getHelpMenu());
 		super.add(spacer);
-		if (helpMenu != null)
-			super.add(helpMenu);
+		if (getHelpMenu() != null)
+			super.add(getHelpMenu());
 	}
 
 	@Override

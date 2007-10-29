@@ -1,6 +1,7 @@
 package org.bbop.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import org.bbop.framework.GUITask;
 
 public class CollectionUtil {
 
@@ -337,5 +340,9 @@ public class CollectionUtil {
 			Collections.reverse(outputList);
 		}
 		return outputList;
+	}
+
+	public static <T> List<T> list(T... items) {
+		return Arrays.asList(items);
 	}
 }

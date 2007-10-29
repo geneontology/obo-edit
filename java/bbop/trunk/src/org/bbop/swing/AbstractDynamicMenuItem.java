@@ -67,7 +67,7 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 				addSep = false;
 			}
 			int j = 0;
-			List<Component> items = dmi.getItems();
+			List<? extends Component> items = dmi.getItems();
 			for (Component d : items) {
 				addItemToMenu(d, j == 0, j >= items.size() - 1);
 				j++;
@@ -99,11 +99,12 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 		super.removeAll();
 		addSep = false;
 		int index = 0;
-		Collection<Component> items = getItems();
+		Collection<? extends Component> items = getItems();
 		for (Component c : items) {
 			addItemToMenu(c, index == 0, index >= items.size() - 1);
 			index++;
 		}
+		setEnabled(items.size() > 0);
 	}
 	
 	protected static String escapeID(String s) {
@@ -202,7 +203,7 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 	
 	@Override
 	public Component[] getMenuComponents() {
-		Collection<Component> items = getItems();
+		Collection<? extends Component> items = getItems();
 		return items.toArray(new Component[items.size()]);
 	}
 	
