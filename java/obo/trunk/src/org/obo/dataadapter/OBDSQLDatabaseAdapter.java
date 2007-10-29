@@ -102,6 +102,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		protected boolean failFast = true;
 
 		protected boolean saveImplied;
+		
+		protected boolean replaceLinks = false;
 
 		protected java.util.List saveRecords = new ArrayList();
 
@@ -425,12 +427,36 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	
 	protected int saveLink(Link link) throws SQLException {
-		return callSqlFunc("store_link",
-				link.getChild().getID(),
-				link.getType().getID(),
-				link.getParent().getID(),
-				(TermUtil.isIntersection(link) ? "C" : ""),
-				TermUtil.isImplied(link));
+		System.out.println("saving "+link);
+		if (link instanceof ValueLink) {
+			ValueLink pv = (ValueLink)link;
+			Value v = pv.getValue();
+			if (v instanceof DatatypeValue) {
+				DatatypeValue dv = (DatatypeValue) v;
+				System.out.println("dv type="+dv.getType());
+				return callSqlFunc("store_tagval",
+						link.getChild().getID(),
+						link.getType().getID(),
+						dv.getValue(),
+						dv.getType());
+	//					((DatatypeValue) v).getType());
+				
+			}
+			else if (v instanceof IdentifiedObject) {
+//				throw new Exception("eek");
+				return 1;
+			}
+			return 1;
+		}
+		else {
+			return callSqlFunc("store_link",
+					link.getChild().getID(),
+					link.getType().getID(),
+					link.getParent().getID(),
+					(TermUtil.isIntersection(link) ? "C" : ""),
+					TermUtil.isImplied(link));
+		}
+		
 	}
 	
 
@@ -441,7 +467,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		//System.out.println("saving "+lo);
 		int iid;
 		String ns = "";
-		if (lo instanceof NamespacedObject) {
+		if (ioprofile.replaceLinks) {
+			// TODO
+			callSqlFunc("remove_links_for_node", lo.getID());
+		}
+		if (lo instanceof NamespacedObject && lo.getNamespace() != null) {
 			ns = lo.getNamespace().getID();
 		}
 		if (lo instanceof DanglingObject) {
@@ -455,7 +485,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			iid =
 				callSqlFunc("store_annotation",
 						annot.getSubject(),
-						annot.getType(),
+						annot.getRelationship(),
 						annot.getObject(),
 						"f");
 		}
@@ -530,10 +560,14 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			sql.append("?");
 		}
 		sql.append(")}");
-		//System.out.println("sql="+sql);
+		System.out.print("sql="+sql+" :: ");
+		for (Object ob : args) {
+			System.out.print(ob+" ");
+		}
+		System.out.println("");
 		CallableStatement stmt = conn.prepareCall(sql.toString());
 		stmt.registerOutParameter(1, Types.INTEGER);
-		//System.out.println("stmt="+stmt);
+		// System.out.println("stmt="+stmt);
 		for (int i=0; i<args.length; i++) {
 			Object arg = args[i];
 			if (arg instanceof Integer) {
@@ -541,6 +575,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			else if (arg instanceof Boolean) {
 				stmt.setBoolean(i+2, (Boolean)arg);
+			}
+			else if (arg instanceof IdentifiedObject) {
+				stmt.setString(i+2, ((IdentifiedObject) arg).getID());
 			}
 			else {
 				stmt.setString(i+2, (String)arg);
@@ -550,7 +587,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		
 		boolean rs = stmt.execute();	
 		
-		//System.out.println("rs="+rs);
+		System.out.println("rs="+rs);
 		return stmt.getInt(1);
 	}
 	

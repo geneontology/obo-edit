@@ -150,6 +150,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
         parseEvidence(ann,evCode,colvals[7]);
         System.out.println("  parsed ev");
 		LinkedObject subj =  getSessionLinkedObject(subjectID);
+		OBOProperty rel =  (OBOProperty)getSessionLinkedObject("OBO_REL:has_role",OBOClass.OBO_PROPERTY);
+		ann.setRelationship(rel);
 		System.out.println("  setting subj to "+subj);
 		ann.setSubject(subj);
 		if (subjectID != lastSubjectID) {
@@ -253,13 +255,20 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		
 	}
 	
+	// TODO: should we return a DanglingObject?
+	// can we do this and resolve later?
 	public LinkedObject getSessionLinkedObject(String id) {
+		return getSessionLinkedObject(id, OBOClass.OBO_CLASS);
+	}
+	
+	// TODO: move somewhere more generic
+	public LinkedObject getSessionLinkedObject(String id, OBOClass metaclass) {
 		System.out.println("getting/adding obj:"+id);
 		LinkedObject obj = (LinkedObject)session.getObject(id);
 		if (obj == null) {
 			obj =
 				(LinkedObject) session.getObjectFactory().
-				createObject(id, OBOClass.OBO_CLASS, true);
+				createObject(id, metaclass, true);
 			System.out.println("  got obj:"+obj);
 			session.addObject(obj);
 		}
