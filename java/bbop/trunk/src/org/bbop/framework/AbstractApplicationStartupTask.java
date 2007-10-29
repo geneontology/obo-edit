@@ -61,10 +61,12 @@ public abstract class AbstractApplicationStartupTask extends
 
 	protected abstract DataAdapterRegistry getAdapterRegistry();
 
+	protected abstract String getAppID();
+	
 	protected abstract String getAppName();
 
 	protected File getPrefsDir() {
-		return new File(System.getProperty("user.home") + "/." + getAppName());
+		return new File(System.getProperty("user.home") + "/." + getAppID());
 	}
 
 	protected String getDefaultPerspectiveResourcePath() {
@@ -160,30 +162,14 @@ public abstract class AbstractApplicationStartupTask extends
 
 	protected void showFrame() {
 		JFrame frame = getManager().getFrame();
-		// JPanel mainPanel = new JPanel();
-		// mainPanel.setLayout(new GridLayout(1, 1));
-		// frame.setContentPane(mainPanel);
-		// GUIComponent c = DockPanelFactory.getInstance().createComponent(
-		// DockPanelFactory.getInstance().getDefaultID());
-		// c.init();
-		// mainPanel.add((Component) c);
-		//
-		// int i;
-		// Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		// for (i = 1; i < dimensionInfo.length; i++) {
-		// if (screenSize.width < dimensionInfo[i][0]
-		// || screenSize.height < dimensionInfo[i][1])
-		// break;
-		//
-		// }
-		// frame.setSize(dimensionInfo[i - 1][0], dimensionInfo[i - 1][1]);
-
 		frame.setVisible(true);
 		SwingUtil.center(frame);
 	}
 
 	protected JFrame createFrame() {
-		return new MainFrame(getAppName());
+		JFrame out = new MainFrame(getAppID());
+		out.setTitle(getAppName());
+		return out;
 	}
 
 	protected Color getButtonColor() {
@@ -240,7 +226,7 @@ public abstract class AbstractApplicationStartupTask extends
 	}
 
 	protected File[] getPluginDirs() {
-		File[] out = { new File(GUIManager.getPrefsDir(), "." + getAppName()) };
+		File[] out = { new File(GUIManager.getPrefsDir(), "." + getAppID()) };
 		return out;
 	}
 
@@ -249,7 +235,7 @@ public abstract class AbstractApplicationStartupTask extends
 		final Logger global = Logger.getLogger("");
 		try {
 			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
-					getAppName() + "-%g%u.log").getAbsolutePath(), 10485760, 1);
+					getAppID() + "-%g%u.log").getAbsolutePath(), 10485760, 1);
 			fh.setLevel(Level.ALL);
 			global.addHandler(fh);
 
