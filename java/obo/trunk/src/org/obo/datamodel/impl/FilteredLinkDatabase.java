@@ -158,7 +158,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 		return termFilter == null || termFilter.satisfies(lo);
 	}
 
-	public void setTermFilter(Filter termFilter, Filter linkFilter) {
+	public void setFilters(Filter termFilter, Filter linkFilter) {
 		this.termFilter = termFilter;
 		this.linkFilter = linkFilter;
 	}

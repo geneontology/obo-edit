@@ -349,6 +349,11 @@ public class TermUtil {
 			LinkDatabase linkDatabase) {
 		return new AncestorTask(linkDatabase, term, null);
 	}
+	
+	public static boolean isAncestor(LinkedObject term, LinkedObject ancestor,
+			LinkDatabase linkDatabase) {
+		return getAncestors(term, linkDatabase, true).contains(ancestor);
+	}
 
 	protected static AncestorTask getAncestors(LinkedObject term,
 			LinkDatabase linkDatabase,

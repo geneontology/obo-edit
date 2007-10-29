@@ -9,6 +9,10 @@ public class NameSearchCriterion extends
 
 	public static final NameSearchCriterion CRITERION = new NameSearchCriterion();
 
+	public NameSearchCriterion() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Collection<String> getValues(Collection<String> scratch,
 			IdentifiedObject obj) {
 		scratch.add(obj.getName());
