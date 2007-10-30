@@ -27,7 +27,7 @@ use strict;
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 use GO::CGI::Query qw(get_fasta);
-use GO::Template::Template;
+#use GO::Template::Template;
 
 use CGI;
 $CGI::DISABLE_UPLOADS = 1;

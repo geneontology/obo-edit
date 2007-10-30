@@ -13,8 +13,7 @@ our %desc;
 our $pwd = $ENV{PWD};
 our $tmpl = (shift @ARGV) || "tmpl-amigo-install";
 our ($cvsroot,$godbname, $goservername, $godbuser, $godbauth, $gosocket);
-our $amigo = 'new-amigo';
-
+our $amigo = 'amigo';
 
 $conf{trace}=0;
 %defaults =
@@ -57,14 +56,13 @@ sub install_all {
 	$cvsroot = $conf{$k};
 	$ENV{GO_ROOT} = $cvsroot;
 
-	$k = 'GO_AMIGO_ROOT';
-	print "\n\n";
-	print "Please enter the full path to the amigo root directory,\n";
-	printf "e.g. /www/port_80/cvs/go-dev/amigo [%s]\n", $conf{$k} || '';
-	&get_ans($k);
-	$cvsroot = $conf{$k};
-	$ENV{GO_AMIGO_ROOT} = $cvsroot;
-
+#	$k = 'GO_AMIGO_ROOT';
+#	print "\n\n";
+#	print "Please enter the full path to the amigo root directory,\n";
+#	printf "e.g. /www/port_80/cvs/go-dev/amigo [%s]\n", $conf{$k} || '';
+#	&get_ans($k);
+#	$cvsroot = $conf{$k};
+#	$ENV{GO_AMIGO_ROOT} = $cvsroot;
 
 	$k = 'GO_DBNAME';
 	my $default = $conf{$k};
@@ -98,7 +96,7 @@ sub install_all {
 	print "\n\n";
 	print "Please enter the full path to the cgi\n";
 	print "directory in which you'd like to install AmiGO.\n";
-	printf "e.g. /www/port_80/cgi-bin/$amigo [%s]\n", $conf{$k} || '';
+	printf "e.g. /www/port_80/cgi-bin/amigo [%s]\n", $conf{$k} || '';
 	&get_ans($k);
 
 	my $cgiroot = $conf{$k};
@@ -109,8 +107,8 @@ sub install_all {
 	$k = 'GO_CGI_URL';
 	print "\n\n";
 	print "Please enter the URL that the AmiGO cgi directory\n";
-	print "($conf{GO_CGI_ROOT}/$amigo)\n";
-	printf "maps to, e.g. http://myserver/cgi-bin/$amigo [%s]\n", $conf{$k};
+	print "($conf{GO_CGI_ROOT}/amigo)\n";
+	printf "maps to, e.g. http://myserver/cgi-bin/amigo [%s]\n", $conf{$k};
 	&get_ans($k);
 
 =old
@@ -123,15 +121,15 @@ sub install_all {
 	$k = 'DOC_ROOT_DIR';
 	print "\n\n";
 	print "Please enter the full path of web server document root.\n";
-	print "This must be writeable as the '$amigo' directory will be created under it.\n";
+	print "This must be writeable as the 'amigo' directory will be created under it.\n";
 	printf "e.g. /www/port_80/docs [%s]\n",$conf{$k};
 	&get_ans($k);
 
 	$k = 'GO_HTML_URL';
 	print "\n\n";
 	print "Please enter the URL that the AmiGO directory\n";
-	print "($conf{DOC_ROOT_DIR}/$amigo)\n";
-	printf "maps to, e.g. http://myserver/$amigo [%s]\n",$conf{$k};
+	print "($conf{DOC_ROOT_DIR}/amigo)\n";
+	printf "maps to, e.g. http://myserver/amigo [%s]\n",$conf{$k};
 	&get_ans($k);
 
 	my $amigo_docroot = $conf{DOC_ROOT_DIR}."/".$amigo;
@@ -154,19 +152,21 @@ sub install_all {
 	`chmod a+x $cgiroot/*.cgi`;
 	cp("$cvsroot/$amigo/cgi-bin/*.pl $cgiroot/");
 
-=cut for now
 	## Copy the CGI scripts to the target directory.
-	cp("$cvsroot/$amigo/cgi-bin/gosql.cgi $cgiroot/");
-	`chmod a+x $cgiroot/gosql.cgi`;
-	cp("$cvsroot/$amigo/cgi-bin/termfinder.cgi $cgiroot/");
-	`chmod a+x $cgiroot/termfinder.cgi`;
-	cp("$cvsroot/$amigo/cgi-bin/map2slim.cgi $cgiroot/");
-	`chmod a+x $cgiroot/map2slim.cgi`;
-	cp("$cvsroot/$amigo/cgi-bin/orb_client.cgi $cgiroot/");
+	cp("$cvsroot/amigo/cgi-bin/goose $cgiroot/");
+	`chmod a+x $cgiroot/goose`;
+	cp("$cvsroot/amigo/cgi-bin/term_enrichment $cgiroot/");
+	`chmod a+x $cgiroot/term_enrichment`;
+	cp("$cvsroot/amigo/cgi-bin/slimmer $cgiroot/");
+	`chmod a+x $cgiroot/slimmer`;
+	cp("$cvsroot/amigo/cgi-bin/visualize $cgiroot/");
+	`chmod a+x $cgiroot/visualize`;
+=cut for now
+	cp("$cvsroot/amigo/cgi-bin/orb_client.cgi $cgiroot/");
 	`chmod a+x $cgiroot/orb_client.cgi`;
-	cp("$cvsroot/$amigo/cgi-bin/go.cgi $cgiroot/");
+	cp("$cvsroot/amigo/cgi-bin/go.cgi $cgiroot/");
 	`chmod a+x $cgiroot/go.cgi`;
-	cp("$cvsroot/$amigo/cgi-bin/*.pl $cgiroot/");
+	cp("$cvsroot/amigo/cgi-bin/*.pl $cgiroot/");
 =cut
 	## Copy the library skeleton example to the right directory.
 	my $library_dir = "$amigo_docroot/library";
@@ -174,7 +174,8 @@ sub install_all {
 	or grace_exit("mkdir $library_dir", $!)
 	unless (-e $library_dir);
 	`chmod a+r $library_dir`;
-	cpr("$cvsroot/amigo/amigo/library/* $amigo_docroot/library/");
+#	cpr("$cvsroot/amigo/amigo/library/* $amigo_docroot/library/");
+	cpr("$cvsroot/$amigo/library/* $amigo_docroot/library/");
 	$conf{GO_LIBRARY} = $library_dir;
 	$conf{GO_LIBRARY_LINK} = "/amigo/library";
 
@@ -269,7 +270,7 @@ sub install_all {
 	`perl ./scripts/make_spec_key.pl $conf{GO_CGI_ROOT} 50`;
 	printf "Make cache file for other items, please wait...\n";
 	`perl ./scripts/make_misc_key.pl $conf{GO_CGI_ROOT}`;
-	my $amigo_url = $conf{GO_CGI_ROOT} . "/$amigo/search.cgi";
+	my $amigo_url = $conf{GO_CGI_URL} . "/amigo/search.cgi";
 
 #	$k = 'INSTALL_GO_DEV';
 #	printf "Would you like to install go-dev documentation? [%s]\n", $conf{$k} || 'n';
@@ -296,7 +297,7 @@ sub write_amigo_config {
 
 	print F "## go-dev location\n";
 	printf F "\$ENV{GO_ROOT}='%s';\n\n", $conf{GO_ROOT};
-	printf F "\$ENV{GO_AMIGO_ROOT}='%s';\n\n", $conf{GO_AMIGO_ROOT};
+#	printf F "\$ENV{GO_AMIGO_ROOT}='%s';\n\n", $conf{GO_AMIGO_ROOT};
 
 	my @keys = qw(GO_DBNAME GO_DBHOST GO_DBUSER GO_DBAUTH GO_DBSOCKET);
 	printf F "## database.\n";

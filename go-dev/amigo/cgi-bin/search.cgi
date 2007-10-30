@@ -27,7 +27,7 @@ use GO::CGI::Search qw(:std);
 use GO::CGI::Session;
 use GO::CGI::NameMunger;
 use GO::CGI::Utilities qw(:std);
-use GO::Template::Template;
+#use GO::Template::Template;
 use HTML::Entities;
 
 use Data::Dumper;

@@ -30,7 +30,7 @@ use GO::CGI::Query qw(get_graph_for_gp get_nit);
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 #use GO::CGI::NameMunger;
-use GO::Template::Template;
+#use GO::Template::Template;
 
 use CGI;
 $CGI::DISABLE_UPLOADS = 1;
