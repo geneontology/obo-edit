@@ -1,6 +1,6 @@
 #! /bin/sh
 # Set the classname of the Java class to execute
-CLASSNAME=org.oboedit.launcher.OBO2OBO
+CLASSNAME=org.oboedit.launcher.OBO2Database
 
 # Give a space-separated list of classpath items RELATIVE TO THE CURRENT SCRIPT
 # These will be resolved into absolute pathnames
