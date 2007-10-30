@@ -21,10 +21,7 @@
 			#INCLUDE javascript_gp_details.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-			[% INCLUDE header.tmpl;
-				INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 [% TRY;
 	IF !gp %]
@@ -36,7 +33,7 @@
 <ul id="navPage" class="inline C">
 <li><a href="#info" title="View gene product information">Gene product information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 [% IF gp.seq_list && gp.seq_list.size > 0 %]
-<li><a href="#sequence" title="View peptide sequence">Peptide sequence <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
+<li><a href="#sequence" title="View peptide sequence" id="barSeqToggle">Peptide sequence <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 <li><a href="#seq-info" title="View sequence information">Sequence information <img src="[% image_dir %]/down.png" alt="in-page link"></a></li>
 [% END %]
 [% term_assoc_link = 'Term associations';
@@ -156,8 +153,6 @@
 		PROCESS error.tmpl;
 	END %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>	

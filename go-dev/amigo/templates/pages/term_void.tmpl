@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+	<head>
+	<title>AmiGO: Term Details</title>
+		[% page_name = 'term_void' %]
+		[% INCLUDE header_info.tmpl %]
+		[% INCLUDE term_detail_header_info.tmpl %]
+		[% INCLUDE javascript_term_details.tmpl %]
+	</head>
+	<body>
+	[% image_dir = session.get_param('html_url') _ '/images' %]
+		<div id="header">
+			[% INCLUDE header.tmpl %]
+			 [% INCLUDE bar_term_details.tmpl %]
+		</div>
+		<div class="contents">
+                 <p>
+                  <em>
+
+No term exists with the ID: "[% session.get_param('query') %]".
+
+                  </em>
+                 </p>
+                 <p>
+
+If you feel that you have reached this page in error, please contact the <a
+href="http://www.geneontology.org/GO.contacts.shtml">GO helpdesk</a>.
+
+                 </p>
+<!--
+                 <p>
+
+If you are interested in having a term added to the GO, please
+continue to <a
+href="http://toy.lbl.gov:9002/cgi-bin/amigo2/orb-html-client.cgi?ontology_id=GO"
+title="Add term to GO">here.</a>
+
+                 </p>
+-->
+		</div>
+		<div id="footer">
+			[% INCLUDE footer.tmpl %]
+		</div>
+	</body>
+</html>	

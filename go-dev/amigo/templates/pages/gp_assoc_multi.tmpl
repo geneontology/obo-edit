@@ -7,10 +7,7 @@
 		[%# INCLUDE javascript_gp_comp.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-			[% INCLUDE header.tmpl %]
-			[% INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 		<h1>Gene Product Annotation Overview</h1>
 	[% TRY;
@@ -75,8 +72,6 @@
 			PROCESS error.tmpl;
 		END %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>	

@@ -1,2 +1,52 @@
-<a class="logo floatR" href="search.cgi?session_id=[% session_id %]"><img src="[% image_dir %]/logo-sm.png" alt="AmiGO logo" title="AmiGO front page"></a>
-<h1 id="top"><a href="http://www.geneontology.org/" title="Gene Ontology website">the Gene Ontology</a></h1>
+<div class="header">
+	<a class="logo floatR" href="search.cgi?session_id=[% session_id %]"><img src="[% image_dir %]/logo-sm.png" alt="AmiGO logo" title="AmiGO front page"></a> <h1 id="top"><a href="http://www.geneontology.org/" title="Gene Ontology website">the Gene Ontology</a></h1> 
+</div>
+<div id="searchbar">
+	<ul id="menuToggle">
+		[% IF page_name == 'advanced_query' %] 
+		<li class="here">Search</li>
+		[% ELSE %] 
+		<li>
+			<a href="search.cgi?action=advanced_query&amp;session_id=[% session_id %]" title="Advanced search for GO terms or gene product annotations">Search</a>
+		</li>
+		[% END %] 
+		<li>
+			<a href="browse.cgi?session_id=[% session_id %]" title="Browse the terms in the Gene Ontology">Browse</a>
+		</li>
+		[% IF page_name == 'blast_query' %] 
+		<li class="here">BLAST search</li>
+		[% ELSE %] 
+		<li>
+			<a href="blast.cgi?session_id=[% session_id %]" title="BLAST search for gene products">BLAST search</a>
+		</li>
+		[% END %] 
+
+	[% IF current == "slimmer" %]
+	<li class="here">Slimmer</li>
+	[% ELSE %]
+		<li>
+			<a href="slimmer?session_id=[% session_id %]" title="Map your data to high level terms">GO Slimmer</a> 
+		</li>
+	[% END %]
+	[% IF current == "term_enrichment" %]
+	<li class="here">Term Enrichment</li>
+	[% ELSE %]
+		<li>
+			<a href="term_enrichment?session_id=[% session_id %]" title="Find ...">Term Enrichment</a> 
+		</li>
+	[% END %]
+
+		<li>
+			<a href="http://www.geneontology.org/amigo/help-front.shtml" title="Help guide for this page">Help</a> 
+		</li>
+	</ul>
+	[% IF page_name != 'front' %] 
+	<div id="menuSearchForm">
+		<form action="search.cgi" id="bar-form" method='POST'>
+			<p>
+				<label for="bar-query">Search GO</label><input class="textBox" type="text" name="search_query" size="25" value="[% query %]" id="bar-query"> [% opt_name = 'search_constraint'; option = search_constraint_data.data; INCLUDE options_radio.tmpl %] <input type="checkbox" id="bar-exact_match" name="exact_match" value="1" class="cbox"><label for="bar-exact_match">exact match</label> <input type="hidden" name="session_id" value="[% session_id %]"> <input type="hidden" name="action" value="new-search"> <input type="submit" class="button">
+			</p>
+		</form>
+	</div>
+	[% END %] 
+</div>

@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+  <head>
+
+  [% INCLUDE amigo_common_head.tmpl %]
+
+   <meta name="description"
+         content="Gene Ontology SQL web client.">
+
+   <!-- Optional JavaScript entry: TODO -->
+   <script type="text/javascript">
+   <!--
+   [% INCLUDE goose_js.tmpl %]
+   // -->
+   </script>
+
+  </head>
+  <body onload="if( 1 ) pulldownForGoose();">
+
+    [% current = "" %]
+    [% INCLUDE amigo_common_header_lite.tmpl %]
+
+    <div class="contents">
+      
+	<h1>GO Online SQL Environment</h1>
+    
+	<form action="goose"
+	      method="GET"
+	      name="goose_form"
+	      id="goose_form">
+	
+	  <div class="block">
+	  
+	  <!-- Uncomment the code below to get the selection box back. -->
+	  	<input type="hidden" name="database" value="1" />
+
+	    <h2>Directly query the GO database</h2>
+	  
+	  See some <a
+	  href="http://wiki.geneontology.org/index.php/Example_Queries">examples</a>
+	  and learn more about the <a
+	  href="http://www.geneontology.org/GO.database.shtml"
+	  title="GO database schema documentation">schema</a>.<br />
+	  If your query takes a long time or returns a blank screen, you may want to try the download option.
+	  
+	 
+	    <h3 class="first">
+	      Enter your SQL query:
+	    </h3>
+
+	    <!--
+	    <p>
+	      white space.
+	    </p>
+	    -->
+
+
+<textarea id="sql_query" name="sql_query" cols="80" rows="5">[% SQL_QUERY %]</textarea>
+
+	    <div style="" id="goose_example_table"></div>
+
+            Limit the number of results returned:
+	    <select name="limit" size="1">
+	      <option
+		 title="10" 
+		 value="10" 
+		 [% IF LIMIT == 10 %]selected[% END %]
+		 class="" />10</option>
+	      <option
+		 title="100" 
+		 value="100" 
+		 [% IF LIMIT == 100 %]selected[% END %]
+		 class="" />100</option>
+	      <option
+		 title="1000" 
+		 value="1000" 
+		 [% IF LIMIT == 1000 %]selected[% END %]
+		 class="" />1000</option>
+	      <option
+		 title="10000" 
+		 value="10000" 
+		 [% IF LIMIT == 10000 %]selected[% END %]
+		 class="" />10000</option>
+	      <option
+		 title="unlimited" 
+		 value="0" 
+		 [% IF LIMIT == 0 %]selected[% END %]
+		 class="" />unlimited</option>
+            </select>
+
+	    <br />
+
+	    <div>
+            Download results directly in tab-delimited format
+	    <input class="cbox" type="checkbox" name="format" value="tab" />
+	    </div>
+
+<!--
+              Database version:
+	      <select name="database" size="1">
+		  <option
+			 title="IEAs" 
+			 value="1" 
+			 [%IF DATABASE_SELECTION == '1' %]selected[% END %]
+			 class="" />IEAs</option>
+		  <option
+			 title="no IEAs" 
+			 value="2"
+			 [%IF DATABASE_SELECTION == '2' %]selected[% END %]
+			 class="" />no IEAs</option>
+	      </select>
+
+	    <br />
+-->
+
+	    <fieldset class="block">
+	      <legend>
+		Mirror
+	      </legend>
+	      <ul>
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="1" 
+			 [%IF MIRROR_SELECTION == '1' %]checked[% END %]
+			 class="cbox">
+		    <b>Berkeley</b>:
+		    Use the database mirror at the Berkeley BOP.
+		    <!-- Both
+		    <em>GO Full</em> and <em>GO Lite</em> are available.
+		    -->
+		</li>
+		<li>
+		  <input type="radio" 
+			 name="mirror" 
+			 value="2" 
+			 [%IF MIRROR_SELECTION == '2' %]checked[% END %]
+			 class="cbox">
+   <b>EBI</b>:
+   Use the database mirror at EBI.
+<!--
+ Only <em>GO Full</em> is available.
+-->
+		</li>
+	      </ul>	      
+	    </fieldset>
+
+	    <hr class="clearL">
+	    <input type="submit" class="button" value="Query!" />
+	      
+	  </div>
+
+	</form>		
+	
+	[%IF DISPLAY_MAIN_RESULTS %]
+	[%   MAIN_RESULTS %]
+	[%END%]
+	
+    </div>
+    
+    [% INCLUDE amigo_common_footer.tmpl %]
+    
+  </body>
+</html>

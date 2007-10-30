@@ -1,0 +1,441 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/DTD/strict.dtd">
+<html>
+
+  <head>
+  [% INCLUDE amigo_common_head.tmpl %]
+
+
+  <link rel="stylesheet"
+        title="standard"
+        type="text/css"
+        href="/amigo/css/orb_client.css" >
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9002/cgi-bin/amigo2/orb.cgi?request=jsapi">
+  </script>
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9002/amigo/js/orb_client.js">
+  </script>
+  </head>
+
+  <body onload="Initialize()" onunload="">
+
+    [% current = "" %]
+    [% INCLUDE amigo_common_header.tmpl %]
+
+    <div class="contents">
+
+    <form name="generated_form" action="">
+      
+      <div class="left_column">
+
+	<div id="propose_mode_area" class="">
+            
+	  <div class="block">
+	    <a name="anchor_summary"></a>
+	    <h2>Title:</h2>
+	    <p class="explanation">
+		
+	      Please provide a short title that <b>briefly
+		describe</b>s your new term or proposed
+	      modification. This will serve as a title that the
+	      ontology curators will use to classify and handle your
+	      request.  Note that this should be under 128
+	      characters.
+	      
+	    </p>
+	    <input type="text" id="summary" class="long_text_input" />
+	  </div>
+	  
+	  <div class="block">
+	    <a name="anchor_definition"></a>
+	    <h2>Definition:</h2>
+	    <p class="explanation">
+				
+	      Please provide a description and <b>definition</b> for your
+	      proposed new term, <b>or</b> a <b>description</b> of the
+	      modification you'd like to make to the ontology. Provide
+	      <b>supporting references</b> for your proposed changes
+	      where possible.
+	      
+	      Note that this information must be under 2048
+	      characters.
+	      
+	    </p>
+	    <textarea rows="10" cols="30" id="definition" class="textarea"></textarea>
+	  </div>
+	  
+	  <div class="block">
+	    <a name="anchor_details"></a>
+	    <h2>Details:</h2>
+	    <p class="explanation">
+	      
+	      In this section, please provide any additional information
+	      about your proposed modification. These may include
+	      information such as <b>position</b> in the ontology,
+	      <b>examples</b> to help clarify the definition, and the
+	      <b>justification</b> for the modification. Please note
+	      that this information must be under 2048 characters.
+		
+	    </p>
+	    <textarea id="details" rows="10" cols="30" class="textarea"></textarea>
+	  </div>
+	  
+	  <div class="block">
+	    <a name="anchor_modtype"></a>
+	    <h2>Modification Type (recommended):</h2>
+	    <p class="explanation">
+	      
+	      <em>Optionally</em>, you may select the <b>most
+		appropriate</b> for the type of modification you wish
+	      to make. While these choices may not cover the
+	      complete spectrum of possibilites, they do help the
+	      curators direct your request to the appropriate
+	      person.
+	      
+	    </p>
+	    
+	    <table>
+	      <tr>
+		<td>
+		  <input type="radio" name="modtype" value="new" />
+		</td>
+		<td>
+		  <b>New</b>:
+		</td>
+		<td>
+		  Propose a new term
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input type="radio" name="modtype" value="modify" />
+		</td>
+		<td>
+		  <b>Modify</b>:
+		</td>
+		<td>
+		  Propose a modification to existing terms or their
+		  relationships
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input type="radio" name="modtype" value="other" />
+		</td>
+		<td>
+		  <b>Other</b>:
+		</td>
+		<td>
+		  Propose some other type of modification      
+		</td>
+	      </tr>
+	    </table>
+	    
+	  </div>
+          
+	  <div class="block">
+	    <a name="anchor_attribution"></a>
+	    <h2>Attribution (recommended):</h2>
+	    <p class="explanation">
+	      
+	      Finally, and <em>optionally</em>, you may add some
+	      <b>contact information</b> so that if your modification
+	      is accepted you may be cited. Also, curators may use
+	      this information to contact you if further discussion of
+	      your modification if necessary.
+	      
+	    </p>
+	    <p>
+	      Attribution: <input id="attribution" type="text"
+				  class="long_text_input" />
+	    </p>
+	  </div>
+	    
+	</div>
+	  
+	<!-- Initially hidden -->
+	<div id="option_area" class="hidden">
+	    
+	  <div id="categories_container" class="block">
+	    <a name="anchor_category_id"></a>
+	    <h2>Categories (optional):</h2>
+	    <p class="explanation">
+	      
+	      Next, you  need to <b>select the category</b> of the change you
+	      wish to  make to  the ontology. If  the category  that you
+	      want cannot be classified as  one of the following and you
+	      feel that it  should be added to the  list, please contact
+	      the <a href="http://www.obofoundry.org">OBO Foundry</a>.
+	      
+	    </p>
+	    <div id="categories" class="">[Please select ontology]</div>
+	  </div>
+	  
+	  <div id="artifacts_container" class="block">
+	    <a name="anchor_artifact_group_id"></a>
+	    <h2>Classification (optional):</h2>
+	    <p class="explanation">
+	      
+	      Now, if possible, would you <b>select the value</b>
+	      below that is most closely associated with your proposed
+	      modification.
+	      
+	    </p>
+	    <div id="artifacts" class="">[Please select ontology]</div>
+	  </div>
+	  
+	  <div class="block">
+	    <a name="anchor_login"></a>
+	    <a name="anchor_password"></a>
+	    <h2>Identity (optional):</h2>
+	    <p class="explanation">
+	      
+	      This is <em>optional</em>. If you have a <b>SF.net
+		ID</b> under which you want to submit this request,
+	      please enter the username and password here. If you do
+	      not have a SF.net username, or wish to remain anonymous,
+	      you may skip this step. Please note that while the ORB
+	      server's connection to the tracker is, if possible,
+	      secure, this client's connection to the ORB server is
+	      not.
+		
+	    </p>
+	    <p>
+	      Login: <input id="login" type="text" class="" />
+	    </p>
+	    <p>
+	      Password: <input id="password" type="password" class="" />
+	    </p>
+	  </div>
+	  
+	</div>
+      
+	<!-- Initially hidden mode -->
+	<div id="queue_mode_area" class="hidden">
+	  
+	  <div id="queue_container" class="block">
+	    <h2>Term Queue:</h2>
+	    <p class="explanation">
+	      These are the terms that already exist in the queue.
+	    </p>
+	    <div id="queue" class="list">[Please select ontology]</div>
+	  </div>
+	  
+	</div>
+	
+	<!-- Initially hidden mode -->
+	<div id="proposal_mode_area" class="hidden">
+	  
+	  <div id="proposal_container" class="block">
+	    <h2>Proposed Item Progress:</h2>
+	    <p class="explanation">
+	      This is the progress of the items you've proposed.
+	    </p>
+	    <div id="proposal" class="">[Populating table...]</div>
+	  </div>
+	  
+	</div>
+	
+      </div> <!-- End left column -->
+
+      <!-- Right-side menu in parallel world -->
+      <div class="right_column">
+	
+	<!-- Live report. -->
+	<div id="report">
+	  <!--
+	      class="right_column_item">
+	    -->
+	  <div id="checker">
+
+	    <div class="block">
+	      <b>Required:</b>
+	      <table class="list">
+		<tr>
+		  <td><img id="image_summary" alt="redo icon" width="15"
+			   height="15" src="/amigo/images/orb_led_red.png"
+			   /> </td>
+		  <td id="label_summary" class="list_item_bad">
+		    <a href="#anchor_summary">Title</a>
+		  </td>
+		</tr>
+		<tr>
+		  <td><img id="image_definition" alt="pass icon"
+			   width="15" height="15"
+			   src="/amigo/images/orb_led_grey.png" /> </td>
+		  <td id="label_definition" class="list_item_neutral">
+		    <a href="#anchor_definition">Definition</a>
+		  </td>
+		</tr>
+		<tr>
+		  <td><img id="image_details" alt="redo icon" width="15"
+			   height="15" src="/amigo/images/orb_led_red.png"
+			   /> </td>
+		  <td id="label_details" class="list_item_bad">
+		    <a href="#anchor_details">Details</a>
+		  </td>
+		</tr>
+	      </table>
+	    </div>
+
+	    <div class="block">
+	      <b>Recommended:</b>
+	      <table class="list">
+		<tr>
+		  <td><img id="image_modtype" alt="pass icon" width="15"
+			   height="15" src="/amigo/images/orb_led_grey.png"
+			   /> </td>
+		  <td id="label_modtype" class="list_item_neutral">
+		    <a href="#anchor_modtype">Modtype</a>
+		  </td>
+		</tr>
+		<tr>
+	          <td><img id="image_attribution" alt="pass icon"
+	                   width="15" height="15"
+		           src="/amigo/images/orb_led_grey.png" /> </td>
+		  <td id="label_attribution" class="list_item_neutral">
+		    <a href="#anchor_attribution">Attribution</a>
+	          </td>
+		</tr>
+	      </table>
+	    </div>
+	    
+	    <div class="block">
+	      <div id="option_toggle" class="">
+		<img id="option_toggle_image" alt=""
+		     width="20" height="15"
+		     src="/amigo/images/orb_nav_closed.png" />
+		<b>Optional:</b>
+	      </div>
+	      <div id="option_menu" class="hidden">
+		<table class="list">
+		  <tr>
+		    <td><img id="image_category_id" alt="pass icon"
+			     width="15" height="15"
+			     src="/amigo/images/orb_led_grey.png" /> </td>
+		    <td id="label_category_id" class="list_item_neutral">
+		      <a href="#anchor_category_id">Category</a>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td><img id="image_artifact_group_id" alt="pass icon"
+			     width="15" height="15"
+			     src="/amigo/images/orb_led_grey.png" /> </td>
+		    <td id="label_artifact_group_id" class="list_item_neutral">
+		      <a href="#anchor_artifact_group_id">Classification</a>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td><img id="image_login" alt="pass icon" width="15"
+			     height="15"
+			     src="/amigo/images/orb_led_grey.png" /> </td>
+		    <td id="label_login" class="list_item_neutral">
+		      <a href="#anchor_login">Login</a>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td><img id="image_password" alt="pass icon"
+			     width="15" height="15"
+			     src="/amigo/images/orb_led_grey.png" /> </td>
+		    <td id="label_password" class="list_item_neutral">
+		      <a href="#anchor_password">Password</a>
+		    </td>
+		  </tr>
+		</table>
+	      </div>
+	   
+	    </div>
+
+	  </div>
+
+	  <div class="centered">
+	    <div id="retriever">
+	      <input type="button"
+		     name="retrieve_button"
+		     id="retrieve_button"
+		     value="Retrieve"
+		     class="blue_button" />
+	    </div>
+	    <div id="submitter"></div>
+	  </div>
+	  <div id="results" class=""></div>
+	  <div id="link" class=""></div>
+	  
+	</div>
+	
+
+	<div class="hidden">
+	<!-- Mode chooser -->
+	<div class="small_chooser">
+	  <div id="mode_toggle" class="">
+	    <img id="mode_toggle_image" alt=""
+		 width="16" height="12"
+		 src="/amigo/images/orb_nav_closed.png" />
+	    Mode Chooser
+	  </div>
+	  <div id="mode_menu" class="hidden">
+	    <table class="list">
+	      <tr>
+		<td><input type="radio" name="mode" value="propose"
+			   checked="checked" /> </td>
+		<td>Modification</td>
+	      </tr>
+	      <tr>
+		<td><input type="radio" name="mode" value="queue" /> </td>
+		<td>Current queue</td>
+	      </tr>
+	      <tr>
+		<td><input type="radio" name="mode" value="proposal" /> </td>
+		<td>My items</td>
+	      </tr>
+	    </table>
+	  </div>
+	</div>
+	  
+	<!-- Danger buttons -->
+	<div class="small_chooser">
+	  <div id="danger_toggle" class="">
+	    <img id="danger_toggle_image" alt=""
+		 width="16" height="12"
+		 src="/amigo/images/orb_nav_closed.png" />
+	    Advanced Controls
+	  </div>
+	  <div id="danger_menu" class="hidden">
+	    <table class="list">
+	      <tr>
+		<td><input type="button" value="TODO:" /> </td>
+		<td>Refresh all</td>
+	      </tr>
+	      <tr>
+		<td><input type="button" value="TODO:" /> </td>
+		<td>Clear form</td>
+	      </tr>
+	      <tr>
+		<td><input type="button" value="TODO:" /> </td>
+		<td>Clear cookie</td>
+	      </tr>
+	    </table>
+	  </div>
+	</div>
+	</div>
+	
+      </div>
+      
+    </form>
+      
+    <!-- Need to get these silently loaded. -->
+    <div class="hidden">
+      <img src="/amigo/images/orb_led_green.png" alt="Item is ready." />
+      <img src="/amigo/images/orb_led_red.png" alt="Item needs to be entered." />
+      <img src="/amigo/images/orb_led_grey.png" alt="Item is optional." />
+    </div>
+      
+    </div>
+
+    <div id="obo_file"></div>
+
+    [% INCLUDE amigo_common_footer.tmpl %]
+      
+  </body>
+</html>

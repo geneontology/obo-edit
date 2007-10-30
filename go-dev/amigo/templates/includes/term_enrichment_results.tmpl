@@ -1,0 +1,111 @@
+<!-- START template: term_enrichment_results.tmpl -->
+<!-- transfer_link = [% transfer_link %] -->
+<div class="block">
+  <h2 id="results">Results</h2>
+
+  <p>
+    [% IF NUMBER_OF_RESULTS_OVER_THRESHOLDS > 0 %]
+    <!--
+    Number of gene products in sample: <em>[% NUMBER_OF_GPS_INPUTTED %]</em>
+    <br />
+    -->
+    Database filter(s): <em>[% ECHO_SPECIESDBS_STRING %]</em>
+    <br />
+    The p-value cutoff was: <em>[% ECHO_CUTOFF %]</em>
+    <br />
+    The minimum number of gene products: <em>[% ECHO_MIN_GPS %]</em>
+    <br />
+    [% END %]
+    There were
+    <em>[% NUMBER_OF_RESULTS_OVER_THRESHOLDS %]</em>
+    result(s) above the threshold values and
+    <em>[% NUMBER_OF_RESULTS -  NUMBER_OF_RESULTS_OVER_THRESHOLDS %]</em>
+    below.
+  </p>
+  
+  [% IF NUMBER_OF_RESULTS_OVER_THRESHOLDS > 0 %]
+
+  <p>
+    You may
+    <a href="[% transfer_link %]">transfer</a>
+    these results to be used as a subset in the
+    <a href="slimmer">GO Slimmer</a>
+    tool. You may also view them with the
+    <a href="[% visualize_link %]">visualize</a>
+    tool.
+  </p>
+
+  <p>
+    If you wish to retry or tune your query, you
+    may <a href="#controls" title="Jump to the controls">jump</a> to
+    the controls.
+  </p>
+
+  <table summary="Enriched terms">
+    <thead>
+      <tr>
+	<th>GO Term</th>
+	<th>Aspect</th>
+	<th>P-value</th>
+	<!--
+	<th style=""># GPs sam/anno</th>
+	<th style=""># GPs db/anno</th>
+	-->
+	<th>Sample frequency</th>
+	<th>Background frequency</th>
+	<th>Genes</th>
+      </tr>
+    </thead>
+    <tbody>
+      [% eo = 0 %]
+      [% FOREACH row = ROWS %]
+      [%    IF eo % 2 == 0 %]
+      <tr class="even_row">
+      [%    ELSE %]
+      <tr class="even_odd">
+      [%    END %]
+	<td rowspan="1">
+	  <a href="go.cgi?term=[% row.acc %]">[% row.acc %]</a>
+	  [% row.name %]
+	</td>
+	<td rowspan="1">
+	  [% row.aspect %]
+	</td>
+	<td rowspan="1">
+	  [% row.pval %]
+	</td>
+	<td style="text-align: center;" rowspan="1">
+	  [% row.number_gps_in_sample_annotated %]/[% row.number_gps_in_sample %] ([% row.sample_ratio %]%)
+	</td>
+	<td style="text-align: center;" rowspan="1">
+	  [% row.number_gps_in_background_annotated %]/[% row.number_gps_in_background %] ([% row.background_ratio %]%)
+	</td>
+	<td rowspan="1">
+	  [% FOREACH gene = row.genes %]
+	  <a href="go.cgi?gene_product=[% gene %]">[% gene %]</a>
+	  [% END %]	  
+	</td>
+      </tr>
+      [%    eo = eo + 1 %]
+      [% END %]
+    </tbody>
+  </table>
+
+  [% ELSE %]
+
+  <p>
+
+    No results could be generated for your input. Perhaps
+    the <em>filters</em> were too strict or the <em>search by</em>
+    field has been set incorrectly.
+
+  </p>
+
+  [% END %]
+  
+  <p class="toTop">
+    <a href="#results" title="Back to the top of the page">Back to top</a>
+  </p>
+
+</div>
+<!-- END template: term_enrichment_results.tmpl -->

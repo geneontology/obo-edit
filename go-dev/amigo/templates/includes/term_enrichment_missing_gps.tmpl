@@ -1,0 +1,30 @@
+<!-- START template: term_enrichment_missing_gps.tmpl -->
+<div class="block">
+  <h2><span class="error_text">Missing gene products</span></h2>
+
+  <p> The following gene products could not be found in the database
+    and were removed from the enrichment calculation. This may be an
+    artifact of the currently selected filters.  </p>
+  
+  <table summary="Inputted gene products not found in database">
+    [% eo = 0 %]
+    [% FOREACH mgps = MISSING_GPS %]
+    [%    IF eo % 2 == 0 %]
+    <tr class="even_row">
+      [%    ELSE %]
+    <tr class="even_odd">
+      [%    END %]
+      <td rowspan="1">
+	[% mgps %]
+      </td>
+    </tr>
+    [%    eo = eo + 1 %]
+    [% END %]
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: term_enrichment_missing_gps.tmpl -->

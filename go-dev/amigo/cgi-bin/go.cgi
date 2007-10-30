@@ -1,4 +1,4 @@
-#!/usr/bin/perl5.8.6 -w
+#!/usr/local/bin/perl -w
 #	redirects links to the new CGIs
 
 require 5.8.0;

@@ -19,10 +19,7 @@
 			# INCLUDE javascript_gp_details.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-		[% INCLUDE header.tmpl %]
-		[% INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 [% TRY;
 
@@ -54,8 +51,8 @@
 		<h2>Term Associations</h2>
 		[% IF term_list && term_list.size > 0 %]
 		<ul class="download">
-		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"> <img src="[% image_dir %]/down.png" alt="in-page link"> GA format</a></li>
-		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/down.png" alt="in-page link"> RDF-XML</a></li>
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> GA format</a></li>
+		<li><a href="gp-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
 		</ul>
 		[% INCLUDE filter_gp_assoc.tmpl %]
 		[% IF 1 == 0 %]
@@ -118,9 +115,7 @@
 
 [%# USE Dumper(indent=1) ; '<pre>' ; Dumper.dump( data ) ; '</pre>' %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>
 

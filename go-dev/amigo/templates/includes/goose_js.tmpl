@@ -1,0 +1,45 @@
+// START template: gosql_js.tmpl 
+
+
+// Start wiki data
+[% WIKI_JS_DATA %]
+// End wiki data
+
+
+// 
+function pulldownForGoose(){
+
+  // Generate new select element.
+  var pulldown = document.createElement("select");
+  pulldown.setAttribute('size', 1);
+  pulldown.setAttribute('class', '');
+  pulldown.setAttribute('className', '');
+  pulldown.onchange = function(event){
+
+    // Handle IE stooooopidity.
+    var e = event || window.event;
+
+    var textarea = document.getElementById("sql_query");
+    if( e.target ){
+      textarea.innerHTML = e.target.value;
+    }else if ( e.srcElement ){
+      textarea.innerHTML = e.srcElement.value;      
+    }
+  };
+
+  // Append the child input elements.
+  for( var i = 0; i < global_goose_pulldown_table.length; i++ ){
+    var new_opt = document.createElement("option");
+    new_opt.innerHTML = global_goose_pulldown_table[i].title;
+    new_opt.setAttribute('title', global_goose_pulldown_table[i].value);
+    new_opt.setAttribute('value', global_goose_pulldown_table[i].value);
+    pulldown.appendChild(new_opt);
+  }
+
+  // Add our new element to the div.
+  var div = document.getElementById("goose_example_table");
+  div.appendChild(pulldown);
+}
+
+
+// END template: gosql_js.tmpl 
