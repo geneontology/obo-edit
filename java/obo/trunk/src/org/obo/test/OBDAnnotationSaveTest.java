@@ -5,13 +5,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
+import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
@@ -74,6 +77,20 @@ public class OBDAnnotationSaveTest extends AbstractOBOTest {
 	public void testHasLoaded() {
 		// TODO
 		assertTrue(true);
+	}
+	
+	// TODO: DRY
+	public void testFileSave() throws DataAdapterException {
+		// session -> file
+		OBOFileAdapter fileAdapter = new OBOFileAdapter();
+		OBOAdapterConfiguration fileConfig = new OBOFileAdapter.OBOAdapterConfiguration();
+		OBOSerializationEngine.FilteredPath path = new OBOSerializationEngine.FilteredPath();
+		path.setUseSessionReasoner(false);
+		path.setPath("foo.obo");
+		fileConfig.getSaveRecords().add(path);
+		fileConfig.setBasicSave(false);
+		fileConfig.setSerializer("OBO_1_2");
+		fileAdapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, fileConfig, session);
 	}
 	
 	public boolean testForAnnotation(String su, String ob) {
