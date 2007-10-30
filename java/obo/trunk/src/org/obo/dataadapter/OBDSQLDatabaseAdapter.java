@@ -230,10 +230,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			while (it.hasNext()) {
 				FilteredPath filteredPath = it.next();
 				LinkDatabase ldb = session.getLinkDatabase();
-				if (ioprofile.saveImplied) {
-					//
+				if (filteredPath.saveImplied) {
+					
 					if (reasoner == null) {
-						throw new DataAdapterException("must pass in a reasoner");
+						reasoner = new ForwardChainingReasoner();
+						reasoner.setLinkDatabase(new DefaultLinkDatabase(session));
+						reasoner.recache();
 					}
 					ldb = reasoner;
 					System.err.println("will save implied");
@@ -413,13 +415,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return link;
 	}
 	
-	public IdentifiedObject xxxlookupObject(String id) {
-		IdentifiedObject lo = conn2objmap.get(conn).get(id);
-		if (lo == null) {
-			lo = new DanglingObjectImpl(id);
-		}
-		return lo;
-	}
+	
 	
 	public IdentifiedObject lookupObject(OBOSession session, String id) {
 		return session.getObject(id);
