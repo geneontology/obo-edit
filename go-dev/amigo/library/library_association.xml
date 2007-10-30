@@ -1,0 +1,12 @@
+<?xml version="1.0"?> 
+<level name="Gene Association Files"
+       description="Files for doing ga stuff.">
+  <file id="f1"
+	name="gene assoc 1"
+	description="Small file."
+	location="/www/toy_9002/htdocs/amigo/library/ga1.fb" />
+  <file id="f2"
+	name="another file"
+	description="Big file."
+	location="/www/toy_9002/htdocs/amigo/library/ga2.fb" />
+</level>

@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+  <head>
+
+  [% INCLUDE amigo_common_head.tmpl %]
+
+  <script type="text/javascript" src="/amigo/js/mootools.v1.11.js"></script>
+  <script type="text/javascript">
+    <!--
+
+	window.addEvent('domready', function() {
+
+	var slide1 = new Fx.Slide('aod', {mode: 'vertical'}); 
+	$('aod_toggle').addEvent('click', function(e){
+	e = new Event(e);
+	slide1.toggle();
+	e.stop();
+	});
+	slide1.toggle();
+
+	var slide2 = new Fx.Slide('filters', {mode: 'vertical'}); 
+	$('filters_toggle').addEvent('click', function(e){
+	e = new Event(e);
+	e.stop();
+
+	// .open is not part of the mootools API--had to fish for it.
+       if( slide2.open ){
+       
+       $('speciesdb').setStyles({ display: 'none' });
+       $('evcode').setStyles({ display: 'none' });
+       //$('ontology').setStyles({ display: 'none' });
+
+       }else{
+       
+       $('speciesdb').setStyles({ display: 'block' });
+       $('evcode').setStyles({ display: 'block' });
+       //$('ontology').setStyles({ display: 'block' });
+
+       }
+
+       slide2.toggle();
+       });
+
+       $('speciesdb').setStyles({ display: 'none' });
+       $('evcode').setStyles({ display: 'none' });
+       //$('ontology').setStyles({ display: 'none' });
+       slide2.toggle();
+
+	});
+
+	// -->
+  </script>
+
+  </head>
+  <body>
+    
+    [% current = "slimmer" %]
+    [% INCLUDE amigo_common_header.tmpl %]
+
+    <div class="contents">
+      
+      <h1>GO Slimmer</h1>
+    
+      [% IF DISPLAY_MISSING_TERMS %]
+      [%    INCLUDE slimmer_missing_terms.tmpl %]
+      [% END %]
+
+      [% IF DISPLAY_MISSING_GPS %]
+      [%    INCLUDE slimmer_missing_gps.tmpl %]
+      [% END %]
+
+      [% IF DISPLAY_MAIN_RESULTS == "count" %]
+      [%    INCLUDE slimmer_results_count.tmpl %]
+      [% ELSIF DISPLAY_MAIN_RESULTS == "assoc" %]
+      [%    INCLUDE slimmer_results_assoc.tmpl %]
+      [% ELSIF DISPLAY_MAIN_RESULTS == "minimap" %]
+      [%    INCLUDE slimmer_results_map.tmpl %]
+      [% ELSIF DISPLAY_MAIN_RESULTS == "fullmap" %]
+      [%    INCLUDE slimmer_results_map.tmpl %]
+      [% END %]
+      
+      <div id="controls" class="block">
+
+	<h2>Query set</h2>
+
+	<p>
+	  The Slimmer tool allows you to map the granular annotations
+	  of the query set of genes to one or more high-level, broader
+	  parent terms referred to as GO Slim terms. This is possible
+	  with GO because there are parent:child relationships
+	  recorded between granular terms and more general parent
+	  (ie. GO slim) terms. The Slimmer tool can be useful in
+	  reporting the results of GO annotations of a genome,
+	  analyzing the results of microarray expression data, or cDNA
+	  collection using a high level view of the three ontologies.
+	</p>
+
+	<p>
+	  More information about this tool can be found
+	  <a href="http://wiki.geneontology.org/index.php/AmiGO">here</a>.
+	</p>
+
+	<form action="slimmer"
+	      method="POST"
+	      enctype="multipart/form-data"
+	      name="slimmer_form"
+	      id="slimmer_form">
+	
+	  <div>
+	    <input type="hidden" name="request" value="results">
+	    <input type="hidden" name="force" value="yes">
+	  </div>
+		 
+	  <h3>
+	    <label>Input your GO slim terms</label>
+	    <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+	       class="help-link">
+	      <img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		   alt="help!">
+	    </a>
+	  </h3>
+
+	  <p>
+	    Enter your GO ids below (symbols, synonyms, and accessions):
+	  </p>
+	  <div>
+	    <textarea id="terms" name="slim_list" cols="55" rows="4">[% ECHO_SLIM_LIST %]</textarea>
+	  </div>
+
+	  <p>
+	    <em>OR</em>
+	    use a pre-existing GO slim set:
+	  </p>
+	  <div>
+	    [% hash = AVAILABLE_SUBSETS %]
+	    [% form_name = "subset" %]
+	    [% selected = ECHO_SUBSET %]
+	    [% catch_all = "none" %]
+	    [% INCLUDE amigo_common_dropmenu.tmpl %]
+	  </div>
+	  
+	  <p>
+	    <em>OR</em>
+	    <label for="slim_file">
+	      upload an OBO text file (with .obo extension) or a text file of term ids (limit 100MB)
+	    </label>:
+	  </p>
+	  <div>
+	    <input type="file"
+		   name="slim_file"
+		   id="slim_file"
+		   title="Upload a text file for AmiGO to use as input"
+		   class="button">
+	  </div>
+
+	  <h3>
+	    <label>Input your gene product list</label>
+	    <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+	       class="help-link">
+	      <img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		   alt="help!">
+	    </a>
+	  </h3>
+
+<!--
+	  <p>
+	    <em>If</em> you just want a mapping file with GO IDs mapped to the
+	    nearest GO slim terms, no file is required here.
+	  </p>
+
+	  <p>
+	    To use data from the GO database, enter a list or file of
+	    database IDs in the form DB:identifier
+	    (e.g. Uniprot:P32019 or FB:FBgn003877). Gene products should
+	    be separated with a line break.
+	  </p>
+
+	  <p>
+	    To use your own association data, upload a file in
+	    <a href="http://www.geneontology.org/GO.format.annotation.shtml"
+	       title="GO gene association file format">
+	      GO gene association format</a>.
+	  </p>
+-->
+
+	  <p>
+	    Enter your gene symbols and ids below (symbols, synonyms,
+	    and accessions):
+	  </p>
+
+	  <div>
+	    <textarea id="gp_list" name="gp_list"
+		      cols="55" rows="4">[% ECHO_GP_LIST %]</textarea>
+	  </div>
+
+	  <p>
+	    <em>OR</em>
+	    <label for="ga_file">
+	      upload a gene association file
+	    </label>:
+	    <input type="file"
+		   name="ga_file"
+		   id="ga_file"
+		   title="Upload a text file for AmiGO to use as input"
+		   class="button" />
+	  </p>
+
+	  <h3 id="filters_toggle" class="first"
+	      title="Click here to open the gene product filter menu.">
+	    <a href="#">
+	      [Display gene product filters]
+	    </a>
+	  </h3>
+
+	  <div id="filters">
+
+	    <h3 class="first">Available filters
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+
+	    <!--
+	    [% title = "Ontology" %]
+	    [% form_name = "ontology" %]
+	    [% multiple = "true" %]
+	    [% size = 4 %]
+	    [% hash = AVAILABLE_ONTOLOGIES %]
+	    [% selected_hash = ECHO_ONTOLOGIES %]
+	    [% catch_all = "All" %]
+	    -->
+	    <!-- INCLUDE amigo_common_select.tmpl -->
+
+	    [% title = "Species DB" %]
+	    [% form_name = "speciesdb" %]
+	    [% multiple = "true" %]
+	    [% size = 4 %]
+	    [% hash = AVAILABLE_SPECIESDBS %]
+	    [% selected_hash = ECHO_SPECIESDBS %]
+	    [% catch_all = "All" %]
+	    [% INCLUDE amigo_common_select.tmpl %]
+
+	    [% title = "Evidence Code" %]
+	    [% form_name = "evcode" %]
+	    [% multiple = "true" %]
+	    [% size = 4 %]
+	    [% hash = AVAILABLE_EVCODES %]
+	    [% selected_hash = ECHO_EVCODES %]
+	    [% catch_all = "All" %]
+	    [% INCLUDE amigo_common_select.tmpl %]
+
+	    <!--
+	    <br /> * Which gene product filters are useful in this
+	    case? Temporarily disabled.
+	    -->
+
+	  </div>
+
+	  <h3 id="aod_toggle">
+	    <a href="#" title="Click here to open the advanced options menu.">
+	      [Display advanced result options]
+	    </a>
+	  </h3>
+
+	  <div id="aod">
+
+	    <!--
+		<h3 class="first">Bucket terms
+		  <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		     class="help-link">
+		    <img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+			 alt="help!">
+		  </a>
+		</h3>
+		
+	  <p>
+	    <input id="bucket"
+		   name="bucket"
+		   type="checkbox"
+		   value="yes"
+		   title="Use bucket terms."
+		   onclick="" />
+	    <label for="bucket">Use bucket terms</label> (<em>BUGGY</em>)
+	  </p>
+	  -->
+
+	    <h3 class="first">Choose your results
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+	    
+	    <table>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="count"
+			 id="count"
+			 checked>
+		</td>
+		<td>
+		  <em>gene product counts</em> for each slim term
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="assoc"
+			 id="assoc">
+		</td>
+		<td>
+		  <em>gene association file</em>
+		  containing the most pertinent GO slim accessions
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="minimap"
+			 id="minimap">
+		</td>
+		<td>
+		  <em>mapping file</em> for the terms
+		  associated with your gene product list
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="fullmap"
+			 id="fullmap">
+		</td>
+		<td>
+		  <em>mapping file</em> for <em>every term</em> in the
+		  full ontology, showing both the most pertinent slim
+		  term and all slim terms that are ancestors (<em>large and
+		  time-consuming</em>)
+		</td>
+	      </tr>
+	    </table>
+	    
+	    <h3 class="first">Choose your response type
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+	    
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="html"
+		   id="html"
+		   checked>
+	    <em>html</em> page
+	    <br />
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="tab"
+		   id="tab">
+	    <em>tab-delimited</em> file
+	    <br />
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="xml"
+		   id="xml">
+	    <em>xml</em> file (unstable format)
+
+	  </div>
+	  
+	  <div>
+	    <input type="submit" class="button" />
+	    <br />
+	    <span class="button">
+	      <a class="clear-link" href="">Clear Query</a>
+	    </span>
+	  </div>
+	  
+	</form>
+
+      </div>
+      
+    </div>
+    
+    [% INCLUDE amigo_common_footer.tmpl %]
+    
+  </body>
+</html>

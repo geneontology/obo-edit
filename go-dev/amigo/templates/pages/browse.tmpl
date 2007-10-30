@@ -13,10 +13,7 @@
 		[%# INCLUDE javascript_browse.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-			[% INCLUDE header.tmpl %]
-			[% INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 		<h1>Tree Browser</h1>
 		[% IF msg_h.keys; USE Dumper; '<pre>'; Dumper.dump(msg_h); '</pre>'; END %]
@@ -33,8 +30,6 @@
 			PROCESS error.tmpl;
 		END %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>

@@ -16,16 +16,8 @@ BEGIN {
 
 use lib "$ENV{GO_ROOT}/go-perl";
 use lib "$ENV{GO_ROOT}/go-db-perl";
-use lib "$ENV{GO_ROOT}/new-amigo/perl";
-
-
-#use lib qw( /Library/WebServer/cvs/go-dev/new-amigo/perl /Library/WebServer/cvs/go-dev/go-perl /Library/WebServer/cvs/go-dev/go-db-perl );
-
-#use FindBin qw($RealBin);
-#use lib (($ENV{GO_ROOT})
-#         ? "$ENV{GO_ROOT}/go-db-perl" : "$RealBin/../../go-db-perl");
-#use lib (($ENV{GO_ROOT})
-#         ? "$ENV{GO_ROOT}/amigo/perl" : "$RealBin/../perl");
+use lib "$ENV{GO_AMIGO_ROOT}/perl";
+#use lib "$ENV{GO_ROOT}/new-amigo/perl";
 
 use strict;
 use FreezeThaw qw(freeze thaw);

@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+  [% INCLUDE amigo_common_head.tmpl %]
+
+  <body>
+
+    [% INCLUDE amigo_common_header_lite.tmpl %]
+
+    <div class="contents">
+      
+      <p>Sorry, your request could not be honored for the following
+	reason(s):</p>
+
+      <div class="block">
+
+	<h2>Error</h2>
+
+	[% ERROR_MESSAGE %]
+      
+      </div>
+      
+      <p>
+	If you feel that this error was not cause by exceptional
+	circumstances, please contact the
+ 	<a href="http://www.geneontology.org/amigo/suggest.shtml"
+	   title="Please report errors">AmiGO developers</a>.
+      </p>
+
+    </div>
+    
+    [% INCLUDE amigo_common_footer.tmpl %]
+    
+  </body>
+</html>

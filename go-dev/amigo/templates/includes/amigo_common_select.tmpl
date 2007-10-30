@@ -1,0 +1,45 @@
+<!-- START template: amigo_common_select.tmpl -->
+<!--    title = "[% title %]"         -->
+<!--    form_name = "[% form_name %]"         -->
+<!--    multiple = "[% multiple %]"           -->
+<!--    size = "[% size %]"                   -->
+<!--    hash = "[% hash %]"                   -->
+<!--    selected_hash = "[% selected_hash %]" -->
+<!--    catch_all = "[% catch_all %]"         --> 
+<fieldset>
+  <legend>
+    <label for="[% form_name %]" class="select">
+      [% title %]
+    </label>
+  </legend>
+  <select id="[% form_name %]" name="[% form_name %]"
+	  [% IF multiple == "true" %]
+	  multiple
+	  [% END %]
+          size="[% size %]">
+    [% IF catch_all %]
+    <option value=""
+	    [%    empty_selected_hash_p = 0 %]
+	    [%    FOREACH item IN selected_hash %]
+	    [%       empty_selected_hash_p = 1 %]
+	    [%    END %]
+	    [%    IF empty_selected_hash_p == 0 %]
+	    selected
+	    [%    END %]
+	    >[% catch_all %]</option>
+    [% END %]
+    [% i = 0 %]
+    [% FOREACH item IN hash %]
+    <option
+       [% itemkey = item.key %]
+       [% IF i == 0 && ! catch_all %]
+       selected
+       [% ELSIF selected_hash.$itemkey == 1 %]
+       selected
+       [% END %]
+       value="[% item.key %]">[% item.value %]</option>
+    [% i = i + 1 %]
+    [% END %]
+  </select>
+</fieldset>
+<!-- END template: amigo_common_select.tmpl -->

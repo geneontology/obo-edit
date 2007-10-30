@@ -7,10 +7,7 @@
 		<title>AmiGO: BLAST Query Submission</title>
 	</head>
 	<body>
-	<div id="header">
-		[% INCLUDE header.tmpl %]
-		[% INCLUDE bar_generic.tmpl %]
-	</div>
+[% INCLUDE header.tmpl %]
 	<div class="contents">
 		<h1>AmiGO: BLAST Query Submission</h1>
 		<div class="block">
@@ -21,8 +18,6 @@
 			<p><a href="blast.cgi?action=get_blast_results&amp;session_id=[% session_id %]">Try retrieving your job now</a></p>
 		</div>
 	</div>
-	<div id="footer">
-		[% INCLUDE footer.tmpl %]
-	</div>
+[% INCLUDE footer.tmpl %]
 </body>
 </html>

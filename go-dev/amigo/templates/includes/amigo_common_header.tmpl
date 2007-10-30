@@ -1,0 +1,76 @@
+<!-- START template: amigo_common_header.tmpl
+  current = "[% current %]"
+-->
+   <div id="header">
+      <a class="logo floatR" href="go.cgi">
+	<img src="/amigo/images/logo-sm.png"
+	     alt="AmiGO logo"
+	     title="AmiGO"></a>
+      <h1 id="top">
+	<a href="http://www.geneontology.org/"
+	   title="Gene Ontology website">the Gene Ontology</a>
+      </h1>
+    </div>
+
+    <div id="searchbar">
+      <ul id="menuToggle">
+
+	[% IF current == "advanced" %]
+	<li class="here">Advanced Search</li>
+	[% ELSE %]
+	<li>
+	  <a href="go.cgi?advanced_query=yes"
+	     title="Advanced search for GO terms or 
+		    gene product annotations">Advanced Search</a>
+	</li>
+	[% END %]
+
+	[% IF current == "blast" %]
+	<li class="here">BLAST Search</li>
+	[% ELSE %]
+	<li>
+	  <a href="http://toy.lbl.gov:9002/cgi-bin/gost/gost.cgi" 
+	     title="BLAST search for gene products">BLAST search</a>
+	</li>
+	[% END %]
+
+	[% IF current == "browse" %]
+	<li class="here">Browse</li>
+	[% ELSE %]
+	<li>
+	  <a href="go.cgi?search_constraint=terms&amp;action=replace_tree"
+	     title="Browse the terms in the Gene Ontology">Browse</a>
+	</li>
+	[% END %]
+
+	[% IF current == "term_enrichment" %]
+	<li class="here">Term Enrichment</li>
+	[% ELSE %]
+	<li>
+	  <a href="term_enrichment" 
+	     title="Find terms in the Gene Ontology">Term Enrichment</a>
+	</li>
+	[% END %]
+
+	[% IF current == "slimmer" %]
+	<li class="here">Slimmer</li>
+	[% ELSE %]
+	<li>
+	  <a href="slimmer" 
+	     title="Slim the Gene Ontology">Slimmer</a>
+	</li>
+	[% END %]
+
+	[% IF current == "help" %]
+	<li class="here">Help</li>
+	[% ELSE %]
+	<li>
+	  <a href="http://www.geneontology.org/amigo/help-front.shtml" 
+	     title="Help guide for AmiGO">Help</a>
+	</li>
+	[% END %]
+
+      </ul>
+    </div>
+    <div class="clearall"></div>
+<!-- END template: amigo_common_header.tmpl -->

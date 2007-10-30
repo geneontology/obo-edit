@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	  "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+
+  <head>
+
+    [% INCLUDE amigo_common_head.tmpl %]
+
+    <script type="text/javascript" src="/amigo/js/mootools.v1.11.js"></script>
+    <script type="text/javascript">
+      <!--
+
+	window.addEvent('domready', function() {
+
+	var slide1 = new Fx.Slide('aod', {mode: 'vertical'}); 
+	$('aod_toggle').addEvent('click', function(e){
+	e = new Event(e);
+	slide1.toggle();
+	e.stop();
+	});
+	slide1.toggle();
+
+	var slide2 = new Fx.Slide('filters', {mode: 'vertical'}); 
+	$('filters_toggle').addEvent('click', function(e){
+	e = new Event(e);
+	e.stop();
+
+	// .open is not part of the mootools API--had to fish for it.
+       if( slide2.open ){
+       
+       //$('speciesdb').setStyles({ display: 'none' });
+       //$('evcode').setStyles({ display: 'none' });
+       //$('ontology').setStyles({ display: 'none' });
+
+       }else{
+       
+       //$('speciesdb').setStyles({ display: 'block' });
+       //$('evcode').setStyles({ display: 'block' });
+       //$('ontology').setStyles({ display: 'block' });
+
+       }
+
+       slide2.toggle();
+       });
+
+       //$('speciesdb').setStyles({ display: 'none' });
+       //$('evcode').setStyles({ display: 'none' });
+       //$('ontology').setStyles({ display: 'none' });
+
+       slide2.toggle();
+
+	});
+
+	// -->
+    </script>
+
+  </head>
+  <body>
+
+    [% current = "term_enrichment" %]
+    [% INCLUDE amigo_common_header.tmpl %]
+
+    <div class="contents">
+      
+      <h1>GO Term Enrichment</h1>
+    
+      [% IF DISPLAY_MISSING_GPS %]
+      [%    INCLUDE term_enrichment_missing_gps.tmpl %]
+      [% END %]
+      
+      [% IF DISPLAY_MISSING_BGGPS %]
+      [%    INCLUDE term_enrichment_missing_bggps.tmpl %]
+      [% END %]
+      
+      [% IF DISPLAY_MAIN_RESULTS %]
+      [%   INCLUDE term_enrichment_results.tmpl %]
+      [% END %]
+
+      <div id="controls" class="block">
+
+	<h2>View Enriched Terms</h2>
+
+	<p>
+	  The Term Enrichment tool finds significant shared GO Terms
+	  or parents of those GO terms, used to describe the genes in
+	  the query/input set to help discover what those genes may
+	  have in common. The Term Enrichment tool makes use of
+	  the <a href = "http://search.cpan.org/dist/GO-TermFinder/">GO-TermFinder</a> perl module written by Gavin
+	  Sherlock and Shuai Weng at Stanford University.
+	</p>
+	  
+	<p>
+	  More information about this tool can be found
+	  <a href="http://wiki.geneontology.org/index.php/AmiGO">here</a>.
+	</p>
+
+	<form action="term_enrichment"
+	      method="POST"
+	      enctype="multipart/form-data"
+	      name="term_enrichment_form"
+	      id="term_enrichment_form">
+	  
+	  <div>
+	    <input type="hidden" name="request" value="results">
+	    <input type="hidden" name="force" value="yes">
+	  </div>
+	  
+	  <h3>
+	    <label>Input your gene products</label>
+	    <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+	       class="help-link">
+	      <img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		   alt="help!">
+	    </a>
+	  </h3>
+
+	  <p>
+	    Enter your gene products below (symbols, synonyms, and accessions):
+	  </p>
+	  <div>
+	    <textarea id="gp_list" name="gp_list"
+		      cols="55" rows="4">[% ECHO_GP_LIST %]</textarea>
+	  </div>
+
+	  <p>
+	    <em>OR</em>
+	    <label for="gp_file">
+	      upload a
+	      <select name="gp_file_type"
+		      id="gp_file_type"
+		      title="Type of gene product upload file">
+		<option value="ga">gene association file</option>
+		<option value="list">list containing gene products</option>
+	      </select>
+	    </label>:<br />
+	    <input type="file"
+		   name="gp_file"
+		   id="gp_file"
+		   title="Upload a gene product file to use as input"
+		   class="button" />
+	  </p>
+
+	  <h3 class="first">
+	    <label>Input your background set</label>
+	    <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+	       class="help-link">
+	      <img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		   alt="help!">
+	    </a>
+	  </h3>
+
+	  <p>
+	    Enter your gene products below (symbols, synonyms, and
+	    accessions). If you do not enter a background set, the
+	    entire database will be used as a default:
+	  </p>
+	  <div>
+	    <textarea id="bggp_list" name="bggp_list"
+		      cols="55" rows="4">[% ECHO_BGGP_LIST %]</textarea>
+	  </div>
+
+	  <p>
+	    <em>OR</em>
+	    <label for="bggp_file">
+	      upload a
+	      <select name="bggp_file_type"
+		      id="bggp_file_type"
+		      title="Type of gene product upload file">
+		<option value="ga">gene association file</option>
+		<option value="list">list containing gene products</option>
+	      </select>
+	    </label>:<br />
+	    <input type="file"
+		   name="bggp_file"
+		   id="bggp_file"
+		   title="Upload a gene product file to use as input"
+		   class="button" /> (will increase query time)
+	  </p>
+
+
+<!--
+	  <p>
+	    Cut and paste your gene products below. If you
+	    do not enter a background set, the entire database will be
+	    used as a default.
+	  </p>
+	  <div class="or">
+	    <textarea id="bggp_list" name="bggp_list"
+		      cols="55" rows="4">[% ECHO_BGGP_LIST %]</textarea>
+	  </div>
+
+	  <div class="or">
+	  <p>
+	    <em>OR</em>
+	  </p>
+	  </div>
+	  <div class="or">
+	  <p>
+	    <label for="bggp_file">
+	      upload a
+	      <select name="bggp_file_type"
+		      id="bggp_file_type"
+		      title="Type of gene product upload file">
+		<option value="ga">gene association file</option>
+		<option value="list">list containing gene products</option>
+	      </select>
+	    </label>:<br />
+	    <input type="file"
+		   name="bggp_file"
+		   id="bggp_file"
+		   title="Upload a gene product file to use as input"
+		   class="button" /> (will increase query time)
+	  </p>
+	  </div>
+-->
+
+	  <p>
+	    <em>AND</em>
+	    <label for="speciesdb">
+	      select the database filter
+	    </label>:<br />
+	    [% title = "" %]
+	    [% form_name = "speciesdb" %]
+	    [% multiple = "true" %]
+	    [% size = 4 %]
+	    [% hash = AVAILABLE_SPECIESDBS %]
+	    [% selected_hash = ECHO_SPECIESDBS %]
+	    [% catch_all = "All databases" %]
+	    [% INCLUDE amigo_common_select.tmpl %]
+	  
+	  </p>
+	  <!-- The above close tag seems to show that the w2c
+	  validator is broken: replace it with div and it works. -->
+
+	  <h3 id="filters_toggle" class="first"
+	      title="Click here to open the threshold filter menu.">
+	    <a href="#">
+	      [Display threshold filters]
+	    </a>
+	  </h3>
+
+	  <div id="filters">
+	    
+	    <h3 class="first">Changeable thresholds
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+
+	    <!--
+		[% title = "Ontology" %]
+		[% form_name = "ontology" %]
+		[% multiple = "true" %]
+		[% size = 4 %]
+		[% hash = AVAILABLE_ONTOLOGIES %]
+		[% selected_hash = ECHO_ONTOLOGIES %]
+		[% catch_all = "All" %]
+	      -->
+	    <!-- INCLUDE amigo_common_select.tmpl -->
+
+	    <!--
+		[% title = "Evidence Code" %]
+		[% form_name = "evcode" %]
+		[% multiple = "true" %]
+		[% size = 4 %]
+		[% hash = AVAILABLE_EVCODES %]
+		[% selected_hash = ECHO_EVCODES %]
+		[% catch_all = "All" %]
+		-->
+		<!-- INCLUDE amigo_common_select.tmpl -->
+
+	    <fieldset class="block">
+	      <legend>
+		Maximum p-value:
+	      </legend>
+	      <input
+		 style="background-color: #f8f8ff; border: thin solid;"
+		 type="text"
+		 name="cutoff"
+		 value="[% ECHO_CUTOFF %]" />
+	    </fieldset>
+
+	    <fieldset class="block">
+	      <legend>
+		Minimum number of gene products:
+	      </legend>
+	      <input type="text"
+		     style="background-color: #f8f8ff; border: thin solid;"
+		     name="min_gps"
+		     value="[% ECHO_MIN_GPS %]" />
+	    </fieldset>
+
+	  </div>
+
+	  <h3 id="aod_toggle">
+	    <a href="#" title="Click here to open the advanced options menu.">
+	      [Display advanced result options]
+	    </a>
+	  </h3>
+
+	  <div id="aod">
+
+	    <h3 class="first">Choose your results
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+	  
+	    <table>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="normal"
+			 id="normal"
+			 checked >
+		</td>
+		<td>
+		  <em>enrichment values</em> for terms
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <input class="radio"
+			 type="radio"
+			 name="output"
+			 value="raw"
+			 id="raw">
+		</td>
+		<td>
+		  <em>enrichment values with no threshold
+		  filters </em> for terms
+		</td>
+	      </tr>
+	      
+	    </table>
+
+	    <h3 class="first">Choose your response type
+	      <a href="http://www.geneontology.org/amigo/help-adv_query.shtml"
+		 class="help-link">
+		<img src="http://toy.lbl.gov:9002/amigo/images/help.png"
+		     alt="help!">
+	      </a>
+	    </h3>
+	    
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="html"
+		   id="html"
+		   checked >
+	    <em>html</em> page (with the option to transfer results to the
+	    <a href="slimmer">GO Slimmer</a> in html-mode) <br />
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="tab"
+		   id="tab">
+	    <em>tab-delimited</em> file
+	    <br />
+	    <input class="radio"
+		   type="radio"
+		   name="format"
+		   value="xml"
+		   id="xml">
+	    <em>xml</em> file (unstable format)
+
+	  </div>
+
+	  <div>
+	    <input type="submit" class="button" />
+	    <br />
+	    <span class="button">
+	      <a class="clear-link" href="">Clear Query</a>
+	    </span>
+	  </div>
+
+	</form>		
+	
+	</div>
+    </div>
+    
+    [% INCLUDE amigo_common_footer.tmpl %]
+    
+  </body>
+</html>

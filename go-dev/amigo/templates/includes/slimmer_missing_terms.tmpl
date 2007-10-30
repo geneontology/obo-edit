@@ -1,0 +1,31 @@
+<!-- START template: slimmer_missing_terms.tmpl -->
+<div class="block">
+  <h2><span class="error_text">Missing terms</span></h2>
+
+  <p>
+    The following terms could not be found in the ontology and were
+    removed from the slim calculation.
+  </p>
+  
+  <table summary="Inputted terms missing from ontology">
+    [% eo = 0 %]
+    [% FOREACH mt = MISSING_TERMS %]
+    [%    IF eo % 2 == 0 %]
+    <tr class="even_row">
+      [%    ELSE %]
+    <tr class="even_odd">
+      [%    END %]
+      <td rowspan="1">
+	[% mt %]
+      </td>
+    </tr>
+    [%    eo = eo + 1 %]
+    [% END %]
+  </table>
+
+  <p class="toTop">
+    <a href="#top" title="Back to the top of the page">Back to top</a>
+  </p>
+  
+</div>
+<!-- END template: slimmer_missing_terms.tmpl -->

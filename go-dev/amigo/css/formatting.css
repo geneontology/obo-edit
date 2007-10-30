@@ -54,6 +54,9 @@ a:visited { border-bottom: 1px dotted #99F;}
 
 a:hover, a:focus, a:active { color: #fff; background: #3875D7; border-bottom: 1px solid #3875D7; }
 
+a.clear-link, a.clear-link:link, a.clear-link:visited { padding: 0 2px; text-decoration: none; color: #000; border-bottom: 0px; }
+a.clear-link:hover, a.clear-link:focus, a.clear-link:active { color: #000; background: #fff; border-bottom: 0px; }
+
 a.img, a.help-link { background: #fff; border: none; }
 
 a.logo { background: #e9effa; border: none; }
@@ -165,6 +168,10 @@ fieldset ul { margin: 5px; }
 #searchType h4 { margin: 0 0 5px 0; }
 #searchType fieldset { background: #e9effa; }
 #searchType .deselected fieldset { background: #fff; }
+
+div.or { float: left; margin: 0 0 5px 0; }
+.or h4 { margin: 0 0 5px 0; }
+
 select { min-width: 1.5em; border: 1px solid #3875D7; }
 
 p select { margin-left: 5px; }
@@ -333,3 +340,12 @@ ul.info { padding: 10px 0 10px 35px; background: url(../images/info.png) 0 50% n
 #messages { padding: 0 10px; }
 
 .transparent { padding: 0 !important; border: 0 !important; margin: 0 !important; } 
+
+.clearall {
+    clear: both;
+}
+
+.error_text {
+/* color: #7c7cff;*/
+color: #da3030;
+}

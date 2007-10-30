@@ -7,10 +7,7 @@
 			#INCLUDE javascript_term_assoc.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-			[% INCLUDE header.tmpl %]
-			[% INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 [% TRY;
 		#USE Dumper; '<pre style="size: 0.7em">'; Dumper.dump(data); Dumper.dump(session); '</pre>';
@@ -53,8 +50,11 @@
 		#USE Dumper; '<pre>'; Dumper.dump(data); '</pre>';
 
 		IF assoc_h %]
-<p>Download this data in <a href="term-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt">GA (tab-delimited) format</a> or as <a href="term-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt">RDF-XML</a>.</p>
 
+		<ul class="download">
+		<li><a href="term-assoc.cgi?[% url_string %]&amp;format=go_assoc&amp;session_id=[% session_id %]" title="Download association data in GA file format" class="fmt"><img src="[% image_dir %]/dl.png" alt="download link"> GA format</a></li>
+		<li><a href="term-assoc.cgi?[% url_string %]&amp;format=rdfxml&amp;session_id=[% session_id %]" title="Download association data in RDF XML format" class="fmt"> <img src="[% image_dir %]/dl.png" alt="download link"> RDF-XML</a></li>
+		</ul>
 
 [% IF 1 == 0 %]
 		<h3 id="downloadToggle" class="toggle">Download</h3>
@@ -140,8 +140,6 @@
 		PROCESS error.tmpl;
 	END %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>	

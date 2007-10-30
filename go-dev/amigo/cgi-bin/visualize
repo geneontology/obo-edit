@@ -1,0 +1,426 @@
+#!/usr/local/bin/perl -w
+
+##
+## Tags that I use: BUG, TODO, WARN, NOTE, ASK
+##
+## TODO: Make sure that all errors will work with all formats. Gunna
+## need an error chooser pretty early on.
+##
+
+## Try to get the local environment sane.
+BEGIN {
+  require "config.pl" if -f "config.pl" ;
+  if( ! defined($ENV{GO_ROOT}) &&
+      -f "../cvs/go-dev/"){
+    $ENV{GO_ROOT} = "../cvs/go-dev";
+  }
+  die "cannot find templates: $!" if ! $ENV{GO_TEMPLATE_PATHS};
+}
+use lib "$ENV{GO_ROOT}/go-perl";
+use lib "$ENV{GO_ROOT}/go-db-perl";
+use lib "$ENV{GO_ROOT}/amigo/perl";
+
+## Bring in necessaries.
+use utf8;
+use strict;
+use Template;
+use GraphViz;
+use GO::AppHandle;
+
+## Set up CGI environment,
+use CGI qw/:standard/;
+use CGI::Carp qw(warningsToBrowser fatalsToBrowser);
+$CGI::POST_MAX = 0;	## no uploads
+my $query = new CGI;
+
+
+##########
+##
+## Sanity check all possible incoming parameters:
+##
+## Flow arguments:
+## 'request' drop into data mode, build data structure
+## 'force' this will force continuation instead of dying for *small*
+## problems
+##
+## Results arguments:
+## 'output' what we output ()
+## 'format' how we output ()
+##
+## Data arguments:
+## 'term' -> 'term_list' list of term ids with p-value
+##
+##########
+
+my $upper_arg_size_limit = 256;
+my $upper_list_arg_size_limit = 100000;
+
+## Required
+my $request = $query->param('request');
+if( $request && $request ne 'render' ){
+  die_template('illegitimate request type (unknown value)');
+}
+
+##
+my $force = $query->param('force');
+if( $force && ( $force ne 'yes' &&  $force ne 'no' ) ){
+  die_template('illegitimate force value');
+}
+if( $force && $force eq 'yes' ){
+  $force = 1; }
+else{
+  $force = 0; }
+
+
+## What do we want to output?
+my $output = $query->param('output');
+if( $output && length($output) > $upper_arg_size_limit ){
+  die_template("illegitimate output value");
+}elsif( $output && ( $output eq 'normal' ||
+		     $output eq 'raw' ) ){
+  ## OK, let it go.
+}elsif( $output ){
+  die_template("unknown output value");
+}
+
+
+## Which format do we want? Force format to a defined and known value:
+## html. Other formats are 'tab' (tab-delimited text file) and xml
+## (TODO).
+my $format = $query->param('format');
+if( $format && length($format) > $upper_arg_size_limit ){
+  die_template("illegitimate format value");
+}elsif( $format && ( $format eq 'tab' ||
+ 		     $format eq 'image' ||
+ 		     $format eq 'dot' ) ){
+  ## OK, let it go.
+}else{
+  $format = 'image';
+}
+
+
+##
+my %pval_by_term = ();
+my @term_list = $query->param('term');
+foreach my $pval_term_combo (@term_list){
+
+  ## Check if it looks legit.
+  if( $pval_term_combo &&
+      ( length($pval_term_combo) > $upper_list_arg_size_limit ||
+	$pval_term_combo =~ /[^0-9GOgo\:e\.\-\@]+/ ) ){
+    die_template('illegitimate term value');
+  }
+
+  ## Add to incoming hash
+  my( $term, $pval ) = split('@', $pval_term_combo);
+  die_template('illegitimate something')
+    if ! $term || ! $pval ||
+      ! $term =~ /[^0-9GOgo\:]+/ || ! $pval =~ /[^0-9e\.\-]+/;
+
+  $pval_by_term{$term} = $pval;
+  #print STDERR "_t_ " . $term . "\n";
+  #print STDERR "_p_ " . $pval . "\n";
+}
+
+
+##
+my $apph = GO::AppHandle->connect(-dbname=>$ENV{GO_DBNAME},
+				  -dbhost=>$ENV{GO_DBHOST});
+die_template("Could not connect to GO database.") if ! $apph;
+
+my $graphviz = GraphViz->new({
+			      rankdir => 0,
+			      directed => 1,
+			      node => {
+				       shape=>'box',
+				       color=>'black',
+				       style=>'filled',
+				       fontsize => 10,
+				       fillcolor => 'white',
+				       fontcolor => 'blue',
+				      },
+			      edge => {
+				       fontsize => 8
+				      }
+			     });
+
+##
+if ( $request && $request eq 'render' ) {
+
+  ## Gotta have a format and a target output.
+  die_template("Need to have a format type.") if ! $format;
+
+  ##########
+  ##
+  ## Handle incoming term list.
+  ##
+  ##########
+
+  ## Make sure that we have input...
+  die_template("A term list is necessary for this operation")
+    if ! keys %pval_by_term;
+
+  ## Construct graph so the wanted accs are at least the leaves.
+  my @terms = ();
+  foreach my $term_id (keys %pval_by_term){
+    my $term = $apph->get_term_by_acc($term_id);
+    push @terms, $term if $term;
+  }
+  my $graph = $apph->get_graph_by_terms(\@terms, 0);
+  die_template("Trouble making the graph.") if ! $graph;
+
+
+  ##
+  my %relcolors = (is_a => 'blue', part_of => 'red', develops_from => 'green');
+
+  ## Get ready to iterate through the terms.
+  my %relationships;
+  my %labellednodes;
+  my %term_h = ();
+  my $terms = $graph->get_all_nodes;
+  map { $term_h{$_->acc} = $_ } @$terms;
+
+  ##
+  my $it = $graph->create_iterator;
+  while (my $ni = $it->next_node_instance ) {
+    my $term = $ni->term;
+
+    ## Set the colors according to pval or lack thereof.
+    my $color_outline = '#000000';
+    my $color_fill = '#ffffff';
+    my $color_font = '#0000ff';
+    my $pval = $pval_by_term{$term->acc} + 0.0; # coersion?
+    if( $pval ){
+      #p_val = parseFloat(p_val);
+      if( $pval > 0.1 ){
+	$color_fill = '#eeeeee';
+      }elsif( $pval > 0.01 ){
+	$color_fill = '#dddddd';
+      }elsif( $pval > 0.001 ){
+	$color_fill = '#cccccc';
+      }elsif( $pval > 0.0001 ){
+	$color_fill = '#bbbbbb';
+      }elsif( $pval > 0.00001 ){
+	$color_fill = '#aaaaaa';
+      }elsif( $pval > 0.000001 ){
+	$color_fill = '#999999';
+      }elsif( $pval > 0.0000001 ){
+	$color_fill = '#888888';
+      }elsif( $pval > 0.00000001 ){
+	$color_fill = '#777777';
+      }elsif( $pval > 0.000000001 ){
+	$color_fill = '#666666';
+      }elsif( $pval > 0.0000000001 ){
+	$color_fill = '#555555';
+	$color_font = '#add8e6';
+      }elsif( $pval > 0.00000000001 ){
+	$color_fill = '#444444';
+	$color_font = '#add8e6';
+      }elsif( $pval > 0.000000000001 ){
+	$color_fill = '#333333';
+	$color_font = '#add8e6';
+      }elsif( $pval > 0.0000000000001 ){
+	$color_fill = '#222222';
+	$color_font = '#add8e6';
+      }elsif( $pval > 0.00000000000001 ){
+	$color_fill = '#111111';
+	$color_font = '#add8e6';
+      }else{
+	$color_fill = '#000000';
+	$color_font = '#add8e6';
+      }
+    }
+
+    if( $pval ){
+      $pval = sprintf "%.2e", $pval;
+    }else{
+      $pval = 0;
+    }
+
+    # print STDERR "\nterm: ".$term->acc."\n";
+    graphviz_label( $term,
+		    $graph,
+		    \%labellednodes,
+		    $graphviz,
+		    $pval,
+		    $color_outline,
+		    $color_fill,
+		    $color_font
+		  ) if $term->acc ne 'all';
+
+    #new
+    my $parent_rels = $graph->get_parent_relationships($term->acc);
+    foreach my $rel (@$parent_rels){
+      my $p = $term_h{$rel->acc1};
+      #	print STDERR "parent term: ".$p->acc."\n";
+      graphviz_label( $p,
+		      $graph->is_focus_node( $p ),
+		      \%labellednodes,
+		      $graphviz,
+		      $pval,
+		      $color_outline,
+		      $color_fill,
+		      $color_font
+		    ) if $p->acc ne 'all';
+      my $identifier = $p->acc . " " . $term->acc;
+      unless( $relationships{ $identifier } || $p->acc eq 'all' ){
+	## for some reason graphviz assumes that a number is only a
+	## label, and not a node name which is irritating.
+	my $node = "acc" . $term->acc;
+	my $pnode = "acc" . $p->acc;
+	my $relation = $rel->type;
+
+	#$graphviz->add_edge($node => $pnode,
+	$graphviz->add_edge($pnode => $node,
+			    label => $relation,
+			    color => $relcolors{$relation} || 'black',
+			    arrowhead => 'none',
+			    arrowtail => 'normal'
+			   );
+	$relationships{ $identifier } = 1;
+      }
+    }
+  }
+}
+
+
+##
+if( $request eq 'render' ){
+
+  if( $format eq 'image' ){
+
+    ##
+    png_header();
+    $graphviz->as_png(\*STDOUT);
+
+  }elsif( $format eq 'dot' ){
+
+    ##
+    die_template("done dot");
+
+  }elsif( $format eq 'tab' ){
+
+    ##
+    die_template("done tab");
+
+  }else{
+    die_template("How did you get here? Impossible!");
+  }
+
+}else {
+    die_template("Not a supported request.");
+}
+
+
+#####
+##
+## Subs.
+##
+####
+
+
+##
+sub html_header{ print "content-type:text/html\n\n"; }
+sub tab_header{ print "content-type:text/plain\n\n"; }
+sub png_header{ print "content-type:image/png\n\n"; }
+sub xml_header{ print "content-type:text/xml\n\n"; }
+sub unknown_header{ print "content-type:unknown\n\n"; }
+
+
+##
+sub die_template {
+
+  my $message = shift || 'generic error';
+
+  ## Template runtime parameters.
+  my $diet = Template->new({
+			    INCLUDE_PATH => $ENV{GO_TEMPLATE_PATHS},
+			    EVAL_PERL => 1,
+			    TRIM => 1,
+			   });
+  html_header();
+  $diet->process('amigo_error.tmpl', {ERROR_MESSAGE => $message}) ||
+  die "$message: $!"; # ASK: Is croak or confess more appropriate?
+  exit(-1); ## BUG: Why do I need both.
+}
+
+
+##
+sub graphviz_label{
+
+  my $term = shift;
+  my $graph = shift;
+  my $labellednodes = shift;
+  my $graphviz = shift;
+  my $pval = shift || '';
+  my $outline_color = shift;
+  my $fill_color = shift;
+  my $font_color = shift;
+
+  my $acc = $term->acc;
+  my $node = "acc" . $term->acc;
+
+  my $label = $term->acc . "\n" . $term->name;
+  $label = $term->acc . " (" . $pval . ")\n" . $term->name if $pval;
+
+  my $code = $term->get_code_from_namespace;
+  if( $code eq 'C' ){
+    $outline_color = '#a020f0';
+  }elsif( $code eq 'P' ){
+    $outline_color = '#00ee76';
+  }elsif( $code eq 'F' ){
+    $outline_color = '#ffd700';
+  }
+
+  $graphviz->add_node(
+		      $node,
+		      label => $label,
+		      fontname => 'Courier',
+		      color => $outline_color,
+		      fillcolor => $fill_color,
+		      fontcolor => $font_color
+		     );
+  $labellednodes->{$acc} = 1;
+}
+
+
+# sub drint {
+#   my $head = shift || '';
+#   my $string = shift || 'whatever';
+#   print STDERR $head . $string . "\n";
+#   sleep 1;
+# }
+
+
+##
+# sub graphviz_to_dotty{
+#   my $graphviz = shift;
+
+#   open( DOTTY, "|dotty -" );
+#   print DOTTY $graphviz->as_text;
+#   close( DOTTY );
+# }
+
+
+##
+# sub label_nodes_with_colour{
+#   my $graphviz = shift;
+#   my $terms = shift;
+#   my $colour = shift;
+
+#   foreach my $term (@$terms){
+#     my $node = "acc" . $term->acc;
+#     $graphviz->add_node(
+# 			$node,
+# 			style=>"filled",
+# 			color=>$colour,
+# 			fontname=>'Courier'
+# 		       );
+#   }
+# }
+
+
+## support US spelling
+#*label_nodes_with_color = \&label_nodes_with_colour;
+
+#1;

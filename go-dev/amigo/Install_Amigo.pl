@@ -20,7 +20,6 @@ $conf{trace}=0;
 %defaults =
   (GO_DBNAME => 'go',
    GO_DBHOST => 'localhost',
-   GO_DBUSER => 'root',
    GO_ROOT   => $ENV{GO_ROOT},
   );
 
@@ -58,6 +57,15 @@ sub install_all {
 	$cvsroot = $conf{$k};
 	$ENV{GO_ROOT} = $cvsroot;
 
+	$k = 'GO_AMIGO_ROOT';
+	print "\n\n";
+	print "Please enter the full path to the amigo root directory,\n";
+	printf "e.g. /www/port_80/cvs/go-dev/amigo [%s]\n", $conf{$k} || '';
+	&get_ans($k);
+	$cvsroot = $conf{$k};
+	$ENV{GO_AMIGO_ROOT} = $cvsroot;
+
+
 	$k = 'GO_DBNAME';
 	my $default = $conf{$k};
 	print "Please enter the name of the GO database\n";
@@ -72,7 +80,6 @@ sub install_all {
 	&get_ans($k);
 
 	$k = 'GO_DBUSER';
-	$default = $conf{$k};
 	print "\n\n";
 	printf "Please enter the database user login [%s]\n", $conf{$k} || '';
 	&get_ans($k);
@@ -106,16 +113,17 @@ sub install_all {
 	printf "maps to, e.g. http://myserver/cgi-bin/$amigo [%s]\n", $conf{$k};
 	&get_ans($k);
 
-#	 $k = 'GO_AMIGO_URL';
-#	 print "\n\n";
-#	 print "Please enter the URL that the CGI_ROOT ($conf{GO_CGI_ROOT}) with go.cgi script\n";
-#	 printf "maps to, ie http://myserver/cgi-bin/amigo/go.cgi [%s]\n", $conf{$k};
-#	 &get_ans($k);
-
+=old
+	$k = 'GO_AMIGO_URL';
+	print "\n\n";
+	print "Please enter the URL that the CGI_ROOT ($conf{GO_CGI_ROOT}) with go.cgi script\n";
+	printf "maps to, ie http://myserver/cgi-bin/amigo/go.cgi [%s]\n", $conf{$k};
+	&get_ans($k);
+=cut
 	$k = 'DOC_ROOT_DIR';
 	print "\n\n";
 	print "Please enter the full path of web server document root.\n";
-	print "This must be writeable as an '$amigo' directory will be created under it.\n";
+	print "This must be writeable as the '$amigo' directory will be created under it.\n";
 	printf "e.g. /www/port_80/docs [%s]\n",$conf{$k};
 	&get_ans($k);
 
@@ -137,21 +145,60 @@ sub install_all {
 	mkdir "$amigo_docroot/images" or grace_exit("mkdir $amigo_docroot/images", $!) unless (-e "$amigo_docroot/images");
 	mkdir "$amigo_docroot/css" or grace_exit("mkdir $amigo_docroot/css", $!) unless (-e "$amigo_docroot/css");
 	mkdir "$amigo_docroot/js" or grace_exit("mkdir $amigo_docroot/js", $!) unless (-e "$amigo_docroot/js");
-	#	 cpr("$cvsroot/amigo/install/images/* $amigo_docroot/images");
-	#	 cpr("$cvsroot/amigo/install/css/* $amigo_docroot/css");
 	cpr("$cvsroot/$amigo/images/* $amigo_docroot/images");
 	cpr("$cvsroot/$amigo/css/* $amigo_docroot/css");
+	cpr("$cvsroot/$amigo/js/* $amigo_docroot/js");
 	
 	print "\nInstalling cgis and templates into $cgiroot...\n";
 	cp("$cvsroot/$amigo/cgi-bin/*.cgi $cgiroot/");
 	`chmod a+x $cgiroot/*.cgi`;
 	cp("$cvsroot/$amigo/cgi-bin/*.pl $cgiroot/");
-	
+
+=cut for now
+	## Copy the CGI scripts to the target directory.
+	cp("$cvsroot/$amigo/cgi-bin/gosql.cgi $cgiroot/");
+	`chmod a+x $cgiroot/gosql.cgi`;
+	cp("$cvsroot/$amigo/cgi-bin/termfinder.cgi $cgiroot/");
+	`chmod a+x $cgiroot/termfinder.cgi`;
+	cp("$cvsroot/$amigo/cgi-bin/map2slim.cgi $cgiroot/");
+	`chmod a+x $cgiroot/map2slim.cgi`;
+	cp("$cvsroot/$amigo/cgi-bin/orb_client.cgi $cgiroot/");
+	`chmod a+x $cgiroot/orb_client.cgi`;
+	cp("$cvsroot/$amigo/cgi-bin/go.cgi $cgiroot/");
+	`chmod a+x $cgiroot/go.cgi`;
+	cp("$cvsroot/$amigo/cgi-bin/*.pl $cgiroot/");
+=cut
+	## Copy the library skeleton example to the right directory.
+	my $library_dir = "$amigo_docroot/library";
+	mkdir $library_dir
+	or grace_exit("mkdir $library_dir", $!)
+	unless (-e $library_dir);
+	`chmod a+r $library_dir`;
+	cpr("$cvsroot/amigo/amigo/library/* $amigo_docroot/library/");
+	$conf{GO_LIBRARY} = $library_dir;
+	$conf{GO_LIBRARY_LINK} = "/amigo/library";
+
+	## Make sure that we have a writable sessions directory.
 	my $sess_dir = "$cgiroot/sessions";
-	mkdir $sess_dir or grace_exit("mkdir $sess_dir", $!) unless (-e $sess_dir);
+	mkdir $sess_dir
+	or grace_exit("mkdir $sess_dir", $!)
+	unless (-e $sess_dir);
 	`chmod a+w $sess_dir`;
+
+	## Make sure that we have a writable working directory.
+	my $working_dir = "$conf{DOC_ROOT_DIR}/amigo/workbench";
+	mkdir $working_dir
+	or grace_exit("mkdir $working_dir", $!)
+	unless (-e $working_dir);
+	`chmod a+w $working_dir`;
+	$conf{GO_WORKBENCH} = $working_dir;
+	$conf{GO_WORKBENCH_LINK} = "/amigo/workbench";
+
+	## Make sure that the templates are in the right place.
 	my $tmpl_dir = "$cgiroot/templates";
-	mkdir $tmpl_dir or grace_exit("mkdir $tmpl_dir", $!) unless (-e $tmpl_dir);
+	mkdir $tmpl_dir
+	or grace_exit("mkdir $tmpl_dir", $!)
+	unless (-e $tmpl_dir);
 	`chmod a+r $tmpl_dir`;
 	cpr("$cvsroot/$amigo/templates/* $cgiroot/templates/");
 	
@@ -196,7 +243,7 @@ sub install_all {
 		print "gost needs to be installed/configured\n";
 		printf "Install gost? [%s]\n", $conf{$k};
 		&get_ans($k);
-		&install_gost if ($conf{$k} =~ /^y/i);
+		&install_blast if ($conf{$k} =~ /^y/i);
 
 		$k = 'GO_GOST_URL';
 		print "\n\n";
@@ -216,25 +263,21 @@ sub install_all {
 =cut
 	}
 
-
-#	 cp("$cvsroot/amigo/install/cgi-bin/go.cgi $cgiroot/");
-#	 `chmod a+x $cgiroot/go.cgi`;
-
 	&write_amigo_config;
 
 	printf "Make species cache file, please wait...\n";
 	`perl ./scripts/make_spec_key.pl $conf{GO_CGI_ROOT} 50`;
 	printf "Make cache file for other items, please wait...\n";
 	`perl ./scripts/make_misc_key.pl $conf{GO_CGI_ROOT}`;
-	my $amigo_url = $conf{GO_AMIGO_URL};
+	my $amigo_url = $conf{GO_CGI_ROOT} . "/$amigo/search.cgi";
 
-#	 $k = 'INSTALL_GO_DEV';
-#	 printf "Would you like to install go-dev documentation? [%s]\n", $conf{$k} || 'n';
-#	 &get_ans($k);
+#	$k = 'INSTALL_GO_DEV';
+#	printf "Would you like to install go-dev documentation? [%s]\n", $conf{$k} || 'n';
+#	&get_ans($k);
 #
-#	 if ($conf{$k} =~ /^y/i) {
-#		 &install_go_dev;
-#	 }
+#	if ($conf{$k} =~ /^y/i) {
+#		&install_go_dev;
+#	}
 
 	print "Configuration is completed. The URL of your AmiGO installation is \n$amigo_url\n\n";
 }
@@ -245,25 +288,26 @@ sub write_amigo_config {
 	#finally write amigo config
 	open(F, ">$cgiroot/config.pl");
 
-	printf F "##########################################\n";
-	printf F "# general                                #\n";
-	printf F "##########################################\n\n";
+	print F "##########################################\n";
+	print F "# general                                #\n";
+	print F "##########################################\n\n";
 
-#	 printf F "\$ENV{BDGP_MODULE_PATH}='%s';\n\n",$conf{BDGP_MODULE_PATH} if ($conf{BDGP_MODULE_PATH});
+#	printf F "\$ENV{BDGP_MODULE_PATH}='%s';\n\n",$conf{BDGP_MODULE_PATH} if ($conf{BDGP_MODULE_PATH});
 
-	printf F "## go-dev location\n";
+	print F "## go-dev location\n";
 	printf F "\$ENV{GO_ROOT}='%s';\n\n", $conf{GO_ROOT};
+	printf F "\$ENV{GO_AMIGO_ROOT}='%s';\n\n", $conf{GO_AMIGO_ROOT};
 
 	my @keys = qw(GO_DBNAME GO_DBHOST GO_DBUSER GO_DBAUTH GO_DBSOCKET);
 	printf F "## database.\n";
 	map{printf F "\$ENV{$_}='%s';\n", $conf{$_} if ($conf{$_})}@keys;
 
-	printf F "##########################################\n";
-	printf F "# Locations of images/sessions/etc       #\n";
-	printf F "##########################################\n\n";
-	print F "##These settings should not be altered after setting up AmiGO.\n\n";
-	
-		$conf{GO_HTML_DIR} = "$conf{DOC_ROOT_DIR}/$amigo";
+	print F "##########################################\n";
+	print F "# Locations of images/sessions/etc       #\n";
+	print F "##########################################\n\n";
+	print F "## These settings should not be altered after setting up AmiGO.\n\n";
+
+	$conf{GO_HTML_DIR} = "$conf{DOC_ROOT_DIR}/$amigo";
 	@keys = qw(GO_HTML_DIR GO_HTML_URL GO_CGI_ROOT GO_CGI_URL);
 	map{printf F "\$ENV{$_}='%s';\n",$conf{$_}}@keys;
 
@@ -275,9 +319,17 @@ sub write_amigo_config {
 	print F "## be a relative file path to cgi-bin.\n";
 	printf F "\$ENV{GO_SESSION_DIR}='sessions';\n\n";
 
-	printf F "#######################################################\n";
-	printf F "# General Settings                                    #\n";
-	printf F "#######################################################\n\n";
+	print F "## Directory where static library files live.\n";
+	printf F "\$ENV{GO_LIBRARY}='%s';\n\n", $conf{GO_LIBRARY};
+	printf F "\$ENV{GO_LIBRARY_LINK}='%s';\n\n", $conf{GO_LIBRARY_LINK};
+
+	print F "## Directory where generated static files live.\n";
+	printf F "\$ENV{GO_WORKBENCH}='%s';\n\n", $conf{GO_WORKBENCH};
+	printf F "\$ENV{GO_WORKBENCH_LINK}='%s';\n\n", $conf{GO_WORKBENCH_LINK};
+
+	print F "#######################################################\n";
+	print F "# General Settings                                    #\n";
+	print F "#######################################################\n\n";
 
 	printf F "\$ENV{GO_MAX_SESSIONS} = 200;\n";
 	printf F "\$ENV{GO_SESSION_TIMEOUT} = 7200;\n";
@@ -410,7 +462,7 @@ sub install_blast {
 	cpr("$cvsroot/amigo/install/templates/blast_includes/* $tmpl_dir/");
 
 	#blast stuff
-	my $k = 'GO_DATA_DIR';
+	$k = 'GO_DATA_DIR';
 	printf "\n\n";
 	printf "Please enter data dir [%s]\n", $conf{$k};
 	&get_ans($k);
@@ -438,7 +490,7 @@ sub install_blast {
 
 	$k = 'GO_BLAST_METHOD';
 	printf "\n\n";
-	printf "Please enter method of accessing blast, cgi or pbs [%s]\n", $conf{$k};
+	printf "Please enter the BLAST submission method, cgi or pbs [%s]\n", $conf{$k};
 	&get_ans($k);
 
 	if ($conf{$k} eq 'cgi') {
@@ -499,9 +551,8 @@ sub install_blast {
 	print F "# Docroot\n";
 	printf F "\$ENV{GO_HTML_DIR}='%s';\n", $conf{GO_HTML_DIR};
 	printf F "\$ENV{GO_HTML_URL}='%s';\n", $conf{GO_HTML_URL};
-#	 printf F "\$ENV{GO_AMIGO_URL}='%s';\n", $conf{GO_AMIGO_URL};
-#	 printf F "\$ENV{GO_CGI_ROOT}='%s';\n\n",$conf{GOST_CGI_ROOT};
-	printf F "\$ENV{GO_CGI_ROOT}='%s';\n\n",$root;
+	printf F "\$ENV{GO_AMIGO_URL}='%s';\n", $conf{GO_AMIGO_URL};
+	printf F "\$ENV{GO_CGI_ROOT}='%s';\n\n",$conf{GOST_CGI_ROOT};
 
 	printf F "## Directories where templates live.	Must\n";
 	printf F "## be a relative file path to the cgi dir.\n";
@@ -634,7 +685,7 @@ AmiGO Install Helper
 ========================
 
 This installer is *ALPHA* software.
-This script sets up AmiGO and optional BLAST to run in a web server.
+This script sets up AmiGO with optional BLAST to run in a web server.
 It need to get information on database AmiGO will access, cgi directory
 where AmiGO script lives, etc. Similarly for blast if to install blast.
 All input values will be saved to '$tmpl' file so you can redo install.

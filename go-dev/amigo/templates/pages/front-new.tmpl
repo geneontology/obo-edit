@@ -22,34 +22,7 @@
 </style> 
 </head>
 <body>
-<div id="header">
-	<a class="logo floatR" href="search.cgi?session_id=9334b1180908234"><img src="http://127.0.0.1/amigo/images/logo-sm.png" alt="AmiGO logo" title="AmiGO front page"></a> <h1 id="top"><a href="http://www.geneontology.org/" title="Gene Ontology website">the Gene Ontology</a></h1>
-</div>
-<div id="searchbar">
-	<ul id="menuToggle">
-		<li>
-			<a href="search.cgi?action=advanced_query&amp;session_id=9334b1180908234" title="Advanced search for GO terms or gene product annotations">Search</a>
-		</li>
-		<li>
-			<a href="browse.cgi?session_id=9334b1180908234" title="Browse the terms in the Gene Ontology">Browse</a>
-		</li>
-		<li>
-			<a href="blast.cgi?session_id=9334b1180908234" title="BLAST search for gene products">BLAST</a>
-		</li>
-		<li>
-			<a href="map2slim.cgi?session_id=9334b1180908234" title="Map your data to high level terms">GO Slimmer</a>
-		</li>
-		<li>
-			<a href="term-finder.cgi?session_id=9334b1180908234" title="Find terms, or something like that">Term Finder</a>
-		</li>
-		<li>
-			<a href="my-amigo.cgi?session_id=9334b1180908234" title="Set your user preferences">My AmiGO</a>
-		</li>
-		<li>
-			<a href="http://www.geneontology.org/amigo/help-front.shtml" title="Help guide for this page">Help</a>
-		</li>
-	</ul>
-</div>
+[% INCLUDE header.tmpl %]
 <div class="contents">
 	<ul id="front-nav">
 		<li><a href="search.cgi"><span class="h1">AmiGO</span><br>
@@ -82,8 +55,6 @@
 </form>
 -->
 </div>
-<div id="footer">
-	[% INCLUDE footer.tmpl %] 
-</div>
+[% INCLUDE footer.tmpl %] 
 </body>
 </html>

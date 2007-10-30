@@ -1,0 +1,24 @@
+<!-- START template: slimmer_chooser.tmpl -->
+<!--    files = "[% files %]"              -->
+<!--    form_name = "[% form_name %]"      -->
+<!--    type = "[% type %]"                -->
+GO Library:
+<br>
+[% i = 0 %]
+[% FOREACH file = files %]
+<input type="[% type %]"
+       name="[% form_name %]"
+       [% IF i == 0 && type == "radio" %]
+       checked="checked"
+       [% END %]
+       title="[% file.description %]"
+       value="[% file.id %]">
+       [% IF file.link %]
+       <a title="[% file.description %]"
+          href="[% file.link %]">[% file.name %]</a><br>
+       [% ELSE %]
+       [% file.name %]<br>
+       [% END %]
+[% i = i + 1 %]
+[% END %]
+<!-- END template: slimmer_chooser.tmpl -->

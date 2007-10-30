@@ -7,10 +7,7 @@
 		[%# INCLUDE javascript_front.tmpl %]
 	</head>
 	<body>
-		<div id="header">
-			[% INCLUDE header.tmpl %]
-			[% INCLUDE bar_generic.tmpl %]
-		</div>
+[% INCLUDE header.tmpl %]
 		<div class="contents">
 		<h1>A Message From AmiGO</h1>
 		[% IF msg_h;
@@ -23,8 +20,6 @@
 		<p>This feature has not yet been implemented. Please be patient!</p>
 		[% END %]
 		</div>
-		<div id="footer">
-			[% INCLUDE footer.tmpl %]
-		</div>
+[% INCLUDE footer.tmpl %]
 	</body>
 </html>

@@ -1,3 +1,6 @@
+$ENV{PATH} .= ':/usr/local/graphviz/bin';
+
+
 ##########################################
 # general                                #
 ##########################################
@@ -7,9 +10,15 @@ $ENV{GO_ROOT}='/Library/WebServer/svn/geneontology/go-dev';
 #$ENV{GO_ROOT}='/Library/WebServer/cvs/go-dev';
 
 ## database.
-$ENV{GO_DBNAME}='go';
-$ENV{GO_DBHOST}='localhost';
-$ENV{GO_DBUSER}='root';
+#$ENV{GO_DBNAME}='go';
+#$ENV{GO_DBHOST}='localhost';
+#$ENV{GO_DBUSER}='root';
+$ENV{GO_DBNAME}='go_latest_lite_sc';
+$ENV{GO_DBHOST}='spitz.lbl.gov';
+
+# comment this line out if your db doesn't have the species count
+$ENV{POPULATE_COUNT_BY_SPECIES} = 1;
+
 ##########################################
 # Locations of images/sessions/etc       #
 ##########################################
@@ -28,12 +37,22 @@ $ENV{GO_TEMPLATE_PATHS}='../templates/pages:../templates/includes';
 ## Default is 'sessions'
 $ENV{GO_SESSION_DIR}='../sessions';
 
+#$ENV{GO_SESSION_DIR} = '../sessions';
+#$ENV{GO_SESSION_DIR} = '/Library/WebServer/svn/geneontology/go-dev/new-amigo/sessions';
+
+## hard-coded temp image dir location
+#$ENV{GO_TMP_IMG_DIR} = '/Library/WebServer/svn/geneontology/go-dev/new-amigo';
+
+
 #######################################################
 # Feature Toggles                                     #
 #######################################################
 
 # Switch GO_SHOW_BLAST to 1 to enable the GO BLAST search.
 $ENV{GO_SHOW_BLAST} = 1;
+
+# Switch GO_SHOW_GRAPHVIZ to 1 to enable the graph visualizations.
+$ENV{GO_SHOW_GRAPHVIZ} = 1;
 
 $ENV{GO_SHOW_ONT_FILTER} = 1;
 
@@ -86,7 +105,7 @@ $ENV{GO_MAX_RESULTS_PAGES} = 40;
 #$ENV{GO_DATA_DIR}='/Library/WebServer/blast/data';
 #$ENV{GO_DATA_DIR}='blast_sessions';
 
-$ENV{GO_FASTA_DB}='/Library/WebServer/blast/data/go_20070916-seqdblite.fasta';
+$ENV{GO_FASTA_DB}='/Library/WebServer/blast/data/go_latest-seqdblite.fasta';
 
 $ENV{GO_BLASTP}='/Library/WebServer/blast/blastp';
 
@@ -96,9 +115,11 @@ $ENV{GO_BLASTN}='/Library/WebServer/blast/blastn';
 
 $ENV{GO_BLAST_METHOD}='cgi';
 
-$ENV{GO_MAX_SEQ_NUM} = 100;
-$ENV{GO_MAX_SEQ_LENGTH} = 3000000;
+#$ENV{GO_BLAST_URL}='http://127.0.0.1/cgi-bin/amigo/blast-sgd-update.pl';
+$ENV{GO_BLAST_URL}='http://127.0.0.1/amigo-cgi-bin/blast-sgd-update.pl';
 
-$ENV{GO_BLAST_URL}='http://127.0.0.1/cgi-bin/amigo/blast-sgd-update.pl';
+$ENV{GO_MAX_SEQ_NUM} = 100;
+
+$ENV{GO_MAX_SEQ_LENGTH} = 3000000;
 
 1;
