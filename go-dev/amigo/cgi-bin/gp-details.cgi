@@ -29,7 +29,7 @@ use GO::CGI::Query qw(get_gp_details get_term_count_for_gps);
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 #use GO::CGI::NameMunger;
-use GO::Template::Template;
+#use GO::Template::Template;
 
 use CGI;
 $CGI::DISABLE_UPLOADS = 1;

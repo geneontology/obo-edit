@@ -8,7 +8,7 @@ package GO::CGI::Utilities;
 
 use strict;
 #use GO::CGI::Session;
-use GO::Template::Template;
+#use GO::Template::Template;
 #use Carp;
 use Data::Dumper;
 $Data::Dumper::Indent = 1;

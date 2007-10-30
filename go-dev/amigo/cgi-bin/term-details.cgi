@@ -32,7 +32,7 @@ use GO::CGI::Query qw(get_term_in_graph get_nit get_permalink);
 use GO::CGI::Session;
 #use GO::CGI::NameMunger;
 use GO::CGI::Utilities qw(:std);
-use GO::Template::Template;
+#use GO::Template::Template;
 use GO::Dotty::Dotty;
 use GO::Parser;
 use Data::Dumper;

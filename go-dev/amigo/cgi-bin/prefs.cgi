@@ -25,7 +25,7 @@ use strict;
 use FileHandle;
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
-use GO::Template::Template;
+#use GO::Template::Template;
 
 use CGI;
 $CGI::DISABLE_UPLOADS = 1;

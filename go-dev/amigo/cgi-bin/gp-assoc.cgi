@@ -29,7 +29,7 @@ use GO::CGI::Query qw(get_gp_assocs);
 use GO::CGI::Session;
 use GO::CGI::Utilities qw(:std);
 #use GO::CGI::NameMunger;
-use GO::Template::Template;
+#use GO::Template::Template;
 use GO::IO::go_assoc;
 
 use CGI;

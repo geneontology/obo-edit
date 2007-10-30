@@ -15,6 +15,7 @@ use FileHandle;
 use FreezeThaw qw (freeze thaw);
 use Data::Dumper;
 use Exporter;
+use Template;
 
 use GO::AppHandle;
 use GO::Utils qw(rearrange);
@@ -1978,7 +1979,6 @@ sub process_page_template {
 		show_blast => $self->get_default_param('show_blast'), # environment
 		show_graphviz => $self->get_default_param('show_graphviz'),   # env
 		image_dir => $self->get_default_param('html_url').'/images',  # env
-		template_paths => $self->get_default_param('template_paths'), # env
 	};
 
 	if ($self->get_default_param('show_gp_options'))
@@ -1988,8 +1988,18 @@ sub process_page_template {
 		}
 	}
 
+	my $template_paths = $self->get_default_param('template_paths');
+	my $tt = Template->new({
+#		PLUGIN_BASE => 'GO::Template::Plugin',
+		INCLUDE_PATH=>$template_paths,
+		EVAL_PERL=>1,
+		PRE_CHOMP=>1,
+		POST_CHOMP=>1,
+		TRIM=>1
+	});
+
 	print "Content-type:text/html\n\n";
-	GO::Template::Template->process_template($ses_type.".tmpl", $tmpl_vars);
+	$tt->process($ses_type.".tmpl", $tmpl_vars);
 }
 
 sub set_option {
