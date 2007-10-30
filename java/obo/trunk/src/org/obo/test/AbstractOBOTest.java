@@ -5,7 +5,9 @@ import java.util.Collection;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
@@ -69,6 +71,19 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
 	}
+	
+	public void testForNamespace(String id, String nsId)  {
+		LinkedObject lo = (LinkedObject) session.getObject(id);
+		Namespace ns = lo.getNamespace();
+		assertTrue(ns.getID().equals(nsId));	
+	}
+	
+	public void testForDefinition(String id, String def)  {
+		DefinedObject lo = (DefinedObject) session.getObject(id);
+		String defCurr = lo.getDefinition();
+		assertTrue(defCurr.equals(def));	
+	}
+
 
 	public void testForLink(String childID, String relID, String parentID) {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
