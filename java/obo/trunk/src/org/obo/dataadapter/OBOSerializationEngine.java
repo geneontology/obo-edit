@@ -34,7 +34,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public static final String SAVE_ALL = "Save all links";
 
 	public static class FilteredPath {
-		protected FilterPair filterPair;
+
+		protected Filter linkFilter;
+
+		protected Filter objectFilter;
 
 		protected String prefilterProperty;
 
@@ -67,8 +70,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		public FilteredPath() {
 		}
 
-		public FilteredPath(FilterPair filterPair, String path) {
-			setFilterPair(filterPair);
+		public FilteredPath(Filter linkFilter, Filter objectFilter, String path) {
+			setLinkFilter(linkFilter);
+			setObjectFilter(objectFilter);
 			setPath(path);
 		}
 
@@ -128,10 +132,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return saveImplied;
 		}
 
-		public void setFilterPair(FilterPair filterPair) {
-			this.filterPair = filterPair;
-		}
-
 		public void setPath(String path) {
 			this.path = path;
 		}
@@ -142,10 +142,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		public String getImpliedType() {
 			return impliedType;
-		}
-
-		public FilterPair getFilterPair() {
-			return filterPair;
 		}
 
 		public String getPath() {
@@ -195,6 +191,22 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		public void setDiscardUnusedCategories(boolean discardUnusedCategories) {
 			this.discardUnusedCategories = discardUnusedCategories;
+		}
+
+		public Filter getLinkFilter() {
+			return linkFilter;
+		}
+
+		public void setLinkFilter(Filter linkFilter) {
+			this.linkFilter = linkFilter;
+		}
+
+		public Filter getObjectFilter() {
+			return objectFilter;
+		}
+
+		public void setObjectFilter(Filter objectFilter) {
+			this.objectFilter = objectFilter;
 		}
 	}
 
@@ -344,7 +356,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void serialize(OBOSession session, OBOSerializer serializer,
 			String path) throws DataAdapterException {
 		serialize(session, serializer, Collections.singleton(new FilteredPath(
-				null, path)));
+				null, null, path)));
 	}
 
 	public void serialize(OBOSession session, OBOSerializer serializer,
@@ -363,13 +375,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				PrintStream stream = new PrintStream(new BufferedOutputStream(
 						sfos));
 				closingStreams.add(stream);
-				FilterPair pair = filteredPath.getFilterPair();
-				if (!filteredPath.getDoFilter()
-						&& !filteredPath.getDoLinkFilter())
-					pair = null;
-				else if (filteredPath.getDoFilter()
-						&& filteredPath.getSaveTypes()) {
-					FilterPair newPair = new FilterPairImpl();
+
+				Filter linkFilter = filteredPath.getLinkFilter();
+				Filter objectFilter = filteredPath.getObjectFilter();
+				if (!filteredPath.getDoFilter())
+					objectFilter = null;
+				else if (filteredPath.getSaveTypes()) {
 					CompoundFilter cf = new CompoundFilterImpl();
 
 					ObjectFilter propCriterion = new ObjectFilterImpl();
@@ -377,13 +388,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					propCriterion.setCriterion(new IsPropertyCriterion());
 
 					cf.setBooleanOperation(CompoundFilter.OR);
-					cf.addFilter(pair.getObjectFilter());
+					cf.addFilter(objectFilter);
 					cf.addFilter(propCriterion);
-					newPair.setLinkFilter(pair.getLinkFilter());
-					newPair.setObjectFilter(cf);
-					pair = newPair;
+					objectFilter = cf;
 				}
-				writeFile(session, pair, serializer, stream, filteredPath);
+				if (!filteredPath.getDoLinkFilter())
+					linkFilter = null;
+				writeFile(session, objectFilter, linkFilter, serializer,
+						stream, filteredPath);
 			} catch (IOException ex) {
 				throw new DataAdapterException("Write error", ex);
 			}
@@ -910,8 +922,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected static LinkFilter getPropertyLinkFilter(OBOProperty filterProperty) {
 		org.obo.filters.LinkFilter basicLinkFilter = new LinkFilterImpl();
-		basicLinkFilter
-				.setAspect(org.obo.filters.LinkFilter.TYPE);
+		basicLinkFilter.setAspect(org.obo.filters.LinkFilter.TYPE);
 
 		ObjectFilter idfilter = new ObjectFilterImpl();
 		idfilter.setCriterion(new IDSearchCriterion());
@@ -930,8 +941,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		return reasoner;
 	}
 
-	public void writeFile(OBOSession session, FilterPair filterPair,
-			OBOSerializer serializer, PrintStream stream,
+	public void writeFile(OBOSession session, Filter objectFilter,
+			Filter linkFilter, OBOSerializer serializer, PrintStream stream,
 			FilteredPath filteredPath) throws IOException,
 			CancelledAdapterException {
 		String path = filteredPath.getPath();
@@ -1025,10 +1036,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			}
 		}
 
-		if (filterPair != null) {
+		if (linkFilter != null || objectFilter != null) {
 			database = new FilteredLinkDatabase(database);
-			((FilteredLinkDatabase) database).setLinkFilter(filterPair.getLinkFilter());
-			((FilteredLinkDatabase) database).setTermFilter(filterPair.getObjectFilter());
+			((FilteredLinkDatabase) database).setLinkFilter(linkFilter);
+			((FilteredLinkDatabase) database).setTermFilter(objectFilter);
 			((FilteredLinkDatabase) database).setAllowDangling(allowDangling);
 		}
 
