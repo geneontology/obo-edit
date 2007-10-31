@@ -46,7 +46,7 @@ public class TableList<T> extends JComponent {
 	protected boolean completingEdit = false;
 	protected ListTableEditor<T> editor;
 	protected TableCellRenderer renderer = new HTMLTableRenderer();
-	protected List<T> data = Collections.emptyList();
+	protected List<T> data = new ArrayList<T>();
 	protected ActionListener commitListener = new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {

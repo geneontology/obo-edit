@@ -51,6 +51,7 @@ import org.bbop.util.ExceptionLogger;
 
 public abstract class AbstractApplicationStartupTask extends
 		AbstractSingleActionTask {
+	
 	protected abstract String getPerspectiveResourceDir();
 
 	protected abstract Collection<GUITask> getDefaultTasks();
