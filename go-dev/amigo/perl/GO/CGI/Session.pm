@@ -1967,10 +1967,11 @@ sub process_page_template {
 	my $tmpl_vars = 
 	{	%$vars,
 		filterdata => $self->get_data_for_filters,
-		search_constraint_data => $self->set_option('search_constraint'),
-		session => $self,
+		search_constraint_selected => $self->get_param('search_constraint'),
+#		session => $self,
 		munger => $self->munger,
 		session_id => $self->id,
+		session_id_for_url => 'session_id='.$self->id,
 		page_name => $self->ses_type,
 		release_date => $self->{release_date},
 		's' => 4,
