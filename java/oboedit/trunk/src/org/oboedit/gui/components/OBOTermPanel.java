@@ -38,8 +38,10 @@ import org.oboedit.gui.EditActionToolbar;
 import org.oboedit.gui.Filterable;
 import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.GestureTarget;
+import org.oboedit.gui.HTMLNodeLabelProvider;
 import org.oboedit.gui.InputHandlerI;
 import org.oboedit.gui.LineRenderer;
+import org.oboedit.gui.NodeLabelProvider;
 import org.oboedit.gui.OBOCellRenderer;
 import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.Preferences;
@@ -48,6 +50,7 @@ import org.oboedit.gui.Selection;
 import org.oboedit.gui.SelectionTransferHandler;
 import org.oboedit.gui.TermModel;
 import org.oboedit.gui.event.*;
+import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
@@ -108,8 +111,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	protected String id;
 
 	protected boolean revertToDefaultAction = true;
-	
+
 	protected EditActionToolbar toolbar;
+
+	protected NodeLabelProvider nodeLabelProvider;
 
 	TreeSelectionListener treeSelectionListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
@@ -339,7 +344,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	protected class InputListener extends AbstractSelectableHandlerBridge {
-		
+
 		protected HistoryListener historyListener = new HistoryListener() {
 
 			public void applied(HistoryAppliedEvent event) {
@@ -349,25 +354,25 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			public void reversed(HistoryAppliedEvent event) {
 				updateFromHistory();
 			}
-			
+
 		};
-		
+
 		public InputListener() {
 			setComponent(OBOTermPanel.this);
 		}
-		
+
 		public void install() {
 			SessionManager.getManager().addHistoryListener(historyListener);
 		}
-		
+
 		public void uninstall() {
 			SessionManager.getManager().removeHistoryListener(historyListener);
 		}
 
 		protected void updateFromHistory() {
 			if (revertToDefaultAction) {
-				toolbar.setCurrentHandler(EditActionManager
-						.getManager().getDefaultInputHandler());
+				toolbar.setCurrentHandler(EditActionManager.getManager()
+						.getDefaultInputHandler());
 			}
 		}
 
@@ -903,6 +908,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	protected JPanel panel;
+
 	// protected JToolBar toolbar;
 	// protected JComboBox gestureBox = new JComboBox();
 
@@ -911,6 +917,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		setDrawArrowhead(true);
 		setShowsRootHandles(true);
 		setRootVisible(false);
+		setNodeLabelProvider(new HTMLNodeLabelProvider(this));
 		/*
 		 * addFocusListener(new FocusAdapter() { @Override public void
 		 * focusGained(FocusEvent e) {
@@ -940,6 +947,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			super.setUI(getDefaultUI());
 		else
 			super.setUI(ui);
+		setRowHeight(0);
 	}
 
 	public Selection getSelection(MouseEvent e) {
@@ -1224,19 +1232,26 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 		JMenu renderMenu = new JMenu("Remove specific renderer");
 		renderMenu.setEnabled(objectRenderers.size() > 0);
-		Iterator it = objectRenderers.iterator();
+		Iterator<RenderedFilter> it = objectRenderers.iterator();
 		while (it.hasNext()) {
-			final FilterPair fr = (FilterPair) it.next();
+			final RenderedFilter fr = it.next();
 
 			JMenuItem ritem = new JMenuItem("Remove " + fr.toString());
 			ritem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					RenderedFilter f = fr.getLinkRenderer();
-					if (f != null)
-						removeLinkRenderer(f);
-					f = fr.getObjectRenderer();
-					if (f != null)
-						removeObjectRenderer(f);
+					removeObjectRenderer(fr);
+				}
+			});
+			renderMenu.add(ritem);
+		}
+		it = linkRenderers.iterator();
+		while (it.hasNext()) {
+			final RenderedFilter fr = it.next();
+
+			JMenuItem ritem = new JMenuItem("Remove " + fr.toString());
+			ritem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					removeLinkRenderer(fr);
 				}
 			});
 			renderMenu.add(ritem);
@@ -1312,10 +1327,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			rootStr = "STRICT";
 		else if (getRootAlgorithm() == RootAlgorithm.GREEDY)
 			rootStr = "GREEDY";
+		String basicHTML = null;
+		if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+			basicHTML = ((HTMLNodeLabelProvider) getNodeLabelProvider())
+					.getHtmlExpression();
+		}
 		return new OntologyEditorConfiguration(getTermFilter(),
-				getLinkFilter(), toolbar.getShowToolbar(), toolbar.getToolbarPosition(),
-				toolbar.getCurrentHandler().getID(), isRevertToDefaultAction(),
-				isLive(), rootStr);
+				getLinkFilter(), getObjectRenderers(), getLinkRenderers(),
+				basicHTML, toolbar.getShowToolbar(), toolbar
+						.getToolbarPosition(), toolbar.getCurrentHandler()
+						.getID(), isRevertToDefaultAction(), isLive(), rootStr);
 	}
 
 	public void setConfiguration(ComponentConfiguration c) {
@@ -1324,6 +1345,12 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			setLive(config.isLive());
 			setLinkFilter(config.getLinkFilter());
 			setTermFilter(config.getTermFilter());
+			setObjectRenderers(config.getObjectRenderers());
+			setLinkRenderers(config.getLinkRenderers());
+			if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+				((HTMLNodeLabelProvider) getNodeLabelProvider()).
+				setHtmlExpression(config.getBasicHTML());
+			}
 			if (config.getRootAlgorithm() != null) {
 				if (config.getRootAlgorithm().equals("STRICT")) {
 					setRootAlgorithm(RootAlgorithm.STRICT);
@@ -1333,8 +1360,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 			toolbar.setShowToolbar(config.getShowToolbar());
 			setRevertToDefaultAction(config.isRevertToDefaultAction());
-			toolbar.setCurrentHandler(EditActionManager.getManager().
-					getInputHandler(config.getDragActionID()));
+			toolbar.setCurrentHandler(EditActionManager.getManager()
+					.getInputHandler(config.getDragActionID()));
 			toolbar.setToolbarPosition(config.getToolbarPosition());
 		}
 	}
@@ -1412,5 +1439,19 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		inputListener.setRevertToDefaultAction(revertToDefaultAction);
 	}
 
+	public void setLinkRenderers(List<RenderedFilter> renderers) {
+		this.linkRenderers = renderers;
+	}
 
+	public void setObjectRenderers(List<RenderedFilter> renderers) {
+		this.objectRenderers = renderers;
+	}
+
+	public NodeLabelProvider getNodeLabelProvider() {
+		return nodeLabelProvider;
+	}
+
+	public void setNodeLabelProvider(NodeLabelProvider nodeLabelProvider) {
+		this.nodeLabelProvider = nodeLabelProvider;
+	}
 }

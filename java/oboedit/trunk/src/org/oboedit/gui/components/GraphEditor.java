@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -14,11 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeListener;
 
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
@@ -26,8 +23,6 @@ import org.bbop.framework.GUIComponent;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.filters.Filter;
-import org.obo.filters.FilterPair;
-import org.obo.filters.FilterPairImpl;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
@@ -48,13 +43,12 @@ import org.oboedit.graph.ViewBehavior;
 import org.oboedit.graph.VisibilityDropBehavior;
 import org.oboedit.graph.ZoomWidgetBehavior;
 import org.oboedit.gui.EditActionToolbar;
-import org.oboedit.gui.FilterComponent;
-import org.oboedit.gui.LinkFilterEditorFactory;
-import org.oboedit.gui.TermFilterEditorFactory;
+import org.oboedit.gui.HTMLNodeLabelProvider;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
+import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 
 public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
@@ -77,12 +71,15 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		}
 
 		public GraphEditorConfiguration(Filter<?> termFilter,
-				Filter<?> linkFilter, boolean disableAnimations,
-				long layoutDuration, int showToolbar, String toolbarPosition,
-				String dragActionID, boolean revert, boolean live,
-				String rootAlgorithm, boolean expandPaths) {
-			super(termFilter, linkFilter, showToolbar, toolbarPosition,
-					dragActionID, revert, live, rootAlgorithm);
+				Filter<?> linkFilter, List<RenderedFilter> objectRenderers,
+				List<RenderedFilter> linkRenderers, String basicHTML,
+				boolean disableAnimations, long layoutDuration,
+				int showToolbar, String toolbarPosition, String dragActionID,
+				boolean revert, boolean live, String rootAlgorithm,
+				boolean expandPaths) {
+			super(termFilter, linkFilter, objectRenderers, linkRenderers,
+					basicHTML, showToolbar, toolbarPosition, dragActionID,
+					revert, live, rootAlgorithm);
 			this.disableAnimations = disableAnimations;
 			this.layoutDuration = layoutDuration;
 			this.expandPaths = expandPaths;
@@ -177,6 +174,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected EditActionToolbar toolbar;
 	protected DragDropEditBehavior dragDropBehavior;
 	protected boolean revertToDefaultAction = false;
+
 	public ConfigurationPanel getConfigurationPanel() {
 		return new OntologyEditorConfigEditor() {
 			protected JCheckBox animationsBox;
@@ -281,7 +279,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected void installRightClickBehaviors() {
 		addMenuFactory(new LinkExpanderRightClickMenuFactory());
 		addMenuFactory(new RootDisplayRightClickMenuFactory());
-//		addMenuFactory(new SaveScreenMenuFactory());
+		// addMenuFactory(new SaveScreenMenuFactory());
 	}
 
 	public void init() {
@@ -319,14 +317,20 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		}
 		return panel;
 	}
-
+	
 	public ComponentConfiguration getConfiguration() {
 		String algorithmStr = null;
 		if (getRootAlgorithm() == RootAlgorithm.STRICT)
 			algorithmStr = "STRICT";
 		else if (getRootAlgorithm() == RootAlgorithm.GREEDY)
 			algorithmStr = "GREEDY";
+		String basicHTML = null;
+		if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+			basicHTML = ((HTMLNodeLabelProvider) getNodeLabelProvider())
+					.getHtmlExpression();
+		}
 		return new GraphEditorConfiguration(getTermFilter(), getLinkFilter(),
+				getObjectRenderers(), getLinkRenderers(), basicHTML,
 				getDisableAnimations(), getLayoutDuration(), toolbar
 						.getShowToolbar(), toolbar.getToolbarPosition(),
 				toolbar.getCurrentHandler().getID(), isRevertToDefaultAction(),
@@ -346,9 +350,12 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			GraphEditorConfiguration gec = (GraphEditorConfiguration) config;
 			setLinkFilter(gec.getLinkFilter());
 			setTermFilter(gec.getTermFilter());
+			setLinkRenderers(gec.getLinkRenderers());
+			setObjectRenderers(gec.getObjectRenderers());
 			setDisableAnimations(gec.getDisableAnimations());
 			setLayoutDuration(gec.getLayoutDuration());
 			setExpandSelectionPaths(gec.isExpandPaths());
+			setHTMLExpression(gec.getBasicHTML());
 			setLive(gec.isLive());
 			if (gec.getRootAlgorithm() != null) {
 				if (gec.getRootAlgorithm().equals("STRICT")) {
@@ -359,6 +366,14 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			}
 			setRevertToDefaultAction(gec.isRevertToDefaultAction());
 			toolbar.setShowToolbar(gec.getShowToolbar());
+			relayout();
+		}
+	}
+	
+	public void setHTMLExpression(String htmlExpression) {
+		if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+			((HTMLNodeLabelProvider) getNodeLabelProvider()).
+			setHtmlExpression(htmlExpression);
 		}
 	}
 

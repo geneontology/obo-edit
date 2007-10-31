@@ -11,10 +11,10 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
-import org.obo.filters.RenderSpec;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.gui.TermFilterEditorFactory.IdentifiedObjectModel;
 import org.oboedit.gui.event.GUIUpdateListener;
+import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.LinkSpecEditor;
 
 public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {

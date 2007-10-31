@@ -6,6 +6,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
+import org.obo.util.HTMLUtil;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.components.TermImageDisplayComponent;
 import org.oboedit.piccolo.Morphable;
@@ -20,14 +21,8 @@ public class OENode extends PCNode implements Morphable {
 
 	protected static final Object KEY_LABEL = "KEY";
 
-	// protected ViewRenderedStyleText field = new TransitionText();
+	//protected ViewRenderedStyleText field = new TransitionText();
 	protected ViewRenderedStyleText field = new ViewRenderedStyleText();
-
-	protected int preferredWidth = -1;
-
-	protected int preferredHeight = -1;
-
-	protected static final int MARGIN = 10;
 
 	protected int roundingSize = 10;
 
@@ -35,6 +30,9 @@ public class OENode extends PCNode implements Morphable {
 	protected NamedChildProvider provider;
 
 	protected HTMLEditorKit kit = new HTMLEditorKit();
+	
+//	int x_margin = 20;
+//	int y_margin = 20;
 
 	public OENode(LinkedObject lo, LinkDatabaseCanvas canvas, Shape s) {
 		this(lo, canvas, DefaultNamedChildProvider.getInstance(), s);
@@ -42,74 +40,59 @@ public class OENode extends PCNode implements Morphable {
 
 	public OENode(LinkedObject lo, LinkDatabaseCanvas canvas,
 			NamedChildProvider provider, Shape s) {
+		field.setWidth(s.getBounds().getWidth()+1);
 		s = ShapeUtil.createRoundRectangle(null, roundingSize, (float) s
 				.getBounds().getX(), (float) s.getBounds().getY(), (float) s
 				.getBounds().getWidth(), (float) s.getBounds().getHeight());
 		initialize(lo, provider, s);
 		// field.setConstrainWidthToTextWidth(true);
+		System.err.println("CREATED NODE FOR " + lo.getID() + " width="
+				+ s.getBounds().getWidth() + ", height="
+				+ s.getBounds().getHeight());
 		setNamedChild(KEY_LABEL, field);
 		field.setPickable(false);
-		setLabel(lo.getName());
+		setLabel(canvas.generateLabel(lo));
 	}
 
 	public int getRoundingSize() {
 		return roundingSize;
 	}
 
-	protected static String escapeHTML(String s) {
-		StringBuffer out = new StringBuffer();
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '<')
-				out.append("&lt;");
-			else if (s.charAt(i) == '>')
-				out.append("&gt;");
-			else
-				out.append(s.charAt(i));
-		}
-		return out.toString();
-	}
-
-	public static String getLabelAsHTML(IdentifiedObject io, String field) {
-		String imgURL = TermImageDisplayComponent.getFile((LinkedObject) io);
-		if (imgURL == null) {
-			field = "<html><center><font face='Arial' color='black'>"
-					+ escapeHTML(field) + "</font></center></html>";
-		} else {
-			field = "<html><table border=0><tr valign=center><td><img align=left src='" + imgURL
-					+ "' width='50'></td><td><font face='Arial' color='black'>"
-					+ escapeHTML(field) + "</font></td></table></html>";
-//			field = "<html><img align=left src='" + imgURL
-//					+ "' width='50'><font face='Arial' color='black'>"
-//					+ escapeHTML(field) + "</font></html>";
-		}
-		return field;
-	}
-
-	public static int getInitialNodeWidth() {
-		return 180;
+	public static String getLabelAsHTML(String field) {
+		// String imgURL = TermImageDisplayComponent.getFile((LinkedObject) io);
+		// if (imgURL == null) {
+		// field = "<html><center><font face='Arial' color='black'>"
+		// + HTMLUtil.escapeHTML(field) + "</font></center></html>";
+		// } else {
+		// field = "<html><table border=0><tr valign=center><td><img align=left
+		// src='" + imgURL
+		// + "' width='50'></td><td><font face='Arial' color='black'>"
+		// + HTMLUtil.escapeHTML(field) + "</font></td></table></html>";
+		// }
+		// return field;
+		return "<html><center>" + field + "</center></html>";
 	}
 
 	public String getLabel() {
-		return this.field.getLabel();
+		return this.field.getText();
 	}
 
 	public void setLabel(String field) {
-		this.field.setWidth(getInitialNodeWidth());
-		String s = getLabelAsHTML((IdentifiedObject) getObject(), field);
-		this.field.setText(s);
+
+		this.field.setText(field);
 
 		// if (this.field.getHeight() > getPreferredHeight()
 		// || this.field.getWidth() > getPreferredWidth()) {
 		setShape(ShapeUtil.createRoundRectangle((float) 0, (float) 0,
 				(float) getPreferredWidth(), (float) getPreferredHeight()));
+		PiccoloUtil.centerInParent(this.field, true, true, false);
 		// }
 	}
 
 	@Override
 	protected void internalUpdateBounds(double x, double y, double width,
 			double height) {
-		PiccoloUtil.centerInParent(this.field, true, true, true);
-		field.setOffset(field.getXOffset() - 4, field.getYOffset());
+//		field.setOffset(field.getXOffset(), field.getYOffset());
 		super.internalUpdateBounds(x, y, width, height);
 	}
 
@@ -123,34 +106,21 @@ public class OENode extends PCNode implements Morphable {
 	}
 
 	public int getDefaultPreferredWidth() {
-		int width = (int) field.getWidth() + MARGIN;
+		int width = (int) field.getWidth();
 		return width;
 	}
 
 	protected int getDefaultPreferredHeight() {
-		return (int) field.getHeight() + MARGIN;
+		return (int) field.getHeight();
 	}
 
 	public int getPreferredHeight() {
-		if (preferredHeight == -1)
-			return getDefaultPreferredHeight();
-		else
-			return preferredHeight;
-	}
-
-	public void setPreferredHeight(int preferredHeight) {
-		// this.preferredHeight = preferredHeight;
+		return getDefaultPreferredHeight();
 	}
 
 	public int getPreferredWidth() {
-		if (preferredWidth == -1)
-			return getDefaultPreferredWidth();
-		else
-			return preferredWidth;
-	}
+		return getDefaultPreferredWidth();
 
-	public void setPreferredWidth(int preferredWidth) {
-		// this.preferredWidth = preferredWidth;
 	}
 
 	public String toString() {
@@ -163,6 +133,7 @@ public class OENode extends PCNode implements Morphable {
 
 	public PActivity morphTo(PNode node, long duration) {
 		if (node instanceof OENode) {
+//			return new PActivity(0);
 			return animateSetLabel(((OENode) node).getLabel(), duration);
 		} else {
 			return new PActivity(0);

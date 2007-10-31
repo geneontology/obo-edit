@@ -1,32 +1,20 @@
 package org.oboedit.util;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-
-import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.KeyRecorder;
-import org.bbop.util.TaskDelegate;
 import org.obo.datamodel.LinkedObject;
-import org.obo.filters.FilterPair;
-import org.obo.filters.RenderedFilter;
 import org.obo.history.HistoryItem;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.IDUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.Filterable;
-import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.event.GlobalFilterListener;
 import org.oboedit.gui.event.HistoryAppliedEvent;
@@ -37,6 +25,10 @@ import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
+import org.oboedit.gui.filter.GeneralRendererSpec;
+import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.RenderSpec;
+import org.oboedit.gui.filter.RenderedFilter;
 
 public class GUIUtil {
 	protected static class ListenerBundle {
@@ -131,8 +123,8 @@ public class GUIUtil {
 		}
 	}
 
-	protected static final boolean isMacOS = System.getProperty("os.name").equals(
-			"Mac OS X");
+	protected static final boolean isMacOS = System.getProperty("os.name")
+			.equals("Mac OS X");
 
 	protected static final boolean isWindows = System.getProperty("os.name")
 			.startsWith("Windows");
@@ -140,7 +132,7 @@ public class GUIUtil {
 	public static boolean isMacOS() {
 		return GUIUtil.isMacOS;
 	}
-	
+
 	public static boolean isWindows() {
 		return isWindows;
 	}
@@ -182,121 +174,85 @@ public class GUIUtil {
 		}
 	}
 
-//	public static JPopupMenu getFilterMenu(final JComponent c) {
-//		if (!(c instanceof Filterable || c instanceof FilteredRenderable))
-//			return null;
-//		JPopupMenu v = new JPopupMenu("Filter");
-//		JMenuItem removeAllDecorationAndFilters = new JMenuItem(
-//				"Remove all renderers and filters");
-//		Filterable tf = null;
-//		FilteredRenderable tfr = null;
-//		if (c instanceof FilteredRenderable)
-//			tfr = (FilteredRenderable) c;
-//		if (c instanceof Filterable)
-//			tf = (Filterable) c;
-//		final Filterable f = tf;
-//		final FilteredRenderable fr = tfr;
-//
-//		if (fr != null && f != null) {
-//			removeAllDecorationAndFilters.setEnabled((fr.getObjectRenderers()
-//					.size() > 0 || f.getFilter() != null));
-//
-//			removeAllDecorationAndFilters
-//					.addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent e) {
-//							fr.getObjectRenderers().clear();
-//							if (f.getFilter() != null) {
-//								f.setFilter(null);
-//							}
-//							c.repaint();
-//						}
-//					});
-//			v.add(removeAllDecorationAndFilters);
-//		}
-//
-//		if (fr != null) {
-//			JMenuItem removeAllDecoration = new JMenuItem(
-//					"Remove all renderers");
-//			removeAllDecoration.setEnabled(fr.getObjectRenderers().size() > 0);
-//			removeAllDecoration.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					fr.getObjectRenderers().clear();
-//					c.repaint();
-//				}
-//			});
-//			v.add(removeAllDecoration);
-//
-//			JMenu renderMenu = new JMenu("Remove specific renderer");
-//			renderMenu.setEnabled(fr.getObjectRenderers().size() > 0);
-//			for (final RenderedFilter renderer : fr.getObjectRenderers()) {
-//				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
-//				ritem.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						fr.removeObjectRenderer(renderer);
-//					}
-//				});
-//				renderMenu.add(ritem);
-//			}
-//			for (final RenderedFilter renderer : fr.getLinkRenderers()) {
-//				JMenuItem ritem = new JMenuItem("Remove " + renderer.toString());
-//				ritem.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						fr.removeLinkRenderer(renderer);
-//					}
-//				});
-//				renderMenu.add(ritem);
-//			}
-//			v.add(renderMenu);
-//		}
-//
-//		if (f != null) {
-//			JMenuItem filterMenuItem = new JMenuItem("Remove filter");
-//			filterMenuItem.setEnabled(f.getFilter() != null);
-//			filterMenuItem.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					f.setFilter(null);
-//				}
-//			});
-//			v.add(filterMenuItem);
-//		}
-//		return v;
-//	}
-	
 	public static final Object PRE_SELECTION_KEY = new Object();
 	public static final Object POST_SELECTION_KEY = new Object();
-	
+
 	public static String fetchID(LinkedObject parent) {
 		return IDUtil.fetchID(IDManager.getManager().getIDAdapter(),
 				SessionManager.getManager().getSession(), parent);
 	}
-	
-	public static void setSelections(HistoryItem item, Selection pre, Selection post) {
+
+	public static void setSelections(HistoryItem item, Selection pre,
+			Selection post) {
 		setPreSelection(item, pre);
 		setPostSelection(item, post);
 	}
-	
+
 	public static void setPreSelection(HistoryItem item, Selection selection) {
 		item.setProperty(PRE_SELECTION_KEY, selection);
 	}
-	
+
 	public static Selection getPreSelection(HistoryItem item) {
 		return (Selection) item.getProperty(PRE_SELECTION_KEY);
 	}
-	
+
 	public static void setPostSelection(HistoryItem item, Selection selection) {
 		item.setProperty(POST_SELECTION_KEY, selection);
 	}
-	
+
 	public static Selection getPostSelection(HistoryItem item) {
 		return (Selection) item.getProperty(POST_SELECTION_KEY);
 	}
 
-	public static void addRendererPair(FilteredRenderable r, FilterPair pair) {
-		RenderedFilter f = pair.getLinkRenderer();
-		if (f != null)
-			r.addLinkRenderer(f);
-		f = pair.getObjectRenderer();
-		if (f != null)
-			r.addObjectRenderer(f);
+	public static RenderSpec getSpec(Object o, Collection<RenderedFilter>... fs) {
+		RenderSpec out = null;
+		for (Collection<RenderedFilter> f : fs) {
+			if (f.size() == 0)
+				continue;
+			for (RenderedFilter rf : f) {
+				if (rf.getFilter().satisfies(o)) {
+					if (out == null)
+						out = rf.getSpec();
+					else {
+						out = out.merge(rf.getSpec());
+					}
+				}
+			}
+		}
+		return out;
 	}
+
+	public static String renderHTML(String text, GeneralRendererSpec spec) {
+		StringBuffer out = new StringBuffer(text);
+		if (spec != null) {
+			for (GeneralRendererSpecField field : spec.getFields()) {
+				if (field.getHTMLType() > 0) {
+					field.renderHTML(spec.getValue(field), out);
+				}
+			}
+		}
+		out.insert(0, "<html>");
+		out.append("</html>");
+		return out.toString();
+	}
+
+	public static String renderHTML(String text, Object o,
+			Collection<RenderedFilter>... f) {
+		String out = text;
+		RenderSpec spec = getSpec(o, f);
+		if (spec instanceof GeneralRendererSpec || spec == null) {
+			out = renderHTML(text, (GeneralRendererSpec) spec);
+		}
+		return out;
+	}
+
+	// public static void addRendererPair(FilteredRenderable r, FilterPair pair)
+	// {
+	// RenderedFilter f = pair.getLinkRenderer();
+	// if (f != null)
+	// r.addLinkRenderer(f);
+	// f = pair.getObjectRenderer();
+	// if (f != null)
+	// r.addObjectRenderer(f);
+	// }
 }

@@ -8,11 +8,12 @@ import org.bbop.io.IOUtil;
 import org.obo.dataadapter.*;
 import org.obo.datamodel.*;
 import org.obo.filters.*;
+import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
+import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
-import org.oboedit.gui.widget.FilterPairEditor;
 
 import java.util.*;
 
@@ -548,14 +549,19 @@ public class OBO2OBO {
 							printUsage(1);
 						i++;
 						String filterFile = args[i];
-						FilterPair filterPair = FilterPairEditor
-								.loadFilterPair(filterFile);
+						Filter filter = FilterUtil.loadFilter(filterFile);
 
-						path
-								.setDoLinkFilter(filterPair.getLinkFilter() != null);
-						path.setDoFilter(filterPair.getObjectFilter() != null);
-						path.setFilterPair(filterPair);
+						path.setDoFilter(filter != null);
+						path.setObjectFilter(filter);
+					} else if (args[i].equals("-lf")) {
+						if (i >= args.length - 1)
+							printUsage(1);
+						i++;
+						String filterFile = args[i];
+						Filter filter = FilterUtil.loadFilter(filterFile);
 
+						path.setDoLinkFilter(filter != null);
+						path.setLinkFilter(filter);
 					} else if (args[i].equals("-allowdangling")) {
 						path.setAllowDangling(true);
 					} else if (args[i].equals("-strictrootdetection")) {
@@ -636,9 +642,9 @@ public class OBO2OBO {
 				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
 						+ "                               be loaded");
 		System.err
-				.println("  -o [-f <filterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo> - \n"
-						+ "        An output file to write. The optional -f flag may be used to specify a\n"
-						+ "        filter file to apply to the output file before writing. If the \n"
+				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo> - \n"
+						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
+						+ "        filter file or a link filter file to apply to the output file before writing. If the \n"
 						+ "        -allowdangling flag is specified, dangling links will not be written.\n"
 						+ "        The optional -p flag specifies the id of a property to use for \n"
 						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"

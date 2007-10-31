@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +32,6 @@ import org.obo.filters.DescendantSearchAspect;
 import org.obo.filters.EndsWithComparison;
 import org.obo.filters.EqualsComparison;
 import org.obo.filters.Filter;
-import org.obo.filters.FilterPair;
-import org.obo.filters.FilterPairImpl;
 import org.obo.filters.GeneralDbxrefSearchCriterion;
 import org.obo.filters.GreaterThanComparison;
 import org.obo.filters.GreaterThanEqualsComparison;
@@ -58,16 +58,13 @@ import org.obo.filters.LessThanEqualsComparison;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.LinkNamespaceSearchCriterion;
-import org.obo.filters.LinkRenderSpec;
 import org.obo.filters.NameSearchCriterion;
 import org.obo.filters.NameSynonymSearchCriterion;
 import org.obo.filters.NamespaceSearchCriterion;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
-import org.obo.filters.ObjectRenderSpec;
 import org.obo.filters.ParentCountCriterion;
 import org.obo.filters.RegexpComparison;
-import org.obo.filters.RenderedFilter;
 import org.obo.filters.RootSearchAspect;
 import org.obo.filters.SearchAspect;
 import org.obo.filters.SearchComparison;
@@ -80,12 +77,28 @@ import org.obo.filters.WildcardComparison;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.FilterUtil;
 import org.oboedit.gui.event.GlobalFilterListener;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
+import org.oboedit.gui.filter.BoldSpecField;
+import org.oboedit.gui.filter.ConfiguredColor;
+import org.oboedit.gui.filter.FontFaceSpecField;
+import org.oboedit.gui.filter.FontSizeSpecField;
+import org.oboedit.gui.filter.ForegroundColorSpecField;
+import org.oboedit.gui.filter.GeneralRendererSpec;
+import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.HTMLSpecField;
+import org.oboedit.gui.filter.ItalicSpecField;
+import org.oboedit.gui.filter.LinkRenderSpec;
+import org.oboedit.gui.filter.ObjectRenderSpec;
+import org.oboedit.gui.filter.RenderedFilter;
+import org.oboedit.gui.filter.StrikeoutSpecField;
+import org.oboedit.gui.filter.UnderlineSpecField;
 
 public class FilterManager {
 
 	protected static FilterManager manager;
 
-	protected List<SearchCriterion> criteria = new LinkedList<SearchCriterion>();
+	protected Map<String, SearchCriterion> criteria =
+		new LinkedHashMap<String, SearchCriterion>();
 	protected List<SearchAspect> aspects = new LinkedList<SearchAspect>();
 	protected List<SearchComparison> comparisons = new LinkedList<SearchComparison>();
 
@@ -95,7 +108,8 @@ public class FilterManager {
 	protected Collection<RenderedFilter> globalTermRenderers;
 
 	protected Collection<GlobalFilterListener> globalFilterListeners = new LinkedList<GlobalFilterListener>();
-	protected List<FilterPair> modifyFilters = new LinkedList<FilterPair>();
+
+	protected Collection<GeneralRendererSpecField<?>> renderSpecFields = new ArrayList<GeneralRendererSpecField<?>>();
 
 	public void addGlobalFilterListener(GlobalFilterListener listener) {
 		globalFilterListeners.add(listener);
@@ -187,6 +201,16 @@ public class FilterManager {
 
 		buildDefaultGlobalTermRenderers();
 		buildDefaultGlobalLinkRenderers();
+
+		addRenderSpecField(ForegroundColorSpecField.FIELD);
+		addRenderSpecField(BackgroundColorSpecField.FIELD);
+		addRenderSpecField(FontFaceSpecField.FIELD);
+		addRenderSpecField(FontSizeSpecField.FIELD);
+		addRenderSpecField(BoldSpecField.FIELD);
+		addRenderSpecField(ItalicSpecField.FIELD);
+		addRenderSpecField(UnderlineSpecField.FIELD);
+		addRenderSpecField(StrikeoutSpecField.FIELD);
+		addRenderSpecField(HTMLSpecField.FIELD);
 	}
 
 	protected static FilterManager createManager() {
@@ -200,23 +224,23 @@ public class FilterManager {
 		});
 		return manager;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Filter<?> getAugmentedLinkFilter(Filter linkFilter) {
 		return FilterUtil.mergeFilters(linkFilter, getGlobalLinkFilter());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Filter<?> getAugmentedTermFilter(Filter termFilter) {
 		return FilterUtil.mergeFilters(termFilter, getGlobalTermFilter());
 	}
 
 	public void addCriterion(SearchCriterion c) {
-		criteria.add(c);
+		criteria.put(c.getID(), c);
 	}
 
 	public void removeCriterion(SearchCriterion c) {
-		criteria.remove(c);
+		criteria.remove(c.getID());
 	}
 
 	public void addAspect(SearchAspect aspect) {
@@ -244,7 +268,11 @@ public class FilterManager {
 	}
 
 	public Collection<SearchCriterion> getCriteria() {
-		return criteria;
+		return criteria.values();
+	}
+	
+	public SearchCriterion getCriterion(String id) {
+		return criteria.get(id);
 	}
 
 	protected void buildDefaultGlobalLinkFilter() {
@@ -313,8 +341,7 @@ public class FilterManager {
 		ObjectFilter typeFilter = new ObjectFilterImpl();
 		typeFilter.setCriterion(new IsImpliedLinkCriterion());
 		org.obo.filters.LinkFilter basicLinkFilter = new LinkFilterImpl();
-		basicLinkFilter
-				.setAspect(org.obo.filters.LinkFilter.SELF);
+		basicLinkFilter.setAspect(org.obo.filters.LinkFilter.SELF);
 		basicLinkFilter.setFilter(typeFilter);
 
 		LinkRenderSpec spec = new LinkRenderSpec();
@@ -329,8 +356,10 @@ public class FilterManager {
 		ObjectFilter filter = new ObjectFilterImpl();
 		filter.setCriterion(new IsObsoleteCriterion());
 
-		ObjectRenderSpec spec = new ObjectRenderSpec();
-		spec.setForegroundColor(Color.red);
+		GeneralRendererSpec spec = new GeneralRendererSpec();
+		spec.setValue(ForegroundColorSpecField.FIELD, new ConfiguredColor(
+				Color.red, true));
+		spec.setValue(StrikeoutSpecField.FIELD, true);
 		return new RenderedFilter(filter, spec);
 	}
 
@@ -338,8 +367,9 @@ public class FilterManager {
 		ObjectFilter filter = new ObjectFilterImpl();
 		filter.setCriterion(new IsPropertyCriterion());
 
-		ObjectRenderSpec spec = new ObjectRenderSpec();
-		spec.setForegroundColor(Color.blue);
+		GeneralRendererSpec spec = new GeneralRendererSpec();
+		spec.setValue(ForegroundColorSpecField.FIELD, new ConfiguredColor(
+				Color.blue, true));
 		return new RenderedFilter(filter, spec);
 	}
 
@@ -347,8 +377,7 @@ public class FilterManager {
 		ObjectFilter typeFilter = new ObjectFilterImpl();
 		typeFilter.setCriterion(new IsRedundantLinkCriterion());
 		org.obo.filters.LinkFilter basicLinkFilter = new LinkFilterImpl();
-		basicLinkFilter
-				.setAspect(org.obo.filters.LinkFilter.SELF);
+		basicLinkFilter.setAspect(org.obo.filters.LinkFilter.SELF);
 		basicLinkFilter.setFilter(typeFilter);
 
 		LinkRenderSpec spec = new LinkRenderSpec();
@@ -389,18 +418,6 @@ public class FilterManager {
 
 	public void setGlobalTermRenderers(List<RenderedFilter> globalTermRenderers) {
 		this.globalTermRenderers = globalTermRenderers;
-	}
-
-	public void addModifyFilter(FilterPair filterPair) {
-		modifyFilters.add(filterPair);
-	}
-
-	public List<FilterPair> getModifyFilters() {
-		return modifyFilters;
-	}
-
-	public void removeModifyFilter(FilterPair filterPair) {
-		modifyFilters.remove(filterPair);
 	}
 
 	protected void flushConfig() {
@@ -476,5 +493,17 @@ public class FilterManager {
 
 	protected void setGlobalTermFilter(Filter filter) {
 		this.globalTermFilter = filter;
+	}
+
+	public Collection<GeneralRendererSpecField<?>> getRenderSpecFields() {
+		return renderSpecFields;
+	}
+
+	public void addRenderSpecField(GeneralRendererSpecField<?> field) {
+		renderSpecFields.add(field);
+	}
+
+	public void removeRenderSpecField(GeneralRendererSpecField<?> field) {
+		renderSpecFields.remove(field);
 	}
 }

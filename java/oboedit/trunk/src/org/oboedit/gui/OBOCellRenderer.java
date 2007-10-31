@@ -8,6 +8,15 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.components.OBOTermPanel;
+import org.oboedit.gui.filter.ForegroundColorSpecField;
+import org.oboedit.gui.filter.ConfiguredColor;
+import org.oboedit.gui.filter.GeneralRendererSpec;
+import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.LinkRenderSpec;
+import org.oboedit.gui.filter.ObjectRenderSpec;
+import org.oboedit.gui.filter.RenderSpec;
+import org.oboedit.gui.filter.RenderedFilter;
+import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
 import javax.swing.tree.*;
@@ -38,8 +47,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 	protected static LineBorder tabBorder = new LineBorder(tabBorderColor);
 
-	protected ObjectRenderSpec objectSpec = new ObjectRenderSpec();
-
 	protected LinkRenderSpec linkSpec = new LinkRenderSpec();
 
 	protected static HashMap fontHash = new HashMap();
@@ -67,16 +74,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 		 * defaultSpecs.add(createObsoleteRenderer());
 		 * defaultSpecs.add(createImpliedRenderer());
 		 */
-	}
-
-	protected void mergeRenderers(RenderSpec targetSpec, Object o,
-			Collection<RenderedFilter> specs) {
-		Iterator<RenderedFilter> it = specs.iterator();
-		while (it.hasNext()) {
-			RenderedFilter pair = it.next();
-			if (pair.getFilter().satisfies(o))
-				targetSpec.merge(pair.getSpec());
-		}
 	}
 
 	public OBOCellRenderer() {
@@ -131,21 +128,20 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 			if (value instanceof Link) {
 				Link link = (Link) path.getLastPathComponent();
-				linkSpec.clear();
-				// mergeRenderers(linkSpec, link, defaultSpecs);
-				mergeRenderers(linkSpec, link, FilterManager.getManager()
-						.getGlobalLinkRenderers());
-
-				if (c instanceof FilteredRenderable)
-					mergeRenderers(linkSpec, link, ((FilteredRenderable) c)
-							.getLinkRenderers());
-
-				if (linkSpec.getLinkColor() != null)
-					lineColor = linkSpec.getLinkColor();
-				if (linkSpec.getLineWidth() != -1)
-					lineWidth = linkSpec.getLineWidth();
-				if (linkSpec.getLineType() != -1)
-					lineStyle = linkSpec.getLineType();
+				// linkSpec.clear();
+				// mergeRenderers(linkSpec, link, FilterManager.getManager()
+				// .getGlobalLinkRenderers());
+				//
+				// if (c instanceof FilteredRenderable)
+				// mergeRenderers(linkSpec, link, ((FilteredRenderable) c)
+				// .getLinkRenderers());
+				//
+				// if (linkSpec.getLinkColor() != null)
+				// lineColor = linkSpec.getLinkColor();
+				// if (linkSpec.getLineWidth() != -1)
+				// lineWidth = linkSpec.getLineWidth();
+				// if (linkSpec.getLineType() != -1)
+				// lineStyle = linkSpec.getLineType();
 			}
 			String hashVal = lineWidth + "-" + lineStyle;
 			Stroke stroke = (Stroke) strokeHash.get(hashVal);
@@ -321,17 +317,22 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				setOpaque(false);
 				setBackground(null);
 				return this;
-			}
+			} else
+				setForeground(Color.black);
 
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
 			}
 
-			objectSpec.clear();
-
 			Relationship link = (Relationship) value;
-			String text = link.getChild().getName();
+			if (tree instanceof FilteredRenderable) {
+				FilteredRenderable fr = (FilteredRenderable) tree;
+				NodeLabelProvider provider = fr.getNodeLabelProvider();
+				LinkedObject lo = link.getChild();
+				String s = provider.getLabel(lo);
+				setText(s);
+			}
 
 			Icon icon = null;
 
@@ -394,28 +395,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				setBorder(null);
 			}
 
-			// mergeRenderers(objectSpec, link.getChild(), defaultSpecs);
-			mergeRenderers(objectSpec, link.getChild(), FilterManager
-					.getManager().getGlobalTermRenderers());
-
-			if (tree instanceof FilteredRenderable) {
-				mergeRenderers(objectSpec, link.getChild(),
-						((FilteredRenderable) tree).getObjectRenderers());
-			}
-
-			Font font = getFont(objectSpec);
-			setFont(font);
-
-			Color color = Color.black;
-
-			if (objectSpec.getForegroundColor() != null)
-				color = objectSpec.getForegroundColor();
-			setForeground(color);
-
-			if (objectSpec.getUnderlined())
-				setText("<html><u>" + text + "</u></html>");
-			else
-				setText(text);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

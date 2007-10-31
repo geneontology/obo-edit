@@ -8,13 +8,13 @@ import javax.swing.*;
 import org.obo.datamodel.*;
 import org.obo.filters.*;
 import org.oboedit.gui.*;
-import org.oboedit.gui.widget.FilterPairEditor;
 
 public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		UserCheck {
 
 	public static class UserFilterConfiguration extends CheckConfiguration {
-		protected FilterPair filter = new FilterPairImpl();
+		protected Filter filter;
+		protected boolean link;
 
 		protected String message = "";
 
@@ -28,14 +28,6 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 
 		public String getDescription() {
 			return desc;
-		}
-
-		public void setFilter(FilterPair filter) {
-			this.filter = filter;
-		}
-
-		public FilterPair getFilter() {
-			return filter;
 		}
 
 		public void setMessage(String message) {
@@ -53,6 +45,22 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		public void setIsFatal(boolean isFatal) {
 			this.isFatal = isFatal;
 		}
+
+		public Filter getFilter() {
+			return filter;
+		}
+
+		public void setFilter(Filter filter) {
+			this.filter = filter;
+		}
+
+		public boolean isLink() {
+			return link;
+		}
+
+		public void setLink(boolean link) {
+			this.link = link;
+		}
 	}
 
 	protected class ConfigurationPanel extends JPanel implements ActionListener {
@@ -62,7 +70,7 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		 */
 		private static final long serialVersionUID = 1L;
 
-		protected FilterPairEditor filterPairEditor = new FilterPairEditor();
+		protected FilterComponent editor;
 
 		protected JTextField messageField = new JTextField("contains errors");
 
@@ -70,24 +78,10 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 
 		protected JCheckBox fatalCheckBox = new JCheckBox("Is fatal");
 
-		protected JButton newButton = new JButton(Preferences
-				.loadLibraryIcon("file.gif"));
-		protected JButton loadButton = new JButton(Preferences
-				.loadLibraryIcon("folder.gif"));
-		protected JButton saveButton = new JButton(Preferences
-				.loadLibraryIcon("floppy.gif"));
-		
 		public ConfigurationPanel() {
 			JLabel messageLabel = new JLabel(
 					"Message suffix (message will begin with \"Term <term name> \")");
 			JLabel descriptionLabel = new JLabel("Check name");
-
-			Box northPanel = new Box(BoxLayout.X_AXIS);
-			northPanel.add(descriptionLabel);
-			northPanel.add(Box.createHorizontalStrut(10));
-			northPanel.add(descField);
-			northPanel.add(Box.createHorizontalStrut(10));
-			northPanel.add(filterPairEditor.getLoadSaveButtonPanel());
 
 			fatalCheckBox.setOpaque(false);
 
@@ -95,16 +89,20 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 			southPanel.add(messageLabel);
 			southPanel.add(messageField);
 			southPanel.add(fatalCheckBox);
-			
-			filterPairEditor.setRendererOptionAllowed(false);
-			filterPairEditor.setKeywordOptionAllowed(false);
 
 			setLayout(new BorderLayout());
-			add(northPanel, "North");
-			add(filterPairEditor, "Center");
 			add(southPanel, "South");
 			validate();
 			repaint();
+		}
+
+		public void setIsLink(boolean link) {
+			remove(editor);
+			if (link)
+				editor = new FilterComponent(new LinkFilterEditorFactory());
+			else
+				editor = new FilterComponent(new TermFilterEditorFactory());
+			add(editor, "Center");
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -112,8 +110,8 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		}
 
 		protected void updateConfiguration() {
-			((UserFilterConfiguration) configuration)
-					.setFilter(filterPairEditor.getFilterPair());
+			((UserFilterConfiguration) configuration).setFilter(editor
+					.getFilter());
 			((UserFilterConfiguration) configuration).setDescription(descField
 					.getText());
 			((UserFilterConfiguration) configuration).setMessage(messageField
@@ -138,7 +136,7 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		return ((UserFilterConfiguration) configuration).getDescription();
 	}
 
-	public FilterPair getFilter() {
+	public Filter getFilter() {
 		return ((UserFilterConfiguration) configuration).getFilter();
 	}
 
@@ -150,16 +148,20 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		return ((UserFilterConfiguration) configuration).isFatal();
 	}
 
+	public boolean isLink() {
+		return ((UserFilterConfiguration) configuration).isLink();
+	}
+
 	public Collection check(OBOSession session, IdentifiedObject currentObject,
 			byte condition, boolean checkObsoletes) {
 		Collection out = new LinkedList();
-		if (getFilter().getLinkFilter() != null) {
+		if (isLink()) {
 			if (currentObject instanceof LinkedObject) {
 				Iterator it = ((LinkedObject) currentObject).getParents()
 						.iterator();
 				while (it.hasNext()) {
 					Link link = (Link) it.next();
-					if (getFilter().getLinkFilter().satisfies(link)) {
+					if (getFilter().satisfies(link)) {
 						out
 								.add(new CheckWarning("Link " + link + " "
 										+ getMessage(), isFatal(), this,
@@ -168,10 +170,8 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 					}
 				}
 			}
-		}
-
-		if (getFilter().getObjectFilter() != null) {
-			if (getFilter().getObjectFilter().satisfies(currentObject))
+		} else {
+			if (getFilter().satisfies(currentObject))
 				out.add(new CheckWarning("Term " + currentObject.getName()
 						+ " (" + currentObject.getID() + ") " + getMessage(),
 						isFatal(), this, currentObject));

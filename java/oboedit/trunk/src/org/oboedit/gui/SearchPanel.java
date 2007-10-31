@@ -12,13 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
-import java.beans.ExceptionListener;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,7 +37,6 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.bbop.framework.GUIManager;
-import org.bbop.io.IOUtil;
 import org.bbop.swing.MultiIcon;
 import org.bbop.swing.SwingUtil;
 import org.bbop.swing.dropbox.DropBoxContents;
@@ -54,6 +47,7 @@ import org.obo.filters.CompoundFilter;
 import org.obo.filters.CompoundFilterImpl;
 import org.obo.filters.Filter;
 import org.obo.filters.PathCapableFilter;
+import org.obo.util.FilterUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
@@ -333,22 +327,9 @@ public class SearchPanel extends JPanel {
 			return out;
 	}
 
-	public static Filter loadFilter(String path) throws IOException {
-		XMLDecoder d = new XMLDecoder(new BufferedInputStream(IOUtil
-				.getStream(path)));
-		d.setExceptionListener(new ExceptionListener() {
-			public void exceptionThrown(Exception ex) {
-				ex.printStackTrace();
-			}
-		});
-		Filter result = (Filter) d.readObject();
-		d.close();
-		return result;
-	}
-
 	public void load(File file) {
 		try {
-			setFilter(loadFilter(file.toString()));
+			setFilter(FilterUtil.loadFilter(file.toString()));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -371,7 +352,7 @@ public class SearchPanel extends JPanel {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
 			try {
-				return loadFilter(file.toString());
+				return FilterUtil.loadFilter(file.toString());
 			} catch (IOException ex) {
 				return null;
 			}
@@ -389,18 +370,7 @@ public class SearchPanel extends JPanel {
 				.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
-			save(file.toString(), filterPair);
-		}
-	}
-
-	public static void save(String filename, Filter filterPair) {
-		try {
-			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(
-					new FileOutputStream(filename)));
-			e.writeObject(filterPair);
-			e.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
+			FilterUtil.save(file.toString(), filterPair);
 		}
 	}
 

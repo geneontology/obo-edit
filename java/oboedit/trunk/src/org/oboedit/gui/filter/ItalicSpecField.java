@@ -1,0 +1,34 @@
+package org.oboedit.gui.filter;
+
+public class ItalicSpecField implements GeneralRendererSpecField<Boolean> {
+
+	public static final ItalicSpecField FIELD = new ItalicSpecField();
+
+	public String getID() {
+		return "italic";
+	}
+
+	public String getName() {
+		return "Italic";
+	}
+
+	public Boolean merge(Boolean a, Boolean b) {
+		return a || b;
+	}
+
+	public int getHTMLType() {
+		return HTML;
+	}
+
+	public void renderHTML(Boolean value, StringBuffer in) {
+		if (value.booleanValue()) {
+			in.insert(0, "<i>");
+			in.append("</i>");
+		}
+	}
+
+	public GeneralRendererSpecFieldEditor<Boolean> getEditor() {
+		return new EmptyBooleanEditor();
+	}
+
+}

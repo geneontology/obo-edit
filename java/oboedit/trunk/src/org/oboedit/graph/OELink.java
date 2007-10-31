@@ -53,37 +53,6 @@ public class OELink extends PCNode {
 
 	protected float arrowheadWidth = 12f;
 
-	protected TooltipFactory linkTooltipFactory = new AbstractTooltipFactory() {
-
-		/*
-		 * PStyledText text = new StyledText(); {
-		 * text.setConstrainWidthToTextWidth(false); }
-		 */
-		ViewRenderedStyleText text = new ViewRenderedStyleText();
-
-		public PNode getTooltip(LinkDatabaseCanvas canvas, PNode node) {
-			if (node instanceof OELink && canvas.getReasoner() != null) {
-				Link link = ((OELink) node).getLink();
-				if (link != null) {
-					String html = "<html>\n" + "<body>\n";
-
-					html += ExplanationUtil.getDescriptionReasoned(canvas
-							.getReasoner(), canvas.getLinkProviderDatabase(),
-							link, false);
-					html += "</body></html>";
-					// PiccoloUtil.setHTML(text,
-					// HTMLUtil.removeHyperlinks(html));
-					text.setWidth(canvas.getWidth() * .6);
-					text.setText(HTMLUtil.removeHyperlinks(html));
-					// text.recomputeLayout();
-					return text;
-				}
-			}
-			return null;
-		}
-
-	};
-
 	public OELink(Link link, TypeIconManager iconManager,
 			TypeColorManager colorManager, Shape s) {
 		this(link, iconManager, colorManager, DefaultNamedChildProvider
@@ -109,7 +78,6 @@ public class OELink extends PCNode {
 		setNamedChild(KEY_ARROWHEAD, arrowhead);
 		setNamedChild(KEY_ICON_PANEL, iconPanel);
 
-		addAttribute(TooltipFactory.KEY, linkTooltipFactory);
 	}
 
 	public PNode createArrowhead() {

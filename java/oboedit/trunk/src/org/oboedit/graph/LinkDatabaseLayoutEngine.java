@@ -32,8 +32,6 @@ public class LinkDatabaseLayoutEngine {
 
 	protected int initialNodeHeight = 40;
 
-	protected int initialNodeWidth = OENode.getInitialNodeWidth();
-
 	public LinkDatabaseLayoutEngine() {
 	}
 
@@ -62,13 +60,13 @@ public class LinkDatabaseLayoutEngine {
 	}
 
 	protected void initializeData(PNode oldLayer) {
-		ViewRenderedStyleText text = null;
+		// ViewRenderedStyleText text = null;
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (TermUtil.isProperty(io) || TermUtil.isObsolete(io)
 					|| !(io instanceof LinkedObject) || io.isBuiltIn())
 				continue;
 			graphLayout.addNode(io);
-			int width = getInitialNodeWidth();
+			int width = 0;
 			int height = getInitialNodeHeight();
 			for (NodeSizeProvider sizeProvider : sizeProviders) {
 				Dimension d = sizeProvider.getSize(io);
@@ -80,27 +78,25 @@ public class LinkDatabaseLayoutEngine {
 				}
 			}
 
-			PNode oldNode = provider.getNamedChild(io, oldLayer);
+			// PNode oldNode = provider.getNamedChild(io, oldLayer);
 
-			if (text == null)
-				text = new ViewRenderedStyleText();
+			// if (text == null)
+			// text = new ViewRenderedStyleText();
+			//
+			// text.setWidth(width);
+			// text.setText(OENode.getLabelAsHTML(io, getLabel(io)));
+			// height = (int) text.getHeight() + OENode.MARGIN;
+			// width = (int) text.getWidth() + OENode.MARGIN;
 
-			text.setWidth(width);
-			text.setText(OENode.getLabelAsHTML(io, getLabel(io)));
-			height = (int) text.getHeight() + OENode.MARGIN;
-			width = (int) text.getWidth() + OENode.MARGIN;
-			
-/*
-			if (oldNode instanceof OENode) {
-				int w = ((OENode) oldNode).getPreferredWidth();
-				int h = ((OENode) oldNode).getPreferredHeight();
-				if (w > width)
-					width = w;
-				if (h > height)
-					height = h;
-			}
-			*/
+			/*
+			 * if (oldNode instanceof OENode) { int w = ((OENode)
+			 * oldNode).getPreferredWidth(); int h = ((OENode)
+			 * oldNode).getPreferredHeight(); if (w > width) width = w; if (h >
+			 * height) height = h; }
+			 */
 			graphLayout.setNodeDimensions(io, width, height);
+			System.err.println(":: suggested size for " + io.getID()
+					+ " = width=" + width + ", height=" + height);
 		}
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io instanceof LinkedObject && !io.isBuiltIn()) {
@@ -172,13 +168,5 @@ public class LinkDatabaseLayoutEngine {
 
 	public void setInitialNodeHeight(int initialNodeHeight) {
 		this.initialNodeHeight = initialNodeHeight;
-	}
-
-	public int getInitialNodeWidth() {
-		return initialNodeWidth;
-	}
-
-	public void setInitialNodeWidth(int initialNodeWidth) {
-		this.initialNodeWidth = initialNodeWidth;
 	}
 }
