@@ -268,7 +268,6 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		addViewBehavior(new FocusPicker());
 		addViewBehavior(new QuickSearchBehavior());
 		addViewBehavior(new SelectionBehavior());
-		// addViewBehavior(new LinkoutMeterBehavior());
 		addViewBehavior(new LinkButtonBehavior());
 		addViewBehavior(new ZoomWidgetBehavior());
 		addViewBehavior(new TooltipBehavior());
