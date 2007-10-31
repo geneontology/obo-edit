@@ -26,16 +26,16 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	public CollapsibleLinkDatabase(LinkDatabase linkDatabase) {
 		setLinkDatabase(linkDatabase);
 	}
-	
+
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
 		defaultVisibleObjects.addAll(TermUtil.getRoots(linkDatabase));
-		recache();		
+		recache();
 	}
-	
+
 	public void cleanupCache() {
 		Iterator<IdentifiedObject> it = visibleObjects.iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			IdentifiedObject io = it.next();
 			if (!linkDatabase.getObjects().contains(io))
 				it.remove();
@@ -54,7 +54,8 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 		return linkDatabase;
 	}
 
-	public void setDefaultVisibleObjects(Collection<? extends IdentifiedObject> c) {
+	public void setDefaultVisibleObjects(
+			Collection<? extends IdentifiedObject> c) {
 		defaultVisibleObjects = new LinkedList<IdentifiedObject>(c);
 	}
 
@@ -198,17 +199,20 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 		fireExpansionStateChanged();
 	}
 
-	public void setVisibleObjects(Collection<? extends IdentifiedObject> objects,
-			boolean setDefault) {
+	public void setVisibleObjects(
+			Collection<? extends IdentifiedObject> objects, boolean setDefault) {
 		if (setDefault) {
 			setDefaultVisibleObjects(objects);
 			recache();
+			fireExpansionStateChanged();
 		} else {
-			setDefaultVisibleObjects(Collections.EMPTY_SET);
-			recache();
-			visibleObjects.addAll(objects);
+			if (!objects.equals(visibleObjects)) {
+				setDefaultVisibleObjects(Collections.EMPTY_SET);
+				recache();
+				visibleObjects.addAll(objects);
+				fireExpansionStateChanged();
+			}
 		}
-		fireExpansionStateChanged();
 
 	}
 

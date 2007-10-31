@@ -13,13 +13,20 @@ public class DefaultNodeFactory implements NodeFactory {
 	protected TypeIconManager iconManager;
 	protected TypeColorManager colorManager;
 	protected LinkDatabaseCanvas canvas;
+	
+	public DefaultNodeFactory() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public PNode createNode(Object lo, Shape s) {
 		if (lo instanceof LinkedObject) {
-			OENode node = new OENode((LinkedObject) lo, canvas, s); 
+			OENode node = new OENode((LinkedObject) lo, canvas, s);
 			return node;
-		} else if (lo instanceof Link)
-			return new OELink((Link) lo, iconManager, colorManager, s);
+		} else if (lo instanceof Link) {
+			OELink node = new OELink((Link) lo, iconManager, colorManager, s);
+			node.setTooltipFactory(new LinkTooltipFactory());
+			return node;
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}

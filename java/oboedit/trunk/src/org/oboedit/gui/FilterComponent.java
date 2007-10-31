@@ -4,19 +4,28 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.ExceptionListener;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.bbop.framework.GUIManager;
+import org.bbop.io.IOUtil;
 import org.obo.filters.Filter;
 import org.obo.filters.PathCapableFilter;
-import org.obo.filters.RenderSpec;
-import org.obo.filters.SpecEditor;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -24,6 +33,9 @@ import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
+import org.oboedit.gui.filter.RenderSpec;
+import org.oboedit.gui.filter.RenderedFilter;
+import org.oboedit.gui.filter.SpecEditor;
 
 public class FilterComponent extends JPanel {
 
@@ -90,6 +102,11 @@ public class FilterComponent extends JPanel {
 		contentPanel.setFilter(filter);
 	}
 
+	public void clear() {
+		contentPanel.clear();
+		setRenderSpec(null);
+	}
+
 	public void setRenderSpec(RenderSpec spec) {
 		if (showRendererControls)
 			factory.setRenderSpec(rendererEditor, spec);
@@ -100,6 +117,15 @@ public class FilterComponent extends JPanel {
 			return factory.getRenderSpec(rendererEditor);
 		else
 			return null;
+	}
+	
+	public RenderedFilter getRenderedFilter() {
+		return new RenderedFilter(getFilter(), getRenderSpec());
+	}
+	
+	public void setRenderedFilter(RenderedFilter rf) {
+		setFilter(rf.getFilter());
+		setRenderSpec(rf.getSpec());
 	}
 
 	protected void installListeners() {
@@ -132,6 +158,56 @@ public class FilterComponent extends JPanel {
 	public void setButtonVisible(boolean visible) {
 		searchButton.setVisible(visible);
 		validate();
+	}
+
+	public void save() {
+		JFileChooser chooser = new JFileChooser();
+		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
+				.getFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			try {
+				XMLEncoder e = new XMLEncoder(new BufferedOutputStream(
+						new FileOutputStream(file)));
+				e.writeObject(getFilter());
+				if (showRendererControls) {
+					e.writeObject(getRenderSpec());
+				}
+				e.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public void load() {
+		JFileChooser chooser = new JFileChooser();
+		int returnVal = chooser.showOpenDialog(GUIManager.getManager()
+				.getFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			Filter result = null;
+			RenderSpec renderSpec = null;
+			try {
+				XMLDecoder d = new XMLDecoder(new BufferedInputStream(IOUtil
+						.getStream(file.getAbsolutePath())));
+				d.setExceptionListener(new ExceptionListener() {
+					public void exceptionThrown(Exception ex) {
+						ex.printStackTrace();
+					}
+				});
+				result = (Filter) d.readObject();
+				if (showRendererControls) {
+					renderSpec = (RenderSpec) d.readObject();
+				}
+				d.close();
+			} catch (IOException ex) {
+			}
+			if (result != null)
+				setFilter(result);
+			if (renderSpec != null)
+				setRenderSpec(renderSpec);
+		}
 	}
 
 	protected void initGUI() {
@@ -176,7 +252,7 @@ public class FilterComponent extends JPanel {
 
 		newButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				contentPanel.clear();
+				clear();
 			}
 		});
 

@@ -87,6 +87,8 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 			OBOProperty prop, LinkedObject lo) {
 		if (getImmediateFile(lo.getID()) != null)
 			return lo;
+		if (reasoner == null)
+			return null;
 		List<LinkedObject> superparts = new ArrayList<LinkedObject>(reasoner
 				.getParentsOfType(lo, prop));
 		List<LinkedObject> temp = new LinkedList<LinkedObject>();

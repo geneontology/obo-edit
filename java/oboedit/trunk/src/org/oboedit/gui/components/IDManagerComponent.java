@@ -14,8 +14,6 @@ import org.obo.util.IDUtil;
 import org.oboedit.controller.IDManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
-import org.oboedit.gui.widget.FilterBuilder;
-import org.oboedit.gui.widget.FilterPairEditor;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -237,8 +235,8 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		currentProfile = profile;
 
 		if (IDManager.getManager().getIDAdapter() instanceof DefaultIDGenerator) {
-			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager.getManager()
-					.getIDAdapter();
+			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager
+					.getManager().getIDAdapter();
 			idGen.setProfile(profile);
 		}
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
@@ -254,8 +252,8 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		profiles = IDManager.loadIDProfiles();
 
 		if (IDManager.getManager().getIDAdapter() instanceof DefaultIDGenerator) {
-			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager.getManager()
-					.getIDAdapter();
+			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager
+					.getManager().getIDAdapter();
 			currentProfile = idGen.getProfile();
 		}
 	}
@@ -267,8 +265,8 @@ public class IDManagerComponent extends AbstractGUIComponent {
 
 		IDProfile currentProfile = null;
 		if (IDManager.getManager().getIDAdapter() instanceof DefaultIDGenerator) {
-			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager.getManager()
-					.getIDAdapter();
+			DefaultIDGenerator idGen = (DefaultIDGenerator) IDManager
+					.getManager().getIDAdapter();
 			currentProfile = idGen.getProfile();
 		}
 
@@ -298,7 +296,8 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		 */
 		private static final long serialVersionUID = 1L;
 		protected JTextField ruleField = new JTextField();
-		protected FilterBuilder objectFilterEditor = new FilterBuilder();
+		protected FilterComponent objectFilterEditor = new FilterComponent(
+				new TermFilterEditorFactory());
 
 		protected ListEditor editor;
 
@@ -308,46 +307,6 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		}
 
 		public IDRuleEditor() {
-			JButton newButton = new JButton(Preferences
-					.loadLibraryIcon("file.gif"));
-			JButton loadButton = new JButton(Preferences
-					.loadLibraryIcon("folder.gif"));
-			JButton saveButton = new JButton(Preferences
-					.loadLibraryIcon("floppy.gif"));
-			newButton.setPreferredSize(new Dimension(20, 20));
-			loadButton.setPreferredSize(new Dimension(20, 20));
-			saveButton.setPreferredSize(new Dimension(20, 20));
-
-			newButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					objectFilterEditor.setFilter(new CompoundFilterImpl());
-				}
-			});
-			loadButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					FilterPair pair = FilterPairEditor.loadFilterPair();
-					if (pair != null) {
-						objectFilterEditor
-								.setFilter((pair.getObjectFilter() == null ? new ObjectFilterImpl()
-										: pair.getObjectFilter()));
-					}
-				}
-			});
-			saveButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					FilterPair pair = new FilterPairImpl();
-					pair.setObjectFilter(objectFilterEditor.getFilter());
-					FilterPairEditor.save(pair);
-				}
-			});
-			Box buttonBox = new Box(BoxLayout.Y_AXIS);
-			buttonBox.add(newButton);
-			buttonBox.add(loadButton);
-			buttonBox.add(saveButton);
-			buttonBox.add(Box.createVerticalGlue());
-
-			objectFilterEditor.setFilterFactory(new ObjectFilterFactory());
-			objectFilterEditor.setShowCompoundFilter(true);
 
 			JLabel filterLabel = new JLabel("Parent match filter:");
 
@@ -355,7 +314,6 @@ public class IDManagerComponent extends AbstractGUIComponent {
 			filterPanel.setLayout(new BorderLayout());
 			filterPanel.add(filterLabel, "North");
 			filterPanel.add(objectFilterEditor, "Center");
-			filterPanel.add(buttonBox, "East");
 
 			JLabel ruleLabel = new JLabel("ID Rule");
 

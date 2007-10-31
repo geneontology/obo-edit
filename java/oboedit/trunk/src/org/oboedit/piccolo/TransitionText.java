@@ -63,8 +63,8 @@ public class TransitionText extends ViewRenderedStyleText implements Morphable {
 				// recomputeLayout();
 				addChild(dummyOld);
 				addChild(dummyNew);
-				PiccoloUtil.centerInParent(dummyOld, true, true);
-				PiccoloUtil.centerInParent(dummyNew, true, true);
+				//PiccoloUtil.centerInParent(dummyOld, true, true);
+				// PiccoloUtil.centerInParent(dummyNew, true, true);
 			}
 
 			@Override

@@ -52,6 +52,10 @@ public class PCNode extends PPath {
 	public double getHeight() {
 		return getPathDelegate().getHeight();
 	}
+	
+	public void setTooltipFactory(TooltipFactory factory) {
+		addAttribute(TooltipFactory.KEY, factory);
+	}
 
 	public PPath getPathDelegate() {
 		return (PPath) getNamedChild(PATH_NODE);

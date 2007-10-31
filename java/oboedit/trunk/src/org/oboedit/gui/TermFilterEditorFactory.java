@@ -10,9 +10,9 @@ import javax.swing.JComponent;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
-import org.obo.filters.RenderSpec;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.gui.event.GUIUpdateListener;
+import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
 public class TermFilterEditorFactory implements SearchComponentFactory<IdentifiedObject> {

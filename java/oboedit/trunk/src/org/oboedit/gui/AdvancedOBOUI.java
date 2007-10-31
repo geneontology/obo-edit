@@ -17,9 +17,6 @@ import org.obo.datamodel.*;
 import org.obo.filters.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-import org.oboedit.gui.widget.FilterBuilder;
-import org.oboedit.gui.widget.FilterPairEditor;
 
 public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
@@ -93,9 +90,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	protected JLabel serializerLabel = new JLabel("Output type");
 
 	protected JComboBox serializerBox = new JComboBox();
-	
+
 	protected GraphicalUI advancedUI;
-	
+
 	public void setUIConfiguration(UIConfiguration uiconfig) {
 	}
 
@@ -166,9 +163,12 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JPanel panel = new JPanel();
 
-		protected FilterBuilder objectFilterEditor = new FilterBuilder();
+		protected FilterComponent objectFilterEditor = 
+			new FilterComponent(
+				new TermFilterEditorFactory());
 
-		protected FilterBuilder linkFilterEditor = new FilterBuilder();
+		protected FilterComponent linkFilterEditor = new FilterComponent(
+				new LinkFilterEditorFactory());
 
 		protected JTextField pathField = new JTextField();
 
@@ -229,20 +229,15 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			rootAlgorithmChooser.addItem("STRICT");
 
 			currentHistory = SessionManager.getManager().getSession();
-			Iterator it = TermUtil.getRelationshipTypes(currentHistory).iterator();
+			Iterator it = TermUtil.getRelationshipTypes(currentHistory)
+					.iterator();
 			while (it.hasNext()) {
 				OBOProperty property = (OBOProperty) it.next();
 				prefilterTypeChooser.addItem(property);
 			}
 
-			objectFilterEditor.setFilterFactory(new ObjectFilterFactory());
-			linkFilterEditor.setFilterFactory(new LinkFilterFactory());
-
 			objectFilterEditor.setPreferredSize(null);
 			linkFilterEditor.setPreferredSize(null);
-
-			objectFilterEditor.setShowCompoundFilter(true);
-			linkFilterEditor.setShowCompoundFilter(true);
 
 			objectFilterEditor.setOpaque(false);
 			linkFilterEditor.setOpaque(false);
@@ -256,58 +251,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			saveImpliedBox.setOpaque(false);
 			realizeImpliedBox.setOpaque(false);
 
-			JButton newButton = new JButton(Preferences
-					.loadLibraryIcon("file.gif"));
-			JButton loadButton = new JButton(Preferences
-					.loadLibraryIcon("folder.gif"));
-			JButton saveButton = new JButton(Preferences
-					.loadLibraryIcon("floppy.gif"));
-			newButton.setPreferredSize(new Dimension(20, 20));
-			loadButton.setPreferredSize(new Dimension(20, 20));
-			saveButton.setPreferredSize(new Dimension(20, 20));
-
-			newButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					objectFilterEditor.setFilter(new CompoundFilterImpl());
-					linkFilterEditor.setFilter(new CompoundFilterImpl());
-					rebuildPanel();
-				}
-			});
-			loadButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					FilterPair pair = FilterPairEditor.loadFilterPair();
-					if (pair != null) {
-						objectFilterEditor
-								.setFilter((pair.getObjectFilter() == null ? new ObjectFilterImpl()
-										: pair.getObjectFilter()));
-						linkFilterEditor
-								.setFilter((pair.getObjectFilter() == null ? new ObjectFilterImpl()
-										: pair.getObjectFilter()));
-						filterBox.setSelected(pair.getObjectFilter() != null);
-						linkFilterEditor
-								.setEnabled(pair.getLinkFilter() != null);
-						rebuildPanel();
-					}
-				}
-			});
-			saveButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					FilterPair pair = new FilterPairImpl();
-					objectFilterEditor.acceptEdits();
-					linkFilterEditor.acceptEdits();
-					if (filterBox.isSelected())
-						pair.setObjectFilter(objectFilterEditor.getFilter());
-					if (linkFilterBox.isSelected())
-						pair.setLinkFilter(linkFilterEditor.getFilter());
-					FilterPairEditor.save(pair);
-				}
-			});
-
 			TitledBorder linkBorder = new TitledBorder("Link filtering");
 			TitledBorder objectBorder = new TitledBorder("Object filtering");
 			TitledBorder remarkBorder = new TitledBorder("OBO File Remark");
-
-
 
 			objectFilterEditor.setBorder(objectBorder);
 			linkFilterEditor.setBorder(linkBorder);
@@ -371,10 +317,6 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA.add(linkFilterBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(allowDanglingBox);
-			checkboxPanelA.add(Box.createHorizontalStrut(10));
-			checkboxPanelA.add(newButton);
-			checkboxPanelA.add(loadButton);
-			checkboxPanelA.add(saveButton);
 
 			checkboxPanelA2.add(prefilterBox);
 			checkboxPanelA2.add(prefilterTypeChooser);
@@ -469,7 +411,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		public Object createNewValue() {
 			OBOSerializationEngine.FilteredPath path = new OBOSerializationEngine.FilteredPath(
-					new FilterPairImpl(), "<new save path>");
+					null, null, "<new save path>");
 			path.setRemark(SessionManager.getManager().getSession()
 					.getCurrentHistory().getComment());
 			return path;
@@ -481,9 +423,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			OBOSerializationEngine.FilteredPath profile = (OBOSerializationEngine.FilteredPath) o;
 			pathField.setText(profile.getPath());
 			remarkField.setText(profile.getRemark());
-			objectFilterEditor.setFilter(profile.getFilterPair()
-					.getObjectFilter());
-			linkFilterEditor.setFilter(profile.getFilterPair().getLinkFilter());
+			objectFilterEditor.setFilter(profile.getObjectFilter());
+			linkFilterEditor.setFilter(profile.getLinkFilter());
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
@@ -492,8 +433,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 			prefilterBox.setSelected(profile.getPrefilterProperty() != null);
 			if (profile.getPrefilterProperty() != null) {
-				OBOProperty property = (OBOProperty) SessionManager.getManager()
-						.getSession().getObject(profile.getPrefilterProperty());
+				OBOProperty property = (OBOProperty) SessionManager
+						.getManager().getSession().getObject(
+								profile.getPrefilterProperty());
 				prefilterTypeChooser.setSelectedItem(property);
 			}
 			rootAlgorithmChooser.setSelectedItem(profile.getRootAlgorithm());
@@ -542,15 +484,11 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 					&& categoryBox.isSelected());
 			profile.setRootAlgorithm((String) rootAlgorithmChooser
 					.getSelectedItem());
-			objectFilterEditor.acceptEdits();
-			linkFilterEditor.acceptEdits();
 
 			if (filterBox.isSelected())
-				profile.getFilterPair().setObjectFilter(
-						objectFilterEditor.getFilter());
+				profile.setObjectFilter(objectFilterEditor.getFilter());
 			if (linkFilterBox.isSelected())
-				profile.getFilterPair().setLinkFilter(
-						linkFilterEditor.getFilter());
+				profile.setLinkFilter(linkFilterEditor.getFilter());
 		}
 	}
 

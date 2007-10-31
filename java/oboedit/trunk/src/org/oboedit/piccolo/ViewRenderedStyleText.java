@@ -1,13 +1,19 @@
 package org.oboedit.piccolo;
 
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.StringReader;
 
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.BoxView;
 import javax.swing.text.ComponentView;
@@ -27,6 +33,8 @@ import javax.swing.text.html.ListView;
 import javax.swing.text.html.ParagraphView;
 
 import org.bbop.swing.RootView;
+
+import com.sun.java.swing.SwingUtilities2;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.util.PPaintContext;
@@ -59,7 +67,9 @@ public class ViewRenderedStyleText extends PNode {
 			this.viewFactory = viewFactory;
 		document = editorKit.createDefaultDocument();
 		((AbstractDocument) document).setAsynchronousLoadPriority(-1);
-		rootView = new RootView(new JTextField(), editorKit);
+		JTextField field = new JTextField();
+		field.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY, Boolean.TRUE);
+		rootView = new RootView(field, editorKit);
 	}
 
 	public EditorKit getEditorKit() {
@@ -98,110 +108,9 @@ public class ViewRenderedStyleText extends PNode {
 
 	protected Rectangle rect = new Rectangle();
 
-	protected static void layoutMinorAxis(View view, int targetSpan, int axis,
-			int[] offsets, int[] spans) {
-		int n = view.getViewCount();
-		for (int i = 0; i < n; i++) {
-			View v = view.getView(i);
-			int max = (int) v.getMaximumSpan(axis);
-			if (max < targetSpan) {
-				// can't make the child this wide, align it
-				float align = v.getAlignment(axis);
-				offsets[i] = (int) ((targetSpan - max) * align);
-				spans[i] = max;
-			} else {
-				// make it the target width, or as small as it can get.
-				int min = (int) v.getMinimumSpan(axis);
-				offsets[i] = 0;
-				spans[i] = Math.max(min, targetSpan);
-			}
-		}
-	}
-
-	public static int getMinorAxisSize(View view, int targetSize, int axis) {
-		int[] offsets = new int[view.getViewCount()];
-		int[] spans = new int[view.getViewCount()];
-		layoutMinorAxis(view, targetSize, axis, offsets, spans);
-		int out = 0;
-		for (int i : spans)
-			if (i > out)
-				out = i;
-		return out;
-	}
-
-	protected static int getMajorAxisSize(View view, int targetSize, int axis) {
-		int[] offsets = new int[view.getViewCount()];
-		int[] spans = new int[view.getViewCount()];
-		layoutMajorAxis(view, targetSize, axis, offsets, spans);
-		int out = 0;
-		for (int i : spans)
-			out += i;
-		return out;
-	}
-
-	protected static void layoutMajorAxis(View view, int targetSpan, int axis,
-			int[] offsets, int[] spans) {
-		/*
-		 * first pass, calculate the preferred sizes and the flexibility to
-		 * adjust the sizes.
-		 */
-		long preferred = 0;
-		int n = view.getViewCount();
-		for (int i = 0; i < n; i++) {
-			View v = view.getView(i);
-			spans[i] = (int) v.getPreferredSpan(axis);
-			preferred += spans[i];
-		}
-
-		/*
-		 * Second pass, expand or contract by as much as possible to reach the
-		 * target span.
-		 */
-
-		// determine the adjustment to be made
-		long desiredAdjustment = targetSpan - preferred;
-		float adjustmentFactor = 0.0f;
-		int[] diffs = null;
-
-		if (desiredAdjustment != 0) {
-			long totalSpan = 0;
-			diffs = new int[n];
-			for (int i = 0; i < n; i++) {
-				View v = view.getView(i);
-				int tmp;
-				if (desiredAdjustment < 0) {
-					tmp = (int) v.getMinimumSpan(axis);
-					diffs[i] = spans[i] - tmp;
-				} else {
-					tmp = (int) v.getMaximumSpan(axis);
-					diffs[i] = tmp - spans[i];
-				}
-				totalSpan += tmp;
-			}
-
-			float maximumAdjustment = Math.abs(totalSpan - preferred);
-			adjustmentFactor = desiredAdjustment / maximumAdjustment;
-			adjustmentFactor = Math.min(adjustmentFactor, 1.0f);
-			adjustmentFactor = Math.max(adjustmentFactor, -1.0f);
-		}
-
-		// make the adjustments
-		int totalOffset = 0;
-		for (int i = 0; i < n; i++) {
-			offsets[i] = totalOffset;
-			if (desiredAdjustment != 0) {
-				float adjF = adjustmentFactor * diffs[i];
-				spans[i] += Math.round(adjF);
-			}
-			totalOffset = (int) Math.min((long) totalOffset + (long) spans[i],
-					Integer.MAX_VALUE);
-		}
-	}
-
 	protected void updateBounds() {
 
 		if (useFixedWidth && view instanceof BoxView) {
-
 			view.setSize((float) getWidth(), (float) getHeight());
 			float startHeight = view.getPreferredSpan(View.Y_AXIS);
 
@@ -219,7 +128,7 @@ public class ViewRenderedStyleText extends PNode {
 				}
 			}
 
-			view.setSize(maxWidth + 10, startHeight);
+			view.setSize(maxWidth, startHeight);
 			/*
 			 * view .setSize((float) getWidth(), view
 			 * .getPreferredSpan(View.Y_AXIS));
