@@ -107,7 +107,7 @@ sub install_all {
 	$k = 'GO_CGI_URL';
 	print "\n\n";
 	print "Please enter the URL that the AmiGO cgi directory\n";
-	print "($conf{GO_CGI_ROOT}/amigo)\n";
+	print "($conf{GO_CGI_ROOT})\n";
 	printf "maps to, e.g. http://myserver/cgi-bin/amigo [%s]\n", $conf{$k};
 	&get_ans($k);
 
@@ -270,7 +270,7 @@ sub install_all {
 	`perl ./scripts/make_spec_key.pl $conf{GO_CGI_ROOT} 50`;
 	printf "Make cache file for other items, please wait...\n";
 	`perl ./scripts/make_misc_key.pl $conf{GO_CGI_ROOT}`;
-	my $amigo_url = $conf{GO_CGI_URL} . "/amigo/search.cgi";
+	my $amigo_url = $conf{GO_CGI_URL} . "/search.cgi";
 
 #	$k = 'INSTALL_GO_DEV';
 #	printf "Would you like to install go-dev documentation? [%s]\n", $conf{$k} || 'n';
