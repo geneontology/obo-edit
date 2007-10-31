@@ -64,7 +64,7 @@ sub new {
 		#	check the session ID is OK before we do anything else
 		if ($self->is_valid_session_id($ses_id))
 		{	$self->id($ses_id);
-			$self->__load_session($ses_id);
+			$self->__load_session($ses_id) unless $temp;
 		}
 		else
 		{	#	invalid session ID. Delete it!
@@ -128,7 +128,7 @@ sub apph {
 
 		# DBPASS and DBAUTH both work.
 		my $dbpass = $self->get_default_param("dbpass");
-		my $dbauth = $self->get_default_param("dbauth");
+#		my $dbauth = $self->get_default_param("dbauth");
 
 		my $dbsocket = $self->get_default_param("dbsocket");
 		my $dbport = $self->get_default_param("dbport");
@@ -139,7 +139,7 @@ sub apph {
 		if (defined ($dbuser)) { $params{-dbuser} = $dbuser; }
 		# DBPASS and DBAUTH both work.
 		if (defined ($dbpass)) { $params{-dbauth} = $dbpass; }
-		if (defined ($dbauth)) { $params{-dbauth} = $dbauth; }
+#		if (defined ($dbauth)) { $params{-dbauth} = $dbauth; }
 	
 		if (defined ($dbsocket)) { $params{-dbsocket} = $dbsocket; }
 		if (defined ($dbport)) { $params{-dbport} = $dbport; }

@@ -1,6 +1,7 @@
 <div id="header">
 	<a class="logo floatR" href="search.cgi?session_id=[% session_id %]"><img src="[% image_dir %]/logo-sm.png" alt="AmiGO logo" title="AmiGO front page"></a> <h1 id="top"><a href="http://www.geneontology.org/" title="Gene Ontology website">the Gene Ontology</a></h1> 
 </div>
+[% UNLESS page_name == 'goose' %]
 <div id="searchbar">
 	<ul id="menuToggle">
 		[% IF page_name == 'advanced_query' %] 
@@ -50,3 +51,4 @@
 	</div>
 	[% END %] 
 </div>
+[% END %] 
