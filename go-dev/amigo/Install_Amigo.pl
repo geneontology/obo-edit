@@ -100,7 +100,9 @@ sub install_all {
 	&get_ans($k);
 
 	my $cgiroot = $conf{$k};
-	unless (-e $cgiroot) {
+	if (-e $cgiroot) {
+		`rm -rf $cgiroot/*`;
+	} else {
 		mkdir $cgiroot or grace_exit('mkdir $cgiroot', $!);
 	}
 
@@ -133,7 +135,9 @@ sub install_all {
 	&get_ans($k);
 
 	my $amigo_docroot = $conf{DOC_ROOT_DIR}."/".$amigo;
-	unless (-e $amigo_docroot) {
+	if (-e $amigo_docroot) {
+		`rm -rf $amigo_docroot/*`;
+	} else {
 		mkdir $amigo_docroot or grace_exit("mkdir $amigo_docroot", $!);
 	}
 
@@ -265,6 +269,8 @@ sub install_all {
 	}
 
 	&write_amigo_config;
+
+	print STDERR "GO_CGI_ROOT: $conf{GO_CGI_ROOT}\n";
 
 	printf "Make species cache file, please wait...\n";
 	`perl ./scripts/make_spec_key.pl $conf{GO_CGI_ROOT} 50`;
