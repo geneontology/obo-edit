@@ -55,9 +55,8 @@
 
   </head>
   <body>
-    
-    [% current = "slimmer" %]
-    [% INCLUDE amigo_common_header.tmpl %]
+[% page_name = "slimmer";
+	INCLUDE header.tmpl %]
 
     <div class="contents">
       
@@ -399,7 +398,7 @@
       
     </div>
     
-    [% INCLUDE amigo_common_footer.tmpl %]
-    
-  </body>
+	<hr class="clearboth">
+[% INCLUDE footer.tmpl %]
+	</body>
 </html>

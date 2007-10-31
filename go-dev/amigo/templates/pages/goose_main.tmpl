@@ -19,8 +19,8 @@
   </head>
   <body onload="if( 1 ) pulldownForGoose();">
 
-    [% current = "" %]
-    [% INCLUDE amigo_common_header_lite.tmpl %]
+[% page_name = 'goose';
+	INCLUDE header.tmpl %]
 
     <div class="contents">
       
@@ -148,7 +148,7 @@
 	    </fieldset>
 
 	    <hr class="clearL">
-	    <input type="submit" class="button" value="Query!" />
+	    <input type="submit" class="button" value="Query!">
 	      
 	  </div>
 
@@ -158,9 +158,8 @@
 	[%   MAIN_RESULTS %]
 	[%END%]
 	
-    </div>
-    
-    [% INCLUDE amigo_common_footer.tmpl %]
-    
-  </body>
+	</div>
+	<hr class="clearboth">
+[% INCLUDE footer.tmpl %]
+	</body>
 </html>

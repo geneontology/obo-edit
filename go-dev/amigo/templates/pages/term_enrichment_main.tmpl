@@ -56,10 +56,8 @@
 
   </head>
   <body>
-
-    [% current = "term_enrichment" %]
-    [% INCLUDE amigo_common_header.tmpl %]
-
+[% page_name = "term_enrichment";
+	INCLUDE header.tmpl %]
     <div class="contents">
       
       <h1>GO Term Enrichment</h1>
@@ -132,12 +130,12 @@
 		<option value="ga">gene association file</option>
 		<option value="list">list containing gene products</option>
 	      </select>
-	    </label>:<br />
+	    </label>:<br>
 	    <input type="file"
 		   name="gp_file"
 		   id="gp_file"
 		   title="Upload a gene product file to use as input"
-		   class="button" />
+		   class="button">
 	  </p>
 
 	  <h3 class="first">
@@ -169,12 +167,12 @@
 		<option value="ga">gene association file</option>
 		<option value="list">list containing gene products</option>
 	      </select>
-	    </label>:<br />
+	    </label>:<br>
 	    <input type="file"
 		   name="bggp_file"
 		   id="bggp_file"
 		   title="Upload a gene product file to use as input"
-		   class="button" /> (will increase query time)
+		   class="button"> (will increase query time)
 	  </p>
 
 
@@ -218,7 +216,7 @@
 	    <em>AND</em>
 	    <label for="speciesdb">
 	      select the database filter
-	    </label>:<br />
+	    </label>:<br>
 	    [% title = "" %]
 	    [% form_name = "speciesdb" %]
 	    [% multiple = "true" %]
@@ -279,7 +277,7 @@
 		 style="background-color: #f8f8ff; border: thin solid;"
 		 type="text"
 		 name="cutoff"
-		 value="[% ECHO_CUTOFF %]" />
+		 value="[% ECHO_CUTOFF %]">
 	    </fieldset>
 
 	    <fieldset class="block">
@@ -289,7 +287,7 @@
 	      <input type="text"
 		     style="background-color: #f8f8ff; border: thin solid;"
 		     name="min_gps"
-		     value="[% ECHO_MIN_GPS %]" />
+		     value="[% ECHO_MIN_GPS %]">
 	    </fieldset>
 
 	  </div>
@@ -355,14 +353,14 @@
 		   id="html"
 		   checked >
 	    <em>html</em> page (with the option to transfer results to the
-	    <a href="slimmer">GO Slimmer</a> in html-mode) <br />
+	    <a href="slimmer">GO Slimmer</a> in html-mode) <br>
 	    <input class="radio"
 		   type="radio"
 		   name="format"
 		   value="tab"
 		   id="tab">
 	    <em>tab-delimited</em> file
-	    <br />
+	    <br>
 	    <input class="radio"
 		   type="radio"
 		   name="format"
@@ -373,8 +371,8 @@
 	  </div>
 
 	  <div>
-	    <input type="submit" class="button" />
-	    <br />
+	    <input type="submit" class="button">
+	    <br>
 	    <span class="button">
 	      <a class="clear-link" href="">Clear Query</a>
 	    </span>
@@ -384,8 +382,6 @@
 	
 	</div>
     </div>
-    
-    [% INCLUDE amigo_common_footer.tmpl %]
-    
-  </body>
+[% INCLUDE footer.tmpl %]
+	</body>
 </html>

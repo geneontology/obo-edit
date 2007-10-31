@@ -20,8 +20,7 @@
 
   <body onload="Initialize()" onunload="">
 
-    [% current = "" %]
-    [% INCLUDE amigo_common_header.tmpl %]
+[% INCLUDE header.tmpl %]
 
     <div class="contents">
 
@@ -434,8 +433,7 @@
     </div>
 
     <div id="obo_file"></div>
-
-    [% INCLUDE amigo_common_footer.tmpl %]
-      
-  </body>
+	<hr class="clearboth">
+[% INCLUDE footer.tmpl %]
+	</body>
 </html>
