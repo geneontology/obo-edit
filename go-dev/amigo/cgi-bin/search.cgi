@@ -19,7 +19,7 @@ BEGIN {
 
 use lib "$ENV{GO_ROOT}/go-perl";
 use lib "$ENV{GO_ROOT}/go-db-perl";
-use lib "$ENV{GO_ROOT}/new-amigo/perl";
+use lib "$ENV{GO_ROOT}/amigo/perl";
 
 use strict;
 use FileHandle;
