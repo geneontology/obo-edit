@@ -22,18 +22,18 @@
 		</li>
 		[% END %] 
 
-	[% IF current == "slimmer" %]
+	[% IF page_name == "slimmer" %]
 	<li class="here">Slimmer</li>
 	[% ELSE %]
 		<li>
-			<a href="slimmer?session_id=[% session_id %]" title="Map your data to high level terms">GO Slimmer</a> 
+			<a href="slimmer" title="Map your data to high level terms">GO Slimmer</a> 
 		</li>
 	[% END %]
-	[% IF current == "term_enrichment" %]
+	[% IF page_name == "term_enrichment" %]
 	<li class="here">Term Enrichment</li>
 	[% ELSE %]
 		<li>
-			<a href="term_enrichment?session_id=[% session_id %]" title="Find ...">Term Enrichment</a> 
+			<a href="term_enrichment" title="Find ...">Term Enrichment</a> 
 		</li>
 	[% END %]
 
