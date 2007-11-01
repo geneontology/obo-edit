@@ -77,7 +77,8 @@ public class OBDSaveTest extends AbstractOBOTest {
 		testForLink("GO:0044464","part_of","GO:0005623");
 		testForNamespace("GO:0044464", "cellular_component");
 		testForDefinition("GO:0005623", "The basic structural and functional unit of all organisms. Includes the plasma membrane and any external encapsulating structures such as the cell wall and cell envelope.");
-		
+		testForCategory("GO:0043227","gosubset_prok");
+		testForDbxref("CARO:0000013","GO:0005623");
 	}
 	
 	public void testFileSave() throws DataAdapterException {

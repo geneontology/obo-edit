@@ -5,11 +5,15 @@ import java.util.Collection;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
@@ -70,6 +74,22 @@ public abstract class AbstractOBOTest extends TestCase {
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
+	}
+	public void testForCategory(String childID, String catName) {
+		CategorizedObject child = (CategorizedObject) session.getObject(childID);
+		TermCategory cat =session.getCategory(catName);
+		assertTrue(child.getCategories().contains(cat));
+	}
+	
+	public void testForDbxref(String childID, String xrefStr) {
+		DbxrefedObject child = (DbxrefedObject) session.getObject(childID);
+		boolean ok = false;
+		for (Dbxref x: child.getDbxrefs()) {
+			if (xrefStr.equals(x.toString())) {
+				ok = true;
+			}
+		}
+		assertTrue(ok);
 	}
 	
 	public void testForNamespace(String id, String nsId)  {
