@@ -1,9 +1,17 @@
 package org.obo.util;
 
+import java.beans.ExceptionListener;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.bbop.io.IOUtil;
 import org.obo.datamodel.OBOProperty;
 import org.obo.filters.BooleanCriterion;
 import org.obo.filters.CompoundFilter;
@@ -203,5 +211,29 @@ public class FilterUtil {
 				out.append(")");
 		}
 		return out.toString();
+	}
+
+	public static Filter loadFilter(String path) throws IOException {
+		XMLDecoder d = new XMLDecoder(new BufferedInputStream(IOUtil
+				.getStream(path)));
+		d.setExceptionListener(new ExceptionListener() {
+			public void exceptionThrown(Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+		Filter result = (Filter) d.readObject();
+		d.close();
+		return result;
+	}
+
+	public static void save(String filename, Filter filterPair) {
+		try {
+			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(
+					new FileOutputStream(filename)));
+			e.writeObject(filterPair);
+			e.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 }

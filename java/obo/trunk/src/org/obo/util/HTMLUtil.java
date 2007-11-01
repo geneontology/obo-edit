@@ -62,4 +62,17 @@ public class HTMLUtil {
 		return m.replaceAll("$1");
 	}
 
+	public static String escapeHTML(String s) {
+		StringBuffer out = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '<')
+				out.append("&lt;");
+			else if (s.charAt(i) == '>')
+				out.append("&gt;");
+			else
+				out.append(s.charAt(i));
+		}
+		return out.toString();
+	}
+
 }

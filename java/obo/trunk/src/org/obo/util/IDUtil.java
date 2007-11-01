@@ -67,7 +67,7 @@ public class IDUtil {
 	public static class Variable {
 		protected String s;
 
-		protected java.util.List params = new ArrayList();
+		protected java.util.List<String> params = new ArrayList<String>();
 
 		public Variable(String s) {
 			this.s = s;
@@ -81,7 +81,7 @@ public class IDUtil {
 			params.add(param);
 		}
 
-		public java.util.List getParams() {
+		public java.util.List<String> getParams() {
 			return params;
 		}
 
