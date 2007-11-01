@@ -2,11 +2,16 @@ package org.obo.test;
 
 import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.ReasonerFactory;
 
 public abstract class AbstractReasonerTest extends AbstractOBOTest {
 
 	protected ReasonedLinkDatabase reasonedDB;
+	
+	protected static ReasonerFactory reasonerFactory =
+		new ForwardChainingReasonerFactory();
 
 	protected AbstractReasonerTest(String name) {
 		super(name);
@@ -22,6 +27,14 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	
 	protected ReasonedLinkDatabase createReasoner() {
 		return new ForwardChainingReasoner();
+	}
+
+	public static ReasonerFactory getReasonerFactory() {
+		return reasonerFactory;
+	}
+
+	public static void setReasonerFactory(ReasonerFactory reasonerFactoryIn) {
+		reasonerFactory = reasonerFactoryIn;
 	}
 
 	public void testForIsA(String childID, String parentID)  {
