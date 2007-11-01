@@ -104,7 +104,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 
 			if (ioprofile.getBasicSave()) {
 				filteredPaths.add(new OBOSerializationEngine.FilteredPath(
-						null, ioprofile.getWritePath()));
+						null, null, ioprofile.getWritePath()));
 			} else {
 				System.err.println("gsr="+ioprofile.getSaveRecords());
 				filteredPaths.addAll(ioprofile.getSaveRecords());
