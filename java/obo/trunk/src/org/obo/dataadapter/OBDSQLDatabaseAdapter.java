@@ -10,6 +10,7 @@ import org.bbop.io.SafeFileOutputStream;
 import org.bbop.util.AbstractProgressValued;
 import org.bbop.util.StringUtil;
 import org.obo.annotation.datamodel.Annotation;
+import org.obo.dataadapter.OBOParser.XrefPair;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.DanglingObjectImpl;
@@ -308,18 +309,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		rs = stmt.executeQuery("select * FROM node_link_node_with_pred_and_source WHERE is_inferred='f'");
 		while (rs.next()) {
-			Link link = fetchLink(session, rs);
-			transformLink(session,link);
+			fetchLink(session, rs);
 		}
 		// TODO: subsets
 	}
 	
-	public void transformLink(OBOSession session, Link link) {
-		String pid = link.getType().getID();
-		if (pid.equals("oboMetaModel:inSubset")) {
-			
-		}
-	}
+
 
 	public IdentifiedObject fetchObject(OBOSession session, ResultSet rs) throws SQLException {
 		IdentifiedObject io;
@@ -359,7 +354,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return io;
 	}
 	
-	public Link fetchLink(OBOSession session, ResultSet rs) throws SQLException {
+	public void fetchLink(OBOSession session, ResultSet rs) throws SQLException {
 		Link link;
 		LinkedObject node = (LinkedObject) lookupObject(session, rs.getString("node_uid"));
 		OBOProperty pred = (OBOProperty) lookupObject(session, rs.getString("pred_uid"));
@@ -374,14 +369,66 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		System.err.println("read link: "+link);
 		link.setNamespace(source);
-		node.addParent(link);
-		return link;
+		addLink(session,link);
+	}
+	
+
+	// transforms from generic links to OBO metadata model
+	public void addLink(OBOSession session, Link link) {
+		String pid = link.getType().getID();
+		LinkedObject lo = link.getChild();
+		LinkedObject p = link.getParent();
+		
+		if (pid.equals("oboMetaModel:inSubset")) {
+			System.err.println("subset "+link+"//"+p);
+			TermUtil.castToClass(lo);
+			TermCategory category = session.getCategory(p.getID());
+			if (category == null) {
+				category = objectFactory.createCategory(p.getID(), "");
+				session.addCategory(category);
+			}
+			((OBOClass)lo).addCategory(category);
+		}
+		else if (pid.equals("oboMetaModel:xref")) {
+			TermUtil.castToClass(lo);
+			((OBOClass)lo).addDbxref(getDbxref(p.getID()));
+		}
+		else if (pid.equals("OBO_REL:instance_of") &&
+				p.getID().equals("subsetdef")) {
+			TermCategory cat = objectFactory.createCategory(lo.getID(), lo.getName());
+			session.addCategory(cat);
+			// TODO: remove this at the end; still required as object of subset links
+			// session.removeObject(lo);
+				
+		}
+		else {
+
+			lo.addParent(link);
+		}
+	}
+	
+	protected Dbxref getDbxref(String dbx) {
+		int index = dbx.indexOf(':');
+		String id;
+		String db;
+		if (index < 0) {
+			db = "";
+			id = dbx;
+		} else {
+			db = dbx.substring(0, index);
+			id = dbx.substring(index + 1, dbx.length());
+		}
+		Dbxref ref = objectFactory.createDbxref(db, id, "", Dbxref.RELATED_SYNONYM, null);
+		return ref;
 	}
 
 	public void storeAll(OBOSession session, LinkDatabase ldb) throws DataAdapterException {
 		try {
 			setProgressString("Saving to db...");
 	
+			for (TermCategory cat : session.getCategories()) {
+				saveCategory(cat);
+			}
 			for (IdentifiedObject io : session.getObjects()) {
 				if (io.isBuiltIn()) {
 					
@@ -492,6 +539,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return iid;
 	}
+	
+	protected int saveCategory(TermCategory cat) throws SQLException {
+		return
+		callSqlFunc("store_subset",
+					cat.getName(),
+					cat.getDesc());
+	
+	}
+
 
 	protected int saveLink(Link link) throws SQLException {
 			System.out.println("saving "+link);
