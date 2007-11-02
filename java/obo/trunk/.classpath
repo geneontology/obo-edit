@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BBOP"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/jpl.jar"/>
+	<classpathentry kind="lib" path="lib/pellet.jar" sourcepath="/Pellet"/>
+	<classpathentry kind="lib" path="lib/aterm-java-1.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
