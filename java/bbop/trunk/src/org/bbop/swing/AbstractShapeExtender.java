@@ -16,8 +16,8 @@ public abstract class AbstractShapeExtender implements ShapeExtender {
 		System.err.println("original source =  "+source.toString());
 		System.err.println("original target =  "+target.toString());
 		*/
-		int [] sourceIndices = source.getSubpathIndices();
-		int [] targetIndices = target.getSubpathIndices();
+		int [] sourceIndices = source.getSubpathIndices(false);
+		int [] targetIndices = target.getSubpathIndices(false);
 		
 		int i;
 		for(i=0; i < sourceIndices.length && i < targetIndices.length; i++) {
@@ -33,7 +33,28 @@ public abstract class AbstractShapeExtender implements ShapeExtender {
 			else
 				endTargetIndex = targetIndices[i+1]-1;
 			
-			addPoints(source, sourceIndices[i], endSourceIndex, target, targetIndices[i], endTargetIndex);			
+			// 
+		}
+		source.flushPendingOps();
+		target.flushPendingOps();
+		
+		sourceIndices = source.getSubpathIndices(true);
+		targetIndices = target.getSubpathIndices(true);
+		
+		for(i=0; i < sourceIndices.length && i < targetIndices.length; i++) {
+			int endSourceIndex;
+			if (i >= sourceIndices.length - 1)
+				endSourceIndex = source.size()-1;
+			else
+				endSourceIndex = sourceIndices[i+1]-1;
+			
+			int endTargetIndex;
+			if (i >= targetIndices.length - 1)
+				endTargetIndex = target.size()-1;
+			else
+				endTargetIndex = targetIndices[i+1]-1;
+			
+			addPoints(source, sourceIndices[i], endSourceIndex, target, targetIndices[i], endTargetIndex);
 		}
 		source.flushPendingOps();
 		target.flushPendingOps();

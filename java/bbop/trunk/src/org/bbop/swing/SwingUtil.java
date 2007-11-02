@@ -152,8 +152,8 @@ public class SwingUtil {
 			KeyStroke keyStroke, Action action) {
 		Object key = action.getValue(Action.NAME);
 		if (key == null)
-			throw new IllegalArgumentException("The provided action must " +
-					"have a name defined");
+			throw new IllegalArgumentException("The provided action must "
+					+ "have a name defined");
 		mapAction(c, condition, key, keyStroke, action);
 	}
 
@@ -627,5 +627,10 @@ public class SwingUtil {
 				.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		out.getGraphics().drawImage(image, 0, 0, null);
 		return toolkit.createCustomCursor(out, new Point(x, y), name);
+	}
+
+	public static Color mergeColors(Color a, Color b) {
+		return new Color((a.getRed() + b.getRed()) / 2, (a.getGreen() + b
+				.getGreen()) / 2, (a.getBlue() + b.getBlue()) / 2);
 	}
 }

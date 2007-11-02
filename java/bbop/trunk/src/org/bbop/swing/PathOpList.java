@@ -57,8 +57,8 @@ public class PathOpList {
 		return out;
 	}
 
-	public int[] getSubpathIndices() {
-		if (subpathIndices == null)
+	public int[] getSubpathIndices(boolean rebuild) {
+		if (subpathIndices == null || rebuild)
 			rebuildSubpathIndex();
 		return subpathIndices;
 	}
