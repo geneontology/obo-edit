@@ -7,6 +7,10 @@ import junit.framework.*;
 
 public class AllTests extends TestCase {
 
+	protected AllTests(String name) {
+		super(name);
+	}
+	
 	public static Test suite() {
 		TestSuite out = new TestSuite();
 

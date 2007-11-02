@@ -24,7 +24,7 @@ public abstract class AbstractOBOTest extends TestCase {
 	protected OBOSession session;
 	protected DefaultLinkDatabase linkDatabase;
 
-	protected AbstractOBOTest(String name) {
+	public AbstractOBOTest(String name) {
 		super(name);
 	}
 
