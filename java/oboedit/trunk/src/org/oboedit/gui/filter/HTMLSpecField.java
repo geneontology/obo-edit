@@ -31,4 +31,11 @@ public class HTMLSpecField implements GeneralRendererSpecField<String> {
 		return new HTMLSpecEditor();
 	}
 
+	public boolean isLinkRenderer() {
+		return false;
+	}
+
+	public boolean isObjectRenderer() {
+		return true;
+	}
 }

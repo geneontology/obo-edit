@@ -51,12 +51,12 @@ public class TransitionText extends ViewRenderedStyleText implements Morphable {
 			protected void activityStarted() {
 				super.activityStarted();
 				disablePaint = true;
-				setText(newText);
+				setText(newText, false);
 
 				dummyOld.setWidth(getWidth());
 				dummyNew.setWidth(getWidth());
-				dummyOld.setText(getText());
-				dummyNew.setText(newText);
+				dummyOld.setText(getText(), true);
+				dummyNew.setText(newText, true);
 
 				center = new Point2D.Double(getXOffset() + getWidth() / 2,
 						getYOffset() + getHeight() / 2);

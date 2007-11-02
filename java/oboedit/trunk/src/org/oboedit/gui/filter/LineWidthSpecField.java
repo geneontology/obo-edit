@@ -1,15 +1,15 @@
 package org.oboedit.gui.filter;
 
-public class FontSizeSpecField implements GeneralRendererSpecField<Integer> {
+public class LineWidthSpecField implements GeneralRendererSpecField<Integer> {
 
-	public static final FontSizeSpecField FIELD = new FontSizeSpecField();
+	public static final LineWidthSpecField FIELD = new LineWidthSpecField();
 
 	public String getID() {
-		return "font_size";
+		return "line_width";
 	}
 
 	public String getName() {
-		return "Font Size";
+		return "Line Width";
 	}
 
 	public Integer merge(Integer a, Integer b) {
@@ -17,23 +17,22 @@ public class FontSizeSpecField implements GeneralRendererSpecField<Integer> {
 	}
 
 	public int getHTMLType() {
-		return HTML;
+		return NON_HTML;
 	}
 
 	public void renderHTML(Integer value, StringBuffer in) {
-		in.insert(0, "<font size='" + value.intValue() + "'>");
-		in.append("</font>");
+		throw new UnsupportedOperationException();
 	}
 
 	public GeneralRendererSpecFieldEditor<Integer> getEditor() {
-		return new IntegerSpecEditor();
+		return new IntegerSpecEditor(1);
 	}
 
 	public boolean isLinkRenderer() {
-		return false;
+		return true;
 	}
 
 	public boolean isObjectRenderer() {
-		return true;
+		return false;
 	}
 }

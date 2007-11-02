@@ -1,7 +1,9 @@
 package org.oboedit.gui.components;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
@@ -10,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.HierarchyBoundsAdapter;
 import java.awt.event.HierarchyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -21,13 +24,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
+import org.bbop.swing.ScalingComponent;
 import org.bbop.swing.SwingUtil;
+import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -46,22 +53,11 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 
 	protected JLabel label = new JLabel();
 
-	protected JComponent comp = new JComponent() {
-		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-			Rectangle r = g.getClipBounds();
-			if (image != null) {
-				g.drawImage(image, r.x, r.y, null);
-			}
-		}
-	};
-
-	protected Timer timer;
+	protected JLabel imageLabel = new JLabel();
 
 	public static String getImmediateFile(String id) {
 		File f = new File(GUIManager.getManager().getPrefsDir(), "images/"
-				+ id.replace(':', '_') + ".jpg");
+				+ id.replace(":", "_") + ".jpg");
 		if (f.exists())
 			try {
 				return f.toURL().toString();
@@ -108,6 +104,10 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 		public void selectionChanged(SelectionEvent e) {
 			image = null;
 			LinkedObject lo = e.getSelection().getTermSubSelection();
+			if (lo == null) {
+				imageLabel.setText("");
+				return;
+			}
 			String s = getImmediateFile(lo.getID());
 			if (s == null) {
 				OBOProperty partof = (OBOProperty) SessionManager.getManager()
@@ -120,6 +120,9 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 						.getSelection().getTermSubSelection());
 				if (settleForMe != null)
 					s = getImmediateFile(settleForMe.getID());
+				else {
+
+				}
 				if (s == null) {
 					label.setText("No image found");
 				} else
@@ -131,69 +134,28 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 			}
 			if (s != null) {
 				imageLoc = s;
-				buildImage();
-			}
+				imageLabel.setText("<html><img src='" + s + "'></html>");
+			} else
+				imageLabel.setText("");
 			validate();
 			repaint();
 		}
 	};
-
-	protected class TimerActionListener implements ActionListener {
-		protected Timer timer;
-
-		protected MediaTracker tracker;
-
-		public TimerActionListener(MediaTracker tracker) {
-			this.tracker = tracker;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			if (tracker.checkAll())
-				timer.stop();
-			repaint();
-		}
-
-		public void setTimer(Timer timer) {
-			this.timer = timer;
-		}
-	}
-
-	protected void buildImage() {
-		if (timer != null) {
-			if (timer.isRunning())
-				timer.stop();
-			timer = null;
-		}
-		if (comp.getWidth() > 0 && comp.getHeight() > 0 && imageLoc != null) {
-			final MediaTracker tracker = new MediaTracker(comp);
-			image = Toolkit.getDefaultToolkit().getImage(imageLoc)
-					.getScaledInstance(comp.getWidth(), comp.getHeight(),
-							Image.SCALE_FAST);
-			tracker.addImage(image, 0);
-			TimerActionListener listener = new TimerActionListener(tracker);
-			final Timer newTimer = new Timer(200, listener);
-			listener.setTimer(newTimer);
-			timer = newTimer;
-			timer.start();
-		}
-	}
 
 	protected File directory;
 
 	public TermImageDisplayComponent(String id) {
 		super(id);
 		setLayout(new BorderLayout());
-		add(comp, "Center");
+		add(new ScalingComponent(imageLabel), "Center");
 		directory = new File(GUIManager.getManager().getPrefsDir(), "images");
-		addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
-			@Override
-			public void ancestorResized(HierarchyEvent arg0) {
-				buildImage();
-			}
-		});
 	}
 
 	protected void buildMap() {
+		if (!directory.exists())
+			directory.mkdirs();
+		System.err.println("directory = " + directory);
+		File[] files = directory.listFiles();
 		for (File file : directory.listFiles()) {
 			String name = file.getName();
 			int dotIndex = name.indexOf(".");
@@ -208,7 +170,11 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 	@Override
 	public void init() {
 		super.init();
-		buildMap();
+		try {
+			buildMap();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 	}
 

@@ -21,7 +21,7 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 	protected Map<GeneralRendererSpecField<?>, JComponent> panelMap = new HashMap<GeneralRendererSpecField<?>, JComponent>();
 	protected Map<GeneralRendererSpecField<?>, GeneralRendererSpecFieldEditor<?>> editorMap = new HashMap<GeneralRendererSpecField<?>, GeneralRendererSpecFieldEditor<?>>();
 
-	public GeneralSpecEditor() {
+	public GeneralSpecEditor(boolean links) {
 		double[] rowSizes = new double[FilterManager.getManager()
 				.getRenderSpecFields().size()];
 		Arrays.fill(rowSizes, TableLayout.PREFERRED);
@@ -32,29 +32,34 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 		int row = 0;
 		for (final GeneralRendererSpecField<?> field : FilterManager
 				.getManager().getRenderSpecFields()) {
-			final JCheckBox selectBox = new JCheckBox(field.getName());
-			final JPanel holderPanel = new JPanel();
-			holderPanel.setLayout(new GridLayout(1,1));
-			final GeneralRendererSpecFieldEditor<?> editor = field.getEditor();
-			add(selectBox, "0, "+row);
-			add(holderPanel, "1, "+row);
-			row++;
-			checkboxMap.put(field, selectBox);
-			panelMap.put(field, holderPanel);
-			editorMap.put(field, editor);
-			selectBox.addActionListener(new ActionListener() {
+			if ((field.isLinkRenderer() && links)
+					|| (field.isObjectRenderer() && !links)) {
 
-				public void actionPerformed(ActionEvent e) {
-					if (!selectBox.isSelected())
-						holderPanel.removeAll();
-					else {
-						editor.setValue(null);
-						holderPanel.add((JComponent) editor);
+				final JCheckBox selectBox = new JCheckBox(field.getName());
+				final JPanel holderPanel = new JPanel();
+				holderPanel.setLayout(new GridLayout(1, 1));
+				final GeneralRendererSpecFieldEditor<?> editor = field
+						.getEditor();
+				add(selectBox, "0, " + row);
+				add(holderPanel, "1, " + row);
+				row++;
+				checkboxMap.put(field, selectBox);
+				panelMap.put(field, holderPanel);
+				editorMap.put(field, editor);
+				selectBox.addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						if (!selectBox.isSelected())
+							holderPanel.removeAll();
+						else {
+							editor.setValue(null);
+							holderPanel.add((JComponent) editor);
+						}
+						validate();
+						repaint();
 					}
-					validate();
-					repaint();
-				}
-			});
+				});
+			}
 		}
 	}
 
@@ -62,7 +67,7 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 		GeneralRendererSpec spec = new GeneralRendererSpec();
 		for (final GeneralRendererSpecField field : FilterManager.getManager()
 				.getRenderSpecFields()) {
-			if (checkboxMap.get(field).isSelected())
+			if (checkboxMap.containsKey(field) && checkboxMap.get(field).isSelected())
 				spec.setValue(field, editorMap.get(field).getValue());
 		}
 		return spec;

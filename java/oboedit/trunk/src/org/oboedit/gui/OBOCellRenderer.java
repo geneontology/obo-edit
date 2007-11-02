@@ -4,6 +4,7 @@ import org.bbop.swing.*;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 import org.obo.filters.*;
+import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
@@ -12,6 +13,8 @@ import org.oboedit.gui.filter.ForegroundColorSpecField;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.LineTypeSpecField;
+import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderSpec;
@@ -28,7 +31,7 @@ import java.net.*;
 import java.util.*;
 
 public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
-		ListCellRenderer, LineRenderer {
+		ListCellRenderer {
 
 	/**
 	 * 
@@ -99,119 +102,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 		return d;
 	}
 
-	/*
-	 * public Color getLineColor(JTree tree, Object value, int row) { if (value
-	 * instanceof OBORestriction && ((OBORestriction) value).isImplied()) return
-	 * Color.cyan; else return null; }
-	 */
-	protected final int[] triangleXBuffer = new int[3];
-
-	protected final int[] triangleYBuffer = new int[3];
-
-	protected final int triangleYSize = 4;
-
-	protected final int triangleXSize = 4;
-
-	protected final int triangleOffset = 2;
-
-	protected final boolean arrowheadLeft = true;
-
-	protected final int controlWidth = 8;
-
-	public void paintLine(Graphics g, Component c, int y, int left, int right,
-			boolean isLeaf, TreePath path) {
-		try {
-			Object value = path.getLastPathComponent();
-			Color lineColor = Color.black;
-			int lineWidth = 1;
-			int lineStyle = LinkRenderSpec.SOLID_LINE;
-
-			if (value instanceof Link) {
-				Link link = (Link) path.getLastPathComponent();
-				// linkSpec.clear();
-				// mergeRenderers(linkSpec, link, FilterManager.getManager()
-				// .getGlobalLinkRenderers());
-				//
-				// if (c instanceof FilteredRenderable)
-				// mergeRenderers(linkSpec, link, ((FilteredRenderable) c)
-				// .getLinkRenderers());
-				//
-				// if (linkSpec.getLinkColor() != null)
-				// lineColor = linkSpec.getLinkColor();
-				// if (linkSpec.getLineWidth() != -1)
-				// lineWidth = linkSpec.getLineWidth();
-				// if (linkSpec.getLineType() != -1)
-				// lineStyle = linkSpec.getLineType();
-			}
-			String hashVal = lineWidth + "-" + lineStyle;
-			Stroke stroke = (Stroke) strokeHash.get(hashVal);
-			if (stroke == null) {
-				float[] dash_pattern = null;
-
-				if (lineStyle == LinkRenderSpec.DASHED_LINE) {
-					dash_pattern = new float[2];
-					dash_pattern[0] = lineWidth;
-					dash_pattern[1] = lineWidth;
-				}
-				stroke = new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-						BasicStroke.JOIN_BEVEL, 1.0f, dash_pattern, 0);
-				strokeHash.put(hashVal, stroke);
-			}
-
-			int xoffset = triangleOffset;
-			if (!isLeaf) {
-				xoffset += 2 + controlWidth / 2;
-			}
-
-			boolean drawArrow = path.getPathCount() > 3;
-
-			int modifiedLeft;
-
-			if (drawArrow)
-				modifiedLeft = left + xoffset + triangleXSize - 1;
-			else
-				modifiedLeft = left;
-
-			Stroke oldStroke = ((Graphics2D) g).getStroke();
-
-			g.setColor(lineColor);
-			((Graphics2D) g).setStroke(stroke);
-			if (lineStyle == LinkRenderSpec.WAVY_LINE) {
-				int length = right - modifiedLeft;
-				CubicCurve2D curve = new CubicCurve2D.Float(modifiedLeft, y,
-						modifiedLeft, y - triangleYSize / 2, modifiedLeft
-								+ length / 2, y - triangleYSize / 2,
-						modifiedLeft + length / 2, y);
-				((Graphics2D) g).draw(curve);
-				curve = new CubicCurve2D.Float(modifiedLeft + length / 2, y,
-						modifiedLeft + length / 2, y + triangleYSize / 2,
-						right, y + triangleYSize / 2, right, y);
-				((Graphics2D) g).draw(curve);
-			} else
-				g.drawLine(modifiedLeft, y, right, y);
-
-			((Graphics2D) g).setStroke(oldStroke);
-
-			if (drawArrow) {
-				triangleYBuffer[0] = y - triangleYSize;
-				triangleYBuffer[1] = y + triangleYSize;
-				triangleYBuffer[2] = y;
-
-				if (arrowheadLeft) {
-					triangleXBuffer[0] = left + xoffset + triangleXSize;
-					triangleXBuffer[1] = left + xoffset + triangleXSize;
-					triangleXBuffer[2] = left + xoffset;
-				} else {
-					triangleXBuffer[0] = right - xoffset - triangleXSize;
-					triangleXBuffer[1] = right - xoffset - triangleXSize;
-					triangleXBuffer[2] = right - xoffset;
-				}
-				g.fillPolygon(triangleXBuffer, triangleYBuffer, 3);
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
-	}
+	protected ArrowIcon linkIcon = new ArrowIcon();
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
@@ -320,19 +211,48 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			} else
 				setForeground(Color.black);
 
+			multiIcon.addIcon(linkIcon);
+			linkIcon.setColor(Color.black);
+			linkIcon.setLineWidth(1);
+			linkIcon.setLineType(LineTypes.SOLID_LINE);
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
 			}
 
 			Relationship link = (Relationship) value;
+			RenderSpec spec;
 			if (tree instanceof FilteredRenderable) {
 				FilteredRenderable fr = (FilteredRenderable) tree;
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
 				LinkedObject lo = link.getChild();
 				String s = provider.getLabel(lo);
 				setText(s);
+				spec = GUIUtil.getSpec(link, FilterManager.getManager()
+						.getGlobalLinkRenderers(), fr.getLinkRenderers());
+			} else {
+				spec = GUIUtil.getSpec(link, FilterManager.getManager()
+						.getGlobalLinkRenderers());
+				setText(link.getChild().getName());
 			}
+			if (spec instanceof GeneralRendererSpec) {
+				GeneralRendererSpec s = (GeneralRendererSpec) spec;
+				ConfiguredColor f = s.getValue(ForegroundColorSpecField.FIELD);
+				if (f != null) {
+					linkIcon.setColor(f.getColor());
+				}
+				Integer width = s.getValue(LineWidthSpecField.FIELD);
+				if (width != null)
+					linkIcon.setLineWidth(width.intValue());
+				LineTypes type = s.getValue(LineTypeSpecField.FIELD);
+				if (type != null) {
+					linkIcon.setLineType(type);
+				}
+
+			}
+
+			linkIcon.setLeaf(leaf);
+			linkIcon.setPath(tree.getPathForRow(row));
 
 			Icon icon = null;
 

@@ -56,6 +56,8 @@ import org.bbop.swing.DropTargetListenerMulticaster;
 import org.bbop.swing.FocusHierarchyListener;
 import org.bbop.swing.FocusHierarchyManager;
 import org.bbop.util.AbstractTaskDelegate;
+import org.bbop.util.CollectionUtil;
+import org.bbop.util.ObjectUtil;
 import org.bbop.util.TaskDelegate;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
@@ -103,6 +105,7 @@ import org.oboedit.gui.RightClickMenuProvider;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.HTMLSpecEditor;
 import org.oboedit.gui.filter.HTMLSpecField;
@@ -316,7 +319,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		super();
 		addSizeProvider(defaultNodeSizeProvider);
 		installDefaultRenderers();
-		setNodeLabelProvider(new HTMLNodeLabelProvider(this, defaultObjectRenderers));
+		setNodeLabelProvider(new HTMLNodeLabelProvider(this, CollectionUtil
+				.list(BackgroundColorSpecField.FIELD), null,
+				defaultObjectRenderers));
 		setNodeFactory(new DefaultNodeFactory());
 		setPanEventHandler(new SingleCameraPanHandler());
 		getPanEventHandler().setAutopan(false);
@@ -339,7 +344,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected void installDefaultRenderers() {
 		defaultObjectRenderers.add(new RenderedFilter(new GeneralRendererSpec(
-				HTMLSpecField.FIELD, "<center><font face='Arial'>$term$</font></center>")));
+				HTMLSpecField.FIELD,
+				"<center><font face='Arial'>$term$</font></center>")));
 	}
 
 	public void addDecorator(NodeDecorator decorator) {
@@ -388,7 +394,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void addSizeProvider(NodeSizeProvider provider) {
 		layoutEngine.addSizeProvider(provider);
 	}
-	
+
 	public NodeSizeProvider getDefaultSizeProvider() {
 		return defaultNodeSizeProvider;
 	}
@@ -404,8 +410,12 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			if (io instanceof LinkedObject)
 				current.add((LinkedObject) io);
 		}
-		current.addAll(getLinkedObjectCollection(visible));
-		linkDatabase.setVisibleObjects(current, true);
+		System.err.println("CURRENT: "+current);
+		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible); 
+		System.err.println("  LOCOL: "+loCol);
+		current.addAll(loCol);
+//		linkDatabase.setVisibleObjects(current, true);
+		linkDatabase.setVisibleObjects(current, false);
 	}
 
 	protected void completeQueuedActions() {
@@ -553,7 +563,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		else
 			return null;
 	}
-	
+
 	public long getLayoutDuration() {
 		return layoutDuration;
 	}
@@ -1223,7 +1233,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				current.add((LinkedObject) io);
 		}
 		current.removeAll(getLinkedObjectCollection(visible));
-		linkDatabase.setVisibleObjects(current, true);
+//		linkDatabase.setVisibleObjects(current, true);
+		linkDatabase.setVisibleObjects(current, false);
+
 	}
 
 	public void select(final Selection selection) {
@@ -1255,7 +1267,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			 * addRelayoutListener(listener);
 			 */
 		}
-		if (isExpandSelectionPaths()) {
+		if (isExpandSelectionPaths() && !ObjectUtil.equals(selection.getSelector(), this)) {
 			TreePath[] paths = selection.getPaths();
 			if (paths == null || paths.length == 0) {
 				paths = new TreePath[1];

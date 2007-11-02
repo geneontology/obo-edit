@@ -87,6 +87,8 @@ import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.HTMLSpecField;
 import org.oboedit.gui.filter.ItalicSpecField;
+import org.oboedit.gui.filter.LineTypeSpecField;
+import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
@@ -203,6 +205,8 @@ public class FilterManager {
 		buildDefaultGlobalLinkRenderers();
 
 		addRenderSpecField(ForegroundColorSpecField.FIELD);
+		addRenderSpecField(LineWidthSpecField.FIELD);
+		addRenderSpecField(LineTypeSpecField.FIELD);
 		addRenderSpecField(BackgroundColorSpecField.FIELD);
 		addRenderSpecField(FontFaceSpecField.FIELD);
 		addRenderSpecField(FontSizeSpecField.FIELD);

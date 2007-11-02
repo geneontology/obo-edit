@@ -25,7 +25,7 @@ public class LinkTooltipFactory extends AbstractTooltipFactory {
 				// PiccoloUtil.setHTML(text,
 				// HTMLUtil.removeHyperlinks(html));
 				text.setWidth(canvas.getWidth() * .6);
-				text.setText(HTMLUtil.removeHyperlinks(html));
+				text.setText(HTMLUtil.removeHyperlinks(html), true);
 				// text.recomputeLayout();
 				return text;
 			}

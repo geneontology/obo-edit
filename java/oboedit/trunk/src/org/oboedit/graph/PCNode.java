@@ -1,7 +1,10 @@
 package org.oboedit.graph;
 
+import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 
 import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.LinkedObject;
@@ -9,6 +12,7 @@ import org.obo.datamodel.PathCapable;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PPath;
+import edu.umd.cs.piccolo.util.PPaintContext;
 
 public class PCNode extends PPath {
 
@@ -19,18 +23,18 @@ public class PCNode extends PPath {
 	protected PPath pathNode;
 
 	public void initialize(PathCapable pc, NamedChildProvider provider, Shape s) {
-		setOffset(0,0);
+		setOffset(0, 0);
 		setProvider(provider);
 		setObject(pc);
 		setPickable(true);
 		pathNode = new PPath();
 		pathNode.setPickable(false);
 		setNamedChild(PATH_NODE, pathNode);
-		setShape(s);
 		setPaint(null);
 		setStroke(null);
 		setStrokePaint(null);
-		setBounds(getPathDelegate().getBounds());
+		setShape(s);
+		// setBounds(getPathDelegate().getBounds());
 	}
 
 	public void setShape(Shape s) {
@@ -40,19 +44,9 @@ public class PCNode extends PPath {
 		setPathTo(newShape);
 		setOffset(getXOffset() + s.getBounds2D().getX(), getYOffset()
 				+ s.getBounds2D().getY());
-		setBounds(getPathDelegate().getBounds());
-	}
-	
-	@Override
-	public double getWidth() {
-		return getPathDelegate().getWidth();
+		// setBounds(getPathDelegate().getBounds());
 	}
 
-	@Override
-	public double getHeight() {
-		return getPathDelegate().getHeight();
-	}
-	
 	public void setTooltipFactory(TooltipFactory factory) {
 		addAttribute(TooltipFactory.KEY, factory);
 	}

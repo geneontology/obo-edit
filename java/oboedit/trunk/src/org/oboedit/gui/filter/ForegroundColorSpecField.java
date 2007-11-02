@@ -35,4 +35,12 @@ public class ForegroundColorSpecField implements GeneralRendererSpecField<Config
 		in.append("</font>");
 	}
 
+	public boolean isLinkRenderer() {
+		return true;
+	}
+
+	public boolean isObjectRenderer() {
+		return true;
+	}
+
 }

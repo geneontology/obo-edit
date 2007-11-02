@@ -16,6 +16,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.plaf.TreeUI;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.*;
 
 import org.bbop.framework.ComponentConfiguration;
@@ -40,7 +41,6 @@ import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.HTMLNodeLabelProvider;
 import org.oboedit.gui.InputHandlerI;
-import org.oboedit.gui.LineRenderer;
 import org.oboedit.gui.NodeLabelProvider;
 import org.oboedit.gui.OBOCellRenderer;
 import org.oboedit.gui.ObjectSelector;
@@ -531,28 +531,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				SelectionManager.setGlobalSelection(getSelection());
 		}
 
-		protected int[] triangleXBuffer = new int[3];
-
-		protected int[] triangleYBuffer = new int[3];
-
 		@Override
 		protected boolean isToggleEvent(MouseEvent event) {
 			return false;
 		}
 
 		@Override
-		protected void paintHorizontalLine(Graphics g, JComponent c, int y,
-				int left, int right, boolean isLeaf, TreePath path) {
-			if (OBOTermPanel.this.getCellRenderer() instanceof LineRenderer) {
-				LineRenderer lineRenderer = (LineRenderer) OBOTermPanel.this
-						.getCellRenderer();
-				// y = getRowHeight() / 2;
-				lineRenderer.paintLine(g, c, y, left, right, isLeaf, path);
-			} else {
-
-			}
+		public void installUI(JComponent c) {
+			// TODO Auto-generated method stub
+			super.installUI(c);
 		}
-
 	}
 
 	protected Collection<SelectionListener> selectionListeners = new LinkedList<SelectionListener>();
@@ -914,7 +902,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public OBOTermPanel(String id) {
 		this.id = id;
-		setDrawArrowhead(true);
 		setShowsRootHandles(true);
 		setRootVisible(false);
 		setNodeLabelProvider(new HTMLNodeLabelProvider(this));
@@ -931,7 +918,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		toolbar = new EditActionToolbar(panel, inputListener, true);
 		DragFriendlyTreeUI ui = getDefaultUI();
 		setUI(ui);
-		ui.setRightChildIndent(20);
+		ui.setRightChildIndent(8);
 
 		DefaultTermModel model = new DefaultTermModel();
 		setModel(model);
@@ -1045,13 +1032,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			menu.add(item);
 		}
 
-	}
-
-	public void setDrawArrowhead(boolean drawArrowhead) {
-		if (getUI() instanceof DragFriendlyTreeUI) {
-			DragFriendlyTreeUI ui = (DragFriendlyTreeUI) getUI();
-			ui.setDrawArrowhead(drawArrowhead);
-		}
 	}
 
 	protected DragFriendlyTreeUI getDefaultUI() {
@@ -1332,11 +1312,13 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			basicHTML = ((HTMLNodeLabelProvider) getNodeLabelProvider())
 					.getHtmlExpression();
 		}
+		InputHandlerI currentHandler = toolbar.getCurrentHandler();
 		return new OntologyEditorConfiguration(getTermFilter(),
 				getLinkFilter(), getObjectRenderers(), getLinkRenderers(),
 				basicHTML, toolbar.getShowToolbar(), toolbar
-						.getToolbarPosition(), toolbar.getCurrentHandler()
-						.getID(), isRevertToDefaultAction(), isLive(), rootStr);
+						.getToolbarPosition(),
+				(currentHandler != null ? currentHandler.getID() : null),
+				isRevertToDefaultAction(), isLive(), rootStr);
 	}
 
 	public void setConfiguration(ComponentConfiguration c) {
@@ -1348,8 +1330,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			setObjectRenderers(config.getObjectRenderers());
 			setLinkRenderers(config.getLinkRenderers());
 			if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
-				((HTMLNodeLabelProvider) getNodeLabelProvider()).
-				setHtmlExpression(config.getBasicHTML());
+				((HTMLNodeLabelProvider) getNodeLabelProvider())
+						.setHtmlExpression(config.getBasicHTML());
 			}
 			if (config.getRootAlgorithm() != null) {
 				if (config.getRootAlgorithm().equals("STRICT")) {

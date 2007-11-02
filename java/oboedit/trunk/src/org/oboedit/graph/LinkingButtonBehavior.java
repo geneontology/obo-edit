@@ -119,7 +119,7 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 					Point2D startPoint = originNode.getFullBoundsReference()
 							.getCenter2D();
 					line.setLine(startPoint, dragPos);
-					PPath arrowGhost = new OELink(dummyLink, canvas
+					PPath arrowGhost = new OELink(canvas, dummyLink, canvas
 							.getIconManager(), canvas.getColorManager(), canvas
 							.getNamedChildProvider(), line);
 					arrowGhost.setPickable(false);

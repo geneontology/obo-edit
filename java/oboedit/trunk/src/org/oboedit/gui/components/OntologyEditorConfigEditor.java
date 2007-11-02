@@ -101,13 +101,13 @@ public class OntologyEditorConfigEditor extends ConfigurationPanel {
 				.add(
 						new JLabel(
 								"<html>Enter an expression below that will "
-										+ "determine what information is shown for each term. "
-										+ "To include specific term information, use search "
-										+ "criteria ids enclosed in $ characters. For example, "
-										+ "to display the term name on one line and the term "
-										+ "id in italics on the line below, use the expression "
-										+ "&lt;center&gt;$name$&lt;br&gt;&lt;i&gt;&lt;font "
-										+ "size=-1&gt;$id$&lt;/font&gt;&lt;/center&gt;</html>"),
+								+ "determine what information is shown for each term. "
+								+ "To include specific term information, use search "
+								+ "criteria ids enclosed in $ characters. For example, "
+								+ "to display the term name on one line and the term "
+								+ "id in italics on the line below, use the expression "
+								+ "<b>&lt;center&gt;$name$&lt;br&gt;&lt;i&gt;&lt;font "
+								+ "size=-1&gt;$id$&lt;/font&gt;&lt;/i&gt;&lt;/center&gt;</b></html>"),
 						BorderLayout.NORTH);
 		htmlExpressionPanel.add(pane, BorderLayout.CENTER);
 

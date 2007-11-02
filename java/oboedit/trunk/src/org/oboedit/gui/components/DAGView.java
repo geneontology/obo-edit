@@ -404,26 +404,9 @@ public class DAGView extends AbstractGUIComponent {
 		}
 	}
 
-	public class DAGViewUI extends DragFriendlyTreeUI {
-
-		protected int[] triangleXBuffer = new int[3];
-
-		protected int[] triangleYBuffer = new int[3];
-
-		@Override
-		protected void paintHorizontalLine(Graphics g, JComponent c, int y,
-				int left, int right, boolean isLeaf, TreePath path) {
-			if (DAGViewUI.this.getCellRenderer() instanceof LineRenderer) {
-				LineRenderer lineRenderer = (LineRenderer) DAGViewUI.this
-						.getCellRenderer();
-				// y = getRowHeight() / 2;
-				lineRenderer.paintLine(g, c, y, left, right, isLeaf, path);
-			}
-		}
-	}
-
 	protected DragFriendlyTreeUI getDefaultUI() {
-		DragFriendlyTreeUI ui = new DAGViewUI();
+		DragFriendlyTreeUI ui = new DragFriendlyTreeUI();
+		ui.setRightChildIndent(0);
 		return ui;
 	}
 

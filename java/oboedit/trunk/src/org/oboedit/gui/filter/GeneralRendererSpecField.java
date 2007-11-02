@@ -29,4 +29,8 @@ public interface GeneralRendererSpecField<T> {
 	public int getHTMLType();
 
 	public void renderHTML(T value, StringBuffer in);
+	
+	public boolean isObjectRenderer();
+	
+	public boolean isLinkRenderer();
 }

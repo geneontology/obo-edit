@@ -201,19 +201,19 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	public void setVisibleObjects(
 			Collection<? extends IdentifiedObject> objects, boolean setDefault) {
-		if (setDefault) {
-			setDefaultVisibleObjects(objects);
-			recache();
-			fireExpansionStateChanged();
-		} else {
-			if (!objects.equals(visibleObjects)) {
+		if (!(visibleObjects.size() == objects.size()
+				&& objects.containsAll(visibleObjects))) {
+			if (setDefault) {
+				setDefaultVisibleObjects(objects);
+				recache();
+				fireExpansionStateChanged();
+			} else {
 				setDefaultVisibleObjects(Collections.EMPTY_SET);
 				recache();
 				visibleObjects.addAll(objects);
 				fireExpansionStateChanged();
 			}
 		}
-
 	}
 
 	public void setVisible(LinkedObject lo, boolean visible) {

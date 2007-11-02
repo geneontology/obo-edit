@@ -1,9 +1,11 @@
 package org.oboedit.piccolo;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import org.bbop.swing.EndpointShapeExtender;
 import org.bbop.swing.ShapeExtender;
+import org.oboedit.verify.ImmediateQuickFix;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
@@ -23,7 +25,8 @@ public class DefaultMorpher implements Morpher {
 
 	protected Point2D scratchPoint = new Point2D.Double();
 
-	public PCompoundActivity morph(PNode oldNode, PNode newNode, long duration) {
+	public PCompoundActivity morph(final PNode oldNode, final PNode newNode,
+			long duration) {
 		PCompoundActivity relayoutActivity = new PCompoundActivity();
 		if (newNode == null) {
 			if (deadNodeDestNode != null) {
@@ -47,8 +50,8 @@ public class DefaultMorpher implements Morpher {
 				scratchPoint.setLocation(newNodeOriginNode.getXOffset()
 						- newNodeOriginNode.getFullBoundsReference().getWidth()
 						/ 2, newNodeOriginNode.getYOffset()
-						- newNodeOriginNode.getFullBoundsReference().getHeight()
-						/ 2);
+						- newNodeOriginNode.getFullBoundsReference()
+								.getHeight() / 2);
 				PInterpolatingActivity effect = newNode
 						.animateToPositionScaleRotation(newNode.getXOffset(),
 								newNode.getYOffset(), 1, 0, duration);
@@ -81,6 +84,21 @@ public class DefaultMorpher implements Morpher {
 					.animateToPositionScaleRotation(newNode.getXOffset(),
 							newNode.getYOffset(), newNode.getScale(), newNode
 									.getRotation(), duration));
+			if (newNode.getPaint() instanceof Color)
+				relayoutActivity.addActivity(oldNode.animateToColor(
+						(Color) newNode.getPaint(), duration));
+			relayoutActivity.addActivity(new PCompoundActivity() {
+				@Override
+				protected void activityStarted() {
+					super.activityStarted();
+					if (oldNode instanceof PPath && newNode instanceof PPath) {
+						((PPath) oldNode).setStroke(((PPath) newNode)
+								.getStroke());
+						((PPath) oldNode).setStrokePaint(((PPath) newNode)
+								.getStrokePaint());
+					}
+				}
+			});
 		}
 		return relayoutActivity;
 	}

@@ -9,11 +9,11 @@ import org.oboedit.gui.components.LinkDatabaseCanvas;
 import edu.umd.cs.piccolo.PNode;
 
 public class DefaultNodeFactory implements NodeFactory {
-	
+
 	protected TypeIconManager iconManager;
 	protected TypeColorManager colorManager;
 	protected LinkDatabaseCanvas canvas;
-	
+
 	public DefaultNodeFactory() {
 		// TODO Auto-generated constructor stub
 	}
@@ -23,7 +23,8 @@ public class DefaultNodeFactory implements NodeFactory {
 			OENode node = new OENode((LinkedObject) lo, canvas, s);
 			return node;
 		} else if (lo instanceof Link) {
-			OELink node = new OELink((Link) lo, iconManager, colorManager, s);
+			OELink node = new OELink(canvas, (Link) lo, iconManager,
+					colorManager, s);
 			node.setTooltipFactory(new LinkTooltipFactory());
 			return node;
 		}

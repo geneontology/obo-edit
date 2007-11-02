@@ -135,10 +135,10 @@ public class LinkDatabaseLayoutEngine {
 			Shape s = graphLayout.getNodeShape(lo);
 			PNode p = factory.createNode(lo, s);
 
-			if (p instanceof OENode) {
-				((OENode) p).setHeight(((OENode) p).getPreferredHeight());
-				((OENode) p).setWidth(((OENode) p).getPreferredWidth());
-			}
+//			if (p instanceof OENode) {
+//				((OENode) p).setHeight(((OENode) p).getPreferredHeight());
+//				((OENode) p).setWidth(((OENode) p).getPreferredWidth());
+//			}
 
 			// PPath p = createNodeForObject(lo, s);
 			provider.setNamedChild(lo, out, p);

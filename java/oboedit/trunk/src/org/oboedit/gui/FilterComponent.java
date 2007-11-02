@@ -83,6 +83,11 @@ public class FilterComponent extends JPanel {
 		searchButton.setVisible(visible);
 		validate();
 	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		uninstallListeners();
+	}
 
 	public void cleanup() {
 		uninstallListeners();

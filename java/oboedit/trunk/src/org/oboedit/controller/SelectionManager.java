@@ -61,7 +61,11 @@ public class SelectionManager implements ObjectSelector {
 			SessionManager.getManager().addRootChangeListener(
 					new RootChangeListener() {
 						public void changeRoot(RootChangeEvent e) {
-							selectNone();
+							try {
+								selectNone();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
 						}
 					});
 		}
@@ -496,14 +500,22 @@ public class SelectionManager implements ObjectSelector {
 	}
 
 	public static void selectTerm(JComponent component, LinkedObject lo) {
-		setGlobalSelection(createSelectionFromTerms(component, Collections
+		getManager().select(component, lo);
+	}
+	
+	public void select(JComponent component, LinkedObject lo) {
+		select(createSelectionFromTerms(component, Collections
 				.singleton(lo), lo, false));
+	}
+	
+	public void select(JComponent component, Link link, boolean fillInTerms) {
+		select(createSelectionFromLinks(component, Collections
+				.singleton(link), link, fillInTerms));
 	}
 
 	public static void selectLink(JComponent component, Link link,
 			boolean fillInTerms) {
-		setGlobalSelection(createSelectionFromLinks(component, Collections
-				.singleton(link), link, fillInTerms));
+		getManager().select(component, link, fillInTerms);
 	}
 
 	public static void selectTerms(JComponent component,
@@ -541,8 +553,8 @@ public class SelectionManager implements ObjectSelector {
 
 	public static Selection createSelection(JComponent component,
 			Collection<? extends PathCapable> pcs) {
-		return createSelection(component, pcs, null, null, RootAlgorithm.GREEDY,
-				DefaultLinkDatabase.getDefault());
+		return createSelection(component, pcs, null, null,
+				RootAlgorithm.GREEDY, DefaultLinkDatabase.getDefault());
 	}
 
 	public static Selection createSelection(JComponent component,

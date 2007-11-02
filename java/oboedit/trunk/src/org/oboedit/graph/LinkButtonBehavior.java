@@ -173,7 +173,8 @@ public class LinkButtonBehavior implements ViewBehavior {
 			final ButtonLocations loc = (ButtonLocations) button
 					.getAttribute("buttonType");
 			if (loc.isClose()) {
-				canvas.removeVisibleObjects(Collections.singleton(lo));
+				if (event.isLeftMouseButton())
+					canvas.removeVisibleObjects(Collections.singleton(lo));
 				return;
 			}
 
