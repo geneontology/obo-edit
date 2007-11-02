@@ -43,7 +43,7 @@ public class GOAnnotationFileTest extends AbstractOBOTest {
 		// write
 		config = new OBOFileAdapter.OBOAdapterConfiguration();
 		File outFile = File.createTempFile("foo", "bar");
-		outFile.deleteOnExit();
+		//outFile.deleteOnExit();
 		config.setWritePath(outFile.getAbsolutePath());
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
 
