@@ -12,7 +12,7 @@ import junit.framework.TestSuite;
 
 public class IntersectionBloodCellExampleTest extends AbstractReasonerTest {
 
-	protected IntersectionBloodCellExampleTest(String name) {
+	public IntersectionBloodCellExampleTest(String name) {
 		super(name);
 	}
 

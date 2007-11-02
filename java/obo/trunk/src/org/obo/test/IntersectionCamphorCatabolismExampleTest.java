@@ -11,7 +11,7 @@ import junit.framework.TestSuite;
 
 public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTest {
 
-	protected IntersectionCamphorCatabolismExampleTest(String name) {
+	public IntersectionCamphorCatabolismExampleTest(String name) {
 		super(name);
 	}
 

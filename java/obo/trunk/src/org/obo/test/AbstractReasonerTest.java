@@ -26,7 +26,7 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	}
 	
 	protected ReasonedLinkDatabase createReasoner() {
-		return new ForwardChainingReasoner();
+		return reasonerFactory.createReasoner();
 	}
 
 	public static ReasonerFactory getReasonerFactory() {
