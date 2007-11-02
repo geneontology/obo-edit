@@ -40,7 +40,7 @@ public class RendererEditor extends AbstractListTableEditor<RenderedFilter> {
 		else
 			rendererEditor = new ObjectSpecEditor();
 			*/
-		rendererEditor = new GeneralSpecEditor();
+		rendererEditor = new GeneralSpecEditor(isLinkRenderer);
 		JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				filterComponent,
 				(JComponent) rendererEditor);

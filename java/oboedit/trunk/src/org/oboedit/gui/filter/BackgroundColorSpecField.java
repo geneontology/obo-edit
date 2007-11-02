@@ -34,4 +34,12 @@ public class BackgroundColorSpecField implements
 		in.append("</span>");
 	}
 
+	public boolean isLinkRenderer() {
+		return false;
+	}
+
+	public boolean isObjectRenderer() {
+		return true;
+	}
+
 }

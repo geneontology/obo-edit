@@ -34,4 +34,11 @@ public class FontFaceSpecField implements GeneralRendererSpecField<String> {
 		return new FontFaceEditor();
 	}
 
+	public boolean isLinkRenderer() {
+		return false;
+	}
+
+	public boolean isObjectRenderer() {
+		return true;
+	}
 }

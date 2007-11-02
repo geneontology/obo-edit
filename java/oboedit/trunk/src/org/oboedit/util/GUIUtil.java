@@ -222,10 +222,14 @@ public class GUIUtil {
 		return out;
 	}
 
-	public static String renderHTML(String text, GeneralRendererSpec spec) {
+	public static String renderHTML(String text,
+			Collection<GeneralRendererSpecField<?>> ignore,
+			GeneralRendererSpec spec) {
 		StringBuffer out = new StringBuffer(text);
 		if (spec != null) {
 			for (GeneralRendererSpecField field : spec.getFields()) {
+				if (ignore.contains(field))
+					continue;
 				if (field.getHTMLType() > 0) {
 					field.renderHTML(spec.getValue(field), out);
 				}
@@ -237,11 +241,12 @@ public class GUIUtil {
 	}
 
 	public static String renderHTML(String text, Object o,
+			Collection<GeneralRendererSpecField<?>> ignore,
 			Collection<RenderedFilter>... f) {
 		String out = text;
 		RenderSpec spec = getSpec(o, f);
 		if (spec instanceof GeneralRendererSpec || spec == null) {
-			out = renderHTML(text, (GeneralRendererSpec) spec);
+			out = renderHTML(text, ignore, (GeneralRendererSpec) spec);
 		}
 		return out;
 	}

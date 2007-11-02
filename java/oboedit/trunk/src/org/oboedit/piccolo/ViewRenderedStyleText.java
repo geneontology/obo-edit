@@ -68,7 +68,8 @@ public class ViewRenderedStyleText extends PNode {
 		document = editorKit.createDefaultDocument();
 		((AbstractDocument) document).setAsynchronousLoadPriority(-1);
 		JTextField field = new JTextField();
-		field.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY, Boolean.TRUE);
+		field.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+				Boolean.TRUE);
 		rootView = new RootView(field, editorKit);
 	}
 
@@ -88,7 +89,7 @@ public class ViewRenderedStyleText extends PNode {
 		return text;
 	}
 
-	public void setText(String text) {
+	public void setText(String text, boolean resizeBounds) {
 		try {
 			this.text = text;
 			// document = editorKit.createDefaultDocument();
@@ -100,10 +101,21 @@ public class ViewRenderedStyleText extends PNode {
 			view = editorKit.getViewFactory().create(
 					document.getRootElements()[0]);
 			rootView.setView(view);
-			updateBounds();
+			if (resizeBounds)
+				updateBounds();
+			else
+				view.setSize((float) getWidth(), (float) getHeight());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void internalUpdateBounds(double x, double y, double width,
+			double height) {
+		super.internalUpdateBounds(x, y, width, height);
+		if (view != null)
+			view.setSize((float) getWidth(), (float) getHeight());
 	}
 
 	protected Rectangle rect = new Rectangle();
@@ -129,10 +141,6 @@ public class ViewRenderedStyleText extends PNode {
 			}
 
 			view.setSize(maxWidth, startHeight);
-			/*
-			 * view .setSize((float) getWidth(), view
-			 * .getPreferredSpan(View.Y_AXIS));
-			 */
 
 			setWidth(maxWidth);
 			setHeight(startHeight);

@@ -1,27 +1,37 @@
 package org.oboedit.graph;
 
+import java.awt.Color;
 import java.awt.Shape;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
+import org.obo.util.FilterUtil;
 import org.obo.util.HTMLUtil;
+import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.components.TermImageDisplayComponent;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
+import org.oboedit.gui.filter.ConfiguredColor;
+import org.oboedit.gui.filter.GeneralRendererSpec;
+import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.piccolo.Morphable;
 import org.oboedit.piccolo.PiccoloUtil;
 import org.oboedit.piccolo.TransitionText;
 import org.oboedit.piccolo.ViewRenderedStyleText;
+import org.oboedit.util.GUIUtil;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
+import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
 
 public class OENode extends PCNode implements Morphable {
 
 	protected static final Object KEY_LABEL = "KEY";
 
-	//protected ViewRenderedStyleText field = new TransitionText();
+	// protected ViewRenderedStyleText field = new TransitionText();
 	protected ViewRenderedStyleText field = new ViewRenderedStyleText();
 
 	protected int roundingSize = 10;
@@ -30,9 +40,11 @@ public class OENode extends PCNode implements Morphable {
 	protected NamedChildProvider provider;
 
 	protected HTMLEditorKit kit = new HTMLEditorKit();
-	
-//	int x_margin = 20;
-//	int y_margin = 20;
+
+	protected int x_label_padding = 10;
+	protected int y_label_padding = 0;
+	protected int x_margin = 0;
+	protected int y_margin = 5;
 
 	public OENode(LinkedObject lo, LinkDatabaseCanvas canvas, Shape s) {
 		this(lo, canvas, DefaultNamedChildProvider.getInstance(), s);
@@ -40,37 +52,36 @@ public class OENode extends PCNode implements Morphable {
 
 	public OENode(LinkedObject lo, LinkDatabaseCanvas canvas,
 			NamedChildProvider provider, Shape s) {
-		field.setWidth(s.getBounds().getWidth()+1);
+		field.setWidth(s.getBounds().getWidth());
+		field.setHeight(s.getBounds().getHeight());
 		s = ShapeUtil.createRoundRectangle(null, roundingSize, (float) s
 				.getBounds().getX(), (float) s.getBounds().getY(), (float) s
-				.getBounds().getWidth(), (float) s.getBounds().getHeight());
+				.getBounds().getWidth()
+				+ x_margin + x_label_padding, (float) s.getBounds().getHeight()
+				+ y_margin + y_label_padding);
 		initialize(lo, provider, s);
-		// field.setConstrainWidthToTextWidth(true);
-		System.err.println("CREATED NODE FOR " + lo.getID() + " width="
-				+ s.getBounds().getWidth() + ", height="
-				+ s.getBounds().getHeight());
 		setNamedChild(KEY_LABEL, field);
 		field.setPickable(false);
 		setLabel(canvas.generateLabel(lo));
+		RenderSpec spec = GUIUtil.getSpec(lo, FilterManager.getManager()
+				.getGlobalTermRenderers(), canvas.getObjectRenderers());
+		setPaint(Color.lightGray);
+		if (spec instanceof GeneralRendererSpec) {
+			ConfiguredColor c = ((GeneralRendererSpec) spec)
+					.getValue(BackgroundColorSpecField.FIELD);
+			if (c != null) {
+				setPaint(c.getColor());
+			}
+		}
 	}
 
 	public int getRoundingSize() {
 		return roundingSize;
 	}
 
-	public static String getLabelAsHTML(String field) {
-		// String imgURL = TermImageDisplayComponent.getFile((LinkedObject) io);
-		// if (imgURL == null) {
-		// field = "<html><center><font face='Arial' color='black'>"
-		// + HTMLUtil.escapeHTML(field) + "</font></center></html>";
-		// } else {
-		// field = "<html><table border=0><tr valign=center><td><img align=left
-		// src='" + imgURL
-		// + "' width='50'></td><td><font face='Arial' color='black'>"
-		// + HTMLUtil.escapeHTML(field) + "</font></td></table></html>";
-		// }
-		// return field;
-		return "<html><center>" + field + "</center></html>";
+	@Override
+	public void setPathTo(Shape shape) {
+		super.setPathTo(shape);
 	}
 
 	public String getLabel() {
@@ -79,21 +90,23 @@ public class OENode extends PCNode implements Morphable {
 
 	public void setLabel(String field) {
 
-		this.field.setText(field);
-
-		// if (this.field.getHeight() > getPreferredHeight()
-		// || this.field.getWidth() > getPreferredWidth()) {
-		setShape(ShapeUtil.createRoundRectangle((float) 0, (float) 0,
-				(float) getPreferredWidth(), (float) getPreferredHeight()));
-		PiccoloUtil.centerInParent(this.field, true, true, false);
-		// }
+		this.field.setText(field, false);
+		updateFieldDimensions();
+		// setShape(ShapeUtil.createRoundRectangle((float) 0, (float) 0,
+		// (float) getPreferredWidth(), (float) getPreferredHeight()));
 	}
 
 	@Override
 	protected void internalUpdateBounds(double x, double y, double width,
 			double height) {
-//		field.setOffset(field.getXOffset(), field.getYOffset());
 		super.internalUpdateBounds(x, y, width, height);
+		updateFieldDimensions();
+	}
+
+	protected void updateFieldDimensions() {
+		field.setWidth(getWidth() + x_label_padding);
+		field.setHeight(getHeight() + y_label_padding);
+		PiccoloUtil.centerInParent(this.field, true, true, false);
 	}
 
 	public PActivity animateSetLabel(String text, long duration) {
@@ -101,25 +114,17 @@ public class OENode extends PCNode implements Morphable {
 			return ((TransitionText) field).animateTextChange(text, duration);
 		else {
 			setLabel(text);
-			return new PActivity(0);
+			PActivity act = new PActivity(0);
+			return act;
 		}
 	}
 
-	public int getDefaultPreferredWidth() {
-		int width = (int) field.getWidth();
-		return width;
-	}
-
-	protected int getDefaultPreferredHeight() {
+	public int getPreferredHeight() {
 		return (int) field.getHeight();
 	}
 
-	public int getPreferredHeight() {
-		return getDefaultPreferredHeight();
-	}
-
 	public int getPreferredWidth() {
-		return getDefaultPreferredWidth();
+		return (int) field.getWidth();
 
 	}
 
@@ -133,7 +138,7 @@ public class OENode extends PCNode implements Morphable {
 
 	public PActivity morphTo(PNode node, long duration) {
 		if (node instanceof OENode) {
-//			return new PActivity(0);
+			// return new PActivity(0);
 			return animateSetLabel(((OENode) node).getLabel(), duration);
 		} else {
 			return new PActivity(0);

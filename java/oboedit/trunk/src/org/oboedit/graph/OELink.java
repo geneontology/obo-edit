@@ -2,8 +2,10 @@ package org.oboedit.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 
@@ -11,6 +13,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.bbop.swing.ShapeUtil;
+import org.bbop.swing.ZigZagStroke;
 import org.bbop.util.StringUtil;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.PathCapable;
@@ -18,10 +21,19 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.ExplanationUtil;
 import org.obo.util.HTMLUtil;
 import org.obo.util.TermUtil;
+import org.oboedit.controller.FilterManager;
+import org.oboedit.gui.LineTypes;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.filter.ConfiguredColor;
+import org.oboedit.gui.filter.ForegroundColorSpecField;
+import org.oboedit.gui.filter.GeneralRendererSpec;
+import org.oboedit.gui.filter.LineTypeSpecField;
+import org.oboedit.gui.filter.LineWidthSpecField;
+import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.piccolo.PiccoloUtil;
 import org.oboedit.piccolo.StyledText;
 import org.oboedit.piccolo.ViewRenderedStyleText;
+import org.oboedit.util.GUIUtil;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PPath;
@@ -53,22 +65,42 @@ public class OELink extends PCNode {
 
 	protected float arrowheadWidth = 12f;
 
-	public OELink(Link link, TypeIconManager iconManager,
-			TypeColorManager colorManager, Shape s) {
-		this(link, iconManager, colorManager, DefaultNamedChildProvider
+	public OELink(LinkDatabaseCanvas canvas, Link link,
+			TypeIconManager iconManager, TypeColorManager colorManager, Shape s) {
+		this(canvas, link, iconManager, colorManager, DefaultNamedChildProvider
 				.getInstance(), s);
 	}
 
-	public OELink(Link link, TypeIconManager iconManager,
-			TypeColorManager colorManager, NamedChildProvider provider, Shape s) {
+	public OELink(LinkDatabaseCanvas canvas, Link link,
+			TypeIconManager iconManager, TypeColorManager colorManager,
+			NamedChildProvider provider, Shape s) {
 		this.colorManager = colorManager;
 		this.iconManager = iconManager;
 		initialize(link, provider, s);
 
-		setLineWeight(3);
+		int weight = 1;
 		Paint typeColor = colorManager.getColor(link.getType());
-		getPathDelegate().setStrokePaint(typeColor);
-		getPathDelegate().setPaint(null);
+		LineTypes type = LineTypes.SOLID_LINE;
+
+		RenderSpec sc = GUIUtil.getSpec(lo, FilterManager.getManager()
+				.getGlobalLinkRenderers(), canvas.getLinkRenderers());
+		if (sc instanceof GeneralRendererSpec) {
+			GeneralRendererSpec spec = (GeneralRendererSpec) sc;
+			ConfiguredColor f = spec.getValue(ForegroundColorSpecField.FIELD);
+			if (f != null) {
+				typeColor = f.getColor();
+			}
+			Integer width = spec.getValue(LineWidthSpecField.FIELD);
+			if (width != null)
+				weight = width.intValue();
+			LineTypes ttype = spec.getValue(LineTypeSpecField.FIELD);
+			if (ttype != null) {
+				type = ttype;
+			}
+
+		}
+
+		setLineWeight(3 * weight, type, typeColor);
 
 		PNode iconPanel = createIconPanel();
 		PNode arrowhead = createArrowhead();
@@ -130,13 +162,33 @@ public class OELink extends PCNode {
 		return (Link) getObject();
 	}
 
-	public void setLineWeight(int lineWeight) {
-		if (TermUtil.isImplied(getObject())) {
-			float[] dashArr = { 1, 10 };
-			getPathDelegate().setStroke(
-					new BasicStroke(lineWeight, BasicStroke.CAP_ROUND,
-							BasicStroke.JOIN_ROUND, 10f, dashArr, 0f));
-		} else
-			getPathDelegate().setStroke(new BasicStroke(lineWeight));
+	public void setLineWeight(int lineWeight, LineTypes type, Paint typeColor) {
+		Stroke stroke;
+		float[] dashArr = null;
+		if (type == LineTypes.DASHED_LINE
+				|| type == LineTypes.DASHED_ZIGZAG_LINE) {
+			dashArr = new float[2];
+			dashArr[0] = 1;
+			dashArr[1] = 10;
+		}
+		if (type == LineTypes.ZIGZAG_LINE
+				|| type == LineTypes.DASHED_ZIGZAG_LINE) {
+			stroke = new ZigZagStroke(new BasicStroke(lineWeight,
+					BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
+					dashArr, 0f), ICON_PANEL_HEIGHT / 2, ICON_PANEL_HEIGHT / 2);
+			getPathDelegate().setPathTo(
+					stroke.createStrokedShape(getPathReference()));
+			getPathDelegate().setStroke(null);
+			getPathDelegate().setStrokePaint(null);
+			getPathDelegate().setPaint(typeColor);
+		} else {
+			stroke = new BasicStroke(lineWeight, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_ROUND, 10f, dashArr, 0f);
+			getPathDelegate().setPathTo(getPathReference());
+			getPathDelegate().setStroke(stroke);
+			getPathDelegate().setStrokePaint(typeColor);
+			getPathDelegate().setPaint(null);
+		}
+
 	}
 }

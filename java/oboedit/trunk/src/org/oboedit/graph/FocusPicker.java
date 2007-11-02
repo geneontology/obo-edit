@@ -1,7 +1,9 @@
 package org.oboedit.graph;
 
 import java.awt.Color;
+import java.awt.Paint;
 
+import org.bbop.swing.SwingUtil;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.PathCapable;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
@@ -13,6 +15,8 @@ import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 
 public class FocusPicker implements ViewBehavior, NodeDecorator {
+
+	protected static final Object REAL_PAINT = new Object();
 
 	protected LinkDatabaseCanvas canvas;
 
@@ -43,10 +47,28 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 		}
 	};
 
+	protected RelayoutListener layoutListener = new RelayoutListener() {
+
+		public void relayoutComplete() {
+			for (PCNode node : canvas.getVisibleNodes()) {
+				node.addAttribute(REAL_PAINT, null);
+			}
+		}
+
+		public void relayoutStarting() {
+		}
+
+	};
+
+	public FocusPicker() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public void install(LinkDatabaseCanvas canvas) {
 		canvas.addInputEventListener(handler);
 		canvas.addDecorator(this);
 		canvas.addFocusedNodeListener(focusListener);
+		canvas.addRelayoutListener(layoutListener);
 		this.canvas = canvas;
 	}
 
@@ -54,6 +76,7 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 		canvas.removeInputEventListener(handler);
 		canvas.removeDecorator(this);
 		canvas.removeFocusedNodeListener(focusListener);
+		canvas.removeRelayoutListener(layoutListener);
 		this.canvas = null;
 	}
 
@@ -68,11 +91,25 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 	public PActivity decorate(PNode node, boolean noAnimation) {
 		if (!(node instanceof OENode))
 			return null;
+		Paint p = node.getPaint();
+		p = (Paint) node.getAttribute(REAL_PAINT);
+		if (p == null) {
+			p = node.getPaint();
+			node.addAttribute(REAL_PAINT, p);
+		}
+		Color c = null;
+		if (p instanceof Color)
+			c = (Color) p;
 		if (canvas.getFocusedNode() != null
-				&& canvas.getFocusedNode().equals(node))
-			node.setPaint(Color.white);
-		else
-			node.setPaint(Color.lightGray);
+				&& canvas.getFocusedNode().equals(node)) {
+			if (c == null) {
+				node.setPaint(Color.white);
+			} else
+				node.setPaint(SwingUtil.mergeColors(c, Color.white));
+
+		} else
+			node.setPaint(p);
+
 		return null;
 	}
 

@@ -20,6 +20,8 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
 import org.bbop.framework.AbstractGUIComponent;
@@ -48,6 +50,7 @@ import org.oboedit.graph.SelectionBehavior;
 import org.oboedit.graph.TooltipBehavior;
 import org.oboedit.graph.ZoomToAllGuarantor;
 import org.oboedit.graph.ZoomWidgetBehavior;
+import org.oboedit.gui.HTMLNodeLabelProvider;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.gui.event.SelectionEvent;
@@ -56,50 +59,52 @@ import org.oboedit.util.GUIUtil;
 
 public class DAGViewCanvas extends AbstractGUIComponent {
 
-	public static class GraphDAGViewConfiguration implements ComponentConfiguration {
+	public static class GraphDAGViewConfiguration implements
+			ComponentConfiguration {
 		protected boolean showAnimations = false;
 		protected boolean succinctDisplay = false;
 		protected boolean showPerType = true;
 		protected boolean allTypes = true;
 		protected boolean nonTransitive = false;
 		protected int orientation = HORIZONTAL;
-		
+		protected String htmlExpression = "$name$";
+
 		public boolean isShowAnimations() {
 			return showAnimations;
 		}
-		
+
 		public void setShowAnimations(boolean showAnimations) {
 			this.showAnimations = showAnimations;
 		}
-		
+
 		public boolean isSuccinctDisplay() {
 			return succinctDisplay;
 		}
-		
+
 		public void setSuccinctDisplay(boolean succinctDisplay) {
 			this.succinctDisplay = succinctDisplay;
 		}
-		
+
 		public boolean isShowPerType() {
 			return showPerType;
 		}
-		
+
 		public void setShowPerType(boolean showPerType) {
 			this.showPerType = showPerType;
 		}
-		
+
 		public boolean isAllTypes() {
 			return allTypes;
 		}
-		
+
 		public void setAllTypes(boolean allTypes) {
 			this.allTypes = allTypes;
 		}
-		
+
 		public boolean isNonTransitive() {
 			return nonTransitive;
 		}
-		
+
 		public void setNonTransitive(boolean nonTransitive) {
 			this.nonTransitive = nonTransitive;
 		}
@@ -111,17 +116,26 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		public void setOrientation(int orientation) {
 			this.orientation = orientation;
 		}
+
+		public String getHTMLExpression() {
+			return htmlExpression;
+		}
+
+		public void setHTMLExpression(String htmlExpression) {
+			this.htmlExpression = htmlExpression;
+		}
 	}
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1221804652480622045L;
-	
+
 	public static int HORIZONTAL = 0;
 	public static int VERTICAL = 1;
 
 	protected GraphDAGViewConfiguration config = new GraphDAGViewConfiguration();
-	
+
 	protected OBOSession session;
 
 	protected LinkDatabase linkProviderDatabase;
@@ -142,6 +156,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 			true);
 	protected JCheckBox nonTransitiveBox = new JCheckBox(
 			"Show non-transitive types", false);
+	protected JTextArea htmlArea = new JTextArea();
 
 	protected static final String[] orientations = { "horizontal", "vertical" };
 
@@ -160,7 +175,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		}
 
 	};
-	
+
 	public DAGViewCanvas(String id) {
 		super(id);
 		configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.Y_AXIS));
@@ -175,16 +190,34 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		orientationPanel.add(orientationChooser);
 		orientationPanel.add(Box.createHorizontalGlue());
 		configPanel.add(orientationPanel);
+		JPanel htmlPanel = new JPanel();
+		htmlPanel.setLayout(new BorderLayout());
+		htmlPanel
+				.add(
+						new JLabel(
+								"<html>Enter an expression below that will "
+										+ "determine what information is shown for each term. "
+										+ "To include specific term information, use search "
+										+ "criteria ids enclosed in $ characters. For example, "
+										+ "to display the term name on one line and the term "
+										+ "id in italics on the line below, use the expression "
+										+ "<b>&lt;center&gt;$name$&lt;br&gt;&lt;i&gt;&lt;font "
+										+ "size=-1&gt;$id$&lt;/font&gt;&lt;/i&gt;&lt;/center&gt;</b></html>"),
+						BorderLayout.NORTH);
+		htmlPanel.add(new JScrollPane(htmlArea,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+		configPanel.add(htmlPanel);
 		configPanel.add(Box.createVerticalGlue());
 	}
-	
+
 	protected static JComponent createPanel(JComponent c) {
 		Box out = Box.createHorizontalBox();
 		out.add(c);
 		out.add(Box.createHorizontalGlue());
 		return out;
 	}
-	
+
 	protected void commitConfig() {
 		config.setAllTypes(allTypesBox.isSelected());
 		config.setShowAnimations(showAnimations.isSelected());
@@ -192,9 +225,10 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		config.setShowPerType(showBreakdownBox.isSelected());
 		config.setSuccinctDisplay(succinctCheckbox.isSelected());
 		config.setOrientation(orientationChooser.getSelectedIndex());
+		config.setHTMLExpression(htmlArea.getText());
 		reload();
 	}
-	
+
 	protected void initConfig() {
 		allTypesBox.setAlignmentX(0);
 		showAnimations.setAlignmentX(0);
@@ -204,6 +238,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		showBreakdownBox.setSelected(config.isShowPerType());
 		succinctCheckbox.setSelected(config.isSuccinctDisplay());
 		orientationChooser.setSelectedIndex(config.getOrientation());
+		htmlArea.setText(config.getHTMLExpression());
 	}
 
 	public void setDataProviders(OBOSession session,
@@ -230,7 +265,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 				addViewBehavior(new SelectionBehavior());
 				// addViewBehavior(new LinkoutMeterBehavior());
 				addViewBehavior(new TooltipBehavior());
-				addViewBehavior(new ZoomWidgetBehavior(8,20));
+				addViewBehavior(new ZoomWidgetBehavior(8, 20));
 				addViewBehavior(new BoundsGuarantor() {
 					@Override
 					protected void installDefaultCyclers() {
@@ -241,6 +276,10 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 		};
 		canvas.setDisableAnimations(!config.isShowAnimations());
+		if (canvas.getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+			((HTMLNodeLabelProvider) canvas.getNodeLabelProvider())
+					.setHtmlExpression(config.getHTMLExpression());
+		}
 
 		LinkDatabase linkDatabase;
 		Collection<LinkedObject> objects = new LinkedList<LinkedObject>();
@@ -285,7 +324,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		canvas.relayout();
 		return canvas;
 	}
-	
+
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
 		return configPanel;
@@ -341,8 +380,8 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 					if (!config.isNonTransitive() && !type.isTransitive())
 						continue;
 					Collection<Link> parents = typeMap.get(type);
-					LinkDatabaseCanvas canvas = getCanvas(type, parents,
-							config.isSuccinctDisplay());
+					LinkDatabaseCanvas canvas = getCanvas(type, parents, config
+							.isSuccinctDisplay());
 					JPanel panel = wrapCanvas(type.getID(), canvas);
 					canvasList.add(canvas);
 					componentList.add(panel);
@@ -353,7 +392,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 				dagPanel.setLayout(new GridLayout(1, canvasList.size()));
 			else
 				dagPanel.setLayout(new GridLayout(canvasList.size(), 1));
-			
+
 			for (JComponent c : componentList) {
 				dagPanel.add(c);
 			}
@@ -395,7 +434,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 	public ComponentConfiguration getConfiguration() {
 		return config;
 	}
-	
+
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			updateProviders();
@@ -417,7 +456,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 	public void init() {
 		removeAll();
-		
+
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
 		dagPanel.setOpaque(false);
@@ -438,7 +477,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 			config = new GraphDAGViewConfiguration();
 		this.config = (GraphDAGViewConfiguration) config;
 	}
-	
+
 	public void setXML(String xml) {
 	}
 

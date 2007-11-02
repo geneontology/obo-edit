@@ -192,10 +192,12 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected void doOtherInstallations() {
+		UIManager.put("Tree.paintLines", Boolean.FALSE);
+//		UIManager.put("Tree.rightChildIndent", new Integer(0));
 		FocusMenuManager.install();
 		installDefaultActions();
 		installGlobalScriptObjects();
-		GhostImageController.enable();
+		GhostImageController.enable();		
 	}
 
 	@Override

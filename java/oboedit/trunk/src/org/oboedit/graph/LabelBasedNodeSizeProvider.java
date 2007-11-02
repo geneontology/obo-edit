@@ -31,7 +31,7 @@ public class LabelBasedNodeSizeProvider implements NodeSizeProvider {
 		if (text == null)
 			text = new ViewRenderedStyleText();
 		text.setWidth(initialNodeWidth);
-		text.setText(getLabel(io));
+		text.setText(getLabel(io), true);
 		return new Dimension((int) text.getWidth() + xmargin, (int) text
 				.getHeight()
 				+ ymargin);

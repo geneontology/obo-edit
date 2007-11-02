@@ -31,4 +31,11 @@ public class UnderlineSpecField implements GeneralRendererSpecField<Boolean> {
 		return new EmptyBooleanEditor();
 	}
 
+	public boolean isLinkRenderer() {
+		return false;
+	}
+
+	public boolean isObjectRenderer() {
+		return true;
+	}
 }
