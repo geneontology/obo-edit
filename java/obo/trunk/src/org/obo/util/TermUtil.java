@@ -546,6 +546,8 @@ public class TermUtil {
 		}
 		return list;
 	}
+	
+
 
 	/**
 	 * Returns all non-obsolete {@link OBOProperty OBOProperties} in a
@@ -1127,6 +1129,15 @@ public class TermUtil {
 			return (OBOClass) lo;
 		} else if (isDangling(lo)) {
 			return new DanglingClassImpl(lo.getID());
+		} else
+			return null;
+	}
+	
+	public static OBOProperty castToProperty(LinkedObject lo) {
+		if (lo instanceof OBOProperty) {
+			return (OBOProperty) lo;
+		} else if (isDangling(lo)) {
+			return new DanglingPropertyImpl(lo.getID());
 		} else
 			return null;
 	}
