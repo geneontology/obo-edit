@@ -39,11 +39,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	// pellet results are copied here
 	protected MutableLinkDatabase impliedLinkDatabase;
 	
-//	public PelletWrappedReasoner(MutableLinkDatabase impliedLinkDatabase) {
-//		setImpliedLinkDatabase(impliedLinkDatabase);
-//	}
+
 	
 	// TODO: protected
+	// returns an ATermAppl object made from an OBO object
+	// uses cache
 	public ATermAppl makeATerm(IdentifiedObject lo) {
 		String id = lo.getID();
 		ATermAppl aterm = idToATerm.get(id);
@@ -113,20 +113,36 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 			}
 			else {
 				if (type.equals(OBOProperty.IS_A)) {
-					System.err.println("adding subclass "+c+" < "+p);
-					kb.addSubClass(c,p);
+					if (link.getChild() instanceof OBOProperty) {
+						System.err.println("adding subprop "+c+" < "+p);
+						kb.addSubProperty(c, p);
+					}
+					else {
+						System.err.println("adding subclass "+c+" < "+p);
+						kb.addSubClass(c,p);
+					}
 				}
 				else {
 					ATermAppl t = makeATerm(type);
-					ATermAppl restr = ATermUtils.makeSomeValues(t,p);
-					System.err.println("adding restriction "+c+" < "+restr+" /"+p);
-					kb.addSubClass(c,restr);
+					if (link.getChild() instanceof OBOProperty) {
+						// TODO
+						System.err.println("ignoring "+link);
+					}
+					else {
+						ATermAppl restr = ATermUtils.makeSomeValues(t,p);
+						System.err.println("adding restriction "+c+" < "+restr+" /"+p);
+						kb.addSubClass(c,restr);
+					}
 				}
 			}
 		}
 	}
 
 	public void addProperty(OBOProperty p) {
+		if (p.equals(OBOProperty.IS_A)) {
+			return;
+		}
+		System.out.println("adding prop "+p);
 		ATermAppl atermProp = makeATerm(p);
 		if (p.isTransitive()) {
 			System.out.println("setting to transitive:" +atermProp);
@@ -194,6 +210,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	public Collection<Link> getParents(LinkedObject lo) {
 		ATermAppl aterm = makeATerm(lo);
 		
+		System.out.println(" getting parents of "+lo.getID()+" "+lo);
 		// in OWL, the only class-level relation is subClassOf
 		// non-is_a links are obtained by finding the superclasses that are restrictions
 		Set<Set<ATermAppl>> equivClassSetSet = tax.getSupers(aterm, false);
@@ -247,6 +264,9 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	}
 
 	public boolean isSubPropertyOf(OBOProperty a, OBOProperty b) {
+		if (a.equals(b)) {
+			return true;
+		}
 		for (OBOProperty p : getSuperProperties(a)) {
 			if (p.getID().equals(b.getID())) {
 				return true;
@@ -286,6 +306,8 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		kb = owlReasoner.getKB();
 		System.out.println("kb = "+kb);
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
+			if (io.isBuiltIn())
+				continue;
 			if (io instanceof LinkedObject) {
 				for (Link link : linkDatabase.getParents((LinkedObject) io)) {
 					addLink(link);
