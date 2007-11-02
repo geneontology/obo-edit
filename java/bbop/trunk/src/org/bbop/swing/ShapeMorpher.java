@@ -29,8 +29,8 @@ public class ShapeMorpher {
 	private static void printSideBySide(PathIterator a, String labela, PathIterator b, String labelb, int padAmt) {
 		PathOpList sourceList = new PathOpList(a, false);
 		PathOpList targetList = new PathOpList(b, false);
-		int[] sendpointIndices = sourceList.getSubpathIndices();
-		int[] tendpointIndices = targetList.getSubpathIndices();
+		int[] sendpointIndices = sourceList.getSubpathIndices(false);
+		int[] tendpointIndices = targetList.getSubpathIndices(false);
 
 		System.err.println(StringUtil.pad(labela,' ', padAmt)+"| "+StringUtil.pad(labelb,' ', padAmt));
 		System.err.println(StringUtil.pad("", '-', padAmt)+"+-"+StringUtil.pad("", '-', padAmt));
@@ -69,7 +69,18 @@ public class ShapeMorpher {
 
 		Shape[] shapes = extender.extend(simplifiedSource, simplifiedTarget);
 		massagedSource = shapes[0];
-		massagedTarget = shapes[1];	
+		massagedTarget = shapes[1];
+		
+		PathIterator sourceIterator = massagedSource.getPathIterator(null);
+		PathIterator targetIterator = massagedTarget.getPathIterator(null);
+		lastPoint.setLocation(0,0);
+		while (!sourceIterator.isDone()) {
+			int stype = sourceIterator.currentSegment(sp);
+			int ttype = targetIterator.currentSegment(tp);
+			int outtype = matchCoords(stype, sp, ttype, tp);
+			sourceIterator.next();
+			targetIterator.next();
+		}
 	}
 
 	public Shape getShapeAtTime(float time, GeneralPath out) {
