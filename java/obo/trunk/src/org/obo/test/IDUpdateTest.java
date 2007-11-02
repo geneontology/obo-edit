@@ -17,7 +17,7 @@ import junit.framework.TestSuite;
 
 public class IDUpdateTest extends AbstractOBOTest {
 
-	protected IDUpdateTest(String name) {
+	public IDUpdateTest(String name) {
 		super(name);
 	}
 
