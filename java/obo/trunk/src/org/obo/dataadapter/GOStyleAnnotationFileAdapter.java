@@ -133,12 +133,17 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		return null;
 	}
 	
+	public OBOProperty getEntityToTaxonProperty() {
+		LinkedObject lo =getSessionLinkedObject("has_taxon",OBOClass.OBO_PROPERTY);
+		return TermUtil.castToProperty(lo);
+	}
+	
 	protected Annotation parseAnnotation(String[] colvals) {
 		Annotation ann = new AnnotationImpl(IDUtil.fetchTemporaryID(session));
 		String subjectID = colvals[0]+":"+colvals[1];
 		String objectID = colvals[4];
 		String evCode = colvals[6];
-                
+        
 		String taxID = colvals[12]; // TODO - multi-species
 
 		session.addObject(ann);
@@ -149,6 +154,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		System.out.println("  parsing ev");
         parseEvidence(ann,evCode,colvals[7]);
         System.out.println("  parsed ev");
+        
 		LinkedObject subj =  getSessionLinkedObject(subjectID);
 		OBOProperty rel =  (OBOProperty)getSessionLinkedObject("OBO_REL:has_role",OBOClass.OBO_PROPERTY);
 		ann.setRelationship(rel);
@@ -164,14 +170,16 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 
 		LinkedObject obj = getSessionLinkedObject(objectID);
 		ann.setObject(obj);
+		parseAspect(ann,colvals[8]);
 		if (objectID != lastObjectID) {
 			lastObjectID = objectID;
 			
 		}
-		parseQualifierField(ann,colvals[4]);
-		parseTaxonField(ann,colvals[13]);
-		parseDateField(ann,colvals[14]);
-		parseAssignedByField(ann,colvals[15]);
+		parseQualifierField(ann,colvals[3]);
+		// TODO parseTypeField(ann,colvals[11]);
+		parseTaxonField(ann,colvals[12]);
+		parseDateField(ann,colvals[13]);
+		parseAssignedByField(ann,colvals[14]);
 
 		System.out.println("  done ann");
 		//items.add(item);
@@ -180,7 +188,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 	
 	protected void parseQualifierField(Annotation ann, String qualField) {
-		for(String q : splitOn(qualField,"|")) {
+		for(String q : splitOn(qualField,"\\|")) {
 			if (q.equals("NOT")) {
 				ann.setIsNegated(true);
 			}
@@ -191,8 +199,34 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		}
 	}
 	
+	protected void parseAspect(Annotation ann, String aspect) {
+
+		LinkedObject obj = ann.getObject();
+		if (obj.getNamespace() != null)
+			return; // no need of aspect
+		if (aspect == null || aspect.equals(""))
+			return;
+		
+		// hard-coded for GO
+		// only required for roundtripping GO annotation files 
+		String ns;
+		
+		if (aspect.equals("C"))
+			ns = "cellular_component";
+		else if (aspect.equals("P"))
+			ns = "biological_process";
+		else if (aspect.equals("F"))
+			ns = "molecular_function";
+		else
+			ns = aspect;
+		Namespace nsObj = session.getNamespace(ns);
+		if (nsObj == null)
+			nsObj = session.getObjectFactory().createNamespace(ns, "");
+		obj.setNamespace(nsObj);
+	}
+	
 	protected void parseSynonymField(Annotation ann, String synField, LinkedObject ae) {
-		for(String s : splitOn(synField,"|")) {
+		for(String s : splitOn(synField,"\\|")) {
 			Synonym longname = new SynonymImpl(s);
 			((SynonymedObject)ae).addSynonym(longname);
 		}
@@ -205,35 +239,42 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 
 	protected void parseDateField(Annotation ann, String dateField) {
-		// TODO
+		
+		//ann.setModificationDate(date) TODO
 	}
 
 	protected void parseAssignedByField(Annotation ann, String abField) {
 		// TODO
+		ann.setAssignedBy(abField);
 	}
 	protected void parseEvidence(Annotation ann, String evCode, String withExpr) {
 		Pattern p = Pattern.compile("|");
 		String[] withVals = p.split(withExpr);
 		String evidenceID = "_:ev"+nextEvidenceID;
 			nextEvidenceID++;
-		LinkedObject ev = 
-			(LinkedObject) session.getObjectFactory().
+		Instance ev = 
+			(Instance) session.getObjectFactory().
 			createObject(evidenceID, OBOClass.OBO_INSTANCE, true);
 		session.addObject(ev);
+		OBOClass evCodeClass = (OBOClass)getSessionLinkedObject(evCode);
+		ev.setType(evCodeClass);
 		//ev.setType(evCode);
 		for (String s: withVals) {
 			LinkedObject withObj =
 				(LinkedObject) session.getObjectFactory().
 				createObject(s, OBOClass.OBO_INSTANCE, true);
 			OBOProperty ev2withRel = null;
+			// TODO: 
+			session.getObjectFactory().createPropertyValue("with", s);
 			Link ev2with = new InstancePropertyValue(ev);
 			ev2with.setParent(withObj);
+			ev2with.setChild(ev);
 		}
 		ann.addEvidence(ev);
 	}
 
 	protected void parseTaxonField(Annotation ann, String taxVal) {
-		Pattern p = Pattern.compile("|");
+		Pattern p = Pattern.compile("\\|");
 		String[] taxIDs = p.split(taxVal);
 		
 		for (int i=0; i<taxIDs.length; i++) {
@@ -241,19 +282,23 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			LinkedObject taxObj = getSessionLinkedObject(taxID);
 			if (i==0) {
 				LinkedObject ae = ann.getSubject();
-				makeLink(ae,null,taxObj);
-				OBOProperty subj2taxRel = null;
-				Link subj2tax = new OBORestrictionImpl(ae, subj2taxRel, taxObj);
+				//makeLink(ae,null,taxObj);
+				OBOProperty subj2taxRel = getEntityToTaxonProperty();
+				// TODO: link of correct metatype
+				Link subj2tax = 
+					session.getObjectFactory()
+					.createOBORestriction(ae, subj2taxRel, taxObj, false);
+				ae.addParent(subj2tax);
+					//new OBORestrictionImpl(ae, subj2taxRel, taxObj);
 			}
 			else {
-				makeLink(ann,null,taxObj);
+				// multi-species interactions, 2ary taxon. TODO
+				// makeLink(ann,null,taxObj);
 			}
 		}
 	}
 	
-	public void makeLink(LinkedObject su, String rel, LinkedObject ob) {
-		
-	}
+	
 	
 	// TODO: should we return a DanglingObject?
 	// can we do this and resolve later?
@@ -313,7 +358,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		}
 	}
 	
-	protected void writeAnnotation(PrintStream stream, Annotation annot) {
+	protected void writeAnnotation(PrintStream stream, Annotation annot) throws Exception {
 		String[] colvals = new String[16];
 		System.out.println("writing annot= "+annot);
 		IdentifiedObject su = annot.getSubject();
@@ -326,6 +371,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		colvals[2] = su.getName();
 		
 		//TODO: qualifiers
+		colvals[3] = "";
 		if (annot.getIsNegated()) {
 			colvals[3] = "NOT";
 		}
@@ -333,26 +379,48 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		colvals[4] = ob.getID();
 
 		Collection<String> sources = annot.getSources();
-		colvals[5] = sources.toString();
+		colvals[5] = flattenSet(sources);
 
 		Collection<LinkedObject> evs = annot.getEvidence();
-		//LinkedObject ev = evs.
-		// TODO evid 6
-		// with: TODO 7
-
-		colvals[8] = getAspect(ob);
+		if (evs.size() >1)
+			throw new Exception("can't deal with >1 evidence per annotation yet!");
+		colvals[6] = "";
+		colvals[7] = "";
+		for (LinkedObject ev : evs) {
+			colvals[6] = ((Instance)ev).getType().getID();
+			colvals[7] = flattenSet(ev.getPropertyValues());
+			for (PropertyValue pv : ev.getPropertyValues()) {
+				colvals[7] = "x";
+			}
+		}
 		
-		colvals[9] = ""; // TODO - synonym category
+		colvals[8] = getAspect(ob); // TODO 
+		
+		colvals[9] = "";
+		// colvals[9] = flattenSet(); // TODO - synonym category, fullname
 		colvals[10] = "";
-		if (ob instanceof SynonymedObject) {
-			Set<Synonym> syns = ((SynonymedObject)ob).getSynonyms();
-			colvals[10] = flattenSet(syns);
+		if (su instanceof SynonymedObject) {
+			Set<Synonym> syns = ((SynonymedObject)su).getSynonyms();
+			Collection<String> strs = new LinkedList<String>();
+			for (Synonym syn : syns) {
+				strs.add(syn.getText());
+			}
+			colvals[10] = flattenSet(strs);
+			//colvals[10] = syns.toString();
 		}
 		// type
 		colvals[11]="";
+		if (su instanceof Instance)
+			colvals[11] = ((Instance)su).getType().getID();
 		
 		// taxa
 		colvals[12]="";
+		OBOProperty taxRel = getEntityToTaxonProperty();
+		for (Link link : ((LinkedObject)su).getParents()) {
+			if (link.getType().equals(taxRel)) {
+				colvals[12] = link.getParent().getID();
+			}
+		}
 		
 		colvals[13] = annot.getModificationDate() == null ?
 				"" : annot.getModificationDate().toString();
@@ -371,7 +439,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		System.out.println(" su+ob "+su+" "+ob);
 	}
 	
-	protected String flattenSet(Set set) {
+	protected String flattenSet(Collection set) {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
 			if (s.length() == 0) {
@@ -413,7 +481,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 
 	public String[] splitOn(String s, String delim) {
-		Pattern p = Pattern.compile("|");
+		Pattern p = Pattern.compile(delim);
 		return p.split(s);
 		
 	}
