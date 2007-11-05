@@ -15,35 +15,36 @@ public class ShapeMorpher {
 	protected Shape massagedTarget;
 	protected float[] sp = new float[6];
 	protected float[] tp = new float[6];
-	protected Point2D.Float lastPoint = new Point2D.Float(0,0);
-/*
-	public ShapeMorpher(Shape source, Shape target, ShapeExtender extender) {
-		this.source = source;
-		this.target = target;
-		Shape[] shapes = extender.extend(source, target);
-		massagedSource = shapes[0];
-		massagedTarget = shapes[1];
-	}
-	*/
-	
-	private static void printSideBySide(PathIterator a, String labela, PathIterator b, String labelb, int padAmt) {
+	protected Point2D.Float lastPoint = new Point2D.Float(0, 0);
+
+	/*
+	 * public ShapeMorpher(Shape source, Shape target, ShapeExtender extender) {
+	 * this.source = source; this.target = target; Shape[] shapes =
+	 * extender.extend(source, target); massagedSource = shapes[0];
+	 * massagedTarget = shapes[1]; }
+	 */
+
+	private static void printSideBySide(PathIterator a, String labela,
+			PathIterator b, String labelb, int padAmt) {
 		PathOpList sourceList = new PathOpList(a, false);
 		PathOpList targetList = new PathOpList(b, false);
 		int[] sendpointIndices = sourceList.getSubpathIndices(false);
 		int[] tendpointIndices = targetList.getSubpathIndices(false);
 
-		System.err.println(StringUtil.pad(labela,' ', padAmt)+"| "+StringUtil.pad(labelb,' ', padAmt));
-		System.err.println(StringUtil.pad("", '-', padAmt)+"+-"+StringUtil.pad("", '-', padAmt));
-		for(int i=0; i < sourceList.size() || i < targetList.size(); i++) {
+		System.err.println(StringUtil.pad(labela, ' ', padAmt) + "| "
+				+ StringUtil.pad(labelb, ' ', padAmt));
+		System.err.println(StringUtil.pad("", '-', padAmt) + "+-"
+				+ StringUtil.pad("", '-', padAmt));
+		for (int i = 0; i < sourceList.size() || i < targetList.size(); i++) {
 			boolean isSourceEndpoint = false;
-			for(int index : sendpointIndices) {
+			for (int index : sendpointIndices) {
 				if (index == i) {
 					isSourceEndpoint = true;
 					break;
 				}
 			}
 			boolean isTargetEndpoint = false;
-			for(int index : tendpointIndices) {
+			for (int index : tendpointIndices) {
 				if (index == i) {
 					isTargetEndpoint = true;
 					break;
@@ -55,31 +56,47 @@ public class ShapeMorpher {
 			String targetString = "";
 			if (targetList.size() > i)
 				targetString = targetList.getSegment(i).toString();
-			System.err.println(i+")"+(isSourceEndpoint ? '*' : ' ')+StringUtil.pad(sourceString, ' ', padAmt)+ "|"+(isTargetEndpoint ? '*' : ' ')+StringUtil.pad(targetString, ' ', padAmt));
-		}		
+			System.err.println(i + ")" + (isSourceEndpoint ? '*' : ' ')
+					+ StringUtil.pad(sourceString, ' ', padAmt) + "|"
+					+ (isTargetEndpoint ? '*' : ' ')
+					+ StringUtil.pad(targetString, ' ', padAmt));
+		}
 	}
-	public ShapeMorpher(Shape source, Shape target, double flatness, int limit, ShapeExtender extender) {
+
+	public ShapeMorpher(Shape source, Shape target, double flatness, int limit,
+			ShapeExtender extender) {
 		this.source = source;
 		this.target = target;
 		int padAmt = 50;
 		GeneralPath simplifiedSource = new GeneralPath();
 		GeneralPath simplifiedTarget = new GeneralPath();
-		simplifiedSource.append(new FlatteningPathIterator(source.getPathIterator(null), flatness, limit), false);
-		simplifiedTarget.append(new FlatteningPathIterator(target.getPathIterator(null), flatness, limit), false);
+		simplifiedSource.append(new FlatteningPathIterator(source
+				.getPathIterator(null), flatness, limit), false);
+		simplifiedTarget.append(new FlatteningPathIterator(target
+				.getPathIterator(null), flatness, limit), false);
 
 		Shape[] shapes = extender.extend(simplifiedSource, simplifiedTarget);
 		massagedSource = shapes[0];
 		massagedTarget = shapes[1];
-		
+
 		PathIterator sourceIterator = massagedSource.getPathIterator(null);
 		PathIterator targetIterator = massagedTarget.getPathIterator(null);
-		lastPoint.setLocation(0,0);
+		lastPoint.setLocation(0, 0);
+		int pos = 0;
 		while (!sourceIterator.isDone()) {
-			int stype = sourceIterator.currentSegment(sp);
-			int ttype = targetIterator.currentSegment(tp);
-			int outtype = matchCoords(stype, sp, ttype, tp);
-			sourceIterator.next();
-			targetIterator.next();
+			int stype = -111 , ttype = -111, outtype = -111;
+			try {
+				stype = sourceIterator.currentSegment(sp);
+				ttype = targetIterator.currentSegment(tp);
+				outtype = matchCoords(stype, sp, ttype, tp);
+				sourceIterator.next();
+				targetIterator.next();
+				if (targetIterator.isDone() != sourceIterator.isDone())
+					System.err.println("Aha!");
+				pos++;
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 		}
 	}
 
@@ -96,7 +113,7 @@ public class ShapeMorpher {
 
 		PathIterator sourceIterator = massagedSource.getPathIterator(null);
 		PathIterator targetIterator = massagedTarget.getPathIterator(null);
-		lastPoint.setLocation(0,0);
+		lastPoint.setLocation(0, 0);
 		while (!sourceIterator.isDone()) {
 			int stype = sourceIterator.currentSegment(sp);
 			int ttype = targetIterator.currentSegment(tp);
@@ -110,7 +127,8 @@ public class ShapeMorpher {
 		return out;
 	}
 
-	public static void addOp(GeneralPath out, int op, float[] sp2, Point2D.Float lastPoint) {
+	public static void addOp(GeneralPath out, int op, float[] sp2,
+			Point2D.Float lastPoint) {
 		if (op == PathIterator.SEG_CLOSE)
 			out.closePath();
 		else if (op == PathIterator.SEG_CUBICTO) {
@@ -130,14 +148,16 @@ public class ShapeMorpher {
 			lastPoint.x = sp2[2];
 			lastPoint.y = sp2[3];
 		} else
-			throw new IllegalArgumentException("bad path iterator segment type "+op);
+			throw new IllegalArgumentException(
+					"bad path iterator segment type " + op);
 
 	}
 
-	protected void interpolateCoords(int outtype, float[] sp2, float[] tp2, float time) {
+	protected void interpolateCoords(int outtype, float[] sp2, float[] tp2,
+			float time) {
 		int count = ShapeUtil.getArrayUse(outtype);
-		for(int i=0; i < count; i++)
-			sp2[i] = sp2[i] + (tp2[i] - sp2[i])*time;
+		for (int i = 0; i < count; i++)
+			sp2[i] = sp2[i] + (tp2[i] - sp2[i]) * time;
 	}
 
 	protected int lineToCubic(float[] lessComplexCoords) {
@@ -151,7 +171,8 @@ public class ShapeMorpher {
 	}
 
 	protected int quadToCubic(float[] moreComplexCoords) {
-		throw new UnsupportedOperationException("We don't yet support cubic to quad");
+		throw new UnsupportedOperationException(
+				"We don't yet support cubic to quad");
 	}
 
 	protected int quadToLine(double[] coords) {
@@ -169,7 +190,7 @@ public class ShapeMorpher {
 	protected boolean convertCurveToLine() {
 		return false;
 	}
-	
+
 	protected static boolean isMoreComplex(int op, int op2) {
 		if (op == op2)
 			return false;
@@ -199,7 +220,7 @@ public class ShapeMorpher {
 			lessComplexType = stype;
 			moreComplexCoords = tp2;
 			lessComplexCoords = sp2;
-			
+
 		}
 		if (lessComplexType == PathIterator.SEG_QUADTO) {
 			quadToCubic(lessComplexCoords);
@@ -209,10 +230,12 @@ public class ShapeMorpher {
 			if (moreComplexType == PathIterator.SEG_QUADTO)
 				quadToCubic(moreComplexCoords);
 			return PathIterator.SEG_CUBICTO;
-		} else if (lessComplexType == PathIterator.SEG_CLOSE && moreComplexType == PathIterator.SEG_CLOSE) {
+		} else if (lessComplexType == PathIterator.SEG_CLOSE
+				&& moreComplexType == PathIterator.SEG_CLOSE) {
 			return PathIterator.SEG_CLOSE;
 		}
-		// we shouldn't be able to get here if the other parts are doing their jobs
+		// we shouldn't be able to get here if the other parts are doing their
+		// jobs
 		return -1;
 	}
 }

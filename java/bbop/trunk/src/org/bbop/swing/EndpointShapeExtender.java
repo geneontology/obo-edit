@@ -11,17 +11,11 @@ public class EndpointShapeExtender extends AbstractShapeExtender {
 		int newNodeCount;
 		int smallerStartIndex;
 		int smallerEndIndex;
-		PathOp lastSourceOp = source.getSegment(endSourceIndex);
-		PathOp lastTargetOp = source.getSegment(endTargetIndex);
-		if ((lastSourceOp.getOp() == PathIterator.SEG_CLOSE || lastTargetOp
-				.getOp() == PathIterator.SEG_CLOSE)
-				&& lastSourceOp.getOp() != lastTargetOp.getOp()) {
-			System.err.println("Do something!");
+
+		if (endSourceIndex - startSourceIndex == endTargetIndex
+				- startTargetIndex) {
+			return;
 		}
-			if (endSourceIndex - startSourceIndex == endTargetIndex
-					- startTargetIndex) {
-				return;
-			}
 		if (endSourceIndex - startSourceIndex < endTargetIndex
 				- startTargetIndex) {
 			newNodeCount = (endTargetIndex - startTargetIndex)

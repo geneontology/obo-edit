@@ -51,6 +51,12 @@ public class PluginManager {
 
 		protected Collection<String> classes = new LinkedList<String>();
 
+		public InstallerConfig(Collection<String> classes,
+				Collection<String> libs) {
+			setClasses(classes);
+			setLibs(libs);
+		}
+
 		public InstallerConfig() {
 
 		}

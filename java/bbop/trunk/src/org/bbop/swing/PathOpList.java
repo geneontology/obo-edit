@@ -171,6 +171,10 @@ public class PathOpList {
 		op.setPendingIndex(index);
 		pendingOps.add(op);
 	}
+	
+	public void resetOp(int index, PathOp op) {
+		list.set(index, op);
+	}
 
 	public void flushPendingOps() {
 		Collections.sort(pendingOps, new Comparator<PathOp>() {
@@ -186,7 +190,9 @@ public class PathOpList {
 			int newIndex = op.getPendingIndex();
 			if (newIndex < 0)
 				newIndex = list.size();
-			addOp(newIndex+addedSoFar, op);
+			else
+				newIndex = newIndex + addedSoFar;
+			addOp(newIndex, op);
 			addedSoFar++;
 		}
 	}
