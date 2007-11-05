@@ -3,10 +3,13 @@ package org.oboedit.gui.filter;
 import org.bbop.swing.SwingUtil;
 import org.obo.util.HTMLUtil;
 
-public class BackgroundColorSpecField implements
-		GeneralRendererSpecField<ConfiguredColor> {
+public class BackgroundColorSpecField extends
+		AbstractRendererSpecField<ConfiguredColor> {
 
 	public static final BackgroundColorSpecField FIELD = new BackgroundColorSpecField();
+
+	public BackgroundColorSpecField() {
+	}
 
 	public GeneralRendererSpecFieldEditor<ConfiguredColor> getEditor() {
 		return new ColorSpecEditor();

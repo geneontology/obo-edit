@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class FontFaceSpecField implements GeneralRendererSpecField<String> {
+public class FontFaceSpecField extends AbstractRendererSpecField<String> {
 
 	public static final FontFaceSpecField FIELD = new FontFaceSpecField();
 
+	public FontFaceSpecField() {
+	}
+	
 	public String getID() {
 		return "font_face";
 	}

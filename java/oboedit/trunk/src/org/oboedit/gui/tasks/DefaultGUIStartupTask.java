@@ -26,6 +26,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -48,6 +49,7 @@ import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
+import org.bbop.framework.PluginManager;
 import org.bbop.framework.ViewMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
@@ -68,6 +70,7 @@ import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.datamodel.OBOProperty;
 import org.obo.filters.Filter;
 import org.obo.filters.LinkFilter;
+import org.obo.filters.SearchCriterion;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
 import org.obo.reasoner.impl.LinkPileReasoner;
@@ -77,6 +80,7 @@ import org.obo.util.TermUtil;
 import org.obo.util.VersionNumber;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.ExpressionManager;
+import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.IOManager;
@@ -139,6 +143,7 @@ import org.oboedit.gui.factory.TermImageComponentFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
+import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.menu.EditMenu;
 import org.oboedit.gui.menu.FileMenu;
 import org.oboedit.gui.menu.OEHelpMenu;
@@ -156,7 +161,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new PostLoadVerifyTask(), new FrameNameUpdateTask(),
 				screenLockTask);
 	}
-	
+
 	@Override
 	protected String getAppName() {
 		return "OBO-Edit version " + Preferences.getVersion();
@@ -186,18 +191,32 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ExplanationComponentFactory(),
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
-				new TermImageComponentFactory(), new ConfigurableMessageComponentFactory());
+				new TermImageComponentFactory(),
+				new ConfigurableMessageComponentFactory());
 
 	}
 
 	@Override
 	protected void doOtherInstallations() {
 		UIManager.put("Tree.paintLines", Boolean.FALSE);
-//		UIManager.put("Tree.rightChildIndent", new Integer(0));
+		// UIManager.put("Tree.rightChildIndent", new Integer(0));
 		FocusMenuManager.install();
 		installDefaultActions();
 		installGlobalScriptObjects();
-		GhostImageController.enable();		
+		GhostImageController.enable();
+	}
+	
+	@Override
+	protected void installPlugins() {
+		super.installPlugins();
+		for (SearchCriterion<?,?> crit : PluginManager.getManager()
+				.instantiateAll(SearchCriterion.class)) {
+			FilterManager.getManager().addCriterion(crit);
+		}
+		for(GeneralRendererSpecField<?> field : PluginManager.getManager()
+				.instantiateAll(GeneralRendererSpecField.class)) {
+			FilterManager.getManager().addRenderSpecField(field);
+		}
 	}
 
 	@Override
@@ -238,6 +257,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 			protected Icon filterInvIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
+
+			protected Collection<JComponent> barComponents = new LinkedList<JComponent>();
 
 			public void viewCreated(View v, final GUIComponent c) {
 				if (c instanceof Filterable) {
@@ -313,7 +334,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 						}
 					});
-					v.getCustomTitleBarComponents().add(filterButton);
+					barComponents.add(filterButton);
 				}
 				if (c instanceof ObjectSelector) {
 
@@ -348,12 +369,17 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 							}
 						}
 					});
-
-					v.getCustomTitleBarComponents().add(liveButton);
+					barComponents.add(liveButton);
+				}
+				for (JComponent bc : barComponents) {
+					v.getCustomTitleBarComponents().add(bc);
 				}
 			}
 
 			public void viewDestroyed(View v, GUIComponent c) {
+				for (JComponent bc : barComponents) {
+					v.getCustomTitleBarComponents().remove(bc);
+				}
 			}
 
 		});
@@ -458,6 +484,13 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
 		return CollectionUtil.list(new FileMenu(), new EditMenu(),
 				new ViewMenu(), new OEHelpMenu());
+	}
+
+	@Override
+	protected File[] getPluginDirs() {
+		File[] out = { new File(GUIManager.getPrefsDir(), "extensions"),
+				new File(Preferences.getInstallationDirectory(), "extensions") };
+		return out;
 	}
 
 	protected void installGlobalScriptObjects() {

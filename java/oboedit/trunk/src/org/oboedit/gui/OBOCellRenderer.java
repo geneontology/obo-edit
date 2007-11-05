@@ -46,8 +46,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 	protected final static Color tabBorderColor = Color.blue;
 
-	protected static LineBorder clickBorder = new LineBorder(clickBorderColor);
-
 	protected static LineBorder tabBorder = new LineBorder(tabBorderColor);
 
 	protected LinkRenderSpec linkSpec = new LinkRenderSpec();
@@ -214,7 +212,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			multiIcon.addIcon(linkIcon);
 			linkIcon.setColor(Color.black);
 			linkIcon.setLineWidth(1);
-			linkIcon.setLineType(LineTypes.SOLID_LINE);
+			linkIcon.setLineType(LineType.SOLID_LINE);
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
@@ -244,7 +242,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				Integer width = s.getValue(LineWidthSpecField.FIELD);
 				if (width != null)
 					linkIcon.setLineWidth(width.intValue());
-				LineTypes type = s.getValue(LineTypeSpecField.FIELD);
+				LineType type = s.getValue(LineTypeSpecField.FIELD);
 				if (type != null) {
 					linkIcon.setLineType(type);
 				}
@@ -307,9 +305,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				setOpaque(false);
 				setBackground(null);
 			}
-			if (clickTarget) {
-				setBorder(clickBorder);
-			} else if (tabRow) {
+			if (tabRow) {
 				setBorder(tabBorder);
 			} else {
 				setBorder(null);
@@ -318,6 +314,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
+		validate();
 		return this;
 	}
 }

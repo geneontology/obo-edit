@@ -1,13 +1,16 @@
 package org.oboedit.gui.filter;
 
-import org.oboedit.gui.LineTypes;
+import org.oboedit.gui.LineType;
 
 import net.infonode.gui.icon.button.ArrowIcon;
 
-public class LineTypeSpecField implements GeneralRendererSpecField<LineTypes> {
+public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 
 	public static final LineTypeSpecField FIELD = new LineTypeSpecField();
 
+	public LineTypeSpecField() {
+	}
+	
 	public String getID() {
 		return "line_type";
 	}
@@ -24,8 +27,8 @@ public class LineTypeSpecField implements GeneralRendererSpecField<LineTypes> {
 		throw new UnsupportedOperationException();
 	}
 
-	public GeneralRendererSpecFieldEditor<LineTypes> getEditor() {
-		return new DropdownListSpecEditor<LineTypes>(LineTypes.values());
+	public GeneralRendererSpecFieldEditor<LineType> getEditor() {
+		return new DropdownListSpecEditor<LineType>(LineType.values());
 	}
 
 	public boolean isLinkRenderer() {
@@ -36,11 +39,11 @@ public class LineTypeSpecField implements GeneralRendererSpecField<LineTypes> {
 		return false;
 	}
 
-	public LineTypes merge(LineTypes a, LineTypes b) {
+	public LineType merge(LineType a, LineType b) {
 		return a;
 	}
 
-	public void renderHTML(LineTypes value, StringBuffer in) {
+	public void renderHTML(LineType value, StringBuffer in) {
 		throw new UnsupportedOperationException();
 	}
 }

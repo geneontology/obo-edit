@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.CubicCurve2D;
@@ -33,11 +34,12 @@ public class ArrowIcon implements Icon {
 	protected final boolean arrowheadLeft = true;
 
 	protected int width = 20;
+	protected int no_arrow_width = 1;
 
 	protected TreePath path;
 	protected boolean isLeaf;
 	protected Color color = Color.black;
-	protected LineTypes lineType = LineTypes.SOLID_LINE;
+	protected LineType lineType = LineType.SOLID_LINE;
 	protected int lineWidth = 1;
 
 	protected static HashMap strokeHash = new HashMap();
@@ -50,34 +52,36 @@ public class ArrowIcon implements Icon {
 	}
 
 	public int getIconWidth() {
-		// TODO Auto-generated method stub
 		return width;
+	}
+	
+	protected boolean shouldDrawArrow() {
+		return path.getPathCount() > 3;
 	}
 
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 		try {
+			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			if (path == null)
 				return;
 			Object value = path.getLastPathComponent();
 
 			String hashVal = lineWidth + "-" + getLineType();
-			Stroke stroke = (Stroke) strokeHash.get(hashVal);
+			Stroke stroke = null; // (Stroke) strokeHash.get(hashVal);
 			if (stroke == null) {
 				float[] dash_pattern = null;
-				if (getLineType() == LineTypes.DASHED_LINE
-						|| getLineType() == LineTypes.DASHED_ZIGZAG_LINE) {
+				if (getLineType() == LineType.DASHED_LINE) {
 					dash_pattern = new float[2];
-					dash_pattern[0] = width;
-					dash_pattern[1] = width;
+					dash_pattern[0] = getLineWidth();
+					dash_pattern[1] = getLineWidth()*2;
 				}
-				if (getLineType() == LineTypes.ZIGZAG_LINE
-						|| getLineType() == LineTypes.DASHED_ZIGZAG_LINE) {
+				if (getLineType() == LineType.ZIGZAG_LINE) {
 					stroke = new ZigZagStroke(new BasicStroke(getLineWidth(),
 							BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f,
 							dash_pattern, 0), triangleYSize / 2, 4);
 				} else {
 					stroke = new BasicStroke(getLineWidth(),
-							BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f,
+							BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f,
 							dash_pattern, 0);
 				}
 				strokeHash.put(hashVal, stroke);
@@ -85,11 +89,9 @@ public class ArrowIcon implements Icon {
 
 			int xoffset = triangleOffset;
 
-			boolean drawArrow = path.getPathCount() > 3;
-
 			int modifiedLeft;
 
-			if (drawArrow)
+			if (shouldDrawArrow())
 				modifiedLeft = x + xoffset + triangleXSize - 1;
 			else
 				modifiedLeft = x;
@@ -98,7 +100,14 @@ public class ArrowIcon implements Icon {
 			Shape line = new Line2D.Float(modifiedLeft,
 					y + getIconHeight() / 2, getIconWidth(), y
 							+ getIconHeight() / 2);
-			((Graphics2D) g).fill(stroke.createStrokedShape(line));
+			if (stroke instanceof BasicStroke) {
+				((Graphics2D) g).setStroke(stroke);
+				((Graphics2D) g).draw(line);
+			} else {
+				((Graphics2D) g).fill(stroke.createStrokedShape(line));
+			}
+			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
 			// Stroke oldStroke = ((Graphics2D) g).getStroke();
 			// ((Graphics2D) g).setStroke(stroke);
 			// g.drawLine(modifiedLeft, y + getIconHeight() / 2, getIconWidth(),
@@ -106,7 +115,7 @@ public class ArrowIcon implements Icon {
 			// + getIconHeight() / 2);
 			//
 			// ((Graphics2D) g).setStroke(oldStroke);
-			if (drawArrow) {
+			if (shouldDrawArrow()) {
 				int centerY = y + getIconHeight() / 2;
 				triangleYBuffer[0] = centerY - triangleYSize;
 				triangleYBuffer[1] = centerY + triangleYSize;
@@ -148,16 +157,16 @@ public class ArrowIcon implements Icon {
 		this.color = color;
 	}
 
-	protected LineTypes getLineType() {
+	protected LineType getLineType() {
 		return lineType;
 	}
 
-	protected void setLineType(LineTypes lineType) {
+	protected void setLineType(LineType lineType) {
 		this.lineType = lineType;
 	}
 
 	protected int getLineWidth() {
-		return lineWidth;
+		return lineWidth*1;
 	}
 
 	protected void setLineWidth(int lineWidth) {

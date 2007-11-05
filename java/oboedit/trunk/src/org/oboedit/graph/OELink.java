@@ -22,7 +22,7 @@ import org.obo.util.ExplanationUtil;
 import org.obo.util.HTMLUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
-import org.oboedit.gui.LineTypes;
+import org.oboedit.gui.LineType;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
@@ -80,7 +80,7 @@ public class OELink extends PCNode {
 
 		int weight = 1;
 		Paint typeColor = colorManager.getColor(link.getType());
-		LineTypes type = LineTypes.SOLID_LINE;
+		LineType type = LineType.SOLID_LINE;
 
 		RenderSpec sc = GUIUtil.getSpec(lo, FilterManager.getManager()
 				.getGlobalLinkRenderers(), canvas.getLinkRenderers());
@@ -93,7 +93,7 @@ public class OELink extends PCNode {
 			Integer width = spec.getValue(LineWidthSpecField.FIELD);
 			if (width != null)
 				weight = width.intValue();
-			LineTypes ttype = spec.getValue(LineTypeSpecField.FIELD);
+			LineType ttype = spec.getValue(LineTypeSpecField.FIELD);
 			if (ttype != null) {
 				type = ttype;
 			}
@@ -162,17 +162,15 @@ public class OELink extends PCNode {
 		return (Link) getObject();
 	}
 
-	public void setLineWeight(int lineWeight, LineTypes type, Paint typeColor) {
+	public void setLineWeight(int lineWeight, LineType type, Paint typeColor) {
 		Stroke stroke;
 		float[] dashArr = null;
-		if (type == LineTypes.DASHED_LINE
-				|| type == LineTypes.DASHED_ZIGZAG_LINE) {
+		if (type == LineType.DASHED_LINE) {
 			dashArr = new float[2];
 			dashArr[0] = 1;
 			dashArr[1] = 10;
 		}
-		if (type == LineTypes.ZIGZAG_LINE
-				|| type == LineTypes.DASHED_ZIGZAG_LINE) {
+		if (type == LineType.ZIGZAG_LINE) {
 			stroke = new ZigZagStroke(new BasicStroke(lineWeight,
 					BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
 					dashArr, 0f), ICON_PANEL_HEIGHT / 2, ICON_PANEL_HEIGHT / 2);

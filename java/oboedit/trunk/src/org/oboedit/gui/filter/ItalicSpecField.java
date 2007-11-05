@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class ItalicSpecField implements GeneralRendererSpecField<Boolean> {
+public class ItalicSpecField extends AbstractRendererSpecField<Boolean> {
 
 	public static final ItalicSpecField FIELD = new ItalicSpecField();
 
+	public ItalicSpecField() {
+	}
+	
 	public String getID() {
 		return "italic";
 	}

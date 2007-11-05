@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class FontSizeSpecField implements GeneralRendererSpecField<Integer> {
+public class FontSizeSpecField extends AbstractRendererSpecField<Integer> {
 
 	public static final FontSizeSpecField FIELD = new FontSizeSpecField();
 
+	public FontSizeSpecField() {
+	}
+	
 	public String getID() {
 		return "font_size";
 	}
