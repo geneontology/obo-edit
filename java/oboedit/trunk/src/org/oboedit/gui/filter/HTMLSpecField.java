@@ -1,10 +1,13 @@
 package org.oboedit.gui.filter;
 
-public class HTMLSpecField implements GeneralRendererSpecField<String> {
+public class HTMLSpecField extends AbstractRendererSpecField<String> {
 
 	public static final HTMLSpecField FIELD = new HTMLSpecField();
 	protected static final String REPLACE_SEQ = "$term$";
 
+	public HTMLSpecField() {
+	}
+	
 	public String getID() {
 		return "html_code";
 	}

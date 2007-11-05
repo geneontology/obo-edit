@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class UnderlineSpecField implements GeneralRendererSpecField<Boolean> {
+public class UnderlineSpecField extends AbstractRendererSpecField<Boolean> {
 
 	public static final UnderlineSpecField FIELD = new UnderlineSpecField();
 
+	public UnderlineSpecField() {
+	}
+	
 	public String getID() {
 		return "underline";
 	}

@@ -22,13 +22,13 @@ public class RendererRenderer extends HTMLTableRenderer {
 			RenderedFilter fr = (RenderedFilter) value;
 			if (isLink)
 				return "<html>Display link lines as <b>"
-						+ fr.getSpec().toString()
+						+ fr.getSpec()
 						+ "</b> for links that match<br><i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
 						+ "</i></html>";
 			else
 				return "<html>Display terms lines as <b>"
-						+ fr.getSpec().toString()
+						+ fr.getSpec()
 						+ "</b> for terms that match<br><i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
 						+ "</i></html>";

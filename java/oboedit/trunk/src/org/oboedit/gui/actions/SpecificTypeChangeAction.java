@@ -46,6 +46,7 @@ public class SpecificTypeChangeAction implements ClickMenuAction {
 	}
 
 	public void clickInit(Selection selection, GestureTarget destItem) {
+		isLegal = true;
 		if (selection.getLinks().size() < 1) {
 			isLegal = false;
 			return;

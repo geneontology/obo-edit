@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class StrikeoutSpecField implements GeneralRendererSpecField<Boolean> {
+public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
 
 	public static final StrikeoutSpecField FIELD = new StrikeoutSpecField();
 
+	public StrikeoutSpecField() {
+	}
+	
 	public String getID() {
 		return "strikeout";
 	}

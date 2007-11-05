@@ -125,10 +125,10 @@ public class LinkingButtonBehavior implements ToolbarButtonBehavior {
 					arrowGhost.setPickable(false);
 					arrowGhost.setChildrenPickable(false);
 					MouseEvent me = (MouseEvent) event.getSourceSwingEvent();
-					if (!canvas.getCamera().getViewBounds().contains(dragPos))
-						canvas.getCamera().animateViewToCenterBounds(
-								new Rectangle2D.Double(dragPos.getX(), dragPos
-										.getY(), 1, 1), false, PAN_DURATION);
+//					if (!canvas.getCamera().getViewBounds().contains(dragPos))
+//						canvas.getCamera().animateViewToCenterBounds(
+//								new Rectangle2D.Double(dragPos.getX(), dragPos
+//										.getY(), 1, 1), false, PAN_DURATION);
 					OENode thisDestNode = (OENode) PiccoloUtil.getNodeOfClass(
 							canvas.getCamera().pick(me.getX(), me.getY(), 1),
 							OENode.class);

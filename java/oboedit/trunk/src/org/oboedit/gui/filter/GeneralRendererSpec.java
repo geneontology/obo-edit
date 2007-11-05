@@ -13,6 +13,17 @@ public class GeneralRendererSpec implements RenderSpec {
 
 	protected Map<GeneralRendererSpecField<?>, Object> map = new HashMap<GeneralRendererSpecField<?>, Object>();
 
+	public GeneralRendererSpec() {
+	}
+	
+	public Map<GeneralRendererSpecField<?>, Object> getMap() {
+		return map;
+	}
+	
+	public void setMap(Map<GeneralRendererSpecField<?>, Object> map) {
+		this.map = map;
+	}
+	
 	public GeneralRendererSpec(Object... vals) {
 		if (vals.length % 2 == 1)
 			throw new IllegalArgumentException(

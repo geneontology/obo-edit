@@ -1,9 +1,12 @@
 package org.oboedit.gui.filter;
 
-public class LineWidthSpecField implements GeneralRendererSpecField<Integer> {
+public class LineWidthSpecField extends AbstractRendererSpecField<Integer> {
 
 	public static final LineWidthSpecField FIELD = new LineWidthSpecField();
 
+	public LineWidthSpecField() {
+	}
+	
 	public String getID() {
 		return "line_width";
 	}

@@ -84,9 +84,15 @@ public class DefaultMorpher implements Morpher {
 					.animateToPositionScaleRotation(newNode.getXOffset(),
 							newNode.getYOffset(), newNode.getScale(), newNode
 									.getRotation(), duration));
-			if (newNode.getPaint() instanceof Color)
+			if (newNode.getPaint() != null && newNode.getPaint() instanceof Color
+					&& oldNode.getPaint() != null && oldNode.getPaint() instanceof Color) {
 				relayoutActivity.addActivity(oldNode.animateToColor(
 						(Color) newNode.getPaint(), duration));
+			} else if (newNode.getPaint() != null) {
+				oldNode.setPaint(newNode.getPaint());
+			} else if (oldNode.getPaint() != null) {
+				oldNode.setPaint(null);
+			}
 			relayoutActivity.addActivity(new PCompoundActivity() {
 				@Override
 				protected void activityStarted() {
