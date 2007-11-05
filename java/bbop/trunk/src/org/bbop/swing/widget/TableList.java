@@ -138,13 +138,22 @@ public class TableList<T> extends JComponent {
 			return data.size();
 		}
 
+		public void addValue(T value) {
+			data.add(value);
+			fireTableRowsInserted(data.size() - 1, data.size() - 1);
+		}
+
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			return data.get(rowIndex);
 		}
 
 		public void setValueAt(int rowIndex, T value) {
-			data.set(rowIndex, value);
-			fireTableRowsUpdated(rowIndex, rowIndex);
+			if (rowIndex >= data.size())
+				addValue(value);
+			else {
+				data.set(rowIndex, value);
+				fireTableRowsUpdated(rowIndex, rowIndex);
+			}
 		}
 
 		@Override
@@ -177,7 +186,7 @@ public class TableList<T> extends JComponent {
 			}
 			fireTableStructureChanged();
 		}
-		
+
 		@Override
 		public String getColumnName(int column) {
 			return null;
@@ -238,7 +247,7 @@ public class TableList<T> extends JComponent {
 			add(new JScrollPane(table), "Center");
 		else
 			add(table, "Center");
-		
+
 		if (installButtons)
 			installDefaultButtons();
 	}
@@ -249,8 +258,8 @@ public class TableList<T> extends JComponent {
 		Icon plusIcon = new ImageIcon(getClass().getResource(
 				"/org/bbop/swing/tablelist/resources/plus.gif"));
 		Icon minusIcon = new ImageIcon(getClass().getResource(
-		"/org/bbop/swing/tablelist/resources/minus.gif"));
-		
+				"/org/bbop/swing/tablelist/resources/minus.gif"));
+
 		final JButton add = new JButton(plusIcon);
 		final JButton remove = new JButton(minusIcon);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -273,7 +282,7 @@ public class TableList<T> extends JComponent {
 			public void valueChanged(ListSelectionEvent e) {
 				remove.setEnabled(getSelectedRowCount() > 0);
 			}
-			
+
 		});
 		remove.setEnabled(getSelectedRowCount() > 0);
 	}

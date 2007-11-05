@@ -91,6 +91,7 @@ public abstract class AbstractApplicationStartupTask extends
 		installPlugins();
 		configureUI();
 		GUIManager.getManager().setFrame(createFrame());
+		doPreInstallation();
 		installDefaultDataAdapters();
 		installDefaultComponentFactories();
 		installDefaultTasks();
@@ -99,7 +100,9 @@ public abstract class AbstractApplicationStartupTask extends
 		ComponentManager.getManager().setDriver(createLayoutDriver());
 
 		showFrame();
-
+	}
+	
+	protected void doPreInstallation() {
 	}
 
 	protected void installDefaultTasks() {
@@ -227,7 +230,7 @@ public abstract class AbstractApplicationStartupTask extends
 	}
 
 	protected File[] getPluginDirs() {
-		File[] out = { new File(GUIManager.getPrefsDir(), "." + getAppID()) };
+		File[] out = { new File(GUIManager.getPrefsDir(), "extensions") };
 		return out;
 	}
 

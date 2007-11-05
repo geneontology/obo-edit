@@ -10,6 +10,8 @@ public class PathOp {
 	public PathOp(int op, float [] coords) {
 		this.op = op;
 		this.coords = coords;
+		if (this.coords == null)
+			this.coords = new float[0];
 	}
 	
 	public String toString() {
