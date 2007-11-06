@@ -56,6 +56,8 @@ public class OBDAnnotationSaveTest extends AbstractOBOTest {
 		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 
+		String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
+		
 		// SessionManager.getManager().setSession(session);
 		//linkDatabase = new DefaultLinkDatabase(session);
 		//ReasonerFactory rf = new ForwardChainingReasonerFactory();
@@ -65,18 +67,25 @@ public class OBDAnnotationSaveTest extends AbstractOBOTest {
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
 		wconfig.setSaveImplied(false);
 		
-		wconfig.setWritePath("jdbc:postgresql://localhost:5432/obdtest");
+		wconfig.setWritePath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		//ReasonedLinkDatabase reasoner = rf.createReasoner();
 		//reasoner.setLinkDatabase(linkDatabase);
 		//wadapter.setReasoner(reasoner);
 		//reasoner.recache();
 		wadapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, wconfig, session);
+		
+		// database -> session
+		System.err.println("reading");
+		wconfig.getReadPaths().add(jdbcPath);
+		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
+		System.err.println("read: "+session);
+
 	}
 
 	public void testHasLoaded() {
 		// TODO
-		assertTrue(true);
+		testForName("FB:FBgn0061475","18SrRNA");
 	}
 	
 	// TODO: DRY
