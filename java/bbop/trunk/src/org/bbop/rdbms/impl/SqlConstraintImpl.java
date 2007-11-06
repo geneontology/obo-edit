@@ -21,9 +21,13 @@ public class SqlConstraintImpl extends AbstractRelationalTerm {
 	public void addConstraint(String s) {
 		this.constraints.add(s);	
 	}
+	
+	public void addEqualityConstraint(String s, Object o) {
+		this.constraints.add(s + "=" + o);
+	}
 
 	public String toSQL() {
-		return concat(",", constraints);
+		return concat(" AND ", constraints);
 	}
 
 }

@@ -1,5 +1,7 @@
 package org.bbop.rdbms.impl;
 
+import java.util.Collection;
+
 import org.bbop.rdbms.FromClause;
 import org.bbop.rdbms.GroupByClause;
 import org.bbop.rdbms.OrderByClause;
@@ -49,6 +51,11 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 				null,null);
 	}
 
+	public SqlQueryImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+
 	public String toSQL() {
 		return 
 			getSelectClause().toSQL() + " " +
@@ -70,7 +77,7 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 
 
 	public void addTable(String tbl) {
-		return;
+		fromClause.addRelation(tbl);
 	}
 
 	public FromClause getFromClause() {
@@ -104,5 +111,10 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	public void setWhereClause(WhereClause whereClause) {
 		this.whereClause = whereClause;
 	}
+	
+	public Collection<Object> getPlaceHolderVals() {
+		return whereClause.getPlaceHolderVals();
+	}
+
 	
 }
