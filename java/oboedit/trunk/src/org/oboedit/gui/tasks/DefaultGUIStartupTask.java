@@ -129,6 +129,7 @@ import org.oboedit.gui.factory.ExtendedInfoFactory;
 import org.oboedit.gui.factory.GlobalFilterManagerFactory;
 import org.oboedit.gui.factory.GraphDAGViewFactory;
 import org.oboedit.gui.factory.GraphEditorFactory;
+import org.oboedit.gui.factory.GraphvizViewFactory;
 import org.oboedit.gui.factory.HistoryBrowserFactory;
 import org.oboedit.gui.factory.IDManagerFactory;
 import org.oboedit.gui.factory.IntersectionEditorFactory;
@@ -174,7 +175,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new DAGViewFactory(), new GraphDAGViewFactory(),
 				new SearchComponentFactory(), new LinkSearchComponentFactory(),
 				new IntersectionEditorFactory(), new CategoryManagerFactory(),
-
+				new GraphvizViewFactory(),
 				new SynonymCategoryManagerFactory(),
 				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
 				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
