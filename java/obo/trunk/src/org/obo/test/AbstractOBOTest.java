@@ -9,10 +9,13 @@ import org.obo.datamodel.CategorizedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
@@ -92,6 +95,17 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(ok);
 	}
 	
+	public void testForSynonym(String id, String syn) {
+		SynonymedObject io = (SynonymedObject) session.getObject(id);
+		boolean ok = false;
+		for (Synonym x: io.getSynonyms()) {
+			if (x.getText().equals(syn)) {
+				ok = true;
+			}
+		}
+		assertTrue(ok);
+	}
+	
 	public void testForNamespace(String id, String nsId)  {
 		LinkedObject lo = (LinkedObject) session.getObject(id);
 		Namespace ns = lo.getNamespace();
@@ -102,6 +116,11 @@ public abstract class AbstractOBOTest extends TestCase {
 		DefinedObject lo = (DefinedObject) session.getObject(id);
 		String defCurr = lo.getDefinition();
 		assertTrue(defCurr.equals(def));	
+	}
+	
+	public void testForName(String id, String name)  {
+		IdentifiedObject lo =  session.getObject(id);
+		assertTrue(lo.getName().equals(name));	
 	}
 
 
