@@ -3,12 +3,12 @@ package org.bbop.rdbms.impl;
 import org.bbop.rdbms.FromClause;
 import org.bbop.rdbms.GroupByClause;
 import org.bbop.rdbms.OrderByClause;
-import org.bbop.rdbms.Query;
+import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.SelectClause;
 import org.bbop.rdbms.WhereClause;
 
 
-public class SqlQueryImpl extends AbstractRelationalTerm implements Query {
+public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQuery {
 
 	protected SelectClause selectClause = new SqlSelectClauseImpl();
 	protected FromClause fromClause = new SqlFromClauseImpl();
