@@ -71,7 +71,7 @@ public class TermUtil {
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
 			Collection<LinkedObject> out = memoizeTable.get(term);
-			if (out != null) {
+			if (memoizeTable.containsKey(term)) {
 				progress += (int) incSize;
 				return out;
 			}
@@ -120,7 +120,7 @@ public class TermUtil {
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
 			Collection<LinkedObject> out = memoizeTable.get(term);
-			if (out != null) {
+			if (memoizeTable.containsKey(term)) {
 				progress += (int) incSize;
 				return out;
 			}

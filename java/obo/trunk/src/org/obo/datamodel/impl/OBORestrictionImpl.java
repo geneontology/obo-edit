@@ -180,6 +180,10 @@ public class OBORestrictionImpl implements OBORestriction {
 	public boolean isImplied() {
 		return implied;
 	}
+	
+	public OBORestrictionImpl(boolean implied) {
+		this(null, null, null, implied);
+	}
 
 	public OBORestrictionImpl(Link link) {
 		this(link.getChild(), link.getType(), link.getParent());

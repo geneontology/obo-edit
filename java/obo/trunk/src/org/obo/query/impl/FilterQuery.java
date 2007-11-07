@@ -43,7 +43,7 @@ public class FilterQuery<T> implements Query<T, SearchHit<T>> {
 		return null;
 	}
 
-	public Class<? super T> getInputType() {
+	public Class<T> getInputType() {
 		return inputType;
 	}
 

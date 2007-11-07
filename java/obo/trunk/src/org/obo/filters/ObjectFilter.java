@@ -1,5 +1,7 @@
 package org.obo.filters;
 
+import org.obo.datamodel.LinkedObject;
+
 public interface ObjectFilter extends PathCapableFilter {
 
 	public boolean getNegate();
