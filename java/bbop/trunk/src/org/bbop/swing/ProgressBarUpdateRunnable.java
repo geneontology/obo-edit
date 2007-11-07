@@ -11,7 +11,7 @@ public class ProgressBarUpdateRunnable extends AbstractPeriodicUpdateRunnable {
 	public ProgressBarUpdateRunnable(BackgroundEventQueue queue,
 			JProgressBar progressBar) {
 		super(queue, true);
-		this.progressBar = progressBar;
+		this.progressBar = progressBar; 
 	}
 
 	@Override
@@ -21,11 +21,16 @@ public class ProgressBarUpdateRunnable extends AbstractPeriodicUpdateRunnable {
 	@Override
 	protected void doUpdate(TaskDelegate<?> task) {
 		Number n = task.getProgressValue();
-		if (n != null)
+		System.err.println("!!!updating progress bar with "+n);
+		if (n != null) {
+			progressBar.setIndeterminate(false);
 			progressBar.setValue(n.intValue());
+		} else
+			progressBar.setIndeterminate(true);
 		String s = task.getProgressString();
 		if (s != null)
 			progressBar.setString(s);
+		progressBar.repaint();
 	}
 
 	@Override

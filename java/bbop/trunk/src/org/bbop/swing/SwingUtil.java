@@ -163,6 +163,19 @@ public class SwingUtil {
 		c.getInputMap(condition).put(keyStroke, key);
 	}
 
+	/**
+	 * Generic-ified version of SwingUtilities.getAncestorOfClass()
+	 */
+	public static <T> T getAncestorOfClass(Class<T> c, Component comp) {
+		if (comp == null || c == null)
+			return null;
+
+		Container parent = comp.getParent();
+		while (parent != null && !(c.isInstance(parent)))
+			parent = parent.getParent();
+		return (T) parent;
+	}
+
 	public static Image getImage(Component c) {
 		GraphicsEnvironment ge = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
@@ -252,6 +265,14 @@ public class SwingUtil {
 		int x = (screenSize.width - windowSize.width) / 2;
 		int y = (screenSize.height - windowSize.height) / 2;
 		win.setLocation(x, y);
+	}
+
+	public static void center(Window relativeToMe, Window centerMe) {
+		int x = relativeToMe.getX()
+				+ (relativeToMe.getWidth() - centerMe.getWidth()) / 2;
+		int y = relativeToMe.getY()
+				+ (relativeToMe.getHeight() - centerMe.getHeight()) / 2;
+		centerMe.setLocation(x, y);
 	}
 
 	public static ComponentUI getUI(JComponent component) {

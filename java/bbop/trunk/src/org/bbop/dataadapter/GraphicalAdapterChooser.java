@@ -998,7 +998,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		dialog.setModal(true);
 		dialog.setTitle(title);
 		dialog.pack();
-		SwingUtil.center(dialog);
+		SwingUtil.center(owner, dialog);
 		dialog.setVisible(true);
 		dialog.dispose();
 		return committed;
