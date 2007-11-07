@@ -102,8 +102,8 @@ public class IOManager {
 		}
 
 		OBOSession session = showLoadDialog();
-		session.setCurrentUser(Preferences.getPreferences().getUserName());
 		if (session != null) {
+			session.setCurrentUser(Preferences.getPreferences().getUserName());
 			SessionManager.getManager().setSession(session);
 		}
 	}
@@ -227,7 +227,8 @@ public class IOManager {
 
 			gac.setHistoryPath(Preferences.getPreferences()
 					.getHistoryFilePath());
-			boolean worked = gac.showDialog("Save ontology", null);
+			boolean worked = gac.showDialog("Save ontology", GUIManager
+					.getManager().getFrame());
 			if (worked) {
 				OBOSession session = (OBOSession) gac.getResult();
 				SessionManager.getManager().markChangesFlushed();
@@ -251,7 +252,8 @@ public class IOManager {
 						.getPreferences().getUseModalProgressMonitors(), input);
 
 		gac.setHistoryPath(Preferences.getPreferences().getHistoryFilePath());
-		boolean worked = gac.showDialog(op.getName(), null);
+		boolean worked = gac.showDialog(op.getName(), GUIManager.getManager()
+				.getFrame());
 		if (worked) {
 			return gac.getResult();
 		} else
@@ -269,7 +271,8 @@ public class IOManager {
 
 			gac.setHistoryPath(Preferences.getPreferences()
 					.getHistoryFilePath());
-			boolean worked = gac.showDialog("Load ontology", null);
+			boolean worked = gac.showDialog("Load ontologies", GUIManager
+					.getManager().getFrame());
 			if (worked) {
 				OBOSession session = (OBOSession) gac.getResult();
 				return session;

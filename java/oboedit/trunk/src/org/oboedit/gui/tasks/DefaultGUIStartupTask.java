@@ -5,35 +5,23 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
-import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
 import net.infonode.docking.View;
@@ -42,26 +30,23 @@ import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.expression.ExpressionException;
 import org.bbop.framework.AbstractApplicationStartupTask;
-import org.bbop.framework.AbstractSingleActionTask;
-import org.bbop.framework.ComponentManager;
 import org.bbop.framework.DockPanelFactory;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
 import org.bbop.framework.PluginManager;
+import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.ViewMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
 import org.bbop.framework.dock.idw.IDWDriver;
 import org.bbop.framework.dock.idw.IDWUtil;
 import org.bbop.framework.dock.idw.ViewListener;
-import org.bbop.io.LoggerStream;
-import org.bbop.io.MultiOutputStream;
 import org.bbop.swing.GhostImageController;
-import org.bbop.swing.SwingUtil;
 import org.bbop.util.CollectionUtil;
-import org.bbop.util.ExceptionLogger;
+import org.bbop.util.MultiArrayListMap;
+import org.bbop.util.MultiMap;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OWLURLReaderAdapter;
@@ -69,12 +54,9 @@ import org.obo.dataadapter.SerialAdapter;
 import org.obo.dataadapter.XMLHistoryAdapter;
 import org.obo.datamodel.OBOProperty;
 import org.obo.filters.Filter;
-import org.obo.filters.LinkFilter;
 import org.obo.filters.SearchCriterion;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDGenerator;
-import org.obo.reasoner.impl.LinkPileReasoner;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.obo.util.VersionNumber;
@@ -113,7 +95,6 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
-import org.oboedit.gui.components.ConfigurableTextComponent;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
@@ -140,7 +121,6 @@ import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
-import org.oboedit.gui.factory.TermImageComponentFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
@@ -192,7 +172,6 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ExplanationComponentFactory(),
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
-				new TermImageComponentFactory(),
 				new ConfigurableMessageComponentFactory());
 
 	}
@@ -206,15 +185,15 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		installGlobalScriptObjects();
 		GhostImageController.enable();
 	}
-	
+
 	@Override
 	protected void installPlugins() {
 		super.installPlugins();
-		for (SearchCriterion<?,?> crit : PluginManager.getManager()
+		for (SearchCriterion<?, ?> crit : PluginManager.getManager()
 				.instantiateAll(SearchCriterion.class)) {
 			FilterManager.getManager().addCriterion(crit);
 		}
-		for(GeneralRendererSpecField<?> field : PluginManager.getManager()
+		for (GeneralRendererSpecField<?> field : PluginManager.getManager()
 				.instantiateAll(GeneralRendererSpecField.class)) {
 			FilterManager.getManager().addRenderSpecField(field);
 		}
@@ -242,7 +221,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	protected Font getFont() {
 		return Preferences.getPreferences().getFont();
-	}
+	}  
 
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = (IDWDriver) super.createLayoutDriver();
@@ -259,7 +238,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			protected Icon filterInvIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
 
-			protected Collection<JComponent> barComponents = new LinkedList<JComponent>();
+			protected MultiMap<GUIComponent, JComponent> compMap =
+				new MultiArrayListMap<GUIComponent, JComponent>();
 
 			public void viewCreated(View v, final GUIComponent c) {
 				if (c instanceof Filterable) {
@@ -335,7 +315,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 						}
 					});
-					barComponents.add(filterButton);
+					compMap.add(c, filterButton);
 				}
 				if (c instanceof ObjectSelector) {
 
@@ -370,17 +350,18 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 							}
 						}
 					});
-					barComponents.add(liveButton);
+					compMap.add(c, liveButton);
 				}
-				for (JComponent bc : barComponents) {
+				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().add(bc);
 				}
 			}
 
 			public void viewDestroyed(View v, GUIComponent c) {
-				for (JComponent bc : barComponents) {
+				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().remove(bc);
 				}
+				compMap.remove(c);
 			}
 
 		});

@@ -254,20 +254,11 @@ public class LinkButtonBehavior implements ViewBehavior {
 			} else {
 				Collection<LinkedObject> removeUs = new LinkedList<LinkedObject>();
 				if (loc.isChildren()) {
-					// Collection<Link> links
 					removeUs = TermUtil.getDescendants(lo, canvas
 							.getLinkDatabase(), false);
-					/*
-					 * for (Link link : links) { removeUs.add(link.getChild()); }
-					 */
 				} else {
 					removeUs = TermUtil.getAncestors(lo, canvas
 							.getLinkDatabase(), false);
-					/*
-					 * Collection<Link> links =
-					 * canvas.getLinkProviderDatabase() .getParents(lo); for
-					 * (Link link : links) { removeUs.add(link.getParent()); }
-					 */
 				}
 				canvas.removeVisibleObjects(removeUs);
 

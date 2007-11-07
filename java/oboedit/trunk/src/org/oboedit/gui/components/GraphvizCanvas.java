@@ -644,11 +644,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	LinkListener linkListener = new LinkListener();
 
 	protected SelectionListener selectionListener = new SelectionListener() {
-		public void select(SelectionEvent e) {
-			reloadImage();
-		}
 
-		@Override
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();

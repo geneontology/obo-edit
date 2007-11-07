@@ -23,6 +23,7 @@ import org.bbop.framework.GUIComponent;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.filters.Filter;
+import org.obo.reasoner.impl.OnTheFlyReasoner.ReasonerLink;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
@@ -44,6 +45,7 @@ import org.oboedit.graph.VisibilityDropBehavior;
 import org.oboedit.graph.ZoomWidgetBehavior;
 import org.oboedit.gui.EditActionToolbar;
 import org.oboedit.gui.HTMLNodeLabelProvider;
+import org.oboedit.gui.InputHandlerI;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.gui.event.SelectionEvent;
@@ -110,28 +112,6 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected String id;
 
 	protected String title;
-
-	protected SelectionListener globalSelectionListener = new SelectionListener() {
-		public void selectionChanged(SelectionEvent e) {
-			if (isLive) {
-				removeSelectionListener(globalSelectionNotifier);
-				select(e.getSelection());
-				addSelectionListener(globalSelectionNotifier);
-			}
-		}
-	};
-
-	protected SelectionListener globalSelectionNotifier = new SelectionListener() {
-		public void selectionChanged(SelectionEvent e) {
-			if (isLive()) {
-				SelectionManager.getManager().removeSelectionListener(
-						globalSelectionListener);
-				SelectionManager.setGlobalSelection(getSelection());
-				SelectionManager.getManager().addSelectionListener(
-						globalSelectionListener);
-			}
-		}
-	};
 
 	public String getTitle() {
 		if (title == null)
@@ -267,7 +247,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		addViewBehavior(new BoundsGuarantor());
 		addViewBehavior(new FocusPicker());
 		addViewBehavior(new QuickSearchBehavior());
-		addViewBehavior(new SelectionBehavior());
+		addViewBehavior(new SelectionBehavior(false));
 		addViewBehavior(new LinkButtonBehavior());
 		addViewBehavior(new ZoomWidgetBehavior());
 		addViewBehavior(new TooltipBehavior());
@@ -283,19 +263,16 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	public void init() {
 		setDropTarget(dropTarget);
-		SelectionManager.getManager().addSelectionListener(
-				globalSelectionListener);
-		addSelectionListener(globalSelectionNotifier);
+
 		GUIUtil.addReloadListener(reloadListener);
 		updateDatasources();
 		toolbar.updateGestureList();
 	}
 
 	public void cleanup() {
+		super.cleanup();
 		setDropTarget(null);
-		SelectionManager.getManager().removeSelectionListener(
-				globalSelectionListener);
-		removeSelectionListener(globalSelectionNotifier);
+
 		GUIUtil.removeReloadListener(reloadListener);
 		Collection<ViewBehavior> temp = new LinkedList<ViewBehavior>(
 				viewBehaviors);
@@ -328,11 +305,13 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			basicHTML = ((HTMLNodeLabelProvider) getNodeLabelProvider())
 					.getHtmlExpression();
 		}
+		InputHandlerI handler = toolbar.getCurrentHandler();
+		String handlerID = handler == null ? null : handler.getID();
 		return new GraphEditorConfiguration(getTermFilter(), getLinkFilter(),
 				getObjectRenderers(), getLinkRenderers(), basicHTML,
 				getDisableAnimations(), getLayoutDuration(), toolbar
 						.getShowToolbar(), toolbar.getToolbarPosition(),
-				toolbar.getCurrentHandler().getID(), isRevertToDefaultAction(),
+				handlerID, isRevertToDefaultAction(),
 				isLive(), algorithmStr, isExpandSelectionPaths());
 	}
 

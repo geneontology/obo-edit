@@ -12,9 +12,11 @@ public class DropdownListSpecEditor<T> extends JPanel implements
 	protected JComboBox valueBox = new JComboBox();
 
 	public DropdownListSpecEditor(T... values) {
-		for(T v : values) {
+		for (T v : values) {
 			valueBox.addItem(v);
 		}
+		if (valueBox.getItemCount() > 0)
+			valueBox.setSelectedIndex(0);
 		add(valueBox);
 	}
 
@@ -23,6 +25,9 @@ public class DropdownListSpecEditor<T> extends JPanel implements
 	}
 
 	public void setValue(T o) {
-		valueBox.setSelectedItem(o);
+		if (o == null && valueBox.getItemCount() > 0)
+			valueBox.setSelectedIndex(0);
+		else
+			valueBox.setSelectedItem(o);
 	}
 }

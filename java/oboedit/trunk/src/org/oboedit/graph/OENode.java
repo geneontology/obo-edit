@@ -11,7 +11,6 @@ import org.obo.util.FilterUtil;
 import org.obo.util.HTMLUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.gui.components.TermImageDisplayComponent;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;

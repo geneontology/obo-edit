@@ -177,6 +177,8 @@ public class OntologyEditorConfigEditor extends ConfigurationPanel {
 		showToolbarBox.setSelectedIndex(config.getShowToolbar());
 		revertToDefaultAction.setSelected(config.isRevertToDefaultAction());
 		htmlArea.setText(config.getBasicHTML());
+		termRendererList.setData(config.getObjectRenderers());
+		linkRendererList.setData(config.getLinkRenderers());
 	}
 
 	protected void updateConfigFilterPanels() {

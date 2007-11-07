@@ -199,9 +199,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	protected static Collection<IdentifiedObject> getLinkedObjectCollection(
-			Collection<? extends PathCapable> pcs) {
+			Collection<?> pcs) {
 		Collection<IdentifiedObject> out = new HashSet<IdentifiedObject>();
-		for (PathCapable pc : pcs) {
+		for (Object pc : pcs) {
 			if (pc instanceof LinkedObject)
 				out.add((LinkedObject) pc);
 			else if (pc instanceof Link) {
@@ -212,6 +212,28 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		}
 		return out;
 	}
+	
+	protected SelectionListener globalSelectionListener = new SelectionListener() {
+		public void selectionChanged(SelectionEvent e) {
+			if (isLive) {
+				removeSelectionListener(globalSelectionNotifier);
+				select(e.getSelection());
+				addSelectionListener(globalSelectionNotifier);
+			}
+		}
+	};
+
+	protected SelectionListener globalSelectionNotifier = new SelectionListener() {
+		public void selectionChanged(SelectionEvent e) {
+			if (isLive()) {
+				SelectionManager.getManager().removeSelectionListener(
+						globalSelectionListener);
+				SelectionManager.setGlobalSelection(getSelection());
+				SelectionManager.getManager().addSelectionListener(
+						globalSelectionListener);
+			}
+		}
+	};
 
 	protected Collection<NodeDecorator> decorators = new LinkedList<NodeDecorator>();
 
@@ -410,11 +432,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			if (io instanceof LinkedObject)
 				current.add((LinkedObject) io);
 		}
-		System.err.println("CURRENT: "+current);
 		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible); 
-		System.err.println("  LOCOL: "+loCol);
 		current.addAll(loCol);
-//		linkDatabase.setVisibleObjects(current, true);
 		linkDatabase.setVisibleObjects(current, false);
 	}
 
@@ -1013,6 +1032,15 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 					}
 
 				});
+		SelectionManager.getManager().addSelectionListener(
+				globalSelectionListener);
+		addSelectionListener(globalSelectionNotifier);		
+	}
+	
+	protected void cleanup() {
+		SelectionManager.getManager().removeSelectionListener(
+				globalSelectionListener);
+		removeSelectionListener(globalSelectionNotifier);
 	}
 
 	protected void installRightClickBehaviors() {
@@ -1116,7 +1144,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 		linkDatabase.cleanupCache();
 
-		newLayer = layoutEngine.getNewLayer(getLayer());
+		newLayer = layoutEngine.getNewLayer();
 		decorateNode(getRoot(), newLayer, decorators, true, true);
 
 		morpher.setNewNodeOriginNode(getFocusedNode());
@@ -1400,8 +1428,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		this.termFilter = termFilter;
 		updateDatasources();
 	}
-
-	public void setVisibleObjects(Collection<? extends PathCapable> visible) {
+	
+	public void setVisibleObjects(Collection<?> visible) {
 		linkDatabase.setVisibleObjects(getLinkedObjectCollection(visible),
 				false);
 	}

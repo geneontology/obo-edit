@@ -59,7 +59,7 @@ public class LinkDatabaseLayoutEngine {
 		sizeProviders.remove(provider);
 	}
 
-	protected void initializeData(PNode oldLayer) {
+	protected void initializeData() {
 		// ViewRenderedStyleText text = null;
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (TermUtil.isProperty(io) || TermUtil.isObsolete(io)
@@ -95,8 +95,6 @@ public class LinkDatabaseLayoutEngine {
 			 * height) height = h; }
 			 */
 			graphLayout.setNodeDimensions(io, width, height);
-			System.err.println(":: suggested size for " + io.getID()
-					+ " = width=" + width + ", height=" + height);
 		}
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io instanceof LinkedObject && !io.isBuiltIn()) {
@@ -112,14 +110,19 @@ public class LinkDatabaseLayoutEngine {
 	protected String getLabel(IdentifiedObject io) {
 		return io.getName();
 	}
-
-	public PNode getNewLayer(PNode oldLayer) {
+	
+	public GraphLayout getLayout() {
 		graphLayout.reset();
-		initializeData(oldLayer);
+		initializeData();
+		graphLayout.doLayout();
+		return graphLayout;
+	}
+
+	public PNode getNewLayer() {
+		graphLayout.reset();
+		initializeData();
 		graphLayout.doLayout();
 		PNode out = new PNode();
-		System.err.println("LDLE.linkDatabase.objects = "
-				+ linkDatabase.getObjects());
 		List<IdentifiedObject> objects = new ArrayList<IdentifiedObject>();
 		objects.addAll(linkDatabase.getObjects());
 		Collections.sort(objects, new Comparator<IdentifiedObject>() {

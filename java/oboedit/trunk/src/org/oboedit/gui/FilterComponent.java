@@ -26,6 +26,7 @@ import org.bbop.framework.GUIManager;
 import org.bbop.io.IOUtil;
 import org.obo.filters.Filter;
 import org.obo.filters.PathCapableFilter;
+import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -83,7 +84,7 @@ public class FilterComponent extends JPanel {
 		searchButton.setVisible(visible);
 		validate();
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		uninstallListeners();
@@ -95,10 +96,16 @@ public class FilterComponent extends JPanel {
 
 	public Filter<?> getFilter() {
 		Filter<?> out = contentPanel.getFilter();
-		if (out instanceof PathCapableFilter
-				&& SessionManager.getManager().getUseReasoner()) {
-			((PathCapableFilter) out).setReasonedLinkDatabase(SessionManager
-					.getManager().getReasoner());
+		if (out instanceof PathCapableFilter) {
+			if (SessionManager.getManager().getUseReasoner())
+				((PathCapableFilter) out)
+						.setReasonedLinkDatabase(SessionManager.getManager()
+								.getReasoner());
+			else
+				((PathCapableFilter) out)
+						.setReasonedLinkDatabase(new OnTheFlyReasoner(
+								SessionManager.getManager()
+										.getCurrentLinkDatabase()));
 		}
 		return out;
 	}
@@ -123,11 +130,11 @@ public class FilterComponent extends JPanel {
 		else
 			return null;
 	}
-	
+
 	public RenderedFilter getRenderedFilter() {
 		return new RenderedFilter(getFilter(), getRenderSpec());
 	}
-	
+
 	public void setRenderedFilter(RenderedFilter rf) {
 		setFilter(rf.getFilter());
 		setRenderSpec(rf.getSpec());

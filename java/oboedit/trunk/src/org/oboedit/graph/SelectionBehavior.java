@@ -32,6 +32,7 @@ public class SelectionBehavior implements ViewBehavior, NodeDecorator {
 	public static final Object STROKE_PATH_KEY = new Object();
 
 	protected LinkDatabaseCanvas canvas;
+	protected boolean generateSelections = false;
 
 	protected Paint selectionPaint = Preferences.defaultSelectionColor();
 
@@ -40,17 +41,30 @@ public class SelectionBehavior implements ViewBehavior, NodeDecorator {
 			canvas.decorate();
 		}
 	};
+	protected PInputEventListener inputListener;
+	
+	public SelectionBehavior(boolean generateSelections) {
+		this.generateSelections = generateSelections;
+	}
 
 	public void install(LinkDatabaseCanvas canvas) {
 		this.canvas = canvas;
-		// canvas.addInputEventListener(mouseListener);
+
+		if (generateSelections) {
+			inputListener = new SelectionMouseListener(canvas);
+			canvas.addInputEventListener(inputListener);
+		}
+			
 		canvas.addSelectionListener(selectionListener);
 		canvas.addDecorator(this);
 	}
 
 	public void uninstall(LinkDatabaseCanvas canvas) {
 		this.canvas = null;
-		// canvas.getLayer().removeInputEventListener(mouseListener);
+		if (generateSelections) {
+			canvas.removeInputEventListener(inputListener);
+		}
+
 		canvas.removeSelectionListener(selectionListener);
 		canvas.removeDecorator(this);
 	}

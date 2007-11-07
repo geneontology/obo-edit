@@ -6,9 +6,11 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +24,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
+import org.bbop.swing.TaskPanel;
+import org.bbop.util.AbstractTaskDelegate;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
@@ -39,6 +44,7 @@ import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.datamodel.impl.MaskedLinkDatabase;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
@@ -145,8 +151,11 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 	protected List<LinkedObject> terms = new LinkedList<LinkedObject>();
 
 	protected JPanel dagPanel = new JPanel();
+	protected TaskPanel taskPanel = new TaskPanel();
 
 	protected JLabel topLabel = new JLabel();
+
+	Collection<LinkDatabaseCanvas> canvasList;
 
 	protected JCheckBox showAnimations = new JCheckBox("Animate", false);
 	protected JCheckBox succinctCheckbox = new JCheckBox("Succinct", true);
@@ -175,6 +184,76 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		}
 
 	};
+
+	protected class ReloadTaskDelegate extends
+			AbstractTaskDelegate<Map<String, LinkDatabase>> {
+
+		public ReloadTaskDelegate() {
+			setSwingFriendly(true);
+			addPostExecuteRunnable(new Runnable() {
+				public void run() {
+					updatePanels(getResults());
+				}
+			});
+		}
+		
+		@Override
+		protected void setProgressValue(Integer progress) {
+			// TODO Auto-generated method stub
+			super.setProgressValue(progress);
+		}
+
+		@Override
+		public void execute() throws Exception {
+			long time = System.currentTimeMillis();
+			setProgressValue(null);
+			setProgressString("Working...");
+			int totalCount = 0;
+			if (config.isAllTypes())
+				totalCount++;
+			Map<OBOProperty, Collection<Link>> typeMap = null;
+			if (config.isShowPerType()) {
+				typeMap = getTypeMap();
+				totalCount += typeMap.size();
+			}
+			Map<String, LinkDatabase> databases = new LinkedHashMap<String, LinkDatabase>();
+			int currentProgress = 0;
+			if (config.isAllTypes()) {
+				Collection<Link> parents = new HashSet<Link>();
+				for (LinkedObject lo : terms) {
+					for (Link link : reasoner.getParents(lo)) {
+						if (config.isNonTransitive()
+								|| link.getType().isTransitive())
+							parents.add(link);
+					}
+				}
+				setProgressValue(currentProgress++ * 100 / totalCount);
+				if (isCancelled())
+					return;
+				LinkDatabase linkDatabase = createLinkDatabase(null, parents,
+						false);
+				databases.put("All parents", linkDatabase);
+			}
+
+			if (config.isShowPerType()) {
+				for (OBOProperty type : typeMap.keySet()) {
+					if (!config.isNonTransitive() && !type.isTransitive())
+						continue;
+					Collection<Link> parents = typeMap.get(type);
+					setProgressValue(currentProgress++ * 100 / totalCount);
+					if (isCancelled())
+						return;
+					LinkDatabase linkDatabase = createLinkDatabase(type,
+							parents, config.isSuccinctDisplay());
+					databases.put(type.getID(), linkDatabase);
+				}
+			}
+			setProgressValue(100);
+			setResults(databases);
+			System.err.println("found paths in "+(System.currentTimeMillis() - time));
+		}
+
+	}
 
 	public DAGViewCanvas(String id) {
 		super(id);
@@ -255,40 +334,11 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 		reload();
 	}
 
-	protected LinkDatabaseCanvas getCanvas(OBOProperty type,
+	protected LinkDatabase createLinkDatabase(OBOProperty type,
 			Collection<Link> parents, boolean succinct) {
-		LinkDatabaseCanvas canvas = new LinkDatabaseCanvas(
-				new HierarchicalGraphLayout()) {
-
-			protected void addDefaultBehaviors() {
-				addViewBehavior(new FocusPicker());
-				addViewBehavior(new SelectionBehavior());
-				// addViewBehavior(new LinkoutMeterBehavior());
-				addViewBehavior(new TooltipBehavior());
-				addViewBehavior(new ZoomWidgetBehavior(8, 20));
-				addViewBehavior(new BoundsGuarantor() {
-					@Override
-					protected void installDefaultCyclers() {
-						addBoundsGuarantor(new ZoomToAllGuarantor(canvas));
-					}
-				});
-			}
-
-		};
-		canvas.setDisableAnimations(!config.isShowAnimations());
-		if (canvas.getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
-			((HTMLNodeLabelProvider) canvas.getNodeLabelProvider())
-					.setHtmlExpression(config.getHTMLExpression());
-		}
-
 		LinkDatabase linkDatabase;
-		Collection<LinkedObject> objects = new LinkedList<LinkedObject>();
 		if (!succinct) {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
-
-			for (LinkedObject object : objects) {
-				mutable.addObject(object);
-			}
 
 			for (Link link : parents) {
 				if (TermUtil.isImplied(link)) {
@@ -301,14 +351,12 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 				} else
 					mutable.addParent(link);
 			}
-			for (IdentifiedObject io : mutable.getObjects())
-				if (io instanceof LinkedObject)
-					objects.add((LinkedObject) io);
 			linkDatabase = mutable;
 		} else {
 			FilteredLinkDatabase filtered = new FilteredLinkDatabase(reasoner);
 			filtered.setLinkFilter(new LinkFilterImpl(type));
 			MaskedLinkDatabase collapsible = new MaskedLinkDatabase(filtered);
+			Collection<LinkedObject> objects = new LinkedList<LinkedObject>();
 			objects.addAll(terms);
 			for (Link link : parents) {
 				objects.add(link.getParent());
@@ -316,11 +364,39 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 			collapsible.setVisible(objects, true);
 			linkDatabase = collapsible;
 		}
+		return linkDatabase;
+	}
+
+	protected LinkDatabaseCanvas getCanvas(LinkDatabase linkDatabase) {
+		LinkDatabaseCanvas canvas = new LinkDatabaseCanvas(
+				new HierarchicalGraphLayout()) {
+
+			protected void addDefaultBehaviors() {
+				addViewBehavior(new FocusPicker());
+				addViewBehavior(new SelectionBehavior(true));
+				// addViewBehavior(new LinkoutMeterBehavior());
+				addViewBehavior(new TooltipBehavior());
+				addViewBehavior(new ZoomWidgetBehavior(8, 20));
+				addViewBehavior(new BoundsGuarantor() {
+					@Override
+					protected void installDefaultCyclers() {
+						addBoundsGuarantor(new ZoomToAllGuarantor(canvas));
+					}
+				});
+			}
+
+		};
+		canvas.setLive(true);
+		canvas.setDisableAnimations(!config.isShowAnimations());
+		if (canvas.getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
+			((HTMLNodeLabelProvider) canvas.getNodeLabelProvider())
+					.setHtmlExpression(config.getHTMLExpression());
+		}
+
 		// canvas.setLinkDatabase(reasoner);
 		canvas.setLinkDatabase(linkDatabase);
 		canvas.setLinkProviderDatabase(linkProviderDatabase);
-		canvas.setVisibleObjects(objects);
-		canvas.setLive(false);
+		canvas.setVisibleObjects(linkDatabase.getObjects());
 		canvas.relayout();
 		return canvas;
 	}
@@ -341,7 +417,17 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 	}
 
 	public void reload() {
+		ReloadTaskDelegate task = new ReloadTaskDelegate();
+		taskPanel.schedule(task, true);
+	}
 
+	public void updatePanels(Map<String, LinkDatabase> databases) {
+		if (canvasList != null) {
+			for (LinkDatabaseCanvas canvas : canvasList) {
+				canvas.cleanup();
+			}
+			canvasList.clear();
+		}
 		dagPanel.removeAll();
 		if (terms.size() == 0) {
 			topLabel.setText("Select a term to see ancestry views");
@@ -355,37 +441,13 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 				buffer.append(terms.get(i).getName());
 			}
 			topLabel.setText(buffer.toString());
-			Collection<LinkDatabaseCanvas> canvasList = new LinkedList<LinkDatabaseCanvas>();
+			canvasList = new LinkedList<LinkDatabaseCanvas>();
 			Collection<JComponent> componentList = new LinkedList<JComponent>();
-
-			if (config.isAllTypes()) {
-				Collection<Link> parents = new HashSet<Link>();
-				for (LinkedObject lo : terms) {
-					for (Link link : reasoner.getParents(lo)) {
-						if (config.isNonTransitive()
-								|| link.getType().isTransitive())
-							parents.add(link);
-					}
-				}
-				LinkDatabaseCanvas canvas = getCanvas(null, parents, false);
-				JPanel panel = wrapCanvas("All parents", canvas);
+			for (String name : databases.keySet()) {
+				LinkDatabaseCanvas canvas = getCanvas(databases.get(name));
+				JPanel panel = wrapCanvas(name, canvas);
 				canvasList.add(canvas);
 				componentList.add(panel);
-			}
-
-			if (config.isShowPerType()) {
-				Map<OBOProperty, Collection<Link>> typeMap = getTypeMap();
-
-				for (OBOProperty type : typeMap.keySet()) {
-					if (!config.isNonTransitive() && !type.isTransitive())
-						continue;
-					Collection<Link> parents = typeMap.get(type);
-					LinkDatabaseCanvas canvas = getCanvas(type, parents, config
-							.isSuccinctDisplay());
-					JPanel panel = wrapCanvas(type.getID(), canvas);
-					canvasList.add(canvas);
-					componentList.add(panel);
-				}
 			}
 
 			if (config.getOrientation() == HORIZONTAL)
@@ -425,6 +487,12 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 	public void cleanup() {
 		GUIUtil.removeReloadListener(reloadListener);
 		SelectionManager.getManager().removeSelectionListener(selectListener);
+		if (canvasList != null) {
+			for (LinkDatabaseCanvas canvas : canvasList) {
+				canvas.cleanup();
+			}
+			canvasList.clear();
+		}
 	}
 
 	public JComponent getComponent() {
@@ -449,8 +517,12 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 	protected void updateProviders() {
 		OBOSession session = SessionManager.getManager().getSession();
-		setDataProviders(session, session.getLinkDatabase(), SessionManager
-				.getManager().getCurrentFullLinkDatabase());
+		LinkDatabase reasoner;
+		if (SessionManager.getManager().getUseReasoner())
+			reasoner = SessionManager.getManager().getReasoner();
+		else
+			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
+		setDataProviders(session, session.getLinkDatabase(), reasoner);
 		reload();
 	}
 
@@ -459,8 +531,12 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
+		taskPanel.removeAll();
+		taskPanel.setLayout(new GridLayout(1, 1));
+		taskPanel.add(dagPanel);
+		taskPanel.setOpaque(false);
 		dagPanel.setOpaque(false);
-		add(dagPanel, "Center");
+		add(taskPanel, "Center");
 		add(topLabel, "North");
 		GUIUtil.addReloadListener(reloadListener);
 		SelectionManager.getManager().addSelectionListener(selectListener);

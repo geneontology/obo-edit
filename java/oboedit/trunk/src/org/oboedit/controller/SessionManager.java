@@ -27,6 +27,7 @@ import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasoner;
+import org.obo.reasoner.impl.OnTheFlyReasonerFactory;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.TermUtil;

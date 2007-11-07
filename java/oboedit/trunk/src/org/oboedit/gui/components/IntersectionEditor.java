@@ -74,7 +74,6 @@ import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
 import org.oboedit.gui.widget.IntersectionPanel;
-import org.oboedit.gui.widget.SessionAutocompleteBox;
 import org.oboedit.util.GUIUtil;
 
 public class IntersectionEditor extends AbstractGUIComponent {
@@ -282,7 +281,7 @@ public class IntersectionEditor extends AbstractGUIComponent {
 	protected JCheckBox keywordSearchCheckbox = new JCheckBox(
 			"Use keyword search method", false);
 
-	protected SessionAutocompleteBox termBox;
+//	protected SessionAutocompleteBox termBox;
 
 	protected QueryEngine queryEngine;
 

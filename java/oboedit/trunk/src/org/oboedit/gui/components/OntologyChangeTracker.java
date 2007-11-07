@@ -203,7 +203,8 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 						generatedHistory);
 				gac.setHistoryPath(Preferences.getPreferences()
 						.getHistoryFilePath());
-				boolean worked = gac.showDialog("Save history", null);
+				boolean worked = gac.showDialog("Save history", GUIManager.getManager()
+						.getFrame());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
