@@ -50,6 +50,8 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		progressBar.setValue(0);
 		messageLabel.setText("");
 		dialog.pack();
+		SwingUtil.center(frame, dialog);
+		dialog.toFront();
 	}
 
 	protected JDialog createDialog() {
@@ -65,11 +67,6 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		contentPane.add(southPanel, "South");
 		dialog.setContentPane(contentPane);
 		return dialog;
-	}
-
-	@Override
-	protected void clearTimer() {
-		super.clearTimer();
 	}
 	
 	@Override
@@ -108,6 +105,6 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		} else {
 			dialog.pack();
 		}
-		SwingUtil.center(dialog);
+		SwingUtil.center(frame, dialog);
 	}
 }

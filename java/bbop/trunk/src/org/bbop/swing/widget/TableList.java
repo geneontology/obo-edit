@@ -32,6 +32,8 @@ import javax.swing.KeyStroke;
 import javax.swing.OverlayLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -180,9 +182,17 @@ public class TableList<T> extends JComponent {
 		}
 
 		public void deleteSelectedRows() {
-			int[] rows = table.getSelectedRows();
-			for (int i = rows.length - 1; i >= 0; i--) {
-				data.remove(rows[i]);
+			int row = table.getEditingRow();
+			if (row >= 0) {
+				ListTableCellEditor te = (ListTableCellEditor) table
+						.getDefaultEditor(Object.class);
+				te.cancelCellEditing();
+				data.remove(row);
+			} else {
+				int[] rows = table.getSelectedRows();
+				for (int i = rows.length - 1; i >= 0; i--) {
+					data.remove(rows[i]);
+				}
 			}
 			fireTableStructureChanged();
 		}
@@ -247,6 +257,19 @@ public class TableList<T> extends JComponent {
 			add(new JScrollPane(table), "Center");
 		else
 			add(table, "Center");
+		table.getModel().addTableModelListener(new TableModelListener() {
+
+			public void tableChanged(TableModelEvent e) {
+				List<T> l = getSelection();
+				for(T t : l) {
+					if (!data.contains(t)) {
+						setSelection(l);
+						return;
+					}
+				}
+			}
+			
+		});
 
 		if (installButtons)
 			installDefaultButtons();
@@ -270,6 +293,7 @@ public class TableList<T> extends JComponent {
 
 			public void actionPerformed(ActionEvent e) {
 				add();
+				remove.setEnabled(getSelectedRowCount() > 0 || table.isEditing());
 			}
 		});
 		remove.addActionListener(new ActionListener() {
@@ -280,11 +304,11 @@ public class TableList<T> extends JComponent {
 		addSelectionListener(new ListSelectionListener() {
 
 			public void valueChanged(ListSelectionEvent e) {
-				remove.setEnabled(getSelectedRowCount() > 0);
+				remove.setEnabled(getSelectedRowCount() > 0 || table.isEditing());
 			}
 
 		});
-		remove.setEnabled(getSelectedRowCount() > 0);
+		remove.setEnabled(getSelectedRowCount() > 0 || table.isEditing());
 	}
 
 	public void setRenderer(TableCellRenderer renderer) {
@@ -345,6 +369,8 @@ public class TableList<T> extends JComponent {
 
 	protected void createNewRow() {
 		int row = ((ListTableModel) table.getModel()).addRow();
+		table.getSelectionModel().clearSelection();
+		table.getSelectionModel().addSelectionInterval(row, row);
 		table.editCellAt(row, 0);
 	}
 
@@ -367,9 +393,25 @@ public class TableList<T> extends JComponent {
 		List<T> out = new ArrayList<T>();
 		int[] rows = getSelectedRows();
 		for (int row : rows) {
-			out.add(data.get(row));
+			if (row < data.size())
+				out.add(data.get(row));
 		}
 		return out;
+	}
+	
+	public void setSelection(Collection<T> c) {
+		List<Integer> temp = new ArrayList<Integer>();
+		for(T t : c) {
+			int index = data.indexOf(t);
+			if (index != -1)
+				temp.add(index);
+		}
+		table.getSelectionModel().clearSelection();
+		for(Integer i : temp) {
+			table.getSelectionModel().addSelectionInterval(i, i);
+		}
+		repaint();
+		validate();
 	}
 
 	public void setData(T... data) {
@@ -394,63 +436,6 @@ public class TableList<T> extends JComponent {
 					.getValue());
 			table.repaint();
 		}
-	}
-
-	private static class ListEditor extends AbstractListTableEditor<String> {
-
-		protected JTextField field = new JTextField();
-
-		public ListEditor() {
-			setLayout(new BorderLayout());
-			add(field, "North");
-			field.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					commit();
-				}
-			});
-		}
-
-		public String createNewValue() {
-			return "<new value>";
-		}
-
-		public String getValue() {
-			return field.getText();
-		}
-
-		public void notifyActive() {
-			field.requestFocus();
-		}
-
-		public void notifyCancel() {
-		}
-
-		public void setValue(String value) {
-			field.setText(value);
-		}
-	}
-
-	public static void main(String[] args) {
-		JDialog dialog = new JDialog();
-		dialog.getContentPane().setLayout(new GridLayout(1, 1));
-		TableList<String> list = new TableList<String>();
-		list.setEditor(new ListEditor());
-		list.setRenderer(new HTMLTableRenderer() {
-			@Override
-			public String getHTML(JTable table, Object value,
-					boolean isSelected, boolean hasFocus, int row, int column) {
-				return "<html><i>" + value + "</i></html>";
-			}
-		});
-		List<String> data = new LinkedList<String>();
-		data.add("Cartman");
-		data.add("Kenny");
-		data.add("Stan");
-		data.add("Kyle");
-		list.setData(data);
-		dialog.getContentPane().add(list);
-		dialog.pack();
-		dialog.show();
 	}
 
 }

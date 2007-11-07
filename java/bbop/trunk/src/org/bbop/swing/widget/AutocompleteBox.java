@@ -108,8 +108,9 @@ public class AutocompleteBox<T> extends JComboBox {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE
-						&& (e.getModifiers() & Toolkit.getDefaultToolkit()
-								.getMenuShortcutKeyMask()) > 0) {
+						&& ((e.getModifiers() & Toolkit.getDefaultToolkit()
+								.getMenuShortcutKeyMask()) > 0
+						&& e.isShiftDown() || e.isControlDown())) {
 					autocompleteSingleWord();
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					boolean isVisible = isPopupVisible();
@@ -679,7 +680,39 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	protected void autocompleteSingleWord() {
-		System.err.println("not yet implemented");
+		AutoTextField field = (AutoTextField) getEditor();
+		if (field == null)
+			return;
+		String text = getEditorText();
+		int cursorPos = field.getCaretPosition() - 1;
+		int[] replaceIndices = StringUtil.getWordIndicesSurrounding(text,
+				cursorPos, cursorPos);
+		String currentWord = text.substring(replaceIndices[0],
+				replaceIndices[1]);
+		for (MatchPair matchPair : lastHits) {
+			int[] indices = (int[]) matchPair.getMatch().get(currentWord);
+			if (indices != null) {
+				int index = indices[0];
+				String match = StringUtil.getWordSurrounding(matchPair
+						.getString(), index, index);
+				text = text.substring(0, replaceIndices[0]) + match
+						+ text.substring(replaceIndices[1], text.length());
+				field.setText(text);
+				return;
+			}
+		}
+		// List<MatchPair> matches = getMatches(currentWord);
+		// if (matches.size() > 0) {
+		// MatchPair matchPair = matches.get(0);
+		// int[] indices = (int[]) matchPair.getMatch().get(currentWord);
+		// int index = indices[0];
+		// String match = StringUtil.getWordSurrounding(matchPair.getString(),
+		// index, index);
+		// text = text.substring(0,
+		// replaceIndices[0])+match+text.substring(replaceIndices[1],
+		// text.length());
+		// field.setText(text);
+		// }
 	}
 
 	protected TimerTask createTimerTask(final String str,
@@ -740,6 +773,22 @@ public class AutocompleteBox<T> extends JComboBox {
 			}
 
 		};
+	}
+
+	protected List getMatches(String str) {
+		List tokens = new LinkedList<String>();
+		boolean longEnough = false;
+		StringTokenizer st = new StringTokenizer(str);
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if (token.length() >= getMinLength()) {
+				longEnough = true;
+			}
+			tokens.add(token);
+		}
+		TaskDelegate<List> del = autocompleteModel.getObjects(tokens);
+		del.run();
+		return del.getResults();
 	}
 
 	protected Comparator<MatchPair> alphabeticOrdering = new Comparator<MatchPair>() {

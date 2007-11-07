@@ -397,12 +397,7 @@ public class IDWDriver implements LayoutDriver {
 		if (label == null)
 			label = c.getTitle();
 		final String flabel = label;
-		final View v = new View(label, null, (JComponent) card) {
-			@Override
-			protected void finalize() throws Throwable {
-				super.finalize();
-			}
-		};
+		final View v = new View(label, null, (JComponent) card);
 		v.addListener(new DockingWindowAdapter() {
 
 			@Override

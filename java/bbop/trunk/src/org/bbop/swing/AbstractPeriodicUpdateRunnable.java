@@ -5,7 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.bbop.util.TaskDelegate;
 
@@ -34,24 +37,37 @@ public abstract class AbstractPeriodicUpdateRunnable implements Runnable {
 		clearTimer();
 		if (swingFriendly) {
 			SwingUtilities.invokeLater(new Runnable() {
-
 				public void run() {
 					setupUpdate();
 				}
 			});
+//			try {
+//				SwingUtilities.invokeAndWait(new Runnable() {
+//
+//					public void run() {
+//						setupUpdate();
+//					}
+//				});
+//			} catch (InterruptedException e) {
+//			} catch (InvocationTargetException e) {
+//			}
 		} else
 			setupUpdate();
-		timer = new Timer(100, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		
+		timer = new Timer(true);
+		timer.scheduleAtFixedRate(new TimerTask() {
+
+			@Override
+			public void run() {
 				updateStep();
 			}
-		});
-		timer.start();
+			
+		}, 100, 200);
 	}
 
 	protected void clearTimer() {
 		if (timer != null)
-			timer.stop();
+			timer.cancel();
 		timer = null;
 		if (swingFriendly) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -84,6 +100,16 @@ public abstract class AbstractPeriodicUpdateRunnable implements Runnable {
 							doUpdate(currentTask);
 						}
 					});
+//					try {
+//						SwingUtilities.invokeAndWait(new Runnable() {
+//
+//							public void run() {
+//								doUpdate(currentTask);
+//							}
+//						});
+//					} catch (InterruptedException e) {
+//					} catch (InvocationTargetException e) {
+//					}
 				} else
 					doUpdate(currentTask);
 			}

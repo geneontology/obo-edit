@@ -28,7 +28,11 @@ public class DefaultAdapterRegistry implements DataAdapterRegistry {
 	}
 
 	public Collection<DataAdapter> getAdapters() {
-		return adapters.values();
+		List<DataAdapter> out = new ArrayList<DataAdapter>();
+		for(String id : adapters.keySet()) {
+			out.add(adapters.get(id));
+		}
+		return out;
 	}
 
 	public DataAdapterUIFactory getUIFactory() {
