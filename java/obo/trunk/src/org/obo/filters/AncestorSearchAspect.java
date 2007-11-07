@@ -17,7 +17,7 @@ public class AncestorSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
-		if (reasoner != null) {
+		if (reasoner != null && o instanceof LinkedObject) {
 			for (Link link : reasoner.getParents((LinkedObject) o)) {
 				if (traversalFilter == null || traversalFilter.satisfies(link)) {
 					c.add(link.getParent());

@@ -1,5 +1,6 @@
 package org.obo.query.impl;
 
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,7 @@ public class DefaultQueryResolver implements QueryResolver {
 	protected boolean queryAccepts(Query q, Class<?> c) {
 		Class<?> inputType = q.getInputType();
 		boolean isAssignable = inputType.isAssignableFrom(c);
+		// boolean isAssignable = c.isAssignableFrom(inputType);
 		return isAssignable;
 	}
 
@@ -52,42 +54,51 @@ public class DefaultQueryResolver implements QueryResolver {
 
 			@Override
 			public void execute() {
-				progressString = "Querying...";
-				Collection<V> out = getResultHolder(q);
-				Collection<FieldPathSpec> specs = q.getInputPaths();
-				if (specs == null) {
-					specs = new LinkedList<FieldPathSpec>();
-					specs.add(new FieldPathSpec());
-				}
-				Collection<FieldPath> paths = new LinkedList<FieldPath>();
-				for (FieldPathSpec spec : specs) {
-					FieldPath qpath = FieldPathSpec.createQueryPath(spec);
-					if (cancelled)
-						return;
-					Collection<FieldPath> values = FieldPath.resolve(qpath,
-							session.getLinkDatabase());
-					paths.addAll(values);
-				}
-				int total = paths.size();
-				int i=0;
-				for (FieldPath path : paths) {
-					progress = new Integer(100 * i / total);
-					if (cancelled)
-						return;
-					Object value = path.getLastValue();
-					if (queryAccepts(q, value.getClass())) {
+				try {
+					progressString = "Querying...";
+					Collection<V> out = getResultHolder(q);
+					results = out;
+					Collection<FieldPathSpec> specs = q.getInputPaths();
+					if (specs == null) {
+						specs = new LinkedList<FieldPathSpec>();
+						specs.add(new FieldPathSpec());
+					}
+					Collection<FieldPath> paths = new LinkedList<FieldPath>();
+					for (FieldPathSpec spec : specs) {
+						FieldPath qpath = FieldPathSpec.createQueryPath(spec);
+						if (cancelled)
+							return;
+						Collection<FieldPath> values = FieldPath.resolve(qpath,
+								session.getLinkDatabase());
+						for (FieldPath p : values) {
+							if (queryAccepts(q, p.getLastValue().getClass()))
+								paths.add(p);
+						}
+					}
+					int total = paths.size();
+					int i = 0;
+					for (FieldPath path : paths) {
+						progress = new Integer(100 * i / total);
+						if (cancelled)
+							return;
+						Object vgg = path.getLastValue();
+
 						q.setFieldPath(path);
-						V result = q.matches((T) value);
+						Object r = q.matches((T) vgg);
+						V result = (V) r;
 						if (result != null) {
 							out.add(result);
 						}
+						i++;
 					}
-					i++;
+					if (out instanceof List && q.getComparator() != null) {
+						Collections.sort((List<V>) out, q.getComparator());
+					}
+					results = out;
+				} catch (Throwable t) {
+					t.printStackTrace();
 				}
-				if (out instanceof List && q.getComparator() != null) {
-					Collections.sort((List<V>) out, q.getComparator());
-				}
-				results = out;
+
 			}
 
 		};

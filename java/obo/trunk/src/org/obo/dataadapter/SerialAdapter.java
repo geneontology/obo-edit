@@ -79,30 +79,44 @@ public class SerialAdapter implements OBOAdapter {
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { WRITE_ONTOLOGY, READ_ONTOLOGY};
+		IOOperation[] supported = { WRITE_ONTOLOGY, READ_ONTOLOGY };
 		return supported;
 	}
-	
+
 	public String getProgressString() {
 		return pfis.getProgressString();
 	}
-	
+
 	public Number getProgressValue() {
 		return pfis.getProgressValue();
 	}
 
 	public OBOSession getRoot() throws DataAdapterException {
+
+		ZipInputStream zipstream;
 		try {
 			pfis = IOUtil.getProgressableStream(path);
-			ZipInputStream zipstream = new ZipInputStream(
-					new BufferedInputStream(pfis));
+			zipstream = new ZipInputStream(new BufferedInputStream(pfis));
 			zipstream.getNextEntry();
-			ObjectInputStream stream = new ObjectInputStream(zipstream);
-			OBOSession history = (OBOSession) stream.readObject();
+		} catch (IOException e) {
+			throw new DataAdapterException("Load error", e);
+		}
+		ObjectInputStream stream;
+		try {
+			stream = new ObjectInputStream(zipstream);
+		} catch (IOException e) {
+			throw new DataAdapterException(
+					"Could not load file - the selected file is "
+							+ "probably not in the correct format", e);
+		}
+
+		OBOSession history;
+		try {
+			history = (OBOSession) stream.readObject();
 			history.setLoadRemark(IOUtil.getShortName(path));
 			return history;
 		} catch (Exception e) {
-			throw new DataAdapterException(e, "Load error");
+			throw new DataAdapterException("Load error", e);
 		}
 	}
 
