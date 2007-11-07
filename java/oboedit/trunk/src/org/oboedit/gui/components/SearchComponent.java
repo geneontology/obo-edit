@@ -127,9 +127,10 @@ public class SearchComponent extends AbstractGUIComponent {
 	protected void search() {
 		QueryEngine engine = SessionManager.getManager().getQueryEngine();
 		final Filter filter = component.getFilter();
+		Class<?> resultType = factory.getResultType();
 		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(
 				SessionManager.getManager().getSession(), new FilterQuery(
-						filter, factory.getResultType()));
+						filter, resultType));
 		Runnable r = new Runnable() {
 
 			public void run() {

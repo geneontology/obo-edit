@@ -40,7 +40,7 @@ public class FileMenu extends DynamicMenu {
 		JMenuItem saveItem;
 
 		JMenuItem newItem = new JMenuItem("New Ontology");
-		JMenuItem loadItem = new JMenuItem("Load Terms...");
+		JMenuItem loadItem = new JMenuItem("Load Ontologies...");
 		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
 

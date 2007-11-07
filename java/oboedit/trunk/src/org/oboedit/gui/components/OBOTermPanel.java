@@ -1,6 +1,7 @@
 package org.oboedit.gui.components;
 
 import java.awt.*;
+import java.awt.dnd.Autoscroll;
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -56,7 +57,7 @@ import org.oboedit.util.PathUtil;
 
 public class OBOTermPanel extends JTree implements ObjectSelector,
 		FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
-		RightClickMenuProvider {
+		RightClickMenuProvider, Autoscroll {
 
 	/**
 	 * 
@@ -65,6 +66,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected String title;
 
+	protected static final int AUTOSCROLL_MARGIN = 12;
 	public static Border EMPTY_BORDER = new EmptyBorder(1, 1, 1, 1);
 
 	// protected OBO_1_2_FileSerializer oboAdapter =
@@ -1435,5 +1437,37 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public void setNodeLabelProvider(NodeLabelProvider nodeLabelProvider) {
 		this.nodeLabelProvider = nodeLabelProvider;
+	}
+
+	// Ok, we’ve been told to scroll because the mouse cursor is in our
+	// scroll zone.
+	public void autoscroll(Point p) {
+		JViewport viewport = SwingUtil.getAncestorOfClass(
+				JViewport.class, this);
+		if (viewport != null) {
+			Rectangle outer = getBounds();
+			boolean top = p.y + outer.y <= AUTOSCROLL_MARGIN;			
+			Rectangle viewRect = viewport.getViewRect();
+			if (top)
+				viewRect.y -= AUTOSCROLL_MARGIN;
+			else
+				viewRect.y += AUTOSCROLL_MARGIN;
+			if (viewRect.y < 0)
+				viewRect.y = 0;
+			if (viewRect.y + viewRect.height > getHeight())
+				viewRect.y = getHeight() - viewRect.height;
+			viewport.setViewPosition(viewRect.getLocation());
+		}
+	}
+
+	// Calculate the insets for the *JTREE*, not the viewport
+	// the tree is in. This makes it a bit messy.
+	public Insets getAutoscrollInsets() {
+		Rectangle outer = getBounds();
+		Rectangle inner = getParent().getBounds();
+		return new Insets(inner.y - outer.y + AUTOSCROLL_MARGIN, inner.x
+				- outer.x + AUTOSCROLL_MARGIN, outer.height - inner.height
+				- inner.y + outer.y + AUTOSCROLL_MARGIN, outer.width
+				- inner.width - inner.x + outer.x + AUTOSCROLL_MARGIN);
 	}
 }

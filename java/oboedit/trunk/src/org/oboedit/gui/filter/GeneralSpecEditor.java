@@ -36,7 +36,7 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 					|| (field.isObjectRenderer() && !links)) {
 
 				final JCheckBox selectBox = new JCheckBox(field.getName());
-				final JPanel holderPanel = new JPanel();
+				JPanel holderPanel = new JPanel();
 				holderPanel.setLayout(new GridLayout(1, 1));
 				final GeneralRendererSpecFieldEditor<?> editor = field
 						.getEditor();
@@ -49,18 +49,26 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 				selectBox.addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent e) {
-						if (!selectBox.isSelected())
-							holderPanel.removeAll();
-						else {
-							editor.setValue(null);
-							holderPanel.add((JComponent) editor);
-						}
-						validate();
-						repaint();
+						setVisible(field, selectBox.isSelected());
 					}
 				});
 			}
 		}
+	}
+	
+	protected void setVisible(GeneralRendererSpecField<?> field, boolean visible) {
+		JCheckBox checkBox = checkboxMap.get(field);
+		checkBox.setSelected(visible);
+		GeneralRendererSpecFieldEditor<?> editor = editorMap.get(field);
+		JComponent holderPanel = panelMap.get(field);
+		if (!visible)
+			holderPanel.removeAll();
+		else {
+			editor.setValue(null);
+			holderPanel.add((JComponent) editor);
+		}
+		validate();
+		repaint();
 	}
 
 	public RenderSpec getSpec() {
@@ -76,11 +84,11 @@ public class GeneralSpecEditor extends JPanel implements SpecEditor {
 	public void setSpec(RenderSpec s) {
 		if (s instanceof GeneralRendererSpec) {
 			GeneralRendererSpec spec = (GeneralRendererSpec) s;
-			for (JCheckBox box : checkboxMap.values()) {
-				box.setSelected(false);
+			for (GeneralRendererSpecField field : checkboxMap.keySet()) {
+				setVisible(field, false);
 			}
 			for (final GeneralRendererSpecField field : spec.getFields()) {
-				checkboxMap.get(field).setSelected(true);
+				setVisible(field, true);
 				GeneralRendererSpecFieldEditor editor = editorMap.get(field);
 				editor.setValue(spec.getValue(field));
 			}

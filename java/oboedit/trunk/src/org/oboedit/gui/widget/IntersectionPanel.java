@@ -15,6 +15,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.*;
 
 import org.bbop.swing.*;
+import org.bbop.swing.widget.AutocompleteBox;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.history.*;
@@ -30,6 +31,7 @@ import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
+import org.oboedit.gui.TermAutocompleteModel;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
 
@@ -40,7 +42,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		public boolean accept(Component aComponent) {
 			if (aComponent instanceof JComboBox
 					|| SwingUtilities.getAncestorOfClass(
-							SessionAutocompleteBox.class, aComponent) != null)
+							AutocompleteBox.class, aComponent) != null)
 				return super.accept(aComponent);
 			else
 				return false;
@@ -56,7 +58,8 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 		protected JButton deleteButton = new JButton(deleteIcon);
 
-		protected SessionAutocompleteBox parentBox = new SessionAutocompleteBox();
+		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(
+				new TermAutocompleteModel());
 
 		protected JComboBox propertyBox = new JComboBox();
 
@@ -122,7 +125,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		}
 
 		public OBOClass getParentTerm() {
-			return (OBOClass) parentBox.getTerm();
+			return (OBOClass) parentBox.getValue();
 		}
 
 		public OBOProperty getProperty() {
@@ -136,7 +139,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		}
 
 		public void setParentTerm(final OBOClass parentTerm) {
-			parentBox.setTerm(parentTerm);
+			parentBox.setValue(parentTerm);
 			if (selectActionListener != null)
 				selectButton.removeActionListener(selectActionListener);
 			selectActionListener = new ActionListener() {
@@ -252,7 +255,8 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 	protected IntersectionPanelFocusPolicy focusPolicy = new IntersectionPanelFocusPolicy();
 
-	protected SessionAutocompleteBox genusField = new SessionAutocompleteBox();
+	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(
+			new TermAutocompleteModel());
 
 	protected JLabel genusLabel = new JLabel("Intersection Genus");
 
@@ -264,8 +268,10 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 	protected ActionListener genusSelectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			SelectionManager.selectTerm(IntersectionPanel.this, genusField
-					.getTerm());
+			IdentifiedObject io = genusField.getValue();
+			if (io instanceof LinkedObject)
+				SelectionManager.selectTerm(IntersectionPanel.this,
+						(LinkedObject) io);
 		}
 	};
 
@@ -284,12 +290,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	protected JCheckBox anonymousCheckbox = new JCheckBox("anonymous");
 
 	protected boolean showNameFields;
-
-	protected RootChangeListener rootListener = new RootChangeListener() {
-		public void changeRoot(RootChangeEvent e) {
-			genusField.refreshSearchSet();
-		}
-	};
 
 	protected Action commitListener = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -345,9 +345,9 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 				KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
 						KeyEvent.SHIFT_DOWN_MASK), "tabBackward");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
-						Toolkit.getDefaultToolkit()
-						.getMenuShortcutKeyMask()), "commit");
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
+						.getDefaultToolkit().getMenuShortcutKeyMask()),
+				"commit");
 
 		getActionMap().put("tabForward", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -476,9 +476,10 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 	public Collection<Link> getRelationshipList() {
 		LinkedList<Link> out = new LinkedList<Link>();
-		if (genusField.getTerm() != null) {
+		if (genusField.getValue() != null
+				&& genusField.getValue() instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,
-					OBOProperty.IS_A, genusField.getTerm());
+					OBOProperty.IS_A, (LinkedObject) genusField.getValue());
 			isaLink.setCompletes(true);
 			out.add(isaLink);
 		}
@@ -621,7 +622,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 	@Override
 	public void installListeners() {
-		SessionManager.getManager().addRootChangeListener(rootListener);
 		genusSelectButton.addActionListener(genusSelectListener);
 		dropButton.setDropTarget(new DropTarget(dropButton,
 				dropDiscriminatingListener));
@@ -679,7 +679,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	public void setClass(OBOClass oboClass) {
 		this.oboClass = oboClass;
 		currentID = oboClass.getID();
-		genusField.setTerm(null);
+		genusField.setValue(null);
 		linkListPanel.removeAll();
 
 		System.err.println("parents of " + oboClass + " = "
@@ -695,7 +695,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 				parent = new DanglingClassImpl(parent.getID());
 			}
 			if (link.getType().equals(OBOProperty.IS_A)) {
-				genusField.setTerm((OBOClass) parent);
+				genusField.setValue(parent);
 			} else {
 				addDiscriminating((OBOClass) parent, link.getType());
 			}
@@ -717,19 +717,19 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 			nameField.setText(PostcompUtil.getPostcompName(
 					getRelationshipList(), null, true));
 	}
-	
+
 	protected String currentID;
 
 	protected void autoUpdateID() {
 		currentID = IDUtil.fetchID(IDManager.getManager().getIDAdapter(),
-				SessionManager.getManager().getSession(),
-				null, null,
+				SessionManager.getManager().getSession(), null, null,
 				anonymousCheckbox.isSelected());
-		idField.setText("<html>" + currentID + " <i>(not yet created)</i></html>");
+		idField.setText("<html>" + currentID
+				+ " <i>(not yet created)</i></html>");
 	}
 
 	protected void setGenus(OBOClass genusTerm) {
-		genusField.setTerm(genusTerm);
+		genusField.setValue(genusTerm);
 	}
 
 	protected void tabToNext() {
@@ -753,7 +753,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 
 	@Override
 	public void uninstallListeners() {
-		SessionManager.getManager().removeRootChangeListener(rootListener);
 		genusSelectButton.removeActionListener(genusSelectListener);
 	}
 
