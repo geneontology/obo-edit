@@ -1133,7 +1133,16 @@ public class TermUtil {
 			return null;
 	}
 	
-	public static OBOProperty castToProperty(LinkedObject lo) {
+	public static Instance castToInstance(LinkedObject lo) {
+		if (lo instanceof Instance) {
+			return (Instance) lo;
+		} else if (isDangling(lo)) {
+			return new InstanceImpl(lo.getID()); // TODO: check
+		} else
+			return null;
+	}
+	
+	public static OBOProperty castToProperty(IdentifiedObject lo) {
 		if (lo instanceof OBOProperty) {
 			return (OBOProperty) lo;
 		} else if (isDangling(lo)) {
