@@ -56,6 +56,14 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 			addParent(newLink);
 		}
 	}
+	
+	public AnnotationImpl(Instance instance, Link link) {
+		this(instance);
+		setSubject(link.getChild());
+		setObject(link.getParent());
+		setRelationship(link.getType());
+	}
+
 
 	public String getAssignedBy() {
 		return (String) TermUtil.getPropValue(this, AnnotationOntology
