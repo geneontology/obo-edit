@@ -28,3 +28,7 @@ domain: oban:annotation
 id: oban:assigned_by
 name: assigned_by
 domain: oban:annotation
+
+[Term]
+id: oban:publication
+name: Publication
