@@ -14,6 +14,8 @@ import org.bbop.rdbms.impl.SqlQueryImpl;
 import org.bbop.util.AbstractProgressValued;
 import org.bbop.util.StringUtil;
 import org.obo.annotation.datamodel.Annotation;
+import org.obo.annotation.datamodel.AnnotationOntology;
+import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOParser.XrefPair;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
@@ -196,6 +198,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		public void setNamespaces(Collection<Namespace> namespaces) {
 			this.namespaces = namespaces;
 		}
+		
+		public void addNamespace(String namespace) {
+			namespaces.add(new Namespace(namespace));
+		}
 	}
 
 	public DataAdapterUI getPreferredUI() {
@@ -329,6 +335,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			// use obo.query
 			whereClause.addInConstraint("source_uid", ioprofile.getNamespaces());
 		}
+		System.out.println(nodeQuery.toSQL());
 		ResultSet rs = stmt.executeQuery(nodeQuery.toSQL());
 		LinkedList<IdentifiedObject> ios = new LinkedList<IdentifiedObject>();
 		while (rs.next()) {
@@ -343,13 +350,6 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			fetchObjectLinks(session, io);
 		}
 		
-		if (false) {
-		rs = stmt.executeQuery("select * FROM node_link_node_with_pred_and_source WHERE is_inferred='f'");
-		while (rs.next()) {
-			fetchLink(session, rs);
-		}
-		}
-		// TODO: subsets
 	}
 	
 
@@ -485,6 +485,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		else {
 			link = new InstancePropertyValue(node,pred,obj);
 		}
+		Integer annotId = rs.getInt("reiflink_node_id");
+		if (!rs.wasNull()) {
+			Instance inst = TermUtil.castToInstance((LinkedObject)iid2obj.get(annotId));
+			System.err.println("this is a reified link; annotId="+annotId+" "+inst);
+			Annotation annot = new AnnotationImpl(inst, link);
+			session.addObject(annot);
+		}
 		System.err.println("read link: "+link);
 		link.setNamespace(source);
 		addLink(session,link);
@@ -510,13 +517,21 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		else if (pid.equals("oboMetaModel:xref")) {
 			TermUtil.castToClass(lo).addDbxref(getDbxref(p.getID()));
 		}
-		else if (pid.equals("OBO_REL:instance_of") &&
-				p.getID().equals("subsetdef")) {
-			TermCategory cat = objectFactory.createCategory(lo.getID(), lo.getName());
-			session.addCategory(cat);
-			// TODO: remove this at the end; still required as object of subset links
-			// session.removeObject(lo);
+		else if (pid.equals("OBO_REL:instance_of")) {
+	
+			if (p.getID().equals("subsetdef")) {
+				TermCategory cat = objectFactory.createCategory(lo.getID(), lo.getName());
+				session.addCategory(cat);
+				// TODO: remove this at the end; still required as object of subset links
+				// session.removeObject(lo);
+			}
+			else if (p.getID().equals("oban:Annotation")) {
+				//Annotation annot = new AnnotationImpl((Instance)lo);
+				//session.addObject(annot);
+			}
+			else {
 				
+			}
 		}
 		else {
 
