@@ -9,7 +9,7 @@ import org.bbop.util.StringUtil;
 public interface GUIComponentFactory<T extends GUIComponent> {
 
 	public static enum FactoryCategory {
-		ONTOLOGY, ANNOTATION, SEARCH, INFO, REASONER, HISTORY, METADATA, CONFIG, TOOLS, MISC;
+		TOOLBARS, ONTOLOGY, ANNOTATION, SEARCH, INFO, REASONER, HISTORY, METADATA, CONFIG, TOOLS, MISC;
 
 		public String toString() {
 			return StringUtil.toTitleCase(name().toLowerCase());
