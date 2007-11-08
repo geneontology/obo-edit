@@ -22,14 +22,21 @@ public abstract class AbstractRelationalTerm implements RelationalTerm {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
 			if (s.length() == 0) {
-				s.append((String)o);
+				s.append(dbQuote(o));
 			}
 			else {
 				s.append(c);
-				s.append((String)o);
+				s.append(dbQuote(o));
 			}
 		}
 		return s.toString();
+	}
+	
+	public String dbQuote(Object o) {
+		if (o instanceof Integer)
+			return o.toString();
+		else
+			return "'"+o.toString()+"'"; // TODO: make safe
 	}
 
 }
