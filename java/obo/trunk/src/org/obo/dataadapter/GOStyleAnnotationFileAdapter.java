@@ -100,6 +100,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			}
 			return session;
 		} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
+			session = (OBOSession)o;
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
 			if (ioprofile.getBasicSave()) {
@@ -308,7 +309,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	
 	// TODO: move somewhere more generic
 	public LinkedObject getSessionLinkedObject(String id, OBOClass metaclass) {
-		System.out.println("getting/adding obj:"+id);
+		System.out.println(session+" getting/adding obj:"+id);
 		LinkedObject obj = (LinkedObject)session.getObject(id);
 		if (obj == null) {
 			obj =
