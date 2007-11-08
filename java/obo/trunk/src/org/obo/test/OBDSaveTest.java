@@ -28,7 +28,8 @@ import junit.framework.*;
 
 public class OBDSaveTest extends AbstractOBOTest {
 
-	
+	protected String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
+
 	protected OBDSaveTest(String name) {
 		super(name);
 	}
@@ -54,7 +55,6 @@ public class OBDSaveTest extends AbstractOBOTest {
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
 		config.setSaveImplied(true);
 		
-		String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 		config.setWritePath(jdbcPath);
 		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
 		ReasonedLinkDatabase reasoner = rf.createReasoner();
@@ -83,6 +83,23 @@ public class OBDSaveTest extends AbstractOBOTest {
 		testForSynonym("GO:0005622","protoplasm");
 	}
 	
+	public void testNamespaceFilteredLoad() throws DataAdapterException {
+		OBDSQLDatabaseAdapterConfiguration config = 
+			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
+		
+		// database -> session
+		System.err.println("reading ns filtered");
+		
+		config.addNamespace("caro");
+		config.getReadPaths().add(jdbcPath);
+		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
+		System.err.println("read: "+session);
+		testForIsA("CARO:0000003","CARO:0000006");
+		testNotPresent("GO:0005622");
+		
+	}
+	
 	public void testFileSave() throws DataAdapterException {
 		// session -> file
 		OBOFileAdapter fileAdapter = new OBOFileAdapter();
@@ -96,31 +113,6 @@ public class OBDSaveTest extends AbstractOBOTest {
 		fileAdapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, fileConfig, session);
 	}
 	
-	public boolean testForAnnotation(String su, String ob) {
-		IdentifiedObject io = session.getObject(su);
-		if (io != null) {
-			Collection<Annotation> annots = getAnnotationsForSubject(io);
-			for (Annotation annot : annots) {
-				if (ob.equals(annot.getObject())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public Collection<Annotation> getAnnotationsForSubject(IdentifiedObject su) {
-		Collection<Annotation> annots = new LinkedList<Annotation>();
-		for (IdentifiedObject io : session.getObjects()) {
-			if (io instanceof Annotation) {
-				Annotation annot = (Annotation)io;
-				if (su.equals(annot.getSubject())) {
-					annots.add(annot);
-				}
-			}
-		}
-		return annots;
-	}
 	
 	public static Test suite() {
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
@@ -134,6 +126,8 @@ public class OBDSaveTest extends AbstractOBOTest {
 	public static void addTests(TestSuite suite) {
 		suite.addTest(new OBDSaveTest("testHasLoaded"));
 		suite.addTest(new OBDSaveTest("testFileSave"));
+		suite.addTest(new OBDSaveTest("testNamespaceFilteredLoad"));
+
 	}
 }
 
