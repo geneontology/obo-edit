@@ -14,11 +14,12 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.util.AnnotationUtil;
 
 
 import junit.framework.*;
 
-public class GOAnnotationFileTest extends AbstractOBOTest {
+public class GOAnnotationFileTest extends AbstractAnnotationTest {
 
 	protected GOAnnotationFileTest(String name) {
 		super(name);
@@ -52,34 +53,11 @@ public class GOAnnotationFileTest extends AbstractOBOTest {
 	}
 
 	public void testAnnot() {
+		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
+		System.err.println("N annots:"+annots.size());
+		
 		testForAnnotation("FB:FBgn0024177","GO:0005921");
 		assertTrue(true);
-	}
-	
-	public boolean testForAnnotation(String su, String ob) {
-		IdentifiedObject io = session.getObject(su);
-		if (io != null) {
-			Collection<Annotation> annots = getAnnotationsForSubject(io);
-			for (Annotation annot : annots) {
-				if (ob.equals(annot.getObject())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public Collection<Annotation> getAnnotationsForSubject(IdentifiedObject su) {
-		Collection<Annotation> annots = new LinkedList<Annotation>();
-		for (IdentifiedObject io : session.getObjects()) {
-			if (io instanceof Annotation) {
-				Annotation annot = (Annotation)io;
-				if (su.equals(annot.getSubject())) {
-					annots.add(annot);
-				}
-			}
-		}
-		return annots;
 	}
 	
 	public static Test suite() {

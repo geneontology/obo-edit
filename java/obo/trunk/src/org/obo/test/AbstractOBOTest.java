@@ -131,4 +131,8 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, rel, parent)));
 	}
+	
+	public void testNotPresent(String id) {
+		assertTrue(session.getObject(id) == null);
+	}
 }
