@@ -139,7 +139,7 @@ public class SearchComponent extends AbstractGUIComponent {
 						+ FilterUtil.getOBOFilterExpression(filter);
 				String id = ComponentManager.getManager().showComponent(
 						new SearchResultsComponentFactory(),
-						SearchComponent.this, title);
+						SearchComponent.this, title, false);
 				SearchResultsComponent src = (SearchResultsComponent) ComponentManager
 						.getManager().getActiveComponent(id);
 				src.setFactory(factory);

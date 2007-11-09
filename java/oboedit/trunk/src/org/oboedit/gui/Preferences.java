@@ -254,10 +254,6 @@ public class Preferences {
 		return allowExtendedCharacters;
 	}
 
-	public String getHistoryFilePath() {
-		return new File(GUIManager.getPrefsDir(), "history.xml").getAbsolutePath();
-	}
-
 	public void setSelectionBatchSize(int selectionBatchSize) {
 		this.selectionBatchSize = selectionBatchSize;
 	}

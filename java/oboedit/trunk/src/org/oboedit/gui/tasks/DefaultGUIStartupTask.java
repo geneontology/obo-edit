@@ -35,6 +35,7 @@ import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
+import org.bbop.framework.IOManager;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.ViewMenu;
@@ -65,7 +66,6 @@ import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
-import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
@@ -113,6 +113,7 @@ import org.oboedit.gui.factory.GraphEditorFactory;
 import org.oboedit.gui.factory.GraphvizViewFactory;
 import org.oboedit.gui.factory.HistoryBrowserFactory;
 import org.oboedit.gui.factory.IDManagerFactory;
+import org.oboedit.gui.factory.IDResolutionComponentFactory;
 import org.oboedit.gui.factory.IntersectionEditorFactory;
 import org.oboedit.gui.factory.LinkSearchComponentFactory;
 import org.oboedit.gui.factory.NamespaceManagerFactory;
@@ -121,6 +122,7 @@ import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
+import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
@@ -139,8 +141,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				.getFrame(), Preferences.getPreferences()
 				.getUseModalProgressMonitors());
 		return CollectionUtil.list(new AutosaveTask(),
-				new PostLoadVerifyTask(), new FrameNameUpdateTask(),
-				screenLockTask);
+				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
+				new FrameNameUpdateTask(), screenLockTask);
 	}
 
 	@Override
@@ -152,11 +154,12 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
 		return (Collection) CollectionUtil.list(new TermPanelFactory(),
 				new GraphEditorFactory(), new TextEditorFactory(),
+				new TableOfContentsFactory(),
+				// new IDResolutionComponentFactory(),
 				new DAGViewFactory(), new GraphDAGViewFactory(),
 				new SearchComponentFactory(), new LinkSearchComponentFactory(),
 				new IntersectionEditorFactory(), new CategoryManagerFactory(),
-				new GraphvizViewFactory(),
-				new SynonymCategoryManagerFactory(),
+				new GraphvizViewFactory(), new SynonymCategoryManagerFactory(),
 				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
 				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
 				new IDManagerFactory(), new ReasonerManagerFactory(),
@@ -221,7 +224,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	protected Font getFont() {
 		return Preferences.getPreferences().getFont();
-	}  
+	}
 
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = (IDWDriver) super.createLayoutDriver();
@@ -238,8 +241,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			protected Icon filterInvIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
 
-			protected MultiMap<GUIComponent, JComponent> compMap =
-				new MultiArrayListMap<GUIComponent, JComponent>();
+			protected MultiMap<GUIComponent, JComponent> compMap = new MultiArrayListMap<GUIComponent, JComponent>();
 
 			public void viewCreated(View v, final GUIComponent c) {
 				if (c instanceof Filterable) {
@@ -483,12 +485,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			// do nothing; this will always work
 		}
 	}
-
-	@Override
-	protected DataAdapterRegistry getAdapterRegistry() {
-		return IOManager.getManager().getAdapterRegistry();
-	}
-
+	
 	@Override
 	protected String getAppID() {
 		// TODO Auto-generated method stub

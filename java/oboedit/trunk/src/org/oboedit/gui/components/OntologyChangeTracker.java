@@ -3,13 +3,13 @@ package org.oboedit.gui.components;
 import org.bbop.dataadapter.*;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
+import org.bbop.framework.IOManager;
 import org.bbop.swing.*;
 import org.bbop.util.*;
 import org.obo.dataadapter.*;
 import org.obo.datamodel.*;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryList;
-import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 
@@ -61,14 +61,14 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 	protected Box progressBox = Box.createVerticalBox();
 
 	protected JProgressBar progressBar = new JProgressBar(0, 100);
-	
+
 	public OntologyChangeTracker(String id) {
 		super(id);
 
 		// buildGUI();
 		attachListeners();
 	}
-	
+
 	@Override
 	public void init() {
 		buildGUI();
@@ -197,21 +197,19 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 						.getAdapterRegistry();
 
 				GraphicalAdapterChooser gac = new GraphicalAdapterChooser(
-						registry, OBOAdapter.WRITE_HISTORY,
-						GUIManager.getManager().getScreenLockQueue(),
-						GUIManager.getManager().getFrame(), true,
+						registry, OBOAdapter.WRITE_HISTORY, GUIManager
+								.getManager().getScreenLockQueue(), GUIManager
+								.getManager().getFrame(), true,
 						generatedHistory);
-				gac.setHistoryPath(Preferences.getPreferences()
+				gac.setHistoryPath(IOManager.getManager()
 						.getHistoryFilePath());
-				boolean worked = gac.showDialog("Save history", GUIManager.getManager()
-						.getFrame());
+				boolean worked = gac.showDialog("Save history", GUIManager
+						.getManager().getFrame());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		} else
-			JOptionPane.showMessageDialog(
-					GUIManager.getManager()
-					.getFrame(),
+			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
 					"You cannot save until you've "
 							+ "clicked the \"Find Changes\" " + "button.");
 	}
@@ -243,51 +241,28 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 		});
 		loadOldRootButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OBOSession session = getTerm();
-				if (session != null) {
-					oldHistory = session;
-					loadedOld = true;
-					update();
+				try {
+					newHistory = IOManager.getManager().doOperation(
+							OBOAdapter.READ_ONTOLOGY, null, false);
+				} catch (DataAdapterException e1) {
+					e1.printStackTrace();
 				}
+				loadedOld = true;
+				update();
 			}
 		});
 		loadNewRootButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OBOSession session = getTerm();
-				if (session != null) {
-					newHistory = session;
+				try {
+					newHistory = IOManager.getManager().doOperation(
+							OBOAdapter.READ_ONTOLOGY, null, false);
 					loadedNew = true;
 					update();
+				} catch (DataAdapterException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
-	}
-
-	protected OBOSession getTerm() {
-		/*
-		 * DataAdapterChooser chooser = new DataAdapterChooser( (JFrame) null,
-		 * controller.getAdapterRegistry(), DEDataAdapterI.READ_TERMS, "Load
-		 * terms", null, false); if (controller.getHistoryFilePath() != null)
-		 * chooser.setPropertiesFile(controller.getHistoryFilePath());
-		 * chooser.setFont(Preferences.getPreferences().getFont());
-		 * chooser.show(); if (!chooser.isFailure() && !chooser.isCancelled()) {
-		 * DEDataAdapterI lastAdapter = (DEDataAdapterI) chooser.
-		 * getDataAdapter(); controller. setLastAdapter(lastAdapter);
-		 * controller.
-		 * setLastAdapterProperties(lastAdapter.getStateInformation()); if
-		 * (controller.getAdapterRegistry().
-		 * adapterSupports(lastAdapter.getClass().getName(),
-		 * DEDataAdapterI.GET_ID)) controller.setIDAdapter(lastAdapter); else
-		 * controller.setIDAdapter(null); OBOSession history = (OBOSession)
-		 * chooser.getOutput(); TermWrapper wrapper = new TermWrapper();
-		 * wrapper.history = history; wrapper.adapter = (DEDataAdapterI)
-		 * chooser.getDataAdapter(); return wrapper; }
-		 */
-		OBOSession history = IOManager.getManager().showLoadDialog();
-		if (history == null)
-			return null;
-		else
-			return history;
 	}
 
 	protected void update() {
