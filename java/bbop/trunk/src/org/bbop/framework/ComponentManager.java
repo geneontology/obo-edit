@@ -134,14 +134,24 @@ public class ComponentManager {
 		driver.savePerspectiveAs(p, name);
 	}
 
+	public String showComponent(GUIComponentFactory factory,
+			boolean showInNewWindow) {
+		return showComponent(factory, null, null, showInNewWindow);
+	}
+
 	public String showComponent(GUIComponentFactory factory, GUIComponent target) {
-		return showComponent(factory, target, null);
+		return showComponent(factory, target, null, false);
 	}
 
 	public String showComponent(GUIComponentFactory factory,
-			GUIComponent target, String label) {
+			GUIComponent target, boolean showInNewWindow) {
+		return showComponent(factory, target, null, showInNewWindow);
+	}
+
+	public String showComponent(GUIComponentFactory factory,
+			GUIComponent target, String label, boolean showInNewWindow) {
 		return getDriver().showComponent(factory, target, null, label,
-				factory.getPreferSeparateWindow(), null);
+				factory.getPreferSeparateWindow() || showInNewWindow, null);
 	}
 
 	public static File getPrefsPath() {
@@ -282,8 +292,7 @@ public class ComponentManager {
 			try {
 				XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 						new FileInputStream(f)));
-				config = (ComponentConfiguration) decoder
-						.readObject();
+				config = (ComponentConfiguration) decoder.readObject();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
