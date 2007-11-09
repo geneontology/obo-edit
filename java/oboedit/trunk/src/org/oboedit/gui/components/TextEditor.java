@@ -27,6 +27,9 @@ import org.bbop.framework.ComponentManager;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
+import org.bbop.framework.IOEvent;
+import org.bbop.framework.IOListener;
+import org.bbop.framework.IOManager;
 import org.bbop.swing.SwingUtil;
 import org.bbop.swing.XMLLayoutUtil;
 import org.bbop.util.MultiHashMap;
@@ -38,7 +41,6 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.oboedit.controller.ExpressionManager;
-import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
@@ -52,8 +54,6 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.SelectionDrivenComponent;
 import org.oboedit.gui.TextComponentNameResolver;
-import org.oboedit.gui.event.IOEvent;
-import org.oboedit.gui.event.IOListener;
 import org.oboedit.gui.event.IncrementalVerificationEvent;
 import org.oboedit.gui.event.IncrementalVerificationListener;
 import org.oboedit.gui.event.PreSelectionEvent;
@@ -463,12 +463,11 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected IOListener ioListener = new IOListener() {
 
-		public boolean willChangeRoot(IOEvent e) {
+		public boolean willExecuteOperation(IOEvent e) {
 			return runChecksAndCommit();
 		}
 
-		public boolean willSaveRoot(IOEvent e) {
-			return runChecksAndCommit();
+		public void operationExecuted(IOEvent e) {			
 		}
 	};
 

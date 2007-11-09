@@ -16,6 +16,13 @@ import org.obo.datamodel.OBOProperty;
 public abstract class TermHyperlinkListener implements HyperlinkListener {
 
 	protected LinkDatabase linkDatabase;
+	
+	public TermHyperlinkListener() {
+	}
+	
+	public TermHyperlinkListener(LinkDatabase linkDatabase) {
+		this.linkDatabase = linkDatabase;
+	}
 
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
@@ -26,6 +33,10 @@ public abstract class TermHyperlinkListener implements HyperlinkListener {
 			if (!e.getURL().getProtocol().equals("file"))
 				return;
 			String path = e.getURL().getPath();
+			int slashIndex = path.lastIndexOf('/');
+			if (slashIndex >= 0) {
+				path = path.substring(slashIndex+1, path.length());
+			}
 			Pattern paramPattern = Pattern
 			.compile("(\\S+?)\\((\\S+?)\\)-(.+)");
 			String linkType = null;
@@ -49,7 +60,8 @@ public abstract class TermHyperlinkListener implements HyperlinkListener {
 			System.err.println("linkParam = "+linkParam);
 			System.err.println("linkVal = "+linkVal);
 			if (linkType.equals("term")) {
-				IdentifiedObject io = linkDatabase.getObject(linkVal.replaceAll("%3A", ":"));
+				String id = linkVal.replaceAll("%3A", ":");
+				IdentifiedObject io = linkDatabase.getObject(id);
 				if (io != null)
 					termSelected(linkParam, io);
 			} else if (linkType.equals("link")) {

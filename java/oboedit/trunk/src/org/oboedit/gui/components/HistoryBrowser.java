@@ -4,6 +4,7 @@ import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
+import org.bbop.framework.IOManager;
 import org.bbop.swing.*;
 import org.bbop.util.*;
 import org.obo.dataadapter.*;
@@ -11,7 +12,6 @@ import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.obo.history.HistoryList;
 import org.obo.history.SessionHistoryList;
-import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
@@ -61,8 +61,8 @@ public class HistoryBrowser extends AbstractGUIComponent {
 
 			if (SessionManager.getManager().getSession() != null
 					&& (value instanceof HistoryList)
-					&& value
-							.equals(SessionManager.getManager().getSession().getCurrentHistory())) {
+					&& value.equals(SessionManager.getManager().getSession()
+							.getCurrentHistory())) {
 				setForeground(Color.blue);
 				setText("Current session");
 			} else {
@@ -72,7 +72,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 			return c;
 		}
 	}
-	
+
 	public HistoryBrowser(String id) {
 		super(id);
 		sessionList = new JTree();
@@ -106,15 +106,15 @@ public class HistoryBrowser extends AbstractGUIComponent {
 				.getLastPathComponent();
 
 		try {
-			DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
+			DataAdapterRegistry registry = IOManager.getManager()
+					.getAdapterRegistry();
 
 			GraphicalAdapterChooser gac = new GraphicalAdapterChooser(registry,
-					OBOAdapter.WRITE_HISTORY,
-					GUIManager.getManager().getScreenLockQueue(),
-					GUIManager.getManager().getFrame(),
-					Preferences.getPreferences().getUseModalProgressMonitors(),
-					historyList);
-			gac.setHistoryPath(Preferences.getPreferences().getHistoryFilePath());
+					OBOAdapter.WRITE_HISTORY, GUIManager.getManager()
+							.getScreenLockQueue(), GUIManager.getManager()
+							.getFrame(), Preferences.getPreferences()
+							.getUseModalProgressMonitors(), historyList);
+			gac.setHistoryPath(IOManager.getManager().getHistoryFilePath());
 			gac.showDialog("Save history", null);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -237,7 +237,8 @@ public class HistoryBrowser extends AbstractGUIComponent {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (e.getEventType().equals(
 							HyperlinkEvent.EventType.ACTIVATED)) {
-						selectTerm(e.getURL(), SessionManager.getManager().getSession());
+						selectTerm(e.getURL(), SessionManager.getManager()
+								.getSession());
 					}
 				}
 			});

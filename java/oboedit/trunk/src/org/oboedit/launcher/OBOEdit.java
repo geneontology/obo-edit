@@ -2,6 +2,7 @@ package org.oboedit.launcher;
 
 import org.bbop.dataadapter.*;
 import org.bbop.framework.GUIManager;
+import org.bbop.framework.IOManager;
 import org.bbop.io.AuditedPrintStream;
 import org.bbop.io.MultiPrintStream;
 import org.bbop.swing.*;
@@ -13,8 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.*;
-import org.oboedit.controller.IOManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
@@ -27,7 +28,7 @@ public class OBOEdit {
 	private static TagSpec getCommandLineSpec(DataAdapterRegistry registry) {
 
 		TagSpec loadAdapterSpec = CommandLineWidget.getTagSpec(registry,
-				IOManager.getManager().getDefaultReadAdapter(),
+				new OBOFileAdapter(),
 				OBOAdapter.READ_ONTOLOGY, null);
 		TagSpec vSpec = new TagSpec("-v");
 		TagSpec verboseSpec = new TagSpec("-verbose");

@@ -123,6 +123,16 @@ public class SessionManager {
 	public OBOSession getSession() {
 		return session;
 	}
+	
+	/**
+	 * Leaves the current session in place, but sends a change root event
+	 * to all the registered listeners. This is useful if a massive change has
+	 * occurred to the session that has not been achieved via the history session
+	 * (such as an irreversible import).
+	 */
+	public void reloadSession() {
+		fireChangeRoot(new RootChangeEvent(this, session));
+	}
 
 	public void setSession(OBOSession session) {
 		this.session = session;
@@ -132,7 +142,7 @@ public class SessionManager {
 		if (getUseReasoner()) {
 			initializeReasonerDatabase();
 		}
-		fireChangeRoot(new RootChangeEvent(this, session));
+		reloadSession();
 	}
 
 	public boolean getUseReasoner() {

@@ -407,7 +407,9 @@ public class SearchPanel extends JPanel {
 
 	public void setFilter(Filter<?> filter) {
 		contentPanel.removeAll();
-		if (filter instanceof CompoundFilter) {
+		if (filter == null) {
+			return;
+		} else if (filter instanceof CompoundFilter) {
 			CompoundFilter cf = (CompoundFilter) filter;
 			if (cf.getBooleanOperation() == CompoundFilter.AND)
 				allButton.setSelected(true);
