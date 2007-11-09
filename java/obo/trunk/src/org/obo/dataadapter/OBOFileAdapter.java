@@ -41,7 +41,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			FileAdapterConfiguration {
 		protected boolean allowDangling = false;
 
-		protected boolean failFast = true;
+		protected boolean failFast = false;
 
 		protected boolean saveImplied;
 

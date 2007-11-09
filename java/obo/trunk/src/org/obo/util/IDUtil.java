@@ -217,7 +217,7 @@ public class IDUtil {
 			boolean temporary) {
 		return idGen.generateID(session, parent, reservedIDs, temporary);
 	}
-	
+
 	public static String fetchTemporaryID(OBOSession session) {
 		return fetchTemporaryID(new DefaultIDGenerator(), session);
 	}
@@ -297,13 +297,19 @@ public class IDUtil {
 				boolean typeProblem = warning.getTypeWarning() != null;
 				if (parentProblem || typeProblem) {
 					for (LinkIDResolution res : linkResolutions) {
-						if (warning.getParentWarning() != null
-								&& res.getParentResolution() != null) {
+						if (res.getParentResolution() == null
+								&& res.getTypeResolution() == null) {
 							parentProblem = false;
-						}
-						if (warning.getTypeWarning() != null
-								&& res.getTypeResolution() != null) {
 							typeProblem = false;
+						} else {
+							if (warning.getParentWarning() != null
+									&& res.getParentResolution() != null) {
+								parentProblem = false;
+							}
+							if (warning.getTypeWarning() != null
+									&& res.getTypeResolution() != null) {
+								typeProblem = false;
+							}
 						}
 						if (!(typeProblem && parentProblem))
 							break;
@@ -317,6 +323,9 @@ public class IDUtil {
 			throw new UnresolvedIDsException(warnings);
 		List<HistoryItem> historyItems = new LinkedList<HistoryItem>();
 		for (LinkIDResolution resolution : resolutions) {
+			if (resolution.getParentResolution() == null
+					&& resolution.getTypeResolution() == null)
+				continue;
 			HistoryItem delItem = new DeleteLinkHistoryItem(resolution
 					.getLink());
 			Link newLink = (Link) resolution.getLink().clone();
@@ -340,6 +349,7 @@ public class IDUtil {
 				child.removeParent(resolution.getLink());
 				child.addParent(newLink);
 			}
+
 		}
 		return historyItems;
 	}

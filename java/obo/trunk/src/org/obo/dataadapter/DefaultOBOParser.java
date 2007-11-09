@@ -66,7 +66,7 @@ public class DefaultOBOParser implements OBOParser {
 
 	protected OBOMetaData metaData;
 
-	protected boolean failFast = true;
+	protected boolean failFast = false;
 
 	protected static class BasicMapping {
 		protected String subject;
