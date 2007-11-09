@@ -793,13 +793,17 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.DOMAIN_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
-			if (property.getDomain() != null)
+			if (property.getDomain() != null
+					&& (allowDangling || linkDatabase.getObject(property
+							.getDomain().getID()) != null))
 				serializer.writeDomainTag(property.getDomain(), property
 						.getDomainExtension());
 		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.RANGE_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
-			if (property.getRange() != null)
+			if (property.getRange() != null
+					&& (allowDangling || linkDatabase.getObject(property
+							.getRange().getID()) != null))
 				serializer.writeRangeTag(property.getRange(), property
 						.getRangeExtension());
 		} else if (obj instanceof OBOProperty
