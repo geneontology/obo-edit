@@ -50,6 +50,10 @@ public class GUIManager {
 	public BackgroundEventQueue getBackgroundQueue() {
 		return backgroundQueue;
 	}
+	
+	public void runTaskNow(TaskDelegate<?> task, boolean lockScreen) {
+		getQueue(lockScreen).runTaskNow(task);
+	}
 
 	public void scheduleTask(TaskDelegate<?> task, boolean lockScreen) {
 		getQueue(lockScreen).scheduleTask(task);

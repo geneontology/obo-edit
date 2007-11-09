@@ -525,6 +525,7 @@ public class IDWDriver implements LayoutDriver {
 		if (tryRestore)
 			window.restore();
 		if (window.getWindowParent() == null) {
+			// TODO make this work with floating windows
 			DockingWindow w;
 			DockingWindow target = null;
 			if (targetComponent != null)

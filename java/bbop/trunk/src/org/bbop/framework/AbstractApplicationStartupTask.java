@@ -60,8 +60,6 @@ public abstract class AbstractApplicationStartupTask extends
 
 	protected abstract Collection<GUIComponentFactory<?>> getDefaultComponentFactories();
 
-	protected abstract DataAdapterRegistry getAdapterRegistry();
-
 	protected abstract String getAppID();
 	
 	protected abstract String getAppName();
@@ -129,7 +127,7 @@ public abstract class AbstractApplicationStartupTask extends
 
 	protected void installDefaultDataAdapters() {
 		for (DataAdapter adapter : getDefaultDataAdapters()) {
-			getAdapterRegistry().addAdapter(adapter);
+			IOManager.getManager().getAdapterRegistry().addAdapter(adapter);
 		}
 	}
 
@@ -221,10 +219,10 @@ public abstract class AbstractApplicationStartupTask extends
 				.instantiateAll(GUIComponentFactory.class)) {
 			ComponentManager.getManager().install(factory);
 		}
-		if (getAdapterRegistry() != null) {
+		if (IOManager.getManager().getAdapterRegistry() != null) {
 			for (DataAdapter adapter : PluginManager.getManager()
 					.instantiateAll(DataAdapter.class)) {
-				getAdapterRegistry().addAdapter(adapter);
+				IOManager.getManager().getAdapterRegistry().addAdapter(adapter);
 			}
 		}
 	}

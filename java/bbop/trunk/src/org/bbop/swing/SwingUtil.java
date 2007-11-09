@@ -252,6 +252,48 @@ public class SwingUtil {
 					seen);
 		}
 	}
+	
+	
+	/*
+	 * Returns the bounding rectangle for the component text.
+	 */
+	public static Rectangle getTextRectangle(JLabel label) {
+
+		String text = label.getText();
+		Icon icon = (label.isEnabled()) ? label.getIcon() : label
+				.getDisabledIcon();
+
+		if ((icon == null) && (text == null)) {
+			return null;
+		}
+
+		Rectangle paintIconR = new Rectangle();
+		Rectangle paintTextR = new Rectangle();
+		Rectangle paintViewR = new Rectangle();
+		Insets paintViewInsets = new Insets(0, 0, 0, 0);
+
+		paintViewInsets = label.getInsets(paintViewInsets);
+		paintViewR.x = paintViewInsets.left;
+		paintViewR.y = paintViewInsets.top;
+		paintViewR.width = label.getWidth()
+				- (paintViewInsets.left + paintViewInsets.right);
+		paintViewR.height = label.getHeight()
+				- (paintViewInsets.top + paintViewInsets.bottom);
+
+		Graphics g = label.getGraphics();
+		if (g == null) {
+			return null;
+		}
+		String clippedText = SwingUtilities.layoutCompoundLabel(
+				(JComponent) label, g.getFontMetrics(), text, icon, label
+						.getVerticalAlignment(),
+				label.getHorizontalAlignment(),
+				label.getVerticalTextPosition(), label
+						.getHorizontalTextPosition(), paintViewR, paintIconR,
+				paintTextR, label.getIconTextGap());
+
+		return paintTextR;
+	}
 
 	/**
 	 * Places a Window in the center of the screen.

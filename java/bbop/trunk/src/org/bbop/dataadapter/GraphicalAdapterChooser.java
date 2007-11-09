@@ -877,11 +877,14 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 			dialog.pack();
 	}
 
+	public AdapterConfiguration getConfiguration() throws DataAdapterUIException {
+		return currentUI.getConfig(op, currentAdapter, input);
+	}
+
 	public void commit() {
 		try {
 			currentUI.acceptComponentConfig(false);
-			AdapterConfiguration config = currentUI.getConfig(op,
-					currentAdapter, input);
+			AdapterConfiguration config = getConfiguration();
 			task = new DataAdapterOperationTask<IN, OUT>(currentAdapter, op,
 					config, input);
 			task.addPostExecuteRunnable(new Runnable() {

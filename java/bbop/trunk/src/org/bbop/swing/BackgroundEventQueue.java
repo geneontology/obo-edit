@@ -1,5 +1,6 @@
 package org.bbop.swing;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,8 @@ public class BackgroundEventQueue {
 		protected LinkedList<TaskDelegate<?>> l = new LinkedList<TaskDelegate<?>>();
 		protected TaskDelegate<?> currentTask;
 		protected List<Runnable> startupNotifiers = new LinkedList<Runnable>();
+		protected List<Runnable> sleepNotifiers = new LinkedList<Runnable>();
+
 		protected BackgroundEventQueue queue;
 		protected boolean kill = false;
 
@@ -70,6 +73,9 @@ public class BackgroundEventQueue {
 					executeTask(t);
 				}
 				currentTask = null;
+				for (Runnable r : new ArrayList<Runnable>(sleepNotifiers)) {
+					r.run();
+				}
 			}
 		}
 		
@@ -81,6 +87,14 @@ public class BackgroundEventQueue {
 				t.cancel();
 			}
 			
+		}
+		
+		protected void addSleepNotifier(Runnable r) {
+			sleepNotifiers.add(r);
+		}
+		
+		public void removeSleepNotifier(Runnable r) {
+			sleepNotifiers.remove(r);
 		}
 
 		protected void addStartupNotifier(Runnable r) {
@@ -200,6 +214,24 @@ public class BackgroundEventQueue {
 	@Override
 	public String toString() {
 		return "Background Event Queue "+id;
+	}
+
+	public <T> T runTaskNow(TaskDelegate<T> task) {
+		BackgroundEventThread thread = getBackgroundEventThread();
+		final Thread currentThread = Thread.currentThread();
+		Runnable r = new Runnable() {
+			public void run() {
+				currentThread.interrupt();
+			}
+		};
+		thread.addSleepNotifier(r);
+		thread.scheduleTask(task);
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+		}
+		thread.removeSleepNotifier(r);
+		return task.getResults();
 	}
 
 }
