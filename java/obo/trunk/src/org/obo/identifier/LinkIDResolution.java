@@ -6,4 +6,5 @@ public interface LinkIDResolution {
 	public Link getLink();
 	public IDResolution getParentResolution();
 	public IDResolution getTypeResolution();
+	public boolean requiresUserIntervention();
 }

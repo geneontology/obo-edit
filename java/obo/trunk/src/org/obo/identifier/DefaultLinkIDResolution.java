@@ -6,14 +6,18 @@ public class DefaultLinkIDResolution implements LinkIDResolution {
 
 	protected Link link;
 	protected IDResolution parent;
-	protected IDResolution child;
+	protected IDResolution type;
 
 	public DefaultLinkIDResolution(Link link, IDResolution parent,
 			IDResolution child) {
 		super();
 		this.link = link;
 		this.parent = parent;
-		this.child = child;
+		this.type = child;
+	}
+	
+	public static LinkIDResolution getIgnoreResolution(Link link) {
+		return new DefaultLinkIDResolution(link, null, null);
 	}
 
 	public Link getLink() {
@@ -25,12 +29,17 @@ public class DefaultLinkIDResolution implements LinkIDResolution {
 	}
 
 	public IDResolution getTypeResolution() {
-		return child;
+		return type;
+	}
+
+	public boolean requiresUserIntervention() {
+		return (type != null && type.requiresUserIntervention())
+				|| (parent != null && parent.requiresUserIntervention());
 	}
 
 	public String toString() {
 		return "Replace " + link + " "
-				+ (parent == null ? "" : "parent=(" + parent.toString()+")") + " "
-				+ (child == null ? "" : "child=(" + child.toString()+")");
+				+ (parent == null ? "" : "parent=(" + parent.toString() + ")")
+				+ " " + (type == null ? "" : "type=(" + type.toString() + ")");
 	}
 }
