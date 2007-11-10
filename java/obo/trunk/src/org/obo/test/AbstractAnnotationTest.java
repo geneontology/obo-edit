@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
@@ -52,6 +53,17 @@ public abstract class AbstractAnnotationTest extends AbstractOBOTest {
 		return annots;
 	}
 	
+	public File writeTempAssocFile() throws IOException, DataAdapterException {
+		
+		GOStyleAnnotationFileAdapter adapter = new GOStyleAnnotationFileAdapter();
+		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+		File outFile = File.createTempFile("foo", "bar");
+		//outFile.deleteOnExit();
+		config.setWritePath(outFile.getAbsolutePath());
+		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
+		return outFile;
+	}
+
 
 	@Override
 	public Collection<String> getFilesToLoad() {

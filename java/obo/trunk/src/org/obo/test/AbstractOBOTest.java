@@ -1,5 +1,7 @@
 package org.obo.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.bbop.dataadapter.DataAdapterException;
@@ -134,5 +136,16 @@ public abstract class AbstractOBOTest extends TestCase {
 	
 	public void testNotPresent(String id) {
 		assertTrue(session.getObject(id) == null);
+	}
+	
+	public File writeTempOBOFile() throws IOException, DataAdapterException {
+		
+		OBOFileAdapter adapter = new OBOFileAdapter();
+		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+		File outFile = File.createTempFile("foo", "bar");
+		//outFile.deleteOnExit();
+		config.setWritePath(outFile.getAbsolutePath());
+		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
+		return outFile;
 	}
 }
