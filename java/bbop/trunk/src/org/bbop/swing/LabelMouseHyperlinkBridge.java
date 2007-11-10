@@ -4,6 +4,8 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -26,12 +28,19 @@ import javax.swing.text.View;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 
+import org.bbop.util.MultiHashMap;
+import org.bbop.util.MultiMap;
+
 public class LabelMouseHyperlinkBridge implements MouseListener,
 		MouseMotionListener {
 
 	protected JLabel label;
+
 	protected Collection<HyperlinkListener> hyperlinkListeners = new ArrayList<HyperlinkListener>();
+
 	protected Collection<StringLinkListener> stringListeners = new ArrayList<StringLinkListener>();
+
+	protected MultiMap<String, ActionListener> actionMap = new MultiHashMap<String, ActionListener>();
 
 	public LabelMouseHyperlinkBridge(JLabel label) {
 		this.label = label;
@@ -52,15 +61,15 @@ public class LabelMouseHyperlinkBridge implements MouseListener,
 		}
 		return null;
 	}
-	
+
 	public void addStringLinkListener(StringLinkListener listener) {
 		stringListeners.add(listener);
 	}
-	
+
 	public void removeStringLinkListener(StringLinkListener listener) {
 		stringListeners.remove(listener);
 	}
-	
+
 	protected void fireStringlinkListener(String href) {
 		for (StringLinkListener listener : stringListeners)
 			listener.link(href);
@@ -88,6 +97,16 @@ public class LabelMouseHyperlinkBridge implements MouseListener,
 						EventType.ACTIVATED, new URL(url)));
 			} catch (MalformedURLException e1) {
 			}
+			fireActionListener(new ActionEvent(e.getSource(),
+					ActionEvent.ACTION_PERFORMED, url));
+		}
+	}
+
+	protected void fireActionListener(ActionEvent event) {
+		Collection<ActionListener> listeners = actionMap.get(event
+				.getActionCommand());
+		for (ActionListener listener : listeners) {
+			listener.actionPerformed(event);
 		}
 	}
 
@@ -117,6 +136,14 @@ public class LabelMouseHyperlinkBridge implements MouseListener,
 			label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		else
 			label.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	public void add(String command, ActionListener listener) {
+		actionMap.add(command, listener);
+	}
+
+	public void remove(String command, ActionListener listener) {
+		actionMap.add(command, listener);
 	}
 
 }
