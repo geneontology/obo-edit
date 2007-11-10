@@ -219,7 +219,7 @@ public class AnnotationParserExtension implements ParserExtension,
 											.getLineNum());
 						}
 						annotation.setObject((LinkedObject) object);
-					} else if (pv.getProperty().equals("relation")) {
+					} else if (pv.getProperty().equals("relationship")) {
 						IdentifiedObject object = parser.getObject(pv
 								.getValue());
 						if (object == null) {
