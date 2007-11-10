@@ -43,7 +43,7 @@ public class HyperlinkLabel extends JLabel {
 		bridge.removeStringLinkListener(listener);
 	}
 
-	public void addHyperLinkListener(HyperlinkListener listener) {
+	public void addHyperlinkListener(HyperlinkListener listener) {
 		bridge.addHyperLinkListener(listener);
 	}
 
