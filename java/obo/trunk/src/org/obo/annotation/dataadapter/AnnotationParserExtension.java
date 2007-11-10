@@ -376,6 +376,7 @@ public class AnnotationParserExtension implements ParserExtension,
 
 	public boolean startStanza(IdentifiedObject obj) throws IOException {
 		if (obj instanceof Instance
+				&& obj.getType() != null
 				&& obj.getType().equals(AnnotationOntology.ANNOTATION())) {
 			Instance instance = (Instance) obj;
 			if (instance instanceof Annotation) {
