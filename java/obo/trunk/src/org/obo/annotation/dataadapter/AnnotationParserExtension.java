@@ -86,6 +86,9 @@ public class AnnotationParserExtension implements ParserExtension,
 
 	protected static final TagMapping SOURCE_TAG = new TagMapping("source",
 			null, null);
+	
+	public AnnotationParserExtension() {
+	}
 
 	public String mapID(String id) {
 		return null;

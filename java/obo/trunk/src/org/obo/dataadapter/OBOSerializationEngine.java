@@ -4,6 +4,7 @@ import org.bbop.dataadapter.*;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.SafeFileOutputStream;
 import org.bbop.util.*;
+import org.obo.annotation.dataadapter.AnnotationParserExtension;
 import org.obo.dataadapter.OBOConstants.StanzaMapping;
 import org.obo.dataadapter.OBOConstants.TagMapping;
 import org.obo.datamodel.*;
@@ -335,6 +336,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public OBOSerializationEngine() {
 		try {
 			addSerializerExtension(new PostcompParserExtension());
+			addSerializerExtension(new AnnotationParserExtension());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
