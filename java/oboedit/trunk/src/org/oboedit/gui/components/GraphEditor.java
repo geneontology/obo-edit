@@ -28,6 +28,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.graph.BoundsGuarantor;
+import org.oboedit.graph.DemoDecorator;
 import org.oboedit.graph.DragDropEditBehavior;
 import org.oboedit.graph.FocusPicker;
 import org.oboedit.graph.GraphLayout;
@@ -253,6 +254,9 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		addViewBehavior(new TooltipBehavior());
 		addViewBehavior(new VisibilityDropBehavior());
 		addViewBehavior(new OverviewCameraBehavior());
+		// TODO Seth & Chris
+		// remove this line to use the demodecorator
+//		addDecorator(new DemoDecorator());
 	}
 
 	protected void installRightClickBehaviors() {
