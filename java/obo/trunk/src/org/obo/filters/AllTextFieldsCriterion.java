@@ -40,6 +40,6 @@ public class AllTextFieldsCriterion extends AbstractStringCriterion {
 
 	@Override
 	public String toString() {
-		return "All text fields";
+		return "Any text field";
 	}
 }
