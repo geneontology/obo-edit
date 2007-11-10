@@ -141,6 +141,7 @@ public class Preferences {
 	protected File autosavePath;
 
 	protected Map<String, Icon> iconIndex = new HashMap<String, Icon>();
+
 	protected Map<String, String> iconURLIndex = new HashMap<String, String>();
 
 	protected static VersionNumber version;
@@ -203,13 +204,16 @@ public class Preferences {
 			try {
 				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
 						Preferences.getPrefsXMLFile())));
-				preferences = (Preferences) d.readObject();
+				Preferences p = (Preferences) d.readObject();
+				preferences = (Preferences) p;
 				d.close();
 			} catch (Exception e) {
 				System.err.println("Could not read preferences file from "
 						+ Preferences.getPrefsXMLFile());
-				preferences = new Preferences();
 			}
+			if (preferences == null)
+				preferences = new Preferences();
+
 			GUIManager.addShutdownHook(new Runnable() {
 				public void run() {
 					try {
