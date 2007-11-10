@@ -558,6 +558,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		try {
 			setProgressString("Saving to db...");
 	
+			LinkedList<IdentifiedObject> savedObjects = new LinkedList<IdentifiedObject>();
+
 			for (TermCategory cat : session.getCategories()) {
 				saveCategory(cat);
 			}
@@ -566,10 +568,17 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					
 				}
 				else {
+					if (!(io instanceof Annotation) &&
+							ioprofile.getAnnotationMode().equals(
+							OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY))
+						continue;
 					saveObject(io);
+					savedObjects.add(io);
 				}
 			}
-			for (IdentifiedObject io : ldb.getObjects()) {
+			
+			// save links for all objects that have been saved
+			for (IdentifiedObject io : savedObjects) {
 				if (io instanceof LinkedObject) {
 					for (Link link : ldb.getParents((LinkedObject) io)) {
 						saveLink(link);
@@ -577,6 +586,18 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				}
 			}
 			
+			/*
+			if (!ioprofile.getAnnotationMode().equals(
+				OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY)) {
+				for (IdentifiedObject io : ldb.getObjects()) {
+					if (io instanceof LinkedObject) {
+						for (Link link : ldb.getParents((LinkedObject) io)) {
+							saveLink(link);
+						}
+					}
+				}
+			}
+			*/
 		
 		} catch (Exception e) {
 			System.out.println(e);
