@@ -1,25 +1,56 @@
 package org.obo.dataadapter;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.bbop.dataadapter.*;
+import org.bbop.dataadapter.AdapterConfiguration;
+import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.dataadapter.DataAdapterUI;
+import org.bbop.dataadapter.FileAdapterUI;
+import org.bbop.dataadapter.IOOperation;
+import org.bbop.dataadapter.JDBCAdapterConfiguration;
 import org.bbop.io.ProgressableInputStream;
-import org.bbop.io.SafeFileOutputStream;
-import org.bbop.rdbms.FromClause;
 import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.WhereClause;
 import org.bbop.rdbms.impl.SqlQueryImpl;
 import org.bbop.util.AbstractProgressValued;
-import org.bbop.util.StringUtil;
 import org.obo.annotation.datamodel.Annotation;
-import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
-import org.obo.dataadapter.OBOParser.XrefPair;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.DanglingObjectImpl;
+import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.DanglingObject;
+import org.obo.datamodel.DatatypeValue;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.DbxrefedObject;
+import org.obo.datamodel.DefinedObject;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Instance;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
+import org.obo.datamodel.NamespacedObject;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.ObjectFactory;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymCategory;
+import org.obo.datamodel.SynonymedObject;
+import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.Value;
+import org.obo.datamodel.ValueLink;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.DefaultObjectFactory;
 import org.obo.datamodel.impl.InstanceImpl;
@@ -27,7 +58,6 @@ import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOPropertyImpl;
 import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
@@ -624,6 +654,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		else if (lo instanceof Annotation) {
 			Annotation annot = (Annotation)lo;
+			LinkedObject obj = annot.getObject();
+			if (obj.isAnonymous()) {
+				saveObject(obj);
+				for (Link link : obj.getParents())
+					saveLink(link);
+			}
 			iid =
 				callSqlFunc("store_annotation",
 						annot.getSubject(),
@@ -729,7 +765,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						link.getChild().getID(),
 						link.getType().getID(),
 						link.getParent().getID(),
-						(TermUtil.isIntersection(link) ? "C" : ""),
+						(TermUtil.isIntersection(link) ? "I" : ""),
 						TermUtil.isImplied(link));
 			}
 			
