@@ -27,3 +27,11 @@ id: D
 [Term]
 id: E
 alt_id: epsilon
+
+[Term]
+id: F
+is_a: C
+
+[Term]
+id: G
+is_a: C
