@@ -3,6 +3,7 @@ package org.obo.test;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.bbop.dataadapter.DataAdapterException;
@@ -12,6 +13,9 @@ import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Instance;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
@@ -27,18 +31,68 @@ public abstract class AbstractAnnotationTest extends AbstractOBOTest {
 
 
 	public void testForAnnotation(String su, String ob) {
+		assertTrue(getFirstAnnotation(su,ob) != null);
+	}
+	
+	public void testForAnnotationAssignedBy(String su, String ob, String by)  {
+		assertTrue(getFirstAnnotation(su,ob).getAssignedBy().getID().equals(by));
+	}
+	
+	public void testForAnnotationPublication(String su, String ob, String pubId)  {
+		assertTrue(getFirstAnnotationWithPublication(su,ob,pubId) != null);
+	}
+	
+	public void testForAnnotationWithEvidenceCode(String su, String ob, String code)  {
+		assertTrue(getFirstAnnotationWithEvidenceCode(su,ob,code) != null);
+	}
+	
+	public Annotation getFirstAnnotationWithPublication(String su, String ob, String pubId)  {
+		for (Annotation annot : getAllAnnotations(su, ob))
+			for (IdentifiedObject pub : annot.getSources())
+				if (pub.getID().equals(pubId))
+					return annot;
+		return null;
+	}
+	
+	public Annotation getFirstAnnotationWithEvidenceCode(String su, String ob, String code)  {
+		for (Annotation annot : getAllAnnotations(su, ob))
+			for (IdentifiedObject ev : annot.getEvidence())
+				if (((Instance)ev).getType().getID().equals(code))
+					return annot;
+		return null;
+	}
+	
+	public Annotation getFirstAnnotation(String su, String ob) {
 		IdentifiedObject io = session.getObject(su);
-		boolean ok = false;
 		if (io != null) {
 			Collection<Annotation> annots = getAnnotationsForSubject(io);
 			for (Annotation annot : annots) {
 				if (ob.equals(annot.getObject().getID())) {
-					ok = true;
+					return annot;
 				}
 			}
 		}
-		assertTrue(ok);
+		return null;
 	}
+	
+	public Collection<Annotation> getAllAnnotations(String su, String ob) {
+		IdentifiedObject io = session.getObject(su);
+		HashSet<Annotation> matches = new HashSet<Annotation>();
+		if (io != null) {
+			Collection<Annotation> annots = getAnnotationsForSubject(io);
+			for (Annotation annot : annots) {
+				if (ob.equals(annot.getObject().getID())) {
+					matches.add(annot);
+				}
+			}
+		}
+		return matches;
+	}
+	
+	
+	
+	
+
 	
 	public Collection<Annotation> getAnnotationsForSubject(IdentifiedObject su) {
 		Collection<Annotation> annots = new LinkedList<Annotation>();

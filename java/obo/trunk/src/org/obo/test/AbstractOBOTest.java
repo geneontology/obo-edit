@@ -12,6 +12,7 @@ import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
@@ -27,7 +28,7 @@ import junit.framework.TestCase;
 
 public abstract class AbstractOBOTest extends TestCase {
 	protected OBOSession session;
-	protected DefaultLinkDatabase linkDatabase;
+	protected LinkDatabase linkDatabase;
 
 	public AbstractOBOTest(String name) {
 		super(name);
@@ -113,6 +114,8 @@ public abstract class AbstractOBOTest extends TestCase {
 		Namespace ns = lo.getNamespace();
 		assertTrue(ns.getID().equals(nsId));	
 	}
+	
+	
 	
 	public void testForDefinition(String id, String def)  {
 		DefinedObject lo = (DefinedObject) session.getObject(id);

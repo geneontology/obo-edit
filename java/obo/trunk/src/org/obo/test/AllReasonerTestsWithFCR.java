@@ -1,20 +1,18 @@
 package org.obo.test;
 
-import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
+import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 
 import junit.framework.*;
 
-public class AllReasonerTestsWithPellet extends TestCase {
+public class AllReasonerTestsWithFCR extends TestCase {
 
 	public static Test suite() {
 
-		AbstractReasonerTest.setReasonerFactory(new PelletWrappedReasonerFactory());
+		AbstractReasonerTest.setReasonerFactory(new ForwardChainingReasonerFactory());
 
 		TestSuite out = new TestSuite();
 
 		out.addTestSuite(IntersectionBloodCellExampleTest.class);
-		
-		// we don't expect this one to succeed yet:
 		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
 
 		return out;
