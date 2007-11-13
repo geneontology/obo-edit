@@ -32,3 +32,7 @@ domain: oban:annotation
 [Term]
 id: oban:publication
 name: Publication
+
+[Term]
+id: oban:agent
+name: Agent

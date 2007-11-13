@@ -65,9 +65,9 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 
-	public String getAssignedBy() {
-		return (String) TermUtil.getPropValue(this, AnnotationOntology
-				.ASSIGNED_BY_REL(), String.class, true);
+	public LinkedObject getAssignedBy() {
+		return (LinkedObject)TermUtil.getPropValue(this, AnnotationOntology
+				.ASSIGNED_BY_REL());
 	}
 
 	public Collection<LinkedObject> getEvidence() {
@@ -92,8 +92,9 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return (OBOProperty) link.getType();
 	}
 
-	public Collection<String> getSources() {
+	public Collection<LinkedObject> getSources() {
 		return TermUtil.getPropValues(this, AnnotationOntology.SOURCE_REL());
+		//return TermUtil.getParentsByType(this, AnnotationOntology.SOURCE_REL());
 	}
 
 	public LinkedObject getSubject() {
@@ -114,13 +115,15 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return false;
 	}
 
-	public HistoryItem getAssignedByChangeItem(String assignedBy) {
+	public HistoryItem getAssignedByChangeItem(LinkedObject assignedBy) {
 		TermMacroHistoryItem item = new TermMacroHistoryItem();
-		String oldAssignedBy = getAssignedBy();
+		LinkedObject oldAssignedBy = getAssignedBy();
+		// TODO
+		/*
 		if (oldAssignedBy != null) {
 			HistoryItem delitem = new DeletePropertyValueHistoryItem(getID(),
 					AnnotationOntology.ASSIGNED_BY_REL().getID(),
-					Datatype.STRING.getID(), oldAssignedBy);
+					oldAssignedBy);
 			item.addItem(delitem);
 		}
 		if (assignedBy != null) {
@@ -129,6 +132,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 					Datatype.STRING.getID(), assignedBy);
 			item.addItem(additem);
 		}
+		*/
 		return item;
 	}
 
@@ -250,6 +254,11 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 	public void setAssignedBy(String assignedBy) {
+		Instance i = new InstanceImpl(assignedBy, AnnotationOntology.AGENT());
+		setAssignedBy(i);
+
+	}
+	public void setAssignedBy(LinkedObject assignedBy) {
 		for (Link link : getParents()) {
 			if (link.getType().equals(AnnotationOntology.ASSIGNED_BY_REL())) {
 				removeParent(link);
@@ -258,8 +267,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		}
 		if (assignedBy != null) {
 			Link link = new InstancePropertyValue(this, AnnotationOntology
-					.ASSIGNED_BY_REL(), new DatatypeValueImpl(Datatype.STRING,
-					assignedBy));
+					.ASSIGNED_BY_REL(), assignedBy);
 			addParent(link);
 		}
 	}
@@ -277,13 +285,30 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 	public void addSource(String source) {
-		addPropertyValue(AnnotationOntology.SOURCE_REL(),
-				new DatatypeValueImpl(Datatype.STRING, source));
+		// TODO: use factory and check instance does not exist already
+		Instance i = new InstanceImpl(source, AnnotationOntology.PUBLICATION());
+		Link link = new InstancePropertyValue(this, AnnotationOntology
+				.SOURCE_REL(), i);
+		addParent(link);
+		//addPropertyValue(AnnotationOntology.SOURCE_REL(),
+		//		new DatatypeValueImpl(Datatype.STRING, source));
+	}
+	
+	public void addSource(LinkedObject source) {
+		Link link = new InstancePropertyValue(this, AnnotationOntology
+				.SOURCE_REL(), source);
+		addParent(link);
 	}
 
-	public void removeSource(String source) {
-		removePropertyValue(AnnotationOntology.SOURCE_REL(),
-				new DatatypeValueImpl(Datatype.STRING, source));
+//	public void removeSource(String source) {
+//		removePropertyValue(AnnotationOntology.SOURCE_REL(),
+//				new DatatypeValueImpl(Datatype.STRING, source));
+//	}
+	
+	public void removeSource(LinkedObject source) {
+		Link link = new InstancePropertyValue(this, AnnotationOntology
+				.SOURCE_REL(), source);
+		removeParent(link);
 	}
 
 	public void setRelationship(OBOProperty relationship) {
@@ -309,8 +334,11 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 	public void setSubject(LinkedObject subject) {
-		LinkLinkedObject lo = (LinkLinkedObject) TermUtil.getPropValue(this,
+		Object o = TermUtil.getPropValue(this,
 				AnnotationOntology.POSITS_REL(), LinkedObject.class, true);
+		if (o != null && !(o instanceof LinkLinkedObject))
+			System.err.println(o);
+		LinkLinkedObject lo = (LinkLinkedObject) o;
 		Link newLink = null;
 		if (lo != null) {
 			Link link = lo.getLink();

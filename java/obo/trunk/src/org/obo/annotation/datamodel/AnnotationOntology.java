@@ -13,6 +13,8 @@ public class AnnotationOntology {
 	protected static final String ANNOTATION_TYPE_ID = "oban:annotation";
 	protected static final String EVIDENCE_TYPE_ID = "oban:evidence";
 	protected static final String PUBLICATION_TYPE_ID = "oban:publication";
+	
+	protected static final String AGENT_TYPE_ID = "oban:agent";
 	protected static final String ASSIGNED_BY_PROPERTY_ID = "oban:assigned_by";
 	protected static final String SOURCE_PROPERTY_ID = "oban:has_data_source";
 	protected static final String EVIDENCE_PROPERTY_ID = "oban:has_evidence";
@@ -50,6 +52,10 @@ public class AnnotationOntology {
 	
 	public static OBOClass PUBLICATION() {
 		return (OBOClass) getSession().getObject(PUBLICATION_TYPE_ID);
+	}
+	
+	public static OBOClass AGENT() {
+		return (OBOClass) getSession().getObject(AGENT_TYPE_ID);
 	}
 
 
