@@ -472,6 +472,16 @@ public class TermUtil {
 	public static int getParentCount(LinkDatabase linkDatabase, LinkedObject lo) {
 		return linkDatabase.getParents(lo).size();
 	}
+	
+	public static Collection<LinkedObject> getParentsByType(LinkedObject lo, OBOProperty type) {
+		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
+		for (Link link : lo.getParents()) {
+			if (link.getType().equals(type)) {
+				parents.add(link.getParent());
+			}
+		}
+		return parents;
+	}
 
 	/**
 	 * Returns a single value for a given property from a given instance. If the
