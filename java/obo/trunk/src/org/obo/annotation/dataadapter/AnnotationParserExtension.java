@@ -177,7 +177,14 @@ public class AnnotationParserExtension implements ParserExtension,
 				}
 				for (PropertyValue pv : stanza.getPropertyValues()) {
 					if (pv.getProperty().equals("source")) {
-						annotation.addSource(pv.getValue());
+						IdentifiedObject source = parser.getObject(pv
+								.getValue());
+						if (source == null) {
+							source = session.getObjectFactory().
+							 createObject(pv.getValue(), OBOClass.OBO_INSTANCE, false);
+							((Instance)source).setType(AnnotationOntology.PUBLICATION());
+						}
+						annotation.addSource((LinkedObject)source);
 						System.err.println("added source " + pv.getValue()
 								+ " to " + annotation.getID());
 					} else if (pv.getProperty().equals("subject")) {
@@ -393,9 +400,9 @@ public class AnnotationParserExtension implements ParserExtension,
 			LinkDatabase linkDatabase) throws IOException {
 		if (currentAnnotation != null) {
 			if (mapping.equals(ASSIGNED_BY_TAG)) {
-				String assignedBy = currentAnnotation.getAssignedBy();
+				LinkedObject assignedBy = currentAnnotation.getAssignedBy();
 				if (assignedBy != null)
-					stream.print("assigned_by: " + assignedBy + "\n");
+					stream.print("assigned_by: " + assignedBy.getID() + "\n");
 				return true;
 			} else if (mapping.equals(SUBJECT_TAG)) {
 				LinkedObject subject = currentAnnotation.getSubject();
@@ -426,8 +433,8 @@ public class AnnotationParserExtension implements ParserExtension,
 			} else if (mapping.equals(OBOConstants.INSTANCE_OF_TAG)) {
 				return true;
 			} else if (mapping.equals(SOURCE_TAG)) {
-				for (String source : currentAnnotation.getSources()) {
-					stream.print("source: " + source + "\n");
+				for (LinkedObject source : currentAnnotation.getSources()) {
+					stream.print("source: " + source.getID() + "\n");
 				}
 				return true;
 			} else if (mapping.equals(OBOConstants.LINK_TAG)

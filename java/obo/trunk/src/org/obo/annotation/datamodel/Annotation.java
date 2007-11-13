@@ -19,15 +19,16 @@ public interface Annotation extends Instance {
     * evidence: <evidence code, perhaps an identifier for some built-in evidence objects>
     * assigned_by: <user id, probably just a string> 
  */
-	public String getAssignedBy();
+	public LinkedObject getAssignedBy();
 	public LinkedObject getSubject();
 	public LinkedObject getObject();
 	public Collection<LinkedObject> getEvidence();
-	public Collection<String> getSources();
+	public Collection<LinkedObject> getSources();
 	public OBOProperty getRelationship();
 	public boolean getIsNegated();
 	
-	public void setAssignedBy(String assignedBy);
+	public void setAssignedBy(String assignedBy); // TODO: deprecate?
+	public void setAssignedBy(LinkedObject assignedBy);
 	public void setSubject(LinkedObject subject);
 	public void setRelationship(OBOProperty relationship);
 	public void setObject(LinkedObject object);
@@ -35,11 +36,16 @@ public interface Annotation extends Instance {
 	public void removeEvidence(LinkedObject evidence);
 	public void setIsNegated(boolean isNegated);
 	
+	// TODO: deprecate these two, or keep them as convenience methods?
 	public void addSource(String source);
-	public void removeSource(String source);
+	//public void removeSource(String source);
+	
+	public void addSource(LinkedObject source);
+	public void removeSource(LinkedObject source);
+
 	
 	public HistoryItem getRelationshipChangeItem(OBOProperty relationship);
-	public HistoryItem getAssignedByChangeItem(String assignedBy);
+	public HistoryItem getAssignedByChangeItem(LinkedObject assignedBy);
 	public HistoryItem getSubjectChangeItem(LinkedObject subject);
 	public HistoryItem getObjectChangeItem(LinkedObject object);
 
