@@ -19,6 +19,8 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		String[] files={"camphor_catabolism.obo"};
 		return Arrays.asList(files);
 	}
+	
+	
 
 	public static Collection<String> getTests() {
 		String[] tests={};
@@ -26,6 +28,7 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 	}
 
 	public void testLinks() throws Exception {
+		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
 		testForIsA("GO:0019383","GO:0009056"); /* genus */
 		testForIsA("GO:0019383","GO:0042178"); /* completeness */
 		testForLink("GO:0019383","UCDHSC:results_in_division_of","CHEBI:15396"); /* differentia */

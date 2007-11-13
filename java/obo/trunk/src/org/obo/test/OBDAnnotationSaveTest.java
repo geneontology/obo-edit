@@ -1,9 +1,11 @@
 package org.obo.test;
 
-import java.io.*;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
@@ -15,17 +17,9 @@ import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
 import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.impl.DefaultLinkDatabase;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.util.AnnotationUtil;
-
-
-import junit.framework.*;
 
 public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
@@ -56,6 +50,8 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		config.setFailFast(false);
 		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
+		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
+
 
 		String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 		
@@ -90,6 +86,15 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
 		testForAnnotation("FB:FBgn0061475","GO:0005843");
+		testForAnnotation("FB:FBgn0024177","GO:0005921");
+		testForNamespace("FB:FBgn0061475","FB");
+		testForLink("FB:FBgn0061475","has_taxon","taxon:7227");
+		testForAnnotationPublication("FB:FBgn0061475","GO:0005843","FB:FBrf0121292");
+		testForAnnotationWithEvidenceCode("FB:FBgn0061475","GO:0005843","ISS");
+		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
+//		testForNamespace("GO:0005843","FB");
+
+		
 	}
 	
 	// TODO: DRY

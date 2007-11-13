@@ -40,7 +40,7 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	public void testForIsA(String childID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		System.out.println("testing "+child+" - "+parent);
+		System.out.println(reasonedDB+" testing "+child+" - "+parent);
 		assertTrue(reasonedDB.hasRelationship(child, OBOProperty.IS_A, parent) != null);
 	}
 

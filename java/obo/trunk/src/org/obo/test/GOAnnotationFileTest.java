@@ -57,7 +57,12 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 		System.err.println("N annots:"+annots.size());
 		
 		testForAnnotation("FB:FBgn0024177","GO:0005921");
-		assertTrue(true);
+		testForName("FB:FBgn0061475","18SrRNA");
+		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
+		testForAnnotationPublication("FB:FBgn0061475","GO:0005843","FB:FBrf0121292");
+		testForAnnotationWithEvidenceCode("FB:FBgn0061475","GO:0005843","ISS");
+		testForNamespace("FB:FBgn0061475","FB");
+		testForLink("FB:FBgn0061475","has_taxon","taxon:7227");
 	}
 	
 	public static Test suite() {

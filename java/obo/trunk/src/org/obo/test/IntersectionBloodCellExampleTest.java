@@ -27,6 +27,10 @@ public class IntersectionBloodCellExampleTest extends AbstractReasonerTest {
 		return Arrays.asList(tests);
 	}
 
+	public void testAsserted() throws Exception {
+		testForIsA("GO:0043226", "GO:0005575");
+	}
+
 	public void testSubsumed() throws Exception {
 		testForIsA("ZF:erythrocyte","CL:nucleate_erythrocyte");
 	}
@@ -42,6 +46,7 @@ public class IntersectionBloodCellExampleTest extends AbstractReasonerTest {
 	}
 
 	public static void addTests(TestSuite suite) {
+		suite.addTest(new IntersectionBloodCellExampleTest("testAsserted"));
 		suite.addTest(new IntersectionBloodCellExampleTest("testSubsumed"));
 	}
 
