@@ -12,7 +12,7 @@ public class AllReasonerTestsWithLPR extends TestCase {
 
 		TestSuite out = new TestSuite();
 
-		out.addTestSuite(IntersectionBloodCellExampleTest.class);
+		//out.addTestSuite(IntersectionBloodCellExampleTest.class);
 		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
 
 		return out;

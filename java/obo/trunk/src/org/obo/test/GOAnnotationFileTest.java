@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
@@ -24,6 +25,8 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 	protected GOAnnotationFileTest(String name) {
 		super(name);
 	}
+	
+	String outPath;
 
 	public void setUp() throws Exception {
 		System.out.println("Setting up: " + this);
@@ -45,19 +48,35 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 		config = new OBOFileAdapter.OBOAdapterConfiguration();
 		File outFile = File.createTempFile("foo", "bar");
 		//outFile.deleteOnExit();
-		config.setWritePath(outFile.getAbsolutePath());
+		outPath = outFile.getAbsolutePath();
+		config.setWritePath(outPath);
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
 
 		// SessionManager.getManager().setSession(session);
 		linkDatabase = new DefaultLinkDatabase(session);
 	}
+	
+	public void loadAnnotations(String f) throws DataAdapterException {
+		GOStyleAnnotationFileAdapter adapter = new GOStyleAnnotationFileAdapter();
+		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+		config.getReadPaths().add(f);
+		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
+				null);
+	}
+	
+	public void testRoundTrip() throws DataAdapterException {
+		loadAnnotations(outPath);
+		testAnnot();
+	}
 
 	public void testAnnot() {
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
+		for (Annotation annot : annots)
+			System.out.println(annot);
 		System.err.println("N annots:"+annots.size());
 		
-		testForAnnotation("FB:FBgn0024177","GO:0005921");
 		testForName("FB:FBgn0061475","18SrRNA");
+		testForAnnotation("FB:FBgn0024177","GO:0005921");
 		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
 		testForAnnotationPublication("FB:FBgn0061475","GO:0005843","FB:FBrf0121292");
 		testForAnnotationWithEvidenceCode("FB:FBgn0061475","GO:0005843","ISS");
@@ -76,6 +95,7 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 
 	public static void addTests(TestSuite suite) {
 		suite.addTest(new GOAnnotationFileTest("testAnnot"));
+		suite.addTest(new GOAnnotationFileTest("testRoundTrip"));
 	}
 
 

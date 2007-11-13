@@ -2,6 +2,7 @@ package org.obo.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,6 +28,41 @@ public class ReasonerUtil {
 				.getExplainedObject());
 		return explanations != null && explanations.contains(e);
 	}
+	
+	public static Collection<PathCapable> getShortestExplanationPath(ReasonedLinkDatabase reasoner,
+			PathCapable link) {
+		int leastHops = 0;
+		Collection<PathCapable> shortestPath = new LinkedList<PathCapable>();
+		System.out.println("Link: "+link);
+		for (Explanation e : reasoner.getExplanations(link)) {
+			System.out.println("  Explanation: "+e);
+			if (e.getExplanationType().equals(ExplanationType.GIVEN))
+				return Collections.singleton(link);
+			
+			// sum over evidence
+			Collection<PathCapable> path = new LinkedList<PathCapable>();
+			for (Link evidence : e.getEvidence()) {
+				System.out.println("    Evidence: "+e);
+				path.addAll(getShortestExplanationPath(reasoner,evidence));
+			}
+			if (leastHops == 0 || path.size() <= leastHops) {
+				leastHops = path.size();
+				shortestPath = path;
+			}
+		}
+
+		Collection<PathCapable> newPath = new LinkedList<PathCapable>();
+		newPath.add(link);
+		newPath.addAll(shortestPath);
+		return newPath;
+	}
+	
+	public static Collection<PathCapable> getShortestExplanationPath(ReasonedLinkDatabase reasoner,
+			LinkedObject child, OBOProperty prop, LinkedObject parent) {
+		Link link = new OBORestrictionImpl(child,prop,parent);
+		return getShortestExplanationPath(reasoner,link);
+	}
+
 
 	public static boolean generateTransitiveImplication(
 			ReasonedLinkDatabase reasoner, Link out, Link link, Link gpLink) {

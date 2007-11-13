@@ -23,6 +23,8 @@ import org.obo.util.AnnotationUtil;
 
 public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
+	String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
+	
 	protected OBDAnnotationSaveTest(String name) {
 		super(name);
 	}
@@ -52,12 +54,6 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 				null);
 		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
 
-
-		String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
-		
-		// SessionManager.getManager().setSession(session);
-		//linkDatabase = new DefaultLinkDatabase(session);
-		//ReasonerFactory rf = new ForwardChainingReasonerFactory();
 		
 		// write
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
@@ -72,16 +68,19 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		//reasoner.recache();
 		wadapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, wconfig, session);
 		
-		// database -> session
-		System.err.println("reading");
-		wconfig.getReadPaths().add(jdbcPath);
-		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
-		System.err.println("read: "+session);
 
 	}
 
-	public void testHasLoaded() {
-		// TODO
+	public void testHasLoaded() throws DataAdapterException {
+		// database -> session
+		System.err.println("reading");
+		OBDSQLDatabaseAdapterConfiguration wconfig = 
+			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		wconfig.getReadPaths().add(jdbcPath);
+		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
+		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
+		System.err.println("read: "+session);
+		
 		testForName("FB:FBgn0061475","18SrRNA");
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
@@ -92,19 +91,44 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		testForAnnotationPublication("FB:FBgn0061475","GO:0005843","FB:FBrf0121292");
 		testForAnnotationWithEvidenceCode("FB:FBgn0061475","GO:0005843","ISS");
 		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
-//		testForNamespace("GO:0005843","FB");
-
+	
+	}
+	
+	public void testNamespaceFilteredLoad() throws DataAdapterException {
+		OBDSQLDatabaseAdapterConfiguration config = 
+			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
+		
+		// database -> session
+		System.err.println("reading ns filtered");
+		
+		config.addNamespace("MGI");
+		config.getReadPaths().add(jdbcPath);
+		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
+		System.err.println("read: "+session);
+		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
+		for (Annotation annot: annots)
+			System.out.println(annot.getSubject() + "-----" + annot.getObject());
+		System.err.println("N annots:"+annots.size());
+		testFileSave("mgi-filtered");
+		
+		testForName("MGI:MGI:95723","Gjb5");
+		testForAnnotation("MGI:MGI:95723","GO:0016020");
+		testForAnnotationAssignedBy("MGI:MGI:95723","GO:0016020","UniProt");
+		testNotPresent("FB:FBgn0061475");
 		
 	}
 	
+
+	
 	// TODO: DRY
-	public void testFileSave() throws DataAdapterException {
+	public void testFileSave(String base) throws DataAdapterException {
 		// session -> file
 		OBOFileAdapter fileAdapter = new OBOFileAdapter();
 		OBOAdapterConfiguration fileConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		OBOSerializationEngine.FilteredPath path = new OBOSerializationEngine.FilteredPath();
 		path.setUseSessionReasoner(false);
-		path.setPath("foo.obo");
+		path.setPath(base+".obo");
 		fileConfig.getSaveRecords().add(path);
 		fileConfig.setBasicSave(false);
 		fileConfig.setSerializer("OBO_1_2");
@@ -122,6 +146,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
 	public static void addTests(TestSuite suite) {
 		suite.addTest(new OBDAnnotationSaveTest("testHasLoaded"));
+		suite.addTest(new OBDAnnotationSaveTest("testNamespaceFilteredLoad"));
 	}
 }
 

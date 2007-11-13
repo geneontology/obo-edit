@@ -28,6 +28,7 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 	}
 
 	public void testLinks() throws Exception {
+		testForIsA("CHEBI:24974","CHEBI:23367"); /* is_a transitivity */
 		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
 		testForIsA("GO:0019383","GO:0009056"); /* genus */
 		testForIsA("GO:0019383","GO:0042178"); /* completeness */

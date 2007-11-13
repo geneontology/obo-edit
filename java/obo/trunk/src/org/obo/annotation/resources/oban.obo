@@ -1,38 +1,39 @@
 default-namespace: oban
 
 [Term]
-id: oban:annotation
-name: Annotation
+id: oban:Annotation
+name: annotation
 
 [Typedef]
 id: oban:has_data_source
 name: has data source
-domain: oban:annotation
+domain: oban:Annotation
 
 [Typedef]
 id: oban:has_evidence
 name: has evidence
-domain: oban:annotation
-range: oban:evidence
+domain: oban:Annotation
+range: oban:Evidence
 
 [Term]
-id: oban:evidence
-name: Evidence
+id: oban:Evidence
+name: evidence
 
 [Typedef]
 id: oban:posits
 name: posits
-domain: oban:annotation
+domain: oban:Annotation
 
 [Typedef]
 id: oban:assigned_by
 name: assigned_by
-domain: oban:annotation
+domain: oban:Annotation
+range: oban:Agent
 
 [Term]
-id: oban:publication
-name: Publication
+id: oban:Publication
+name: publication
 
 [Term]
-id: oban:agent
-name: Agent
+id: oban:Agent
+name: agent

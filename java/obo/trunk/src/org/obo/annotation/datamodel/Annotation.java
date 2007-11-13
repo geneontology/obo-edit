@@ -49,8 +49,10 @@ public interface Annotation extends Instance {
 	public HistoryItem getSubjectChangeItem(LinkedObject subject);
 	public HistoryItem getObjectChangeItem(LinkedObject object);
 
-	public HistoryItem addSourceChangeItem(String source);
+	//public HistoryItem addSourceChangeItem(String source);
+	public HistoryItem addSourceChangeItem(LinkedObject source);
 	public HistoryItem addEvidenceHistoryItem(LinkedObject code);
-	public HistoryItem removeSourceChangeItem(String source);
+	//public HistoryItem removeSourceChangeItem(String source);
+	public HistoryItem removeSourceChangeItem(LinkedObject source);
 	public HistoryItem removeEvidenceHistoryItem(LinkedObject code);
 }
