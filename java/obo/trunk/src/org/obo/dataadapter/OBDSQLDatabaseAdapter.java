@@ -26,6 +26,7 @@ import org.bbop.rdbms.WhereClause;
 import org.bbop.rdbms.impl.SqlQueryImpl;
 import org.bbop.util.AbstractProgressValued;
 import org.obo.annotation.datamodel.Annotation;
+import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.CategorizedObject;
@@ -129,6 +130,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		new HashMap <Integer,IdentifiedObject>();
 	protected HashMap<IdentifiedObject,Integer> obj2iid =
 		new HashMap <IdentifiedObject,Integer>();
+	
+	LinkedList<IdentifiedObject> savedObjects = new LinkedList<IdentifiedObject>();
+	
+	LinkDatabase linkDatabase;
+
 	
 	protected Connection conn;
 
@@ -272,6 +278,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			for (String readPath : ioprofile.getReadPaths()) {
 				try {
 					conn = ioprofile.getConnection(readPath,"cjm","");
+					System.err.println("connecting "+readPath+" "+conn);
 					fetchAll(session);
 					return (OUTPUT_TYPE) session;
 				} catch (Exception e) {
@@ -518,7 +525,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		Integer annotId = rs.getInt("reiflink_node_id");
 		if (!rs.wasNull()) {
 			Instance inst = TermUtil.castToInstance((LinkedObject)iid2obj.get(annotId));
-			System.err.println("this is a reified link; annotId="+annotId+" "+inst);
+			System.err.println("this is a reified link; annotId="+annotId+" "+inst+" "+link);
 			Annotation annot = new AnnotationImpl(inst, link);
 			session.addObject(annot);
 		}
@@ -560,11 +567,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				//session.addObject(annot);
 			}
 			else {
-				
+				TermUtil.castToInstance(lo).setType(TermUtil.castToClass(p));
 			}
 		}
 		else {
-
+			if (pid.equals("oban:assigned_by"))
+				System.err.println("assigned: "+link);
 			lo.addParent(link);
 		}
 	}
@@ -587,8 +595,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	public void storeAll(OBOSession session, LinkDatabase ldb) throws DataAdapterException {
 		try {
 			setProgressString("Saving to db...");
+			
+			linkDatabase = ldb;
 	
-			LinkedList<IdentifiedObject> savedObjects = new LinkedList<IdentifiedObject>();
+			savedObjects = new LinkedList<IdentifiedObject>();
 
 			for (TermCategory cat : session.getCategories()) {
 				saveCategory(cat);
@@ -598,23 +608,30 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					
 				}
 				else {
+					// do not save any annotations if annotation mode is on 
 					if (!(io instanceof Annotation) &&
 							ioprofile.getAnnotationMode().equals(
 							OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY))
 						continue;
 					saveObject(io);
-					savedObjects.add(io);
+					
 				}
 			}
 			
 			// save links for all objects that have been saved
 			for (IdentifiedObject io : savedObjects) {
 				if (io instanceof LinkedObject) {
+					if (io instanceof Annotation) {
+						System.err.println("saving annot links:"+io);
+					}
 					for (Link link : ldb.getParents((LinkedObject) io)) {
+						if (link.getType().equals(AnnotationOntology.POSITS_REL()))
+							continue;
 						saveLink(link);
 					}
 				}
 			}
+		
 			
 			/*
 			if (!ioprofile.getAnnotationMode().equals(
@@ -666,6 +683,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						annot.getRelationship(),
 						annot.getObject(),
 						"f");
+//			for (Link link : annot.getParents())
+//				saveLink(link);
 		}
 		else if (lo instanceof OBOClass) {
 			iid =
@@ -678,11 +697,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		else if (lo instanceof Instance) {
 			iid =
-				callSqlFunc("store_node",
+				callSqlFunc("store_instance_node",
 						lo.getID(),
 						lo.getName(),
 						ns,
-				"I");
+						lo.getType().getID());
 	
 		}
 		else if (lo instanceof OBOProperty) {
@@ -726,6 +745,17 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				
 			}
 		}
+		savedObjects.add(lo); // redundant with obj2iid?
+		obj2iid.put(lo, iid);
+		
+		if (false) {
+			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
+				if (link.getType().equals(AnnotationOntology.POSITS_REL()))
+					continue;
+				saveLink(link);
+			}
+		}
+
 		return iid;
 	}
 	
@@ -739,37 +769,49 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 
 	protected int saveLink(Link link) throws SQLException {
-			System.out.println("saving "+link);
-			if (link instanceof ValueLink) {
-				ValueLink pv = (ValueLink)link;
-				Value v = pv.getValue();
-				if (v instanceof DatatypeValue) {
-					DatatypeValue dv = (DatatypeValue) v;
-					System.out.println("dv type="+dv.getType());
-					return callSqlFunc("store_tagval",
-							link.getChild().getID(),
-							link.getType().getID(),
-							dv.getValue(),
-							dv.getType());
-		//					((DatatypeValue) v).getType());
-					
-				}
-				else if (v instanceof IdentifiedObject) {
-	//				throw new Exception("eek");
-					return 1;
-				}
-				return 1;
-			}
-			else {
-				return callSqlFunc("store_link",
+		LinkedObject child = link.getChild();
+		System.err.println("child="+child);
+		Integer childDbId = obj2iid.get(child);
+		System.out.println("saving "+link);
+		if (link instanceof ValueLink) {
+			ValueLink pv = (ValueLink)link;
+			Value v = pv.getValue();
+			if (v instanceof DatatypeValue) {
+				DatatypeValue dv = (DatatypeValue) v;
+				System.out.println("dv type="+dv.getType());
+				return callSqlFunc("store_tagval",
 						link.getChild().getID(),
+						link.getType().getID(),
+						dv.getValue(),
+						dv.getType());
+				//					((DatatypeValue) v).getType());
+
+			}
+			else if (v instanceof IdentifiedObject) {
+				// 
+				return
+				  callSqlFunc("store_link_si",
+						childDbId,
 						link.getType().getID(),
 						link.getParent().getID(),
 						(TermUtil.isIntersection(link) ? "I" : ""),
 						TermUtil.isImplied(link));
 			}
-			
+			else {
+				return 1;
+			}
 		}
+		else {
+			return callSqlFunc("store_link_si",
+					//link.getChild().getID(),
+					childDbId,
+					link.getType().getID(),
+					link.getParent().getID(),
+					(TermUtil.isIntersection(link) ? "I" : ""),
+					TermUtil.isImplied(link));
+		}
+
+	}
 
 	public IdentifiedObject attachDescription(OBOSession session, ResultSet rs) throws SQLException {
 		IdentifiedObject io;

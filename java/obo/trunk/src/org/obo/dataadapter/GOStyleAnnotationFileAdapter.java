@@ -1,23 +1,48 @@
 package org.obo.dataadapter;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
-import org.bbop.dataadapter.*;
+import org.bbop.dataadapter.AdapterConfiguration;
+import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.dataadapter.DataAdapterUI;
+import org.bbop.dataadapter.FileAdapterUI;
+import org.bbop.dataadapter.IOOperation;
 import org.bbop.io.ProgressableInputStream;
 import org.bbop.io.SafeFileOutputStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.*;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Instance;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.PropertyValue;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymedObject;
+import org.obo.datamodel.impl.InstancePropertyValue;
+import org.obo.datamodel.impl.OBOSessionImpl;
+import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
-
-import java.util.regex.Pattern;  
 
 /**
  * @author cjm
@@ -155,8 +180,18 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		System.out.println("  parsing ev");
         parseEvidence(ann,evCode,colvals[7]);
         System.out.println("  parsed ev");
+        Namespace subjectNS = session.getNamespace(colvals[0]);
+        if (subjectNS == null)
+        	subjectNS = session.getObjectFactory().createNamespace(colvals[0], "");
+
+        // give the annotation the same namespace as the source
+        ann.setNamespace(subjectNS);
         
 		LinkedObject subj =  getSessionLinkedObject(subjectID);
+		if (subj.getNamespace() == null) {
+			subj.setNamespace(subjectNS);
+			
+		}
 		OBOProperty rel =  (OBOProperty)getSessionLinkedObject("OBO_REL:has_role",OBOClass.OBO_PROPERTY);
 		ann.setRelationship(rel);
 		System.out.println("  setting subj to "+subj);
@@ -379,7 +414,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		
 		colvals[4] = ob.getID();
 
-		Collection<String> sources = annot.getSources();
+		Collection<LinkedObject> sources = annot.getSources();
 		colvals[5] = flattenSet(sources);
 
 		Collection<LinkedObject> evs = annot.getEvidence();
@@ -426,7 +461,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		colvals[13] = annot.getModificationDate() == null ?
 				"" : annot.getModificationDate().toString();
 		
-		colvals[14] = annot.getAssignedBy();
+		colvals[14] = annot.getAssignedBy() != null ? annot.getAssignedBy().getID() : "";
 		
 		colvals[15] = "";
 		
@@ -443,12 +478,17 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	protected String flattenSet(Collection set) {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
+			String token;
+			if (o instanceof IdentifiedObject)
+				token = ((IdentifiedObject)o).getID();
+			else
+				token = (String)o;
 			if (s.length() == 0) {
-				s.append((String)o);
+				s.append(token);
 			}
 			else {
 				s.append("|");
-				s.append((String)o);
+				s.append(token);
 			}
 		}
 		return s.toString();
