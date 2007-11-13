@@ -1,10 +1,13 @@
 package org.obo.test;
 
+import java.util.Collection;
+
 import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
+import org.obo.util.ReasonerUtil;
 
 public abstract class AbstractReasonerTest extends AbstractOBOTest {
 
@@ -42,13 +45,19 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
 		System.out.println(reasonedDB+" testing "+child+" - "+parent);
 		assertTrue(reasonedDB.hasRelationship(child, OBOProperty.IS_A, parent) != null);
+		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
+		//System.out.println(path+" pathlen="+path.size());
 	}
 
 	public void testForLink(String childID, String relID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
 		OBOProperty rel = (OBOProperty) session.getObject(relID);
+		System.out.println(reasonedDB+" testing "+child+" "+rel+" "+parent);
 		assertTrue(reasonedDB.hasRelationship(child, rel, parent) != null);
+		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
+		//System.out.println(path+" pathlen="+path.size());
+
 	}
 
 

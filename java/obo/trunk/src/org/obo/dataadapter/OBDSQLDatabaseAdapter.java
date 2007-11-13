@@ -524,8 +524,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		Integer annotId = rs.getInt("reiflink_node_id");
 		if (!rs.wasNull()) {
-			Instance inst = TermUtil.castToInstance((LinkedObject)iid2obj.get(annotId));
-			System.err.println("this is a reified link; annotId="+annotId+" "+inst+" "+link);
+			IdentifiedObject o = iid2obj.get(annotId);
+			System.err.println("o="+o);
+			Instance inst = TermUtil.castToInstance((LinkedObject)o);
+			System.err.println("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
 			Annotation annot = new AnnotationImpl(inst, link);
 			session.addObject(annot);
 		}
@@ -571,8 +573,6 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 		}
 		else {
-			if (pid.equals("oban:assigned_by"))
-				System.err.println("assigned: "+link);
 			lo.addParent(link);
 		}
 	}
@@ -682,7 +682,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						annot.getSubject(),
 						annot.getRelationship(),
 						annot.getObject(),
-						"f");
+						annot.getNamespace().getID());
 //			for (Link link : annot.getParents())
 //				saveLink(link);
 		}

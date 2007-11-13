@@ -7,6 +7,7 @@ import java.io.LineNumberReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -62,7 +63,6 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	protected List streams = new LinkedList();
 	protected OBOSession session;
 	protected String lastSubjectID;
-	protected String lastObjectID;
 	protected static int nextEvidenceID = 0;
 
 	public DataAdapterUI getPreferredUI() {
@@ -71,6 +71,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		ui.setReadOperation(WRITE_ONTOLOGY);
 		return ui;
 	}
+
+	protected String lastObjectID;
 
 	public void cancel() {
 		try {
@@ -175,8 +177,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		session.addObject(ann);
 		System.out.println("new ann:"+ann);
 		
-		ann.addSource(colvals[5]);
-
+		parseReferenceField(ann, colvals[5]);
+	
 		System.out.println("  parsing ev");
         parseEvidence(ann,evCode,colvals[7]);
         System.out.println("  parsed ev");
@@ -269,8 +271,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 
 	protected void parseReferenceField(Annotation ann, String refField) {
-		for(String s : splitOn(refField,"|")) {
-			// TODO
+		for(String s : splitOn(refField,"\\|")) {
+			ann.addSource(s);
 		}
 	}
 
@@ -400,8 +402,13 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		IdentifiedObject su = annot.getSubject();
 
 		// TODO: split
-		colvals[0] = su.getID();
-		colvals[1] = su.getID();
+		String[] idPartArray = splitOn(su.getID(),":");
+		colvals[0] = idPartArray[0];
+		StringBuffer sb = new StringBuffer(idPartArray[1]);
+		for (int i=2;i<idPartArray.length;i++) {
+			sb.append(":"+idPartArray[i]);
+		}
+		colvals[1] = sb.toString();
 		IdentifiedObject ob = annot.getObject();
 
 		colvals[2] = su.getName();

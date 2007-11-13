@@ -80,7 +80,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		if (lo == null)
 			return null;
 		Link link = lo.getLink();
-		return (OBOClass) link.getParent();
+		return link.getParent();
 	}
 
 	public OBOProperty getRelationship() {
@@ -247,11 +247,23 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return new AddPropertyValueHistoryItem(getID(), AnnotationOntology
 				.SOURCE_REL().getID(), Datatype.STRING.getID(), source);
 	}
+	
+	public HistoryItem addSourceChangeItem(LinkedObject source) {
+		return new CreateLinkHistoryItem(this, AnnotationOntology
+				.SOURCE_REL(), source);
+	}
 
 	public HistoryItem removeSourceChangeItem(String source) {
 		return new DeletePropertyValueHistoryItem(getID(), AnnotationOntology
 				.SOURCE_REL().getID(), Datatype.STRING.getID(), source);
 	}
+	
+	public HistoryItem removeSourceChangeItem(LinkedObject source) {
+		return new DeleteLinkHistoryItem(source.getID(), getID(),
+				AnnotationOntology.SOURCE_REL().getID());
+	}
+	
+	
 
 	public void setAssignedBy(String assignedBy) {
 		Instance i = new InstanceImpl(assignedBy, AnnotationOntology.AGENT());
@@ -372,6 +384,10 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 
 			addParent(link);
 		}
+	}
+	
+	public String toString() {
+		return this.getID() + " posits: "+this.getSubject()+" ["+this.getRelationship()+"] "+this.getObject();
 	}
 
 }
