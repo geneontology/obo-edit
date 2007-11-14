@@ -11,6 +11,7 @@ import org.obo.datamodel.impl.*;
 import org.obo.filters.*;
 import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
+import org.obo.util.IDUtil;
 
 public class DefaultOBOParser implements OBOParser {
 
@@ -519,23 +520,29 @@ public class DefaultOBOParser implements OBOParser {
 	public IdentifiedObject fetchObject(String id) {
 		IdentifiedObject out = getObject(id);
 		if (out == null) {
-			for (ParserExtension extension : parserExtensions) {
-				out = extension.createObject(id);
-				if (out != null)
-					break;
-			}
-			if (out == null) {
-				if (currentStanza.equalsIgnoreCase("typedef"))
-					out = objectFactory.createObject(id, OBOClass.OBO_PROPERTY,
-							false);
-				else if (currentStanza.equalsIgnoreCase("term"))
-					out = objectFactory.createObject(id, OBOClass.OBO_CLASS,
-							false);
-				else if (currentStanza.equalsIgnoreCase("instance"))
-					out = objectFactory.createObject(id, OBOClass.OBO_INSTANCE,
-							false);
-			}
+			out = createObject(currentStanza, id);
 			session.addObject(out);
+		}
+		return out;
+	}
+	
+	protected IdentifiedObject createObject(String currentStanza, String id) {
+		IdentifiedObject out = null;
+		for (ParserExtension extension : parserExtensions) {
+			out = extension.createObject(currentStanza, id);
+			if (out != null)
+				break;
+		}
+		if (out == null) {
+			if (currentStanza.equalsIgnoreCase("typedef"))
+				out = objectFactory.createObject(id, OBOClass.OBO_PROPERTY,
+						false);
+			else if (currentStanza.equalsIgnoreCase("term"))
+				out = objectFactory.createObject(id, OBOClass.OBO_CLASS,
+						false);
+			else if (currentStanza.equalsIgnoreCase("instance"))
+				out = objectFactory.createObject(id, OBOClass.OBO_INSTANCE,
+						false);
 		}
 		return out;
 	}
@@ -1529,5 +1536,9 @@ public class DefaultOBOParser implements OBOParser {
 		((ModificationMetadataObject) currentObject).setModifiedBy(user);
 		((ModificationMetadataObject) currentObject)
 				.setModifiedByExtension(val);
+	}
+
+	public void readImpliedID() {
+		readID(IDUtil.fetchTemporaryID(session), new NestedValueImpl());
 	}
 }

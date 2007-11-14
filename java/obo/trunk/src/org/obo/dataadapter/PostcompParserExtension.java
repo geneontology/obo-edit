@@ -38,7 +38,7 @@ public class PostcompParserExtension implements ParserExtension,
 
 	protected Map<OBOClass, Collection<Link>> intersectionMap;
 
-	public IdentifiedObject createObject(String id) {
+	public IdentifiedObject createObject(String stanza, String id) {
 		return null;
 	}
 

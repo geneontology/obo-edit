@@ -141,4 +141,6 @@ public interface OBOParser extends OBOSimpleParser {
 
 	public void readIsReflexive(boolean b, NestedValue nv)
 			throws OBOParseException;
+
+	public void readImpliedID();
 }

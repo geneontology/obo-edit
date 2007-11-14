@@ -29,10 +29,11 @@ public class OBOParseEngine extends AbstractParseEngine {
 	protected int bytesRead = 0;
 
 	protected StringBuffer tempBuffer = new StringBuffer();
-	
-	protected SimpleDateFormat dateFormat = new SimpleDateFormat(
-	"dd:MM:yyyy HH:mm");
 
+	protected SimpleDateFormat dateFormat = new SimpleDateFormat(
+			"dd:MM:yyyy HH:mm");
+	
+	protected boolean readIDForStanza = false;
 
 	// protected String currentStanza;
 
@@ -260,7 +261,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	}
 
 	protected void doParse(String path) throws IOException, OBOParseException {
-		setProgressString("Reading "+path);
+		setProgressString("Reading " + path);
 		String currentStanza = null;
 
 		BufferedReader reader = null;
@@ -302,6 +303,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 							getCurrentPath(), line, linenum);
 				currentStanza = stanzaname;
 				parser.startStanza(stanzaname);
+				readIDForStanza = false;
 			} else {
 				SOPair pair;
 				try {
@@ -389,17 +391,22 @@ public class OBOParseEngine extends AbstractParseEngine {
 		}
 	}
 
-
 	protected void parseTag(String stanza, String line, int linenum,
 			int charoffset, String name, String value, NestedValue nv)
 			throws OBOParseException, IOException {
 		value = value.trim();
-		if (stanza != null
-				&& !(stanza.equalsIgnoreCase("term")
-						|| stanza.equalsIgnoreCase("typedef") || stanza
-						.equalsIgnoreCase("instance"))) {
-			parser.readTagValue(name, value, nv, false);
-			return;
+		if (stanza != null) {
+			if (!readIDForStanza && !name.equals("id")
+					&& parser instanceof OBOParser) {
+				((OBOParser) parser).readImpliedID();
+				readIDForStanza = true;
+			}
+			if (!(stanza.equalsIgnoreCase("term")
+					|| stanza.equalsIgnoreCase("typedef") || stanza
+					.equalsIgnoreCase("instance"))) {
+				parser.readTagValue(name, value, nv, false);
+				return;
+			}
 		}
 
 		if (name.equals("import")) {
@@ -463,14 +470,16 @@ public class OBOParseEngine extends AbstractParseEngine {
 			}
 		} else if (name.equals("creation_date")) {
 			try {
-				((OBOParser) parser).readCreationDate(dateFormat.parse(value), nv);
+				((OBOParser) parser).readCreationDate(dateFormat.parse(value),
+						nv);
 			} catch (ParseException ex) {
 				throw new OBOParseException("Badly formatted date: " + value,
 						getCurrentPath(), line, linenum, 0);
 			}
 		} else if (name.equals("modification_date")) {
 			try {
-				((OBOParser) parser).readModificationDate(dateFormat.parse(value), nv);
+				((OBOParser) parser).readModificationDate(dateFormat
+						.parse(value), nv);
 			} catch (ParseException ex) {
 				throw new OBOParseException("Badly formatted date: " + value,
 						getCurrentPath(), line, linenum, 0);
@@ -509,6 +518,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			((OBOParser) parser).readSynonymCategory(id, desc, scope);
 		} else if (name.equals("id")) {
 			((OBOParser) parser).readID(value, nv);
+			readIDForStanza = true;
 		} else if (name.equals("name")) {
 			((OBOParser) parser).readName(unescape(value), nv);
 		} else if (name.equals("alt_id")) {
@@ -786,7 +796,8 @@ public class OBOParseEngine extends AbstractParseEngine {
 			else if (value.trim().equalsIgnoreCase("false"))
 				((OBOParser) parser).readIsReflexive(false, nv);
 			else
-				throw new OBOParseException("Invalid value for always_implies_inverse",
+				throw new OBOParseException(
+						"Invalid value for always_implies_inverse",
 						getCurrentPath(), line, linenum, 0);
 		} else if (name.equals("always_implies_inverse")) {
 			if (value.trim().equalsIgnoreCase("true"))
@@ -794,7 +805,8 @@ public class OBOParseEngine extends AbstractParseEngine {
 			else if (value.trim().equalsIgnoreCase("false"))
 				((OBOParser) parser).readAlwaysImpliesInverse(false, nv);
 			else
-				throw new OBOParseException("Invalid value for always_implies_inverse",
+				throw new OBOParseException(
+						"Invalid value for always_implies_inverse",
 						getCurrentPath(), line, linenum, 0);
 		} else if (name.equals("is_transitive")) {
 			if (value.trim().equalsIgnoreCase("true"))
