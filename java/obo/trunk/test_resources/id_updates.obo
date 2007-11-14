@@ -5,7 +5,7 @@ alt_id: alpha
 is_a: beta
 
 [Term]
-id: B
+!id: B
 alt_id: beta
 is_obsolete: true
 replaced_by: C

@@ -3,6 +3,7 @@ package org.obo.datamodel;
 import java.util.*;
 
 import org.obo.datamodel.impl.DefaultLinkDatabase;
+import org.obo.util.TermUtil;
 
 public interface RootAlgorithm {
 
@@ -26,13 +27,18 @@ public interface RootAlgorithm {
 						&& !(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
 					continue;
 				}
-				
+
+				if (link instanceof Link)
+					if (TermUtil.isObsolete(((Link) link).getParent())
+							|| TermUtil.isObsolete(((Link) link).getType()))
+						continue;
+
 				return false;
 			}
 
 			return GREEDY.isRoot(lo);
 		}
-		
+
 		public String toString() {
 			return "STRICT";
 		}
@@ -47,10 +53,15 @@ public interface RootAlgorithm {
 
 			while (it.hasNext()) {
 				Relationship link = (Relationship) it.next();
-				
+
 				if (link instanceof Link
 						&& ((Link) link).getParent() instanceof DanglingObject)
 					continue;
+
+				if (link instanceof Link)
+					if (TermUtil.isObsolete(((Link) link).getParent())
+							|| TermUtil.isObsolete(((Link) link).getType()))
+						continue;
 
 				if (link instanceof ValueLink) {
 					if (!(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
@@ -62,7 +73,7 @@ public interface RootAlgorithm {
 
 			return true;
 		}
-		
+
 		public String toString() {
 			return "GREEDY";
 		}

@@ -264,6 +264,31 @@ public class IDUtil {
 		return !failed;
 	}
 
+	public static String getDescription(LinkIDWarning warning) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<html>");
+		buffer.append("The term "
+				+ HTMLUtil.getHTMLLink(warning.getLink().getChild(), true));
+		if (warning.getParentWarning() != null) {
+			if (warning.getParentWarning().getType().equals(
+					WarningType.DANGLING_ID)) {
+				buffer.append(" links to the dangling identifier " + "<i>"
+						+ warning.getLink().getParent().getID() + "</i>");
+			} else if (warning.getParentWarning().getType().equals(
+					WarningType.SECONDARY_ID)) {
+				buffer.append(" links to the secondary identifier "
+						+ warning.getLink().getParent().getID());
+			} else if (warning.getParentWarning().getType().equals(
+					WarningType.OBSOLETE_ID)) {
+				buffer.append(" links to the obsolete term "
+						+ HTMLUtil.getHTMLLink(warning.getLink().getParent(),
+								true));
+			}
+		}
+		buffer.append("</html>");
+		return buffer.toString();
+	}
+
 	public static List<HistoryItem> updateIDs(OBOSession session,
 			Collection<LinkIDResolution> resolutions, boolean applyImmediately)
 			throws UnresolvedIDsException {

@@ -293,8 +293,8 @@ public class AnnotationParserExtension implements ParserExtension,
 		}
 	}
 
-	public IdentifiedObject createObject(String id) {
-		if (inAnnotationStanza)
+	public IdentifiedObject createObject(String stanza, String id) {
+		if (stanza.equalsIgnoreCase("annotation"))
 			return new AnnotationImpl(id);
 		else
 			return null;
