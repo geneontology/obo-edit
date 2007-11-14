@@ -43,6 +43,7 @@ import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.UnknownStanza;
 import org.obo.datamodel.ValueLink;
 import org.obo.datamodel.impl.DanglingObjectImpl;
+import org.obo.datamodel.impl.DanglingPropertyImpl;
 
 public class AnnotationParserExtension implements ParserExtension,
 		OBOSerializerExtension {
@@ -229,14 +230,18 @@ public class AnnotationParserExtension implements ParserExtension,
 											.getLineNum());
 						}
 						annotation.setObject((LinkedObject) object);
-					} else if (pv.getProperty().equals("relationship")) {
+					} else if (pv.getProperty().equals("relationship") ||
+							   pv.getProperty().equals("relation")) {
 						IdentifiedObject object = parser.getObject(pv
 								.getValue());
 						if (object == null) {
-							throw new OBOParseException("Unknown object id "
-									+ pv.getValue() + " in annotation "
-									+ annotation.getID(), currentPath, engine
-									.getCurrentLine(), engine.getLineNum());
+							if (parser.getAllowDanglingParents())
+								object = new DanglingPropertyImpl(pv.getValue());
+							else						
+								throw new OBOParseException("Unknown object id "
+										+ pv.getValue() + " in annotation "
+										+ annotation.getID(), currentPath, engine
+										.getCurrentLine(), engine.getLineNum());
 						} else if (!(object instanceof OBOProperty)) {
 							throw new OBOParseException("Object "
 									+ pv.getValue() + " in annotation "
