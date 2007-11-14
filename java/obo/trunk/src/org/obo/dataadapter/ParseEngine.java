@@ -21,5 +21,9 @@ public interface ParseEngine extends ProgressValued {
 	public abstract int getLineNum();
 
 	public abstract String getCurrentLine();
+	
+	public void setReadIDForCurrentBlock(boolean read);
+	
+	public boolean getReadIDForCurrentBlock();
 
 }

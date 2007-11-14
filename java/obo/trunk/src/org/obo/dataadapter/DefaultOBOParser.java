@@ -581,6 +581,7 @@ public class DefaultOBOParser implements OBOParser {
 		currentObject = fetchObject(id);
 		currentObject.setIDExtension(nv);
 		session.addObject(currentObject);
+		engine.setReadIDForCurrentBlock(true);
 	}
 
 	public void readName(String name, NestedValue nv) {
@@ -1432,6 +1433,7 @@ public class DefaultOBOParser implements OBOParser {
 		if (currentObject != null && currentObject.getNamespace() == null
 				&& getDefaultNamespace() != null)
 			currentObject.setNamespace(getDefaultNamespace());
+		engine.setReadIDForCurrentBlock(false);
 		currentStanza = name;
 		if (!currentStanza.equalsIgnoreCase("term")
 				&& !currentStanza.equalsIgnoreCase("typedef")
@@ -1450,6 +1452,10 @@ public class DefaultOBOParser implements OBOParser {
 		for (ParserExtension extension : parserExtensions) {
 			extension.readBangComment(comment);
 		}
+	}
+	
+	public UnknownStanza getCurrentUnknownStanza() {
+		return unknownStanza;
 	}
 
 	public void readTagValue(String name, String value, NestedValue nv,
@@ -1539,6 +1545,8 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readImpliedID() {
-		readID(IDUtil.fetchTemporaryID(session), new NestedValueImpl());
+		if (unknownStanza == null) {
+			readID(IDUtil.fetchTemporaryID(session), new NestedValueImpl());
+		}
 	}
 }

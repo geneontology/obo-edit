@@ -33,10 +33,6 @@ public class OBOParseEngine extends AbstractParseEngine {
 	protected SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"dd:MM:yyyy HH:mm");
 	
-	protected boolean readIDForStanza = false;
-
-	// protected String currentStanza;
-
 	protected static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
 
 	protected static final HashMap<Character, Character> unescapeChars = new HashMap<Character, Character>();
@@ -303,7 +299,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 							getCurrentPath(), line, linenum);
 				currentStanza = stanzaname;
 				parser.startStanza(stanzaname);
-				readIDForStanza = false;
+				setReadIDForCurrentBlock(false);
 			} else {
 				SOPair pair;
 				try {
@@ -390,7 +386,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			setProgressValue(percentVal);
 		}
 	}
-
+	
 	protected void parseTag(String stanza, String line, int linenum,
 			int charoffset, String name, String value, NestedValue nv)
 			throws OBOParseException, IOException {
@@ -399,7 +395,6 @@ public class OBOParseEngine extends AbstractParseEngine {
 			if (!readIDForStanza && !name.equals("id")
 					&& parser instanceof OBOParser) {
 				((OBOParser) parser).readImpliedID();
-				readIDForStanza = true;
 			}
 			if (!(stanza.equalsIgnoreCase("term")
 					|| stanza.equalsIgnoreCase("typedef") || stanza
@@ -518,7 +513,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			((OBOParser) parser).readSynonymCategory(id, desc, scope);
 		} else if (name.equals("id")) {
 			((OBOParser) parser).readID(value, nv);
-			readIDForStanza = true;
+			setReadIDForCurrentBlock(true);
 		} else if (name.equals("name")) {
 			((OBOParser) parser).readName(unescape(value), nv);
 		} else if (name.equals("alt_id")) {
