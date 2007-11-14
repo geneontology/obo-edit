@@ -44,6 +44,7 @@ import org.obo.datamodel.Namespace;
 import org.obo.datamodel.NamespacedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObjectFactory;
 import org.obo.datamodel.Synonym;
@@ -69,14 +70,19 @@ import org.obo.util.TermUtil;
  *
  * Relational Database Adapter for any Schema that implements the OBD SQL API
  * Status of OBD API, per schema
- *   OBD: partially implemented
- *   Chado: No
+ *   OBD: mostly implemented
+ *   Chado: ontology save/store partially implemented
  *   GODB: No
  *   BioSQL: No
  *   
+ * Current capabilities:
+ *   Read & write objects, links and annotations
+ *   Save reasoner results (TODO: "distances")
+ *   
  * The OBD SQL API consists of a schema-neutral
- *  (a) a view layer; and
- *  (b) SQL functions, such as store_node(...)
+ *  (a) a view layer
+ *  and
+ *  (b) SQL functions. Example store_node(...)
  *  
  * This API can be implemented on a per schema / DBMS vendor basis
  * 
@@ -92,13 +98,42 @@ import org.obo.util.TermUtil;
  * Schema implementations may choose to implement store_annotation()
  * in any way they choose
  * 
+ * The best way of seeing how to use this is via junit tests:
+ *   org.obo.test.OBDSaveTest
+ *   org.obo.test.OBDAnnotationSaveTest
+ *   phenote.datamodel.BasicAnnotationModelTest
+ *   
+ *  You can also use some of the launcher scripts:
+ *    obo2database
+ *    database2obo
+ *    
+ *  TODO: AdapterUI 
+ * 
  * Currently this adapter is incomplete
  * 
- *   Reads: No
- *   Writes: Partial
- *   Filters on read: unimplemented
- *   Filters on write: unimplemented
- *   Lazy read: unimplemented
+ *  TODO: Query/filtering implementation
+ *  Currently the default is to save everything or read everything.
+ *  Implementing filters on save should be trivial.
+ *  Reading would be more difficult. Ideally we want to be able to fetch
+ *  subsets of objects and links according to queries of the form:
+ *   - All ontologies in namespace "NS"
+ *   - All annotations to "X"
+ *   - All annotations assignedBy "P"
+ *   - All annotations in namespace "NS"
+ *   - All annotations to objects in namespace "MGI"
+ *   - All annotations to any object linked to "X"
+ *   - All annotations to X, where X allele_of G and G has_ancestor G2
+ *   
+ *   Together with boolean combinations of the above
+ *   
+ *   org.obo.query gives us the framework to do this (complete?)
+ *   However, we would need smart query implementations that would generate the SQL
+ *   
+ *  For now query/filtering is very simple. In the config object, you can do
+ *  a setAnnotationMode() depending on whether you want ontologies, annotations or
+ *  both.
+ *  You can also filter by namespaces using config.addNamespace(..)
+ *  
  *   
  * At some point in the future there will be a LinkDatabase implementation;
  * this will bring various advantages:
@@ -327,8 +362,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					return (OUTPUT_TYPE) input;
 				}  catch (Exception ex) {
 					System.err.println(ex);
+					ex.printStackTrace();
 					
-					throw new DataAdapterException("Bad configuration");
+					throw new DataAdapterException("Bad configuration", ex);
 				// write((OBOSession) o);
 				}
 			}
@@ -515,9 +551,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		OBOProperty pred = lookupProperty(session, rs.getString("pred_uid"));
 		LinkedObject obj = (LinkedObject) lookupObject(session, rs.getString("object_uid"));
 		Namespace source =  lookupNamespace(session, rs.getString("source_uid"));
+		
 		String metatype = rs.getString("node_metatype"); 
 		if (metatype != null && metatype.equals("C")) {
 			link = new OBORestrictionImpl(node,pred,obj);
+			String combinator = rs.getString("combinator");
+			if (combinator.equals("I"))
+				((OBORestriction)link).setCompletes(true);
 		}
 		else {
 			link = new InstancePropertyValue(node,pred,obj);
@@ -532,6 +572,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			session.addObject(annot);
 		}
 		System.err.println("read link: "+link);
+		
 		link.setNamespace(source);
 		addLink(session,link);
 	}
@@ -677,12 +718,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				for (Link link : obj.getParents())
 					saveLink(link);
 			}
+			
 			iid =
 				callSqlFunc("store_annotation",
 						annot.getSubject(),
 						annot.getRelationship(),
 						annot.getObject(),
-						annot.getNamespace().getID());
+						annot.getNamespace() == null ? "_" : annot.getNamespace().getID());
 //			for (Link link : annot.getParents())
 //				saveLink(link);
 		}
@@ -696,13 +738,20 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	
 		}
 		else if (lo instanceof Instance) {
-			iid =
-				callSqlFunc("store_instance_node",
-						lo.getID(),
-						lo.getName(),
-						ns,
-						lo.getType().getID());
-	
+			if (lo.getType() == null)
+				iid =
+					callSqlFunc("store_instance_node",
+							lo.getID(),
+							lo.getName(),
+							ns);
+			else
+				iid =
+					callSqlFunc("store_instance_node",
+							lo.getID(),
+							lo.getName(),
+							ns,
+							lo.getType().getID());
+
 		}
 		else if (lo instanceof OBOProperty) {
 			iid =
