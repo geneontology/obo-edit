@@ -20,3 +20,14 @@ FB	FBte0000044	Tc3		GO:0004520	FB:FBrf0161459	IEA		F	Tc3		gene	taxon:7227	200610
 FB	FBte0001062	gtwin		GO:0007498	FB:FBrf0138533|PMID:11486054	IEP		P	gtwin		gene	taxon:7227	20060803	FlyBase
 FB	FBgn0061475	18SrRNA		GO:0005843	FB:FBrf0121292	ISS	EMBL:AF096450	C	18SrRNA	18S|18S RNA|18S rDNA|18S rRNA|18SRNA|18s rRNA|BEST:GH11893|BEST:GH15369|BEST:LD10585|BEST:LD33742|BEST:LP07011|BEST:SD07466|NEST:bs01c01	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0061475	18SrRNA		GO:0005843	FB:FBrf0121292	ISS	EMBL:AF187101	C	18SrRNA	18S|18S RNA|18S rDNA|18S rRNA|18SRNA|18s rRNA|BEST:GH11893|BEST:GH15369|BEST:LD10585|BEST:LD33742|BEST:LP07011|BEST:SD07466|NEST:bs01c01	gene	taxon:7227	20060803	FlyBase
+MGI	MGI:95723	Gjb5		GO:0016020	MGI:MGI:1354194	IEA	SP_KW:KW-0472	C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
+MGI	MGI:95723	Gjb5		GO:0030054	MGI:MGI:1354194	IEA	SP_KW:KW-0965	C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
+MGI	MGI:95723	Gjb5		GO:0005615	MGI:MGI:2429377|PMID:12466851	RCA		C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20030221	MGI
+MGI	MGI:95723	Gjb5		GO:0016021	MGI:MGI:2429377|PMID:12466851	RCA		C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20030221	MGI
+MGI	MGI:95723	Gjb5		GO:0005921	MGI:MGI:1347124	IEA		C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
+MGI	MGI:95723	Gjb5		GO:0005921	MGI:MGI:1354194	IEA	SP_KW:KW-0303	C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
+MGI	MGI:95723	Gjb5		GO:0005922	MGI:MGI:2152098	IEA	InterPro:IPR000500,InterPro:IPR002270	C	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
+MGI	MGI:95723	Gjb5		GO:0005243	MGI:MGI:1347124	IEA		F	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
+MGI	MGI:95723	Gjb5		GO:0007154	MGI:MGI:1347124	IEA		P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
+MGI	MGI:95723	Gjb5		GO:0007154	MGI:MGI:2152098	IEA	InterPro:IPR000500,InterPro:IPR002270	P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
+MGI	MGI:95723	Gjb5		GO:0007267	MGI:MGI:1347124	IEA		P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
