@@ -15,6 +15,7 @@ public abstract class AbstractParseEngine extends AbstractProgressValued impleme
 	protected List<String> paths = new LinkedList<String>();
 	protected boolean halt = false;
 	protected Stack<String> pathStack;
+	protected boolean readIDForStanza = false;
 
 	public AbstractParseEngine() {
 		super();
@@ -63,4 +64,11 @@ public abstract class AbstractParseEngine extends AbstractProgressValued impleme
 		parser.endParse();
 	}
 
+	public void setReadIDForCurrentBlock(boolean readIDForStanza) {
+		this.readIDForStanza = readIDForStanza;
+	}
+
+	public boolean getReadIDForCurrentBlock() {
+		return readIDForStanza;
+	}
 }
