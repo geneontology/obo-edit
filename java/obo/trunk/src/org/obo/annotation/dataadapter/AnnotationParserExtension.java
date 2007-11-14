@@ -293,6 +293,7 @@ public class AnnotationParserExtension implements ParserExtension,
 				if (!engine.getReadIDForCurrentBlock()) {
 					currentObject = fetchObject(IDUtil
 							.fetchTemporaryID(session), nv);
+					currentObject.setIsAnonymous(true);
 					parser.getCurrentUnknownStanza().addPropertyValue(
 							new PropertyValueImpl("id", currentObject.getID()));
 				}
