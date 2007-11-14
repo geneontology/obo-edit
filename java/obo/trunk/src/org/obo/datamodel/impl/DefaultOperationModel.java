@@ -701,6 +701,10 @@ public class DefaultOperationModel implements OperationModel {
 		if (parent == null && allowDangling) {
 			parent = new DanglingObjectImpl(tr.getParent());
 		}
+		if (type == null && allowDangling) {
+			type = new DanglingPropertyImpl(tr.getType());
+		}
+
 
 		Namespace ns = session.getNamespace(tr.getNamespace());
 		OBORestriction realtr = new OBORestrictionImpl(child, parent, type);
