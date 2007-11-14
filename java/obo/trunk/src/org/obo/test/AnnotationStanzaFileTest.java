@@ -1,24 +1,17 @@
 package org.obo.test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
-import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
-import org.obo.dataadapter.OBOAdapter;
-import org.obo.dataadapter.OBOFileAdapter;
-import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.impl.DefaultLinkDatabase;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
-
-
-import junit.framework.*;
 
 public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
