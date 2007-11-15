@@ -34,7 +34,8 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	protected Map<IdentifiedObject, Collection<ATerm>> objectToEquivATermSet = 
 		new HashMap<IdentifiedObject, Collection<ATerm>>();
 
-
+	protected Map<ATermAppl,Link> namedRestrToLink =
+		new HashMap<ATermAppl,Link>();
 	
 	// pellet results are copied here
 	protected MutableLinkDatabase impliedLinkDatabase;
@@ -87,6 +88,14 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		
 		if (link instanceof OBORestriction) {
 			OBORestriction rlink = (OBORestriction)link;
+			if (rlink.getType().equals(OBOProperty.DISJOINT_FROM)) {
+				kb.addDisjointClass(c, p);
+				return;
+			}
+			if (rlink.getType().equals(OBOProperty.INVERSE_OF)) {
+				kb.addInverseProperty(c, p);
+				return;
+			}
 			if (rlink.completes()) {
 				// TODO
 				// collect and make OWL Restriction later...
@@ -221,31 +230,38 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 				if (ATermUtils.isTop(parentATerm)) {
 					System.out.println("ignoring TOP");
 				}
-				else if (ATermUtils.isSomeValues(parentATerm)) {
-					// TODO
-					// this doesn't work because Pellet only
-					// finds subclasses of *named* classes
-					// - we will have to do the iteration
-					//   ourselves here...
-					// OR we can create a class restriction(R,X) forall R,X
-					System.out.println("not yet"+parentATerm);
-					ATermList list = (ATermList) parentATerm;
-					LinkedObject parent = (LinkedObject)objectFromATerm( (ATermAppl)(list.getFirst()) );
-					OBOProperty prop = (OBOProperty)objectFromATerm( (ATermAppl)(list.getLast()) );
-					Link newRel = findOrCreateLink(lo, 
-							prop,
-							parent);
-					s.add(newRel);
-				}
+//				else if (ATermUtils.isSomeValues(parentATerm)) {
+//				}
 				else {
-					LinkedObject parent = (LinkedObject)objectFromATerm(parentATerm);
-					Link newRel = findOrCreateLink(lo, OBOProperty.IS_A,
-							parent);
-					s.add(newRel);
+					// previously constructed hashset mapping
+					// a named class (not in original ontology) and
+					// a parent link. Each of these named classes
+					// has been declared equivalent to an anonymous
+					// restriction 
+					Link plink = namedRestrToLink.get(parentATerm);
+					if (plink == null) {
+						LinkedObject parent = (LinkedObject)objectFromATerm(parentATerm);
+						Link newRel = findOrCreateLink(lo, OBOProperty.IS_A,
+								parent);
+						s.add(newRel);
+					}
+					else {
+						s.add(findOrCreateLink(lo, plink.getType(), plink.getParent()));
+					}
 				}
 			}		
 		}
 		return s;
+	}
+	
+	public Link hasRelationship(LinkedObject a, OBOProperty b, LinkedObject c) {
+		
+		if (b.isBuiltIn())
+			for (Link link : a.getParents())
+				if (link.getType().equals(b) && link.getParent().equals(c))
+					return link;
+		
+		return super.hasRelationship(a, b, c);
 	}
 
 
@@ -305,6 +321,18 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		System.out.println("set OWL reasoner =   "+owlReasoner);
 		kb = owlReasoner.getKB();
 		System.out.println("kb = "+kb);
+		
+		idToATerm = 
+			new HashMap<String, ATermAppl>();
+		aTermToObject = 
+			new HashMap<ATermAppl, IdentifiedObject>();
+		objectToEquivATermSet = 
+			new HashMap<IdentifiedObject, Collection<ATerm>>();
+
+		namedRestrToLink =
+			new HashMap<ATermAppl,Link>();
+		
+		Collection<OBOProperty> props = new HashSet<OBOProperty>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io.isBuiltIn())
 				continue;
@@ -312,10 +340,34 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 				for (Link link : linkDatabase.getParents((LinkedObject) io)) {
 					addLink(link);
 				}
+				
 			}
 			if (io instanceof OBOProperty) {
 				addProperty((OBOProperty)io);
+				props.add((OBOProperty)io);
 			}
+		}
+		
+		// needed for TBox reasoning
+		// for every P x Class we make a named class "PC" and declare it
+		// equivalentTo Restriction(P C)
+		for (OBOProperty prop : props) {
+			for (IdentifiedObject io : linkDatabase.getObjects()) {
+				if (io.isBuiltIn())
+					continue;
+				if (io instanceof LinkedObject) {
+					ATermAppl t = makeATerm(prop);
+					ATermAppl p = makeATerm(io);
+					ATermAppl namedRestr = ATermUtils.makeTermAppl(prop.getID()+"---"+io.getID());
+					ATermAppl fakeChild = makeATerm(io);
+					ATermAppl restr = ATermUtils.makeSomeValues(t,p);
+					kb.addEquivalentClass(namedRestr, restr);
+					kb.addClass(namedRestr);
+					namedRestrToLink.put(namedRestr, 
+							findOrCreateLink(null,prop,(LinkedObject)io));
+				}
+			}
+			
 		}
 		setEquivalentClasses();
 
