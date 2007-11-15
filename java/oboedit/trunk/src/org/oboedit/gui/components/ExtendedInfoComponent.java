@@ -7,6 +7,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
+import org.oboedit.util.GUIUtil;
 
 import javax.swing.*;
 import java.util.*;
@@ -18,10 +19,12 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected ReloadItListener reloadlistener = new ReloadItListener();
-
-	protected RerootItListener rerootlistener = new RerootItListener();
-
+	protected ReloadListener reloadlistener = new ReloadListener() {
+		public void reload(ReloadEvent e) {
+			update();
+		}
+	};
+	
 	protected static final int MAX_PARENTAGE = 100;
 
 	protected HashMap scratch = new HashMap();
@@ -203,32 +206,12 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		}
 	}
 
-	protected SessionManager sessionManager = SessionManager.getManager();
-
 	private void attachListeners() {
-		sessionManager.addHistoryListener(reloadlistener);
-		sessionManager.addRootChangeListener(rerootlistener);
+		GUIUtil.addReloadListener(reloadlistener);
 	}
 
 	@Override
 	public void cleanup() {
-		sessionManager.removeHistoryListener(reloadlistener);
-		sessionManager.removeRootChangeListener(rerootlistener);
-	}
-
-	private class ReloadItListener implements HistoryListener {
-		public void applied(HistoryAppliedEvent event) {
-			update();
-		}
-
-		public void reversed(HistoryAppliedEvent event) {
-			update();
-		}
-	}
-
-	private class RerootItListener implements RootChangeListener {
-		public void changeRoot(RootChangeEvent e) {
-			update();
-		}
+		GUIUtil.removeReloadListener(reloadlistener);
 	}
 }

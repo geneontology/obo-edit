@@ -31,7 +31,7 @@ public class BackgroundColorSpecField extends
 		return HTML;
 	}
 
-	public void renderHTML(ConfiguredColor value, StringBuffer in) {
+	public void renderHTML(ConfiguredColor value, StringBuffer in, Object o) {
 		in.insert(0, "<span style='background-color: "
 				+ SwingUtil.getHTMLCode(value.getColor()) + ";'>");
 		in.append("</span>");

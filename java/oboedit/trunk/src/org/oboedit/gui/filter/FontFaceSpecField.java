@@ -28,7 +28,7 @@ public class FontFaceSpecField extends AbstractRendererSpecField<String> {
 		return HTML;
 	}
 
-	public void renderHTML(String value, StringBuffer in) {
+	public void renderHTML(String value, StringBuffer in, Object o) {
 		in.insert(0, "<style type='text/css>\n* {font-family: "+value+"; }\n</style><font face='" + value + "'>");
 		in.append("</font>");
 	}

@@ -95,6 +95,7 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 		return GUIUtil.renderHTML(resolveHTMLExpression(htmlExpression, lo),
 				lo, ignoreThese, preRenderers, renderable.getObjectRenderers(),
 				FilterManager.getManager().getGlobalTermRenderers(),
+				renderable.getAutomaticObjectRenderers(),
 				postRenderers);
 	}
 

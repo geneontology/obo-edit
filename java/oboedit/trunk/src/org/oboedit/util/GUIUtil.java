@@ -19,6 +19,7 @@ import org.oboedit.gui.Selection;
 import org.oboedit.gui.event.GlobalFilterListener;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
+import org.oboedit.gui.event.OntologyReloadListener;
 import org.oboedit.gui.event.ReasonerStatusEvent;
 import org.oboedit.gui.event.ReasonerStatusListener;
 import org.oboedit.gui.event.ReloadEvent;
@@ -40,6 +41,8 @@ public class GUIUtil {
 
 		public ReasonerStatusListener reasonerStatusListener;
 
+		public OntologyReloadListener ontologyReloadListener;
+
 		public RootChangeListener rootListener;
 	}
 
@@ -56,25 +59,33 @@ public class GUIUtil {
 		bundle.globalFilterListener = new GlobalFilterListener() {
 			public void globalFilterChanged() {
 				listener.reload(new ReloadEvent(this, null, false, true, false,
-						false));
+						false, false));
 			}
+		};
+		bundle.ontologyReloadListener = new OntologyReloadListener() {
+
+			public void reload() {
+				listener.reload(new ReloadEvent(this, null, false, false,
+						false, false, true));
+			}
+
 		};
 		bundle.historyListener = new HistoryListener() {
 			public void applied(HistoryAppliedEvent event) {
 				listener.reload(new ReloadEvent(this, event, true, false,
-						false, false));
+						false, false, false));
 			}
 
 			public void reversed(HistoryAppliedEvent event) {
 				listener.reload(new ReloadEvent(this, event, true, false,
-						false, false));
+						false, false, false));
 			}
 		};
 		bundle.reasonerListener = new ReasonerListener() {
 
 			public void reasoningFinished() {
 				listener.reload(new ReloadEvent(this, null, false, false, true,
-						false));
+						false, false));
 			}
 
 			public void reasoningStarted() {
@@ -84,7 +95,7 @@ public class GUIUtil {
 			public void statusChanged(ReasonerStatusEvent e) {
 				if (!e.isActive()) {
 					listener.reload(new ReloadEvent(this, null, false, false,
-							true, false));
+							true, false, false));
 				}
 			}
 		};
@@ -92,7 +103,7 @@ public class GUIUtil {
 			public void changeRoot(RootChangeEvent e) {
 				if (!SessionManager.getManager().getUseReasoner())
 					listener.reload(new ReloadEvent(this, null, false, false,
-							false, true));
+							false, true, false));
 			}
 		};
 		filterManager.addGlobalFilterListener(bundle.globalFilterListener);
@@ -100,6 +111,7 @@ public class GUIUtil {
 		sessionManager.addReasonerListener(bundle.reasonerListener, true);
 		sessionManager.addReasonerStatusListener(bundle.reasonerStatusListener);
 		sessionManager.addRootChangeListener(bundle.rootListener);
+		sessionManager.addOntologyReloadListener(bundle.ontologyReloadListener);
 		bundleMap.put(listener, bundle);
 	}
 
@@ -119,6 +131,8 @@ public class GUIUtil {
 			sessionManager
 					.removeReasonerStatusListener(bundle.reasonerStatusListener);
 			sessionManager.removeRootChangeListener(bundle.rootListener);
+			sessionManager
+					.removeOntologyReloadListener(bundle.ontologyReloadListener);
 			bundleMap.remove(listener);
 		}
 	}
@@ -224,14 +238,14 @@ public class GUIUtil {
 
 	public static String renderHTML(String text,
 			Collection<GeneralRendererSpecField<?>> ignore,
-			GeneralRendererSpec spec) {
+			GeneralRendererSpec spec, Object obj) {
 		StringBuffer out = new StringBuffer(text);
 		if (spec != null) {
 			for (GeneralRendererSpecField field : spec.getFields()) {
 				if (ignore.contains(field))
 					continue;
 				if (field.getHTMLType() > 0) {
-					field.renderHTML(spec.getValue(field), out);
+					field.renderHTML(spec.getValue(field), out, obj);
 				}
 			}
 		}
@@ -246,7 +260,7 @@ public class GUIUtil {
 		String out = text;
 		RenderSpec spec = getSpec(o, f);
 		if (spec instanceof GeneralRendererSpec || spec == null) {
-			out = renderHTML(text, ignore, (GeneralRendererSpec) spec);
+			out = renderHTML(text, ignore, (GeneralRendererSpec) spec, o);
 		}
 		return out;
 	}

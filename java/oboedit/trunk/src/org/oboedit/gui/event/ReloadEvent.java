@@ -9,18 +9,21 @@ public class ReloadEvent extends EventObject {
 	protected boolean isFilter;
 	protected boolean isReasoner;
 	protected boolean isRoot;
+	protected boolean isOntologyReload;
 	
 	public ReloadEvent(Object source, EventObject parentEvent,
 			boolean isHistory,
 			boolean isFilter,
 			boolean isReasoner,
-			boolean isRoot) {
+			boolean isRoot,
+			boolean isOntologyReload) {
 		super(source);
 		this.parentEvent = parentEvent;
 		this.isHistory = isHistory;
 		this.isFilter = isFilter;
 		this.isReasoner = isReasoner;
 		this.isRoot = isRoot;
+		this.isOntologyReload = isOntologyReload;
 	}
 	
 	public EventObject getParentEvent() {
@@ -41,5 +44,9 @@ public class ReloadEvent extends EventObject {
 	
 	public boolean isRoot() {
 		return isRoot;
+	}
+	
+	public boolean isOntologyReload() {
+		return isOntologyReload;
 	}
 }

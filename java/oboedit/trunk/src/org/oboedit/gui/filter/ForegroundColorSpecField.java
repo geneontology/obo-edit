@@ -30,7 +30,7 @@ public class ForegroundColorSpecField extends AbstractRendererSpecField<Configur
 		return HTML;
 	}
 
-	public void renderHTML(ConfiguredColor value, StringBuffer in) {
+	public void renderHTML(ConfiguredColor value, StringBuffer in, Object o) {
 		in.insert(0, "<font color='"+SwingUtil.getHTMLCode(value.getColor())+"'>");		
 		in.append("</font>");
 	}

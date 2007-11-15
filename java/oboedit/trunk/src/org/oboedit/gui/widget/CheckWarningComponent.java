@@ -68,6 +68,7 @@ public class CheckWarningComponent extends JEditorPane {
 		protected QuickFix action;
 
 		public ActionWrapper(QuickFix action) {
+			super(action.getDesc());
 			this.action = action;
 		}
 

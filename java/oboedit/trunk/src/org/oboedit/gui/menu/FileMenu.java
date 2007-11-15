@@ -63,7 +63,7 @@ public class FileMenu extends DynamicMenu {
 		JMenuItem newItem = new JMenuItem("New Ontology");
 		JMenuItem loadItem = new JMenuItem("Load Ontologies...");
 		JMenuItem importItem = new JMenuItem("Import Terms...");
-		JMenuItem resolveItem = new JMenuItem("Resolve ids...");
+		JMenuItem resolveItem = new JMenuItem("Fix ids...");
 		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
 
@@ -77,7 +77,7 @@ public class FileMenu extends DynamicMenu {
 
 		add(newItem);
 		add(loadItem);
-		// add(importItem);
+		add(importItem);
 		add(resolveItem);
 		// removed until the correct behavior is figured out
 		// fileMenu.add(saveItem);
@@ -87,11 +87,6 @@ public class FileMenu extends DynamicMenu {
 		add(applyHistoryItem);
 		add(saveHistoryItem);
 		addSeparator();
-		// removed until the correct behavior is figured out
-		/*
-		 * fileMenu.add(importItem); fileMenu.add(importAndTrimItem);
-		 * fileMenu.add(exportItem); fileMenu.addSeparator();
-		 */
 		add(exitItem);
 
 		newItem.addActionListener(new ActionListener() {
@@ -192,8 +187,8 @@ public class FileMenu extends DynamicMenu {
 				.showConfirmDialog(
 						GUIManager.getManager().getFrame(),
 						"Once you import a new ontology, the undo history will be "
-								+ "reset. You will be unable to undo any changes made before "
-								+ "this point." + " Are you sure "
+								+ "reset.\nYou will be unable to undo any changes made before "
+								+ "this point.\n" + " Are you sure "
 								+ "you want to proceed?", "Undo warning",
 						JOptionPane.YES_NO_OPTION);
 		if (proceed != JOptionPane.YES_OPTION)
@@ -205,7 +200,6 @@ public class FileMenu extends DynamicMenu {
 				SessionManager.getManager().getSession().importSession(session,
 						true);
 				SessionManager.getManager().reloadSession();
-				resolveIDs();
 			}
 		} catch (DataAdapterException e1) {
 			e1.printStackTrace();

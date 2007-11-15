@@ -94,6 +94,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected java.util.List<RenderedFilter> objectRenderers = new ArrayList<RenderedFilter>();
 
+	protected java.util.List<RenderedFilter> automaticObjectRenderers = new ArrayList<RenderedFilter>();
+
 	protected java.util.List<RenderedFilter> linkRenderers = new ArrayList<RenderedFilter>();
 
 	// protected FilterPair filter;
@@ -1442,11 +1444,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	// Ok, we’ve been told to scroll because the mouse cursor is in our
 	// scroll zone.
 	public void autoscroll(Point p) {
-		JViewport viewport = SwingUtil.getAncestorOfClass(
-				JViewport.class, this);
+		JViewport viewport = SwingUtil
+				.getAncestorOfClass(JViewport.class, this);
 		if (viewport != null) {
 			Rectangle outer = getBounds();
-			boolean top = p.y + outer.y <= AUTOSCROLL_MARGIN;			
+			boolean top = p.y + outer.y <= AUTOSCROLL_MARGIN;
 			Rectangle viewRect = viewport.getViewRect();
 			if (top)
 				viewRect.y -= AUTOSCROLL_MARGIN;
@@ -1469,5 +1471,17 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				- outer.x + AUTOSCROLL_MARGIN, outer.height - inner.height
 				- inner.y + outer.y + AUTOSCROLL_MARGIN, outer.width
 				- inner.width - inner.x + outer.x + AUTOSCROLL_MARGIN);
+	}
+	
+	public void addAutomaticObjectRenderer(RenderedFilter renderer) {
+		automaticObjectRenderers.add(renderer);
+	}
+	
+	public void removeAutomaticObjectRenderer(RenderedFilter renderer) {
+		automaticObjectRenderers.remove(renderer);
+	}
+
+	public List<RenderedFilter> getAutomaticObjectRenderers() {
+		return automaticObjectRenderers;
 	}
 }

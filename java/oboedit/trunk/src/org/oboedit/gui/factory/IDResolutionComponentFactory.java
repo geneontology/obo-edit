@@ -15,7 +15,7 @@ public class IDResolutionComponentFactory extends
 	}
 
 	public String getName() {
-		return "ID Resolution Component";
+		return "ID Fixer";
 	}
 
 	public FactoryCategory getCategory() {

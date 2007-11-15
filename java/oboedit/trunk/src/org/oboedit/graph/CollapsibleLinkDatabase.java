@@ -117,257 +117,44 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 		return false;
 	}
 
-	public void setParentSetVisible(Set objects, boolean visible) {
-		// cacheVisibleObjects();
-		if (visible) {
-			Iterator it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				doSetVisible(lo, true);
-			}
-		} else {
-			Set keepers = new HashSet();
-			Iterator it;
-			it = objects.iterator();
-			// ignore everything that isn't currently visible
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				if (!isVisible(lo)) {
-					it.remove();
-				}
-			}
-			it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				Iterator it2 = getChildren(lo).iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
-					if (!objects.contains(link.getChild())) {
-						keepers.add(link.getChild());
-						break;
-					}
-				}
-			}
-			it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				if (!keepers.contains(lo))
-					doSetVisible(lo, false);
-			}
-		}
-		fireExpansionStateChanged();
-	}
-
-	public void setChildSetVisible(Set objects, boolean visible) {
-		// cacheVisibleObjects();
-		if (visible) {
-			Iterator it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				doSetVisible(lo, true);
-			}
-		} else {
-			Set keepers = new HashSet();
-			Iterator it;
-			it = objects.iterator();
-			// ignore everything that isn't currently visible
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				if (!isVisible(lo)) {
-					it.remove();
-				}
-			}
-			it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				Iterator it2 = getParents(lo).iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
-					if (!objects.contains(link.getParent())) {
-						keepers.add(link.getParent());
-						break;
-					}
-				}
-			}
-			it = objects.iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				if (!keepers.contains(lo))
-					doSetVisible(lo, false);
-			}
-		}
-		fireExpansionStateChanged();
-	}
-
 	public void setVisibleObjects(
 			Collection<? extends IdentifiedObject> objects, boolean setDefault) {
-		if (!(visibleObjects.size() == objects.size()
-				&& objects.containsAll(visibleObjects))) {
+		Collection<IdentifiedObject> oldVisible = new ArrayList<IdentifiedObject>(
+				visibleObjects);
+		Collection<IdentifiedObject> added = new ArrayList<IdentifiedObject>(
+				objects);
+		Collection<IdentifiedObject> deleted = new ArrayList<IdentifiedObject>(
+				visibleObjects);
+		added.removeAll(oldVisible);
+		deleted.removeAll(objects);
+		if (!(visibleObjects.size() == objects.size() && objects
+				.containsAll(visibleObjects))) {
 			if (setDefault) {
 				setDefaultVisibleObjects(objects);
 				recache();
-				fireExpansionStateChanged();
+				fireExpansionStateChanged(added, deleted);
 			} else {
 				setDefaultVisibleObjects(Collections.EMPTY_SET);
 				recache();
 				visibleObjects.addAll(objects);
-				fireExpansionStateChanged();
+				fireExpansionStateChanged(added, deleted);
 			}
 		}
 	}
 
-	public void setVisible(LinkedObject lo, boolean visible) {
-		setVisible(lo, visible, true);
-	}
-
-	public void setVisible(LinkedObject lo, boolean visible, boolean fireEvents) {
-		// cacheVisibleObjects();
-		doSetVisible(lo, visible);
-		if (fireEvents)
-			fireExpansionStateChanged();
-	}
-
-	protected void doSetVisible(LinkedObject lo, boolean visible) {
-		if (visible) {
-			visibleObjects.add(lo);
-			// lastVisibleObjects.add(lo);
-		} else {
-			visibleObjects.remove(lo);
-		}
-	}
-
-	public boolean toggleParentExpand(LinkedObject lo) {
-		int expansionCount = getParentExpansionCount(lo);
-		if (expansionCount == TermUtil.getParentCount(linkDatabase, lo)) {
-			setParentsExpanded(lo, false);
-			return false;
-		} else {
-			setParentsExpanded(lo, true);
-			return true;
-		}
-	}
-
-	public boolean toggleChildExpand(LinkedObject lo) {
-		int expansionCount = getChildExpansionCount(lo);
-		if (expansionCount == TermUtil.getChildCount(linkDatabase, lo)) {
-			setChildrenExpanded(lo, false);
-			return false;
-		} else {
-			setChildrenExpanded(lo, true);
-			return true;
-		}
-	}
-
-	public void hideParent(LinkedObject lo, boolean cascade) {
-		doHideParent(lo, cascade);
-		fireExpansionStateChanged();
-	}
-
-	public void doHideParent(LinkedObject lo, boolean cascade) {
-		doSetVisible(lo, false);
-		if (cascade) {
-			LinkedList hideem = new LinkedList();
-			Iterator it = getParents(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				if (getChildren(link.getChild()).isEmpty())
-					hideem.add(link.getChild());
-			}
-			it = hideem.iterator();
-			while (it.hasNext()) {
-				LinkedObject hideme = (LinkedObject) it.next();
-				hideParent(hideme, true);
-			}
-		}
-	}
-
-	public void hideChild(LinkedObject lo, boolean cascade) {
-		// cacheVisibleObjects();
-		doHideChild(lo, new HashSet(), cascade);
-		fireExpansionStateChanged();
-	}
-
-	protected void fireExpansionStateChanged() {
+	protected void fireExpansionStateChanged(
+			Collection<IdentifiedObject> shown,
+			Collection<IdentifiedObject> hidden) {
 		ExpansionEvent e = null;
 		int size = listeners.size();
 		for (int i = 0; i < size && i < listeners.size(); i++) {
 			ExpandCollapseListener listener = (ExpandCollapseListener) listeners
 					.get(i);
 			if (e == null) {
-				e = new ExpansionEvent(this);
+				e = new ExpansionEvent(this, shown, hidden);
 			}
 			listener.expandStateChanged(e);
 		}
-	}
-
-	protected void doHideChild(LinkedObject lo, Set seenem, boolean cascade) {
-		if (seenem.contains(lo))
-			return;
-		seenem.add(lo);
-
-		doSetVisible(lo, false);
-		if (cascade) {
-			LinkedList hideem = new LinkedList();
-			Iterator it = getChildren(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				if (getParents(link.getChild()).isEmpty())
-					hideem.add(link.getChild());
-			}
-			it = hideem.iterator();
-			while (it.hasNext()) {
-				LinkedObject hideme = (LinkedObject) it.next();
-				doHideChild(hideme, seenem, true);
-			}
-		}
-	}
-
-	public void expandChildren(LinkedObject lo) {
-		setChildrenExpanded(lo, true);
-	}
-
-	public void collapseChildren(LinkedObject lo) {
-		setChildrenExpanded(lo, false);
-	}
-
-	public void setChildrenExpanded(LinkedObject lo, boolean expanded) {
-		// cacheVisibleObjects();
-		if (expanded) {
-			Iterator it = linkDatabase.getChildren(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				doSetVisible(link.getChild(), true);
-			}
-		} else {
-			Iterator it = getChildren(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				doHideChild(link.getChild(), new HashSet(), true);
-			}
-		}
-		fireExpansionStateChanged();
-	}
-
-	/*
-	 * protected void cacheVisibleObjects() { lastVisibleObjects.clear();
-	 * lastVisibleObjects.addAll(visibleObjects); }
-	 */
-	public void setParentsExpanded(LinkedObject lo, boolean expanded) {
-		// cacheVisibleObjects();
-		if (expanded) {
-			Iterator it = linkDatabase.getParents(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				doSetVisible(link.getParent(), true);
-			}
-		} else {
-			Iterator it = getParents(lo).iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-				hideParent(link.getParent(), true);
-			}
-		}
-		fireExpansionStateChanged();
 	}
 
 	public boolean shouldBeTrimmed(Link link) {

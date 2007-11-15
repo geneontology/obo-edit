@@ -70,7 +70,6 @@ public class TooltipBehavior implements ViewBehavior {
 			if (destroyedHolder != null) {
 				PActivity activity = destroyedHolder.animateToTransparency(0,
 						getTooltipFadeOutTime());
-				System.err.println("activity = "+activity);
 				activity.setDelegate(new PActivityDelegate() {
 					public void activityFinished(PActivity arg0) {
 						if (canvas.getCamera().getChildrenReference().contains(
