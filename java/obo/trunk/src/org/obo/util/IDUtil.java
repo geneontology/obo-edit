@@ -65,16 +65,16 @@ public class IDUtil {
 	}
 
 	public static class Variable {
-		protected String s;
+		protected String name;
 
 		protected java.util.List<String> params = new ArrayList<String>();
 
 		public Variable(String s) {
-			this.s = s;
+			this.name = s;
 		}
 
 		public String getName() {
-			return s;
+			return name;
 		}
 
 		public void addParam(String param) {
@@ -84,10 +84,10 @@ public class IDUtil {
 		public java.util.List<String> getParams() {
 			return params;
 		}
-
+		
 		@Override
 		public String toString() {
-			return "[variable: " + s + ", params: " + params + "]";
+			return "[variable: " + name + ", params: " + params + "]";
 		}
 	}
 
