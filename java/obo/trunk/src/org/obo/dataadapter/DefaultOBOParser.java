@@ -12,6 +12,7 @@ import org.obo.filters.*;
 import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
 import org.obo.util.IDUtil;
+import org.obo.util.TermUtil;
 
 public class DefaultOBOParser implements OBOParser {
 
@@ -1141,6 +1142,7 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					instanceOfObj = objectFactory
 					.createDanglingObject(is.instanceOf, false);
+					instanceOfObj = TermUtil.castToClass((LinkedObject)instanceOfObj);
 				}
 				else {
 					throw new OBOParseException("Unrecognized instance_of id "
@@ -1153,9 +1155,8 @@ public class DefaultOBOParser implements OBOParser {
 					throw new OBOParseException("Cannot use non-term value "
 							+ is.instanceOf + ", " + "for instance_of statement.",
 							is.getPath(), is.getLine(), is.getLineNum());
-
-				((Instance) instance).setType((OBOClass) instanceOfObj);
 			}
+			((Instance) instance).setType((OBOClass) instanceOfObj);
 		}
 
 		it = propertyValSet.iterator();

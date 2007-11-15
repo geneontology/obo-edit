@@ -14,7 +14,10 @@ import org.obo.identifier.DefaultIDGenerator;
 import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
@@ -49,6 +52,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		protected boolean allowDangling = false;
 
 		protected boolean saveImplied = false;
+		
+		//protected ReasonerFactory reasonerFactory = new LinkPileReasonerFactory();
+		protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
 
 		protected boolean discardUnusedCategories = false;
 
@@ -209,6 +215,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		public void setObjectFilter(Filter objectFilter) {
 			this.objectFilter = objectFilter;
 		}
+
+		public ReasonerFactory getReasonerFactory() {
+			return reasonerFactory;
+		}
+
+		public void setReasonerFactory(ReasonerFactory reasonerFactory) {
+			this.reasonerFactory = reasonerFactory;
+		}
 	}
 
 	protected boolean cancelled = false;
@@ -226,6 +240,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	protected boolean allowDangling;
 
 	protected boolean saveImplied;
+	
+	protected ReasonerFactory reasonerFactory;
 
 	protected boolean realizeImplied;
 
@@ -956,6 +972,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		saveImplied = filteredPath.getSaveImplied();
 		realizeImplied = filteredPath.getSaveImplied();
 		String impliedType = filteredPath.getImpliedType();
+		reasonerFactory = filteredPath.getReasonerFactory();
 
 		OBOProperty prefilterProperty = null;
 		if (filteredPath.getPrefilterProperty() != null)
@@ -982,7 +999,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (filteredPath.getUseSessionReasoner() && getReasoner() != null) {
 				fullReasoner = getReasoner();
 			} else {
-				fullReasoner = new ForwardChainingReasoner();
+				fullReasoner = reasonerFactory.createReasoner();
 				fullReasoner.setLinkDatabase(new DefaultLinkDatabase(session));
 				fullReasoner.recache();
 			}
