@@ -12,11 +12,12 @@ public class AllReasonerTestsWithPellet extends TestCase {
 
 		TestSuite out = new TestSuite();
 
-		out.addTestSuite(IntersectionBloodCellExampleTest.class);
-		
-		// we don't expect this one to succeed yet:
+		out.addTestSuite(TransitivityTest.class);
+
+		//out.addTestSuite(IntersectionBloodCellExampleTest.class);
 		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
 
+		
 		return out;
 	}
 }

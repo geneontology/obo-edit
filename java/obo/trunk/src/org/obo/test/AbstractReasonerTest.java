@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.ReasonerUtil;
@@ -13,8 +14,10 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 
 	protected ReasonedLinkDatabase reasonedDB;
 	
+	// use LP as default: can be overridden in test
 	protected static ReasonerFactory reasonerFactory =
-		new ForwardChainingReasonerFactory();
+		new LinkPileReasonerFactory();
+		//new ForwardChainingReasonerFactory();
 
 	protected AbstractReasonerTest(String name) {
 		super(name);
