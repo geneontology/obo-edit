@@ -713,6 +713,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		else if (lo instanceof Annotation) {
 			Annotation annot = (Annotation)lo;
 			LinkedObject obj = annot.getObject();
+			if (obj == null) {
+				// TODO
+				System.err.println("no object for: "+annot);
+				return 0;
+			}
 			if (obj.isAnonymous()) {
 				saveObject(obj);
 				for (Link link : obj.getParents())
