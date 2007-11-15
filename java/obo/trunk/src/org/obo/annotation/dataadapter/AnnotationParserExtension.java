@@ -1,23 +1,18 @@
 package org.obo.annotation.dataadapter;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.bbop.dataadapter.IOOperation;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.DefaultOBOParser;
 import org.obo.dataadapter.OBOConstants;
-import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOParseException;
 import org.obo.dataadapter.OBOSerializationEngine;
@@ -27,8 +22,6 @@ import org.obo.dataadapter.OBO_1_2_Serializer;
 import org.obo.dataadapter.ParseEngine;
 import org.obo.dataadapter.ParserExtension;
 import org.obo.dataadapter.OBOConstants.TagMapping;
-import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
-import org.obo.datamodel.DanglingObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
@@ -191,6 +184,19 @@ public class AnnotationParserExtension implements ParserExtension,
 						}
 						annotation.addSource((LinkedObject) source);
 						System.err.println("added source " + pv.getValue()
+								+ " to " + annotation.getID());
+					} else if (pv.getProperty().equals("assigned_by")) {
+						IdentifiedObject ab = parser.getObject(pv
+								.getValue());
+						if (ab == null) {
+							ab = session.getObjectFactory()
+							.createObject(pv.getValue(),
+									OBOClass.OBO_INSTANCE, false);
+							((Instance) ab).setType(AnnotationOntology
+									.AGENT());
+						}
+						annotation.setAssignedBy((LinkedObject) ab);
+						System.err.println("set assigned_by " + pv.getValue()
 								+ " to " + annotation.getID());
 					} else if (pv.getProperty().equals("subject")) {
 						IdentifiedObject subject = parser.getObject(pv
