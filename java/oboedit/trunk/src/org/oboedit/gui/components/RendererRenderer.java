@@ -7,6 +7,7 @@ import javax.swing.JTable;
 
 import org.bbop.swing.HTMLTableRenderer;
 import org.obo.util.FilterUtil;
+import org.obo.util.HTMLUtil;
 import org.oboedit.gui.filter.RenderedFilter;
 
 public class RendererRenderer extends HTMLTableRenderer {
@@ -22,13 +23,13 @@ public class RendererRenderer extends HTMLTableRenderer {
 			RenderedFilter fr = (RenderedFilter) value;
 			if (isLink)
 				return "<html>Display link lines as <b>"
-						+ fr.getSpec()
+						+ HTMLUtil.escapeHTML(fr.getSpec().toString())
 						+ "</b> for links that match<br><i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
 						+ "</i></html>";
 			else
 				return "<html>Display terms lines as <b>"
-						+ fr.getSpec()
+						+ HTMLUtil.escapeHTML(fr.getSpec().toString())
 						+ "</b> for terms that match<br><i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
 						+ "</i></html>";

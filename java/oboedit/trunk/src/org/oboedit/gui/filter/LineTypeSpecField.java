@@ -23,7 +23,7 @@ public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 		return NON_HTML;
 	}
 
-	public void renderHTML(Integer value, StringBuffer in) {
+	public void renderHTML(LineType value, StringBuffer in, Object o) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -41,9 +41,5 @@ public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 
 	public LineType merge(LineType a, LineType b) {
 		return a;
-	}
-
-	public void renderHTML(LineType value, StringBuffer in) {
-		throw new UnsupportedOperationException();
 	}
 }

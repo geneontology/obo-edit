@@ -130,7 +130,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-			if (e.isHistory() || e.isRoot() || e.isReasoner()) {
+			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()) {
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
 					Collection<? extends LinkedObject> roots = TermUtil

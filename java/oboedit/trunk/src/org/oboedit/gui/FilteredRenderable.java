@@ -12,6 +12,10 @@ public interface FilteredRenderable {
 	public List<RenderedFilter> getObjectRenderers();
 	public void setObjectRenderers(List<RenderedFilter> renderers);
 	
+	public void addAutomaticObjectRenderer(RenderedFilter pair);
+	public void removeAutomaticObjectRenderer(RenderedFilter pair);
+	public List<RenderedFilter> getAutomaticObjectRenderers();
+	
 	public void addLinkRenderer(RenderedFilter renderer);
 	public void removeLinkRenderer(RenderedFilter renderer);
 	public List<RenderedFilter> getLinkRenderers();	

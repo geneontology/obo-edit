@@ -36,6 +36,7 @@ import org.oboedit.gui.Selection;
 import org.oboedit.gui.Selection.PathCalcMode;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
+import org.oboedit.gui.event.OntologyReloadListener;
 import org.oboedit.gui.event.ReasonerStatusEvent;
 import org.oboedit.gui.event.ReasonerStatusListener;
 import org.oboedit.gui.event.RootChangeEvent;
@@ -54,10 +55,12 @@ public class SessionManager {
 
 	protected Collection<RootChangeListener> rootChangeListeners = new LinkedList<RootChangeListener>();
 
+	protected Collection<OntologyReloadListener> ontologyReloadListeners = new LinkedList<OntologyReloadListener>();
+
 	protected List<HistoryItem> redoHistoryItems = new LinkedList<HistoryItem>();
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
-	
+
 	protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
 
 	protected ReasonedLinkDatabase reasoner;
@@ -73,6 +76,20 @@ public class SessionManager {
 	public SessionManager() {
 		setSession(new OBOSessionImpl());
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
+	}
+	
+	public void addOntologyReloadListener(OntologyReloadListener listener) {
+		ontologyReloadListeners.add(listener);
+	}
+	
+	public void removeOntologyReloadListener(OntologyReloadListener listener) {
+		ontologyReloadListeners.remove(listener);
+	}
+	
+	public void reload() {
+		for(OntologyReloadListener listener : ontologyReloadListeners) {
+			listener.reload();
+		}
 	}
 
 	public void addReasonerListener(ReasonerListener listener, boolean AWTThread) {
@@ -123,25 +140,24 @@ public class SessionManager {
 	public OBOSession getSession() {
 		return session;
 	}
-	
+
 	/**
-	 * Leaves the current session in place, but sends a change root event
-	 * to all the registered listeners. This is useful if a massive change has
-	 * occurred to the session that has not been achieved via the history session
-	 * (such as an irreversible import).
+	 * Leaves the current session in place, but sends a change root event to all
+	 * the registered listeners. This is useful if a massive change has occurred
+	 * to the session that has not been achieved via the history session (such
+	 * as an irreversible import).
 	 */
 	public void reloadSession() {
+		queryEngine = new QueryEngine(session);
+		redoHistoryItems.clear();
+		if (getUseReasoner()) {
+			initializeReasonerDatabase();
+		}
 		fireChangeRoot(new RootChangeEvent(this, session));
 	}
 
 	public void setSession(OBOSession session) {
 		this.session = session;
-		queryEngine = new QueryEngine(session);
-		redoHistoryItems.clear();
-
-		if (getUseReasoner()) {
-			initializeReasonerDatabase();
-		}
 		reloadSession();
 	}
 
@@ -332,7 +348,7 @@ public class SessionManager {
 	public ReasonedLinkDatabase createReasoner() {
 		return reasonerFactory.createReasoner();
 	}
-	
+
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}
@@ -377,21 +393,17 @@ public class SessionManager {
 			if (getUseReasoner()) {
 				OperationWarning reasonerWarning = reasonerOpModel.apply(item);
 				Object[] params = { item, reasonerWarning };
-				Logger
-						.getLogger("org.oboedit.datamodel.history")
-						.log(
-								Level.WARNING,
-								"Warning message while trying to apply history item",
-								params);
+				Logger.getLogger("org.oboedit.datamodel.history").log(
+						Level.WARNING,
+						"Warning message while trying to apply history item",
+						params);
 			}
 			if (warning != null) {
 				Object[] params = { item, warning };
-				Logger
-						.getLogger("org.oboedit.datamodel.history")
-						.log(
-								Level.WARNING,
-								"Warning message while trying to apply history item",
-								params);
+				Logger.getLogger("org.oboedit.datamodel.history").log(
+						Level.WARNING,
+						"Warning message while trying to apply history item",
+						params);
 
 				System.err.println("*** GOT WARNING = " + warning);
 			}

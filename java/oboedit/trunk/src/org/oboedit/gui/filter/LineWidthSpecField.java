@@ -23,7 +23,7 @@ public class LineWidthSpecField extends AbstractRendererSpecField<Integer> {
 		return NON_HTML;
 	}
 
-	public void renderHTML(Integer value, StringBuffer in) {
+	public void renderHTML(Integer value, StringBuffer in, Object o) {
 		throw new UnsupportedOperationException();
 	}
 

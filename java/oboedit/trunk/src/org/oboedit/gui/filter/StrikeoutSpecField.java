@@ -23,7 +23,7 @@ public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
 		return HTML;
 	}
 
-	public void renderHTML(Boolean value, StringBuffer in) {
+	public void renderHTML(Boolean value, StringBuffer in, Object o) {
 		if (value.booleanValue()) {
 			in.insert(0, "<strike>");
 			in.append("</strike>");

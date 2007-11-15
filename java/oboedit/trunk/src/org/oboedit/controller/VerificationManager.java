@@ -23,6 +23,7 @@ import org.oboedit.verify.impl.DanglingIntersectionCheck;
 import org.oboedit.verify.impl.DbxrefCheck;
 import org.oboedit.verify.impl.DefinitionCheck;
 import org.oboedit.verify.impl.DisjointednessCheck;
+import org.oboedit.verify.impl.IDCheck;
 import org.oboedit.verify.impl.NameCheck;
 import org.oboedit.verify.impl.NameRedundancyCheck;
 import org.oboedit.verify.impl.SynonymCheck;
@@ -136,6 +137,7 @@ public class VerificationManager {
 		out.add(new DanglingIntersectionCheck());
 		out.add(new CycleCheck());
 		out.add(new DisjointednessCheck());
+		out.add(new IDCheck());
 		return out;
 	}
 

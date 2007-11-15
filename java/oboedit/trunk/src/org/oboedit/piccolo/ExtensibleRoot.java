@@ -167,7 +167,11 @@ public class ExtensibleRoot extends PRoot {
 			time = Long.MAX_VALUE;
 		else
 			time = globalTime;
+		try {
 		activityScheduler.processActivities(time);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 		validateFullBounds();
 		validateFullPaint();
 

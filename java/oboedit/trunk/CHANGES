@@ -1,4 +1,6 @@
-	* Fixed OBO 1.2 save bug (SF 1827542)
-	* Fixed bugs when saving filtered files with range & domain defined
-	* Changed method of starting load/save operations
+	* Added Import... to the file menu
+	* Added Fix ids... to the file menu
+	* Added a verification system check for bad ids. The id fix options are all
+	  available as quickfixes
+	* Added a new system for installing custom graph decorators
 	

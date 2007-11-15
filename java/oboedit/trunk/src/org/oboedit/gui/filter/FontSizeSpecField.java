@@ -23,7 +23,7 @@ public class FontSizeSpecField extends AbstractRendererSpecField<Integer> {
 		return HTML;
 	}
 
-	public void renderHTML(Integer value, StringBuffer in) {
+	public void renderHTML(Integer value, StringBuffer in, Object o) {
 		in.insert(0, "<font size='" + value.intValue() + "'>");
 		in.append("</font>");
 	}

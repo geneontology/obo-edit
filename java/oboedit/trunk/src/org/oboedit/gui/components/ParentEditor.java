@@ -35,13 +35,8 @@ public class ParentEditor extends AbstractGUIComponent {
 		}
 	};
 
-	HistoryListener historyListener = new HistoryListener() {
-		public void applied(HistoryAppliedEvent e) {
-			loadTerm(SelectionManager.getGlobalSelection()
-					.getTermSubSelection());
-		}
-
-		public void reversed(HistoryAppliedEvent e) {
+	ReloadListener reloadListener = new ReloadListener() {
+		public void reload(ReloadEvent e) {
 			loadTerm(SelectionManager.getGlobalSelection()
 					.getTermSubSelection());
 		}
@@ -637,13 +632,13 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected void attachListeners() {
 		SelectionManager.getManager().addSelectionListener(selectionListener);
-		sessionManager.addHistoryListener(historyListener);
+		GUIUtil.addReloadListener(reloadListener);
 	}
 
 	protected void removeListeners() {
 		SelectionManager.getManager()
 				.removeSelectionListener(selectionListener);
-		sessionManager.removeHistoryListener(historyListener);
+		GUIUtil.removeReloadListener(reloadListener);
 	}
 
 	@Override

@@ -156,7 +156,11 @@ public class ViewRenderedStyleText extends PNode {
 		 * document.getLength())); } catch (BadLocationException e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
-		view.paint(g, rect);
+		try {
+			view.paint(g, rect);
+		} catch (Throwable t) {
+			System.err.println("!");
+		}
 		// setPaint(Color.red);
 		// super.paint(paintContext);
 	}

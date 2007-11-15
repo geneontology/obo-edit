@@ -13,6 +13,7 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
+import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
 import java.util.*;
@@ -49,8 +50,6 @@ public class DAGView extends AbstractGUIComponent {
 	protected JButton configButton = new JButton("Config");
 
 	protected JProgressBar progressBar = new JProgressBar();
-
-	protected SessionManager sessionManager = SessionManager.getManager();
 
 	public static class DAGViewConfig implements ComponentConfiguration {
 		protected boolean multiSelect = false;
@@ -95,7 +94,7 @@ public class DAGView extends AbstractGUIComponent {
 
 	protected SelectionListener selectionListener;
 
-	protected HistoryListener historyListener;
+	protected ReloadListener historyListener;
 
 	TreeModel model;
 
@@ -228,21 +227,15 @@ public class DAGView extends AbstractGUIComponent {
 				update();
 			}
 		};
-		historyListener = new HistoryListener() {
-
-			public void applied(HistoryAppliedEvent event) {
+		historyListener = new ReloadListener() {
+			public void reload(ReloadEvent e) {
 				update();
 			}
-
-			public void reversed(HistoryAppliedEvent event) {
-				update();
-			}
-
 		};
 
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
-		sessionManager.addHistoryListener(historyListener);
+		GUIUtil.addReloadListener(historyListener);
 		tree.addMouseListener(clickListener);
 		setToolTips();
 	}
@@ -251,7 +244,7 @@ public class DAGView extends AbstractGUIComponent {
 		SelectionManager.getManager()
 				.removeSelectionListener(selectionListener);
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
-		sessionManager.removeHistoryListener(historyListener);
+		GUIUtil.addReloadListener(historyListener);
 	}
 
 	protected TreePath trimPathToNode(TreePath path, Object node) {

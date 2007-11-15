@@ -526,6 +526,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		warningComponent.setWarnings(c, null, null, true, showCondition, true);
 		tabbedPane.setComponentAt(1, warningScroller);
 		tabbedPane.setEnabledAt(1, true);
+		tabbedPane.setSelectedIndex(1);
 		tabbedPane.revalidate();
 		tabbedPane.repaint();
 	}

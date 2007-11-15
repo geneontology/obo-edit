@@ -67,6 +67,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.example.LineNumberFetchBehaviorTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
 import org.oboedit.gui.Filterable;
@@ -142,7 +143,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				.getUseModalProgressMonitors());
 		return CollectionUtil.list(new AutosaveTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
-				new FrameNameUpdateTask(), screenLockTask);
+				new FrameNameUpdateTask(), screenLockTask
+//				, new LineNumberFetchBehaviorTask()
+		);
 	}
 
 	@Override
@@ -155,7 +158,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return (Collection) CollectionUtil.list(new TermPanelFactory(),
 				new GraphEditorFactory(), new TextEditorFactory(),
 				new TableOfContentsFactory(),
-				// new IDResolutionComponentFactory(),
+				new IDResolutionComponentFactory(),
 				new DAGViewFactory(), new GraphDAGViewFactory(),
 				new SearchComponentFactory(), new LinkSearchComponentFactory(),
 				new IntersectionEditorFactory(), new CategoryManagerFactory(),

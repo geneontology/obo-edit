@@ -63,7 +63,7 @@ public class OENode extends PCNode implements Morphable {
 		field.setPickable(false);
 		setLabel(canvas.generateLabel(lo));
 		RenderSpec spec = GUIUtil.getSpec(lo, FilterManager.getManager()
-				.getGlobalTermRenderers(), canvas.getObjectRenderers());
+				.getGlobalTermRenderers(), canvas.getObjectRenderers(), canvas.getAutomaticObjectRenderers());
 		setPaint(Color.lightGray);
 		if (spec instanceof GeneralRendererSpec) {
 			ConfiguredColor c = ((GeneralRendererSpec) spec)

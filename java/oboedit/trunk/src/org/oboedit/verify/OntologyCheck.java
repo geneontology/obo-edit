@@ -6,6 +6,7 @@ import java.util.*;
 
 public interface OntologyCheck extends Check {
 
-	public Collection check(OBOSession history, IdentifiedObject currentObject,
-			byte condition, boolean checkObsoletes);
+	public Collection<CheckWarning> check(OBOSession history,
+			IdentifiedObject currentObject, byte condition,
+			boolean checkObsoletes);
 }

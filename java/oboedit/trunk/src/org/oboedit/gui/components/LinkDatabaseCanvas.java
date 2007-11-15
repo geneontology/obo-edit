@@ -212,7 +212,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		}
 		return out;
 	}
-	
+
 	protected SelectionListener globalSelectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive) {
@@ -255,8 +255,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected boolean expandSelectionPaths = true;
 
-	protected Collection<ExpandCollapseListener> expansionListeners = new LinkedList<ExpandCollapseListener>();
-
 	protected FilteredLinkDatabase filteredLinkDatabase;
 
 	protected Collection<FocusedNodeListener> focusedNodeListeners = new LinkedList<FocusedNodeListener>();
@@ -291,6 +289,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected Collection<RelayoutListener> layoutListeners = new LinkedList<RelayoutListener>();
 
+	protected Collection<ExpandCollapseListener> expansionListeners = new ArrayList<ExpandCollapseListener>();
+
 	protected TaskDelegate<Void> layoutTask;
 
 	protected CollapsibleLinkDatabase linkDatabase;
@@ -318,6 +318,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	protected NodeLabelProvider nodeLabelProvider;
 
 	protected List<RenderedFilter> objectRenderers = new ArrayList<RenderedFilter>();
+
+	protected List<RenderedFilter> automaticObjectRenderers =
+		new ArrayList<RenderedFilter>();
 
 	protected JPanel placementPanel = new JPanel();
 
@@ -382,6 +385,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void addExpansionListener(ExpandCollapseListener listener) {
+		if (linkDatabase != null)
+			linkDatabase.addListener(listener);
 		expansionListeners.add(listener);
 	}
 
@@ -432,7 +437,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			if (io instanceof LinkedObject)
 				current.add((LinkedObject) io);
 		}
-		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible); 
+		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible);
 		current.addAll(loCol);
 		linkDatabase.setVisibleObjects(current, false);
 	}
@@ -484,12 +489,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				else
 					menu.add(item);
 			}
-		}
-	}
-
-	public void fireExpandEvent(ExpansionEvent e) {
-		for (ExpandCollapseListener listener : expansionListeners) {
-			listener.expandStateChanged(e);
 		}
 	}
 
@@ -1034,9 +1033,17 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				});
 		SelectionManager.getManager().addSelectionListener(
 				globalSelectionListener);
-		addSelectionListener(globalSelectionNotifier);		
+		addSelectionListener(globalSelectionNotifier);
+		addExpansionListener(new ExpandCollapseListener() {
+
+			public void expandStateChanged(ExpansionEvent e) {
+				System.err.println("showed " + e.getShown());
+				System.err.println("hid " + e.getHidden());
+			}
+
+		});
 	}
-	
+
 	protected void cleanup() {
 		SelectionManager.getManager().removeSelectionListener(
 				globalSelectionListener);
@@ -1117,6 +1124,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void relayout() {
+		if (linkDatabase == null)
+			return;
 		isLayingOut = true;
 		dim();
 		if (getDisableAnimations()) {
@@ -1183,6 +1192,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
+				if (relayoutActivity == null)
+					return;
 				getRoot().addActivity(relayoutActivity);
 				((ExtensibleRoot) getRoot()).setDisableUpdates(false);
 			}
@@ -1198,6 +1209,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void removeExpansionListener(ExpandCollapseListener listener) {
+		if (linkDatabase != null)
+			linkDatabase.removeListener(listener);
 		expansionListeners.remove(listener);
 	}
 
@@ -1261,7 +1274,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				current.add((LinkedObject) io);
 		}
 		current.removeAll(getLinkedObjectCollection(visible));
-//		linkDatabase.setVisibleObjects(current, true);
+		// linkDatabase.setVisibleObjects(current, true);
 		linkDatabase.setVisibleObjects(current, false);
 
 	}
@@ -1295,7 +1308,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			 * addRelayoutListener(listener);
 			 */
 		}
-		if (isExpandSelectionPaths() && !ObjectUtil.equals(selection.getSelector(), this)) {
+		if (isExpandSelectionPaths()
+				&& !ObjectUtil.equals(selection.getSelector(), this)) {
 			TreePath[] paths = selection.getPaths();
 			if (paths == null || paths.length == 0) {
 				paths = new TreePath[1];
@@ -1362,6 +1376,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			this.filteredLinkDatabase = new FilteredLinkDatabase(linkDatabase);
 			this.linkDatabase = new CollapsibleLinkDatabase(
 					filteredLinkDatabase);
+			for (ExpandCollapseListener listener : expansionListeners)
+				this.linkDatabase.addListener(listener);
 			this.linkDatabase.addListener(expandCollapseListener);
 			if (layoutEngine != null)
 				layoutEngine.setLinkDatabase(this.linkDatabase);
@@ -1428,7 +1444,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		this.termFilter = termFilter;
 		updateDatasources();
 	}
-	
+
 	public void setVisibleObjects(Collection<?> visible) {
 		linkDatabase.setVisibleObjects(getLinkedObjectCollection(visible),
 				false);
@@ -1458,5 +1474,17 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		PBounds centerBounds = getLayer().getFullBoundsReference();
 		getCamera().animateViewToCenterBounds(centerBounds, true,
 				getLayoutDuration());
+	}
+	
+	public void addAutomaticObjectRenderer(RenderedFilter renderer) {
+		automaticObjectRenderers.add(renderer);
+	}
+	
+	public void removeAutomaticObjectRenderer(RenderedFilter renderer) {
+		automaticObjectRenderers.remove(renderer);
+	}
+
+	public List<RenderedFilter> getAutomaticObjectRenderers() {
+		return automaticObjectRenderers;
 	}
 }
