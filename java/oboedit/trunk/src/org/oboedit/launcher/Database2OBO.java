@@ -74,6 +74,7 @@ public class Database2OBO {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
+		
 		System.err.println("About to write files..., session object count = "
 				+ session.getObjects().size());
 		System.err.println("writePath = " + writeConfig.getWritePath());
