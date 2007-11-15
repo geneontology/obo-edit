@@ -1,21 +1,35 @@
 package org.oboedit.launcher;
 
-import org.bbop.dataadapter.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.IOUtil;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
-import org.obo.filters.*;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.dataadapter.OBOSerializationEngine;
+import org.obo.datamodel.CommentedObject;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.DefinedObject;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.ObsoletableObject;
+import org.obo.filters.Filter;
+import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
-import org.oboedit.controller.FilterManager;
-import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-
-import java.util.*;
+import org.oboedit.gui.Preferences;
 
 public class OBO2OBO {
 
@@ -562,6 +576,11 @@ public class OBO2OBO {
 
 						path.setDoLinkFilter(filter != null);
 						path.setLinkFilter(filter);
+					} else if (args[i].equals("-reasonerfactory")) {
+						if (i >= args.length - 1)
+							printUsage(1);
+						i++;
+						path.setReasonerFactory((ReasonerFactory)Class.forName(args[i]).newInstance());
 					} else if (args[i].equals("-allowdangling")) {
 						path.setAllowDangling(true);
 					} else if (args[i].equals("-strictrootdetection")) {
