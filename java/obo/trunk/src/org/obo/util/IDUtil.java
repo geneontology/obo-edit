@@ -264,16 +264,19 @@ public class IDUtil {
 		return !failed;
 	}
 
-	public static String getDescription(LinkIDWarning warning) {
+	public static String getDescription(LinkIDWarning warning, boolean html) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("<html>");
+		if (html)
+			buffer.append("<html>");
 		buffer.append("The term "
-				+ HTMLUtil.getHTMLLink(warning.getLink().getChild(), true));
+				+ HTMLUtil.getHTMLLink(warning.getLink().getChild(), html));
 		if (warning.getParentWarning() != null) {
 			if (warning.getParentWarning().getType().equals(
 					WarningType.DANGLING_ID)) {
-				buffer.append(" links to the dangling identifier " + "<i>"
-						+ warning.getLink().getParent().getID() + "</i>");
+				buffer.append(" links to the dangling identifier "
+						+ (html ? "<i>" : "")
+						+ warning.getLink().getParent().getID()
+						+ (html ? "</i>" : ""));
 			} else if (warning.getParentWarning().getType().equals(
 					WarningType.SECONDARY_ID)) {
 				buffer.append(" links to the secondary identifier "
@@ -282,16 +285,33 @@ public class IDUtil {
 					WarningType.OBSOLETE_ID)) {
 				buffer.append(" links to the obsolete term "
 						+ HTMLUtil.getHTMLLink(warning.getLink().getParent(),
-								true));
+								html));
 			}
 		}
-		buffer.append("</html>");
+		if (html)
+			buffer.append("</html>");
 		return buffer.toString();
+	}
+
+	public static boolean hasIDIssues(OBOSession session) {
+		try {
+			updateIDs(session, new ArrayList<LinkIDResolution>(), false);
+			return false;
+		} catch (UnresolvedIDsException e) {
+			return true;
+		}
 	}
 
 	public static List<HistoryItem> updateIDs(OBOSession session,
 			Collection<LinkIDResolution> resolutions, boolean applyImmediately)
 			throws UnresolvedIDsException {
+		return updateIDs(session, resolutions, applyImmediately, false);
+	}
+	
+	
+	public static List<HistoryItem> updateIDs(OBOSession session,
+			Collection<LinkIDResolution> resolutions, boolean applyImmediately,
+			boolean applyDespiteExceptions) throws UnresolvedIDsException {
 		MultiMap<String, IdentifiedObject> secondaryIDMap = new MultiHashMap<String, IdentifiedObject>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (!TermUtil.isDangling(io) && io instanceof MultiIDObject) {
@@ -344,8 +364,9 @@ public class IDUtil {
 				}
 			}
 		}
-		if (warnings.size() > 0)
-			throw new UnresolvedIDsException(warnings);
+		if (!applyDespiteExceptions)
+			if (warnings.size() > 0)
+				throw new UnresolvedIDsException(warnings);
 		List<HistoryItem> historyItems = new LinkedList<HistoryItem>();
 		for (LinkIDResolution resolution : resolutions) {
 			if (resolution.getParentResolution() == null
@@ -376,6 +397,9 @@ public class IDUtil {
 			}
 
 		}
+		if (applyDespiteExceptions)
+			if (warnings.size() > 0)
+				throw new UnresolvedIDsException(warnings);
 		return historyItems;
 	}
 

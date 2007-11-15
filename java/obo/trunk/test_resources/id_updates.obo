@@ -1,11 +1,13 @@
 
 [Term]
 id: A
+name: Some Object Called A
 alt_id: alpha
 is_a: beta
 
 [Term]
 !id: B
+name: Some Object Called B
 alt_id: beta
 is_obsolete: true
 replaced_by: C
@@ -14,24 +16,30 @@ consider: Z
 
 [Term]
 id: Z
+name: Some Object Called Z
 
 [Term]
 id: C
+name: Some Object Called C
 alt_id: gamma
 is_obsolete: true
 consider: epsilon
 
 [Term]
 id: D
+name: Some Object Called D
 
 [Term]
 id: E
+name: Some Object Called E
 alt_id: epsilon
 
 [Term]
 id: F
+name: Some Object Called F
 is_a: C
 
 [Term]
 id: G
+name: Some Object Called G
 is_a: C
