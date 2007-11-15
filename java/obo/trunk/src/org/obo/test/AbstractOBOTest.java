@@ -12,6 +12,7 @@ import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Instance;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
@@ -126,6 +127,11 @@ public abstract class AbstractOBOTest extends TestCase {
 	public void testForName(String id, String name)  {
 		IdentifiedObject lo =  session.getObject(id);
 		assertTrue(lo.getName().equals(name));	
+	}
+	
+	public void testInstanceType(String id, String type)  {
+		Instance lo =  (Instance) session.getObject(id);
+		assertTrue(lo.getType().getID().equals(type));	
 	}
 
 

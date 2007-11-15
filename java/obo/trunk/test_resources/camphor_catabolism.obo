@@ -324,3 +324,17 @@ synonym: "Camphor(D)" EXACT []
 synonym: "D-Camphor" EXACT []
 is_a: CHEBI:36773 ! camphor
 
+[Term]
+id: testA
+relationship: part_of testB
+
+[Term]
+id: testB
+relationship: part_of testC
+
+[Term]
+id: testC
+
+[Typedef]
+id: part_of
+is_transitive: true

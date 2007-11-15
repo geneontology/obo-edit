@@ -98,6 +98,7 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		
 		testForName("ZFIN:ZDB-GENO-070219-2",
 				"Df(LG03:sox8,sox9b)b971/b971;sox9a<sup>hi1134Tg/hi1134Tg</sup>");
+		testInstanceType("ZFIN:ZDB-GENO-070219-2","SO:0001027");
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
 		for (Annotation annot : annots)
@@ -106,7 +107,12 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		Collection<Annotation> annots2 = getAnnotationsForSubject(ae);
 		boolean genusFound = false;
 		boolean diffFound = false;
-		Annotation match;
+		boolean assignedByOk = false;
+		
+		// check annotation. We can't do an ID check on the object as
+		// it's stored as anonymous in OBD (OBD grants it a temp ID).
+		// we have to check the structure of the object is the same
+		Annotation match = null;
 		for (Annotation annot : annots2) {
 			LinkedObject obj = annot.getObject();
 			for (Link link : obj.getParents()) {
@@ -122,11 +128,16 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 					}		
 				}
 			}
+			if (annot.getAssignedBy() != null)
+				assignedByOk = true;
 			if (genusFound & diffFound)
 				match = annot;
 		}
 		assertTrue(genusFound);
 		assertTrue(diffFound);
+		System.out.println("assby="+match.getAssignedBy());
+		assertTrue(assignedByOk);
+		assertTrue(match != null && match.getAssignedBy().getID().equals("ZFIN"));
 	
 	}
 	
