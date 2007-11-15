@@ -18,19 +18,28 @@ public final class IOUtil {
 		fos.close();
 	}
 	
-	public static String readFile(String uri) {
+	public static String readFileToPosition(String uri, int pos) {
 		try {
 			InputStream s = new BufferedInputStream(getStream(uri));
 			StringBuffer out = new StringBuffer();
 			int c;
+			int byteCount = 0;
 			while((c = s.read()) != -1) {
 				out.append((char) c);
+				byteCount++;
+				if (pos >= 0 && byteCount >= pos) {
+					break;
+				}
 			}
 			s.close();
 			return out.toString();
 		} catch (IOException ex) {
 			return null;
 		}
+	}
+	
+	public static String readFile(String uri) {
+		return readFileToPosition(uri, -1);
 	}
 
 	public static long calculateChecksum(InputStream stream) throws IOException {
