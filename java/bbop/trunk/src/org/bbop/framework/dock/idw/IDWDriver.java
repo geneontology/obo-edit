@@ -645,4 +645,14 @@ public class IDWDriver implements LayoutDriver {
 			String perspectiveListResourcePath) {
 		this.perspectiveListResourcePath = perspectiveListResourcePath;
 	}
+
+	public void setComponentLabel(GUIComponent target, String label) {
+		View v = getView(target);
+		v.getViewProperties().setTitle(label);
+	}
+
+	public String getComponentLabel(GUIComponent c) {
+		View v = getView(c);
+		return v.getViewProperties().getTitle();
+	}
 }

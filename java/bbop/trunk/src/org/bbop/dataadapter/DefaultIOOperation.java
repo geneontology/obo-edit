@@ -1,5 +1,12 @@
 package org.bbop.dataadapter;
 
+/**
+ * A basic IOOperation implementation that can be used in almost every situation.
+ * @author jrichter
+ *
+ * @param <IN> The input type for this operation
+ * @param <OUT> The output type for this operation
+ */
 public class DefaultIOOperation<IN, OUT> implements IOOperation<IN, OUT> {
 
 	protected String id;

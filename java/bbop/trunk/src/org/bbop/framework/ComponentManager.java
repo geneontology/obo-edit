@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -174,6 +175,14 @@ public class ComponentManager {
 			return new HashMap<String, List<ComponentConfiguration>>();
 		}
 	}
+	
+	public void setLabel(GUIComponent c, String label) {
+		driver.setComponentLabel(c, label);
+	}
+	
+	public String getLabel(GUIComponent c) {
+		return driver.getComponentLabel(c);
+	}
 
 	public void resetCurrentConfigurationMap() {
 		currentConfig = new HashMap<String, List<GUIComponent>>();
@@ -307,6 +316,10 @@ public class ComponentManager {
 
 	public void removeActiveComponent(GUIComponent comp) {
 		activeComponents.remove(comp.getID());
+		for (GUIComponentListener listener : componentListeners) {
+			listener.componentHidden(new GUIComponentEvent(this, comp, false,
+					true));
+		}
 		File f = getFile(comp);
 		try {
 			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
@@ -317,10 +330,6 @@ public class ComponentManager {
 			System.err.println("Couldn't flush component config successfully");
 		}
 		comp.cleanup();
-		for (GUIComponentListener listener : componentListeners) {
-			listener.componentHidden(new GUIComponentEvent(this, comp, false,
-					true));
-		}
 	}
 
 	public GUIComponent getActiveComponent(String id) {
