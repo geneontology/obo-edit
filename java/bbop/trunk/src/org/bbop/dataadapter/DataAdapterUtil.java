@@ -4,12 +4,23 @@ import java.util.*;
 
 public class DataAdapterUtil {
 
+	/**
+	 * Returns the first {@link DataAdapterUI} for an adapter that is a subclass
+	 * of ALL the provided classes. This is often used to find all the adapter
+	 * uis that are appropriate to a particular data adapter widget. For
+	 * example, {@link GraphicalAdapterChooser} calls this method to find adapter
+	 * uis that are both {@link GraphicalUI}s and
+	 * {@link java.awt.Component}s
+	 * 
+	 * @param adapter
+	 * @param registry
+	 * @param uiClasses
+	 * @return
+	 */
 	public static DataAdapterUI getUI(DataAdapter adapter,
-			DataAdapterRegistry registry, Class[] uiClasses) {
-		Collection c = registry.getUIFactory().getUIs(adapter);
-		Iterator it = c.iterator();
-		while (it.hasNext()) {
-			DataAdapterUI ui = (DataAdapterUI) it.next();
+			DataAdapterRegistry registry, Class<?>[] uiClasses) {
+		Collection<DataAdapterUI> c = registry.getUIFactory().getUIs(adapter);
+		for (DataAdapterUI ui : c) {
 			boolean match = true;
 			for (int i = 0; i < uiClasses.length; i++) {
 				if (!uiClasses[i].isAssignableFrom(ui.getClass())) {
@@ -23,12 +34,20 @@ public class DataAdapterUtil {
 		return null;
 	}
 
+	/**
+	 * Returns all the data adapters that support a given {@link IOOperation} and
+	 * have a {@link DataAdapterUI} that is a subclass of all the provided classes. 
+	 * @param registry
+	 * @param op
+	 * @param uiClasses
+	 * @return
+	 */
 	public static DataAdapter[] getAdapters(DataAdapterRegistry registry,
-			IOOperation op, Class[] uiClasses) {
+			IOOperation<?,?> op, Class<?>[] uiClasses) {
 		Collection<DataAdapter> out = new ArrayList<DataAdapter>();
 		for (DataAdapter adapter : registry.getAdapters()) {
 			boolean matched = false;
-			IOOperation[] ops = adapter.getSupportedOperations();
+			IOOperation<?,?>[] ops = adapter.getSupportedOperations();
 			for (int i = 0; i < ops.length; i++) {
 				if (ops[i].equals(op)) {
 					matched = true;
@@ -36,11 +55,9 @@ public class DataAdapterUtil {
 				}
 			}
 			if (matched && uiClasses != null) {
-				Collection uis = registry.getUIFactory().getUIs(adapter);
-				Iterator it2 = uis.iterator();
+				Collection<DataAdapterUI> uis = registry.getUIFactory().getUIs(adapter);
 				matched = false;
-				while (it2.hasNext()) {
-					DataAdapterUI ui = (DataAdapterUI) it2.next();
+				for(DataAdapterUI ui : uis) {
 					matched = true;
 					for (int i = 0; i < uiClasses.length; i++) {
 						if (!uiClasses[i].isAssignableFrom(ui.getClass())) {

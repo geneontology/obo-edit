@@ -24,7 +24,11 @@ public interface LayoutDriver {
 	public String showComponent(GUIComponentFactory factory, GUIComponent target,
 			String name, String label, boolean preferFloat, Rectangle floatRect);
 	
+	public void setComponentLabel(GUIComponent target, String label);
+	
 	public void cleanup();
 	
 	public GUIComponent createMainPanel(String id);
+
+	public String getComponentLabel(GUIComponent c);
 }

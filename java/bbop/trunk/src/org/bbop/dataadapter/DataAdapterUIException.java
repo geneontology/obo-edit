@@ -1,5 +1,12 @@
 package org.bbop.dataadapter;
 
+/**
+ * An exception thrown by a DataAdapterUI. This kind of exception is thrown when
+ * the UI detects some kind of problem before an {@link AdapterConfiguration} is
+ * passed to a {@link DataAdapter}
+ * @author jrichter
+ *
+ */
 public class DataAdapterUIException extends Exception {
 
     /**

@@ -34,9 +34,9 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 
 	protected boolean multiSelectEnabled = true;
 
-	protected IOOperation readOperation;
+	protected IOOperation<?,?> readOperation;
 
-	protected IOOperation writeOperation;
+	protected IOOperation<?,?> writeOperation;
 
 	protected static final int MAX_HISTORY_SIZE = 5;
 
