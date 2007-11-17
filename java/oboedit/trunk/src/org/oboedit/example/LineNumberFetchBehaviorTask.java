@@ -75,7 +75,8 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
 	@Override
 	protected void decorateComplete(OENode node, Integer value) {
-		Color c = new Color(255 * value / fileLength, 0, 0);
+		Color c = new Color((int) (255 * getRatio(value, getMaxValue(),
+				getMinValue())), 0, 0);
 		node.setPaint(c);
 	}
 
