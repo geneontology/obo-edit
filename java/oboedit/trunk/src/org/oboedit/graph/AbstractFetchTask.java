@@ -4,6 +4,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -15,9 +16,12 @@ import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUITask;
 import org.bbop.framework.event.GUIComponentEvent;
 import org.bbop.framework.event.GUIComponentListener;
+import org.bbop.util.ComparableComparator;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.OBOSession;
 import org.obo.filters.AbstractBooleanCriterion;
 import org.obo.filters.AbstractCriterion;
+import org.obo.filters.AbstractNumberCriterion;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
 import org.oboedit.controller.FilterManager;
@@ -93,8 +97,57 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 				scratch.add(val);
 			return scratch;
 		}
+	}
+
+	protected class MaxCriterion extends AbstractCriterion<OBOSession, T> {
+
+		public String getID() {
+			// TODO Auto-generated method stub
+			return getBehaviorID() + "_max_fetch_value";
+		}
+
+		public Class<OBOSession> getInputType() {
+			return OBOSession.class;
+		}
+
+		public Class<T> getReturnType() {
+			return valueClass;
+		}
+
+		public Collection<T> getValues(Collection<T> scratch, OBOSession obj) {
+			T val = getMaxValue();
+			if (val != null)
+				scratch.add(val);
+			return scratch;
+		}
 
 	}
+
+	protected class MinCriterion extends AbstractCriterion<OBOSession, T> {
+
+		public String getID() {
+			// TODO Auto-generated method stub
+			return getBehaviorID() + "_min_fetch_value";
+		}
+
+		public Class<OBOSession> getInputType() {
+			return OBOSession.class;
+		}
+
+		public Class<T> getReturnType() {
+			return valueClass;
+		}
+
+		public Collection<T> getValues(Collection<T> scratch, OBOSession obj) {
+			T val = getMinValue();
+			if (val != null)
+				scratch.add(val);
+			return scratch;
+		}
+
+	}
+
+	protected Comparator comparator = ComparableComparator.COMPARATOR;
 
 	protected LinkedList<IdentifiedObject> pendingObjects = new LinkedList<IdentifiedObject>();
 
@@ -107,6 +160,8 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	protected Class<T> valueClass;
 
 	protected FetchValueCriterion fetchCriterion = new FetchValueCriterion();
+	protected MaxCriterion maxCriterion = new MaxCriterion();
+	protected MinCriterion minCriterion = new MinCriterion();
 	protected IsDecoratedCriterion isDecoratedCriterion = new IsDecoratedCriterion();
 
 	public AbstractFetchTask(Class<T> valueClass) {
@@ -209,6 +264,36 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	 * @return
 	 */
 	protected abstract GeneralRendererSpec getFetchedRenderer();
+
+	public T getMaxValue() {
+		T max = null;
+		for (T val : decoratedObjects.values()) {
+			if (max == null || comparator.compare(val, max) > 0)
+				max = val;
+		}
+		return max;
+	}
+
+	public T getMinValue() {
+		T min = null;
+		for (T val : decoratedObjects.values()) {
+			if (min == null || comparator.compare(val, min) < 0)
+				min = val;
+		}
+		return min;
+	}
+
+	public static double getRatio(Number val, Number min, Number max) {
+		if (max == null)
+			max = Double.MAX_VALUE;
+		if (min == null)
+			min = new Double(0);
+		return getRatio(val.doubleValue(), min.doubleValue(), max.doubleValue());
+	}
+
+	public static double getRatio(double val, double min, double max) {
+		return (val - min) / (max - min);
+	}
 
 	protected class FetchThread extends Thread {
 		protected T result;
@@ -328,6 +413,8 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	public void install() {
 		ComponentManager.getManager().addComponentListener(componentListener);
 		FilterManager.getManager().addCriterion(fetchCriterion);
+		FilterManager.getManager().addCriterion(maxCriterion);
+		FilterManager.getManager().addCriterion(minCriterion);
 		FilterManager.getManager().addCriterion(isDecoratedCriterion);
 	}
 
@@ -335,6 +422,8 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 		ComponentManager.getManager()
 				.removeComponentListener(componentListener);
 		FilterManager.getManager().removeCriterion(fetchCriterion);
+		FilterManager.getManager().removeCriterion(maxCriterion);
+		FilterManager.getManager().removeCriterion(minCriterion);
 		FilterManager.getManager().removeCriterion(isDecoratedCriterion);
 	}
 }
