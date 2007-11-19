@@ -11,6 +11,8 @@ import junit.framework.TestSuite;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
+import org.obo.datamodel.Instance;
+import org.obo.datamodel.PropertyValue;
 import org.obo.util.AnnotationUtil;
 
 public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
@@ -20,10 +22,16 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 	}
 
 	public void testAnnot() throws IOException, DataAdapterException {
+		Instance fred = (Instance)session.getObject("fred");
+		System.out.println(fred);
+		System.out.println("ns="+fred.getNamespace());
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
 		for (Annotation annot : annots) {
-			System.err.println("annot: "+annot+":: "+annot.getSubject()+" -"+annot.getRelationship()+"-> "+annot.getObject());  
+			System.out.println(annot.getNamespace()+" annot: "+annot+":: "+annot.getSubject()+" -"+annot.getRelationship()+"-> "+annot.getObject());  
+			for (PropertyValue pv : annot.getPropertyValues()) {
+				System.out.println("  pv:"+pv);
+			}
 		}
 		
 		writeTempOBOFile();
