@@ -40,6 +40,7 @@ import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.MultiIDObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.NamespacedObject;
 import org.obo.datamodel.OBOClass;
@@ -47,6 +48,7 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObjectFactory;
+import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymCategory;
 import org.obo.datamodel.SynonymedObject;
@@ -181,7 +183,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 		protected boolean saveImplied;
 		
-		protected boolean replaceLinks = false;
+		// true if all links for saved terms should be replaced
+		protected boolean replaceLinks = false; 
 
 		protected java.util.List saveRecords = new ArrayList();
 
@@ -309,7 +312,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		this.ioprofile = (OBDSQLDatabaseAdapterConfiguration) configuration;
 		if (op.equals(READ_ONTOLOGY)) {
 			OBOSession session = objectFactory.createSession();
-			session.setDefaultNamespace(objectFactory.createNamespace("test", "test"));
+			session.setDefaultNamespace(objectFactory.createNamespace("test", "test")); // TODO
 			for (String readPath : ioprofile.getReadPaths()) {
 				try {
 					conn = ioprofile.getConnection(readPath,"cjm","");
@@ -765,6 +768,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						lo.getName(),
 						ns,
 				"R");
+			OBOProperty prop = (OBOProperty)lo;
+			if (prop.isTransitive())
+				callSqlFunc("set_node_is_transitive_i",iid,true);
+			if (prop.isSymmetric())
+				callSqlFunc("set_node_is_symmetric_i",iid,true);
+			
 		
 		}
 		else {
@@ -775,6 +784,14 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		
 		// node is saved in database. Now for additional metadata:
+		
+		if (lo instanceof ObsoletableObject) {
+			callSqlFunc("set_node_is_obsolete_i",iid,true);
+			for (IdentifiedObject x : ((ObsoletableObject)lo).getConsiderReplacements())
+				callSqlFunc("store_link_si",iid,"oboMetaModel:consider",x.getID(),"",false);
+			for (IdentifiedObject x : ((ObsoletableObject)lo).getReplacedBy())
+				callSqlFunc("store_link_si",iid,"oboMetaModel:replaced_by",x.getID(),"",false);
+		}
 		if (lo instanceof DbxrefedObject) {
 			for (Dbxref x : ((DbxrefedObject) lo).getDbxrefs()) {
 				callSqlFunc("store_node_dbxref_i",iid,x.toString());
@@ -783,6 +800,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (lo instanceof CategorizedObject) {
 			for (TermCategory x : ((CategorizedObject) lo).getCategories()) {
 				callSqlFunc("store_node_subset_link_i",iid,x.getName());
+			}
+		}
+		if (lo instanceof MultiIDObject) {
+			for (String x : ((MultiIDObject) lo).getSecondaryIDs()) {
+				callSqlFunc("store_node_dbxref_i",iid,x);
 			}
 		}
 		if (lo instanceof SynonymedObject) {
