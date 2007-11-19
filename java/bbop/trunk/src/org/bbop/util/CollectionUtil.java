@@ -1,5 +1,7 @@
 package org.bbop.util;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,17 +25,16 @@ public class CollectionUtil {
 
 	private CollectionUtil() {
 	}
-	
+
 	public static <T> T[] array(T... in) {
 		return in;
 	}
 
-	public static <K, V> MultiMap<V, K> invertMap(
-			MultiMap<K, V> map) {
-		MultiMap<V,K> out = new MultiHashMap<V,K>();
-		for(K key : map.keySet()) {
+	public static <K, V> MultiMap<V, K> invertMap(MultiMap<K, V> map) {
+		MultiMap<V, K> out = new MultiHashMap<V, K>();
+		for (K key : map.keySet()) {
 			Collection<V> vals = map.get(key);
-			for(V val : vals) {
+			for (V val : vals) {
 				out.add(val, key);
 			}
 		}
@@ -344,11 +345,55 @@ public class CollectionUtil {
 
 	public static <T> List<T> list(T... items) {
 		ArrayList<T> out = new ArrayList<T>();
-		
-		for(T t : items) {
+
+		for (T t : items) {
 			out.add(t);
 		}
-		
+
 		return out;
+	}
+
+	/**
+	 * Creates a new empty instance of the provided collection
+	 * 
+	 * @param <T>
+	 * @param in
+	 * @return
+	 */
+	public static <T> Collection<T> createEmpty(Collection<?> in) {
+		Class<?> originalClass = in.getClass();
+		try {
+			Constructor<?> originalConstructor = originalClass
+					.getConstructor(new Class[0]);
+			return (Collection<T>) originalConstructor
+					.newInstance(new Object[0]);
+		} catch (IllegalArgumentException e) {
+		} catch (InstantiationException e) {
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
+		} catch (SecurityException e) {
+		} catch (NoSuchMethodException e) {
+		} finally {
+			return null;
+		}
+	}
+
+	public static <T> Collection<T> getObjectsOfType(
+			Collection<?> input, Class<T> type) {
+		return getObjectsOfType(input, type, null);
+	}
+
+	public static <T> Collection<T> getObjectsOfType(
+			Collection<?> input, Class<T> type, Collection<T> output) {
+		if (output == null) {
+			output = createEmpty(input);
+			if (output == null)
+				output = new ArrayList<T>();
+		}
+		for (Object o : input) {
+			if (type.isAssignableFrom(o.getClass()))
+				output.add((T) o);
+		}
+		return output;
 	}
 }
