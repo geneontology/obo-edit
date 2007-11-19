@@ -72,55 +72,6 @@ public class SwingUtil {
 				component.getPreferredSize().width, height));
 	}
 
-	protected static String getHexDigit(int val) {
-		if (val < 10)
-			return val + "";
-		else if (val == 10)
-			return "A";
-		else if (val == 11)
-			return "B";
-		else if (val == 12)
-			return "C";
-		else if (val == 13)
-			return "D";
-		else if (val == 14)
-			return "E";
-		else if (val == 15)
-			return "F";
-		return null;
-	}
-
-	protected static int getHexVal(char digit) {
-		digit = Character.toUpperCase(digit);
-		if (Character.isDigit(digit))
-			return digit - '0';
-		else
-			return 10 + (digit - 'A');
-	}
-
-	public static Color getColor(String htmlCode) {
-		int out = 0;
-		htmlCode = htmlCode.trim();
-		if (htmlCode.startsWith("#"))
-			htmlCode = htmlCode.substring(1, 7);
-		for (int i = 0; i < htmlCode.length(); i++) {
-			out += Math.pow(16, htmlCode.length() - i - 1)
-					* getHexVal(htmlCode.charAt(i));
-		}
-		return new Color(out);
-	}
-
-	public static String getHTMLCode(Color color) {
-		StringBuffer out = new StringBuffer();
-		out.append(getHexDigit(color.getRed() / 16));
-		out.append(getHexDigit(color.getRed() % 16));
-		out.append(getHexDigit(color.getGreen() / 16));
-		out.append(getHexDigit(color.getGreen() % 16));
-		out.append(getHexDigit(color.getBlue() / 16));
-		out.append(getHexDigit(color.getBlue() % 16));
-		return out.toString();
-	}
-
 	public static String getHTMLFontStyle(Font font) {
 		StringBuffer out = new StringBuffer();
 		out.append("font-size: " + font.getSize() + "px; ");
@@ -690,10 +641,5 @@ public class SwingUtil {
 				.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		out.getGraphics().drawImage(image, 0, 0, null);
 		return toolkit.createCustomCursor(out, new Point(x, y), name);
-	}
-
-	public static Color mergeColors(Color a, Color b) {
-		return new Color((a.getRed() + b.getRed()) / 2, (a.getGreen() + b
-				.getGreen()) / 2, (a.getBlue() + b.getBlue()) / 2);
 	}
 }

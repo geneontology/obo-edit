@@ -25,6 +25,12 @@ public class ShapeUtil {
 	private ShapeUtil() {
 	}
 
+	public static double distance(double x, double y, double z, double a,
+			double b, double c) {
+		return Math.sqrt(Math.pow(x - a, 2) + Math.pow(y - b, 2)
+				+ Math.pow(z - c, 2));
+	}
+
 	public static Shape createRoundRectangle(float x, float y, float width,
 			float height) {
 		return createRoundRectangle(50, x, y, width, height);
