@@ -997,17 +997,15 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				
 				String extension = configuration.getViewerFormat();
 				
-				System.out.println("GraphvizCanvas : CallGraphviz : " 
-						+ configuration.getDotPath() + " -T "
-						+ extension + " -o \"" + outputFile + "\" -v "
-						+ textFile.getPath());
+				String command = configuration.getDotPath() + " -T "
+				+ extension + " -o \"" + outputFile + "\" -v "
+				+ textFile.getPath();
+				
+				System.out.println("GraphvizCanvas : CallGraphviz : " + command);
 				
 				
 				//This command below is not working on the mac, though the command works if used on the command line. 
-				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T "
-						+ extension + " -o " + outputFile + " -v "
-						+ textFile.getPath());
+				Process p = Runtime.getRuntime().exec(command);
 				
 				 p.waitFor();
 				 System.out.println("Exit status of Process p is " + p.exitValue());
