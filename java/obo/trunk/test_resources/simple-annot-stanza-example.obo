@@ -26,6 +26,11 @@ namespace: test
 subject: fred
 relationship: likes
 object: bread
+property_value: confirmed_by freds_mum
+
+[Typedef]
+id: confirmed_by
+name: confirmed_by
 
 [Typedef]
 id: dislikes
