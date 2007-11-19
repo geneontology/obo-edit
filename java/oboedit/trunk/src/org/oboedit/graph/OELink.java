@@ -24,6 +24,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.LineType;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
 import org.oboedit.gui.filter.GeneralRendererSpec;
@@ -82,13 +83,13 @@ public class OELink extends PCNode {
 		Paint typeColor = colorManager.getColor(link.getType());
 		LineType type = LineType.SOLID_LINE;
 
-		RenderSpec sc = GUIUtil.getSpec(lo, FilterManager.getManager()
+		RenderSpec sc = GUIUtil.getSpec(canvas, lo, FilterManager.getManager()
 				.getGlobalLinkRenderers(), canvas.getLinkRenderers());
 		if (sc instanceof GeneralRendererSpec) {
 			GeneralRendererSpec spec = (GeneralRendererSpec) sc;
-			ConfiguredColor f = spec.getValue(ForegroundColorSpecField.FIELD);
+			ColorProvider f = spec.getValue(ForegroundColorSpecField.FIELD);
 			if (f != null) {
-				typeColor = f.getColor();
+				typeColor = f.getColor(canvas, link);
 			}
 			Integer width = spec.getValue(LineWidthSpecField.FIELD);
 			if (width != null)

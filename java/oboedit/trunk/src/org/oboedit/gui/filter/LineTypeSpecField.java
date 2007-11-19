@@ -1,5 +1,6 @@
 package org.oboedit.gui.filter;
 
+import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.LineType;
 
 import net.infonode.gui.icon.button.ArrowIcon;
@@ -10,7 +11,7 @@ public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 
 	public LineTypeSpecField() {
 	}
-	
+
 	public String getID() {
 		return "line_type";
 	}
@@ -23,7 +24,8 @@ public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 		return NON_HTML;
 	}
 
-	public void renderHTML(LineType value, StringBuffer in, Object o) {
+	public void renderHTML(FilteredRenderable fr, LineType value,
+			StringBuffer in, Object o) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -39,7 +41,7 @@ public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
 		return false;
 	}
 
-	public LineType merge(LineType a, LineType b) {
+	public LineType merge(FilteredRenderable fr, LineType a, LineType b, Object o) {
 		return a;
 	}
 }

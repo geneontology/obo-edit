@@ -1,6 +1,7 @@
 package org.oboedit.gui.filter;
 
 import org.obo.datamodel.LinkedObject;
+import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.HTMLNodeLabelProvider;
 
 public class HTMLSpecField extends AbstractRendererSpecField<String> {
@@ -19,7 +20,7 @@ public class HTMLSpecField extends AbstractRendererSpecField<String> {
 		return "HTML Code";
 	}
 
-	public String merge(String a, String b) {
+	public String merge(FilteredRenderable fr, String a, String b, Object o) {
 		return a.replace(REPLACE_SEQ, b);
 	}
 
@@ -27,7 +28,8 @@ public class HTMLSpecField extends AbstractRendererSpecField<String> {
 		return HTML;
 	}
 
-	public void renderHTML(String value, StringBuffer in, Object obj) {
+	public void renderHTML(FilteredRenderable fr, String value,
+			StringBuffer in, Object obj) {
 		int replaceIndex = value.indexOf(REPLACE_SEQ);
 		if (replaceIndex >= 0) {
 			in.insert(0, value.substring(0, replaceIndex));

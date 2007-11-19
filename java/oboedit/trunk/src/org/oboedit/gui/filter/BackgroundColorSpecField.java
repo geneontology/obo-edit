@@ -1,17 +1,18 @@
 package org.oboedit.gui.filter;
 
-import org.bbop.swing.SwingUtil;
+import org.bbop.swing.ColorUtil;
 import org.obo.util.HTMLUtil;
+import org.oboedit.gui.FilteredRenderable;
 
 public class BackgroundColorSpecField extends
-		AbstractRendererSpecField<ConfiguredColor> {
+		AbstractRendererSpecField<ColorProvider> {
 
 	public static final BackgroundColorSpecField FIELD = new BackgroundColorSpecField();
 
 	public BackgroundColorSpecField() {
 	}
 
-	public GeneralRendererSpecFieldEditor<ConfiguredColor> getEditor() {
+	public GeneralRendererSpecFieldEditor<ColorProvider> getEditor() {
 		return new ColorSpecEditor();
 	}
 
@@ -23,17 +24,20 @@ public class BackgroundColorSpecField extends
 		return "Background Color";
 	}
 
-	public ConfiguredColor merge(ConfiguredColor a, ConfiguredColor b) {
-		return ConfiguredColor.merge(a, b);
+	public ColorProvider merge(FilteredRenderable selector, ColorProvider a,
+			ColorProvider b, Object o) {
+		return new ConfiguredColor(ColorUtil.mergeColors(a
+				.getColor(selector, o), a.getColor(selector, o)), true);
 	}
 
 	public int getHTMLType() {
 		return HTML;
 	}
 
-	public void renderHTML(ConfiguredColor value, StringBuffer in, Object o) {
+	public void renderHTML(FilteredRenderable selector, ColorProvider value,
+			StringBuffer in, Object o) {
 		in.insert(0, "<span style='background-color: "
-				+ SwingUtil.getHTMLCode(value.getColor()) + ";'>");
+				+ ColorUtil.getHTMLCode(value.getColor(selector, o)) + ";'>");
 		in.append("</span>");
 	}
 

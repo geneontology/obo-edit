@@ -15,6 +15,8 @@ import org.obo.util.IDUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.gui.FilteredRenderable;
+import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.event.GlobalFilterListener;
 import org.oboedit.gui.event.HistoryAppliedEvent;
@@ -218,7 +220,7 @@ public class GUIUtil {
 		return (Selection) item.getProperty(POST_SELECTION_KEY);
 	}
 
-	public static RenderSpec getSpec(Object o, Collection<RenderedFilter>... fs) {
+	public static RenderSpec getSpec(FilteredRenderable fr, Object o, Collection<RenderedFilter>... fs) {
 		RenderSpec out = null;
 		for (Collection<RenderedFilter> f : fs) {
 			if (f.size() == 0)
@@ -228,7 +230,7 @@ public class GUIUtil {
 					if (out == null)
 						out = rf.getSpec();
 					else {
-						out = out.merge(rf.getSpec());
+						out = out.merge(fr, rf.getSpec(), o);
 					}
 				}
 			}
@@ -236,7 +238,7 @@ public class GUIUtil {
 		return out;
 	}
 
-	public static String renderHTML(String text,
+	public static String renderHTML(FilteredRenderable selector, String text,
 			Collection<GeneralRendererSpecField<?>> ignore,
 			GeneralRendererSpec spec, Object obj) {
 		StringBuffer out = new StringBuffer(text);
@@ -245,7 +247,7 @@ public class GUIUtil {
 				if (ignore.contains(field))
 					continue;
 				if (field.getHTMLType() > 0) {
-					field.renderHTML(spec.getValue(field), out, obj);
+					field.renderHTML(selector, spec.getValue(field), out, obj);
 				}
 			}
 		}
@@ -254,13 +256,13 @@ public class GUIUtil {
 		return out.toString();
 	}
 
-	public static String renderHTML(String text, Object o,
-			Collection<GeneralRendererSpecField<?>> ignore,
+	public static String renderHTML(FilteredRenderable selector, String text,
+			Object o, Collection<GeneralRendererSpecField<?>> ignore,
 			Collection<RenderedFilter>... f) {
 		String out = text;
-		RenderSpec spec = getSpec(o, f);
+		RenderSpec spec = getSpec(selector, o, f);
 		if (spec instanceof GeneralRendererSpec || spec == null) {
-			out = renderHTML(text, ignore, (GeneralRendererSpec) spec, o);
+			out = renderHTML(selector, text, ignore, (GeneralRendererSpec) spec, o);
 		}
 		return out;
 	}

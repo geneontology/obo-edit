@@ -8,12 +8,12 @@
 	<classpathentry kind="lib" path="lib/runlibs/bounce.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/debug.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/hsqldb.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/idw-gpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/idw-gpl.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/jazzy-core.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/jhall.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/jwf-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/piccolo.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/piccolox.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolo.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolox.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/tablelayout.jar"/>
 	<classpathentry kind="lib" path="lib/buildlibs/xstream-1.2.2.jar"/>
 	<classpathentry kind="output" path="classes"/>

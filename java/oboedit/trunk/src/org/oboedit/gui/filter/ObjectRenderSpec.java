@@ -2,6 +2,8 @@ package org.oboedit.gui.filter;
 
 import java.awt.Color;
 
+import org.oboedit.gui.FilteredRenderable;
+
 
 public class ObjectRenderSpec implements RenderSpec {
 
@@ -115,7 +117,7 @@ public class ObjectRenderSpec implements RenderSpec {
 		return out;
 	}
 
-	public RenderSpec merge(RenderSpec s) {
+	public RenderSpec merge(FilteredRenderable fr, RenderSpec s, Object o) {
 		if (s == null)
 			return this;
 		if (!(s instanceof ObjectRenderSpec))

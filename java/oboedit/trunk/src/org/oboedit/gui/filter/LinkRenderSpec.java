@@ -2,6 +2,8 @@ package org.oboedit.gui.filter;
 
 import java.awt.Color;
 
+import org.oboedit.gui.FilteredRenderable;
+
 
 public class LinkRenderSpec implements RenderSpec {
 
@@ -79,7 +81,7 @@ public class LinkRenderSpec implements RenderSpec {
 		return linkColor;
 	}
 
-	public RenderSpec merge(RenderSpec s) {
+	public RenderSpec merge(FilteredRenderable fr, RenderSpec s, Object o) {
 		if (s == null)
 			return this;
 		if (!(s instanceof LinkRenderSpec))
@@ -93,5 +95,4 @@ public class LinkRenderSpec implements RenderSpec {
 			linkColor = spec.getLinkColor();
 		return this;
 	}
-
 }

@@ -128,6 +128,7 @@ import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
+import org.oboedit.gui.filter.MaxParentCountCriterion;
 import org.oboedit.gui.menu.EditMenu;
 import org.oboedit.gui.menu.FileMenu;
 import org.oboedit.gui.menu.OEHelpMenu;
@@ -144,7 +145,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return CollectionUtil.list(new AutosaveTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
 				new FrameNameUpdateTask(), screenLockTask
-//				, new LineNumberFetchBehaviorTask()
+				, new LineNumberFetchBehaviorTask()
 		);
 	}
 
@@ -184,6 +185,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected void doOtherInstallations() {
+		FilterManager.getManager().addCriterion(new MaxParentCountCriterion());
 		UIManager.put("Tree.paintLines", Boolean.FALSE);
 		// UIManager.put("Tree.rightChildIndent", new Integer(0));
 		FocusMenuManager.install();

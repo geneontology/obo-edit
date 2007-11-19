@@ -1,4 +1,4 @@
-package org.oboedit.graph;
+package org.oboedit.gui.event;
 
 import java.util.Collection;
 import java.util.Collections;

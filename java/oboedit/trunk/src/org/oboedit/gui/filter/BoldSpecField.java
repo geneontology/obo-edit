@@ -2,6 +2,7 @@ package org.oboedit.gui.filter;
 
 import org.bbop.swing.SwingUtil;
 import org.obo.util.HTMLUtil;
+import org.oboedit.gui.FilteredRenderable;
 
 public class BoldSpecField extends AbstractRendererSpecField<Boolean> {
 
@@ -9,7 +10,7 @@ public class BoldSpecField extends AbstractRendererSpecField<Boolean> {
 
 	public BoldSpecField() {
 	}
-	
+
 	public String getID() {
 		return "bold";
 	}
@@ -18,7 +19,7 @@ public class BoldSpecField extends AbstractRendererSpecField<Boolean> {
 		return "Bold";
 	}
 
-	public Boolean merge(Boolean a, Boolean b) {
+	public Boolean merge(FilteredRenderable fr, Boolean a, Boolean b, Object o) {
 		return a || b;
 	}
 
@@ -26,7 +27,8 @@ public class BoldSpecField extends AbstractRendererSpecField<Boolean> {
 		return HTML;
 	}
 
-	public void renderHTML(Boolean value, StringBuffer in, Object o) {
+	public void renderHTML(FilteredRenderable fr, Boolean value,
+			StringBuffer in, Object o) {
 		if (value.booleanValue()) {
 			in.insert(0, "<b>");
 			in.append("</b>");

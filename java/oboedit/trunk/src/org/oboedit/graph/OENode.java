@@ -1,6 +1,7 @@
 package org.oboedit.graph;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Shape;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -12,6 +13,7 @@ import org.obo.util.HTMLUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
+import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
@@ -62,14 +64,14 @@ public class OENode extends PCNode implements Morphable {
 		setNamedChild(KEY_LABEL, field);
 		field.setPickable(false);
 		setLabel(canvas.generateLabel(lo));
-		RenderSpec spec = GUIUtil.getSpec(lo, FilterManager.getManager()
+		RenderSpec spec = GUIUtil.getSpec(canvas, lo, FilterManager.getManager()
 				.getGlobalTermRenderers(), canvas.getObjectRenderers(), canvas.getAutomaticObjectRenderers());
 		setPaint(Color.lightGray);
 		if (spec instanceof GeneralRendererSpec) {
-			ConfiguredColor c = ((GeneralRendererSpec) spec)
+			ColorProvider c = ((GeneralRendererSpec) spec)
 					.getValue(BackgroundColorSpecField.FIELD);
 			if (c != null) {
-				setPaint(c.getColor());
+				setPaint(c.getColor(canvas, lo));
 			}
 		}
 	}
@@ -116,6 +118,12 @@ public class OENode extends PCNode implements Morphable {
 			PActivity act = new PActivity(0);
 			return act;
 		}
+	}
+	
+	@Override
+	public void setPaint(Paint arg0) {
+		// TODO Auto-generated method stub
+		super.setPaint(arg0);
 	}
 
 	public int getPreferredHeight() {
