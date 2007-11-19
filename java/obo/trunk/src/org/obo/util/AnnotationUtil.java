@@ -28,7 +28,11 @@ public class AnnotationUtil {
 		Collection<Annotation> annots = new LinkedList<Annotation>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
-				annots.add((Annotation)io);
+				Annotation annot = (Annotation)io;
+				// Extra defence against null annotations
+				if (annot.getSubject() != null &&
+						annot.getObject() != null)
+					annots.add(annot);
 			}
 		}
 		return annots;
