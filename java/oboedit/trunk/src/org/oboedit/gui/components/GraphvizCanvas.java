@@ -988,27 +988,41 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				
 				outputFile(textFile);
 				
+				System.out.println("DEBUG : GraphvizCanvas : reloadImage : textfile = " + textFile);
+				
 				String outputFile = imageFile.getPath();
+				
+				System.out.println("DEBUG : GraphvizCanvas : reloadImage : imageFile = " + imageFile);
+				
 				
 				String extension = configuration.getViewerFormat();
 				
-				System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
-						+ extension + " -o " + outputFile + " -v "
-						+ textFile.getPath());
-				
-				
-				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T"
+				System.out.println("GraphvizCanvas : CallGraphviz : " 
+						+ configuration.getDotPath() + " -T "
 						+ extension + " -o \"" + outputFile + "\" -v "
 						+ textFile.getPath());
 				
-				// p.waitFor();
+				
+				//This command below is not working on the mac, though the command works if used on the command line. 
+				Process p = Runtime.getRuntime().exec(
+						configuration.getDotPath() + " -T "
+						+ extension + " -o " + outputFile + " -v "
+						+ textFile.getPath());
+				
+				 p.waitFor();
+				 System.out.println("Exit status of Process p is " + p.exitValue());
+				 System.out.println("Error stream of Process p is " + p.getErrorStream());
+				 
 				
 				// callGraphviz(imageFile.getPath(), textFile, configuration.getViewerFormat());
 
 				System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 1 call ");
 				
 				p = Runtime.getRuntime().exec(
+						configuration.getDotPath() + " -Tcmapx "
+						+ textFile.getPath());
+				
+				System.out.println("GraphvizCanvas : CallGraphviz : " + 
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
 				
@@ -1410,7 +1424,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected void callGraphviz(String outputFile, File textFile, String extension) throws IOException, InterruptedException{
 
 		System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
-				+ extension + " -o " + outputFile + " -v "
+				+ extension + " -o \"" + outputFile + "\" -v "
 				+ textFile.getPath());
 		
 		
