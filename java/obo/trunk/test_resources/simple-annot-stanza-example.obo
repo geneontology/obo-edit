@@ -10,6 +10,7 @@ name: bread
 [Instance]
 id: fred
 name: fred
+namespace: test
 property_value: dislikes shuggy
 
 [Instance]
@@ -21,7 +22,7 @@ id: likes
 name: likes
 
 [Annotation]
-id: x
+namespace: test
 subject: fred
 relationship: likes
 object: bread
