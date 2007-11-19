@@ -889,7 +889,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		HashSet relationshipSet = new HashSet();
 		populateSet(relationshipSet);
 
-		System.out.println("DEBUG : GraphPlugin : outputFile : relationSet size = " + relationshipSet.size());
+		System.out.println("DEBUG : GraphvizCanvas : outputFile : relationSet size = " + relationshipSet.size());
 
 		Iterator it = relationshipSet.iterator();
 		Set termSet = new HashSet();
@@ -981,17 +981,40 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			try {
 				File imageFile = File.createTempFile("graphimage", "."
 						+ configuration.getViewerFormat());
+				
 				File textFile = File.createTempFile("graphtext", ".txt");
+				System.out.println("DEBUG : GraphvizCanvas : reloadImage : temp file name = " + textFile.getAbsolutePath());
 
+				
 				outputFile(textFile);
+				
+				String outputFile = imageFile.getPath();
+				
+				String extension = configuration.getViewerFormat();
+				
+				System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
+						+ extension + " -o " + outputFile + " -v "
+						+ textFile.getPath());
+				
+				
 				Process p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -T"
-						+ configuration.getViewerFormat() + " -o "
-						+ imageFile.getPath() + " " + textFile.getPath());
-				p.waitFor();
+						+ extension + " -o \"" + outputFile + "\" -v "
+						+ textFile.getPath());
+				
+				// p.waitFor();
+				
+				// callGraphviz(imageFile.getPath(), textFile, configuration.getViewerFormat());
+
+				System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 1 call ");
+				
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
+				
+				System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 2 call ");
+
+				
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
 				buffer.append("<head>\n");
@@ -1347,7 +1370,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// check the user answer, is  he press  "ok" continue in the if  block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				System.out.println("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
+				System.out.println("DEBUG : GraphvizCanvas : storeImage : temp file name = " + textFile.getAbsolutePath());
 
 				// Creating the .dot file for graphviz
 				outputFile(textFile);
@@ -1358,28 +1381,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				// Getting the file name (with the full path)
 				String outputFile = chooser.getSelectedFile().getPath();
 
-
-
 				// Adding the file extension if missing 
 				if (!outputFile.endsWith(ef.getExt())) {
 					outputFile += ef.getExt();
 				}
 
-				System.out.println(configuration.getDotPath() + " -T"
-						+ ef.getExtNoDot() + " -o " + outputFile + " -v "
-						+ textFile.getPath());
-				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T"
-						+ ef.getExtNoDot() + " -o \"" + outputFile + "\" -v "
-						+ textFile.getPath());
-				//The bug has been fixed by putting escaped quotes round the output file
-				//string because the 'Documents and Settings' path in 
-				// the save instructions was being confused by the spaces and 
-				//was saving to path/Documents which doesn't exist.
-				//C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
-				//This only matters because the command is run on the cmd line.
+				callGraphviz(outputFile, textFile, ef.getExtNoDot());				
 
-				p.waitFor();
+				System.out.println("DEBUG : GraphvizCanvas : storeImage : after call");
 
 				textFile.delete();
 			}
@@ -1387,7 +1396,33 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			ex.printStackTrace();
 		}
 	}
+	
+	
+	/**
+	 * Calls Graphviz via a system call to process the text file previously generated and produce a jpg file of the graph.
+	 * 
+	 * @param outputFile - the jpg file of the graph produced by graphviz.
+	 * @param textFile - the text file previously produced with the text description of the graph. Should be a valid dot file.
+	 * @param extension - This is an extension, which is the image format passed to graphviz.  
+	 * @throws IOException
+	 * @throws InterruptedException 
+	 */
+	protected void callGraphviz(String outputFile, File textFile, String extension) throws IOException, InterruptedException{
 
+		System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
+				+ extension + " -o " + outputFile + " -v "
+				+ textFile.getPath());
+		
+		
+		Process p = Runtime.getRuntime().exec(
+				configuration.getDotPath() + " -T"
+				+ extension + " -o \"" + outputFile + "\" -v "
+				+ textFile.getPath());
+		
+		p.waitFor();
+		
+	}
+	
 	protected void trimSet(Set set) {
 		HashSet roots = new HashSet();
 		HashSet trash = new HashSet();
