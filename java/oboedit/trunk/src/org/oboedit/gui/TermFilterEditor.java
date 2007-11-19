@@ -126,7 +126,7 @@ public class TermFilterEditor extends JPanel {
 
 	protected Collection<SearchCriterion<?, ?>> getCriteria() {
 		Collection<SearchCriterion<?, ?>> out = new LinkedList<SearchCriterion<?, ?>>();
-		for (SearchCriterion sc : FilterManager.getManager().getCriteria()) {
+		for (SearchCriterion sc : FilterManager.getManager().getDisplayableCriteria()) {
 			if (getInputClass().isAssignableFrom(sc.getInputType())) {
 				out.add(sc);
 			}

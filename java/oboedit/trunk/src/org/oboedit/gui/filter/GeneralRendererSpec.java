@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.oboedit.controller.FilterManager;
+import org.oboedit.gui.FilteredRenderable;
 
 public class GeneralRendererSpec implements RenderSpec {
 
@@ -67,7 +68,7 @@ public class GeneralRendererSpec implements RenderSpec {
 		map.clear();
 	}
 
-	public RenderSpec merge(RenderSpec spec) {
+	public RenderSpec merge(FilteredRenderable fr, RenderSpec spec, Object o) {
 		if (spec instanceof GeneralRendererSpec) {
 			GeneralRendererSpec result = new GeneralRendererSpec();
 			for (GeneralRendererSpecField field : FilterManager.getManager()
@@ -80,7 +81,7 @@ public class GeneralRendererSpec implements RenderSpec {
 				else if (b == null)
 					out = a;
 				else {
-					out = field.merge(a, b);
+					out = field.merge(fr, a, b, o);
 				}
 				result.setValue(field, out);
 			}

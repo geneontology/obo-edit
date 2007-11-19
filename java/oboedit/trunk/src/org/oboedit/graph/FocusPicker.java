@@ -3,7 +3,7 @@ package org.oboedit.graph;
 import java.awt.Color;
 import java.awt.Paint;
 
-import org.bbop.swing.SwingUtil;
+import org.bbop.swing.ColorUtil;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.PathCapable;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
@@ -104,8 +104,10 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 				&& canvas.getFocusedNode().equals(node)) {
 			if (c == null) {
 				node.setPaint(Color.white);
-			} else
-				node.setPaint(SwingUtil.mergeColors(c, Color.white));
+			} else {
+				Color newColor = ColorUtil.mergeColors(c, Color.white); 
+				node.setPaint(newColor);
+			}
 
 		} else
 			node.setPaint(p);

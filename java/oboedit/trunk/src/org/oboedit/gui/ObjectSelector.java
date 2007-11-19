@@ -1,8 +1,10 @@
 package org.oboedit.gui;
 
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 
 import org.obo.datamodel.*;
+import org.oboedit.gui.event.ExpandCollapseListener;
 import org.oboedit.gui.event.SelectionListener;
 
 public interface ObjectSelector {
@@ -31,5 +33,11 @@ public interface ObjectSelector {
 	public void removeSelectionListener(SelectionListener listener);
 	
 	public boolean hasCombinedTermsAndLinks();
+	
+	public void addExpansionListener(ExpandCollapseListener listener);
+	
+	public void removeExpansionListener(ExpandCollapseListener listener);
+	
+	public Collection<PathCapable> getVisibleObjects();
 	
 }

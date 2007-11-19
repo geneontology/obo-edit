@@ -99,8 +99,7 @@ public class FilterManager {
 
 	protected static FilterManager manager;
 
-	protected Map<String, SearchCriterion> criteria =
-		new LinkedHashMap<String, SearchCriterion>();
+	protected Map<String, SearchCriterion> criteria = new LinkedHashMap<String, SearchCriterion>();
 	protected List<SearchAspect> aspects = new LinkedList<SearchAspect>();
 	protected List<SearchComparison> comparisons = new LinkedList<SearchComparison>();
 
@@ -112,6 +111,9 @@ public class FilterManager {
 	protected Collection<GlobalFilterListener> globalFilterListeners = new LinkedList<GlobalFilterListener>();
 
 	protected Collection<GeneralRendererSpecField<?>> renderSpecFields = new ArrayList<GeneralRendererSpecField<?>>();
+
+	protected List<SearchCriterion> displayableCriteria =
+		new ArrayList<SearchCriterion>();
 
 	public void addGlobalFilterListener(GlobalFilterListener listener) {
 		globalFilterListeners.add(listener);
@@ -240,11 +242,18 @@ public class FilterManager {
 	}
 
 	public void addCriterion(SearchCriterion c) {
+		addCriterion(c, true);
+	}
+
+	public void addCriterion(SearchCriterion c, boolean displayable) {
 		criteria.put(c.getID(), c);
+		if (displayable)
+			displayableCriteria.add(c);
 	}
 
 	public void removeCriterion(SearchCriterion c) {
 		criteria.remove(c.getID());
+		displayableCriteria.remove(c);
 	}
 
 	public void addAspect(SearchAspect aspect) {
@@ -274,7 +283,11 @@ public class FilterManager {
 	public Collection<SearchCriterion> getCriteria() {
 		return criteria.values();
 	}
-	
+
+	public Collection<SearchCriterion> getDisplayableCriteria() {
+		return displayableCriteria;
+	}
+
 	public SearchCriterion getCriterion(String id) {
 		return criteria.get(id);
 	}

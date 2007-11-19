@@ -3,6 +3,8 @@ package org.oboedit.graph;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.util.TermUtil;
+import org.oboedit.gui.event.ExpandCollapseListener;
+import org.oboedit.gui.event.ExpansionEvent;
 
 import java.util.*;
 

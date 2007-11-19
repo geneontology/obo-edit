@@ -2,7 +2,7 @@ package org.oboedit.gui;
 
 import org.obo.filters.Filter;
 
-public interface Filterable {
+public interface Filterable extends ObjectSelector {
 
 
 	public void setLinkFilter(Filter<?> filter);

@@ -26,6 +26,7 @@ import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.Selection.PathCalcMode;
+import org.oboedit.gui.event.ExpandCollapseListener;
 import org.oboedit.gui.event.PreSelectionEvent;
 import org.oboedit.gui.event.PreSelectionListener;
 import org.oboedit.gui.event.RootChangeEvent;
@@ -611,5 +612,17 @@ public class SelectionManager implements ObjectSelector {
 			throw new IllegalArgumentException(
 					"The 'live' status of a selection "
 							+ "manager cannot be controlled in this way.");
+	}
+
+	public void addExpansionListener(ExpandCollapseListener listener) {
+		// do nothing
+	}
+
+	public Collection<PathCapable> getVisibleObjects() {
+		return Collections.emptyList();
+	}
+
+	public void removeExpansionListener(ExpandCollapseListener listener) {
+		// do nothing		
 	}
 }

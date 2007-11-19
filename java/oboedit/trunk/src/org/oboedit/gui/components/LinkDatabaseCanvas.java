@@ -75,8 +75,6 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.graph.CollapsibleLinkDatabase;
 import org.oboedit.graph.DefaultNodeFactory;
 import org.oboedit.graph.DefaultTypeColorManager;
-import org.oboedit.graph.ExpandCollapseListener;
-import org.oboedit.graph.ExpansionEvent;
 import org.oboedit.graph.FocusedNodeListener;
 import org.oboedit.graph.GraphLayout;
 import org.oboedit.graph.LabelBasedNodeSizeProvider;
@@ -103,6 +101,8 @@ import org.oboedit.gui.NodeLabelProvider;
 import org.oboedit.gui.ObjectSelector;
 import org.oboedit.gui.RightClickMenuProvider;
 import org.oboedit.gui.Selection;
+import org.oboedit.gui.event.ExpandCollapseListener;
+import org.oboedit.gui.event.ExpansionEvent;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
@@ -342,6 +342,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	public LinkDatabaseCanvas(GraphLayout graphLayout) {
 		super();
+		layoutEngine.setCanvas(this);
 		addSizeProvider(defaultNodeSizeProvider);
 		installDefaultRenderers();
 		setNodeLabelProvider(new HTMLNodeLabelProvider(this, CollectionUtil
@@ -518,7 +519,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public String generateLabel(IdentifiedObject lo) {
-		return nodeLabelProvider.getLabel(lo);
+		return nodeLabelProvider.getLabel(this, lo);
 	}
 
 	public PBounds getBounds(Collection<PathCapable> pcs) {

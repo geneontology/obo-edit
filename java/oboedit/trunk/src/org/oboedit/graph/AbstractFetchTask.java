@@ -27,6 +27,8 @@ import org.obo.filters.ObjectFilterImpl;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.components.GraphEditor;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.event.ExpandCollapseListener;
+import org.oboedit.gui.event.ExpansionEvent;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.RenderedFilter;
 
@@ -50,8 +52,7 @@ import edu.umd.cs.piccolo.activities.PActivity;
  *            The datatype of the value fetched by
  *            {@link #getValue(IdentifiedObject)}
  */
-public abstract class AbstractFetchTask<T> implements ViewBehavior,
-		NodeDecorator, GUITask {
+public abstract class AbstractFetchTask<T> implements ViewBehavior, GUITask {
 
 	protected ExpandCollapseListener listener = new ExpandCollapseListener() {
 
@@ -99,54 +100,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 		}
 	}
 
-	protected class MaxCriterion extends AbstractCriterion<OBOSession, T> {
-
-		public String getID() {
-			// TODO Auto-generated method stub
-			return getBehaviorID() + "_max_fetch_value";
-		}
-
-		public Class<OBOSession> getInputType() {
-			return OBOSession.class;
-		}
-
-		public Class<T> getReturnType() {
-			return valueClass;
-		}
-
-		public Collection<T> getValues(Collection<T> scratch, OBOSession obj) {
-			T val = getMaxValue();
-			if (val != null)
-				scratch.add(val);
-			return scratch;
-		}
-
-	}
-
-	protected class MinCriterion extends AbstractCriterion<OBOSession, T> {
-
-		public String getID() {
-			// TODO Auto-generated method stub
-			return getBehaviorID() + "_min_fetch_value";
-		}
-
-		public Class<OBOSession> getInputType() {
-			return OBOSession.class;
-		}
-
-		public Class<T> getReturnType() {
-			return valueClass;
-		}
-
-		public Collection<T> getValues(Collection<T> scratch, OBOSession obj) {
-			T val = getMinValue();
-			if (val != null)
-				scratch.add(val);
-			return scratch;
-		}
-
-	}
-
 	protected Comparator comparator = ComparableComparator.COMPARATOR;
 
 	protected LinkedList<IdentifiedObject> pendingObjects = new LinkedList<IdentifiedObject>();
@@ -160,8 +113,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	protected Class<T> valueClass;
 
 	protected FetchValueCriterion fetchCriterion = new FetchValueCriterion();
-	protected MaxCriterion maxCriterion = new MaxCriterion();
-	protected MinCriterion minCriterion = new MinCriterion();
 	protected IsDecoratedCriterion isDecoratedCriterion = new IsDecoratedCriterion();
 
 	public AbstractFetchTask(Class<T> valueClass) {
@@ -231,69 +182,21 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	protected abstract String getBehaviorID();
 
 	/**
-	 * Called to decorate a node whose decoration data is still being fetched.
-	 * This should only be used to apply decorations that cannot be attached via
-	 * a renderer (like heat map colorings)
-	 * 
-	 * @param node
-	 */
-	protected abstract void decoratePending(OENode node);
-
-	/**
-	 * Called to decorate a node whose decoration data has been fetched. This
-	 * should only be used to apply decorations that cannot be attached via a
-	 * renderer (like heat map colorings)
-	 * 
-	 * @param node
-	 * @param value
-	 *            The value fetched by getValue()
-	 */
-	protected abstract void decorateComplete(OENode node, T value);
-
-	/**
 	 * The renderer to use for nodes whose decoration data is still being
 	 * fetched
 	 * 
 	 * @return
 	 */
-	protected abstract GeneralRendererSpec getPendingRenderer();
+	protected abstract GeneralRendererSpec getPendingRenderer(
+			LinkDatabaseCanvas canvas);
 
 	/**
 	 * The renderer to use for nodes whose decoration data has been fetched
 	 * 
 	 * @return
 	 */
-	protected abstract GeneralRendererSpec getFetchedRenderer();
-
-	public T getMaxValue() {
-		T max = null;
-		for (T val : decoratedObjects.values()) {
-			if (max == null || comparator.compare(val, max) > 0)
-				max = val;
-		}
-		return max;
-	}
-
-	public T getMinValue() {
-		T min = null;
-		for (T val : decoratedObjects.values()) {
-			if (min == null || comparator.compare(val, min) < 0)
-				min = val;
-		}
-		return min;
-	}
-
-	public static double getRatio(Number val, Number min, Number max) {
-		if (max == null)
-			max = Double.MAX_VALUE;
-		if (min == null)
-			min = new Double(0);
-		return getRatio(val.doubleValue(), min.doubleValue(), max.doubleValue());
-	}
-
-	public static double getRatio(double val, double min, double max) {
-		return (val - min) / (max - min);
-	}
+	protected abstract GeneralRendererSpec getFetchedRenderer(
+			LinkDatabaseCanvas canvas);
 
 	protected class FetchThread extends Thread {
 		protected T result;
@@ -322,22 +225,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 		}
 	}
 
-	public PActivity decorate(PNode node, boolean noAnimation) {
-		if (node instanceof OENode) {
-			OENode oenode = (OENode) node;
-			if (isPending((IdentifiedObject) oenode.getObject()))
-				decoratePending(oenode);
-			else if (isDecorated((IdentifiedObject) oenode.getObject()))
-				decorateComplete(oenode, decoratedObjects
-						.get((IdentifiedObject) oenode.getObject()));
-		}
-		return null;
-	}
-
-	public boolean onlyDecorateAfterLayout() {
-		return true;
-	}
-
 	protected boolean isPending(IdentifiedObject io) {
 		return pendingObjects.contains(io);
 	}
@@ -358,22 +245,22 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 		canvas.addExpansionListener(listener);
 		thread = new GeneralFetchThread();
 		thread.start();
-		if (getFetchedRenderer() != null) {
+		GeneralRendererSpec fetchedSpec = getFetchedRenderer(canvas);
+		if (fetchedSpec != null) {
 			ObjectFilter filter = new ObjectFilterImpl();
 			filter.setCriterion(isDecoratedCriterion);
-			fetchedRenderFilter = new RenderedFilter(filter,
-					getFetchedRenderer());
+			fetchedRenderFilter = new RenderedFilter(filter, fetchedSpec);
 			canvas.addAutomaticObjectRenderer(fetchedRenderFilter);
 		}
-		if (getPendingRenderer() != null) {
+		GeneralRendererSpec pendingSpec = getPendingRenderer(canvas);
+		if (pendingSpec != null) {
 			ObjectFilter filter = new ObjectFilterImpl();
 			filter.setNegate(true);
 			filter.setCriterion(isDecoratedCriterion);
 			pendingRenderFilter = new RenderedFilter(filter,
-					getPendingRenderer());
+					pendingSpec);
 			canvas.addAutomaticObjectRenderer(pendingRenderFilter);
 		}
-		canvas.addDecorator(this);
 	}
 
 	public String getValueVarName() {
@@ -387,7 +274,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 			canvas.removeAutomaticObjectRenderer(fetchedRenderFilter);
 		if (pendingRenderFilter != null)
 			canvas.removeAutomaticObjectRenderer(pendingRenderFilter);
-		canvas.removeDecorator(this);
 	}
 
 	protected GUIComponentListener componentListener = new GUIComponentListener() {
@@ -413,8 +299,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 	public void install() {
 		ComponentManager.getManager().addComponentListener(componentListener);
 		FilterManager.getManager().addCriterion(fetchCriterion);
-		FilterManager.getManager().addCriterion(maxCriterion);
-		FilterManager.getManager().addCriterion(minCriterion);
 		FilterManager.getManager().addCriterion(isDecoratedCriterion);
 	}
 
@@ -422,8 +306,6 @@ public abstract class AbstractFetchTask<T> implements ViewBehavior,
 		ComponentManager.getManager()
 				.removeComponentListener(componentListener);
 		FilterManager.getManager().removeCriterion(fetchCriterion);
-		FilterManager.getManager().removeCriterion(maxCriterion);
-		FilterManager.getManager().removeCriterion(minCriterion);
 		FilterManager.getManager().removeCriterion(isDecoratedCriterion);
 	}
 }

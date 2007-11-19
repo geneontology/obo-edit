@@ -1,12 +1,14 @@
 package org.oboedit.gui.filter;
 
+import org.oboedit.gui.FilteredRenderable;
+
 public class FontFaceSpecField extends AbstractRendererSpecField<String> {
 
 	public static final FontFaceSpecField FIELD = new FontFaceSpecField();
 
 	public FontFaceSpecField() {
 	}
-	
+
 	public String getID() {
 		return "font_face";
 	}
@@ -15,7 +17,7 @@ public class FontFaceSpecField extends AbstractRendererSpecField<String> {
 		return "Font Face";
 	}
 
-	public String merge(String a, String b) {
+	public String merge(FilteredRenderable fr, String a, String b, Object o) {
 		if (a == null)
 			return b;
 		else if (b == null)
@@ -28,8 +30,10 @@ public class FontFaceSpecField extends AbstractRendererSpecField<String> {
 		return HTML;
 	}
 
-	public void renderHTML(String value, StringBuffer in, Object o) {
-		in.insert(0, "<style type='text/css>\n* {font-family: "+value+"; }\n</style><font face='" + value + "'>");
+	public void renderHTML(FilteredRenderable fr, String value,
+			StringBuffer in, Object o) {
+		in.insert(0, "<style type='text/css>\n* {font-family: " + value
+				+ "; }\n</style><font face='" + value + "'>");
 		in.append("</font>");
 	}
 

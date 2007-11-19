@@ -5,7 +5,7 @@ import java.util.List;
 import org.obo.filters.*;
 import org.oboedit.gui.filter.RenderedFilter;
 
-public interface FilteredRenderable {
+public interface FilteredRenderable extends ObjectSelector {
 
 	public void addObjectRenderer(RenderedFilter pair);
 	public void removeObjectRenderer(RenderedFilter pair);

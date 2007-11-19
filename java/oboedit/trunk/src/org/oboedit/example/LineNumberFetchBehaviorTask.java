@@ -12,9 +12,11 @@ import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.graph.AbstractFetchTask;
 import org.oboedit.graph.OENode;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.BoldSpecField;
 import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.HTMLSpecField;
+import org.oboedit.gui.filter.HeatmapColor;
 
 public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
@@ -54,46 +56,22 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 		return lineNum;
 	}
 
-	protected int fileLength = 0;
-
 	@Override
 	public void install(LinkDatabaseCanvas canvas) {
 		super.install(canvas);
-		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(goFileLoc));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				fileLength++;
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
-	protected void decorateComplete(OENode node, Integer value) {
-		Color c = new Color((int) (255 * getRatio(value, getMaxValue(),
-				getMinValue())), 0, 0);
-		node.setPaint(c);
-	}
-
-	@Override
-	protected void decoratePending(OENode node) {
-
-	}
-
-	@Override
-	protected GeneralRendererSpec getFetchedRenderer() {
+	protected GeneralRendererSpec getFetchedRenderer(LinkDatabaseCanvas canvas) {
 		return new GeneralRendererSpec(HTMLSpecField.FIELD,
 				"$term$<hr><center><font color=white>defined on line $"
-						+ getValueVarName() + "$</font></center>");
+						+ getValueVarName() + "$</font></center>",
+				BackgroundColorSpecField.FIELD, new HeatmapColor(Color.yellow,
+						Color.red, getValueVarName()));
 	}
 
 	@Override
-	protected GeneralRendererSpec getPendingRenderer() {
+	protected GeneralRendererSpec getPendingRenderer(LinkDatabaseCanvas canvas) {
 		return new GeneralRendererSpec(HTMLSpecField.FIELD,
 				"$term$<hr><center><font color=white><i>Loading...</i></font></center>");
 	}

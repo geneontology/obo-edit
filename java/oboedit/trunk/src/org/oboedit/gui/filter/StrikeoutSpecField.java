@@ -1,12 +1,14 @@
 package org.oboedit.gui.filter;
 
+import org.oboedit.gui.FilteredRenderable;
+
 public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
 
 	public static final StrikeoutSpecField FIELD = new StrikeoutSpecField();
 
 	public StrikeoutSpecField() {
 	}
-	
+
 	public String getID() {
 		return "strikeout";
 	}
@@ -15,7 +17,7 @@ public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
 		return "Strikeout";
 	}
 
-	public Boolean merge(Boolean a, Boolean b) {
+	public Boolean merge(FilteredRenderable fr, Boolean a, Boolean b, Object o) {
 		return a || b;
 	}
 
@@ -23,7 +25,8 @@ public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
 		return HTML;
 	}
 
-	public void renderHTML(Boolean value, StringBuffer in, Object o) {
+	public void renderHTML(FilteredRenderable fr, Boolean value,
+			StringBuffer in, Object o) {
 		if (value.booleanValue()) {
 			in.insert(0, "<strike>");
 			in.append("</strike>");

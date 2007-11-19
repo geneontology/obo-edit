@@ -9,6 +9,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.components.OBOTermPanel;
+import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
 import org.oboedit.gui.filter.ConfiguredColor;
 import org.oboedit.gui.filter.GeneralRendererSpec;
@@ -224,20 +225,23 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				FilteredRenderable fr = (FilteredRenderable) tree;
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
 				LinkedObject lo = link.getChild();
-				String s = provider.getLabel(lo);
+				String s = provider.getLabel(fr, lo);
 				setText(s);
-				spec = GUIUtil.getSpec(link, FilterManager.getManager()
+				spec = GUIUtil.getSpec(fr, link, FilterManager.getManager()
 						.getGlobalLinkRenderers(), fr.getLinkRenderers());
 			} else {
-				spec = GUIUtil.getSpec(link, FilterManager.getManager()
+				spec = GUIUtil.getSpec(null, link, FilterManager.getManager()
 						.getGlobalLinkRenderers());
 				setText(link.getChild().getName());
 			}
 			if (spec instanceof GeneralRendererSpec) {
 				GeneralRendererSpec s = (GeneralRendererSpec) spec;
-				ConfiguredColor f = s.getValue(ForegroundColorSpecField.FIELD);
+				ColorProvider f = s.getValue(ForegroundColorSpecField.FIELD);
 				if (f != null) {
-					linkIcon.setColor(f.getColor());
+					FilteredRenderable fr = null;
+					if (tree instanceof FilteredRenderable)
+						fr = (FilteredRenderable) tree;
+					linkIcon.setColor(f.getColor(fr, link));
 				}
 				Integer width = s.getValue(LineWidthSpecField.FIELD);
 				if (width != null)

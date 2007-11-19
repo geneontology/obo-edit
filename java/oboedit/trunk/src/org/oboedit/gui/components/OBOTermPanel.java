@@ -26,6 +26,7 @@ import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.swing.*;
 import org.bbop.swing.plaf.DragFriendlyTreeUI;
+import org.bbop.util.CollectionUtil;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.filters.*;
@@ -120,6 +121,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected NodeLabelProvider nodeLabelProvider;
 
+	protected List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+	protected List<ExpandCollapseListener> expansionListeners = new ArrayList<ExpandCollapseListener>();
+
+	protected JScrollPane scrollPane;
+
 	TreeSelectionListener treeSelectionListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
 			sortedSelectionRows = getSortedSelectionRows();
@@ -201,10 +207,73 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 	};
 
+	protected class ExpansionBridge implements TreeExpansionListener,
+			TreeWillExpandListener {
+
+		protected Collection<PathCapable> oldVisibles;
+
+		public void treeCollapsed(TreeExpansionEvent event) {
+			fireEvent();
+			oldVisibles = null;
+		}
+
+		public void treeExpanded(TreeExpansionEvent event) {
+			fireEvent();
+			oldVisibles = null;
+		}
+
+		protected void fireEvent() {
+			if (expansionListeners.size() < 1)
+				return;
+			Collection<PathCapable> visible = getVisibleObjects();
+			Iterator<PathCapable> it = oldVisibles.iterator();
+			while (it.hasNext()) {
+				PathCapable old = it.next();
+				if (visible.remove(old))
+					it.remove();
+			}
+			fireExpansionStateChanged(CollectionUtil.getObjectsOfType(visible,
+					IdentifiedObject.class), CollectionUtil.getObjectsOfType(
+					oldVisibles, IdentifiedObject.class));
+		}
+
+		public void treeWillCollapse(TreeExpansionEvent event)
+				throws ExpandVetoException {
+			if (expansionListeners.size() < 1)
+				return;
+			oldVisibles = getVisibleObjects();
+		}
+
+		public void treeWillExpand(TreeExpansionEvent event)
+				throws ExpandVetoException {
+			if (expansionListeners.size() < 1)
+				return;
+			oldVisibles = getVisibleObjects();
+		}
+
+	}
+
+	ExpansionBridge expansionBridge = new ExpansionBridge();
+
 	protected boolean isLive = true;
 
 	public Icon getImage(DragSourceDragEvent e) {
 		return new ImageIcon(getDragImage(getSelectionRows()));
+	}
+
+	protected void fireExpansionStateChanged(
+			Collection<IdentifiedObject> shown,
+			Collection<IdentifiedObject> hidden) {
+		ExpansionEvent e = null;
+		int size = expansionListeners.size();
+		for (int i = 0; i < size && i < expansionListeners.size(); i++) {
+			ExpandCollapseListener listener = (ExpandCollapseListener) expansionListeners
+					.get(i);
+			if (e == null) {
+				e = new ExpansionEvent(this, shown, hidden);
+			}
+			listener.expandStateChanged(e);
+		}
 	}
 
 	protected void paintHeaderShape(Graphics2D graphics, int width, int height) {
@@ -547,10 +616,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 	}
 
-	protected Collection<SelectionListener> selectionListeners = new LinkedList<SelectionListener>();
-
-	protected JScrollPane scrollPane;
-
 	protected TreePath getPath(Point p) {
 		TreePath path = OBOTermPanel.this.getPathForLocation((int) p.getX(),
 				(int) p.getY());
@@ -860,6 +925,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		});
 		addTreeSelectionListener(treeSelectionListener);
+		addTreeExpansionListener(expansionBridge);
+		addTreeWillExpandListener(expansionBridge);
+		addExpansionListener(new ExpandCollapseListener() {
+
+			public void expandStateChanged(ExpansionEvent e) {
+				System.err.println("EXPANDED "+e.getShown());
+				System.err.println("HID "+e.getHidden());
+			}
+			
+		});
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -1472,16 +1547,41 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				- inner.y + outer.y + AUTOSCROLL_MARGIN, outer.width
 				- inner.width - inner.x + outer.x + AUTOSCROLL_MARGIN);
 	}
-	
+
 	public void addAutomaticObjectRenderer(RenderedFilter renderer) {
 		automaticObjectRenderers.add(renderer);
 	}
-	
+
 	public void removeAutomaticObjectRenderer(RenderedFilter renderer) {
 		automaticObjectRenderers.remove(renderer);
 	}
 
 	public List<RenderedFilter> getAutomaticObjectRenderers() {
 		return automaticObjectRenderers;
+	}
+
+	public Collection<PathCapable> getVisibleObjects() {
+		Collection<PathCapable> out = new HashSet<PathCapable>();
+		for (int i = 0; i < getRowCount(); i++) {
+			TreePath path = getPathForRow(i);
+			Object o = path.getLastPathComponent();
+			if (o instanceof Link) {
+				Link link = (Link) o;
+				out.add(link);
+				if (link.getParent() != null)
+					out.add(link.getParent());
+				if (link.getChild() != null)
+					out.add(link.getChild());
+			}
+		}
+		return out;
+	}
+
+	public void addExpansionListener(ExpandCollapseListener listener) {
+		expansionListeners.add(listener);
+	}
+
+	public void removeExpansionListener(ExpandCollapseListener listener) {
+		expansionListeners.remove(listener);
 	}
 }

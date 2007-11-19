@@ -1,12 +1,14 @@
 package org.oboedit.gui.filter;
 
+import org.oboedit.gui.FilteredRenderable;
+
 public class LineWidthSpecField extends AbstractRendererSpecField<Integer> {
 
 	public static final LineWidthSpecField FIELD = new LineWidthSpecField();
 
 	public LineWidthSpecField() {
 	}
-	
+
 	public String getID() {
 		return "line_width";
 	}
@@ -15,7 +17,7 @@ public class LineWidthSpecField extends AbstractRendererSpecField<Integer> {
 		return "Line Width";
 	}
 
-	public Integer merge(Integer a, Integer b) {
+	public Integer merge(FilteredRenderable fr, Integer a, Integer b, Object o) {
 		return a + b;
 	}
 
@@ -23,7 +25,8 @@ public class LineWidthSpecField extends AbstractRendererSpecField<Integer> {
 		return NON_HTML;
 	}
 
-	public void renderHTML(Integer value, StringBuffer in, Object o) {
+	public void renderHTML(FilteredRenderable fr, Integer value,
+			StringBuffer in, Object o) {
 		throw new UnsupportedOperationException();
 	}
 

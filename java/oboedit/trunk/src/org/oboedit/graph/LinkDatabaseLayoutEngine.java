@@ -12,6 +12,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.util.TermUtil;
+import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.TransitionText;
 import org.oboedit.piccolo.ViewRenderedStyleText;
 
@@ -22,6 +23,8 @@ public class LinkDatabaseLayoutEngine {
 	protected LinkDatabase linkDatabase;
 
 	protected GraphLayout graphLayout;
+	
+	protected LinkDatabaseCanvas canvas;
 
 	protected List<NodeSizeProvider> sizeProviders = new LinkedList<NodeSizeProvider>();
 
@@ -69,7 +72,7 @@ public class LinkDatabaseLayoutEngine {
 			int width = 0;
 			int height = getInitialNodeHeight();
 			for (NodeSizeProvider sizeProvider : sizeProviders) {
-				Dimension d = sizeProvider.getSize(io);
+				Dimension d = sizeProvider.getSize(canvas, io);
 				if (d != null) {
 					if (d.getHeight() > 0)
 						height = (int) d.getHeight();
@@ -171,5 +174,13 @@ public class LinkDatabaseLayoutEngine {
 
 	public void setInitialNodeHeight(int initialNodeHeight) {
 		this.initialNodeHeight = initialNodeHeight;
+	}
+
+	public LinkDatabaseCanvas getCanvas() {
+		return canvas;
+	}
+
+	public void setCanvas(LinkDatabaseCanvas canvas) {
+		this.canvas = canvas;
 	}
 }

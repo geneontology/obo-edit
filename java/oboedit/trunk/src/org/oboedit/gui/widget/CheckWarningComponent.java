@@ -471,7 +471,7 @@ public class CheckWarningComponent extends JEditorPane {
 				+ "}\np {font-weight: bold;\n"
 				+ fontStyle
 				+ "}</style></head><body bgcolor='#"
-				+ SwingUtil.getHTMLCode(Preferences.getPreferences()
+				+ ColorUtil.getHTMLCode(Preferences.getPreferences()
 						.getBackgroundColor()) + "'>" + html.toString()
 				+ "</body></html>";
 		if (!hyperlinksEnabled)
