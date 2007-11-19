@@ -17,6 +17,7 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.Synonym;
+import org.obo.datamodel.Type;
 import org.obo.datamodel.impl.DatatypeValueImpl;
 import org.obo.datamodel.impl.InstanceImpl;
 import org.obo.datamodel.impl.InstancePropertyValue;
@@ -64,7 +65,12 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		setRelationship(link.getType());
 	}
 
-
+	public Type<OBOClass> getType() {
+		Type<OBOClass> type = super.getType();
+		if (type == null)
+			type = AnnotationOntology.ANNOTATION();
+		return type;
+	}
 	public LinkedObject getAssignedBy() {
 		return (LinkedObject)TermUtil.getPropValue(this, AnnotationOntology
 				.ASSIGNED_BY_REL());
