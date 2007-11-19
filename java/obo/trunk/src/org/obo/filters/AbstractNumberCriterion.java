@@ -1,6 +1,7 @@
 package org.obo.filters;
 
-public abstract class AbstractNumberCriterion extends AbstractCriterion {
+public abstract class AbstractNumberCriterion<INPUT_TYPE> extends
+		AbstractCriterion<INPUT_TYPE, Integer> {
 
 	/*
 	 * All extensions of this class return integers, so this method returns
@@ -8,7 +9,7 @@ public abstract class AbstractNumberCriterion extends AbstractCriterion {
 	 * 
 	 * @return Integer.class
 	 */
-	public Class getReturnType() {
+	public Class<Integer> getReturnType() {
 		return Integer.class;
 	}
 

@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.obo.datamodel.*;
 import org.obo.util.TermUtil;
 
-public class ParentCountCriterion extends AbstractNumberCriterion {
+public class ParentCountCriterion extends AbstractNumberCriterion<IdentifiedObject> {
 	
-	public Collection getValues(Collection scratch, Object obj) {
+	public Collection getValues(Collection scratch, IdentifiedObject obj) {
 		IdentifiedObject o = (IdentifiedObject) obj;
 		if (o instanceof LinkedObject && !TermUtil.isObsolete(o))
 			scratch.add(new Integer(((LinkedObject) o).getParents().size()));
@@ -18,7 +18,7 @@ public class ParentCountCriterion extends AbstractNumberCriterion {
 		return "parent_count";
 	}
 
-	public Class getInputType() {
+	public Class<IdentifiedObject> getInputType() {
 		return IdentifiedObject.class;
 	}
 
