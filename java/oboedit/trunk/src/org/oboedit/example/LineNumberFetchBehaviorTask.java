@@ -55,12 +55,7 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 			lineNum = -1;
 		return lineNum;
 	}
-
-	@Override
-	public void install(LinkDatabaseCanvas canvas) {
-		super.install(canvas);
-	}
-
+	
 	@Override
 	protected GeneralRendererSpec getFetchedRenderer(LinkDatabaseCanvas canvas) {
 		return new GeneralRendererSpec(HTMLSpecField.FIELD,
