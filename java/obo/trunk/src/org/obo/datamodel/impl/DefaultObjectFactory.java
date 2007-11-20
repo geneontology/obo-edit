@@ -79,7 +79,7 @@ public class DefaultObjectFactory implements ObjectFactory {
 	}
 
 	public PropertyValue createPropertyValue(String property, String value) {
-		return new PropertyValueImpl(property, value);
+		return new PropertyValueImpl(property, value, null, -1);
 	}
 
 	public HistoryList createHistoryList() {
