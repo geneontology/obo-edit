@@ -426,6 +426,10 @@ public class VerificationManager {
 		CheckTask task = getCheckTask(getCheckObsoletes(), liveChecks, session,
 				path, condition);
 		task.run();
+		if (task.getException() != null) {
+			task.getException().printStackTrace();
+			throw new RuntimeException(task.getException());
+		}
 		return task.getResults();
 	}
 
