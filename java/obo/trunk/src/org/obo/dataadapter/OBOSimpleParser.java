@@ -14,11 +14,11 @@ public interface OBOSimpleParser {
 
 	public void endFileParse(String uri) throws OBOParseException;
 
-	public void startStanza(String name) throws OBOParseException;
+	public boolean startStanza(String name) throws OBOParseException;
 
 	public void readBangComment(String comment) throws OBOParseException;
 
-	public void readTagValue(String tag, String value, NestedValue nv, boolean handled)
+	public boolean readTagValue(String tag, String value, NestedValue nv, boolean handled)
 			throws OBOParseException;
 
 	public void setParseEngine(ParseEngine engine);

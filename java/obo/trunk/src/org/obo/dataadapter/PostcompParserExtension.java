@@ -89,8 +89,9 @@ public class PostcompParserExtension implements ParserExtension,
 	public void readBangComment(String comment) throws OBOParseException {
 	}
 
-	public void readTagValue(String tag, String value, NestedValue nv,
+	public boolean readTagValue(String tag, String value, NestedValue nv,
 			boolean handled) throws OBOParseException {
+		return false;
 	}
 
 	public void setParseEngine(ParseEngine engine) {
@@ -107,7 +108,8 @@ public class PostcompParserExtension implements ParserExtension,
 	public void startSerialize() throws IOException {
 	}
 
-	public void startStanza(String name) throws OBOParseException {
+	public boolean startStanza(String name) throws OBOParseException {
+		return false;
 	}
 
 	public void endSerialize() throws IOException {

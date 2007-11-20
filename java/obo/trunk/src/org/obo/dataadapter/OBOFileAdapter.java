@@ -213,7 +213,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				throw new DataAdapterException(e, "Load error, line "
 						+ e.getLineNum());
 			} catch (Throwable e) {
-				System.err.println("exception " + e);
+				e.printStackTrace();
 				if (cancelled)
 					throw new CancelledAdapterException();
 

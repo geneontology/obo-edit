@@ -28,6 +28,10 @@ public class OBOConstants {
 			this.allowsClass = allowsClass;
 			this.provider = provider;
 		}
+		
+		public String getName() {
+			return tagName;
+		}
 
 		@Override
 		public String toString() {
