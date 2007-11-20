@@ -526,7 +526,7 @@ public class DefaultOBOParser implements OBOParser {
 		}
 		return out;
 	}
-	
+
 	protected IdentifiedObject createObject(String currentStanza, String id) {
 		IdentifiedObject out = null;
 		for (ParserExtension extension : parserExtensions) {
@@ -539,8 +539,7 @@ public class DefaultOBOParser implements OBOParser {
 				out = objectFactory.createObject(id, OBOClass.OBO_PROPERTY,
 						false);
 			else if (currentStanza.equalsIgnoreCase("term"))
-				out = objectFactory.createObject(id, OBOClass.OBO_CLASS,
-						false);
+				out = objectFactory.createObject(id, OBOClass.OBO_CLASS, false);
 			else if (currentStanza.equalsIgnoreCase("instance"))
 				out = objectFactory.createObject(id, OBOClass.OBO_INSTANCE,
 						false);
@@ -577,9 +576,13 @@ public class DefaultOBOParser implements OBOParser {
 		}
 	}
 
+	public void setCurrentObject(IdentifiedObject currentObject) {
+		this.currentObject = currentObject;
+	}
+
 	public void readID(String id, NestedValue nv) {
 		id = mapID(id);
-		currentObject = fetchObject(id);
+		setCurrentObject(fetchObject(id));
 		currentObject.setIDExtension(nv);
 		session.addObject(currentObject);
 		engine.setReadIDForCurrentBlock(true);
@@ -863,8 +866,9 @@ public class DefaultOBOParser implements OBOParser {
 			((OBOProperty) currentObject).setAlwaysImpliesInverse(b);
 			((OBOProperty) currentObject).setAlwaysImpliesInverseExtension(nv);
 		} else
-			throw new OBOParseException("Attempt to set always_implies_inverse "
-					+ "attribute of non-type " + currentObject + ".",
+			throw new OBOParseException(
+					"Attempt to set always_implies_inverse "
+							+ "attribute of non-type " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
 							.getLineNum());
 	}
@@ -1140,21 +1144,20 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (instanceOfObj == null) {
 				if (allowDanglingParents) {
-					instanceOfObj = objectFactory
-					.createDanglingObject(is.instanceOf, false);
-					instanceOfObj = TermUtil.castToClass((LinkedObject)instanceOfObj);
-				}
-				else {
+					instanceOfObj = objectFactory.createDanglingObject(
+							is.instanceOf, false);
+				} else {
 					throw new OBOParseException("Unrecognized instance_of id "
-							+ is.instanceOf + " specified for " + "instance id "
-							+ id, is.getPath(), is.getLine(), is.getLineNum());
+							+ is.instanceOf + " specified for "
+							+ "instance id " + id, is.getPath(), is.getLine(),
+							is.getLineNum());
 				}
-			}
-			else {
+			} else {
 				if (!(instanceOfObj instanceof OBOClass))
 					throw new OBOParseException("Cannot use non-term value "
-							+ is.instanceOf + ", " + "for instance_of statement.",
-							is.getPath(), is.getLine(), is.getLineNum());
+							+ is.instanceOf + ", "
+							+ "for instance_of statement.", is.getPath(), is
+							.getLine(), is.getLineNum());
 			}
 			((Instance) instance).setType((OBOClass) instanceOfObj);
 		}
@@ -1430,23 +1433,33 @@ public class DefaultOBOParser implements OBOParser {
 		}
 	}
 
-	public void startStanza(String name) throws OBOParseException {
+	public boolean startStanza(String name) throws OBOParseException {
 		if (currentObject != null && currentObject.getNamespace() == null
 				&& getDefaultNamespace() != null)
 			currentObject.setNamespace(getDefaultNamespace());
 		engine.setReadIDForCurrentBlock(false);
-		currentStanza = name;
-		if (!currentStanza.equalsIgnoreCase("term")
-				&& !currentStanza.equalsIgnoreCase("typedef")
-				&& !currentStanza.equalsIgnoreCase("instance")) {
-			unknownStanza = new UnknownStanza(currentStanza,
-					getDefaultNamespace());
-			unknownStanzaList.add(unknownStanza);
-		} else
-			unknownStanza = null;
+		setCurrentStanza(name);
+		boolean handled = false;
 		for (ParserExtension extension : parserExtensions) {
-			extension.startStanza(name);
+			if (extension.startStanza(name))
+				handled = true;
 		}
+		if (!handled) {
+			if (!currentStanza.equalsIgnoreCase("term")
+					&& !currentStanza.equalsIgnoreCase("typedef")
+					&& !currentStanza.equalsIgnoreCase("instance")) {
+				unknownStanza = new UnknownStanza(currentStanza,
+						getDefaultNamespace());
+				unknownStanzaList.add(unknownStanza);
+			} else
+				unknownStanza = null;
+		}
+		return true;
+	}
+	
+	public void setCurrentStanza(String name) {
+		currentStanza = name;
+		unknownStanza = null;
 	}
 
 	public void readBangComment(String comment) throws OBOParseException {
@@ -1454,25 +1467,35 @@ public class DefaultOBOParser implements OBOParser {
 			extension.readBangComment(comment);
 		}
 	}
-	
+
 	public UnknownStanza getCurrentUnknownStanza() {
 		return unknownStanza;
 	}
 
-	public void readTagValue(String name, String value, NestedValue nv,
+	public boolean prefersRaw(String tag, String value, NestedValue nv)
+			throws OBOParseException {
+		boolean handled = false;
+		for (ParserExtension extension : parserExtensions) {
+			boolean accepted = extension.readTagValue(tag, value, nv, handled);
+			if (accepted)
+				handled = true;
+		}
+		return handled;
+	}
+
+	public boolean readTagValue(String name, String value, NestedValue nv,
 			boolean handled) throws OBOParseException {
 		if (!handled) {
-			PropertyValue pv = new PropertyValueImpl(name, value);
+			PropertyValue pv = new PropertyValueImpl(name, value, engine
+					.getCurrentPath(), engine.getLineNum());
 			if (currentStanza == null)
 				session.addPropertyValue(pv);
 			else if (unknownStanza != null)
-				unknownStanza.addPropertyValue(pv);
+				unknownStanza.addPropertyValue(pv, nv);
 			else
 				currentObject.addPropertyValue(pv);
 		}
-		for (ParserExtension extension : parserExtensions) {
-			extension.readTagValue(name, value, nv, handled);
-		}
+		return true;
 	}
 
 	public void setParseEngine(ParseEngine engine) {

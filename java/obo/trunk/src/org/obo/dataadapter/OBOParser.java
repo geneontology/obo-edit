@@ -22,6 +22,9 @@ public interface OBOParser extends OBOSimpleParser {
 		}
 	}
 
+	public boolean prefersRaw(String tag, String value, NestedValue nv)
+			throws OBOParseException;
+
 	public void readFormatVersion(String version) throws OBOParseException;
 
 	public void readImport(String path) throws IOException, OBOParseException;

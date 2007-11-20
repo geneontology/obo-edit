@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.obo.datamodel.NestedValue;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -129,6 +130,17 @@ public class OBOXMLParseEngine extends AbstractParseEngine {
 
 	public int getLineNum() {
 		return locator.getLineNumber();
+	}
+
+	public String getCurrentPath() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public boolean parseTagValue(String stanza, String line, int linenum,
+			int charoffset, String name, String value, NestedValue nv)
+			throws OBOParseException, IOException {
+		return false;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.bbop.util.ProgressValued;
+import org.obo.datamodel.NestedValue;
 
 public interface ParseEngine extends ProgressValued {
 
@@ -21,9 +22,15 @@ public interface ParseEngine extends ProgressValued {
 	public abstract int getLineNum();
 
 	public abstract String getCurrentLine();
-	
+
+	public String getCurrentPath();
+
+	public boolean parseTagValue(String stanza, String line, int linenum,
+			int charoffset, String name, String value, NestedValue nv)
+			throws OBOParseException, IOException;
+
 	public void setReadIDForCurrentBlock(boolean read);
-	
+
 	public boolean getReadIDForCurrentBlock();
 
 }
