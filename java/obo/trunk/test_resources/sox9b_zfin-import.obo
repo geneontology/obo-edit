@@ -1,0 +1,4 @@
+import: sox9b_zfin.obo
+import: http://purl.org/obo/obo-all/cell/cell.obo
+import: http://purl.org/obo/obo-all/quality/quality.obo
+import: http://purl.org/obo/obo-all/zebrafish_anatomy/zebrafish_anatomy.obo
