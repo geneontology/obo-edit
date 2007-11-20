@@ -32,4 +32,10 @@ public interface PropertyValue extends Cloneable, Serializable {
 	public String getProperty();
 
 	public Object clone();
+
+	public int getLineNumber();
+
+	public String getFilename();
+
+	public String getLine();
 }

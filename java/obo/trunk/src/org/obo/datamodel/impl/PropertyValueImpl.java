@@ -10,10 +10,18 @@ public class PropertyValueImpl implements PropertyValue {
 	private static final long serialVersionUID = 1555285338106605459L;
 	protected String property;
 	protected String value;
-
+	protected int lineNumber;
+	protected String filename;
+	
 	public PropertyValueImpl(String property, String value) {
+		this(property, value, null, -1);
+	}
+
+	public PropertyValueImpl(String property, String value, String filename, int lineNumber) {
 		this.property = property;
 		this.value = value;
+		this.lineNumber = lineNumber;
+		this.filename = filename;
 	}
 
 	public String getValue() {
@@ -37,5 +45,17 @@ public class PropertyValueImpl implements PropertyValue {
 			// this will never happen
 			return null;
 		}
+	}
+
+	public int getLineNumber() {
+		return lineNumber;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+	
+	public String getLine() {
+		return property+": "+value;
 	}
 }
