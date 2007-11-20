@@ -55,7 +55,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
 	@Override
 	public Collection<String> getFilesToLoad() {
-		String[] files={"simple-annot-stanza-example.obo"};
+		String[] files={"simple-annot-stanza-example.obo", "sox9b_zfin.obo"};
 		return Arrays.asList(files);
 	}
 }
