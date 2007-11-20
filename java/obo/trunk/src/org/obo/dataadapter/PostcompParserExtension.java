@@ -71,12 +71,11 @@ public class PostcompParserExtension implements ParserExtension,
 				HistoryItem item = PostcompUtil.createPostcompItem(session, id,
 						intersectionMap, null, true);
 				String postcompItemID = item.getTarget();
+				if (session.getObject(postcompItemID) != null)
+					return postcompItemID;
 				OBOClass obj = (OBOClass) session.getObjectFactory()
 						.createObject(postcompItemID, OBOClass.OBO_CLASS, true);
-				System.err.println("created postcomp object " + obj.getID());
 				session.addObject(obj);
-				System.err.println("   looked up object "
-						+ session.getObject(obj.getID()));
 				items.add(item);
 				return postcompItemID;
 			} catch (ParseException ex) {
@@ -133,14 +132,7 @@ public class PostcompParserExtension implements ParserExtension,
 
 	public boolean writeObject(LinkDatabase linkDatabase, IdentifiedObject obj)
 			throws IOException {
-		boolean postcompable = PostcompUtil.isPostcompable(obj);
-		if (obj.isAnonymous())
-			System.err.println("]]-->> writing anonymous object " + obj.getID()
-					+ ", postcompable = " + postcompable);
-		if (postcompable)
-			System.err.println("]]]>>> skipping write of " + obj.getID()
-					+ " because it's postcompable");
-		return postcompable;
+		return PostcompUtil.isPostcompable(obj);
 	}
 
 	public void changeHeaderTagOrder(List headerTagOrder) {

@@ -19,6 +19,7 @@ public class InstanceImpl extends LinkedAnnotatedObjectImpl implements
 	public InstanceImpl(String id, OBOClass type) {
 		super(id);
 		setType(type);
+		setName(id);
 	}
 
 	public InstanceImpl(String id) {
