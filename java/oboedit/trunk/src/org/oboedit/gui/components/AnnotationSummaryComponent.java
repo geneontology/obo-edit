@@ -1,54 +1,51 @@
 package org.oboedit.gui.components;
 
-import org.obo.annotation.datamodel.Annotation;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.oboedit.gui.*;
-import org.oboedit.gui.event.*;
-import org.obo.util.AnnotationUtil;
-import org.obo.util.IDUtil;
-import org.obo.util.ReasonerUtil;
-import org.obo.util.TermUtil;
-import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.util.TinySet;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.Dimension;
 import java.net.URL;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.util.TinySet;
+import org.obo.annotation.datamodel.Annotation;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOSession;
+import org.obo.util.AnnotationUtil;
+import org.obo.util.ReasonerUtil;
+import org.obo.util.TermUtil;
+import org.oboedit.controller.SelectionManager;
+import org.oboedit.controller.SessionManager;
+import org.oboedit.gui.Selection;
+import org.oboedit.gui.event.SelectionEvent;
+import org.oboedit.gui.event.SelectionListener;
 
 
 
@@ -273,16 +270,23 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			Collection<LinkedObject> subjs =  AnnotationUtil.getAnnotationSubjects(session);
 			Collection<LinkedObject> objs =  AnnotationUtil.getAnnotationObjects(session);
 
+			System.out.println("n_objs: "+objs.size());
+			System.out.println("n_subjs: "+subjs.size());
 			if (isTransitiveIncluded) {
-				Collection<LinkedObject> ancs = new HashSet<LinkedObject>();
+				Set<LinkedObject> objsWithAncs = new HashSet<LinkedObject>();
 				for (LinkedObject obj : objs) {
-					System.out.println("getting ancestors of "+obj);
-					ancs.addAll(TermUtil.getAncestors(obj,true));
+					System.out.println("  direct annotation to:"+obj.getID()+" :: "+obj);
+					if (obj == null)
+						continue;
+					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true);
+					for (LinkedObject anc : ancs)
+						System.out.println("      transitive annotation to:"+anc.getID()+" :: "+anc);
+					objsWithAncs.addAll(ancs);
 				}
-				objs = ancs;
+				objs = objsWithAncs;
 			}
-			
-			System.out.println("constructor called");
+			System.out.println("n_objs (after including transitive): "+objs.size());
+
 			rowObjs = objs.toArray(new LinkedObject[0]);
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
@@ -297,8 +301,9 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			HashMap<LinkedObject, Integer> hdr2colnum =
 				new HashMap<LinkedObject, Integer>();
 
+			// fill edges of grid
 			for (int i=0; i< objs.size(); i++) {
-				System.out.println("row: "+i+" ="+objs.toArray()[i]);
+				System.out.println("row: "+i+" ="+((IdentifiedObject)objs.toArray()[i]).getID()+" :: "+objs.toArray()[i]);
 				hdr2rownum.put((LinkedObject) objs.toArray()[i], i);
 			}
 			for (int i=0; i< subjs.size(); i++) {
@@ -313,20 +318,25 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			//cellStatus = new CellStatus[rowCount][columnCount];
 			
 			for (Annotation annot : annots) {
-				LinkedObject subj = annot.getSubject();
-				LinkedObject obj = annot.getObject();
-				System.out.println(subj+" -> "+obj);
-				int row = hdr2rownum.get(obj);
-				int col = hdr2colnum.get(subj);
-				setCell(annot,row,col);
+				System.out.println(annot);
+				LinkedObject annotatedEntity = annot.getSubject();
+				LinkedObject annotatedWithObject = annot.getObject();
 				
-				for (LinkedObject objAnc : TermUtil.getAncestors(obj, true)) {
-					System.out.println(obj + " < "+objAnc+" : "+row);
-					row = hdr2rownum.get(objAnc);
-					System.out.println(obj + " < "+objAnc+" : "+row);
-					setCellTransitive(annot,row,col);
+				int row = hdr2rownum.get(annotatedWithObject); // classes
+				int col = hdr2colnum.get(annotatedEntity); // annotated entities
+				setCell(annot,row,col);
+				System.out.println("  setting cell " + row + ","+col);
+				
+				if (isTransitiveIncluded) {
+					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true)) {
+						System.out.println("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
+						row = hdr2rownum.get(objAnc);
+						System.out.println(annotatedWithObject + " < "+objAnc+" : "+row);
+						setCellTransitive(annot,row,col);
+					}
 				}
 			}
+			System.out.println("made table model");
 		}
 		
 		public int getRowCount() {
