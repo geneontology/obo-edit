@@ -72,7 +72,7 @@ public class AnnotationParserExtension implements ParserExtension,
 			null, null);
 
 	protected static final TagMapping RELATIONSHIP_TAG = new TagMapping(
-			"relationship", null, null);
+			"relation", null, null);
 
 	protected static final TagMapping OBJECT_TAG = new TagMapping("object",
 			null, null);
@@ -110,204 +110,158 @@ public class AnnotationParserExtension implements ParserExtension,
 		sengine.addSerializerExtension(new AnnotationParserExtension());
 		sengine.serialize(session, new OBO_1_2_Serializer(),
 				"/home/jrichter/test_annotations.obo");
-
-		/*
-		 * Annotation annotation = (Annotation) session
-		 * .getObject("_anon:phenotype_annotation-277");
-		 * System.err.println("annotation = " + annotation); for (Link link :
-		 * annotation.getParents()) { System.err.println(" link = " + link); }
-		 * DefaultOperationModel model = new DefaultOperationModel();
-		 * model.setHistory(session); HistoryItem item;
-		 * 
-		 * item = annotation.getSubjectChangeItem((LinkedObject) session
-		 * .getObject("OBD:genotype99"));
-		 * 
-		 * model.apply(item); System.err.println("after subject change:
-		 * annotation = " + annotation); System.err.println(" posits values " +
-		 * annotation.getValues(AnnotationOntology.POSITS_REL())); for (Link
-		 * link : annotation.getParents()) { System.err.println(" link = " +
-		 * link); }
-		 * 
-		 * item = annotation.getObjectChangeItem((LinkedObject) session
-		 * .getObject("OBD:genotype99")); model.apply(item);
-		 * System.err.println("after object change: annotation = " +
-		 * annotation); for (Link link : annotation.getParents()) {
-		 * System.err.println(" link = " + link); }
-		 * 
-		 * item = annotation.getRelationshipChangeItem(OBOProperty.IS_A);
-		 * model.apply(item); System.err.println("after type change: annotation = " +
-		 * annotation); for (Link link : annotation.getParents()) {
-		 * System.err.println(" link = " + link); }
-		 */
 	}
 
 	public void endParse() throws OBOParseException {
 		parser.setAllowDanglingParents(true);
 
-		Collection<UnknownStanza> annotationStanzas = new LinkedList<UnknownStanza>();
-		for (UnknownStanza stanza : session.getUnknownStanzas()) {
-			if (stanza.getStanza().equalsIgnoreCase("annotation")) {
-				annotationStanzas.add(stanza);
-				Annotation annotation = null;
-				for (PropertyValue pv : stanza.getPropertyValues()) {
-					if (pv.getProperty().equals("id")) {
-						String id = pv.getValue();
-						IdentifiedObject io = session.getObject(id);
-						if (io == null)
-							throw new OBOParseException(
-									"Annotation stanza not associated with datamodel objects",
-									currentPath, engine.getCurrentLine(),
-									engine.getLineNum());
-						if (!(io instanceof Annotation))
-							throw new OBOParseException(
-									"Expected annotation object in datamodel, but found something else",
-									currentPath, engine.getCurrentLine(),
-									engine.getLineNum());
-						annotation = (Annotation) io;
-
-						break;
+		for (IdentifiedObject io : session.getObjects()) {
+			if (!(io instanceof Annotation))
+				continue;
+			Annotation annotation = (Annotation) io;
+			Iterator<PropertyValue> it = annotation.getPropertyValues()
+					.iterator();
+			while (it.hasNext()) {
+				PropertyValue pv = it.next();
+				if (pv.getProperty().equals(SOURCE_TAG.getName())) {
+					IdentifiedObject source = parser.getObject(pv.getValue());
+					if (source == null) {
+						// jd-r: this is odd! why are we automatically
+						// creating an empty object here rather than
+						// creating a dangling identifier?
+						source = session.getObjectFactory().createObject(
+								pv.getValue(), OBOClass.OBO_INSTANCE, false);
+						((Instance) source).setType(AnnotationOntology
+								.PUBLICATION());
 					}
-				}
-				if (annotation == null) {
-					continue;
-				}
-				for (PropertyValue pv : stanza.getPropertyValues()) {
-					if (pv.getProperty().equals("source")) {
-						IdentifiedObject source = parser.getObject(pv
-								.getValue());
-						if (source == null) {
-							source = session.getObjectFactory()
-									.createObject(pv.getValue(),
-											OBOClass.OBO_INSTANCE, false);
-							((Instance) source).setType(AnnotationOntology
-									.PUBLICATION());
-						}
-						annotation.addSource((LinkedObject) source);
-						System.err.println("added source " + pv.getValue()
-								+ " to " + annotation.getID());
-					} else if (pv.getProperty().equals("assigned_by")) {
-						IdentifiedObject ab = parser.getObject(pv
-								.getValue());
-						if (ab == null) {
-							ab = session.getObjectFactory()
-							.createObject(pv.getValue(),
-									OBOClass.OBO_INSTANCE, false);
-							((Instance) ab).setType(AnnotationOntology
-									.AGENT());
-						}
-						annotation.setAssignedBy((LinkedObject) ab);
-						System.err.println("set assigned_by " + pv.getValue()
-								+ " to " + annotation.getID());
-					} else if (pv.getProperty().equals("subject")) {
-						IdentifiedObject subject = parser.getObject(pv
-								.getValue());
-						if (subject == null) {
+					annotation.addSource((LinkedObject) source);
+					it.remove();
+				} else if (pv.getProperty().equals(ASSIGNED_BY_TAG.getName())) {
+					IdentifiedObject ab = parser.getObject(pv.getValue());
+					if (ab == null) {
+						// jd-r: this is odd! why are we automatically
+						// creating an empty object here rather than
+						// creating a dangling identifier?
+						ab = session.getObjectFactory().createObject(
+								pv.getValue(), OBOClass.OBO_INSTANCE, false);
+						((Instance) ab).setType(AnnotationOntology.AGENT());
+					}
+					annotation.setAssignedBy((LinkedObject) ab);
+					it.remove();
+				} else if (pv.getProperty().equals(SUBJECT_TAG.getName())) {
+					IdentifiedObject subject = parser.getObject(pv.getValue());
+					if (subject == null) {
+						if (parser.getAllowDanglingParents()) {
+							subject = new DanglingObjectImpl(pv.getValue());
+						} else
 							throw new OBOParseException("Unknown subject id "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());
-						} else if (!(subject instanceof LinkedObject)) {
-							throw new OBOParseException("Subject "
-									+ pv.getValue() + " in annotation "
-									+ annotation.getID() + " is a "
-									+ subject.getClass()
-									+ " not a LinkedObject", currentPath,
-									engine.getCurrentLine(), engine
-											.getLineNum());
-						}
-						// CJM: subjects can be any kind of node
-						// annotation.setSubject((OBOClass) subject);
-						annotation.setSubject((LinkedObject) subject);
-					} else if (pv.getProperty().equals("object")) {
-						IdentifiedObject object = parser.getObject(pv
-								.getValue());
-						if (object == null) {
-							if (parser.getAllowDanglingParents()) {
-								object = new DanglingObjectImpl(pv.getValue());
-							} else
-								throw new OBOParseException(
-										"Unknown object id " + pv.getValue()
-												+ " in annotation "
-												+ annotation.getID(),
-										currentPath, engine.getCurrentLine(),
-										engine.getLineNum());
-						} else if (!(object instanceof LinkedObject)) {
-							throw new OBOParseException("Object "
-									+ pv.getValue() + " in annotation "
-									+ annotation.getID()
-									+ " is not a LinkedObject", currentPath,
-									engine.getCurrentLine(), engine
-											.getLineNum());
-						}
-						annotation.setObject((LinkedObject) object);
-					} else if (pv.getProperty().equals("relationship")
-							|| pv.getProperty().equals("relation")) {
-						IdentifiedObject object = parser.getObject(pv
-								.getValue());
-						if (object == null) {
-							if (parser.getAllowDanglingParents())
-								object = new DanglingPropertyImpl(pv.getValue());
-							else
-								throw new OBOParseException(
-										"Unknown object id " + pv.getValue()
-												+ " in annotation "
-												+ annotation.getID(),
-										currentPath, engine.getCurrentLine(),
-										engine.getLineNum());
-						} else if (!(object instanceof OBOProperty)) {
-							throw new OBOParseException("Object "
-									+ pv.getValue() + " in annotation "
-									+ annotation.getID()
-									+ " is not an OBOProperty", currentPath,
-									engine.getCurrentLine(), engine
-											.getLineNum());
-						}
-						annotation.setRelationship((OBOProperty) object);
-					} else if (pv.getProperty().equals("evidence")) {
-						IdentifiedObject object = parser.getObject(pv
-								.getValue());
-						if (object == null) {
+					} else if (!(subject instanceof LinkedObject)) {
+						throw new OBOParseException("Subject " + pv.getValue()
+								+ " in annotation " + annotation.getID()
+								+ " is a " + subject.getClass()
+								+ " not a LinkedObject", currentPath, engine
+								.getCurrentLine(), engine.getLineNum());
+					}
+					// CJM: subjects can be any kind of node
+					// annotation.setSubject((OBOClass) subject);
+					annotation.setSubject((LinkedObject) subject);
+					it.remove();
+				} else if (pv.getProperty().equals(OBJECT_TAG.getName())) {
+					IdentifiedObject object = parser.getObject(pv.getValue());
+					if (object == null) {
+						if (parser.getAllowDanglingParents()) {
+							object = new DanglingObjectImpl(pv.getValue());
+						} else
 							throw new OBOParseException("Unknown object id "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());
-						} else if (!(object instanceof LinkedObject)) {
-							throw new OBOParseException("Object "
-									+ pv.getValue() + " in annotation "
-									+ annotation.getID()
-									+ " is not a LinkedObject", currentPath,
-									engine.getCurrentLine(), engine
-											.getLineNum());
-						}
-						annotation.addEvidence((LinkedObject) object);
+					} else if (!(object instanceof LinkedObject)) {
+						throw new OBOParseException("Object " + pv.getValue()
+								+ " in annotation " + annotation.getID()
+								+ " is not a LinkedObject", currentPath, engine
+								.getCurrentLine(), engine.getLineNum());
 					}
+					annotation.setObject((LinkedObject) object);
+					it.remove();
+				} else if (pv.getProperty().equals(RELATIONSHIP_TAG.getName())) {
+					IdentifiedObject object = parser.getObject(pv.getValue());
+					if (object == null) {
+						if (parser.getAllowDanglingParents())
+							object = new DanglingPropertyImpl(pv.getValue());
+						else
+							throw new OBOParseException("Unknown object id "
+									+ pv.getValue() + " in annotation "
+									+ annotation.getID(), currentPath, engine
+									.getCurrentLine(), engine.getLineNum());
+					} else if (!(object instanceof OBOProperty)) {
+						throw new OBOParseException("Object " + pv.getValue()
+								+ " in annotation " + annotation.getID()
+								+ " is not an OBOProperty", currentPath, engine
+								.getCurrentLine(), engine.getLineNum());
+					}
+					annotation.setRelationship((OBOProperty) object);
+					it.remove();
+				} else if (pv.getProperty().equals(EVIDENCE_TAG.getName())) {
+					IdentifiedObject object = parser.getObject(pv.getValue());
+					if (object == null) {
+						if (parser.getAllowDanglingParents())
+							object = new DanglingPropertyImpl(pv.getValue());
+						else
+							throw new OBOParseException("Unknown object id "
+									+ pv.getValue() + " in annotation "
+									+ annotation.getID(), currentPath, engine
+									.getCurrentLine(), engine.getLineNum());
+					} else if (!(object instanceof LinkedObject)) {
+						throw new OBOParseException("Object " + pv.getValue()
+								+ " in annotation " + annotation.getID()
+								+ " is not a LinkedObject", currentPath, engine
+								.getCurrentLine(), engine.getLineNum());
+					}
+					annotation.addEvidence((LinkedObject) object);
+					it.remove();
 				}
 			}
 		}
-		for (UnknownStanza stanza : annotationStanzas) {
-			session.removeUnknownStanza(stanza);
-		}
 	}
 
-	public void readTagValue(String tag, String value, NestedValue nv,
+	public boolean readTagValue(String tag, String value, NestedValue nv,
 			boolean handled) throws OBOParseException {
 		if (inAnnotationStanza) {
 			if (tag.equals("id")) {
 				String id = parser.mapID(value);
 				currentObject = fetchObject(id, nv);
+				return true;
 			} else {
 				if (!engine.getReadIDForCurrentBlock()) {
 					currentObject = fetchObject(IDUtil
 							.fetchTemporaryID(session), nv);
 					currentObject.setIsAnonymous(true);
-					parser.getCurrentUnknownStanza().addPropertyValue(
-							new PropertyValueImpl("id", currentObject.getID()));
+					// parser.getCurrentUnknownStanza().addPropertyValue(
+					// new PropertyValueImpl("id", currentObject.getID(),
+					// null, -1), null);
 				}
-				if (tag.equals("is_anonymous")) {
-					currentObject.setIsAnonymous(value.equals("true"));
-				}
+				// try {
+				// engine.parseTagValue("Annotation", engine.getCurrentPath(),
+				// engine.getLineNum(), engine.getLineNum(), tag,
+				// value, nv);
+				// return true;
+				// } catch (IOException e) {
+				// throw new OBOParseException(
+				// "IOException while attempting callback to parse engine",
+				// engine.getCurrentLine(), engine.getCurrentLine(),
+				// engine.getLineNum());
+				// }
+				// if (tag.equals("is_anonymous")) {
+				// currentObject.setIsAnonymous(value.equals("true"));
+				// return true;
+				// }
 			}
 		}
+		return false;
 	}
 
 	public IdentifiedObject fetchObject(String id, NestedValue nv) {
@@ -318,6 +272,7 @@ public class AnnotationParserExtension implements ParserExtension,
 		currentObject.setIDExtension(nv);
 		session.addObject(currentObject);
 		annotations.add((Annotation) currentObject);
+		parser.setCurrentObject(currentObject);
 		return currentObject;
 	}
 
@@ -328,8 +283,9 @@ public class AnnotationParserExtension implements ParserExtension,
 			return null;
 	}
 
-	public void startStanza(String name) throws OBOParseException {
+	public boolean startStanza(String name) throws OBOParseException {
 		inAnnotationStanza = name.equalsIgnoreCase("annotation");
+		return inAnnotationStanza;
 	}
 
 	public void setParseEngine(ParseEngine engine) {
