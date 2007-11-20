@@ -94,6 +94,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 			attachListeners();
 		}
+		
+		
 
 		protected void attachListeners() {
 			textColorChooser.getSelectionModel().addChangeListener(cl);
@@ -889,7 +891,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		HashSet relationshipSet = new HashSet();
 		populateSet(relationshipSet);
 
-		System.out.println("DEBUG : GraphvizCanvas : outputFile : relationSet size = " + relationshipSet.size());
+		//System.out.println("DEBUG : GraphvizCanvas : outputFile : relationSet size = " + relationshipSet.size());
 
 		Iterator it = relationshipSet.iterator();
 		Set termSet = new HashSet();
@@ -983,22 +985,22 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ configuration.getViewerFormat());
 				
 				File textFile = File.createTempFile("graphtext", ".txt");
-				System.out.println("DEBUG : GraphvizCanvas : reloadImage : temp file name = " + textFile.getAbsolutePath());
+				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : temp file name = " + textFile.getAbsolutePath());
 
 				
 				outputFile(textFile);
 				
-				System.out.println("DEBUG : GraphvizCanvas : reloadImage : textfile = " + textFile);
+				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : textfile = " + textFile);
 				
 				String outputFile = imageFile.getPath();
 				
-				System.out.println("DEBUG : GraphvizCanvas : reloadImage : imageFile = " + imageFile);
+				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : imageFile = " + imageFile);
 				
 				
 				String extension = configuration.getViewerFormat();
 				
 				String command = configuration.getDotPath() + " -T "
-				+ extension + " -o \"" + outputFile + "\" -v "
+				+ extension + " -o " + outputFile + " -v "
 				+ textFile.getPath();
 				
 				System.out.println("GraphvizCanvas : CallGraphviz : " + command);
@@ -1014,17 +1016,17 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				
 				// callGraphviz(imageFile.getPath(), textFile, configuration.getViewerFormat());
 
-				System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 1 call ");
+				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 1 call ");
 				
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
 				
-				System.out.println("GraphvizCanvas : CallGraphviz : " + 
+				//System.out.println("GraphvizCanvas : CallGraphviz : " + 
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
 				
-				System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 2 call ");
+				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 2 call ");
 
 				
 				StringBuffer buffer = new StringBuffer();
@@ -1382,7 +1384,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// check the user answer, is  he press  "ok" continue in the if  block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				System.out.println("DEBUG : GraphvizCanvas : storeImage : temp file name = " + textFile.getAbsolutePath());
+				//System.out.println("DEBUG : GraphvizCanvas : storeImage : temp file name = " + textFile.getAbsolutePath());
 
 				// Creating the .dot file for graphviz
 				outputFile(textFile);
@@ -1400,7 +1402,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 				callGraphviz(outputFile, textFile, ef.getExtNoDot());				
 
-				System.out.println("DEBUG : GraphvizCanvas : storeImage : after call");
+				//System.out.println("DEBUG : GraphvizCanvas : storeImage : after call");
 
 				textFile.delete();
 			}
@@ -1422,13 +1424,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected void callGraphviz(String outputFile, File textFile, String extension) throws IOException, InterruptedException{
 
 		System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
-				+ extension + " -o \"" + outputFile + "\" -v "
+				+ extension + " -o " + outputFile + " -v "
 				+ textFile.getPath());
 		
 		
 		Process p = Runtime.getRuntime().exec(
 				configuration.getDotPath() + " -T"
-				+ extension + " -o \"" + outputFile + "\" -v "
+				+ extension + " -o " + outputFile + " -v "
 				+ textFile.getPath());
 		
 		p.waitFor();
