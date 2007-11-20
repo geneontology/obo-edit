@@ -1,5 +1,7 @@
 package org.oboedit.gui.filter;
 
+import java.awt.Color;
+
 import org.bbop.swing.ColorUtil;
 import org.obo.util.HTMLUtil;
 import org.oboedit.gui.FilteredRenderable;
@@ -36,8 +38,9 @@ public class ForegroundColorSpecField extends
 
 	public void renderHTML(FilteredRenderable selector, ColorProvider value,
 			StringBuffer in, Object o) {
+		Color c = value.getColor(selector, o);
 		in.insert(0, "<font color='"
-				+ ColorUtil.getHTMLCode(value.getColor(selector, o)) + "'>");
+				+ ColorUtil.getHTMLCode(c) + "'>");
 		in.append("</font>");
 	}
 

@@ -1488,4 +1488,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public List<RenderedFilter> getAutomaticObjectRenderers() {
 		return automaticObjectRenderers;
 	}
+
+	public void redraw() {
+		relayout();		
+	}
 }

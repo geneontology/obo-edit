@@ -414,7 +414,17 @@ public class Preferences {
 		URL url = getExtensionLoader().getResource(
 				"org/oboedit/gui/resources/icons/" + name);
 
-		return new ImageIcon(url);
+		return getIconForURL(url.toString());
+	}
+
+	public static Icon getIconForURL(String url) {
+		try {
+			if (url.endsWith("svg"))
+				return new SVGIcon(url);
+		} catch (IOException e) {
+		} finally {
+			return new ImageIcon(url);
+		}
 	}
 
 	public static Image loadLibraryImage(String name) {
@@ -786,11 +796,7 @@ public class Preferences {
 				if (iconURL.startsWith("resource:")) {
 					out = loadLibraryIcon(iconURL.substring(9));
 				} else {
-					try {
-						URL url = new URL(iconURL);
-						out = new ImageIcon(url);
-					} catch (MalformedURLException ex) {
-					}
+					out = getIconForURL(iconURL);
 				}
 			}
 			if (out == null) {

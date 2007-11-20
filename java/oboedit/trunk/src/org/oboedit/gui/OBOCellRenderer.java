@@ -9,6 +9,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.components.OBOTermPanel;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ForegroundColorSpecField;
 import org.oboedit.gui.filter.ConfiguredColor;
@@ -178,6 +179,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			boolean highlighted, boolean clickTarget, boolean tabRow,
 			boolean ignoreSelection, int row, boolean hasFocus) {
 		try {
+			setOpaque(false);
 			multiIcon.clearIcons();
 			if (value.equals(PathUtil.OBSOLETE)) {
 				setText("Obsolete");
@@ -259,8 +261,12 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			Icon icon = null;
 
 			if (link.getType() != null) {
-				icon = Preferences.getPreferences().getIconForRelationshipType(
-						link.getType());
+				if (link.getType().equals(OBOProperty.IS_A))
+					icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
+							Preferences.getPreferences().getFont().getSize());
+				else
+					icon = Preferences.getPreferences()
+							.getIconForRelationshipType(link.getType());
 			}
 
 			if (icon != null) {
@@ -306,8 +312,23 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 					}
 				}
 			} else {
-				setOpaque(false);
 				setBackground(null);
+				if (tree instanceof FilteredRenderable) {
+					FilteredRenderable fr = (FilteredRenderable) tree;
+					RenderSpec bgspec = GUIUtil
+							.getSpec(fr, link.getChild(), FilterManager
+									.getManager().getGlobalTermRenderers(), fr
+									.getObjectRenderers(), fr
+									.getAutomaticObjectRenderers());
+					if (bgspec instanceof GeneralRendererSpec) {
+						ColorProvider c = ((GeneralRendererSpec) bgspec)
+								.getValue(BackgroundColorSpecField.FIELD);
+						if (c != null) {
+							setOpaque(true);
+							setBackground(c.getColor(fr, link.getChild()));
+						}
+					}
+				}
 			}
 			if (tabRow) {
 				setBorder(tabBorder);
