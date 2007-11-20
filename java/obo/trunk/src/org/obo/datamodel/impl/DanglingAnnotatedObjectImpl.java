@@ -1,5 +1,6 @@
 package org.obo.datamodel.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -30,81 +31,64 @@ public abstract class DanglingAnnotatedObjectImpl extends
 	}
 
 	public Set getSecondaryIDs() {
-
-		return null;
+		return Collections.emptySet();
 	}
 
 	public void removeSecondaryID(String secondaryID) {
-
 	}
 
 	public void addSynonym(Synonym s) {
-
 	}
 
 	public Set<Synonym> getSynonyms() {
-
-		return null;
+		return Collections.emptySet();
 	}
 
 	public void removeSynonym(Synonym s) {
-
 	}
 
 	public void addDbxref(Dbxref xref) {
-
 	}
 
 	public Set<Dbxref> getDbxrefs() {
-
-		return null;
+		return Collections.emptySet();
 	}
 
 	public void removeDbxref(Dbxref xref) {
-
 	}
 
 	public String getComment() {
-
 		return null;
 	}
 
 	public NestedValue getCommentExtension() {
-
 		return null;
 	}
 
 	public void setComment(String comment) {
-
 	}
 
 	public void setCommentExtension(NestedValue nv) {
-
 	}
 
 	public void addConsiderExtension(ObsoletableObject o, NestedValue v) {
-
 	}
 
 	public void addConsiderReplacement(ObsoletableObject o) {
-
 	}
 
 	public void addReplacedBy(ObsoletableObject o) {
-
 	}
 
 	public void addReplacedByExtension(ObsoletableObject o, NestedValue v) {
-
 	}
 
 	public NestedValue getConsiderExtension(ObsoletableObject o) {
-
 		return null;
 	}
 
 	public Set<ObsoletableObject> getConsiderReplacements() {
-		return null;
+		return Collections.emptySet();
 	}
 
 	public NestedValue getObsoleteExtension() {
@@ -112,7 +96,7 @@ public abstract class DanglingAnnotatedObjectImpl extends
 	}
 
 	public Set<ObsoletableObject> getReplacedBy() {
-		return null;
+		return Collections.emptySet();
 	}
 
 	public NestedValue getReplacedByExtension(ObsoletableObject o) {
@@ -139,7 +123,7 @@ public abstract class DanglingAnnotatedObjectImpl extends
 	}
 
 	public Set<Dbxref> getDefDbxrefs() {
-		return null;
+		return Collections.emptySet();
 	}
 
 	public String getDefinition() {

@@ -366,14 +366,6 @@ public class PostcompUtil {
 				String newID = buffer.toString();
 				item.addItem(new CreateObjectHistoryItem(newID, true,
 						OBOClass.OBO_CLASS.getID()));
-				for (int i = 0; i < item.size(); i++) {
-					HistoryItem x = item.getItemAt(i);
-					if (x instanceof CreateObjectHistoryItem
-							&& ((CreateObjectHistoryItem) x).getObjectID()
-									.equals(newID)) {
-						System.err.println(" HISTORYITEM " + i + ") " + x);
-					}
-				}
 				OBOClass oboClass = (OBOClass) session.getObjectFactory()
 						.createObject(newID, OBOClass.OBO_CLASS, true);
 				Collection<Link> links = new LinkedList<Link>();
@@ -408,7 +400,6 @@ public class PostcompUtil {
 				}
 				intersectionMap.put(oboClass, links);
 				String name = getPostcompName(oboClass, provider);
-				System.err.println("got name " + name + " for " + oboClass);
 				oboClass.setName(name);
 				item.addItem(new NameChangeHistoryItem(name, newID,
 						newID));
