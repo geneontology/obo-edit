@@ -261,10 +261,10 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			Icon icon = null;
 
 			if (link.getType() != null) {
-				if (link.getType().equals(OBOProperty.IS_A))
-					icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
-							Preferences.getPreferences().getFont().getSize());
-				else
+//				if (link.getType().equals(OBOProperty.IS_A))
+//					icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
+//							Preferences.getPreferences().getFont().getSize());
+//				else
 					icon = Preferences.getPreferences()
 							.getIconForRelationshipType(link.getType());
 			}
