@@ -6,6 +6,7 @@ import org.obo.datamodel.DanglingProperty;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.NestedValue;
+import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.TermCategory;
@@ -28,6 +29,11 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 
 	public IdentifiedObject getDomain() {
 		return null;
+	}
+	
+	@Override
+	public Type<OBOClass> getType() {
+		return OBOClass.OBO_PROPERTY;
 	}
 
 	public NestedValue getDomainExtension() {
