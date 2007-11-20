@@ -7,10 +7,19 @@ default-namespace: foo
 id: bread
 name: bread
 
+[Term]
+id: dread
+name: dread
+
 [Instance]
 id: fred
 name: fred
 namespace: test
+property_value: dislikes shuggy
+
+[Instance]
+id: mildred
+name: mildred
 property_value: dislikes shuggy
 
 [Instance]
@@ -23,10 +32,17 @@ name: likes
 
 [Annotation]
 namespace: test
+namespace: men
 subject: fred
-relationship: likes
+relation: likes
 object: bread
 property_value: confirmed_by freds_mum
+
+[Annotation]
+namespace: women
+subject: mildred
+relation: dislikes
+object: dread
 
 [Typedef]
 id: confirmed_by
