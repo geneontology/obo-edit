@@ -1144,8 +1144,7 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (instanceOfObj == null) {
 				if (allowDanglingParents) {
-					instanceOfObj = objectFactory.createDanglingObject(
-							is.instanceOf, false);
+					instanceOfObj = new DanglingClassImpl(is.instanceOf);
 				} else {
 					throw new OBOParseException("Unrecognized instance_of id "
 							+ is.instanceOf + " specified for "

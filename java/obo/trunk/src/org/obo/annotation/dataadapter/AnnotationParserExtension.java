@@ -2,6 +2,7 @@ package org.obo.annotation.dataadapter;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -115,10 +116,14 @@ public class AnnotationParserExtension implements ParserExtension,
 	public void endParse() throws OBOParseException {
 		parser.setAllowDanglingParents(true);
 
+		Collection<Annotation> annotations = new ArrayList<Annotation>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (!(io instanceof Annotation))
 				continue;
-			Annotation annotation = (Annotation) io;
+			annotations.add((Annotation) io);
+		}		
+		
+		for (Annotation annotation : annotations) {
 			Iterator<PropertyValue> it = annotation.getPropertyValues()
 					.iterator();
 			while (it.hasNext()) {

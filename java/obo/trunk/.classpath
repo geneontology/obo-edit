@@ -10,9 +10,7 @@
 	<classpathentry kind="lib" path="lib/jena.jar"/>
 	<classpathentry kind="lib" path="lib/arq.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.12.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-api.jar" sourcepath="/owl1_1/api/src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/owl1_1"/>
 	<classpathentry kind="lib" path="lib/owlapi-apibinding.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-oboparser.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-util.jar"/>
