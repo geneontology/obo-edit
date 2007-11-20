@@ -11,6 +11,7 @@ import org.bbop.io.IOUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.graph.AbstractFetchTask;
 import org.oboedit.graph.OENode;
+import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.BoldSpecField;
@@ -57,16 +58,16 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 	}
 	
 	@Override
-	protected GeneralRendererSpec getFetchedRenderer(LinkDatabaseCanvas canvas) {
+	protected GeneralRendererSpec getFetchedRenderer(FilteredRenderable canvas, String valueVar) {
 		return new GeneralRendererSpec(HTMLSpecField.FIELD,
 				"$term$<hr><center><font color=white>defined on line $"
-						+ getValueVarName() + "$</font></center>",
+						+ valueVar + "$</font></center>",
 				BackgroundColorSpecField.FIELD, new HeatmapColor(Color.yellow,
-						Color.red, getValueVarName()));
+						Color.red, valueVar));
 	}
 
 	@Override
-	protected GeneralRendererSpec getPendingRenderer(LinkDatabaseCanvas canvas) {
+	protected GeneralRendererSpec getPendingRenderer(FilteredRenderable canvas, String valueVar) {
 		return new GeneralRendererSpec(HTMLSpecField.FIELD,
 				"$term$<hr><center><font color=white><i>Loading...</i></font></center>");
 	}

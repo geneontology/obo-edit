@@ -1,0 +1,84 @@
+package org.oboedit.gui;
+
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+
+import javax.swing.Icon;
+
+import org.apache.batik.gvt.GraphicsNode;
+import org.oboedit.util.SVGUtil;
+
+public class SVGIcon implements Icon {
+
+	protected GraphicsNode node;
+	protected int width = -1;
+	protected int height = -1;
+	protected double widthScaleFactor = 1;
+	protected double heightScaleFactor = 1;
+
+	public SVGIcon(String uri) throws IOException {
+		this(uri, -1, -1);
+	}
+
+	public SVGIcon(String uri, int dimension) throws IOException {
+		node = SVGUtil.getSVG(uri);
+		int width = -1;
+		int height = -1;
+		Rectangle2D r = node.getBounds();
+		if (r.getWidth() < r.getHeight())
+			height = dimension;
+		else
+			width = dimension;
+		setDimension(width, height);
+	}
+
+	public SVGIcon(String uri, int width, int height) throws IOException {
+		node = SVGUtil.getSVG(uri);
+		setDimension(width, height);
+	}
+
+	protected void setDimension(int width, int height) {
+		Rectangle2D r = node.getBounds();
+		widthScaleFactor = 1;
+		heightScaleFactor = 1;
+		if (height > 0)
+			heightScaleFactor = height / r.getHeight();
+		if (width > 0)
+			widthScaleFactor = width / r.getWidth();
+		if (width == -1) {
+			widthScaleFactor = heightScaleFactor;
+		}
+		if (height == -1)
+			heightScaleFactor = widthScaleFactor;
+		width = (int) (r.getWidth() * widthScaleFactor);
+		height = (int) (r.getHeight() * heightScaleFactor);
+		this.width = width;
+		this.height = height;
+	}
+
+	public int getIconHeight() {
+		return height;
+	}
+
+	public int getIconWidth() {
+		return width;
+	}
+
+	public void paintIcon(Component c, Graphics g, int x, int y) {
+		if (g instanceof Graphics2D) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.translate(x, y);
+			g2.scale(widthScaleFactor, heightScaleFactor);
+			node.paint(g2);
+			g2.scale(1 / widthScaleFactor, 1 / heightScaleFactor);
+			g2.translate(-x, -y);
+		}
+	}
+
+}

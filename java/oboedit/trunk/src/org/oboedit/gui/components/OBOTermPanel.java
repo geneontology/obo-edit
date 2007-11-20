@@ -52,6 +52,7 @@ import org.oboedit.gui.Selection;
 import org.oboedit.gui.SelectionTransferHandler;
 import org.oboedit.gui.TermModel;
 import org.oboedit.gui.event.*;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
@@ -930,10 +931,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		addExpansionListener(new ExpandCollapseListener() {
 
 			public void expandStateChanged(ExpansionEvent e) {
-				System.err.println("EXPANDED "+e.getShown());
-				System.err.println("HID "+e.getHidden());
+				System.err.println("EXPANDED " + e.getShown());
+				System.err.println("HID " + e.getHidden());
 			}
-			
+
 		});
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -983,7 +984,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		this.id = id;
 		setShowsRootHandles(true);
 		setRootVisible(false);
-		setNodeLabelProvider(new HTMLNodeLabelProvider(this));
+		setNodeLabelProvider(new HTMLNodeLabelProvider(this, CollectionUtil
+				.list(BackgroundColorSpecField.FIELD), null, null));
 		/*
 		 * addFocusListener(new FocusAdapter() { @Override public void
 		 * focusGained(FocusEvent e) {
@@ -1583,5 +1585,9 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public void removeExpansionListener(ExpandCollapseListener listener) {
 		expansionListeners.remove(listener);
+	}
+
+	public void redraw() {
+		repaint();
 	}
 }

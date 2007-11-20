@@ -23,4 +23,6 @@ public interface FilteredRenderable extends ObjectSelector {
 	
 	public void setNodeLabelProvider(NodeLabelProvider provider);
 	public NodeLabelProvider getNodeLabelProvider();
+	
+	public void redraw();
 }
