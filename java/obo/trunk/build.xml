@@ -50,6 +50,12 @@
 				<path refid="classpath" />
 			</classpath>
 		</javac>
+    <!-- obo reources are in source and need to go to classes -MG -->
+    <copy todir="${outputdir}">
+      <fileset file="${sourcedir}/**">
+         <include name="*.obo"/>
+      </fileset>
+    </copy>
 	</target>
 
 	<target name="checkjar">
