@@ -3,9 +3,13 @@ package org.oboedit.gui.components;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,7 +35,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.util.MultiHashMap;
+import org.bbop.util.MultiMap;
 import org.bbop.util.TinySet;
+
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
@@ -54,11 +61,11 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 	private static final long serialVersionUID = -7919246476674947971L;
 
 
+	protected JCheckBox checkBoxUseTransitive = new JCheckBox("Include ancestors");
+	protected JCheckBox checkBoxConcise = new JCheckBox("use concise");
 
 	protected JTable asTable;
 	protected JComboBox relationChooser = new JComboBox();
-	protected JCheckBox checkBoxForIsA = null;
-	protected JCheckBox checkBoxForAll = null;
 
 	protected JEditorPane AnnotationSummaryPane = new JEditorPane("text/html",
 			"<html></html>");
@@ -131,24 +138,13 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 				// TODO: provide more info in  tooltip
 				if (lo == null) {
-					return "";
+					return "--";
 				}
 				else {
 					StringBuffer out = new StringBuffer(); 
-					IdentifiedObject xpGenus = ReasonerUtil.getGenus((OBOClass)lo);
-					Collection<Link> xpDiffs = ReasonerUtil.getDifferentia((OBOClass)lo);
 					out.append("<html>");
-					out.append("Term: [" + lo.getID() + "] " + lo + "<br>");
-					out.append("Genus: " + xpGenus + "<br>");
-					out.append("Discriminating Properties:<br><ul>");
-		
-					for (Link xpDiff : xpDiffs) {
-						LinkedObject io = xpDiff.getParent();
-
-						out.append("<li>" + xpDiff.getType().getName()+" "+io+"</li>");
-					}
-					//return lo.getName() + " "+lo.getID();
-					out.append("</ul></html>");
+					out.append("Term: [" + lo.getID() + "] " + lo.getName() + "<br>");
+					out.append("</html>");
 					return out.toString();
 				}
 			}
@@ -168,6 +164,29 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 		// The Renderer highlights subsumption paths
 		asTable.setDefaultRenderer(Object.class, new AnnotationSetCellRenderer());
+
+		JPanel buttonPanel = new JPanel();
+		
+		checkBoxUseTransitive.addItemListener(
+				new ItemListener() {
+					public void itemStateChanged(ItemEvent e) {
+						update();
+					}
+				}
+				);
+		checkBoxConcise.addItemListener(
+				new ItemListener() {
+					public void itemStateChanged(ItemEvent e) {
+						update();
+					}
+				}
+				);
+
+		
+		buttonPanel.add(checkBoxUseTransitive);
+		buttonPanel.add(checkBoxConcise);
+
+		add(buttonPanel,"NORTH");
 
 		// Show genus terms in header
 		JTableHeader asTableHeader = asTable.getTableHeader();
@@ -254,6 +273,27 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		TinySet<LinkedObject> objSet = new TinySet<LinkedObject>();
 		
 		
+		private class AnnotationSorter implements Comparator<Annotation> {
+			AnnotationSorter() {
+			}
+			
+			public int compare(Annotation a1, Annotation a2) {
+				return a1.getNamespace().getID().compareTo(a2.getNamespace().getID());
+			}
+		}	
+		
+		private class ClassSorter implements Comparator<LinkedObject> {
+			ClassSorter() {
+			}
+			
+			public int compare(LinkedObject a1, LinkedObject a2) {
+				
+				String a1s = a1.getNamespace() == null ? "" : a1.getNamespace().getID();
+				String a2s = a2.getNamespace() == null ? "" : a2.getNamespace().getID();
+				
+				return a1s.compareTo(a2s);
+			}
+		}	
 		/**
 		 * @param rowObjsIn
 		 * genus terms
@@ -264,29 +304,81 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		AnnotationSummaryTableModel(OBOSession session) {
 			
 			boolean isTransitiveIncluded = true;
-			boolean isFilteredToMinimalSet = true; //TODO
 			
 			Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 			Collection<LinkedObject> subjs =  AnnotationUtil.getAnnotationSubjects(session);
-			Collection<LinkedObject> objs =  AnnotationUtil.getAnnotationObjects(session);
+			Collection<LinkedObject> objSet =  AnnotationUtil.getAnnotationObjects(session);
 
-			System.out.println("n_objs: "+objs.size());
+			System.out.println("n_objs: "+objSet.size());
 			System.out.println("n_subjs: "+subjs.size());
-			if (isTransitiveIncluded) {
+			if (checkBoxUseTransitive.isSelected()) {
 				Set<LinkedObject> objsWithAncs = new HashSet<LinkedObject>();
-				for (LinkedObject obj : objs) {
-					System.out.println("  direct annotation to:"+obj.getID()+" :: "+obj);
+				for (LinkedObject obj : objSet) {
+					//System.out.println("  direct annotation to:"+obj.getID()+" :: "+obj);
 					if (obj == null)
 						continue;
 					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true);
-					for (LinkedObject anc : ancs)
-						System.out.println("      transitive annotation to:"+anc.getID()+" :: "+anc);
-					objsWithAncs.addAll(ancs);
+						objsWithAncs.addAll(ancs);
 				}
-				objs = objsWithAncs;
+				objSet = objsWithAncs;
 			}
-			System.out.println("n_objs (after including transitive): "+objs.size());
+			System.out.println("n_objs (after including transitive): "+objSet.size());
+			
+			if (checkBoxConcise.isSelected()) {
+				//MultiMap<LinkedObject, LinkedObject> obj2subj = 
+				//	new MultiHashMap<LinkedObject, LinkedObject>();
+				Map<LinkedObject, HashSet<LinkedObject>> obj2subj = 
+					new HashMap<LinkedObject, HashSet<LinkedObject>>();
+				
+				// build annotation mapping; eg Phenotype to Genotype
+				for (Annotation annot : annots)
+					for (LinkedObject obj : TermUtil.getAncestors(annot.getObject()))
+						if (obj2subj.containsKey(obj))
+							obj2subj.get(obj).add(annot.getSubject());
+						else
+							obj2subj.put(obj, 
+									new HashSet(Collections.singleton(annot.getSubject())));
+				
+				Collection<LinkedObject> filteredObjSet =  objSet;
+				
+				for (LinkedObject obj : objSet) {
+					Set<LinkedObject> parentsAndChildren = new HashSet<LinkedObject>();
+					for (Link link : obj.getParents())
+						if (objSet.contains(link.getParent()))
+							parentsAndChildren.add(link.getParent());
+					for (Link link : obj.getChildren())
+						if (objSet.contains(link.getChild()))
+							parentsAndChildren.add(link.getChild());
+					//System.out.println(parentsAndChildren.size()+" ::: "+obj);
+					Collection<LinkedObject> profile =
+						obj2subj.get(obj);
+						//AnnotationUtil.getSubjectsAnnotatedWithObject(session, obj);
+					boolean isInformative = false; // only informative if a neighbour is different
+					//System.out.println("  profile="+profile);
+					for (LinkedObject neighbor : parentsAndChildren) {
+						Set<LinkedObject> neighborProfile =
+							obj2subj.get(neighbor);
+							//AnnotationUtil.getSubjectsAnnotatedWithObject(session, neighbor);
+							//System.out.println("      Nprofile="+neighborProfile+" "+neighbor);
+						if (neighborProfile == null ||
+								profile == null ||
+								!neighborProfile.equals(profile))
+							isInformative = true;
+						//System.out.println("      INF:"+isInformative);
+					}
+					if (parentsAndChildren.size() == 0)
+						isInformative = true; // graph singletons are informative
+					if (isInformative)
+						filteredObjSet.add(obj);
+				}
+				objSet = filteredObjSet;
+				System.out.println("n_objs (uniformative nodes trimmed): "+objSet.size());
 
+			}
+			
+			LinkedList<LinkedObject> objs = new LinkedList<LinkedObject>(objSet);
+			Collections.sort(objs, new ClassSorter());
+			//System.out.println("sorted objs="+objs);
 			rowObjs = objs.toArray(new LinkedObject[0]);
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
@@ -303,11 +395,11 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 			// fill edges of grid
 			for (int i=0; i< objs.size(); i++) {
-				System.out.println("row: "+i+" ="+((IdentifiedObject)objs.toArray()[i]).getID()+" :: "+objs.toArray()[i]);
+				//System.out.println("row: "+i+" ="+((IdentifiedObject)objs.toArray()[i]).getID()+" :: "+objs.toArray()[i]);
 				hdr2rownum.put((LinkedObject) objs.toArray()[i], i);
 			}
 			for (int i=0; i< subjs.size(); i++) {
-				System.out.println("col: "+i+" ="+subjs.toArray()[i]);
+				//System.out.println("col: "+i+" ="+subjs.toArray()[i]);
 				hdr2colnum.put((LinkedObject) subjs.toArray()[i], i);
 			}
 			
@@ -318,21 +410,26 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			//cellStatus = new CellStatus[rowCount][columnCount];
 			
 			for (Annotation annot : annots) {
-				System.out.println(annot);
+				//System.out.println(annot);
 				LinkedObject annotatedEntity = annot.getSubject();
 				LinkedObject annotatedWithObject = annot.getObject();
 				
 				int row = hdr2rownum.get(annotatedWithObject); // classes
 				int col = hdr2colnum.get(annotatedEntity); // annotated entities
 				setCell(annot,row,col);
-				System.out.println("  setting cell " + row + ","+col);
+				//System.out.println("  setting cell " + row + ","+col);
 				
-				if (isTransitiveIncluded) {
+				if (checkBoxUseTransitive.isSelected()) {
 					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true)) {
-						System.out.println("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
-						row = hdr2rownum.get(objAnc);
-						System.out.println(annotatedWithObject + " < "+objAnc+" : "+row);
-						setCellTransitive(annot,row,col);
+						//System.out.println("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
+						if (hdr2rownum.containsKey(objAnc)) {
+							row = hdr2rownum.get(objAnc);
+							setCellTransitive(annot,row,col);
+						}
+						else {
+							if (!checkBoxConcise.isSelected())
+								System.err.println("THIS SHOULD NOT HAPPEN!! "+objAnc);
+						}
 					}
 				}
 			}
@@ -340,7 +437,6 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		}
 		
 		public int getRowCount() {
-			System.out.println("rc= "+rowCount);
 			return rowCount;
 		}
 		
@@ -355,7 +451,6 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		// col: column 0 is the differentium
 		//      col 1+ is the xp term
 		public Object getValueAt(int row, int column) {
-			System.out.println("getting "+row+" "+column);
 			if (column == 0) {
 				return rowObjs[row];
 			}
@@ -366,8 +461,11 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					return "";
 				}
 				else {
-					return as.getTransitiveAnnotations().size()
-					 + " ("+as.getDirectAnnotations().size()+")";
+					if (checkBoxUseTransitive.isSelected())
+						return as.getTransitiveAnnotations().size()
+						+ " ("+as.getDirectAnnotations().size()+")";
+					else
+						return as.getDirectAnnotations().size();
 		
 				}
 			}
@@ -449,15 +547,14 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				boolean isSelected, boolean hasFocus,
 				int row, int column) {
 			
-			// Differentium column
+			// AnnotatedWith column
 			if (column==0) {
 				setBackground(Color.lightGray);
 			}
 			else {
-				AnnotationSummaryTableModel tm = (AnnotationSummaryTableModel)table.getModel();
-				//System.out.println("status="+tm.getStatusAt(row, column-1));
-			
-						setBackground(Color.white);
+				AnnotationSummaryTableModel tm = 
+					(AnnotationSummaryTableModel)table.getModel();
+				setBackground(Color.white);
 			}
 			return 
 				super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
