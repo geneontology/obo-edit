@@ -22,6 +22,10 @@
 	<property name="svnpath" value="/usr/local/bin/svn" />
 	<property name="antpath" value="ant" />	
 
+	<fileset dir="${sourcedir}" id="resource_files">
+		<include name="**/resources/**" />
+	</fileset>
+	
 	<path id="classpath">
 		<fileset dir="${librarydir}">
 			<include name="*.jar" />
@@ -42,20 +46,21 @@
 		<ant dir="${bbop_dest}" target="jar" inheritAll="false"/>
 		<copy file="${bbop_dest}/bbop.jar" todir="${librarydir}"/>
 	</target>
+	
+	<target name="resources">
+		<copy todir="${outputdir}">
+			<fileset refid="resource_files" />
+		</copy>
+	</target>
 
-	<target name="classes" depends="buildbbop">
+	<target name="classes" depends="buildbbop, resources">
 		<mkdir dir="${outputdir}" />
 		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
 			<classpath>
 				<path refid="classpath" />
 			</classpath>
 		</javac>
-    <!-- obo reources are in source and need to go to classes -MG -->
-    <copy todir="${outputdir}">
-      <fileset file="${sourcedir}/**">
-         <include name="*.obo"/>
-      </fileset>
-    </copy>
+
 	</target>
 
 	<target name="checkjar">
