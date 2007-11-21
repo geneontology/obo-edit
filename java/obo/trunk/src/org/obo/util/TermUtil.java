@@ -1147,7 +1147,7 @@ public class TermUtil {
 		if (lo instanceof Instance) {
 			return (Instance) lo;
 		} else if (isDangling(lo)) {
-			return new InstanceImpl(lo.getID()); // TODO: check
+			return new DanglingInstanceImpl(lo.getID(),null); 
 		} else
 			return null;
 	}
