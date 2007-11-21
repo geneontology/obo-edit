@@ -88,12 +88,7 @@ public abstract class AbstractAnnotationTest extends AbstractOBOTest {
 		}
 		return matches;
 	}
-	
-	
-	
-	
-
-	
+		
 	public Collection<Annotation> getAnnotationsForSubject(IdentifiedObject su) {
 		Collection<Annotation> annots = new LinkedList<Annotation>();
 		for (IdentifiedObject io : session.getObjects()) {

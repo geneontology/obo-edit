@@ -128,7 +128,9 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 					}		
 				}
 			}
-			if (annot.getAssignedBy() != null)
+			System.out.println("* assby="+annot.getAssignedBy());
+
+			if (annot.getAssignedBy() != null && annot.getAssignedBy().getID().equals("ZFIN"))
 				assignedByOk = true;
 			if (genusFound & diffFound)
 				match = annot;
@@ -136,8 +138,8 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		assertTrue(genusFound);
 		assertTrue(diffFound);
 		System.out.println("assby="+match.getAssignedBy());
+		System.out.println("annotation ns="+match.getNamespace());
 		assertTrue(assignedByOk);
-		assertTrue(match != null && match.getAssignedBy().getID().equals("ZFIN"));
 	
 	}
 	
