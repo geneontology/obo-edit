@@ -103,6 +103,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 	}
 
 	protected ArrowIcon linkIcon = new ArrowIcon();
+	protected ScaledIcon scaledIcon = new ScaledIcon(null);
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
@@ -213,6 +214,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				setForeground(Color.black);
 
 			multiIcon.addIcon(linkIcon);
+			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
 			linkIcon.setLineWidth(1);
 			linkIcon.setLineType(LineType.SOLID_LINE);
@@ -222,6 +224,18 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			}
 
 			Relationship link = (Relationship) value;
+
+			if (link.getType() != null) {
+				// if (link.getType().equals(OBOProperty.IS_A))
+				// icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
+				// Preferences.getPreferences().getFont().getSize());
+				// else
+				Color c = Preferences.getPreferences()
+						.getColorForRelationshipType(link.getType());
+				if (c != null)
+					linkIcon.setColor(c);
+			}
+
 			RenderSpec spec;
 			if (tree instanceof FilteredRenderable) {
 				FilteredRenderable fr = (FilteredRenderable) tree;
@@ -261,17 +275,19 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			Icon icon = null;
 
 			if (link.getType() != null) {
-//				if (link.getType().equals(OBOProperty.IS_A))
-//					icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
-//							Preferences.getPreferences().getFont().getSize());
-//				else
-					icon = Preferences.getPreferences()
-							.getIconForRelationshipType(link.getType());
+				// if (link.getType().equals(OBOProperty.IS_A))
+				// icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
+				// Preferences.getPreferences().getFont().getSize());
+				// else
+				icon = Preferences.getPreferences().getIconForRelationshipType(
+						link.getType());
 			}
+			scaledIcon.setIcon(icon);
+			setIcon(null);
+			int newHeight = (int) getPreferredSize().getHeight() - 2;
+			setIcon(multiIcon);
+			scaledIcon.setDimension(newHeight);
 
-			if (icon != null) {
-				multiIcon.addIcon(icon);
-			}
 			if (link instanceof OBORestriction) {
 				OBORestriction tr = (OBORestriction) link;
 				if (!tr.isNecessarilyTrue() && tr.isInverseNecessarilyTrue())

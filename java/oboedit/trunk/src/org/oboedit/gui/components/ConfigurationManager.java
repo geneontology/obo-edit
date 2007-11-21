@@ -1,23 +1,16 @@
 package org.oboedit.gui.components;
 
-import org.bbop.expression.ExpressionException;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
-import org.bbop.util.*;
-import org.bounce.text.xml.*;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.widget.DbxrefListEditor;
 import org.oboedit.util.GUIUtil;
-import org.xml.sax.SAXParseException;
 
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.Element;
-import javax.swing.text.PlainDocument;
 import java.util.*;
 import java.util.List;
 import java.net.*;
@@ -59,7 +52,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	JCheckBox warnBeforeDiscardingEditsBox;
 
 	JButton commitButton;
-	
+
 	JTabbedPane mainPanel;
 
 	JTextField memoryField;
@@ -135,9 +128,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		private String url;
 
-		public IconWrapper(String type, String url) {
+		private Color color;
+
+		public IconWrapper(String type, String url, Color color) {
 			this.type = type;
 			this.url = url;
+			this.color = color;
 		}
 
 		public String getType() {
@@ -159,6 +155,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		@Override
 		public String toString() {
 			return type;
+		}
+
+		public Color getColor() {
+			return color;
+		}
+
+		public void setColor(Color color) {
+			this.color = color;
 		}
 	}
 
@@ -185,6 +189,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JButton libraryButton = new JButton("Browse built-in icons");
 
+		JButton colorButton = new JButton();
+
 		protected ListEditor editor;
 
 		public void setMasterComponent(Component c) {
@@ -193,6 +199,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		public IconEditor() {
+			colorButton.setBorderPainted(false);
+			previewLabel.setVerticalAlignment(SwingConstants.CENTER);
 			setMinimumSize(new Dimension(0, 0));
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -223,6 +231,18 @@ public class ConfigurationManager extends AbstractGUIComponent {
 					showFileChooser();
 				}
 			});
+			colorButton.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					Color c = JColorChooser.showDialog(
+							ConfigurationManager.this, "Select link color",
+							colorButton.getBackground());
+					colorButton.setBackground(c);
+					colorButton.setText(ColorUtil.getName(c)
+							+ " (click to modify)");
+				}
+
+			});
 
 			Box typeBox = new Box(BoxLayout.X_AXIS);
 			typeBox.add(typeLabel);
@@ -241,19 +261,46 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			buttonBox.add(libraryButton);
 			buttonBox.add(Box.createHorizontalGlue());
 
-			Box previewBox = new Box(BoxLayout.X_AXIS);
-			previewBox.add(previewTextLabel);
-			previewBox.add(Box.createHorizontalGlue());
+			// Box previewBox = new Box(BoxLayout.X_AXIS);
+			// previewBox.add(previewTextLabel);
+			// previewBox.add(Box.createHorizontalGlue());
+			// previewBox.add(previewLabel);
+
+			JPanel previewBox = new JPanel();
+			previewBox.setLayout(new GridLayout(1, 1));
 			previewBox.add(previewLabel);
+
+			JPanel iconPanel = new JPanel();
+			iconPanel.setLayout(new BorderLayout());
+			JPanel fieldsPanel = new JPanel();
+			fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
+			fieldsPanel.add(urlLabelBox);
+			fieldsPanel.add(urlField);
+			fieldsPanel.add(Box.createVerticalStrut(5));
+			fieldsPanel.add(buttonBox);
+			iconPanel.add(fieldsPanel, "Center");
+			iconPanel.add(previewBox, "East");
+			iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+					(int) iconPanel.getPreferredSize().getHeight()));
+
+			JPanel colorPanel = new JPanel();
+			colorPanel.setLayout(new BorderLayout());
+			Box colorLabelBox = Box.createHorizontalBox();
+			colorLabelBox.add(new JLabel("Link color"));
+			colorLabelBox.add(Box.createHorizontalStrut(10));
+			colorPanel.add(colorLabelBox, "North");
+			colorPanel.add(colorButton, "Center");
 
 			add(typeBox);
 			add(Box.createVerticalStrut(10));
-			add(urlLabelBox);
-			add(urlField);
-			add(Box.createVerticalStrut(5));
-			add(buttonBox);
-			add(Box.createVerticalStrut(10));
-			add(previewBox);
+			// add(urlLabelBox);
+			// add(urlField);
+			// add(Box.createVerticalStrut(5));
+			// add(buttonBox);
+			// add(Box.createVerticalStrut(10));
+			// add(previewBox);
+			add(iconPanel);
+			add(colorPanel);
 			add(Box.createVerticalGlue());
 		}
 
@@ -264,12 +311,27 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		 */
 
 		private void update() {
+			Icon icon = null;
 			try {
-				URL url = new URL(urlField.getText());
-				previewLabel.setIcon(new ImageIcon(url));
+				if (urlField.getText().startsWith("resource:"))
+					icon = Preferences.loadLibraryIcon(urlField.getText()
+							.substring(9));
+				else
+					icon = Preferences
+							.getIconForURL(new URL(urlField.getText()));
 				validate();
 			} catch (Exception e) {
+				File file = new File(urlField.getText());
+				if (file.exists())
+					try {
+						icon = Preferences.getIconForURL(file.toURL());
+					} catch (MalformedURLException e1) {
+					}
 			}
+			if (icon != null)
+				previewLabel.setIcon(new ScaledIcon(icon, 60));
+			else
+				previewLabel.setIcon(null);
 		}
 
 		public void load(Object o) {
@@ -278,6 +340,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			typeField.setText(iw.getType());
 			urlField.setCaretPosition(0);
 			typeField.setCaretPosition(0);
+			colorButton.setBackground(iw.getColor());
+			colorButton.setText(ColorUtil.getName(iw.getColor())
+					+ " (click to modify)");
 			update();
 		}
 
@@ -285,36 +350,44 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			IconWrapper iw = (IconWrapper) o;
 			iw.setURL(urlField.getText());
 			iw.setType(typeField.getText());
+			iw.setColor(colorButton.getBackground());
 		}
 
 		public Object createNewValue() {
-			return new IconWrapper("UNKNOWN", "<new icon path>");
+			return new IconWrapper("UNKNOWN", "<new icon path>", Color.black);
 		}
 
 		private void showIconLibrary() {
 			JPanel panel = new JPanel();
 			panel.setBackground(Color.white);
-			List<URL> icons = Preferences.getIconLibrary();
-			final JDialog dialog = new JDialog();
-			dialog.setTitle("Click an icon to select it");
-			dialog.setModal(true);
+			try {
+				List<URL> icons = Preferences.getIconLibrary();
+				final JDialog dialog = new JDialog();
+				dialog.setTitle("Click an icon to select it");
+				dialog.setModal(true);
 
-			for (final URL url : icons) {
-				ActionListener listener = new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						urlField.setText(url.toString());
-						update();
-						dialog.dispose();
-					}
-				};
-				JButton button = new JButton(new ImageIcon(url));
-				button.setOpaque(false);
-				button.addActionListener(listener);
-				panel.add(button);
+				for (final URL url : icons) {
+					ActionListener listener = new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							File file = new File(url.getPath());
+							urlField.setText("resource:" + file.getName());
+							update();
+							dialog.dispose();
+						}
+					};
+					JButton button = new JButton(new ScaledIcon(Preferences
+							.getIconForURL(url), 20));
+					button.setOpaque(false);
+					button.addActionListener(listener);
+					panel.add(button);
+				}
+				dialog.setContentPane(panel);
+				dialog.pack();
+				dialog.setVisible(true);
+			} catch (Throwable t) {
+				t.printStackTrace();
+				int out = 0;
 			}
-			dialog.setContentPane(panel);
-			dialog.pack();
-			dialog.setVisible(true);
 		}
 
 		private void showFileChooser() {
@@ -664,7 +737,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		memoryField = new JTextField();
 		memoryField.setText(Preferences.getPreferences().getMemString());
 
-		String[] sizes = { "6", "8", "10", "12", "14", "16", "18", "20" };
+		String[] sizes = { "6", "8", "10", "12", "14", "16", "18", "20", "24",
+				"30", "36", "42", "48", "56", "64", "72", "80", "90", "100" };
 		String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment()
 				.getAvailableFontFamilyNames();
 		String[] fontStyles = { "Normal", "Italic", "Bold", "Bold-Italic" };
@@ -686,9 +760,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fontPreviewArea.setEditable(false);
 		fontPreviewArea.setOpaque(false);
 
-
 		JPanel guiPanel = new JPanel();
-		// guiPanel.setLayout(new BoxLayout(guiPanel, BoxLayout.Y_AXIS));
 		guiPanel.setLayout(new SpringLayout());
 		guiPanel.setBorder(new TitledBorder("GUI Options"));
 
@@ -806,14 +878,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		/*
 		 * JPanel valuesPanel = new JPanel(new SpringLayout());
-		 * valuesPanel.setOpaque(false);
-		 *  // 6 valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
+		 * valuesPanel.setOpaque(false); // 6
+		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
 		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 7
 		 * valuesPanel.add(selectionBatchLabel);
 		 * valuesPanel.add(selectionBatchField); // 8
 		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-		 *  // 9 valuesPanel.add(useDefaultBrowserBox);
+		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 9
+		 * valuesPanel.add(useDefaultBrowserBox);
 		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 10
 		 * valuesPanel.add(browserLabel); valuesPanel.add(browserCommandField); //
 		 * 11 valuesPanel.add(Box.createVerticalGlue());
@@ -907,7 +979,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		for (String id : Preferences.getPreferences().getIconURLIndex()
 				.keySet()) {
 			IconWrapper iw = new IconWrapper(id, Preferences.getPreferences()
-					.getIconURLIndex().get(id));
+					.getIconURLIndex().get(id), Preferences.getPreferences()
+					.getColorForRelationshipType(id));
 			out.addElement(iw);
 		}
 
@@ -983,11 +1056,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		preferences.setMemoryValue(memoryField.getText());
 
 		Map<String, String> iconURLIndex = new HashMap<String, String>();
+		Map<String, Color> colorIndex = new HashMap<String, Color>();
 		for (int i = 0; i < icons.size(); i++) {
 			IconWrapper iw = (IconWrapper) icons.elementAt(i);
 			iconURLIndex.put(iw.getType(), iw.getURL());
+			colorIndex.put(iw.getType(), iw.getColor());
 		}
 		preferences.setIconURLIndex(iconURLIndex);
+		preferences.setColorIndex(colorIndex);
 
 		preferences.setUsePersonalDefinition(personalDefCheckbox.isSelected());
 		if (personalDefCheckbox.isSelected()) {

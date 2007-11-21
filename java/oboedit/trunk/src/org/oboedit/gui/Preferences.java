@@ -143,6 +143,7 @@ public class Preferences {
 	protected Map<String, Icon> iconIndex = new HashMap<String, Icon>();
 
 	protected Map<String, String> iconURLIndex = new HashMap<String, String>();
+	protected Map<String, Color> colorIndex = new HashMap<String, Color>();
 
 	protected static VersionNumber version;
 
@@ -196,6 +197,10 @@ public class Preferences {
 		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:isa.gif");
 		iconURLIndex.put("part_of", "resource:partof.gif");
 		iconURLIndex.put("develops_from", "resource:develops.gif");
+		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
+		colorIndex.put("part_of", Color.orange);
+		colorIndex.put("develops_from", Color.green.darker());
+		
 	}
 
 	public static Preferences getPreferences() {
@@ -413,18 +418,21 @@ public class Preferences {
 	protected Icon loadLibraryIconLocal(String name) {
 		URL url = getExtensionLoader().getResource(
 				"org/oboedit/gui/resources/icons/" + name);
-
-		return getIconForURL(url.toString());
+		if (url == null) {
+			url = getExtensionLoader().getResource(
+					"org/oboedit/gui/resources/icons/typeicons/" + name);
+		}
+		return getIconForURL(url);
 	}
 
-	public static Icon getIconForURL(String url) {
+	public static Icon getIconForURL(URL url) {
 		try {
-			if (url.endsWith("svg"))
-				return new SVGIcon(url);
+			String urlStr = url.toString();
+			if (urlStr.endsWith("svg"))
+				return new SVGIcon(urlStr);
 		} catch (IOException e) {
-		} finally {
-			return new ImageIcon(url);
 		}
+		return new ImageIcon(url);
 	}
 
 	public static Image loadLibraryImage(String name) {
@@ -623,22 +631,25 @@ public class Preferences {
 	}
 
 	public static List<URL> getIconLibrary() {
-		List<URL> iconLib = new LinkedList<URL>();
-		try {
-			InputStream stream = getExtensionLoader().getResourceAsStream(
-					"org/oboedit/gui/resources/" + "icons/dir");
-			Properties icons = new Properties();
-			icons.load(stream);
-			int size = Integer.parseInt(icons.getProperty("iconCount"));
-			for (int i = 0; i < size; i++) {
-				String iconName = icons.getProperty("icon" + i);
-				URL iconURL = getExtensionLoader().getResource(iconName);
-				iconLib.add(iconURL);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return iconLib;
+		// List<URL> iconLib = new LinkedList<URL>();
+		// try {
+		// InputStream stream = getExtensionLoader().getResourceAsStream(
+		// "org/oboedit/gui/resources/" + "icons/dir");
+		// Properties icons = new Properties();
+		// icons.load(stream);
+		// int size = Integer.parseInt(icons.getProperty("iconCount"));
+		// for (int i = 0; i < size; i++) {
+		// String iconName = icons.getProperty("icon" + i);
+		// URL iconURL = getExtensionLoader().getResource(iconName);
+		// iconLib.add(iconURL);
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// return iconLib;
+		return ClassUtil.getResources(Preferences.class.getClassLoader(),
+				"**/org/oboedit/gui/resources/icons/typeicons/**", "gif",
+				"jpg", "svg");
 	}
 
 	protected static void writePreferences(Preferences preferences)
@@ -735,6 +746,10 @@ public class Preferences {
 	public static URL getLibraryIconURL(String name) {
 		URL url = getExtensionLoader().getResource(
 				"org/oboedit/gui/resources/icons/" + name);
+		if (url == null) {
+			url = getExtensionLoader().getResource(
+					"org/oboedit/gui/resources/icons/typeicons/" + name);
+		}
 		return url;
 	}
 
@@ -787,23 +802,55 @@ public class Preferences {
 	public Map<String, String> getIconURLIndex() {
 		return iconURLIndex;
 	}
+	
+	public Color getColorForRelationshipType(OBOProperty type) {
+		return getColorForRelationshipType(type.getID());
+	}
+	
+	public Color getColorForRelationshipType(String id) {
+		Color out = colorIndex.get(id);
+		if (out == null)
+			out = Color.black;
+		return out;
+	}
 
 	public Icon getIconForRelationshipType(OBOProperty type) {
-		Icon out = (Icon) iconIndex.get(type.getID());
+		return getIconForRelationshipType(type.getID(), type.getName());
+	}
+
+	public Icon getIconForRelationshipType(String id, String name) {
+		Icon out = (Icon) iconIndex.get(id);
 		if (out == null) {
-			String iconURL = iconURLIndex.get(type.getID());
+			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {
 				if (iconURL.startsWith("resource:")) {
 					out = loadLibraryIcon(iconURL.substring(9));
 				} else {
-					out = getIconForURL(iconURL);
+					try {
+						out = getIconForURL(new URL(iconURL));
+					} catch (MalformedURLException e) {
+						File file = new File(iconURL);
+						if (file.exists())
+							try {
+								out = getIconForURL(file.toURL());
+							} catch (MalformedURLException e1) {
+							}
+					}
 				}
 			}
 			if (out == null) {
-				out = new TextIcon(type.getName());
+				out = new TextIcon(name);
 			}
-			iconIndex.put(type.getID(), out);
+			iconIndex.put(id, out);
 		}
 		return out;
+	}
+
+	public Map<String, Color> getColorIndex() {
+		return colorIndex;
+	}
+
+	public void setColorIndex(Map<String, Color> colorIndex) {
+		this.colorIndex = colorIndex;
 	}
 }
