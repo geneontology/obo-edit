@@ -41,6 +41,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	public AnnotationImpl(Instance instance) {
 		super(instance.getID());
 		setName(instance.getName());
+		setNamespace(instance.getNamespace());
 		setDefinition(instance.getDefinition());
 		setComment(instance.getComment());
 		for(Dbxref ref : instance.getDbxrefs())

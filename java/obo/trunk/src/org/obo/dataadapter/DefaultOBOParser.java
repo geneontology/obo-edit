@@ -1157,8 +1157,11 @@ public class DefaultOBOParser implements OBOParser {
 							+ is.instanceOf + ", "
 							+ "for instance_of statement.", is.getPath(), is
 							.getLine(), is.getLineNum());
+				
+	
 			}
-			((Instance) instance).setType((OBOClass) instanceOfObj);
+			((Instance) instance).setType(TermUtil.castToClass((LinkedObject)instanceOfObj));
+
 		}
 
 		it = propertyValSet.iterator();

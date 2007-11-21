@@ -277,6 +277,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		this.session = session; // TODO : check
 		ObjectFactory oboFactory = session.getObjectFactory();
 		try {
+			System.out.println("f="+f);
 			ontology = manager.loadOntologyFromPhysicalURI(URI.create("file:"+f));
 			for (OWLClass owlClass : ontology.getReferencedClasses()) {
 				

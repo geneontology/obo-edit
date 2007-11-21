@@ -3,6 +3,7 @@ package org.obo.util;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.datamodel.IdentifiedObject;
@@ -22,6 +23,27 @@ public class AnnotationUtil {
 			}
 		}
 		return annots;
+	}
+	
+	public static Collection<Annotation> getAnnotationsForObject(OBOSession session, IdentifiedObject ob) {
+		Collection<Annotation> annots = new LinkedList<Annotation>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io instanceof Annotation) {
+				Annotation annot = (Annotation)io;
+				if (ob.equals(annot.getObject())) {
+					annots.add(annot);
+				}
+			}
+		}
+		return annots;
+	}
+	
+	public static Set<LinkedObject> getSubjectsAnnotatedWithObject(OBOSession session, IdentifiedObject ob) {
+		Collection<Annotation> annots = getAnnotationsForObject(session, ob);
+		Set<LinkedObject> subjs = new HashSet<LinkedObject>();
+		for (Annotation annot: annots)
+			subjs.add(annot.getSubject());
+		return subjs;
 	}
 	
 	public static Collection<Annotation> getAnnotations(OBOSession session) {

@@ -16,7 +16,7 @@ public class BasicOWLTest extends AbstractOWLTest {
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "SAO.owl" };
+		String[] files = {  "nucleus.obo", "bfo.obo", "camphor_catabolism.obo" };
 		return Arrays.asList(files);
 	}
 	

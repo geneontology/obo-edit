@@ -10,14 +10,9 @@ import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
-import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
-import org.obo.datamodel.Instance;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.PropertyValue;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.util.AnnotationUtil;
 
 public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
 
@@ -39,6 +34,7 @@ public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
 		// intended for testing loading of annotation files, in which
 		// ALL ontology terms may be danglers
 		config.setAllowDangling(true);
+		config.setBasicSave(false);
 		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 	}
