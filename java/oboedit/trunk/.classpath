@@ -16,6 +16,19 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolox.jar"/>
 	<classpathentry kind="lib" path="lib/runlibs/tablelayout.jar"/>
 	<classpathentry kind="lib" path="lib/buildlibs/xstream-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/batik.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-bridge.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-gvt.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-script.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-util.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-svg-dom.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-dom.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-css.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-ext.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/xml-apis-ext.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-xml.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-parser.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-anim.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/batik-awt-util.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

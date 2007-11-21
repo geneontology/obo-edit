@@ -23,6 +23,7 @@ import org.obo.util.HTMLUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.LineType;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.gui.filter.ColorProvider;
 import org.oboedit.gui.filter.ConfiguredColor;
@@ -31,6 +32,7 @@ import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.LineTypeSpecField;
 import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.RenderSpec;
+import org.oboedit.piccolo.IconNode;
 import org.oboedit.piccolo.PiccoloUtil;
 import org.oboedit.piccolo.StyledText;
 import org.oboedit.piccolo.ViewRenderedStyleText;
@@ -80,7 +82,8 @@ public class OELink extends PCNode {
 		initialize(link, provider, s);
 
 		int weight = 1;
-		Paint typeColor = colorManager.getColor(link.getType());
+		Paint typeColor = Preferences.getPreferences()
+				.getColorForRelationshipType(link.getType());
 		LineType type = LineType.SOLID_LINE;
 
 		RenderSpec sc = GUIUtil.getSpec(canvas, lo, FilterManager.getManager()
@@ -144,7 +147,9 @@ public class OELink extends PCNode {
 				.getPathReference(), .5, .01, 5);
 		iconPanel.setOffset(panelLoc.getX() - iconPanel.getWidth() / 2,
 				panelLoc.getY() - iconPanel.getHeight() / 2);
-		PNode icon = iconManager.getIcon(getLink().getType());
+		// PNode icon = iconManager.getIcon(getLink().getType());
+		PNode icon = new IconNode(Preferences.getPreferences()
+				.getIconForRelationshipType(getLink().getType()));
 		iconPanel.addChild(icon);
 		icon.centerFullBoundsOnPoint(iconPanel.getWidth() / 2, iconPanel
 				.getHeight() / 2);

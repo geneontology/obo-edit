@@ -13,7 +13,7 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
-   sodipodi:docbase="/Users/jrichter"
+   sodipodi:docbase="/Users/jrichter/workspace/OBO-Edit/src/org/oboedit/gui/resources/icons/typeicons"
    sodipodi:docname="develops_from.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -62,17 +62,10 @@
        x="553.21356"
        y="252.18813"
        transform="matrix(0.7071068,0.7071068,-0.7071068,0.7071068,0,0)" />
-    <text
-       xml:space="preserve"
-       style="font-size:58.80025482px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Serif"
-       x="181.78578"
-       y="659.35242"
-       id="text4128"
+    <path
        transform="scale(1.0320598,0.9689361)"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4130"
-         x="181.78578"
-         y="659.35242">D</tspan></text>
+       style="font-size:58.80025482px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Serif"
+       d="M 201.07962,655.87838 L 205.07045,655.87838 C 209.54935,655.87838 212.82241,654.44283 214.88964,651.57172 C 216.97594,648.70062 218.01911,644.13557 218.01914,637.87654 C 218.01911,631.65584 216.98551,627.1195 214.91835,624.2675 C 212.85112,621.39643 209.56849,619.96088 205.07045,619.96084 L 201.07962,619.96084 L 201.07962,655.87838 M 184.54204,659.35242 L 184.54204,655.87838 L 190.02586,655.87838 L 190.02586,619.96084 L 184.54204,619.96084 L 184.54204,616.4868 L 206.53472,616.4868 C 214.22925,616.48684 220.11501,618.32435 224.19202,621.99933 C 228.26894,625.67438 230.30743,630.96678 230.30748,637.87654 C 230.30743,644.82463 228.25937,650.14575 224.16331,653.83989 C 220.0863,657.51491 214.21011,659.35242 206.53472,659.35242 L 184.54204,659.35242"
+       id="text4128" />
   </g>
 </svg>
