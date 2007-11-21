@@ -42,12 +42,19 @@ public class LabelMouseHyperlinkBridge implements MouseListener,
 
 	protected MultiMap<String, ActionListener> actionMap = new MultiHashMap<String, ActionListener>();
 
+	protected ExtensibleLabelUI.BasicEditorKit editorKit;
+
 	public LabelMouseHyperlinkBridge(JLabel label) {
 		this.label = label;
 	}
 
 	protected static String getURL(JLabel lookAtMe, MouseEvent e) {
-		View view = BasicHTML.createHTMLView(lookAtMe, lookAtMe.getText());
+		View view;
+		if (lookAtMe instanceof HTMLLabel) {
+			view = HTMLLabel.createHTMLView(((HTMLLabel) lookAtMe)
+					.getEditorKit(), lookAtMe, lookAtMe.getText());
+		} else
+			view = BasicHTML.createHTMLView(lookAtMe, lookAtMe.getText());
 		if (view != null) {
 			int pos = view.viewToModel(e.getX(), e.getY(), SwingUtil
 					.getTextRectangle(lookAtMe));
