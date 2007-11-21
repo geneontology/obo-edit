@@ -15,14 +15,11 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.ImageView;
 
+import org.bbop.util.ObjectUtil;
+
 public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 
-	public static interface IconFactory {
-		public Icon createIcon(URL url, int width, int height);
-	}
-
-	protected Map<String, IconFactory> iconFactoryMap =
-		new HashMap<String, IconFactory>();
+	protected Map<String, IconFactory> iconFactoryMap = new HashMap<String, IconFactory>();
 
 	protected class PluggableImageHTMLFactory extends HTMLFactory {
 		public View create(Element elem) {
@@ -34,14 +31,15 @@ public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 					String url = getImageURL(elem).toString();
 					int index = url.lastIndexOf('.');
 					if (index > 0) {
-						String suffix = url.substring(index+1, url.length());
+						String suffix = url.substring(index + 1, url.length());
 						final IconFactory factory = iconFactoryMap.get(suffix);
 						if (factory != null) {
 							return new AbstractIconView(elem) {
 								@Override
 								public Icon createIcon(URL url, int width,
 										int height) {
-									return factory.createIcon(url, width, height);
+									return factory.createIcon(url, width,
+											height);
 								}
 							};
 						}
@@ -51,9 +49,14 @@ public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 			return super.create(elem);
 		}
 	}
-	
+
 	public void installFactory(String suffix, IconFactory factory) {
 		iconFactoryMap.put(suffix, factory);
+	}
+	
+	public void uninstallFactory(String suffix, IconFactory factory) {
+		if (ObjectUtil.equals(iconFactoryMap.get(suffix), factory))
+			iconFactoryMap.remove(suffix);
 	}
 
 	public ViewFactory getViewFactory() {
@@ -75,5 +78,4 @@ public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 			return null;
 		}
 	}
-
 }

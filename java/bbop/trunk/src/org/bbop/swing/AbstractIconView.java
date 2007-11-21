@@ -17,6 +17,7 @@ import java.net.URL;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -96,7 +97,13 @@ public abstract class AbstractIconView extends View {
 
 	public AbstractIconView(Element elem) {
 		super(elem);
-		icon = createIcon(PluggableImageHTMLEditorKit.getImageURL(elem), -1, -1);
+		fBounds = new Rectangle();
+		width = getIntAttr(HTML.Attribute.WIDTH, -1);
+		height = getIntAttr(HTML.Attribute.HEIGHT, -1);
+		icon = createIcon(PluggableImageHTMLEditorKit.getImageURL(elem), width, height);
+		width = icon.getIconWidth();
+		height = icon.getIconHeight();
+		setPropertiesFromAttributes();
 	}
 
 	/**
@@ -196,6 +203,7 @@ public abstract class AbstractIconView extends View {
 	 * @see View#paint
 	 */
 	public void paint(Graphics g, Shape a) {
+		setPropertiesFromAttributes();
 		Rectangle rect = (a instanceof Rectangle) ? (Rectangle) a : a
 				.getBounds();
 
@@ -225,15 +233,26 @@ public abstract class AbstractIconView extends View {
 			g.setClip(clip.x, clip.y, clip.width, clip.height);
 		}
 	}
+	
+	protected static JTextComponent holder;
+	
+	protected static JTextComponent getDefaultHolder() {
+		if (holder == null)
+			holder = new JTextField();
+		return holder;
+	}
 
 	private void paintHighlights(Graphics g, Shape shape) {
+		JTextComponent tc;
 		if (container instanceof JTextComponent) {
-			JTextComponent tc = (JTextComponent) container;
-			Highlighter h = tc.getHighlighter();
-			if (h instanceof LayeredHighlighter) {
-				((LayeredHighlighter) h).paintLayeredHighlights(g,
-						getStartOffset(), getEndOffset(), shape, tc, this);
-			}
+			tc = (JTextComponent) container;
+		} else {
+			tc = getDefaultHolder();
+		}
+		Highlighter h = tc.getHighlighter();
+		if (h instanceof LayeredHighlighter) {
+			((LayeredHighlighter) h).paintLayeredHighlights(g,
+					getStartOffset(), getEndOffset(), shape, tc, this);
 		}
 	}
 
@@ -305,6 +324,7 @@ public abstract class AbstractIconView extends View {
 
 	@Override
 	public float getPreferredSpan(int axis) {
+		setPropertiesFromAttributes();
 		switch (axis) {
 		case View.X_AXIS:
 			return width + leftInset + rightInset;

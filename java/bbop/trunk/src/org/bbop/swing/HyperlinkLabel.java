@@ -8,7 +8,7 @@ import javax.swing.event.HyperlinkListener;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 
-public class HyperlinkLabel extends JLabel {
+public class HyperlinkLabel extends HTMLLabel {
 
 	protected LabelMouseHyperlinkBridge bridge = new LabelMouseHyperlinkBridge(
 			this);

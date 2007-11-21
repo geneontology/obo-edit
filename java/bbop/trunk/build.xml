@@ -24,6 +24,16 @@
 			<include name="*.jar" />
 		</fileset>
 	</path>
+	
+	<fileset dir="${sourcedir}" id="resource_files">
+		<include name="**/resources/**" />
+	</fileset>
+	
+	<target name="resources">
+		<copy todir="${outputdir}">
+			<fileset refid="resource_files" />
+		</copy>
+	</target>
 
 	<!-- classes that should appear in the main jar file -->
 	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
@@ -35,7 +45,7 @@
 		<javadoc sourcepath="${sourcedir}" classpathref="classpath" defaultexcludes="yes" destdir="${apidoc_dest}" author="true" version="true" use="true" />
 	</target>
 
-	<target name="classes">
+	<target name="classes" depends="resources">
 		<mkdir dir="${outputdir}" />
 		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
 			<classpath>
