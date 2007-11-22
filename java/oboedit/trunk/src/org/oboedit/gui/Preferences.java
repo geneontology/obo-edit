@@ -194,9 +194,9 @@ public class Preferences {
 
 	public Preferences() {
 		setFont(new Font("Arial", 0, 12));
-		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:isa.gif");
-		iconURLIndex.put("part_of", "resource:partof.gif");
-		iconURLIndex.put("develops_from", "resource:develops.gif");
+		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:is_a.svg");
+		iconURLIndex.put("part_of", "resource:part_of.svg");
+		iconURLIndex.put("develops_from", "resource:develops_from.svg");
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", Color.orange);
 		colorIndex.put("develops_from", Color.green.darker());

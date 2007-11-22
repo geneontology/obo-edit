@@ -54,6 +54,8 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 				IDUtil.Variable var = (IDUtil.Variable) token;
 				SearchCriterion sc = FilterManager.getManager().getCriterion(
 						var.getName());
+				if (sc == null)
+					out.append("??cannot-resolve-"+var.getName()+"??");
 				List vals = (List) sc.getValues(new ArrayList(), lo);
 				int index = 0;
 				String defaultVal = "";

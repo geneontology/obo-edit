@@ -247,7 +247,8 @@ public class GUIUtil {
 				if (ignore.contains(field))
 					continue;
 				if (field.getHTMLType() > 0) {
-					field.renderHTML(selector, spec.getValue(field), out, obj);
+					Object val = spec.getValue(field);
+					field.renderHTML(selector, val, out, obj);
 				}
 			}
 		}
