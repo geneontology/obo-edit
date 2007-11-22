@@ -40,6 +40,7 @@ import org.obo.datamodel.impl.DanglingObjectImpl;
 import org.obo.datamodel.impl.DanglingPropertyImpl;
 import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.util.IDUtil;
+import org.obo.util.TermUtil;
 
 public class AnnotationParserExtension implements ParserExtension,
 		OBOSerializerExtension {
@@ -134,10 +135,15 @@ public class AnnotationParserExtension implements ParserExtension,
 						// jd-r: this is odd! why are we automatically
 						// creating an empty object here rather than
 						// creating a dangling identifier?
-						source = session.getObjectFactory().createObject(
-								pv.getValue(), OBOClass.OBO_INSTANCE, false);
+						// cjm: OK, replaced. How about:
+						//source = session.getObjectFactory().createObject(
+						//		pv.getValue(), OBOClass.OBO_INSTANCE, false);
+						source = session.getObjectFactory().
+						  createDanglingObject(pv.getValue(), false);
+						source = TermUtil.castToInstance((LinkedObject)source);
 						((Instance) source).setType(AnnotationOntology
 								.PUBLICATION());
+						
 					}
 					annotation.addSource((LinkedObject) source);
 					it.remove();
@@ -147,8 +153,10 @@ public class AnnotationParserExtension implements ParserExtension,
 						// jd-r: this is odd! why are we automatically
 						// creating an empty object here rather than
 						// creating a dangling identifier?
-						ab = session.getObjectFactory().createObject(
-								pv.getValue(), OBOClass.OBO_INSTANCE, false);
+						// cjm: fixed
+						ab = session.getObjectFactory().createDanglingObject(
+								pv.getValue(), false);
+						ab = TermUtil.castToInstance((LinkedObject)ab);
 						((Instance) ab).setType(AnnotationOntology.AGENT());
 					}
 					annotation.setAssignedBy((LinkedObject) ab);
@@ -170,8 +178,6 @@ public class AnnotationParserExtension implements ParserExtension,
 								+ " not a LinkedObject", currentPath, engine
 								.getCurrentLine(), engine.getLineNum());
 					}
-					// CJM: subjects can be any kind of node
-					// annotation.setSubject((OBOClass) subject);
 					annotation.setSubject((LinkedObject) subject);
 					it.remove();
 				} else if (pv.getProperty().equals(OBJECT_TAG.getName())) {
