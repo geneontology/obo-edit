@@ -1,5 +1,13 @@
 package org.oboedit.graph;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -16,6 +24,7 @@ import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIComponentWrapper;
+import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
 import org.bbop.framework.event.GUIComponentEvent;
 import org.bbop.framework.event.GUIComponentListener;
@@ -27,6 +36,7 @@ import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.FilteredRenderable;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.ExpandCollapseListener;
 import org.oboedit.gui.event.ExpansionEvent;
 import org.oboedit.gui.filter.GeneralRendererSpec;
@@ -48,8 +58,7 @@ import org.oboedit.gui.filter.RenderedFilter;
  */
 public abstract class AbstractFetchTask<T> implements GUITask {
 
-	public static class FetchTaskConfiguration implements
-			ComponentConfiguration {
+	public static class FetchTaskConfiguration {
 		protected boolean enabled;
 
 		public FetchTaskConfiguration() {
@@ -329,17 +338,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 
 		@Override
 		public GUIComponent doCreateComponent(String id) {
-			return new GUIComponentWrapper(id, getName(), comp) {
-				@Override
-				public ComponentConfiguration getConfiguration() {
-					return AbstractFetchTask.this.getConfiguration();
-				}
-
-				@Override
-				public void setConfiguration(ComponentConfiguration config) {
-					AbstractFetchTask.this.setConfiguration(config);
-				}
-			};
+			return new GUIComponentWrapper(id, getName(), comp);
 		}
 
 		public GUIComponentFactory.FactoryCategory getCategory() {
@@ -453,13 +452,13 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		return fetchCriterion.getID();
 	}
 
-	public void setConfiguration(ComponentConfiguration config) {
+	public void setConfiguration(Object config) {
 		if (config instanceof FetchTaskConfiguration) {
 			setEnabled(((FetchTaskConfiguration) config).isEnabled());
 		}
 	}
 
-	public ComponentConfiguration getConfiguration() {
+	public Object getConfiguration() {
 		return new FetchTaskConfiguration();
 	}
 
@@ -474,6 +473,39 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 			configComponentFactory = new ConfigurationComponentFactory(comp);
 			ComponentManager.getManager().install(configComponentFactory);
 		}
+		readConfig();
+
+	}
+	
+	protected void readConfig() {
+		Object config = getConfiguration();
+		File f = getConfigFile();
+		if (f.exists()) {
+			try {
+				XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
+						new FileInputStream(f)));
+				config = (ComponentConfiguration) decoder.readObject();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		setConfiguration(config);
+	}
+	
+	protected void flushConfig() {
+		File f = getConfigFile();
+		try {
+			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
+					new FileOutputStream(f)));
+			encoder.writeObject(getConfiguration());
+			encoder.close();
+		} catch (IOException ex) {
+			System.err.println("Couldn't flush component config successfully");
+		}
+	}
+	
+	protected File getConfigFile() {
+		return new File(GUIManager.getPrefsDir(), getBehaviorID()+"_behavior.config");
 	}
 
 	protected boolean isFetchCriterionVisibleToOtherComponents() {
@@ -481,6 +513,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 	}
 
 	public void shutdown() {
+		flushConfig();
 		ComponentManager.getManager()
 				.removeComponentListener(componentListener);
 		FilterManager.getManager().removeCriterion(fetchCriterion);
