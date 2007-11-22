@@ -48,6 +48,7 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
     
 	public Connection getConnection(String driverstring, String user, String passwd) throws SQLException, ClassNotFoundException {
 		Class.forName("org.postgresql.Driver");
+		System.out.println("connecting to "+driverstring);
 		return DriverManager.getConnection(driverstring, user, passwd);
 	} 
 	
