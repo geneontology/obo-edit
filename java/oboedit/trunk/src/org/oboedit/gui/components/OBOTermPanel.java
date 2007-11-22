@@ -147,7 +147,15 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 							(LinkedObject) it.next());
 
 					TreePath path = rootPath.pathByAddingChild(tr);
+					if (expansionBridge != null) {
+						removeTreeExpansionListener(expansionBridge);
+						removeTreeWillExpandListener(expansionBridge);
+					}
 					expandPath(path);
+					if (expansionBridge != null) {
+						addTreeExpansionListener(expansionBridge);
+						addTreeWillExpandListener(expansionBridge);
+					}
 				}
 			}
 			// TODO Auto-generated method stub
@@ -926,16 +934,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		});
 		addTreeSelectionListener(treeSelectionListener);
-		addTreeExpansionListener(expansionBridge);
-		addTreeWillExpandListener(expansionBridge);
-		addExpansionListener(new ExpandCollapseListener() {
-
-			public void expandStateChanged(ExpansionEvent e) {
-				System.err.println("EXPANDED " + e.getShown());
-				System.err.println("HID " + e.getHidden());
-			}
-
-		});
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -979,6 +977,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	// protected JToolBar toolbar;
 	// protected JComboBox gestureBox = new JComboBox();
+	
+	protected boolean bridgeEnabled = false;
 
 	public OBOTermPanel(String id) {
 		this.id = id;
@@ -1227,11 +1227,19 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void restorePaths(TreePath[] expanded) {
+		if (expansionBridge != null) {
+			removeTreeExpansionListener(expansionBridge);
+			removeTreeWillExpandListener(expansionBridge);
+		}
 		for (int i = 0; i < expanded.length; i++) {
 			TreePath current = expanded[i];
 			if (PathUtil.pathIsValid(current, getModel())) {
 				makeVisible(current);
 			}
+		}
+		if (expansionBridge != null) {
+			addTreeExpansionListener(expansionBridge);
+			addTreeWillExpandListener(expansionBridge);
 		}
 	}
 
@@ -1588,6 +1596,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void redraw() {
-		repaint();
+		reload();
 	}
 }

@@ -34,8 +34,6 @@ import javax.swing.text.html.ParagraphView;
 
 import org.bbop.swing.RootView;
 
-import com.sun.java.swing.SwingUtilities2;
-
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.util.PPaintContext;
 
@@ -54,6 +52,9 @@ public class ViewRenderedStyleText extends PNode {
 	protected String text = "";
 
 	protected boolean useFixedWidth = true;
+	
+    public static final Object AA_TEXT_PROPERTY_KEY =
+        new StringBuffer("AATextPropertyKey");
 
 	public ViewRenderedStyleText() {
 		this(new HTMLEditorKit(), null);
@@ -68,7 +69,7 @@ public class ViewRenderedStyleText extends PNode {
 		document = editorKit.createDefaultDocument();
 		((AbstractDocument) document).setAsynchronousLoadPriority(-1);
 		JTextField field = new JTextField();
-		field.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+		field.putClientProperty(AA_TEXT_PROPERTY_KEY,
 				Boolean.TRUE);
 		rootView = new RootView(field, editorKit);
 	}
