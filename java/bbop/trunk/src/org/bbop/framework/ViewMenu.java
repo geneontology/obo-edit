@@ -3,6 +3,7 @@ package org.bbop.framework;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -93,8 +94,9 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 			public List<Component> getItems() {
 				List<Component> out = new LinkedList<Component>();
 				Map<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>> factoryMap = new HashMap<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>>();
-				for (final GUIComponentFactory factory : ComponentManager
-						.getManager().getFactories()) {
+				Collection<GUIComponentFactory<?>> f = ComponentManager
+						.getManager().getFactories();
+				for (final GUIComponentFactory factory : f) {
 					if (!factory.showInMenus())
 						continue;
 					List<GUIComponentFactory> factories = factoryMap
