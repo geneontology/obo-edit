@@ -350,10 +350,44 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * html to override these should it wish to have a custom font or color.
 		 */
 		private void setFontAndColor(Font font, Color fg) {
-			getStyleSheet().addRule(
-					com.sun.java.swing.SwingUtilities2.displayPropertiesToCSS(
-							font, fg));
+			getStyleSheet().addRule(displayPropertiesToCSS(font, fg));
 		}
+	}
+
+	protected static String displayPropertiesToCSS(Font font, Color fg) {
+		StringBuffer rule = new StringBuffer("body {");
+		if (font != null) {
+			rule.append(" font-family: ");
+			rule.append(font.getFamily());
+			rule.append(" ; ");
+			rule.append(" font-size: ");
+			rule.append(font.getSize());
+			rule.append("pt ;");
+			if (font.isBold()) {
+				rule.append(" font-weight: 700 ; ");
+			}
+			if (font.isItalic()) {
+				rule.append(" font-style: italic ; ");
+			}
+		}
+		if (fg != null) {
+			rule.append(" color: #");
+			if (fg.getRed() < 16) {
+				rule.append('0');
+			}
+			rule.append(Integer.toHexString(fg.getRed()));
+			if (fg.getGreen() < 16) {
+				rule.append('0');
+			}
+			rule.append(Integer.toHexString(fg.getGreen()));
+			if (fg.getBlue() < 16) {
+				rule.append('0');
+			}
+			rule.append(Integer.toHexString(fg.getBlue()));
+			rule.append(" ; ");
+		}
+		rule.append(" }");
+		return rule.toString();
 	}
 
 	public static class BasicEditorKit extends PluggableImageHTMLEditorKit {
@@ -431,7 +465,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 			installFactory(suffix, IconFactoryRegistry.getFactory(suffix));
 		IconFactoryRegistry.addListener(registryListener);
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
