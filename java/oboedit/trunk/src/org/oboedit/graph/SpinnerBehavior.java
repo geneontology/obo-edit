@@ -1,16 +1,12 @@
 package org.oboedit.graph;
 
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-import org.oboedit.piccolo.PCompoundActivity;
 import org.oboedit.piccolo.PiccoloUtil;
-
-import com.sun.org.apache.xalan.internal.xsltc.cmdline.Transform;
 
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;

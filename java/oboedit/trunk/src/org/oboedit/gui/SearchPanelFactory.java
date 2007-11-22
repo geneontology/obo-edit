@@ -6,14 +6,11 @@ import java.util.Collection;
 
 import javax.swing.JComponent;
 
-import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.ObjectSpecEditor;
-
-import com.sun.jndi.toolkit.dir.SearchFilter;
 
 public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 
