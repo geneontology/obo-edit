@@ -170,13 +170,13 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 	}
 
 	@Override
-	public ComponentConfiguration getConfiguration() {
+	public Object getConfiguration() {
 		return new LineNumberFetchTaskConfiguration(isEnabled(), getMinColor(),
 				getMaxColor());
 	}
 
 	@Override
-	public void setConfiguration(ComponentConfiguration config) {
+	public void setConfiguration(Object config) {
 		super.setConfiguration(config);
 		if (config instanceof LineNumberFetchTaskConfiguration) {
 			LineNumberFetchTaskConfiguration myConfig = (LineNumberFetchTaskConfiguration) config;
