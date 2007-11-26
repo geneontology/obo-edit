@@ -1,6 +1,7 @@
 package org.obo.test;
 
 import java.io.PrintStream;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -18,6 +19,8 @@ import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
 import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.impl.OBOClassImpl;
+import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
 
@@ -35,8 +38,6 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 	}
 	
 	public void setUp() throws Exception {
-		System.out.println("foo");
-		System.out.println("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		
 		// TODO: DRY - GOAnnotationFileTest
@@ -71,7 +72,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
 	}
 
-	public void testHasLoaded() throws DataAdapterException {
+	public void testHasLoaded() throws DataAdapterException, SQLException {
 		// database -> session
 		System.err.println("reading");
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
@@ -91,6 +92,27 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		testForAnnotationPublication("FB:FBgn0061475","GO:0005843","FB:FBrf0121292");
 		testForAnnotationWithEvidenceCode("FB:FBgn0061475","GO:0005843","ISS");
 		testForAnnotationAssignedBy("FB:FBgn0061475","GO:0005843","FlyBase");
+		
+		session = new OBOSessionImpl();
+		annots = wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0005843"));
+		System.err.println("N matching annots:"+annots.size());
+		assertTrue(annots.size() > 0);
+	}
+	
+	public void testQuery() throws SQLException, ClassNotFoundException {
+		OBDSQLDatabaseAdapterConfiguration wconfig = 
+			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		wconfig.getReadPaths().add(jdbcPath);
+		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
+		wadapter.setConfiguration(wconfig);
+		wadapter.connect();
+
+		session = new OBOSessionImpl();
+		Collection<Annotation> annots = wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0005843"));
+		System.err.println("N matching annots:"+annots.size());
+		for (Annotation annot : annots)
+			System.out.println("  match:"+annot);
+		assertTrue(annots.size() > 0);
 	
 	}
 	
@@ -147,6 +169,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 	public static void addTests(TestSuite suite) {
 		suite.addTest(new OBDAnnotationSaveTest("testHasLoaded"));
 		suite.addTest(new OBDAnnotationSaveTest("testNamespaceFilteredLoad"));
+		suite.addTest(new OBDAnnotationSaveTest("testQuery"));
 	}
 }
 
