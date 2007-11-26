@@ -35,6 +35,7 @@ import org.obo.datamodel.ObjectFactory;
 import org.obo.datamodel.impl.DefaultObjectFactory;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.owl.datamodel.MetadataMapping;
+import org.obo.owl.util.IDSpaceRegistry;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
@@ -83,6 +84,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
     URI ontologyURI;
     OWLOntology ontology;    
     OWLOntologyManager manager;
+    
+    public final static String PURL_OBO = "http://purl.org/obo/";
     
  
     OBOSession session;
@@ -209,7 +212,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
 		ui.setReadOperation(READ_ONTOLOGY);
-		ui.setReadOperation(WRITE_ONTOLOGY);
+		ui.setWriteOperation(WRITE_ONTOLOGY);
 		return ui;
 	}
 
@@ -328,26 +331,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 						}
 						equivTo = d;
 					}
-					if (equivTo instanceof OWLObjectIntersectionOf) {
-						Set<OWLDescription> elts = ((OWLObjectIntersectionOf)equivTo).getOperands();
-						for (OWLDescription d : elts) {
-							OBORestriction link = getOboLinkFromOWLDescription(d,oboClass);
-							if (link == null) {
-								String message = "Cannot convert OWLDescription: "+equivTo;
-								if (ioprofile.allowLossy) {
-									System.err.println(message);
-									continue;
-								}
-								else
-									throw new DataAdapterException(message);				
-							}
-							link.setCompletes(true);
-							oboClass.addParent(link);
-						}
-					}
-					else {
-						
-					}
+					addDescription(oboClass,equivTo);
+					
 				}
 				/* Find all N+S conditions
 				 * 
@@ -361,7 +346,32 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				}
 
 			}
-				
+			
+			/* properties
+			 * 
+			 */
+			for (OWLProperty owlProperty : ontology.getReferencedObjectProperties()) {
+				String id = getOboID(owlProperty);
+				OBOProperty oboProperty =
+					(OBOProperty)oboFactory.createObject(id, OBOClass.OBO_PROPERTY, false);
+				session.addObject(oboProperty);
+				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlProperty.getAnnotationAxioms(ontology);
+				getMetadataFromAnnotationAxioms(oboProperty,owlAnnotationAxioms);			
+				if (owlProperty.isFunctional(ontology)) {
+					// TODO
+				}
+				if (owlProperty instanceof OWLObjectProperty) {
+					OWLObjectProperty owlObjectProperty = (OWLObjectProperty)owlProperty;
+					// TODO: check
+					if (owlObjectProperty.isTransitive(ontology))
+						oboProperty.setTransitive(true);
+					if (owlObjectProperty.isSymmetric(ontology))
+						oboProperty.setSymmetric(true);
+					if (owlObjectProperty.isReflexive(ontology))
+						oboProperty.setReflexive(true);
+				}
+					
+			}
 			/* instances
 			 * 
 			 */	
@@ -381,7 +391,31 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		}
 	}
 	
-	public OBORestriction getOboLinkFromOWLDescription(OWLDescription desc, OBOClass oboClass) {
+	public void addDescription(OBOClass oboClass, OWLDescription owlDesc) throws DataAdapterException {
+		if (owlDesc instanceof OWLObjectIntersectionOf) {
+			Set<OWLDescription> elts = ((OWLObjectIntersectionOf)owlDesc).getOperands();
+			for (OWLDescription d : elts) {
+				OBORestriction link = getOboLinkFromOWLDescription(d,oboClass);
+				if (link == null) {
+					String message = "Cannot convert OWLDescription: "+owlDesc;
+					if (ioprofile.allowLossy) {
+						System.err.println(message);
+						continue;
+					}
+					else
+						throw new DataAdapterException(message);				
+				}
+				link.setCompletes(true);
+				oboClass.addParent(link);
+			}
+		}
+		else {
+			
+		}
+
+	}
+	
+	public OBORestriction getOboLinkFromOWLDescription(OWLDescription desc, OBOClass oboClass) throws DataAdapterException {
 		OBOProperty oboProp;
 		OBOClass oboParentClass;
 		ObjectFactory oboFactory = session.getObjectFactory();
@@ -411,12 +445,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		return null;
 	}
 	
-	public String getOboID(URI uri) {
-		String path = uri.getPath() + ":" + uri.getFragment();
-		return path;
-	}
-	
-	public OBOClass getOboClass(OWLDescription owlDesc) {
+	public OBOClass getOboClass(OWLDescription owlDesc) throws DataAdapterException {
 		OBOClass oboClass;
 		if (owlDesc.isAnonymous()) {
 			// TODO: Decide whether to go with temporary IDs or skolem IDs
@@ -425,6 +454,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			oboClass = (OBOClass)
 			 session.getObjectFactory().createObject(id, OBOClass.OBO_CLASS, true);
 			oboClass.setIsAnonymous(true);
+			session.addObject(oboClass);
+			addDescription(oboClass, owlDesc);
 			return oboClass;
 		}
 		else {
@@ -447,6 +478,53 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public String getOboID(OWLEntity oe) {
 		return getOboID(oe.getURI());
 	}
+	
+	public String getOboID(URI uri) {
+		IDSpaceRegistry registry = IDSpaceRegistry.getInstance();
+		String uriString = uri.toString();
+		//System.out.println(" converting: "+uriString);
+		if (uriString.startsWith(PURL_OBO)) {
+			String[] idParts = 
+				StringUtils.split(StringUtils.removeStart(uriString,PURL_OBO),
+								  "#",2);
+			if (idParts.length == 2) {
+				return getOboID(idParts[0],idParts[1]);
+			}
+			// TODO
+			System.err.println("URI "+uriString+" does not conform to purl.org/obo standard");
+		}
+		
+		for (URI uriPrefix : registry.getUris()) {
+			
+			String uriPrefixString = uriPrefix.toString();
+			if (uriString.startsWith(uriPrefixString)) {
+				String localId = StringUtils.removeStart(uriString,uriPrefixString);
+				String idspace = registry.getUriToIDSpace().get(uriPrefix);
+				
+				// register this IDspace in the actual OBO Session
+				session.addIDSpace(idspace, uriPrefixString);
+				return getOboID(idspace, localId);
+			}
+		}
+		
+		return uriString;
+	}
+	
+	public String getOboID(String prefix, String localId) {
+		String id;
+		if (localId.startsWith(prefix+"_")) {
+			localId = StringUtils.removeStart(localId, prefix+"_");
+		}
+		id = prefix + ":" + localId;
+		//ystem.out.println("id="+id);
+		return id;
+	}
+	
+
+	
+
+	
+
 	
 
 	
@@ -509,7 +587,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
             // be stored. (It's good practice to do this even if we don't intend to save the ontology).
             ontologyURI = URI.create("http://purl.org/obo/all");
             // Create a physical URI which can be resolved to point to where our ontology will be saved.
-            URI physicalURI = URI.create("file:"+file);
+            // TODO: make this smarter. absolute vs relative path
+            if (!file.contains("file:"))
+            	file = "file:"+file;
+            URI physicalURI = URI.create(file);
             // Set up a mapping, which maps the ontology URI to the physical URI
             SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
             manager.addURIMapper(mapper);

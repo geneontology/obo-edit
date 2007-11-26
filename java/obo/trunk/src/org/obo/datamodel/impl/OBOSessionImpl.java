@@ -38,6 +38,8 @@ public class OBOSessionImpl implements OBOSession {
 	protected Collection<UnknownStanza> unknownStanzas;
 	protected Namespace defaultNamespace;
 	protected IDProfile profile;
+	
+	protected Map<String,String> idspaceToUri = new HashMap<String,String>();
 
 	protected String loadRemark;
 	protected OperationModel operationModel;
@@ -416,5 +418,17 @@ public class OBOSessionImpl implements OBOSession {
 
 	public void setCurrentUser(String currentUser) {
 		this.currentUser = currentUser;
+	}
+
+	public void addIDSpace(String idspace, String uriPrefix) {
+		idspaceToUri.put(idspace, uriPrefix);	
+	}
+
+	public Collection<String> getIDSpaces() {
+		return idspaceToUri.keySet();
+	}
+
+	public String expandIDSpace(String idspace) {
+		return idspaceToUri.get(idspace);
 	}
 }

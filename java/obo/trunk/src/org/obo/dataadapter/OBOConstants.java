@@ -194,6 +194,8 @@ public class OBOConstants {
 
 	public static final String SUBSETDEF_HEADER_TAG = "subsetdef";
 
+	public static final String IDSPACE_HEADER_TAG = "idspace";
+
 	public static final String RELATED_SYNONYMTYPEDEF_HEADER_TAG = "synonymtypedef";
 
 	public static final String DEFAULT_NAMESPACE_HEADER_TAG = "default-namespace";
@@ -299,6 +301,8 @@ public class OBOConstants {
 		_defaultHeaderTagOrder.add(RELATED_SYNONYMTYPEDEF_HEADER_TAG);
 		_defaultHeaderTagOrder.add(DEFAULT_NAMESPACE_HEADER_TAG);
 		_defaultHeaderTagOrder.add(NAMESPACE_ID_RULE_HEADER_TAG);
+		_defaultHeaderTagOrder.add(IDSPACE_HEADER_TAG);
+
 		_defaultHeaderTagOrder.add(REMARK_HEADER_TAG);
 
 		_defaultStanzaOrder.add(TERM_STANZA);

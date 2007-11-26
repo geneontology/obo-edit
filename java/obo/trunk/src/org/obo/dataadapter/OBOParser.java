@@ -40,6 +40,8 @@ public interface OBOParser extends OBOSimpleParser {
 			throws OBOParseException;
 
 	public void readIDPrefix(String prefix) throws OBOParseException;
+	
+	public void readIDSpace(String idspace, String uriPrefix) throws OBOParseException;
 
 	public void readDate(Date date) throws OBOParseException;
 

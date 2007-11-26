@@ -1,5 +1,7 @@
 package org.obo.owl.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,8 +11,6 @@ import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
-import org.obo.dataadapter.OBOAdapter;
-import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.owl.dataadapter.OWLAdapter;
 
@@ -51,6 +51,12 @@ public class SAORoundtripOWLTest extends AbstractOWLTest {
 		TestSuite suite = new TestSuite();
 		addTests(suite);
 		return suite;
+	}
+	
+	public void testHasLoaded() throws IOException, DataAdapterException {
+		File f = writeTempOBOFile();
+		readOBOFile(f);
+		writeTempOWLFile();
 	}
 
 	public static void addTests(TestSuite suite) {

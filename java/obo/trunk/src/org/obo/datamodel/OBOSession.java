@@ -398,4 +398,16 @@ public interface OBOSession extends IdentifiedObjectIndex, Serializable {
 	 * @param user
 	 */
 	public void setCurrentUser(String user);
+
+	/**
+	 * Sets an OBO ID prefix -> URI prefix mapping for this session.
+	 * 
+	 * @param idspace
+	 * @param uriPrefix
+	 */
+	public void addIDSpace(String idspace, String uriPrefix);
+	
+	public Collection<String> getIDSpaces();
+	
+	public String expandIDSpace(String idspace);
 }

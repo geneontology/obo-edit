@@ -33,7 +33,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
 		ui.setReadOperation(READ_ONTOLOGY);
-		ui.setReadOperation(WRITE_ONTOLOGY);
+		ui.setWriteOperation(WRITE_ONTOLOGY);
 		return ui;
 	}
 
@@ -106,7 +106,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 	}
 
 	public IOOperation[] getSupportedOperations() {
-		IOOperation[] supported = { READ_ONTOLOGY, WRITE_ONTOLOGY };
+		IOOperation[] supported = { WRITE_ONTOLOGY };
 		return supported;
 	}
 

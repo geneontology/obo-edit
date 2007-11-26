@@ -3,6 +3,7 @@ package org.obo.datamodel.impl;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -496,6 +497,8 @@ public class WriteCachedOBOSession implements OBOSession {
 	protected OBOSession session;
 
 	protected IDProfile profile;
+	
+	protected Map<String,String> idspaceToUri = new HashMap<String,String>();
 
 	protected String loadRemark;
 
@@ -856,5 +859,17 @@ public class WriteCachedOBOSession implements OBOSession {
 
 	public void setCurrentUser(String user) {
 		session.setCurrentUser(user);
+	}
+
+	public void addIDSpace(String idspace, String uriPrefix) {
+		idspaceToUri.put(idspace, uriPrefix);	
+	}
+	
+	public Collection<String> getIDSpaces() {
+		return idspaceToUri.keySet();
+	}
+	
+	public String expandIDSpace(String idspace) {
+		return idspaceToUri.get(idspace);
 	}
 }

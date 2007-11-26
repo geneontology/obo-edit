@@ -1575,4 +1575,9 @@ public class DefaultOBOParser implements OBOParser {
 			readID(IDUtil.fetchTemporaryID(session), new NestedValueImpl());
 		}
 	}
+
+	public void readIDSpace(String idspace, String uriPrefix) throws OBOParseException {
+		session.addIDSpace(idspace,uriPrefix);
+		
+	}
 }
