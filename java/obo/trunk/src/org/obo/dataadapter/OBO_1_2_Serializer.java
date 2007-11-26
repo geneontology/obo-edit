@@ -599,4 +599,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		writeNestedValue(nv);
 		println();
 	}
+
+	public void writeIDSpaceHeaderTag(String idspace, String uriPrefix) throws IOException {
+		print("idspace: " + escapeBeforeQuotes(idspace) + " "+uriPrefix);
+		println();		
+	}
 }

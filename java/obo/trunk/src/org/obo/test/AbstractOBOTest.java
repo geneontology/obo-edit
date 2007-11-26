@@ -23,6 +23,8 @@ import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.owl.dataadapter.OWLAdapter;
+import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 
 import junit.framework.TestCase;
@@ -65,6 +67,15 @@ public abstract class AbstractOBOTest extends TestCase {
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 		return session;
+	}
+	
+	public void readOBOFile(File file) throws DataAdapterException {
+		OBOFileAdapter adapter = new OBOFileAdapter();
+		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+		config.getReadPaths().add(file.getAbsolutePath());
+		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
+				null);
+
 	}
 	
 	protected String getResourcePath() {

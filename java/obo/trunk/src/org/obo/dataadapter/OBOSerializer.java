@@ -66,6 +66,9 @@ public interface OBOSerializer {
 	public void writeSynonymTypeDefHeaderTag(SynonymCategory category)
 			throws IOException;
 
+	public void writeIDSpaceHeaderTag(String idspace, String uriPrefix)
+			throws IOException;
+
 	public void writeDefaultNamespaceHeaderTag(Namespace namespace)
 			throws IOException;
 
