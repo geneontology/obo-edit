@@ -780,7 +780,11 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			db = idParts[0];
 			localId = idParts[1];
 		}
-		else {
+		else if (idParts.length == 0) {
+			db = "_global";
+			localId = id;
+		}
+		else { // ==1
 			db = "_global";
 			localId = idParts[0];
 		}

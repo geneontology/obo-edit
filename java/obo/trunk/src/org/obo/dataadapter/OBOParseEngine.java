@@ -487,9 +487,11 @@ public class OBOParseEngine extends AbstractParseEngine {
 			while (tokenizer.hasMoreTokens()) {
 				tokens.add(tokenizer.nextToken());
 			}
-			if (tokens.size() != 2)
+			if (tokens.size() < 2)
 				throw new OBOParseException("Wrong number of arguments to "
 						+ "idspace tag.", getCurrentPath(), line, linenum, 0);
+			if (tokens.size() > 2)
+				System.err.println("ignoring everything after '"+tokens.get(2)+"' in: "+value);
 			((OBOParser) parser).readIDSpace((String) tokens.get(0),
 					(String) tokens.get(1));
 			return true;
