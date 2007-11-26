@@ -62,8 +62,10 @@ import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOPropertyImpl;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.util.AnnotationUtil;
 import org.obo.util.TermUtil;
 
 
@@ -315,8 +317,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			session.setDefaultNamespace(objectFactory.createNamespace("test", "test")); // TODO
 			for (String readPath : ioprofile.getReadPaths()) {
 				try {
-					conn = ioprofile.getConnection(readPath,"cjm","");
-					System.err.println("connecting "+readPath+" "+conn);
+					connect(readPath);
 					fetchAll(session);
 					return (OUTPUT_TYPE) session;
 				} catch (Exception e) {
@@ -378,6 +379,19 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	public String getID() {
 		return "OBO:OBDSQLDatabaseAdapter";
 	}
+	
+	public void connect(String readPath) throws SQLException, ClassNotFoundException {
+		conn = ioprofile.getConnection(readPath,"cjm","");
+		System.err.println("connecting "+readPath+" "+conn);
+	}
+	
+	public void connect() throws SQLException, ClassNotFoundException {
+		// TODO
+		for (String readPath : ioprofile.getReadPaths()) {
+			connect(readPath);
+		}
+	}
+
 
 	public String getName() {
 		return "OBD-compliant SQL Database adapter";
@@ -426,6 +440,59 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			fetchObjectLinks(session, io);
 		}
 		
+	}
+	
+	public Collection<Annotation> fetchAnnotationsByObject(OBOSession session, LinkedObject obj) throws SQLException {
+	
+		RelationalQuery q = new SqlQueryImpl();
+		q.addTable("node_link_node_with_pred_and_source");
+		WhereClause whereClause = q.getWhereClause();
+		//whereClause.addEqualityConstraint("is_inferred", false);
+		whereClause.addEqualityConstraint("object_uid",obj.getID());
+
+		PreparedStatement stmt = conn.prepareStatement(q.toSQL());
+		System.out.println(q.toSQL());
+		
+		// TODO: there must be a more generic way to do this!!
+		int i=1;
+		for (Object v : q.getPlaceHolderVals()) {
+			if (v instanceof String)
+				stmt.setString(i, (String)v);
+			else if (v instanceof Boolean)
+				stmt.setBoolean(i, (Boolean)v);
+			else
+				throw new SQLException("dunno what to do with "+v);
+			// TODO
+			i++;
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		OBOSession tempSession = new OBOSessionImpl();
+		while (rs.next()) {
+			fetchLink(tempSession, rs);
+		}
+		return AnnotationUtil.getAnnotations(tempSession);
+	}
+	
+	// fetches into temporary session
+	public Collection<Annotation> retrieveAllAnnotations(OBOSession session) throws SQLException, ClassNotFoundException {
+		
+		connect();
+		RelationalQuery q = new SqlQueryImpl();
+		q.addTable("obd_prejoins_view.node_link_node_with_pred_and_source");
+		WhereClause whereClause = q.getWhereClause();
+		//whereClause.addEqualityConstraint("is_inferred", false);
+		whereClause. addConstraint("reiflink_node_id IS NOT NULL");
+
+		System.out.println(q.toSQL());
+		PreparedStatement stmt = conn.prepareStatement(q.toSQL());
+			
+		ResultSet rs = stmt.executeQuery();
+		OBOSession tempSession = new OBOSessionImpl();
+		while (rs.next()) {
+			fetchLink(tempSession, rs);
+		}
+		return AnnotationUtil.getAnnotations(tempSession);
 	}
 	
 
@@ -567,7 +634,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		Integer annotId = rs.getInt("reiflink_node_id");
 		if (!rs.wasNull()) {
-			IdentifiedObject o = iid2obj.get(annotId);
+			IdentifiedObject o = iid2obj.get(annotId); // expects pre-retrieved
 			System.err.println("o="+o);
 			Instance inst = TermUtil.castToInstance((LinkedObject)o);
 			System.err.println("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
@@ -1017,6 +1084,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	public AdapterConfiguration getConfiguration() {
 		return ioprofile;
+	}
+	public void setConfiguration(OBDSQLDatabaseAdapterConfiguration conf) {
+		ioprofile = conf;
 	}
 
 

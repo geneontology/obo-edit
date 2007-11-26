@@ -17,9 +17,12 @@ public class AnnotationUtil {
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
 				Annotation annot = (Annotation)io;
-				if (su.equals(annot.getSubject())) {
-					annots.add(annot);
-				}
+				// Extra defence against null annotations from Phenote
+				if (annot.getSubject() != null &&
+						annot.getObject() != null)
+					if (su.equals(annot.getSubject())) {
+						annots.add(annot);
+					}
 			}
 		}
 		return annots;
@@ -30,9 +33,12 @@ public class AnnotationUtil {
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
 				Annotation annot = (Annotation)io;
-				if (ob.equals(annot.getObject())) {
-					annots.add(annot);
-				}
+				// Extra defence against null annotations from Phenote
+				if (annot.getSubject() != null &&
+						annot.getObject() != null)
+					if (ob.equals(annot.getObject())) {
+						annots.add(annot);
+					}
 			}
 		}
 		return annots;
@@ -51,7 +57,7 @@ public class AnnotationUtil {
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
 				Annotation annot = (Annotation)io;
-				// Extra defence against null annotations
+				// Extra defence against null annotations from Phenote
 				if (annot.getSubject() != null &&
 						annot.getObject() != null)
 					annots.add(annot);
@@ -64,8 +70,14 @@ public class AnnotationUtil {
 		Collection<LinkedObject> subjs = new HashSet<LinkedObject>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
-				LinkedObject subj = ((Annotation)io).getSubject();
-				subjs.add(subj);
+				Annotation annot = (Annotation)io;
+				
+				// Extra defence against null annotations from Phenote
+				if (annot.getSubject() != null &&
+						annot.getObject() != null) {
+					LinkedObject subj = annot.getSubject();
+					subjs.add(subj);
+				}
 			}
 		}
 		return subjs;	
