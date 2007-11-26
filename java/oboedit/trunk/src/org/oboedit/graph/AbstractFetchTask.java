@@ -484,7 +484,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 			try {
 				XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 						new FileInputStream(f)));
-				config = (ComponentConfiguration) decoder.readObject();
+				config = decoder.readObject();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
