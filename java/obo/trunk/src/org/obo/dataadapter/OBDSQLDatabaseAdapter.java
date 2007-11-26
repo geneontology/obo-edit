@@ -385,6 +385,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		System.err.println("connecting "+readPath+" "+conn);
 	}
 	
+	public void disconnect() throws SQLException {
+		conn.close();
+	}
+	
+	
+	
 	public void connect() throws SQLException, ClassNotFoundException {
 		// TODO
 		for (String readPath : ioprofile.getReadPaths()) {
@@ -450,6 +456,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		//whereClause.addEqualityConstraint("is_inferred", false);
 		//whereClause.addEqualityConstraint("object_uid",obj.getID());
 		// TODO: use SQL constructors
+		whereClause.addConstraint("reiflink_node_id IS NOT NULL");
 		whereClause.addConstraint("object_id IN (SELECT node_id FROM link_to_node WHERE object_uid ='"+
 				obj.getID()+"')");
 		
@@ -476,6 +483,60 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return AnnotationUtil.getAnnotations(tempSession);
 	}
+	
+	
+	// TODO: DRY
+	public int fetchAnnotationCountByObject(OBOSession session, LinkedObject obj) throws SQLException {
+		
+		RelationalQuery q = new SqlQueryImpl();
+		q.addTable("link");
+		WhereClause whereClause = q.getWhereClause();
+		whereClause.addConstraint("reiflink_node_id IS NOT NULL");
+		whereClause.addConstraint("object_id IN (SELECT node_id FROM link_to_node WHERE object_uid ='"+
+				obj.getID()+"')");
+		q.getSelectClause().addColumn("COUNT(DISTINCT reiflink_node_id) AS c");
+		
+		PreparedStatement stmt = conn.prepareStatement(q.toSQL());
+		System.out.println(q.toSQL());
+		
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next())
+			return rs.getInt("c");
+		else
+			return 0;
+	}
+	
+	public float fetchAnnotationInformationContentByObject(OBOSession session, LinkedObject obj) throws SQLException {
+		
+		RelationalQuery q = new SqlQueryImpl();
+		q.addTable("class_node_entropy_by_evidence INNER JOIN node USING (node_id)");
+		WhereClause whereClause = q.getWhereClause();
+		whereClause.addEqualityConstraint("uid", obj.getID());
+		
+		PreparedStatement stmt = conn.prepareStatement(q.toSQL());
+		System.out.println(q.toSQL());
+		
+		// TODO: there must be a more generic way to do this!!
+		int i=1;
+		for (Object v : q.getPlaceHolderVals()) {
+			if (v instanceof String)
+				stmt.setString(i, (String)v);
+			else if (v instanceof Boolean)
+				stmt.setBoolean(i, (Boolean)v);
+			else
+				throw new SQLException("dunno what to do with "+v);
+			// TODO
+			i++;
+		}
+
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next())
+			return rs.getFloat("shannon_information");
+		else
+			return 0;
+	}
+	
+	
 	
 	// fetches into temporary session
 	public Collection<Annotation> retrieveAllAnnotations(OBOSession session) throws SQLException, ClassNotFoundException {

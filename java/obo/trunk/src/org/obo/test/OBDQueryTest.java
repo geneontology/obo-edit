@@ -14,6 +14,7 @@ import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
+import org.obo.datamodel.Namespace;
 import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOSessionImpl;
 
@@ -46,6 +47,7 @@ public class OBDQueryTest extends AbstractAnnotationTest {
 		wadapter.connect();
 
 		session = new OBOSessionImpl();
+		session.setDefaultNamespace(new Namespace("test"));
 		// ion transport
 		Collection<Annotation> annots = 
 			wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0006811"));
@@ -53,6 +55,19 @@ public class OBDQueryTest extends AbstractAnnotationTest {
 		for (Annotation annot : annots)
 			System.out.println("  match:"+annot);
 		assertTrue(annots.size() > 0);
+		
+		int numAnnots = 
+			wadapter.fetchAnnotationCountByObject(session, new OBOClassImpl("GO:0006811"));
+		System.err.println("N matching annots (count q):"+numAnnots);
+		assertTrue(numAnnots > 0);
+
+		assertTrue(numAnnots == annots.size());
+		
+		float ic =
+			wadapter.fetchAnnotationInformationContentByObject(session, new OBOClassImpl("GO:0006811"));
+		System.err.println("IC:"+ic);
+		assertTrue(ic > 0);
+		
 		writeTempOBOFile();
 		
 	}
