@@ -448,8 +448,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		q.addTable("node_link_node_with_pred_and_source");
 		WhereClause whereClause = q.getWhereClause();
 		//whereClause.addEqualityConstraint("is_inferred", false);
-		whereClause.addEqualityConstraint("object_uid",obj.getID());
-
+		//whereClause.addEqualityConstraint("object_uid",obj.getID());
+		// TODO: use SQL constructors
+		whereClause.addConstraint("object_id IN (SELECT node_id FROM link_to_node WHERE object_uid ='"+
+				obj.getID()+"')");
+		
 		PreparedStatement stmt = conn.prepareStatement(q.toSQL());
 		System.out.println(q.toSQL());
 		
@@ -634,14 +637,19 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		Integer annotId = rs.getInt("reiflink_node_id");
 		if (!rs.wasNull()) {
-			IdentifiedObject o = iid2obj.get(annotId); // expects pre-retrieved
+			IdentifiedObject o = iid2obj.get(annotId);
+			if (o == null) {
+				o = session.getObjectFactory().createObject(annotId.toString(), OBOClass.OBO_INSTANCE, false);
+				iid2obj.put(annotId,o);
+			}
+			
 			System.err.println("o="+o);
 			Instance inst = TermUtil.castToInstance((LinkedObject)o);
 			System.err.println("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
 			Annotation annot = new AnnotationImpl(inst, link);
 			session.addObject(annot);
 		}
-		System.err.println("read link: "+link);
+		//System.err.println("read link: "+link);
 		
 		link.setNamespace(source);
 		addLink(session,link);
@@ -654,6 +662,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		LinkedObject lo = link.getChild();
 		LinkedObject p = link.getParent();
 		
+		// TODO: use metadata ontology
 		if (pid.equals("oboMetaModel:inSubset")) {
 			System.err.println("subset "+link+"//"+p);
 			TermUtil.castToClass(lo);
@@ -1004,7 +1013,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		IdentifiedObject io = session.getObject(id);
 		if (io == null) {
 			io = objectFactory.createDanglingObject(id, false);
-			System.err.println("creating dangling for "+id);
+			//System.err.println("creating dangling for "+id);
 		}
 		return io;
 	}
