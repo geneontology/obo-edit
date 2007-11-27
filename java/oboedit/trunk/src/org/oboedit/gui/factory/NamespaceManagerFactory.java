@@ -6,8 +6,10 @@ import org.oboedit.gui.components.NamespaceManager;
 public class NamespaceManagerFactory extends AbstractComponentFactory<NamespaceManager> {
 
 	public NamespaceManagerFactory() {
-		addID("NAMESPACE_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.NamespaceManagerPlugin");
+	}
+	
+	public String getID() {
+		return "NAMESPACE_MANAGER";
 	}
 	
 	public NamespaceManager doCreateComponent(String id) {

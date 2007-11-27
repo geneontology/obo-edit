@@ -7,7 +7,10 @@ public class IntersectionEditorFactory extends
 		AbstractComponentFactory<IntersectionEditor> {
 
 	public IntersectionEditorFactory() {
-		addID("INTERSECTION_EDITOR");
+	}
+	
+	public String getID() {
+		return "INTERSECTION_EDITOR";
 	}
 
 	public IntersectionEditor doCreateComponent(String id) {

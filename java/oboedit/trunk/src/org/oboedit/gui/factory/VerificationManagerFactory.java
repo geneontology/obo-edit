@@ -6,8 +6,10 @@ import org.oboedit.gui.components.VerificationManagerComponent;
 public class VerificationManagerFactory extends
 		AbstractComponentFactory<VerificationManagerComponent> {
 	public VerificationManagerFactory() {
-		addID("VERIFICATION_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.VerificationPlugin");
+	}
+	
+	public String getID() {
+		return "VERIFICATION_MANAGER";
 	}
 
 	public VerificationManagerComponent doCreateComponent(String id) {

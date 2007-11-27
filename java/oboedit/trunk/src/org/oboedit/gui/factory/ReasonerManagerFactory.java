@@ -6,8 +6,10 @@ import org.oboedit.gui.components.ReasonerManagerComponent;
 public class ReasonerManagerFactory extends AbstractComponentFactory<ReasonerManagerComponent> {
 
 	public ReasonerManagerFactory() {
-		addID("REASONER_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.ReasonerPlugin");
+	}
+	
+	public String getID() {
+		return "REASONER_MANAGER";
 	}
 
 	public ReasonerManagerComponent doCreateComponent(String id) {

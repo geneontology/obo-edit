@@ -6,8 +6,10 @@ import org.oboedit.gui.components.ParentEditor;
 public class ParentEditorFactory extends AbstractComponentFactory<ParentEditor> {
 
 	public ParentEditorFactory() {
-		addID("PARENT_EDITOR");
-		addID("plugin:org.geneontology.oboedit.plugin.ParentPlugin");
+	}
+	
+	public String getID() {
+		return "PARENT_EDITOR";
 	}
 
 	public ParentEditor doCreateComponent(String id) {

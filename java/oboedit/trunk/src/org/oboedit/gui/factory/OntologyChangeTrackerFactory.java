@@ -7,8 +7,10 @@ public class OntologyChangeTrackerFactory extends
 		AbstractComponentFactory<OntologyChangeTracker> {
 
 	public OntologyChangeTrackerFactory() {
-		addID("CHANGE_TRACKER");
-		addID("plugin:org.geneontology.oboedit.plugin.TermChangeTrackerPlugin");
+	}
+	
+	public String getID() {
+		return "CHANGE_TRACKER";
 	}
 
 	public OntologyChangeTracker doCreateComponent(String id) {

@@ -6,8 +6,10 @@ import org.oboedit.gui.components.IDManagerComponent;
 public class IDManagerFactory extends AbstractComponentFactory<IDManagerComponent> {
 
 	public IDManagerFactory() {
-		addID("ID_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.IDManagerPlugin");
+	}
+	
+	public String getID() {
+		return "ID_MANAGER";
 	}
 	
 	public IDManagerComponent doCreateComponent(String id) {

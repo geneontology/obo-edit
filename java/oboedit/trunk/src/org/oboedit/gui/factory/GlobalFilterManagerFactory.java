@@ -7,8 +7,10 @@ public class GlobalFilterManagerFactory extends
 		AbstractComponentFactory<GlobalFilterManagerComponent> {
 
 	public GlobalFilterManagerFactory() {
-		addID("GLOBAL_FILTER_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.GlobalFilterPlugin");
+	}
+	
+	public String getID() {
+		return "GLOBAL_FILTER_MANAGER";
 	}
 
 	public GlobalFilterManagerComponent doCreateComponent(String id) {

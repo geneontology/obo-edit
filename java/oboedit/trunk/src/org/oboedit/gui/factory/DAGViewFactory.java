@@ -12,8 +12,6 @@ import org.oboedit.gui.components.DAGView;
 public class DAGViewFactory extends AbstractComponentFactory<DAGView> {
 	
 	public DAGViewFactory() {
-		addID("DAG_VIEW");
-		addID("plugin:org.geneontology.oboedit.plugin.DAGView");
 	}
 	
 	public DAGView doCreateComponent(String id) {
@@ -22,6 +20,10 @@ public class DAGViewFactory extends AbstractComponentFactory<DAGView> {
 
 	public String getName() {
 		return "DAG View";
+	}
+	
+	public String getID() {
+		return "DAG_VIEW";
 	}
 	
 	@Override

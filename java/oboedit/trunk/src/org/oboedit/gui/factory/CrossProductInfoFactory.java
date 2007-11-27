@@ -8,8 +8,10 @@ public class CrossProductInfoFactory extends
 		AbstractComponentFactory<CrossProductInfoComponent> {
 
 	public CrossProductInfoFactory() {
-		addID("CROSS_PRODUCT_INFO_COMPONENT");
-		addID("plugin:org.geneontology.oboedit.plugin.CrossProductInfoPlugin");
+	}
+	
+	public String getID() {
+		return "CROSS_PRODUCT_INFO_COMPONENT";
 	}
 
 	public CrossProductInfoComponent doCreateComponent(String id) {

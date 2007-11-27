@@ -19,7 +19,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
@@ -126,6 +125,11 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 				scratch.add(val);
 			return scratch;
 		}
+		
+		@Override
+		public String toString() {
+			return getID();
+		}
 	}
 
 	protected class IsDecoratedCriterion extends AbstractBooleanCriterion {
@@ -136,6 +140,10 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 
 		public boolean matches(IdentifiedObject o) {
 			return decoratedObjects.containsKey(o);
+		}
+
+		public String toString() {
+			return getID();
 		}
 	}
 
@@ -315,6 +323,8 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		}
 
 		public void componentShown(GUIComponentEvent event) {
+			if (!isEnabled())
+				return;
 			if (event.getComponent() instanceof FilteredRenderable) {
 				FilteredRenderable canvas = (FilteredRenderable) event
 						.getComponent();
@@ -332,8 +342,11 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		protected JComponent comp;
 
 		public ConfigurationComponentFactory(JComponent comp) {
-			addID(getDefaultID() + "_component_factory");
 			this.comp = comp;
+		}
+		
+		public String getID() {
+			return getBehaviorID()+ "_component_factory";
 		}
 
 		@Override
@@ -509,7 +522,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 	}
 
 	protected boolean isFetchCriterionVisibleToOtherComponents() {
-		return true;
+		return false;
 	}
 
 	public void shutdown() {

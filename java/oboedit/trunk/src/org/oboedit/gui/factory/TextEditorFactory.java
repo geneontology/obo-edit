@@ -6,7 +6,10 @@ import org.oboedit.gui.components.TextEditor;
 public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
 
 	public TextEditorFactory() {
-		addID("TEXTEDIT");
+	}
+	
+	public String getID() {
+		return "TEXTEDIT";
 	}
 
 	public TextEditor doCreateComponent(String id) {

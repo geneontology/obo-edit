@@ -7,7 +7,10 @@ import org.oboedit.gui.components.ConfigurableTextComponent;
 public class ConfigurableMessageComponentFactory extends AbstractComponentFactory {
 
 	public ConfigurableMessageComponentFactory() {
-		addID("MESSAGE");
+	}
+	
+	public String getID() {
+		return "MESSAGE";
 	}
 	
 	@Override

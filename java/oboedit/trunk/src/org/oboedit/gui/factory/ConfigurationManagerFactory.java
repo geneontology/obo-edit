@@ -7,11 +7,14 @@ public class ConfigurationManagerFactory extends
 		AbstractComponentFactory<ConfigurationManager> {
 
 	public ConfigurationManagerFactory() {
-		addID("CONFIGURATION_MANAGER");
 	}
 
 	public ConfigurationManager doCreateComponent(String id) {
 		return new ConfigurationManager(id);
+	}
+	
+	public String getID() {
+		return "CONFIGURATION_MANAGER";
 	}
 
 	public String getName() {

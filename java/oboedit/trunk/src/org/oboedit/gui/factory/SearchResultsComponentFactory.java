@@ -7,7 +7,10 @@ public class SearchResultsComponentFactory extends
 		AbstractComponentFactory<SearchResultsComponent> {
 
 	public SearchResultsComponentFactory() {
-		addID("SEARCH_RESULTS");
+	}
+	
+	public String getID() {
+		return "SEARCH_RESULTS";
 	}
 
 	@Override

@@ -6,8 +6,10 @@ import org.oboedit.gui.components.HistoryBrowser;
 public class HistoryBrowserFactory extends AbstractComponentFactory<HistoryBrowser> {
 
 	public HistoryBrowserFactory() {
-		addID("HISTORY_BROWSER");
-		addID("plugin:org.geneontology.oboedit.plugin.HistoryPlugin");
+	}
+	
+	public String getID() {
+		return "HISTORY_BROWSER";
 	}
 
 	public HistoryBrowser doCreateComponent(String id) {

@@ -8,8 +8,10 @@ public class CrossProductMatrixEditorFactory extends
 		AbstractComponentFactory<CrossProductMatrixEditorComponent> {
 
 	public CrossProductMatrixEditorFactory() {
-		addID("CROSS_PRODUCT_MATRIX_EDITOR_COMPONENT");
-		addID("plugin:org.geneontology.oboedit.plugin.CrossProductMatrixEditorPlugin");
+	}
+	
+	public String getID() {
+		return "CROSS_PRODUCT_MATRIX_EDITOR_COMPONENT";
 	}
 
 	public CrossProductMatrixEditorComponent doCreateComponent(String id) {
