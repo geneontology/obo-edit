@@ -39,13 +39,13 @@ public class AnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Integer
 		protected Color maxColor;
 
 		public AnnotationNumberFetchTaskConfiguration() {
-			setEnabled(false);
+			//setEnabled(false);
 		}
 
 		public AnnotationNumberFetchTaskConfiguration(boolean enabled,
 				Color minColor, Color maxColor) {
-			//setEnabled(enabled);
-			setEnabled(false);
+			setEnabled(enabled);
+			//setEnabled(false);
 			setMinColor(minColor);
 			setMaxColor(maxColor);
 		}
@@ -70,8 +70,8 @@ public class AnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Integer
 	protected Color minColor;
 	protected Color maxColor;
 
-	//protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", true);
-	protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", false);
+	protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", true);
+	//protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", false);
 	protected JButton minColorButton = new JButton();
 	protected JButton maxColorButton = new JButton();
 
@@ -100,7 +100,9 @@ public class AnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Integer
 			}
 
 		});
-		setMinColor(Color.yellow);
+		//setEnabled(false);
+		//setMinColor(Color.yellow);
+		setMinColor(Color.white);
 		setMaxColor(Color.red);
 	}
 
