@@ -2,10 +2,13 @@ package org.obo.datamodel.impl;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.obo.datamodel.Instance;
+import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.Type;
 import org.obo.datamodel.Value;
 
@@ -46,5 +49,4 @@ public class DanglingInstanceImpl extends DanglingAnnotatedObjectImpl implements
 	public void setType(OBOClass type) {
 		this.type = type;
 	}
-
 }

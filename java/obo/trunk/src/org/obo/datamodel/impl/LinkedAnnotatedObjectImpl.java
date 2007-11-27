@@ -5,7 +5,7 @@ import org.obo.datamodel.*;
 import java.util.*;
 
 public abstract class LinkedAnnotatedObjectImpl extends AnnotatedObjectImpl
-		implements LinkedObject {
+		implements OBOObject {
 
 	protected Collection<Link> parents = null;
 

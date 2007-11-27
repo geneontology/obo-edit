@@ -2,8 +2,7 @@ package org.obo.datamodel;
 
 import org.obo.datamodel.impl.*;
 
-public interface OBOClass extends AnnotatedObject, CategorizedObject,
-		LinkedObject, Type, Comparable {
+public interface OBOClass extends OBOObject, Type, Comparable {
 
 	public static final OBOClass OBO_CLASS = new OBOClassImpl("obo:TERM",
 			"obo:TERM") {

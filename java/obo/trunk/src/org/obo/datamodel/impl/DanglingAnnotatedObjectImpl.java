@@ -7,11 +7,13 @@ import java.util.Set;
 import org.obo.datamodel.AnnotatedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.NestedValue;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
+import org.obo.datamodel.TermCategory;
 
 public abstract class DanglingAnnotatedObjectImpl extends
-		DanglingObjectImpl implements AnnotatedObject {
+		DanglingObjectImpl implements OBOObject {
 
 	public DanglingAnnotatedObjectImpl(String id) {
 		super(id);
@@ -199,4 +201,23 @@ public abstract class DanglingAnnotatedObjectImpl extends
 
 	public void setCreatedByExtension(NestedValue createdByExtension) {
 	}
+	
+
+	public void addCategory(TermCategory category) {
+	}
+
+	public void addCategoryExtension(TermCategory category, NestedValue nv) {
+	}
+
+	public Set<TermCategory> getCategories() {
+		return null;
+	}
+
+	public NestedValue getCategoryExtension(TermCategory category) {
+		return null;
+	}
+
+	public void removeCategory(TermCategory category) {
+	}
+
 }
