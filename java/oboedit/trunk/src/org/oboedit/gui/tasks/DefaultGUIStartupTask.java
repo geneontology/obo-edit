@@ -147,8 +147,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return CollectionUtil.list(new AutosaveTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
 				new FrameNameUpdateTask(), screenLockTask
-				// , new AnnotationNumberFetchBehaviorTask()
-				, new LineNumberFetchBehaviorTask()
+				 , new AnnotationNumberFetchBehaviorTask()
+				//, new LineNumberFetchBehaviorTask()
 		);
 	}
 
