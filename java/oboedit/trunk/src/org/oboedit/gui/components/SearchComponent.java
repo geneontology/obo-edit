@@ -87,6 +87,8 @@ public class SearchComponent extends AbstractGUIComponent {
 		}
 
 		public void setType(ResultLabelType type) {
+			if (type == null)
+				type = ResultLabelType.QUERY_NAME;
 			this.type = type;
 		}
 	}
@@ -106,9 +108,10 @@ public class SearchComponent extends AbstractGUIComponent {
 				}
 				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 				add(shortenResultsBox);
-				
+
 				Box resultPanel = Box.createHorizontalBox();
-				resultPanel.add(new JLabel("End title of search results panels with: "));
+				resultPanel.add(new JLabel(
+						"End title of search results panels with: "));
 				resultPanel.add(resultLabelDropdown);
 				add(resultPanel);
 			}
@@ -223,6 +226,9 @@ public class SearchComponent extends AbstractGUIComponent {
 	}
 
 	public void setLabelType(ResultLabelType labelType) {
-		this.labelType = labelType;
+		if (labelType == null)
+			this.labelType = ResultLabelType.QUERY_NAME;
+		else
+			this.labelType = labelType;
 	}
 }

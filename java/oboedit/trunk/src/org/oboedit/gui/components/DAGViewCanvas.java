@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.swing.TaskPanel;
 import org.bbop.util.AbstractTaskDelegate;
+import org.bbop.util.CollectionUtil;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
@@ -39,9 +41,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.MutableLinkDatabase;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.impl.DefaultMutableLinkDatabase;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.datamodel.impl.MaskedLinkDatabase;
+import org.obo.filters.Filter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.OnTheFlyReasoner;
@@ -56,14 +61,23 @@ import org.oboedit.graph.SelectionBehavior;
 import org.oboedit.graph.TooltipBehavior;
 import org.oboedit.graph.ZoomToAllGuarantor;
 import org.oboedit.graph.ZoomWidgetBehavior;
+import org.oboedit.gui.DefaultSelection;
+import org.oboedit.gui.Filterable;
+import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.HTMLNodeLabelProvider;
+import org.oboedit.gui.NodeLabelProvider;
+import org.oboedit.gui.Selection;
+import org.oboedit.gui.event.ExpandCollapseListener;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
+import org.oboedit.gui.filter.BackgroundColorSpecField;
+import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 
-public class DAGViewCanvas extends AbstractGUIComponent {
+public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
+		FilteredRenderable {
 
 	public static class GraphDAGViewConfiguration implements
 			ComponentConfiguration {
@@ -155,7 +169,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 	protected JLabel topLabel = new JLabel();
 
-	Collection<LinkDatabaseCanvas> canvasList;
+	Collection<LinkDatabaseCanvas> canvasList = new LinkedList<LinkDatabaseCanvas>();
 
 	protected JCheckBox showAnimations = new JCheckBox("Animate", false);
 	protected JCheckBox succinctCheckbox = new JCheckBox("Succinct", true);
@@ -196,7 +210,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 				}
 			});
 		}
-		
+
 		@Override
 		protected void setProgressValue(Integer progress) {
 			// TODO Auto-generated method stub
@@ -250,7 +264,8 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 			}
 			setProgressValue(100);
 			setResults(databases);
-			System.err.println("found paths in "+(System.currentTimeMillis() - time));
+			System.err.println("found paths in "
+					+ (System.currentTimeMillis() - time));
 		}
 
 	}
@@ -386,6 +401,22 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 			}
 
 		};
+		if (linkFilter != null)
+			canvas.setLinkFilter(linkFilter);
+		if (termFilter != null)
+			canvas.setTermFilter(termFilter);
+		for (ExpandCollapseListener listener : expandCollapseListeners)
+			canvas.addExpansionListener(listener);
+		for (SelectionListener listener : selectionListeners)
+			canvas.addSelectionListener(listener);
+		for (RenderedFilter filter : automaticObjectRenderers)
+			canvas.addAutomaticObjectRenderer(filter);
+		for (RenderedFilter filter : objectRenderers)
+			canvas.addObjectRenderer(filter);
+		for (RenderedFilter filter : linkRenderers)
+			canvas.addLinkRenderer(filter);
+		if (labelProvider != null)
+			canvas.setNodeLabelProvider(labelProvider);
 		canvas.setLive(true);
 		canvas.setDisableAnimations(!config.isShowAnimations());
 		if (canvas.getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
@@ -511,7 +542,7 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 	protected SelectionListener selectListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
-			setTerms(e.getSelection().getTerms());
+			select(e.getSelection());
 		}
 	};
 
@@ -559,5 +590,189 @@ public class DAGViewCanvas extends AbstractGUIComponent {
 
 	public boolean isXMLSettable() {
 		return false;
+	}
+
+	protected Filter<?> linkFilter;
+	protected Filter<?> termFilter;
+	protected Collection<ExpandCollapseListener> expandCollapseListeners = new ArrayList<ExpandCollapseListener>();
+	protected Collection<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+	protected List<RenderedFilter> automaticObjectRenderers = new ArrayList<RenderedFilter>();
+	protected List<RenderedFilter> objectRenderers = new ArrayList<RenderedFilter>();
+	protected List<RenderedFilter> linkRenderers = new ArrayList<RenderedFilter>();
+	protected NodeLabelProvider labelProvider;
+
+	public Filter<?> getLinkFilter() {
+		return linkFilter;
+	}
+
+	public Filter<?> getTermFilter() {
+		return termFilter;
+	}
+
+	public void setLinkFilter(Filter<?> filter) {
+		this.linkFilter = filter;
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.setLinkFilter(filter);
+		}
+	}
+
+	public void setTermFilter(Filter<?> filter) {
+		this.termFilter = filter;
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.setTermFilter(filter);
+		}
+	}
+
+	public void addExpansionListener(ExpandCollapseListener listener) {
+		expandCollapseListeners.add(listener);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.addExpansionListener(listener);
+		}
+	}
+
+	public void addSelectionListener(SelectionListener listener) {
+		selectionListeners.add(listener);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.addSelectionListener(listener);
+		}
+	}
+
+	public LinkDatabase getLinkDatabase() {
+		return SessionManager.getManager().getSession().getLinkDatabase();
+	}
+
+	public RootAlgorithm getRootAlgorithm() {
+		return RootAlgorithm.GREEDY;
+	}
+
+	public Selection getSelection(MouseEvent e) {
+		return SelectionManager.getManager().getSelection();
+	}
+
+	public Selection getSelection() {
+		return SelectionManager.getManager().getSelection();
+	}
+
+	public Collection<PathCapable> getVisibleObjects() {
+		Collection<PathCapable> out = new HashSet<PathCapable>();
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			out.addAll(canvas.getVisibleObjects());
+		}
+		return out;
+	}
+
+	public boolean hasCombinedTermsAndLinks() {
+		return false;
+	}
+
+	public boolean isLive() {
+		return false;
+	}
+
+	public void removeExpansionListener(ExpandCollapseListener listener) {
+		expandCollapseListeners.remove(listener);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.removeExpansionListener(listener);
+		}
+	}
+
+	public void removeSelectionListener(SelectionListener listener) {
+		selectionListeners.remove(listener);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.removeSelectionListener(listener);
+		}
+	}
+
+	public void select(Selection selection) {
+		setTerms(selection.getTerms());
+	}
+
+	public void setLive(boolean isLive) {
+	}
+
+	public void addAutomaticObjectRenderer(RenderedFilter pair) {
+		automaticObjectRenderers.add(pair);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.addAutomaticObjectRenderer(pair);
+		}
+	}
+
+	public void addLinkRenderer(RenderedFilter renderer) {
+		linkRenderers.add(renderer);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.addLinkRenderer(renderer);
+		}
+	}
+
+	public void addObjectRenderer(RenderedFilter pair) {
+		objectRenderers.add(pair);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.addObjectRenderer(pair);
+		}
+	}
+
+	public List<RenderedFilter> getAutomaticObjectRenderers() {
+		return automaticObjectRenderers;
+	}
+
+	public List<RenderedFilter> getLinkRenderers() {
+		return linkRenderers;
+	}
+
+	public void setNodeLabelProvider(NodeLabelProvider provider) {
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.setNodeLabelProvider(provider);
+		}
+	}
+
+	public NodeLabelProvider getNodeLabelProvider() {
+		return labelProvider;
+	}
+
+	public List<RenderedFilter> getObjectRenderers() {
+		return objectRenderers;
+	}
+
+	public void redraw() {
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.redraw();
+		}
+	}
+
+	public void removeAutomaticObjectRenderer(RenderedFilter pair) {
+		automaticObjectRenderers.remove(pair);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.removeAutomaticObjectRenderer(pair);
+		}
+	}
+
+	public void removeLinkRenderer(RenderedFilter renderer) {
+		linkRenderers.remove(renderer);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.removeLinkRenderer(renderer);
+		}
+	}
+
+	public void removeObjectRenderer(RenderedFilter pair) {
+		objectRenderers.remove(pair);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.removeObjectRenderer(pair);
+		}
+	}
+
+	public void setLinkRenderers(List<RenderedFilter> renderers) {
+		linkRenderers.clear();
+		linkRenderers.addAll(renderers);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.setLinkRenderers(renderers);
+		}
+	}
+
+	public void setObjectRenderers(List<RenderedFilter> renderers) {
+		objectRenderers.clear();
+		objectRenderers.addAll(renderers);
+		for (LinkDatabaseCanvas canvas : canvasList) {
+			canvas.setObjectRenderers(renderers);
+		}
 	}
 }
