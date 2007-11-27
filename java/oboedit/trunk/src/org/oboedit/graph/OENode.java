@@ -55,24 +55,32 @@ public class OENode extends PCNode implements Morphable {
 			NamedChildProvider provider, Shape s) {
 		field.setWidth(s.getBounds().getWidth());
 		field.setHeight(s.getBounds().getHeight());
-		s = ShapeUtil.createRoundRectangle(null, roundingSize, (float) s
-				.getBounds().getX(), (float) s.getBounds().getY(), (float) s
-				.getBounds().getWidth()
-				+ x_margin + x_label_padding, (float) s.getBounds().getHeight()
-				+ y_margin + y_label_padding);
-		initialize(lo, provider, s);
-		setNamedChild(KEY_LABEL, field);
-		field.setPickable(false);
-		setLabel(canvas.generateLabel(lo));
-		RenderSpec spec = GUIUtil.getSpec(canvas, lo, FilterManager.getManager()
-				.getGlobalTermRenderers(), canvas.getObjectRenderers(), canvas.getAutomaticObjectRenderers());
-		setPaint(Color.lightGray);
-		if (spec instanceof GeneralRendererSpec) {
-			ColorProvider c = ((GeneralRendererSpec) spec)
-					.getValue(BackgroundColorSpecField.FIELD);
-			if (c != null) {
-				setPaint(c.getColor(canvas, lo));
+		try {
+			s = ShapeUtil.createRoundRectangle(null, roundingSize, (float) s
+					.getBounds().getX(), (float) s.getBounds().getY(),
+					(float) s.getBounds().getWidth() + x_margin
+							+ x_label_padding, (float) s.getBounds()
+							.getHeight()
+							+ y_margin + y_label_padding);
+			initialize(lo, provider, s);
+			setNamedChild(KEY_LABEL, field);
+			field.setPickable(false);
+			setLabel(canvas.generateLabel(lo));
+			RenderSpec spec = GUIUtil
+					.getSpec(canvas, lo, FilterManager.getManager()
+							.getGlobalTermRenderers(), canvas
+							.getObjectRenderers(), canvas
+							.getAutomaticObjectRenderers());
+			setPaint(Color.lightGray);
+			if (spec instanceof GeneralRendererSpec) {
+				ColorProvider c = ((GeneralRendererSpec) spec)
+						.getValue(BackgroundColorSpecField.FIELD);
+				if (c != null) {
+					setPaint(c.getColor(canvas, lo));
+				}
 			}
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -119,7 +127,7 @@ public class OENode extends PCNode implements Morphable {
 			return act;
 		}
 	}
-	
+
 	@Override
 	public void setPaint(Paint arg0) {
 		// TODO Auto-generated method stub

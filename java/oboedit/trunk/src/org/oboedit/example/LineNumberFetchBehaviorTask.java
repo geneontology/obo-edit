@@ -185,6 +185,12 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 			setMaxColor(myConfig.getMaxColor());
 		}
 	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		enabledCheckBox.setSelected(enabled);
+	}
 
 	@Override
 	protected String getName() {

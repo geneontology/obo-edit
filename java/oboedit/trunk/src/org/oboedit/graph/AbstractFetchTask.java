@@ -29,6 +29,7 @@ import org.bbop.framework.event.GUIComponentEvent;
 import org.bbop.framework.event.GUIComponentListener;
 import org.bbop.util.ComparableComparator;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.PathCapable;
 import org.obo.filters.AbstractBooleanCriterion;
 import org.obo.filters.AbstractCriterion;
 import org.obo.filters.ObjectFilter;
@@ -89,10 +90,14 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		}
 
 		public T getResult() {
-			try {
-				join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			boolean running = true;
+			while (running) {
+				try {
+					join();
+					running = false;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			return result;
 		}
@@ -120,12 +125,20 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 
 		public Collection<T> getValues(Collection<T> scratch,
 				IdentifiedObject obj) {
-			T val = decoratedObjects.get(obj);
-			if (val != null)
-				scratch.add(val);
+			try {
+				T val = decoratedObjects.get(obj);
+				// System.err.println("val = " + val
+				// + ", decoratedObjects.get("+obj+") = "
+				// + decoratedObjects.get(obj) + " decoratedObjects = "
+				// + decoratedObjects);
+				if (val != null)
+					scratch.add(val);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 			return scratch;
 		}
-		
+
 		@Override
 		public String toString() {
 			return getID();
@@ -183,14 +196,21 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 								ft.start();
 							}
 						}
-						for (FetchThread thread : threads)
-							try {
-								thread.join();
-							} catch (InterruptedException e1) {
+						boolean problem;
+						do {
+							problem = false;
+							for (FetchThread thread : threads) {
+								try {
+									thread.join();
+								} catch (InterruptedException e1) {
+									problem = true;
+								}
 							}
+						} while (problem);
 						for (FetchThread thread : threads) {
+							T result = thread.getResult();
 							decoratedObjects.put(thread.getIdentifiedObject(),
-									thread.getResult());
+									result);
 						}
 					}
 					SwingUtilities.invokeLater(new Runnable() {
@@ -227,6 +247,15 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		protected RenderedFilter pendingRenderFilter;
 
 		protected GeneralFetchThread thread;
+
+		public void queueAll() {
+			for (PathCapable pc : canvas.getVisibleObjects()) {
+				if (pc instanceof IdentifiedObject) {
+					pendingObjects.add((IdentifiedObject) pc);
+				}
+			}
+			thread.interrupt();
+		}
 
 		public void queueObjects(Collection<IdentifiedObject> objects) {
 			pendingObjects.addAll(objects);
@@ -344,9 +373,9 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		public ConfigurationComponentFactory(JComponent comp) {
 			this.comp = comp;
 		}
-		
+
 		public String getID() {
-			return getBehaviorID()+ "_component_factory";
+			return getBehaviorID() + "_component_factory";
 		}
 
 		@Override
@@ -369,7 +398,15 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 
 	}
 
-	protected Map<IdentifiedObject, T> decoratedObjects = new HashMap<IdentifiedObject, T>();
+	private static int idgen = 0;
+
+	protected Map<IdentifiedObject, T> decoratedObjects = new HashMap<IdentifiedObject, T>() {
+		int id = idgen++;
+
+		public String toString() {
+			return "hashmap" + id + ":" + super.toString();
+		}
+	};
 
 	protected FetchValueCriterion fetchCriterion = new FetchValueCriterion();
 
@@ -390,18 +427,28 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 	public void setEnabled(boolean enabled) {
 		if (this.enabled != enabled) {
 			this.enabled = enabled;
-			for (FilteredRenderable fr : taskMap.keySet()) {
-				PerPanelTask task = taskMap.get(fr);
-				if (enabled)
-					task.installRenderers();
-				else
-					task.uninstallRenderers();
-				fr.redraw();
+			for (GUIComponent c : ComponentManager.getManager()
+					.getActiveComponents()) {
+				if (c instanceof FilteredRenderable) {
+					FilteredRenderable canvas = (FilteredRenderable) c;
+					if (enabled) {
+						PerPanelTask task = new PerPanelTask();
+						task.install(canvas);
+						taskMap.put(canvas, task);
+						task.queueAll();
+					} else {
+						PerPanelTask task = taskMap.get(canvas);
+						if (task != null)
+							task.shutdown(canvas);
+						canvas.redraw();
+					}
+				}
+
 			}
 
 		}
 	}
-	
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -489,7 +536,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		readConfig();
 
 	}
-	
+
 	protected void readConfig() {
 		Object config = getConfiguration();
 		File f = getConfigFile();
@@ -504,7 +551,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 		}
 		setConfiguration(config);
 	}
-	
+
 	protected void flushConfig() {
 		File f = getConfigFile();
 		try {
@@ -516,9 +563,10 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 			System.err.println("Couldn't flush component config successfully");
 		}
 	}
-	
+
 	protected File getConfigFile() {
-		return new File(GUIManager.getPrefsDir(), getBehaviorID()+"_behavior.config");
+		return new File(GUIManager.getPrefsDir(), getBehaviorID()
+				+ "_behavior.config");
 	}
 
 	protected boolean isFetchCriterionVisibleToOtherComponents() {
