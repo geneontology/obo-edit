@@ -1,9 +1,22 @@
 package org.bbop.framework.dock.idw;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
@@ -24,7 +37,12 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicTextFieldUI;
 
 import net.infonode.docking.DefaultButtonFactories;
 import net.infonode.docking.DockingWindow;
@@ -33,12 +51,17 @@ import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
+import net.infonode.docking.internal.ViewTitleBar;
+import net.infonode.docking.model.TabWindowItem;
 import net.infonode.docking.properties.RootWindowProperties;
 import net.infonode.docking.theme.DockingWindowsTheme;
 import net.infonode.docking.theme.ShapedGradientDockingTheme;
 import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.gui.colorprovider.FixedColorProvider;
+import net.infonode.tabbedpanel.Tab;
+import net.infonode.tabbedpanel.TabbedPanel;
+import net.infonode.tabbedpanel.titledtab.TitledTab;
 import net.infonode.util.Direction;
 
 import org.bbop.framework.ComponentManager;
@@ -51,7 +74,10 @@ import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.Perspective;
 import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
+import org.bbop.swing.SwingUtil;
 import org.bbop.util.ObjectUtil;
+
+import com.sun.java.swing.plaf.windows.WindowsTabbedPaneUI;
 
 public class IDWDriver implements LayoutDriver {
 
@@ -384,9 +410,13 @@ public class IDWDriver implements LayoutDriver {
 
 	protected DockingWindow lastComponent;
 
+	protected String getDefaultIDSuffix() {
+		return "main";
+	}
+
 	public View createView(GUIComponentFactory factory, String id, String label) {
 		if (id == null)
-			id = factory.getIDs().get(0) + ":" + factory.getDefaultID();
+			id = factory.getID() + ":" + getDefaultIDSuffix();
 		View tempView = viewMap.getView(id);
 		if (tempView != null && tempView.getWindowParent() == null) {
 			return tempView;
@@ -449,7 +479,126 @@ public class IDWDriver implements LayoutDriver {
 		 */
 		if (c.getConfigurationPanel() != null)
 			v.getCustomTitleBarComponents().add(configButton);
+		final MouseListener listener = new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					ViewTitleBar bar = (ViewTitleBar) e.getComponent();
+					StringBuffer buffer = new StringBuffer();
+					buffer.append("View");
+					java.awt.Component p = v.getParent();
+					while (p != null) {
+						if (p instanceof DockingWindow) {
+							Collection comps = SwingUtil.getAllDescendants(
+									(Container) p, Tab.class);
+							buffer.append(" -> " + p.getClass());
+
+						}
+						if (p != null
+								&& p instanceof net.infonode.tabbedpanel.Tab) {
+							System.err.println("pausing for tabwindow");
+						}
+						p = p.getParent();
+					}
+					System.out.println("clicked view " + buffer);
+					EditorField field = new EditorField(v, bar);
+					field.install();
+				}
+			}
+		};
+		v.addContainerListener(new ContainerListener() {
+
+			public void componentAdded(ContainerEvent e) {
+				if (e.getChild() instanceof ViewTitleBar) {
+					ViewTitleBar bar = (ViewTitleBar) e.getChild();
+					bar.addMouseListener(listener);
+				}
+			}
+
+			public void componentRemoved(ContainerEvent e) {
+				if (e.getChild() instanceof ViewTitleBar) {
+					ViewTitleBar bar = (ViewTitleBar) e.getChild();
+					bar.removeMouseListener(listener);
+				}
+			}
+
+		});
+		
 		return v;
+	}
+
+	protected class EditorField extends JTextField {
+		protected View view;
+		protected ViewTitleBar bar;
+
+		public EditorField(View view, ViewTitleBar bar) {
+			setMaximumSize(new Dimension(Integer.MAX_VALUE,
+					(int) getMaximumSize().getHeight()));
+			this.bar = bar;
+			this.view = view;
+			setFont(bar.getLabel().getFont());
+			setOpaque(false);
+			setText(bar.getText());
+			addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					commit();
+				}
+			});
+			addFocusListener(new FocusListener() {
+
+				public void focusGained(FocusEvent e) {
+				}
+
+				public void focusLost(FocusEvent e) {
+					commit();
+				}
+
+			});
+		}
+
+		public void install() {
+			JComponent[] comps = { this };
+			bar.setLeftTitleComponents(comps);
+			view.getViewProperties().getViewTitleBarProperties()
+					.getNormalProperties().setTitleVisible(false);
+			// int width = Integer.MAX_VALUE;
+			// for (Component c : bar.getComponents()) {
+			// if (c != this && c != bar.getLabel() && c.isVisible())
+			// if (c.getX() < width)
+			// width = c.getX();
+			// }
+			// setPreferredSize(new Dimension(width, (int) getPreferredSize()
+			// .getHeight()));
+			requestFocus();
+		}
+
+		public void commit() {
+
+			view.getViewProperties().getViewTitleBarProperties()
+					.getNormalProperties().setTitle(getText());
+			view.getViewProperties().getViewTitleBarProperties()
+					.getNormalProperties().setTitleVisible(true);
+			bar.setLeftTitleComponents(new JComponent[0]);
+			view.getViewProperties().setTitle(getText());
+//			TabWindow tabWindow = (TabWindow) SwingUtilities
+//					.getAncestorOfClass(TabWindow.class, view);
+//			TabbedPanel panel = SwingUtil.getDescendantOfType(tabWindow,
+//					TabbedPanel.class);
+//			for (int i = 0; i < panel.getTabCount(); i++) {
+//				Tab t = panel.getTabAt(i);
+//				if (t instanceof TitledTab) {
+//					System.err.println("t = " + t);
+//					TitledTab tt = (TitledTab) t;
+//					if (SwingUtilities.isDescendingFrom(view, t
+//							.getContentComponent())) {
+//						tt.getProperties().getNormalProperties().setText(
+//								getText());
+//						tt.setText(getText());
+//					}
+//				}
+//			}
+		}
 	}
 
 	protected void updateConfigButton(JToggleButton configButton) {
@@ -499,7 +648,8 @@ public class IDWDriver implements LayoutDriver {
 
 	public Collection<View> getAllViews() {
 		List<View> out = new LinkedList<View>();
-		for(GUIComponent c : ComponentManager.getManager().getActiveComponents()) {
+		for (GUIComponent c : ComponentManager.getManager()
+				.getActiveComponents()) {
 			out.add(getView(c));
 		}
 		return out;

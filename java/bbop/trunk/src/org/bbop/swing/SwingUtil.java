@@ -473,12 +473,12 @@ public class SwingUtil {
 		return layout.getConstraints(c);
 	}
 
-	public static Component getDescendantOfType(Component c, Class type) {
+	public static <T> T getDescendantOfType(Component c, Class<T> type) {
 		if (type.isAssignableFrom(c.getClass()))
-			return c;
+			return (T) c;
 		if (c instanceof Container) {
 			for (Component child : ((Container) c).getComponents()) {
-				Component out = getDescendantOfType(child, type);
+				T out = getDescendantOfType(child, type);
 				if (out != null)
 					return out;
 			}
