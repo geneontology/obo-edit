@@ -2,8 +2,7 @@ package org.obo.datamodel;
 
 import java.util.Collection;
 
-public interface Instance extends AnnotatedObject,
-		LinkedObject {
+public interface Instance extends OBOObject {
 
 	public void addPropertyValue(OBOProperty property, Value<?> value);
 

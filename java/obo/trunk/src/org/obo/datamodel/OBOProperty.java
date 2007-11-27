@@ -2,8 +2,7 @@ package org.obo.datamodel;
 
 import org.obo.datamodel.impl.OBOPropertyImpl;
 
-public interface OBOProperty extends LinkedObject, AnnotatedObject,
-		CategorizedObject {
+public interface OBOProperty extends OBOObject {
 
 	public static final OBOProperty IS_A = new OBOPropertyImpl("OBO_REL:is_a",
 			null) {
