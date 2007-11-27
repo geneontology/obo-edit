@@ -7,12 +7,14 @@ public class AnnotationSummaryComponentFactory extends
 		AbstractComponentFactory<AnnotationSummaryComponent> {
 
 	public AnnotationSummaryComponentFactory() {
-		addID("ANNOTATION_SUMMARY_COMPONENT");
-		addID("plugin:org.geneontology.oboedit.plugin.AnnotationSummaryComponentPlugin");
 	}
 
 	public AnnotationSummaryComponent doCreateComponent(String id) {
 		return new AnnotationSummaryComponent(id);
+	}
+	
+	public String getID() {
+		return "ANNOTATION_SUMMARY_COMPONENT";
 	}
 
 	public String getName() {

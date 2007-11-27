@@ -6,8 +6,10 @@ import org.oboedit.gui.components.OBOTermPanel;
 public class TermPanelFactory extends AbstractComponentFactory<OBOTermPanel> {
 	
 	public TermPanelFactory() {
-		addID("DAG");
-		addID("OBODAG");
+	}
+	
+	public String getID() {
+		return "TERM_PANEL";
 	}
 
 	public OBOTermPanel doCreateComponent(String id) {

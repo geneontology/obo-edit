@@ -8,7 +8,10 @@ public class TableOfContentsFactory extends
 		AbstractComponentFactory<TableOfContentsComponent> {
 
 	public TableOfContentsFactory() {
-		addID("TABLE_OF_CONTENTS");
+	}
+	
+	public String getID() {
+		return "TABLE_OF_CONTENTS";
 	}
 
 	public TableOfContentsComponent doCreateComponent(String id) {

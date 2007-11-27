@@ -11,8 +11,12 @@ import org.oboedit.gui.components.DAGViewCanvas;
 public class GraphDAGViewFactory extends AbstractComponentFactory<DAGViewCanvas> {
 
 	public GraphDAGViewFactory() {
-		addID("GRAPH_DAG_VIEW");
 	}
+	
+	public String getID() {
+		return "GRAPH_DAG_VIEW";
+	}
+	
 	public DAGViewCanvas doCreateComponent(String id) {
 		return new DAGViewCanvas(id);
 	}

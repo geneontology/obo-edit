@@ -6,8 +6,10 @@ import org.oboedit.gui.components.DbxrefLibrary;
 public class DbxrefLibraryFactory extends AbstractComponentFactory<DbxrefLibrary> {
 
 	public DbxrefLibraryFactory() {
-		addID("DBXREF_LIBRARY");
-		addID("plugin:org.geneontology.oboedit.plugin.DbxrefLibraryPlugin");
+	}
+	
+	public String getID() {
+		return "DBXREF_LIBRARY";
 	}
 
 	public DbxrefLibrary doCreateComponent(String id) {

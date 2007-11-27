@@ -6,8 +6,10 @@ import org.oboedit.gui.components.SynonymCategoryManager;
 public class SynonymCategoryManagerFactory extends
 		AbstractComponentFactory<SynonymCategoryManager> {
 	public SynonymCategoryManagerFactory() {
-		addID("SYNONYM_CATEGORY_MANAGER");
-		addID("plugin:org.geneontology.oboedit.plugin.SynonymCategoryManagerPlugin");
+	}
+
+	public String getID() {
+		return "SYNONYM_CATEGORY_MANAGER";
 	}
 
 	public SynonymCategoryManager doCreateComponent(String id) {

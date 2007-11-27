@@ -7,7 +7,10 @@ import org.oboedit.gui.components.SearchComponent;
 public class SearchComponentFactory extends AbstractComponentFactory<SearchComponent> {
 
 	public SearchComponentFactory() {
-		addID("FIND");
+	}
+	
+	public String getID() {
+		return "FIND";
 	}
 
 	public SearchComponent doCreateComponent(String id) {

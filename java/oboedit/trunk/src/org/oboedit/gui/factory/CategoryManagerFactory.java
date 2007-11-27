@@ -8,7 +8,10 @@ public class CategoryManagerFactory extends
 		AbstractComponentFactory<CategoryManagerComponent> {
 
 	public CategoryManagerFactory() {
-		addID("CATEGORY_MANAGER");
+	}
+	
+	public String getID() {
+		return "CATEGORY_MANAGER";
 	}
 
 	public CategoryManagerComponent doCreateComponent(String id) {

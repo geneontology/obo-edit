@@ -6,8 +6,10 @@ import org.oboedit.gui.components.ExtendedInfoComponent;
 public class ExtendedInfoFactory extends AbstractComponentFactory<ExtendedInfoComponent> {
 
 	public ExtendedInfoFactory() {
-		addID("EXTENDED_INFO");
-		addID("plugin:org.geneontology.oboedit.plugin.ExtendedInfoPlugin");
+	}
+	
+	public String getID() {
+		return "EXTENDED_INFO";
 	}
 
 	public ExtendedInfoComponent doCreateComponent(String id) {

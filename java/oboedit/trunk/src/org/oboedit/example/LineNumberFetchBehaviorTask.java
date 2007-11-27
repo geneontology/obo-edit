@@ -71,6 +71,7 @@ public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
 	public LineNumberFetchBehaviorTask() {
 		super(Integer.class);
+		setEnabled(false);
 		minColorButton.setBorderPainted(false);
 		maxColorButton.setBorderPainted(false);
 		minColorButton.addActionListener(new ActionListener() {

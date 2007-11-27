@@ -7,7 +7,10 @@ public class IDResolutionComponentFactory extends
 		AbstractComponentFactory<IDResolutionComponent> {
 	
 	public IDResolutionComponentFactory() {
-		addID("ID_RESOLUTION");
+	}
+	
+	public String getID() {
+		return "ID_RESOLUTION";
 	}
 
 	public IDResolutionComponent doCreateComponent(String id) {
