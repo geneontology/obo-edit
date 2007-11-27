@@ -1,7 +1,6 @@
 package org.bbop.framework;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 
 import org.bbop.util.StringUtil;
@@ -18,7 +17,7 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 
 	public boolean showInMenus();
 
-	public List<String> getIDs();
+	public String getID();
 
 	public String getName();
 
@@ -27,8 +26,6 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 	public boolean getPreferSeparateWindow();
 
 	public boolean isSingleton();
-
-	public String getDefaultID();
 
 	public FactoryCategory getCategory();
 }

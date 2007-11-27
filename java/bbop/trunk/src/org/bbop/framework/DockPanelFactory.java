@@ -14,7 +14,10 @@ public class DockPanelFactory extends
 	}
 
 	public DockPanelFactory() {
-		addID("DOCK_PANEL");
+	}
+	
+	public String getID() {
+		return "DOCK_PANEL";
 	}
 
 	public GUIComponent doCreateComponent(String id) {

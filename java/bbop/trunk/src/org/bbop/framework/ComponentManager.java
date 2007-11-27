@@ -54,6 +54,8 @@ public class ComponentManager {
 
 	protected List<GUIComponentListener> componentListeners = new LinkedList<GUIComponentListener>();
 
+	protected final static String DEFAULT_COMPONENT_ID_SUFFIX = "main";
+
 	protected static int idgen = 0;
 
 	protected LayoutDriver driver;
@@ -175,11 +177,11 @@ public class ComponentManager {
 			return new HashMap<String, List<ComponentConfiguration>>();
 		}
 	}
-	
+
 	public void setLabel(GUIComponent c, String label) {
 		driver.setComponentLabel(c, label);
 	}
-	
+
 	public String getLabel(GUIComponent c) {
 		return driver.getComponentLabel(c);
 	}
@@ -205,20 +207,11 @@ public class ComponentManager {
 	}
 
 	public void install(GUIComponentFactory<?> factory) {
-		for (String id : factory.getIDs()) {
-			if (factoryMap.containsKey(id)) {
-				throw new IllegalArgumentException("The factory "
-						+ factoryMap.get(id)
-						+ " is already installed under the id " + id);
-			}
-			factoryMap.put(id, factory);
-		}
+		factoryMap.put(factory.getID(), factory);
 	}
 
 	public void uninstall(GUIComponentFactory<?> factory) {
-		for (String id : factory.getIDs()) {
-			factoryMap.remove(id);
-		}
+		factoryMap.remove(factory.getID());
 	}
 
 	public GUIComponent createComponent(String factoryID, String componentID) {
@@ -231,9 +224,8 @@ public class ComponentManager {
 
 	public GUIComponent createComponent(GUIComponentFactory<?> factory,
 			String componentID) {
-		if (componentID == null && factory.getDefaultID() != null)
-			componentID = factory.getIDs().get(0) + ":"
-					+ factory.getDefaultID();
+		if (componentID == null)
+			componentID = factory.getID() + ":" + DEFAULT_COMPONENT_ID_SUFFIX;
 		if (componentID != null)
 			if (getActiveComponent(componentID) != null) {
 				componentID = null;
@@ -241,7 +233,7 @@ public class ComponentManager {
 		if (componentID == null) {
 			int idgen = 1;
 			do {
-				componentID = factory.getIDs().get(0) + ":" + (idgen++);
+				componentID = factory.getID() + ":" + (idgen++);
 			} while (getActiveComponent(componentID) != null);
 		}
 
@@ -252,7 +244,7 @@ public class ComponentManager {
 	public void destroyComponent(GUIComponent c) {
 		GUIComponentFactory<?> factory = componentToFactoryMap.get(c);
 		if (factory != null) {
-			List<GUIComponent> l = currentConfig.get(factory.getIDs().get(0));
+			List<GUIComponent> l = currentConfig.get(factory.getID());
 			if (l != null) {
 				l.remove(c);
 			}

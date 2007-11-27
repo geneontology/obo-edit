@@ -42,23 +42,9 @@ public abstract class AbstractComponentFactory<T extends GUIComponent> implement
 	}
 
 	public abstract T doCreateComponent(String id);
-
-	protected List<String> ids = new LinkedList<String>();
-
-	public String getDefaultID() {
-		return "main";
-	}
-
-	protected void addID(String id) {
-		ids.add(id);
-	}
 	
 	public boolean getPreferSeparateWindow() {
 		return false;
-	}
-
-	public List<String> getIDs() {
-		return ids;
 	}
 
 	public boolean isSingleton() {
