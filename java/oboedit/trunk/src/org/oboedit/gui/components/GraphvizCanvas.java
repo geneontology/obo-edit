@@ -94,8 +94,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 			attachListeners();
 		}
-		
-		
 
 		protected void attachListeners() {
 			textColorChooser.getSelectionModel().addChangeListener(cl);
@@ -650,7 +648,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();
-			System.out.println("now updating selection.");
+			//System.out.println("now updating selection.");
 		}
 	};
 	JPanel imagePanel = new JPanel();
@@ -990,29 +988,21 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				
 				outputFile(textFile);
 				
-				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : textfile = " + textFile);
-				
 				String outputFile = imageFile.getPath();
-				
-				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : imageFile = " + imageFile);
-				
 				
 				String extension = configuration.getViewerFormat();
 				
-				String command = configuration.getDotPath() + " -T "
-				+ extension + " -o " + outputFile + " -v "
-				+ textFile.getPath();
-				
-				//System.out.println("GraphvizCanvas : CallGraphviz : " + command);
+				//System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
+						//+ extension + " -o " + outputFile + " -v "
+						//+ textFile.getPath());
 				
 				
-				//This command below is not working on the mac, though the command works if used on the command line. 
-				Process p = Runtime.getRuntime().exec(command);
+				Process p = Runtime.getRuntime().exec(
+						configuration.getDotPath() + " -T"
+						+ extension + " -o " + outputFile + " -v "
+						+ textFile.getPath());
 				
-				 p.waitFor();
-				 System.out.println("Exit status of Process p is " + p.exitValue());
-				 System.out.println("Error stream of Process p is " + p.getErrorStream());
-				 
+				// p.waitFor();
 				
 				// callGraphviz(imageFile.getPath(), textFile, configuration.getViewerFormat());
 
@@ -1021,10 +1011,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
-				
-				//System.out.println("GraphvizCanvas : CallGraphviz : " + 
-						//configuration.getDotPath() + " -Tcmapx "
-						//+ textFile.getPath());
 				
 				//System.out.println("DEBUG : GraphvizCanvas : reloadImage : after 2 call ");
 
@@ -1423,9 +1409,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	 */
 	protected void callGraphviz(String outputFile, File textFile, String extension) throws IOException, InterruptedException{
 
-		//System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
-			//	+ extension + " -o " + outputFile + " -v "
-				//+ textFile.getPath());
+		System.out.println("GraphvizCanvas : CallGraphviz : " + configuration.getDotPath() + " -T"
+				+ extension + " -o " + outputFile + " -v "
+				+ textFile.getPath());
 		
 		
 		Process p = Runtime.getRuntime().exec(
