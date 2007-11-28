@@ -67,8 +67,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.example.AnnotationNumberFetchBehaviorTask;
-import org.oboedit.example.LineNumberFetchBehaviorTask;
+import org.oboedit.example.NumberFetchBehaviorTask;
 //import org.oboedit.example.LineNumberFetchBehaviorTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
@@ -147,7 +146,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return CollectionUtil.list(new AutosaveTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
 				new FrameNameUpdateTask(), screenLockTask
-				 , new AnnotationNumberFetchBehaviorTask()
+				 , new NumberFetchBehaviorTask()
 				//, new LineNumberFetchBehaviorTask()
 		);
 	}
