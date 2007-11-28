@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.filters.SearchCriterion;
+import org.obo.util.HTMLUtil;
 import org.obo.util.IDUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
@@ -81,11 +82,11 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 				else if (index == -1) {
 					for (Object val : vals) {
 						out
-								.append(repeatHTML.replace("$item$", val
-										.toString()));
+								.append(repeatHTML.replace("$item$", HTMLUtil.escapeHTML(val
+										.toString())));
 					}
 				} else {
-					out.append(vals.get(index).toString());
+					out.append(HTMLUtil.escapeHTML(vals.get(index).toString()));
 				}
 			} else
 				out.append(token.toString());

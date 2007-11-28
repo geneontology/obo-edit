@@ -61,7 +61,13 @@ public class FileMenu extends DynamicMenu {
 		JMenuItem saveItem;
 
 		JMenuItem newItem = new JMenuItem("New Ontology");
-		JMenuItem loadItem = new JMenuItem("Load Ontologies...");
+		JMenuItem loadItem = new JMenuItem("Load Ontologies...") {
+			@Override
+			public KeyStroke getAccelerator() {
+				// TODO Auto-generated method stub
+				return super.getAccelerator();
+			}
+		};
 		JMenuItem importItem = new JMenuItem("Import Terms...");
 		JMenuItem resolveItem = new JMenuItem("Fix ids...");
 		saveItem = new JMenuItem("Save");
@@ -368,16 +374,5 @@ public class FileMenu extends DynamicMenu {
 			ex.printStackTrace();
 		}
 
-	}
-
-	public JMenu buildFileMenu() {
-		JMenu fileMenu = new JMenu("File");
-
-		return fileMenu;
-	}
-
-	public JMenu buildTypeChangeMenu() {
-		JMenu changeMenu = new JMenu("Change relationship type to");
-		return changeMenu;
 	}
 }
