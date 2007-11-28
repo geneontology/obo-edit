@@ -1,5 +1,9 @@
 package org.bbop.rdbms.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import org.bbop.rdbms.FromClause;
@@ -114,6 +118,28 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	
 	public Collection<Object> getPlaceHolderVals() {
 		return whereClause.getPlaceHolderVals();
+	}
+
+
+	public ResultSet execute(Connection conn) throws SQLException {
+		String sql = toSQL();
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		System.out.println(sql);
+		
+		// TODO: there must be a more generic way to do this!!
+		int i=1;
+		for (Object v : getPlaceHolderVals()) {
+			if (v instanceof String)
+				stmt.setString(i, (String)v);
+			else if (v instanceof Boolean)
+				stmt.setBoolean(i, (Boolean)v);
+			else
+				throw new SQLException("dunno what to do with "+v);
+			// TODO
+			i++;
+		}
+		
+		return stmt.executeQuery();
 	}
 
 	

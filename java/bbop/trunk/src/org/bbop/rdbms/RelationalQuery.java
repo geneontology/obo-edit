@@ -1,5 +1,8 @@
 package org.bbop.rdbms;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 public interface RelationalQuery extends RelationalTerm {
@@ -23,4 +26,6 @@ public interface RelationalQuery extends RelationalTerm {
 	public void setWhereClause(WhereClause whereClause);
 	
 	public Collection<Object> getPlaceHolderVals();
+	
+	public ResultSet execute(Connection conn) throws SQLException;
 }
