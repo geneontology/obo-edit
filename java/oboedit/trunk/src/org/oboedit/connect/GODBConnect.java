@@ -77,7 +77,7 @@ public class GODBConnect {
 
 	
 	//
-	public int getCount( String sqlKey ) {
+	public int getCount( String sqlLever ) {
 
 		int number = -1;
 		ResultSet rs;
@@ -85,11 +85,15 @@ public class GODBConnect {
 		//this.connect();
 	
 		try {
-			String sql = sqlFront + sqlKey + sqlBack;
+			String sql = sqlFront + sqlLever + sqlBack;
 			Statement stmt = connector.createStatement();
 			rs = stmt.executeQuery(sql);
 			
 			System.err.println("SQL: " + sql);
+			System.err.println("\tDB: " + DB);
+			System.err.println("\tHOST: " + HOST);
+			System.err.println("\tUSER: " + USER);
+			System.err.println("\tPASSWORD: " + PASSWORD);
 			while( rs.next() ){
 				number = rs.getInt("count");
 				System.err.println("SQL (RESULT): " + number);
@@ -124,9 +128,6 @@ public class GODBConnect {
 		String foo = newSQL.substring(0, index);
 		String bar = newSQL.substring(index + variableLength, stringLength);
 
-		//System.err.println("___FRONT: " + foo);
-		//System.err.println("___BACK: " + bar);
-		
 		sqlFront = foo;
 		sqlBack = bar;
 	}
