@@ -3,6 +3,10 @@ package org.bbop.swing;
 import java.awt.Component;
 import java.awt.MenuComponent;
 import java.awt.PopupMenu;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +31,7 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public List<Component> getItems() {
 		return items;
 	}
-	
+
 	public List<Component> getDynamicItems() {
 		return null;
 	}
@@ -41,13 +45,13 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public JMenuItem add(Action a) {
 		JMenuItem item = new JMenuItem(a);
 		items.add(item);
-		return item;
+		return super.add(a);
 	}
 
 	@Override
 	public Component add(Component c) {
 		items.add(c);
-		return c;
+		return super.add(c);
 	}
 
 	@Override
@@ -55,23 +59,25 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 		if (index == -1)
 			index = items.size();
 		items.add(index, c);
-		return c;
+		return super.add(c, index);
 	}
 
 	@Override
 	public void add(Component comp, Object constraints) {
 		items.add(comp);
+		super.add(comp, constraints);
 	}
 
 	@Override
 	public void add(Component comp, Object constraints, int index) {
 		items.add(comp);
+		super.add(comp, constraints, index);
 	}
 
 	@Override
 	public JMenuItem add(JMenuItem menuItem) {
 		items.add(menuItem);
-		return menuItem;
+		return super.add(menuItem);
 	}
 
 	@Override
@@ -89,31 +95,36 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public JMenuItem add(String s) {
 		JMenuItem item = new JMenuItem(s);
 		items.add(item);
-		return item;
+		return super.add(s);
 	}
 
 	@Override
 	public void remove(Component c) {
 		items.remove(c);
+		super.remove(c);
 	}
 
 	@Override
 	public void remove(int pos) {
 		items.remove(pos);
+		super.remove(pos);
 	}
 
 	@Override
 	public void remove(JMenuItem item) {
 		items.remove(item);
+		super.remove(item);
 	}
 
 	@Override
 	public synchronized void remove(MenuComponent popup) {
 		items.remove(popup);
+		super.remove(popup);
 	}
 
 	@Override
 	public void removeAll() {
 		items.clear();
+		super.removeAll();
 	}
 }
