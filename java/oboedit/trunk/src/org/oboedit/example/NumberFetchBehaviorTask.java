@@ -38,9 +38,6 @@ public class NumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
 	protected GODBConnect gdbc = new GODBConnect();
 	
-	protected void clear() {
-		this.clearCache();
-	}
 	
 	public static class AnnotationNumberFetchTaskConfiguration extends
 			FetchTaskConfiguration {
@@ -103,24 +100,21 @@ public class NumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 			
 			public void actionPerformed(ActionEvent e) {
 				
-				String sql = sqlText.getText();
-				String host = hostField.getText();
-				String db = dbField.getText();
-				String user = userField.getText();
-				String password = passwordField.getText();
-
-				gdbc.setSQL(sql);
+				gdbc.setSQL(sqlText.getText());
+				gdbc.setHost(hostField.getText());
+				gdbc.setDB(dbField.getText());
+				gdbc.setUser(userField.getText());
+				gdbc.setPassword(passwordField.getText());
 				
 				//
-				//this.
+				//clearCache();
 				
-				System.err.println("___RECONNECT:");
-				System.err.println("\tSQL: " + sql);
-				System.err.println("\tNEW SQL: " + gdbc.getSQL());
-				System.err.println("\tHOST: " + host);
-				System.err.println("\tDB: " + db);
-				System.err.println("\tUSER: " + user);
-				System.err.println("\tPASSWORD: " + password);
+				System.err.println("RECONNECT:");
+				System.err.println("\tSQL: " + gdbc.getSQL());
+				System.err.println("\tHOST: " + gdbc.getHost());
+				System.err.println("\tDB: " + gdbc.getDB());
+				System.err.println("\tUSER: " + gdbc.getUser());
+				System.err.println("\tPASSWORD: " + gdbc.getPassword());
 			}
 		});
 		
@@ -151,7 +145,7 @@ public class NumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
 	@Override
 	protected String getBehaviorID() {
-		return "annotation_number_fetch";
+		return "number_fetch";
 	}
 
 	@Override
@@ -289,7 +283,7 @@ public class NumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
 
 	@Override
 	protected String getName() {
-		return "Annotation Number Renderer Plugin";
+		return "Number Renderer Plugin";
 	}
 
 	public Color getMinColor() {
