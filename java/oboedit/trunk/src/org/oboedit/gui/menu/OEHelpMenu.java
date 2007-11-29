@@ -27,27 +27,32 @@ public class OEHelpMenu extends HelpMenu {
 		JMenuItem aboutItem = new JMenuItem("About");
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final JDialog aboutDialog = new JDialog(GUIManager.getManager()
-						.getFrame(), "About OBO-Edit");
-				BackgroundImagePanel bip = SplashScreen.getSplashPanel();
-				bip.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mousePressed(MouseEvent e) {
-						aboutDialog.dispose();
-					}
-				});
-				bip.setMaximumSize(new Dimension(400, 400));
-				bip.setMinimumSize(new Dimension(400, 400));
-				bip.setPreferredSize(new Dimension(400, 400));
-				aboutDialog.setResizable(false);
-				aboutDialog
-						.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				aboutDialog.setContentPane(bip);
-				aboutDialog.pack();
-				SwingUtil.center(aboutDialog);
-				aboutDialog.setVisible(true);
+			    showAboutFrame();
 			}
-		});
+		    });
+		    
 		add(aboutItem);
 	}
+
+    public static void showAboutFrame() {
+	final JDialog aboutDialog = new JDialog(GUIManager.getManager()
+						.getFrame(), "About OBO-Edit");
+	BackgroundImagePanel bip = SplashScreen.getSplashPanel();
+	bip.addMouseListener(new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+		    aboutDialog.dispose();
+		}
+	    });
+	bip.setMaximumSize(new Dimension(400, 400));
+	bip.setMinimumSize(new Dimension(400, 400));
+	bip.setPreferredSize(new Dimension(400, 400));
+	aboutDialog.setResizable(false);
+	aboutDialog
+	    .setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+	aboutDialog.setContentPane(bip);
+	aboutDialog.pack();
+	SwingUtil.center(aboutDialog);
+	aboutDialog.setVisible(true);
+    }
 }
