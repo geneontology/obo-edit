@@ -48,4 +48,5 @@ fi
 PATH_TO_ME=`echo $PATH_TO_ME | sed -e "s/\(.*\)\/.*/\1/g"`
 
 #$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/oboedit_launcher.jar "$@"
-$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/runtime/oboedit.jar "$@"
+echo "$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/../runtime/oboedit.jar $@"
+$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/../runtime/oboedit.jar "$@"
