@@ -69,7 +69,7 @@ public class FileMenu extends DynamicMenu {
 			}
 		};
 		JMenuItem importItem = new JMenuItem("Import Terms...");
-		JMenuItem resolveItem = new JMenuItem("Fix ids...");
+		JMenuItem resolveItem = new JMenuItem("Fix IDs...");
 		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
 
@@ -178,15 +178,32 @@ public class FileMenu extends DynamicMenu {
 			public void actionPerformed(ActionEvent e) {
 				applyHistory();
 			}
-		});
+		    });
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GUIManager.exit(0);
+//				GUIManager.exit(0);
+			    askQuit();
 			}
-		});
-
+		    });
 	}
+
+    public static void askQuit() {
+	if (SessionManager.getManager().needsSave()) {
+	    int proceed = JOptionPane
+		.showConfirmDialog(
+		    GUIManager.getManager().getFrame(),
+		    "There are unsaved changes to this ontology. Really quit?",
+		    "Unsaved changes", JOptionPane.YES_NO_OPTION);
+
+	    if (proceed != JOptionPane.YES_OPTION)
+		return;
+	    else
+		GUIManager.exit(0, false);  // Don't ask (again)
+	}
+	else  // Don't need save
+	    GUIManager.exit(0, true);  // Ask "Really quit?"
+    }
 
 	protected void doImport() {
 		int proceed = JOptionPane
