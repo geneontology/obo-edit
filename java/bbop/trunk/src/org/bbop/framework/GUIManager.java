@@ -221,21 +221,27 @@ public class GUIManager {
 	}
 
 	public static void exit(final int status) {
+	    exit(status, true);  // ask "Really quit?"
+	}
+
+       public static void exit(final int status, boolean askFirst) {
+	   if (askFirst) {
 		if (GUIManager.getManager().getFrame() != null && isConfirmOnExit()) {
 			if (JOptionPane.showConfirmDialog(GUIManager.getManager()
 					.getFrame(), "Really quit?", "Exit?",
 					JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 				return;
 		}
+	   }
 
-		for (Runnable r : hooks) {
-			SwingUtilities.invokeLater(r);
-		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				System.exit(status);
-			}
-		});
+	   for (Runnable r : hooks) {
+	       SwingUtilities.invokeLater(r);
+	   }
+	   SwingUtilities.invokeLater(new Runnable() {
+		   public void run() {
+		       System.exit(status);
+		   }
+	       });
 	}
 
 	public static boolean isConfirmOnExit() {
