@@ -51,12 +51,15 @@ public abstract class AbstractAutocompleteModel<DISPLAY_TYPE, OUTPUT_TYPE>
 		public void execute() {
 			try {
 				List<MatchPair<DISPLAY_TYPE>> out = new ArrayList<MatchPair<DISPLAY_TYPE>>();
-				for (DISPLAY_TYPE obj : getAllValues()) {
+				Collection<DISPLAY_TYPE> vals = getAllValues();
+				for (DISPLAY_TYPE obj : vals) {
 					if (cancelled)
 						return;
 					String s = AbstractAutocompleteModel.this.toString(obj);
 					Map<String, int[]> hits = StringUtil.getMatchMap(s, tokens,
-							true);
+							true, isIgnoreCase());
+					if (obj.toString().contains("O"))
+						System.err.println("hits = "+hits);
 					if (cancelled)
 						return;
 					if (hits.size() > 0) {
@@ -74,6 +77,10 @@ public abstract class AbstractAutocompleteModel<DISPLAY_TYPE, OUTPUT_TYPE>
 				t.printStackTrace();
 			}
 		}
+	}
+	
+	protected boolean isIgnoreCase() {
+		return true;
 	}
 	
 	protected Collection<DISPLAY_TYPE> getDisplayValues(Collection<OUTPUT_TYPE> values) {

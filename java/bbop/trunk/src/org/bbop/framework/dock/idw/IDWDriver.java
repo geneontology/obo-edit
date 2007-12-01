@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +48,8 @@ import javax.swing.plaf.basic.BasicTextFieldUI;
 import net.infonode.docking.DefaultButtonFactories;
 import net.infonode.docking.DockingWindow;
 import net.infonode.docking.DockingWindowAdapter;
+import net.infonode.docking.DockingWindowListener;
+import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
@@ -71,6 +74,7 @@ import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.dock.LayoutDriver;
+import org.bbop.framework.dock.LayoutListener;
 import org.bbop.framework.dock.Perspective;
 import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
@@ -109,7 +113,134 @@ public class IDWDriver implements LayoutDriver {
 
 	protected String perspectiveListResourcePath;
 
+	protected Collection<LayoutListener> layoutListeners = new ArrayList<LayoutListener>();
+
+	protected DockingWindowListener closeListener = new DockingWindowListener() {
+
+		protected GUIComponent getComponent(DockingWindow d) {
+			if (d instanceof View) {
+				return IDWDriver.getComponent((View) d);
+			}
+			return null;
+		}
+
+		public void windowClosed(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.close(c);
+				}
+			}
+		}
+
+		public void viewFocusChanged(View old, View newView) {
+			GUIComponent oldC = getComponent(old);
+			GUIComponent newC = getComponent(newView);
+			for (LayoutListener listener : layoutListeners) {
+				listener.focusChanged(oldC, newC);
+			}
+		}
+
+		public void windowAdded(DockingWindow parent, DockingWindow child) {
+			GUIComponent parentC = getComponent(parent);
+			GUIComponent childC = getComponent(child);
+			if (childC != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.add(parentC, childC);
+				}
+			}
+		}
+
+		public void windowUndocked(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.undocked(c);
+				}
+			}
+		}
+
+		public void windowDocked(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.docked(c);
+				}
+			}
+		}
+
+		public void windowMaximized(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.maximized(c);
+				}
+			}
+
+		}
+
+		public void windowMinimized(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.minimized(c);
+				}
+			}
+		}
+
+		public void windowRestored(DockingWindow d) {
+			GUIComponent c = getComponent(d);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					listener.restored(c);
+				}
+			}
+		}
+
+		public void windowHidden(DockingWindow arg0) {
+		}
+
+		public void windowClosing(DockingWindow arg0)
+				throws OperationAbortedException {
+		}
+
+		public void windowDocking(DockingWindow arg0)
+				throws OperationAbortedException {
+		}
+
+		public void windowMaximizing(DockingWindow arg0)
+				throws OperationAbortedException {
+
+		}
+
+		public void windowMinimizing(DockingWindow arg0)
+				throws OperationAbortedException {
+		}
+
+		public void windowRestoring(DockingWindow arg0)
+				throws OperationAbortedException {
+		}
+
+		public void windowShown(DockingWindow arg0) {
+		}
+
+		public void windowUndocking(DockingWindow arg0)
+				throws OperationAbortedException {
+		}
+
+		public void windowRemoved(DockingWindow arg0, DockingWindow arg1) {
+		}
+	};
+
 	public IDWDriver() {
+	}
+
+	public void addLayoutListener(LayoutListener listener) {
+		layoutListeners.add(listener);
+	}
+
+	public void removeLayoutListener(LayoutListener listener) {
+		layoutListeners.remove(listener);
 	}
 
 	public void addViewListener(ViewListener listener) {
@@ -318,6 +449,7 @@ public class IDWDriver implements LayoutDriver {
 				ComponentManager.getManager().getActiveComponents());
 		for (GUIComponent c : comps) {
 			View v = viewMap.getView(c.getID());
+			v.removeListener(closeListener);
 			if (v != null)
 				destroyView(v);
 			else
@@ -327,6 +459,16 @@ public class IDWDriver implements LayoutDriver {
 		ObjectInputStream stream = getInputStream(path);
 		rootWindow.read(stream, false);
 		stream.close();
+		Collection<String> deadViews = new ArrayList<String>();
+		for (int i = 0; i < viewMap.getViewCount(); i++) {
+			View v = viewMap.getViewAtIndex(i);
+			if (v instanceof DefaultViewSerializer.GarbageView) {
+				destroyView(v);
+			}
+		}
+		for(String id : deadViews) {
+			viewMap.removeView(id);
+		}
 	}
 
 	protected ObjectInputStream getInputStream(String path) throws IOException {
@@ -450,6 +592,7 @@ public class IDWDriver implements LayoutDriver {
 			}
 
 		});
+		v.addListener(closeListener);
 		DefaultButtonFactories.getCloseButtonFactory();
 		final JToggleButton configButton = IDWUtil
 				.createFlatHighlightToggleButton(wrenchIcon,
@@ -496,11 +639,9 @@ public class IDWDriver implements LayoutDriver {
 						}
 						if (p != null
 								&& p instanceof net.infonode.tabbedpanel.Tab) {
-							System.err.println("pausing for tabwindow");
 						}
 						p = p.getParent();
 					}
-					System.out.println("clicked view " + buffer);
 					EditorField field = new EditorField(v, bar);
 					field.install();
 				}
@@ -523,7 +664,7 @@ public class IDWDriver implements LayoutDriver {
 			}
 
 		});
-		
+
 		return v;
 	}
 
@@ -574,30 +715,30 @@ public class IDWDriver implements LayoutDriver {
 		}
 
 		public void commit() {
-
-			view.getViewProperties().getViewTitleBarProperties()
-					.getNormalProperties().setTitle(getText());
-			view.getViewProperties().getViewTitleBarProperties()
-					.getNormalProperties().setTitleVisible(true);
+			setComponentLabel(IDWDriver.getComponent(view), getText());
+			// view.getViewProperties().getViewTitleBarProperties()
+			// .getNormalProperties().setTitle(getText());
+			// view.getViewProperties().getViewTitleBarProperties()
+			// .getNormalProperties().setTitleVisible(true);
 			bar.setLeftTitleComponents(new JComponent[0]);
-			view.getViewProperties().setTitle(getText());
-//			TabWindow tabWindow = (TabWindow) SwingUtilities
-//					.getAncestorOfClass(TabWindow.class, view);
-//			TabbedPanel panel = SwingUtil.getDescendantOfType(tabWindow,
-//					TabbedPanel.class);
-//			for (int i = 0; i < panel.getTabCount(); i++) {
-//				Tab t = panel.getTabAt(i);
-//				if (t instanceof TitledTab) {
-//					System.err.println("t = " + t);
-//					TitledTab tt = (TitledTab) t;
-//					if (SwingUtilities.isDescendingFrom(view, t
-//							.getContentComponent())) {
-//						tt.getProperties().getNormalProperties().setText(
-//								getText());
-//						tt.setText(getText());
-//					}
-//				}
-//			}
+			// view.getViewProperties().setTitle(getText());
+			// TabWindow tabWindow = (TabWindow) SwingUtilities
+			// .getAncestorOfClass(TabWindow.class, view);
+			// TabbedPanel panel = SwingUtil.getDescendantOfType(tabWindow,
+			// TabbedPanel.class);
+			// for (int i = 0; i < panel.getTabCount(); i++) {
+			// Tab t = panel.getTabAt(i);
+			// if (t instanceof TitledTab) {
+			// System.err.println("t = " + t);
+			// TitledTab tt = (TitledTab) t;
+			// if (SwingUtilities.isDescendingFrom(view, t
+			// .getContentComponent())) {
+			// tt.getProperties().getNormalProperties().setText(
+			// getText());
+			// tt.setText(getText());
+			// }
+			// }
+			// }
 		}
 	}
 
@@ -798,11 +939,40 @@ public class IDWDriver implements LayoutDriver {
 
 	public void setComponentLabel(GUIComponent target, String label) {
 		View v = getView(target);
+		v.getViewProperties().getViewTitleBarProperties().getNormalProperties()
+				.setTitle(label);
+		v.getViewProperties().getViewTitleBarProperties().getNormalProperties()
+				.setTitleVisible(true);
 		v.getViewProperties().setTitle(label);
+		TabWindow tabWindow = (TabWindow) SwingUtilities.getAncestorOfClass(
+				TabWindow.class, v);
+		if (tabWindow != null) {
+			TabbedPanel panel = SwingUtil.getDescendantOfType(tabWindow,
+					TabbedPanel.class);
+			if (panel == null)
+				return;
+			for (int i = 0; i < panel.getTabCount(); i++) {
+				Tab t = panel.getTabAt(i);
+				if (t instanceof TitledTab) {
+					System.err.println("t = " + t);
+					TitledTab tt = (TitledTab) t;
+					if (SwingUtilities.isDescendingFrom(v, t
+							.getContentComponent())) {
+						tt.getProperties().getNormalProperties().setText(label);
+						tt.setText(label);
+					}
+				}
+			}
+		}
+		for (LayoutListener listener : layoutListeners) {
+			listener.titleChanged(target, label);
+		}
 	}
 
 	public String getComponentLabel(GUIComponent c) {
 		View v = getView(c);
+		if (v == null)
+			return null;
 		return v.getViewProperties().getTitle();
 	}
 }

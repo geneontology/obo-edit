@@ -42,4 +42,8 @@ public class MatchPair<DISPLAY_TYPE> {
 	public Map<String, int[]> getMatch() {
 		return match;
 	}
+	
+	public String toString() {
+		return "Matched "+str+" with "+val+" with score of "+score;
+	}
 }

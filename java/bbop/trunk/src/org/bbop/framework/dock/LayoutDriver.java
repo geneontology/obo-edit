@@ -31,4 +31,8 @@ public interface LayoutDriver {
 	public GUIComponent createMainPanel(String id);
 
 	public String getComponentLabel(GUIComponent c);
+	
+	public void addLayoutListener(LayoutListener listener);
+
+	public void removeLayoutListener(LayoutListener listener);
 }

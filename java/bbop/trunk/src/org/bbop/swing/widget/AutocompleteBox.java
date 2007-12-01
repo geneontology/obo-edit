@@ -767,8 +767,9 @@ public class AutocompleteBox<T> extends JComboBox {
 			@Override
 			public boolean cancel() {
 				cancelled = true;
-				if (del != null)
+				if (del != null) {
 					del.cancel();
+				}
 				return super.cancel();
 			}
 

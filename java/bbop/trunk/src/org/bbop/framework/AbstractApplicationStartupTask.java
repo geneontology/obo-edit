@@ -26,6 +26,7 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.LookAndFeel;
@@ -51,7 +52,21 @@ import org.bbop.util.ExceptionLogger;
 
 public abstract class AbstractApplicationStartupTask extends
 		AbstractSingleActionTask {
-	
+
+	protected VetoableShutdownListener vetoableShutdownListener =
+		new VetoableShutdownListener() {
+
+		public boolean willShutdown() {
+			if (GUIManager.getManager().getFrame() != null &&
+					GUIManager.getManager().isConfirmOnExit()) {
+				return JOptionPane.showConfirmDialog(GUIManager.getManager()
+						.getFrame(), "Really quit?", "Exit?",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+			} else
+				return true;
+		}
+	};
+
 	protected abstract String getPerspectiveResourceDir();
 
 	protected abstract Collection<GUITask> getDefaultTasks();
@@ -61,7 +76,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected abstract Collection<GUIComponentFactory<?>> getDefaultComponentFactories();
 
 	protected abstract String getAppID();
-	
+
 	protected abstract String getAppName();
 
 	protected File getPrefsDir() {
@@ -90,6 +105,7 @@ public abstract class AbstractApplicationStartupTask extends
 		configureUI();
 		GUIManager.getManager().setFrame(createFrame());
 		doPreInstallation();
+		installSystemListeners();
 		installDefaultDataAdapters();
 		installDefaultComponentFactories();
 		installDefaultTasks();
@@ -99,7 +115,11 @@ public abstract class AbstractApplicationStartupTask extends
 
 		showFrame();
 	}
-	
+
+	protected void installSystemListeners() {
+		GUIManager.addVetoableShutdownListener(vetoableShutdownListener);
+	}
+
 	protected void doPreInstallation() {
 	}
 

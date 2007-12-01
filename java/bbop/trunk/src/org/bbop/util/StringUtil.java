@@ -402,10 +402,14 @@ public class StringUtil {
 	}
 
 	public static Map<String, int[]> getMatchMap(String str, List<String> vals,
-			boolean matchAll) {
+			boolean matchAll, boolean ignoreCase) {
+		if (ignoreCase)
+			str = str.toLowerCase();
 		Map<String, int[]> map = new HashMap<String, int[]>();
 		LinkedList<Integer> temp = new LinkedList<Integer>();
 		for (String val : vals) {
+			if (ignoreCase)
+				val = val.toLowerCase();
 			int index = -str.length();
 			while ((index = str.indexOf(val, index + str.length())) != -1) {
 				temp.add(index);
