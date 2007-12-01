@@ -37,6 +37,10 @@ public class GUIManager {
 
 	protected LinkedList<GUITask> startupTasks = new LinkedList<GUITask>();
 
+	protected static List<Runnable> hooks = new LinkedList<Runnable>();
+
+	protected static List<VetoableShutdownListener> shutdownListeners = new ArrayList<VetoableShutdownListener>();
+
 	protected MultiMap<String, UserListener> userListeners = new MultiHashMap<String, UserListener>();
 
 	protected static boolean confirmOnExit = true;
@@ -50,7 +54,17 @@ public class GUIManager {
 	public BackgroundEventQueue getBackgroundQueue() {
 		return backgroundQueue;
 	}
-	
+
+	public static void addVetoableShutdownListener(
+			VetoableShutdownListener listener) {
+		shutdownListeners.add(listener);
+	}
+
+	public static void removeVetoableShutdownListener(
+			VetoableShutdownListener listener) {
+		shutdownListeners.remove(listener);
+	}
+
 	public void runTaskNow(TaskDelegate<?> task, boolean lockScreen) {
 		getQueue(lockScreen).runTaskNow(task);
 	}
@@ -210,8 +224,6 @@ public class GUIManager {
 			prefsDir = null;
 	}
 
-	protected static List<Runnable> hooks = new LinkedList<Runnable>();
-
 	public static void addShutdownHook(Runnable r) {
 		hooks.add(r);
 	}
@@ -221,27 +233,21 @@ public class GUIManager {
 	}
 
 	public static void exit(final int status) {
-	    exit(status, true);  // ask "Really quit?"
-	}
 
-       public static void exit(final int status, boolean askFirst) {
-	   if (askFirst) {
-		if (GUIManager.getManager().getFrame() != null && isConfirmOnExit()) {
-			if (JOptionPane.showConfirmDialog(GUIManager.getManager()
-					.getFrame(), "Really quit?", "Exit?",
-					JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+		for (VetoableShutdownListener listener : shutdownListeners) {
+			if (!listener.willShutdown())
 				return;
 		}
-	   }
 
-	   for (Runnable r : hooks) {
-	       SwingUtilities.invokeLater(r);
-	   }
-	   SwingUtilities.invokeLater(new Runnable() {
-		   public void run() {
-		       System.exit(status);
-		   }
-	       });
+		for (Runnable r : hooks) {
+			SwingUtilities.invokeLater(r);
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				System.exit(status);
+			}
+		});
+
 	}
 
 	public static boolean isConfirmOnExit() {
