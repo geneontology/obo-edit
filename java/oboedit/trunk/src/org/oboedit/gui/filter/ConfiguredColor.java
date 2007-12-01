@@ -14,6 +14,10 @@ public class ConfiguredColor implements ColorProvider {
 	public Color getColor(ObjectSelector fr, Object o) {
 		return color;
 	}
+	
+	public Color getColor() {
+		return color;
+	}
 
 	public void setColor(Color color) {
 		this.color = color;

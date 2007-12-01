@@ -12,14 +12,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.obo.datamodel.IdentifiableObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 
-public abstract class AbstractSearchResultsTableModel<T> extends
-		AbstractTableModel implements SearchResultsTableModel<T> {
+public abstract class AbstractSearchResultsTableModel<T extends IdentifiableObject>
+		extends AbstractTableModel implements SearchResultsTableModel<T> {
 	protected java.util.List<T> itemList = Collections.emptyList();
 
 	protected boolean reverse = false;
@@ -33,7 +34,7 @@ public abstract class AbstractSearchResultsTableModel<T> extends
 	}
 
 	protected Comparator<T> comparator = new java.util.Comparator<T>() {
-		public int compare(Object o1, Object o2) {
+		public int compare(T o1, T o2) {
 			String compVal1 = getColumnVal(o1, getSortColumn()).toString();
 			String compVal2 = getColumnVal(o2, getSortColumn()).toString();
 			int compVal = compVal1.compareToIgnoreCase(compVal2);
@@ -88,7 +89,7 @@ public abstract class AbstractSearchResultsTableModel<T> extends
 		};
 		return listener;
 	}
-	
+
 	protected PathCapable getPathCapable(T t) {
 		if (t instanceof PathCapable)
 			return (PathCapable) t;

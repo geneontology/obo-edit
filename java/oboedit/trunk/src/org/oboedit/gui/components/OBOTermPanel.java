@@ -100,10 +100,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected java.util.List<RenderedFilter> linkRenderers = new ArrayList<RenderedFilter>();
 
-	// protected FilterPair filter;
-
-	protected boolean dragging = false;
-
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 	protected static final Color lockGray = new Color(200, 200, 200);
@@ -511,7 +507,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				indicateClickTarget(-1);
-				if (OBOTermPanel.this.dragging || e.isConsumed()) {
+				if (e.isConsumed() || !SwingUtilities.isLeftMouseButton(e)) {
 					return;
 				}
 
@@ -538,7 +534,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 									&& (!isLive() || SelectionManager
 											.getManager()
 											.doPreSelectValidation(
-													OBOTermPanel.this))) {
+													OBOTermPanel.this)
+											&& path.getLastPathComponent() instanceof Link)) {
 								selectPathForEvent(path, e);
 							}
 						}
@@ -977,7 +974,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	// protected JToolBar toolbar;
 	// protected JComboBox gestureBox = new JComboBox();
-	
+
 	protected boolean bridgeEnabled = false;
 
 	public OBOTermPanel(String id) {
@@ -1211,6 +1208,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		if (model instanceof TermModel) {
 			((TermModel) model).reload();
 		}
+		clearToggledPaths();
 
 		long time2 = System.currentTimeMillis();
 		restorePaths(expanded);
@@ -1233,9 +1231,9 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 		for (int i = 0; i < expanded.length; i++) {
 			TreePath current = expanded[i];
-			if (PathUtil.pathIsValid(current, getModel())) {
-				makeVisible(current);
-			}
+			TreePath newPath = PathUtil.reconstruct(current, getModel());
+			if (newPath != null)
+				makeVisible(newPath);
 		}
 		if (expansionBridge != null) {
 			addTreeExpansionListener(expansionBridge);

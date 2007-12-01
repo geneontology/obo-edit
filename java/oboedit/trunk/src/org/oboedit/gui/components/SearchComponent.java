@@ -16,6 +16,7 @@ import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIManager;
+import org.bbop.util.EnumPersistenceDelegate;
 import org.bbop.util.SwingUpdateTask;
 import org.bbop.util.TaskDelegate;
 import org.obo.datamodel.PathCapable;
@@ -52,6 +53,10 @@ public class SearchComponent extends AbstractGUIComponent {
 				return "Nothing";
 			}
 		};
+
+		static {
+			EnumPersistenceDelegate.installFor(values()[0].getClass());
+		}
 	}
 
 	protected FilterComponent component;
@@ -63,12 +68,15 @@ public class SearchComponent extends AbstractGUIComponent {
 
 	public static class SearchConfig implements ComponentConfiguration {
 		protected boolean shortenResultsDesc;
-		protected ResultLabelType type;
+		protected String type = ResultLabelType.QUERY_NAME.name();
+		protected Filter<?> filter;
 
-		public SearchConfig(boolean shortenResultsDesc, ResultLabelType type) {
+		public SearchConfig(boolean shortenResultsDesc, ResultLabelType type,
+				Filter<?> filter) {
 			super();
 			this.shortenResultsDesc = shortenResultsDesc;
-			this.type = type;
+			this.type = type.name();
+			this.filter = filter;
 		}
 
 		public SearchConfig() {
@@ -82,14 +90,26 @@ public class SearchComponent extends AbstractGUIComponent {
 			this.shortenResultsDesc = shortenResultsDesc;
 		}
 
-		public ResultLabelType getType() {
+		protected String getType() {
 			return type;
 		}
 
-		public void setType(ResultLabelType type) {
+		public ResultLabelType getRealizedType() {
+			return ResultLabelType.valueOf(type);
+		}
+
+		public void setType(String type) {
 			if (type == null)
-				type = ResultLabelType.QUERY_NAME;
+				this.type = ResultLabelType.QUERY_NAME.name();
 			this.type = type;
+		}
+
+		public Filter<?> getFilter() {
+			return filter;
+		}
+
+		public void setFilter(Filter<?> filter) {
+			this.filter = filter;
 		}
 	}
 
@@ -121,8 +141,8 @@ public class SearchComponent extends AbstractGUIComponent {
 				SearchConfig config = (SearchConfig) getComponent()
 						.getConfiguration();
 				config.setShortenResultsDesc(!shortenResultsBox.isSelected());
-				config.setType((ResultLabelType) resultLabelDropdown
-						.getSelectedItem());
+				config.setType(((ResultLabelType) resultLabelDropdown
+						.getSelectedItem()).name());
 				getComponent().setConfiguration(config);
 			}
 
@@ -139,14 +159,17 @@ public class SearchComponent extends AbstractGUIComponent {
 
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		return new SearchConfig(isShortenResultsDesc(), getLabelType());
+		return new SearchConfig(isShortenResultsDesc(), getLabelType(),
+				component.getFilter());
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
 		if (config instanceof SearchConfig) {
-			setShortenResultsDesc(((SearchConfig) config)
-					.isShortenResultsDesc());
-			setLabelType(((SearchConfig) config).getType());
+			SearchConfig searchConfig = (SearchConfig) config;
+			setShortenResultsDesc((searchConfig).isShortenResultsDesc());
+			setLabelType(searchConfig.getRealizedType());
+			if (searchConfig.getFilter() != null)
+				component.setFilter(searchConfig.getFilter());
 		}
 	}
 
@@ -195,8 +218,9 @@ public class SearchComponent extends AbstractGUIComponent {
 						: "Search results: ")
 						+ desc;
 				String id = ComponentManager.getManager().showComponent(
-						new SearchResultsComponentFactory(),
-						SearchComponent.this, title, false);
+						ComponentManager.getManager().getFactory(
+								"SEARCH_RESULTS"), SearchComponent.this, title,
+						false);
 				SearchResultsComponent src = (SearchResultsComponent) ComponentManager
 						.getManager().getActiveComponent(id);
 				src.setFactory(factory);

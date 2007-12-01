@@ -71,14 +71,7 @@ public class DefaultMorpher implements Morpher {
 						((PPath) newNode).getPathReference(), extender,
 						duration));
 			} else {
-				/*
-				 * float newTrans = newNode.getTransparency();
-				 * newNode.setTransparency(0);
-				 * relayoutActivity.addActivity(oldNode.animateToTransparency(0,
-				 * duration));
-				 * relayoutActivity.addActivity(newNode.animateToTransparency(
-				 * newTrans, duration));
-				 */
+				System.err.println("don't known how to morph "+newNode+" to "+oldNode);
 			}
 			relayoutActivity.addActivity(oldNode
 					.animateToPositionScaleRotation(newNode.getXOffset(),

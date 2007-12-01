@@ -33,12 +33,14 @@ import org.oboedit.gui.filter.LineTypeSpecField;
 import org.oboedit.gui.filter.LineWidthSpecField;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.piccolo.IconNode;
+import org.oboedit.piccolo.Morphable;
 import org.oboedit.piccolo.PiccoloUtil;
 import org.oboedit.piccolo.StyledText;
 import org.oboedit.piccolo.ViewRenderedStyleText;
 import org.oboedit.util.GUIUtil;
 
 import edu.umd.cs.piccolo.PNode;
+import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
 import edu.umd.cs.piccolox.nodes.P3DRect;
@@ -46,7 +48,7 @@ import edu.umd.cs.piccolox.nodes.PStyledText;
 
 // TODO Modify OELink to create a distinct path node so decorations can appear behind it6
 
-public class OELink extends PCNode {
+public class OELink extends PCNode implements Morphable {
 
 	protected static final int ICON_PANEL_MARGIN = 2;
 
@@ -56,13 +58,13 @@ public class OELink extends PCNode {
 
 	protected static final Object KEY_ICON_PANEL = new Object();
 
+	protected static final Object KEY_ICON = new Object();
+
 	protected static final Object KEY_ARROWHEAD = new Object();
 
 	protected TypeIconManager iconManager;
 
 	protected TypeColorManager colorManager;
-
-	protected NamedChildProvider provider;
 
 	protected float arrowheadHeight = 24f;
 
@@ -150,7 +152,8 @@ public class OELink extends PCNode {
 		// PNode icon = iconManager.getIcon(getLink().getType());
 		PNode icon = new IconNode(Preferences.getPreferences()
 				.getIconForRelationshipType(getLink().getType()));
-		iconPanel.addChild(icon);
+		provider.setNamedChild(KEY_ICON, iconPanel, icon);
+//		iconPanel.addChild(icon);
 		icon.centerFullBoundsOnPoint(iconPanel.getWidth() / 2, iconPanel
 				.getHeight() / 2);
 
@@ -194,5 +197,24 @@ public class OELink extends PCNode {
 			getPathDelegate().setPaint(null);
 		}
 
+	}
+	
+	@Override
+	public String toString() {
+		return "OELink["+getLink()+"]";
+	}
+
+	public boolean doDefaultMorph() {
+		return true;
+	}
+
+	public PActivity morphTo(PNode node, long duration) {
+		if (node instanceof OELink) {
+			OELink linkNode = (OELink) node;
+			Link link = (Link) linkNode.getObject();
+			Link oldLink = (Link) getObject();
+			System.err.println("link = "+link);
+		}
+		return new PActivity(0);
 	}
 }

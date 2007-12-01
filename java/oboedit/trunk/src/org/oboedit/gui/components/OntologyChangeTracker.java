@@ -84,7 +84,21 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 
 		changeTree.setEnabled(false);
 		changeTree.putClientProperty("JTree.lineStyle", "Angled");
-		DefaultTreeCellRenderer rend = new DefaultTreeCellRenderer();
+		DefaultTreeCellRenderer rend = new DefaultTreeCellRenderer() {
+			
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree,
+					Object value, boolean sel, boolean expanded, boolean leaf,
+					int row, boolean hasFocus) {
+//				System.err.println("painting "+value);
+				return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
+						row, hasFocus);
+			}
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+			}
+		};
 		rend.setLeafIcon(null);
 		rend.setClosedIcon(null);
 		rend.setOpenIcon(null);
@@ -242,7 +256,7 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 		loadOldRootButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					newHistory = IOManager.getManager().doOperation(
+					oldHistory = IOManager.getManager().doOperation(
 							OBOAdapter.READ_ONTOLOGY, null, false);
 				} catch (DataAdapterException e1) {
 					e1.printStackTrace();

@@ -15,11 +15,10 @@ import org.oboedit.gui.widget.ObjectSpecEditor;
 public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 
 	protected SearchComponentFactory<T> subComponentFactory;
-	
+
 	public SearchPanelFactory(SearchComponentFactory<T> subComponentFactory) {
 		this.subComponentFactory = subComponentFactory;
 	}
-		
 
 	public JComponent createSubEditor() {
 		return new SearchPanel(subComponentFactory);
@@ -28,13 +27,12 @@ public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 	public Filter getFilter(Component editor) {
 		return ((SearchPanel) editor).getFilter();
 	}
-	
+
 	public void setFilter(Component editor, Filter filter) {
 		((SearchPanel) editor).setFilter(filter);
 	}
 
-	public Collection<T> getRelevantValues(
-			Collection<?> items) {
+	public Collection<T> getRelevantValues(Collection<?> items) {
 		return subComponentFactory.getRelevantValues(items);
 	}
 
@@ -62,21 +60,19 @@ public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 		((ObjectSpecEditor) editor).setSpec(spec);
 	}
 
-
 	public void addActionListener(Component c, ActionListener listener) {
 		if (c instanceof SearchPanel) {
 			((SearchPanel) c).addActionListener(listener);
 		}
 	}
 
-
 	public void removeActionListener(Component c, ActionListener listener) {
 		if (c instanceof SearchPanel) {
 			((SearchPanel) c).removeActionListener(listener);
 		}
-		
+
 	}
-	
+
 	public Class<T> getResultType() {
 		return subComponentFactory.getResultType();
 	}
@@ -85,4 +81,11 @@ public class SearchPanelFactory<T> implements SearchComponentFactory<T> {
 		return subComponentFactory.getResultsDisplay(results);
 	}
 
+	public Object serializeResults(Collection<SearchHit<?>> results) {
+		return subComponentFactory.serializeResults(results);
+	}
+	
+	public Collection<SearchHit<?>> deserializeResults(Object o) {
+		return subComponentFactory.deserializeResults(o);
+	}
 }

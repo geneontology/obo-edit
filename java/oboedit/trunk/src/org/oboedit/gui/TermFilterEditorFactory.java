@@ -2,6 +2,7 @@ package org.oboedit.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -10,13 +11,16 @@ import javax.swing.JComponent;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
+import org.obo.query.impl.BasicSearchHit;
 import org.obo.query.impl.SearchHit;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
-public class TermFilterEditorFactory implements SearchComponentFactory<IdentifiedObject> {
-	
+public class TermFilterEditorFactory implements
+		SearchComponentFactory<IdentifiedObject> {
+
 	protected static class IdentifiedObjectModel extends
 			AbstractSearchResultsTableModel<IdentifiedObject> {
 
@@ -63,7 +67,7 @@ public class TermFilterEditorFactory implements SearchComponentFactory<Identifie
 				return "?!";
 		}
 	};
-	
+
 	public JComponent createSubEditor() {
 		return new TermFilterEditor();
 	}
@@ -72,8 +76,7 @@ public class TermFilterEditorFactory implements SearchComponentFactory<Identifie
 		return ((TermFilterEditor) editor).getFilter();
 	}
 
-	public Collection<IdentifiedObject> getRelevantValues(
-			Collection<?> items) {
+	public Collection<IdentifiedObject> getRelevantValues(Collection<?> items) {
 		Collection<IdentifiedObject> pcs = new LinkedList<IdentifiedObject>();
 		for (Object pc : items) {
 			if (pc instanceof IdentifiedObject) {
@@ -82,7 +85,7 @@ public class TermFilterEditorFactory implements SearchComponentFactory<Identifie
 		}
 		return pcs;
 	}
-	
+
 	public void addUpdateListener(Component c, GUIUpdateListener listener) {
 		if (c instanceof TermFilterEditor) {
 			((TermFilterEditor) c).addUpdateListener(listener);
@@ -122,7 +125,7 @@ public class TermFilterEditorFactory implements SearchComponentFactory<Identifie
 			((TermFilterEditor) c).removeActionListener(listener);
 		}
 	}
-	
+
 	public JComponent getResultsDisplay(Collection<SearchHit<?>> results) {
 		return new SearchResultsTable(new IdentifiedObjectModel(), results);
 	}
@@ -130,4 +133,25 @@ public class TermFilterEditorFactory implements SearchComponentFactory<Identifie
 	public Class<IdentifiedObject> getResultType() {
 		return IdentifiedObject.class;
 	}
+
+	public Object serializeResults(Collection<SearchHit<?>> results) {
+		Collection<String> out = new ArrayList<String>(results.size());
+		for (SearchHit<?> result : results) {
+			if (result.getHit() instanceof IdentifiedObject) {
+				out.add(((IdentifiedObject) result.getHit()).getID());
+			}
+		}
+		return out;
+	}
+
+	public Collection<SearchHit<?>> deserializeResults(Object o) {
+		Collection<String> ids = (Collection<String>) o;
+		Collection<SearchHit<?>> out = new ArrayList<SearchHit<?>>();
+		for (String id : ids) {
+			out.add(new BasicSearchHit<IdentifiedObject>(SessionManager
+					.getManager().getSession().getObject(id)));
+		}
+		return out;
+	}
+
 }

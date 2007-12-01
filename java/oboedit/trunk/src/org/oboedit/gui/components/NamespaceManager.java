@@ -271,5 +271,6 @@ public class NamespaceManager extends AbstractGUIComponent {
 		}
 		GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 				SelectionManager.getGlobalSelection());
+		SessionManager.getManager().apply(item);
 	}
 }

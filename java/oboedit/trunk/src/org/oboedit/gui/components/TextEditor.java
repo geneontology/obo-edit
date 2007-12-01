@@ -58,6 +58,8 @@ import org.oboedit.gui.event.IncrementalVerificationEvent;
 import org.oboedit.gui.event.IncrementalVerificationListener;
 import org.oboedit.gui.event.PreSelectionEvent;
 import org.oboedit.gui.event.PreSelectionListener;
+import org.oboedit.gui.event.ReconfigEvent;
+import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.event.TermLoadEvent;
@@ -93,6 +95,16 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected ErrorDecoratorFactory errorDecoratorFactory = new DefaultErrorDecoratorFactory(
 			true);
+	
+	protected ReconfigListener reconfigListener = new ReconfigListener() {
+
+		public void configReloaded(ReconfigEvent e) {
+			System.err.println("reloaded config");
+			reload();
+			setObject(getObject());
+		}
+		
+	};
 
 	protected ObjectSelector selector;
 
@@ -444,6 +456,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected void installListeners() {
 		addMapping(new FieldPathSpec(), this, this);
 		addIncrementalVerificationListener(listener);
+		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		startTimer();
 	}
 
@@ -452,6 +465,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		removeMapping(new FieldPathSpec(), this);
 		removeIncrementalVerificationListener(listener);
 		uninstallAutocommitListener();
+		Preferences.getPreferences().removeReconfigListener(reconfigListener);
 		stopTimer();
 	}
 

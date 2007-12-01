@@ -859,12 +859,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		iconPanel.setLayout(new GridLayout(1, 1));
 		iconPanel.add(iconList);
 		iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-		guiPanel.add(iconPanel);
+		// guiPanel.add(iconPanel);
 		guiPanel.add(runtimeDisplayPanel);
 		guiPanel.add(moreOptionsPanel);
 		guiPanel.add(Box.createVerticalGlue());
 
-		SwingUtil.makeCompactGrid(guiPanel, 4, 1, 0, 0, 0, 5);
+		SwingUtil.makeCompactGrid(guiPanel, 3, 1, 0, 0, 0, 5);
 
 		JPanel behaviorPanel = new JPanel();
 
@@ -936,6 +936,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		textEditPanel.add(textEditTopPanel, "North");
 
 		mainPanel.addTab("General GUI", null, guiPanel, "General gui options");
+		mainPanel.addTab("Icons & Colors", null, iconPanel,
+				"Set up default colors and icons for relationship types");
 		mainPanel.addTab("Paths & Autosave", null, pathPanel, "Set paths");
 		mainPanel.addTab("Behavior", null, behaviorPanel, "Set ID options");
 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");

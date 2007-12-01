@@ -5,12 +5,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.bbop.swing.ReselectListSelectionModel;
 import org.obo.query.impl.SearchHit;
 
 public class SearchResultsTable extends JTable {
@@ -21,6 +23,7 @@ public class SearchResultsTable extends JTable {
 			Collection<SearchHit<?>> results) {
 		this.searchModel = model;
 		setModel(searchModel);
+		setSelectionModel(new ReselectListSelectionModel());
 		getSelectionModel().addListSelectionListener(
 				searchModel.getSelectionListener(this));
 		final JTableHeader header = getTableHeader();
