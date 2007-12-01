@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
 import org.bbop.framework.dock.LayoutDriver;
+import org.bbop.framework.dock.LayoutListener;
 import org.bbop.framework.dock.Perspective;
 import org.bbop.framework.dock.idw.IDWDriver;
 import org.bbop.framework.event.GUIComponentEvent;
@@ -105,6 +106,14 @@ public class ComponentManager {
 			GUIComponent c = activeComponents.get(id);
 			removeActiveComponent(c);
 		}
+	}
+
+	public void addLayoutListener(LayoutListener listener) {
+		driver.addLayoutListener(listener);
+	}
+
+	public void removeLayoutListener(LayoutListener listener) {
+		driver.removeLayoutListener(listener);
 	}
 
 	public Perspective getPerspective(String name) {

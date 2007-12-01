@@ -28,4 +28,6 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 	public boolean isSingleton();
 
 	public FactoryCategory getCategory();
+	
+	public boolean isRestoreOnStartup();
 }

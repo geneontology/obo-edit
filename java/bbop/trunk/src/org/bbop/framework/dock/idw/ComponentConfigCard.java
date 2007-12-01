@@ -10,15 +10,14 @@ import javax.swing.JPanel;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
 
-class ComponentConfigCard extends JPanel {
+public class ComponentConfigCard extends JPanel {
 	public static final String COMPONENT_KEY = "component";
 	public static final String CONFIG_KEY = "config";
-	
+
 	protected GUIComponent component;
 	protected ConfigurationPanel configScreen;
 	protected CardLayout cardLayout;
-	
-	
+
 	public ComponentConfigCard(GUIComponent c) {
 		this.component = c;
 		this.configScreen = c.getConfigurationPanel();
@@ -29,19 +28,19 @@ class ComponentConfigCard extends JPanel {
 			add(configScreen, CONFIG_KEY);
 		show(COMPONENT_KEY);
 	}
-	
+
 	public GUIComponent getComponent() {
 		return component;
 	}
-	
+
 	public ConfigurationPanel getConfigScreen() {
 		return configScreen;
 	}
-	
+
 	public void show(String key) {
 		cardLayout.show(this, key);
 	}
-	
+
 	public void toggle() {
 		cardLayout.next(this);
 	}

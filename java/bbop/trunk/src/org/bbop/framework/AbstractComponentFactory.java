@@ -54,4 +54,8 @@ public abstract class AbstractComponentFactory<T extends GUIComponent> implement
 	public boolean showInMenus() {
 		return true;
 	}
+	
+	public boolean isRestoreOnStartup() {
+		return true;
+	}
 }

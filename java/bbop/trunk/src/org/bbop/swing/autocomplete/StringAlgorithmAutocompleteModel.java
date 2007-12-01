@@ -123,7 +123,7 @@ public class StringAlgorithmAutocompleteModel implements
 					return;
 				String s = pair.getGenerated();
 				Map<String, int[]> hits = StringUtil.getMatchMap(s, newTokens,
-						true);
+						true, isIgnoreCase());
 				if (cancelled)
 					return;
 				if (hits.size() > 0) {
@@ -135,6 +135,10 @@ public class StringAlgorithmAutocompleteModel implements
 			}
 			setResults(out);
 		}
+	}
+	
+	protected boolean isIgnoreCase() {
+		return true;
 	}
 
 	public TaskDelegate<List<MatchPair<StringPair>>> getObjects(

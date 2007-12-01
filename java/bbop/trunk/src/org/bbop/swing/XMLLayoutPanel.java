@@ -116,6 +116,8 @@ public class XMLLayoutPanel extends JPanel implements XMLLayoutRoot {
 
 			layout.resolver.endParseNotify();
 			parseException = null;
+			validate();
+			repaint();
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();

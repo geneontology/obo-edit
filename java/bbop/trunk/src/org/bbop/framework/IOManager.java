@@ -115,6 +115,7 @@ public class IOManager {
 			throws DataAdapterException {
 		if (fireEvents) {
 			JDialog d = new JDialog((Frame) null, true);
+			d.setTitle("OBO-Edit: Working...");
 			d.getContentPane().add(new JLabel("OBO-Edit: Working..."));
 			d.setLocation(GUIManager.getManager().getFrame().getLocation());
 			d.toBack();
