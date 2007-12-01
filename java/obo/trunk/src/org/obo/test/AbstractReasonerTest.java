@@ -17,7 +17,7 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	// use LP as default: can be overridden in test
 	protected static ReasonerFactory reasonerFactory =
 		new LinkPileReasonerFactory();
-		//new ForwardChainingReasonerFactory();
+		// new ForwardChainingReasonerFactory();
 
 	protected AbstractReasonerTest(String name) {
 		super(name);

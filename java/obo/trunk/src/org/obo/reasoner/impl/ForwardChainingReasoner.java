@@ -55,6 +55,14 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			MutableLinkDatabase impliedLinkDatabase) {
 		this.impliedLinkDatabase = impliedLinkDatabase;
 	}
+	
+	public Map<Link, Collection<Explanation>>  getExplanationMap() {
+		return explanationMap;
+	}
+	
+	public Map<Link, Collection<Explanation>>  getExplanationDepsMap() {
+		return explanationDeps;
+	}
 
 	public ForwardChainingReasoner() {
 		this(createImpliedLinkDatabase(null));
@@ -293,7 +301,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 				// it = completeExplanations.iterator();
 				// while (it.hasNext()) {
 				// AbstractExplanation exp = (AbstractExplanation) it.next();
-				reasonRemoval(exp);
+				reasonRemoval(exp, null);
 			}
 			internalAddLink(link);
 		} else {
@@ -347,7 +355,8 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 
 		// find all the explanations that depend on the dead link
 		Collection<Explanation> deps = getDependentExplanations(link);
-		for (Explanation exp : deps) {
+		
+		for (Explanation exp : new ArrayList<Explanation>(deps)) {
 			// remove the now-defunct link as supporting evidence for the
 			// dependent
 			// explanation
@@ -357,12 +366,15 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			// the explanation, so that explanation needs to be removed
 			if (dead) {
 				// ditch the explanation
-				reasonRemoval(exp);
+				reasonRemoval(exp, link);
 			}
 		}
 	}
 
-	protected void reasonRemoval(Explanation exp) {
+	protected void reasonRemoval(Explanation exp, Link justRemoved) {
+		Collection<Link> evidenceLinks = new ArrayList(exp.getEvidence());
+		if (justRemoved != null)
+			evidenceLinks.add(justRemoved);
 		// Since we're removing this explanation, this explanation no longer
 		// relies
 		// on any supporting links, so it needs to be removed from
@@ -372,7 +384,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		// For each of those links, remove the now-defunct explanation from the
 		// list
 		// of explanations that relies on that link
-		for (Link link : exp.getEvidence()) {
+		for (Link link : evidenceLinks) {
 			Collection<Explanation> exps = explanationDeps.get(link);
 			if (exps != null) {
 				exps.remove(exp);
@@ -389,6 +401,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		Collection<Explanation> exps = getExplanations(explainedObject);
 		// remove the now-defunct explanation from the set of explanations
 		exps.remove(exp);
+
 		// if there are no explanations left for explainedObject, it needs
 		// to be removed too
 		if (exps.size() == 0)
@@ -929,7 +942,8 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 						.singleton((Explanation) new ExternallyImpliedExplanation(
 								link));
 			} else
-				return Collections.singleton((Explanation) new GivenExplanation(link));
+				return Collections
+						.singleton((Explanation) new GivenExplanation(link));
 		} else {
 			// Anything that is in the original database needs a "given"
 			// explanation

@@ -89,7 +89,7 @@ public class DefaultHistoryList implements SessionHistoryList {
 	}
 
 	public void addItem(HistoryItem item) {
-			historyList.add(item);
+		historyList.add(item);
 	}
 
 	public void removeItem(HistoryItem item) {

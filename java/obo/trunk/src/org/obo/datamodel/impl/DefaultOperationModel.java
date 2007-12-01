@@ -11,7 +11,7 @@ public class DefaultOperationModel implements OperationModel {
 	protected OBOSession session;
 	protected Collection<OperationModel> lockstepModels = new LinkedList<OperationModel>();
 	protected String currentUser;
-	
+
 	public void setSession(OBOSession session) {
 		this.session = session;
 	}
@@ -103,7 +103,7 @@ public class DefaultOperationModel implements OperationModel {
 		else
 			warning = new OperationWarning("Unknown history item " + item
 					+ " found of type " + item.getClass() + "!");
-		for(OperationModel lockstepModel : lockstepModels) {
+		for (OperationModel lockstepModel : lockstepModels) {
 			OperationWarning lwarning = lockstepModel.apply(item);
 			if (lwarning != null)
 				warning.addWarning(lwarning);
@@ -111,9 +111,11 @@ public class DefaultOperationModel implements OperationModel {
 		if (item.getTarget() != null) {
 			IdentifiedObject io = getRealIDObject(item.getTarget());
 			if (io instanceof ModificationMetadataObject) {
-				((ModificationMetadataObject) io).setModificationDate(new Date());
+				((ModificationMetadataObject) io)
+						.setModificationDate(new Date());
 				if (session.getCurrentUser() != null) {
-					((ModificationMetadataObject) io).setModifiedBy(session.getCurrentUser());					
+					((ModificationMetadataObject) io).setModifiedBy(session
+							.getCurrentUser());
 				}
 			}
 		}
@@ -705,7 +707,6 @@ public class DefaultOperationModel implements OperationModel {
 			type = new DanglingPropertyImpl(tr.getType());
 		}
 
-
 		Namespace ns = session.getNamespace(tr.getNamespace());
 		OBORestriction realtr = new OBORestrictionImpl(child, parent, type);
 		realtr.setNamespace(ns);
@@ -734,7 +735,8 @@ public class DefaultOperationModel implements OperationModel {
 				item.getObjectID(), (OBOClass) type, item.isAnonymous());
 		if (io instanceof ModificationMetadataObject) {
 			((ModificationMetadataObject) io).setCreationDate(new Date());
-			((ModificationMetadataObject) io).setCreatedBy(session.getCurrentUser());
+			((ModificationMetadataObject) io).setCreatedBy(session
+					.getCurrentUser());
 		}
 		session.addObject(io);
 
@@ -1320,8 +1322,7 @@ public class DefaultOperationModel implements OperationModel {
 	}
 
 	public OperationWarning reverse(CompletesHistoryItem item) {
-		StringRelationship sr = (StringRelationship) item
-				.getRel().clone();
+		StringRelationship sr = (StringRelationship) item.getRel().clone();
 		sr.setCompletes(!item.getOldCompletes());
 
 		OBORestriction tr = (OBORestriction) getRealRel(sr);
@@ -1411,8 +1412,8 @@ public class DefaultOperationModel implements OperationModel {
 					+ "term " + item.getTarget());
 		}
 
-		StringRelationship sr = new StringRelationship(
-				item.getTarget(), item.getTypeID(), item.getParentID());
+		StringRelationship sr = new StringRelationship(item.getTarget(), item
+				.getTypeID(), item.getParentID());
 
 		Link tr = getRealRel(sr);
 
@@ -1453,8 +1454,8 @@ public class DefaultOperationModel implements OperationModel {
 					+ "term " + item.getTarget());
 		}
 
-		StringRelationship sr = new StringRelationship(
-				item.getTarget(), item.getTypeID(), item.getParentID());
+		StringRelationship sr = new StringRelationship(item.getTarget(), item
+				.getTypeID(), item.getParentID());
 
 		Link tr = getRealRel(sr);
 
@@ -1606,12 +1607,16 @@ public class DefaultOperationModel implements OperationModel {
 				+ "macro history item");
 		boolean failure = false;
 		for (int i = 0; i < item.size(); i++) {
-			OperationWarning w = apply(item.getItemAt(i));
-			if (w != null) {
-				System.err.println("got warning " + w + " from "
-						+ item.getItemAt(i));
-				failure = true;
-				warning.addWarning(w);
+			try {
+				OperationWarning w = apply(item.getItemAt(i));
+				if (w != null) {
+					System.err.println("got warning " + w + " from "
+							+ item.getItemAt(i));
+					failure = true;
+					warning.addWarning(w);
+				}
+			} catch (Throwable t) {
+				t.printStackTrace();
 			}
 		}
 
@@ -1692,8 +1697,8 @@ public class DefaultOperationModel implements OperationModel {
 					+ item.getRelationshipType());
 		}
 
-		sr = new StringRelationship(sr.getChild(), item
-				.getRelationshipType(), sr.getParent());
+		sr = new StringRelationship(sr.getChild(), item.getRelationshipType(),
+				sr.getParent());
 
 		Link tr = getRealRel(sr);
 
@@ -2183,7 +2188,7 @@ public class DefaultOperationModel implements OperationModel {
 
 	public OperationWarning reverse(HistoryItem item) {
 		OperationWarning warning;
-		
+
 		if (item instanceof CreateObjectHistoryItem)
 			warning = reverse((CreateObjectHistoryItem) item);
 		else if (item instanceof CreateLinkHistoryItem)
@@ -2268,7 +2273,7 @@ public class DefaultOperationModel implements OperationModel {
 			warning = reverse((DeletePropertyValueHistoryItem) item);
 		else
 			warning = new OperationWarning("Unknown history item found!");
-		for(OperationModel lockstepModel : lockstepModels) {
+		for (OperationModel lockstepModel : lockstepModels) {
 			OperationWarning lwarning = lockstepModel.reverse(item);
 			if (lwarning != null)
 				warning.addWarning(lwarning);
@@ -2277,11 +2282,11 @@ public class DefaultOperationModel implements OperationModel {
 	}
 
 	public void addLockstepModel(OperationModel model) {
-		lockstepModels.add(model);	
+		lockstepModels.add(model);
 	}
 
 	public void removeLockstepModel(OperationModel model) {
-		lockstepModels.remove(model);	
+		lockstepModels.remove(model);
 	}
 
 }

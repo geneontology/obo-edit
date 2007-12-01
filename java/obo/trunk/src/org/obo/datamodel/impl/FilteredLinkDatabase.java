@@ -173,6 +173,8 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	public IdentifiedObject getObject(String id) {
 		IdentifiedObject out = linkDatabase.getObject(id);
+		if (out == null)
+			return null;
 		if (termFilter == null || termFilter.satisfies(out))
 			return out;
 		else
