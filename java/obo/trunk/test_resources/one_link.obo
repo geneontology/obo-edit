@@ -1,0 +1,20 @@
+
+[Term]
+id: A
+name: Some Object Called A
+is_a: B
+
+[Term]
+id: B
+name: Some Object Called B
+
+[Term]
+id: C
+name: Some Object Called C
+is_a: A
+
+[Typedef]
+id: part_of
+name: part of
+is_transitive: true
+
