@@ -5,14 +5,14 @@ import org.obo.datamodel.*;
 
 import java.util.*;
 
-
-public class LinkTypeHistoryItem extends LinkHistoryItem {
+public class LinkTypeHistoryItem extends SubclassedMacroHistoryItem {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4652336581904427325L;
 
+	StringRelationship rel;
 	String relType;
 
 	public LinkTypeHistoryItem() {
@@ -20,12 +20,14 @@ public class LinkTypeHistoryItem extends LinkHistoryItem {
 	}
 
 	public LinkTypeHistoryItem(StringRelationship rel, String relType) {
+		super("change relationship");
 		this.rel = rel;
 		this.target = null;
 		setRelType(relType);
 	}
 
 	public LinkTypeHistoryItem(Link tr, OBOProperty relType) {
+		super("change relationship");
 		this.rel = createStringRelationship(tr);
 		this.target = null;
 		setRelType(relType);
@@ -45,9 +47,12 @@ public class LinkTypeHistoryItem extends LinkHistoryItem {
 				&& ObjectUtil.equals(relType, item.getRelationshipType());
 	}
 
-	@Override
-	public String getShortName() {
-		return "change relationship";
+	public StringRelationship getRel() {
+		return rel;
+	}
+
+	public void setRel(StringRelationship rel) {
+		this.rel = rel;
 	}
 
 	public void setRelType(String relType) {
@@ -83,6 +88,14 @@ public class LinkTypeHistoryItem extends LinkHistoryItem {
 			}
 			return out;
 		}
+		return null;
+	}
+
+	@Override
+	protected OperationWarning getItems(OBOSession history, List historyItems) {
+		historyItems.add(new DeleteLinkHistoryItem(getRel()));
+		historyItems.add(new CreateLinkHistoryItem(getRel().getChild(),
+				relType, getRel().getParent()));
 		return null;
 	}
 }

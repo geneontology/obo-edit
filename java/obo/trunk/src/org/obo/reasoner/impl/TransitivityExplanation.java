@@ -28,6 +28,14 @@ public class TransitivityExplanation extends AbstractExplanation {
 		this.extensionLink = extensionLink;
 	}
 	
+	public Link getDirectLink() {
+		return directLink;
+	}
+	
+	public Link getExtensionLink() {
+		return extensionLink;
+	}
+	
 	@Override
 	public Collection<Link> getEvidence() {
 		ArrayList<Link> out = new ArrayList<Link>(2);

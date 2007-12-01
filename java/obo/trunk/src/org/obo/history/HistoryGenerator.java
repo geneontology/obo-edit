@@ -191,11 +191,11 @@ public class HistoryGenerator implements Serializable {
 						Link link = (Link) it2.next();
 						history.addItem(new DeleteLinkHistoryItem(link));
 					}
-					it2 = lo.getChildren().iterator();
-					while (it2.hasNext()) {
-						Link link = (Link) it2.next();
-						history.addItem(new DeleteLinkHistoryItem(link));
-					}
+//					it2 = lo.getChildren().iterator();
+//					while (it2.hasNext()) {
+//						Link link = (Link) it2.next();
+//						history.addItem(new DeleteLinkHistoryItem(link));
+//					}
 				}
 				history.addItem(new DestroyObjectHistoryItem(io));
 				continue;
