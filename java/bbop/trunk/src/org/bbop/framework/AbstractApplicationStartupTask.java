@@ -1,13 +1,8 @@
 package org.bbop.framework;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -22,43 +17,34 @@ import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
+import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
-import net.infonode.docking.View;
-
 import org.bbop.dataadapter.DataAdapter;
-import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.framework.dock.LayoutDriver;
-import org.bbop.framework.dock.idw.BitmapIcon;
 import org.bbop.framework.dock.idw.IDWDriver;
-import org.bbop.framework.dock.idw.IDWUtil;
-import org.bbop.framework.dock.idw.ViewListener;
 import org.bbop.io.LoggerStream;
 import org.bbop.io.MultiOutputStream;
-import org.bbop.swing.ComponentFactory;
-import org.bbop.swing.EnhancedMenuBar;
-import org.bbop.swing.GhostImageController;
 import org.bbop.swing.SwingUtil;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.ExceptionLogger;
+import org.simplericity.macify.eawt.Application;
+import org.simplericity.macify.eawt.ApplicationEvent;
+import org.simplericity.macify.eawt.ApplicationListener;
+import org.simplericity.macify.eawt.DefaultApplication;
 
 public abstract class AbstractApplicationStartupTask extends
 		AbstractSingleActionTask {
 
-	protected VetoableShutdownListener vetoableShutdownListener =
-		new VetoableShutdownListener() {
+	protected VetoableShutdownListener vetoableShutdownListener = new VetoableShutdownListener() {
 
 		public boolean willShutdown() {
-			if (GUIManager.getManager().getFrame() != null &&
-					GUIManager.getManager().isConfirmOnExit()) {
+			if (GUIManager.getManager().getFrame() != null
+					&& GUIManager.getManager().isConfirmOnExit()) {
 				return JOptionPane.showConfirmDialog(GUIManager.getManager()
 						.getFrame(), "Really quit?", "Exit?",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
@@ -97,12 +83,93 @@ public abstract class AbstractApplicationStartupTask extends
 			return null;
 	}
 
+	/**
+	 * This internal class fixes the issue on Macs where the MacOS adds a
+	 * top-level menu for each application (such as OBO-Edit) that includes menu
+	 * items such as "About" and "Quit" (shortcut command-Q). If the Mac user
+	 * selected Quit from that top-level menu (or typed command-Q), OBO-Edit
+	 * would instantly quit without going through the standard OBO-Edit exit
+	 * method (asking "Really quit?"). This class uses an Open Source library,
+	 * org.simplericity.macify.eawt, that lets us control that top-level menu on
+	 * Macs without requiring any Mac-specific code that would cause runtime or
+	 * compile-time problems on non-Macs.
+	 */
+	public class MacApplicationSupport implements ApplicationListener {
+		private Application application = new DefaultApplication();
+
+		public void handleAbout(ApplicationEvent event) {
+			Action aboutAction = getAboutAction();
+			if (aboutAction != null) {
+				aboutAction.actionPerformed(new ActionEvent(event.getSource(),
+						0, "about"));
+				event.setHandled(true);
+			}
+		}
+
+		public void handleQuit(ApplicationEvent event) {
+			Action exitAction = getExitAction();
+			if (exitAction != null) {
+				exitAction.actionPerformed(new ActionEvent(event.getSource(),
+						0, "exit"));
+			} else
+				GUIManager.exit(0);
+		}
+
+		/*
+		 * These have to be declared even if we're not going to do anything with
+		 * them
+		 */
+		public void handleOpenApplication(ApplicationEvent event) {
+		}
+
+		public void handleOpenFile(ApplicationEvent event) {
+			Action openAction = getOpenFileAction(event.getFilename());
+			if (openAction != null) {
+				openAction.actionPerformed(new ActionEvent(event.getSource(),
+						0, "openFile"));
+				event.setHandled(true);			
+			}
+		}
+
+		public void handlePreferences(ApplicationEvent event) {
+			Action prefsAction = getPreferencesAction();
+			if (prefsAction != null) {
+				prefsAction.actionPerformed(new ActionEvent(event.getSource(),
+						0, "about"));
+				event.setHandled(true);
+			}
+		}
+
+		public void handlePrintFile(ApplicationEvent event) {
+		}
+
+		public void handleReopenApplication(ApplicationEvent event) {
+		}
+	}
+	
+	protected Action getOpenFileAction(String filename) {
+		return null;
+	}
+
+	protected Action getAboutAction() {
+		return null;
+	}
+
+	protected Action getExitAction() {
+		return null;
+	}
+	
+	protected Action getPreferencesAction() {
+		return null;
+	}
+
 	public void run() {
 		GUIManager.setPrefsDir(getPrefsDir());
 		PluginManager.getManager().setPluginDirs(getPluginDirs());
 		configureLogging();
 		installPlugins();
 		configureUI();
+		configureSystem();
 		GUIManager.getManager().setFrame(createFrame());
 		doPreInstallation();
 		installSystemListeners();
@@ -114,6 +181,13 @@ public abstract class AbstractApplicationStartupTask extends
 		ComponentManager.getManager().setDriver(createLayoutDriver());
 
 		showFrame();
+	}
+
+	protected void configureSystem() {
+		Application application = new DefaultApplication();
+		application.setEnabledAboutMenu(getAboutAction() != null);
+		application.setEnabledPreferencesMenu(getPreferencesAction() != null);
+		application.addApplicationListener(new MacApplicationSupport());
 	}
 
 	protected void installSystemListeners() {
