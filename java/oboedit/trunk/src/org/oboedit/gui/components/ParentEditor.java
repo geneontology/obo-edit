@@ -1,10 +1,11 @@
 package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.swing.*;
-import org.bbop.util.*;
+import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
+import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.*;
+import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -13,13 +14,47 @@ import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.tree.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Rectangle;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.Scrollable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.tree.TreePath;
 
 public class ParentEditor extends AbstractGUIComponent {
 
@@ -27,7 +62,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	protected SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			loadTerm(SelectionManager.getGlobalSelection()
@@ -78,8 +113,6 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected JPanel outerPanel = new RowScrollPanel();
 
-	protected JPanel panel = new JPanel();
-
 	protected JPanel buttonPanel = new JPanel();
 
 	protected JButton dropButton = new JButton("Drop terms here to add new "
@@ -114,42 +147,61 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected SessionManager sessionManager = SessionManager.getManager();
 
-	/*
-	 * protected DropListener dropListener = new DropListener() { LineBorder
-	 * border = new LineBorder(Color.black, 2);
-	 * 
-	 * public boolean allowDrop(DragEvent e) { if (e.getData() instanceof
-	 * TreePath[] && ((TreePath[]) e.getData()).length > 0) { TreePath[] paths =
-	 * (TreePath[]) e.getData(); for (int i = 0; i < paths.length; i++) if
-	 * (!(paths[i].getLastPathComponent() instanceof OBORestriction)) return
-	 * false; return true; } else return false; }
-	 * 
-	 * public void dragEnter(DragEvent e) { if (allowDrop(e)) setBorder(border); }
-	 * 
-	 * public void dragExit(DragEvent e) { setBorder(emptyBorder); }
-	 * 
-	 * public void drop(DragEvent e) { LinkedObject lo =
-	 * SelectionManager.getSelection().getTermSubSelection();
-	 * 
-	 * TreePath[] paths = (TreePath[]) e.getData(); TermMacroHistoryItem item =
-	 * new TermMacroHistoryItem( "Added parents"); TreePath[] tpaths = new
-	 * TreePath[paths.length]; for (int i = 0; i < paths.length; i++) {
-	 * OBORestriction tr = (OBORestriction) paths[i] .getLastPathComponent();
-	 * TermCopyHistoryItem citem = new TermCopyHistoryItem(tr .getChild(), lo,
-	 * OBOProperty.IS_A); item.addHistoryItem(citem); OBORestriction tr2 =
-	 * controller.getSession().getObjectFactory() .createOBORestriction(lo,
-	 * OBOProperty.IS_A, tr.getChild(), false, null); TreePath path =
-	 * paths[i].pathByAddingChild(tr2); tpaths[i] = path; }
-	 * item.setPreSelection(SelectionManager.createSelectionFromPaths(ParentPlugin.this,
-	 * paths, null, true));
-	 * item.setPostSelection(SelectionManager.createSelectionFromPaths(ParentPlugin.this,
-	 * tpaths, null, true)); controller.apply(item); setBorder(emptyBorder); }
-	 * 
-	 * public void draggedOver(DragEvent e) { } };
-	 * 
-	 * protected DropTarget dropTarget = new DropTarget(dropButton,
-	 * dropListener);
-	 */
+	protected DropTargetListener dropListener = new DropTargetListener() {
+		public boolean allowDrop(DropTargetDragEvent e) {
+			Selection s = DropUtil.getSelection(e);
+			return s != null && s.getTerms().size() > 0;
+		}
+
+		public void dragEnter(DropTargetDragEvent e) {
+			if (!allowDrop(e)) {
+				e.rejectDrag();
+				return;
+			} else {
+				e.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+			}
+		}
+
+		public void dragExit(DropTargetEvent dte) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void dragOver(DropTargetDragEvent dtde) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void drop(DropTargetDropEvent e) {
+			Selection s = DropUtil.getSelection(e);
+			LinkedObject target = SelectionManager.getManager().getSelection()
+					.getTermSubSelection();
+
+			TermMacroHistoryItem item = new TermMacroHistoryItem(
+					"Added parents");
+			Collection<Link> newLinks = new ArrayList<Link>();
+			for (LinkedObject parent : s.getTerms()) {
+				CreateLinkHistoryItem citem = new CreateLinkHistoryItem(target,
+						OBOProperty.IS_A, parent);
+				OBORestriction link = new OBORestrictionImpl(target,
+						OBOProperty.IS_A, parent);
+				newLinks.add(link);
+				item.addItem(citem);
+			}
+			GUIUtil.setSelections(item, SelectionManager.getManager()
+					.getSelection(), SelectionManager.createSelectionFromLinks(
+					ParentEditor.this, newLinks, null, false));
+			e.dropComplete(true);
+			SessionManager.getManager().apply(item);
+		}
+
+		public void dropActionChanged(DropTargetDragEvent dtde) {
+		}
+
+	};
+
+	protected DropTarget dropTarget = new DropTarget(dropButton, dropListener);
+
 	protected Comparator<Link> parentComparator = new Comparator<Link>() {
 		public int compare(Link a, Link b) {
 			Link tr = a;
@@ -191,17 +243,30 @@ public class ParentEditor extends AbstractGUIComponent {
 		loadTerm(currentObject);
 	}
 
+	protected static class TypeRenderer extends DefaultListCellRenderer {
+
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			return super.getListCellRendererComponent(list,
+					((IdentifiedObject) value).getName(), index, isSelected,
+					cellHasFocus);
+		}
+
+	}
+
+	protected static TypeRenderer typeRenderer = new TypeRenderer();
+
 	public void loadTerm(LinkedObject t) {
 		currentObject = t;
 		outerPanel.removeAll();
 		// panel = new JPanel();
 		if (t == null) {
 			outerPanel.add(label);
-			panel.remove(buttonPanel);
+			remove(buttonPanel);
 		} else {
-			panel.add(buttonPanel, "Center");
+			add(buttonPanel, "South");
 			final TreePath[] oldpaths = PathUtil.getPaths(t);
-			Vector<Link> v = new Vector<Link>();
+			List<Link> v = new ArrayList<Link>();
 			if (showImpliedCheckbox.isSelected()
 					&& SessionManager.getManager().getUseReasoner()) {
 				v.addAll(SessionManager.getManager().getReasoner()
@@ -210,6 +275,7 @@ public class ParentEditor extends AbstractGUIComponent {
 			v.addAll(t.getParents());
 
 			Collections.sort(v, parentComparator);
+			boolean first = true;
 			for (int i = 0; i < v.size(); i++) {
 				final OBORestriction tr = (OBORestriction) v.get(i);
 				// final TreePath [] oldpaths = tr.getPaths();
@@ -226,7 +292,11 @@ public class ParentEditor extends AbstractGUIComponent {
 				}
 
 				JPanel panel = new JPanel();
-				panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+				JPanel controlsPanel = new JPanel();
+				controlsPanel.setLayout(new BoxLayout(controlsPanel,
+						BoxLayout.Y_AXIS));
+				panel.setLayout(new BorderLayout());
+				panel.add(controlsPanel, "West");
 				final JComboBox typeBox = new JComboBox();
 				typeBox.setFont(font);
 				typeBox.setEnabled(enabled);
@@ -268,6 +338,7 @@ public class ParentEditor extends AbstractGUIComponent {
 						SessionManager.getManager().apply(item);
 					}
 				});
+				typeBox.setRenderer(typeRenderer);
 
 				JButton idButton = new JButton(tr.getParent().getID());
 				idButton.setBorder(null);
@@ -285,14 +356,22 @@ public class ParentEditor extends AbstractGUIComponent {
 				idButton.setFont(font);
 				idButton.setOpaque(false);
 
-				JTextField field = new JTextField();
+				JButton field = new JButton();
 				field.setOpaque(false);
-				field.setBorder(null);
-				field.setText(tr.getParent().getName());
-				field.setCaretPosition(0);
+				field.setBorderPainted(false);
+				field.setText("<html>" + tr.getParent().getName() + "</html>");
 				field.setToolTipText(tr.getParent().getName());
-				field.setEditable(false);
 				field.setFont(font);
+				field.setMinimumSize(new Dimension(0, (int) field
+						.getMinimumSize().getHeight()));
+				// JTextField field = new JTextField();
+				// field.setOpaque(false);
+				// field.setBorder(null);
+				// field.setText(tr.getParent().getName());
+				// field.setCaretPosition(0);
+				// field.setToolTipText(tr.getParent().getName());
+				// field.setEditable(false);
+				// field.setFont(font);
 
 				final JButton trashButton = new JButton(Preferences
 						.loadLibraryIcon("trashcan.gif"));
@@ -304,14 +383,14 @@ public class ParentEditor extends AbstractGUIComponent {
 						GUIUtil.setPreSelection(ditem, SelectionManager
 								.getGlobalSelection());
 
-						Vector<TreePath> temp = new Vector<TreePath>();
+						List<TreePath> temp = new ArrayList<TreePath>();
 						for (int i = 0; i < oldpaths.length; i++) {
 							if (!oldpaths[i].getLastPathComponent().equals(tr)) {
 								temp.add(oldpaths[i]);
 							}
 						}
-						TreePath[] paths = new TreePath[temp.size()];
-						temp.copyInto(paths);
+						TreePath[] paths = temp.toArray(new TreePath[temp
+								.size()]);
 
 						GUIUtil.setPostSelection(ditem, SelectionManager
 								.createSelectionFromPaths(ParentEditor.this,
@@ -324,78 +403,17 @@ public class ParentEditor extends AbstractGUIComponent {
 				});
 				trashButton.setEnabled(enabled
 						&& tr.getChild().getParents().size() > 1);
-				panel.add(trashButton);
-				panel.add(Box.createHorizontalStrut(5));
-				panel.add(typeBox);
-				panel.add(Box.createHorizontalStrut(5));
-				panel.add(idButton);
-				panel.add(Box.createHorizontalStrut(5));
-				panel.add(field);
-				panel.add(Box.createHorizontalGlue());
+				Box topBox = Box.createHorizontalBox();
+				topBox.add(trashButton);
+				topBox.add(Box.createHorizontalStrut(5));
+				topBox.add(typeBox);
+				topBox.add(Box.createHorizontalStrut(5));
+				topBox.add(idButton);
+				Box bottomBox = Box.createHorizontalBox();
+
+				controlsPanel.add(topBox);
+				panel.add(field, "Center");
 				if (!TermUtil.isProperty(tr.getParent())) {
-//					JLabel completesLabel = new JLabel(completes_icon);
-//					final JCheckBox completesBox = new JCheckBox("");
-//					completesBox.setSelected(tr.completes());
-//					completesBox.setFont(font);
-//					completesBox.setToolTipText("Completes");
-//					completesBox.setEnabled(enabled);
-//					panel.add(completesLabel);
-//					panel.add(completesBox);
-//					panel.add(Box.createHorizontalStrut(5));
-//					completesBox.setOpaque(false);
-//					completesBox.addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent e) {
-//							CompletesHistoryItem item = new CompletesHistoryItem(
-//									tr);
-//							GUIUtil.setSelections(item, SelectionManager
-//									.getGlobalSelection(), SelectionManager
-//									.getGlobalSelection());
-//							SessionManager.getManager().apply(item);
-//						}
-//					});
-//
-//					JLabel necLabel = new JLabel(nec_icon);
-//					final JCheckBox necessaryBox = new JCheckBox("");
-//					necessaryBox.setSelected(tr.isNecessarilyTrue());
-//					necessaryBox.setFont(font);
-//					necessaryBox.setToolTipText("Necessarily true");
-//					necessaryBox.setEnabled(enabled);
-//					panel.add(necLabel);
-//					panel.add(necessaryBox);
-//					panel.add(Box.createHorizontalStrut(5));
-//					necessaryBox.setOpaque(false);
-//					necessaryBox.setEnabled(enabled);
-//					necessaryBox.addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent e) {
-//							NecessarilyTrueHistoryItem item = new NecessarilyTrueHistoryItem(
-//									tr);
-//							GUIUtil.setSelections(item, SelectionManager
-//									.getGlobalSelection(), SelectionManager
-//									.getGlobalSelection());
-//							SessionManager.getManager().apply(item);
-//						}
-//					});
-//
-//					JLabel invLabel = new JLabel(inv_icon);
-//					JCheckBox invNecessaryBox = new JCheckBox("");
-//					invNecessaryBox.setSelected(tr.isInverseNecessarilyTrue());
-//					invNecessaryBox.setFont(font);
-//					invNecessaryBox.setToolTipText("Inverse necessarily true");
-//					invNecessaryBox.setEnabled(enabled);
-//					panel.add(invLabel);
-//					panel.add(invNecessaryBox);
-//					panel.add(Box.createHorizontalStrut(5));
-//					invNecessaryBox.setOpaque(false);
-//					invNecessaryBox.addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent e) {
-//							InverseNecHistoryItem item = new InverseNecHistoryItem(
-//									tr);
-//							GUIUtil.setSelections(item, SelectionManager
-//									.getGlobalSelection(), SelectionManager
-//									.getGlobalSelection());
-//							SessionManager.getManager().apply(item);
-//						}
-//					});
 
 					JButton cardinalityButton = new JButton();
 					cardinalityButton.setFont(font);
@@ -427,8 +445,8 @@ public class ParentEditor extends AbstractGUIComponent {
 						}
 					}
 					cardinalityButton.setText(label);
-					panel.add(cardinalityButton);
-					panel.add(Box.createHorizontalStrut(5));
+					bottomBox.add(cardinalityButton);
+					bottomBox.add(Box.createHorizontalStrut(5));
 				}
 				// completesBox.setSelected(tr.isNecessarilyTrue());
 				// completesBox.setSelected(tr.isInverseNecessarilyTrue());
@@ -460,10 +478,13 @@ public class ParentEditor extends AbstractGUIComponent {
 						SessionManager.getManager().apply(item);
 					}
 				});
-				panel.add(namespaceBox);
-				panel.add(Box.createHorizontalStrut(5));
+				bottomBox.add(namespaceBox);
+				controlsPanel.add(bottomBox);
 
 				panel.setOpaque(false);
+				if (first) {
+					outerPanel.add(new JSeparator());
+				}
 				outerPanel.add(panel);
 			}
 			outerPanel.add(Box.createVerticalStrut(10));
@@ -527,7 +548,7 @@ public class ParentEditor extends AbstractGUIComponent {
 		JButton commit = new JButton("Commit");
 		commit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Vector<HistoryItem> changes = new Vector<HistoryItem>();
+				List<HistoryItem> changes = new ArrayList<HistoryItem>();
 				if (cardinalityChooser.getSelectedIndex() == 0) {
 					Integer cardinality = null;
 					try {
@@ -617,17 +638,15 @@ public class ParentEditor extends AbstractGUIComponent {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		loadTerm(SelectionManager.getGlobalSelection().getTermSubSelection());
 		outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
-		dropButton.setBorder(null);
-		panel.setOpaque(true);
-		panel.setLayout(new BorderLayout());
-		JScrollPane pane = new JScrollPane(panel,
+		dropButton.setBorderPainted(false);
+		dropButton.setBackground(Preferences.defaultButtonColor());
+		JScrollPane pane = new JScrollPane(outerPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		panel.removeAll();
+		pane.setOpaque(false);
 		removeAll();
-		panel.add(outerPanel, "North");
-		panel.add(buttonPanel, "Center");
 		add(pane, "Center");
+		add(buttonPanel, "South");
 	}
 
 	protected void attachListeners() {

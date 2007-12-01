@@ -13,30 +13,34 @@ import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 
 public interface SearchComponentFactory<T> {
-	
+
 	public Class<T> getResultType();
 
 	public JComponent createSubEditor();
-	
+
 	public JComponent getSpecEditor();
-	
+
 	public JComponent getResultsDisplay(Collection<SearchHit<?>> results);
-	
+
 	public RenderSpec getRenderSpec(Component editor);
-	
+
 	public void setRenderSpec(Component editor, RenderSpec spec);
-	
+
 	public Filter<T> getFilter(Component editor);
-	
+
 	public void setFilter(Component editor, Filter<T> filter);
-	
+
 	public Collection<T> getRelevantValues(Collection<?> items);
-	
+
 	public void addUpdateListener(Component c, GUIUpdateListener listener);
 
 	public void removeUpdateListener(Component c, GUIUpdateListener listener);
-	
+
 	public void addActionListener(Component c, ActionListener listener);
-	
+
 	public void removeActionListener(Component c, ActionListener listener);
+
+	public Object serializeResults(Collection<SearchHit<?>> results);
+
+	public Collection<SearchHit<?>> deserializeResults(Object o);
 }

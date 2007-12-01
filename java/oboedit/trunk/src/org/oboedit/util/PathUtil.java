@@ -98,6 +98,29 @@ public class PathUtil {
 		}
 		return true;
 	}
+	
+	public static TreePath reconstruct(TreePath current, TreeModel model) {
+		Object[] objects = current.getPath();
+		Object[] newObjects = new Object[objects.length];
+		Object previous = objects[0];
+		newObjects[0] = objects[0];
+		for (int j = 1; j < objects.length; j++) {
+			int count = model.getChildCount(previous);
+			boolean found = false;
+			for (int i = 0; i < count; i++) {
+				Object child = model.getChild(previous, i);
+				if (child.equals(objects[j])) {
+					found = true;
+					newObjects[j] = child;
+					break;
+				}
+			}
+			if (!found)
+				return null;
+			previous = objects[j];
+		}
+		return new TreePath(newObjects);
+	}
 
 	public static TreePath[] getPaths(IdentifiedObject io) {
 		return PathUtil.getPaths(io, RootAlgorithm.GREEDY, DefaultLinkDatabase

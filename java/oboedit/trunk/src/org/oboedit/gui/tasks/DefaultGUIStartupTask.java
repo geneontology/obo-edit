@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -20,6 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
@@ -38,6 +40,7 @@ import org.bbop.framework.GUITask;
 import org.bbop.framework.IOManager;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
+import org.bbop.framework.VetoableShutdownListener;
 import org.bbop.framework.ViewMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
@@ -67,8 +70,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.example.NumberFetchBehaviorTask;
-//import org.oboedit.example.LineNumberFetchBehaviorTask;
+import org.oboedit.example.LineNumberFetchBehaviorTask; //import org.oboedit.example.LineNumberFetchBehaviorTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.DefaultInputHandler;
 import org.oboedit.gui.Filterable;
@@ -123,6 +125,7 @@ import org.oboedit.gui.factory.OntologyChangeTrackerFactory;
 import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
+import org.oboedit.gui.factory.SearchResultsComponentFactory;
 import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
@@ -146,9 +149,42 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return CollectionUtil.list(new AutosaveTask(),
 				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
 				new FrameNameUpdateTask(), screenLockTask
-				 , new NumberFetchBehaviorTask()
-				//, new LineNumberFetchBehaviorTask()
-		);
+		// , new AnnotationNumberFetchBehaviorTask()
+				// , new LineNumberFetchBehaviorTask()
+				);
+	}
+
+	@Override
+	protected void installSystemListeners() {
+		VetoableShutdownListener listener = new VetoableShutdownListener() {
+
+			public boolean willShutdown() {
+				if (GUIManager.getManager().getFrame() != null) {
+					if (SessionManager.getManager().needsSave()) {
+						return JOptionPane.showConfirmDialog(GUIManager
+								.getManager().getFrame(),
+								"<html>There are unsaved changes to your "
+										+ "ontology.<br>Really quit?</html>",
+								"Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+					} else if (GUIManager.isConfirmOnExit())
+						return JOptionPane.showConfirmDialog(GUIManager
+								.getManager().getFrame(), "Really quit?",
+								"Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+				}
+				return true;
+			}
+		};
+		GUIManager.addVetoableShutdownListener(listener);
+	}
+
+	@Override
+	protected Action getAboutAction() {
+		return new AbstractAction("About") {
+
+			public void actionPerformed(ActionEvent actionEvent) {
+				(new OEHelpMenu()).showAboutFrame();
+			}
+		};
 	}
 
 	@Override
@@ -161,9 +197,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return (Collection) CollectionUtil.list(new TermPanelFactory(),
 				new GraphEditorFactory(), new TextEditorFactory(),
 				new TableOfContentsFactory(),
-				new IDResolutionComponentFactory(),
-				new DAGViewFactory(), new GraphDAGViewFactory(),
-				new SearchComponentFactory(), new LinkSearchComponentFactory(),
+				new IDResolutionComponentFactory(), new DAGViewFactory(),
+				new GraphDAGViewFactory(), new SearchComponentFactory(),
+				new LinkSearchComponentFactory(),
 				new IntersectionEditorFactory(), new CategoryManagerFactory(),
 				new GraphvizViewFactory(), new SynonymCategoryManagerFactory(),
 				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
@@ -181,7 +217,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ExplanationComponentFactory(),
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
-				new ConfigurableMessageComponentFactory());
+				new ConfigurableMessageComponentFactory(),
+				new SearchResultsComponentFactory());
 
 	}
 
@@ -492,7 +529,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			// do nothing; this will always work
 		}
 	}
-	
+
 	@Override
 	protected String getAppID() {
 		// TODO Auto-generated method stub

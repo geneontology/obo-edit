@@ -77,17 +77,17 @@ public class SessionManager {
 		setSession(new OBOSessionImpl());
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
 	}
-	
+
 	public void addOntologyReloadListener(OntologyReloadListener listener) {
 		ontologyReloadListeners.add(listener);
 	}
-	
+
 	public void removeOntologyReloadListener(OntologyReloadListener listener) {
 		ontologyReloadListeners.remove(listener);
 	}
-	
+
 	public void reload() {
-		for(OntologyReloadListener listener : ontologyReloadListeners) {
+		for (OntologyReloadListener listener : ontologyReloadListeners) {
 			listener.reload();
 		}
 	}
@@ -230,7 +230,8 @@ public class SessionManager {
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));
-			SelectionManager.setGlobalSelection(selection);
+			if (SelectionManager.getManager().doPreSelectValidation(this))
+				SelectionManager.setGlobalSelection(selection);
 		}
 	}
 

@@ -9,7 +9,7 @@ public class TermPanelFactory extends AbstractComponentFactory<OBOTermPanel> {
 	}
 	
 	public String getID() {
-		return "TERM_PANEL";
+		return "DAG";
 	}
 
 	public OBOTermPanel doCreateComponent(String id) {

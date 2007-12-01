@@ -73,6 +73,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.graph.CollapsibleLinkDatabase;
+import org.oboedit.graph.DefaultNamedChildProvider;
 import org.oboedit.graph.DefaultNodeFactory;
 import org.oboedit.graph.DefaultTypeColorManager;
 import org.oboedit.graph.FocusedNodeListener;
@@ -1155,6 +1156,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		linkDatabase.cleanupCache();
 
 		newLayer = layoutEngine.getNewLayer();
+		System.err.println("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
 		decorateNode(getRoot(), newLayer, decorators, true, true);
 
 		morpher.setNewNodeOriginNode(getFocusedNode());

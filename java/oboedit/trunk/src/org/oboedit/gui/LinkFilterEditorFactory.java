@@ -2,6 +2,7 @@ package org.oboedit.gui;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -9,17 +10,21 @@ import javax.swing.JComponent;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkLinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
+import org.obo.query.impl.BasicSearchHit;
 import org.obo.query.impl.SearchHit;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.TermFilterEditorFactory.IdentifiedObjectModel;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.LinkSpecEditor;
 
 public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
-	
-	protected static class LinkModel extends AbstractSearchResultsTableModel<Link> {
+
+	protected static class LinkModel extends
+			AbstractSearchResultsTableModel<Link> {
 
 		/**
 		 * 
@@ -76,7 +81,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 				return "?!";
 		}
 	}
-	
+
 	public JComponent createSubEditor() {
 		return new LinkFilterEditor();
 	}
@@ -85,8 +90,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 		return ((LinkFilterEditor) editor).getFilter();
 	}
 
-	public Collection<Link> getRelevantValues(
-			Collection<?> items) {
+	public Collection<Link> getRelevantValues(Collection<?> items) {
 		Collection<Link> pcs = new LinkedList<Link>();
 		for (Object pc : items) {
 			if (pc instanceof Link) {
@@ -95,7 +99,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 		}
 		return pcs;
 	}
-	
+
 	public Class<Link> getResultType() {
 		return Link.class;
 	}
@@ -131,16 +135,40 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 	public void addActionListener(Component c, ActionListener listener) {
 		if (c instanceof LinkFilterEditor) {
 			((LinkFilterEditor) c).addActionListener(listener);
-		}	
+		}
 	}
 
 	public void removeActionListener(Component c, ActionListener listener) {
 		if (c instanceof LinkFilterEditor) {
 			((LinkFilterEditor) c).removeActionListener(listener);
-		}	
+		}
 	}
 
 	public JComponent getResultsDisplay(Collection<SearchHit<?>> results) {
 		return new SearchResultsTable(new LinkModel(), results);
+	}
+
+	public Object serializeResults(Collection<SearchHit<?>> results) {
+		Collection<String> out = new ArrayList<String>(results.size());
+		for (SearchHit<?> result : results) {
+			if (result.getHit() instanceof IdentifiedObject) {
+				out.add(((Link) result.getHit()).getID());
+			}
+		}
+		return out;
+	}
+
+	public Collection<SearchHit<?>> deserializeResults(Object o) {
+		Collection<String> ids = (Collection<String>) o;
+		Collection<SearchHit<?>> out = new ArrayList<SearchHit<?>>();
+		for (String id : ids) {
+			IdentifiedObject io = SessionManager.getManager().getSession()
+					.getObject(id);
+			if (io instanceof LinkLinkedObject) {
+				out.add(new BasicSearchHit<Link>(((LinkLinkedObject) io)
+						.getLink()));
+			}
+		}
+		return out;
 	}
 }

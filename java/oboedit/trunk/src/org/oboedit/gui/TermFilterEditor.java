@@ -60,8 +60,7 @@ public class TermFilterEditor extends JPanel {
 
 	protected Box valueBox = new Box(BoxLayout.X_AXIS);
 
-	protected FieldAutocompleteModel<String> model = new FieldAutocompleteModel<String>(
-			String.class);
+	protected StringFieldAutocompleteModel model = new StringFieldAutocompleteModel();
 
 	protected AutocompleteBox<String> valueField;
 
@@ -126,7 +125,8 @@ public class TermFilterEditor extends JPanel {
 
 	protected Collection<SearchCriterion<?, ?>> getCriteria() {
 		Collection<SearchCriterion<?, ?>> out = new LinkedList<SearchCriterion<?, ?>>();
-		for (SearchCriterion sc : FilterManager.getManager().getDisplayableCriteria()) {
+		for (SearchCriterion sc : FilterManager.getManager()
+				.getDisplayableCriteria()) {
 			if (getInputClass().isAssignableFrom(sc.getInputType())) {
 				out.add(sc);
 			}
@@ -193,11 +193,11 @@ public class TermFilterEditor extends JPanel {
 			Class[] acceptedTypes = c.getAcceptedTypes();
 			boolean match = false;
 			for (Class atype : acceptedTypes) {
-				boolean isNumeric = Number.class.isAssignableFrom(criterion.getReturnType());
+				boolean isNumeric = Number.class.isAssignableFrom(criterion
+						.getReturnType());
 				boolean isString = String.class.isAssignableFrom(atype);
 				if (criterion != null
-						&& (atype.isAssignableFrom(criterion.getReturnType()) ||
-								(!isNumeric && isString))) {
+						&& (atype.isAssignableFrom(criterion.getReturnType()) || (!isNumeric && isString))) {
 					match = true;
 					break;
 				}
@@ -346,12 +346,6 @@ public class TermFilterEditor extends JPanel {
 			p.topmostValidate();
 	}
 
-	@Override
-	public void validate() {
-		System.err.println("validating termfiltereditor");
-		super.validate();
-	}
-
 	public Filter<IdentifiedObject> getFilter() {
 		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
@@ -378,7 +372,6 @@ public class TermFilterEditor extends JPanel {
 	protected boolean updateEventPending = false;
 
 	protected void fireUpdateEvent() {
-		System.err.println("fireUpdateEvent occurred");
 		updateEventPending = true;
 	}
 

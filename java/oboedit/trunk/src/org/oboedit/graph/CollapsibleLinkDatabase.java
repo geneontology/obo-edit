@@ -8,6 +8,8 @@ import org.oboedit.gui.event.ExpansionEvent;
 
 import java.util.*;
 
+import javax.security.auth.Refreshable;
+
 public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 
 	/**
@@ -36,12 +38,20 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public void cleanupCache() {
-		Iterator<IdentifiedObject> it = visibleObjects.iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = it.next();
-			if (!linkDatabase.getObjects().contains(io))
-				it.remove();
+		visibleObjects = refresh(visibleObjects);
+		defaultVisibleObjects = refresh(defaultVisibleObjects);
+	}
+
+	protected Collection<IdentifiedObject> refresh(
+			Collection<IdentifiedObject> ios) {
+		Collection<IdentifiedObject> out = new LinkedHashSet<IdentifiedObject>();
+		for (IdentifiedObject io : ios) {
+			IdentifiedObject fetched = linkDatabase.getObject(io.getID());
+			if (fetched != null)
+				out.add(fetched);
 		}
+		return out;
+
 	}
 
 	public void addListener(ExpandCollapseListener listener) {

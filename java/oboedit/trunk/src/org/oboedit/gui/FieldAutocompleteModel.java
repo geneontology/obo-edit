@@ -119,7 +119,15 @@ public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
 	}
 
 	public boolean isLegal(T val) {
-		return getAllValues().contains(val);
+		for(T t : getAllValues()) {
+			if (equals(t, val))
+				return true;
+		}
+		return false;
+	}
+	
+	protected boolean equals(T a, T b) {
+		return a.equals(b);
 	}
 
 	public String toString(T val) {

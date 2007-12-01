@@ -15,6 +15,7 @@ import org.oboedit.util.SVGUtil;
 public class SVGIcon implements Icon {
 
 	protected GraphicsNode node;
+	protected String uri;
 	protected int width = -1;
 	protected int height = -1;
 	protected double widthScaleFactor = 1;
@@ -26,6 +27,7 @@ public class SVGIcon implements Icon {
 
 	public SVGIcon(String uri, int dimension) throws IOException {
 		node = SVGUtil.getSVG(uri);
+		this.uri = uri;
 		int width = -1;
 		int height = -1;
 		Rectangle2D r = node.getBounds();
@@ -38,6 +40,7 @@ public class SVGIcon implements Icon {
 
 	public SVGIcon(String uri, int width, int height) throws IOException {
 		node = SVGUtil.getSVG(uri);
+		this.uri = uri;
 		setDimension(width, height);
 	}
 
@@ -80,5 +83,8 @@ public class SVGIcon implements Icon {
 			g2.translate(-x, -y);
 		}
 	}
-
+	
+	public String toString() {
+		return uri;
+	}
 }

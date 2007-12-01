@@ -539,7 +539,8 @@ public class DefaultTermModel implements TermModel {
 		else if (parent.equals(PathUtil.OBSOLETE))
 			return obsoleteRoots;
 		else if (parent instanceof Relationship) {
-			LinkedObject lo = ((Relationship) parent).getChild();
+			LinkedObject lo = (LinkedObject) SessionManager.getManager().getSession()
+					.getObject(((Relationship) parent).getChild().getID());
 
 			List out = (List) childCache.get(lo);
 
@@ -550,6 +551,8 @@ public class DefaultTermModel implements TermModel {
 					if (lo.getName().equals("cell division"))
 						System.err.println("HERE we go");
 					Collection<Link> children = linkDatabase.getChildren(lo);
+					Collection<Link> realChildren = SessionManager.getManager()
+							.getSession().getLinkDatabase().getChildren(lo);
 					out = wrapSet(children);
 				}
 				childCache.put(lo, out);

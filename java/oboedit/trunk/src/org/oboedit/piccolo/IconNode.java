@@ -6,10 +6,11 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.Icon;
 
 import edu.umd.cs.piccolo.PNode;
+import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.util.PBounds;
 import edu.umd.cs.piccolo.util.PPaintContext;
 
-public class IconNode extends PNode {
+public class IconNode extends PNode implements Morphable {
 
 	protected Icon icon;
 
@@ -20,6 +21,10 @@ public class IconNode extends PNode {
 	public void setIcon(Icon icon) {
 		this.icon = icon;
 		setBounds(0, 0, icon.getIconWidth(), icon.getIconHeight());
+	}
+	
+	public Icon getIcon() {
+		return icon;
 	}
 
 	@Override
@@ -47,6 +52,18 @@ public class IconNode extends PNode {
 		} else {
 			icon.paintIcon(null, g2, 0, 0);
 		}
+	}
+
+	public boolean doDefaultMorph() {
+		return false;
+	}
+
+	public PActivity morphTo(PNode node, long duration) {
+		if (node instanceof IconNode) {
+			setIcon(((IconNode) node).getIcon());
+			return new PActivity(0);
+		}
+		return null;
 	}
 
 }
