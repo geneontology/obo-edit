@@ -48,5 +48,13 @@ fi
 PATH_TO_ME=`echo $PATH_TO_ME | sed -e "s/\(.*\)\/.*/\1/g"`
 
 #$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/oboedit_launcher.jar "$@"
-echo "$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/../runtime/oboedit.jar $@"
-$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/../runtime/oboedit.jar "$@"
+#$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/../runtime/oboedit.jar "$@"
+# I had added the ../ to the PATH_TO_ME because this script lives in launch_scripts, and the
+# runtime jars are not in launch_scripts but in ..
+# Unfortunately, when OBO-Edit is installed, this script moves to the OBO-Edit home dir, and
+# so the ../ is wrong.
+# In order to run this script as a developer, from the checked-out version rather than the
+# installed version, you'll need to cp (NOT link) launch_scripts/oboedit to the main OBO-Edit
+# directory.
+$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/runtime/oboedit.jar "$@"
+echo "$JAVAPATH -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/runtime/oboedit.jar $@"
