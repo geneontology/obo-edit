@@ -71,7 +71,6 @@ public class OBO2OBOReasonerTest extends TestCase {
 			int returnVal = p.waitFor();
 			assertTrue("Exit value should be zero", returnVal == 0);
 
-			// TestUtil.fileCheck(this, testFile, out10File);
 			System.out.println("parsing: "+outFile.toString());
 			session = TestUtil.getSession(outFile.toString());
 			
