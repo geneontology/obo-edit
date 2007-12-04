@@ -12,15 +12,26 @@ import java.util.Properties;
 import jpl.*;
 
 
+import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.DbxrefedObject;
+import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.IdentifiedObjectIndex;
+import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.MultiIDObject;
 import org.obo.datamodel.MutableLinkDatabase;
+import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.ObjectFactory;
+import org.obo.datamodel.ObsoletableObject;
+import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymedObject;
+import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultObjectFactory;
 import org.obo.reasoner.impl.AbstractReasoner;
 import org.obo.util.TermUtil;
@@ -44,17 +55,88 @@ public class DatalogReasoner extends AbstractReasoner {
 
 	public void addObject(IdentifiedObject lo) {
 		String pred = "inst";
+		String id = lo.getID();
+		
+		if (lo.isBuiltIn())
+			return;
+		
 		if (lo instanceof OBOClass) {
 			pred = "class";
 		}
 		else if (lo instanceof OBOProperty) {
 			pred = "property";
+			OBOProperty prop = (OBOProperty)lo;
+			if (prop.isTransitive())
+				assertOntolFact("is_transitive",id);
+			if (prop.isSymmetric())
+				assertOntolFact("is_symmetric",id);
+			if (prop.getDomain() != null)
+				assertOntolFact("domain",id,prop.getDomain().getID());
+			if (prop.getRange() != null)
+				assertOntolFact("range",id,prop.getRange().getID());
+			if (prop.isNonInheritable())
+				assertOntolFact("is_metadata_tag", id);
 		}
 		else {
+			pred = "inst";
+			Instance inst = (Instance)lo;
+			if (inst.getType() != null) {
+				assertOntolFact("inst_of",id,inst.getType().getID());
+			}
+		}
+		if (lo instanceof ObsoletableObject && ((ObsoletableObject)lo).isObsolete()) {
+			assertMetadataFact("entity_obsolete",id,pred);
+			for (IdentifiedObject x : ((ObsoletableObject)lo).getConsiderReplacements())
+				assertMetadataFact("entity_consider",id,x);
+			for (IdentifiedObject x : ((ObsoletableObject)lo).getReplacedBy())
+				assertMetadataFact("entity_replaced_by",id,x);
 			
 		}
-		assertFact("ontol_db",pred,lo.getID());
-		assertFact("metadata_db","entity_label",lo.getID(),lo.getName());
+		else {
+			assertOntolFact(pred,id);
+		}
+		assertMetadataFact("entity_label",id,lo.getName());
+		
+		if (lo instanceof DbxrefedObject) {
+			for (Dbxref x : ((DbxrefedObject) lo).getDbxrefs()) {
+				assertMetadataFact("entity_dbxref",id,x.toString());
+			}
+		}
+		if (lo instanceof CategorizedObject) {
+			for (TermCategory x : ((CategorizedObject) lo).getCategories()) {
+				assertMetadataFact("entity_partition",id,x.getName());
+			}
+		}
+		if (lo instanceof MultiIDObject) {
+			for (String x : ((MultiIDObject) lo).getSecondaryIDs()) {
+				assertMetadataFact("entity_xref",id,x);
+			}
+		}
+		if (lo instanceof SynonymedObject) {
+			for (Synonym x : ((SynonymedObject) lo).getSynonyms()) {
+				assertMetadataFact("entity_synonym",
+						id,x.getText());
+				assertMetadataFact("entity_synonym_scope",
+						id,TermUtil.getScopeLabel(x.getScope()),x.getText());
+				if (x.getSynonymCategory() != null)
+					assertMetadataFact("entity_synonym_type",
+							id,x.getSynonymCategory(),x.getText());
+			}
+		}
+		if (lo instanceof DefinedObject) {
+			String def = ((DefinedObject) lo).getDefinition();
+			if (def != null) {
+				assertOntolFact("def",
+						id,def);
+				
+			}
+		}
+		Namespace ns = lo.getNamespace();
+		if (ns != null) {
+			assertMetadataFact("entity_resource",id,ns.getID());				
+		}
+		if (lo.isAnonymous())
+			assertOntolFact("is_anonymous", id);
 		
 	}
 	
@@ -70,16 +152,17 @@ public class DatalogReasoner extends AbstractReasoner {
 			if (link instanceof OBORestriction)
 				if (type.equals(OBOProperty.IS_A))
 					if (TermUtil.isIntersection(link))
-						assertFact("ontol_db","genus",child.getID(),parent.getID());
+						assertOntolFact("genus",child.getID(),parent.getID());
 					else
-						assertFact("ontol_db","subclass",child.getID(),parent.getID());
+						assertOntolFact("subclass",child.getID(),parent.getID());
+				else if (type.equals(OBOProperty.DISJOINT_FROM))
+					assertOntolFact("disjoint_from",child.getID(),parent.getID());
+				else if (TermUtil.isIntersection(link))
+					assertOntolFact("differentium",child.getID(),type.getID(),parent.getID());
 				else
-					if (TermUtil.isIntersection(link))
-						assertFact("ontol_db","differentium",child.getID(),type.getID(),parent.getID());
-					else
-						assertFact("ontol_db","restriction",child.getID(),type.getID(),parent.getID());
+					assertOntolFact("restriction",child.getID(),type.getID(),parent.getID());
 			else
-				assertFact("ontol_db","inst_rel",child.getID(),type.getID(),parent.getID());
+				assertOntolFact("inst_rel",child.getID(),type.getID(),parent.getID());
 		}
 	}
 
@@ -170,6 +253,13 @@ public class DatalogReasoner extends AbstractReasoner {
 		retractAll("subclass",lo.getID(),"_");
 		retractAll("restriction",lo.getID(),"_","_");
 		
+	}
+	
+	protected int assertOntolFact(String pred, Object... args) {
+		return assertFact("ontol_db",pred,args);
+	}	
+	protected int assertMetadataFact(String pred, Object... args) {
+		return assertFact("metadata_db",pred,args);
 	}
 	
 	protected int assertFact(String mod, String pred, Object... args) {
