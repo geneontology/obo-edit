@@ -860,15 +860,18 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				&& tagMapping.equals(OBOConstants.LINK_TAG)) {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
-				List linkList = new LinkedList();
+				List<Link> linkList = new LinkedList<Link>();
 				linkList.addAll(linkDatabase.getParents(lo));
 				Collections.sort(linkList, getLinkComparator(serializer));
-				Iterator it2 = linkList.iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
-					if (link instanceof OBORestriction)
-						writeLink(serializer, link);
+				for(Link link : linkList) {
+					writeLink(serializer, link);
 				}
+//				Iterator it2 = linkList.iterator();
+//				while (it2.hasNext()) {
+//					Link link = (Link) it2.next();
+//					if (link instanceof OBORestriction)
+//						writeLink(serializer, link);
+//				}
 			}
 		} else if (obj instanceof ObsoletableObject
 				&& tagMapping.equals(OBOConstants.IS_OBSOLETE_TAG)) {
