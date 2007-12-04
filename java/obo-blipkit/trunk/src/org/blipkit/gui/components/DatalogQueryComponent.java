@@ -14,6 +14,8 @@ import jpl.Query;
 import jpl.Term;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.blipkit.reasoner.impl.DatalogReasoner;
+import org.oboedit.controller.SessionManager;
 
 public class DatalogQueryComponent extends AbstractGUIComponent {
 
@@ -38,8 +40,11 @@ public class DatalogQueryComponent extends AbstractGUIComponent {
 	}
 	public JTextArea textArea;
 	
+	DatalogReasoner datalog;
+	
 	protected void update() {
 		removeAll();
+		
 		textArea = new JTextArea();
 		JPanel buttonPanel = new JPanel();
 		
@@ -68,18 +73,26 @@ public class DatalogQueryComponent extends AbstractGUIComponent {
 
 		
 		public void actionPerformed(ActionEvent e) {
-			
+			// TODO: recache on changes..
+			if (datalog == null) {
+				datalog = new DatalogReasoner();
+				datalog.setLinkDatabase(SessionManager.getManager().getCurrentLinkDatabase());
+				datalog.recache();
+			}
 			String queryText = textArea.getText();
 			System.err.println("event: "+e);
 			System.err.println("qtext: "+queryText);
 			Query q = new jpl.Query(queryText);
 			System.err.println("q: "+q);
+			int n=0;
 			for (Hashtable h : q.allSolutions()) {
+				n++;
 				for (Object k : h.keySet()) {
 					Term val = (Term)h.get(k);
 					System.out.println(k+" = "+val);
 				}
 			}
+			System.out.println("num sols="+n);
 		}
 	}
 
