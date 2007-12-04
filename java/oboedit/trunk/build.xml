@@ -84,7 +84,7 @@
 	</target>
 
 	<target name="-releasenotesuptodate">
-		<condition property="-releasenotes_current">
+		<condition property="releasenotes_current">
 			<and>
 				<uptodate targetfile="${version_file}">
 					<srcfiles dir="${sourcedir}">
