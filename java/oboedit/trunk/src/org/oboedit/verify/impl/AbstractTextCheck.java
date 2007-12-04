@@ -68,7 +68,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 		protected byte finalPunctuationCondition = VerificationManager.ALL;
 
-		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_THREAD;
+		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_THREAD
+				^ VerificationManager.TEXT_EDIT_COMMIT;
 
 		public AbstractCheckConfiguration() {
 			super();
@@ -310,8 +311,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			return VerificationManager.TEXT_EDIT_THREAD;
 		} else if (word.equals("On Text Edit / Manual")) {
 			return VerificationManager.TEXT_EDIT_COMMIT
-					| VerificationManager.TEXT_EDIT_THREAD
-					| VerificationManager.MANUAL;
+					^ VerificationManager.TEXT_EDIT_THREAD
+					^ VerificationManager.MANUAL;
 		} else {
 			return 0;
 		}
@@ -340,7 +341,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	@Override
 	protected void initConfiguration() {
-		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_COMMIT
+		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_THREAD
+				| VerificationManager.TEXT_EDIT_COMMIT
 				| VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 

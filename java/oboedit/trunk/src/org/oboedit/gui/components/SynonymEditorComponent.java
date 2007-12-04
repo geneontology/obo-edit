@@ -22,12 +22,13 @@ import org.obo.filters.SynonymTextSearchCriterion;
 import org.obo.history.*;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.RootTextEditComponent;
+import org.oboedit.gui.SynonymTableCellEditor;
 
 public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 	protected static final Color reallyLightGray = new Color(230, 230, 230);
 
-	protected static final String[] TYPES = { "Related Synonym",
+	public static final String[] TYPES = { "Related Synonym",
 			"Exact Synonym", "Narrow Synonym", "Broad Synonym" };
 
 	protected final static FieldPathSpec spec = new FieldPathSpec(
@@ -50,7 +51,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	protected void configureLabel(JTable table, JLabel out, Synonym synonym,
-			int index, boolean isSelected) {
+			int index, boolean isSelected) { 
 		out.setOpaque(true);
 		out.setBorder(new EmptyBorder(10, 10, 10, 10));
 		out.setMinimumSize(new Dimension(table.getWidth(), 0));
@@ -80,7 +81,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		s.append("</td>");
 
 		if (synonym.getDbxrefs().size() > 0) {
-			s.append("<td>");
+			s.append("<td width='33%'>");
 			s.append("<center><i>Dbxrefs</i></center>");
 			s.append("<hr>");
 			s.append("<ul>");

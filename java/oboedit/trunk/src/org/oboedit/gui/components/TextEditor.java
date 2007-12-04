@@ -115,7 +115,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected ActionListener checkTask = new ActionListener() {
 
 		public void actionPerformed(ActionEvent e) {
-			doTimedTextChecks();
+			doTimedTextChecks(true);
 		}
 
 	};
@@ -139,6 +139,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected void startTimer() {
 		checkTimer = new Timer(TIMER_DELAY, checkTask);
+		checkTimer.start();
 	}
 
 	public Map<FieldPathSpec, Collection<JComponent>> getComponentMap() {
@@ -151,31 +152,27 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		checkTimer = null;
 	}
 
-	protected void doLoadTextChecks() {
-		if (currentObject == null)
-			return;
-		final Collection<CheckWarning> warnings = VerificationManager
-				.getManager().runChecks(
-						SessionManager.getManager().getSession(),
-						new FieldPath(currentObject),
-						VerificationManager.TEXT_EDIT_COMMIT);
-		final MultiMap<FieldPath, CheckWarning> allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
-		for (CheckWarning w : warnings) {
-			allWarnings.add(w.getPath(), w);
-		}
-		for (FieldPath path : allWarnings.keySet()) {
-			displayWarnings(path, allWarnings.get(path));
-		}
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				fireIncrementalVerificationEvent(new IncrementalVerificationEvent(
-						this, allWarnings));
-			}
-		});
-	}
+//	protected void doLoadTextChecks() {
+//		if (currentObject == null)
+//			return;
+//		final Collection<CheckWarning> warnings = VerificationManager
+//				.getManager().runChecks(
+//						SessionManager.getManager().getSession(),
+//						new FieldPath(currentObject),
+//						VerificationManager.TEXT_EDIT_THREAD);
+//		final MultiMap<FieldPath, CheckWarning> allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
+//		for (CheckWarning w : warnings) {
+//			allWarnings.add(w.getPath(), w);
+//		}
+//		for (FieldPath path : allWarnings.keySet()) {
+//			displayWarnings(path, allWarnings.get(path));
+//		}
+//		setWarningMap(allWarnings);
+//		repaint();
+//	}
 
-	protected void doTimedTextChecks() {
-		if (this.dirtyPaths.size() == 0)
+	protected void doTimedTextChecks(boolean requireDirtyPaths) {
+		if (requireDirtyPaths && this.dirtyPaths.size() == 0)
 			return;
 		if (currentObject == null)
 			return;
@@ -740,7 +737,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 		dirtyPaths = new LinkedList<FieldPath>();
 		warningMap.clear();
-		// doLoadTextChecks();
+		doTimedTextChecks(false);
 		fireLoadEvent(new TermLoadEvent(this, io));
 	}
 
