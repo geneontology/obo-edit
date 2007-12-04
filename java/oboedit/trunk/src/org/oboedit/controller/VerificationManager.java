@@ -298,9 +298,12 @@ public class VerificationManager {
 	}
 
 	protected boolean shouldRun(Check check, byte condition) {
-		return (!check.needsReasoner() || (check.needsReasoner() && SessionManager
-				.getManager().getUseReasoner()))
-				&& (check.getConfiguration().getCondition() & condition) > 0;
+		boolean reasonerCondition = !check.needsReasoner()
+				|| (check.needsReasoner() && SessionManager.getManager()
+						.getUseReasoner());
+		int configCondition = check.getConfiguration().getCondition();
+		int bytes = (configCondition & condition);
+		return reasonerCondition && bytes > 0;
 	}
 
 	public static String getMessage(Collection warnings, String prefixText,
@@ -378,12 +381,12 @@ public class VerificationManager {
 		return runChecks(session, new FieldPath(io), condition);
 	}
 
-	public Collection<CheckWarning> runChecks(OBOSession session, FieldPath path,
-			byte condition) {
+	public Collection<CheckWarning> runChecks(OBOSession session,
+			FieldPath path, byte condition) {
 		List<Check> liveChecks = getLiveChecks(condition);
 		return runChecks(liveChecks, session, path, condition);
 	}
-	
+
 	protected List<Check> getLiveChecks(byte condition) {
 		List<Check> liveChecks = new LinkedList<Check>();
 		Iterator<Check> it = configuration.getChecks().iterator();
@@ -394,14 +397,17 @@ public class VerificationManager {
 		}
 		return liveChecks;
 	}
-	
-	public CheckTask getCheckTask(OBOSession session, IdentifiedObject io, byte condition) {
+
+	public CheckTask getCheckTask(OBOSession session, IdentifiedObject io,
+			byte condition) {
 		return getCheckTask(session, new FieldPath(io), condition);
 	}
-	
-	public CheckTask getCheckTask(OBOSession session, FieldPath path, byte condition) {
+
+	public CheckTask getCheckTask(OBOSession session, FieldPath path,
+			byte condition) {
 		List<Check> liveChecks = getLiveChecks(condition);
-		return getCheckTask(getCheckObsoletes(), liveChecks, session, path, condition);
+		return getCheckTask(getCheckObsoletes(), liveChecks, session, path,
+				condition);
 	}
 
 	public CheckTask getCheckTask(Collection<Check> liveChecks,
@@ -413,8 +419,8 @@ public class VerificationManager {
 	public CheckTask getCheckTask(boolean checkObsoletes,
 			Collection<Check> liveChecks, OBOSession session, FieldPath path,
 			byte condition) {
-		CheckTask task = new CheckTask(checkObsoletes, liveChecks, session, path,
-				condition);
+		CheckTask task = new CheckTask(checkObsoletes, liveChecks, session,
+				path, condition);
 		for (VerificationListener listener : verificationListeners) {
 			task.addVerificationListener(listener);
 		}

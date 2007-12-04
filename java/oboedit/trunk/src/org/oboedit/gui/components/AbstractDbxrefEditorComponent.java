@@ -1,17 +1,11 @@
 package org.oboedit.gui.components;
 
-import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,28 +13,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.FocusManager;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.event.UserEvent;
 import org.bbop.framework.event.UserListener;
-import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.FieldPath;
@@ -49,100 +32,13 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
+import org.oboedit.gui.DbxrefListTableEditor;
+import org.oboedit.gui.DbxrefTableRenderer;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RootTextEditComponent;
 
 public abstract class AbstractDbxrefEditorComponent extends
 		AbstractTextEditComponent {
-	
-	public class DbxrefListTableEditor extends AbstractListTableEditor<Dbxref> {
-		
-		protected JTextField dbField = new JTextField();
-
-		protected JTextField idField = new JTextField();
-
-		protected JLabel dbLabel = new JLabel("Database");
-
-		protected JLabel idLabel = new JLabel("ID");
-
-		protected JLabel colonLabel = new JLabel(":");
-
-		protected JLabel descLabel = new JLabel("Description");
-
-		protected JTextField descField = new JTextField();
-		
-		public DbxrefListTableEditor() {
-			double[][] sizes = {
-					{ TableLayout.PREFERRED, 10, TableLayout.FILL },
-					{ TableLayout.PREFERRED, TableLayout.PREFERRED,
-							TableLayout.PREFERRED, TableLayout.PREFERRED } };
-			setLayout(new TableLayout(sizes));
-			add(dbLabel, "0,0");
-			add(idLabel, "2,0");
-			add(dbField, "0,1");
-			add(colonLabel, "1,1");
-			add(idField, "2,1");
-			add(descLabel, "0,2");
-			add(descField, "0,3,2,3");
-			
-			addHierarchyListener(new HierarchyListener() {
-
-				public void hierarchyChanged(HierarchyEvent e) {
-					dbField.requestFocus();
-				}
-
-			});
-			setFocusCycleRoot(true);
-			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-					.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
-			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-					.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tabForward");
-			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-					.put(
-							KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
-									KeyEvent.SHIFT_DOWN_MASK), "tabBackward");
-			getActionMap().put("tabForward", new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					tabToNext();
-				}
-			});
-		}
-
-		protected void tabToNext() {
-			Component lastComponent = getFocusTraversalPolicy()
-					.getLastComponent(this);
-			Component focused = FocusManager.getCurrentKeyboardFocusManager()
-					.getFocusOwner();
-			if (SwingUtilities.isDescendingFrom(focused, lastComponent)) {
-				commit();
-			} else
-				focused.transferFocus();
-
-		}
-
-		public void notifyActive() {
-			dbField.requestFocus();
-		}
-
-		public Dbxref createNewValue() {
-			return createNewDbxref();
-		}
-
-		public Dbxref getValue() {
-			Dbxref out = createNewDbxref();
-			out.setDatabase(dbField.getText());
-			out.setDatabaseID(idField.getText());
-			out.setDesc(descField.getText());
-			return out;
-		}
-
-		public void setValue(Dbxref dbxref) {
-			dbField.setText(dbxref.getDatabase());
-			idField.setText(dbxref.getDatabaseID());
-			descField.setText(dbxref.getDesc());
-		}
-
-	}
 
 	public static class DbxrefUpdateEvent extends UserEvent {
 		protected Dbxref[] addThese;
@@ -154,22 +50,6 @@ public abstract class AbstractDbxrefEditorComponent extends
 
 		public Dbxref[] getDbxrefs() {
 			return addThese;
-		}
-	}
-
-	protected class DbxrefTableRenderer extends DefaultTableCellRenderer {
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			JLabel out = (JLabel) super.getTableCellRendererComponent(table,
-					value, isSelected, hasFocus, row, column);
-			if (value instanceof Dbxref)
-				configureLabel(table, out, (Dbxref) value, row, isSelected);
-			if (out.getPreferredSize().height != table.getRowHeight(row)) {
-				table.setRowHeight(row, out.getPreferredSize().height);
-			}
-			return out;
 		}
 	}
 
@@ -196,17 +76,16 @@ public abstract class AbstractDbxrefEditorComponent extends
 	public AbstractDbxrefEditorComponent() {
 		super();
 		dbxrefList.setRenderer(new DbxrefTableRenderer());
-		dbxrefList.setEditor(new DbxrefListTableEditor());
+		dbxrefList.setEditor(new DbxrefListTableEditor(createNewDbxref()));
 
-		dbxrefList.addSelectionListener(
-				new ListSelectionListener() {
+		dbxrefList.addSelectionListener(new ListSelectionListener() {
 
-					public void valueChanged(ListSelectionEvent e) {
-						removeButton
-								.setEnabled(dbxrefList.getSelectedRows().length > 0);
-					}
+			public void valueChanged(ListSelectionEvent e) {
+				removeButton
+						.setEnabled(dbxrefList.getSelectedRows().length > 0);
+			}
 
-				});
+		});
 		setLayout(new BorderLayout());
 		JScrollPane pane = new JScrollPane(dbxrefList,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -243,29 +122,6 @@ public abstract class AbstractDbxrefEditorComponent extends
 
 	protected void delDbxref() {
 		dbxrefList.deleteSelectedRows();
-	}
-
-	protected static final Color reallyLightGray = new Color(230, 230, 230);
-
-	protected void configureLabel(JTable table, JLabel out, Dbxref dbxref,
-			int index, boolean isSelected) {
-		out.setOpaque(true);
-		out.setBorder(new EmptyBorder(10, 10, 10, 10));
-		out.setMinimumSize(new Dimension(table.getWidth(), 0));
-		if (!isSelected) {
-			if (index % 2 == 0)
-				out.setBackground(reallyLightGray);
-			else
-				out.setBackground(Color.white);
-		}
-		String s = "<html>"
-				+ dbxref.getDatabase()
-				+ ":"
-				+ dbxref.getDatabaseID()
-				+ "<br>"
-				+ (dbxref.getDesc() != null ? "<i>" + dbxref.getDesc() + "</i>"
-						: "") + "</html>";
-		out.setText(s);
 	}
 
 	@Override

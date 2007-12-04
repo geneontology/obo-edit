@@ -162,7 +162,8 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 
 	@Override
 	protected void initConfiguration() {
-		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_COMMIT
+		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_THREAD
+				| VerificationManager.TEXT_EDIT_COMMIT
 				| VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 
