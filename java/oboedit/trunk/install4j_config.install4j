@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.0.6" transformSequenceNumber="1">
-  <directoryPresets config="." />
+  <directoryPresets config="./src/org/oboedit/gui/resources/icons" />
   <application name="OBO-Edit" distributionSourceDir="" applicationId="7283-8148-3557-0894" mediaDir="./releases" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.version}_${compiler:sys.platform}_install4j" compression="9" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="oboedit" publisher="Gene Ontology Consortium" publisherWeb="http://www.geneontology.org" version="0.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="" allowBetaVM="true">
     <languages skipLanguageSelection="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -48,9 +48,7 @@
           <entry location="docs" launcher="false" />
           <entry location="ARTISTIC_LICENSE" launcher="false" />
           <entry location="LICENSE" launcher="false" />
-          <entry location="README" launcher="false" />
-          <entry location="oboedit.vmoptions" launcher="false" />
-          <entry location="oboedit" launcher="true" />
+          <entry location="OBO-Edit" launcher="true" />
           <entry location="obo2obo" launcher="true" />
           <entry location="obodiff" launcher="true" />
           <entry location="obomerge" launcher="true" />
@@ -70,8 +68,8 @@
     </components>
   </files>
   <launchers>
-    <launcher name="oboedit" id="8" external="false" excludeFromMenu="false" menuName="OBO-Edit" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
-      <executable name="oboedit" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="false" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+    <launcher name="OBO-Edit" id="8" external="false" excludeFromMenu="false" menuName="OBO-Edit" icnsFile="./src/org/oboedit/gui/resources/icons/oboedit_icon_mac.icns" pngIcon16File="./src/org/oboedit/gui/resources/icons/oboedit_icon_16x16.png" pngIcon32File="./src/org/oboedit/gui/resources/icons/oboedit_icon_32x32.png" macServiceDependencies="" swtApp="false">
+      <executable name="OBO-Edit" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="false" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
       <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
@@ -80,7 +78,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="org.oboedit.launcher.OBOEdit" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=oboedit&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="org.oboedit.launcher.OBOEdit" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=oboedit&quot; &quot;-Dcom.apple.mrj.application.apple.menu.about.name=OBO-Edit&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
         <classPath>
           <scanDirectory location="runtime" failOnError="false" />
         </classPath>
@@ -181,7 +179,7 @@
       </customScript>
     </launcher>
   </launchers>
-  <installerGui installerType="1" suggestPreviousProgramGroup="true" addOnAppId="" suggestPreviousLocations="true" allowUnattended="true" allowConsole="true" useCustomInstallerHeaderImage="false" customInstallerHeaderImage="" useCustomUninstallerHeaderImage="false" customUninstallerHeaderImage="" customSize="false" customWidth="500" customHeight="390" useCustomIcon="false" customIcnsFile="" customPngIcon16File="" customPngIcon32File="" customIcoFile="" vmParameters="" watermark="true" resizable="true" suppressProgressDialog="false">
+  <installerGui installerType="1" suggestPreviousProgramGroup="true" addOnAppId="" suggestPreviousLocations="true" allowUnattended="true" allowConsole="true" useCustomInstallerHeaderImage="false" customInstallerHeaderImage="" useCustomUninstallerHeaderImage="false" customUninstallerHeaderImage="" customSize="false" customWidth="500" customHeight="390" useCustomIcon="true" customIcnsFile="./src/org/oboedit/gui/resources/icons/oboedit_installer_icon_mac.icns" customPngIcon16File="./src/org/oboedit/gui/resources/icons/obedit_installer_icon_16x16.png" customPngIcon32File="./src/org/oboedit/gui/resources/icons/obedit_installer_icon_32x32.png" customIcoFile="" vmParameters="" watermark="true" resizable="true" suppressProgressDialog="false">
     <customCode useInstalledFiles="false" />
     <installerScreens>
       <screen name="" id="26" beanClass="com.install4j.runtime.beans.screens.WelcomeScreen" rollbackBarrier="false" backButton="2" finishScreen="false">
@@ -381,7 +379,24 @@ configurationObject.setValue(val);</initScript>
             </serializedBean>
             <condition />
           </action>
-          <action name="" id="8738" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+          <action name="" id="9308" beanClass="com.install4j.runtime.beans.actions.desktop.CreateDesktopLinkAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.desktop.CreateDesktopLinkAction">
+                  <void property="file">
+                    <object class="java.io.File">
+                      <string>oboedit</string>
+                    </object>
+                  </void>
+                  <void property="name">
+                    <string>${compiler:sys.fullName}</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>context.getBooleanVariable("createDesktopLinkAction")</condition>
+          </action>
+          <action name="" id="8738" beanClass="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction" rollbackBarrier="false" multiExec="false" failureStrategy="3" errorMessage="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.actions.misc.AddVmOptionsAction">
@@ -475,6 +490,37 @@ configurationObject.setValue(val);</initScript>
               </java>
             </serializedBean>
             <condition>context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="9296" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
+                  <void property="file">
+                    <object class="java.io.File">
+                      <string>${installer:sys.installationDir}/oboedit.vmoptions</string>
+                    </object>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>Util.isMacOS() &amp;&amp; context.getVariable("oboedit.memoryAlloc") != null</condition>
+          </action>
+          <action name="" id="9297" beanClass="com.install4j.runtime.beans.actions.text.AppendToFileAction" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.actions.text.AppendToFileAction">
+                  <void property="file">
+                    <object class="java.io.File">
+                      <string>${installer:sys.installationDir}/oboedit.vmoptions</string>
+                    </object>
+                  </void>
+                  <void property="text">
+                    <string>-Xmx${installer:oboedit.memoryAlloc}M</string>
+                  </void>
+                </object>
+              </java>
+            </serializedBean>
+            <condition>Util.isMacOS() &amp;&amp; context.getVariable("oboedit.memoryAlloc") != null</condition>
           </action>
         </actions>
         <formComponents />
@@ -625,7 +671,7 @@ configurationObject.setValue(val);</initScript>
     </linuxRPM>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="25" />
+    <mediaSet refId="24" />
   </buildIds>
 </install4j>
 
