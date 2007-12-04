@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bbop.io.AuditedPrintStream;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -34,8 +35,11 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		testForIsA("GO:0019383","GO:0042178"); /* completeness */
 		testForLink("testA","part_of","testB"); /* asserted */
 		testForLink("testA","part_of","testC"); /* transitivity */
-
 		testForLink("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
+
+		testForIsAInTrimmed("GO:0019383","GO:0042178"); 
+		testForLinkInTrimmed("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
+		
 	}
 
 	public static Test suite() {

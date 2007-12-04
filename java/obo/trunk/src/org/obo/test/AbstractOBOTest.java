@@ -93,6 +93,15 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
 	}
+	public void testForLink(String childID, String relID, String parentID) {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		OBOProperty rel = (OBOProperty) session.getObject(relID);
+		assertTrue(child.getParents().contains(
+				new OBORestrictionImpl(child, rel, parent)));
+	}
+
+	
 	public void testForCategory(String childID, String catName) {
 		CategorizedObject child = (CategorizedObject) session.getObject(childID);
 		TermCategory cat =session.getCategory(catName);
@@ -143,15 +152,6 @@ public abstract class AbstractOBOTest extends TestCase {
 	public void testInstanceType(String id, String type)  {
 		Instance lo =  (Instance) session.getObject(id);
 		assertTrue(lo.getType().getID().equals(type));	
-	}
-
-
-	public void testForLink(String childID, String relID, String parentID) {
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		OBOProperty rel = (OBOProperty) session.getObject(relID);
-		assertTrue(child.getParents().contains(
-				new OBORestrictionImpl(child, rel, parent)));
 	}
 	
 	public void testNotPresent(String id) {
