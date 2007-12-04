@@ -43,22 +43,6 @@ public class FocusHierarchyManager {
 		}		
 		return out;
 	}
-	
-	protected static Collection<Component> getDescendants(Component c) {
-		Collection<Component> out = new HashSet<Component>();
-		populateDescendants(c, out);
-		return out;
-	}
-	
-	private static void populateDescendants(Component c, Collection<Component> out) {
-		if (listeners.containsKey(c))
-			out.add(c);
-		if (c instanceof Container) {
-			for(Component child : ((Container) c).getComponents()) {
-				populateDescendants(child, out);
-			}
-		}
-	}
 
 	protected static void dispatchFocusChange(Component oldValue, Component newValue) {
 		Collection<Component> previouslyFocused = getAncestors(oldValue);

@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.OverlayLayout;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -38,7 +40,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
+import org.bbop.swing.FocusHierarchyListener;
+import org.bbop.swing.FocusHierarchyManager;
 import org.bbop.swing.HTMLTableRenderer;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.tablelist.ListTableEditor;
@@ -61,6 +66,17 @@ public class TableList<T> extends JComponent {
 
 	protected JTable table;
 	protected int lastEditRow = -1;
+	protected FocusHierarchyListener focusListener = new FocusHierarchyListener() {
+
+		public void focusGained(FocusEvent e) {
+
+		}
+
+		public void focusLost(FocusEvent e) {
+			commitPendingEdits();
+		}
+
+	};
 
 	protected class ListTableCellRenderer extends DefaultTableCellRenderer {
 		@Override
@@ -89,6 +105,8 @@ public class TableList<T> extends JComponent {
 
 		public void notifyActive() {
 			editor.notifyActive();
+			FocusHierarchyManager.addFocusHierarchyListener((Component) editor,
+					focusListener);
 		}
 
 		@Override
@@ -117,12 +135,16 @@ public class TableList<T> extends JComponent {
 			flushEdits();
 			completingEdit = false;
 			boolean b = super.stopCellEditing();
+			FocusHierarchyManager.removeFocusHierarchyListener(
+					(Component) editor, focusListener);
 			return b;
 		}
 
 		@Override
 		public void cancelCellEditing() {
 			super.cancelCellEditing();
+			FocusHierarchyManager.removeFocusHierarchyListener(
+					(Component) editor, focusListener);
 		}
 
 		public Object getCellEditorValue() {
@@ -239,6 +261,13 @@ public class TableList<T> extends JComponent {
 				editor.notifyActive();
 		}
 
+		public void columnMarginChanged(ChangeEvent e) {
+			if (isEditing()) {
+				return;
+			} else
+				super.columnMarginChanged(e);
+		}
+
 	}
 
 	public TableList() {
@@ -261,14 +290,14 @@ public class TableList<T> extends JComponent {
 
 			public void tableChanged(TableModelEvent e) {
 				List<T> l = getSelection();
-				for(T t : l) {
+				for (T t : l) {
 					if (!data.contains(t)) {
 						setSelection(l);
 						return;
 					}
 				}
 			}
-			
+
 		});
 
 		if (installButtons)
@@ -293,7 +322,8 @@ public class TableList<T> extends JComponent {
 
 			public void actionPerformed(ActionEvent e) {
 				add();
-				remove.setEnabled(getSelectedRowCount() > 0 || table.isEditing());
+				remove.setEnabled(getSelectedRowCount() > 0
+						|| table.isEditing());
 			}
 		});
 		remove.addActionListener(new ActionListener() {
@@ -304,7 +334,8 @@ public class TableList<T> extends JComponent {
 		addSelectionListener(new ListSelectionListener() {
 
 			public void valueChanged(ListSelectionEvent e) {
-				remove.setEnabled(getSelectedRowCount() > 0 || table.isEditing());
+				remove.setEnabled(getSelectedRowCount() > 0
+						|| table.isEditing());
 			}
 
 		});
@@ -329,6 +360,12 @@ public class TableList<T> extends JComponent {
 		} else {
 			createNewRow();
 		}
+	}
+
+	public void commitPendingEdits() {
+		ListTableCellEditor tce = (ListTableCellEditor) table
+				.getDefaultEditor(Object.class);
+		tce.stopCellEditing();
 	}
 
 	public void setSelectionMode(int mode) {
@@ -398,16 +435,16 @@ public class TableList<T> extends JComponent {
 		}
 		return out;
 	}
-	
+
 	public void setSelection(Collection<T> c) {
 		List<Integer> temp = new ArrayList<Integer>();
-		for(T t : c) {
+		for (T t : c) {
 			int index = data.indexOf(t);
 			if (index != -1)
 				temp.add(index);
 		}
 		table.getSelectionModel().clearSelection();
-		for(Integer i : temp) {
+		for (Integer i : temp) {
 			table.getSelectionModel().addSelectionInterval(i, i);
 		}
 		repaint();
