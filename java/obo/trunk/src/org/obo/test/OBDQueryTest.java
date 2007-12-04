@@ -33,11 +33,8 @@ public class OBDQueryTest extends AbstractAnnotationTest {
 	}
 	
 	public void setUp() throws Exception {
-		
-
 	}
 
-	
 	public void testQuery() throws SQLException, ClassNotFoundException, IOException, DataAdapterException {
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();

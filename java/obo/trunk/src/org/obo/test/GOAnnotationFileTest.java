@@ -1,9 +1,13 @@
 package org.obo.test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
@@ -11,14 +15,10 @@ import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
-
-
-import junit.framework.*;
 
 public class GOAnnotationFileTest extends AbstractAnnotationTest {
 
@@ -44,13 +44,6 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 		session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 		
-		// write
-		config = new OBOFileAdapter.OBOAdapterConfiguration();
-		File outFile = File.createTempFile("foo", "bar");
-		//outFile.deleteOnExit();
-		outPath = outFile.getAbsolutePath();
-		config.setWritePath(outPath);
-		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
 
 		// SessionManager.getManager().setSession(session);
 		linkDatabase = new DefaultLinkDatabase(session);
@@ -64,7 +57,15 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 				null);
 	}
 	
-	public void testRoundTrip() throws DataAdapterException {
+	public void testRoundTrip() throws DataAdapterException, IOException {
+		// write
+		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+		File outFile = File.createTempFile("foo", "bar");
+		//outFile.deleteOnExit();
+		outPath = outFile.getAbsolutePath();
+		config.setWritePath(outPath);
+		GOStyleAnnotationFileAdapter adapter = new GOStyleAnnotationFileAdapter();
+		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
 		loadAnnotations(outPath);
 		testAnnot();
 	}
