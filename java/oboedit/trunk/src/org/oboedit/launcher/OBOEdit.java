@@ -137,6 +137,10 @@ public class OBOEdit {
 		return actions;
 	}
 
+    public static String getAppName() {
+	return "OBO-Edit2";
+    }
+
 	/**
 	 * Initialize some things, read the command line and start
 	 */
@@ -152,8 +156,8 @@ public class OBOEdit {
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();
 
-					System.err.println("Starting OBO-Edit "
-							+ Preferences.getVersion() + ": " + (new Date()));
+					System.err.println("Starting " + getAppName() + " "
+							   + Preferences.getVersion() + ": " + (new Date()));
 
 					DataAdapterRegistry registry = IOManager.getManager()
 							.getAdapterRegistry();
@@ -172,6 +176,8 @@ public class OBOEdit {
 				}
 			}
 		};
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", getAppName());
+
 		SwingUtilities.invokeAndWait(r);
 	}
 }
