@@ -1,0 +1,22 @@
+[Term]
+id: bone
+
+[Term]
+id: endochondral_bone
+intersection_of: bone
+intersection_of: develops_from cartilage
+
+[Term]
+id: tripus
+is_a: bone
+relationship: develops_from bv_cartilage
+
+[Term]
+id: cartilage
+
+[Term]
+id: bv_cartilage
+is_a: cartilage
+
+[Typedef]
+id: develops_from
