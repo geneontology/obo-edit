@@ -57,6 +57,7 @@ public class OBO2OBOReasonerTest extends TestCase {
 		//outFile.deleteOnExit();
 		
 		for (String factoryName : getReasonerFactoryNames()) {
+//			String saveFlag = saveAll ? "-realizeimpliedlinks" : "-saveimpliedlinks";
 			String saveFlag = saveAll ? "-saveallimpliedlinks" : "-saveimpliedlinks";
 					
 			String cmd = 
