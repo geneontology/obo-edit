@@ -70,6 +70,21 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
 		//System.out.println(path+" pathlen="+path.size());
 	}
+	
+	public void testForRedundantIsA(String childID, String parentID)  {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		System.out.println(reasonedDB+" testing redundant isa "+child+" - "+parent);
+		for (Link link : reasonedDB.getParents(child)) {
+			if (link.getParent().equals(parent) && link.getType().equals(OBOProperty.IS_A)) {
+				assertTrue(ReasonerUtil.isRedundant(reasonedDB, link));
+				return;
+			}
+		}
+		assertTrue(false);
+	}
+	
+
 
 
 	public void testForLink(String childID, String relID, String parentID)  {
