@@ -5,5 +5,8 @@
 	* All TableList editors (like the dbxref editors and the synonym editor) now commit
 	  their changes the minute they are unfocused, which should make them easier to
 	  use
-	
+	* On Macs, top-level application menu now says "OBO-Edit2" [we can
+	  change that string if people don't like it] rather than using the
+	  Java class name (org.oboedit.launcher.OBOEdit).
+          Should have no effect on non-Macs.
 	
