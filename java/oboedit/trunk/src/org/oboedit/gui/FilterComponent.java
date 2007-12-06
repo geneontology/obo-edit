@@ -99,11 +99,11 @@ public class FilterComponent extends JPanel {
 		if (out instanceof PathCapableFilter) {
 			if (SessionManager.getManager().getUseReasoner())
 				((PathCapableFilter) out)
-						.setReasonedLinkDatabase(SessionManager.getManager()
+						.setReasoner(SessionManager.getManager()
 								.getReasoner());
 			else
 				((PathCapableFilter) out)
-						.setReasonedLinkDatabase(new OnTheFlyReasoner(
+						.setReasoner(new OnTheFlyReasoner(
 								SessionManager.getManager()
 										.getCurrentLinkDatabase()));
 		}

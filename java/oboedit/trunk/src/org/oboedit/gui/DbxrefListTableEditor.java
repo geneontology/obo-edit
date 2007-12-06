@@ -18,13 +18,20 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
 import org.bbop.swing.tablelist.AbstractListTableEditor;
+import org.bbop.util.CollectionUtil;
 import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.impl.DbxrefImpl;
+import org.obo.filters.DbxrefDBSearchCriterion;
+import org.obo.filters.DbxrefDescSearchCriterion;
+import org.obo.filters.DbxrefIDSearchCriterion;
+import org.obo.filters.DefinitionDbxrefSearchCriterion;
+import org.oboedit.gui.components.AbstractDbxrefEditorComponent;
 
-public class DbxrefListTableEditor extends
-		AbstractListTableEditor<Dbxref> {
+public class DbxrefListTableEditor extends AbstractListTableEditor<Dbxref> {
 
 	protected JTextField dbField = new JTextField();
 
@@ -41,7 +48,7 @@ public class DbxrefListTableEditor extends
 	protected JTextField descField = new JTextField();
 
 	protected Dbxref prototype;
-	
+
 	public DbxrefListTableEditor() {
 		this(new DbxrefImpl("XX", "<new dbxref>"));
 	}
@@ -84,8 +91,8 @@ public class DbxrefListTableEditor extends
 	}
 
 	protected void tabToNext() {
-		Component lastComponent = getFocusTraversalPolicy()
-				.getLastComponent(this);
+		Component lastComponent = getFocusTraversalPolicy().getLastComponent(
+				this);
 		Component focused = FocusManager.getCurrentKeyboardFocusManager()
 				.getFocusOwner();
 		if (SwingUtilities.isDescendingFrom(focused, lastComponent)) {
@@ -94,11 +101,9 @@ public class DbxrefListTableEditor extends
 			focused.transferFocus();
 
 	}
-	
-	@Override
-	public void notifyCancel() {
-		// TODO Auto-generated method stub
-		super.notifyCancel();
+
+	public JTextComponent[] getTextComponents() {
+		return CollectionUtil.array(idField, descField, dbField);
 	}
 
 	public void notifyActive() {
@@ -124,4 +129,32 @@ public class DbxrefListTableEditor extends
 		descField.setText(dbxref.getDesc());
 	}
 
+	public void uninstallMappings(FieldPathSpec pathSpec,
+			AbstractDbxrefEditorComponent abstractDbxrefEditorComponent) {
+		abstractDbxrefEditorComponent.getRoot().removeMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefIDSearchCriterion.CRITERION), idField);
+		abstractDbxrefEditorComponent.getRoot().removeMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefDBSearchCriterion.CRITERION), dbField);
+		abstractDbxrefEditorComponent.getRoot().removeMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefDescSearchCriterion.CRITERION), descField);
+	}
+
+	public void installMappings(FieldPathSpec pathSpec,
+			AbstractDbxrefEditorComponent abstractDbxrefEditorComponent) {
+		abstractDbxrefEditorComponent.getRoot().addMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefIDSearchCriterion.CRITERION),
+				abstractDbxrefEditorComponent, idField);
+		abstractDbxrefEditorComponent.getRoot().addMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefDBSearchCriterion.CRITERION),
+				abstractDbxrefEditorComponent, dbField);
+		abstractDbxrefEditorComponent.getRoot().addMapping(
+				new FieldPathSpec(abstractDbxrefEditorComponent.getPathSpec(),
+						DbxrefDescSearchCriterion.CRITERION),
+				abstractDbxrefEditorComponent, descField);
+	}
 }

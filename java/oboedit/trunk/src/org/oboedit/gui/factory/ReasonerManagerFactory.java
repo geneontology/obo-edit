@@ -19,6 +19,11 @@ public class ReasonerManagerFactory extends AbstractComponentFactory<ReasonerMan
 	public String getName() {
 		return "Reasoner Manager";
 	}
+	
+	@Override
+	public boolean getPreferSeparateWindow() {
+		return true;
+	}
 
 	public FactoryCategory getCategory() {
 		return FactoryCategory.REASONER;

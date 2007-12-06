@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import javax.swing.JComponent;
 import javax.swing.tree.TreePath;
 
+import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
@@ -48,6 +49,8 @@ public class SelectionManager implements ObjectSelector {
 	protected LinkedList<Selection> forwardSelections = new LinkedList<Selection>();
 
 	protected int maxSelectionStackSize = 10;
+	
+	protected Selection checkedPreSelection = null;
 
 	protected SelectionManager() {
 	}
@@ -106,6 +109,10 @@ public class SelectionManager implements ObjectSelector {
 				links, terms, paths, postSelection.getRootAlgorithm(),
 				postSelection.getLinkDatabase(), postSelection.getMode(),
 				linkSubSelection, termSubSelection);
+	}
+	
+	public static Selection createEmptySelection() {
+		return createEmptySelection(null);
 	}
 
 	public static Selection createEmptySelection(JComponent component) {
@@ -354,11 +361,14 @@ public class SelectionManager implements ObjectSelector {
 	}
 
 	public void select(Selection selection) {
-		selectionStack.add(selection);
-		if (selectionStack.size() > maxSelectionStackSize)
-			selectionStack.removeFirst();
-		forwardSelections.clear();
-		notifyListeners();
+		if (doPreSelectValidation(selection)) {
+			selectionStack.add(selection);
+			if (selectionStack.size() > maxSelectionStackSize)
+				selectionStack.removeFirst();
+			forwardSelections.clear();
+			notifyListeners();
+			checkedPreSelection = null;
+		}
 	}
 
 	public boolean hasPreviousSelection() {
@@ -430,15 +440,20 @@ public class SelectionManager implements ObjectSelector {
 		}
 	}
 
-	public boolean doPreSelectValidation(Object source) {
+	public boolean doPreSelectValidation(Selection source) {
+		if (ObjectUtil.equals(source, checkedPreSelection))
+			return true;
 		PreSelectionEvent event = new PreSelectionEvent(source);
 		Iterator it = new LinkedList<PreSelectionListener>(
 				preSelectionListeners).iterator();
 		while (it.hasNext()) {
 			PreSelectionListener listener = (PreSelectionListener) it.next();
-			if (!listener.isPreSelectOkay(event))
+			if (!listener.isPreSelectOkay(event)) {
+				checkedPreSelection = null;
 				return false;
+			}
 		}
+		checkedPreSelection = source;
 		return true;
 	}
 

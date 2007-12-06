@@ -28,10 +28,10 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 	protected static final Color reallyLightGray = new Color(230, 230, 230);
 
-	public static final String[] TYPES = { "Related Synonym",
-			"Exact Synonym", "Narrow Synonym", "Broad Synonym" };
+	public static final String[] TYPES = { "Related Synonym", "Exact Synonym",
+			"Narrow Synonym", "Broad Synonym" };
 
-	protected final static FieldPathSpec spec = new FieldPathSpec(
+	public final static FieldPathSpec spec = new FieldPathSpec(
 			SynonymSearchCriterion.CRITERION);
 
 	protected class SynonymTableRenderer extends DefaultTableCellRenderer {
@@ -51,7 +51,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	protected void configureLabel(JTable table, JLabel out, Synonym synonym,
-			int index, boolean isSelected) { 
+			int index, boolean isSelected) {
 		out.setOpaque(true);
 		out.setBorder(new EmptyBorder(10, 10, 10, 10));
 		out.setMinimumSize(new Dimension(table.getWidth(), 0));
@@ -280,22 +280,17 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	@Override
-	public void setRoot(RootTextEditComponent root) {
-//		if (this.root != null) {
-//			this.root.removeMapping(spec, synonymList);
-//			this.root
-//					.removeMapping(
-//							new FieldPathSpec(spec,
-//									SynonymTextSearchCriterion.CRITERION),
-//							((SynonymTableCellEditor) synonymList.getEditor()).synonymField);
-//		}
-		super.setRoot(root);
-//		getRoot().addMapping(spec, this, synonymList);
-//		getRoot()
-//				.addMapping(
-//						new FieldPathSpec(spec,
-//								SynonymTextSearchCriterion.CRITERION),
-//						this,
-//						((SynonymTableCellEditor) synonymList.getEditor()).synonymField);
+	protected void installListeners() {
+		super.installListeners();
+		getRoot().addMapping(spec, this, synonymList);
+		((SynonymTableCellEditor) synonymList.getEditor()).installMappings(this);
+
+	}
+	
+	@Override
+	protected void uninstallListeners() {
+		super.uninstallListeners();
+		getRoot().removeMapping(spec, synonymList);
+		((SynonymTableCellEditor) synonymList.getEditor()).uninstallMappings(this);
 	}
 }

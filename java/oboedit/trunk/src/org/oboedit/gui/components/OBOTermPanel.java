@@ -531,11 +531,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 						if (x > bounds.x) {
 							if (x <= (bounds.x + bounds.width)
-									&& (!isLive() || SelectionManager
-											.getManager()
-											.doPreSelectValidation(
-													OBOTermPanel.this)
-											&& path.getLastPathComponent() instanceof Link)) {
+									&& (path.getLastPathComponent() instanceof Link)) {
 								selectPathForEvent(path, e);
 							}
 						}
@@ -604,10 +600,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 		@Override
 		protected void selectPathForEvent(TreePath path, MouseEvent event) {
+			TreePath[] selected = getSelectionPaths();
 			super.selectPathForEvent(path, event);
-			fireSelectionEvent();
-			if (isLive())
-				SelectionManager.setGlobalSelection(getSelection());
+			if (!SelectionManager.getManager().doPreSelectValidation(
+					getSelection())) {
+				setSelectionPaths(selected);
+			} else {
+				fireSelectionEvent();
+				if (isLive())
+					SelectionManager.setGlobalSelection(getSelection());
+			}
 		}
 
 		@Override
@@ -1021,10 +1023,15 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public Selection getSelection() {
 		TreePath[] paths = getSelectionPaths();
-		if (paths == null || paths.length == 0)
-			return SelectionManager.createEmptySelection(this);
-		Link leadLink = null;
 		TreePath lead = getLeadSelectionPath();
+		return createSelectionFromPaths(lead, paths);
+	}
+
+	protected static Selection createSelectionFromPaths(TreePath lead,
+			TreePath[] paths) {
+		if (paths == null || paths.length == 0)
+			return SelectionManager.createEmptySelection();
+		Link leadLink = null;
 		if (lead != null) {
 			leadLink = (Link) lead.getLastPathComponent();
 			int leadIndex = -1;
@@ -1040,9 +1047,9 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				paths[leadIndex] = temp;
 			}
 		}
-		return SelectionManager.createSelectionFromPaths(this,
-				getSelectionPaths(), leadLink, SessionManager.getManager()
-						.getCurrentLinkDatabase(), RootAlgorithm.GREEDY, true);
+		return SelectionManager.createSelectionFromPaths(null, paths, leadLink,
+				SessionManager.getManager().getCurrentLinkDatabase(),
+				RootAlgorithm.GREEDY, true);
 	}
 
 	public void select(Selection selection) {

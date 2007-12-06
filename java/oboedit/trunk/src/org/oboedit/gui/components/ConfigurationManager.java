@@ -1,7 +1,11 @@
 package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.ComponentManager;
+import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIManager;
+import org.bbop.framework.dock.LayoutAdapter;
+import org.bbop.framework.dock.LayoutListener;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
@@ -444,9 +448,21 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		defTextArea.setEnabled(enabled);
 		defDbxrefList.setEnabled(enabled);
 	}
+	
+	protected LayoutListener layoutListener = new LayoutAdapter() {
 
+		public boolean closing(GUIComponent c) {
+			if (c.equals(ConfigurationManager.this)) {
+				save();
+			}
+			return true;
+		}
+		
+	};
+	
 	@Override
 	public void init() {
+		ComponentManager.getManager().addLayoutListener(layoutListener);
 		removeAll();
 		mainPanel = new JTabbedPane();
 
@@ -1083,6 +1099,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 	}
 
+	@Override
+	public void cleanup() {
+		ComponentManager.getManager().removeLayoutListener(layoutListener);
+		super.cleanup();
+	}
+	
+	
+	
 	public ConfigurationManager(String id) {
 		super(id);
 	}

@@ -232,6 +232,8 @@ public class TextErrorDecorator implements ErrorDecorator {
 		} else if (action instanceof TextReplaceQuickFix) {
 			int pos = component.getCaretPosition();
 			component.setText(((TextReplaceQuickFix) action).getNewText());
+			if (pos > component.getText().length())
+				pos = component.getText().length();
 			component.setCaretPosition(pos);
 		} else if (action instanceof HistoryQuickFix) {
 			int pos = component.getCaretPosition();
@@ -242,6 +244,8 @@ public class TextErrorDecorator implements ErrorDecorator {
 			model.apply(((HistoryQuickFix) action).getItem());
 			parent.setObject(io);
 			component.requestFocus();
+			if (pos > component.getText().length())
+				pos = component.getText().length();
 			component.setCaretPosition(pos);
 		}
 		TextEditUtil.addDirtyPaths(parent, getPaths());
@@ -311,7 +315,8 @@ public class TextErrorDecorator implements ErrorDecorator {
 			if (d.getStyle(tw.getType()) == null) {
 				s = d.addStyle(tw.getType(), null);
 				StyleConstants.setForeground(s, Color.red);
-				StyleConstants.setUnderline(s, true);
+				if (tw.getFixes().size() > 0)
+					StyleConstants.setUnderline(s, true);
 			}
 			return s;
 		}

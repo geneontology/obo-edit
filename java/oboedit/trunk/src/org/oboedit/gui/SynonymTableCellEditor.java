@@ -28,8 +28,11 @@ import javax.swing.text.DocumentFilter;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.impl.SynonymImpl;
+import org.obo.filters.SynonymDbxrefSearchCriterion;
+import org.obo.filters.SynonymTextSearchCriterion;
 import org.oboedit.gui.components.SynonymEditorComponent;
 
 public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
@@ -42,7 +45,6 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 	protected TableList<Dbxref> dbxrefList = new TableList<Dbxref>();
 	protected JButton addDbxrefButton = new JButton("+");
 	protected JButton removeDbxrefButton = new JButton("-");
-	
 
 	public SynonymTableCellEditor() {
 		if (synonymField.getDocument() instanceof AbstractDocument) {
@@ -81,7 +83,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 				dbxrefList.deleteSelectedRows();
 			}
 		});
-		
+
 		setFocusCycleRoot(true);
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
@@ -98,8 +100,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		});
 
 		double[][] sizes = {
-				{ TableLayout.PREFERRED, 10, .6,
-						.4 },
+				{ TableLayout.PREFERRED, 10, .6, .4 },
 				{ TableLayout.FILL, TableLayout.PREFERRED,
 						TableLayout.PREFERRED, TableLayout.PREFERRED } };
 		setLayout(new TableLayout(sizes));
@@ -110,7 +111,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(1,2));
+		buttonPanel.setLayout(new GridLayout(1, 2));
 		buttonPanel.add(addDbxrefButton);
 		buttonPanel.add(removeDbxrefButton);
 		panel.add(new JScrollPane(dbxrefList,
@@ -150,11 +151,31 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		return new SynonymImpl("<new synonym>");
 	}
 
+	public void installMappings(SynonymEditorComponent parent) {
+		parent.getRoot().addMapping(
+				new FieldPathSpec(parent.spec,
+						SynonymTextSearchCriterion.CRITERION), parent,
+				synonymField);
+		parent.getRoot().addMapping(
+				new FieldPathSpec(parent.spec,
+						SynonymDbxrefSearchCriterion.CRITERION), parent,
+				dbxrefList);
+	}
+
+	public void uninstallMappings(SynonymEditorComponent parent) {
+		parent.getRoot().removeMapping(
+				new FieldPathSpec(parent.spec,
+						SynonymTextSearchCriterion.CRITERION), synonymField);
+		parent.getRoot().removeMapping(
+				new FieldPathSpec(parent.spec,
+						SynonymDbxrefSearchCriterion.CRITERION), dbxrefList);
+	}
+
 	public Synonym getValue() {
 		Synonym out = createNewValue();
 		out.setText(synonymField.getText());
 		out.setScope(typeList.getSelectedIndex());
-		for(Dbxref ref : dbxrefList.getData()) {
+		for (Dbxref ref : dbxrefList.getData()) {
 			out.addDbxref(ref);
 		}
 		return out;
