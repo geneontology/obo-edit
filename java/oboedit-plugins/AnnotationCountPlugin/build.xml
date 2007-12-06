@@ -1,0 +1,58 @@
+<project name="AnnotationCountPlugin"
+	 default="full"
+	 basedir=".">
+  <description>
+    build file
+  </description>
+  <!-- set global properties for this build -->
+  <property name="src"
+	    location="src" />
+  <property name="build"
+	    location="build" />
+  <property name="classpath"
+	    location="../../oboedit/trunk/src:../../bbop/trunk/src/:../../obo/trunk/src" />
+<!--
+  <property name="classpath"
+	    location="/home/sjcarbon/local/src/eclipse/workspace/OBO-Edit/classes:/home/sjcarbon/local/src/eclipse/workspace/BBOP/classes:/home/sjcarbon/local/src/eclipse/workspace/OBO/classes:/home/sjcarbon/local/src/java/src/lib:/home/sjcarbon/local/src/eclipse/workspace/OBO/classes/org/oboedit/connect" />
+-->
+  <property name="plugin_dir"
+	    location="." />
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp />
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile"
+	  depends="init"
+          description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}"
+	   destdir="${build}">
+      <classpath>
+        <pathelement path="${classpath}/"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="dist"
+	  depends="compile"
+          description="generate the distribution" >
+    <jar jarfile="${plugin_dir}/AnnotationCountPlugin.jar"
+	 basedir="${build}"/>
+  </target>
+
+  <target name="clean"
+	  depends="compile"
+          description="clean up" >
+    <!-- Delete the ${build} directory tree -->
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="full"
+	  depends="clean"
+          description="full compile cycle" >
+  </target>
+</project>
