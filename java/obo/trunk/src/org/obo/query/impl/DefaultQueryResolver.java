@@ -14,6 +14,7 @@ import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOSession;
@@ -48,7 +49,7 @@ public class DefaultQueryResolver implements QueryResolver {
 		return isAssignable;
 	}
 
-	public <T, V> TaskDelegate<Collection<V>> query(final OBOSession session,
+	public <T, V> TaskDelegate<Collection<V>> query(final LinkDatabase linkDatabase,
 			final Query<T, V> q) {
 		TaskDelegate<Collection<V>> out = new AbstractTaskDelegate<Collection<V>>() {
 
@@ -69,10 +70,11 @@ public class DefaultQueryResolver implements QueryResolver {
 						if (cancelled)
 							return;
 						Collection<FieldPath> values = FieldPath.resolve(qpath,
-								session.getLinkDatabase());
+								linkDatabase);
 						for (FieldPath p : values) {
-							if (queryAccepts(q, p.getLastValue().getClass()))
+							if (queryAccepts(q, p.getLastValue().getClass())) {
 								paths.add(p);
+							}
 						}
 					}
 					int total = paths.size();

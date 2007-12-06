@@ -4,13 +4,16 @@ import org.obo.datamodel.Link;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 public class IsRedundantLinkCriterion extends AbstractBooleanLinkCriterion {
-	
+
+	public static final IsRedundantLinkCriterion CRITERION =
+		new IsRedundantLinkCriterion();
+
 	protected ReasonedLinkDatabase reasoner;
-	
+
 	public void setReasoner(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
 	}
-	
+
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}

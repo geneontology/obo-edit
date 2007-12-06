@@ -201,8 +201,8 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		Collection<Link> impliedChildren = impliedLinkDatabase.getChildren(lo);
 		Collection<Link> out = new LinkedHashSet<Link>(given.size()
 				+ impliedChildren.size());
-		out.addAll(given);
 		out.addAll(impliedChildren);
+		out.addAll(given);
 		return out;
 	}
 
@@ -217,8 +217,8 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		Collection<Link> impliedParents = impliedLinkDatabase.getParents(lo);
 		Collection<Link> out = new LinkedHashSet<Link>(given.size()
 				+ impliedParents.size());
-		out.addAll(given);
 		out.addAll(impliedParents);
+		out.addAll(given);
 		return out;
 	}
 
@@ -340,7 +340,18 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	protected void reasonRemoval(Link link) {
 		// actually remove the dead link from the various caches
 		impliedLinkDatabase.removeParent(link);
-		explanationMap.remove(link);
+		Collection<Explanation> exps = explanationMap.get(link);
+		if (exps != null) {
+			Iterator<Explanation> it = exps.iterator();
+			while(it.hasNext()) {
+				Explanation exp = it.next();
+				if (exp.getExplanationType().equals(ExplanationType.GIVEN)) {
+					it.remove();
+				}
+			}
+			if (exps.size() == 0)
+				explanationMap.remove(link);
+		}
 		if (link instanceof OBORestriction
 				&& ((OBORestriction) link).completes()) {
 			Collection<Link> completeParents = intersectionMap.get(link

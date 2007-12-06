@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bbop.util.TaskDelegate;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.OBOSession;
 import org.obo.query.Query;
 import org.obo.query.QueryResolver;
@@ -111,14 +112,14 @@ public abstract class CachingQueryResolver implements QueryResolver {
 		results = new HashMap<Object, Map<Query, Collection>>();
 	}
 
-	public <T, V> TaskDelegate<Collection<V>> query(OBOSession session,
+	public <T, V> TaskDelegate<Collection<V>> query(LinkDatabase linkDatabase,
 			Query<T, V> q, boolean cache) {
-		final Collection<V> c = fetchCachedQuery(session, q);
+		final Collection<V> c = fetchCachedQuery(linkDatabase, q);
 		if (c == null) {
-			final TaskDelegate<Collection<V>> task = query(session, q);
+			final TaskDelegate<Collection<V>> task = query(linkDatabase, q);
 			if (cache) {
 			TaskDelegate<Collection<V>> taskWrapper =
-				new TaskDelegateWrapper<V>(task, session, q);
+				new TaskDelegateWrapper<V>(task, linkDatabase, q);
 			return taskWrapper;
 			} else
 				return task;

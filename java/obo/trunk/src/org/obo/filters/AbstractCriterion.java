@@ -1,5 +1,9 @@
 package org.obo.filters;
 
+import org.obo.datamodel.LinkDatabase;
+import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
+
 /**
  * 
  * A basic abstract implementation of {@link SearchCriterion }
@@ -8,6 +12,9 @@ package org.obo.filters;
 
 public abstract class AbstractCriterion<IN_TYPE, OUT_TYPE> implements SearchCriterion<IN_TYPE, OUT_TYPE> {
 
+	protected ReasonedLinkDatabase reasoner;
+	protected LinkDatabase trimmedReasoner;
+	
 	/**
 	 * Matches any SearchCriterion of the same class
 	 */
@@ -24,6 +31,14 @@ public abstract class AbstractCriterion<IN_TYPE, OUT_TYPE> implements SearchCrit
 	@Override
 	public int hashCode() {
 		return getClass().hashCode();
+	}
+	
+	public void setReasoner(ReasonedLinkDatabase reasoner) {
+		this.reasoner = reasoner;
+		if (reasoner == null)
+			trimmedReasoner = null;
+		else
+			trimmedReasoner = new TrimmedLinkDatabase(reasoner);
 	}
 	
 	public int getMaxCardinality() {
