@@ -83,7 +83,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 		return reasoner;
 	}
 
-	public void setReasonedLinkDatabase(ReasonedLinkDatabase reasoner) {
+	public void setReasoner(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
 	}
 
@@ -99,6 +99,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 			}
 			List os = new LinkedList();
 			aspect.getObjects(os, getReasoner(), traversalFilter, object);
+			criterion.setReasoner(getReasoner());
 			boolean matches = negate;
 
 			Iterator it = os.iterator();

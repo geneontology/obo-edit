@@ -1047,6 +1047,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 						public void setContext(JexlContext context) {
 						}
+						
+						public void setReasoner(ReasonedLinkDatabase reasoner) {
+						}
 
 						@Override
 						public Object clone() {

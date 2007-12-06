@@ -16,6 +16,8 @@ package org.obo.filters;
 
 import java.util.Collection;
 
+import org.obo.reasoner.ReasonedLinkDatabase;
+
 public interface SearchCriterion<IN_TYPE, OUT_TYPE> {
 
 	/*
@@ -60,6 +62,8 @@ public interface SearchCriterion<IN_TYPE, OUT_TYPE> {
 	
 	public int getMinCardinality();
 	
-	public int getMaxCardinality(); 
+	public int getMaxCardinality();
+	
+	public void setReasoner(ReasonedLinkDatabase reasoner);
 
 }

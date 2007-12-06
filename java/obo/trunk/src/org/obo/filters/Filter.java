@@ -2,6 +2,7 @@ package org.obo.filters;
 
 import org.bbop.expression.JexlContext;
 import org.bbop.util.*;
+import org.obo.reasoner.ReasonedLinkDatabase;
 
 public interface Filter<T> extends Cloneable, VectorFilter<T> {
 
@@ -18,6 +19,9 @@ public interface Filter<T> extends Cloneable, VectorFilter<T> {
 		public Object clone() {
 			return this;
 		}
+		
+		public void setReasoner(ReasonedLinkDatabase reasoner) {
+		}
 	};
 	
 	public void setContext(JexlContext context);
@@ -25,4 +29,6 @@ public interface Filter<T> extends Cloneable, VectorFilter<T> {
 	public boolean satisfies(T o);
 
 	public Object clone();
+	
+	public void setReasoner(ReasonedLinkDatabase reasoner);
 }

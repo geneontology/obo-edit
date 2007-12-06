@@ -10,6 +10,7 @@ package org.obo.filters;
 import java.util.*;
 
 import org.bbop.expression.JexlContext;
+import org.obo.reasoner.ReasonedLinkDatabase;
 
 public class CompoundFilterImpl implements CompoundFilter {
 
@@ -17,7 +18,7 @@ public class CompoundFilterImpl implements CompoundFilter {
 	 * 
 	 */
 	private static final long serialVersionUID = -1115133463692494529L;
-	protected List filters = new ArrayList();
+	protected List<Filter> filters = new ArrayList<Filter>();
 	protected int booleanOperation = AND;
 	protected JexlContext context;
 
@@ -146,5 +147,12 @@ public class CompoundFilterImpl implements CompoundFilter {
 			}
 			return out.toString();
 		}
+	}
+
+	public void setReasoner(ReasonedLinkDatabase reasoner) {
+		for(Filter filter : filters) {
+			filter.setReasoner(reasoner);
+		}
+		
 	}
 }

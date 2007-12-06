@@ -329,6 +329,14 @@ public class FieldPath {
 	public FieldPath(IdentifiedObject object) {
 		this.object = object;
 	}
+	
+	public boolean containsValue(Object value) {
+		for(FieldPathElement e : getElements()) {
+			if (e.getValue().equals(value))
+				return true;
+		}
+		return false;
+	}
 
 	public List<FieldPathElement> getElements() {
 		return elements;

@@ -114,7 +114,7 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		 */
 		VectorFilter<Link> filter = new VectorFilter<Link>() {
 			public boolean satisfies(Link inLink) {
-				boolean trim = !ReasonerUtil.shouldBeTrimmed(linkDatabase, inLink);
+				boolean trim = !ReasonerUtil.shouldBeTrimmedOld(linkDatabase, inLink);
 				return trim;
 			}
 		};

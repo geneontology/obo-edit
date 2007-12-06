@@ -175,6 +175,8 @@ public class ReasonerUtil {
 			Link link) {
 		if (!TermUtil.isImplied(link))
 			return false;
+		if (TermUtil.isIntersection(link))
+			return true;
 		Iterator it;
 
 		// trim any links to parents that are redundant with

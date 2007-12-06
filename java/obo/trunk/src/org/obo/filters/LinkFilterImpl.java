@@ -92,7 +92,7 @@ public class LinkFilterImpl implements LinkFilter {
 			return false;
 	}
 
-	public void setReasonedLinkDatabase(ReasonedLinkDatabase reasoner) {
-		filter.setReasonedLinkDatabase(reasoner);
+	public void setReasoner(ReasonedLinkDatabase reasoner) {
+		filter.setReasoner(reasoner);
 	}
 }

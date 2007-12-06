@@ -3,6 +3,7 @@ package org.obo.util;
 import java.util.Collection;
 
 import org.bbop.util.TaskDelegate;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.OBOSession;
 import org.obo.query.Query;
 import org.obo.query.QueryEngine;
@@ -15,8 +16,8 @@ public class QueryUtil {
 	}
 
 	public static <T, V> Collection<V> query(QueryEngine engine,
-			OBOSession session, Query<T, V> q) {
-		TaskDelegate<Collection<V>> task = engine.query(session, q);
+			LinkDatabase linkDatabase, Query<T, V> q) {
+		TaskDelegate<Collection<V>> task = engine.query(linkDatabase, q);
 		return getResults(task);
 	}
 

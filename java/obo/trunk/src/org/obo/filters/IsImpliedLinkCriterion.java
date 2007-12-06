@@ -5,10 +5,7 @@ import org.obo.datamodel.*;
 public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 
 	public boolean matches(Link o) {
-		if (o instanceof Impliable) {
-			return ((Impliable) o).isImplied();
-		} else
-			return false;
+		return ((Impliable) o).isImplied();
 	}
 
 	public String getID() {

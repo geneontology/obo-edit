@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Collection;
 
 import org.bbop.util.TaskDelegate;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.OBOSession;
 import org.obo.query.impl.CachingQueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
@@ -45,7 +46,7 @@ public class QueryEngine extends CachingQueryResolver {
 	}
 
 	public <T, V> Collection<V> query(Query<T, V> q, boolean cache) {
-		return QueryUtil.getResults(query(session, q, cache));
+		return QueryUtil.getResults(query(session.getLinkDatabase(), q, cache));
 	}
 
 	protected QueryResolver getResolver(Query q) {
@@ -56,10 +57,10 @@ public class QueryEngine extends CachingQueryResolver {
 		return DefaultQueryResolver.getResolver();
 	}
 
-	public <T, V> TaskDelegate<Collection<V>> query(OBOSession session,
+	public <T, V> TaskDelegate<Collection<V>> query(LinkDatabase linkDatabase,
 			Query<T, V> q) {
 		QueryResolver resolver = getResolver(q);
-		return resolver.query(session, q);
+		return resolver.query(linkDatabase, q);
 	}
 
 	public <T, V> TaskDelegate<Collection<V>> query(
