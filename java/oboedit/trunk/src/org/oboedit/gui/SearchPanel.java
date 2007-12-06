@@ -515,7 +515,7 @@ public class SearchPanel extends JPanel {
 				if (f instanceof PathCapableFilter
 						&& SessionManager.getManager().getUseReasoner()) {
 					((PathCapableFilter) f)
-							.setReasonedLinkDatabase(SessionManager
+							.setReasoner(SessionManager
 									.getManager().getReasoner());
 				}
 				boolean matches = false;

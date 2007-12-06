@@ -1,5 +1,6 @@
 package org.oboedit.gui.components;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -95,7 +96,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected ErrorDecoratorFactory errorDecoratorFactory = new DefaultErrorDecoratorFactory(
 			true);
-	
+
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
@@ -103,7 +104,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			reload();
 			setObject(getObject());
 		}
-		
+
 	};
 
 	protected ObjectSelector selector;
@@ -152,24 +153,25 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		checkTimer = null;
 	}
 
-//	protected void doLoadTextChecks() {
-//		if (currentObject == null)
-//			return;
-//		final Collection<CheckWarning> warnings = VerificationManager
-//				.getManager().runChecks(
-//						SessionManager.getManager().getSession(),
-//						new FieldPath(currentObject),
-//						VerificationManager.TEXT_EDIT_THREAD);
-//		final MultiMap<FieldPath, CheckWarning> allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
-//		for (CheckWarning w : warnings) {
-//			allWarnings.add(w.getPath(), w);
-//		}
-//		for (FieldPath path : allWarnings.keySet()) {
-//			displayWarnings(path, allWarnings.get(path));
-//		}
-//		setWarningMap(allWarnings);
-//		repaint();
-//	}
+	// protected void doLoadTextChecks() {
+	// if (currentObject == null)
+	// return;
+	// final Collection<CheckWarning> warnings = VerificationManager
+	// .getManager().runChecks(
+	// SessionManager.getManager().getSession(),
+	// new FieldPath(currentObject),
+	// VerificationManager.TEXT_EDIT_THREAD);
+	// final MultiMap<FieldPath, CheckWarning> allWarnings = new
+	// MultiHashMap<FieldPath, CheckWarning>();
+	// for (CheckWarning w : warnings) {
+	// allWarnings.add(w.getPath(), w);
+	// }
+	// for (FieldPath path : allWarnings.keySet()) {
+	// displayWarnings(path, allWarnings.get(path));
+	// }
+	// setWarningMap(allWarnings);
+	// repaint();
+	// }
 
 	protected void doTimedTextChecks(boolean requireDirtyPaths) {
 		if (requireDirtyPaths && this.dirtyPaths.size() == 0)
@@ -330,6 +332,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	};
 
 	protected boolean global = false;
+	protected MultiMap<FieldPath, CheckWarning> oldWarningMap;
 
 	protected void autocommit() {
 		uninstallAutocommitListener();
@@ -338,9 +341,20 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	protected void setWarningMap(MultiMap<FieldPath, CheckWarning> warningMap) {
+		boolean unchanged = ObjectUtil.equals(oldWarningMap, warningMap);
+		this.oldWarningMap = warningMap;
+		if (unchanged) {
+			return;
+		}
 		if (warningMap.isEmpty())
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
+					ComponentManager.getManager().setLabel(TextEditor.this,
+							"Text Editor");
+					ComponentManager.getManager().setTitlebarTooltip(
+							TextEditor.this, null);
+					ComponentManager.getManager().setTitlebarColor(
+							TextEditor.this, Color.black);
 					errorPanel.setVisible(false);
 					validate();
 					repaint();
@@ -367,9 +381,10 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 				color = "#FFAA33";
 				icon = warningIcon;
 			}
+			final StringBuffer htmlWrapperBuffer = new StringBuffer();
 			final StringBuffer buffer = new StringBuffer();
-			buffer.append("<html>");
-			buffer.append("<font color='" + color + "'>");
+			htmlWrapperBuffer.append("<html>");
+			htmlWrapperBuffer.append("<font color='" + color + "'>");
 			if (errorCount > 0) {
 				buffer.append(errorCount + " fatal error"
 						+ (errorCount != 1 ? "s" : ""));
@@ -379,16 +394,29 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			if (warningCount > 0)
 				buffer.append(warningCount + " warning"
 						+ (warningCount != 1 ? "s" : ""));
-			buffer.append(".");
-			buffer.append("</font>");
-			buffer.append(" <i>Click for more details</i>");
-			buffer.append("</html>");
+			htmlWrapperBuffer.append(buffer);
+			htmlWrapperBuffer.append(".");
+			htmlWrapperBuffer.append("</font>");
+			htmlWrapperBuffer.append(" <i>Click for more details</i>");
+			htmlWrapperBuffer.append("</html>");
+			final int errorCountFinal = errorCount;
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					errorLabel.setText(buffer.toString());
+					String tooltip = CheckWarningComponent.getHTML(warnings,
+							"", "", true, false, false, false);
+					ComponentManager.getManager().setLabel(TextEditor.this,
+							"Text Editor (" + buffer.toString() + ")");
+					ComponentManager.getManager().setTitlebarTooltip(
+							TextEditor.this, tooltip);
+					if (errorCountFinal > 0)
+						ComponentManager.getManager().setTitlebarColor(
+								TextEditor.this, Color.red);
+					else
+						ComponentManager.getManager().setTitlebarColor(
+								TextEditor.this, Color.orange);
+					errorLabel.setText(htmlWrapperBuffer.toString());
 					errorLabel.setIcon(icon);
-					errorLabel.setToolTipText(CheckWarningComponent.getHTML(
-							warnings, "", "", true, false, false, false));
+					errorLabel.setToolTipText(tooltip);
 					errorPanel.setVisible(true);
 					validate();
 					repaint();
@@ -478,7 +506,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			return runChecksAndCommit();
 		}
 
-		public void operationExecuted(IOEvent e) {			
+		public void operationExecuted(IOEvent e) {
 		}
 	};
 
@@ -576,7 +604,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 				+
 
 				"<box orientation='vert'>"
-				+ "<component id='ERROR_PANEL'/>"
+				// put this back if we need it
+				// + "<component id='ERROR_PANEL'/>"
 				+
 
 				"<compactgrid cols='2' yPad='3'>"

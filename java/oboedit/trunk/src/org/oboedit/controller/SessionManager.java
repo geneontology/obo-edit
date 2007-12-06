@@ -230,7 +230,7 @@ public class SessionManager {
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));
-			if (SelectionManager.getManager().doPreSelectValidation(this))
+			if (SelectionManager.getManager().doPreSelectValidation(selection))
 				SelectionManager.setGlobalSelection(selection);
 		}
 	}

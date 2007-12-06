@@ -3,6 +3,7 @@ package org.oboedit.gui.components;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.Box;
@@ -19,8 +20,11 @@ import org.bbop.framework.GUIManager;
 import org.bbop.util.EnumPersistenceDelegate;
 import org.bbop.util.SwingUpdateTask;
 import org.bbop.util.TaskDelegate;
+import org.obo.datamodel.FieldPathSpec;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
+import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.QueryEngine;
 import org.obo.query.impl.FilterQuery;
 import org.obo.query.impl.SearchHit;
@@ -202,9 +206,12 @@ public class SearchComponent extends AbstractGUIComponent {
 		QueryEngine engine = SessionManager.getManager().getQueryEngine();
 		final Filter filter = component.getFilter();
 		Class<?> resultType = factory.getResultType();
+		LinkDatabase linkDatabase = SessionManager.getManager()
+				.getCurrentLinkDatabase();
 		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(
-				SessionManager.getManager().getSession(), new FilterQuery(
-						filter, resultType));
+				linkDatabase, new FilterQuery(filter, resultType,
+						SessionManager.getManager()
+						.getReasoner()));
 		Runnable r = new Runnable() {
 
 			public void run() {

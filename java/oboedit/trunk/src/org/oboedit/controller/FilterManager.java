@@ -44,7 +44,6 @@ import org.obo.filters.IsClassCriterion;
 import org.obo.filters.IsCompleteCriterion;
 import org.obo.filters.IsCompleteLinkCriterion;
 import org.obo.filters.IsImpliedLinkCriterion;
-import org.obo.filters.IsImpliedObjectCriterion;
 import org.obo.filters.IsNecessaryCriterion;
 import org.obo.filters.IsObsoleteCriterion;
 import org.obo.filters.IsPropertyCriterion;
@@ -64,6 +63,7 @@ import org.obo.filters.NamespaceSearchCriterion;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
 import org.obo.filters.ParentCountCriterion;
+import org.obo.filters.ParentSearchCriterion;
 import org.obo.filters.RegexpComparison;
 import org.obo.filters.RootSearchAspect;
 import org.obo.filters.SearchAspect;
@@ -76,7 +76,10 @@ import org.obo.filters.SynonymSearchCriterion;
 import org.obo.filters.WildcardComparison;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.FilterUtil;
+import org.oboedit.gui.LineType;
 import org.oboedit.gui.event.GlobalFilterListener;
+import org.oboedit.gui.event.ReasonerStatusEvent;
+import org.oboedit.gui.event.ReasonerStatusListener;
 import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.BoldSpecField;
 import org.oboedit.gui.filter.ConfiguredColor;
@@ -112,8 +115,7 @@ public class FilterManager {
 
 	protected Collection<GeneralRendererSpecField<?>> renderSpecFields = new ArrayList<GeneralRendererSpecField<?>>();
 
-	protected List<SearchCriterion> displayableCriteria =
-		new ArrayList<SearchCriterion>();
+	protected List<SearchCriterion> displayableCriteria = new ArrayList<SearchCriterion>();
 
 	public void addGlobalFilterListener(GlobalFilterListener listener) {
 		globalFilterListeners.add(listener);
@@ -131,6 +133,34 @@ public class FilterManager {
 
 	private FilterManager() {
 		installDefaults();
+		SessionManager.getManager().addReasonerListener(new ReasonerListener() {
+
+			public void reasoningFinished() {
+				updateReasoner();
+			}
+
+			public void reasoningStarted() {
+			}
+
+		}, true);
+		SessionManager.getManager().addReasonerStatusListener(
+				new ReasonerStatusListener() {
+
+					public void statusChanged(ReasonerStatusEvent e) {
+						updateReasoner();
+					}
+
+				});
+		updateReasoner();
+	}
+
+	protected void updateReasoner() {
+		for (SearchCriterion<?, ?> crit : getCriteria()) {
+			if (SessionManager.getManager().getUseReasoner())
+				crit.setReasoner(SessionManager.getManager().getReasoner());
+			else
+				crit.setReasoner(null);
+		}
 	}
 
 	public static FilterManager getManager() {
@@ -168,6 +198,7 @@ public class FilterManager {
 		addCriterion(new IsCompleteCriterion());
 		addCriterion(new IsaCompleteCriterion());
 		addCriterion(new HasIsaParentCriterion());
+		addCriterion(new ParentSearchCriterion(), false);
 		addCriterion(new HasParentWithTypeIDCriterion());
 		addCriterion(new IsAnonymousCriterion());
 		addCriterion(new IsCompleteLinkCriterion());
@@ -178,19 +209,7 @@ public class FilterManager {
 		addCriterion(new IsaParentCountCriterion());
 		addCriterion(new ParentCountCriterion());
 		addCriterion(new IsImpliedLinkCriterion());
-		addCriterion(new IsImpliedObjectCriterion());
-		final IsRedundantLinkCriterion c = new IsRedundantLinkCriterion();
-		SessionManager.getManager().addReasonerListener(new ReasonerListener() {
-
-			public void reasoningFinished() {
-				c.setReasoner(SessionManager.getManager().getReasoner());
-			}
-
-			public void reasoningStarted() {
-			}
-
-		}, true);
-		addCriterion(c);
+		addCriterion(new IsRedundantLinkCriterion());
 		addCriterion(new IsTransitiveCriterion());
 		addCriterion(new IsBuiltinCriterion());
 		addCriterion(new KeywordSearchCriterion());
@@ -361,10 +380,8 @@ public class FilterManager {
 		basicLinkFilter.setAspect(org.obo.filters.LinkFilter.SELF);
 		basicLinkFilter.setFilter(typeFilter);
 
-		LinkRenderSpec spec = new LinkRenderSpec();
-		spec.setLinkColor(Color.blue);
-		spec.setLineType(LinkRenderSpec.WAVY_LINE);
-		spec.setLineWidth(2);
+		GeneralRendererSpec spec = new GeneralRendererSpec(
+				LineTypeSpecField.FIELD, LineType.DASHED_LINE);
 
 		return new RenderedFilter(basicLinkFilter, spec);
 	}
@@ -392,14 +409,15 @@ public class FilterManager {
 
 	protected RenderedFilter createRedundantRenderer() {
 		ObjectFilter typeFilter = new ObjectFilterImpl();
-		typeFilter.setCriterion(new IsRedundantLinkCriterion());
+		typeFilter.setCriterion(IsRedundantLinkCriterion.CRITERION);
 		org.obo.filters.LinkFilter basicLinkFilter = new LinkFilterImpl();
 		basicLinkFilter.setAspect(org.obo.filters.LinkFilter.SELF);
 		basicLinkFilter.setFilter(typeFilter);
 
-		LinkRenderSpec spec = new LinkRenderSpec();
-		spec.setLinkColor(Color.red);
-		spec.setLineWidth(2);
+		GeneralRendererSpec spec = new GeneralRendererSpec(
+				LineTypeSpecField.FIELD, LineType.ZIGZAG_LINE,
+				ForegroundColorSpecField.FIELD, new ConfiguredColor(Color.red,
+						true));
 		return new RenderedFilter(basicLinkFilter, spec);
 	}
 

@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
+import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
 import org.oboedit.gui.components.SearchResultsComponent;
 
@@ -42,35 +43,14 @@ public class SearchResultsComponentFactory extends
 
 	protected Map<String, TemporaryRestoreStruct> temporaryMap = new HashMap<String, TemporaryRestoreStruct>();
 
-	protected LayoutListener listener = new LayoutListener() {
+	protected LayoutListener listener = new LayoutAdapter() {
 
-		public void add(GUIComponent parent, GUIComponent child) {
-		}
-
-		public void close(GUIComponent c) {
+		public boolean closing(GUIComponent c) {
 			if (c instanceof SearchResultsComponent) {
 				uncache(c.getID());
 			}
+			return true;
 		}
-
-		public void docked(GUIComponent component) {
-		}
-
-		public void focusChanged(GUIComponent old, GUIComponent newComponent) {
-		}
-
-		public void maximized(GUIComponent component) {
-		}
-
-		public void minimized(GUIComponent component) {
-		}
-
-		public void restored(GUIComponent component) {
-		}
-
-		public void undocked(GUIComponent component) {
-		}
-		
 		public void titleChanged(GUIComponent component, String newTitle) {
 			if (component instanceof SearchResultsComponent) {
 				TemporaryRestoreStruct struct = temporaryMap.get(component.getID());

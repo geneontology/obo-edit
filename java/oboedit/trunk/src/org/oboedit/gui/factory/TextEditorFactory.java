@@ -7,7 +7,7 @@ public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
 
 	public TextEditorFactory() {
 	}
-	
+
 	public String getID() {
 		return "TEXTEDIT";
 	}
@@ -20,9 +20,13 @@ public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
 	public String getName() {
 		return "Text Editor";
 	}
-	
-	
+
 	public FactoryCategory getCategory() {
 		return FactoryCategory.ONTOLOGY;
+	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Text_Editing";
 	}
 }

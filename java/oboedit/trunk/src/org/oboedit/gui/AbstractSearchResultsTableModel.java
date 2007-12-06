@@ -32,6 +32,10 @@ public abstract class AbstractSearchResultsTableModel<T extends IdentifiableObje
 	public AbstractSearchResultsTableModel(Class<T> objectType) {
 		this.objectType = objectType;
 	}
+	
+	public Class<T> getObjectType() {
+		return objectType;
+	}
 
 	protected Comparator<T> comparator = new java.util.Comparator<T>() {
 		public int compare(T o1, T o2) {

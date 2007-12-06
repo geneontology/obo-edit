@@ -54,16 +54,16 @@ public class SearchResultsComponent extends AbstractGUIComponent implements
 		this.factory = factory;
 	}
 
-//	public void addNotify() {
-//		// TODO Auto-generated method stub
-//		super.addNotify();
-//		SearchResultsComponentFactory componentFactory = (SearchResultsComponentFactory) ComponentManager
-//				.getManager().getFactory(this);
-//		if (componentFactory.alreadyStored(getID())) {
-//			String title = componentFactory.getTitle(getID());
-//			ComponentManager.getManager().setLabel(this, title);
-//		}
-//	}
+	public void addNotify() {
+		// TODO Auto-generated method stub
+		super.addNotify();
+		SearchResultsComponentFactory componentFactory = (SearchResultsComponentFactory) ComponentManager
+				.getManager().getFactory(this);
+		if (componentFactory.alreadyStored(getID())) {
+			String title = componentFactory.getTitle(getID());
+			ComponentManager.getManager().setLabel(this, title);
+		}
+	}
 
 	@Override
 	public void init() {

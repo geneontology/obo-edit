@@ -18,6 +18,7 @@ public class DefaultErrorDecoratorFactory implements ErrorDecoratorFactory {
 			addFactory(new TextErrorDecoratorFactory());
 			addFactory(new JListErrorDecoratorFactory());
 			addFactory(new JTableErrorDecoratorFactory());
+			addFactory(new TableListErrorDecoratorFactory());
 		}
 	}
 

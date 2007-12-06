@@ -226,6 +226,7 @@ public class GUIUtil {
 			if (f.size() == 0)
 				continue;
 			for (RenderedFilter rf : f) {
+				rf.getFilter().setReasoner(SessionManager.getManager().getReasoner());
 				if (rf.getFilter().satisfies(o)) {
 					if (out == null)
 						out = rf.getSpec();

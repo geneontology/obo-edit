@@ -37,6 +37,7 @@ import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
+import org.bbop.framework.HelpManager;
 import org.bbop.framework.IOManager;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
@@ -226,7 +227,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	protected void doOtherInstallations() {
 		FilterManager.getManager().addCriterion(new MaxParentCountCriterion());
 		UIManager.put("Tree.paintLines", Boolean.FALSE);
-		// UIManager.put("Tree.rightChildIndent", new Integer(0));
+		HelpManager.getManager().setHelpSetFile(
+				new File(Preferences.getInstallationDirectory(),
+						"docs/OBO-Edit.hs"));
 		FocusMenuManager.install();
 		installDefaultActions();
 		installGlobalScriptObjects();

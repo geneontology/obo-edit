@@ -8,6 +8,7 @@ import javax.swing.border.*;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
+import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.filters.DefinitionSearchCriterion;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
@@ -123,19 +124,19 @@ public class DefinitionEditorComponent extends AbstractTextEditComponent {
 			defField.setEnabled(false);
 		}
 	}
-	
+
 	@Override
 	public void init() {
 		super.init();
 		defDbxrefList.init();
 	}
-	
+
 	@Override
 	public void cleanup() {
 		defDbxrefList.cleanup();
 		super.cleanup();
 	}
-	
+
 	@Override
 	public void setRoot(RootTextEditComponent root) {
 		super.setRoot(root);
@@ -168,6 +169,7 @@ public class DefinitionEditorComponent extends AbstractTextEditComponent {
 		getRoot().addMapping(
 				new FieldPathSpec(DefinitionSearchCriterion.CRITERION), this,
 				defField);
+
 	}
 
 	@Override

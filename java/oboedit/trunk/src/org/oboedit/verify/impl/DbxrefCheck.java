@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +51,9 @@ import org.oboedit.verify.AbstractCheck;
 import org.oboedit.verify.CheckConfiguration;
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.FieldCheck;
+import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.OntologyCheck;
+import org.oboedit.verify.QuickFix;
 
 public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		OntologyCheck {
@@ -542,11 +545,60 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 		if (dbconfig.getDoBadCharactersCheck()) {
 			if (!StringUtil.containsOnlyValidURICharacters(ref.getDatabaseID())
 					|| !StringUtil.containsOnlyValidURICharacters(ref
-							.getDatabase()))
-				out.add(new CheckWarning(getWarningHeader(title, index, field
-						.getObject())
-						+ " contains non-URI characters.", false, this, field));
+							.getDatabase())) {
+				Collection<QuickFix> fixes = new ArrayList<QuickFix>();
+				fixes.add(new DefaultHistoryQuickFix(
+						"Remove non-uri characters", getNonURIReplaceItem(
+								field, ref, '\0')));
+				fixes.add(new DefaultHistoryQuickFix(
+						"Replace non-uri characters with underscores",
+						getNonURIReplaceItem(field, ref, '_')));
+				fixes.add(new DefaultHistoryQuickFix(
+						"Replace non-uri characters with dashes",
+						getNonURIReplaceItem(field, ref, '-')));
+				CheckWarning warning = new CheckWarning(getWarningHeader(title,
+						index, field.getObject())
+						+ " contains non-URI characters.", false, this, field,
+						fixes);
+				out.add(warning);
+			}
 		}
+	}
+
+	protected static HistoryItem getNonURIReplaceItem(FieldPath field,
+			Dbxref ref, char replaceChar) {
+		TermMacroHistoryItem item = new TermMacroHistoryItem();
+		Synonym s = null;
+		if (field.getLastField().equals(SynonymDbxrefSearchCriterion.CRITERION)) {
+			FieldPath parentPath = field.getParentPath();
+			s = (Synonym) parentPath.getLastValue();
+		}
+		Dbxref newDbxref = SessionManager
+				.getManager()
+				.getSession()
+				.getObjectFactory()
+				.createDbxref(
+						replaceNonURICharacters(ref.getDatabase(), replaceChar),
+						replaceNonURICharacters(ref.getDatabaseID(),
+								replaceChar), ref.getDesc(), ref.getType(), s);
+		item.addItem(new DelDbxrefHistoryItem(field.getObject().getID(), ref,
+				ref.isDefRef(), s == null ? null : s.getText()));
+		item.addItem(new AddDbxrefHistoryItem(field.getObject().getID(),
+				newDbxref, newDbxref.isDefRef(),
+				s == null ? null : s.getText()));
+		return item;
+	}
+
+	protected static String replaceNonURICharacters(String s, char replaceChar) {
+		StringBuffer out = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (StringUtil.isValidURICharacter(c))
+				out.append(c);
+			else if (replaceChar != '\0')
+				out.append(replaceChar);
+		}
+		return out.toString();
 	}
 
 	public String getID() {

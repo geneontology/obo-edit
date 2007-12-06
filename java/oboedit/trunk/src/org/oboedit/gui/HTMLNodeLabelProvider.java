@@ -23,6 +23,10 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 	protected Collection<GeneralRendererSpecField<?>> ignoreThese = new ArrayList<GeneralRendererSpecField<?>>();
 	protected String htmlExpression = "$name$";
 
+	public HTMLNodeLabelProvider() {
+		this(null, (Collection) null);
+	}
+	
 	public HTMLNodeLabelProvider(FilteredRenderable renderable,
 			Collection<RenderedFilter> postRenderers) {
 		this(renderable, null, null, postRenderers);
@@ -98,11 +102,17 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 		FilteredRenderable fr = null;
 		if (selector instanceof FilteredRenderable)
 			fr = (FilteredRenderable) selector;
-		return GUIUtil.renderHTML(fr, resolveHTMLExpression(htmlExpression, lo),
+		if (renderable != null)
+			return GUIUtil.renderHTML(fr, resolveHTMLExpression(htmlExpression, lo),
 				lo, ignoreThese, preRenderers, renderable.getObjectRenderers(),
 				FilterManager.getManager().getGlobalTermRenderers(),
 				renderable.getAutomaticObjectRenderers(),
 				postRenderers);
+		else
+			return GUIUtil.renderHTML(fr, resolveHTMLExpression(htmlExpression, lo),
+					lo, ignoreThese, preRenderers,
+					FilterManager.getManager().getGlobalTermRenderers(),
+					postRenderers);
 	}
 
 	public String getHtmlExpression() {

@@ -781,13 +781,22 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 			char finalChar = text.charAt(text.length() - 1);
 			if (doFinalPunctuationCheck(condition)
-					&& !(finalChar == '?' || finalChar == '.' || finalChar == '!'))
+					&& !(finalChar == '?' || finalChar == '.' || finalChar == '!')) {
+				Collection<QuickFix> fixes = new ArrayList<QuickFix>();
+				fixes.add(new ReplacementFix("End sentence with a period",
+						path, text + "."));
+				fixes.add(new ReplacementFix(
+						"End sentence with a question mark", path, text + "?"));
+				fixes.add(new ReplacementFix(
+						"End sentence with an exclamation point", path, text
+								+ "!"));
 				addWarning(out, new TextCheckWarning(getWarningLabel(path,
 						condition)
 						+ " does not end with a period, "
 						+ "question mark or exclamation point.", false, this,
-						text.length() - 1, text.length(), path,
+						text.length() - 1, text.length(), path, fixes,
 						"text:no_punctuation"));
+			}
 			StringBuffer word = new StringBuffer();
 			StringBuffer sentence = new StringBuffer();
 			for (int i = 0; i < text.length(); i++) {

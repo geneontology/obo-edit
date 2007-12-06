@@ -20,6 +20,11 @@ public class ConfigurationManagerFactory extends
 	public String getName() {
 		return "Configuration Manager";
 	}
+	
+	@Override
+	public boolean getPreferSeparateWindow() {
+		return true;
+	}
 
 	public FactoryCategory getCategory() {
 		return FactoryCategory.CONFIG;

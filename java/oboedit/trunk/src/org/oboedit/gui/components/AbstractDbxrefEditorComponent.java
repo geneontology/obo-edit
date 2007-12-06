@@ -1,6 +1,5 @@
 package org.oboedit.gui.components;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -29,6 +28,7 @@ import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
@@ -71,12 +71,15 @@ public abstract class AbstractDbxrefEditorComponent extends
 
 	protected TableList<Dbxref> dbxrefList = new TableList<Dbxref>();
 
+	protected DbxrefListTableEditor editor;
+
 	protected abstract String getUserEventType();
 
 	public AbstractDbxrefEditorComponent() {
 		super();
 		dbxrefList.setRenderer(new DbxrefTableRenderer());
-		dbxrefList.setEditor(new DbxrefListTableEditor(createNewDbxref()));
+		editor = new DbxrefListTableEditor(createNewDbxref());
+		dbxrefList.setEditor(editor);
 
 		dbxrefList.addSelectionListener(new ListSelectionListener() {
 
@@ -128,12 +131,16 @@ public abstract class AbstractDbxrefEditorComponent extends
 	public void init() {
 		super.init();
 		GUIManager.getManager().addUserListener(dbxrefEditListener);
+		getRoot().addMapping(getPathSpec(), this, dbxrefList);
+		editor.installMappings(getPathSpec(), this);
 	}
 
 	@Override
 	public void cleanup() {
 		super.cleanup();
+		getRoot().removeMapping(getPathSpec(), dbxrefList);
 		GUIManager.getManager().removeUserListener(dbxrefEditListener);
+		editor.uninstallMappings(getPathSpec(), this);
 	}
 
 	@Override
@@ -193,15 +200,6 @@ public abstract class AbstractDbxrefEditorComponent extends
 		}
 
 		return out;
-	}
-
-	@Override
-	public void setRoot(RootTextEditComponent root) {
-		if (this.root != null) {
-			this.root.removeMapping(getPathSpec(), dbxrefList);
-		}
-		super.setRoot(root);
-		getRoot().addMapping(getPathSpec(), this, dbxrefList);
 	}
 
 	protected abstract HistoryItem getAddDbxrefItem(Dbxref ref);

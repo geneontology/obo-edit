@@ -26,15 +26,14 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 
 	protected Point2D startPoint = new Point2D.Double();
 	protected LinkDatabaseCanvas canvas;
-	
+
 	public SelectionMouseListener(LinkDatabaseCanvas canvas) {
 		this.canvas = canvas;
 	}
-	
+
 	@Override
 	public void mousePressed(PInputEvent event) {
-		if (event.isMiddleMouseButton()
-				&& event.getClickCount() == 1) {
+		if (event.isMiddleMouseButton() && event.getClickCount() == 1) {
 			startPoint.setLocation(event.getPosition());
 		}
 	}
@@ -76,10 +75,8 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 				Iterator it = canvas.getLayer().getAllNodes().iterator();
 				while (it.hasNext()) {
 					PNode child = (PNode) it.next();
-					PBounds marqueeBounds = selectionMarquee
-							.getGlobalBounds();
-					if (marqueeBounds.intersects(child
-							.getGlobalFullBounds())) {
+					PBounds marqueeBounds = selectionMarquee.getGlobalBounds();
+					if (marqueeBounds.intersects(child.getGlobalFullBounds())) {
 						if (child instanceof OELink) {
 							OELink oelink = (OELink) child;
 							PNode iconPanel = oelink
@@ -104,27 +101,24 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 							.getSelection(), selected);
 				} else
 					selection = SelectionManager.createSelection(canvas,
-							selected, null, null,
-							canvas.getRootAlgorithm(), canvas
-									.getLinkProviderDatabase());
-				provider
-						.setNamedChild(MARQUEE_KEY, canvas.getLayer(), null);
+							selected, null, null, canvas.getRootAlgorithm(),
+							canvas.getLinkProviderDatabase());
+				provider.setNamedChild(MARQUEE_KEY, canvas.getLayer(), null);
 				canvas.select(selection);
 				canvas.decorate();
 			}
 		} else if (event.isLeftMouseButton()) {
 			PPickPath path = canvas.getCamera().pick(
-					event.getPosition().getX(), event.getPosition().getY(),
-					1);
+					event.getPosition().getX(), event.getPosition().getY(), 1);
 			PCNode node = (PCNode) PiccoloUtil.getNodeOfClass(event.getPath(),
 					PCNode.class);
 			if (node == null)
 				return;
-			
+
 			if (node instanceof OENode && !event.getPickedNode().equals(node)) {
 				return;
 			}
-				
+
 			PathCapable pathCapable = node.getObject();
 			Selection selection = null;
 			if (event.isShiftDown()) {
@@ -143,10 +137,10 @@ public class SelectionMouseListener extends PBasicInputEventHandler {
 						pathCapable, canvas.getRootAlgorithm(), canvas
 								.getLinkProviderDatabase());
 			if (canvas.isLive()
-					&& !SelectionManager.getManager()
-							.doPreSelectValidation(canvas))
+					&& !SelectionManager.getManager().doPreSelectValidation(
+							selection))
 				return;
-			
+
 			canvas.select(selection);
 			canvas.decorate();
 		}
