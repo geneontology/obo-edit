@@ -1,5 +1,6 @@
 package org.bbop.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,7 +61,11 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 		if (isFailed()) {
 			for (Runnable r : failedRunnables) {
 				if (isSwingFriendly) {
-					SwingUtilities.invokeLater(r);
+					try {
+						SwingUtilities.invokeAndWait(r);
+					} catch (InterruptedException e) {
+					} catch (InvocationTargetException e) {
+					}
 				} else
 					r.run();
 			}
@@ -68,7 +73,11 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 		} else if (isCancelled()) {
 			for (Runnable r : cancelledRunnables) {
 				if (isSwingFriendly) {
-					SwingUtilities.invokeLater(r);
+					try {
+						SwingUtilities.invokeAndWait(r);
+					} catch (InterruptedException e) {
+					} catch (InvocationTargetException e) {
+					}
 				} else
 					r.run();
 			}
@@ -76,7 +85,12 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 		} else {
 			for (Runnable r : postExecuteRunnables) {
 				if (isSwingFriendly) {
-					SwingUtilities.invokeLater(r);
+					// SwingUtilities.invokeLater(r);
+					try {
+						SwingUtilities.invokeAndWait(r);
+					} catch (InterruptedException e) {
+					} catch (InvocationTargetException e) {
+					}
 				} else
 					r.run();
 			}

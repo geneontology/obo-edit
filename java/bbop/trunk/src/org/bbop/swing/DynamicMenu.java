@@ -45,13 +45,13 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public JMenuItem add(Action a) {
 		JMenuItem item = new JMenuItem(a);
 		items.add(item);
-		return super.add(a);
+		return item;
 	}
 
 	@Override
 	public Component add(Component c) {
 		items.add(c);
-		return super.add(c);
+		return c;
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 		if (index == -1)
 			index = items.size();
 		items.add(index, c);
-		return super.add(c, index);
+		return c;
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	@Override
 	public JMenuItem add(JMenuItem menuItem) {
 		items.add(menuItem);
-		return super.add(menuItem);
+		return menuItem;
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class DynamicMenu extends AbstractDynamicMenuItem {
 	public JMenuItem add(String s) {
 		JMenuItem item = new JMenuItem(s);
 		items.add(item);
-		return super.add(s);
+		return item;
 	}
 
 	@Override

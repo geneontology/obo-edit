@@ -9,7 +9,7 @@ import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.TaskDelegate;
 
 public class BackgroundEventQueue {
-	
+
 	private static int idgen = 0;
 	private int id = idgen++;
 
@@ -45,14 +45,14 @@ public class BackgroundEventQueue {
 		protected List<Runnable> startupNotifiers = new LinkedList<Runnable>();
 		protected List<Runnable> sleepNotifiers = new LinkedList<Runnable>();
 
-		protected BackgroundEventQueue queue;
 		protected boolean kill = false;
+		protected StackTraceElement[] trace;
 
-		public BackgroundEventThread(BackgroundEventQueue queue) {
+		public BackgroundEventThread() {
 			setDaemon(true);
-			this.queue = queue;
+			trace = (new Exception()).getStackTrace();
 		}
-		
+
 		public void kill() {
 			kill = true;
 			interrupt();
@@ -78,21 +78,21 @@ public class BackgroundEventQueue {
 				}
 			}
 		}
-		
+
 		public void cancelAll() {
 			List<TaskDelegate<?>> cancelUs = new LinkedList<TaskDelegate<?>>(l);
 			if (currentTask != null)
 				cancelUs.add(0, currentTask);
-			for(TaskDelegate<?> t : cancelUs) {
+			for (TaskDelegate<?> t : cancelUs) {
 				t.cancel();
 			}
-			
+
 		}
-		
+
 		protected void addSleepNotifier(Runnable r) {
 			sleepNotifiers.add(r);
 		}
-		
+
 		public void removeSleepNotifier(Runnable r) {
 			sleepNotifiers.remove(r);
 		}
@@ -152,11 +152,11 @@ public class BackgroundEventQueue {
 
 	public BackgroundEventQueue() {
 	}
-	
+
 	public void cancelAll() {
 		getBackgroundEventThread().cancelAll();
 	}
-	
+
 	public void addStartupNotifier(Runnable r) {
 		getBackgroundEventThread().addStartupNotifier(r);
 	}
@@ -175,14 +175,14 @@ public class BackgroundEventQueue {
 		BackgroundEventThread thread = getBackgroundEventThread();
 		thread.scheduleTask(t);
 	}
-	
+
 	public void scheduleTasks(TaskDelegate<?>... tasks) {
 		BackgroundEventThread thread = getBackgroundEventThread();
-		for(TaskDelegate<?> task : tasks) {
+		for (TaskDelegate<?> task : tasks) {
 			thread.scheduleTask(task);
 		}
 	}
-	
+
 	public void scheduleDependentTasks(TaskDelegate<?>... tasks) {
 		BackgroundEventThread thread = getBackgroundEventThread();
 		thread.scheduleTask(new TaskGroup(tasks));
@@ -190,7 +190,7 @@ public class BackgroundEventQueue {
 
 	protected BackgroundEventThread getBackgroundEventThread() {
 		if (thread == null) {
-			thread = new BackgroundEventThread(this);
+			thread = new BackgroundEventThread();
 			thread.start();
 		}
 		return thread;
@@ -203,17 +203,21 @@ public class BackgroundEventQueue {
 	public int getPendingTaskCount() {
 		return thread.getTaskQueue().size();
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
-		if (thread != null)
-			thread.kill();
+		die();
 		super.finalize();
 	}
-	
+
+	public void die() {
+		if (thread != null)
+			thread.kill();
+	}
+
 	@Override
 	public String toString() {
-		return "Background Event Queue "+id;
+		return "Background Event Queue " + id;
 	}
 
 	public <T> T runTaskNow(TaskDelegate<T> task) {

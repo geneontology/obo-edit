@@ -660,12 +660,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		showProfilesButton.setContentAreaFilled(false);
 		showProfilesButton.setBorderPainted(false);
 
-		if (queue == null) {
-			this.queue = new BackgroundEventQueue();
-			this.queue.addStartupNotifier(new ScreenLockRunnable(this.queue,
-					frame, modal));
-		} else
-			this.queue = queue;
+		this.queue = queue;
 
 		CompoundBorder paddedUIBorder = new CompoundBorder(uiPanelBorder,
 				new EmptyBorder(10, 10, 10, 10));
@@ -877,7 +872,8 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 			dialog.pack();
 	}
 
-	public AdapterConfiguration getConfiguration() throws DataAdapterUIException {
+	public AdapterConfiguration getConfiguration()
+			throws DataAdapterUIException {
 		return currentUI.getConfig(op, currentAdapter, input);
 	}
 

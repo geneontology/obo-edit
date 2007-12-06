@@ -20,6 +20,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
@@ -35,6 +36,8 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 	protected boolean bracketBottom;
 
 	protected boolean merge;
+	
+	protected boolean addSep = false;
 
 	public AbstractDynamicMenuItem(String s) {
 		this(s, true, false, false);
@@ -143,21 +146,21 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 
 	public void buildMenu() {
 		super.removeAll();
-		addSep = false;
-		int index = 0;
-		Collection<? extends Component> items = getItems();
-		for (Component c : items) {
-			addItemToMenu(c, index == 0, index >= items.size() - 1);
-			index++;
-		}
-		setEnabled(items.size() > 0);
+//		addSep = false;
+//		int index = 0;
+//		Collection<? extends Component> items = getItems();
+//		for (Component c : items) {
+//			addItemToMenu(c, index == 0, index >= items.size() - 1);
+//			index++;
+//		}
+//		setEnabled(items.size() > 0);
+//		Component [] comps = getPopupMenu().getComponents();
+//		System.err.println("comps = "+comps.length);
 	}
 
 	protected static String escapeID(String s) {
 		return s.replace(':', '_').replace('|', '_');
 	}
-
-	protected boolean addSep = false;
 
 	public boolean getMerge() {
 		return merge;
@@ -252,5 +255,26 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 		Collection<? extends Component> items = getItems();
 		return items.toArray(new Component[items.size()]);
 	}
+
+	public boolean isBracketTop() {
+		return bracketTop;
+	}
+
+	public void setBracketTop(boolean bracketTop) {
+		this.bracketTop = bracketTop;
+	}
+
+	public boolean isBracketBottom() {
+		return bracketBottom;
+	}
+
+	public void setBracketBottom(boolean bracketBottom) {
+		this.bracketBottom = bracketBottom;
+	}
+
+	public void setMerge(boolean merge) {
+		this.merge = merge;
+	}
+	
 
 }
