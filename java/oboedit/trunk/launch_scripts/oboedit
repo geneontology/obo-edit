@@ -1,4 +1,4 @@
-#! /bin/sh
+ #! /bin/sh
 
 #Try to figure out where go is installed, assuming that the goeditor
 #script is in the same directory as the GO runtime files
