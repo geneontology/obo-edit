@@ -498,7 +498,7 @@ public class StringUtil {
 	public static boolean isValidURICharacter(char c) {
 		return p.matcher(c + "").matches();
 	}
-
+	
 	public static boolean containsOnlyValidURICharacters(String s) {
 		return p.matcher(s).matches();
 	}

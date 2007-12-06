@@ -1,5 +1,6 @@
 package org.bbop.framework.dock;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -26,13 +27,25 @@ public interface LayoutDriver {
 	
 	public void setComponentLabel(GUIComponent target, String label);
 	
+	public void setComponentTitlebarTooltip(GUIComponent target, String label);
+	
+	public void setComponentTitlebarColor(GUIComponent c, Color color);
+	
 	public void cleanup();
 	
 	public GUIComponent createMainPanel(String id);
 
 	public String getComponentLabel(GUIComponent c);
 	
+	public String getComponentTitlebarTooltip(GUIComponent c);
+	
+	public Color getComponentTitlebarColor(GUIComponent c);
+	
 	public void addLayoutListener(LayoutListener listener);
 
 	public void removeLayoutListener(LayoutListener listener);
+	
+	public boolean isFloating(GUIComponent c);
+	
+	public void setFloating(GUIComponent c, boolean floating);
 }

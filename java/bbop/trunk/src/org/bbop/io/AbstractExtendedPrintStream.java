@@ -153,6 +153,11 @@ public abstract class AbstractExtendedPrintStream extends PrintStream {
 		callWrite();
 	}
 	
+	@Override
+	public void flush() {
+		callWrite();
+	}
+	
 	protected void callWrite() {
 		String s = stream.toString();
 		stream.reset();

@@ -30,4 +30,6 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 	public FactoryCategory getCategory();
 	
 	public boolean isRestoreOnStartup();
+	
+	public String getHelpTopicID();
 }

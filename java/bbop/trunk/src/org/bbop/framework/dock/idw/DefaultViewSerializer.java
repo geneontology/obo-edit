@@ -59,7 +59,8 @@ public class DefaultViewSerializer implements ViewSerializer {
 				v = new GarbageView();
 			if (v != null)
 				driver.addView(v);
-		}
+		} else
+			driver.fireCreatedView(v, driver.getComponent(v));
 		return v;
 	}
 

@@ -3,11 +3,13 @@ package org.bbop.swing.widget;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -171,12 +173,13 @@ public class TableList<T> extends JComponent {
 			return data.get(rowIndex);
 		}
 
-		public void setValueAt(int rowIndex, T value) {
+		public void setValueAt(int rowIndex, T value, boolean fireEvent) {
 			if (rowIndex >= data.size())
 				addValue(value);
 			else {
 				data.set(rowIndex, value);
-				fireTableRowsUpdated(rowIndex, rowIndex);
+				if (fireEvent)
+					fireTableRowsUpdated(rowIndex, rowIndex);
 			}
 		}
 
@@ -227,6 +230,8 @@ public class TableList<T> extends JComponent {
 
 	protected class ListTable extends JTable {
 
+		protected boolean marginAdjust = false;
+
 		@Override
 		public Component prepareEditor(TableCellEditor editor, int row,
 				int column) {
@@ -248,6 +253,8 @@ public class TableList<T> extends JComponent {
 
 		@Override
 		public void removeEditor() {
+			if (marginAdjust)
+				return;
 			if (!completingEdit) {
 				editor.notifyCancel();
 			}
@@ -262,10 +269,9 @@ public class TableList<T> extends JComponent {
 		}
 
 		public void columnMarginChanged(ChangeEvent e) {
-			if (isEditing()) {
-				return;
-			} else
-				super.columnMarginChanged(e);
+			marginAdjust = true;
+			super.columnMarginChanged(e);
+			marginAdjust = false;
 		}
 
 	}
@@ -380,6 +386,14 @@ public class TableList<T> extends JComponent {
 		add(Arrays.asList(items));
 	}
 
+	public void addTableModelListener(TableModelListener listener) {
+		table.getModel().addTableModelListener(listener);
+	}
+
+	public void removeTableModelListener(TableModelListener listener) {
+		table.getModel().removeTableModelListener(listener);
+	}
+
 	public int getSelectedRowCount() {
 		return getSelectedRows().length;
 	}
@@ -411,14 +425,18 @@ public class TableList<T> extends JComponent {
 		table.editCellAt(row, 0);
 	}
 
-	public void setEditor(ListTableEditor editor) {
+	public void setEditor(ListTableEditor<T> editor) {
 		if (this.editor != null)
 			this.editor.removeCommitListener(commitListener);
 		this.editor = editor;
 		editor.addCommitListener(commitListener);
 	}
 
-	public ListTableEditor getEditor() {
+	public void cancelEditing() {
+		table.removeEditor();
+	}
+
+	public ListTableEditor<T> getEditor() {
 		return editor;
 	}
 
@@ -451,11 +469,35 @@ public class TableList<T> extends JComponent {
 		validate();
 	}
 
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		table.addMouseListener(l);
+	}
+
+	@Override
+	public synchronized void removeMouseListener(MouseListener l) {
+		table.removeMouseListener(l);
+	}
+
 	public void setData(T... data) {
 		setData(Arrays.asList(data));
 	}
 
+	public boolean isEditing() {
+		return table.isEditing();
+	}
+
+	public T getItemAt(Point p) {
+		int row = table.rowAtPoint(p);
+		if (row >= getData().size())
+			return null;
+		return getData().get(row);
+	}
+
 	public void setData(Collection<T> data) {
+		if (isEditing()) {
+			cancelEditing();
+		}
 		this.data = new ArrayList<T>(data);
 		((ListTableModel) table.getModel()).fireTableDataChanged();
 		repaint();
@@ -467,12 +509,15 @@ public class TableList<T> extends JComponent {
 	}
 
 	protected void flushEdits() {
-		int row = table.getEditingRow();
-		if (row >= 0) {
-			((ListTableModel) table.getModel()).setValueAt(row, (T) editor
-					.getValue());
+		if (table.isEditing()) {
+			((ListTableModel) table.getModel()).setValueAt(table
+					.getEditingRow(), (T) editor.getValue(), false);
 			table.repaint();
 		}
+	}
+
+	public TableCellRenderer getRenderer() {
+		return renderer;
 	}
 
 }
