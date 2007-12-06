@@ -15,6 +15,9 @@ import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.dataadapter.DefaultAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.dataadapter.IOOperation;
+import org.bbop.swing.BackgroundEventQueue;
+import org.bbop.swing.BackgroundUtil;
+import org.bbop.util.AbstractTaskDelegate;
 
 public class IOManager {
 
@@ -77,57 +80,33 @@ public class IOManager {
 		adapterRegistry.removeAdapter(adapter);
 	}
 
-	protected class BlockingRunnable<INPUT_TYPE, OUTPUT_TYPE> implements
-			Runnable {
-		protected boolean failed = false;
-		protected IOOperation<INPUT_TYPE, OUTPUT_TYPE> op;
-		protected INPUT_TYPE input;
-		protected JDialog dialog;
-
-		public BlockingRunnable(IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
-				INPUT_TYPE input, JDialog dialog) {
-			this.op = op;
-			this.input = input;
-			this.dialog = dialog;
-		}
-
-		public void run() {
-			failed = false;
-			for (IOListener listener : new LinkedList<IOListener>(listeners)) {
-				if (!listener.willExecuteOperation(new IOEvent<INPUT_TYPE>(
-						this, op, input))) {
-					failed = true;
-				}
-			}
-			dialog.setVisible(false);
-			dialog.dispose();
-		}
-
-		public boolean isFailed() {
-			return failed;
-		}
-
-	}
-
 	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
 			final IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
 			final INPUT_TYPE input, boolean fireEvents)
 			throws DataAdapterException {
 		if (fireEvents) {
-			JDialog d = new JDialog((Frame) null, true);
-			d.setTitle("OBO-Edit: Working...");
-			d.getContentPane().add(new JLabel("OBO-Edit: Working..."));
-			d.setLocation(GUIManager.getManager().getFrame().getLocation());
-			d.toBack();
-			BlockingRunnable<INPUT_TYPE, OUTPUT_TYPE> runnable = new BlockingRunnable<INPUT_TYPE, OUTPUT_TYPE>(
-					op, input, d);
-			Thread thread = new Thread(runnable);
-			thread.start();
-			d.pack();
-			d.toBack();
-			d.setVisible(true);
-			d.toBack();
-			if (runnable.isFailed())
+			AbstractTaskDelegate<Boolean> eventTask = new AbstractTaskDelegate<Boolean>() {
+
+				@Override
+				public void execute() throws Exception {
+					for (IOListener listener : new LinkedList<IOListener>(
+							listeners)) {
+						if (!listener
+								.willExecuteOperation(new IOEvent<INPUT_TYPE>(
+										this, op, input))) {
+							setResults(true);
+							return;
+						}
+					}
+					setResults(false);
+				}
+
+			};
+			BackgroundEventQueue queue = new BackgroundEventQueue();
+			BackgroundUtil.scheduleTask(queue, eventTask,
+					true, "OBO-Edit: Working");
+			queue.die();
+			if (eventTask.getResults())
 				return null;
 		}
 		DataAdapterRegistry registry = getAdapterRegistry();
