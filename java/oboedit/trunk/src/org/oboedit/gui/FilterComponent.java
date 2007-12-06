@@ -98,14 +98,11 @@ public class FilterComponent extends JPanel {
 		Filter<?> out = contentPanel.getFilter();
 		if (out instanceof PathCapableFilter) {
 			if (SessionManager.getManager().getUseReasoner())
-				((PathCapableFilter) out)
-						.setReasoner(SessionManager.getManager()
-								.getReasoner());
+				((PathCapableFilter) out).setReasoner(SessionManager
+						.getManager().getReasoner());
 			else
-				((PathCapableFilter) out)
-						.setReasoner(new OnTheFlyReasoner(
-								SessionManager.getManager()
-										.getCurrentLinkDatabase()));
+				((PathCapableFilter) out).setReasoner(new OnTheFlyReasoner(
+						SessionManager.getManager().getCurrentLinkDatabase()));
 		}
 		return out;
 	}
@@ -229,9 +226,12 @@ public class FilterComponent extends JPanel {
 		contentPanel.addUpdateListener(new GUIUpdateListener() {
 
 			public void guiupdated(GUIUpdateEvent e) {
-				String s = FilterUtil.getOBOFilterExpression(contentPanel
-						.getFilter());
-				statusLabel.setText(s);
+				if (contentPanel.getFilter() != null) {
+					String s = FilterUtil.getOBOFilterExpression(contentPanel
+							.getFilter());
+					statusLabel.setText(s);
+				} else
+					statusLabel.setText("");
 			}
 
 		});

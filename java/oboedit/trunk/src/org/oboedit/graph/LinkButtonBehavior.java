@@ -100,10 +100,10 @@ public class LinkButtonBehavior implements ViewBehavior {
 	protected BackgroundEventQueue queue;
 
 	public LinkButtonBehavior() {
-		queue = new BackgroundEventQueue();
 	}
 
 	public void install(LinkDatabaseCanvas canvas) {
+		queue = new BackgroundEventQueue();
 		this.canvas = canvas;
 		canvas.addInputEventListener(new PBasicInputEventHandler() {
 			@Override
@@ -129,6 +129,7 @@ public class LinkButtonBehavior implements ViewBehavior {
 
 	public void uninstall(LinkDatabaseCanvas canvas) {
 		this.canvas = null;
+		queue.die();
 	}
 
 	public void removeButtons(OENode oenode) {

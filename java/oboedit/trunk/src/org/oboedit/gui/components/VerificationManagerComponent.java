@@ -552,7 +552,9 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 
 	protected void removeCheck() {
 		int selectedRow = table.getSelectedRow();
-		tableModel.removeCheck(selectedRow);
+		Check check = tableModel.getCheck(selectedRow);
+		VerificationManager.getManager().removeCheck(check);
+		tableModel.setData(VerificationManager.getManager().getChecks());
 	}
 
 	protected void updateEngineSettings() {
