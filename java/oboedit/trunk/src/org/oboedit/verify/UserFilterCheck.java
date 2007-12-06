@@ -7,20 +7,26 @@ import javax.swing.*;
 
 import org.obo.datamodel.*;
 import org.obo.filters.*;
+import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.*;
 
 public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		UserCheck {
 
 	public static class UserFilterConfiguration extends CheckConfiguration {
-		protected Filter filter;
+		protected Filter filter = new ObjectFilterImpl();
 		protected boolean link;
 
-		protected String message = "";
+		protected String message = "contains errors";
 
 		protected boolean isFatal = false;
 
 		protected String desc = "<new filter>";
+		
+		public UserFilterConfiguration() {
+			super();
+			condition = VerificationManager.SAVE ^ VerificationManager.MANUAL;
+		}
 
 		public void setDescription(String desc) {
 			this.desc = desc;
@@ -72,41 +78,60 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 
 		protected FilterComponent editor;
 
-		protected JTextField messageField = new JTextField("contains errors");
+		protected JTextField messageField = new JTextField();
 
 		protected JTextField descField = new JTextField(30);
 
 		protected JCheckBox fatalCheckBox = new JCheckBox("Is fatal");
 
 		public ConfigurationPanel() {
+			setLayout(new BorderLayout());
+
 			JLabel messageLabel = new JLabel(
 					"Message suffix (message will begin with \"Term <term name> \")");
 			JLabel descriptionLabel = new JLabel("Check name");
 
 			fatalCheckBox.setOpaque(false);
-
+			setIsLink(false);
 			Box southPanel = new Box(BoxLayout.Y_AXIS);
 			southPanel.add(messageLabel);
 			southPanel.add(messageField);
 			southPanel.add(fatalCheckBox);
 
-			setLayout(new BorderLayout());
+			JPanel northPanel = new JPanel();
+			northPanel.setLayout(new BorderLayout());
+			northPanel.add(descriptionLabel, "West");
+			northPanel.add(descField, "Center");
+			add(northPanel, "North");
 			add(southPanel, "South");
 			validate();
 			repaint();
 		}
 
 		public void setIsLink(boolean link) {
-			remove(editor);
+			if (editor != null)
+				remove(editor);
 			if (link)
 				editor = new FilterComponent(new LinkFilterEditorFactory());
 			else
 				editor = new FilterComponent(new TermFilterEditorFactory());
+			editor.setShowButton(false);
 			add(editor, "Center");
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			updateConfiguration();
+		}
+
+		protected void updateEditor() {
+			editor.setFilter(((UserFilterConfiguration) configuration)
+					.getFilter());
+			descField.setText(((UserFilterConfiguration) configuration)
+					.getDescription());
+			messageField.setText(((UserFilterConfiguration) configuration)
+					.getMessage());
+			fatalCheckBox.setSelected(((UserFilterConfiguration) configuration)
+					.isFatal());
 		}
 
 		protected void updateConfiguration() {
@@ -124,6 +149,7 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 	protected ConfigurationPanel configurationPanel = new ConfigurationPanel();
 
 	public UserFilterCheck() {
+		setConfiguration(createConfiguration());
 	}
 
 	@Override
@@ -178,9 +204,16 @@ public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
 		}
 		return out;
 	}
+	
+	@Override
+	public void setConfiguration(CheckConfiguration configuration) {
+		super.setConfiguration(configuration);
+		configurationPanel.updateEditor();
+	}
 
 	@Override
 	public JComponent getConfigurationPanel() {
+		configurationPanel.updateEditor();
 		return configurationPanel;
 	}
 

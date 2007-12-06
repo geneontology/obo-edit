@@ -10,6 +10,7 @@ import org.bbop.framework.GUITask;
 import org.bbop.framework.IOEvent;
 import org.bbop.framework.IOListener;
 import org.bbop.framework.IOManager;
+import org.bbop.swing.BackgroundUtil;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.datamodel.IdentifiedObject;
 import org.oboedit.controller.SessionManager;
@@ -19,11 +20,11 @@ import org.oboedit.verify.CheckTask;
 import org.oboedit.verify.CheckWarning;
 
 public class PreSaveVerifyTask implements GUITask {
-	
+
 	protected IOListener listener = new IOListener() {
 
 		protected boolean fatal;
-		
+
 		public void operationExecuted(IOEvent<?> e) {
 		}
 
@@ -33,22 +34,23 @@ public class PreSaveVerifyTask implements GUITask {
 			fatal = false;
 			byte condition = (byte) VerificationManager.SAVE;
 
-			final CheckTask task = VerificationManager.getManager().getCheckTask(
-					SessionManager.getManager().getSession(),
-					(IdentifiedObject) null, condition);
+			final CheckTask task = VerificationManager.getManager()
+					.getCheckTask(SessionManager.getManager().getSession(),
+							(IdentifiedObject) null, condition);
 			Runnable updateGUIRunnable = new Runnable() {
 				public void run() {
 					Collection<CheckWarning> c = task.getResults();
 					if (c.size() > 0) {
-						byte warningConditions = VerificationManager.getManager()
-								.getWarningConditions();
+						byte warningConditions = VerificationManager
+								.getManager().getWarningConditions();
 
 						int fatalCount = VerificationManager.countFatal(c);
 						int warningCount = c.size() - fatalCount;
 						boolean showWarnings = VerificationManager
 								.getConditionAtField(warningConditions,
 										VerificationManager.SAVE);
-						if (fatalCount > 0 || (warningCount > 0 && showWarnings)) {
+						if (fatalCount > 0
+								|| (warningCount > 0 && showWarnings)) {
 							CheckWarningComponent warningComponent = new CheckWarningComponent();
 
 							String header = null;
@@ -69,21 +71,21 @@ public class PreSaveVerifyTask implements GUITask {
 										+ "Verification Plugin.</p>";
 								footer = "Proceed with save?";
 							}
-							warningComponent.setWarnings(c, header, footer, true,
-									showWarnings, true);
-							warningComponent.setPreferredSize(new Dimension(640,
-									640));
+							warningComponent.setWarnings(c, header, footer,
+									true, showWarnings, true);
+							warningComponent.setPreferredSize(new Dimension(
+									640, 640));
 							int dialogType = CheckWarningComponent.OK_OPTION;
 							if (fatalCount == 0)
 								dialogType = CheckWarningComponent.YES_NO_OPTION;
-							int dialogVal = warningComponent.showDialog(GUIManager
-									.getManager().getFrame(),
+							int dialogVal = warningComponent.showDialog(
+									GUIManager.getManager().getFrame(),
 									(fatalCount > 0 ? "Fatal errors found"
 											: "Warnings found"), dialogType);
 							if (fatalCount > 0
 									|| dialogVal != CheckWarningComponent.YES_VALUE)
 								fatal = true;
-								return;
+							return;
 						}
 					}
 				}
@@ -98,14 +100,16 @@ public class PreSaveVerifyTask implements GUITask {
 				}
 
 			});
-			GUIManager.getManager().runTaskNow(task, true);
+			BackgroundUtil.scheduleTask(GUIManager.getManager()
+					.getScreenLockQueue(), task, true, "OBO-Edit: Working");
+			// GUIManager.getManager().runTaskNow(task, true);
 			return !fatal && !task.isCancelled() && !task.isFailed();
 		}
 	};
 
 	public PreSaveVerifyTask() {
 	}
-	
+
 	public void install() {
 		IOManager.getManager().addIOListener(listener);
 	}
