@@ -106,16 +106,18 @@ public class ExplanationUtil {
 							+ (TermUtil.isImplied(me.getMatchLink()) ? "</i>"
 									: ""));
 					out.append(" ");
-					out
-							.append(HTMLUtil
-									.getHTMLLink(
-											(subExplanations.contains(me
-													.getMatchLink()) ? "HIDE"
-													: "EXPAND"),
-											(subExplanations.contains(me
-													.getMatchLink()) ? "<font size=-1><b>(hide explanation)</b></font>"
-													: "<font size=-1><b>(show explanation)</b></font>"),
-											me.getMatchLink(), true));
+					if (subExplanations != null) {
+						out
+						.append(HTMLUtil
+								.getHTMLLink(
+										(subExplanations.contains(me
+												.getMatchLink()) ? "HIDE"
+														: "EXPAND"),
+														(subExplanations.contains(me
+																.getMatchLink()) ? "<font size=-1><b>(hide explanation)</b></font>"
+																		: "<font size=-1><b>(show explanation)</b></font>"),
+																		me.getMatchLink(), true));
+					}
 					if (subExplanations != null
 							&& !link.equals(me.getMatchLink())
 							&& subExplanations.contains(me.getMatchLink())
