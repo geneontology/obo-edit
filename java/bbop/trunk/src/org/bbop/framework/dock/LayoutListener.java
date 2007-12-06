@@ -6,21 +6,22 @@ import org.bbop.framework.GUIComponent;
 
 public interface LayoutListener extends EventListener {
 
-	public void close(GUIComponent c);
-	
 	public void focusChanged(GUIComponent old, GUIComponent newComponent);
 	
 	public void add(GUIComponent parent, GUIComponent child);
 	
-	public void undocked(GUIComponent component);
-	
-	public void docked(GUIComponent component);
-	
-	public void maximized(GUIComponent component);
-	
-	public void minimized(GUIComponent component);
-	
-	public void restored(GUIComponent component);
-	
 	public void titleChanged(GUIComponent component, String newTitle);
+
+	public boolean closing(GUIComponent c);
+
+	public boolean undocking(GUIComponent component);
+	
+	public boolean docking(GUIComponent component);
+	
+	public boolean maximizing(GUIComponent component);
+	
+	public boolean minimizing(GUIComponent component);
+	
+	public boolean restoring(GUIComponent component);
+	
 }

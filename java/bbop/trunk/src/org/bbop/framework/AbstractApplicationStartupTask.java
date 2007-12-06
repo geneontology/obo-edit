@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -331,23 +332,21 @@ public abstract class AbstractApplicationStartupTask extends
 		final Logger global = Logger.getLogger("");
 		try {
 			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
-					getAppID() + "-%g%u.log").getAbsolutePath(), 10485760, 1);
+					getAppID() + "%u.log").getAbsolutePath(), 10485760, 1);
 			fh.setLevel(Level.ALL);
 			global.addHandler(fh);
-
-			Handler eh = new StreamHandler(System.err, new SimpleFormatter());
-			eh.setLevel(Level.WARNING);
-			global.addHandler(eh);
+			global.addHandler(new ConsoleHandler());
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		MultiOutputStream stream = new MultiOutputStream();
-		stream.addOutputStream(System.err);
-		stream.addOutputStream(new LoggerStream(global, Level.INFO));
-		System.setErr(new PrintStream(stream));
+		global.info("Configured logging output destinations");
+		LoggerStream logStream = new LoggerStream(global, Level.INFO);
+		System.setErr(logStream);
+		global.info("Reset standard error stream");
+		logStream.println("Testing raw log stream");
+		System.err.println("Testing standard error stream");
 		Thread
 				.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
@@ -360,5 +359,6 @@ public abstract class AbstractApplicationStartupTask extends
 				});
 		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
 				.getName());
+		global.info("Configured final exception handlers");
 	}
 }

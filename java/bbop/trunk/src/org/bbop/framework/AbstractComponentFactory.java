@@ -58,4 +58,8 @@ public abstract class AbstractComponentFactory<T extends GUIComponent> implement
 	public boolean isRestoreOnStartup() {
 		return true;
 	}
+	
+	public String getHelpTopicID() {
+		return null;
+	}
 }

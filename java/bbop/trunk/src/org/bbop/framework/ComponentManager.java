@@ -1,5 +1,6 @@
 package org.bbop.framework;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.beans.XMLDecoder;
@@ -186,6 +187,15 @@ public class ComponentManager {
 			return new HashMap<String, List<ComponentConfiguration>>();
 		}
 	}
+	
+	public boolean isFloating(GUIComponent c) {
+		return driver.isFloating(c);
+	}
+	
+	public void setFloating(GUIComponent c, boolean floating) {
+		driver.setFloating(c, floating);
+	}
+
 
 	public void setLabel(GUIComponent c, String label) {
 		driver.setComponentLabel(c, label);
@@ -193,6 +203,22 @@ public class ComponentManager {
 
 	public String getLabel(GUIComponent c) {
 		return driver.getComponentLabel(c);
+	}
+	
+	public void setTitlebarTooltip(GUIComponent c, String tooltip) {
+		driver.setComponentTitlebarTooltip(c, tooltip);
+	}
+	
+	public String getTitlebarTooltip(GUIComponent c) {
+		return driver.getComponentLabel(c);
+	}
+	
+	public void setTitlebarColor(GUIComponent c, Color color) {
+		driver.setComponentTitlebarColor(c, color);
+	}
+	
+	public Color getTitlebarColor(GUIComponent c) {
+		return driver.getComponentTitlebarColor(c);
 	}
 
 	public void resetCurrentConfigurationMap() {
