@@ -146,16 +146,14 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 
 	public void buildMenu() {
 		super.removeAll();
-//		addSep = false;
-//		int index = 0;
-//		Collection<? extends Component> items = getItems();
-//		for (Component c : items) {
-//			addItemToMenu(c, index == 0, index >= items.size() - 1);
-//			index++;
-//		}
-//		setEnabled(items.size() > 0);
-//		Component [] comps = getPopupMenu().getComponents();
-//		System.err.println("comps = "+comps.length);
+		addSep = false;
+		int index = 0;
+		Collection<? extends Component> items = getItems();
+		for (Component c : items) {
+			addItemToMenu(c, index == 0, index >= items.size() - 1);
+			index++;
+		}
+		setEnabled(items.size() > 0);
 	}
 
 	protected static String escapeID(String s) {
