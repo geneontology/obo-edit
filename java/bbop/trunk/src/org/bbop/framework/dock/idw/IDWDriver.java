@@ -120,14 +120,28 @@ public class IDWDriver implements LayoutDriver {
 
 	protected Collection<LayoutListener> layoutListeners = new ArrayList<LayoutListener>();
 
-	protected DockingWindowListener closeListener = new DockingWindowListener() {
-
-		protected GUIComponent getComponent(DockingWindow d) {
-			if (d instanceof View) {
-				return IDWDriver.getComponent((View) d);
+	protected DockingWindowListener floatingWindowCloseListener = new DockingWindowAdapter() {
+		public void windowClosed(DockingWindow window) {
+			View v = SwingUtil.getDescendantOfType(window, View.class);
+			if (v != null)
+				destroyView(v);
+		};
+		
+		@Override
+		public void windowClosing(DockingWindow window)
+				throws OperationAbortedException {
+			View v = SwingUtil.getDescendantOfType(window, View.class);
+			GUIComponent c = getComponent(v);
+			if (c != null) {
+				for (LayoutListener listener : layoutListeners) {
+					if (!listener.closing(c))
+						throw new OperationAbortedException();
+				}
 			}
-			return null;
 		}
+	};
+
+	protected DockingWindowListener masterDockingListener = new DockingWindowListener() {
 
 		public void viewFocusChanged(View old, View newView) {
 			GUIComponent oldC = getComponent(old);
@@ -135,6 +149,8 @@ public class IDWDriver implements LayoutDriver {
 			for (LayoutListener listener : layoutListeners) {
 				listener.focusChanged(oldC, newC);
 			}
+			if (newView != null)
+				lastComponent = newView;
 		}
 
 		public void windowAdded(DockingWindow parent, DockingWindow child) {
@@ -145,13 +161,20 @@ public class IDWDriver implements LayoutDriver {
 					listener.add(parentC, childC);
 				}
 			}
+			if (child != null && child instanceof View)
+			lastComponent = (View) child;
 		}
 
 		public void windowClosed(DockingWindow d) {
-
+			View v = SwingUtil.getDescendantOfType(d, View.class);
+			if (v != null)
+				destroyView(v);
 		}
 
 		public void windowUndocked(DockingWindow d) {
+			FloatingWindow floater = SwingUtil.getAncestorOfClass(
+					FloatingWindow.class, d);
+			floater.addListener(floatingWindowCloseListener);
 		}
 
 		public void windowDocked(DockingWindow d) {
@@ -460,7 +483,7 @@ public class IDWDriver implements LayoutDriver {
 				ComponentManager.getManager().getActiveComponents());
 		for (GUIComponent c : comps) {
 			View v = viewMap.getView(c.getID());
-			v.removeListener(closeListener);
+			v.removeListener(masterDockingListener);
 			if (v != null)
 				destroyView(v);
 			else
@@ -582,7 +605,7 @@ public class IDWDriver implements LayoutDriver {
 			label = c.getTitle();
 		final String flabel = label;
 		final View v = new View(label, null, (JComponent) card);
-		v.addListener(closeListener);
+		v.addListener(masterDockingListener);
 		v.addListener(new DockingWindowAdapter() {
 
 			@Override
@@ -591,19 +614,6 @@ public class IDWDriver implements LayoutDriver {
 				v.getViewProperties().setTitle(flabel);
 				lastComponent = addedWindow;
 			}
-
-			@Override
-			public void viewFocusChanged(View previouslyFocusedView,
-					View focusedView) {
-				if (focusedView != null)
-					lastComponent = focusedView;
-			}
-
-			@Override
-			public void windowClosed(DockingWindow window) {
-				destroyView(v);
-			}
-
 		});
 		DefaultButtonFactories.getCloseButtonFactory();
 		final JToggleButton configButton = IDWUtil
@@ -619,19 +629,6 @@ public class IDWDriver implements LayoutDriver {
 		});
 		if (c.getConfigurationPanel() == null)
 			configButton.setEnabled(false);
-		/*
-		 * if (c instanceof Filterable || c instanceof FilteredRenderable) {
-		 * final JButton filterButton = ButtonFactory
-		 * .createFlatHighlightButton(filterIcon, "Click to modify filters", 0,
-		 * null); filterButton.setFocusable(false);
-		 * filterButton.addActionListener(new ActionListener() {
-		 * 
-		 * public void actionPerformed(ActionEvent e) { JPopupMenu menu =
-		 * GUIUtil.getFilterMenu((JComponent) c); menu.show(filterButton,
-		 * filterButton.getWidth() / 2, filterButton.getHeight() / 2); }
-		 * 
-		 * }); v.getCustomTitleBarComponents().add(filterButton); }
-		 */
 		if (c.getConfigurationPanel() != null)
 			v.getCustomTitleBarComponents().add(configButton);
 		if (factory.getHelpTopicID() != null) {
@@ -786,7 +783,16 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
+	public static GUIComponent getComponent(DockingWindow d) {
+		if (d instanceof View) {
+			return getComponent((View) d);
+		}
+		return null;
+	}
+
 	public static GUIComponent getComponent(View v) {
+		if (v == null || v.getComponent() == null)
+			return null;
 		return ((ComponentConfigCard) v.getComponent()).getComponent();
 	}
 
@@ -863,6 +869,7 @@ public class IDWDriver implements LayoutDriver {
 				}
 				FloatingWindow w = rootWindow.createFloatingWindow(floatRect
 						.getLocation(), floatRect.getSize(), window);
+				w.addListener(floatingWindowCloseListener);
 				w.getTopLevelAncestor().setVisible(true);
 			} else {
 				DockingWindow w;
