@@ -241,11 +241,11 @@ public class Database2OBO {
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("database2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
+				.println("database2obo [-?]  <jdbcpath 1> ... <jdbcpath N> \\\n"
 						+ "    [-parsecomments] [-writecomments] \\\n"
 						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-						+ "   [-o [-f <filterfile1.xml>] <jdbcpath1>] ... \\\n"
-						+ "   [-o [-f <filterfileN.xml>] <jdbcpathN>]");
+						+ "   [-o [-f <filterfile1.xml>] <file1>] ... \\\n"
+						+ "   [-o [-f <filterfileN.xml>] <fileN>]");
 		System.err
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
@@ -263,6 +263,8 @@ public class Database2OBO {
 				.println("  -script <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's "
 						+ "                                             arguments MUST be followed by a \\; sequence.");
 
+		System.err
+		.println("  <jdbcpathN>                - A JDBC location");
 		System.err
 				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
 						+ "                               be loaded");
