@@ -497,8 +497,6 @@ public class PathUtil {
 			int count = parents.size() - nBest;
 			for (int i = 0; i < count; i++)
 				((List) parents).remove(parents.size() - 1);
-			System.err.println("     trimmed parents of " + link + " = "
-					+ parents);
 		}
 
 		Iterator it = parents.iterator();

@@ -777,7 +777,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fontPreviewArea.setOpaque(false);
 
 		JPanel guiPanel = new JPanel();
-		guiPanel.setLayout(new SpringLayout());
+		guiPanel.setLayout(new BorderLayout());
 		guiPanel.setBorder(new TitledBorder("GUI Options"));
 
 		JLabel memoryLabel = new JLabel("OBO-Edit memory allocation");
@@ -876,11 +876,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		iconPanel.add(iconList);
 		iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
 		// guiPanel.add(iconPanel);
-		guiPanel.add(runtimeDisplayPanel);
-		guiPanel.add(moreOptionsPanel);
-		guiPanel.add(Box.createVerticalGlue());
-
-		SwingUtil.makeCompactGrid(guiPanel, 3, 1, 0, 0, 0, 5);
+		guiPanel.add(runtimeDisplayPanel, "North");
+		guiPanel.add(moreOptionsPanel, "Center");
 
 		JPanel behaviorPanel = new JPanel();
 

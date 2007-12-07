@@ -82,7 +82,7 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 	public static class GraphDAGViewConfiguration implements
 			ComponentConfiguration {
 		protected boolean showAnimations = false;
-		protected boolean succinctDisplay = false;
+		protected boolean succinctDisplay = true;
 		protected boolean showPerType = true;
 		protected boolean allTypes = true;
 		protected boolean nonTransitive = false;
@@ -160,7 +160,7 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 
 	protected LinkDatabase linkProviderDatabase;
 
-	protected LinkDatabase reasoner;
+	protected ReasonedLinkDatabase reasoner;
 
 	protected List<LinkedObject> terms = new LinkedList<LinkedObject>();
 
@@ -336,7 +336,7 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 	}
 
 	public void setDataProviders(OBOSession session,
-			LinkDatabase linkProviderDatabase, LinkDatabase reasoner) {
+			LinkDatabase linkProviderDatabase, ReasonedLinkDatabase reasoner) {
 		this.linkProviderDatabase = linkProviderDatabase;
 		this.reasoner = reasoner;
 		this.session = session;
@@ -373,8 +373,22 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 			MaskedLinkDatabase collapsible = new MaskedLinkDatabase(filtered);
 			Collection<LinkedObject> objects = new LinkedList<LinkedObject>();
 			objects.addAll(terms);
+			// for (Link link : parents) {
+			// objects.add(link.getParent());
+			// }
 			for (Link link : parents) {
-				objects.add(link.getParent());
+				if (reasoner.isSubPropertyOf(link.getType(), type)) {
+					if (TermUtil.isImplied(link)) {
+						Collection<Link> implied = ReasonerUtil
+								.getGivenSupportingLinks(
+										(ReasonedLinkDatabase) reasoner, link);
+						for (Link backingLink : implied) {
+							if (reasoner.isSubPropertyOf(backingLink.getType(), type))
+								objects.add(backingLink.getParent());
+						}
+					} else
+						objects.add(link.getParent());
+				}
 			}
 			collapsible.setVisible(objects, true);
 			linkDatabase = collapsible;
@@ -548,7 +562,7 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 
 	protected void updateProviders() {
 		OBOSession session = SessionManager.getManager().getSession();
-		LinkDatabase reasoner;
+		ReasonedLinkDatabase reasoner;
 		if (SessionManager.getManager().getUseReasoner())
 			reasoner = SessionManager.getManager().getReasoner();
 		else

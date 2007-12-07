@@ -226,6 +226,16 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	@Override
 	protected void doOtherInstallations() {
 		FilterManager.getManager().addCriterion(new MaxParentCountCriterion());
+		Preferences.getPreferences().addReconfigListener(
+				new ReconfigListener() {
+
+					public void configReloaded(ReconfigEvent e) {
+						SessionManager.getManager().getSession()
+								.setCurrentUser(
+										Preferences.getPreferences()
+												.getUserName());
+					}
+				});
 		UIManager.put("Tree.paintLines", Boolean.FALSE);
 		HelpManager.getManager().setHelpSetFile(
 				new File(Preferences.getInstallationDirectory(),

@@ -57,6 +57,7 @@ import org.obo.filters.LessThanEqualsComparison;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.LinkNamespaceSearchCriterion;
+import org.obo.filters.MultipleRootSearchCriterion;
 import org.obo.filters.NameSearchCriterion;
 import org.obo.filters.NameSynonymSearchCriterion;
 import org.obo.filters.NamespaceSearchCriterion;
@@ -213,6 +214,7 @@ public class FilterManager {
 		addCriterion(new IsTransitiveCriterion());
 		addCriterion(new IsBuiltinCriterion());
 		addCriterion(new KeywordSearchCriterion());
+		addCriterion(new MultipleRootSearchCriterion());
 
 		addAspect(new SelfSearchAspect());
 		addAspect(new RootSearchAspect());

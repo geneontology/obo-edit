@@ -155,7 +155,7 @@ public class SearchComponent extends AbstractGUIComponent {
 				SearchConfig config = (SearchConfig) getComponent()
 						.getConfiguration();
 				shortenResultsBox.setSelected(!config.isShortenResultsDesc());
-				resultLabelDropdown.setSelectedItem(config.getType());
+				resultLabelDropdown.setSelectedItem(config.getRealizedType());
 			}
 		};
 		return p;
