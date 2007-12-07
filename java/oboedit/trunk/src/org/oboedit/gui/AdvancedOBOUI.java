@@ -163,8 +163,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JPanel panel = new JPanel();
 
-		protected FilterComponent objectFilterEditor = 
-			new FilterComponent(
+		protected FilterComponent objectFilterEditor = new FilterComponent(
 				new TermFilterEditorFactory());
 
 		protected FilterComponent linkFilterEditor = new FilterComponent(
@@ -190,6 +189,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JCheckBox allowDanglingBox = new JCheckBox(
 				"Allow dangling parents");
+
+		protected JCheckBox writeModificationBox = new JCheckBox(
+				"Write modification info");
 
 		protected JCheckBox prefilterBox = new JCheckBox("Do type prefiltering");
 
@@ -248,6 +250,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			prefilterBox.setOpaque(false);
 
 			allowDanglingBox.setOpaque(false);
+			writeModificationBox.setOpaque(false);
 			saveImpliedBox.setOpaque(false);
 			realizeImpliedBox.setOpaque(false);
 
@@ -317,6 +320,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA.add(linkFilterBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(allowDanglingBox);
+			checkboxPanelA.add(Box.createHorizontalStrut(10));
+			checkboxPanelA.add(writeModificationBox);
+			checkboxPanelA.add(Box.createHorizontalGlue());
 
 			checkboxPanelA2.add(prefilterBox);
 			checkboxPanelA2.add(prefilterTypeChooser);
@@ -327,7 +333,6 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA2.add(Box.createHorizontalStrut(5));
 			checkboxPanelA2.add(rootAlgorithmChooser);
 
-			checkboxPanelA.add(Box.createHorizontalGlue());
 			checkboxPanelB.add(saveImpliedBox);
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
 			checkboxPanelB.add(impliedTypeBox);
@@ -427,6 +432,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			linkFilterEditor.setFilter(profile.getLinkFilter());
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
+			writeModificationBox.setSelected(profile.getWriteModificationData());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
 			realizeImpliedBox.setSelected(profile.getRealizeImpliedLinks());
@@ -468,6 +474,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				profile.setRemark(remarkField.getText().trim());
 
 			profile.setAllowDangling(allowDanglingBox.isSelected());
+			profile.setWriteModificationData(writeModificationBox.isSelected());
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
 			profile.setRealizeImpliedLinks(realizeImpliedBox.isSelected());
