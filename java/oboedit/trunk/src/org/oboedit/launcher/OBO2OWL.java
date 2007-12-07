@@ -1,22 +1,51 @@
 package org.oboedit.launcher;
 
-import org.bbop.dataadapter.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.IOUtil;
-import org.obo.dataadapter.*;
-import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
-import org.obo.datamodel.*;
-import org.obo.filters.*;
+import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.coode.obo.parser.OBOOntologyFormat;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.dataadapter.OBOSerializationEngine;
+import org.obo.datamodel.CommentedObject;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.DefinedObject;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.ObsoletableObject;
+import org.obo.filters.Filter;
+import org.obo.owl.dataadapter.OWLAdapter;
+import org.obo.owl.datamodel.MetadataMapping;
+import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
+import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
+import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
+import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
-import java.util.*;
+import org.semanticweb.owl.io.DefaultOntologyFormat;
+import org.semanticweb.owl.io.OWLFunctionalSyntaxOntologyFormat;
+import org.semanticweb.owl.io.OWLXMLOntologyFormat;
+import org.semanticweb.owl.io.RDFXMLOntologyFormat;
+import org.semanticweb.owl.model.OWLOntologyFormat;
 
-
-public class OBO2Database {
+public class OBO2OWL {
 
 	protected static class DanglingWrapper {
 		protected String id;
@@ -62,12 +91,21 @@ public class OBO2Database {
 
 	public static void convertFiles(
 			OBOFileAdapter.OBOAdapterConfiguration readConfig,
-			OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration writeConfig,
+			OWLAdapter.OWLAdapterConfiguration writeConfig,
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
 			boolean fixDbxrefs, List scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
+		if (parseObsoleteComments) {
+			parseComments(session);
+		}
+		if (writeObsoleteComments) {
+			writeComments(session);
+		}
+		if (fixDbxrefs) {
+			fixDbxrefs(session);
+		}
 		Iterator it = scripts.iterator();
 		while (it.hasNext()) {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
@@ -77,9 +115,8 @@ public class OBO2Database {
 				+ session.getObjects().size());
 		System.err.println("writePath = " + writeConfig.getWritePath());
 		System.err.println("savePath = " + writeConfig.getSaveRecords());
-		
-		OBDSQLDatabaseAdapter writer = new OBDSQLDatabaseAdapter();
-		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
+		OWLAdapter wadapter = new OWLAdapter();
+		wadapter.doOperation(OWLAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
 	public static void runScript(OBOSession session, String script, List args)
@@ -88,6 +125,64 @@ public class OBO2Database {
 		context.setGlobalVariable("session", session, false);
 		context.setLocalVariable("args", args, true);
 		ExpressionUtil.exec(script, context);
+	}
+
+	protected static void fixDbxrefs(OBOSession session) {
+		Iterator it = session.getObjects().iterator();
+		while (it.hasNext()) {
+			IdentifiedObject io = (IdentifiedObject) it.next();
+			if (io instanceof DefinedObject) {
+				DefinedObject dfo = (DefinedObject) io;
+				Iterator it2 = dfo.getDefDbxrefs().iterator();
+				Dbxref metacycRef = null;
+				Dbxref brokenRef = null;
+				Dbxref otherRef = null;
+				int metacycCount = 0;
+				int brokenCount = 0;
+				while (it2.hasNext()) {
+					Dbxref ref = (Dbxref) it2.next();
+					if (ref.getDatabase().equalsIgnoreCase("metacyc")) {
+						metacycCount++;
+						metacycRef = ref;
+					} else if (ref.getDatabase().length() == 0) {
+						brokenCount++;
+						brokenRef = ref;
+					} else {
+						otherRef = ref;
+					}
+				}
+				if (brokenRef != null && metacycRef != null) {
+					if (brokenCount > 1 || metacycCount > 1) {
+						System.err
+								.println("*!!!!! Probable broken ref at "
+										+ io.getID()
+										+ " cannot be automatically repaired. There are too many pieces.");
+						continue;
+					}
+					dfo.removeDefDbxref(metacycRef);
+					dfo.removeDefDbxref(brokenRef);
+					System.err.println("* Repairing broken dbxref at "
+							+ dfo.getID() + ", merging dbxrefs " + metacycRef
+							+ " and " + brokenRef);
+					metacycRef.setDatabaseID(metacycRef.getDatabaseID() + ","
+							+ brokenRef.getDatabaseID());
+					dfo.addDefDbxref(metacycRef);
+				} else if (dfo.getDefDbxrefs().size() == 2 && brokenRef != null
+						&& otherRef != null) {
+					dfo.removeDefDbxref(otherRef);
+					dfo.removeDefDbxref(brokenRef);
+					System.err.println("* Repairing broken dbxref at "
+							+ dfo.getID() + ", merging dbxrefs " + otherRef
+							+ " and " + brokenRef);
+					otherRef.setDatabaseID(otherRef.getDatabaseID() + "," + brokenRef.getDatabaseID());
+					dfo.addDefDbxref(otherRef);
+				} else if (brokenRef != null) {
+					System.err.println("*!! Possible broken ref at "
+							+ dfo.getID()
+							+ " could not be automatically repaired.");
+				}
+			}
+		}
 	}
 
 	protected static void groupTerms(List terms, Map mappable, List external) {
@@ -427,26 +522,54 @@ public class OBO2Database {
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		readConfig.setBasicSave(false);
-		OBDSQLDatabaseAdapterConfiguration writeConfig = new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		OWLAdapter.OWLAdapterConfiguration writeConfig = new OWLAdapter.OWLAdapterConfiguration();
 		writeConfig.setBasicSave(false);
 		boolean parseObsoleteComments = false;
 		boolean writeObsoleteComments = false;
 		boolean fixDbxrefs = false;
 		LinkedList scripts = new LinkedList();
-		String formatVersion = "OBO_1_2";
+		Collection<MetadataMapping> mappings = new HashSet<MetadataMapping>();
+		
+		String owlFormat = "rdfxml";
+		OWLOntologyFormat owlWriter = new DefaultOntologyFormat();
 		for (int i = 0; i < args.length; i++)
 			System.err.println("args[" + i + "] = |" + args[i] + "|");
 
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-formatversion")) {
+			if (args[i].equals("-mapping")) {
 				if (i >= args.length - 1)
 					printUsage(1);
 				i++;
-				formatVersion = args[i];
-				if (!(formatVersion.equals("OBO_1_2") || formatVersion
-						.equals("OBO_1_0")))
+				MetadataMapping mapping;
+				String name = args[i].toLowerCase();
+				if (name.equals("simple"))
+					mapping = new SimpleOWLMetadataMapping();
+				else if (name.equals("ncbo"))
+					mapping = new NCBOOboInOWLMetadataMapping();
+				else if (name.equals("axiom"))
+					mapping = new AxiomAnnotationBasedOWLMetadataMapping();
+				else
+					mapping = (MetadataMapping) Class.forName(name).newInstance();
+				mappings.add(mapping);
+			}
+			else if (args[i].equals("-owlformat")) {
+				if (i >= args.length - 1)
 					printUsage(1);
-			} else if (args[i].equals("-parsecomments")) {
+				i++;
+				owlFormat = args[i].toLowerCase();
+				if (owlFormat.equals("owlxml"))
+					owlWriter = new OWLXMLOntologyFormat();
+				else if (owlFormat.equals("owlfunctionalsyntax"))
+					owlWriter = new OWLFunctionalSyntaxOntologyFormat();
+				else if (owlFormat.equals("manchesterowlsyntax"))
+					owlWriter = new ManchesterOWLSyntaxOntologyFormat();
+				else if (owlFormat.equals("obo"))
+					owlWriter = new OBOOntologyFormat();
+				else if (owlFormat.equals("default") || owlFormat.equals("rdfxml"))
+					owlWriter = new RDFXMLOntologyFormat();
+				else
+					printUsage(1);
+				} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
@@ -487,6 +610,20 @@ public class OBO2Database {
 
 						path.setDoFilter(filter != null);
 						path.setObjectFilter(filter);
+					} else if (args[i].equals("-lf")) {
+						if (i >= args.length - 1)
+							printUsage(1);
+						i++;
+						String filterFile = args[i];
+						Filter filter = FilterUtil.loadFilter(filterFile);
+
+						path.setDoLinkFilter(filter != null);
+						path.setLinkFilter(filter);
+					} else if (args[i].equals("-reasonerfactory")) {
+						if (i >= args.length - 1)
+							printUsage(1);
+						i++;
+						path.setReasonerFactory((ReasonerFactory)Class.forName(args[i]).newInstance());
 					} else if (args[i].equals("-allowdangling")) {
 						path.setAllowDangling(true);
 					} else if (args[i].equals("-strictrootdetection")) {
@@ -534,44 +671,41 @@ public class OBO2Database {
 				printUsage(1);
 			}
 		}
-		writeConfig.setSerializer(formatVersion);
+		writeConfig.setOntologyFormat(owlWriter);
+		if (mappings.size() == 0)
+			mappings.add(new SimpleOWLMetadataMapping());
+		for (MetadataMapping mapping : mappings)
+			writeConfig.addMetadataMapping(mapping);
 		convertFiles(readConfig, writeConfig, parseObsoleteComments,
 				writeObsoleteComments, fixDbxrefs, scripts);
 	}
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("obo2database [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
-						+ "    [-parsecomments] [-writecomments] \\\n"
-						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-						+ "   [-o [-f <filterfile1.xml>] <jdbcPath>] ... \\\n"
-						+ "   [-o [-f <filterfileN.xml>] <jdbcPathN>]");
+				.println("obo2owl [-?] [-mapping <mapping1>] [-mapping <mapping2>]... [-owlformat <owlformat>] <filename 1> ... <filename N> \\\n"
+						+ "   [-o [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
+						+ "   [-o [-f <filterfileN.xml>] <outputfileN>]");
 		System.err
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
-				.println("  -parsecomments             - Parses comments in obsolete terms looking for "
-						+ "                               GO-style formatted comments containing parseable "
-						+ "                               replacement and consider terms.");
+		.println("  -mapping <mapping> - specifies a mapping between OBO and OWL. The logical mapping is hardcoded but the metadata mapping is flexible. TODO: more docs on this\n"
+				+ "                               Allowed: ncbo simple axiom. The default is simple.\n"
+				+ "                               Optional. Multiple values can be provided");
 		System.err
-				.println("  -writecomments             - Writes replaced_by and consider tags into parseable "
-						+ "                               GO-style formatted comments.");
-		System.err
-				.println("  -formatversion <versionid> - The version of OBO to write. Allowed values are\n"
-						+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
+				.println("  -owlformat <owlformat> - OWL concrete serialization. Allowed values are\n"
+						+ "                               rdfxml owlxml owlfunctionalsyntax owlmanchestersyntax. The default is rdfxml.\n"
 						+ "                               Optional.");
 		System.err
 				.println("  -script <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's "
 						+ "                                             arguments MUST be followed by a \\; sequence.");
 
 		System.err
-		.println("  <jdbcpathN>                - A JDBC location");
-		System.err
 				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
 						+ "                               be loaded");
 		System.err
-				.println("  -o [-f <filterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo> - \n"
-						+ "        An output file to write. The optional -f flag may be used to specify a\n"
-						+ "        filter file to apply to the output file before writing. If the \n"
+				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo> - \n"
+						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
+						+ "        filter file or a link filter file to apply to the output file before writing. If the \n"
 						+ "        -allowdangling flag is specified, dangling links will not be written.\n"
 						+ "        The optional -p flag specifies the id of a property to use for \n"
 						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
