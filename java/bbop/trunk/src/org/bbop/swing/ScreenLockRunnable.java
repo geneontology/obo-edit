@@ -25,6 +25,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 	protected Frame frame;
 	protected boolean modal;
 	protected boolean cancelled;
+	protected Dimension lastSize;
 
 	public ScreenLockRunnable(BackgroundEventQueue queue, Frame frame,
 			boolean modal) {
@@ -36,7 +37,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 			public void actionPerformed(ActionEvent e) {
 				cancelled = true;
 			}
-			
+
 		});
 	}
 
@@ -49,7 +50,8 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		progressBar.setIndeterminate(true);
 		progressBar.setValue(0);
 		messageLabel.setText("");
-		dialog.pack();
+		//dialog.pack();
+		dialog.setSize(400,200);
 		SwingUtil.center(frame, dialog);
 		dialog.toFront();
 	}
@@ -57,7 +59,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 	protected JDialog createDialog() {
 		JDialog dialog = new JDialog(frame, "Progress...", modal);
 		JPanel contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(20,20,20,20));
+		contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
 		contentPane.setLayout(new BorderLayout());
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BorderLayout());
@@ -68,7 +70,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		dialog.setContentPane(contentPane);
 		return dialog;
 	}
-	
+
 	@Override
 	protected void cleanupUpdate() {
 		if (dialog != null) {
@@ -83,6 +85,8 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 
 	@Override
 	protected void doUpdate(TaskDelegate<?> currentTask) {
+		if (lastSize == null)
+			lastSize = dialog.getContentPane().getSize();
 		Number n = currentTask.getProgressValue();
 		if (n != null) {
 			int val = n.intValue();
@@ -101,10 +105,28 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 			messageLabel.setText(s);
 		if (!dialog.isVisible()) {
 			dialog.setVisible(true);
-			dialog.pack();
+			dialog
+					.setSize(
+							(int) (lastSize.getWidth()
+									+ dialog.getInsets().left + dialog
+									.getInsets().right), (int) (lastSize
+									.getHeight()
+									+ dialog.getInsets().bottom + dialog
+									.getInsets().top));
 		} else {
-			dialog.pack();
+			Dimension newSize = dialog.getContentPane().getPreferredSize();
+			if (newSize.width > lastSize.width
+					|| newSize.height > lastSize.height)
+				dialog
+						.setSize(
+								(int) (newSize.getWidth()
+										+ dialog.getInsets().left + dialog
+										.getInsets().right), (int) (newSize
+										.getHeight()
+										+ dialog.getInsets().bottom + dialog
+										.getInsets().top));
 		}
+		lastSize = dialog.getContentPane().getSize();
 		SwingUtil.center(frame, dialog);
 	}
 }
