@@ -33,7 +33,10 @@
 	<!-- utility program paths -->
 	<property name="svnpath" value="/usr/local/bin/svn" />
 	<property name="antpath" value="ant" />
-	<property name="javahelp_indexer" location="/Applications/javahelp/bin/jhindexer" />
+	<!-- Note: to make javahelp_inders, you will need to install javahelp 
+	     (see http://java.sun.com/products/javahelp/download_binary.html)
+	     and you may need to change the path below to point to where you've installed it. -->
+	<property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" />
 
 	<!-- test to see if optional regular expression targets are available -->
 	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
@@ -169,9 +172,16 @@
 	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, -docindex, apidocs, platform_independent_installer, -install4j_installers" description="Build installers">
 	</target>
 
+	<fileset dir="${obo_dest}/lib" id="obo_jars">
+		<include name="**jar" />
+	</fileset>
+
 	<target name="buildobo" if="obo_dest">
 		<ant dir="${obo_dest}" target="jar" inheritAll="false" />
 		<copy file="${obo_dest}/obo.jar" todir="${librarydir}/runlibs" />
+		<copy todir="${librarydir}/runlibs">
+		  <fileset refid="obo_jars" />
+		</copy>
 	</target>
 
 	<target name="library_jars" depends="buildbbop, buildobo">
