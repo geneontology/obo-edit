@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import org.bbop.rdbms.FromClause;
 import org.bbop.rdbms.GroupByClause;
@@ -123,12 +124,14 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 
 	public ResultSet execute(Connection conn) throws SQLException {
 		String sql = toSQL();
+		Logger.getLogger("org.bbop.rdbms").info(toSQL());
+	
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		System.out.println(sql);
 		
 		// TODO: there must be a more generic way to do this!!
 		int i=1;
 		for (Object v : getPlaceHolderVals()) {
+			Logger.getLogger("org.bbop.rdbms").info("  ?= "+v);
 			if (v instanceof String)
 				stmt.setString(i, (String)v);
 			else if (v instanceof Boolean)

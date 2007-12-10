@@ -5,6 +5,11 @@ import java.util.Collection;
 import org.bbop.rdbms.RelationalTerm;
 
 public abstract class AbstractRelationalTerm implements RelationalTerm {
+	
+	public String toString() {
+		return toSQL();
+	}
+	
 	public String concat(String c, Collection set) {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {

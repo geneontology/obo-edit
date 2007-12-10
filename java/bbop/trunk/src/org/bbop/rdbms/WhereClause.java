@@ -10,4 +10,6 @@ public interface WhereClause extends RelationalTerm {
 	public void addConstraint(String constr);
 
 	public Collection<Object> getPlaceHolderVals();
+
+	public void addInConstraint(String string, RelationalQuery subQuery);
 }
