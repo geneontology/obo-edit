@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.bbop.rdbms.FromClause;
+import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.WhereClause;
 
 public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
@@ -16,7 +17,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		super();
 		constraintTerm.addConstraint(s);
 	}
-	SqlWhereClauseImpl() {
+	public SqlWhereClauseImpl() {
 		super();
 	}
 
@@ -34,6 +35,12 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	
 	public void addInConstraint(String s, Collection in) {
 		this.constraintTerm.addConstraint(s + " IN (" + concatValues(",",in) + ")");
+	}
+	
+	public void addInConstraint(String s, RelationalQuery subQuery) {
+		// TODO: delayed access?
+		this.constraintTerm.addConstraint(s + " IN (" + subQuery.toSQL() + ")");
+		placeHolderVals.addAll(subQuery.getPlaceHolderVals());
 	}
 	public void addEqualityConstraint(String col, Object val) {
 		this.constraintTerm.addConstraint(col + " = ?");
@@ -54,6 +61,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	public void setPlaceHolderVals(Collection<Object> placeHolderVals) {
 		this.placeHolderVals = placeHolderVals;
 	}
+
 	
 
 
