@@ -9,9 +9,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -64,6 +66,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	protected OBOSession session;
 	protected String lastSubjectID;
 	protected static int nextEvidenceID = 0;
+	protected Map<Namespace,String> NamespaceCodeMap = new HashMap<Namespace,String>();
 
 	public DataAdapterUI getPreferredUI() {
 		FileAdapterUI ui = new FileAdapterUI();
@@ -83,14 +86,16 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			ex.printStackTrace();
 		}
 	}
+	
 
 	public AdapterConfiguration getConfiguration() {
 		return config;
 	}
 	
 	
-	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
-			Object o) throws DataAdapterException {
+	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
+			IOOperation<INPUT_TYPE, OUTPUT_TYPE> op, AdapterConfiguration configuration,
+			INPUT_TYPE  o) throws DataAdapterException {
 		if (!(configuration instanceof OBOAdapterConfiguration)) {
 			throw new DataAdapterException("Invalid configuration; this "
 					+ "adapter requires an "
@@ -125,7 +130,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 				System.out.println(e);
 				throw new DataAdapterException(e, "read error");
 			}
-			return session;
+			return (OUTPUT_TYPE)session;
 		} else if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
 			session = (OBOSession)o;
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
@@ -151,7 +156,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 					PrintStream stream = new PrintStream(new BufferedOutputStream(
 							sfos));
 					write((OBOSession) o, stream, filteredPath);
-				return o;
+				return (OUTPUT_TYPE)o;
 				}  catch (IOException ex) {
 					throw new DataAdapterException("Bad configuration");
 				// write((OBOSession) o);
@@ -506,7 +511,15 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		if (ns == null) {
 			return "";
 		}
-		return ns.getID();
+		String nsId = ns.getID();
+		if (nsId.equals("cellular_component"))
+			return "C";
+		else if (nsId.equals("molecular_function"))
+			return "F";
+		else if (nsId.equals("biological_process"))
+			return "P";
+		else
+			return nsId;
 	}
 	
 		
