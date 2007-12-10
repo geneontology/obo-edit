@@ -7,6 +7,7 @@ import org.bbop.dataadapter.DataAdapterException;
 import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.owl.dataadapter.OWLAdapter;
+import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
@@ -38,10 +39,14 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 	}
 	
 	public File writeTempOWLFile() throws IOException, DataAdapterException {
+		return writeTempOWLFile(new SimpleOWLMetadataMapping());
+	}
+	
+	public File writeTempOWLFile(MetadataMapping mapping) throws IOException, DataAdapterException {
 		
 		OWLAdapter adapter = new OWLAdapter();
 		OWLAdapter.OWLAdapterConfiguration config = new OWLAdapter.OWLAdapterConfiguration();
-		config.addMetadataMapping(new SimpleOWLMetadataMapping());
+		config.addMetadataMapping(mapping);
 		//config.addMetadataMapping(new AxiomAnnotationBasedOWLMetadataMapping());
 		//File outFile = File.createTempFile("foo", "bar");
 		//config.setOntologyFormat(new OWLFunctionalSyntaxOntologyFormat());
