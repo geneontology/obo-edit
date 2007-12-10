@@ -23,6 +23,7 @@ import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
+import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Instance;
@@ -32,8 +33,10 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObjectFactory;
+import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.impl.DefaultObjectFactory;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.util.IDSpaceRegistry;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -267,7 +270,6 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			this.session = (OBOSession)input;
 			while (it.hasNext()) {
 				FilteredPath filteredPath = it.next();
-				System.err.println("fpp="+filteredPath.getPath());
 				writeAll((OBOSession) input, filteredPath.getPath(), filteredPath);
 				return (OUTPUT_TYPE)input;
 			}
@@ -548,10 +550,27 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
     		if (!isProcessed)
     			unprocessedAxioms.add(axiom);
     	}
+   		
+   		// Store any unprocessed axioms as PropertyValues
+   		for (OWLAnnotationAxiom axiom : unprocessedAxioms) {
+   			OWLAnnotation owlAnnot = axiom.getAnnotation();
+   			URI uri = owlAnnot.getAnnotationURI();
+   			
+   			String propid = getOboID(uri);
+   			OBOProperty prop = this.getOboProperty(propid);
+   			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
+   			PropertyValue pv =
+   				new PropertyValueImpl(propid,val);
+   			// lo.addPropertyValue(pv); TODO
+   		}
 	}
 	
-	public OBOProperty getOboProperty(OWLObjectProperty owlProp) {
+	public OBOProperty getOboProperty(OWLProperty owlProp) {
 		String id = getOboID(owlProp);
+		return getOboProperty(id);
+	}
+	
+	public OBOProperty getOboProperty(String id) {
 		IdentifiedObject io = session.getObject(id);
 		if (io == null) {
 			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
@@ -706,6 +725,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	
 	public void addOboMetadataToOwlEntity(OWLEntity owlEntity, IdentifiedObject io ) throws OWLOntologyChangeException {
         OWLConstant labelCon = owlFactory.getOWLUntypedConstant(io.getName());
+        
+        // name gets mapped to rdfs:label
+        
         // The above constant is just a plain literal containing the version info text/comment
         // we need to create an annotation, which pairs a URI with the constant
         OWLAnnotation anno = 
@@ -717,7 +739,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
         	for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
         		for (OWLAxiom axiom : mapping.getOWLAxioms(this,owlEntity,io))
         			addAxiom(axiom);
-        		
+        		// TODO: unconsumed
         	}
         }
 	}

@@ -42,6 +42,14 @@ public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 			factory.getOWLEntityAnnotationAxiom(owlEntity, 
 				factory.getOWLConstantAnnotation(uri,con));
 	}
+	
+	protected OWLAnnotationAxiom getAnnotationAxiom(OWLEntity owlEntity, URI uri, OWLIndividual x) {
+		// The above constant is just a plain literal containing the version info text/comment
+		// we need to create an annotation, which pairs a URI with the constant
+		return
+			factory.getOWLEntityAnnotationAxiom(owlEntity,
+				factory.getOWLObjectAnnotation(uri, x));
+	}
 	protected OWLAnnotationAxiom getAnnotationAxiom(OWLEntity owlEntity, URI pred, URI obj) {
 		OWLIndividual i = factory.getOWLIndividual(obj);
 		return
@@ -59,7 +67,7 @@ public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 	}
 	
 	protected OWLAxiomAnnotationAxiom getAxiomAnnotationAxiom(OWLAxiom axiom, URI pred, URI obj) {
-		OWLIndividual i = factory.getOWLIndividual(obj);
+		OWLIndividual i = factory.getOWLIndividual(obj); // always an individual?s
 		return
 			factory.getOWLAxiomAnnotationAxiom(axiom, 
 					factory.getOWLObjectAnnotation(pred, i));

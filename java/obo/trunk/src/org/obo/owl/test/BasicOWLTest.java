@@ -1,5 +1,7 @@
 package org.obo.owl.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,7 +9,9 @@ import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
+import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
 public class BasicOWLTest extends AbstractOWLTest {
 
@@ -27,6 +31,14 @@ public class BasicOWLTest extends AbstractOWLTest {
 		TestSuite suite = new TestSuite();
 		addTests(suite);
 		return suite;
+	}
+	
+	public void testHasLoaded() throws IOException, DataAdapterException {
+		File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
+		//outFile = writeTempOWLFile();
+		//outFile = writeTempOWLFile();
+		readOWLFile(outFile);
+		writeTempOBOFile();
 	}
 
 	public static void addTests(TestSuite suite) {
