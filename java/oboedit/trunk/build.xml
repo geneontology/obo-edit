@@ -352,6 +352,7 @@
 
 	<target name="launchscript" description="Copy oboedit launch script to main dir so it can be run">
 	  <copy file="launch_scripts/oboedit" todir="." />
+	  <chmod file="oboedit" perm="ugo+x" />
 	  <echo message="To launch OBO-Edit, type ./oboedit"/>
 	</target>
 
