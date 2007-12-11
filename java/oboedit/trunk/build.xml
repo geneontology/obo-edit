@@ -310,7 +310,7 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="classes, jarmanifest, checkjar" unless="main_jar_current" description="Generate jar file">
+	<target name="jar" depends="classes, jarmanifest, checkjar, launchscript" unless="main_jar_current" description="Generate jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
@@ -348,6 +348,11 @@
 		<delete>
 			<fileset dir="." includes="*.vmoptions" />
 		</delete>
+	</target>
+
+	<target name="launchscript" description="Copy oboedit launch script to main dir so it can be run">
+	  <copy file="launch_scripts/oboedit" todir="." />
+	  <echo message="To launch OBO-Edit, type ./oboedit"/>
 	</target>
 
 </project>
