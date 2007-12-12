@@ -74,7 +74,7 @@ public class TableOfContentsComponent extends AbstractGUIComponent {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Center");
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new GridLayout(3, 9));
-		for(char c = 'A'; c < 'Z'; c++) {
+		for(char c = 'A'; c <= 'Z'; c++) {
 			JButton button = new JButton(""+c);
 			button.setSize(new Dimension(12, 12));
 			button.setBorderPainted(false);
