@@ -134,18 +134,20 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				int realColumnIndex = convertColumnIndexToModel(colIndex);
 
 				TableModel model = getModel();
-				LinkedObject lo = (LinkedObject)model.getValueAt(rowIndex,colIndex);
-
-				// TODO: provide more info in  tooltip
-				if (lo == null) {
+				Object obj = model.getValueAt(rowIndex,colIndex);
+				if (obj == null)
 					return "--";
-				}
-				else {
+				else if (obj instanceof LinkedObject) {
+					LinkedObject lo = (LinkedObject)obj;
+
 					StringBuffer out = new StringBuffer(); 
 					out.append("<html>");
 					out.append("Term: [" + lo.getID() + "] " + lo.getName() + "<br>");
 					out.append("</html>");
 					return out.toString();
+				}
+				else {
+					return obj.toString();
 				}
 			}
 		};
@@ -287,7 +289,14 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			}
 			
 			public int compare(LinkedObject a1, LinkedObject a2) {
-				
+				if (a1 == null || a2 == null) {
+					// TODO: this should never happen. Check in Phenote
+					if (a1 == null && a2 == null)
+						return 0;
+					if (a1 == null)
+						return -1;
+					return 1;
+				}
 				String a1s = a1.getNamespace() == null ? "" : a1.getNamespace().getID();
 				String a2s = a2.getNamespace() == null ? "" : a2.getNamespace().getID();
 				
@@ -532,7 +541,13 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			}
 			else {
 				//System.out.println("cn for "+col+" = "+columnObjs[col-1].getName());
-				return columnObjs[col-1].getName();
+				LinkedObject co = columnObjs[col-1];
+				if (co == null) {
+					System.err.println("nothing in col: "+col);
+					return "";
+				}
+				else
+					return co.getName();
 			}
 		}
 		
