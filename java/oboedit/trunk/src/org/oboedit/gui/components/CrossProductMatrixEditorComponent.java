@@ -1,9 +1,50 @@
 package org.oboedit.gui.components;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.logging.Logger;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.util.TinySet;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.PathCapable;
 import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.CreateObjectHistoryItem;
@@ -11,50 +52,14 @@ import org.obo.history.NameChangeHistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.postcomp.PostcompUtil;
 import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.util.IDUtil;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-import org.oboedit.gui.event.*;
+import org.oboedit.gui.Selection;
+import org.oboedit.gui.event.SelectionEvent;
+import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.util.GUIUtil;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.Dimension;
-import java.net.URL;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableModel;
 
 
 
@@ -67,6 +72,8 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		SUBSUMER,
 		NORMAL
 	}
+
+	Logger logger = Logger.getLogger("org.oboedit.gui");
 
 	protected JTable xpTable;
 	protected JComboBox relationChooser = new JComboBox();
@@ -107,18 +114,13 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 	public CrossProductMatrixEditorComponent(String id) {
 		super(id);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
 		TitledBorder rborder = new TitledBorder("Referenced by");
-		referencePane.setBorder(rborder);
-		referencePane.setEditable(false);
-		referencePane.setOpaque(false);
 
 		TitledBorder cborder = new TitledBorder("Cross product defs");
 		crossProductPane.setBorder(cborder);
 		crossProductPane.setEditable(false);
 		crossProductPane.setOpaque(false);
 
-		referencePane.addHyperlinkListener(linkListener);
 		crossProductPane.addHyperlinkListener(linkListener);
 	}
 
@@ -206,11 +208,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 			}
 		}
 
-		
-		
-		int numGenus = xpGenusObjs.size();
-		int numDiffs = xpDiffObjs.size();
-
+	
 		// Initialize xp table model
 		CrossProductTableModel xpTableModel = new CrossProductTableModel(xpDiffObjs,xpGenusObjs);
 		Vector<LinkedObject> xpGenusVec = new Vector<LinkedObject>(xpGenusObjs);
@@ -261,7 +259,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		buttonPanel.add(checkBoxForIsA);
 		buttonPanel.add(checkBoxForAll);
 		
-		System.out.println("making xpTable");
+		logger.info("Creating xpTable");
 		// create a JTable with per-cell tooltips
 		xpTable = new JTable(xpTableModel) {
 			public String getToolTipText(MouseEvent e) {
@@ -384,7 +382,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		 * differentium terms
 		 */
 		CrossProductTableModel(Collection<LinkedObject> rowObjsIn, Collection<LinkedObject> columnObjsIn) {
-			System.out.println("constructor called");
+			logger.info("creating xpTableModel");
 			rowObjs = rowObjsIn.toArray(new LinkedObject[0]);
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
@@ -392,7 +390,8 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 					
 			rowCount = rowObjsIn.size();
 			columnCount = columnObjsIn.size();
-			System.out.println(rowCount + "/" + columnCount);
+			
+			logger.info(rowCount + "/" + columnCount);
 			
 			// initialize arrays. 
 			// cols = genus cols+1 -- left col shows diff term
@@ -443,7 +442,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		 */
 		public void setCell(LinkedObject lo, OBOProperty prop, 
 							int row, int column) {
-			//System.out.println("adding "+row+" "+column+" = "+lo);
+			//logger.info("adding "+row+" "+column+" = "+lo);
 			matrix[row][column] = lo;
 			//cellStatus[row][column] = CellStatus.NORMAL;
 			objSet.add(lo);
@@ -477,7 +476,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 				return "-";
 			}
 			else {
-				//System.out.println("cn for "+col+" = "+columnObjs[col-1].getName());
+				//logger.info("cn for "+col+" = "+columnObjs[col-1].getName());
 				return columnObjs[col-1].getName();
 			}
 		}
@@ -498,7 +497,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 			}
 			else {
 				CrossProductTableModel tm = (CrossProductTableModel)table.getModel();
-				//System.out.println("status="+tm.getStatusAt(row, column-1));
+				//logger.info("status="+tm.getStatusAt(row, column-1));
 			
 				if (tm.getStatusAt(row, column-1) == CellStatus.SUBSUMED) {
 					setBackground(Color.pink);
@@ -521,13 +520,11 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 
 		// bug/issue - if last row is deleted should create new blank one...
 		public void actionPerformed(ActionEvent e) {
-			int selectRow = 0;
-			boolean doSelection = true;
 			int[] selectedCols = xpTable.getSelectedColumns();
 			int[] selectedRows = xpTable.getSelectedRows();
-			//System.out.println("pressed: cols="+selectedCols+" rows="+selectedRows);
+			//logger.info("pressed: cols="+selectedCols+" rows="+selectedRows);
 			Object selectedRel = relationChooser.getSelectedItem();
-			//System.out.println("selected relation="+selectedRel);
+			//logger.info("selected relation="+selectedRel);
 			CrossProductTableModel tm = (CrossProductTableModel)xpTable.getModel();
 			
 			for (int colNum: selectedCols) {
@@ -537,7 +534,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 					LinkedObject diffClass = tm.getRowObj(rowNum);
 					
 					String id = GUIUtil.fetchID(null);
-					System.out.println("new term with id="+id);
+					logger.info("new term with id="+id);
 					TermMacroHistoryItem item = new TermMacroHistoryItem("Created new xp term");
 							
 					String typeID =  OBOClass.OBO_CLASS.getID();
@@ -551,7 +548,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 							if (proto != null) {
 								for (Link link : ReasonerUtil.getDifferentia(proto)) {
 									relID = link.getType().getID();
-									System.out.println("default rel="+relID);
+									logger.info("default rel="+relID);
 								}
 							}
 						}									
@@ -560,13 +557,13 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 						
 					}
 					else {
-						System.out.println("relID="+relID);
+						logger.info("relID="+relID);
 						item.addItem(new CreateObjectHistoryItem(id, typeID));
 						item.addItem(new CreateLinkHistoryItem(id, relID, diffClass.getID()));
 						item.addItem(new CreateLinkHistoryItem(id, "OBO_REL:is_a", genus.getID()));
 //						item.addItem(new NameChangeHistoryItem("<new term>", id, id));
 						SessionManager.getManager().apply(item);
-						System.out.println("applied "+item);
+						logger.info("applied "+item);
 
 
 						item = new TermMacroHistoryItem("Setting to completes");	
@@ -577,11 +574,9 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 						// give it a name
 						LinkedObject newObj = 
 							(LinkedObject)SessionManager.getManager().getSession().getObject(id);
-						System.out.println("newObj= "+newObj);
-						System.out.println(newObj instanceof LinkedObject);
-						System.out.println(TermUtil.isIntersection(newObj));
+						logger.info("newObj= "+newObj);
 						String newName = PostcompUtil.getPostcompName(newObj, null, true);
-						System.out.println("newName= "+newName);
+						logger.info("newName= "+newName);
 
 						item = new TermMacroHistoryItem("Named new xp term");
 						item.addItem(new NameChangeHistoryItem(newName, id, id));
@@ -621,7 +616,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 			if (reasoner == null) {
 				return;
 			}
-			//System.out.println("pressed:" + e+" cols="+selectedCols+" rows="+selectedRows);
+			//logger.info("pressed:" + e+" cols="+selectedCols+" rows="+selectedRows);
 			for (int i: selectedCols) {
 				for (int j: selectedRows) {
 					
