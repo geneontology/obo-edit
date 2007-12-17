@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bbop.rdbms.FromClause;
@@ -22,6 +24,8 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	protected WhereClause whereClause = new SqlWhereClauseImpl();
 	protected OrderByClause orderByClause = new SqlOrderByClauseImpl();
 	protected GroupByClause groupByClause = new SqlGroupByClauseImpl();
+	
+	protected Map<String,Integer> aliasNumByTable = new HashMap<String,Integer>();
 	
 	SqlQueryImpl(SelectClause sc,
 			FromClause fc,
@@ -84,6 +88,25 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	public void addTable(String tbl) {
 		fromClause.addRelation(tbl);
 	}
+	public void addTable(String tbl, String alias) {
+		fromClause.addRelation(tbl + " AS "+alias);
+	}
+	
+	public String addAutoAliasedTable(String tbl) {
+		int num = 0;
+		if (!aliasNumByTable.containsKey(tbl))
+			aliasNumByTable.put(tbl,num);
+		else {
+			num = aliasNumByTable.get(tbl);
+			num++;
+			aliasNumByTable.put(tbl,num);
+		}
+		String aliasTbl = tbl+"__"+num;
+		addTable(tbl, aliasTbl);
+		return aliasTbl;
+	}
+	
+	
 
 	public FromClause getFromClause() {
 		return fromClause;
@@ -136,6 +159,10 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 				stmt.setString(i, (String)v);
 			else if (v instanceof Boolean)
 				stmt.setBoolean(i, (Boolean)v);
+			else if (v instanceof Integer)
+				stmt.setInt(i, (Integer)v);
+			else if (v instanceof Float)
+				stmt.setFloat(i, (Float)v);
 			else
 				throw new SQLException("dunno what to do with "+v);
 			// TODO
@@ -144,6 +171,9 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 		
 		return stmt.executeQuery();
 	}
+
+
+
 
 	
 }

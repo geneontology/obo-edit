@@ -14,6 +14,8 @@ public interface RelationalQuery extends RelationalTerm {
 	public FromClause getFromClause();
 	
 	public void addTable(String tbl);
+	public void addTable(String tbl, String alias);
+	public String addAutoAliasedTable(String tbl);
 
 
 	public GroupByClause getGroupByClause();
