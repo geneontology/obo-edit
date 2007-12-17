@@ -399,7 +399,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			for (OWLDescription d : elts) {
 				OBORestriction link = getOboLinkFromOWLDescription(d,oboClass);
 				if (link == null) {
-					String message = "Cannot convert OWLDescription: "+owlDesc;
+					String message = "Cannot convert OWLDescription: "+d+" -- in "+owlDesc;
 					if (ioprofile.allowLossy) {
 						System.err.println(message);
 						continue;
@@ -439,7 +439,17 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		}
 		else if (desc instanceof OWLObjectAllRestriction) {
-	
+//			 not yet
+		}
+		else if (desc instanceof OWLObjectIntersectionOf) {
+			oboProp = OBOProperty.IS_A;
+			oboParentClass = getOboClass(desc);
+			// oboRestrictions are not real descriptions!!
+			link = (OBORestriction)oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
+			return link;
+
+//			System.err.println("cannot do recursive intersections yet: "+desc);
+//			 not yet
 		}
 		else {
 			
@@ -632,6 +642,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
             		OBOClass oboClass = (OBOClass)io;
             		OWLClass owlClass = getOWLClass(io);
             		addOboMetadataToOwlEntity(owlClass,io);
+            		
+            		//if (io.isAnonymous())
+            		//	addAxiom(owlFactory.
                    
                     Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
              		for (Link link : oboClass.getParents()) {
