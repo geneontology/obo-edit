@@ -34,14 +34,18 @@ public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 		File outFile = File.createTempFile("reasoner-out", ".obo");
 		//outFile.deleteOnExit();
 		
-		for (String factoryName : getReasonerFactoryNames()) {
-			for (String url : getOntologyURLs()) {
+		for (String url : getOntologyURLs()) {
+			logger.info("ontology: "+url);
+
+			for (String factoryName : getReasonerFactoryNames()) {
+				logger.info("testing "+factoryName);
+
 				String saveFlag = saveAll ? "-saveallimpliedlinks" : "-saveimpliedlinks";
 
 				long timeOfStart = System.nanoTime();
 
 				String cmd = 
-					"./launch_scripts/obo2obo " + url + " "
+					"./launch_scripts/obo2obo -allowdangling " + url + " "
 					+ "-formatversion OBO_1_2 " + "-o " +
 					saveFlag +
 					" -reasonerfactory "
@@ -51,8 +55,8 @@ public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 				Process p = Runtime.getRuntime().exec(cmd);
 				int returnVal = p.waitFor();
 				long timeOfEnd = System.nanoTime();
-				long timeDelta = timeOfEnd-timeOfStart;
-				System.err.println("t="+timeDelta);
+				long timeDelta = (timeOfEnd-timeOfStart) / 1000000000;
+				System.err.println("t= "+timeDelta+"s");
 				assertTrue("Exit value should be zero", returnVal == 0);
 
 				System.out.println("parsing: "+outFile.toString());

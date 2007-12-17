@@ -40,13 +40,11 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 		protected Color maxColor;
 
 		public AnnotationNumberFetchTaskConfiguration() {
-			//setEnabled(false);
 		}
 
 		public AnnotationNumberFetchTaskConfiguration(boolean enabled,
 				Color minColor, Color maxColor) {
 			setEnabled(enabled);
-			//setEnabled(false);
 			setMinColor(minColor);
 			setMaxColor(maxColor);
 		}
@@ -72,12 +70,12 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 	protected Color maxColor;
 
 	protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", true);
-	//protected JCheckBox enabledCheckBox = new JCheckBox("Enabled", false);
 	protected JButton minColorButton = new JButton();
 	protected JButton maxColorButton = new JButton();
 
 	public OBDAnnotationNumberFetchBehaviorTask() {
 		super(Integer.class);
+		setEnabled(false);
 		gdbc.connect();
 		minColorButton.setBorderPainted(false);
 		maxColorButton.setBorderPainted(false);
@@ -101,8 +99,6 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 			}
 
 		});
-		//setEnabled(false);
-		//setMinColor(Color.yellow);
 		setMinColor(Color.white);
 		setMaxColor(Color.red);
 	}
@@ -176,6 +172,13 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 			setMaxColor(myConfig.getMaxColor());
 		}
 	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		enabledCheckBox.setSelected(enabled);
+	}
+
 
 	@Override
 	protected String getName() {

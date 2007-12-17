@@ -545,6 +545,8 @@ public class OWL2OBO {
 					printUsage(1);
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
+			} else if (args[i].equals("-allowlossy")) {
+				readConfig.setAllowLossy(true);
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
 			} else if (args[i].equals("-fixdbxrefs")) {
@@ -657,16 +659,18 @@ public class OWL2OBO {
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("owl2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
+				.println("owl2obo [-?] [-allowlossy] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
 						+ "    [-parsecomments] [-writecomments] \\\n"
 						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
 						+ "   [-o [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
 						+ "   [-o [-f <filterfileN.xml>] <outputfileN>]");
 		System.err
-				.println("  -?                         - Writes this page to stderr and exits.");
+		.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
-				.println("  -parsecomments             - Parses comments in obsolete terms looking for "
-						+ "                               GO-style formatted comments containing parseable "
+		.println("  -allowlossy                - skips owl constructs that cannot be converted to obo");
+		System.err
+		.println("  -parsecomments             - Parses comments in obsolete terms looking for "
+				+ "                               GO-style formatted comments containing parseable "
 						+ "                               replacement and consider terms.");
 		System.err
 		.println("  -mapping <mapping> - specifies a mapping between OBO and OWL. The logical mapping is hardcoded but the metadata mapping is flexible. TODO: more docs on this\n"
