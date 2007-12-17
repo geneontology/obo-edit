@@ -11,10 +11,14 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
+import java.util.logging.Logger;
 
 public class OBO2OBOReasonerTest extends TestCase {
 	
 	protected OBOSession session;
+	
+	Logger logger = Logger.getLogger("org.oboedit.test");
+
 	
 	public Collection<String> getReasonerFactoryNames() {
 		String[] names={
@@ -30,6 +34,8 @@ public class OBO2OBOReasonerTest extends TestCase {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
 		System.out.println(child.getID());
+		logger.info("testing for isA: "+child+" "+parent);
+
 		for (Link link : child.getParents()) {
 			System.out.println("  "+link.getParent().getID());
 		}
@@ -57,9 +63,13 @@ public class OBO2OBOReasonerTest extends TestCase {
 		//outFile.deleteOnExit();
 		
 		for (String factoryName : getReasonerFactoryNames()) {
+			logger.info("testing "+factoryName);
+
 //			String saveFlag = saveAll ? "-realizeimpliedlinks" : "-saveimpliedlinks";
 			String saveFlag = saveAll ? "-saveallimpliedlinks" : "-saveimpliedlinks";
-					
+
+			logger.info("saveFlag: "+saveFlag);
+
 			String cmd = 
 				"./launch_scripts/obo2obo " + testFile.getPath() + " "
 				+ "-formatversion OBO_1_2 " + "-o " +
