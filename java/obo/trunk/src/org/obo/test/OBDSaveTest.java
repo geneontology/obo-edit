@@ -30,7 +30,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = { "nucleus.obo", "caro.obo" };
+		String[] files = { "nucleus.obo", "caro.obo", "camphor_catabolism.obo" };
 		return Arrays.asList(files);
 	}
 	
@@ -76,6 +76,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 		testForDbxref("CARO:0000013","GO:0005623");
 		testForName("GO:0005634","nucleus");
 		testForSynonym("GO:0005622","protoplasm");
+		testForSynonym("CHEBI:26872","fake_for_test");
 	}
 	
 	public void testNamespaceFilteredLoad() throws DataAdapterException {

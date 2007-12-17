@@ -28,7 +28,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
 	String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 	
-	protected OBDAnnotationSaveTest(String name) {
+	public OBDAnnotationSaveTest(String name) {
 		super(name);
 	}
 
