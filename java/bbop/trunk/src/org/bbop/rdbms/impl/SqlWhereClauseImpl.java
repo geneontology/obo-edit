@@ -33,6 +33,11 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		this.constraintTerm.addConstraint(s);
 	}
 	
+	public void addOperatorConstraint(String op, String arg1, String arg2) {
+		this.constraintTerm.addConstraint(arg1 + " " + op + " ?");
+		placeHolderVals.add(arg2);		
+	}
+	
 	public void addInConstraint(String s, Collection in) {
 		this.constraintTerm.addConstraint(s + " IN (" + concatValues(",",in) + ")");
 	}
@@ -61,6 +66,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	public void setPlaceHolderVals(Collection<Object> placeHolderVals) {
 		this.placeHolderVals = placeHolderVals;
 	}
+
 
 	
 
