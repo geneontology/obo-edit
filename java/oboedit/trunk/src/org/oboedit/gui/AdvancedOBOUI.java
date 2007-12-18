@@ -663,6 +663,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		for (int i = 0; i < temp.size(); i++)
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
+		// Options in serializerBox are OBO_1_0 and OBO_1_2
 		profile.setSerializer((String) serializerBox.getSelectedItem());
 		profile.setSaveRecords(namespaceList.getData());
 		profile.setBasicSave(false);
