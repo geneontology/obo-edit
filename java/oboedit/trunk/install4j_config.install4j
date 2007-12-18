@@ -19,6 +19,7 @@
       <mountPoint id="2" root="" location="extensions" mode="755" />
       <mountPoint id="3" root="" location="runtime" mode="755" />
       <mountPoint id="4" root="" location="docs" mode="755" />
+      <mountPoint id="5" root="" location="test_resources" mode="755" />
       <mountPoint id="118" root="" location="apidocs" mode="755" />
       <mountPoint id="1" root="" location="" mode="755" />
     </mountPoints>
@@ -29,6 +30,11 @@
       <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn" dirMode="755">
         <exclude>
           <entry location="api" launcher="false" />
+          <entry location="CVS" launcher="false" />
+        </exclude>
+      </dirEntry>
+      <dirEntry mountPoint="5" file="./test_resources" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn" dirMode="755">
+        <exclude>
           <entry location="CVS" launcher="false" />
         </exclude>
       </dirEntry>
@@ -46,6 +52,7 @@
           <entry location="extensions" launcher="false" />
           <entry location="runtime" launcher="false" />
           <entry location="docs" launcher="false" />
+          <entry location="test_resources" launcher="false" />
           <entry location="ARTISTIC_LICENSE" launcher="false" />
           <entry location="LICENSE" launcher="false" />
           <entry location="OBO-Edit" launcher="true" />
@@ -638,7 +645,7 @@ configurationObject.setValue(val);</initScript>
       <excludedInstallerScreens />
       <excludedUninstallerScreens />
     </macosFolder>
-    <unixInstaller name="Unix Installer" id="25" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <unixInstaller name="Unix Installer" id="26" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
