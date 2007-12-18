@@ -615,7 +615,7 @@ public class Preferences {
 			try {
 				updateInfoPlist();
 			} catch (IOException ex) {
-				System.err.println("Could not update launcher script");
+				System.err.println("Could not update Mac application launcher script (Info.plist)");
 			}
 		}
 		try {
