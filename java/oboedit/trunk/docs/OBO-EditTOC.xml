@@ -5,20 +5,26 @@
 <toc version="2.0">
 
 <tocitem text="OBO-Edit User's Guide">
-     <tocitem text="What is OBO-Edit?" target="What_is_OBO_Edit_"/>
+     <tocitem text="What is OBO-Edit? (UPDATED)" target="What_is_OBO_Edit_"/>
      <tocitem text="What is an ontology?" target="What_is_an_ontology_"/>
      <tocitem text="Basic Concepts and Vocabulary" target="Basic_Concepts_and_Vocabulary"/>
      <tocitem text="An Introduction to OBO Ontologies" target="An_Introduction_to_OBO_Ontologies"/>
-     <tocitem text="Getting OBO-Edit Started" target="Getting_Started"/>
+     <tocitem text="Getting OBO-Edit Started (UPDATED)" target="Getting_Started"/>
      <tocitem text="Bugs and Troubleshooting" target="Bugs_and_Troubleshooting"/>
 </tocitem>
 <tocitem text="Viewing Ontologies">
-     <tocitem text="The Ontology Editor Panel" target="The_Term_Editor_Panel"/>
+     <tocitem text="Components (NEW--needs work)" target="Components"/>
+     <tocitem text="Perspectives (NEW)" target="Perspectives"/>
+     <tocitem text="The Ontology Editor Panel (NEEDS UPDATING)" target="The_Term_Editor_Panel"/>
      <tocitem text="Working with Selections" target="Working_with_Selections"/>
+     <tocitem text="Configurable Message (NEW)" target="Configurable_Message"/>
+     <tocitem text="Table of Contents Panel (NEW)" target="Table_of_Contents"/>
 </tocitem>
 <tocitem text="Filtering, Rendering &amp; Searching">
      <tocitem text="Filters" target="Filters"/>
      <tocitem text="Link Filters vs Term Filters" target="Link_Filters_vs_Term_Filters"/>
+     <tocitem text="Term Image Display Panel (NEW)" target="Term_Image_Display_Panel"/>
+     <tocitem text="HTML Rendering (NEW)" target="HTML_Rendering"/>
      <tocitem text="Building Filters" target="Building_Filters">
           <tocitem text="Setting the Filter Mode" target="Setting_the_Filter_Mode"/>
           <tocitem text="Term Filters" target="Term_Filters"/>
@@ -33,6 +39,8 @@
           <tocitem text="Global Filters &amp; Renderers" target="Global_Filters___Renderers"/>
           <tocitem text="Other Uses of Filters" target="Other_Uses_of_Filters"/>
           <tocitem text="Custom Search Buttons" target="Custom_Search_Buttons"/>
+     </tocitem>
+     <tocitem text="Advanced Searching (NEW)" target="Advanced_Searching">
      </tocitem>
 </tocitem>
 <tocitem text="Editing">
@@ -106,7 +114,7 @@
      <tocitem text="Cross Products in the Text Editor" target="Cross_Products_in_the_Text_Editor"/>
      <tocitem text="Cross Products By Hand" target="Cross_Products_By_Hand"/>
 </tocitem>
-<tocitem text="Customizing OBO-Edit">
+<tocitem text="Customizing OBO-Edit (CAN THIS WHOLE SECTION GO AWAY?)">
      <tocitem text="The Configuration Plugin" target="The_Configuration_Plugin"/>
      <tocitem text="Customizing the Interface">
           <tocitem text="Working with XML Layouts" target="Working_with_XML_Layouts"/>
