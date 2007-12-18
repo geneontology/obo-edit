@@ -2,6 +2,7 @@ package org.bbop.framework;
 
 import java.awt.Frame;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -15,6 +16,7 @@ import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.dataadapter.DefaultAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
 import org.bbop.dataadapter.IOOperation;
+import org.bbop.io.FileUtil;
 import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
@@ -34,10 +36,19 @@ public class IOManager {
 	}
 
 	public String getHistoryFilePath() {
-		if (historyPath == null)
-			historyPath = new File(GUIManager.getPrefsDir(), "history.xml")
-					.getAbsolutePath();
-		return historyPath;
+	    if (historyPath == null) {
+		File historyFile = new File(GUIManager.getPrefsDir(), "history.xml");
+		System.err.println("getHistoryFilePath: no existing history in " + historyFile.getAbsolutePath() + "--creating from resource."); // DEL
+		// If there's no history yet, use the default one stored as a resource, and copy to .oboedit directory
+		try {
+		    FileUtil.ensureExists(historyFile,
+					  "org/oboedit/resources/history.xml");
+		    historyPath = historyFile.getAbsolutePath();
+		} catch (IOException e) {
+		    System.err.println("ensureExists failed: " + e);
+		}
+	    }
+	    return historyPath;
 	}
 
 	public DataAdapterRegistry getAdapterRegistry() {
