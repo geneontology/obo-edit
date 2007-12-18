@@ -58,8 +58,10 @@ public class ConfigurableTextComponent extends AbstractGUIComponent {
 	}
 
 	protected JLabel label = new JLabel();
-	protected String html = "<html><font size='+1'>Press the configuration button to "
-			+ "enter your own text. Your text will be saved when the application is "
+	protected String html = "<html><font size='+1'>To "
+	+ "enter your own text, click the little wrench icon in the toolbar above. " +
+	"You may use html markup in your text. " + 
+	"When you're ready, click the check icon in the toolbar. Your text will be saved and displayed when OBO-Edit is "
 			+ "restarted.</font></html>";
 
 	public ConfigurableTextComponent(String id) {
