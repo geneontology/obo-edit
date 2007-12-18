@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.5.0_13" class="java.beans.XMLDecoder"> 
+ <object class="org.bbop.dataadapter.GraphicalAdapterChooser$AdapterChooserConfig"> 
+  <void property="operationToLastAdapterMap"> 
+   <void method="put"> 
+    <string>READ_ONTOLOGY</string> 
+    <string>OBO:OBO_Adapter</string> 
+   </void> 
+  </void> 
+  <void property="profileMap"> 
+   <void method="put"> 
+    <string>OBO:OBO_Adapter</string> 
+    <object class="org.bbop.dataadapter.GraphicalAdapterChooser$ProfileCollection"> 
+     <void property="UIConfig"> 
+      <object class="org.bbop.dataadapter.FileAdapterUI$FileUIConfig"> 
+       <void property="readHistory"> 
+        <void method="add"> 
+         <string>test_resources/camphor_catabolism.obo</string> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void property="operationToAdvancedMap"> 
+      <void method="put"> 
+       <object class="org.bbop.dataadapter.DefaultIOOperation"> 
+        <void property="ID"> 
+         <string>READ_ONTOLOGY</string> 
+        </void> 
+        <void property="name"> 
+         <string>read ontology</string> 
+        </void> 
+       </object> 
+       <boolean>false</boolean> 
+      </void> 
+     </void> 
+    </object> 
+   </void> 
+  </void> 
+ </object> 
+</java> 
