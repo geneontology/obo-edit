@@ -1,12 +1,11 @@
-	* Fixed bug where synonym dbxrefs would be lost on synonym edit (SF 1843460)
-	* Added editor for synonym dbxrefs
-	* Dbxref listing is now always the same size in synonym editor (SF 1843405)
-	* Live error highlighting in the text editor now works properly
-	* All TableList editors (like the dbxref editors and the synonym editor) now commit
-	  their changes the minute they are unfocused, which should make them easier to
-	  use
-	* On Macs, top-level application menu now says "OBO-Edit2" [we can
-	  change that string if people don't like it] rather than using the
-	  Java class name (org.oboedit.launcher.OBOEdit).
-          Should have no effect on non-Macs.
-	
+	* Minor bug fixes (e.g., table of contents panel now lists A-Z rather
+	  	than A-Y (SF 1849467))
+	* New help pages added; some existing help pages updated (much remains
+	  	to be done)
+	* A default history is now included with the release.  When user does
+	  	"Load ontologies", it opens showing a default ontology filename
+		 (right now, test_resources/camphor_catabolism.obo--we
+	  	probably should change this).
+		I would like it to automatically load this ontology if the
+	  	user has no history!
+
