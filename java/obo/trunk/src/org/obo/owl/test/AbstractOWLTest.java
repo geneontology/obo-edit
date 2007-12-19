@@ -4,15 +4,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.bbop.dataadapter.DataAdapterException;
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.test.AbstractOBOTest;
-import org.semanticweb.owl.io.OWLFunctionalSyntaxOntologyFormat;
 
 public abstract class AbstractOWLTest extends AbstractOBOTest {
 

@@ -13,6 +13,7 @@ import org.obo.owl.dataadapter.OWLAdapter;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
@@ -65,15 +66,17 @@ public class SAO_1_2_OWLMetadataMapping extends AbstractOWLMetadataMapping {
 		return axioms;
 	}
 
-	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo) {
+	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		OWLAnnotation owlAnnot = axiom.getAnnotation();
 		URI uri = owlAnnot.getAnnotationURI();
-		String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-		if (uri.equals(SAOVocabulary.SYNONYM.getURI())) {
-			if (lo instanceof SynonymedObject)
-				((SynonymedObject)lo).addSynonym(new SynonymImpl(val));
-			return true;
-		}	
+		if (owlAnnot instanceof OWLConstantAnnotation) {
+			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
+			if (uri.equals(SAOVocabulary.SYNONYM.getURI())) {
+				if (lo instanceof SynonymedObject)
+					((SynonymedObject)lo).addSynonym(new SynonymImpl(val));
+				return true;
+			}	
+		}
 		return false;
 	}
 

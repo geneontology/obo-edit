@@ -21,7 +21,9 @@ import java.util.regex.Pattern;
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterUI;
+import org.bbop.dataadapter.DataAdapterUIException;
 import org.bbop.dataadapter.FileAdapterUI;
+import org.bbop.dataadapter.GraphicalUI;
 import org.bbop.dataadapter.IOOperation;
 import org.bbop.io.ProgressableInputStream;
 import org.bbop.io.SafeFileOutputStream;
@@ -35,6 +37,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
+import org.obo.datamodel.NamespacedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
@@ -44,6 +47,7 @@ import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.datamodel.impl.SynonymImpl;
+import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
@@ -66,14 +70,10 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	protected OBOSession session;
 	protected String lastSubjectID;
 	protected static int nextEvidenceID = 0;
+	protected GraphicalUI advancedUI;
 	protected Map<Namespace,String> NamespaceCodeMap = new HashMap<Namespace,String>();
 
-	public DataAdapterUI getPreferredUI() {
-		FileAdapterUI ui = new FileAdapterUI();
-		ui.setReadOperation(READ_ONTOLOGY);
-		ui.setReadOperation(WRITE_ONTOLOGY);
-		return ui;
-	}
+
 
 	protected String lastObjectID;
 
@@ -196,10 +196,11 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
         
 		LinkedObject subj =  getSessionLinkedObject(subjectID);
 		if (subj.getNamespace() == null) {
-			subj.setNamespace(subjectNS);
-			
+			subj.setNamespace(subjectNS);			
 		}
-		OBOProperty rel =  (OBOProperty)getSessionLinkedObject("OBO_REL:has_role",OBOClass.OBO_PROPERTY);
+		OBOProperty rel =  
+			TermUtil.castToProperty(getSessionLinkedObject("OBO_REL:has_role",
+					OBOClass.OBO_PROPERTY));
 		ann.setRelationship(rel);
 		System.out.println("  setting subj to "+subj);
 		ann.setSubject(subj);
@@ -211,7 +212,15 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 						
 		}
 
-		LinkedObject obj = getSessionLinkedObject(objectID);
+		LinkedObject obj = (LinkedObject)session.getObject(objectID);
+		if (obj == null) {
+			obj =
+				(LinkedObject) session.getObjectFactory().
+				createDanglingObject(objectID, false);
+			//System.out.println("  got obj:"+obj);
+			session.addObject(obj);
+		}
+
 		ann.setObject(obj);
 		parseAspect(ann,colvals[8]);
 		if (objectID != lastObjectID) {
@@ -265,7 +274,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		Namespace nsObj = session.getNamespace(ns);
 		if (nsObj == null)
 			nsObj = session.getObjectFactory().createNamespace(ns, "");
-		obj.setNamespace(nsObj);
+		if (obj instanceof NamespacedObject)
+			obj.setNamespace(nsObj);
 	}
 	
 	protected void parseSynonymField(Annotation ann, String synField, LinkedObject ae) {
@@ -299,7 +309,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			(Instance) session.getObjectFactory().
 			createObject(evidenceID, OBOClass.OBO_INSTANCE, true);
 		session.addObject(ev);
-		OBOClass evCodeClass = (OBOClass)getSessionLinkedObject(evCode);
+		OBOClass evCodeClass = TermUtil.castToClass(getSessionLinkedObject(evCode));
 		ev.setType(evCodeClass);
 		//ev.setType(evCode);
 		for (String s: withVals) {
@@ -357,18 +367,23 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			obj =
 				(LinkedObject) session.getObjectFactory().
 				createObject(id, metaclass, true);
+//				(LinkedObject) session.getObjectFactory().
+//				createDanglingObject(id, metaclass.equals(OBOClass.OBO_PROPERTY));
+		//		createObject(id, metaclass, true);
 			System.out.println("  got obj:"+obj);
 			session.addObject(obj);
 		}
 		return obj;
 	}
+	
+	
 
 	public String getID() {
 		return "OBO:GOStyleAnnotation";
 	}
 
 	public String getName() {
-		return "OBO Annotation Adapter";
+		return "GO Association File Adapter";
 	}
 
 	public IOOperation[] getSupportedOperations() {
@@ -376,6 +391,45 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		return supported;
 	}
 
+	public DataAdapterUI getPreferredUI() {
+
+		FileAdapterUI ui = new FileAdapterUI() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 8709597443707849569L;
+
+			@Override
+			public AdapterConfiguration createEmptyConfig() {
+				return new OBOAdapterConfiguration();
+			}
+
+			@Override
+			public void acceptComponentConfig(boolean storeonly)
+					throws DataAdapterUIException {
+				super.acceptComponentConfig(storeonly);
+				((OBOAdapterConfiguration) config).setBasicSave(true);
+			}
+
+		};
+		ui.setReadOperation(READ_ONTOLOGY);
+		ui.setWriteOperation(WRITE_ONTOLOGY);
+		GraphicalUI advancedUI = getAdvancedUI();
+		if (advancedUI != null) {
+			advancedUI.setSimpleUI(ui);
+			ui.setAdvancedUI(advancedUI);
+		}
+		return ui;
+	}
+	
+	// TODO - DRY
+	public GraphicalUI getAdvancedUI() {
+		return advancedUI;
+	}
+	public void setAdvancedUI(GraphicalUI advancedUI) {
+		this.advancedUI = advancedUI;
+	}
 
 	public OBOSession write(OBOSession session, PrintStream stream, 
 						FilteredPath filteredPath) throws DataAdapterException {

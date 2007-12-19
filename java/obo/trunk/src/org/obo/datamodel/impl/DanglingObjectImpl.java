@@ -14,6 +14,7 @@ public class DanglingObjectImpl implements DanglingObject {
 	protected Set<Link> children = new HashSet<Link>();
 	protected String id;
 	protected String name;
+	protected Namespace namespace;
 	protected boolean root;
 
 	public DanglingObjectImpl(String id) {
@@ -101,10 +102,6 @@ public class DanglingObjectImpl implements DanglingObject {
 		parents.remove(tr);
 	}
 
-	public Namespace getNamespace() {
-		return null;
-	}
-
 	public NestedValue getTypeExtension() {
 		return null;
 	}
@@ -133,10 +130,6 @@ public class DanglingObjectImpl implements DanglingObject {
 		this.name = name;
 	}
 
-	public void setNamespace(Namespace name) {
-		throw new UnsupportedOperationException(
-				"Dangling cannot be given names");
-	}
 
 	public void setRoot(boolean root) {
 		this.root = root;
@@ -209,5 +202,20 @@ public class DanglingObjectImpl implements DanglingObject {
 	@Override
 	public String toString() {
 		return "/" + getID() + "\\";
+	}
+
+	// CJM: allowing get/set of namespaces partially violates the
+	// point of DanglingObjects, but is necessary for certain scenarios;
+	// i.e. loading in associations for which only IDs and namespaces are known.
+	// overall the whole principle of DanglingObjects needs a rethink.
+	// ideally we would have something like OWL where different things can
+	// be said about an ID in different files, there is no binary dangling/not
+	// dangling
+	public Namespace getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(Namespace namespace) {
+		this.namespace = namespace;
 	}
 }

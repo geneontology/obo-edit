@@ -382,23 +382,33 @@ public class OBOSessionImpl implements OBOSession {
 
 	public HistoryItem importSession(OBOSession session, boolean executeNow) {
 		if (executeNow) {
-		for(IdentifiedObject lo : session.getObjects()) {
-			if (!idHash.containsKey(lo.getID()))
-				addObject(lo);
-		}
-		for(TermCategory cat : session.getCategories()) {
-			if (!categories.contains(cat))
-				addCategory(cat);
-		}
-		for(SynonymCategory cat : session.getSynonymCategories()) {
-			if (!synonymCategories.contains(cat))
-				addSynonymCategory(cat);
-		}
-		for(Namespace namespace : session.getNamespaces()) {
-			if (!namespaces.contains(namespace))
-				addNamespace(namespace);
-		}
-		return null;
+			for(IdentifiedObject lo : session.getObjects()) {
+				if (idHash.containsKey(lo.getID())) {
+					IdentifiedObject curr = idHash.get(lo.getID());
+					if (curr instanceof DanglingObject) {
+						addObject(lo);
+					}
+				}
+				else {
+					if (!idHash.containsKey(lo.getID()))
+						addObject(lo);
+				}
+
+			}
+			for(TermCategory cat : session.getCategories()) {
+				if (!categories.contains(cat))
+					addCategory(cat);
+			}
+			for(SynonymCategory cat : session.getSynonymCategories()) {
+				if (!synonymCategories.contains(cat))
+					addSynonymCategory(cat);
+			}
+			for(Namespace namespace : session.getNamespaces()) {
+				if (!namespaces.contains(namespace))
+					addNamespace(namespace);
+			}
+			TermUtil.resolveDanglingLinks(this);
+			return null;
 		} else {
 			throw new UnsupportedOperationException("Undoable import not supported.");
 		}

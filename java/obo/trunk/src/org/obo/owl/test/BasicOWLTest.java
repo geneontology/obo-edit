@@ -20,7 +20,7 @@ public class BasicOWLTest extends AbstractOWLTest {
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "nucleus.obo", "bfo.obo", "camphor_catabolism.obo" };
+		String[] files = {  "nucleus.obo", "bfo.obo", "camphor_catabolism.obo", "part_of_test.obo" };
 		return Arrays.asList(files);
 	}
 	
@@ -33,6 +33,16 @@ public class BasicOWLTest extends AbstractOWLTest {
 		return suite;
 	}
 	
+	public void testLinks() throws Exception {
+		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
+		testForLink("testA","part_of","testB"); /* asserted */
+		testForIsTransitive("part_of");
+		
+	}
+
+	
+
+
 	public void testHasLoaded() throws IOException, DataAdapterException {
 		File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
 		//outFile = writeTempOWLFile();
@@ -43,6 +53,7 @@ public class BasicOWLTest extends AbstractOWLTest {
 
 	public static void addTests(TestSuite suite) {
 		suite.addTest(new BasicOWLTest("testHasLoaded"));
+		suite.addTest(new BasicOWLTest("testLinks"));
 	}
 	
 

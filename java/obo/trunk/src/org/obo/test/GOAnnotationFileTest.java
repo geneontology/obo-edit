@@ -26,6 +26,12 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 		super(name);
 	}
 	
+	@Override
+	public Collection<String> getFilesToLoad() {
+		String[] files={"gene_assoc.test"};
+		return Arrays.asList(files);
+	}
+
 	String outPath;
 
 	public void setUp() throws Exception {
@@ -100,9 +106,4 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 	}
 
 
-	@Override
-	public Collection<String> getFilesToLoad() {
-		String[] files={"gene_assoc.test"};
-		return Arrays.asList(files);
-	}
 }
