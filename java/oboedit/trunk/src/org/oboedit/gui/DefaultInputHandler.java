@@ -116,7 +116,7 @@ public class DefaultInputHandler implements InputHandlerI {
 			JMenuItem item = getMenuItem(selected, dest, editAction,
 					liveSelection, fromDrop, (fromDrop ? index : null),
 					inUseSet);
-			System.err.println("item = " + item);
+//			System.err.println("item = " + item);
 			if (item.isEnabled()) {
 				enabledCount++;
 				menu.add(item);

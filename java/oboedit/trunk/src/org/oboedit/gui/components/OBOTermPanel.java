@@ -1227,8 +1227,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 					+ selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
 		}
-		System.err.println("reloaded in " + (System.currentTimeMillis() - time)
-				+ " (expanding took " + time2 + " ms)");
+//		System.err.println("reloaded in " + (System.currentTimeMillis() - time)
+//				+ " (expanding took " + time2 + " ms)");
 	}
 
 	public void restorePaths(TreePath[] expanded) {
