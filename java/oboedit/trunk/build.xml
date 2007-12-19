@@ -169,7 +169,7 @@
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
 
-	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, -docindex, apidocs, platform_independent_installer, -install4j_installers" description="Build installers">
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, platform_independent_installer, -install4j_installers" description="Build installers">
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
@@ -285,7 +285,7 @@
 		</exec>
 	</target>
 
-	<target name="-docindex" depends="-dojhindex">
+	<target name="docindex" depends="-dojhindex">
 		<xslt out="docs/toc.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
 			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
 		</xslt>
@@ -310,7 +310,7 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="classes, jarmanifest, checkjar, launchscript" unless="main_jar_current" description="Generate jar file">
+	<target name="jar" depends="classes, jarmanifest, checkjar, scripts" unless="main_jar_current" description="Generate jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
 		</jar>
@@ -350,10 +350,13 @@
 		</delete>
 	</target>
 
-	<target name="launchscript" description="Copy oboedit launch script to main dir so it can be run">
+	<target name="scripts" description="Copy oboedit launch scripts to main dir so they can be run">
 	  <copy file="launch_scripts/oboedit" todir="." />
 	  <chmod file="oboedit" perm="ugo+x" />
 	  <echo message="To launch OBO-Edit, type ./oboedit"/>
+
+	  <copy file="launch_scripts/obomerge" todir="." />
+	  <chmod file="obomerge" perm="ugo+x" />
 	</target>
 
 </project>
