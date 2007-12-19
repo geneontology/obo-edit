@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.OBOSession;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
@@ -20,7 +21,17 @@ import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 
 	protected OWLDataFactory factory;
+	protected OBOSession session;
 	
+	public OBOSession getSession() {
+		return session;
+	}
+
+	public void setSession(OBOSession session) {
+		this.session = session;
+	}
+
+
 	public void setFactory(OWLDataFactory factory) {
 		this.factory = factory;
 	}
@@ -72,6 +83,11 @@ public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 			factory.getOWLAxiomAnnotationAxiom(axiom, 
 					factory.getOWLObjectAnnotation(pred, i));
 	}
+
+	public void translateGraph(OBOSession session) {
+		// TODO Auto-generated method stub
+	}
+	
 
 }
 		

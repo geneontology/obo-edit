@@ -76,7 +76,7 @@ public class AxiomAnnotationBasedOWLMetadataMapping extends NCBOOboInOWLMetadata
 		return axioms;
 	}
 	
-	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo) {
+	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		return false;
 	}
 	

@@ -1,19 +1,33 @@
 package org.obo.reasoner.impl;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
-import org.obo.datamodel.*;
+import org.bbop.util.TinySet;
+import org.mindswap.pellet.KnowledgeBase;
+import org.mindswap.pellet.jena.OWLReasoner;
+import org.mindswap.pellet.taxonomy.Taxonomy;
+import org.mindswap.pellet.utils.ATermUtils;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Instance;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.MutableLinkDatabase;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBORestriction;
+import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.util.TermUtil;
 
-import org.bbop.util.TinySet;
-import org.mindswap.pellet.jena.OWLReasoner;
-import org.mindswap.pellet.taxonomy.*;
-import org.mindswap.pellet.taxonomy.*;
-import org.mindswap.pellet.utils.*;
-import org.mindswap.pellet.*;
-import aterm.*;
+import aterm.ATerm;
+import aterm.ATermAppl;
+import aterm.ATermList;
 
 public class PelletWrappedReasoner extends AbstractReasoner {
 

@@ -445,6 +445,16 @@ public class DefaultOBOParser implements OBOParser {
 			ex.printStackTrace();
 		}
 	}
+	
+	// allows abbreviations for common URLs
+	// TODO: provide a full registry
+	public String mapPath(String path) {
+		if (path.startsWith("obo:")) {
+			String ns = path.substring(4);
+			path = "http://purl.org/obo/obo-all/"+ns+"/"+ns+".obo";
+		}
+		return path;
+	}
 
 	public void readFileVersion(String version) {
 		metaData.mapFileData(getCurrentPath(), version);

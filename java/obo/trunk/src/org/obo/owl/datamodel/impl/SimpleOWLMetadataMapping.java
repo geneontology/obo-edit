@@ -44,7 +44,7 @@ public class SimpleOWLMetadataMapping extends AbstractOWLMetadataMapping {
 		return axioms;
 	}
 
-	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo) {
+	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		OWLAnnotation owlAnnot = axiom.getAnnotation();
 		URI uri = owlAnnot.getAnnotationURI();
 		String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();

@@ -1184,6 +1184,50 @@ public class TermUtil {
 		}
 		return false;
 	}
+	
+	public static boolean resolveDanglingLink(OBOSession session, Link link) {
+		if (isDangling(link)) {
+			boolean resolved = true;
+			LinkedObject p = link.getParent();
+			if (isDangling(p)) {
+				// the non-dangling object may have been created
+				// after the link; in this case reset the link
+				p = (LinkedObject)session.getObject(p.getID());
+				if (p == null)
+					resolved = false; // leave as dangling
+				else {
+					// reset link
+					link.setParent(p);
+					p.addChild(link); // do reciprocal link 
+				}
+			}
+			OBOProperty t = link.getType();
+			if (isDangling(t)) {
+				t = (OBOProperty)session.getObject(t.getID());
+				if (t == null)
+					resolved = false;
+				else
+					link.setType(t);
+			}
+			return resolved;
+		}
+		return true;
+	}
+	
+	public static boolean resolveDanglingLinks(OBOSession session) {
+		boolean allResolved = true;
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io instanceof LinkedObject) {
+				for (Link link : ((LinkedObject)io).getParents()) {
+					boolean resolved = resolveDanglingLink(session, link);
+					if (!resolved)
+						allResolved = true;
+				}
+			}
+		}
+		return allResolved;
+	}
+	
 
 	public static Iterator<Link> getAllLinks(final LinkDatabase linkDatabase) {
 		IteratorFactory<LinkDatabase, IdentifiedObject> objIteratorFactory = new IteratorFactory<LinkDatabase, IdentifiedObject>() {

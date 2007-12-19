@@ -3,27 +3,30 @@ package org.obo.owl.dataadapter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterUI;
+import org.bbop.dataadapter.DataAdapterUIException;
 import org.bbop.dataadapter.DefaultIOOperation;
 import org.bbop.dataadapter.FileAdapterConfiguration;
 import org.bbop.dataadapter.FileAdapterUI;
+import org.bbop.dataadapter.GraphicalUI;
 import org.bbop.dataadapter.IOOperation;
 import org.bbop.io.ProgressableInputStream;
 import org.bbop.util.AbstractProgressValued;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBOSerializationEngine;
-import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
-import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Instance;
@@ -39,7 +42,6 @@ import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.util.IDSpaceRegistry;
-import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -50,14 +52,15 @@ import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
+import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectAllRestriction;
 import org.semanticweb.owl.model.OWLObjectIntersectionOf;
 import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLObjectPropertyExpression;
 import org.semanticweb.owl.model.OWLObjectSomeRestriction;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
@@ -66,10 +69,8 @@ import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.OWLProperty;
 import org.semanticweb.owl.model.OWLSubClassAxiom;
-import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.util.SimpleURIMapper;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -82,14 +83,18 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	protected ProgressableInputStream pfis;
 	protected boolean cancelled = false;
 	protected OWLAdapterConfiguration ioprofile;
+	protected GraphicalUI advancedUI;
 	protected List streams = new LinkedList();
-    OWLDataFactory owlFactory;
-    URI ontologyURI;
-    OWLOntology ontology;    
-    OWLOntologyManager manager;
+	protected OWLDataFactory owlFactory;
+	protected URI ontologyURI;
+	protected OWLOntology ontology;    
+	protected OWLOntologyManager manager;
+	protected Map<OWLDescription,OBOClass> description2oboclass = 
+		new HashMap<OWLDescription,OBOClass>();
     
     public final static String PURL_OBO = "http://purl.org/obo/";
-    
+    public final static String PURL_OBO_OWL = "http://purl.org/obo/owl/";
+      
  
     OBOSession session;
     
@@ -111,7 +116,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
     	protected boolean saveImplied;
 
-    	protected java.util.List saveRecords = new ArrayList();
+    	protected List<FilteredPath> saveRecords = new ArrayList<FilteredPath>();
 
     	protected boolean basicSave = true;
 
@@ -150,11 +155,11 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
     		this.basicSave = basicSave;
     	}
 
-    	public java.util.List getSaveRecords() {
+    	public List<FilteredPath> getSaveRecords() {
     		return saveRecords;
     	}
 
-    	public void setSaveRecords(java.util.List saveRecords) {
+    	public void setSaveRecords(List<FilteredPath> saveRecords) {
     		if (saveRecords.contains(null))
     			(new Exception("Null save record added to profile"))
     			.printStackTrace();
@@ -213,11 +218,45 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 
 	public DataAdapterUI getPreferredUI() {
-		FileAdapterUI ui = new FileAdapterUI();
+
+		FileAdapterUI ui = new FileAdapterUI() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 8709597443707849569L;
+
+			@Override
+			public AdapterConfiguration createEmptyConfig() {
+				return new OWLAdapterConfiguration();
+			}
+
+			@Override
+			public void acceptComponentConfig(boolean storeonly)
+					throws DataAdapterUIException {
+				super.acceptComponentConfig(storeonly);
+				((OWLAdapterConfiguration) config).setBasicSave(true);
+			}
+
+		};
 		ui.setReadOperation(READ_ONTOLOGY);
 		ui.setWriteOperation(WRITE_ONTOLOGY);
+		GraphicalUI advancedUI = getAdvancedUI();
+		if (advancedUI != null) {
+			advancedUI.setSimpleUI(ui);
+			ui.setAdvancedUI(advancedUI);
+		}
 		return ui;
 	}
+	
+	// TODO - DRY
+	public GraphicalUI getAdvancedUI() {
+		return advancedUI;
+	}
+	public void setAdvancedUI(GraphicalUI advancedUI) {
+		this.advancedUI = advancedUI;
+	}
+
 
 	public void cancel() {
 		try {
@@ -239,14 +278,14 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			AdapterConfiguration configuration, INPUT_TYPE input)
 			throws DataAdapterException {
 		if (!(configuration instanceof OWLAdapterConfiguration)) {
-			throw new DataAdapterException("Invalid configuration; this "
+			System.err.println("conf="+configuration.getClass());
+			throw new DataAdapterException(" - Invalid configuration; this "
 					+ "adapter requires an "
 					+ "OWLAdapterConfiguration object.");
 		}
 		cancelled = false;
 		this.ioprofile = (OWLAdapterConfiguration) configuration;
 		
-    	
 		if (op.equals(READ_ONTOLOGY)) {
 			OBOSession session = new DefaultObjectFactory().createSession();
 			session.setDefaultNamespace(session.getObjectFactory().createNamespace("test", "test")); // TODO
@@ -284,6 +323,22 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		try {
 			System.out.println("f="+f);
 			ontology = manager.loadOntologyFromPhysicalURI(URI.create("file:"+f));
+			/* instances
+			 * 
+			 */	
+			for (OWLIndividual owlIndividual : ontology.getReferencedIndividuals()) {
+
+				String id = getOboID(owlIndividual.getURI());
+				//System.out.println("read Individual:"+id+" " +owlIndividual);
+				Instance oboInstance = 
+					(Instance)oboFactory.createObject(id, OBOClass.OBO_INSTANCE, false);
+				session.addObject(oboInstance);
+				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlIndividual.getAnnotationAxioms(ontology);
+				getMetadataFromAnnotationAxioms(oboInstance,owlAnnotationAxioms);				
+			}
+
+			/* classes
+			*/
 			for (OWLClass owlClass : ontology.getReferencedClasses()) {
 				
 				String id = getOboID(owlClass.getURI());
@@ -308,7 +363,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 							continue;
 						}
 						else
-							throw new DataAdapterException(message);				
+							throw new DataAdapterException(message+
+									" -- set allowLossy to true to ignore this message");				
 					}
 					oboClass.addParent(link);					
 				}
@@ -374,19 +430,16 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				}
 					
 			}
-			/* instances
-			 * 
-			 */	
-			for (OWLIndividual owlIndividual : ontology.getReferencedIndividuals()) {
-
-				String id = getOboID(owlIndividual.getURI());
-				System.out.println("read Individual:"+id+" " +owlIndividual);
-				Instance oboInstance = 
-					(Instance)oboFactory.createObject(id, OBOClass.OBO_INSTANCE, false);
-				session.addObject(oboInstance);
-				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlIndividual.getAnnotationAxioms(ontology);
-				getMetadataFromAnnotationAxioms(oboInstance,owlAnnotationAxioms);				
-			}
+			
+			/* everything else
+			 * e.g. - OboInOWL creates fake superclasses
+			 */
+	   		for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
+     			mapping.translateGraph(session);
+	   		}
+	   		
+	   		TermUtil.resolveDanglingLinks(session);
+  
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -444,7 +497,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		else if (desc instanceof OWLObjectIntersectionOf) {
 			oboProp = OBOProperty.IS_A;
 			oboParentClass = getOboClass(desc);
-			// oboRestrictions are not real descriptions!!
+			// oboRestrictions are not owl restrictions!!
 			link = (OBORestriction)oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
 			return link;
 
@@ -459,7 +512,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	
 	public OBOClass getOboClass(OWLDescription owlDesc) throws DataAdapterException {
 		OBOClass oboClass;
-		if (owlDesc.isAnonymous()) {
+		if (description2oboclass.containsKey(owlDesc)) {
+			 return description2oboclass.get(owlDesc);
+		}
+		else if (owlDesc.isAnonymous()) {
 			// TODO: Decide whether to go with temporary IDs or skolem IDs
 			// An example of a skolem ID is GENUS^REL(DIFFERENTIUM_OBJ)
 			String id = IDUtil.fetchTemporaryID(session);
@@ -468,6 +524,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			oboClass.setIsAnonymous(true);
 			session.addObject(oboClass);
 			addDescription(oboClass, owlDesc);
+			description2oboclass.put(owlDesc,oboClass);
 			return oboClass;
 		}
 		else {
@@ -477,12 +534,17 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			IdentifiedObject o = session.getObject(id);
 			
 			if (o==null) {
-				oboClass = (OBOClass) session.getObjectFactory().createObject(id, OBOClass.OBO_CLASS, false);
+				oboClass = 
+					TermUtil.castToClass(session.getObjectFactory().createDanglingObject(id, false));
+				
+				//oboClass = (OBOClass) session.getObjectFactory().createObject(id, OBOClass.OBO_CLASS, false);
 				session.addObject(oboClass);
+				//System.out.println("dangling="+id+" "+oboClass);
 			}
 			else {
 				oboClass = (OBOClass)o;
 			}
+			description2oboclass.put(owlDesc,oboClass);
 			return oboClass;
 		}
 	}
@@ -495,9 +557,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		IDSpaceRegistry registry = IDSpaceRegistry.getInstance();
 		String uriString = uri.toString();
 		//System.out.println(" converting: "+uriString);
-		if (uriString.startsWith(PURL_OBO)) {
+		if (uriString.startsWith(PURL_OBO_OWL)) {
 			String[] idParts = 
-				StringUtils.split(StringUtils.removeStart(uriString,PURL_OBO),
+				StringUtils.split(StringUtils.removeStart(uriString,PURL_OBO_OWL),
 								  "#",2);
 			if (idParts.length == 2) {
 				return getOboID(idParts[0],idParts[1]);
@@ -524,6 +586,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	
 	public String getOboID(String prefix, String localId) {
 		String id;
+		// flat IDspaces get mapped to obo; eg:
+		// http://purl.org/obo/owl/obo#develops_from
+		if (prefix.equals("obo"))
+			return localId;
 		if (localId.startsWith(prefix+"_")) {
 			localId = StringUtils.removeStart(localId, prefix+"_");
 		}
@@ -545,16 +611,19 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		for (OWLAnnotationAxiom axiom : axioms) {
 			OWLAnnotation owlAnnot = axiom.getAnnotation();
 			URI uri = owlAnnot.getAnnotationURI();
-			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-			if (uri.equals(OWLRDFVocabulary.RDFS_LABEL.getURI())) {
-				lo.setName(val);
+			if (owlAnnot instanceof OWLConstantAnnotation) {
+				String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
+				if (uri.equals(OWLRDFVocabulary.RDFS_LABEL.getURI())) {
+					lo.setName(val);
+				}
 			}
 		}
 		Set<OWLAnnotationAxiom> unprocessedAxioms = new HashSet<OWLAnnotationAxiom>();
    		for (OWLAnnotationAxiom axiom : axioms) {
      		boolean isProcessed = false;
      		for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
-     			if (mapping.translateOWLAxiom(axiom, lo))
+     			
+     			if (mapping.translateOWLAxiom(axiom, lo, this))
      				isProcessed = true;
      		}
     		if (!isProcessed)
@@ -568,10 +637,12 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
    			
    			String propid = getOboID(uri);
    			OBOProperty prop = this.getOboProperty(propid);
-   			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-   			PropertyValue pv =
-   				new PropertyValueImpl(propid,val);
-   			// lo.addPropertyValue(pv); TODO
+   			if (owlAnnot instanceof OWLConstantAnnotation) {
+   				String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
+   				PropertyValue pv =
+   					new PropertyValueImpl(propid,val);
+   				// lo.addPropertyValue(pv); TODO
+   			}
    		}
 	}
 	
@@ -583,8 +654,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public OBOProperty getOboProperty(String id) {
 		IdentifiedObject io = session.getObject(id);
 		if (io == null) {
-			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
-					false);
+			return
+				TermUtil.castToProperty(session.getObjectFactory().createDanglingObject(id, true));
+//			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
+//					false);
 		}
 		else {
 			return TermUtil.castToProperty(io);
@@ -617,9 +690,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
             ontologyURI = URI.create("http://purl.org/obo/all");
             // Create a physical URI which can be resolved to point to where our ontology will be saved.
             // TODO: make this smarter. absolute vs relative path
+            URI physicalURI;
             if (!file.contains("file:"))
-            	file = "file:"+file;
-            URI physicalURI = URI.create(file);
+              	file = "file:"+file;
+            physicalURI = URI.create(file);
             // Set up a mapping, which maps the ontology URI to the physical URI
             SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
             manager.addURIMapper(mapper);
@@ -710,6 +784,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
                			addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
                					getOWLClass(oboProp.getDomain())));
                		}
+               		if (oboProp.isTransitive())
+               			addAxiom(owlFactory.getOWLTransitiveObjectPropertyAxiom(owlProp));
             	}
             	else if (io instanceof Annotation) {
             		addOboAnnotation((Annotation)io);
@@ -858,6 +934,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 	public void setOwlFactory(OWLDataFactory owlFactory) {
 		this.owlFactory = owlFactory;
+	}
+
+	public OBOSession getSession() {
+		return session;
 	}
 
 

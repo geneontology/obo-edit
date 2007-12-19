@@ -93,6 +93,12 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
 	}
+	
+	public void testForIsTransitive(String propID) {
+		OBOProperty prop  = (OBOProperty) session.getObject(propID);
+		assertTrue(prop.isTransitive());
+		
+	}
 	public void testForLink(String childID, String relID, String parentID) {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
