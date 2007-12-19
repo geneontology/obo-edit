@@ -115,8 +115,10 @@ if [ -z "$JAVAPATH" ]; then
 	fi
 fi
 
-MEMORY="1024M"
+#MEMORY="-Xmx1024M"
+# Get this from obomerge.vmoptions
+MEMORY=""
 
-CMD="$JAVAPATH -Xmx$MEMORY -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+CMD="$JAVAPATH $MEMORY -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
 echo $CMD
 sh -c "$CMD"
