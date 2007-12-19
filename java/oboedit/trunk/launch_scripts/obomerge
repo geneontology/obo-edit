@@ -1,6 +1,6 @@
 #! /bin/sh
 # Set the classname of the Java class to execute
-CLASSNAME=org.geneontology.oboedit.launcher.OBOMerge
+CLASSNAME=org.oboedit.launcher.OBOMerge
 
 # Give a space-separated list of classpath items RELATIVE TO THE CURRENT SCRIPT
 # These will be resolved into absolute pathnames
@@ -115,4 +115,8 @@ if [ -z "$JAVAPATH" ]; then
 	fi
 fi
 
-sh -c "$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+MEMORY="1024M"
+
+CMD="$JAVAPATH -Xmx$MEMORY -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+echo $CMD
+sh -c "$CMD"
