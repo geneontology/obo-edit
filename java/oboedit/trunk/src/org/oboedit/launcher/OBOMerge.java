@@ -193,15 +193,22 @@ public class OBOMerge {
 		clashFailSig.addSignature(new FlagSpec("IF_LIKELY"), false);
 		clashFailSig.addSignature(new FlagSpec("NEVER"), false);
 
+		EnumArgumentSignature versionSig = new EnumArgumentSignature();
+		versionSig.addSignature(new FlagSpec("OBO_1_0"), false);
+		versionSig.addSignature(new FlagSpec("OBO_1_2"), false);
+
 		UnorderedArgumentSignature sig2 = new UnorderedArgumentSignature();
 //		sig2.addSignature(new TagSpec("-id-rule"), 0, 1);
 		sig2.addSignature(new TagSpec("-ignore-clash-on-id"), 0,
 				Integer.MAX_VALUE);
 
-		sig2.addSignature(new TagSpec("-update-ids-when", updateIDsSig), 0, 1,
+//		sig2.addSignature(new TagSpec("-update-ids-when", updateIDsSig), 0, 1,
+		sig2.addSignature(new TagSpec("-update-ids", updateIDsSig), 0, 1,
 				false);
 		sig2.addSignature(new TagSpec("-fail-on-clash", clashFailSig), 0, 1,
 				false);
+
+		sig2.addSignature(new TagSpec("-version", versionSig), 0, 1, true);
 
 //		EnumArgumentSignature idGenEnum = new EnumArgumentSignature();
 //		idGenEnum.addSignature(new FlagSpec("-auto"));
@@ -256,9 +263,16 @@ public class OBOMerge {
 
 		boolean autoUpdate = true;
 
+		String oboVersion = "OBO_1_0";  // current default (should it be 1_2?)
+
 		Iterator it = argVals.iterator();
 		while (it.hasNext()) {
 			Tag val = (Tag) it.next();
+			if (val.getName().equals("-version")) {
+			    Tag t = (Tag) val.getValues().get(0);
+			    // User was forced to specify OBO_1_0 or OBO_1_2 by the command line argument enforcer
+			    oboVersion = t.getName();
+			}
 			if (val.getName().equals("-ignore-clash-on-id"))
 				clashesToIgnore.add(val.getStringValue());
 			if (val.getName().equals("-revision")) {
@@ -417,8 +431,10 @@ public class OBOMerge {
 		changes = null;
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.setWritePath(writePath);
+		config.setSerializer(oboVersion);
 
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, writeMe);
+		System.err.println("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 	}
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
@@ -432,6 +448,7 @@ public class OBOMerge {
 
 	public static void printUsage() {
 		System.err.println("Usage: obomerge "+getArgumentSignature().getShortDocumentation());
+		System.err.println("For example:  obomerge -fail-on-clash NEVER -original orig.obo -revision file1.obo -revision file2.obo -version OBO_1_2 -o file.merged.obo");
 		System.err.println();
 	}
 }
