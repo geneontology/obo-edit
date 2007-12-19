@@ -8,7 +8,7 @@
 <body bgcolor="#ffffff">
 <h1>obomerge</h1>
 <p>The obomerge utility can merge the changes in two 
-different versions of a file. Three files are needed: an original unchanged 
+different versions of an ontology file. Three files are needed: an original unchanged 
 version of the file, a version of the file with one set of changes, and a 
 version of the file with another set of changes.</p>
 <p>obomerge uses the OBO-Edit <A 
@@ -20,11 +20,9 @@ unlike, for example, a text-based merge.</p>
   obomerge \
     [-ignore-clash-on-id &lt;value1&gt; -ignore-clash-on-id &lt;value2&gt; ... -ignore-clash-on-id  &lt;valueN&gt;] \
     [-update-ids-when (NEVER | IF_LIKELY | ALWAYS)] [-fail-on-clash (ALWAYS | IF_LIKELY | NEVER)] \
-    -original &lt;value&gt; -revision &lt;value1&gt; -revision &lt;value2&gt; -o &lt;value&gt;</strong>     
-    
-       
-         
-    </pre>
+    [-version (OBO_1_0 | OBO_1_2)] \
+    -original &lt;original file&gt; -revision &lt;changed file 1&gt; -revision &lt;changed file 2&gt; -o &lt;merged file&gt;
+</strong></pre>
 <p>The required command line parameters are:</p>
 <UL>
   <li><strong>&lt;original file&gt;</strong> - The original obo file that both 
@@ -34,7 +32,7 @@ unlike, for example, a text-based merge.</p>
   <li><strong>&lt;changed file 2&gt;</strong> - A version of &lt;original 
   file&gt; with some set of changes. It's okay if&nbsp;some of the&nbsp;same 
   changes were made in &lt;changed file 1&gt; and &lt;changed file 2&gt;.
-  <li><strong>&lt;merged file&gt;</strong> - The file where the merged changes 
+  <li><strong>&lt;merged file&gt;</strong> - The file that will be used to save the merged changes 
   from &lt;changed file 1&gt; and &lt;changed file 2&gt;.</li></UL>
 <P>The optional command line parameters are </P>
 <UL>
@@ -50,8 +48,11 @@ unlike, for example, a text-based merge.</p>
   value given is ALWAYS, obomerge always fails if an id clash is detected. If 
   the value is IF_LIKELY, obomerge fails if a likely clash (where term names are 
   different) is detected. If the value is NEVER, obomerge will always continue 
-  even when id clashes are detected.</LI></UL>
-<p>Note that &lt;original file&gt; MUST be an early version 
+  even when id clashes are detected.</LI>
+  <LI><STRONG>-version (OBO_1_0 | OBO_1_2)</strong> - Lets you specify the format
+of the output file.
+</UL>
+<p>Note that &lt;original file&gt; MUST be a previous version 
 of <strong>both</strong> &lt;changed file 1&gt; and &lt;changed file 2&gt;. 
 Without a usable original file, obomerge cannot determine what changes were made 
 in each version of the file.</p>
