@@ -69,7 +69,7 @@ public class FileMenu extends DynamicMenu {
 			}
 		};
 		JMenuItem importItem = new JMenuItem("Import Terms...");
-		JMenuItem resolveItem = new JMenuItem("Fix ids...");
+		JMenuItem resolveItem = new JMenuItem("Fix IDs...");
 		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
 
