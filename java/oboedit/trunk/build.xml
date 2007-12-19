@@ -273,7 +273,6 @@
 			<replacefilter token="$VERSION$" value="${version}" />
 			<replacefilter token="$DATE$" value="${pretty_date}" />
 		</replace>
-		<touch file="oboedit.vmoptions" />
 	</target>
 
 	<target name="-dojhindex" if="javahelp_indexer">
@@ -345,9 +344,6 @@
 		<delete dir="${runtimedir}" />
 		<delete dir="${release_path}" />
 		<delete file="release_resources/README" />
-		<delete>
-			<fileset dir="." includes="*.vmoptions" />
-		</delete>
 	</target>
 
 	<target name="scripts" description="Copy oboedit launch scripts to main dir so they can be run">
