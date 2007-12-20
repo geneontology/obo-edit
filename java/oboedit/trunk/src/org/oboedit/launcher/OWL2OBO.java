@@ -32,6 +32,7 @@ import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
+import org.obo.owl.util.IDSpaceRegistry;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
@@ -543,6 +544,13 @@ public class OWL2OBO {
 				if (!(formatVersion.equals("OBO_1_2") || formatVersion
 						.equals("OBO_1_0")))
 					printUsage(1);
+			} else if (args[i].equals("-idspace")) {
+				if (i >= args.length - 2)
+					printUsage(1);
+				i++;
+				IDSpaceRegistry registry = IDSpaceRegistry.getInstance();
+				registry.registerMapping(args[i+1], args[i]);
+				i++;
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowlossy")) {
@@ -659,7 +667,7 @@ public class OWL2OBO {
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("owl2obo [-?] [-allowlossy] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
+				.println("owl2obo [-?] [-allowlossy] [-idspace PREFIX URIPREFIX]* [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
 						+ "    [-parsecomments] [-writecomments] \\\n"
 						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
 						+ "   [-o [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
@@ -672,6 +680,10 @@ public class OWL2OBO {
 		.println("  -parsecomments             - Parses comments in obsolete terms looking for "
 				+ "                               GO-style formatted comments containing parseable "
 						+ "                               replacement and consider terms.");
+		System.err
+		.println("  -idspace <prefix> <uriprefix> - specifies how to map URIs to OBO IDs.\n"
+				+ "                               Example: -idspace SAO http://ccdb.birn.org/sao#\n"
+				+ "                               Optional. Multiple values can be provided");
 		System.err
 		.println("  -mapping <mapping> - specifies a mapping between OBO and OWL. The logical mapping is hardcoded but the metadata mapping is flexible. TODO: more docs on this\n"
 				+ "                               Allowed: ncbo simple axiom. The default is simple.\n"
