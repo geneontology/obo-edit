@@ -82,9 +82,10 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	public void setSelectClause(SelectClause selectClause) {
 		this.selectClause = selectClause;
 	}
+	public void setSelectClause(String selectClause) {
+		this.selectClause = new SqlSelectClauseImpl(selectClause);
+	}
 	
-
-
 	public void addTable(String tbl) {
 		fromClause.addRelation(tbl);
 	}

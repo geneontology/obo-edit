@@ -8,6 +8,7 @@ import java.util.Collection;
 public interface RelationalQuery extends RelationalTerm {
 		
 	public void setSelectClause(SelectClause sc);
+	public void setSelectClause(String string);
 	public SelectClause getSelectClause();
 
 	public void setFromClause(FromClause sc);
