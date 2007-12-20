@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY _ "http://purl.org/obo/_#" >
+    <!ENTITY null "http://purl.org/obo/all#" >
+    <!ENTITY example "http://www.example.org/test#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+
+
+
+<!-- Axioms: 14 -->
+
+<Ontology xmlns="http://www.w3.org/2006/12/owl11-xml#"
+     xml:base="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:null="http://purl.org/obo/all#"
+     xmlns:_global="http://purl.org/obo/_global#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:_="http://purl.org/obo/_#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     URI="http://purl.org/obo/all">
+    <EntityAnnotation>
+        <OWLClass URI="&example;_global_x3"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>x3</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <EquivalentClasses>
+        <OWLClass URI="&example;_global_y%5Er%28z%29%5Es%28a%29"/>
+        <ObjectIntersectionOf>
+            <OWLClass URI="&example;_global_y%5Er%28z%29"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty URI="&example;_global_s"/>
+                <OWLClass URI="&example;_global_a"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <ObjectIntersectionOf>
+         <ObjectIntersectionOf>
+             <OWLClass URI="&example;_global_y"/>
+             <ObjectSomeValuesFrom>
+                <ObjectProperty URI="&example;_global_r"/>
+                <OWLClass URI="&example;_global_z"/>
+            </ObjectSomeValuesFrom>
+         </ObjectIntersectionOf>
+
+            <ObjectSomeValuesFrom>
+                <ObjectProperty URI="&example;_global_s"/>
+                <OWLClass URI="&example;_global_a"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+        <OWLClass URI="&_;__1%5Es%28a%29"/>
+    </EquivalentClasses>
+    <EntityAnnotation>
+        <OWLClass URI="&_;__1%5Es%28a%29"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>_:1 that s a</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <EntityAnnotation>
+        <OWLClass URI="&example;_global_y%5Er%28z%29%5Es%28a%29"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>y^r(z) that s a</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <SubClassOf>
+        <OWLClass URI="&example;_global_x3"/>
+        <OWLClass URI="&_;__1%5Es%28a%29"/>
+    </SubClassOf>
+    <SubClassOf>
+        <OWLClass URI="&example;_global_x1"/>
+        <OWLClass URI="&example;_global_y%5Er%28z%29"/>
+    </SubClassOf>
+    <SubClassOf>
+        <OWLClass URI="&example;_global_x2"/>
+        <OWLClass URI="&example;_global_y%5Er%28z%29%5Es%28a%29"/>
+    </SubClassOf>
+    <EntityAnnotation>
+        <OWLClass URI="&example;_global_x1"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>x1</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <EntityAnnotation>
+        <OWLClass URI="&example;_global_y%5Er%28z%29"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>y that r z</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <EntityAnnotation>
+        <OWLClass URI="&example;_global_x2"/>
+        <Annotation annotationURI="&rdfs;label">
+            <Constant>x2</Constant>
+        </Annotation>
+    </EntityAnnotation>
+    <EquivalentClasses>
+        <ObjectIntersectionOf>
+            <OWLClass URI="&example;_global_y"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty URI="&example;_global_r"/>
+                <OWLClass URI="&example;_global_z"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+        <OWLClass URI="&example;_global_y%5Er%28z%29"/>
+    </EquivalentClasses>
+</Ontology>
