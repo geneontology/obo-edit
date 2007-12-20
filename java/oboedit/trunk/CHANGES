@@ -1,11 +1,7 @@
-	* Minor bug fixes (e.g., table of contents panel now lists A-Z rather
-	  	than A-Y (SF 1849467))
-	* New help pages added; some existing help pages updated (much remains
-	  	to be done)
-	* A default history is now included with the release.  When user does
-	  	"Load ontologies", it opens showing a default ontology filename
-		 (right now, test_resources/camphor_catabolism.obo--we
-	  	probably should change this).
-		I would like it to automatically load this ontology if the
-	  	user has no history!
+	* obomerge script fixed (needs to be run from main dir--build.xml now
+	  	   copies it there
+	* added default oboedit.vmoptions and obomerge.vmoptions (they were
+	  	   running out of memory on GO)
+	* obomerge now offers a choice of output formats via optional argument:
+		  -version (OBO_1_0 | OBO_1_2)
 
