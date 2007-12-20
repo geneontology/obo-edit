@@ -198,6 +198,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				engine = new OBOParseEngine(parser);
 
 				engine.setPaths(ioprofile.getReadPaths());
+				System.err.println("Reading " + ioprofile.getReadPaths());
 				engine.parse();
 
 				OBOSession history = parser.getSession();
