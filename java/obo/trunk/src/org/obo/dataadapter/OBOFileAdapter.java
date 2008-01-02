@@ -49,7 +49,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 		protected boolean basicSave = true;
 
-		protected String serializer = "OBO_1_0";
+	        protected String serializer = "OBO_1_2";  // new default
 
 		protected String impliedType = "Save for presentation";
 
