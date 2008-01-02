@@ -263,14 +263,14 @@ public class OBOMerge {
 
 		boolean autoUpdate = true;
 
-		String oboVersion = "OBO_1_0";  // current default (should it be 1_2?)
+		String oboVersion = "OBO_1_2";  // current default
 
 		Iterator it = argVals.iterator();
 		while (it.hasNext()) {
 			Tag val = (Tag) it.next();
 			if (val.getName().equals("-version")) {
 			    Tag t = (Tag) val.getValues().get(0);
-			    // User was forced to specify OBO_1_0 or OBO_1_2 by the command line argument enforcer
+			    // User was forced to specify a version of OBO_1_0 or OBO_1_2 by the command line argument enforcer
 			    oboVersion = t.getName();
 			}
 			if (val.getName().equals("-ignore-clash-on-id"))
