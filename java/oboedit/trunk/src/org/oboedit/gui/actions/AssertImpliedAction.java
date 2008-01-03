@@ -23,6 +23,7 @@ import javax.swing.KeyStroke;
 
 import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.DeleteLinkHistoryItem;
@@ -39,12 +40,14 @@ import org.oboedit.gui.EditAction;
 import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.SimpleWizard;
+import java.util.logging.Logger;
 
 public class AssertImpliedAction implements ClickMenuAction {
 
 	protected Selection sources;
 
 	protected boolean isLegal = false;
+	
 	
 	protected JComboBox relationChooser;
 	protected JPanel panel;
@@ -147,26 +150,39 @@ public class AssertImpliedAction implements ClickMenuAction {
 		Iterator<Link> it = TermUtil.getAllLinks(reasoner);
 		impliedLinks = new LinkedHashSet<Link>();
 		int count = 0;
+		Logger logger = Logger.getLogger("org.oboedit.gui");
+		logger.info("iterating through all links");
 		while (it.hasNext()) {
 			final Link link = it.next();
 			if (TermUtil.isImplied(link)) {
-				
+				logger.info("implied link: "+link);
+				Namespace subjNS = link.getChild().getNamespace();
+				Namespace objNS = link.getParent().getNamespace();
+				//System.err.println("ns: "+subjNS + " " +objNS);
+				if (!subjNS.equals(objNS)) {
+					// TODO: configurable?
+					//System.err.println("ignoring "+link+" as it spans ontologies");
+					continue;
+				}
+				logger.info("checking if this should be trimmed");
 				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
 					!impliedLinks.contains(link) &&
 					(selectedRelation == null ||
 							link.getType().equals(selectedRelation))) {
+					logger.info("checking explanations");
 					Collection<Explanation> explanations = reasoner.getExplanations(link);
 					
 					Explanation chosenExplanation = null;
 					for (Explanation explanation : explanations) {
 						if (!explanation.getExplanationType().equals(
-								ExplanationType.TRANSITIVITY)) {
+								ExplanationType.TRANSITIVITY)) { 
 							chosenExplanation = explanation;
 						}
 					}
 					if (chosenExplanation != null) {
 
-						//impliedLinks.add(link);
+						logger.info("ADDING LINK. chosen explanation: "+chosenExplanation);
+
 						count++;
 						final JCheckBox checkBox = new JCheckBox("Assert: ["
 								+ link+"]    (EXPLANATION: "+chosenExplanation+")", false);
