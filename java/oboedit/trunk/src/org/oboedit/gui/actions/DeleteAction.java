@@ -102,24 +102,25 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	protected boolean getDeletionItems(Selection selection,
-			Collection<PathCapable> out) {
+					   Collection<PathCapable> out) {
 		deleteThese.clear();
 		legacyMode = selection.getSelector() != null
 				&& selection.getSelector().hasCombinedTermsAndLinks();
-		if (legacyMode) {
-			if (Preferences.getPreferences().getWarnBeforeDelete()) {
-				for (Link tr : selection.getLinks()) {
-					LinkedObject parent = tr.getParent();
-					LinkedObject child = tr.getChild();
-					if (TermUtil.isObsolete(parent))
-						continue;
-					if (child.getParents().size() == 1) {
-						lastInstanceCount++;
-						instanceString += child.getName() + " ("
-								+ child.getID() + ")\n";
-					}
-				}
+
+		if (Preferences.getPreferences().getWarnBeforeDelete()) {
+		    for (Link tr : selection.getLinks()) {
+			LinkedObject parent = tr.getParent();
+			LinkedObject child = tr.getChild();
+			if (TermUtil.isObsolete(parent))
+			    continue;
+			if (child.getParents().size() == 1) {
+			    lastInstanceCount++;
+			    instanceString += child.getName() + " ("
+				+ child.getID() + ")\n";
 			}
+		    }
+		}
+		if (legacyMode) {
 			Map temp = new HashMap();
 
 			for (Link tr : selection.getLinks()) {
@@ -171,7 +172,8 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	public HistoryItem execute() {
-		if (legacyMode) {
+	    // Show "Are you sure you want to destroy?" warning whether it's legacyMode or not.
+//		if (legacyMode) {
 			if (shouldDestroy) {
 				if (JOptionPane
 						.showConfirmDialog(
@@ -184,24 +186,27 @@ public class DeleteAction implements ClickMenuAction {
 								"Destroy warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 					return null;
 			} else {
+			    // Is this the right test?  Is it failing to warn in some cases where it should?
 				if (lastInstanceCount > 0) {
 					if (JOptionPane.showConfirmDialog(GUIManager.getManager()
-							.getFrame(), "These are the last appearances "
-							+ "the following terms\n" + instanceString
+							.getFrame(), "These are the last appearances of "
+							+ "the following terms:\n" + instanceString
 							+ "Are you sure you want to "
 							+ "make these terms permanently obsolete?", "Delete warning",
 							JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 						return null;
 				}
 			}
-		}
+//		}
 		Collections.sort(deleteThese, pcComparator);
 		TermMacroHistoryItem out = new TermMacroHistoryItem(
 				"Deleted multiple items");
 		for (PathCapable pc : deleteThese) {
 			if (pc instanceof Link) {
 				Link link = (Link) pc;
-				if (link.getType().equals(OBOProperty.CONSIDER)) {
+				if (link.getType() == null)
+					out.addItem(new DeleteLinkHistoryItem((Link) pc));
+				else if (link.getType().equals(OBOProperty.CONSIDER)) {
 					out.addItem(new RemoveConsiderHistoryItem(link.getParent()
 							.getID(), link.getChild().getID()));
 				} else if (link.getType().equals(OBOProperty.REPLACES)) {
