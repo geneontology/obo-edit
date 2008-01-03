@@ -18,7 +18,7 @@ import org.obo.util.AnnotationUtil;
 
 public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
-	protected AnnotationStanzaFileTest(String name) {
+	public AnnotationStanzaFileTest(String name) {
 		super(name);
 	}
 
@@ -61,7 +61,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
 	@Override
 	public Collection<String> getFilesToLoad() {
-		String[] files={"sox9b_zfin.obo"};
+		String[] files={"simple-annot-stanza-example.obo"};
 		return Arrays.asList(files);
 	}
 }

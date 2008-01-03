@@ -16,7 +16,7 @@ import org.obo.datamodel.OBOSession;
 
 public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
 
-	protected PostcompSyntaxFileTest(String name) {
+	public PostcompSyntaxFileTest(String name) {
 		super(name);
 	}
 

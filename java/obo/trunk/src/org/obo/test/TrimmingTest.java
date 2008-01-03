@@ -17,7 +17,7 @@ import junit.framework.TestSuite;
 
 public class TrimmingTest extends AbstractReasonerTest {
 
-	protected TrimmingTest(String name) {
+	public TrimmingTest(String name) {
 		super(name);
 	}
 
