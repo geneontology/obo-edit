@@ -195,8 +195,8 @@ public class SessionManager {
 			long time = System.currentTimeMillis();
 			listener.applied(event);
 			time = System.currentTimeMillis() - time;
-			System.err.println("fired history applied on " + listener + " in "
-					+ time);
+//			System.err.println("fired history applied on " + listener + " in "
+//					+ time);
 		}
 	}
 
@@ -225,8 +225,8 @@ public class SessionManager {
 		// reasonerOpModel.apply(item);
 		long time = System.currentTimeMillis();
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
-		System.err.println("fired history applied in "
-				+ (System.currentTimeMillis() - time));
+//		System.err.println("fired history applied in "
+//				+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));

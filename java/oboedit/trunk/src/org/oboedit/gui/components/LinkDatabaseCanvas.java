@@ -1039,8 +1039,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		addExpansionListener(new ExpandCollapseListener() {
 
 			public void expandStateChanged(ExpansionEvent e) {
-				System.err.println("showed " + e.getShown());
-				System.err.println("hid " + e.getHidden());
+//				System.err.println("showed " + e.getShown());
+//				System.err.println("hid " + e.getHidden());
 			}
 
 		});
@@ -1156,7 +1156,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		linkDatabase.cleanupCache();
 
 		newLayer = layoutEngine.getNewLayer();
-		System.err.println("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
+//		System.err.println("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
 		decorateNode(getRoot(), newLayer, decorators, true, true);
 
 		morpher.setNewNodeOriginNode(getFocusedNode());
