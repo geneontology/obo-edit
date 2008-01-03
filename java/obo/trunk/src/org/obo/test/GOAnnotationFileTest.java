@@ -22,7 +22,7 @@ import org.obo.util.AnnotationUtil;
 
 public class GOAnnotationFileTest extends AbstractAnnotationTest {
 
-	protected GOAnnotationFileTest(String name) {
+	public GOAnnotationFileTest(String name) {
 		super(name);
 	}
 	

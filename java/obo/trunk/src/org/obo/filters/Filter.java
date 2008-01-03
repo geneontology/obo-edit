@@ -4,6 +4,10 @@ import org.bbop.expression.JexlContext;
 import org.bbop.util.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+/**
+ * see
+ * http://wiki.geneontology.org/index.php/OBO-Edit:_The_Filtering_System
+ */
 public interface Filter<T> extends Cloneable, VectorFilter<T> {
 
 	public static final Filter<?> ALWAYS_TRUE = new Filter<Object>() {

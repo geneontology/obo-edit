@@ -24,8 +24,13 @@ import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.impl.*;
+import org.obo.history.CompletesHistoryItem;
+import org.obo.history.CreateLinkHistoryItem;
+import org.obo.history.CreateObjectHistoryItem;
+import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 /**
@@ -1269,5 +1274,25 @@ public class TermUtil {
 		return ObjectUtil.equals(a.getChild(), b.getChild())
 				&& ObjectUtil.equals(a.getType(), b.getType())
 				&& ObjectUtil.equals(a.getParent(), b.getParent());
+	}
+	
+	public static TermMacroHistoryItem createGenusDifferentiaHistoryItem(LinkedObject lo, LinkedObject genus, String relID, LinkedObject diffClass) {
+		TermMacroHistoryItem item = new TermMacroHistoryItem("Created new xp term");
+		String id = lo.getID();
+		item.addItem(new CreateLinkHistoryItem(id, relID, diffClass.getID()));
+		item.addItem(new CreateLinkHistoryItem(id, "OBO_REL:is_a", genus.getID()));
+		item.addItem(new CompletesHistoryItem(id, relID, diffClass.getID(), false));
+		item.addItem(new CompletesHistoryItem(id, "OBO_REL:is_a", genus.getID(), false));
+		return item;
+	}
+
+	public static Collection<String> getLabels(LinkedObject lo) {
+		LinkedList<String> labels = new LinkedList<String>();
+		labels.add(lo.getName());
+		if (lo instanceof SynonymedObject) {
+			for (Synonym syn : ((SynonymedObject)lo).getSynonyms())
+				labels.add(syn.toString());
+		}
+		return labels;
 	}
 }

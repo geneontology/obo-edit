@@ -22,7 +22,7 @@ import org.obo.util.AnnotationUtil;
 
 public class GOAnnotationFilePlusOntologyTest extends GOAnnotationFileTest {
 
-	protected GOAnnotationFilePlusOntologyTest(String name) {
+	public GOAnnotationFilePlusOntologyTest(String name) {
 		super(name);
 	}
 	

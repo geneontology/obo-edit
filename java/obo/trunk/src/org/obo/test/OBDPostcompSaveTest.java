@@ -105,8 +105,6 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 			System.out.println(annot);
 		IdentifiedObject ae = session.getObject("ZFIN:ZDB-GENO-070219-2");
 		Collection<Annotation> annots2 = getAnnotationsForSubject(ae);
-		boolean genusFound = false;
-		boolean diffFound = false;
 		boolean assignedByOk = false;
 		
 		// check annotation. We can't do an ID check on the object as
@@ -115,6 +113,8 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		Annotation match = null;
 		for (Annotation annot : annots2) {
 			LinkedObject obj = annot.getObject();
+			boolean genusFound = false;
+			boolean diffFound = false;
 			for (Link link : obj.getParents()) {
 				if (TermUtil.isIntersection(link)) {
 					String exprObj = link.getParent().getID();
@@ -128,17 +128,19 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 					}		
 				}
 			}
-			System.out.println("* assby="+annot.getAssignedBy());
+			if (genusFound & diffFound) {
+				System.out.println("* assby="+annot.getAssignedBy()+" ns="+annot.getNamespace());
 
-			if (annot.getAssignedBy() != null && annot.getAssignedBy().getID().equals("ZFIN"))
-				assignedByOk = true;
-			if (genusFound & diffFound)
+				if (annot.getAssignedBy() != null && annot.getAssignedBy().getID().equals("ZFIN")) 
+					assignedByOk = true;
 				match = annot;
+			}
 		}
-		assertTrue(genusFound);
-		assertTrue(diffFound);
+		assertTrue(match!=null);
 		System.out.println("assby="+match.getAssignedBy());
 		System.out.println("annotation ns="+match.getNamespace());
+		assertTrue(match.getNamespace().getID().equals("zfin"));
+		assertTrue(match.getAssignedBy().getID().equals("ZFIN"));
 		assertTrue(assignedByOk);
 	
 	}

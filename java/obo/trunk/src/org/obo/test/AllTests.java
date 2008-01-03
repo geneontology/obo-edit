@@ -15,6 +15,14 @@ public class AllTests extends TestCase {
 		TestSuite out = new TestSuite();
 
 		out.addTestSuite(IDUpdateTest.class);
+		out.addTestSuite(AllReasonerTestsWithLPR.class);
+		out.addTestSuite(AnnotationStanzaFileTest.class);
+		out.addTestSuite(FixedCacheMutableLinkDatabaseTest.class);
+		out.addTestSuite(DisjointnessTest.class);
+		out.addTestSuite(GOAnnotationFileTest.class);
+		out.addTestSuite(GOAnnotationFilePlusOntologyTest.class);
+		out.addTestSuite(PostcompSyntaxFileTest.class);
+		out.addTestSuite(TrimmingTest.class);
 
 		return out;
 	}

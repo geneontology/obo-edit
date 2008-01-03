@@ -462,7 +462,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		
 		// we use a subquery, as transitive closure may not incl annot statements
 		// example: G has_role X, X part_of Y
-		whereClause.addConstraint("object_id IN (SELECT node_id FROM link_to_node WHERE object_uid ='"+
+		whereClause.addConstraint("object_id IN (SELECT DISTINCT node_id FROM link_to_node WHERE object_uid ='"+
 				obj.getID()+"')"); 		// TODO: use SQL constructors
 
 		
@@ -1006,7 +1006,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		obj2iid.put(lo, iid);
 		
 		if (false) {
-			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
+//			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
+			for (Link link : ((LinkedObject) lo).getParents()) {
 				if (link.getType().equals(AnnotationOntology.POSITS_REL()))
 					continue;
 				saveLink(link);
@@ -1040,7 +1041,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						link.getChild().getID(),
 						link.getType().getID(),
 						dv.getValue(),
-						dv.getType());
+						dv.getType(),
+						link.getNamespace());
 				//					((DatatypeValue) v).getType());
 
 			}
@@ -1052,7 +1054,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						link.getType().getID(),
 						link.getParent().getID(),
 						(TermUtil.isIntersection(link) ? "I" : ""),
-						TermUtil.isImplied(link));
+						TermUtil.isImplied(link),
+						link.getNamespace());
 			}
 			else {
 				return 1;
@@ -1065,7 +1068,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					link.getType().getID(),
 					link.getParent().getID(),
 					(TermUtil.isIntersection(link) ? "I" : ""),
-					TermUtil.isImplied(link));
+					TermUtil.isImplied(link),
+					link.getNamespace());
 		}
 
 	}
