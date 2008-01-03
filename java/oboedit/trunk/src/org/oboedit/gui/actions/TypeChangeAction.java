@@ -207,9 +207,12 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 		return "type_change";
 	}
 	
+       // 1/3/2008:  Midori requested that this keyboard shortcut be removed.
+       // It wasn't working right, and anyway it was confusing.
+       // https://sourceforge.net/tracker/index.php?func=detail&aid=1863244&group_id=36855&atid=418260
 	public KeyStroke getShortcut() {
-		return KeyStroke.getKeyStroke(KeyEvent.VK_T,
-				java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
-
+	    return null;
+//		return KeyStroke.getKeyStroke(KeyEvent.VK_T,
+//				java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 	}
 }
