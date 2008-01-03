@@ -65,7 +65,7 @@ public class EraseButtonBehavior extends AbstractClickActionButtonBehavior {
 	}
 
 	public String getTooltip() {
-		return "<html><b>Eraser tool tool</b><br><hr>\n"
+		return "<html><b>Eraser tool</b><br><hr>\n"
 				+ "<table width=300><tr><td>Click an existing term or link " +
 						"(or group of selected terms and links) to delete them."
 				+ "</td></table></html>";
