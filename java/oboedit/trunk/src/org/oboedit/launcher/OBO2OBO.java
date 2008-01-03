@@ -654,11 +654,11 @@ public class OBO2OBO {
 						+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
 						+ "                               Optional.");
 		System.err
-				.println("  -script <scriptname> <args> - Runs an OSL script on the ontology. A script tag's\n"
-					 + "                               arguments MUST be followed by a sequence.");
-
+				.println("  -script <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's\n"
+					 + "                               arguments MUST be followed by \\; so that obo2obo knows\n"
+					 + "                               where the script arguments stop and obo2obo arguments resume.");
 		System.err
-				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
+				.println("  <filenameN>                - An OBO file to load. Any number of OBO files may\n"
 					 + "                               be loaded.");
 		System.err
 				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo>\n"
