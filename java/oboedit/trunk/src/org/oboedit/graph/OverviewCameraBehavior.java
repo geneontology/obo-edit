@@ -89,7 +89,7 @@ public class OverviewCameraBehavior implements ViewBehavior {
 		cameraWrapper.addInputEventListener(new PBasicInputEventHandler() {
 			@Override
 			public void mouseDragged(PInputEvent event) {
-				System.err.println("event = "+event);
+//				System.err.println("event = "+event);
 			}
 		});
 		clip.setPathTo(ShapeUtil.createRoundRectangle(0, 0, 100, 50));

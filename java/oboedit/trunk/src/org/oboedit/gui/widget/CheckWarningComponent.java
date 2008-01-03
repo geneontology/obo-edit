@@ -499,7 +499,7 @@ public class CheckWarningComponent extends JEditorPane {
 		int warningCount = 0;
 		int fatalCount = 0;
 		Iterator it = warnings.iterator();
-		System.err.println("updategui warnings = " + warnings.size());
+//		System.err.println("updategui warnings = " + warnings.size());
 		while (it.hasNext()) {
 			CheckWarning warning = (CheckWarning) it.next();
 			if (warning.isFatal() && !showFatal) {
