@@ -79,7 +79,12 @@ public class FileMenu extends DynamicMenu {
 
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
-		saveItem.setAccelerator(KeyStroke.getKeyStroke("control S"));
+//		saveItem.setAccelerator(KeyStroke.getKeyStroke("control S"));
+		    // For now, until we get Save implemented, 
+		    // let's have command-S be a shortcut for Save As
+		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
+								 .getDefaultToolkit().getMenuShortcutKeyMask()));
+
 
 		add(newItem);
 		add(loadItem);
