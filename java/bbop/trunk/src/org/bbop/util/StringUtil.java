@@ -596,4 +596,15 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
+
+	public static String join(String c, String[] tokens, int p) {
+		StringBuffer s = new StringBuffer();
+		while (p < tokens.length) {
+			s.append(tokens[p]);
+			p++;
+			if (p < tokens.length)
+				s.append(c);
+		}
+		return s.toString();
+	}
 }
