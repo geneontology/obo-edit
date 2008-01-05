@@ -491,6 +491,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("node_link_node_with_pred_and_source");
 		q.setWhereClause(whereClause);
+		q.getSelectClause().setDistinct(true);
 		ResultSet rs = q.execute(connection);
 		
 		OBOSession tempSession = new OBOSessionImpl();
