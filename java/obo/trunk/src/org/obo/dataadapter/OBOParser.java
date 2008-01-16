@@ -75,6 +75,10 @@ public interface OBOParser extends OBOSimpleParser {
 
 	public void readIsTransitive(boolean isTransitive, NestedValue nv)
 			throws OBOParseException;
+	
+	public void readTransitiveOver(String id, String ns, boolean implied,
+			NestedValue nv) throws OBOParseException;
+
 
 	public void readID(String id, NestedValue val) throws OBOParseException;
 

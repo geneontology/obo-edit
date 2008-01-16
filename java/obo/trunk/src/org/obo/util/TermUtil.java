@@ -1337,4 +1337,15 @@ public class TermUtil {
 		}
 		return labels;
 	}
+	public static Collection<String> getExactLabels(LinkedObject lo) {
+		LinkedList<String> labels = new LinkedList<String>();
+		if (lo.getName() != null)
+			labels.add(lo.getName());
+		if (lo instanceof SynonymedObject) {
+			for (Synonym syn : ((SynonymedObject)lo).getSynonyms())
+				if (syn.getScope() == Synonym.EXACT_SYNONYM)
+					labels.add(syn.toString());
+		}
+		return labels;
+	}
 }

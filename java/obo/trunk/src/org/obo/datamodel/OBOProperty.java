@@ -103,6 +103,32 @@ public interface OBOProperty extends OBOObject {
 			return true;
 		}
 	};
+	
+	public static final OBOProperty TRANSITIVE_OVER = new OBOPropertyImpl(
+			"transitive_over", null) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 3635477793098376143L;
+
+		{
+			this.name = "transitive_over";
+		}
+
+		@Override
+		public boolean isSymmetric() {
+			return false;
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return true;
+		}
+		
+		public boolean isNonInheritable() {
+			return true;
+		}
+	};
 
 	public static final OBOProperty REPLACES = new OBOPropertyImpl(
 			"replaced_by", null) {

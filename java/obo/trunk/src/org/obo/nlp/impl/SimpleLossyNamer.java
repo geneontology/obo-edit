@@ -10,7 +10,7 @@ import org.obo.nlp.Namer;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
-public class SimpleLossyNamer implements Namer {
+public class SimpleLossyNamer extends AbstractNamer implements Namer {
 
 	public SimpleLossyNamer() {
 		// TODO Auto-generated constructor stub

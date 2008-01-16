@@ -803,9 +803,12 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 							}
 						}
 						if (oboProp.getTransitiveOver() != null) {
-							// TODO
-							//addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp,
-							//		superProperty))
+					        List<OWLObjectProperty> chain = new ArrayList<OWLObjectProperty>();
+					        chain.add(owlProp);
+					        chain.add(getOWLObjectProperty(oboProp.getTransitiveOver()));
+					        OWLAxiom ax = 
+					        	owlFactory.getOWLObjectPropertyChainSubPropertyAxiom(chain, owlProp);
+					        addAxiom(ax);
 						}
 						if (oboProp.getDomain() != null) {
 							addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
