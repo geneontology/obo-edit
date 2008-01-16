@@ -53,9 +53,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean saveImplied = false;
 
-		// protected ReasonerFactory reasonerFactory = new
-		// LinkPileReasonerFactory();
-		protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
+		// FCR does not appear to work with regulation examples...
+		protected ReasonerFactory reasonerFactory = new
+		  LinkPileReasonerFactory();
+//		protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
 
 		protected boolean discardUnusedCategories = false;
 

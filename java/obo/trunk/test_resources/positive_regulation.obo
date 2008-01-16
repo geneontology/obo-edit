@@ -1,0 +1,227 @@
+format-version: 1.2
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_generic "Generic GO slim"
+subsetdef: goslim_goa "GOA and proteome slim"
+subsetdef: goslim_pir "PIR GO slim"
+subsetdef: goslim_plant "Plant GO slim"
+subsetdef: goslim_yeast "Yeast GO slim"
+subsetdef: gosubset_prok "Prokaryotic GO subset"
+
+[Term]
+id: GO:0003001
+name: generation of a signal involved in cell-cell signaling
+namespace: biological_process
+def: "The cellular process by which a physical entity or change in state, a signal, is created that originates in one cell and is used to transfer information to another cell. This process begins with the initial formation of the signal and ends with the mature form and placement of the signal." [GOC:dph]
+synonym: "formation of a signal" RELATED []
+synonym: "generation of a signal involved in cell-cell signalling" EXACT []
+synonym: "signal generation" EXACT []
+is_a: GO:0009987  ! cellular process
+relationship: part_of GO:0007267 ! cell-cell signaling
+
+[Term]
+id: GO:0007154
+name: cell communication
+namespace: biological_process
+def: "Any process that mediates interactions between a cell and its surroundings. Encompasses interactions such as signaling or attachment between one cell and another cell, between a cell and an extracellular matrix, or between a cell and any other aspect of its environment." [GOC:mah]
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_goa  ! GOA and proteome slim
+subset: goslim_pir  ! PIR GO slim
+subset: goslim_plant  ! Plant GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+is_a: GO:0009987  ! cellular process
+
+[Term]
+id: GO:0007267
+name: cell-cell signaling
+namespace: biological_process
+def: "Any process that mediates the transfer of information from one cell to another." [GOC:mah]
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_plant  ! Plant GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "cell-cell signalling" EXACT []
+is_a: GO:0007154  ! cell communication
+
+[Term]
+id: GO:0008150
+name: biological_process
+namespace: biological_process
+def: "Those processes specifically pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms. A process is a collection of molecular events with a defined beginning and end." [GOC:go_curators, GOC:isa_complete]
+comment: Note that, in addition to forming the root of the biological process ontology, this term is recommended for use for the annotation of gene products whose biological process is unknown. Note that when this term is used for annotation, it indicates that no information was available about the biological process of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.
+subset: goslim_candida  ! Candida GO slim
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_goa  ! GOA and proteome slim
+subset: goslim_pir  ! PIR GO slim
+subset: goslim_plant  ! Plant GO slim
+subset: goslim_yeast  ! Yeast GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "biological process unknown" NARROW []
+synonym: "physiological process" EXACT []
+
+[Term]
+id: GO:0009987
+name: cellular process
+namespace: biological_process
+def: "Processes that are carried out at the cellular level, but are not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level." [GOC:go_curators, GOC:isa_complete]
+subset: goslim_goa  ! GOA and proteome slim
+subset: goslim_pir  ! PIR GO slim
+subset: goslim_plant  ! Plant GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "cell growth and/or maintenance" NARROW []
+synonym: "cell physiology" EXACT []
+synonym: "cellular physiological process" EXACT []
+is_a: GO:0008150  ! biological_process
+disjoint_from: GO:0032501  ! multicellular organismal process
+disjoint_from: GO:0051704  ! multi-organism process
+
+[Term]
+id: GO:0046879
+name: hormone secretion
+namespace: biological_process
+def: "The regulated release of hormones, substances with a specific regulatory effect on a particular organ or group of cells." [ISBN:0198506732]
+is_a: GO:0003001  ! generation of a signal involved in cell-cell signaling
+is_a: GO:0046903  ! secretion
+
+[Term]
+id: GO:0046883
+name: regulation of hormone secretion
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of the regulated release of a hormone from a cell or group of cells." [GOC:ai]
+is_a: GO:0051046  ! regulation of secretion
+relationship: part_of GO:0046879 ! hormone secretion
+
+[Term]
+id: GO:0046887
+name: positive regulation of hormone secretion
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of the regulated release of a hormone from a cell or group of cells." [GOC:ai]
+synonym: "activation of hormone secretion" NARROW []
+synonym: "stimulation of hormone secretion" NARROW []
+synonym: "up regulation of hormone secretion" EXACT []
+synonym: "up-regulation of hormone secretion" EXACT []
+synonym: "upregulation of hormone secretion" EXACT []
+is_a: GO:0046883  ! regulation of hormone secretion
+is_a: GO:0048522  ! positive regulation of cellular process
+is_a: GO:0051047  ! positive regulation of secretion
+
+[Term]
+id: GO:0046903
+name: secretion
+namespace: biological_process
+def: "The regulated release of a substance by a cell, a group of cells, or a tissue." [GOC:ai]
+subset: goslim_goa  ! GOA and proteome slim
+subset: goslim_pir  ! PIR GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+is_a: GO:0051234  ! establishment of localization
+
+[Term]
+id: GO:0048518
+name: positive regulation of biological process
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:jic]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "activation of biological process" NARROW []
+synonym: "positive regulation of physiological process" EXACT []
+synonym: "stimulation of biological process" NARROW []
+synonym: "up regulation of biological process" EXACT []
+synonym: "up-regulation of biological process" EXACT []
+synonym: "upregulation of biological process" EXACT []
+is_a: GO:0050789  ! regulation of biological process
+
+[Term]
+id: GO:0048522
+name: positive regulation of cellular process
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of cellular processes, those that are carried out at the cellular level, but are not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level." [GOC:jic]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "activation of cellular process" NARROW []
+synonym: "positive regulation of cellular physiological process" EXACT []
+synonym: "stimulation of cellular process" NARROW []
+synonym: "up regulation of cellular process" EXACT []
+synonym: "up-regulation of cellular process" EXACT []
+synonym: "upregulation of cellular process" EXACT []
+is_a: GO:0048518  ! positive regulation of biological process
+is_a: GO:0050794  ! regulation of cellular process
+
+[Term]
+id: GO:0050789
+name: regulation of biological process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:ai, GOC:go_curators]
+subset: goslim_generic  ! Generic GO slim
+subset: goslim_goa  ! GOA and proteome slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation of physiological process" EXACT []
+is_a: GO:0065007  ! biological regulation
+
+[Term]
+id: GO:0050794
+name: regulation of cellular process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of cellular processes, those that are carried out at the cellular level, but are not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level." [GOC:go_curators]
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation of cellular physiological process" EXACT []
+is_a: GO:0050789  ! regulation of biological process
+relationship: part_of GO:0009987 ! cellular process
+
+[Term]
+id: GO:0051046
+name: regulation of secretion
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of the regulated release of a substance from a cell or group of cells." [GOC:ai]
+subset: gosubset_prok  ! Prokaryotic GO subset
+is_a: GO:0050789  ! regulation of biological process
+relationship: part_of GO:0046903 ! secretion
+
+[Term]
+id: GO:0051047
+name: positive regulation of secretion
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of the regulated release of a substance from a cell or group of cells." [GOC:ai]
+synonym: "activation of secretion" NARROW []
+synonym: "stimulation of secretion" NARROW []
+synonym: "up regulation of secretion" EXACT []
+synonym: "up-regulation of secretion" EXACT []
+synonym: "upregulation of secretion" EXACT []
+is_a: GO:0048518  ! positive regulation of biological process
+is_a: GO:0051046  ! regulation of secretion
+
+[Term]
+id: GO:0051179
+name: localization
+namespace: biological_process
+def: "The processes by which a cell, a substance, or a cellular entity, such as a protein complex or organelle, is transported to, and/or maintained in a specific location." [GOC:ai]
+subset: goslim_pir  ! PIR GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "establishment and maintenance of cellular component location" NARROW []
+synonym: "establishment and maintenance of localization" EXACT []
+synonym: "establishment and maintenance of position" EXACT []
+synonym: "establishment and maintenance of substance location" NARROW []
+synonym: "establishment and maintenance of substrate location" NARROW []
+is_a: GO:0008150  ! biological_process
+
+[Term]
+id: GO:0051234
+name: establishment of localization
+namespace: biological_process
+def: "The directed movement of a cell, substance or cellular entity, such as a protein complex or organelle, to a specific location." [GOC:ai]
+subset: goslim_pir  ! PIR GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+is_a: GO:0008150  ! biological_process
+relationship: part_of GO:0051179 ! localization
+
+[Term]
+id: GO:0065007
+name: biological regulation
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of any biological process, quality or function." [GOC:isa_complete]
+subset: goslim_pir  ! PIR GO slim
+subset: gosubset_prok  ! Prokaryotic GO subset
+synonym: "regulation" BROAD []
+is_a: GO:0008150  ! biological_process
+
+[Typedef]
+id: part_of
+name: part of
+namespace: gene_ontology
+is_transitive: true
+

@@ -228,4 +228,9 @@ public interface OBOProperty extends OBOObject {
 	public IdentifiedObject getDomain();
 
 	public boolean isNonInheritable();
+	
+	public OBOProperty getTransitiveOver();
+
+	public void setTransitiveOver(OBOProperty transitiveOver);
+	
 }

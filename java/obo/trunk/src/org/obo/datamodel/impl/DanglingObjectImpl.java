@@ -31,7 +31,7 @@ public class DanglingObjectImpl implements DanglingObject {
 	}
 
 	public String getName() {
-		return name;
+		return null; // CJM - changed from id to null. Need to thoroughly test
 	}
 
 	public boolean isAnonymous() {

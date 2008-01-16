@@ -7,6 +7,7 @@ import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.TermCategory;
@@ -146,5 +147,13 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 
 	public void setAlwaysImpliesInverseExtension(NestedValue nv) {
 	}
+	
+	public OBOProperty getTransitiveOver() {
+		return null;
+	}
+
+	public void setTransitiveOver(OBOProperty transitiveOver) {
+	}
+
 
 }

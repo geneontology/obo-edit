@@ -183,8 +183,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	public void writeDefaultNamespaceHeaderTag(Namespace namespace)
 			throws IOException {
-		defaultNamespace = namespace;
-		print("default-namespace: " + escape(namespace.getID()) + "\n");
+		if (namespace != null) {
+			defaultNamespace = namespace;
+			print("default-namespace: " + escape(namespace.getID()) + "\n");
+		}
 	}
 
 	public void writeRemarkHeaderTag(String remark) throws IOException {
