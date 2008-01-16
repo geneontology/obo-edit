@@ -3,30 +3,25 @@ package org.oboedit.gui.actions;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
-import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.history.CreateLinkHistoryItem;
-import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.Explanation;
@@ -40,7 +35,6 @@ import org.oboedit.gui.EditAction;
 import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.SimpleWizard;
-import java.util.logging.Logger;
 
 public class AssertImpliedAction implements ClickMenuAction {
 

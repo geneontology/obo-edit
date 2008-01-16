@@ -61,7 +61,7 @@ fi
 
 GO_CLASSPATH=${PATH_TO_ME}/runtime/org.geneontology.jar:${PATH_TO_ME}/runtime/oboedit.jar
 
-$JAVAPATH -mx$MEMSETTING -classpath $GO_CLASSPATH org.geneontology.oboedit.launcher.OBO2Flat "$@"
+$JAVAPATH -mx$MEMSETTING -classpath $GO_CLASSPATH org.oboedit.launcher.OBO2Flat "$@"
 
 
 
