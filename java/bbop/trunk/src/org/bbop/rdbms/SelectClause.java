@@ -13,5 +13,4 @@ public interface SelectClause extends RelationalTerm {
 	
 	public void addColumn(String column);
 
-
 }
