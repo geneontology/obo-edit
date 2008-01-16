@@ -22,6 +22,7 @@ import org.bbop.swing.PluggableImageHTMLEditorKit;
 import org.oboedit.gui.SVGIcon;
 import org.w3c.dom.Document;
 
+
 public class SVGUtil {
 
 	public static GraphicsNode getSVG(String uri) throws IOException {

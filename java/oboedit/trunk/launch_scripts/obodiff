@@ -67,7 +67,7 @@ GO_CLASSPATH=${PATH_TO_ME}/runtime/org.geneontology.jar:${PATH_TO_ME}/runtime/ob
 
 echo "Starting obodiff at $PATH_TO_ME using $MEMSETTING of memory";
 
-$JAVAPATH -mx$MEMSETTING -Doboedit.dir=${PATH_TO_ME} -classpath $GO_CLASSPATH org.geneontology.oboedit.launcher.OBODiff $*
+$JAVAPATH -mx$MEMSETTING -Doboedit.dir=${PATH_TO_ME} -classpath $GO_CLASSPATH org.oboedit.launcher.OBODiff $*
 
 
 

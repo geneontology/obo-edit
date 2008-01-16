@@ -1,6 +1,7 @@
 package org.oboedit.launcher;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import org.bbop.io.IOUtil;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
+import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DefinedObject;
@@ -25,6 +27,10 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.filters.Filter;
+import org.obo.history.HistoryItem;
+import org.obo.history.TermMacroHistoryItem;
+import org.obo.nlp.SemanticParser;
+import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
@@ -91,6 +97,23 @@ public class OBO2OBO {
 		}
 		if (fixDbxrefs) {
 			fixDbxrefs(session);
+		}
+		if (readConfig.getSemanticParser() != null) {
+			SemanticParser semanticParser = readConfig.getSemanticParser();
+			semanticParser.index(session);
+			Collection<? extends HistoryItem> items = semanticParser.parseTerms();
+			for (HistoryItem item : items) {
+				//System.out.println(item);
+			}
+			semanticParser.apply(items);
+			if (semanticParser.getNamer() != null) {
+				semanticParser.apply(semanticParser.getNamer().generateSynonymChanges(session));
+			}
+				
+			System.out.println("SEMANTIC PARSER REPORT:");
+			for (String report : semanticParser.getReports()) {
+				System.out.println(report);
+			}
 		}
 		Iterator it = scripts.iterator();
 		while (it.hasNext()) {
@@ -534,6 +557,15 @@ public class OBO2OBO {
 				fixDbxrefs = true;
 			} else if (args[i].equals("-writecomments")) {
 				writeObsoleteComments = true;
+			} else if (args[i].equals("-semanticparse")) {
+				// TODO: plugging in of specific rules
+				// Each rule has an extra embedded -rule argument
+				SemanticParser sp = new RegulationTermParser();
+				if (args[i+1].equals("-addsynonyms")) {
+					i++;
+					sp.useDefaultNamer();
+				}
+				readConfig.setSemanticParser(sp);
 			} else if (args[i].equals("-runscript")) {
 				if (i >= args.length - 1)
 					printUsage(1);
