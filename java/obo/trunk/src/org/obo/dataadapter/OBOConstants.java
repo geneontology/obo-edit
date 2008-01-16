@@ -256,7 +256,9 @@ public class OBOConstants {
 			"always_implies_inverse", OBOProperty.class);
 
 	public static final TagMapping IS_SYMMETRIC_TAG = new TagMapping(
-			"is_symmetric", OBOProperty.class);
+			"is_symmetric", OBOProperty.class);	
+	public static final TagMapping TRANSITIVE_OVER_TAG = new TagMapping(
+					"transitive_over", OBOProperty.class);
 
 	public static final TagMapping IS_TRANSITIVE_TAG = new TagMapping(
 			"is_transitive", OBOProperty.class);

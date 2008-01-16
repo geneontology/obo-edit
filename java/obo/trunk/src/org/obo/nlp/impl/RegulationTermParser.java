@@ -9,13 +9,19 @@ import java.util.logging.Logger;
 
 import org.bbop.util.StringUtil;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.impl.DefaultOperationModel;
+import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
+import org.obo.nlp.Namer;
 import org.obo.nlp.SemanticParser;
 import org.obo.util.TermUtil;
 
@@ -36,6 +42,8 @@ public class RegulationTermParser implements SemanticParser {
 	protected Collection<String> reports = new LinkedList<String>();
 	protected OBOSession session;
 	Logger logger = Logger.getLogger("org.obo.nlp");
+	
+	boolean replacePartOfs = true;
 
 	LinkedObject brObj ;
 	LinkedObject romfObj ;
@@ -44,12 +52,13 @@ public class RegulationTermParser implements SemanticParser {
 	LinkedObject mfObj ;
 	LinkedObject bpObj ;
 	
-	OBOProperty regRel;
+	OBOProperty regRel;	
+	OBOProperty partOfRel;
 	OBOProperty negRegRel;
 	OBOProperty posRegRel;
-	String regRelId;
-	String negRegRelId;
-	String posRegRelId;
+	String regRelId = "regulates";
+	String negRegRelId = "negatively_regulation";
+	String posRegRelId = "positively_regulates";
 	
 
 
@@ -92,8 +101,41 @@ public class RegulationTermParser implements SemanticParser {
 		robpObj = lookup("regulation of biological process");
 		mfObj = lookup("molecular_function");
 		bpObj = lookup("biological_process");
-		
+
+		 partOfRel = (OBOProperty)session.getObject("part_of");
+
+		// add relations if not present
 		regRel = (OBOProperty)session.getObject(regRelId);
+		if (regRel == null) {
+			regRel = (OBOProperty)
+			session.getObjectFactory().createObject(regRelId, 
+					OBOClass.OBO_PROPERTY, false);
+			session.addObject(regRel);
+		}
+		posRegRel = (OBOProperty)session.getObject(posRegRelId);
+		if (posRegRel == null) {
+			posRegRel = (OBOProperty)
+			session.getObjectFactory().createObject(posRegRelId, 
+					OBOClass.OBO_PROPERTY, false);
+			session.addObject(posRegRel);
+			Link subProp = 
+				new OBORestrictionImpl(posRegRel,OBOProperty.IS_A,
+						regRel, false);
+			posRegRel.addParent(subProp);
+			posRegRel.setTransitiveOver(partOfRel);
+		}
+		negRegRel = (OBOProperty)session.getObject(negRegRelId);
+		if (negRegRel == null) {
+			negRegRel = (OBOProperty)
+			session.getObjectFactory().createObject(negRegRelId, 
+					OBOClass.OBO_PROPERTY, false);
+			session.addObject(negRegRel);
+			Link subProp = 
+				new OBORestrictionImpl(negRegRel,OBOProperty.IS_A,
+						regRel, false);
+			negRegRel.addParent(subProp);
+			negRegRel.setTransitiveOver(partOfRel);
+		}
 		
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io.isBuiltIn())
@@ -173,6 +215,17 @@ public class RegulationTermParser implements SemanticParser {
 				String relID = relationName;
 				TermMacroHistoryItem item =
 					TermUtil.createGenusDifferentiaHistoryItem(lo, genus, relID, target);
+				// remove old part_of
+				if (replacePartOfs) {
+					OBORestriction partOfLink;
+					for (Link link : lo.getParents()) {
+						if (link.getType().equals(partOfRel) &&
+								link.getParent().equals(target)) {
+							DeleteLinkHistoryItem delItem = new DeleteLinkHistoryItem(link);
+							item.addItem(delItem);					
+						}
+					}
+				}
 				return item;
 			}
 		}
@@ -196,13 +249,28 @@ public class RegulationTermParser implements SemanticParser {
 		return name2obj.get(n);
 	}
 
-	public void apply(Collection<TermMacroHistoryItem> items) {
+	public void apply(Collection<? extends HistoryItem> items) {
 		DefaultOperationModel model = new DefaultOperationModel();
 		model.setSession(session);
 		for (HistoryItem item : items) {
 			model.apply(item);
 		}
 	}
+
+
+
+	protected Namer namer;
+	public Namer getNamer() {
+		return namer;
+	}
+	public void setNamer(Namer namer) {
+		this.namer = namer;
+	}
+	
+	public void useDefaultNamer() {
+		namer = new RegulationTermNamer();
+	}
+	
 
 
 }

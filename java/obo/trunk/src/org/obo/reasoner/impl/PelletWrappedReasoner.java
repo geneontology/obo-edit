@@ -1,5 +1,6 @@
 package org.obo.reasoner.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,6 +78,17 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 				kb.addObjectProperty(aterm);
 				if (((OBOProperty)lo).isTransitive()) {
 					kb.addTransitiveProperty(aterm);
+				}
+				if (((OBOProperty)lo).isSymmetric()) {
+					kb.addSymmetricProperty(aterm);
+				}
+				if (((OBOProperty)lo).getTransitiveOver() != null) {
+					Collection<ATerm> chain = new ArrayList<ATerm>();
+					chain.add(aterm);
+					chain.add(makeATerm(((OBOProperty)lo).getTransitiveOver()));
+					// TODO
+//					ATermAppl chainTerm = ATermUtils.makeList(chain);
+//					kb.addSubProperty(aterm, chainTerm); 
 				}
 				else {
 					//kb.addObjectProperty(aterm);

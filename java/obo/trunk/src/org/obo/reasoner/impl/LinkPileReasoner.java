@@ -157,6 +157,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 		addRule(new SymmetryRule());
 		addRule(new GenusDifferentiaRule());
 		addRule(new IntersectionRule());
+		addRule(new TransitiveOverRule());
 	}
 
 	@Override

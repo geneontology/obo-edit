@@ -2,12 +2,7 @@ package org.obo.reasoner.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.LinkedList;
 
-import org.bbop.util.MultiHashMap;
-import org.bbop.util.MultiMap;
 import org.bbop.util.Subset;
 import org.bbop.util.VectorFilter;
 import org.obo.datamodel.IdentifiedObject;
@@ -15,10 +10,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.OBORestriction;
-import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.util.ReasonerUtil;
-import org.obo.util.TermUtil;
 
 public class TrimmedLinkDatabase implements LinkDatabase {
 

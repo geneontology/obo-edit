@@ -5,6 +5,9 @@ import java.util.Collection;
 
 import junit.framework.TestSuite;
 
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -44,7 +47,13 @@ public class RegulationOfSomitogenesisTest extends AbstractNLPTest {
 		testForGenus(id,"GO:0065007"); /* asserted */
 		testForDifferentium(id,"regulates", "GO:0001756"); /* asserted */
 		testForNoIsA(id, "GO:005079"); /* RoDP - asserted, not specific enough */
+		for (Link link : 
+			((LinkedObject)session.getObject("regulates")).getParents()) {
+			System.out.println(link+" "+link.getType().getID());
+		}
+		System.out.println("tOver="+((OBOProperty)session.getObject("regulates")).getTransitiveOver());
 		
+		//testForLink("negatively_regulates","transitive_over","part_of");
 		ReasonerFactory rf = new LinkPileReasonerFactory();
 //		ReasonerFactory rf = new ForwardChainingReasonerFactory();
 		ReasonedLinkDatabase reasoner = rf.createReasoner();

@@ -208,11 +208,17 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	}
 
 	public OBOProperty getTransitiveOver() {
-		return transitiveOver;
+		//return transitiveOver;
+		for (Link link : this.getParents()) {
+			if (link.getType().getID().equals("transitive_over")) {
+				return (OBOProperty)link.getParent();
+			}
+		}
+		return null;
 	}
 
 	public void setTransitiveOver(OBOProperty transitiveOver) {
-		this.transitiveOver = transitiveOver;
+		//this.transitiveOver = transitiveOver;
 	}
 	
 	

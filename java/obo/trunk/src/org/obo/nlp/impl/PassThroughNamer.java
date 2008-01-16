@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import org.obo.datamodel.LinkedObject;
 import org.obo.nlp.Namer;
 
-public class PassThroughNamer implements Namer {
+public class PassThroughNamer extends AbstractNamer implements Namer {
 
 	private Collection<Namer> namers;
 	

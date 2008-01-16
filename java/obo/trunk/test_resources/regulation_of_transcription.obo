@@ -259,7 +259,7 @@ name: regulation of metabolic process
 namespace: biological_process
 def: "Any process that modulates the frequency, rate or extent of the chemical reactions and pathways within a cell or an organism." [GOC:go_curators]
 subset: gosubset_prok  ! Prokaryotic GO subset
-synonym: "regulation of metabolism" EXACT []
+!!!!synonym: "regulation of metabolism" EXACT []
 is_a: GO:0050789  ! regulation of biological process
 relationship: part_of GO:0008152 ! metabolic process
 

@@ -834,6 +834,20 @@ public class DefaultOBOParser implements OBOParser {
 						.getLineNum(), engine.getCurrentLine(), true, false,
 				false, implied, null, null, null, ns, nv));
 	}
+	public void readTransitiveOver(String id, String ns, boolean implied,
+			NestedValue nv) throws OBOParseException {
+		if (!(currentObject instanceof LinkedObject))
+			throw new OBOParseException("Tried to specify inverse_of "
+					+ "for object " + currentObject + " which "
+					+ "does not support relationships.", getCurrentPath(),
+					engine.getCurrentLine(), engine.getLineNum());
+
+		//((OBOProperty) currentObject).setTransitiveOver(transitiveOver)
+		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+				OBOProperty.TRANSITIVE_OVER.getID(), getCurrentPath(), engine
+						.getLineNum(), engine.getCurrentLine(), true, false,
+				false, implied, null, null, null, ns, nv));
+	}
 
 	public void readIsCyclic(boolean isCyclic, NestedValue nv)
 			throws OBOParseException {

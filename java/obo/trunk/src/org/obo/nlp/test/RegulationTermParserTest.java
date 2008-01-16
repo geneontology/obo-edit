@@ -8,6 +8,7 @@ import junit.framework.TestSuite;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.history.TermMacroHistoryItem;
+import org.obo.nlp.Namer;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
@@ -36,9 +37,9 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 		int passes = 0;
 		for (String report : semanticParser.getReports()) {
 			System.out.println(report);
-			if (report.contains("OK: regulation of transcription, DNA-dependent"))
+			if (report.contains("MISSING_LINK: GO:0019219"))
 				passes++;
-			if (report.contains("OK: regulation of transcription, DNA-dependent"))
+			if (report.contains("NO_TARGET: GO:0021882"))
 				passes++;
 			
 		}
@@ -55,6 +56,18 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 		reasoner.recache();
 		
 		testForIsA(reasoner, id, "GO:0019222"); /* RoMP */
+		
+		/* 
+		 * synonyms
+		 */
+		semanticParser.useDefaultNamer();
+		Namer namer = semanticParser.getNamer();
+		id = "GO:0019222";
+		LinkedObject lo = (LinkedObject)session.getObject(id);
+		Collection<String> names = namer.constructNames(lo );
+		System.out.println(names);
+		assertTrue(names.contains("regulation of metabolism"));
+		assertTrue(names.size() == 1);
 		
 	}
 	

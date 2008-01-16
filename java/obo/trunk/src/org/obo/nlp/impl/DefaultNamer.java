@@ -10,7 +10,7 @@ import org.obo.nlp.Namer;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
-public class DefaultNamer implements Namer {
+public class DefaultNamer extends AbstractNamer implements Namer {
 
 	public DefaultNamer() {
 		// TODO Auto-generated constructor stub

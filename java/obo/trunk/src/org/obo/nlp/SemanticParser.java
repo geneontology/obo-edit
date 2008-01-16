@@ -12,8 +12,10 @@ public interface SemanticParser {
 	public Collection<String> getReports();
 	public void index(OBOSession session);
 	public Collection<TermMacroHistoryItem> parseTerms();
-
+	public Namer getNamer();
+	public void useDefaultNamer();
+	
 	Collection<TermMacroHistoryItem> parseTerm(LinkedObject lo);
-	public void apply(Collection<TermMacroHistoryItem> items);
+	public void apply(Collection<? extends HistoryItem> items);
 	
 }
