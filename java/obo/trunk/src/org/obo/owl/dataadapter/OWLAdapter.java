@@ -666,147 +666,172 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 
 	public OBOSession writeAll(OBOSession session, String file, 
-						FilteredPath filteredPath) throws DataAdapterException {
+			FilteredPath filteredPath) throws DataAdapterException {
+        // We first need to obtain a copy of an OWLOntologyManager, which, as the
+        // name suggests, manages a set of ontologies.  An ontology is unique within
+        // an ontology manager.  To load multiple copies of an ontology, multiple managers
+        // would have to be used.
+       manager = OWLManager.createOWLOntologyManager();
+
+       // Create a physical URI which can be resolved to point to where our ontology will be saved.
+       // TODO: make this smarter. absolute vs relative path
+       URI physicalURI;
+       if (!file.contains("file:"))
+         	file = "file:"+file;
+       physicalURI = URI.create(file);
+       
+		// We need to set up a mapping which points to a concrete file where the ontology will
+		// be stored. (It's good practice to do this even if we don't intend to save the ontology).
+		ontologyURI = URI.create("http://purl.org/obo/all");
+
+
+       // Set up a mapping, which maps the ontology URI to the physical URI
+       SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
+       manager.addURIMapper(mapper);
+
 		try {
 			setProgressString("Writing file...");
-			
-            // We first need to obtain a copy of an OWLOntologyManager, which, as the
-            // name suggests, manages a set of ontologies.  An ontology is unique within
-            // an ontology manager.  To load multiple copies of an ontology, multiple managers
-            // would have to be used.
-           manager = OWLManager.createOWLOntologyManager();
-
-            // All ontologies have a URI, which is used to identify the ontology.  You should
-            // think of the ontology URI as the "name" of the ontology.  This URI frequently
-            // resembles a Web address (i.e. http://...), but it is important to realise that
-            // the ontology URI might not necessarily be resolvable.  In other words, we
-            // can't necessarily get a document from the URI corresponding to the ontology
-            // URI, which represents the ontology.
-            // In order to have a concrete representation of an ontology (e.g. an RDF/XML
-            // file), we MAP the ontology URI to a PHYSICAL URI.  We do this using a URIMapper
-
-            // We need to set up a mapping which points to a concrete file where the ontology will
-            // be stored. (It's good practice to do this even if we don't intend to save the ontology).
-            ontologyURI = URI.create("http://purl.org/obo/all");
-            // Create a physical URI which can be resolved to point to where our ontology will be saved.
-            // TODO: make this smarter. absolute vs relative path
-            URI physicalURI;
-            if (!file.contains("file:"))
-              	file = "file:"+file;
-            physicalURI = URI.create(file);
-            // Set up a mapping, which maps the ontology URI to the physical URI
-            SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
-            manager.addURIMapper(mapper);
-
-            // Now create the ontology - we use the ontology URI (not the physical URI)
-            ontology = manager.createOntology(ontologyURI);
-            // Now we want to specify that A is a subclass of B.  To do this, we add a subclass
-            // axiom.  A subclass axiom is simply an object that specifies that one class is a
-            // subclass of another class.
-            // We need a data factory to create various object from.  Each ontology has a reference
-            // to a data factory that we can use.
-            owlFactory = manager.getOWLDataFactory();
-            
-          for (IdentifiedObject io : session.getObjects()) {
-                
-        	  	if (io.isBuiltIn()) 
-        	  		continue;
-             	String id = io.getID();
-            	if (io instanceof OBOClass) {
-            		OBOClass oboClass = (OBOClass)io;
-            		OWLClass owlClass = getOWLClass(io);
-            		addOboMetadataToOwlEntity(owlClass,io);
-            		
-            		//if (io.isAnonymous())
-            		//	addAxiom(owlFactory.
-                   
-                    Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
-             		for (Link link : oboClass.getParents()) {
-             			OWLClass owlParentClass = getOWLClass(link.getParent());
-             			OBOProperty oboProp = link.getType();
-         				if (oboProp.equals(OBOProperty.DISJOINT_FROM)) {
-         					HashSet<OWLDescription> pair = 
-         						new HashSet<OWLDescription>();
-         					pair.add(owlClass);
-         					pair.add(owlParentClass);
-         					addAxiom(owlFactory.getOWLDisjointClassesAxiom(pair));
-         				}
-             			else {
-                			OWLDescription owlSuperClass;
-              
-                   			if (oboProp.equals(OBOProperty.IS_A)) {
-                 				owlSuperClass = owlParentClass;
-                 			}
-              				else {
-             					OWLObjectProperty owlProp = getOWLObjectProperty(oboProp);
-             					owlSuperClass = 
-             						owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass);
-             				}
-
-             				if (TermUtil.isIntersection(link)) {
-             					intersectionElements.add(owlSuperClass);
-             				}
-             				else {
-             					OWLAxiom axiom = 
-             						owlFactory.getOWLSubClassAxiom(owlClass, owlSuperClass);
-             					AddAxiom addAxiom = new AddAxiom(ontology, axiom);
-             					// We now use the manager to apply the change
-             					manager.applyChange(addAxiom);
-             				}           
-             			}
-            		}
-             		if (intersectionElements.size() > 0) {
-             			OWLDescription owlIntersection =
-             				owlFactory.getOWLObjectIntersectionOf(intersectionElements);
-             			HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
-             			pair.add(owlClass);
-             			pair.add(owlIntersection);
-             			OWLAxiom ecAxiom =
-             				owlFactory.getOWLEquivalentClassesAxiom(pair);
-             			manager.applyChange(new AddAxiom(ontology,ecAxiom));
-             		}
-            	}
-            	else if (io instanceof OBOProperty) {
-            		OBOProperty oboProp = (OBOProperty)io;
-            		OWLObjectProperty owlProp = getOWLObjectProperty(io);
-               		addOboMetadataToOwlEntity(owlProp,io);
-               		for (Link link : oboProp.getParents()) {
-             			OWLObjectProperty owlParentProp = getOWLObjectProperty(link.getParent());
-             			OBOProperty linkType = link.getType();
-         				if (linkType.equals(OBOProperty.IS_A)) {
-         					addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp, owlParentProp));
-         				}
-         				else {
-         					// TODO: throw?
-         				}
-               		}
-               		if (oboProp.getDomain() != null) {
-               			addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
-               					getOWLClass(oboProp.getDomain())));
-               		}
-               		if (oboProp.isTransitive())
-               			addAxiom(owlFactory.getOWLTransitiveObjectPropertyAxiom(owlProp));
-            	}
-            	else if (io instanceof Annotation) {
-            		addOboAnnotation((Annotation)io);
-            	}
-            	else if (io instanceof Instance) {
-            		addInstance((Instance)io);
-            	}
-            	else {
-            		// TODO
-            	}
-            }
-
-            // Now save the ontology.  The ontology will be saved to the location where
-            // we loaded it from, in the default ontology format
-            manager.saveOntology(ontology, ioprofile.getOntologyFormat());
-            //manager.saveOntology(ontology);
+			OWLOntology owlOntology = obo2owl(session, ontologyURI);
+			// Now save the ontology.  The ontology will be saved to the location where
+			// we loaded it from, in the default ontology format
+			manager.saveOntology(ontology, ioprofile.getOntologyFormat());
+			//manager.saveOntology(ontology);
 			return session;
-		} catch (Exception e) {
+
+		}
+		catch (Exception e) {
 			throw new DataAdapterException(e, "Write error");
 		}
 	}
+	public OWLOntology obo2owl(OBOSession session, URI ontologyURI) throws DataAdapterException {
+
+		try {
+			// All ontologies have a URI, which is used to identify the ontology.  You should
+			// think of the ontology URI as the "name" of the ontology.  This URI frequently
+			// resembles a Web address (i.e. http://...), but it is important to realise that
+			// the ontology URI might not necessarily be resolvable.  In other words, we
+			// can't necessarily get a document from the URI corresponding to the ontology
+			// URI, which represents the ontology.
+			// In order to have a concrete representation of an ontology (e.g. an RDF/XML
+			// file), we MAP the ontology URI to a PHYSICAL URI.  We do this using a URIMapper
+
+			// Now create the ontology - we use the ontology URI (not the physical URI)
+			ontology = manager.createOntology(ontologyURI);
+			// Now we want to specify that A is a subclass of B.  To do this, we add a subclass
+			// axiom.  A subclass axiom is simply an object that specifies that one class is a
+			// subclass of another class.
+			// We need a data factory to create various object from.  Each ontology has a reference
+			// to a data factory that we can use.
+			owlFactory = manager.getOWLDataFactory();
+
+			for (IdentifiedObject io : session.getObjects()) {
+
+				if (io.isBuiltIn()) 
+					continue;
+				String id = io.getID();
+				if (io instanceof OBOClass) {
+					OBOClass oboClass = (OBOClass)io;
+					OWLClass owlClass = getOWLClass(io);
+					addOboMetadataToOwlEntity(owlClass,io);
+
+					//if (io.isAnonymous())
+					//	addAxiom(owlFactory.
+
+					Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
+					for (Link link : oboClass.getParents()) {
+						OWLClass owlParentClass = getOWLClass(link.getParent());
+						OBOProperty oboProp = link.getType();
+						if (oboProp.equals(OBOProperty.DISJOINT_FROM)) {
+							HashSet<OWLDescription> pair = 
+								new HashSet<OWLDescription>();
+							pair.add(owlClass);
+							pair.add(owlParentClass);
+							addAxiom(owlFactory.getOWLDisjointClassesAxiom(pair));
+						}
+						else {
+							OWLDescription owlSuperClass;
+
+							if (oboProp.equals(OBOProperty.IS_A)) {
+								owlSuperClass = owlParentClass;
+							}
+							else {
+								OWLObjectProperty owlProp = getOWLObjectProperty(oboProp);
+								owlSuperClass = 
+									owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass);
+							}
+
+							if (TermUtil.isIntersection(link)) {
+								intersectionElements.add(owlSuperClass);
+							}
+							else {
+								OWLAxiom axiom = 
+									owlFactory.getOWLSubClassAxiom(owlClass, owlSuperClass);
+								AddAxiom addAxiom = new AddAxiom(ontology, axiom);
+								// We now use the manager to apply the change
+								manager.applyChange(addAxiom);
+							}           
+						}
+					}
+					if (intersectionElements.size() > 0) {
+						OWLDescription owlIntersection =
+							owlFactory.getOWLObjectIntersectionOf(intersectionElements);
+						HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
+						pair.add(owlClass);
+						pair.add(owlIntersection);
+						OWLAxiom ecAxiom =
+							owlFactory.getOWLEquivalentClassesAxiom(pair);
+						manager.applyChange(new AddAxiom(ontology,ecAxiom));
+					}
+				}
+				else if (io instanceof OBOProperty) {
+					OBOProperty oboProp = (OBOProperty)io;
+					if (oboProp.isNonInheritable()) {
+						// TODO Annotation Property
+					}
+					else {
+						OWLObjectProperty owlProp;
+						owlProp = getOWLObjectProperty(io);
+						addOboMetadataToOwlEntity(owlProp,io);
+						for (Link link : oboProp.getParents()) {
+							OWLObjectProperty owlParentProp = getOWLObjectProperty(link.getParent());
+							OBOProperty linkType = link.getType();
+							if (linkType.equals(OBOProperty.IS_A)) {
+								addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp, owlParentProp));
+							}
+							else {
+								// TODO: throw?
+							}
+						}
+						if (oboProp.getTransitiveOver() != null) {
+							// TODO
+							//addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp,
+							//		superProperty))
+						}
+						if (oboProp.getDomain() != null) {
+							addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
+									getOWLClass(oboProp.getDomain())));
+						}
+						// TODO symmetric
+						if (oboProp.isTransitive()) // TODO
+							addAxiom(owlFactory.getOWLTransitiveObjectPropertyAxiom(owlProp));
+					}
+				}
+				else if (io instanceof Annotation) {
+					addOboAnnotation((Annotation)io);
+				}
+				else if (io instanceof Instance) {
+					addInstance((Instance)io);
+				}
+				else {
+					// TODO
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new DataAdapterException(e, "Write error");		
+		}
+		return ontology;
+		}
 	
 	public void addAxiom(OWLAxiom axiom) throws OWLOntologyChangeException {
 		manager.applyChange(new AddAxiom(ontology,axiom));
@@ -824,7 +849,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
         addAxiom(owlFactory.getOWLEntityAnnotationAxiom(owlEntity, anno));
         
-        if (ioprofile.getMetadataMappings() != null) {
+        if (ioprofile != null && ioprofile.getMetadataMappings() != null) {
         	for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
         		for (OWLAxiom axiom : mapping.getOWLAxioms(this,owlEntity,io))
         			addAxiom(axiom);
@@ -938,6 +963,14 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 	public OBOSession getSession() {
 		return session;
+	}
+
+	public OWLOntologyManager getManager() {
+		return manager;
+	}
+
+	public void setManager(OWLOntologyManager manager) {
+		this.manager = manager;
 	}
 
 

@@ -27,6 +27,7 @@ import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.impl.*;
+import org.obo.filters.LinkFilter;
 import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.CreateObjectHistoryItem;
@@ -52,6 +53,8 @@ public class TermUtil {
 		protected LinkedObject term;
 
 		protected LinkDatabase linkDatabase;
+		
+		protected LinkFilter linkFilter;
 
 		public AncestorTask(LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
@@ -69,6 +72,15 @@ public class TermUtil {
 			setResults(getAncestors(100, linkDatabase, term, memoizeTable));
 		}
 
+
+		public LinkFilter getLinkFilter() {
+			return linkFilter;
+		}
+
+		public void setLinkFilter(LinkFilter linkFilter) {
+			this.linkFilter = linkFilter;
+		}
+
 		protected Collection<LinkedObject> getAncestors(double incSize,
 				LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
@@ -83,6 +95,8 @@ public class TermUtil {
 			out = new HashSet<LinkedObject>();
 			memoizeTable.put(term, out);
 			for (Link tr : linkDatabase.getParents(term)) {
+				if (linkFilter != null && !linkFilter.satisfies(tr))
+					continue;
 				out.add(tr.getParent());
 				out.addAll(getAncestors(incSize / term.getParents().size(),
 						linkDatabase, tr.getParent(), memoizeTable));
@@ -785,6 +799,33 @@ public class TermUtil {
 		return false;
 	}
 	
+	/**
+	 * Returns whether a {@link LinkedObject} has a given ancestor.
+	 */
+	public static boolean hasIsAAncestor(LinkedObject child, LinkedObject ancestor) {
+		boolean out = hasIsAAncestor(new DefaultLinkDatabase(null), child,
+				ancestor, new HashSet<LinkedObject>());
+		return out;
+	}
+	protected static boolean hasIsAAncestor(LinkDatabase linkDatabase,
+			LinkedObject child, LinkedObject ancestor,
+			Collection<LinkedObject> lookedAt) {
+		if (lookedAt.contains(child))
+			return false;
+		else
+			lookedAt.add(child);
+		for (Link tr : linkDatabase.getParents(child)) {
+			if (tr.getType().equals(OBOProperty.IS_A)) {
+				if (tr.getParent().equals(ancestor))
+					return true;
+				else if (hasIsAAncestor(linkDatabase, tr.getParent(), ancestor,
+						lookedAt))
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	public static Link getLink(LinkDatabase linkDatabase, Link link) {
 		for(Link l : linkDatabase.getParents(link.getChild()))
 			if (l.equals(link))
@@ -1288,7 +1329,8 @@ public class TermUtil {
 
 	public static Collection<String> getLabels(LinkedObject lo) {
 		LinkedList<String> labels = new LinkedList<String>();
-		labels.add(lo.getName());
+		if (lo.getName() != null)
+			labels.add(lo.getName());
 		if (lo instanceof SynonymedObject) {
 			for (Synonym syn : ((SynonymedObject)lo).getSynonyms())
 				labels.add(syn.toString());

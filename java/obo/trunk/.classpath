@@ -23,12 +23,19 @@
 	<classpathentry kind="lib" path="lib/owlapi-mansyntaxrenderer.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-mansyntaxparser.jar" sourcepath="/owl1_1/mansyntaxparser/src"/>
 	<classpathentry kind="lib" path="lib/owlapi-krssparser.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-impl.jar"/>
+	<classpathentry kind="lib" path="lib/owlapi-impl.jar" sourcepath="/owl1_1/impl"/>
 	<classpathentry kind="lib" path="lib/owlapi-functionalrenderer.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-functionalparser.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-dig1_1.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-debugging.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-change.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/obd-core.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-runtime-3.0.jar"/>
+	<classpathentry kind="lib" path="/OBO-Edit2/postgresql-8.2-506.jdbc3.jar"/>
+	<classpathentry kind="lib" path="/Pellet/lib/jena/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="/Pellet/lib/jena/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Pellet/lib/xsdlib/relaxngDatatype.jar"/>
+	<classpathentry kind="lib" path="/Pellet/lib/xsdlib/xsdlib.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

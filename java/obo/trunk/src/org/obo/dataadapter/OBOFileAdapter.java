@@ -9,6 +9,7 @@ import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.WriteCachedOBOSession;
 import org.obo.identifier.IDProfile;
+import org.obo.nlp.SemanticParser;
 
 public class OBOFileAdapter implements OBOAdapter {
 
@@ -52,6 +53,8 @@ public class OBOFileAdapter implements OBOAdapter {
 	        protected String serializer = "OBO_1_2";  // new default
 
 		protected String impliedType = "Save for presentation";
+		
+		protected SemanticParser semanticParser;
 
 		public OBOAdapterConfiguration() {
 		}
@@ -98,6 +101,15 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setAllowDangling(boolean allowDangling) {
 			this.allowDangling = allowDangling;
 		}
+
+		public SemanticParser getSemanticParser() {
+			return semanticParser;
+		}
+
+		public void setSemanticParser(SemanticParser semanticParser) {
+			this.semanticParser = semanticParser;
+		}
+		
 	}
 
 	public DataAdapterUI getPreferredUI() {

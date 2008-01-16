@@ -27,6 +27,8 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	protected boolean transitive;
 	protected boolean reflexive;
 	protected boolean alwaysImpliesInverse;
+	
+	protected OBOProperty transitiveOver;
 
 	protected Set categories;
 	protected HashMap categoryExtensionHash;
@@ -204,4 +206,14 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	public boolean isDummy() {
 		return false;
 	}
+
+	public OBOProperty getTransitiveOver() {
+		return transitiveOver;
+	}
+
+	public void setTransitiveOver(OBOProperty transitiveOver) {
+		this.transitiveOver = transitiveOver;
+	}
+	
+	
 }
