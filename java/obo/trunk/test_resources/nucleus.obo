@@ -4,6 +4,7 @@ subsetdef: goslim_goa "GOA and proteome slim"
 subsetdef: goslim_plant "Plant GO slim"
 subsetdef: goslim_yeast "Yeast GO slim"
 subsetdef: gosubset_prok "Prokaryotic GO subset"
+default-namespace: gene_ontology
 
 [Term]
 id: GO:0005575

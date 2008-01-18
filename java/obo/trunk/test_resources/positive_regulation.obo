@@ -170,6 +170,8 @@ namespace: biological_process
 def: "Any process that modulates the frequency, rate or extent of the regulated release of a substance from a cell or group of cells." [GOC:ai]
 subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0050789  ! regulation of biological process
+intersection_of: GO:0065007 ! biological regulation
+intersection_of: regulates GO:0046903 ! secretion
 relationship: part_of GO:0046903 ! secretion
 
 [Term]
