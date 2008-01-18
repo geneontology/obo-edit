@@ -6,6 +6,7 @@ subsetdef: goslim_pir "PIR GO slim"
 subsetdef: goslim_plant "Plant GO slim"
 subsetdef: goslim_yeast "Yeast GO slim"
 subsetdef: gosubset_prok "Prokaryotic GO subset"
+default-namespace: test
 
 [Term]
 id: GO:0001756
@@ -97,7 +98,7 @@ id: GO:0014807
 name: regulation of somitogenesis
 namespace: biological_process
 def: "Any process that modulates the frequency, rate or extent of somitogenesis." [GOC:mtg_muscle]
-is_a: GO:0001756  ! somitogenesis
+relationship: part_of GO:0001756  ! somitogenesis
 is_a: GO:0050793  ! regulation of developmental process
 
 [Term]

@@ -1,0 +1,5 @@
+format-version: 1.2
+
+[Term]
+id: GO:0005623 ! cell
+is_a: snap:Object
