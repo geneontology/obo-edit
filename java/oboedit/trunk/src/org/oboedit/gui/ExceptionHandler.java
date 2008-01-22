@@ -1,6 +1,8 @@
 package org.oboedit.gui;
 
 import javax.swing.JOptionPane;
+import java.io.File;
+import org.bbop.framework.GUIManager;
 
 public class ExceptionHandler {
 	public void handle(Throwable throwable) {
@@ -18,7 +20,8 @@ public class ExceptionHandler {
 					"http://sourceforge.net/projects/geneontology and\n "+
 					"submit a bug report. Please post a copy of the \n"+
 					"stderr file located at\n"+
-					System.getProperty("user.home")+"/.oboedit/stderr");
+//					System.getProperty("user.home")+"/.oboedit/stderr");
+						      GUIManager.getPrefsDir().getPath() + "stderr");
 		}
 	}
 }

@@ -594,7 +594,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getAutosaveEnabled());
 		dbxrefEditor.load(Preferences.getPreferences().getPersonalDbxref());
 		autosavePathField.setText(Preferences.getPreferences()
-				.getAutosavePath().toString());
+					  .getAutosavePath().toString());
 		autosaveExpirationField.setText(Preferences.getPreferences()
 				.getAutosaveExpirationDays()
 				+ "");
@@ -669,10 +669,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autoCommitPanel.add(Box.createHorizontalGlue());
 
 		Box configFileLabelBox = new Box(BoxLayout.X_AXIS);
-		JLabel configFileLabel = new JLabel("Config file");
-		JLabel configFilePath = new JLabel(System.getProperty("user.home")
-				+ "/.oboedit");
-
+		JLabel configFileLabel = new JLabel("Config directory");
+		// This shouldn't be hardcoded!!
+//		JLabel configFilePath = new JLabel(System.getProperty("user.home")
+//				+ "/.oboedit");
+		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
 		configFileLabelBox.add(configFileLabel);
 		configFileLabelBox.add(Box.createHorizontalStrut(20));
 		configFileLabelBox.add(Box.createHorizontalGlue());
