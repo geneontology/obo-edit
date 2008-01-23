@@ -13,8 +13,9 @@
      <tocitem text="Bugs and Troubleshooting" target="Bugs_and_Troubleshooting"/>
 </tocitem>
 <tocitem text="Viewing Ontologies">
-     <tocitem text="Components (NEW--needs work)" target="Components"/>
+     <tocitem text="Components (UPDATED)" target="Components"/>
      <tocitem text="Perspectives (NEW)" target="Perspectives"/>
+     <tocitem text="Configuration Manager (NEW/UPDATED)" target="Configuration_Manager"/>
      <tocitem text="The Ontology Editor Panel (NEEDS UPDATING)" target="The_Term_Editor_Panel"/>
      <tocitem text="Working with Selections" target="Working_with_Selections"/>
      <tocitem text="Configurable Message (NEW)" target="Configurable_Message"/>
@@ -113,32 +114,6 @@
      <tocitem text="Introduction to Cross Products" target="Introduction_to_Cross_Products"/>
      <tocitem text="Cross Products in the Text Editor" target="Cross_Products_in_the_Text_Editor"/>
      <tocitem text="Cross Products By Hand" target="Cross_Products_By_Hand"/>
-</tocitem>
-<tocitem text="Customizing OBO-Edit (CAN THIS WHOLE SECTION GO AWAY?)">
-     <tocitem text="The Configuration Plugin" target="The_Configuration_Plugin"/>
-     <tocitem text="Customizing the Interface">
-          <tocitem text="Working with XML Layouts" target="Working_with_XML_Layouts"/>
-          <tocitem text="Common Parameters" target="Common_Parameters"/>
-          <tocitem text="The &lt;glue&gt; Tag" target="The_Glue_Tag"/>
-          <tocitem text="The &lt;spacer&gt; Tag" target="The_Spacer_Tag"/>
-          <tocitem text="The &lt;label&gt; Tag" target="The_Label_Tag"/>
-          <tocitem text="The &lt;box&gt; Tag" target="The_Box_Tag"/>
-          <tocitem text="The &lt;grid&gt; Tag" target="The_Grid_Tag"/>
-          <tocitem text="The &lt;panel&gt; Tag" target="The_Panel_Tag"/>
-          <tocitem text="The &lt;compactgrid&gt; Tag" target="The_Compactgrid_Tag"/>
-          <tocitem text="The &lt;divider&gt; Tag" target="The_Divider_Tag"/>
-          <tocitem text="The &lt;tabs&gt; Tag" target="The_Tabs_Tag"/>
-          <tocitem text="The &lt;window&gt; Tag" target="The_Window_Tag"/>
-          <tocitem text="The &lt;if&gt; Tag" target="The_If_Tag"/>
-          <tocitem text="The &lt;component&gt; Tag" target="The_Component_Tag"/>
-          <tocitem text="The &lt;search_button&gt; Tag" target="The_searchbutton_Tag"/>
-          <tocitem text="Example Layouts" target="Example_Layouts">
-               <tocitem text="The Default Layout" target="The_Default_Layout"/>
-               <tocitem text="Jen's Layout" target="Jen_s_Layout"/>
-               <tocitem text="ZFIN Layout" target="ZFIN_Layout"/>
-               <tocitem text="Jen's Advanced Layout" target="Jen_s_Advanced_Layout"/>
-          </tocitem>
-     </tocitem>
 </tocitem>
 <tocitem text="Expressions">
      <tocitem text="Introduction to Expressions" target="Introduction_to_Expressions"/>
