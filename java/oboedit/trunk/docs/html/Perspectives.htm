@@ -6,30 +6,46 @@
 </HEAD>
 <BODY bgcolor="#ffffff">
 <H1>Perspectives</H1>
-<p>&nbsp;</p>
-<p>In OBO-Edit the layout of the various tabs in the interface is controlled by
-the Perspectives feature. Using this feature you can drag tabs around the
-interface to a location that is more convenient. The tabs will automatically
-slot into the place where you drop them. You can remove them from the main
-interface to be in a window on their own by clicking the little icon of an
-arrow that points upwards and to the right. To return the tab to within the
-main application window click the icon of an arrow that points downwards and
+<p>
+Layouts in OBO-Edit are referred to as Perspectives.  OBO-Edit offers several built-in
+perspectives and also allows users to customize their own perspectives (which can then
+be saved and shared with other users).
+To access the menus options for perspectives, select [View]->[Layouts].</p>
+<h3>Built-In Perspectives:  Edit and Verify</h3>
+<p>There are two built-in perspectives called Edit and Verify. The Edit perspective
+is optimized for ontology editing:
+</p><p><IMG hspace=0 src="../images/edit_perspective.png" center border=0></p>
+<p>The Verify perspective allows you to
+easily check various features of the ontology such as comment syntax:
+</p><p><IMG hspace=0 src="../images/verify_perspective.png" center border=0>
+</p>
+<h3>Creating Your Own Perspective</h3>
+<p>
+In addition to these built-in perspectives you can create your own favorite perspective, save it,
+and (if desired) share the resulting configuration file with other people. 
+You can set up your desired perspective by using the [View]->[Show] menus to add components, and/or
+the "X" icons to remove components from the display. 
+</p><p>
+Components can be moved around by grabbing their title bars and
+dragging them around.  As you drag a panel, you will see a black outline that shows where it
+will land if you drop it.  You can turn a panel into an independent window by clicking the icon
+of an arrow that points upwards and to the right:
+</p><p><IMG hspace=0 src="../images/undocked.png" center border=0></p>
+<p>To return a panel to the
+main OBO-Edit window, click its icon that shows an arrow pointing downwards and
 to the left.
+</p>
+<h3>Saving and Sharing Perspectives</h3>
+<p>
+First set up your perspective by adding or removing panels and dragging them to your preferred locations.
+Then save the perspective (using [View]->[Layouts]->[Save current perspective as..]).  (Your perspective
+will now show up in the list of perspectives when you access [View]->[Layouts].)
 </p></p>
-To access the menus options for perspectives select [View]->[Layouts].
-</p></p>
-There are two built-in perspectives called Edit and Verify. The Edit perspective
-is optimized for ontology editing, and the Verify perspective allows you to
-easily check various features of the ontology such as comment syntax.
-</p></p>
-In addition to these built-in perspectives you may create your own favourite perspective, save it,
-and mail the configuration file round to your colleagues. To do this, first
-set up the perspective by dragging the tabs around. Then save the
-perspective. Then go to the .oboedit directory (current this is .oboeditbeta
+To find your perspectives file to share with other users, go to your .oboedit directory (current this is .oboeditbeta
 but it won't be once the tool is released) and look inside the perspectives
-directory. The details of your layout are held within a file in this
-folder. It is not possible to edit this file by hand, but you can mail the
-file around to let others use your favourite perspective. They simply need to
+directory for the appropriate .idw file.
+It is not possible to edit this file by hand, but you can mail the
+file around to let others use your favorite perspective. They simply need to
 add your file to their .oboedit/perspectives directory.
 </p>
 </BODY>
