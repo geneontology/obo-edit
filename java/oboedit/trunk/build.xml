@@ -17,6 +17,7 @@
 	<property name="releasenotes" location="CHANGES" />
 	<property name="svn_repository_url" value="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/${projectname}" />
 	<property name="tagprefix" value="${projectname}-" />
+	<!-- Developer note (not sure where to put this:  make sure the VERSION file doesn't contain a newline!! Emacs adds a newline. -->
 	<property name="version_file" value="${sourcedir}/org/oboedit/resources/VERSION" />
 
 	<property name="main_jar_manifest_template" location="templates/jar_manifest.template" />
@@ -111,7 +112,7 @@
 	</target>
 
 	<target name="-releasenotesprompt" unless="releasenotes_current">
-		<input validargs="y,n" defaultvalue="y" addproperty="releasenotes.userinput">The release notes do not seem to be up to date. Continue with release?</input>
+		<input validargs="y,n" defaultvalue="y" addproperty="releasenotes.userinput">The release notes (./CHANGES) and/or the version number (src/org/oboedit/resources/VERSION) do not seem to be up to date. (NOTE: make sure the VERSION file doesn't include a newline!) Continue with release anyway?</input>
 		<echo message="userinput = ${releasenotes.userinput}" />
 		<condition property="releasenotes.continue_with_old_notes">
 			<equals arg1="${releasenotes.userinput}" arg2="y" casesensitive="false" trim="true" />
@@ -128,6 +129,7 @@
 			<tarfileset dir=".">
 				<include name="${runtimedir_name}/*" />
 				<include name="docs/**" />
+				<include name="test_resources/**" />
 				<include name="extensions" />
 				<include name="${launcher_jar_name}" />
 			</tarfileset>
@@ -351,8 +353,12 @@
 	  <chmod file="oboedit" perm="ugo+x" />
 	  <echo message="To launch OBO-Edit, type ./oboedit"/>
 
-	  <copy file="launch_scripts/obomerge" todir="." />
-	  <chmod file="obomerge" perm="ugo+x" />
+	  <copy todir=".">
+	    <fileset dir="launch_scripts">
+	      <include name="*" />
+	    </fileset>
+	  </copy>
+
 	</target>
 
 </project>
