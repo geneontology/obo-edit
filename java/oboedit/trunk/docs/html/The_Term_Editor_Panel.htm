@@ -9,13 +9,13 @@
 <h1>The Ontology Editor Panel</h1>
 <p>Once an ontology is loaded, there are a number of ways to view it. The ontology editor panel is the main view 
 of the classes in your ontology.</p>
-<p><IMG height=318 hspace=0 src="../images/term_editor_panel.gif" width=448 
+<p><IMG height=400 hspace=0 src="../images/term_editor_panel.png" 
 border=0></p>
-<h2>Top Level Nodes</h2>
+<h2>Top Level Nodes test</h2>
 <p>Whenever OBO-Edit loads an ontology, the ontology editor panel always contains 
 three root nodes named "Classes", "Relations", and "Obsolete":</p>
-<p><IMG height=318 hspace=0 src="../images/term_editor_panel_roots.gif" 
-width=448 border=0></p>
+<p><IMG height=400 hspace=0 src="../images/term_editor_panel_roots.png" 
+ border=0></p>
 <p>All of the classes (aka "terms") in your ontology are listed beneath the 
 "Classes" nodes. Relations (aka relationship types) are listed beneath 
 "Relations", and all obsolete objects (which may be classes, relations, or 
@@ -29,8 +29,8 @@ select these top-level nodes or modify them in any way.</p>
 can be expanded or collapsed, so that only a part of the tree is visible at any 
 one time. The expand/collapse controls look like boxes containing a plus or 
 minus sign:</p>
-<p><IMG height=318 hspace=0 src="../images/term_editor_panel_collapse.gif" 
-width=448 border=0></p>
+<p><IMG height=400 hspace=0 src="../images/term_editor_panel_collapse.png" 
+ border=0></p>
 <p>If expand/collapse control is marked with a plus, that means that there are 
 other branches of the tree below, and clicking on the control will cause those 
 branches to become visible. If the control is marked with a minus, it means that 
@@ -55,8 +55,8 @@ src="../images/is_a.gif" width=13 border=0>&nbsp;symbol means that the
 relationship type is <strong>is_a</strong>, so the example above means:</p><pre>extracellular organelle <strong>is_a</strong> organelle</pre>
 <p>We understand the relationships the same way if a node has multiple 
 children:</p>
-<p><IMG height=318 hspace=0 src="../images/term_editor_panel_links.gif" 
-width=448 border=0></p>
+<p><IMG height=400 hspace=0 src="../images/term_editor_panel_links.png" 
+ border=0></p>
 <p>The highlighed section means:</p>
 <ul>
   <li><font face="Courier">extracellular organelle <strong>is_a</strong> 
@@ -67,15 +67,19 @@ width=448 border=0></p>
   organelle</font>
   <li><font face="Courier">non-membrance-bound organelle <strong>is_a</strong> 
   organelle</font>
-  <li><font face="Courier">organelle lumen <strong>part_of</strong> 
+  <li><font face="Courier">organelle part <strong>part_of</strong> 
+  organelle</font>
+  <li><font face="Courier">podosome <strong>is_a</strong> 
+  organelle</font>
+  <li><font face="Courier">vesicle <strong>is_a</strong> 
   organelle</font>
   <li><font face="Courier">organelle <strong>is_a</strong> cellular 
   component</font></li></ul>
 <h2>Relationship Types</h2>
 <p>Relationship types are represented as icons that appear between a parent and 
 child term:</p>
-<p><IMG height=318 hspace=0 src="../images/term_editor_panel_types.gif" 
-width=448 border=0></p>
+<p><IMG height=400 hspace=0 src="../images/term_editor_panel_types.png" 
+ border=0></p>
 <p>A few icons for common relationship types are provided by 
 OBO-Edit by default. (See <A href="The_Configuration_Plugin.htm">The 
 Configuration Plugin</A> for information on customizing these icons.)</p>
@@ -95,22 +99,18 @@ src="../images/obsolete_replacement_view.gif" width=332 border=0>
  </p>
 <p>In this case, the view means that the obsolete term 
 "2-nitropropane biosynthesis" has been replaced by "2-nitroproppane metabolism". 
-The obsolete "26S proteasome" does not have an exact replacement, but the, 
-depending on context, one of the terms "proteasome complex (sensu Eukaryota)", 
-"proteasome core complex (sensu Bacteria)" and "proteasome regulatory particle (sensu Bacteria)" might be a 
+The obsolete "26S proteasome" does not have an exact replacement, but that the term "proteasome complex" might be a 
 valid replacement.</p>
 <p>Note that "replaced by" and "consider" <em>are not real 
 relationship types.</em> There is no relation named "replaced by" or "consider". 
 These lines appear in the ontology editor panel as a viewing convenience, but they 
 do not represent real relationships in the ontology. They merely represent assignments to the OBO&nbsp;tags named&nbsp;"consider" 
-and "replaced-by".</p>
+and "replaced_by".</p>
 <p>See <A href="Assigning_Replacement_Terms.htm">Assigning Replacement Terms</A> 
-for more information about "consider" and "replaced-by".</p>
+for more information about "consider" and "replaced_by".</p>
 <h2>Working with Multiple ontology editor panels</h2>
 <p>There can be several ontology editor panels on screen at once (to learn how to 
-add more ontology editor panels to your interface, see the "Display Controls" 
-section below and the <A href="Customizing_the_Interface.htm">Customizing the 
-Interface</A> section).</p>
+add more ontology editor panels to your interface, see the <A href="Components.htm">Components</A> and <a href="Perspectives.htm">Perspectives</a> sections).</p>
 <p>If there is more than one ontology editor panel, each panel's display is entirely 
 independent. Each panel may display a different section of the ontology, may be 
 filtered differently, may have different rendering settings, and may have a 
@@ -121,7 +121,7 @@ clarification).</p>
 displaying a different view <em>of the <strong>same</strong> ontology</em>. 
 Edits that are executed on one ontology editor panel will affect the contents of 
 <strong>all</strong> ontology editor panels.</p>
-<h2><A name=display_controls></A>Display Controls</h2>
+<h2><A name=display_controls></A>Display Controls - still to be updated</h2>
 <p>There are a number of buttons at the bottom of each ontology editor panel:</p>
 <ul>
   <li><IMG height=17 hspace=0 src="../images/term_editor_panel_corner.gif" 
