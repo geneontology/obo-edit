@@ -116,7 +116,7 @@
    <mapID target="The_Compactgrid_Tag" url="html/The_Compactgrid_Tag.htm"/>
    <mapID target="The_Complex_Class_Plugin" url="html/The_Complex_Class_Plugin.htm"/>
    <mapID target="The_Component_Tag" url="html/The_Component_Tag.htm"/>
-   <mapID target="The_Configuration_Plugin" url="html/The_Configuration_Plugin.htm"/>
+   <mapID target="Configuration_Manager" url="html/Configuration_Manager.htm"/>
    <mapID target="The_DAG_Viewer" url="html/The_DAG_Viewer.htm"/>
    <mapID target="The_Dbxref_Library_Plugin" url="html/The_Dbxref_Library_Plugin.htm"/>
    <mapID target="The_Default_Layout" url="html/Introduction.htm"/>
