@@ -280,7 +280,7 @@ It is recommended that you allocate as much memory as possible. The installer ha
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent">
                   <void property="initialValue">
-                    <int>512</int>
+                    <int>1024</int>
                   </void>
                   <void property="labelText">
                     <string>Maximum Memory for OBO-Edit (in Mb)</string>
@@ -301,7 +301,7 @@ It is recommended that you allocate as much memory as possible. The installer ha
               </java>
             </serializedBean>
             <initScript>Integer val;
-val = new Integer((int) Math.max(512,
+val = new Integer((int) Math.max(1024,
 (Math.round(SystemInfo.getPhysicalMemory() * 0.8 / 1024 / 1024) / 128) * 128));
 configurationObject.setValue(val);</initScript>
           </formComponent>
@@ -392,7 +392,7 @@ configurationObject.setValue(val);</initScript>
                 <object class="com.install4j.runtime.beans.actions.desktop.CreateDesktopLinkAction">
                   <void property="file">
                     <object class="java.io.File">
-                      <string>oboedit</string>
+                      <string>OBO-Edit</string>
                     </object>
                   </void>
                   <void property="name">
