@@ -62,6 +62,7 @@ SCRIPTNAME=`echo $PATH_TO_ME | sed -e "s/.*\/\(.*\)/\1/g"`
 #Remove the name of this script from the end of the path
 PATH_TO_ME=`echo $PATH_TO_ME | sed -e "s/\(.*\)\/.*/\1/g"`
 
+# obomerge.vmoptions currently sets the memory allocation (-Xmx1024M)
 if [ -e "$PATH_TO_ME/$SCRIPTNAME.vmoptions" ]; then
 	VMOPTIONS=`cat $PATH_TO_ME/$SCRIPTNAME.vmoptions`;
 	for OPTION in "$VMOPTIONS"; do
@@ -115,10 +116,6 @@ if [ -z "$JAVAPATH" ]; then
 	fi
 fi
 
-#MEMORY="-Xmx1024M"
-# Get this from obomerge.vmoptions
-MEMORY=""
-
-CMD="$JAVAPATH $MEMORY -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+CMD="$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
 echo $CMD
 sh -c "$CMD"
