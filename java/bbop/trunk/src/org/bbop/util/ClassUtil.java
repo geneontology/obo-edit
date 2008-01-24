@@ -80,8 +80,8 @@ public class ClassUtil {
 			}
 			if (!matches)
 				it.remove();
-			else
-				System.err.println("wow!");
+//			else
+//				System.err.println("wow!");
 		}
 		return resources;
 	}
