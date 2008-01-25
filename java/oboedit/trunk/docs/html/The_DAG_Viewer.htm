@@ -14,12 +14,10 @@
 
 <h1>The DAG Viewer</h1>
 
-<p>The DAG Viewer is a plugin that displays all the possible paths to the 
+<p>The DAG Viewer displays all the possible paths to the 
 currently selected term (or terms):</p>
 
-<p><IMG height=298 hspace=0 src="../images/dagview.gif" 
-width=328 border=0></p>
-
+<p><IMG hspace=0 src="../images/dag_view.png" border=0></p>
 <p>This display shows a view of the ontology where every link that does not end 
 in the selected term has been removed. Hence, every leaf in this tree is the 
 currently selected term.</p>
@@ -37,15 +35,10 @@ paths to the root if one of its ancestor has multiple parents.</p>
              To configure 
 the DAG Viewer, press the "Config" button. A configuration window will appear:</p>
 
-<p><IMG height=153 hspace=0 
-src="../images/dagview_config.gif" width=238 border=0>    
-              
-             
-               
+<p><IMG src="../images/dagview_config.png" border=0>    
            </p>
-
-<p>This plugin can be configured via the two checkboxes in the lower right:</p>
-
+<p>
+Configuration options:
 <ul>
 
   <li><strong>Show paths to multiple 
@@ -62,55 +55,12 @@ src="../images/dagview_config.gif" width=238 border=0>
   -<strong>is_a</strong>-&gt; intracellular membrane-bound 
   organelle" is displayed. Since that relationship has already been shown, the 
   children of "intracellular membrane-bound organelle" are collapsed near the 
-  bottom of the display to save space. 
-  <li><span style="FONT-WEIGHT: bold">Calculate paths based on primary selector</span> - Normally,
-OBO-Edit shows the "global" path structure, ignoring any filters. If
-"Local" is checked, OBO-Edit shows the path structure based on the
-current <A href="Working_with_Selections.htm">primary selector</A>'s version of 
-  the ontology. Any filters that have been applied to the primary selector will 
-  be used when displaying the path structure.
+  bottom of the display to save space.)
   <li><STRONG>Show non-transitive paths</STRONG>&nbsp;- The 
   DAG Viewer normally doesn't show paths that include non-transitive 
-  relationship types. If this&nbsp;box is selected, paths with non-transitive relationships
-will be shown.&nbsp;This often leads to a highly cluttered display.</li>
+  relationship types. If this box is selected, paths with non-transitive relationships
+will be shown. This often leads to a highly cluttered display.</li>
 </ul>
-
-
-<div class="sidebar">
-<h1>Layout Information</h1>
-
-<hr>
-
-<p class="sidebar">This component's layout id is<br>
-
-<code><b>plugin:org.geneontology.oboedit.plugin.DAGView</b></code></p>
-
-<p>See <A href="Customizing_the_Interface.htm">Customizing 
-the Interface</A> for more information </p>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</p>
 </body>
 </html>

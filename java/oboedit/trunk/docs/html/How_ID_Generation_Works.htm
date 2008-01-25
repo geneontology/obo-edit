@@ -7,7 +7,7 @@
 </HEAD>
 <BODY bgColor=#ffffff>
 <H1>How ID Generation Works</H1>
-<H2>The system</H2>
+<H2>The System</H2>
 <P>ID generation works differently for relations and 
 terms.</P>
 <P>When a new relation is created, OBO-Edit displays a prompt where the new 
@@ -20,7 +20,7 @@ provided:</P>
 <P>              
          When a new term is created, 
 OBO-Edit determines what <STRONG>id generation rule</STRONG> to use (see <A 
-href="The_ID_Manager_Plugin.htm">The ID Manager Plugin</A> for how the 
+href="The_ID_Manager_Plugin.htm">The ID Manager</A> for how the 
 current rule is specified). This rule contains information about what new ids 
 should look like.</P>
 <P>At a minimum, an id generation rule specifies some fixed text that must 
@@ -42,8 +42,7 @@ generates will be "GO:004" (assuming that the id generation rule is
 <P>OBO-Edit can only work with what it's given. It assumes that if an id does 
 not appear in any of the currently loaded ontologies, that id is free to be 
 given to a new term.</P>
-<P>This is not always true.</P>
-<P>For example, an ontology may have been filtered in such a way that it was 
+<P>This is not always true. For example, an ontology may have been filtered in such a way that it was 
 saved into 2 or 3 files. Later, a user may load only one of those files. If the 
 pieces of the ontology in each file use the same namespace, a newly created term 
 could be assigned an id that is currently in use in a part of the ontology that 

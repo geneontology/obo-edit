@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
-<title>The ID Manager Plugin</title>
+<title>The ID Manager</title>
 <link rel="stylesheet" type="text/css" href="../javahelp.css">
 </head>
 <body bgcolor="#ffffff">
-<h1>The ID Manager Plugin</h1>
+<h1>The ID Manager</h1>
 <h2>Overview - ID Generation Profiles</h2>
-<p>The ID Manager Plugin controls id generation through the use of <strong>ID 
+<p>The ID Manager controls id generation through the use of <strong>ID 
 generation profiles</strong>.</p>
 <p>An&nbsp;ID generation profile is a collection of ID generation rules, each of 
 which may be used depending on where the new term is created in the ontology. 
@@ -120,12 +120,12 @@ ontology later; either the encoding scheme must be broken, or large parts of the
 ontology must be obsoleted and recreated.</p>
 <p>This variable is only included here because some ontologies require it for 
 historical reasons. If you are creating a new ontology, do not use it!</p>
-<h2>Using the ID Manager Plugin<A 
+<h2>Using the ID Manager<A 
 name=editing_profiles></A>    </h2>
-<p>The ID Manager Plugin is used to manage id profiles, and is used to select 
-the&nbsp;active id profile. It looks like this.</p>
-<p><IMG height=45 hspace=0 src="../images/idplugin.gif" width=308 border=0></p>
-<p>The leftmost control is a list of all available ID 
+<p>The ID Manager is used to edit id profiles, and to select 
+the&nbsp;active id profile:</p>
+<p><IMG hspace=0 src="../images/id_manager.png" border=0></p>
+<p>The pulldown list shows all available ID 
 Generation Profiles. When an id generation profile is selected, it becomes the active id 
 profile, and its rules are used to generate ids for new terms.</p>
 <p>The next control to the right is the configuration button. Press this button 
@@ -139,10 +139,9 @@ profile. If there is only one id profile, a new id profile must be created
 before that profile can be deleted.</p>
 <h2>Editing ID Profiles</h2>
 <p>When the configuration button is pressed, the id profile editor appears:</p>
-<p><IMG height=156 hspace=0 src="../images/idplugin_config.gif" width=322 
-border=0></p>
+<p><IMG hspace=0 src="../images/id_manager_editor.png" border=0></p>
 <p>The topmost box contains the profile name. This name is 
-used in the display, but doesn't effect what the profile does.</p>
+used in the display, but doesn't affect what the profile does.</p>
 <p>The next text box contains the default id rule.</p>
 <p>The bottom most component is a list of conditional id generation rules.</p>
 <p>To add a new conditional id generation rule, press the "Add" button. A new 
@@ -151,8 +150,7 @@ rule will be generated with the rule "&lt;your rule&gt;".</p>
 "Del" button to delete it.</p>
 <p>To edit a conditional id generation rule, left-click a rule to select it. The 
 conditional rule editor will appear to the right:</p>
-<p><IMG height=114 hspace=0 src="../images/idplugin_config_editor.gif" width=458 
-border=0></p>
+<p><IMG hspace=0 src="../images/conditional_rule_editor.png" border=0></p>
 <p>At the top of the editor is a <A href="Term_Filters.htm">term filter 
 editor</A>. This defines the filter that is used to determine whether this 
 conditional rule should be used.</p>
