@@ -1,7 +1,19 @@
-	* obomerge script fixed (needs to be run from main dir--build.xml now
-	  	   copies it there
-	* added default oboedit.vmoptions and obomerge.vmoptions (they were
-	  	   running out of memory on GO)
-	* obomerge now offers a choice of output formats via optional argument:
-		  -version (OBO_1_0 | OBO_1_2)
-
+	* Default save format for OBO-Edit and obomerge is now OBO_1_2
+	* Restored "are you sure?" warning when user tries to destroy a term
+	* Fixed exception that was thrown if you tried to delete or destroy
+	  from the Ontology Editor panel
+	* Command-S is now a shortcut for "Save As" (pending the
+	  implementation of "Save")
+	* Made oboedit and obomerge actually use oboedit.vmoptions and obomerge.vmoptions
+        * Removed command-T keyboard shortcut for "change relationship type"
+  	  because it didn't work and it didn't make sense to have a keyboard
+	  shortcut for it anyway (according to Midori).
+	* Fixed platform-independent release:
+	  - Includes test_resources directory
+	  - Includes oboedit.vmoptions (so that oboedit launches with enough memory)
+	* Installer now successfully creates desktop icon for OBO-Edit
+	* Pop-up help windows that appear when you click the ? icon on a panel
+	  titlebar are now real windows, which can be dragged around, resized,
+	  and destroyed.
+	* Added component-specific help links to more components.
+	* Updated some of the help pages.
