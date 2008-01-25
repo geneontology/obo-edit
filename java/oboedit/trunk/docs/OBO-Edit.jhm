@@ -71,17 +71,12 @@
    <mapID target="Introduction_to_Verification" url="html/Introduction_to_Verification.htm"/>
    <mapID target="ISA_Cycle_Check" url="html/ISA_Cycle_Check.htm"/>
    <mapID target="Java_Options_on_the_Command_line" url="html/Java_Options_on_the_Command_line.htm"/>
-   <mapID target="jen_layout_1" url="html/jen_layout_1.htm"/>
-   <mapID target="jen_layout_2" url="html/jen_layout_2.htm"/>
-   <mapID target="jen_layout_3" url="html/jen_layout_3.htm"/>
-   <mapID target="jen_layout_4" url="html/jen_layout_4.htm"/>
-   <mapID target="Jen_s_Advanced_Layout" url="html/Jen_s_Advanced_Layout.htm"/>
-   <mapID target="Jen_s_Layout" url="html/Jen_s_Layout.htm"/>
    <mapID target="Language_Concepts" url="html/Language_Concepts.htm"/>
    <mapID target="Link_Filters" url="html/Link_Filters.htm"/>
    <mapID target="Link_Filters_vs_Term_Filters" url="html/Link_Filters_vs_Term_Filters.htm"/>
    <mapID target="Loading___Saving" url="html/Loading___Saving.htm"/>
    <mapID target="Loading_a_History_File" url="html/Loading_a_History_File.htm"/>
+   <mapID target="Metadata" url="html/Metadata.htm"/>
    <mapID target="Merging" url="html/Merging.htm"/>
    <mapID target="Moving" url="html/Moving.htm"/>
    <mapID target="Name_Redundancy_Check" url="html/Name_Redundancy_Check.htm"/>
@@ -136,7 +131,7 @@
    <mapID target="The_OBO_Edit_Reasoner" url="html/The_OBO_Edit_Reasoner.htm"/>
    <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
    <mapID target="The_Panel_Tag" url="html/The_Panel_Tag.htm"/>
-   <mapID target="The_Parent_Plugin" url="html/The_Parent_Plugin.htm"/>
+   <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
    <mapID target="The_Reasoner_Plugin" url="html/The_Reasoner_Plugin.htm"/>
    <mapID target="The_searchbutton_Tag" url="html/The_searchbutton_Tag.htm"/>
