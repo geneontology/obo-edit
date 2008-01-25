@@ -8,6 +8,7 @@ import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.Popup;
+import javax.help.SecondaryWindow;
 
 public class HelpManager {
 
@@ -47,11 +48,13 @@ public class HelpManager {
 
 	public void displayHelp(Component invoker, String topicID) {
 		try {
-			Popup popup = (Popup) Popup.getPresentation(
+//			Popup popup = (Popup) Popup.getPresentation(
+//					helpBroker.getHelpSet(), null);
+		    SecondaryWindow popup = (SecondaryWindow) SecondaryWindow.getPresentation(
 					helpBroker.getHelpSet(), null);
 			if (topicID != null)
 				popup.setCurrentID(topicID);
-			popup.setInvoker(invoker);
+//			popup.setInvoker(invoker);
 			popup.setDisplayed(true);
 		} catch (Exception ee) {
 			System.err.println("trouble with visiting id; " + ee);
