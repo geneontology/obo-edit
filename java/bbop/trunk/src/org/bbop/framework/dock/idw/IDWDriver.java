@@ -1003,6 +1003,10 @@ public class IDWDriver implements LayoutDriver {
 		View v = getView(target);
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
+		if (titleBar == null) {
+		    System.err.println("setComponentTitlebarTooltip: can't get title bar for " + label);
+		    return;
+		}
 		TabWindow tabWindow = (TabWindow) SwingUtilities.getAncestorOfClass(
 				TabWindow.class, v);
 		titleBar.setToolTipText(label);
@@ -1035,7 +1039,8 @@ public class IDWDriver implements LayoutDriver {
 		}
 		// v.getViewProperties().getViewTitleBarProperties().getNormalProperties()
 		// .getComponentProperties().setForegroundColor(color);
-		titleBar.getLabel().setForeground(color);
+		if (titleBar != null)
+		    titleBar.getLabel().setForeground(color);
 	}
 
 	public void setComponentLabel(GUIComponent target, String label) {
