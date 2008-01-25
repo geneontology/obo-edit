@@ -56,6 +56,7 @@ p   {font-size: 12pt;
      margin-bottom: 0}
 
 p.code {font-family: Monospaced;
+        font-size: 12pt;
 	margin-left: 22}
 
 p.glossTitle   {margin-top: 0;
@@ -142,7 +143,7 @@ dl.see_also {margin-left: 0;
     margin-bottom: 10}
 a.nounderline {text-decoration: none }
 pre {  font-family: Monospaced, "Courier New", Courier, mono; font-size: x-small}
-code {  font-family: Monospaced, "Courier New", Courier, mono; font-size: x-small}
+code {  font-family: Monospaced, "Courier New", Courier, mono; font-size: small}
 
 table.bodyTable {
   width: 100%;
