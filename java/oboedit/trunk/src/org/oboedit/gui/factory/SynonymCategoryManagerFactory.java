@@ -23,4 +23,9 @@ public class SynonymCategoryManagerFactory extends
 	public FactoryCategory getCategory() {
 		return FactoryCategory.METADATA;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Working_with_Synonym_Categories";
+	}
 }

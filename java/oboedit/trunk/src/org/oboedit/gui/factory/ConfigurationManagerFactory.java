@@ -29,4 +29,9 @@ public class ConfigurationManagerFactory extends
 	public FactoryCategory getCategory() {
 		return FactoryCategory.CONFIG;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Configuration_Manager";
+	}
 }

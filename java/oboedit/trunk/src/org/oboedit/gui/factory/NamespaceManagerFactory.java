@@ -24,4 +24,9 @@ public class NamespaceManagerFactory extends AbstractComponentFactory<NamespaceM
 	public FactoryCategory getCategory() {
 		return FactoryCategory.METADATA;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Working_with_Namespaces";
+	}
 }

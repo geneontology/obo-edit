@@ -26,4 +26,9 @@ public class ConfigurableMessageComponentFactory extends AbstractComponentFactor
 		return "Configurable Message";
 	}
 
+	@Override
+	public String getHelpTopicID() {
+		return "Configurable_Message";
+	}
+
 }

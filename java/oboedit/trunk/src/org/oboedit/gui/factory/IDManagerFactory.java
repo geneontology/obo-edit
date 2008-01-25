@@ -23,4 +23,9 @@ public class IDManagerFactory extends AbstractComponentFactory<IDManagerComponen
 	public FactoryCategory getCategory() {
 		return FactoryCategory.METADATA;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "The_ID_Manager_Plugin";
+	}
 }

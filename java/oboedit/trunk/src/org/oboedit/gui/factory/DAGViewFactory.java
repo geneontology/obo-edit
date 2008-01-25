@@ -34,4 +34,9 @@ public class DAGViewFactory extends AbstractComponentFactory<DAGView> {
 	public FactoryCategory getCategory() {
 		return FactoryCategory.INFO;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "The_DAG_Viewer";
+	}
 }
