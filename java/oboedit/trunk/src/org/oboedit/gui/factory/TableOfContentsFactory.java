@@ -26,4 +26,8 @@ public class TableOfContentsFactory extends
 		return FactoryCategory.INFO;
 	}
 
+	@Override
+	public String getHelpTopicID() {
+		return "Table_of_Contents";
+	}
 }

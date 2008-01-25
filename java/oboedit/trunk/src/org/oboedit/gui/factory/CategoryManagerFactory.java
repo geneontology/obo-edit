@@ -25,4 +25,9 @@ public class CategoryManagerFactory extends
 	public FactoryCategory getCategory() {
 		return FactoryCategory.METADATA;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Working_with_Categories";
+	}
 }
