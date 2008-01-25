@@ -7,20 +7,19 @@
 </head>
 <body bgcolor="#ffffff">
 <h1>Text Editing</h1>
-<p>When a term is <A 
-href="Working_with_Selections.htm">sub-selected</A>    , it is loaded into the text 
+<p>
+The Text Editor panel allows you to edit all the attributes of a term.  
+<A 
+href="Working_with_Selections.htm">Sub-select</A> a term in the Ontology
+Editor Panel to load it into the text 
 editor:</p>
-<p><IMG height=453 hspace=0 
-src="../images/subselection.gif" width=624 border=0></p>
-<p>               
-              
-         In this panel, you 
-can edit all the attributes of a term.</p>
+<p><IMG hspace=0 src="../images/text_editor.png" border=0></p>
+
 <H2>Committing Your Changes</H2>
-<P>OBO-Edit does not immediately apply text edits. OBO-Edit tries to group edits 
+<P>OBO-Edit does not immediately apply text edits; instead, it tries to group edits 
 together so that the behavior of "Undo" makes more sense (you wouldn't want to 
 have to undo each and every letter typed, for example). OBO-Edit has two modes 
-for making text edits permanent, <STRONG>auto-commit mode</STRONG> and 
+for making text edits permanent: <STRONG>auto-commit mode</STRONG> and 
 <STRONG>manual commit mode.</STRONG></P>
 <P>In <STRONG>auto-commit mode</STRONG>, text edits are applied as soon as a new 
 term is selected or the ontology is saved. To commit edits immediately, press 
@@ -29,9 +28,22 @@ Ctrl+Enter.</P>
 "Commit" button is pressed. The "Commit" button is only visible in manual commit 
 mode.</P>
 <P>See the <A href="The_Configuration_Plugin.htm#textedit">Text Editing section 
-of the Configuration Plugin</A> for information about choosing the text editing 
+of the Configuration Manager</A> page for information about choosing the text editing 
 mode.</P>
-<h2>Basic Attributes</h2>
+
+<h2>Text Checking</h2>
+<p>The Text Editor performs <a href="Text_Checks.htm">text checks</a> on the
+selected term.  If there are any errors or warnings, this is indicated in the
+  Text Editor title bar.  To see the warnings, hover your
+mouse over the title bar for a few seconds; a window listing the warnings will
+pop up:
+</p>
+<p><IMG hspace=0 src="../images/text_warnings.png" border=0></p>
+</p>
+
+<h2>Basic Term Attributes</h2>
+<p>At the top of the Text Editor, you will see the basic attributes of the
+selected term.</p>
 <ul>
   <li><strong>ID</strong> - The id of 
   the term. The id cannot be edited. 
@@ -46,77 +58,73 @@ mode.</P>
 <p>In order to fit all of the possible editing options onto 
 one screen, some editing options are organized into tabs. To access a tab, click 
 the tab name. Tabs that currently contain information are marked with an 
-asterick.</p>
-<p><strong>Dbxref Tab</strong> -<a 
-name="dbxref"></a> </p>
-<p><IMG height=182 hspace=0 src="../images/dbxref_tab.gif" width=400 
-border=0></p>
-<p>This tab allows the user to add, edit, and remove general dbxrefs. General 
-dbxrefs are used to provide mappings between a term and a term in another 
-vocabulary.</p>
-<p>To edit a dbxref, click it on the list to left. When the dbxref is selected, 
-it will be loaded in the editor to the right. The editor contains the following 
-fields:</p>
-<ul>
-  <li><strong>Database name</strong> - 
-  Contains the dbxref database name. The dbxref name is the part of the dbxref 
-  that appears to the left of the colon. For example, in the dbxref 
-  "EC:1.8.1.7", the database name is "EC". 
-  <li><strong>Database id</strong> - 
-  Contains the dbxref database id. The dbxref id is the part of the dbxref that 
-  appears to the right of the colon. For example, in the dbxref "EC:1.8.1.7", 
-  the database id is "1.8.1.7". 
-  <li><strong>Database desc</strong> - A descriptive name for the 
-dbxref.</li></ul>
-<p>To add a new dbxref, click the "Add" button. A new dbxref "XX:&lt;new 
-dbxref&gt;" will be created.</p>
-<p>To remove a dbxref, select the dbxref to remove, click the "Del" button. The 
-dbxref will be removed.</p>
-<p><strong>Definition Tab</strong> -</p>
-<p><IMG height=124 hspace=0 src="../images/definition_tab.gif" width=403 
-border=0></p>
+asterisk.</p>
+<p><strong>Definition Tab</strong></p>
+<p><IMG hspace=0 src="../images/text_definition.png" border=0></p>
 <p>Definition text and definition dbxrefs can be edited here. There are two 
 fields:</p>
 <ul>
-  <li><strong>Text</strong> - This 
+  <li><strong>Definition</strong> - This 
   contains the definition text. 
-  <li><strong>Dbxref List</strong> 
+  <li><strong>Dbxrefs</strong> 
   -&nbsp;Definition dbxrefs provide a reference explaining the origin of the 
-  definition. To add a new dbxref, drag a dbxref 
-  onto the list. To delete a dbxref, first click it to select the dbxref. Then 
-  press the "Delete" key on the keyboard. To edit a dbxref, or to have the full 
-  set of dbxref editing tools, click the "Edit" button. The following window 
+  definition. To add a new dbxref, click the + button. To delete a dbxref, first click it to select the dbxref, and
+  then click the - button. To edit a dbxref, or to have the full 
+  set of dbxref editing tools, double-click the dbxref id.  A dbxref editing panel
   will appear:<br>
-  <IMG height=246 hspace=0 src="../images/dbxref_edit_window.gif" 
-    width=300 border=0><br>
-  The interface for modifying the definition dbxref list is 
-  exactly the same as the interface for modifying general dbxrefs (described 
-  above). Click "Ok" to accept the
-  changes.
+<p><IMG hspace=0 src="../images/text_definition_dbxref.png" border=0></p>
   </li></ul>
-<p><strong>Comment Tab</strong> -</p>
-<p><IMG height=124 hspace=0 src="../images/comment_tab.gif" width=401 
-border=0></p>
-<p>The comment can be viewed and modified in this text area.</p>
-<p><strong>Cross Product Tab</strong> -</p>
-<p>See <A href="Cross_Products_in_the_Text_Editor.htm">Cross Products in the 
-Text Editor</A></p>
-<p><strong>Synonyms Tab</strong> -</p>
-<p><IMG height=184 hspace=0 src="../images/synonym_tab.gif" width=401 
-border=0></p>
-<p>Synonyms are alternate names for a term.</p>
-<p>To edit a synonym, click it on the list to left. When the synonym is 
-selected, it will be loaded in the editor to the right. The editor contains the 
-following fields:</p>
+<p>See the <a href="#dbxref">Dbxrefs Tab</a> section below for more information
+about editing dbxrefs.
+
+<p><strong>Comment Tab</strong></p>
+<p>The comment associated with the current term can be viewed and modified in this text area.</p>
+
+<p><strong>Cross Product Tab</strong></p>
+<p>Please refer to <A href="Cross_Products_in_the_Text_Editor.htm">Cross Products in the 
+Text Editor</A>.</p>
+
+<p><strong>Dbxrefs Tab</strong><a 
+name="dbxref"></a> </p>
+<p><IMG hspace=0 src="../images/text_definition_dbxref.png" border=0></p>
+<p>This tab allows the user to add, edit, and remove general dbxrefs associated
+with the selected term. General 
+dbxrefs are used to provide mappings between a term and a term in another 
+vocabulary.</p>
+<p>To edit a dbxref, double-click it in the list. When the dbxref is selected, 
+it will be loaded in the dbxref editor, which contains the following 
+fields:</p>
 <ul>
-  <li><strong>Synonym text</strong> - 
+  <li><strong>Database name</strong> - 
+  Contains the dbxref database name--the part of the dbxref 
+  that appears to the left of the colon. For example, in the dbxref 
+  "EC:1.8.1.7", the database name is "EC". 
+  <li><strong>ID</strong> - 
+  Contains the dbxref database id--the part of the dbxref that 
+  appears to the right of the colon. For example, in the dbxref "EC:1.8.1.7", 
+  the database id is "1.8.1.7". 
+  <li><strong>Description</strong> - A descriptive name for the 
+dbxref.</li></ul>
+<p>To add a new dbxref, click the "+" button. A new dbxref "XX:&lt;new 
+dbxref&gt;" will be created.  Modify the fields as desired.</p>
+<p>To remove a dbxref, select the dbxref to remove, and click the "-" button.</p>
+
+<p><strong>Synonyms Tab</strong></p>
+<p>Synonyms are alternate names for a term.  Not all terms have synonyms.  If
+your currently selected term has synonyms, you will see them in the synonym tab.</p>
+<p><IMG hspace=0 src="../images/synonym_tab.png" border=0></p>
+<p>To edit a synonym, double-click it. The synonym panel will turn into a
+synonym editor panel:</p>
+<p><IMG hspace=0 src="../images/synonym_editor.png" border=0></p>
+<ul>
+  <li><strong>Name</strong> - 
   The actual synonym name. 
-  <li><strong>Synonym scope</strong> - The synonym scope indicates how specific 
+  <li><strong>Scope</strong> - The synonym scope indicates how specific 
   this synonym is. To choose a new scope, select it from the drop down list. The 
   possible values are:
    <ul>
      <li><strong>Related synonym</strong> 
-    - The catch all scope. This means that this synonym has a slightly different 
+    - The catch-all scope. This means that this synonym has a slightly different 
     meaning than the term name, so it can't be said to be more or less specific 
     in scope. Related synonyms are often phrases that a user might use when 
     searching for a term. For example, sometimes the Gene Ontology 
@@ -142,39 +150,31 @@ following fields:</p>
   synonym category, use <A href="Working_with_Synonym_Categories.htm">the 
   Synonym Category Manager Plugin</A>.
   <li><strong>DbXrefs</strong> - Synonym dbxrefs indicate a literature reference 
-  that explains the origin of the synonym. To add a new dbxref, drag a dbxref 
-  onto the list. To delete a dbxref, first click it to select the dbxref. Then 
-  press the "Delete" key on the keyboard. To edit a dbxref, or to have the full 
-  set of dbxref editing tools, click the "Edit" button. The following window 
-  will appear:<br>
-  <IMG 
-  height=246 hspace=0 src="../images/synonym_edit_window.gif" width=300 
-  border=0><br>
-  The interface for modifying the synonym dbxref list is exactly 
-  the same as the interface for modifying general dbxrefs (described above). 
-  Click "Ok" to accept the changes.
+  that explains the origin of the synonym. To add a new dbxref to this synonym,
+  click the "+" button next to the Scope pulldown:
+<p><IMG hspace=0 src="../images/synonym_dbxref_editor.png" border=0></p>
+<p>  The interface for modifying the synonym dbxref list is exactly 
+  the same as the interface for modifying general dbxrefs (described above).</p>
 <p>To add a 
 new dbxref, click the "Add" button. A new dbxref "XX:&lt;new dbxref&gt;" will be 
 created.</p>
-<p>To remove a dbxref, select the dbxref to remove, click the "Del" button. The 
+<p>To remove a dbxref, select the dbxref to remove, click the "-" button. The 
 dbxref will be removed.</p>
 
 </li></ul>
-<p><strong>Category Tab</strong> -</p>
-<p><IMG height=185 hspace=0 src="../images/category_tab.gif" width=401 
-border=0></p>
+<p><strong>Categories Tab</strong></p>
+<p><IMG hspace=0 src="../images/category_tab.png" border=0></p>
 <p>Categories are used to designate subsets of terms within an ontology. The 
-category tab contains a list of the available categories in the ontology. If the 
+categories tab contains a list of the available categories in the ontology. If the 
 selected term is a member of a category, the checkbox to the right will be 
 checked. To change whether the term belongs to a particular category, check or 
 uncheck the appropriate checkbox.</p>
-<p>To edit the list of available categories, use <A 
-href="Working_with_Categories.htm">the Category Manager 
-Plugin</A>           
-.</p>
+<p>To edit the list of available categories, use the <A 
+href="Working_with_Categories.htm">Category Manager</A>.</p>
 <h2>Relation-Specific Attributes</h2>
 <p>The display is slightly different when a relation (rather than a class) has 
 been selected.</p>
+<p>[?? I don't see this display--how do you invoke it?]</p>
 <p><IMG height=115 hspace=0 src="../images/prop_text_editor.gif" width=419 
 border=0></p>
 <ul>
@@ -207,19 +207,9 @@ border=0></p>
   use of this information. If the transitive status of a relation is incorrectly 
   indicated, the reasoner may make many incorrect inferences. 
   <li><strong>Is symmetric</strong> - If this box is checked, the relationship 
-  type is symmetric. It is very important to that this box is marked correctly; 
+  type is symmetric. It is very important to mark this box correctly; 
   the OBO-Edit reasoner makes extensive use of this information. If the 
   symmetric status of a relation is incorrectly indicated, the reasoner may make 
   many incorrect inferences.</li></ul>
-
-<div class="sidebar">
-<h1>Layout Information</h1>
-<hr>
-<p class="sidebar">The text editor's layout id is<br>
-<code><b>TEXTEDIT</b></code></p>
-<p>See <A href="Customizing_the_Interface.htm">Customizing 
-the Interface</A> for more information </p>
-</div>
-  
 </body>
 </html>
