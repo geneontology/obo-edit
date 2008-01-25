@@ -4,7 +4,7 @@
 
 <xsl:template match="toc">
   <html>
-  <head><title>Table of Contents</title></head>
+  <head><title>OBO-Edit: Table of Contents</title></head>
   <body>
   <small><font face="Arial"><p><center><strong>Contents</strong></center></p>
 
