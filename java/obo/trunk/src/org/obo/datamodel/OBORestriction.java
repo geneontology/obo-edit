@@ -2,6 +2,7 @@ package org.obo.datamodel;
 
 import java.io.*;
 
+/** This is a relationship between terms/classes - not instances */
 public interface OBORestriction extends Link, Cloneable,
 		Serializable {
 
