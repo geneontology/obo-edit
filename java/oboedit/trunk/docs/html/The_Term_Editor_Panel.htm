@@ -65,7 +65,7 @@ children:</p>
   organelle</font>
   <li><font face="Courier">membrane-bound organelle <strong>is_a</strong> 
   organelle</font>
-  <li><font face="Courier">non-membrance-bound organelle <strong>is_a</strong> 
+  <li><font face="Courier">non-membrane-bound organelle <strong>is_a</strong> 
   organelle</font>
   <li><font face="Courier">organelle part <strong>part_of</strong> 
   organelle</font>
@@ -98,8 +98,8 @@ obsolete term:</p>
 src="../images/obsolete_replacement_view.gif" width=332 border=0>            
  </p>
 <p>In this case, the view means that the obsolete term 
-"2-nitropropane biosynthesis" has been replaced by "2-nitroproppane metabolism". 
-The obsolete "26S proteasome" does not have an exact replacement, but that the term "proteasome complex" might be a 
+"2-nitropropane biosynthesis" has been replaced by "2-nitropropane metabolism". 
+The obsolete "26S proteasome" does not have an exact replacement, but the term "proteasome complex" might be a 
 valid replacement.</p>
 <p>Note that "replaced by" and "consider" <em>are not real 
 relationship types.</em> There is no relation named "replaced by" or "consider". 
@@ -111,114 +111,26 @@ for more information about "consider" and "replaced_by".</p>
 <h2>Working with Multiple ontology editor panels</h2>
 <p>There can be several ontology editor panels on screen at once (to learn how to 
 add more ontology editor panels to your interface, see the <A href="Components.htm">Components</A> and <a href="Perspectives.htm">Perspectives</a> sections).</p>
-<p>If there is more than one ontology editor panel, each panel's display is entirely 
-independent. Each panel may display a different section of the ontology, may be 
-filtered differently, may have different rendering settings, and may have a 
-different collection of terms selected (kind of - see <A 
-href="Working_with_Selections.htm">Working with Selections</A> for a 
-clarification).</p>
+
+<p>If there is more than one ontology editor panel, each panel can be
+independently set to global or local selection mode. Any panel in
+local selection mode may display a different section of the ontology,
+and may have a different collection of terms selected. Whether in
+global or local selection mode, panels may be filtered differently or
+may have different rendering settings. See <A
+href="Working_with_Selections.htm">Working with Selections</A> for
+more information.</p>
+
 <p>However, no matter how many ontology editor panels are on screen, each is 
 displaying a different view <em>of the <strong>same</strong> ontology</em>. 
 Edits that are executed on one ontology editor panel will affect the contents of 
 <strong>all</strong> ontology editor panels.</p>
-<h2><A name=display_controls></A>Display Controls - still to be updated</h2>
-<p>There are a number of buttons at the bottom of each ontology editor panel:</p>
-<ul>
-  <li><IMG height=17 hspace=0 src="../images/term_editor_panel_corner.gif" 
-  width=17 border=0>&nbsp;This button is 
-  used to hide the button panel that contains the rest of the ontology editor panel 
-  buttons. If the button panel is hidden, this button contains a + icon. 
-  <li><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_primary_button.gif" width=20 
-  border=0>&nbsp;This button indicates whether the current ontology editor panel is 
-  the <em>primary selection panel </em>(see <A 
-  href="Working_with_Selections.htm">Working with Selections</A>). If 
-  the current panel is primary, the circle icon will be green. If it is not, the 
-  circle icon will be blue. Clicking this button will make this panel the 
-  primary panel. If this panel is already the primary panel, pressing this 
-  button will select another panel.
-  <LI><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_left_button.gif" width=20 border=0>&nbsp;This 
-  button is used to change the current sub-selection (see <A 
-  href="Working_with_Selections.htm">Working with Selections</A>  
-                  
-    ). If more than one term is selected in the ontology 
-  editor panel, this button will step backward through the currently selected terms 
-  to pick a new sub-selection.
-  <LI><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_right_button.gif" width=20 
-  border=0>&nbsp;This button is used to change the current sub-selection (see <A 
-  href="Working_with_Selections.htm">Working with Selections</A>). If 
-  more than one term is selected in the ontology editor panel, this button will 
-  step forward through the currently selected terms to pick a new sub-selection.  
-                 
-                  
-                  
-    
-  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_horz_split.gif" 
-  width=20 border=0>&nbsp;This button 
-  splits the current ontology editor panel horizontally to create two ontology 
-  editor panels. A ontology editor panel may be split any number of 
-  times. 
-  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_vert_split.gif" 
-  width=20 border=0>&nbsp;This button 
-  splits the current ontology editor panel vertically to create two ontology 
-  editor panels. A ontology editor panel may be split any number of 
-  times. 
-  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_merge_button.gif" 
-  width=20 border=0>&nbsp;If the 
-  current ontology editor panel was created by splitting an existing ontology editor 
-  panel, this button will merge the two panels. Two panels can also be merged by 
-  right-clicking the divider between two panels. 
-  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_lock_button.gif" 
-  width=20 border=0>&nbsp;This button 
-  locks the scrollbars of the current ontology editor panel. When a ontology editor 
-  panel is locked, it is still possible to edit terms, make new selections, 
-  expand/collapse nodes, etc, but it becomes impossible to scroll the window. 
-  <li><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_refresh_button.gif" width=20 
-  border=0>&nbsp;This 
-  button forces the ontology editor panel to refresh the screen. This can be useful 
-  if the view becomes corrupted due to a bug or out of memory condition. 
-  <li><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_filter_button.gif" width=20 
-  border=0>&nbsp;This 
-  button pops up the filter management menu. This menu allows you to remove the 
-  current filter and remove some or all of the current renderers on this ontology 
-  editor panel. See <A href="Filtering.htm">Filtering</A> and <A 
-  href="Rendering.htm">Rendering</A> for more 
-  information.
-  <li><IMG height=20 hspace=0 
-  src="../images/term_editor_panel_prefilter_button.gif" width=20 
-  border=0>&nbsp;This button displays a popup menu containing all the available 
-  properties in the ontology.&nbsp;Select a property from the menu to specify a 
-  <A href="Reasoner_Prefilters.htm">prefilter property</A> for the editor panel. 
-  This button&nbsp;is only enabled when the reasoner is active.   
-   
-  <li><IMG height=20 hspace=0 src="../images/term_editor_panel_root_button.gif" 
-  width=20 border=0>&nbsp;<a 
-  name=root_algorithm></a>This button allows you to choose the <em>root 
-  picking algorithm</em>. 
-  Two methods are available: 
-  <ul>
-    <li> GREEDY - This algorithm treats any class or 
-    relation with no <em>available</em> parents as a root 
-    term. If a term has been orphaned because a filter has hidden its parents 
-    (see <A href="Filtering.htm#root_picking">Orphaned Terms and the Root 
-    Picking Algorithm</A>), the term will appear as a root term 
-    using this algorithm.
-    <li> STRICT - This algorithm treats any class or 
-    relation with no <em>defined</em> parents as a root 
-    term. If a term has been orphaned because a filter has hidden its parents 
-    (see <A href="Filtering.htm#root_picking">Orphaned Terms and the Root 
-    Picking Algorithm</A>), this algorithm will <em>not</em> treat 
-    the term as a root. The term simply will not be visible until the filter is removed. </li></ul></li></ul>
-<p>Note that many of these display options can also be modified via the ontology 
-editor panel right-click menu. Right-click (or command-click on MacOS) within 
-the ontology editor panel to bring up the right-click menu.</p>
-<h2>              
-          
-     Other Views of the Ontology</h2>
+
+<p>See the "Component Toolbars" subsection of <a
+href="Components.htm">Components</a> for explanations of the icons at
+the top of each ontology editor panel.
+
+<h2>Other Views of the Ontology</h2>
 <p>The ontology editor panel isn't the only way to view an 
 ontology. See <A href="The_DAG_Viewer.htm">The DAG Viewer</A>, <A 
 href="The_Graph_Viewer_Plugin.htm">The Graph Viewer Plugin</A> and <A 
