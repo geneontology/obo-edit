@@ -27,13 +27,20 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		System.out.println(fred);
 		boolean likesBread = false;
 		for (PropertyValue pv : fred.getPropertyValues()) {
+			// THIS IS NEVER REACHED!!!
+			
 			System.out.println("  pv:"+pv);
+			
+			// prop and value are strings: NOT what I expect. CJM
 			String prop = pv.getProperty();
 			System.out.println("  prop:"+prop);
 			String v = pv.getValue();
 			System.out.println("  val:"+prop);
 			
+			if (prop.equals("likes") && v .equals("bread"))
+				likesBread = true;
 		}
+		/// assertTrue(likesBread); -- SHOULD WORK!! CJM
 		assertTrue(fred.getNamespace().getID().equals("test"));
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
