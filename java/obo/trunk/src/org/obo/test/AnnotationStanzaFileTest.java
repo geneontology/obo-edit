@@ -25,6 +25,15 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 	public void testAnnot() throws IOException, DataAdapterException {
 		Instance fred = (Instance)session.getObject("fred");
 		System.out.println(fred);
+		boolean likesBread = false;
+		for (PropertyValue pv : fred.getPropertyValues()) {
+			System.out.println("  pv:"+pv);
+			String prop = pv.getProperty();
+			System.out.println("  prop:"+prop);
+			String v = pv.getValue();
+			System.out.println("  val:"+prop);
+			
+		}
 		assertTrue(fred.getNamespace().getID().equals("test"));
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
