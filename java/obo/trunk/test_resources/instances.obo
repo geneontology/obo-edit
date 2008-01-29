@@ -1,0 +1,80 @@
+format-version: 1.2
+date: 21:01:2008 15:49
+default-namespace: test
+
+[Term]
+id: http://purl.org/obo/test#CDS
+name: http://purl.org/obo/test#CDS
+
+[Term]
+id: http://purl.org/obo/test#Chromosome
+name: http://purl.org/obo/test#Chromosome
+
+[Term]
+id: http://purl.org/obo/test#Exon
+name: http://purl.org/obo/test#Exon
+
+[Term]
+id: http://purl.org/obo/test#Gene
+name: http://purl.org/obo/test#Gene
+
+[Term]
+id: http://purl.org/obo/test#Transcript
+name: http://purl.org/obo/test#Transcript
+
+[Typedef]
+id: http://purl.org/obo/test#part_of
+name: http://purl.org/obo/test#part_of
+
+[Typedef]
+id: http://purl.org/obo/test#relative_to
+name: http://purl.org/obo/test#relative_to
+
+[Instance]
+id: http://purl.org/obo/test#cds1
+name: http://purl.org/obo/test#cds1
+property_value: http://purl.org/obo/test#has_end "240" xsd:string
+property_value: http://purl.org/obo/test#has_start "150" xsd:string
+property_value: http://purl.org/obo/test#has_strand "+" xsd:string
+relationship: http://purl.org/obo/test#part_of http://purl.org/obo/test#tA ! http://purl.org/obo/test#tA
+relationship: http://purl.org/obo/test#relative_to http://purl.org/obo/test#chr1 ! http://purl.org/obo/test#chr1
+
+[Instance]
+id: http://purl.org/obo/test#chr1
+name: http://purl.org/obo/test#chr1
+
+[Instance]
+id: http://purl.org/obo/test#g1
+name: http://purl.org/obo/test#g1
+property_value: http://purl.org/obo/test#has_end "400" xsd:string
+property_value: http://purl.org/obo/test#has_start "100" xsd:string
+property_value: http://purl.org/obo/test#has_strand "+" xsd:string
+relationship: http://purl.org/obo/test#relative_to http://purl.org/obo/test#chr1 ! http://purl.org/obo/test#chr1
+
+[Instance]
+id: http://purl.org/obo/test#tA
+name: http://purl.org/obo/test#tA
+property_value: http://purl.org/obo/test#has_end "400" xsd:string
+property_value: http://purl.org/obo/test#has_start "100" xsd:string
+property_value: http://purl.org/obo/test#has_strand "+" xsd:string
+relationship: http://purl.org/obo/test#part_of http://purl.org/obo/test#g1 ! http://purl.org/obo/test#g1
+relationship: http://purl.org/obo/test#relative_to http://purl.org/obo/test#chr1 ! http://purl.org/obo/test#chr1
+
+[Instance]
+id: http://purl.org/obo/test#x1
+name: http://purl.org/obo/test#x1
+property_value: http://purl.org/obo/test#has_end "200" xsd:string
+property_value: http://purl.org/obo/test#has_start "100" xsd:string
+property_value: http://purl.org/obo/test#has_strand "+" xsd:string
+relationship: http://purl.org/obo/test#part_of http://purl.org/obo/test#tA ! http://purl.org/obo/test#tA
+relationship: http://purl.org/obo/test#relative_to http://purl.org/obo/test#chr1 ! http://purl.org/obo/test#chr1
+
+[Instance]
+id: http://purl.org/obo/test#x2
+name: http://purl.org/obo/test#x2
+property_value: http://purl.org/obo/test#has_end "400" xsd:string
+property_value: http://purl.org/obo/test#has_start "300" xsd:string
+property_value: http://purl.org/obo/test#has_strand "+" xsd:string
+relationship: http://purl.org/obo/test#part_of http://purl.org/obo/test#tA ! http://purl.org/obo/test#tA
+relationship: http://purl.org/obo/test#relative_to http://purl.org/obo/test#chr1 ! http://purl.org/obo/test#chr1
+

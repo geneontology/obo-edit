@@ -16,6 +16,7 @@ id: fred
 name: fred
 namespace: test
 property_value: dislikes shuggy
+property_value: has_ss_no "123-45-6789" xsd:string
 
 [Instance]
 id: mildred
@@ -51,3 +52,7 @@ name: confirmed_by
 [Typedef]
 id: dislikes
 name: dislikes
+
+[Typedef]
+id: has_ss_no
+range: xsd:string
