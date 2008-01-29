@@ -8,22 +8,24 @@
 <body bgcolor="#ffffff">
 <h1>Assigning Replacement Terms</h1>
 <p>&nbsp;</p>
-<p>Most terms are obsoleted because they represent a flawed 
-concept. Usually, the flawed concept is replaced with another concept that more 
-accurately represents the needs of the ontology. OBO-Edit allows users to 
-specify replacements for obsolete terms. These replacements can be used by human 
-annotators as a useful reference, or can be used by software to automatically 
-re-assign database entities that were associated with a term that became 
+
+<p>Most terms are obsoleted due to flaws such as falling outside the
+scope of the ontology, faulty definitions, etc. Often, one or more
+terms in the ontology can be substituted for the obsolete
+term. OBO-Edit allows users to specify replacements for obsolete
+terms. These replacements can be used by human annotators as a useful
+reference, or can be used by software to automatically re-assign
+database entities that were associated with a term that became
 obsolete.</p>
+
 <h2>Specifying a Replacement Term</h2>
 <div class="tabbed">
-<p><strong>Works by</strong>: drag and 
-drop</p>
+<p><strong>Works by</strong>: drag and drop</p>
 <p><strong>Hot keys</strong>: none</p>
 <p><strong>Target required?</strong>: yes</p>
-<p><strong>Source requirements</strong>: a single source term required</p>
+<p><strong>Source requirements</strong>: one or more source terms required</p>
 </div>
-<p>If an obsolete term is perfectly supplanted by another term, the new term may 
+<p>If an obsolete term can be exchanged for another term or terms in all instances of usage (e.g. in annotations or mappings), the new term(s) may 
 be specified as a <em>replacement</em> term. Note that a replacement term should 
 only be specified if the obsolete term can be replaced by <em>exactly this term 
 in every case</em>. If this criterion is not met, use a "consider" term 
@@ -34,22 +36,22 @@ when a term becomes obsolete.</p>
 <p>To specify a replacement for an obsolete term, select a source term to act as 
 the replacement. Drag the replacement source onto the target obsolete term. When 
 the term is dropped, a menu will appear:</p>
-<p><IMG height=39 hspace=0 src="../images/replacement_drop_menu.gif" width=119 
+<p><IMG height=39 hspace=0 src="../images/replacement_drop_menu.png" 
 border=0></p>
-<p>Choose "Set replacement" from the menu to assign the replacement term.</p>
+<p>Choose "Add replacement term" from the menu to assign the replacement term.</p>
 <h2>Specifying a Term to Consider</h2>
 <p><strong>Gesture types:</strong> drag and drop</p>
 <p><strong>Hot keys</strong>: none</p>
 <p><strong>Target required?:</strong> yes</p>
 <p><strong>Source requirements:</strong> one or more source terms required</p>
-<p>Often, there is not a single obvious replacement term for an obsolete term. 
-Usually there are several possible replacements, and the correct replacement 
+<p>Often, there is not a single accurate replacement term for an obsolete term. 
+Usually there are several possible substitutes, and the correct replacement 
 depends on context. In these cases, a user may specify one or more "consider" 
 terms that a human expert would look at.</p>
 <p>To specify a "consider" term for an obsolete term, select&nbsp;one or 
 more&nbsp;source terms to consider. Drag the&nbsp;"consider" source onto the 
 target obsolete term. When the terms&nbsp;are dropped, a menu will appear:</p>
-<p><IMG height=39 hspace=0 src="../images/replacement_drop_menu.gif" width=119 
+<p><IMG height=39 hspace=0 src="../images/replacement_drop_menu.png" 
 border=0></p>
 <p>Choose "Add consider term" from the menu to assign the replacement terms.</p>
 <h2>Removing Replacement/Consider Terms</h2>
