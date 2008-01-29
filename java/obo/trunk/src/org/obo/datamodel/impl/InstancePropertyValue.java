@@ -3,6 +3,9 @@ package org.obo.datamodel.impl;
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 
+
+/** Used for property values for instances, as well as to link 
+    2 instances */
 public class InstancePropertyValue implements ValueLink {
 
 	/**

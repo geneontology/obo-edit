@@ -6,6 +6,8 @@ import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
 
+/** This is a relationship between terms/classes - not instances
+    (to relate instances use InstancePropertyValue) */
 public class OBORestrictionImpl implements OBORestriction {
 
 	protected static class OBORestrictionMetaData implements Serializable {
