@@ -1,0 +1,11 @@
+<module>
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User'/>
+	<servlet path='/test' class='org.geneontology.server.TestServerImpl'/>
+	<servlet path='/refgenome' class='org.geneontology.server.RefGenomeServiceImpl'/>
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='org.geneontology.client.RefGenome'/>
+  
+</module>

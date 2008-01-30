@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/cjm/Eclipse/workspace/OBDAPI/lib/runlibs/obdapi.jar"/>
+	<classpathentry kind="lib" path="/Users/cjm/src/gwt-mac-1.4.61/gwt-user.jar"/>
+	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OBDAPI"/>
+	<classpathentry kind="lib" path="/OBDAPI/lib/runlibs/postgresql-8.2-504.jdbc3.jar"/>
+	<classpathentry kind="lib" path="/OBDAPI/lib/runlibs/obo.jar"/>
+	<classpathentry kind="lib" path="/OBDAPI/lib/runlibs/obdapi.jar"/>
+	<classpathentry kind="lib" path="/OBDAPI/lib/runlibs/junit.jar"/>
+	<classpathentry kind="lib" path="/OBDAPI/lib/runlibs/bbop.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
