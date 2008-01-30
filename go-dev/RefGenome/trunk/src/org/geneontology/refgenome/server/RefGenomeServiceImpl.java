@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.geneontology.refgenome.client.RefGenomeService;
-import org.geneontology.refgenome.client.TestServer;
 import org.obd.model.Node;
 import org.obd.query.ComparisonQueryTerm;
 import org.obd.query.Shard;

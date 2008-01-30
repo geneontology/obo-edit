@@ -20,4 +20,4 @@ shift
 
 C="com.google.gwt.dev.GWTShell"
 #java $C -out "$APPDIR/www" "$@" $MODULE/${MODULE/*./}.html
-java -XstartOnFirstThread -cp $CLASSPATH $C -out "$APPDIR/www" "$@" org.geneontology.RefGenome/RefGenome.html;
+java -XstartOnFirstThread -cp $CLASSPATH $C -out "$APPDIR/www" "$@" org.geneontology.refgenome.RefGenome/RefGenome.html;
