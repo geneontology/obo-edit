@@ -28,7 +28,7 @@ public class RefGenome implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Button button = new Button("Click me ");
+		final Button button = new Button("Press me ");
 		final Label label = new Label();
 		final TextBox tb = new TextBox();
 

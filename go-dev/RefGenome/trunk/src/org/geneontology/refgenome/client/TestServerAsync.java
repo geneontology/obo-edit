@@ -17,7 +17,6 @@ package org.geneontology.refgenome.client;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
  * The implemenation of the RPC service which runs on the server.
@@ -25,5 +24,6 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface TestServerAsync  {
 	
 	public void testCall(AsyncCallback callback);
+
 
 }
