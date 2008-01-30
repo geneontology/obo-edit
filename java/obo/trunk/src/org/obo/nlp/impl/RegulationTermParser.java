@@ -23,6 +23,7 @@ import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.Namer;
 import org.obo.nlp.SemanticParser;
+import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
 /**
@@ -57,7 +58,7 @@ public class RegulationTermParser implements SemanticParser {
 	OBOProperty negRegRel;
 	OBOProperty posRegRel;
 	String regRelId = "regulates";
-	String negRegRelId = "negatively_regulation";
+	String negRegRelId = "negatively_regulates";
 	String posRegRelId = "positively_regulates";
 	
 
@@ -82,7 +83,7 @@ public class RegulationTermParser implements SemanticParser {
 				continue;
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject)io;
-				for (String label : TermUtil.getLabels(lo)) {
+				for (String label : TermUtil.getExactLabels(lo)) {
 					label = label.replace('_', ' ');
 					logger.info("label="+label);
 					name2obj.put(label, lo);
@@ -96,7 +97,7 @@ public class RegulationTermParser implements SemanticParser {
 		Collection<TermMacroHistoryItem> items =
 			new LinkedList<TermMacroHistoryItem>();
 		brObj = lookup("biological regulation");
-		romfObj = lookup("regulation of a molecular function");
+		romfObj = lookup("regulation of molecular function");
 		robqObj= lookup("regulation of biological quality");
 		robpObj = lookup("regulation of biological process");
 		mfObj = lookup("molecular_function");
@@ -167,6 +168,11 @@ public class RegulationTermParser implements SemanticParser {
 	public TermMacroHistoryItem parseTerm(LinkedObject lo, String name) {
 		if (name == null)
 			return null;
+		if (lo instanceof OBOClass && 
+				ReasonerUtil.getGenus((OBOClass)lo) != null) {
+			report("PREDEFINED",lo,name,"already have a logical def");
+			return null;
+		}
 		name = name.replace('_', ' ');
 //		logger.info("splitting: "+name+" in:"+lo);
 		String[] tokens = name.split("\\s");
