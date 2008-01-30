@@ -15,13 +15,48 @@
  */
 package org.geneontology.refgenome.client;
 
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
  * The implemenation of the RPC service which runs on the server.
+
+ * @author cjm
+ *
  */
 public interface RefGenomeService extends RemoteService {
-	
+
+	/**
+	 * 
+	 * query ALL nodes by a searchTerm, return matching node IDs
+	 */
 	public String[] fetchIdsByName(String searchTerm);
+	
+	public String[] fetchIdsByName(String searchTerm, String taxonId);
+
+	public String[] fetchLabelsById(String searchTerm);
+
+	//public Map<String,String> fetchLabelMapsById(String searchTerm);
+	public Map fetchLabelMapsById(String searchTerm);
+
+	
+	/**
+	 * all taxon IDs that are part of some reference set.
+	 * the API is extensible to multiple reference sets - this call
+	 * will always return the superset 
+	 * 
+	 * @return IDs for taxon nodes, typically NCBITax
+	 */
+	public String[] fetchReferenceTaxonIds();
+	
+	public String getTaxonIdPrefix();
+	
+	public String[] fetchReferenceTargetIds();
+	
+	public String[] fetchEntityIdsInHomologSet(String homologSetId);
+	
+	
+
 
 }

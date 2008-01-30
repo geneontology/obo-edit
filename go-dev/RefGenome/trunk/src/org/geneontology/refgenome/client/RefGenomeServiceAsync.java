@@ -17,7 +17,6 @@ package org.geneontology.refgenome.client;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
  * The implemenation of the RPC service which runs on the server.
@@ -25,5 +24,19 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface RefGenomeServiceAsync  {
 	
 	public void fetchIdsByName(String searchTerm, AsyncCallback callback);
+
+	public void fetchIdsByName(String searchTerm, String taxonId, AsyncCallback callback);
+
+	public void fetchLabelsById(String searchTerm, AsyncCallback callback);
+
+	public void fetchLabelMapsById(String searchTerm, AsyncCallback callback);
+
+	public void fetchReferenceTaxonIds( AsyncCallback callback);
+	
+	public void getTaxonIdPrefix( AsyncCallback callback);
+	
+	public void fetchReferenceTargetIds( AsyncCallback callback);
+	
+	public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
 
 }

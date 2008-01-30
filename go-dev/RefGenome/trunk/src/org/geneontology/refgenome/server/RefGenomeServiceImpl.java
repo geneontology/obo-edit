@@ -19,6 +19,7 @@ package org.geneontology.refgenome.server;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.geneontology.refgenome.client.RefGenomeService;
 import org.obd.model.Node;
@@ -107,4 +108,40 @@ RefGenomeService {
 		return null; // TODO
 	}
 
+	public String[] fetchReferenceTaxonIds() {
+		return null;
+	}
+
+	public String[] fetchEntityIdsInHomologSet(String homologSetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] fetchIdsByName(String searchTerm, String taxonId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> fetchLabelMapsById(String searchTerm) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] fetchLabelsById(String searchTerm) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] fetchReferenceTargetIds() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getTaxonIdPrefix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
 }
