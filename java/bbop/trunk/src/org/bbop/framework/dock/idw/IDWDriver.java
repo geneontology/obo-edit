@@ -1111,4 +1111,15 @@ public class IDWDriver implements LayoutDriver {
 		} else
 			v.dock();
 	}
+
+    public void focusComponent(GUIComponent c) {
+        // both calls are required to focus component and last child, especially if it's floating
+        getView(c).requestFocus();
+        getView(c).restoreFocus();
+    }
+
+    public void restoreComponent(GUIComponent c) {
+        getView(c).restore();
+    }
+	
 }
