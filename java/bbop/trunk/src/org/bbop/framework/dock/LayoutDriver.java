@@ -48,4 +48,14 @@ public interface LayoutDriver {
 	public boolean isFloating(GUIComponent c);
 	
 	public void setFloating(GUIComponent c, boolean floating);
+	
+	/**
+	 * Restores focus to the last focused child component or, if no child component has had focus, the first focusable component inside the GUIComponent.
+	 */
+	public void focusComponent(GUIComponent c);
+	
+	/**
+	 * Restore this component to its location before it was minimized or maximized.
+	 */
+	public void restoreComponent(GUIComponent c);
 }

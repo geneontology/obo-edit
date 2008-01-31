@@ -162,9 +162,27 @@ public class ComponentManager {
 	}
 
 	public String showComponent(GUIComponentFactory factory,
-			GUIComponent target, String label, boolean showInNewWindow) {
-		return getDriver().showComponent(factory, target, null, label,
-				factory.getPreferSeparateWindow() || showInNewWindow, null);
+	        GUIComponent target, String label, boolean showInNewWindow) {
+	    if (factory.isSingleton()) {
+	        // shouldn't create a new component if one already exists, just bring it forward
+	        for (GUIComponent component : this.getActiveComponents()) {
+	            if (this.getFactory(component).equals(factory)) {
+	                this.focusComponent(component);
+	                return component.getID();
+	            }
+	        }
+	    }
+	    return getDriver().showComponent(factory, target, null, label,
+	            factory.getPreferSeparateWindow() || showInNewWindow, null);
+	}
+	
+	/**
+	 * Focus component in interface, bringing it to the front or
+	 * unminimizing if necessary.
+	 */
+	public void focusComponent(GUIComponent component) {
+	    this.getDriver().restoreComponent(component); //unminimizes
+	    this.getDriver().focusComponent(component); //focuses
 	}
 
 	public static File getPrefsPath() {
