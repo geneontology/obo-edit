@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.bbop.framework.event.UserEvent;
@@ -164,7 +165,11 @@ public class GUIManager {
 		return ComponentPath.removeComponent(path, getFrame().getJMenuBar(),
 				item);
 	}
-
+	
+	public boolean installToolBar(JToolBar toolbar) {
+		return ComponentPath.addComponent(null, getFrame(), toolbar);
+	}
+	
 	public void start() {
 		addShutdownHook(new Runnable() {
 
