@@ -24,7 +24,7 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	public Component resolveName(String id, Properties props, String xml) {
-		System.err.println("calling resolveName " + id);
+//		System.err.println("calling resolveName " + id);
 		if (id.equals("id_label"))
 			return idLabel;
 		else if (id.equals("secondary_id_label"))

@@ -416,8 +416,8 @@ public class DefaultTermModel implements TermModel {
 			TermUtil.detectRoots(temp, linkDatabase, getRootAlgorithm());
 			if (trimmedLinkDB != null)
 				trimmedLinkDB.setEnableTrimming(true);
-			System.err.println("   detected roots in "
-					+ (System.currentTimeMillis() - time));
+//			System.err.println("   detected roots in "
+//					+ (System.currentTimeMillis() - time));
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

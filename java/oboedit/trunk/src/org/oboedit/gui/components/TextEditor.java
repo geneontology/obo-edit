@@ -100,7 +100,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
-			System.err.println("reloaded config");
+//			System.err.println("reloaded config");
 			reload();
 			setObject(getObject());
 		}
