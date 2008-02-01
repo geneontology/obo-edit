@@ -193,7 +193,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JButton libraryButton = new JButton("Browse built-in icons");
 
-		JButton colorButton = new JButton();
+		JButton colorButton = new JButton("Click to modify");
 
 		protected ListEditor editor;
 
@@ -203,7 +203,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 		public IconEditor() {
-			colorButton.setBorderPainted(false);
+//			colorButton.setBorderPainted(false);
 			previewLabel.setVerticalAlignment(SwingConstants.CENTER);
 			setMinimumSize(new Dimension(0, 0));
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -241,7 +241,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 					Color c = JColorChooser.showDialog(
 							ConfigurationManager.this, "Select link color",
 							colorButton.getBackground());
-					colorButton.setBackground(c);
+					colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray
+					colorButton.setForeground(c);
 					colorButton.setText(ColorUtil.getName(c)
 							+ " (click to modify)");
 				}
@@ -291,9 +292,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			colorPanel.setLayout(new BorderLayout());
 			Box colorLabelBox = Box.createHorizontalBox();
 			colorLabelBox.add(new JLabel("Link color"));
-			colorLabelBox.add(Box.createHorizontalStrut(10));
-			colorPanel.add(colorLabelBox, "North");
-			colorPanel.add(colorButton, "Center");
+//			colorLabelBox.add(Box.createHorizontalStrut(10));
+//			colorPanel.add(colorLabelBox, "North");
+			colorPanel.add(colorLabelBox, "Center");
+//			colorPanel.add(colorButton, "Center");
+			colorPanel.add(colorButton, "South");
 
 			add(typeBox);
 			add(Box.createVerticalStrut(10));
@@ -344,7 +347,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			typeField.setText(iw.getType());
 			urlField.setCaretPosition(0);
 			typeField.setCaretPosition(0);
-			colorButton.setBackground(iw.getColor());
+			colorButton.setBackground(iw.getColor());  // Doesn't seem to do anything--background stays light gray
+			colorButton.setForeground(iw.getColor());
 			colorButton.setText(ColorUtil.getName(iw.getColor())
 					+ " (click to modify)");
 			update();
