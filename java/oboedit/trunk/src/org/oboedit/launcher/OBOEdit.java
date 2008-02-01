@@ -37,7 +37,7 @@ public class OBOEdit {
 		TagSpec vSpec = new TagSpec("-v");
 		TagSpec verboseSpec = new TagSpec("-verbose");
 		TagSpec listSpec = new TagSpec("--listadapters");
-
+		TagSpec helpSpec = new TagSpec("-help");
 		TagSpec loadSpec = new TagSpec("-load");
 		loadSpec.addArgumentSpec(loadAdapterSpec, 1);
 		loadSpec.setImpliedSpec(loadAdapterSpec, 1);
@@ -59,6 +59,7 @@ public class OBOEdit {
 		spec.addArgumentSpec(loadSpec, 1);
 		spec.addArgumentSpec(vSpec, 1);
 		spec.addArgumentSpec(verboseSpec, 1);
+		spec.addArgumentSpec(helpSpec, 1);
 		return spec;
 	}
 
@@ -98,7 +99,11 @@ public class OBOEdit {
 		Iterator it = topLevel.getArguments().iterator();
 		while (it.hasNext()) {
 			Tag tag = (Tag) it.next();
-			if (tag.getName().equals("-load")) {
+			if (tag.getName().equals("-help")) {
+			    printUsage();
+			    System.exit(0);
+			}
+			else if (tag.getName().equals("-load")) {
 				Iterator it2 = tag.getArguments().iterator();
 				while (it2.hasNext()) {
 					Tag t = (Tag) it2.next();
@@ -110,13 +115,10 @@ public class OBOEdit {
 
 						break;
 					} else if (t.getName().equals("--listadapters")) {
-						DataAdapter[] adapters = DataAdapterUtil.getAdapters(
-								registry, OBOAdapter.READ_ONTOLOGY, classes);
-						System.err.println("Available load adapters...");
-						for (int i = 0; i < adapters.length; i++)
-							System.err.println("   -" + adapters[i].getID());
-						System.err.println();
-						System.exit(0);
+					    System.err.println("Available load adapters...");
+					    printAdapters();
+					    System.err.println();
+					    System.exit(0);
 					}
 				}
 			} else if (tag.getName().equals("-v")
@@ -128,6 +130,7 @@ public class OBOEdit {
 			java.util.List progressListeners = new Vector();
 
 			// Actually read in the command line file
+			System.out.println("Loading file " + loadTag);
 			OBOSession o = (OBOSession) CommandLineWidget.execute(registry,
 					OBOAdapter.READ_ONTOLOGY, loadTag, null);
 			actions.setLoadMe(o);
@@ -180,4 +183,19 @@ public class OBOEdit {
 
 		SwingUtilities.invokeAndWait(r);
 	}
+	public static void printUsage() {
+	    System.err.println("OBO-Edit supports the following command-line options:\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name with no other arguments.\nBy default, the following adapters are available:");
+	    printAdapters();
+	    System.err.println();
+	}
+
+    private static void printAdapters() {
+	DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
+	Class[] classes = { ParameterUI.class };
+	DataAdapter[] adapters = DataAdapterUtil.getAdapters(
+	    registry, OBOAdapter.READ_ONTOLOGY, classes);
+	for (int i = 0; i < adapters.length; i++)
+	    System.err.println("   -" + adapters[i].getID());
+    }
+
 }
