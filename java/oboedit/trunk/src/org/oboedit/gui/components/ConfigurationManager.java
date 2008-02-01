@@ -241,10 +241,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 					Color c = JColorChooser.showDialog(
 							ConfigurationManager.this, "Select link color",
 							colorButton.getBackground());
-					colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray
-					colorButton.setForeground(c);
-					colorButton.setText(ColorUtil.getName(c)
-							+ " (click to modify)");
+					if (c != null) {
+					    colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray
+					    colorButton.setForeground(c);
+					    colorButton.setText(ColorUtil.getName(c)
+								+ " (click to modify)");
+					}
 				}
 
 			});
