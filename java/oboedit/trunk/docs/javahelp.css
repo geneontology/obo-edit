@@ -115,7 +115,7 @@ ul {margin-top: 5;
     margin-left: 21;
     list-style: circle}
 
-pre.code_table {font-size: x-small;
+pre.code_table {font-size: small;
 	   margin-left: 10; font-family: Monospaced, "Courier New", Courier, mono}
 
 [border] {border: solid thin;
@@ -142,7 +142,7 @@ dl.see_also {margin-left: 0;
     margin-top: 10;
     margin-bottom: 10}
 a.nounderline {text-decoration: none }
-pre {  font-family: Monospaced, "Courier New", Courier, mono; font-size: x-small}
+pre {  font-family: Monospaced, "Courier New", Courier, mono; font-size: small}
 code {  font-family: Monospaced, "Courier New", Courier, mono; font-size: small}
 
 table.bodyTable {
