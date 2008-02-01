@@ -22,6 +22,7 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
@@ -59,7 +60,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected abstract Collection<GUITask> getDefaultTasks();
 
 	protected abstract Collection<DataAdapter> getDefaultDataAdapters();
-
+	
 	protected abstract Collection<GUIComponentFactory<?>> getDefaultComponentFactories();
 
 	protected abstract String getAppID();
@@ -178,6 +179,7 @@ public abstract class AbstractApplicationStartupTask extends
 		installDefaultComponentFactories();
 		installDefaultTasks();
 		installMenus();
+		installDefaultToolBars();
 		doOtherInstallations();
 		ComponentManager.getManager().setDriver(createLayoutDriver());
 
@@ -215,9 +217,19 @@ public abstract class AbstractApplicationStartupTask extends
 			GUIManager.getManager().installMenuItem(null, menu);
 		}
 	}
+	
+	protected void installDefaultToolBars() {
+		for (JToolBar toolbar : getDefaultToolBars()) {
+			GUIManager.getManager().installToolBar(toolbar);
+		}
+	}
 
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
 		return CollectionUtil.list(new ViewMenu());
+	}
+	
+	protected Collection<JToolBar> getDefaultToolBars() {
+		return null;
 	}
 
 	protected void installDefaultDataAdapters() {
