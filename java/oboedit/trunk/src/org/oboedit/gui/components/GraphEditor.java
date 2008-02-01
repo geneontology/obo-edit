@@ -47,8 +47,11 @@ import org.oboedit.graph.ZoomWidgetBehavior;
 import org.oboedit.gui.EditActionToolbar;
 import org.oboedit.gui.HTMLNodeLabelProvider;
 import org.oboedit.gui.InputHandlerI;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
+import org.oboedit.gui.event.ReconfigEvent;
+import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.filter.RenderedFilter;
@@ -148,6 +151,15 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			} else
 				relayout();
 		}
+	};
+
+	protected ReconfigListener reconfigListener = new ReconfigListener() {
+
+		public void configReloaded(ReconfigEvent e) {
+		    relayout();
+//			System.err.println("GraphEditor: reloaded config");
+		}
+
 	};
 
 	protected JPanel panel;
@@ -269,6 +281,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		setDropTarget(dropTarget);
 
 		GUIUtil.addReloadListener(reloadListener);
+		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		updateDatasources();
 		toolbar.updateGestureList();
 	}
@@ -278,6 +291,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		setDropTarget(null);
 
 		GUIUtil.removeReloadListener(reloadListener);
+		Preferences.getPreferences().removeReconfigListener(reconfigListener);
 		Collection<ViewBehavior> temp = new LinkedList<ViewBehavior>(
 				viewBehaviors);
 		for (ViewBehavior behavior : temp) {
