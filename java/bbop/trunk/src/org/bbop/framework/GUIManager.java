@@ -48,7 +48,7 @@ public class GUIManager {
 
 	protected static File prefsDir;
 	
-	protected boolean lockDoc = false; //used to determine if the GUI componenets should be locked down
+	protected boolean lockDoc; //used to determine if the GUI componenets should be locked down
 
 	public BackgroundEventQueue getScreenLockQueue() {
 		return screenLockQueue;
@@ -95,6 +95,7 @@ public class GUIManager {
 	public GUIManager() {
 		screenLockQueue = BackgroundEventQueue.getGlobalQueue();
 		backgroundQueue = new BackgroundEventQueue();
+		lockDoc = false;
 	}
 
 	public static GUIManager getManager() {
