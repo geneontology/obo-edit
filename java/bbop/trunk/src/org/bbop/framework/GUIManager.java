@@ -47,6 +47,8 @@ public class GUIManager {
 	protected static boolean confirmOnExit = true;
 
 	protected static File prefsDir;
+	
+	protected boolean lockDoc = false; //used to determine if the GUI componenets should be locked down
 
 	public BackgroundEventQueue getScreenLockQueue() {
 		return screenLockQueue;
@@ -169,6 +171,20 @@ public class GUIManager {
 	public boolean installToolBar(JToolBar toolbar) {
 		return ComponentPath.addComponent(null, getFrame(), toolbar);
 	}
+	
+	public void setDocLockStatus(boolean lock) {
+		lockDoc = lock;
+		if (lockDoc)
+			ComponentManager.getManager().getDriver().lockDockingPanels();
+		else
+			ComponentManager.getManager().getDriver().unlockDockingPanels();
+		return;
+	}
+
+	public boolean getDocLockStatus() {
+		return lockDoc;
+	}
+
 	
 	public void start() {
 		addShutdownHook(new Runnable() {

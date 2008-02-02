@@ -58,4 +58,10 @@ public interface LayoutDriver {
 	 * Restore this component to its location before it was minimized or maximized.
 	 */
 	public void restoreComponent(GUIComponent c);
+	
+	//lock down all components so they can't be moved
+  public void lockDockingPanels();
+  
+  public void unlockDockingPanels(); 
+  
 }
