@@ -1121,5 +1121,21 @@ public class IDWDriver implements LayoutDriver {
     public void restoreComponent(GUIComponent c) {
         getView(c).restore();
     }
+    
+    public void lockDockingPanels() {
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setDragEnabled(false);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setUndockEnabled(false);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setCloseEnabled(false);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMinimizeEnabled(false);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMaximizeEnabled(false);
+    }
+    
+    public void unlockDockingPanels() {
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setDragEnabled(true);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setUndockEnabled(true);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setCloseEnabled(true);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMinimizeEnabled(true);
+    	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMaximizeEnabled(true);
+    }
 	
 }
