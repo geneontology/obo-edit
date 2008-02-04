@@ -565,4 +565,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				+ (version.isBeta() ? "beta" : "") + "/");
 		return prefsDir;
 	}
+
+	@Override
+    	protected void installDefaultToolBars() {
+	}
+
 }
