@@ -101,7 +101,7 @@ public class AutosaveTask implements GUITask, Runnable {
 			}
 			String saveFile = new File(preferences.getAutosavePath(),
 					getFileName(calendar)).toString();
-			System.err.println("Autosaving backup file " + saveFile);
+			System.err.println("Autosaving backup file " + saveFile + " at " + (new Date()));
 			final FileAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.setWritePath(saveFile);
 			DataAdapterOperationTask task = new DataAdapterOperationTask(
