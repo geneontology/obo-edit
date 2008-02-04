@@ -104,7 +104,7 @@
    <mapID target="Term_Filters" url="html/Term_Filters.htm"/>
    <mapID target="Text_Checks" url="html/Text_Checks.htm"/>
    <mapID target="Text_Editing" url="html/Text_Editing.htm"/>
-   <mapID target="The_Scroller_Tag" url="html/The_Basic_Flat_File_Interface.htm"/>
+   <mapID target="The_Basic_Flat_File_Interface" url="html/The_Basic_Flat_File_Interface.htm"/>
    <mapID target="The_Box_Tag" url="html/The_Box_Tag.htm"/>
    <mapID target="The_Category_Manager_Plugin" url="html/The_Category_Manager_Plugin.htm"/>
    <mapID target="The_Change_Tracker_Plugin" url="html/The_Change_Tracker_Plugin.htm"/>
