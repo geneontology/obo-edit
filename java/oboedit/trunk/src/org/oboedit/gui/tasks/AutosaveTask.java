@@ -76,7 +76,7 @@ public class AutosaveTask implements GUITask, Runnable {
 		if (preferences.getAutosaveExpirationDays() > 0) {
 			GregorianCalendar expireFileCalendar = new GregorianCalendar();
 			File[] files = preferences.getAutosavePath().listFiles();
-			for (int i = 0; i < files.length; i++) {
+			for (int i = 0; files != null && i < files.length; i++) {
 				expireFileCalendar.setTime(new Date(files[i].lastModified()));
 				expireFileCalendar.add(Calendar.DAY_OF_MONTH, preferences
 						.getAutosaveExpirationDays());
@@ -101,6 +101,7 @@ public class AutosaveTask implements GUITask, Runnable {
 			}
 			String saveFile = new File(preferences.getAutosavePath(),
 					getFileName(calendar)).toString();
+			System.err.println("Autosaving backup file " + saveFile);
 			final FileAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.setWritePath(saveFile);
 			DataAdapterOperationTask task = new DataAdapterOperationTask(
