@@ -56,7 +56,8 @@ public class Preferences {
 
 	protected boolean useBasicRootDetection = true;
 
-	protected boolean autosaveEnabled = false;
+//	protected boolean autosaveEnabled = false;
+    protected boolean autosaveEnabled = true;  // Make this true by default.  --NH, 1/4/2008
 
 	protected boolean caseSensitiveSort = false;
 
@@ -80,9 +81,9 @@ public class Preferences {
 
 	protected String email = "";
 
-	protected int autosaveWaitTime = 30;
+	protected int autosaveWaitTime = 20;
 
-	protected int autosaveExpirationDays = 1;
+	protected int autosaveExpirationDays = 7;
 
 	protected int selectionBatchSize = 100;
 
@@ -430,7 +431,8 @@ public class Preferences {
 			String urlStr = url.toString();
 			if (urlStr.endsWith("svg"))
 				return new SVGIcon(urlStr);
-		} catch (IOException e) {
+		} catch (Exception e) {
+		    System.err.println("WARNING: Exception getting icon for " + url + ": " + e); // DEL
 		}
 		return new ImageIcon(url);
 	}
@@ -500,6 +502,8 @@ public class Preferences {
 	public Color getLightSelectionColor() {
 		if (lightSelectionColor == null)
 			lightSelectionColor = new Color(230, 230, 255);
+//		    lightSelectionColor = Color.yellow;
+//		System.err.println("Returning lightSelectionColor " + lightSelectionColor); // DEL
 		return lightSelectionColor;
 	}
 
@@ -510,6 +514,8 @@ public class Preferences {
 	public Color getSelectionColor() {
 		if (selectionColor == null)
 			selectionColor = new Color(204, 204, 255);
+//		    selectionColor = Color.orange;
+//		System.err.println("Returning selectionColor " + selectionColor); // DEL
 		return selectionColor;
 	}
 
