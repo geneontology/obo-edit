@@ -1,6 +1,7 @@
 package org.oboedit.launcher;
 
 import org.bbop.dataadapter.*;
+import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
 import org.bbop.io.AuditedPrintStream;
@@ -174,6 +175,10 @@ public class OBOEdit {
 					if (actions.getLoadMe() != null)
 						SessionManager.getManager().setSession(
 								actions.getLoadMe());
+					
+					// Also start thread to check free memory
+					CheckMemoryThread cmt = new CheckMemoryThread();
+					cmt.start();
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
