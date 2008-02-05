@@ -3,15 +3,15 @@
           (rather than just in black).
 	* New "-help" command-line option prints usage message and exits.
 	* Fixed problem where Graph Editor wasn't showing changes in icons
-	   or link colors until you did something that made it refresh
-	  itself (e.g. expand a node).  Now it refreshes when you save your
+	  or link colors until you did something that made it refresh
+	  itself (e.g., expand a node).  Now it refreshes when you save your
 	  configuration change so you see the new icon and/or color right
 	  away.
-	 * Temporarily put new "regulates" icon contenders into icons
+	* Temporarily put new "regulates" icon contenders into icons
           directory (src/org/oboedit/gui/resources/icons/typeicons) so that
           users can look at them.  NOT YET COMMITTED--once there is agreement
           on the favorites, I will commit those.
-	 * Autosave is now turned on by default; users can turn it off via the
+	* Autosave is now turned on by default; users can turn it off via the
           Configuration Manager if they wish.
-	 * Added (to BBOP) CheckMemoryThread that runs in the background and
+	* Added (to BBOP) CheckMemoryThread that runs in the background and
           warns user if the available memory is >95% used up.
