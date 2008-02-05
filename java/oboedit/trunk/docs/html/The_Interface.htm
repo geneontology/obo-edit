@@ -1,18 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
-<html>
-<head>
-<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
-<title>The Interface</title>
-<link rel="stylesheet" type="text/css" href="../javahelp.css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
+
+<html>
+
+<head>
+
+<meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
+
+<title>The Interface</title>
+
+<link rel="stylesheet" type="text/css" href="../javahelp.css">
+
 </head>
 <body bgcolor="#ffffff">
 <h1>The Interface</h1>
-<p>Most of the time, structural edits to your ontology will 
+<p>Much of the time, structural edits to your ontology will 
 be accomplished via the ontology editor panel:</p>
 <p><IMG height=318 hspace=0 
-src="../images/term_editor_panel.gif" width=448 border=0></p>
+src="../images/term_editor_panel.png"  border=0></p>
 <p>Some plugins can also make structural changes to the ontology, but most of 
-your day-to-day changes will be done here.</p>
+your day-to-day changes will be done here or in the <a href="">Graph Editor</a>.</p>
+
 <h2>Sources and Targets</h2>
 <p>Whenver you make a structural change in the ontology editor panel, that 
 structural change operates on some collection of <strong>sources</strong> and 
@@ -40,17 +47,17 @@ will not be available until that undeletable term is no longer selected.</p>
 OBO-Edit. To use drag and drop, first select the terms you would like to drag. 
 This selection will be your <strong>source</strong> relationships. Click and 
 drag your selection.&nbsp;A drag graphic will appear:</p>
-<p><IMG height=257 hspace=0 src="../images/dragging.gif" width=419 border=0></p>
+<p><IMG  hspace=0 src="../images/dragging.png"  border=0></p>
 <p>Drag the <strong>sources&nbsp;</strong>over&nbsp;your desired 
 <strong>target</strong> relationship.&nbsp;When 
 the&nbsp;<strong>sources</strong> are above a potential 
 <strong>target</strong>,&nbsp;a yellow box will appear around the 
 <strong>target</strong>:</p>
-<p><IMG height=126 hspace=0 src="../images/drag_highlight.gif" width=395 
+<p><IMG  hspace=0 src="../images/drag_highlight.png"  
 border=0></p>
 <p>&nbsp;When the mouse button is released, the sources will be dropped, and 
 a&nbsp;menu of possible editing options will appear:</p>
-<p><IMG height=131 hspace=0 src="../images/drop_menu.gif" width=355 
+<p><IMG  hspace=0 src="../images/drop_menu.png"  
 border=0></p>
 <p>The menu of editing options will only contain options that make sense given 
 the <strong>sources</strong> you dragged and the <strong>target</strong> you 
@@ -58,16 +65,43 @@ dropped onto.</p>
 <p>To cancel a drag and drop operation in mid-drag, drop 
 the sources onto an empty part of the screen (make sure no target is highlighted). To dismiss the drag and drop popup 
 menu, click somewhere on the screen other than the menu (on some platforms, the 
-drag and drop menu is automatically dismissed when the mouse is moved off of 
+drag and drop menu is automatically dismissed when the mouse is moved off 
 the menu).</p>
-<p>Note that some drag and drop operations have keyboard shortcuts that allow 
-you to specify the edit operation as you're dragging. This allows you to edit 
-faster, without having to see additional popup menus when you drop your 
-selection. See the details for individual editing operations to learn the 
-keyboard shortcuts for each one.</p>
 <p>Not all editing operations are available via drag-and-drop (for example, 
 adding new terms and deleting terms can only be achieved via menu-based editing 
 methods - see below).</p>
+
+<h4>Hotkeys</h4>
+<p>
+
+When a panel is focused, you can press a hotkey to assign a "drag
+mode". This allows you to edit faster, without having to see
+additional popup menus when you drop your selection. The hotkeys are:</p>
+<P>
+Command+X Move<br>
+Command+C Copy<br>
+Command+M Merge<br>
+Command+D Default mode<br>
+</p>
+<p>When you press a hotkey, a dropdown box appears showing the current 
+drag mode, and allowing you to pick a different drag mode with the 
+mouse if you wish. The dropdown box appears at the top of the 
+panel by default, but you can drag it to the bottom or either side if 
+you prefer.</p>
+
+<p><IMG  hspace=0 src="../images/hotkey_dropdown.png"  border=0></p>
+
+<p>The Move and Copy drag modes display a special popup menu of 
+relationship types when you complete the drag and drop operation.
+See the details for individual editing operations for further details.</p>
+
+<p>By default, when you complete an editing operation, the drag mode
+reverts back to default mode. This behavior is configurable in the
+configuration screen - you can decide when the hotkey dropdown is
+visible (always, never, or "on hotkey"), and you can decide whether to
+revert back to the default drag mode when an editing operation is
+complete.</p>
+
 <h3>2) Right-Click Menu</h3>
 <p>Editing operations can also be done by bringing up a right-click menu. The 
 right-click menu is displayed by right-clicking (or command-clicking on MacOS) 
@@ -80,140 +114,15 @@ currently available editing operations. If an operation cannot be performed on t
 current target or sources, the operation will be grayed-out. The right-click menu contains more than just 
 editing operations; the right-click menu also allows you to configure display options 
 for the current ontology editor panel.</p>
+
 <h3>3) Edit Menu</h3>
 <p>The edit menu is available on the main OBO-Edit menu bar:</p>
-<p><IMG height=411 hspace=0 src="../images/edit_menu.gif" 
-width=218 border=0></p>
-<p>When using the edit menu, the currently selected 
-relationships are used as the <strong>sources</strong>. It 
-is not possible to select a <STRONG>target</STRONG> with the edit menu. As a result, all operations that require a target will 
-be grayed-out on the edit menu.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</body>
+<p><IMG  hspace=0 src="../images/edit_menu.png"  border=0></p>
+<p>When using the edit menu, the currently selected relationships are
+used as the <strong>sources</strong>. It is not possible to select a
+<STRONG>target</STRONG> with the edit menu. As a result, all
+operations that require a target will be grayed out on the edit
+menu.</p>
+
+</body>
 </html>
