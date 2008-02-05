@@ -144,7 +144,9 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 
 		readBrowseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
+			    // Start FileChooser ("Browse...") at most recently selected directory
+			    String currentPath = (String) readField.getSelectedItem();
+				JFileChooser chooser = new JFileChooser(currentPath);
 				chooser.setMultiSelectionEnabled(multiSelectEnabled);
 
 				int returnVal = chooser.showOpenDialog(FileAdapterUI.this);
@@ -169,7 +171,9 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		});
 		writeBrowseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
+			    // Start FileChooser ("Browse...") at most recently selected directory
+			    String currentPath = (String) writeField.getSelectedItem();
+			    JFileChooser chooser = new JFileChooser(currentPath);
 
 				int returnVal = chooser.showSaveDialog(FileAdapterUI.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
