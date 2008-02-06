@@ -2,10 +2,12 @@ package org.bbop.rdbms.impl;
 
 import java.util.HashMap;
 
+import org.bbop.rdbms.ConstraintSet;
+
 public abstract class SqlModificationStatement extends AbstractRelationalTerm {
 
 	protected String table;
-	protected SqlConstraintImpl constraintTerm = new SqlConstraintImpl();
+	protected ConstraintSet constraintTerm = new SqlConstraintSetImpl();
 	protected HashMap<String,Object> colVals = new HashMap<String,Object>();
 	
 	public String getTable() {
@@ -16,10 +18,10 @@ public abstract class SqlModificationStatement extends AbstractRelationalTerm {
 		this.table = table;
 	}
 
-	public SqlConstraintImpl getConstraintTerm() {
+	public ConstraintSet getConstraintTerm() {
 		return constraintTerm;
 	}
-	public void setConstraintTerm(SqlConstraintImpl constraintTerm) {
+	public void setConstraintTerm(ConstraintSet constraintTerm) {
 		this.constraintTerm = constraintTerm;
 	}
 	
