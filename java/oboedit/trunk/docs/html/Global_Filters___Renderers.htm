@@ -6,53 +6,63 @@
 <LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
 </HEAD>
 <BODY BGCOLOR=#ffffff>
+
 <H1>Global Filters &amp; Renderers</H1>
+
 <P>You may want to apply a filter or renderer to all ontology 
 editor panels all the time. OBO-Edit allows you to create <EM>global 
-filters</EM> and <EM>global renderers</EM> using the Global Filter Plugin.</P>
-<P>Global&nbsp;filters&nbsp;and renderers are applied to every ontology editor panel 
-automatically. Global&nbsp;filters and renderers&nbsp;do not appear in 
-the&nbsp;ontology editor panel filter menu, and they are not removed by the "Remove 
-all&nbsp;renderers and filters" command.</P>
-<H2>The Global Filter Plugin</H2>
-<P>To&nbsp;edit the&nbsp;global filters, choose&nbsp;The Global Filter Plugin 
-from the Plugins menu:</P>
-<P><IMG height=342 hspace=0 src="../images/global_filter_filters.gif" width=661 
+filters</EM> and <EM>global renderers</EM> using the Global Filters panel.</P>
+<P>Global filters and renderers are applied to every ontology editor
+panel automatically. Global filters and renderers are not affected by
+the filtering and rendering options available in the component
+configuration for an ontology editor panel.
+
+<H2>The Global Filters Panel</H2>
+<P>To&nbsp;edit the&nbsp;global filters, choose Global Filters 
+from the Config menu:</P>
+<P><IMG  hspace=0 src="../images/global_filter_filters.png" 
 border=0>&nbsp;</P>
-<P>There are two tabs at the top of the plugin. The "Filters" tab contains the 
-controls for editing global filter settings. The "Renderers" tab contains 
-controls for editing global renderer settings.</P>
+
+<P>There are four tabs at the top of the plugin, allowing you to edit
+global <strong>term filters, link filters, term renderers</strong> and
+<strong>link renderers</strong> .
+
 <H3>Editing Global Filters</H3>
-<P>To edit global filters, click the "Filters" tab. The screenshot above shows 
-the "Filter" tab. The filters tab consists of two lists of filters. The "Link 
-Filters" list contains all the global link filters, and the "Term filters" list 
-contains all the global term filters.</P>
-<P>To edit a filter, select it by clicking its name in the list. A filter 
-designer will appear where you can edit the filter. The filter designers are 
-always locked in "Compound filtering" mode, and it is not possible to change 
-between "Link filtering" and "Term filtering".</P>
-<P>To add a filter, click the "Add" button under the filter list. A new filter 
-will be created that can be edited as described above.</P>
-<P>To delete a filter, select the filter to delete and click the "Del" button 
-under the filter list.</P>
+
+<P>To edit global filters, click the "Term Filters" or "Link Filters"
+tab. The screenshot above shows the "Term Filters" tab. The "Link
+Filters" list contains all the global link filters, and the "Term
+filters" list contains all the global term filters.</P>
+
+<P>To edit a filter, simply change its search criteria (see <a
+href="Advanced_Searching.htm">Advanced Searching</a> for how to do
+this).</p>
+
+<P>To add a filter, click the "+" button at the bottom of the panel. A
+new filter will be created that can be edited as described above.</P>
+<P>To delete a filter, click the "-" button at the right.</P>
+
 <H3>Editing Global Renderers</H3>
-<P>To edit global renderers, click the "Renderers" tab:</P>
-<P><IMG height=342 hspace=0 src="../images/global_filter_renderers.gif" 
-width=653 border=0></P>
-<P>The renderers tab consists of two lists of renderers. The "Term Renderers" 
-list contains all the global term renderers, and the "Link Renderers" list 
-contains all the default link renderers.</P>
-<P>To edit a renderer, select it by clicking its name in the list. A renderer 
-designer will appear where you can edit the renderer. The renderer designers are 
-always locked in "Compound filtering" and "Rendering controls" mode, and it is 
-not possible to change between "Link filtering" and "Term filtering". Note that 
-between the renderer list and the renderer designer, the interface may need a 
-lot of space on the screen for all the controls to be visible. Resize the Global 
-Renderer Plugin if necessary to see all the controls.</P>
-<P>To add a renderer, click the "Add" button under the filter list. A new 
+<P>To edit global renderers, click the "Term Renderers" or "Link Renderers" tab; the screenshot shows the "Term Renderers" tab:</P>
+<P><IMG hspace=0 src="../images/global_filter_renderers.png" 
+ border=0></P>
+
+<P> The "Term Renderers" list contains all the global term renderers,
+and the "Link Renderers" list contains all the default link
+renderers.</P>
+
+<P>To edit a renderer, select it by double-clicking its description in
+the list. A renderer designer will appear where you can edit the
+renderer.  Note that between the renderer list and the renderer
+designer, the interface may need a lot of space on the screen for all
+the controls to be visible. Resize the panel if necessary to see all
+the controls.</P>
+
+<P>To add a renderer, click the "+" button under the renderer list. A new 
 renderer will be created that can be edited as described above.</P>
-<P>To delete a renderer, select the renderer to delete and click the "Del" 
+<P>To delete a renderer, select the renderer to delete and click the "-" 
 button under the renderer list.</P>
+
 <H2>Default Global Filters &amp; Renderers</H2>
 <P>When OBO-Edit is first installed, the following global filters and renderers 
 are installed by default (note that these default filters and renderers are 
@@ -62,19 +72,26 @@ more complex than these descriptions):</P>
   <LI><STRONG>Default Term Filters</STRONG>
   <UL>
     <LI>Don't show built-in objects that are not relations (ie 
-    obo:datatype)</LI></UL>
+    obo:datatype)</LI>
+  </UL>
   <LI><STRONG>Default Link Filters</STRONG>
   <UL>
     <LI>Don't show links that define an intersection (aka complete 
-links)</LI></UL>
+links)</LI>
+    <li>Don't show links unless the link type is transitive
+  </UL>
   <LI><STRONG>Default Term Renderers</STRONG>
   <UL>
-    <LI>Show obsolete terms in red 
-    <LI>Show relations in blue</LI></UL>
+    <LI>Show obsolete terms in red, and with strikeout
+    <LI>Show relations in blue</LI>
+  </UL>
   <LI><STRONG>Default Link Renderers</STRONG>
   <UL>
-    <LI>Show the arrows of rendundant links in red 
-    <LI>Show the arrows of implied links in blue</LI></UL></LI></UL>
+    <LI>Show the arrows of redundant links in red, and zigzagged
+    <LI>Show the arrows of implied links in blue</LI>
+  </UL>
+</LI>
+</UL>
 <P>&nbsp;</P>
 </BODY>
 </html>
