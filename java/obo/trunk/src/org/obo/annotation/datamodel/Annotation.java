@@ -3,6 +3,8 @@ package org.obo.annotation.datamodel;
 import java.util.Collection;
 
 import org.obo.datamodel.Instance;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkLinkedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
@@ -19,6 +21,11 @@ public interface Annotation extends Instance {
     * evidence: <evidence code, perhaps an identifier for some built-in evidence objects>
     * assigned_by: <user id, probably just a string> 
  */
+	
+	/**
+	 * each annotation posits a link
+	 */
+	public Link getPositedLink(); 
 	public LinkedObject getAssignedBy();
 	public LinkedObject getSubject();
 	public LinkedObject getObject();

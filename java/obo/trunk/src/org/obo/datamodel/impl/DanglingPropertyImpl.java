@@ -155,5 +155,20 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 	public void setTransitiveOver(OBOProperty transitiveOver) {
 	}
 
+	public boolean isUniversallyQuantifier() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isUniversallyQuantified() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setUniversallyQuantified(boolean isUniversallyQuantified) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

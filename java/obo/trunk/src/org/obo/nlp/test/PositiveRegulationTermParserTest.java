@@ -5,8 +5,6 @@ import java.util.Collection;
 
 import junit.framework.TestSuite;
 
-import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.OBOProperty;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -39,11 +37,13 @@ public class PositiveRegulationTermParserTest extends AbstractNLPTest {
 			System.out.println(report);
 			if (report.contains("HIERARCHY: GO:0048518"))
 				passes++;
-			if (report.contains("OK: GO:0051046"))
+			if (report.contains("OK: GO:0046887"))
+				passes++;
+			if (report.contains("PREDEFINED: GO:0051046"))
 				passes++;
 			
 		}
-		assertTrue(passes == 2);
+		assertTrue(passes == 3);
 
 		String id = "GO:0048518"; //  positive regulation of biological process
 		testForGenus(id,"GO:0065007"); /* BR: asserted */

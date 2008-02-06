@@ -52,6 +52,7 @@ public class RegulationOfSomitogenesisTest extends AbstractNLPTest {
 			System.out.println(link+" "+link.getType().getID());
 		}
 		System.out.println("tOver="+((OBOProperty)session.getObject("regulates")).getTransitiveOver());
+		testForNonGenusIsA("GO:0050789","GO:0065007"); /* asserted */
 		
 		//testForLink("negatively_regulates","transitive_over","part_of");
 		ReasonerFactory rf = new LinkPileReasonerFactory();

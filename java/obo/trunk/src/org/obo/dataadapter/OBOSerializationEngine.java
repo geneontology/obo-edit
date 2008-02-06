@@ -879,7 +879,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				linkList.addAll(linkDatabase.getParents(lo));
 				Collections.sort(linkList, getLinkComparator(serializer));
 				for (Link link : linkList) {
-					writeLink(serializer, link);
+					// CJM: I added this defensive test
+					if (!(link instanceof ValueLink))
+						writeLink(serializer, link);
 				}
 				// Iterator it2 = linkList.iterator();
 				// while (it2.hasNext()) {

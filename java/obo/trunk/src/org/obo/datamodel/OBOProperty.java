@@ -193,7 +193,7 @@ public interface OBOProperty extends OBOObject {
 	};
 
 	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
-			UNION_OF, INVERSE_OF };
+			UNION_OF, INVERSE_OF, TRANSITIVE_OVER };
 
 	public void setCyclic(boolean cyclic);
 
@@ -254,6 +254,12 @@ public interface OBOProperty extends OBOObject {
 	public IdentifiedObject getDomain();
 
 	public boolean isNonInheritable();
+	
+	// if true then every use of this relation implies a
+	// universal quantification axiom AS WELL AS the default 
+	// existential quantified one
+	public boolean isUniversallyQuantified();
+	public void setUniversallyQuantified(boolean isUniversallyQuantified);
 	
 	public OBOProperty getTransitiveOver();
 

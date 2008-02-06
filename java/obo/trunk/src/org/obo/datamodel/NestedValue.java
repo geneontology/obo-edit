@@ -7,7 +7,7 @@ public interface NestedValue extends Cloneable, Serializable {
 
 	public String getName();
 
-	public Set getPropertyValues();
+	public Set<PropertyValue> getPropertyValues();
 
 	public void addPropertyValue(PropertyValue pv);
 

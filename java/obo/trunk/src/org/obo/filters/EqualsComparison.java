@@ -2,6 +2,10 @@ package org.obo.filters;
 
 import java.util.*;
 
+/**
+ * Tests either numeric or string equality, whichever is appropriate
+ * 
+ */
 public class EqualsComparison extends AbstractComparison {
 
 	protected Class[] types = { String.class, Number.class };
@@ -18,6 +22,7 @@ public class EqualsComparison extends AbstractComparison {
 		if (value == null)
 			value = "";
 		Number intVal = null;
+		// this is the recommended way to convert strings to numbers
 		try {
 			intVal = new Double(value);
 		} catch (NumberFormatException ex) {

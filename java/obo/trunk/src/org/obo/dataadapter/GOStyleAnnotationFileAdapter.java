@@ -7,7 +7,6 @@ import java.io.LineNumberReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +46,6 @@ import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.datamodel.impl.SynonymImpl;
-import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 

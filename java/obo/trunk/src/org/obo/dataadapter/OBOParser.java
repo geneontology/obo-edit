@@ -74,7 +74,9 @@ public interface OBOParser extends OBOSimpleParser {
 			throws OBOParseException;
 
 	public void readIsTransitive(boolean isTransitive, NestedValue nv)
-			throws OBOParseException;
+	throws OBOParseException;
+	public void readIsUniversallyQuantified(boolean isUniversallyQuantified, NestedValue nv)
+	throws OBOParseException;
 	
 	public void readTransitiveOver(String id, String ns, boolean implied,
 			NestedValue nv) throws OBOParseException;

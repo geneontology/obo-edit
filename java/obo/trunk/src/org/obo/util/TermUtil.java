@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.util.*;
+
+
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.DanglingObject;
@@ -27,7 +29,14 @@ import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.impl.*;
+import org.obo.filters.ContainsComparison;
+import org.obo.filters.EqualsComparison;
 import org.obo.filters.LinkFilter;
+import org.obo.filters.ObjectFilter;
+import org.obo.filters.ObjectFilterFactory;
+import org.obo.filters.RegexpComparison;
+import org.obo.filters.SearchComparison;
+import org.obo.filters.StartsWithComparison;
 import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.CreateObjectHistoryItem;
@@ -1324,10 +1333,24 @@ public class TermUtil {
 		item.addItem(new CreateLinkHistoryItem(id, "OBO_REL:is_a", genus.getID()));
 		item.addItem(new CompletesHistoryItem(id, relID, diffClass.getID(), false));
 		item.addItem(new CompletesHistoryItem(id, "OBO_REL:is_a", genus.getID(), false));
+		// we have to recreate existing links that were transformed:
+		// where we have two links, one is defining, we still want to keep the other
+		for (Link link : lo.getParents()) {
+			if (link.getType().equals(OBOProperty.IS_A) &&
+					link.getParent().equals(genus)) {
+				item.addItem(new CreateLinkHistoryItem(id, "OBO_REL:is_a", genus.getID()));
+			
+			}
+			if (link.getType().getID().equals(relID) &&
+					link.getParent().equals(diffClass)) {
+				item.addItem(new CreateLinkHistoryItem(id, relID, diffClass.getID()));
+				
+			}
+		}
 		return item;
 	}
 
-	public static Collection<String> getLabels(LinkedObject lo) {
+	public static Collection<String> getLabels(IdentifiedObject lo) {
 		LinkedList<String> labels = new LinkedList<String>();
 		if (lo.getName() != null)
 			labels.add(lo.getName());
@@ -1337,7 +1360,8 @@ public class TermUtil {
 		}
 		return labels;
 	}
-	public static Collection<String> getExactLabels(LinkedObject lo) {
+	
+	public static Collection<String> getExactLabels(IdentifiedObject lo) {
 		LinkedList<String> labels = new LinkedList<String>();
 		if (lo.getName() != null)
 			labels.add(lo.getName());
@@ -1348,4 +1372,6 @@ public class TermUtil {
 		}
 		return labels;
 	}
+	
+
 }

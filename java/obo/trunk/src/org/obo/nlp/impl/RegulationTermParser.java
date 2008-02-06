@@ -112,6 +112,7 @@ public class RegulationTermParser implements SemanticParser {
 			session.getObjectFactory().createObject(regRelId, 
 					OBOClass.OBO_PROPERTY, false);
 			session.addObject(regRel);
+			regRel.setTransitiveOver(partOfRel);
 		}
 		posRegRel = (OBOProperty)session.getObject(posRegRelId);
 		if (posRegRel == null) {

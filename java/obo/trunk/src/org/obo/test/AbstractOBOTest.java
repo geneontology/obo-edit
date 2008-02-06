@@ -93,6 +93,20 @@ public abstract class AbstractOBOTest extends TestCase {
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
 	}
+	public void testForTransitiveOver(String childID, String parentID) {
+		OBOProperty child = (OBOProperty) session.getObject(childID);
+		OBOProperty parent = (OBOProperty) session.getObject(parentID);
+		assertTrue(child.getTransitiveOver().equals(parent));
+	}
+	
+	public void testForNonGenusIsA(String childID, String parentID) {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		OBORestrictionImpl link = new OBORestrictionImpl(child, OBOProperty.IS_A, parent);
+		link.setCompletes(false);
+		assertTrue(child.getParents().contains(link));
+	}
+	
 	public void testForNoIsA(String childID, String parentID) {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);

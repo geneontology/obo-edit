@@ -44,6 +44,9 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 			
 		}
 		assertTrue(passes == 2);
+		OBOProperty nrProp = (OBOProperty) session.getObject("negatively_regulates");
+		testForIsA("negatively_regulates","regulates");
+		testForTransitiveOver("negatively_regulates","part_of");
 		String id = "GO:0031323";
 		testForGenus(id,"GO:0065007"); /* asserted */
 		testForDifferentium(id,"regulates", "GO:0044237"); /* asserted */
@@ -56,6 +59,9 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 		reasoner.recache();
 		
 		testForIsA(reasoner, id, "GO:0019222"); /* RoMP */
+		
+		// transitive-over test
+		testForIsA(reasoner,"GO:0045449","GO:0010468");
 		
 		/* 
 		 * synonyms
