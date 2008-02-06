@@ -350,7 +350,9 @@ public class TermFilterEditor extends JPanel {
 		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());
-		out.setValue(valueField.getEditorText());
+		// Trim whitespace at beginning/end of search string before doing search,
+		// so that "term " returns the same results as "term".
+		out.setValue(valueField.getEditorText().trim());
 		out.setNegate(notBox.getSelectedIndex() == 1);
 		out.setComparison((SearchComparison) comparisonBox.getSelectedItem());
 		if (aspectVisible) {
@@ -398,7 +400,6 @@ public class TermFilterEditor extends JPanel {
 			else
 				notBox.setSelectedIndex(0);
 			comparisonBox.setSelectedItem(of.getComparison());
-			valueField.setValue(of.getValue());
 			if (!(of.getAspect() instanceof SelfSearchAspect)) {
 				setAspectControlsVisible(true);
 				aspectBox.setSelectedItem(of.getAspect());
