@@ -27,7 +27,7 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	
 	protected Map<String,Integer> aliasNumByTable = new HashMap<String,Integer>();
 	
-	SqlQueryImpl(SelectClause sc,
+	public SqlQueryImpl(SelectClause sc,
 			FromClause fc,
 			WhereClause wc,
 			OrderByClause obc,
@@ -45,13 +45,13 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	}
 	
 
-	SqlQueryImpl(SelectClause sc,
+	public SqlQueryImpl(SelectClause sc,
 			FromClause fc,
 			WhereClause wc) {
 		this(sc,fc,wc,null,null);
 	}
 	
-	SqlQueryImpl(String sc,
+	public SqlQueryImpl(String sc,
 			String fc,
 			String wc) {
 		this(new SqlSelectClauseImpl(sc),
@@ -103,6 +103,24 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 			aliasNumByTable.put(tbl,num);
 		}
 		String aliasTbl = tbl+"__"+num;
+		addTable(tbl, aliasTbl);
+		return aliasTbl;
+	}
+	
+	public String addAutoAliasedTable(String tbl, String preferredAlias) {
+		int num = 0;
+		if (!aliasNumByTable.containsKey(preferredAlias))
+			aliasNumByTable.put(preferredAlias,num);
+		else {
+			num = aliasNumByTable.get(preferredAlias);
+			num++;
+			aliasNumByTable.put(preferredAlias,num);
+		}
+		String aliasTbl;
+		if (num == 0)
+			aliasTbl = preferredAlias;
+		else
+			aliasTbl = preferredAlias+"__"+num;
 		addTable(tbl, aliasTbl);
 		return aliasTbl;
 	}

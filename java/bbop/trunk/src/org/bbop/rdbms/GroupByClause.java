@@ -1,5 +1,5 @@
 package org.bbop.rdbms;
 
-public interface GroupByClause  extends RelationalTerm {
+public interface GroupByClause  extends ColumnListClause {
 
 }

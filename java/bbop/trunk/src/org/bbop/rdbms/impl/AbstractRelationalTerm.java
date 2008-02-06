@@ -14,11 +14,13 @@ public abstract class AbstractRelationalTerm implements RelationalTerm {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
 			if (s.length() == 0) {
-				s.append((String)o);
+				//s.append((String)o);
+				s.append(o.toString());
 			}
 			else {
 				s.append(c);
-				s.append((String)o);
+				//s.append((String)o);
+				s.append(o.toString());
 			}
 		}
 		return s.toString();
