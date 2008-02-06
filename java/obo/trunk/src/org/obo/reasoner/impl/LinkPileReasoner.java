@@ -85,6 +85,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 		public int hashCode() {
 			return hash;
 		}
+		
+		public String toString() {
+			return child + " -> "+type+" -> "+parent;
+		}
 
 		@Override
 		public boolean equals(Object o) {

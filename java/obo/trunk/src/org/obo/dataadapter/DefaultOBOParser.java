@@ -70,6 +70,15 @@ public class DefaultOBOParser implements OBOParser {
 
 	protected boolean failFast = false;
 
+	// CJM: all link namespaces appear to be false by default
+	// I have added this to allow link nss to inherit the default namespace.
+	// unfortunately, this has the side-effect of writing {namespace} qualifiers
+	// for all links which is undesirable. There may be a way to get round this
+	// by using the default ns of the file; unfortunately this information gets
+	// lost.
+	// until this is resolved this should be assigned false
+	protected boolean assignDefaultNamespaceToLinks = false;
+
 	protected static class BasicMapping {
 		protected String subject;
 
@@ -371,6 +380,8 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	protected Namespace getDefaultNamespace() {
+		if (namespaceStack == null || namespaceStack.empty())
+			return null;
 		Namespace out = (Namespace) namespaceStack.peek();
 		return out;
 	}
@@ -445,7 +456,7 @@ public class DefaultOBOParser implements OBOParser {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	// allows abbreviations for common URLs
 	// TODO: provide a full registry
 	public String mapPath(String path) {
@@ -559,7 +570,7 @@ public class DefaultOBOParser implements OBOParser {
 
 	// go here
 	public void readIDMapping(String originalid, String newid)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (idMapping.containsKey(originalid)
 				&& !idMapping.get(originalid).equals(newid)) {
 			throw new OBOParseException("Multiple mappings assigned to "
@@ -573,7 +584,7 @@ public class DefaultOBOParser implements OBOParser {
 		if (idPrefix != null && !idPrefix.equals(prefix))
 			throw new OBOParseException("Multiple id-prefixes defined",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum(), 0);
+					.getLineNum(), 0);
 		idPrefix = prefix;
 		// create id mappings for every built-in object
 		Iterator it = session.getObjects().iterator();
@@ -604,7 +615,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readRange(String range, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof OBOProperty))
 			throw new OBOParseException("Attempt to set range of "
 					+ "non-type " + currentObject + ".", getCurrentPath(),
@@ -613,7 +624,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readDomain(String domain, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof OBOProperty))
 			throw new OBOParseException("Attempt to set domain of "
 					+ "non-type " + currentObject + ".", getCurrentPath(),
@@ -627,14 +638,14 @@ public class DefaultOBOParser implements OBOParser {
 					+ "object " + currentObject
 					+ " which does not support secondary " + "ids.",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 		((MultiIDObject) currentObject).addSecondaryID(id);
 		if (nv != null)
 			((MultiIDObject) currentObject).addSecondaryIDExtension(id, nv);
 	}
 
 	public void readComment(String comment, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof CommentedObject))
 			throw new OBOParseException("Attempted to set comment of "
 					+ "object " + currentObject
@@ -645,12 +656,12 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readInstanceOf(String termID, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof Instance))
 			throw new OBOParseException("Attempted to set instance_of "
 					+ "value for non-instance " + currentObject,
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 
 		InstanceStruct is = new InstanceStruct(termID, nv, getCurrentPath(),
 				engine.getCurrentLine(), engine.getLineNum());
@@ -664,11 +675,11 @@ public class DefaultOBOParser implements OBOParser {
 			throw new OBOParseException("Attempted to set instance_of "
 					+ "value for non-instance " + currentObject,
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 
 		PropertyValStruct pvs = new PropertyValStruct(currentObject.getID(),
 				propID, val, typeID, nv, getCurrentPath(), quoted, engine
-						.getCurrentLine(), engine.getLineNum());
+				.getCurrentLine(), engine.getLineNum());
 		propertyValSet.add(pvs);
 	}
 
@@ -709,7 +720,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readDef(String def, XrefPair[] xrefs, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof DefinedObject))
 			throw new OBOParseException("Attempted to set definition of "
 					+ "object " + currentObject + " which does not support "
@@ -746,7 +757,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readSubset(String name, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof CategorizedObject)) {
 			throw new OBOParseException("Attempted to add category to "
 					+ "object " + currentObject
@@ -758,7 +769,7 @@ public class DefaultOBOParser implements OBOParser {
 		if (cat == null)
 			throw new OBOParseException("Undefined category " + name + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 
 		((CategorizedObject) currentObject).addCategory(cat);
 		((CategorizedObject) currentObject).addCategoryExtension(cat, nv);
@@ -779,16 +790,19 @@ public class DefaultOBOParser implements OBOParser {
 			boolean inverseNecessary, boolean completes, boolean implied,
 			Integer minCardinality, Integer maxCardinality,
 			Integer cardinality, String ns, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof LinkedObject))
 			throw new OBOParseException("Tried to specify relationship "
 					+ "for object " + currentObject + " which "
 					+ "does not support relationships.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
 
 		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
 				mapID(rel_type), getCurrentPath(), engine.getLineNum(), engine
-						.getCurrentLine(), necessary, inverseNecessary,
+				.getCurrentLine(), necessary, inverseNecessary,
 				completes, implied, minCardinality, maxCardinality,
 				cardinality, ns, nv));
 	}
@@ -800,6 +814,10 @@ public class DefaultOBOParser implements OBOParser {
 					+ currentObject + " which "
 					+ "does not support relationships.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
+
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
 
 		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.IS_A.getID(), getCurrentPath(),
@@ -815,9 +833,13 @@ public class DefaultOBOParser implements OBOParser {
 					+ "does not support relationships.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
 
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
 		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.DISJOINT_FROM.getID(), getCurrentPath(), engine
-						.getLineNum(), engine.getCurrentLine(), true, false,
+				.getLineNum(), engine.getCurrentLine(), true, false,
 				false, implied, null, null, null, ns, nv));
 	}
 
@@ -829,9 +851,13 @@ public class DefaultOBOParser implements OBOParser {
 					+ "does not support relationships.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
 
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
 		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.INVERSE_OF.getID(), getCurrentPath(), engine
-						.getLineNum(), engine.getCurrentLine(), true, false,
+				.getLineNum(), engine.getCurrentLine(), true, false,
 				false, implied, null, null, null, ns, nv));
 	}
 	public void readTransitiveOver(String id, String ns, boolean implied,
@@ -842,15 +868,19 @@ public class DefaultOBOParser implements OBOParser {
 					+ "does not support relationships.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
 
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
 		//((OBOProperty) currentObject).setTransitiveOver(transitiveOver)
 		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.TRANSITIVE_OVER.getID(), getCurrentPath(), engine
-						.getLineNum(), engine.getCurrentLine(), true, false,
+				.getLineNum(), engine.getCurrentLine(), true, false,
 				false, implied, null, null, null, ns, nv));
 	}
 
 	public void readIsCyclic(boolean isCyclic, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (currentObject instanceof OBOProperty) {
 			((OBOProperty) currentObject).setCyclic(isCyclic);
 			((OBOProperty) currentObject).setCyclicExtension(nv);
@@ -861,7 +891,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readIsTransitive(boolean isTransitive, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (currentObject instanceof OBOProperty) {
 			((OBOProperty) currentObject).setTransitive(isTransitive);
 			((OBOProperty) currentObject).setTransitiveExtension(nv);
@@ -869,11 +899,23 @@ public class DefaultOBOParser implements OBOParser {
 			throw new OBOParseException("Attempt to set transitive "
 					+ "attribute of non-type " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
+	}
+
+	public void readIsUniversallyQuantified(boolean isUniversallyQuantified, NestedValue nv)
+	throws OBOParseException {
+		if (currentObject instanceof OBOProperty) {
+			((OBOProperty) currentObject).setUniversallyQuantified(isUniversallyQuantified);
+			//((OBOProperty) currentObject).setTransitiveExtension(nv);
+		} else
+			throw new OBOParseException("Attempt to set UniversallyQuantified "
+					+ "attribute of non-type " + currentObject + ".",
+					getCurrentPath(), engine.getCurrentLine(), engine
+					.getLineNum());
 	}
 
 	public void readIsSymmetric(boolean isSymmetric, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (currentObject instanceof OBOProperty) {
 			((OBOProperty) currentObject).setSymmetric(isSymmetric);
 			((OBOProperty) currentObject).setSymmetricExtension(nv);
@@ -881,24 +923,24 @@ public class DefaultOBOParser implements OBOParser {
 			throw new OBOParseException("Attempt to set symmetric "
 					+ "attribute of non-type " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 	}
 
 	public void readAlwaysImpliesInverse(boolean b, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (currentObject instanceof OBOProperty) {
 			((OBOProperty) currentObject).setAlwaysImpliesInverse(b);
 			((OBOProperty) currentObject).setAlwaysImpliesInverseExtension(nv);
 		} else
 			throw new OBOParseException(
 					"Attempt to set always_implies_inverse "
-							+ "attribute of non-type " + currentObject + ".",
+					+ "attribute of non-type " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 	}
 
 	public void readIsReflexive(boolean b, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (currentObject instanceof OBOProperty) {
 			((OBOProperty) currentObject).setReflexive(b);
 			((OBOProperty) currentObject).setReflexiveExtension(nv);
@@ -906,7 +948,7 @@ public class DefaultOBOParser implements OBOParser {
 			throw new OBOParseException("Attempt to set reflexive "
 					+ "attribute of non-type " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 	}
 
 	public void readIsAnonymous(NestedValue nv) {
@@ -922,21 +964,21 @@ public class DefaultOBOParser implements OBOParser {
 			throw new OBOParseException("Attempt to obsolete "
 					+ "non-obsoletable object " + currentObject + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 	}
 
 	public void readReplacedBy(String id, NestedValue nv) {
 		useSet
-				.add(new BasicMapping(currentObject.getID(), id, nv,
-						getCurrentPath(), engine.getCurrentLine(), engine
-								.getLineNum()));
+		.add(new BasicMapping(currentObject.getID(), id, nv,
+				getCurrentPath(), engine.getCurrentLine(), engine
+				.getLineNum()));
 	}
 
 	public void readConsider(String id, NestedValue nv) {
 		considerSet
-				.add(new BasicMapping(currentObject.getID(), id, nv,
-						getCurrentPath(), engine.getCurrentLine(), engine
-								.getLineNum()));
+		.add(new BasicMapping(currentObject.getID(), id, nv,
+				getCurrentPath(), engine.getCurrentLine(), engine
+				.getLineNum()));
 	}
 
 	public void startParse() throws OBOParseException {
@@ -1064,14 +1106,15 @@ public class DefaultOBOParser implements OBOParser {
 
 			Namespace ns = null;
 
-			if (rs.getNamespace() != null) {
+			String nsString = rs.getNamespace();
+			if (nsString != null) {
 
-				ns = (Namespace) namespaceMap.get(rs.getNamespace());
-				System.err.println("read namespace " + rs.getNamespace()
+				ns = (Namespace) namespaceMap.get(nsString);
+				System.err.println("read namespace " + nsString
 						+ " for link, fetched namespace " + ns);
 				if (ns == null) {
-					ns = objectFactory.createNamespace(rs.getNamespace(), null);
-					namespaceMap.put(rs.getNamespace(), ns);
+					ns = objectFactory.createNamespace(nsString, null);
+					namespaceMap.put(nsString, ns);
 					session.addNamespace(ns);
 				}
 			}
@@ -1106,7 +1149,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (o == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-							.createDanglingObject(rangeID, false);
+					.createDanglingObject(rangeID, false);
 					System.err.println("assigned DANGLING " + dangling
 							+ " to property " + t.getID());
 					t.setRange(dangling);
@@ -1134,7 +1177,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (domain == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-							.createDanglingObject(domainID, false);
+					.createDanglingObject(domainID, false);
 					t.setDomain(dangling);
 				} else
 					throw new OBOParseException("Assigned non-existant domain "
@@ -1181,8 +1224,8 @@ public class DefaultOBOParser implements OBOParser {
 							+ is.instanceOf + ", "
 							+ "for instance_of statement.", is.getPath(), is
 							.getLine(), is.getLineNum());
-				
-	
+
+
 			}
 			((Instance) instance).setType(TermUtil.castToClass((LinkedObject)instanceOfObj));
 
@@ -1197,7 +1240,7 @@ public class DefaultOBOParser implements OBOParser {
 			PropertyValStruct pvs = (PropertyValStruct) it.next();
 			Instance instance = (Instance) getObject(pvs.instanceID);
 			AnnotatedObject prop_o = (AnnotatedObject) session
-					.getObject(pvs.propID);
+			.getObject(pvs.propID);
 			if (instance == null)
 				throw new OBOParseException("Unexpected condition "
 						+ "encountered. Missing " + "instance.", pvs.getPath(),
@@ -1223,6 +1266,12 @@ public class DefaultOBOParser implements OBOParser {
 			IdentifiedObject type_o = session.getObject(pvs.typeID);
 
 			if (pvs.quoted) {
+				/*  quotes: 
+				 * this means we have a pv of the following form:
+				 * property_value:  shoe_size "8" xsd:positiveInteger
+				 * 
+				 * ie linking an instance with a property value
+				 */
 				if (pvs.typeID == null)
 					type_o = Datatype.STRING;
 
@@ -1251,6 +1300,12 @@ public class DefaultOBOParser implements OBOParser {
 				instance.addPropertyValue(prop, new DatatypeValueImpl(type,
 						pvs.val));
 			} else {
+				/* no quotes: 
+				 * this means we have a pv of the following form:
+				 * property_value: eats id:1234
+				 * 
+				 * ie linking two instanes
+				 */
 				IdentifiedObject o = session.getObject(pvs.val);
 				if (o == null) {
 					if (allowDanglingParents) {
@@ -1281,7 +1336,7 @@ public class DefaultOBOParser implements OBOParser {
 		if (danglingViolations.size() > 0) {
 			// Collections.sort(danglingViolations);
 			String message = danglingViolations.size()
-					+ " unrecognized parent terms:\n";
+			+ " unrecognized parent terms:\n";
 			int linenum = -1;
 			String line = null;
 			String path = null;
@@ -1302,7 +1357,7 @@ public class DefaultOBOParser implements OBOParser {
 					parent = pvs.val;
 				}
 				message += "     line " + linenum + ": " + parent + " of "
-						+ path + "\n";
+				+ path + "\n";
 			}
 			/*
 			 * new GOBOParseException("Unrecognized parent "+ rs.getParent(),
@@ -1323,8 +1378,8 @@ public class DefaultOBOParser implements OBOParser {
 			if (subject == null) {
 				throw new OBOParseException(
 						"Unexpected condition: subject " + "of replaced_by "
-								+ bm.getSubject() + " disappeared!", bm
-								.getPath(), bm.getLine(), bm.getLineNum());
+						+ bm.getSubject() + " disappeared!", bm
+						.getPath(), bm.getLine(), bm.getLineNum());
 			}
 
 			if (!(subject instanceof ObsoletableObject)) {
@@ -1377,7 +1432,7 @@ public class DefaultOBOParser implements OBOParser {
 						.getLineNum());
 
 			((ObsoletableObject) subject)
-					.addReplacedBy((ObsoletableObject) object);
+			.addReplacedBy((ObsoletableObject) object);
 			if (bm.getNestedValue() != null) {
 				((ObsoletableObject) subject).addReplacedByExtension(
 						(ObsoletableObject) object, bm.getNestedValue());
@@ -1435,7 +1490,7 @@ public class DefaultOBOParser implements OBOParser {
 						.getLineNum());
 
 			((ObsoletableObject) subject)
-					.addConsiderReplacement((ObsoletableObject) object);
+			.addConsiderReplacement((ObsoletableObject) object);
 			if (bm.getNestedValue() != null) {
 				((ObsoletableObject) subject).addConsiderExtension(
 						(ObsoletableObject) object, bm.getNestedValue());
@@ -1482,7 +1537,7 @@ public class DefaultOBOParser implements OBOParser {
 		}
 		return true;
 	}
-	
+
 	public void setCurrentStanza(String name) {
 		currentStanza = name;
 		unknownStanza = null;
@@ -1499,7 +1554,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public boolean prefersRaw(String tag, String value, NestedValue nv)
-			throws OBOParseException {
+	throws OBOParseException {
 		boolean handled = false;
 		for (ParserExtension extension : parserExtensions) {
 			boolean accepted = extension.readTagValue(tag, value, nv, handled);
@@ -1540,58 +1595,58 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readCreatedBy(String user, NestedValue val)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof ModificationMetadataObject))
 			throw new OBOParseException("Attempted to set created-by field of "
 					+ "object " + currentObject
 					+ " which does not support modification metadata.",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 		((ModificationMetadataObject) currentObject).setCreatedBy(user);
 		((ModificationMetadataObject) currentObject).setCreatedByExtension(val);
 	}
 
 	public void readCreationDate(Date date, NestedValue val)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof ModificationMetadataObject))
 			throw new OBOParseException(
 					"Attempted to set creation-date field of " + "object "
-							+ currentObject
-							+ " which does not support modification metadata.",
+					+ currentObject
+					+ " which does not support modification metadata.",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 		((ModificationMetadataObject) currentObject).setCreationDate(date);
 		((ModificationMetadataObject) currentObject)
-				.setCreationDateExtension(val);
+		.setCreationDateExtension(val);
 
 	}
 
 	public void readModificationDate(Date date, NestedValue val)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof ModificationMetadataObject))
 			throw new OBOParseException(
 					"Attempted to set modification-date field of " + "object "
-							+ currentObject
-							+ " which does not support modification metadata.",
+					+ currentObject
+					+ " which does not support modification metadata.",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 		((ModificationMetadataObject) currentObject).setModificationDate(date);
 		((ModificationMetadataObject) currentObject)
-				.setModificationDateExtension(val);
+		.setModificationDateExtension(val);
 	}
 
 	public void readModifiedBy(String user, NestedValue val)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (!(currentObject instanceof ModificationMetadataObject))
 			throw new OBOParseException(
 					"Attempted to set modified-by field of " + "object "
-							+ currentObject
-							+ " which does not support modification metadata.",
+					+ currentObject
+					+ " which does not support modification metadata.",
 					getCurrentPath(), engine.getCurrentLine(), engine
-							.getLineNum());
+					.getLineNum());
 		((ModificationMetadataObject) currentObject).setModifiedBy(user);
 		((ModificationMetadataObject) currentObject)
-				.setModifiedByExtension(val);
+		.setModifiedByExtension(val);
 	}
 
 	public void readImpliedID() {
@@ -1602,6 +1657,6 @@ public class DefaultOBOParser implements OBOParser {
 
 	public void readIDSpace(String idspace, String uriPrefix) throws OBOParseException {
 		session.addIDSpace(idspace,uriPrefix);
-		
+
 	}
 }

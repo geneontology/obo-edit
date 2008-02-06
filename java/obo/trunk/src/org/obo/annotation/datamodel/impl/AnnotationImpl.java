@@ -33,11 +33,11 @@ import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
 public class AnnotationImpl extends InstanceImpl implements Annotation {
-	
+
 	public AnnotationImpl(String id) {
 		super(id, AnnotationOntology.ANNOTATION());
 	}
-	
+
 	public AnnotationImpl(Instance instance) {
 		super(instance.getID());
 		setName(instance.getName());
@@ -58,7 +58,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 			addParent(newLink);
 		}
 	}
-	
+
 	public AnnotationImpl(Instance instance, Link link) {
 		this(instance);
 		setSubject(link.getChild());
@@ -79,6 +79,12 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 
 	public Collection<LinkedObject> getEvidence() {
 		return TermUtil.getPropValues(this, AnnotationOntology.EVIDENCE_REL());
+	}
+
+	public Link getPositedLink() {
+		LinkLinkedObject llo = (LinkLinkedObject) TermUtil.getPropValue(this,
+				AnnotationOntology.POSITS_REL(), LinkedObject.class, true);
+		return llo.getLink();
 	}
 
 	public LinkedObject getObject() {
@@ -112,7 +118,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Link link = lo.getLink();
 		return (LinkedObject) link.getChild();
 	}
-	
+
 	public boolean getIsNegated() {
 		String isNegatedStr = 
 			((String)TermUtil.getPropValue(this, AnnotationOntology.IS_NEGATED()));
@@ -139,7 +145,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 					Datatype.STRING.getID(), assignedBy);
 			item.addItem(additem);
 		}
-		*/
+		 */
 		return item;
 	}
 
@@ -164,7 +170,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Link newLink = (Link) link.clone();
 		newLink.setParent(object);
 		HistoryItem copyItem = new CreateLinkHistoryItem(newLink.getChild().getID(), newLink.getType().getID(), newLink.getParent()
-						.getID());
+				.getID());
 		item.addItem(delitem);
 		item.addItem(delLinkItem);
 		item.addItem(copyItem);
@@ -189,7 +195,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Link newLink = (Link) link.clone();
 		newLink.setChild(subject);
 		HistoryItem copyItem = new CreateLinkHistoryItem(newLink.getChild().getID(), newLink.getType().getID(), newLink.getParent()
-						.getID());
+				.getID());
 		item.addItem(delitem);
 		item.addItem(delLinkItem);
 		item.addItem(copyItem);
@@ -236,7 +242,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Link newLink = (Link) link.clone();
 		newLink.setType(relationship);
 		HistoryItem copyItem = new CreateLinkHistoryItem(newLink.getChild().getID(), newLink.getType().getID(), newLink.getParent()
-						.getID());
+				.getID());
 		item.addItem(delitem);
 		item.addItem(delLinkItem);
 		item.addItem(copyItem);
@@ -254,7 +260,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return new AddPropertyValueHistoryItem(getID(), AnnotationOntology
 				.SOURCE_REL().getID(), Datatype.STRING.getID(), source);
 	}
-	
+
 	public HistoryItem addSourceChangeItem(LinkedObject source) {
 		return new CreateLinkHistoryItem(this, AnnotationOntology
 				.SOURCE_REL(), source);
@@ -264,13 +270,13 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return new DeletePropertyValueHistoryItem(getID(), AnnotationOntology
 				.SOURCE_REL().getID(), Datatype.STRING.getID(), source);
 	}
-	
+
 	public HistoryItem removeSourceChangeItem(LinkedObject source) {
 		return new DeleteLinkHistoryItem(source.getID(), getID(),
 				AnnotationOntology.SOURCE_REL().getID());
 	}
-	
-	
+
+
 
 	public void setAssignedBy(String assignedBy) {
 		Instance i = new InstanceImpl(assignedBy, AnnotationOntology.AGENT());
@@ -312,7 +318,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		//addPropertyValue(AnnotationOntology.SOURCE_REL(),
 		//		new DatatypeValueImpl(Datatype.STRING, source));
 	}
-	
+
 	public void addSource(LinkedObject source) {
 		Link link = new InstancePropertyValue(this, AnnotationOntology
 				.SOURCE_REL(), source);
@@ -320,10 +326,10 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 //	public void removeSource(String source) {
-//		removePropertyValue(AnnotationOntology.SOURCE_REL(),
-//				new DatatypeValueImpl(Datatype.STRING, source));
+//	removePropertyValue(AnnotationOntology.SOURCE_REL(),
+//	new DatatypeValueImpl(Datatype.STRING, source));
 //	}
-	
+
 	public void removeSource(LinkedObject source) {
 		Link link = new InstancePropertyValue(this, AnnotationOntology
 				.SOURCE_REL(), source);
@@ -392,7 +398,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 			addParent(link);
 		}
 	}
-	
+
 	public String toString() {
 		return this.getID() + " posits: "+this.getSubject()+" ["+this.getRelationship()+"] "+this.getObject();
 	}

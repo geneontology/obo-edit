@@ -13,14 +13,14 @@ import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
-public class BasicOWLTest extends AbstractOWLTest {
+public class TransitiveOverOWLTest extends AbstractOWLTest {
 
-	protected BasicOWLTest(String name) {
+	protected TransitiveOverOWLTest(String name) {
 		super(name);
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "nucleus.obo", "bfo.obo", "camphor_catabolism.obo", "part_of_test.obo", "regulation_of_transcription_xp.obo" };
+		String[] files = {  "regulation_of_transcription_xp.obo" };
 		return Arrays.asList(files);
 	}
 	
@@ -34,9 +34,7 @@ public class BasicOWLTest extends AbstractOWLTest {
 	}
 	
 	public void testLinks() throws Exception {
-		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
-		testForLink("testA","part_of","testB"); /* asserted */
-		testForIsTransitive("part_of");
+		testForTransitiveOver("negatively_regulates","part_of");
 		
 	}
 
@@ -52,8 +50,8 @@ public class BasicOWLTest extends AbstractOWLTest {
 	}
 
 	public static void addTests(TestSuite suite) {
-		suite.addTest(new BasicOWLTest("testHasLoaded"));
-		suite.addTest(new BasicOWLTest("testLinks"));
+		suite.addTest(new TransitiveOverOWLTest("testHasLoaded"));
+		suite.addTest(new TransitiveOverOWLTest("testLinks"));
 	}
 	
 

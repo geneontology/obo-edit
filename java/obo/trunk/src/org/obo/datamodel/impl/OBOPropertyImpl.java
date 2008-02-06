@@ -27,6 +27,7 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	protected boolean transitive;
 	protected boolean reflexive;
 	protected boolean alwaysImpliesInverse;
+	protected boolean universallyQuantified;
 	
 	protected OBOProperty transitiveOver;
 
@@ -218,7 +219,19 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	}
 
 	public void setTransitiveOver(OBOProperty transitiveOver) {
-		//this.transitiveOver = transitiveOver;
+		OBORestrictionImpl link = new OBORestrictionImpl();
+		link.setChild(this);
+		link.setType(OBOProperty.TRANSITIVE_OVER);
+		link.setParent(transitiveOver);
+		addParent(link);
+	}
+
+	public boolean isUniversallyQuantified() {
+		return universallyQuantified;
+	}
+
+	public void setUniversallyQuantified(boolean universallyQuantified) {
+		this.universallyQuantified = universallyQuantified;
 	}
 	
 	

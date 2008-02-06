@@ -31,7 +31,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	protected StringBuffer tempBuffer = new StringBuffer();
 
 	protected SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"dd:MM:yyyy HH:mm");
+	"dd:MM:yyyy HH:mm");
 
 	protected static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
 
@@ -172,7 +172,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	}
 
 	protected int getNestedValue(NestedValue nv, String str, int startIndex)
-			throws OBOParseException {
+	throws OBOParseException {
 		while (startIndex < str.length()) {
 			int equalsIndex = findUnescaped(str, '=', startIndex, str.length());
 			if (equalsIndex == -1)
@@ -225,7 +225,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	}
 
 	protected BufferedReader transformAndReadXML(InputStream stream)
-			throws IOException {
+	throws IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
@@ -280,7 +280,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			if (line.length() == 0)
 				continue;
 			while (line.charAt(line.length() - 1) == '\\'
-					&& line.charAt(line.length() - 2) != '\\') {
+				&& line.charAt(line.length() - 2) != '\\') {
 				String str = reader.readLine();
 				linenum++;
 				if (str == null)
@@ -390,7 +390,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 	public boolean parseTagValue(String stanza, String line, int linenum,
 			int charoffset, String name, String value, NestedValue nv)
-			throws OBOParseException, IOException {
+	throws OBOParseException, IOException {
 		if (((OBOParser) parser).prefersRaw(name, value, nv)) {
 			return true;
 		} else if (name.equals("import")) {
@@ -507,7 +507,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 					.length());
 			String subset = value.substring(0, subIndex).trim();
 			String subsetDesc = value.substring(subIndex + 1, endDescIndex)
-					.trim();
+			.trim();
 			((OBOParser) parser).readSubsetDef(subset, subsetDesc);
 			return true;
 		} else if (name.equals("synonymtypedef")) {
@@ -517,7 +517,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			String id = value.substring(0, subIndex).trim();
 			String desc = value.substring(subIndex + 1, endDescIndex).trim();
 			String trailing = value.substring(endDescIndex + 1, value.length())
-					.trim();
+			.trim();
 			int scope = Synonym.UNKNOWN_SCOPE;
 			if (trailing.equals("EXACT"))
 				scope = Synonym.EXACT_SYNONYM;
@@ -600,8 +600,26 @@ public class OBOParseEngine extends AbstractParseEngine {
 			return true;
 		} else if (name.equals("property_value")) {
 			try {
+				/*
+				 * example: from obo-format docs
+				 * 
+				 * 	[Instance]
+				 * id: john
+				 * name: John Day-Richter
+				 * instance_of: boy
+				 * property_value: married_to heather
+				 * property_value: shoe_size "8" xsd:positiveInteger			
+				 * 
+				 * these go into propertyValSet
+				 */
 				int quoteIndex = findUnescaped(value, '"', 0, value.length());
 				if (quoteIndex == -1) {
+					/* no quotes: 
+					 * this means we have a pv of the following form:
+					 * property_value: eats id:1234
+					 * 
+					 * ie linking two instanes
+					 */
 					StringTokenizer tokenizer = new StringTokenizer(value);
 					List tokens = new Vector();
 					while (tokenizer.hasMoreTokens()) {
@@ -615,6 +633,12 @@ public class OBOParseEngine extends AbstractParseEngine {
 					((OBOParser) parser).readPropertyValue((String) tokens
 							.get(0), (String) tokens.get(1), null, false, nv);
 				} else {
+					/*  quotes: 
+					 * this means we have a pv of the following form:
+					 * property_value:  shoe_size "8" xsd:positiveInteger
+					 * 
+					 * ie linking an instance with a property value
+					 */
 					SOPair p = unescape(value, '"', quoteIndex + 1, value
 							.length(), true);
 					String propID = value.substring(0, quoteIndex).trim();
@@ -865,6 +889,15 @@ public class OBOParseEngine extends AbstractParseEngine {
 				throw new OBOParseException("Invalid value for is_transitive",
 						getCurrentPath(), line, linenum, 0);
 			return true;
+		} else if (name.equals("is_universally_quantified")) {
+			if (value.trim().equalsIgnoreCase("true"))
+				((OBOParser) parser).readIsUniversallyQuantified(true, nv);
+			else if (value.trim().equalsIgnoreCase("false"))
+				((OBOParser) parser).readIsUniversallyQuantified(false, nv);
+			else
+				throw new OBOParseException("Invalid value for is_universally_quantified",
+						getCurrentPath(), line, linenum, 0);
+			return true;
 		} else if (name.equals("consider")) {
 			((OBOParser) parser).readConsider(value.trim(), nv);
 			return true;
@@ -878,7 +911,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 	protected void parseTag(String stanza, String line, int linenum,
 			int charoffset, String name, String value, NestedValue nv)
-			throws OBOParseException, IOException {
+	throws OBOParseException, IOException {
 		value = value.trim();
 		if (stanza != null) {
 			if (!readIDForStanza && !name.equals("id")
@@ -1021,7 +1054,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 	}
 
 	protected void doReadRelationship(RelStruct relStruct, OBOParser parser)
-			throws OBOParseException {
+	throws OBOParseException {
 		if (relStruct.getType().equals("is_a")) {
 			parser.readIsa(relStruct.getID(), relStruct.getNS(), relStruct
 					.completes(), relStruct.isImplied(), relStruct.getNV());
@@ -1034,9 +1067,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 		} else
 			parser.readRelationship(relStruct.getType(), relStruct.getID(),
 					relStruct.getNec(), relStruct.getInvNec(), relStruct
-							.completes(), relStruct.isImplied(), relStruct
-							.getMinCard(), relStruct.getMaxCard(), relStruct
-							.getCard(), relStruct.getNS(), relStruct.getNV());
+					.completes(), relStruct.isImplied(), relStruct
+					.getMinCard(), relStruct.getMaxCard(), relStruct
+					.getCard(), relStruct.getNS(), relStruct.getNV());
 	}
 
 	protected RelStruct parseRelationship(String value, NestedValue nv,
@@ -1089,7 +1122,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 					ns = pv.getValue();
 					dumpEm.add(pv);
 				} else if (pv.getProperty().equalsIgnoreCase(
-						"inverse_necessary")) {
+				"inverse_necessary")) {
 					inverseNecessary = pv.getValue().equalsIgnoreCase("true");
 					dumpEm.add(pv);
 				} else if (pv.getProperty().equalsIgnoreCase("contingent")
@@ -1244,7 +1277,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 				i++;
 				c = str.charAt(i);
 				Character mapchar = (Character) escapeChars
-						.get(new Character(c));
+				.get(new Character(c));
 				if (mapchar == null)
 					throw new OBOParseException("Unrecognized escape"
 							+ " character " + c + " found.", getCurrentPath(),
@@ -1302,7 +1335,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 	public static void translateAndThrow(OBOParseException ex,
 			String wholeline, int linenum, int charoffset)
-			throws OBOParseException {
+	throws OBOParseException {
 		throw translateException(ex, wholeline, linenum, charoffset);
 	}
 

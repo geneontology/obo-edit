@@ -40,6 +40,8 @@ public class OBOFileAdapter implements OBOAdapter {
 
 	public static class OBOAdapterConfiguration extends
 			FileAdapterConfiguration {
+		
+		// WARNING: you need to set this AND basicSave=false. --CJM
 		protected boolean allowDangling = false;
 
 		protected boolean failFast = false;
@@ -204,6 +206,8 @@ public class OBOFileAdapter implements OBOAdapter {
 				cancelled = false;
 				this.ioprofile = (OBOAdapterConfiguration) configuration;
 				DefaultOBOParser parser = new DefaultOBOParser();
+				// CJM: Not sure I understand the following logic
+				// be careful - setting allowdangling is not enough
 				parser.setAllowDanglingParents(ioprofile.getAllowDangling()
 						&& !ioprofile.getBasicSave());
 				parser.setFailFast(ioprofile.getFailFast());

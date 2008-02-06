@@ -1,0 +1,8 @@
+
+[Term]
+id: test:A
+is_a: test:B {is_implied="true"}
+
+[Term]
+id: test:B
+
