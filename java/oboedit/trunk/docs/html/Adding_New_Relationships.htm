@@ -37,28 +37,6 @@ several relationships at once by using a number of source relationships. If "Use
 original type" is used with untyped source relationships (ie one or more of your 
 sources is an ontology root) the <STRONG>is_a</STRONG> relationship is used.</p>
 
-<div class="sidebar">
-<h1>Why is my new relationship not showing up in OBO-Edit?</h1>
-<hr>
-<p>
-OBO-Edit can display any relationships that are specified in an OBO file,
-but by default it only shows transitive relationships. If you are not seeing
-your new relationships, then it's likely that they are not marked as transitive in your file. You
-have two options:
-<ul>
-<li> If the relationship is transitive, add the line "is_transitive: true" in
-the [Typedef] stanza in the file, or select the relationship type in
-OBO-Edit (under "Relations", in blue), tick the "Is transitive?" box, and
-save the file.
-<li> If the relationship is not transitive, you will have to remove one of
-the default <a href="Global_Filters___Renderers.htm">Global Filters</a>.
-If it's not already open, open the Global Filter component 
-([View] -> [Show] -> [Config] -> [Global Filters]) and remove the
-link filter "Link type has Is Transitive". The relationship should become
-visible when you click "Save changes" (note that if you are using one of
-the OBO-Edit 2.0 betas, you may have to quit and restart, due to a bug).
-</div>
-
 <h2>Hotkeys</h2>
 
 <p> When dragging, you can use hotkeys to specify the "Add parent

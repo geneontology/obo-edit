@@ -6,8 +6,8 @@
 <link rel="stylesheet" type="text/css" href="../javahelp.css">
 </head>
 <body bgcolor="#ffffff">
-<h1>Adding New Terms</h1>
-<p><strong>IMPORTANT: </strong>When adding a new&nbsp;class 
+<h1>Adding New Terms and Properties</h1>
+<p><strong>IMPORTANT: </strong>When adding a new class 
 (or property, or any other item with an identifier), it is very important that 
 the id is generated correctly! See <A href="How_ID_Generation_Works.htm">How ID 
 Generation Works</A> for a discussion of how to make sure your new item will 
@@ -55,5 +55,29 @@ entered.</p>
 its parent. See <A href="Changing_Relationship_Types.htm">Changing Relationship 
 Types</A> for information on how to change this relationship after it is 
 created.</p>
+
+<div class="sidebar">
+<h2>Why is my new relationship type not showing up in OBO-Edit?</h2>
+<hr>
+<p>
+OBO-Edit can display any relationships that are specified in an OBO
+file, but by default it only shows transitive relationships. If you
+are not seeing your new relationships, then it's likely that they are
+not marked as transitive in your file. To see these relationship
+types, you have two options:
+<ul>
+<li> If the relationship is transitive, make sure that it is marked
+transitive. Select the relationship in the Ontology Editor Panel, and
+tick the "Is transitive?" box in the Text Editor. When you save the
+file, the tag "is_transitive: true" will be included in the OBO file.
+<li> If the relationship is not transitive, you will have to remove
+one of the default global filters. The filter that must be removed
+specifies "Link type has Is Transitive". See <a
+href="Global_Filters___Renderers.htm">Global Filters</a> for further
+details.  
+</ul>
+</div>
+
+
 </body>
 </html>
