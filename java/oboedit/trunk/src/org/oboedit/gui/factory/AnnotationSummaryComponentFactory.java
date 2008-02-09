@@ -18,7 +18,7 @@ public class AnnotationSummaryComponentFactory extends
 	}
 
 	public String getName() {
-		return "Annotation Summary Component";
+		return "Annotation Summary";
 	}
 
 	public FactoryCategory getCategory() {
