@@ -73,6 +73,7 @@ import org.semanticweb.owl.model.OWLObjectIntersectionOf;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLObjectPropertyExpression;
 import org.semanticweb.owl.model.OWLObjectSomeRestriction;
+import org.semanticweb.owl.model.OWLObjectUnionOf;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -354,7 +355,6 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			for (OWLIndividual owlIndividual : ontology.getReferencedIndividuals()) {
 
 				String id = getOboID(owlIndividual.getURI());
-				//System.out.println("read Individual:"+id+" " +owlIndividual);
 				Instance oboInstance = 
 					(Instance)oboFactory.createObject(id, OBOClass.OBO_INSTANCE, false);
 				session.addObject(oboInstance);
@@ -513,6 +513,28 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				}
 				link.setCompletes(true);
 				oboClass.addParent(link);
+			}
+		}
+		else if (owlDesc instanceof OWLObjectUnionOf) {
+			Set<OWLDescription> elts = ((OWLObjectUnionOf)owlDesc).getOperands();
+			for (OWLDescription d : elts) {
+				OBORestriction link = getOboLinkFromOWLDescription(d,oboClass);
+				if (link == null) {
+					String message = "Cannot convert OWLDescription: "+d+" -- in "+owlDesc;
+					if (ioprofile.allowLossy) {
+						System.err.println(message);
+						continue;
+					}
+					else
+						throw new DataAdapterException(message);				
+				}
+				if (link.getType().equals(OBOProperty.IS_A)) {
+					link.setType(OBOProperty.UNION_OF);
+					oboClass.addParent(link);
+				}
+				else {
+					fireLossyWarning("cannot deal with "+link+" in UnionOf "+owlDesc);
+				}
 			}
 		}
 		else {

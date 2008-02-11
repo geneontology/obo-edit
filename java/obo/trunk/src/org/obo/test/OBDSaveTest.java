@@ -30,7 +30,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = { "nucleus.obo", "caro.obo", "camphor_catabolism.obo" };
+		String[] files = { "nucleus.obo", "caro.obo", "camphor_catabolism.obo", "craniata.obo" };
 		return Arrays.asList(files);
 	}
 	
