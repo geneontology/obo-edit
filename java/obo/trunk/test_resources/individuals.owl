@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY test 'http://purl.org/obo/test#'>
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+]>
+
+<rdf:RDF
+    xmlns:test="&test;"
+    xmlns:rdf="&rdf;"
+    xmlns:xsd="&xsd;"
+    xmlns:owl="&owl;"
+>
+<owl:Ontology rdf:about="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/so.owl"/>
+
+<owl:Ontology rdf:about="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/so-label-map.owl"/>
+
+<owl:Ontology rdf:about="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/location_properties.owl"/>
+
+<owl:Ontology rdf:about="http://purl.org/obo/test">
+  <owl:imports rdf:resource="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/location_properties.owl"/>
+  <owl:imports rdf:resource="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/so-label-map.owl"/>
+  <owl:imports rdf:resource="file:///Users/cjm/cvs/bbop-papers/Ours/2007/SO/owlfiles/ont/so.owl"/>
+</owl:Ontology>
+
+<owl:AnnotationProperty rdf:about="&owl;imports"/>
+
+<test:Exon rdf:about="&test;x1"
+    test:has_strand="+">
+  <test:has_end rdf:datatype="&xsd;int">200</test:has_end>
+  <test:has_start rdf:datatype="&xsd;int">100</test:has_start>
+  <test:part_of rdf:resource="&test;tA"/>
+  <test:relative_to rdf:resource="&test;chr1"/>
+</test:Exon>
+
+<test:Exon rdf:about="&test;x2"
+    test:has_strand="+">
+  <test:has_end rdf:datatype="&xsd;int">400</test:has_end>
+  <test:has_start rdf:datatype="&xsd;int">300</test:has_start>
+  <test:part_of rdf:resource="&test;tA"/>
+  <test:relative_to rdf:resource="&test;chr1"/>
+</test:Exon>
+
+<test:Transcript rdf:about="&test;tA"
+    test:has_strand="+">
+  <test:has_end rdf:datatype="&xsd;int">400</test:has_end>
+  <test:has_start rdf:datatype="&xsd;int">100</test:has_start>
+  <test:part_of rdf:resource="&test;g1"/>
+  <test:relative_to rdf:resource="&test;chr1"/>
+</test:Transcript>
+
+<test:Gene rdf:about="&test;g1"
+    test:has_strand="+">
+  <test:has_end rdf:datatype="&xsd;int">400</test:has_end>
+  <test:has_start rdf:datatype="&xsd;int">100</test:has_start>
+  <test:relative_to rdf:resource="&test;chr1"/>
+</test:Gene>
+
+<test:CDS rdf:about="&test;cds1"
+    test:has_strand="+">
+  <test:has_end rdf:datatype="&xsd;int">240</test:has_end>
+  <test:has_start rdf:datatype="&xsd;int">150</test:has_start>
+  <test:part_of rdf:resource="&test;tA"/>
+  <test:relative_to rdf:resource="&test;chr1"/>
+</test:CDS>
+
+<test:Chromosome rdf:about="&test;chr1"/>
+
+<owl:AllDifferent>
+  <owl:distinctMembers rdf:parseType="Collection">
+    <rdf:Description rdf:about="&test;cds1"/>
+    <rdf:Description rdf:about="&test;g1"/>
+    <rdf:Description rdf:about="&test;tA"/>
+    <rdf:Description rdf:about="&test;x1"/>
+    <rdf:Description rdf:about="&test;x2"/>
+  </owl:distinctMembers>
+</owl:AllDifferent>
+
+</rdf:RDF>

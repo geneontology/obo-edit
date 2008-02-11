@@ -1,11 +1,8 @@
 package org.obo.owl.util;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class IDSpaceRegistry {
@@ -21,6 +18,7 @@ public class IDSpaceRegistry {
 		// defaults: these can be overridden at runtime
 		registerMapping("http://www.ifomis.org/bfo/1.1#","bfo_1_1");
 		registerMapping("http://www.ifomis.org/bfo/1.0#","bfo_1_0");
+		registerMapping("http://purl.org/biotop/dev#","biotop_dev");
 		registerMapping("http://ccdb.ucsd.edu/SAO/1.2#","sao");
 	}
 

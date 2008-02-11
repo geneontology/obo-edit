@@ -14,14 +14,14 @@ import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.OBOSession;
 import org.obo.owl.dataadapter.OWLAdapter;
 
-public class SAORoundtripOWLTest extends AbstractOWLTest {
+public class BioTopRoundtripOWLTest extends AbstractOWLTest {
 
-	protected SAORoundtripOWLTest(String name) {
+	protected BioTopRoundtripOWLTest(String name) {
 		super(name);
 	}
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "http://ccdb.ucsd.edu/SAO/1.2/SAO.owl" };
+		String[] files = {  "http://purl.org/biotop/dev" };
 		return Arrays.asList(files);
 	}
 	
@@ -49,13 +49,14 @@ public class SAORoundtripOWLTest extends AbstractOWLTest {
 	}
 	
 	public void testHasLoaded() throws IOException, DataAdapterException {
+		testForIsA("biotop_dev:AminoGroup","biotop_dev:FunctionalGroup");
 		File f = writeTempOBOFile();
 		readOBOFile(f);
 		writeTempOWLFile();
 	}
 
 	public static void addTests(TestSuite suite) {
-		suite.addTest(new SAORoundtripOWLTest("testHasLoaded"));
+		suite.addTest(new BioTopRoundtripOWLTest("testHasLoaded"));
 	}
 	
 

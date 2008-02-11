@@ -1,0 +1,121 @@
+format-version: 1.2
+
+[Term]
+id: NCBITaxon:1
+name: root
+namespace: unknown
+synonym: "all" RELATED []
+
+[Term]
+id: NCBITaxon:131567
+name: cellular organisms
+namespace: unknown
+synonym: "biota" RELATED []
+is_a: NCBITaxon:1  ! root
+
+[Term]
+id: NCBITaxon:2759
+name: Eukaryota
+namespace: unknown
+synonym: "Eucarya" RELATED []
+synonym: "Eucaryotae" RELATED []
+synonym: "Eukarya" RELATED []
+synonym: "Eukaryotae" RELATED []
+synonym: "eucaryotes" EXACT []
+synonym: "eukaryotes" EXACT []
+is_a: NCBITaxon:131567  ! cellular organisms
+property_value: has_rank NCBITaxon:superkingdom
+
+[Term]
+id: NCBITaxon:33154
+name: Fungi/Metazoa group
+namespace: unknown
+is_a: NCBITaxon:2759  ! Eukaryota
+
+[Term]
+id: NCBITaxon:33208
+name: Metazoa
+namespace: unknown
+synonym: "Animalia" RELATED []
+synonym: "animals" RELATED []
+synonym: "metazoans" EXACT []
+synonym: "multicellular animals" EXACT []
+is_a: NCBITaxon:33154  ! Fungi/Metazoa group
+property_value: has_rank NCBITaxon:kingdom
+
+[Term]
+id: NCBITaxon:33213
+name: Bilateria
+namespace: unknown
+is_a: NCBITaxon:6072  ! Eumetazoa
+
+[Term]
+id: NCBITaxon:33316
+name: Coelomata
+namespace: unknown
+is_a: NCBITaxon:33213  ! Bilateria
+
+[Term]
+id: NCBITaxon:33511
+name: Deuterostomia
+namespace: unknown
+is_a: NCBITaxon:33316  ! Coelomata
+
+[Term]
+id: NCBITaxon:6072
+name: Eumetazoa
+namespace: unknown
+is_a: NCBITaxon:33208  ! Metazoa
+
+[Term]
+id: NCBITaxon:7711
+name: Chordata
+namespace: unknown
+synonym: "chordates" RELATED []
+is_a: NCBITaxon:33511  ! Deuterostomia
+property_value: has_rank NCBITaxon:phylum
+
+[Term]
+id: NCBITaxon:89593
+name: Craniata
+namespace: unknown
+is_a: NCBITaxon:7711  ! Chordata
+property_value: has_rank NCBITaxon:subphylum
+
+[Term]
+id: NCBITaxon:kingdom
+name: kingdom
+namespace: unknown
+is_a: NCBITaxon:taxonomic_rank  ! taxonomic_rank
+
+[Term]
+id: NCBITaxon:phylum
+name: phylum
+namespace: unknown
+is_a: NCBITaxon:taxonomic_rank  ! taxonomic_rank
+
+[Term]
+id: NCBITaxon:subphylum
+name: subphylum
+namespace: unknown
+is_a: NCBITaxon:taxonomic_rank  ! taxonomic_rank
+
+[Term]
+id: NCBITaxon:superkingdom
+name: superkingdom
+namespace: unknown
+is_a: NCBITaxon:taxonomic_rank  ! taxonomic_rank
+
+[Term]
+id: NCBITaxon:taxonomic_rank
+name: taxonomic_rank
+namespace: unknown
+def: "A level of depth within a species taxonomic tree" []
+comment: This is an abstract class for use with the NCBI taxonomy to name the depth of the node within the tree. The link between the node term and the rank is only visible if you are using an obo 1.3 aware browser/editor; otherwise this can be ignored
+
+[Typedef]
+id: has_rank
+name: has_rank
+def: "A metadata relation between a class and its taxonomic rank (eg species, family)" []
+comment: This is an abstract class for use with the NCBI taxonomy to name the depth of the node within the tree. The link between the node term and the rank is only visible if you are using an obo 1.3 aware browser/editor; otherwise this can be ignored
+

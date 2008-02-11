@@ -171,23 +171,34 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	
 	protected Annotation parseAnnotation(String[] colvals) {
 		Annotation ann = new AnnotationImpl(IDUtil.fetchTemporaryID(session));
-		String subjectID = colvals[0]+":"+colvals[1];
+		String dbspace = colvals[0];
+		String localID = colvals[1];
+		String name = colvals[2];
+		String subjectID = dbspace+":"+localID;
+		String qual = colvals[3];
 		String objectID = colvals[4];
+		String refVal = colvals[5];
 		String evCode = colvals[6];
-        
+		String ref = colvals[7];
+		String aspect = colvals[8];
+		String fullName = colvals[9];
+		String synVal = colvals[10];
+		String type = colvals[11]; 
 		String taxID = colvals[12]; // TODO - multi-species
-
+		String date = colvals[13];
+		String assignedBy = colvals[14];
+		
 		session.addObject(ann);
 		System.out.println("new ann:"+ann);
 		
-		parseReferenceField(ann, colvals[5]);
+		parseReferenceField(ann, refVal);
 	
 		System.out.println("  parsing ev");
-        parseEvidence(ann,evCode,colvals[7]);
+        parseEvidence(ann,evCode,ref);
         System.out.println("  parsed ev");
-        Namespace subjectNS = session.getNamespace(colvals[0]);
+        Namespace subjectNS = session.getNamespace(dbspace);
         if (subjectNS == null)
-        	subjectNS = session.getObjectFactory().createNamespace(colvals[0], "");
+        	subjectNS = session.getObjectFactory().createNamespace(dbspace, "");
 
         // give the annotation the same namespace as the source
         ann.setNamespace(subjectNS);
@@ -204,9 +215,9 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		ann.setSubject(subj);
 		if (subjectID != lastSubjectID) {
 			lastSubjectID = subjectID;
-			subj.setName(colvals[2]);
-			parseSynonymField(ann,colvals[9],subj);
-			parseSynonymField(ann,colvals[10],subj);
+			subj.setName(name);
+			parseSynonymField(ann,fullName,subj);
+			parseSynonymField(ann,synVal,subj);
 						
 		}
 
@@ -220,16 +231,16 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		}
 
 		ann.setObject(obj);
-		parseAspect(ann,colvals[8]);
+		parseAspect(ann,aspect);
 		if (objectID != lastObjectID) {
 			lastObjectID = objectID;
 			
 		}
-		parseQualifierField(ann,colvals[3]);
-		// TODO parseTypeField(ann,colvals[11]);
-		parseTaxonField(ann,colvals[12]);
-		parseDateField(ann,colvals[13]);
-		parseAssignedByField(ann,colvals[14]);
+		parseQualifierField(ann,qual);
+		// TODO parseTypeField(ann,type);
+		parseTaxonField(ann,taxID);
+		parseDateField(ann,date);
+		parseAssignedByField(ann,assignedBy);
 
 		System.out.println("  done ann");
 		//items.add(item);
