@@ -1,6 +1,6 @@
 #! /bin/sh
 # Set the classname of the Java class to execute
-CLASSNAME=org.obd.ws.AmigoRestApplication
+CLASSNAME=org.geneontology.web.AmigoRestApplication
 
 # Give a space-separated list of classpath items RELATIVE TO THE CURRENT SCRIPT
 # These will be resolved into absolute pathnames
@@ -96,6 +96,8 @@ done
 for ARG in "$CLASSPATH_RELATIVE"
 do
 	DEREFERENCED_CLASSPATH=`ls -1 -L $PATH_TO_ME/$ARG`
+	echo $DEREFERENCED_CLASSPATH
+        
 	for CP_ENTRY in $DEREFERENCED_CLASSPATH
 	do
 		if [ -z "$CLASSPATH" ]
@@ -135,5 +137,6 @@ then
 fi
 
 echo CMDARGS=$CMDARGS
+echo CP=$CLASSPATH
 
 sh -c "$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"

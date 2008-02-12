@@ -13,7 +13,7 @@
 	<property name="dest.dir.lib" value="${dest.dir}/lib" />
 	
 	<property name="projectname" value="amiso" />
-	<property name="jarfile" location="${projectname}.jar" />
+	<property name="jarfile" location="${librarydir}/runlibs/${projectname}.jar" />
 	<property name="main_jar_manifest" location="jar_manifest" />
 	<property name="outputdir" value="classes" />
 	<property name="sourcedir" value="src" />
@@ -121,5 +121,6 @@
 		</jar>
 	</target>
  
+
 
 </project>
