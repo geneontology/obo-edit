@@ -1,0 +1,125 @@
+<!--
+    -->
+<project name="amiso" basedir="." default="jar">
+
+	<property name="runtimedir_name" value="runtime" />
+	<property name="runtimedir" location="${runtimedir_name}" />
+	<property name="librarydir" location="lib" />
+
+	<property name="dest.dir" value="build" />
+
+	<property name="dest.dir.classes" value="${dest.dir}/classes" />
+
+	<property name="dest.dir.lib" value="${dest.dir}/lib" />
+	
+	<property name="projectname" value="amiso" />
+	<property name="jarfile" location="${projectname}.jar" />
+	<property name="main_jar_manifest" location="jar_manifest" />
+	<property name="outputdir" value="classes" />
+	<property name="sourcedir" value="src" />
+	<property name="apidoc_dest" location="docs" />
+	<property name="librarydir" location="lib" />
+	<property name="releasenotes" location="CHANGES" />
+	<property name="tagprefix" value="${projectname}-" />
+
+
+ 
+    <property name="build.dir" value="build"/>
+
+	<!-- dependency information -->
+	<property name="bbop_dest" location="../BBOP" />
+	<property name="obo_dest" location="../OBO" />
+	<property name="obdapi_dest" location="../OBDAPI" />
+
+	<fileset dir="${librarydir}/runlibs" id="library_jars">
+		<include name="*.jar" />
+	</fileset>
+	<target name="buildbbop" if="bbop_dest">
+		<ant dir="${bbop_dest}" target="jar" inheritAll="false" />
+		<copy file="${bbop_dest}/bbop.jar" todir="${librarydir}/runlibs" />
+	</target>
+	<target name="buildobo" if="obo_dest">
+		<ant dir="${obo_dest}" target="jar" inheritAll="false" />
+		<copy file="${obo_dest}/obo.jar" todir="${librarydir}/runlibs" />
+	</target>
+	<target name="buildobdapi" if="obdapi_dest">
+		<ant dir="${obdapi_dest}" target="jar" inheritAll="false" />
+		<copy file="${obdapi_dest}/obdapi.jar" todir="${librarydir}/runlibs" />
+	</target>
+	<target name="library_jars" depends="buildbbop, buildobo, buildobdapi">
+		<mkdir dir="${runtimedir}" />
+		<sync todir="${runtimedir}">
+			<fileset refid="library_jars" />
+		</sync>
+	</target>
+
+	<path id="classpath">
+		<fileset refid="library_jars" />
+		<fileset dir="${librarydir}/runlibs">
+        		<include name="*.jar" />
+		</fileset>
+		<fileset dir="${librarydir}/buildlibs">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	
+  
+	<target name="prepare">
+
+		<mkdir dir="${dest.dir}" />
+
+		<mkdir dir="${dest.dir.classes}" />
+
+		<mkdir dir="${dest.dir.lib}" />
+
+		<mkdir dir="${dest.dir.classes}/META-INF" />
+
+	</target>
+	
+  
+
+
+	<fileset dir="${sourcedir}" id="resource_files">
+		<include name="**/resources/**" />
+	</fileset>
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
+	
+
+	<target name="resources">
+		<copy todir="${outputdir}">
+			<fileset refid="resource_files" />
+		</copy>
+	</target>
+
+	<target name="classes" depends="buildbbop, resources">
+		<mkdir dir="${outputdir}" />
+		<javac srcdir="${sourcedir}" destdir="${outputdir}" debug="true">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+
+	</target>
+
+	<target name="checkjar">
+		<condition property="main_jar_current">
+			<and>
+				<available file="${jarfile}" />
+				<available file="${main_jar_manifest}" />
+				<uptodate targetfile="${jarfile}">
+					<srcfiles refid="main_jar_contents" />
+				</uptodate>
+				<uptodate targetfile="${jarfile}" srcfile="${main_jar_manifest}" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="jar" depends="classes, checkjar" unless="main_jar_current" description="Generate jar file">
+		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
+			<fileset refid="main_jar_contents" />
+		</jar>
+	</target>
+ 
+
+</project>
