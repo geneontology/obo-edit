@@ -226,7 +226,9 @@ public class GUIUtil {
 			if (f.size() == 0)
 				continue;
 			for (RenderedFilter rf : f) {
-				rf.getFilter().setReasoner(SessionManager.getManager().getReasoner());
+			    if (rf != null) {
+				rf.getFilter().setReasoner(
+				    SessionManager.getManager().getReasoner());
 				if (rf.getFilter().satisfies(o)) {
 					if (out == null)
 						out = rf.getSpec();
@@ -234,6 +236,7 @@ public class GUIUtil {
 						out = out.merge(fr, rf.getSpec(), o);
 					}
 				}
+			    }
 			}
 		}
 		return out;
