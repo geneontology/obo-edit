@@ -6,7 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OBDAPI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OBO"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OBO-Edit2"/>
-	<classpathentry kind="lib" path="lib/buildlibs/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/buildlibs/org.restlet.jar" sourcepath="/Users/cjm/src/restlet-1.0.7/src"/>
 	<classpathentry kind="lib" path="lib/buildlibs/commons-lang-2.3.jar"/>
 	<classpathentry kind="lib" path="lib/buildlibs/json.jar"/>
 	<classpathentry kind="output" path="classes"/>

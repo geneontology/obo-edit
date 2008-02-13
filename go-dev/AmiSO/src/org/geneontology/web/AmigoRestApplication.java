@@ -18,6 +18,7 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 
 import org.geneontology.web.AmigoHomeResource;
 import org.geneontology.web.NodeDetailResource;
@@ -32,6 +33,8 @@ public class AmigoRestApplication extends OBDRestApplication {
 		// Create a component
 		Component component = new Component();
 		component.getClients().add(Protocol.FILE);
+		component.getClients().add(Protocol.JAR);
+		component.getClients().add(Protocol.CLAP);
 
 		OBDRestApplication application = new AmigoRestApplication(
 				component.getContext());
@@ -78,18 +81,31 @@ public class AmigoRestApplication extends OBDRestApplication {
     	router.attach("/usecases/{usecase}.html", PageResource.class);
 
     	// TODO: use PageResource
-    	URL url = AmigoRestApplication.class.getResource("/org/geneontology/web/pages");
-    	String base = url.toString();
-      	Directory cssDirectory = new Directory(getContext(), 
-    			new LocalReference(base+"/css/"));
+    	String base = "/org/geneontology/web/pages";
+    	URL url = AmigoRestApplication.class.getResource(base);
+    	System.out.println("url="+url);
+    	URL urlCSS = AmigoRestApplication.class.getResource(base+"/css/");
+    	String f = url.toString();
+    	//f = f.replace("jar:file:", "jar:");
+    	Reference ref = new Reference(f);
+     	//Directory cssDirectory = new Directory(getContext(), 
+    	//		new LocalReference(AmigoRestApplication.class.getResource(urlCSS.getFile())));
+    	Directory cssDirectory = 
+    		new Directory(getContext(), 
+    				LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
+    						"/org/geneontology/web/pages/css/"));
+       		//		new LocalReference(f+"/css/"));
+			//new LocalReference(urlCSS.toString()));
+			    	//Directory cssDirectory = new Directory(getContext(), urlCSS.getFile());
+       	System.out.println("die="+cssDirectory);
     	router.attach("/css/", cssDirectory);
     	
     	Directory imagesDirectory = new Directory(getContext(), 
-    			new LocalReference(base+"/images/"));
+    			new LocalReference(f+"/images/"));
     	router.attach("/images/", imagesDirectory);
     	
     	Directory jsDirectory = new Directory(getContext(), 
-    			new LocalReference(base+"/js/"));
+    			new LocalReference(f+"/js/"));
     	router.attach("/js/", jsDirectory);
 
 
