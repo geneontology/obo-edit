@@ -25,10 +25,10 @@ import org.geneontology.web.NodeDetailResource;
 
 public class AmigoRestApplication extends OBDRestApplication {
 
-    public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		startServer(args);
-    }
-    
+	}
+
 	public static void startServer(String[] args) throws Exception {
 		// Create a component
 		Component component = new Component();
@@ -38,7 +38,7 @@ public class AmigoRestApplication extends OBDRestApplication {
 
 		OBDRestApplication application = new AmigoRestApplication(
 				component.getContext());
-		
+
 		Config config = parseMainArguments(args);
 		component.getServers().add(Protocol.HTTP, config.getPort());
 
@@ -49,104 +49,93 @@ public class AmigoRestApplication extends OBDRestApplication {
 
 		component.start();
 	}
-	
-    public AmigoRestApplication() {
-        super();
-    }
 
-    public AmigoRestApplication(Context context) {
-        super(context);
-    }
+	public AmigoRestApplication() {
+		super();
+	}
 
-    @Override
-    public Restlet createRoot() {
-    	Router router = new Router(getContext());
+	public AmigoRestApplication(Context context) {
+		super(context);
+	}
 
-      	router.attach("/{format}/entity/{id}", NodeDetailResource.class);
+	@Override
+	public Restlet createRoot() {
+		Router router = new Router(getContext());
 
-      	
-    	// Add a route for the top-level resource
-
-    	router.attach("/", AmigoHomeResource.class).
-    	getTemplate().setMatchingMode(org.restlet.util.Template.MODE_EQUALS);
-    	router.attach("", AmigoHomeResource.class);
-    	router.attach("/help", HomeResource.class);
-    	router.attach("/help/", HomeResource.class);
-    	router.attach("/help/{id}", HomeResource.class);
-
-    	router.attach("/{format}/help/", HomeResource.class);
-
-    	router.attach("/{format}/metadata/", ShardMetadataResource.class);
-    	router.attach("/pages/{page}.html", PageResource.class);
-    	router.attach("/usecases/{usecase}.html", PageResource.class);
-
-    	// TODO: use PageResource
-    	String base = "/org/geneontology/web/pages";
-    	URL url = AmigoRestApplication.class.getResource(base);
-    	System.out.println("url="+url);
-    	URL urlCSS = AmigoRestApplication.class.getResource(base+"/css/");
-    	String f = url.toString();
-    	//f = f.replace("jar:file:", "jar:");
-    	Reference ref = new Reference(f);
-     	//Directory cssDirectory = new Directory(getContext(), 
-    	//		new LocalReference(AmigoRestApplication.class.getResource(urlCSS.getFile())));
-    	Directory cssDirectory = 
-    		new Directory(getContext(), 
-    				LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
-    						"/org/geneontology/web/pages/css/"));
-       		//		new LocalReference(f+"/css/"));
-			//new LocalReference(urlCSS.toString()));
-			    	//Directory cssDirectory = new Directory(getContext(), urlCSS.getFile());
-       	System.out.println("die="+cssDirectory);
-    	router.attach("/css/", cssDirectory);
-    	
-    	Directory imagesDirectory = new Directory(getContext(), 
-    			new LocalReference(f+"/images/"));
-    	router.attach("/images/", imagesDirectory);
-    	
-    	Directory jsDirectory = new Directory(getContext(), 
-    			new LocalReference(f+"/js/"));
-    	router.attach("/js/", jsDirectory);
+		router.attach("/{format}/entity/{id}", NodeDetailResource.class);
 
 
-    	// Add a route for node resources
-    	router.attach("/{format}/nodes/{id}", NodeResource.class);
+		// Add a route for the top-level resource
 
-    	// Add routes for resources accessed via a node
-    	// should it be possible to append all statements URLs with /graph?
-    	router.attach("/{format}/nodes/{id}/statements", StatementsResource.class);
-    	router.attach("/{format}/nodes/{id}/statements/{aspect}", StatementsResource.class);
-    	// is this a politically correct way of doing a filter in REST?
-    	router.attach("/{format}/nodes/{id}/statements/{aspect}/{relation}", StatementsResource.class);
-    	// class-expression composite description
-    	// (here we use the term "description" in the description logic sense)
-    	router.attach("/{format}/nodes/{id}/description", DescriptionResource.class);
+		router.attach("/", AmigoHomeResource.class).
+		getTemplate().setMatchingMode(org.restlet.util.Template.MODE_EQUALS);
+		router.attach("", AmigoHomeResource.class);
+		router.attach("/help", HomeResource.class);
+		router.attach("/help/", HomeResource.class);
+		router.attach("/help/{id}", HomeResource.class);
 
-    	router.attach("/{format}/nodes/{id}/blast", ScoredNodesResource.class);
+		router.attach("/{format}/help/", HomeResource.class);
 
-    	// Add a route for graph-by-node resources
-    	router.attach("/{format}/nodes/{id}/graph", GraphResource.class);
-    	router.attach("/{format}/nodes/{id}/graph/{aspect}", GraphResource.class);
+		router.attach("/{format}/metadata/", ShardMetadataResource.class);
+		router.attach("/pages/{page}.html", PageResource.class);
+		router.attach("/usecases/{usecase}.html", PageResource.class);
 
-    	// Add a route for source node resources
-    	router.attach("/{format}/sources", SourcesResource.class);
-    	router.attach("/{format}/sources/{id}", SourceResource.class);
-    	router.attach("/{format}/sources/{id}/nodes", SourceResource.class);
-    	router.attach("/{format}/sources/{id}/statements", SourceResource.class);
-    	router.attach("/{format}/sources/{id}/graph", SourceResource.class);
-    	router.attach("/{format}/sources/{id}/annotations", SourceResource.class);
+		// TODO: use PageResource
+		String base = "/org/geneontology/web/pages";
+		Directory cssDirectory = 
+			new Directory(getContext(), 
+					LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
+							base+"/css/"));
+		router.attach("/css/", cssDirectory);
 
-    	// Add a route for node resources
-    	router.attach("/{format}/search/{operator}/{term}", NodesBySearchResource.class);
-    	router.attach("/{format}/search/{operator}/{term}/statements", StatementsBySearchResource.class);
-    	router.attach("/{format}/search/{operator}/{term}/statements/{aspect}", StatementsBySearchResource.class);
+		Directory imagesDirectory = new Directory(getContext(), 
+				LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
+						base+"/images/"));
+		router.attach("/images/", imagesDirectory);
 
-      	router.attach("/{format}/hset/{id}", NestedAnnotationResource.class);
+		Directory jsDirectory = new Directory(getContext(), 
+				LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
+						base+"/js/"));
+		router.attach("/js/", jsDirectory);
 
- 
+		// Add a route for node resources
+		router.attach("/{format}/nodes/{id}", NodeResource.class);
 
-    	return router;
-    }
+		// Add routes for resources accessed via a node
+		// should it be possible to append all statements URLs with /graph?
+		router.attach("/{format}/nodes/{id}/statements", StatementsResource.class);
+		router.attach("/{format}/nodes/{id}/statements/{aspect}", StatementsResource.class);
+		// is this a politically correct way of doing a filter in REST?
+		router.attach("/{format}/nodes/{id}/statements/{aspect}/{relation}", StatementsResource.class);
+		// class-expression composite description
+		// (here we use the term "description" in the description logic sense)
+		router.attach("/{format}/nodes/{id}/description", DescriptionResource.class);
+
+		router.attach("/{format}/nodes/{id}/blast", ScoredNodesResource.class);
+
+		// Add a route for graph-by-node resources
+		router.attach("/{format}/nodes/{id}/graph", GraphResource.class);
+		router.attach("/{format}/nodes/{id}/graph/{aspect}", GraphResource.class);
+
+		// Add a route for source node resources
+		router.attach("/{format}/sources", SourcesResource.class);
+		router.attach("/{format}/sources/{id}", SourceResource.class);
+		router.attach("/{format}/sources/{id}/nodes", SourceResource.class);
+		router.attach("/{format}/sources/{id}/statements", SourceResource.class);
+		router.attach("/{format}/sources/{id}/graph", SourceResource.class);
+		router.attach("/{format}/sources/{id}/annotations", SourceResource.class);
+
+		// Add a route for node resources
+		router.attach("/{format}/search/{operator}/{term}", NodesBySearchResource.class);
+		router.attach("/{format}/search/{operator}/{term}/statements", StatementsBySearchResource.class);
+		router.attach("/{format}/search/{operator}/{term}/statements/{aspect}", StatementsBySearchResource.class);
+
+		router.attach("/{format}/hset/{id}", NestedAnnotationResource.class);
+
+
+
+		return router;
+	}
 
 
 
