@@ -82,6 +82,7 @@ public class AmigoRestApplication extends OBDRestApplication {
 
 		// TODO: use PageResource
 		String base = "/org/geneontology/web/pages";
+		
 		Directory cssDirectory = 
 			new Directory(getContext(), 
 					LocalReference.createClapReference(LocalReference.CLAP_CLASS, 
