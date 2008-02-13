@@ -44,7 +44,7 @@
 	</target>
 	<target name="buildobdapi" if="obdapi_dest">
 		<ant dir="${obdapi_dest}" target="jar" inheritAll="false" />
-		<copy file="${obdapi_dest}/obdapi.jar" todir="${librarydir}/runlibs" />
+		<copy file="${obdapi_dest}/lib/runlibs/obdapi.jar" todir="${librarydir}/runlibs" />
 	</target>
 	<target name="library_jars" depends="buildbbop, buildobo, buildobdapi">
 		<mkdir dir="${runtimedir}" />
