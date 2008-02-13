@@ -1,5 +1,6 @@
 package org.geneontology.web;
 
+import java.net.URL;
 import java.sql.SQLException;
 
 import org.obd.query.Shard;
@@ -18,6 +19,7 @@ import org.restlet.Router;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 
+import org.geneontology.web.AmigoHomeResource;
 import org.geneontology.web.NodeDetailResource;
 
 public class AmigoRestApplication extends OBDRestApplication {
@@ -62,9 +64,9 @@ public class AmigoRestApplication extends OBDRestApplication {
       	
     	// Add a route for the top-level resource
 
-    	router.attach("/", HomeResource.class).
+    	router.attach("/", AmigoHomeResource.class).
     	getTemplate().setMatchingMode(org.restlet.util.Template.MODE_EQUALS);
-    	router.attach("", HomeResource.class);
+    	router.attach("", AmigoHomeResource.class);
     	router.attach("/help", HomeResource.class);
     	router.attach("/help/", HomeResource.class);
     	router.attach("/help/{id}", HomeResource.class);
@@ -76,7 +78,8 @@ public class AmigoRestApplication extends OBDRestApplication {
     	router.attach("/usecases/{usecase}.html", PageResource.class);
 
     	// TODO: use PageResource
-    	String base = "file:///users/cjm/Eclipse/workspace/OBDAPI/src/org/obd/ws/pages";
+    	URL url = AmigoRestApplication.class.getResource("/org/geneontology/web/pages");
+    	String base = url.toString();
       	Directory cssDirectory = new Directory(getContext(), 
     			new LocalReference(base+"/css/"));
     	router.attach("/css/", cssDirectory);
@@ -88,7 +91,6 @@ public class AmigoRestApplication extends OBDRestApplication {
     	Directory jsDirectory = new Directory(getContext(), 
     			new LocalReference(base+"/js/"));
     	router.attach("/js/", jsDirectory);
-
 
 
     	// Add a route for node resources
