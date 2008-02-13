@@ -1,0 +1,5 @@
+com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true
+java.lang.Boolean, true
+java.lang.Integer, true
+java.lang.String, true
+[Ljava.lang.String;, true
