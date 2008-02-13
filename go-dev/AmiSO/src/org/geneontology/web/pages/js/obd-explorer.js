@@ -106,8 +106,8 @@ function tableRow(node) {
 function nodeHref(id) {
   //href = new XML('<a href="#" onClick="updateDetailDiv( '+id+'} )">{id}</a>');
   href = <a>{id}</a>;
-  href.@href = "#";
-  href.@onClick = "updateDetailDiv('"+id+"')";
+  href.@href = "/view/entity/"+id;
+  //href.@onClick = "updateDetailDiv('"+id+"')";
   //href = <a href="#" onClick="updateDetailDiv(&apos;{id}&apos;)">{id}</a>;
   
   return href;

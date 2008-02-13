@@ -1,6 +1,11 @@
 <#include "PageMacros.ftl"> 
 
 <@page title="Detail for: ${focusId}">
+<h1>
+<#if graph.getNode(focusId)?exists>
+${graph.getNode(focusId).getLabel()!""}
+</#if>
+</h1>
 
 <#macro nodePageLink id>
 <span class="identifier">
@@ -15,14 +20,6 @@ ${graph.getNode(id).getLabel()!""}
 
 <@section title="Class details">
 <nodePageLink id=${focusId}/>
-
-<#macro download id format>
-<span class="format">
-<a href="/${format}/entity/${id}">
-${format}
-</a>
-</span>
-</#macro>
 
 <div class="synonyms">
 <#list termview.getSynonymStatements(focusId) as statement>
@@ -181,14 +178,9 @@ Differentium:
  </table>
 </@section>
 
+
 <@section title="Export">
-[
-<@download id="${focusId}" format="obo"/>
-|
-<@download id="${focusId}" format="owl"/>
-|
-<@download id="${focusId}" format="obdxml"/>
-]
+<@downloadLinks id=focusId/>
 </@section>
 
 </@page>

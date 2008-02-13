@@ -5,6 +5,66 @@
   </tr></td></table>
 </#macro>
 
+<#macro searchForm>
+   <div class="search">
+     <form id="search_form">
+        <input id="search_term" name="search_term"/>
+      <input name="button"
+            type="button"
+            onclick="nodeSearch()"
+            value="Full Results" />
+     </form>
+</#macro>
+
+<#macro javascriptTags>
+ <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/external/Prototype/prototype.js">
+  </script>
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/amigo/store.js">
+  </script>
+
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/bbop/protocontrol.js">
+  </script>
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/bbop/timer.js">
+  </script>
+
+ <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/bbop/progress/tag.js">
+  </script>
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/bbop/shadowsortfunctions.js">
+  </script>
+
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/bbop/sortabletable.js">
+  </script>
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/obd/model.js">
+  </script>
+
+  <script type="text/javascript"
+          src="http://toy.lbl.gov:9012/amigo2/obd/handle.js">
+  </script>
+  
+    <script type="text/javascript"
+          src="/js/ajax.js">
+  </script>
+  
+
+  <script type="text/javascript"
+          src="/js/obd-explorer.js">
+  </script>
+</#macro>
+
 <#macro hrefNode id format="html" label="${id}">
 <a href="/${format}/nodes/${id}">${label}</a>
 </#macro>
@@ -32,6 +92,27 @@
 </div>
 </#macro>
 
+<#macro download id format>
+<span class="format">
+<a href="/${format}/entity/${id}">
+${format}
+</a>
+</span>
+</#macro>
+
+
+<#macro downloadLinks id>
+[
+<@download id="${id}" format="obo"/>
+|
+<@download id="${id}" format="owl"/>
+|
+<@download id="${id}" format="obdxml"/>
+|
+<@download id="${id}" format="json"/>
+]
+</#macro>
+
 <#macro page title="OBD">
  <html>
 <head>
@@ -40,6 +121,7 @@
 <meta name="description"
       content="OBD: A Database store of biomedical annotations" />
 
+<@javascriptTags/>
 <link href="/css/main.css"
       media="all"
       rel="Stylesheet"
@@ -86,11 +168,14 @@
  class="image" />
   </a>
   </div>
+  <@searchForm/>
   <h1>
     ${title}
   </h1>
   <div class="content">
-   <#nested>
+    <div id="replace_me">
+     <#nested>
+    </div>
   </div>
  </body>
 </html>
