@@ -1,0 +1,68 @@
+/*
+ * Menu based on the incredible suckerfish:
+ * http://www.htmldog.com/articles/suckerfish/
+ */
+
+#menu ul {
+    width: 100%;
+    background: #033c63 url(../images/nav_bg.gif) repeat-x 0px 0px; 
+    color: #ffffff;
+    float: left;
+    list-style: none;
+    padding: 0; /* Remove any previous setting */
+    padding-top: .33em;
+    padding-bottom: .33em;
+    margin: 0 0 0 0; /* Remove any previous setting */
+    /*border-width: 1px 0;*/
+    /*line-height: 1;*/
+    /*font-weight: bold;*/
+    /*border: solid #eda;*/
+    /*margin: 0 0 1em 0;*/
+}
+
+#menu a {
+    display: block;
+    width: 10em;
+    w\idth: 6em; /* IE 6 box hack */
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.25em 2em;
+}
+
+#menu li {
+    float: left;
+    padding: 0;
+    width: 10em;
+}
+
+#menu li ul {
+    background: #033c63; /* Remove the background image from sub-menu */
+    position: absolute;
+    left: -999em;
+    height: auto;
+    width: 14.4em;
+    w\idth: 13.9em; /* IE 6 box hack */
+    /*font-weight: normal;*/
+    /*border-width: 0.25em;*/
+    margin: 0;
+}
+
+#menu li li {
+    padding-right: .9em;
+    width: 13em
+}
+
+#menu li ul a {
+    width: 13em;
+    w\idth: 9em; /* IE 6 box hack */
+}
+
+#menu li:hover ul, 
+#menu li.pseudohover ul {
+    left: auto;
+}
+
+#menu li:hover, 
+#menu li.pseudohover {
+    background: #1b5c92;
+}
