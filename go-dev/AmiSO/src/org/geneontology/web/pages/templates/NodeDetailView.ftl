@@ -18,6 +18,47 @@ ${graph.getNode(id).getLabel()!""}
 </#if>
 </#macro>
 
+<#macro statementRow statement>
+ <tr>
+   <td class="node">
+    <#if statement.getNodeId() != focusId>  
+    <@nodePageLink id="${statement.getNodeId()}"/>
+    </#if>
+   </td>
+   <td class="relation">
+    <@nodePageLink id="${statement.getRelationId()}"/>
+   </td>
+  <td >
+    <#if statement.getTargetId()?exists>
+     <#if statement.getTargetId() != focusId>  
+      <@nodePageLink id="${statement.getTargetId()}"/>
+     </#if>
+   </#if>
+   </td>
+   <td class="node">
+    <#if statement.isInferred()>
+     [implied]
+    </#if>
+   </td>
+   <td class="source">
+   <#if statement.getSourceId()?exists>
+    <@nodePageLink id="${statement.getSourceId()}"/>
+   </#if>
+   </td>
+   <td class="provenance">
+    <#list statement.getSubStatements() as ss>
+     <span class="tag">
+      <@nodePageLink id="${ss.getRelationId()}"/>
+     <span class="tag">
+     </span>
+      <@nodePageLink id="${ss.getTargetId()}"/>
+      <@nodePageLink id="${ss.getValue()}"/>
+     </span>
+    </#list>
+   </td>
+  </tr>
+</#macro>
+
 <@section title="Class details">
 <nodePageLink id=${focusId}/>
 
@@ -116,31 +157,10 @@ Differentium:
  <@section title="Links from this class">
  
  <table>
-  <#list graph.getAllLinkStatementsForNode(focusId) as statement>
+  <#list graph.getAllLinkStatementsForNode(focusId) as s>
   <#-- only show plain links: not links that for N+S conditions -->
-  <#if (!statement.isIntersectionSemantics() && !statement.isUnionSemantics())>
-  <tr>
-   <td class="node">
-    <#if statement.getNodeId() != focusId>  
-    <@nodePageLink id="${statement.getNodeId()}"/>
-    </#if>
-   </td>
-   <td class="relation">
-    <@nodePageLink id="${statement.getRelationId()}"/>
-   </td>
-  <td >
-    <#if statement.getTargetId()?exists>
-     <#if statement.getTargetId() != focusId>  
-      <@nodePageLink id="${statement.getTargetId()}"/>
-     </#if>
-   </#if>
-   </td>
-   <td class="node">
-    <#if statement.isInferred()>
-     [implied]
-    </#if>
-   </td>
-  </tr>
+  <#if (!s.isIntersectionSemantics() && !s.isUnionSemantics())>
+    <@statementRow statement=s/>
   </#if>
  </#list>
  </table>
@@ -148,32 +168,11 @@ Differentium:
  <@section title="Links to this class">
  
  <table>
-  <#list graph.getAllLinkStatementsForTarget(focusId) as statement>
+  <#list graph.getAllLinkStatementsForTarget(focusId) as s>
   <#-- only show plain links: not links that for N+S conditions -->
-  <#if !statement.isIntersectionSemantics() && !statement.isUnionSemantics()>
-  <tr>
-   <td class="node">
-    <#if statement.getNodeId() != focusId>  
-    <@nodePageLink id="${statement.getNodeId()}"/>
-    </#if>
-   </td>
-   <td class="relation">
-    <@nodePageLink id="${statement.getRelationId()}"/>
-   </td>
-  <td >
-    <#if statement.getTargetId()?exists>
-     <#if statement.getTargetId() != focusId>  
-      <@nodePageLink id="${statement.getTargetId()}"/>
-     </#if>
-   </#if>
-   </td>
-   <td class="node">
-     <#if statement.isInferred()>
-     [implied]
-    </#if>
-   </td>
-  </tr>
-    </#if>
+  <#if !s.isIntersectionSemantics() && !s.isUnionSemantics()>
+   <@statementRow statement=s/>
+  </#if>
  </#list>
  </table>
 </@section>
