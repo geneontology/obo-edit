@@ -814,7 +814,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	protected void setResults(List results) {
 		lastHits = results;
 		((AutocompleteListModel) getModel()).update();
-		if (lastHits.size() == 0)
+		if (lastHits == null || lastHits.size() == 0)
 			super.setSelectedItem(null);
 		else {
 			Object val = lastHits.get(0).getVal();

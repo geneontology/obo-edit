@@ -58,8 +58,8 @@ public abstract class AbstractAutocompleteModel<DISPLAY_TYPE, OUTPUT_TYPE>
 					String s = AbstractAutocompleteModel.this.toString(obj);
 					Map<String, int[]> hits = StringUtil.getMatchMap(s, tokens,
 							true, isIgnoreCase());
-					if (obj.toString().contains("O"))
-						System.err.println("hits = "+hits);
+//					if (obj.toString().contains("O"))
+//						System.err.println("hits = "+hits);
 					if (cancelled)
 						return;
 					if (hits.size() > 0) {

@@ -13,7 +13,7 @@ public interface WhereClause extends RelationalTerm {
 
 	public void addEqualityConstraint(String col, Object val);
 	
-	public void addOperatorConstraint(String op, String arg1, String arg2);
+	public void addOperatorConstraint(String op, String arg1, Object arg2);
 	
 	public void addConstraint(String constr);
 
