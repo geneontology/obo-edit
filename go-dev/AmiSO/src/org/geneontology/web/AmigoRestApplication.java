@@ -59,6 +59,11 @@ public class AmigoRestApplication extends OBDRestApplication {
 	}
 
 	@Override
+	public String getPagesDirectoryRelativePath() {
+		return "/org/geneontology/web/pages";
+	}
+	
+	@Override
 	public Restlet createRoot() {
 		Router router = new Router(getContext());
 
@@ -80,7 +85,6 @@ public class AmigoRestApplication extends OBDRestApplication {
 		router.attach("/pages/{page}.html", PageResource.class);
 		router.attach("/usecases/{usecase}.html", PageResource.class);
 
-		// TODO: use PageResource
 		String base = "/org/geneontology/web/pages";
 		
 		Directory cssDirectory = 
