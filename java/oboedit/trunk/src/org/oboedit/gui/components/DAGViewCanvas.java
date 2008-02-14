@@ -264,8 +264,8 @@ public class DAGViewCanvas extends AbstractGUIComponent implements Filterable,
 			}
 			setProgressValue(100);
 			setResults(databases);
-			System.err.println("found paths in "
-					+ (System.currentTimeMillis() - time));
+//			System.err.println("found paths in "
+//					+ (System.currentTimeMillis() - time));
 		}
 
 	}
