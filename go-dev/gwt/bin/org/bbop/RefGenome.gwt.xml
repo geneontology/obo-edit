@@ -1,6 +1,0 @@
-<module>
-	<inherits name='com.google.gwt.user.User'/>
-	<inherits name="com.google.gwt.i18n.I18N"/>
-	<entry-point class='org.bbop.client.RefGenome'/>
-	<stylesheet src='RefGenome.css'/>
-</module>
