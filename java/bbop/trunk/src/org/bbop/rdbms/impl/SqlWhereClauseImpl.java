@@ -16,7 +16,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	protected ConstraintSet constraintSet = new SqlConstraintSetImpl();
 	protected Collection<Object> placeHolderVals = new LinkedList<Object>();
 	
-	SqlWhereClauseImpl(String s) {
+	public SqlWhereClauseImpl(String s) {
 		super();
 		constraintSet.addConstraint(s);
 	}
@@ -36,7 +36,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		this.constraintSet.addConstraint(s);
 	}
 	
-	public void addOperatorConstraint(String op, String arg1, String arg2) {
+	public void addOperatorConstraint(String op, String arg1, Object arg2) {
 		this.constraintSet.addConstraint(arg1 + " " + op + " ?");
 		placeHolderVals.add(arg2);		
 	}
