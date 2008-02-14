@@ -810,7 +810,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			// to a data factory that we can use.
 			owlFactory = manager.getOWLDataFactory();
 
-			
+
 			for (IdentifiedObject io : session.getObjects()) {
 				// TODO
 				if (io instanceof Annotation) {
@@ -873,18 +873,20 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 									AddAxiom addAxiom = new AddAxiom(ontology, axiom);
 									// We now use the manager to apply the change
 									manager.applyChange(addAxiom);
-									
-									Set<PropertyValue> pvs = nv.getPropertyValues();
-									for (PropertyValue pv : pvs) {
-										OWLConstant con = 
-											owlFactory.getOWLUntypedConstant(pv.getValue());
-										URI predURI = getURI(pv.getProperty());
-										 OWLConstantAnnotation owlAnnot = owlFactory.getOWLConstantAnnotation(predURI,
-												con);
-										OWLAxiomAnnotationAxiom aaa = owlFactory.getOWLAxiomAnnotationAxiom(axiom, 
-											owlAnnot);
-										AddAxiom addAAA = new AddAxiom(ontology, aaa);
-										manager.applyChange(addAAA);
+
+									if (nv != null) {
+										Set<PropertyValue> pvs = nv.getPropertyValues();
+										for (PropertyValue pv : pvs) {
+											OWLConstant con = 
+												owlFactory.getOWLUntypedConstant(pv.getValue());
+											URI predURI = getURI(pv.getProperty());
+											OWLConstantAnnotation owlAnnot = owlFactory.getOWLConstantAnnotation(predURI,
+													con);
+											OWLAxiomAnnotationAxiom aaa = owlFactory.getOWLAxiomAnnotationAxiom(axiom, 
+													owlAnnot);
+											AddAxiom addAAA = new AddAxiom(ontology, aaa);
+											manager.applyChange(addAAA);
+										}
 									}
 
 								}
