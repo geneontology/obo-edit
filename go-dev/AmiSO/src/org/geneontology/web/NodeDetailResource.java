@@ -119,7 +119,8 @@ public class NodeDetailResource extends NodeResource {
 				OBOSession session = ((OBOSessionShard)getShard()).getSession();
 				
 			}
-			return getTemplateRepresentation("NodeDetailView",map, "src/org/geneontology/web/pages/templates/");
+			//return getTemplateRepresentation("NodeDetailView",map, "src/org/geneontology/web/pages/templates/");
+			return getTemplateRepresentation("templates/NodeDetailView",map);
 		}
 		else {
 			StringBuilder sb = new StringBuilder();

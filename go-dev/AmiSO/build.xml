@@ -1,5 +1,4 @@
-<!--
-    -->
+
 <project name="amiso" basedir="." default="jar">
 
 	<property name="runtimedir_name" value="runtime" />
@@ -17,7 +16,6 @@
 	<property name="librarydir" location="lib" />
 	<property name="releasenotes" location="CHANGES" />
 	<property name="tagprefix" value="${projectname}-" />
-
     <property name="build.dir" value="build"/>
 
 	<!-- dependency information -->
@@ -27,8 +25,12 @@
 	
 	<fileset dir="${sourcedir}" id="resource_files">
 		<include name="**/resources/**" />
+		<!-- make sure templates, css, images etc included in jar -->
 		<include name="**/pages/**" />
 	</fileset>
+
+	<!-- make sure templates, css, images etc included in jar -->
+	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**,**/pages/**" excludes="**/CVS/*" />
 
 	<path id="classpath">
 		<fileset refid="library_jars" />
@@ -40,7 +42,6 @@
 		</fileset>
 	</path>
 	
-	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**,**/pages/**" excludes="**/CVS/*" />
 
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
 	</target>
