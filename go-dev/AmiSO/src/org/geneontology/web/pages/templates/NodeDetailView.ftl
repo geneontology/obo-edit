@@ -52,7 +52,9 @@ ${graph.getNode(id).getLabel()!""}
      <span class="tag">
      </span>
       <@nodePageLink id="${ss.getTargetId()}"/>
+      <#if ss.isLiteral()>
       <@nodePageLink id="${ss.getValue()}"/>
+      </#if>
      </span>
     </#list>
    </td>
