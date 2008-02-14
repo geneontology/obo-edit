@@ -1,7 +1,0 @@
-<module>
-	<inherits name='com.google.gwt.user.User'/>
-	<inherits name="com.google.gwt.i18n.I18N"/>
-	<entry-point class='org.bbop.client.AmiGO'/>
-  	<servlet path="/GOLookupService" class="org.bbop.server.GOLookupServiceImpl"/>
-	<stylesheet src='AmiGO.css'/>
-</module>
