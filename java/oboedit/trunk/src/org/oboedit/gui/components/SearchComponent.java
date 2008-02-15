@@ -217,7 +217,9 @@ public class SearchComponent extends AbstractGUIComponent {
 			public void run() {
 				String desc = "";
 				if (labelType.equals(ResultLabelType.QUERY_NAME))
-					desc = " " + FilterUtil.getOBOFilterExpression(filter);
+				    desc = " " + FilterUtil.getOBOFilterExpression(filter) +
+					// By request, putting the # of matches back in the search results description
+					" (" + task.getResults().size() + " matches)";
 				else if (labelType.equals(ResultLabelType.RESULT_COUNT)) {
 					desc = " " + task.getResults().size() + " matches";
 				}
