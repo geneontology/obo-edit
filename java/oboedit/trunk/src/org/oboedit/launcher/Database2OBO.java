@@ -220,11 +220,11 @@ public class Database2OBO {
 			} else if (args[i].equals("-?")) {
 				printUsage(0);
 			} else {
-				readConfig.getReadPaths().add(args[i]);
+				readConfig.setReadPath(args[i]);
 			}
 		}
-		if (readConfig.getReadPaths().size() < 1) {
-			System.err.println("You must specify at least one file to load.");
+		if (readConfig.getReadPath() == null) {
+			System.err.println("You must specify a file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {
