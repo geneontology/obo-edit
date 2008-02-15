@@ -13,25 +13,27 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 
     protected int maxReadHistorySize;
     protected int maxWriteHistorySize;
-    protected Collection<String> readPaths = new Vector<String>();
+    protected String readPath;
+    protected String dbUsername;
+    protected String dbPassword = "";
     protected String writePath;
 	protected Connection conn;
 
     // example: jdbc:postgresql://foo.com:5432/dbname
     public JDBCAdapterConfiguration(String jdbcPath) {
     	this();
-    	readPaths.add(jdbcPath);
+    	this.readPath = jdbcPath;
     }
 
     public JDBCAdapterConfiguration() {
     }
 
-    public Collection<String> getReadPaths() {
-	return readPaths;
+    public String getReadPath() {
+    	return readPath;
     }
 
-    public void setReadPaths(Collection<String> c) {
-	this.readPaths = c;
+    public void setReadPath(String readPath) {
+    	this.readPath = readPath;
     }
 
     public void setWritePath(String path) {
@@ -43,13 +45,33 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
     }
 
     public String toString() {
-	return "readPaths = "+readPaths;
+    	return "readPaths = " + readPath;
     }
     
-	public Connection getConnection(String driverstring, String user, String passwd) throws SQLException, ClassNotFoundException {
+	public Connection getConnection(String driverstring) throws SQLException, ClassNotFoundException {
 		Class.forName("org.postgresql.Driver");
-		System.out.println("connecting to "+driverstring);
-		return DriverManager.getConnection(driverstring, user, passwd);
+		System.out.println("connecting to " + driverstring);
+		
+		String username = this.getDbUsername();
+		
+		if (username==null){
+			String systemUser = System.getenv("USER");
+			if (systemUser==null){
+				System.err.println("WARN: No username specified for database connection. Attempting to connect without a user.");
+				username = "";
+			} else {
+				System.err.println("WARN: No username specified for database connection. Substitution environmental username " + systemUser);
+				username = systemUser;
+			}
+		}
+		
+		String password = this.getDbPassword();
+		if (password == null){
+			System.err.println("WARN: No password specified for database connection.");
+			password ="";
+		}
+		
+		return DriverManager.getConnection(driverstring, username, password);
 	} 
 	
 	// TODO: DRY
@@ -74,6 +96,22 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 			System.out.println("Cause :"+se.getCause());
 		}
 		catch (Exception e) { e.printStackTrace(); }
+	}
+
+	public String getDbUsername() {
+		return dbUsername;
+	}
+
+	public void setDbUsername(String dbUsername) {
+		this.dbUsername = dbUsername;
+	}
+
+	public String getDbPassword() {
+		return dbPassword;
+	}
+
+	public void setDbPassword(String dbPassword) {
+		this.dbPassword = dbPassword;
 	} 
 
 }
