@@ -183,8 +183,13 @@ public class SelectionManager implements ObjectSelector {
 	public static Selection createSelectionFromPaths(JComponent component,
 			TreePath[] paths, Link linkSubSelection, LinkDatabase linkDatabase,
 			RootAlgorithm rootAlgorithm, boolean fillInTerms) {
-		Collection<Link> links = new HashSet<Link>();
-		Collection<LinkedObject> terms = new HashSet<LinkedObject>();
+//		Collection<Link> links = new HashSet<Link>();
+//		Collection<LinkedObject> terms = new HashSet<LinkedObject>();
+	    // Want terms to be kept in order (which HashSet doesn't do).
+	    // However, keep in mind that LinkedHashSets are slower.
+		Collection<Link> links = new LinkedHashSet<Link>();
+		Collection<LinkedObject> terms = new LinkedHashSet<LinkedObject>();
+
 		LinkedObject subSelection = null;
 		for (TreePath path : paths) {
 			Link link = (Link) path.getLastPathComponent();
