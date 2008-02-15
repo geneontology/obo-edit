@@ -48,9 +48,9 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
     	return "readPaths = " + readPath;
     }
     
-	public Connection getConnection(String driverstring) throws SQLException, ClassNotFoundException {
+	public Connection getConnection() throws SQLException, ClassNotFoundException {
 		Class.forName("org.postgresql.Driver");
-		System.out.println("connecting to " + driverstring);
+		System.out.println("connecting to " + this.getReadPath());
 		
 		String username = this.getDbUsername();
 		
@@ -71,7 +71,7 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 			password ="";
 		}
 		
-		return DriverManager.getConnection(driverstring, username, password);
+		return DriverManager.getConnection(this.readPath, username, password);
 	} 
 	
 	// TODO: DRY
