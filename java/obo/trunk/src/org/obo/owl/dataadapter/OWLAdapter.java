@@ -25,6 +25,8 @@ import org.bbop.dataadapter.GraphicalUI;
 import org.bbop.dataadapter.IOOperation;
 import org.bbop.io.ProgressableInputStream;
 import org.bbop.util.AbstractProgressValued;
+import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.coode.obo.parser.OBOOntologyFormat;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
@@ -54,6 +56,9 @@ import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.io.DefaultOntologyFormat;
+import org.semanticweb.owl.io.OWLFunctionalSyntaxOntologyFormat;
+import org.semanticweb.owl.io.OWLXMLOntologyFormat;
+import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
@@ -212,6 +217,21 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		public void setOntologyFormat(OWLOntologyFormat ontologyFormat) {
 			this.ontologyFormat = ontologyFormat;
+		}
+		
+		public void setOntologyFormat(String owlFormat) throws DataAdapterException {
+			if (owlFormat.equals("owlxml"))
+				ontologyFormat = new OWLXMLOntologyFormat();
+			else if (owlFormat.equals("owlfunctionalsyntax"))
+				ontologyFormat = new OWLFunctionalSyntaxOntologyFormat();
+			else if (owlFormat.equals("manchesterowlsyntax"))
+				ontologyFormat = new ManchesterOWLSyntaxOntologyFormat();
+			else if (owlFormat.equals("obo"))
+				ontologyFormat = new OBOOntologyFormat();
+			else if (owlFormat.equals("default") || owlFormat.equals("rdfxml"))
+				ontologyFormat = new RDFXMLOntologyFormat();
+			else
+				throw new DataAdapterException("invalid owl ontology format: "+owlFormat);
 		}
 		
 
