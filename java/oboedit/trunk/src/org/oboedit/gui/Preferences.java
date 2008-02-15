@@ -501,9 +501,8 @@ public class Preferences {
 
 	public Color getLightSelectionColor() {
 		if (lightSelectionColor == null)
-			lightSelectionColor = new Color(230, 230, 255);
-//		    lightSelectionColor = Color.yellow;
-//		System.err.println("Returning lightSelectionColor " + lightSelectionColor); // DEL
+		    lightSelectionColor = new Color(230, 230, 255);  // pale lavender-blue
+//		    lightSelectionColor = Color.yellow;  // for testing
 		return lightSelectionColor;
 	}
 
@@ -511,11 +510,13 @@ public class Preferences {
 		this.lightSelectionColor = lightSelectionColor;
 	}
 
+    // Color for the subselection (darker)
 	public Color getSelectionColor() {
 		if (selectionColor == null)
-			selectionColor = new Color(204, 204, 255);
-//		    selectionColor = Color.orange;
-//		System.err.println("Returning selectionColor " + selectionColor); // DEL
+//			selectionColor = new Color(204, 204, 255);
+		    // Slightly darker blue than before
+		    selectionColor = new Color(180, 190, 255);
+//		    selectionColor = Color.orange;  // for testing
 		return selectionColor;
 	}
 
