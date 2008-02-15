@@ -61,7 +61,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 		
 		// database -> session
 		System.err.println("reading");
-		config.getReadPaths().add(jdbcPath);
+		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		System.err.println("read: "+session);
 		
@@ -88,7 +88,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 		System.err.println("reading ns filtered");
 		
 		config.addNamespace("caro");
-		config.getReadPaths().add(jdbcPath);
+		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		System.err.println("read: "+session);
 		testForIsA("CARO:0000003","CARO:0000006");

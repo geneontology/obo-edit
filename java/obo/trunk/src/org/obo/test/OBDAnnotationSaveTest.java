@@ -77,7 +77,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		System.err.println("reading");
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
-		wconfig.getReadPaths().add(jdbcPath);
+		wconfig.setReadPath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
 		System.err.println("read: "+session);
@@ -102,7 +102,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 	public void testQuery() throws SQLException, ClassNotFoundException {
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
-		wconfig.getReadPaths().add(jdbcPath);
+		wconfig.setReadPath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		wadapter.setConfiguration(wconfig);
 		wadapter.connect();
@@ -125,7 +125,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		System.err.println("reading ns filtered");
 		
 		config.addNamespace("MGI");
-		config.getReadPaths().add(jdbcPath);
+		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
 		System.err.println("read: "+session);
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);

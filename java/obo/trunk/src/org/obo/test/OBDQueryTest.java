@@ -38,7 +38,7 @@ public class OBDQueryTest extends AbstractAnnotationTest {
 	public void testQuery() throws SQLException, ClassNotFoundException, IOException, DataAdapterException {
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
-		wconfig.getReadPaths().add(jdbcPath);
+		wconfig.setReadPath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		wadapter.setConfiguration(wconfig);
 		wadapter.connect();
