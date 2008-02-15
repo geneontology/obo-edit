@@ -27,6 +27,7 @@ import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasoner;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
 import org.obo.reasoner.impl.OnTheFlyReasonerFactory;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
@@ -61,7 +62,8 @@ public class SessionManager {
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
 
-	protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
+//	protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
+	protected ReasonerFactory reasonerFactory = new LinkPileReasonerFactory(); // TODO: configurable
 
 	protected ReasonedLinkDatabase reasoner;
 

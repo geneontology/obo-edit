@@ -153,7 +153,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 				Namespace subjNS = link.getChild().getNamespace();
 				Namespace objNS = link.getParent().getNamespace();
 				//System.err.println("ns: "+subjNS + " " +objNS);
-				if (!subjNS.equals(objNS)) {
+				if (subjNS != null && !subjNS.equals(objNS)) {
 					// TODO: configurable?
 					//System.err.println("ignoring "+link+" as it spans ontologies");
 					continue;
