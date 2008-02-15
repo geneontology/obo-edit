@@ -668,16 +668,24 @@ public class OBO2OBO {
 	protected static void printUsage(int exitCode) {
 		System.err
 				.println("obo2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
-					 + "             [-parsecomments] [-writecomments] \\\n"
+						 + "             [-semanticparse [-addsynonyms]] \\\n"
+						 + "             [-parsecomments] [-writecomments] \\\n"
 					 + "             [-runscript <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-					 + "             [-o [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
+					 + "             [-o [-reasonerfactory <class>] [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
 					 + "             [-o [-f <filterfileN.xml>] <outputfileN>]\n");
 		System.err
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
-				.println("  -parsecomments             - Parses comments in obsolete terms looking for\n"
-						+ "                               GO-style formatted comments containing parseable\n"
-						+ "                               replacement and consider terms.");
+		.println("  -semanticparse [-addsynonyms] - Does a semantic parse on term name/synonyms; optionally makes synonyms\n"
+				+ "                               generates intersection_of definition (which can be reasoned over)\n"
+				+ "                               so far only implemented for regulation terms.");
+		System.err
+		.println("  -reasonerfactory            - When saving implied links, calls a non-default reasoner\n"
+				+ "                               Options: ");
+		System.err
+		.println("  -parsecomments             - Parses comments in obsolete terms looking for\n"
+				+ "                               GO-style formatted comments containing parseable\n"
+				+ "                               replacement and consider terms.");
 		System.err
 				.println("  -writecomments             - Writes replaced_by and consider tags into parseable\n"
 						+ "                               GO-style formatted comments.");
