@@ -276,25 +276,25 @@ public class TermFilterEditor extends JPanel {
 			aspectBox.addItem(aspect);
 		}
 
-		comparisonPanel.add(new JLabel("that "));
+		comparisonPanel.add(new JLabel(" that"));
 		comparisonPanel.add(comparisonBox);
 
 		Box topBox = new Box(BoxLayout.X_AXIS);
 		topBox.add(selectTermsLabel);
 		topBox.add(notBox);
-		topBox.add(new JLabel("a "));
+		topBox.add(new JLabel(" a "));
 		topBox.add(criterionBox);
 		topBox.add(comparisonPanel);
 		topBox.add(Box.createHorizontalGlue());
 
-		valuePanel.add(new JLabel("the value "));
+		valuePanel.add(new JLabel(" the value"));
 		valuePanel.add(valueField);
 		valuePanel.add(Box.createHorizontalStrut(5));
 
 		valueBox.add(valuePanel);
 		valueBox.add(advancedButton);
 
-		aspectLineBox.add(new JLabel("in "));
+		aspectLineBox.add(new JLabel(" in"));
 		aspectLineBox.add(aspectBox);
 		aspectLineBox.add(reachedViaLabel);
 		aspectLineBox.add(typeBox);
