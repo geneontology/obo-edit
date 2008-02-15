@@ -162,7 +162,8 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 
 		// build sets
 		for (PathCapable io : gs.getAllSelectedObjects()) {			
-			if (io instanceof LinkedObject) {
+			if (io instanceof LinkedObject &&
+			    io instanceof OBOClass) {
 				OBOClass lo = (OBOClass)io;
 				if (TermUtil.isIntersection(lo)) {
 					xpObjs.add(lo);
