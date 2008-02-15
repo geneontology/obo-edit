@@ -162,6 +162,8 @@ public class FilterUtil {
 			out.append(" ");
 		}
 		out.append(filter.getCriterion().getID());
+		if (filter.getNegate())
+		    out.append(" NOT");
 		if (!(filter.getCriterion() instanceof BooleanCriterion)) {
 			out.append(" ");
 			out.append(filter.getComparison().toString());
