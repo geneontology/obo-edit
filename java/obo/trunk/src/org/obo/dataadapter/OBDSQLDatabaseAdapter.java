@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapterException;
@@ -320,18 +319,18 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (op.equals(READ_ONTOLOGY)) {
 			OBOSession session = objectFactory.createSession();
 			session.setDefaultNamespace(objectFactory.createNamespace("test", "test")); // TODO
-			for (String readPath : ioprofile.getReadPaths()) {
-				try {
-					connect(readPath);
-					fetchAll(session);
-					return (OUTPUT_TYPE) session;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					throw new DataAdapterException("SQL error");
-				}
+			
+			try {
+				//connect(ioprofile.getReadPath());
+				connect();
+				fetchAll(session);
+				return (OUTPUT_TYPE) session;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new DataAdapterException("SQL error");
 			}
-			return (OUTPUT_TYPE) session;
+						
 			
 		} else if (op.equals(WRITE_ONTOLOGY)) {
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
@@ -364,7 +363,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 				try {
 					System.err.println("fp="+filteredPath);
-					connection = ioprofile.getConnection(filteredPath.getPath(),"cjm","");
+					ioprofile.setReadPath(filteredPath.getPath());
+					this.connect();
 					System.out.println("conn="+connection);
 					
 					storeAll(session,ldb);
@@ -385,10 +385,17 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return "OBO:OBDSQLDatabaseAdapter";
 	}
 	
+
+	
+	/*
+	 * This function was comment out because the connection parameters for the database connection
+	 * should be entirely specified in the JDBCconfiguration (this.ioprofile) part of the OBDSQLDatabaseAdaptor object.
+	 * 
 	public void connect(String readPath) throws SQLException, ClassNotFoundException {
 		connection = ioprofile.getConnection(readPath,"cjm","");
 		System.err.println("connecting "+readPath+" "+connection);
 	}
+	*/
 	
 	public void disconnect() throws SQLException {
 		connection.close();
@@ -398,9 +405,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	
 	public void connect() throws SQLException, ClassNotFoundException {
 		// TODO
-		for (String readPath : ioprofile.getReadPaths()) {
-			connect(readPath);
-		}
+		this.connection = this.ioprofile.getConnection();
 	}
 
 
