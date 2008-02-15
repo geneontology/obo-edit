@@ -36,8 +36,8 @@ editor panel will reflect that change.</P>
 <P>Any number of relationships can be selected at a time. However, components 
 like the <A href="Text_Editing.htm">text editor</A>&nbsp;can only operate on a 
 single term at a time. When multiple relationships are selected at once, a 
-single term from the selection becomes the sub-selection. When a new selection 
-is made, the first term you selected becomes the default sub-selection.</P>
+single term from the selection (the last one you selected) becomes the sub-selection. When a new selection 
+is made, it becomes the default sub-selection.</P>
 <P>The sub-selection control contains a list of terms 
 consisting of the <STRONG>child terms</STRONG> of all the currently selected 
 <STRONG>relationships</STRONG>. This is a very important distinction: the 
@@ -48,21 +48,6 @@ relationships</STRONG>. The <STRONG>sub-selection</STRONG> is a single
 selected terms:</P>
 <P><IMG height=347 hspace=0 src="../images/subselection.gif" width=303 
 border=0></P>
-<P>The sub-selection can be changed using the <IMG height=20 hspace=0 
-src="../images/term_editor_panel_right_button.gif" width=20 border=0>&nbsp;and 
-<IMG height=20 hspace=0 src="../images/term_editor_panel_left_button.gif" 
-width=20 border=0>&nbsp;buttons. These buttons change the current sub-selection 
-to the next or previous item in the current collection of selected terms. These 
-buttons scroll through the current selection in the order that the selected 
-items are displayed on the screen. So the <IMG height=20 hspace=0 
-src="../images/term_editor_panel_right_button.gif" width=20 
-border=0>&nbsp;button means "change the sub-selection to the next-lowest 
-selected item in the ontology editor panel". The <IMG height=20 hspace=0 
-src="../images/term_editor_panel_left_button.gif" width=20 border=0>&nbsp;button 
-means "change the sub-selection to the next-highest selected item in the 
-ontology editor panel".</P>
-<P>These buttons are only available if more than one item is selected in the 
-primary selector.</P>
 <H2>What Objects Am I Selecting?</H2>
 <P>The global selection and the sub-selection actually designate 
 <STRONG>different kinds of objects</STRONG>. This can be confusing for novice 
@@ -79,7 +64,7 @@ selection consists of the following two relationships:</P>
 <STRONG>relationship type</STRONG></EM>. The sub-selection is always the 
 <EM>child term</EM> from one of the relationships in the <EM>global 
 selection</EM>.</P>
-<P>Ocassionally this guide will refer to the "selected terms". Realize that this 
+<P>Ocasionally this guide will refer to the "selected terms". This 
 is shorthand for "the child terms of the selected relationships".</P>
 <H2>Local Selections</H2>
 <P>Terms can also be selected in ontology editor panels that are not the primary 
