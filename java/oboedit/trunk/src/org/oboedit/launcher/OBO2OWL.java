@@ -12,12 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.IOUtil;
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.coode.obo.parser.OBOOntologyFormat;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
@@ -39,11 +38,7 @@ import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
-import org.semanticweb.owl.io.DefaultOntologyFormat;
-import org.semanticweb.owl.io.OWLFunctionalSyntaxOntologyFormat;
-import org.semanticweb.owl.io.OWLXMLOntologyFormat;
-import org.semanticweb.owl.io.RDFXMLOntologyFormat;
-import org.semanticweb.owl.model.OWLOntologyFormat;
+
 
 public class OBO2OWL {
 
@@ -531,7 +526,6 @@ public class OBO2OWL {
 		Collection<MetadataMapping> mappings = new HashSet<MetadataMapping>();
 		
 		String owlFormat = "rdfxml";
-		OWLOntologyFormat owlWriter = new DefaultOntologyFormat();
 		for (int i = 0; i < args.length; i++)
 			System.err.println("args[" + i + "] = |" + args[i] + "|");
 
@@ -557,19 +551,8 @@ public class OBO2OWL {
 					printUsage(1);
 				i++;
 				owlFormat = args[i].toLowerCase();
-				if (owlFormat.equals("owlxml"))
-					owlWriter = new OWLXMLOntologyFormat();
-				else if (owlFormat.equals("owlfunctionalsyntax"))
-					owlWriter = new OWLFunctionalSyntaxOntologyFormat();
-				else if (owlFormat.equals("manchesterowlsyntax"))
-					owlWriter = new ManchesterOWLSyntaxOntologyFormat();
-				else if (owlFormat.equals("obo"))
-					owlWriter = new OBOOntologyFormat();
-				else if (owlFormat.equals("default") || owlFormat.equals("rdfxml"))
-					owlWriter = new RDFXMLOntologyFormat();
-				else
-					printUsage(1);
-				} else if (args[i].equals("-parsecomments")) {
+			}
+			else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
@@ -671,7 +654,14 @@ public class OBO2OWL {
 				printUsage(1);
 			}
 		}
-		writeConfig.setOntologyFormat(owlWriter);
+		try {
+			writeConfig.setOntologyFormat(owlFormat);
+		}
+		catch (DataAdapterException e) {
+			e.printStackTrace();
+			System.out.println("valid owlFormats: owlxml owlfunctionalsyntax manchesterowlsyntax rdfxml");
+			System.exit(1);
+		}
 		if (mappings.size() == 0)
 			mappings.add(new SimpleOWLMetadataMapping());
 		for (MetadataMapping mapping : mappings)
@@ -689,11 +679,11 @@ public class OBO2OWL {
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
 		.println("  -mapping <mapping> - specifies a mapping between OBO and OWL. The logical mapping is hardcoded but the metadata mapping is flexible. TODO: more docs on this\n"
-				+ "                               Allowed: ncbo simple axiom. The default is simple.\n"
+				+ "                               Allowed: 'ncbo', 'simple' or 'axiom'. The default is simple.\n"
 				+ "                               Optional. Multiple values can be provided");
 		System.err
 				.println("  -owlformat <owlformat> - OWL concrete serialization. Allowed values are\n"
-						+ "                               rdfxml owlxml owlfunctionalsyntax owlmanchestersyntax. The default is rdfxml.\n"
+						+ "                               rdfxml owlxml owlfunctionalsyntax manchesterowlsyntax. The default is rdfxml.\n"
 						+ "                               Optional.");
 		System.err
 				.println("  -script <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's "
