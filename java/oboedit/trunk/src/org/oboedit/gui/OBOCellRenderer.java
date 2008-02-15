@@ -41,6 +41,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 	private static final long serialVersionUID = 1L;
 
 	protected final static Color ignoreSelectionColor = new Color(204, 255, 204);
+//    protected final static Color ignoreSelectionColor = Color.red;  // for debugging
 
 	protected final static Color highlightColor = Color.yellow;
 
@@ -109,6 +110,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		if (isSelected) {
 			setOpaque(true);
+//			System.out.println("getListCellRendererComponent: choosing darker selection color"); // DEL
 			setBackground(Preferences.defaultSelectionColor());
 		} else {
 			setOpaque(false);
@@ -314,21 +316,35 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				setBackground(highlightColor);
 			} else if (selected) {
 				setOpaque(true);
-				if (ignoreSelection)
+				if (ignoreSelection) {
+//				    System.err.println("Ignoring selection for link = " + link.getType()); // DEL
 					setBackground(ignoreSelectionColor);
+				}
 				else {
 					Selection selection = SelectionManager.getManager()
 							.getGlobalSelection();
-					if (link.getChild().equals(selection.getTermSubSelection())
-							|| ObjectUtil.equals(link, selection
-									.getLinkSubSelection())) {
-						setBackground(Preferences.defaultSelectionColor());
+
+					// Note on this if:
+					// As it was, with the ||, you could end up with two dark-shaded terms
+					// (even though only one was the true subselection).
+					// Without the ||, you sometimes end up with no dark-shaded term (this
+					// happens if you deselect the current subselection), even though there
+					// is still a subselection.
+					// Both behaviors are slightly wrong; I decided the second was less wrong.
+					// I'm not sure how to fix it completely.
+					if (// link.getChild().equals(selection.getTermSubSelection()) ||
+					     ObjectUtil.equals(link, selection
+								 .getLinkSubSelection())) {
+					    // Use darker color (this is the subselection)
+					    setBackground(Preferences.defaultSelectionColor());
 					} else {
-						setBackground(Preferences.lightSelectionColor());
+					    // Use lighter color (this is NOT the subselection)
+					    setBackground(Preferences.lightSelectionColor());
 					}
 				}
 			} else {
 				setBackground(null);
+
 				if (tree instanceof FilteredRenderable) {
 					FilteredRenderable fr = (FilteredRenderable) tree;
 					RenderSpec bgspec = GUIUtil
@@ -342,6 +358,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 						if (c != null) {
 							setOpaque(true);
 							setBackground(c.getColor(fr, link.getChild()));
+//							System.err.println("Set background color to " + getBackground()); // DEL
 						}
 					}
 				}
