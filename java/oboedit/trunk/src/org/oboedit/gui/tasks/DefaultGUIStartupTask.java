@@ -131,6 +131,7 @@ import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
+import org.oboedit.gui.factory.SemanticParserManagerFactory;
 import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
@@ -210,6 +211,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
 				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
 				new IDManagerFactory(), new ReasonerManagerFactory(),
+				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
 
 				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
