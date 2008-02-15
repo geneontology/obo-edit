@@ -155,6 +155,7 @@ import org.obo.util.TermUtil;
  *   - all this code could readily and easily be reused to implement a check-in/check-out system for a database adapter."
  *  TODO: use history objects
  * 
+ * 
  */
 public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBOAdapter {
 
