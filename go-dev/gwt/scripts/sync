@@ -8,7 +8,7 @@ class CommandLineOptions
   require 'getoptlong'
 
   attr_reader :wanted_in, :wanted_out, :wanted_first
-  attr_reader :wanted_debug, :wanted_help, :wanted_verbose
+  attr_reader :wanted_help, :wanted_verbose
   attr_reader :wanted_gwt
   attr_reader :wanted_project
   attr_reader :wanted_execute
@@ -21,7 +21,6 @@ class CommandLineOptions
                      ["--out", "-o", GetoptLong::NO_ARGUMENT],
                      ["--first", "-f", GetoptLong::NO_ARGUMENT],
                      ["--help",    "-h", GetoptLong::NO_ARGUMENT],
-                     ["--debug",   "-d", GetoptLong::NO_ARGUMENT],
                      ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
                      ["--execute", "-x", GetoptLong::NO_ARGUMENT],
                      ["--project",     "-p", GetoptLong::REQUIRED_ARGUMENT],
@@ -32,7 +31,7 @@ class CommandLineOptions
     @wanted_in = nil
     @wanted_out = nil
     @wanted_first = nil
-    @wanted_debug = @wanted_help = @wanted_verbose = nil
+    @wanted_help = @wanted_verbose = nil
     @wanted_project = "GO"
     @wanted_gwt = "/tmp"
     @wanted_execute = nil
@@ -49,8 +48,6 @@ class CommandLineOptions
         @wanted_first = true
       when "--help", "-h"
         @wanted_help = true
-      when "--debug", "-d"
-        @wanted_debug = true
       when "--execute", "-x"
         @wanted_execute = true
       when "--verbose", "-v"
@@ -62,7 +59,6 @@ class CommandLineOptions
       end
     end
     
-    puts "Will print debug output." if @wanted_debug
     puts "Will be verbose." if @wanted_verbose
 
   end
@@ -73,24 +69,35 @@ end
 
 require 'find'
 
-rsync_cmd = "rsync -avz --delete -P --stats --ignore-errors"
+rsync_cmd = "rsync -avz -P --stats --exclude '.svn' --ignore-errors"
 
 clo = CommandLineOptions.new()
 
 ## First gauntlet: want help?
 if clo.wanted_help
 
+  puts "Usage: sync [-h] [-x] [-f | -o | -i] [-p <name>] -g <directory>"
   puts ""
-  puts "Usage: sync [-d] [-h] [-x] -g <GWT install top level>"
+  puts "Note: Always run from the geneontology/go-dev/gwt/scripts directory."
   puts ""
   puts "   -h, --help            print this message and exit"
-  puts "   -d, --debug           print debugging information during execution"
   puts "   -v, --verbose         print a lot of information during execution"
-  puts "   -f, --first         "
-  puts "   -i, --in         "
-  puts "   -o, --out         "
-  puts "   -x, --execute         "
-  puts "   -g, --gwt <target>    "
+  puts "   -f, --first           runs "
+  puts "   -o, --out             rsync files out of this SVN repository"
+  puts "   -i, --in              rsync files back in to this SVN repository"
+  puts "   -x, --execute         actually do things instead of a dry run"
+  puts "   -p, --project <name>  name of the project; defaults to \"GO\""
+  puts "   -g, --gwt <directory> location of an unpacked GWT; defaults to \"/tmp\""
+  puts ""
+  puts "Example usage, to initially bootstrap the project from SVN:"
+  puts "\t./sync -v -x -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "Example usage, to rync files from your SVN repo to the project directory:"
+  puts "\t./sync -v -x -o -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "Example usage, to rync files from your project directory to the SVN repo:"
+  puts "\t./sync -v -x -i -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+
   puts ""
 
   exit(0);
@@ -191,9 +198,9 @@ if clo.wanted_first
     system(create_application) if clo.wanted_execute
   }
 
-elsif clo.wanted_in
+elsif clo.wanted_out
 
-  puts "Will sync in..." if clo.wanted_verbose
+  puts "Will rsync OUT..." if clo.wanted_verbose
 
   ## Get command straight.
   command = rsync_cmd
@@ -203,9 +210,9 @@ elsif clo.wanted_in
   puts "Running: #{command}" if clo.wanted_verbose
   system(command) 
 
-elsif clo.wanted_out
+elsif clo.wanted_in
 
-  puts "Will sync out..." if clo.wanted_verbose
+  puts "Will rsync IN..." if clo.wanted_verbose
 
   ## Get command straight.
   command = rsync_cmd
