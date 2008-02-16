@@ -1,0 +1,222 @@
+#!/usr/bin/ruby -w
+
+
+## This class handles the command line for:
+## flags, numerics, strings, files, directories.
+class CommandLineOptions
+
+  require 'getoptlong'
+
+  attr_reader :wanted_in, :wanted_out, :wanted_first
+  attr_reader :wanted_debug, :wanted_help, :wanted_verbose
+  attr_reader :wanted_gwt
+  attr_reader :wanted_project
+  attr_reader :wanted_execute
+
+  def initialize()
+    # The real big boy.
+    command_line_options =
+      GetoptLong.new(
+                     ["--in", "-i", GetoptLong::NO_ARGUMENT],
+                     ["--out", "-o", GetoptLong::NO_ARGUMENT],
+                     ["--first", "-f", GetoptLong::NO_ARGUMENT],
+                     ["--help",    "-h", GetoptLong::NO_ARGUMENT],
+                     ["--debug",   "-d", GetoptLong::NO_ARGUMENT],
+                     ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
+                     ["--execute", "-x", GetoptLong::NO_ARGUMENT],
+                     ["--project",     "-p", GetoptLong::REQUIRED_ARGUMENT],
+                     ["--gwt",     "-g", GetoptLong::REQUIRED_ARGUMENT]
+                     )
+
+    # Default values.
+    @wanted_in = nil
+    @wanted_out = nil
+    @wanted_first = nil
+    @wanted_debug = @wanted_help = @wanted_verbose = nil
+    @wanted_project = "GO"
+    @wanted_gwt = "/tmp"
+    @wanted_execute = nil
+
+    # Get values using the case statement.
+    command_line_options.each do |option, argument|
+      # Option cases.
+      case option
+      when "--in", "-i"
+        @wanted_in = true
+      when "--out", "-o"
+        @wanted_out = true
+      when "--first", "-f"
+        @wanted_first = true
+      when "--help", "-h"
+        @wanted_help = true
+      when "--debug", "-d"
+        @wanted_debug = true
+      when "--execute", "-x"
+        @wanted_execute = true
+      when "--verbose", "-v"
+        @wanted_verbose = true
+      when "--gwt", "-g"
+        @wanted_gwt = argument
+      when "--project", "-p"
+        @wanted_project = argument
+      end
+    end
+    
+    puts "Will print debug output." if @wanted_debug
+    puts "Will be verbose." if @wanted_verbose
+
+  end
+
+end
+
+## START MAIN ###
+
+require 'find'
+
+rsync_cmd = "rsync -avz --delete -P --stats --ignore-errors"
+
+clo = CommandLineOptions.new()
+
+## First gauntlet: want help?
+if clo.wanted_help
+
+  puts ""
+  puts "Usage: sync [-d] [-h] [-x] -g <GWT install top level>"
+  puts ""
+  puts "   -h, --help            print this message and exit"
+  puts "   -d, --debug           print debugging information during execution"
+  puts "   -v, --verbose         print a lot of information during execution"
+  puts "   -f, --first         "
+  puts "   -i, --in         "
+  puts "   -o, --out         "
+  puts "   -x, --execute         "
+  puts "   -g, --gwt <target>    "
+  puts ""
+
+  exit(0);
+end
+
+
+## Second gauntlet: got a GWT directory?
+gwt_dir = clo.wanted_gwt
+proj_exe = gwt_dir + '/projectCreator';
+app_exe = gwt_dir + '/applicationCreator';
+
+begin
+
+  puts "Checking GWT location..." if clo.wanted_verbose
+  if not File.stat(gwt_dir).directory? or
+      not File.stat(app_exe).executable? or
+      not File.stat(proj_exe).executable?
+    
+    puts "Error: Must specify a legal unpacked GWT directory."
+    exit(-1);
+  else
+    puts "Found GWT directory..." if clo.wanted_verbose
+  end
+
+rescue
+  puts "Error: Must specify a legal unpacked GWT directory."
+  exit(-1);
+end
+
+
+## Third gauntlet: do we have a single action flag?
+if not ( clo.wanted_first or
+         clo.wanted_in or
+         clo.wanted_out )
+
+  puts "Error: Must specify an action flag."
+  exit(-1);
+
+elsif ( clo.wanted_first and clo.wanted_in ) or
+    ( clo.wanted_in and clo.wanted_out ) or
+    ( clo.wanted_out and clo.wanted_first )
+    
+  puts "Error: Must specify a single action flag."
+  exit(-1);
+
+end
+
+
+## Case on action flags.
+if clo.wanted_first
+
+  puts "Initializing run..." if clo.wanted_verbose
+
+  ## Get all of the projects  
+  apps = [];
+  Find.find("../src") do |f|
+    if File.basename(f) =~ /(.+)\.gwt\.xml$/
+      puts "Found project: "  + f if clo.wanted_verbose
+      base_proj = $1
+      #puts "Found project: "  + p if clo.wanted_verbose
+
+      project_bits = []
+      elements = f.split('/')
+      elements.slice(2, elements.length - 3).each{ |e|
+        project_bits.push(e)
+      }
+      project_bits.push('client')
+      project_bits.push(base_proj)
+
+      app_class = project_bits.join('.')
+      puts "Will making class: "  + app_class if clo.wanted_verbose
+      apps.push(app_class)
+
+    end
+  end
+  if apps.empty?
+    puts "Error: couldn't find any applications"
+    exit(-1)
+  end
+
+  ## Move to GWT
+  here = Dir.pwd();
+  Dir.chdir(clo.wanted_gwt)
+  puts "Have entered: "  + Dir.pwd() if clo.wanted_verbose
+
+  ## Forcably set up projects.
+  create_project = './projectCreator -overwrite -eclipse ' + clo.wanted_project
+  puts "Running: #{create_project}" if clo.wanted_verbose
+  system(create_project) if clo.wanted_execute
+
+  ## Forcably set up applications.
+  apps.each{ |app|
+
+    create_application =
+    './applicationCreator -overwrite -eclipse ' + clo.wanted_project + ' ' + app
+    
+    puts "Running: #{create_application}" if clo.wanted_verbose
+    system(create_application) if clo.wanted_execute
+  }
+
+elsif clo.wanted_in
+
+  puts "Will sync in..." if clo.wanted_verbose
+
+  ## Get command straight.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} ../src #{clo.wanted_gwt}/"
+
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+elsif clo.wanted_out
+
+  puts "Will sync out..." if clo.wanted_verbose
+
+  ## Get command straight.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} #{clo.wanted_gwt}/src ../"
+
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+else
+  puts "Error: seeing this message is impossible."
+end
+
+puts "Finished." if clo.wanted_verbose

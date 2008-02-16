@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+	<servlet>
+		<servlet-name>AmiGO</servlet-name>
+		<servlet-class>org.bbop.server.GOLookupServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>AmiGO</servlet-name>
+		<url-pattern>/GOLookupService</url-pattern>
+	</servlet-mapping>
+
+</web-app>
