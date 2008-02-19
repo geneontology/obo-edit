@@ -115,7 +115,7 @@ public class XMLUtil {
 	public static void transform(String xslt, File xml, Map params) throws IOException,
 			TransformerException {
 		File out = File.createTempFile("transform_result", "xml");
-		System.err.println("out = "+out);
+//		System.err.println("out = "+out);
 		// out.deleteOnExit();
 		Source xsltSource = new StreamSource(new StringReader(xslt));
 		Source xmlSource = new StreamSource(new FileReader(xml));

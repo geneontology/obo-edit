@@ -10,7 +10,7 @@ public class CheckMemoryThread extends Thread {
 
   long minMemory;
   long maxMemory;
-  long interval = 30*1000; // in milliseconds--i.e., 30 seconds
+  long interval = 40*1000; // in milliseconds--i.e., 40 seconds
   private boolean halt = false;
 
   public CheckMemoryThread() {
@@ -22,17 +22,15 @@ public class CheckMemoryThread extends Thread {
   }
 
   public void checkFreeMemory() {
-    // Using freeMemory() is not a good way to check free memory, because the heap might
-    // still be at its initial smaller size.  We might have almost used up that initial
-    // heap, but then the JVM can allocate more memory, up to the max.
-    //    long freeMemory = Runtime.getRuntime().freeMemory();
-
     // It seems like we're able to allocate more than maxMemory memory.
     // Not sure how much more.  But it's possible to get freeMemory values
     // below 0!
+//      System.gc();  // DEL
     long memoryUsed = Runtime.getRuntime().totalMemory();
     long freeMemory = maxMemory - memoryUsed;
-    System.err.println("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
+    // Note: you might want to comment out this println; however, it can be helpful when trying to figure out
+    // why your application is running out of memory.
+//    System.err.println("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
 
     if (freeMemory < minMemory) {
       // Try garbage collecting first and see if that helps.
