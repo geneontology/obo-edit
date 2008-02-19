@@ -416,17 +416,17 @@ public class AutocompleteBox<T> extends JComboBox {
 
 	@Override
 	public void setSelectedItem(Object anObject) {
-		if (anObject != null)
-			System.err.println("TRYING to select " + anObject + ", type = "
-					+ anObject.getClass());
+//		if (anObject != null)
+//			System.err.println("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
+//					+ anObject.getClass());
 		if (anObject == null) {
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(
 				anObject.getClass())) {
 			doSetSelectedItem(anObject);
 			Object selected = getSelectedItem();
-			System.err.println("selected = " + selected + ", anObject = "
-					+ anObject);
+//			System.err.println("  AutocompleteBox.setSelectedItem: selected = " + selected + ", anObject = "
+//					+ anObject);
 		} else if (autocompleteModel.getOutputType().isAssignableFrom(
 				anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
