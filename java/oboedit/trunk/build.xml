@@ -279,11 +279,24 @@
 
 	<target name="-dojhindex" if="javahelp_indexer">
 		<delete dir="docs/JavaHelpSearch" />
+		<!-- Move docs/html/.svn out of the way so .html files don't get double-indexed -->
+		<copy todir="svntmp">
+		  <fileset dir="docs/html/.svn" />
+		</copy>
+		<delete dir="docs/html/.svn" />
+
+		<!-- Run jhindexer -->
 		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="false" failifexecutionfails="true">
 			<arg value="." />
 			<arg value="-db" />
 			<arg value="JavaHelpSearch" />
 		</exec>
+
+		<!-- Restore docs/html/.svn -->
+		<copy todir="docs/html/.svn">
+		  <fileset dir="svntmp" />
+		</copy>
+		<delete dir="svntmp" />
 	</target>
 
 	<target name="docindex" depends="-dojhindex">
