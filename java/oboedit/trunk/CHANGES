@@ -1,17 +1,36 @@
-	* In Configuration Manager, button for changing link color now looks
-          like a button and the color name is shown in the appropriate color
-          (rather than just in black).
-	* New "-help" command-line option prints usage message and exits.
-	* Fixed problem where Graph Editor wasn't showing changes in icons
-	  or link colors until you did something that made it refresh
-	  itself (e.g., expand a node).  Now it refreshes when you save your
-	  configuration change so you see the new icon and/or color right
-	  away.
-	* Temporarily put new "regulates" icon contenders into icons
-          directory (src/org/oboedit/gui/resources/icons/typeicons) so that
-          users can look at them.  NOT YET COMMITTED--once there is agreement
-          on the favorites, I will commit those.
-	* Autosave is now turned on by default; users can turn it off via the
-          Configuration Manager if they wish.
-	* Added (to BBOP) CheckMemoryThread that runs in the background and
-          warns user if the available memory is >95% used up.
+* Made file browser for load/save open at last used directory (rather than
+  always at your home directory).
+* Searches were sensitive to whitespace at the end of the search string, so if
+  you searched for "term ", rather than "term", it wouldn't find anything.
+  Now whitespace is trimmed from the beginning and end of the search string.
+  (Requested by M. Ashburner.)
+* Fixed sub-selection problem where you couldn't change the sub-selection
+  without de-selecting most of the other selected terms.
+* Made sub-selection behavior more consistent:  the sub-selection is now the
+  term that you most recently selected (rather than the one that happened to
+  be alphabetically first, or a random one).  Note that this involves using
+  LinkedHashSets rather than HashSets to store the selected links and terms,
+  which maintains their order but can run slower.
+* Mostly fixed the sub-selection coloring problem, where there were multiple
+  darker highlights even though there can only be one sub-selection at a time;
+  however, there is still a minor problem: if you deselect your current
+  sub-selection, you can end up with nothing highlighted in the darker color,
+  even though there is still a sub-selection.
+* By request, added result count at end of search results title ("Search
+  results: all_text_fields contains "foo" (0 matches)").  This should also
+  address the issue of the blank window you get when there are no matches
+  (which a user complained about), since that will now be apparent from the "0
+  matches" text.  If users find the extra length of the title annoying, I can
+  make this configurable or try to make the tab title different from the
+  component title (at the moment, they're always the same).
+* Search text description wasn't including NOT when search is for terms that
+  "don't have" something.
+* Got rid of platform-independent release.  This was motivated by a bug where
+  the platform-independent version couldn't find the sample ontology file
+  (which used a relative path: test_resources/camphor_catabolism.obo) because
+  it didn't know where to look relative to.  Fixing this would have been
+  non-trivial.  After discussing the issue with the OBO-Edit community, we
+  concluded that there's really no need for the platform-independent version.
+  (The generic unix version works on Solaris as well as other unixes.)
+  (NOTE: will reinstate platform-independent release if there is demand from
+  users, e.g. Mike Cherry)
