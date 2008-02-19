@@ -38,7 +38,7 @@ public class IOManager {
 	public String getHistoryFilePath() {
 	    if (historyPath == null) {
 		File historyFile = new File(GUIManager.getPrefsDir(), "history.xml");
-		System.err.println("getHistoryFilePath: no existing history in " + historyFile.getAbsolutePath() + "--creating from resource."); // DEL
+//		System.err.println("getHistoryFilePath: no existing history in " + historyFile.getAbsolutePath() + "--creating from resource org/oboedit/resources/history.xml."); // DEL
 		// If there's no history yet, use the default one stored as a resource, and copy to .oboedit directory
 		try {
 		    FileUtil.ensureExists(historyFile,
