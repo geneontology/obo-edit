@@ -91,6 +91,9 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 			secondaryIDLabel.setEnabled(false);
 			secondaryIDLabel.setText("<no selection>");
 		}
+		// Resets height of ID text box to proper size
+		setMaximumSize(new Dimension(Integer.MAX_VALUE,
+				(int) getPreferredSize().getHeight()));
 	}
 
 	protected void setSecondariesVisible(boolean visible) {
