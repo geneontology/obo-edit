@@ -6,17 +6,19 @@
 </#macro>
 
 <#macro searchForm>
-   <div class="search">
-     <form id="search_form">
+ <div id="searchbar">
+      <form id="search_form">
         <input id="search_term" name="search_term"/>
       <input name="button"
             type="button"
             onclick="nodeSearch()"
-            value="Full Results" />
+            value="Search" />
      </form>
+ </div>
 </#macro>
 
 <#macro javascriptTags>
+  
  <script type="text/javascript"
           src="http://toy.lbl.gov:9012/amigo2/external/Prototype/prototype.js">
   </script>
@@ -54,6 +56,7 @@
   <script type="text/javascript"
           src="http://toy.lbl.gov:9012/amigo2/obd/handle.js">
   </script>
+
   
     <script type="text/javascript"
           src="/js/ajax.js">
@@ -63,6 +66,7 @@
   <script type="text/javascript"
           src="/js/obd-explorer.js">
   </script>
+  
 </#macro>
 
 <#macro hrefNode id format="html" label="${id}">
@@ -113,6 +117,75 @@ ${format}
 ]
 </#macro>
 
+
+
+<#macro nodePageLink id>
+<span class="identifier">
+<a href="/view/entity/${id}">
+<#if graph.getNode(id)?exists>
+${graph.getNode(id).getLabel()!""}
+<#else>
+${id}
+</#if>
+</a>
+</span>
+</#macro>
+
+<#-- TODO: make configurable -->
+<#macro nodePageLinkFull id>
+<span class="identifier">
+<a href="/view/entity/${id}">
+${id}
+</a>
+</span>
+<#if graph.getNode(id)?exists>
+${graph.getNode(id).getLabel()!""}
+</#if>
+</#macro>
+
+<#macro statementRow statement>
+ <tr>
+   <td class="node">
+    <#if statement.getNodeId() != focusId>  
+    <@nodePageLink id="${statement.getNodeId()}"/>
+    </#if>
+   </td>
+   <td class="relation">
+    <@nodePageLink id="${statement.getRelationId()}"/>
+   </td>
+  <td >
+    <#if statement.getTargetId()?exists>
+     <#if statement.getTargetId() != focusId>  
+      <@nodePageLink id="${statement.getTargetId()}"/>
+     </#if>
+   </#if>
+   </td>
+   <td class="node">
+    <#if statement.isInferred()>
+     [implied]
+    </#if>
+   </td>
+   <td class="source">
+   <#if statement.getSourceId()?exists>
+    <@nodePageLink id="${statement.getSourceId()}"/>
+   </#if>
+   </td>
+   <td class="provenance">
+    <#list statement.getSubStatements() as ss>
+     <span class="tag">
+      <@nodePageLink id="${ss.getRelationId()}"/>
+     <span class="tag">
+     </span>
+      <@nodePageLink id="${ss.getTargetId()}"/>
+      <#if ss.isLiteral()>
+      <@nodePageLink id="${ss.getValue()}"/>
+      </#if>
+     </span>
+    </#list>
+   </td>
+  </tr>
+</#macro>
+
 <#macro page title="OBD">
  <html>
 <head>
@@ -122,6 +195,12 @@ ${format}
       content="OBD: A Database store of biomedical annotations" />
 
 <@javascriptTags/>
+
+<link href="/css/formatting.css"
+      media="all"
+      rel="Stylesheet"
+      type="text/css" />
+      <#-- 
 <link href="/css/main.css"
       media="all"
       rel="Stylesheet"
@@ -142,6 +221,7 @@ ${format}
       media="all"
       rel="Stylesheet"
       type="text/css" />
+      -->
 <link rel="shortcut icon"
       href="/images/OBD.png"
       type="image/x-icon" />
@@ -149,7 +229,7 @@ ${format}
   <title>${title}</title>
 </head>
 <body>
-   <div id="header">
+ <div id="header">
   <span id="floatright">
     <a href="http://www.berkeleybop.org/obd" title="Home">Home</a>
 
@@ -167,15 +247,18 @@ ${format}
 	 
  class="image" />
   </a>
-  </div>
+ </div>
+ 
   <@searchForm/>
+  <div class="block" id="info">
   <h1>
     ${title}
   </h1>
-  <div class="content">
+   <div class="content">
     <div id="replace_me">
      <#nested>
     </div>
+   </div>
   </div>
  </body>
 </html>
