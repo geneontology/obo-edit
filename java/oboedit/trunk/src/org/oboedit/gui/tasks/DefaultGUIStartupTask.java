@@ -389,7 +389,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 									// final JButton custom =
 									// ButtonFactory.createFlatHighlightButton(
 									globeIcon,
-									"Click to switch to local selection mode",
+									"Switch to local selection mode",
 									0, null);
 					liveButton.setSelected(((ObjectSelector) c).isLive());
 					if (!((ObjectSelector) c).isLive()) {
@@ -407,11 +407,11 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 							if (liveButton.isSelected()) {
 								liveButton.setIcon(globeIcon);
 								liveButton
-										.setToolTipText("Click to switch to local selection mode");
+										.setToolTipText("Switch to local selection mode");
 							} else {
 								liveButton.setIcon(houseIcon);
 								liveButton
-										.setToolTipText("Click to switch to global selection mode");
+										.setToolTipText("Switch to global selection mode");
 							}
 						}
 					});
