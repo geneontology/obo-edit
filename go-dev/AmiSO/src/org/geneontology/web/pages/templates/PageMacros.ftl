@@ -117,6 +117,26 @@ ${format}
 ]
 </#macro>
 
+<#macro export path format>
+<span class="format">
+<a href="/${format}/${path}">
+${format}
+</a>
+</span>
+</#macro>
+
+<#macro exportLinks path>
+[
+<@export path="${path}" format="obo"/>
+|
+<@export path="${path}" format="owl"/>
+|
+<@export path="${path}" format="obdxml"/>
+|
+<@export path="${path}" format="json"/>
+]
+</#macro>
+
 
 
 <#macro nodePageLink id>

@@ -44,7 +44,7 @@ ${graph.getNode(focusId).getLabel()!""}
 <#if graph.getCompositionalDescription(focusId).isGenusDifferentia()>
 <dt>Genus</dt>
 
- <dd> <@nodePageLink id="${graph.getCompositionalDescription(focusId).getGenus()}"/>
+ <dd> <@nodePageLink id="${graph.getCompositionalDescription(focusId).getGenus().getNodeId()}"/>
  </dd>
 </dt>
 <dt>Differentia</dt>
