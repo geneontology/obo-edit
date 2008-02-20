@@ -6,6 +6,8 @@ default-namespace: foo
 [Term]
 id: bread
 name: bread
+property_value: term_created_by mildred
+made_up_tag: foo
 
 [Term]
 id: dread
@@ -15,8 +17,9 @@ name: dread
 id: fred
 name: fred
 namespace: test
-property_value: dislikes shuggy
+property_value: dislikes shuggy  ! ?? same as instance
 property_value: has_ss_no "123-45-6789" xsd:string
+relationship: likes biggles  ! ?? the proper way of indicating relationships for instances
 
 [Instance]
 id: mildred
@@ -26,6 +29,10 @@ property_value: dislikes shuggy
 [Instance]
 id: shuggy
 name: shuggy
+
+[Instance]
+id: biggles
+name: biggles
 
 [Typedef]
 id: likes
@@ -40,18 +47,36 @@ object: bread
 property_value: confirmed_by freds_mum
 
 [Annotation]
+id: _:annot1
 namespace: women
 subject: mildred
 relation: dislikes
 object: dread
+
+[Annotation]
+subject: biggles
+relation: dislikes
+object: dread
+property_value: holds_more_strongly_than _:annot1
+assigned_by: GO
+source: PMID:biggles_flies_again
 
 [Typedef]
 id: confirmed_by
 name: confirmed_by
 
 [Typedef]
+id: term_created_by
+is_metadata_tag: true
+
+[Typedef]
 id: dislikes
 name: dislikes
+
+[Typedef]
+id: holds_more_strongly_than
+domain: oban:Annotation
+range: oban:Annotation
 
 [Typedef]
 id: has_ss_no
