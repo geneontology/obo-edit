@@ -18,27 +18,33 @@ import org.obo.filters.ObjectFilterFactory;
 import org.obo.filters.SearchComparison;
 
 /**
+ * @deprecated
+ * @see org.obo.web.WebSearchUtil
  * @author cjm
  *
  */
 public class WebSearchUtil {
-	public enum QueryStyle {NCBI,GOOGLE};
+	public enum SearchableDatabase {NCBI,GOOGLE,CLINICAL_TRIALS_GOV};
+	public enum SearchResultFormat {HTML,XML};
 	
-	public static String createQueryString(QueryStyle style, Collection<String> terms) {
+	public static String createQueryString(SearchableDatabase style, Collection<String> terms) {
 		StringBuffer sb = new StringBuffer();
-		if (style.equals(QueryStyle.NCBI))
+		if (style.equals(SearchableDatabase.NCBI))
 			sb.append("(");
 		int i = 0;
 		for (String term : terms) {
 			if (i>0) {
 				sb.append(" OR ");
 			}
+			// we quote terms for all database flavours
 			sb.append("\""+term+"\"");
-			if (style.equals(QueryStyle.NCBI))
+			if (style.equals(SearchableDatabase.NCBI))
 				sb.append("[All Fields]");
+			else if (style.equals(SearchableDatabase.CLINICAL_TRIALS_GOV))
+				sb.append("[ALL-FIELDS]");
 			i++;
 		}
-		if (style.equals(QueryStyle.NCBI))
+		if (style.equals(SearchableDatabase.NCBI))
 			sb.append(")");
 		return sb.toString();
 	}
@@ -121,5 +127,38 @@ public class WebSearchUtil {
 				gterms.add(s1);
 		}
 		return gterms;
+	}
+	
+
+	
+	public static String createSearchURL(SearchResultFormat fmt, SearchableDatabase style, String searchTerm) {
+		String url = null;
+		if (style.equals(SearchableDatabase.CLINICAL_TRIALS_GOV)) {
+			url = "http://clinicaltrials.gov/ct2/results?term="+searchTerm;				
+		}
+		return url;
+	}
+	
+	// TODO: this isn't much good unless we load ontologies...
+	public static void main(String[] args) {
+		SearchableDatabase qs = SearchableDatabase.NCBI;
+		Collection<String> terms = new LinkedList<String>();
+		for (int i=0; i<args.length; i++) {
+			if (args[i].equals("-style")) {
+				i++;
+				String style = args[i];
+				if (style.contains("trial"))
+					qs = SearchableDatabase.CLINICAL_TRIALS_GOV;
+				else if (style.contains("google"))
+					qs = SearchableDatabase.GOOGLE;
+				else
+					qs = SearchableDatabase.NCBI;
+			}
+			else {
+				terms.add(args[i]);
+			}
+		}
+		String searchTerm = createQueryString(qs,terms);
+		System.out.println(searchTerm);
 	}
 }

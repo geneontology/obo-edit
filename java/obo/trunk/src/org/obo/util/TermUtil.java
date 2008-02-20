@@ -1,11 +1,20 @@
 package org.obo.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.bbop.dataadapter.DataAdapterException;
-import org.bbop.util.*;
-
-
+import org.bbop.util.AbstractTaskDelegate;
+import org.bbop.util.EmptyIterator;
+import org.bbop.util.IteratorFactory;
+import org.bbop.util.MultiHashMap;
+import org.bbop.util.ObjectUtil;
+import org.bbop.util.SuperIterator;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.DanglingObject;
@@ -28,18 +37,15 @@ import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.Value;
-import org.obo.datamodel.impl.*;
-import org.obo.filters.ContainsComparison;
-import org.obo.filters.EqualsComparison;
+import org.obo.datamodel.impl.DanglingClassImpl;
+import org.obo.datamodel.impl.DanglingInstanceImpl;
+import org.obo.datamodel.impl.DanglingLinkImpl;
+import org.obo.datamodel.impl.DanglingPropertyImpl;
+import org.obo.datamodel.impl.DefaultLinkDatabase;
+import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.filters.LinkFilter;
-import org.obo.filters.ObjectFilter;
-import org.obo.filters.ObjectFilterFactory;
-import org.obo.filters.RegexpComparison;
-import org.obo.filters.SearchComparison;
-import org.obo.filters.StartsWithComparison;
 import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
-import org.obo.history.CreateObjectHistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
@@ -1178,6 +1184,8 @@ public class TermUtil {
 	}
 	
 	public static int getScopeEnum(String label) {
+		if (label == null)
+			return Synonym.RELATED_SYNONYM;
 		String code = (String) label.toLowerCase().subSequence(0, 1);
 		if (code.equals("e"))
 			return Synonym.EXACT_SYNONYM;

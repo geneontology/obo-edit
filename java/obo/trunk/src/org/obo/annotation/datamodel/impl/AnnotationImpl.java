@@ -210,11 +210,15 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 
 	public void setObject(LinkedObject object) {
+		// lo : the link that is posited by this annotation instance
+		// (this may not exist yet)
 		LinkLinkedObject lo = (LinkLinkedObject) TermUtil.getPropValue(this,
 				AnnotationOntology.POSITS_REL(), LinkedObject.class, true);
 
 		Link newLink = null;
 		if (lo != null) {
+			// the annotation already posits a link;
+			// remove it (we will re-posit later)
 			Link link = lo.getLink();
 			newLink = (Link) link.clone();
 			newLink.setParent(object);
@@ -222,10 +226,14 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 			if (link.getChild() != null)
 				link.getChild().removeParent(link);
 		} else {
+			// 
 			newLink = new OBORestrictionImpl((LinkedObject) null,
 					(OBOProperty) null, (LinkedObject) object);
 		}
 		lo = new LinkLinkedObject(newLink);
+		/*
+		 * (re)posit the link
+		 */
 		addPropertyValue(AnnotationOntology.POSITS_REL(), lo);
 		if (newLink.getChild() != null)
 			newLink.getChild().addParent(newLink);
