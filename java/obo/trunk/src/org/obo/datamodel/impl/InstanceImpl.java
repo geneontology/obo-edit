@@ -93,10 +93,9 @@ public class InstanceImpl extends LinkedAnnotatedObjectImpl implements
 
 	public Collection<OBOProperty> getProperties() {
 		Set<OBOProperty> properties = new LinkedHashSet<OBOProperty>();
-		Iterator<Link> it = getParents().iterator();
-		while (it.hasNext()) {
-			ValueLink link = (ValueLink) it.next();
-			properties.add(link.getType());
+		for (Link link: getParents()) {
+			if (link instanceof ValueLink)
+				properties.add(((ValueLink)link).getType());
 		}
 		return properties;
 	}

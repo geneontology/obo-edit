@@ -5,7 +5,10 @@ import org.obo.datamodel.*;
 
 
 /** Used for property values for instances, as well as to link 
-    2 instances */
+ *  2 instances 
+ *  
+ *  CJM: is this also used for class metadata links? TODO test
+ */
 public class InstancePropertyValue implements ValueLink {
 
 	/**
@@ -25,7 +28,7 @@ public class InstancePropertyValue implements ValueLink {
 	public InstancePropertyValue(LinkedObject child) {
 		this(child, null, null);
 	}
-	
+
 	public InstancePropertyValue(LinkedObject child, OBOProperty type,
 			Value value) {
 		this(child, type, value, false);
@@ -38,11 +41,11 @@ public class InstancePropertyValue implements ValueLink {
 		this.value = value;
 		this.isImplied = isImplied;
 	}
-	
+
 	public void setNamespace(Namespace namespace) {
 		this.namespace = namespace;
 	}
-	
+
 	public Namespace getNamespace() {
 		return namespace;
 	}
@@ -50,8 +53,8 @@ public class InstancePropertyValue implements ValueLink {
 	@Override
 	public int hashCode() {
 		return (child == null ? 0 : child.hashCode())
-				+ (type == null ? 0 : type.hashCode())
-				+ (value == null ? 0 : value.hashCode());
+		+ (type == null ? 0 : type.hashCode())
+		+ (value == null ? 0 : value.hashCode());
 	}
 
 	@Override
@@ -59,8 +62,8 @@ public class InstancePropertyValue implements ValueLink {
 		if (o instanceof InstancePropertyValue) {
 			InstancePropertyValue ipv = (InstancePropertyValue) o;
 			return ObjectUtil.equals(ipv.getChild(), child)
-					&& ObjectUtil.equals(ipv.getType(), type)
-					&& ObjectUtil.equals(ipv.getValue(), value);
+			&& ObjectUtil.equals(ipv.getType(), type)
+			&& ObjectUtil.equals(ipv.getValue(), value);
 		} else
 			return false;
 	}
@@ -68,7 +71,7 @@ public class InstancePropertyValue implements ValueLink {
 	@Override
 	public String toString() {
 		return child + " --" + (type == null ? "null type" : type.getID())
-				+ "--> " + value;
+		+ "--> " + value;
 	}
 
 	public LinkedObject getChild() {
@@ -111,18 +114,18 @@ public class InstancePropertyValue implements ValueLink {
 	public void setValue(Value value) {
 		this.value = value;
 	}
-	
+
 	public LinkedObject getParent() {
 		if (value instanceof LinkedObject)
 			return (LinkedObject) value;
 		else
 			return null;
 	}
-	
+
 	public void setParent(LinkedObject parent) {
 		setValue(parent);
 	}
-	
+
 	public String getID() {
 		char sepChar = '-';
 		String strVal = null;
@@ -132,13 +135,13 @@ public class InstancePropertyValue implements ValueLink {
 			strVal = value.toString();
 		return getChild().getID()+' '+sepChar+getType().getID()+sepChar+'>'+ " \""+strVal.replaceAll("\"", "\\\"")+"\"";
 	}
-	
+
 	public boolean isAnonymous() {
 		return false;
 	}
-	
+
 	public boolean isImplied() {
 		return isImplied;
 	}
-	
+
 }

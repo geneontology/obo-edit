@@ -36,6 +36,13 @@ public interface IdentifiedObject extends IdentifiableObject, NamespacedObject,
 
 	public void addPropertyValue(PropertyValue pv);
 
+	/**
+	 * Note that in the context of an identified object, PropertyValues
+	 * are simple String-String pairwise mappings. The actual instance-level
+	 * property_value tag is actually parsed as a relationship
+	 * 
+	 * @return all property-value pairs
+	 */
 	public Set<PropertyValue> getPropertyValues();
 
 	public void removePropertyValue(PropertyValue pv);

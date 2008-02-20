@@ -15,7 +15,7 @@ import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterFactory;
 import org.obo.filters.RegexpComparison;
 import org.obo.util.WebSearchUtil;
-import org.obo.util.WebSearchUtil.QueryStyle;
+import org.obo.util.WebSearchUtil.SearchableDatabase;
 
 
 public class WebSearchUtilTest extends AbstractOBOTest {
@@ -39,7 +39,7 @@ public class WebSearchUtilTest extends AbstractOBOTest {
 		for (String term : terms)
 			System.out.println(term);
 		assertTrue(terms.size() > 0);
-		String qs = WebSearchUtil.createQueryString(QueryStyle.NCBI, terms);
+		String qs = WebSearchUtil.createQueryString(SearchableDatabase.NCBI, terms);
 		System.out.println(qs);
 		assertTrue(qs.contains("RNA"));
 	}
