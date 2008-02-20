@@ -247,10 +247,10 @@ public class FilterComponent extends JPanel {
 		newButton.setToolTipText("Create new filter");
 		JButton loadButton = new JButton(Preferences
 				.loadLibraryIcon("folder.gif"));
-		newButton.setToolTipText("Load a filter from disk");
+		loadButton.setToolTipText("Load a filter from disk");
 		JButton saveButton = new JButton(Preferences
 				.loadLibraryIcon("floppy.gif"));
-		newButton.setToolTipText("Save this filter to disk");
+		saveButton.setToolTipText("Save this filter to disk");
 		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				contentPanel.load();
