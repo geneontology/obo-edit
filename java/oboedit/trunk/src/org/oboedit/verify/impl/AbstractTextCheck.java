@@ -219,8 +219,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			try {
 				FileUtil.ensureExists(Preferences.getDictionaryFile(),
 						"org/oboedit/resources/dictionary.dict");
-				dictionary = new SpellDictionaryHashMap(Preferences
-						.getDictionaryFile());
+				dictionary = new SpellDictionaryHashMap(Preferences.getDictionaryFile());
 			} catch (IOException e) {
 			}
 			spellChecker = new SpellChecker(dictionary);
@@ -699,7 +698,9 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 										+ "\" to dictionary") {
 							public void run() {
 								getSpellChecker().addToDictionary(
-										arg0.getInvalidWord());
+								    arg0.getInvalidWord());
+								// Add this word to the user's dictionary
+								saveWord(arg0.getInvalidWord(), Preferences.getDictionaryFile());
 							}
 						};
 
@@ -1025,4 +1026,18 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 				|| Character.UnicodeBlock.of(c).equals(
 						Character.UnicodeBlock.LATIN_1_SUPPLEMENT);
 	}
+
+    private void saveWord(String word, File dictFile) {
+	if (dictFile == null || word == null || word.equals(""))
+	    return;
+                try {
+		    FileWriter w = new FileWriter(dictFile.toString(), true);
+		    // Open with append.
+		    w.write(word);
+		    w.write("\n");
+		    w.close();
+		} catch (IOException ex) {
+		    System.out.println("Error writing to dictionary file");
+		}
+    }
 }
