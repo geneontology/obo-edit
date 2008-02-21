@@ -243,8 +243,9 @@ public class FilterComponent extends JPanel {
 		};
 		searchButton.addActionListener(actionListener);
 		contentPanel.addActionListener(actionListener);
-		JButton newButton = new JButton(Preferences.loadLibraryIcon("file.gif"));
-		newButton.setToolTipText("Create new filter");
+//		JButton newButton = new JButton(Preferences.loadLibraryIcon("file.gif"));
+		JButton newButton = new JButton(Preferences.loadLibraryIcon("erase.gif"));
+		newButton.setToolTipText("Clear");
 		JButton loadButton = new JButton(Preferences
 				.loadLibraryIcon("folder.gif"));
 		loadButton.setToolTipText("Load a filter from disk");
