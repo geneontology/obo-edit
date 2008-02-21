@@ -388,13 +388,16 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	public void writeValueLinkTag(ValueLink link, NestedValue nv)
 			throws IOException {
-		if (link.getParent() != null) {
-			writeLinkTag(link, nv);
-		} else if (link.getValue() instanceof DatatypeValue) {
+		
+		if (link.getValue() instanceof DatatypeValue) {
 			DatatypeValue val = (DatatypeValue) link.getValue();
 			stream.print("property_value: " + engine.mapID(link.getType())
 					+ " \"" + escapeQuoted(val.getValue()) + "\" "
 					+ engine.mapID(val.getType())+"\n");
+		} else if (link.getParent() != null) {
+			stream.print("property_value: "+engine.mapID(link.getType()) + " " +
+					engine.mapID(link.getParent())+"\n");
+			//writeLinkTag(link, nv);
 		} else
 			throw new RuntimeException("Unexpected valuelink value from "+link);
 	}
