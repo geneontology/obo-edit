@@ -1,23 +1,9 @@
 package org.geneontology.web;
 
-import org.obd.ws.DescriptionResource;
-import org.obd.ws.GraphResource;
-import org.obd.ws.HomeResource;
-import org.obd.ws.NestedAnnotationResource;
-import org.obd.ws.NodeResource;
-import org.obd.ws.NodesBySearchResource;
 import org.obd.ws.OBDRestApplication;
-import org.obd.ws.PageResource;
-import org.obd.ws.ScoredNodesResource;
-import org.obd.ws.ShardMetadataResource;
-import org.obd.ws.SourceResource;
-import org.obd.ws.SourcesResource;
-import org.obd.ws.StatementsBySearchResource;
-import org.obd.ws.StatementsResource;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
-import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
@@ -126,6 +112,7 @@ public class AmigoRestApplication extends OBDRestApplication {
 	
 	public void attachApplicationSpecificRoutes(Router router) {
 		router.attach("/{format}/entity/{id}", NodeDetailResource.class);
+		router.attach("/{format}/extsearch/{id}", ExternalSearchResource.class);
 	}
 	public void attachRoutes(Router router) {
 		super.attachRoutes(router);
