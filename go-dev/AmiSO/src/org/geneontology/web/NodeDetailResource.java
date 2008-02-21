@@ -14,9 +14,12 @@ import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.LinkQueryTerm;
+import org.obd.query.Shard;
 import org.obd.query.impl.OBOSessionShard;
 import org.obd.ws.NodeResource;
 import org.obo.datamodel.OBOSession;
+import org.obo.web.DatabaseSearchWrapper;
+import org.obo.web.DatabaseSearchWrapper.SearchableDatabase;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -84,7 +87,20 @@ public class NodeDetailResource extends NodeResource {
 		//Collection<Statement> stmts = getStatements();
 		Graph g =  getGraph();
 
-		
+		Shard shard = getShard();
+		/*
+		 * experimental: search term expansion
+		 */
+		if (false) {
+			if (shard instanceof OBOSessionShard) {
+				OBOSessionShard oshard = (OBOSessionShard)shard;
+				OBOSession session = oshard.getSession();
+				DatabaseSearchWrapper dsw = new DatabaseSearchWrapper(session);
+				dsw.setSearchableDatabase(SearchableDatabase.CLINICAL_TRIALS_GOV);
+				String url =
+					dsw.expandToSearchURL(session.getObject(getNodeId()));
+			}
+		}
 		
 		if (format == null) {
 			format = "";
