@@ -1,9 +1,11 @@
 package org.obo.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -17,7 +19,9 @@ import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
+import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.ValueLink;
@@ -38,6 +42,12 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		 * These are an instance-instance like "fred likes bread"
 		 * and instance-datatype "fred has_social_security_no xxx"
 		 */
+		testAnnot(session);
+		File file = writeTempOBOFile();
+		session = getSessionFromResources(Collections.singleton(file.toString()));
+		testAnnot(session);
+	}
+	private void testAnnot(OBOSession session) throws IOException, DataAdapterException {
 		Instance fred = (Instance)session.getObject("fred");
 		System.out.println(fred);
 		boolean likesBread = false;
@@ -52,6 +62,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 			}
 			if (link.getType().getID().equals("dislikes")) {
 				assertTrue(link instanceof ValueLink);
+
 				if (link.getParent().getID().equals("shuggy")) {
 					assertTrue(link instanceof ValueLink);
 				}
@@ -119,6 +130,9 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 								annotCompareTestOk = true;
 						}
 					}
+					OBOProperty property = (OBOProperty)session.getObject("holds_more_strongly_than");
+					IdentifiedObject annot2 = session.getObject("_:annot2");
+					annot.addPropertyValue(property, annot2);
 				}
 			}
 		}
@@ -128,20 +142,16 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 				System.out.println(" regular object "+io);
 			}
 		}
-		
+
 		OBOObject bread = (OBOObject)session.getObject("bread");
 		for (PropertyValue pv : bread.getPropertyValues()) {
 			System.out.println("  pv:"+pv);
-		}		
-				
+		}
 
-		writeTempOBOFile();
-		
 		testForAnnotation("fred","bread");
 		testForAnnotationAssignedBy("biggles","dread","GO");
 		testForAnnotationPublication("biggles","dread","PMID:biggles_flies_again");
-		
-		assertTrue(true);
+
 	}
 	
 

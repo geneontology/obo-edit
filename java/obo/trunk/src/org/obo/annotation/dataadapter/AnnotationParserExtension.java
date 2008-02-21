@@ -413,7 +413,7 @@ public class AnnotationParserExtension implements ParserExtension,
 			} else if (mapping.equals(RELATIONSHIP_TAG)) {
 				OBOProperty rel = currentAnnotation.getRelationship();
 				if (rel != null) {
-					stream.print("relationship: " + sengine.mapID(rel) + " ! "
+					stream.print("relation: " + sengine.mapID(rel) + " ! "
 							+ rel.getName() + "\n");
 				}
 				return true;
@@ -447,23 +447,31 @@ public class AnnotationParserExtension implements ParserExtension,
 					Iterator it2 = linkList.iterator();
 					while (it2.hasNext()) {
 						Link l = (Link) it2.next();
-						if (l instanceof OBORestriction) {
-							OBORestriction link = (OBORestriction) l;
-							if (link.getType().equals(
+//						if (l instanceof OBORestriction) {
+//							OBORestriction link = (OBORestriction) l;
+							if (l.getType().equals(
 									AnnotationOntology.ASSIGNED_BY_REL())
-									|| link.getType().equals(
+									|| l.getType().equals(
 											AnnotationOntology.EVIDENCE_REL())
-									|| link.getType().equals(
+									|| l.getType().equals(
 											AnnotationOntology.POSITS_REL())
-									|| link.getType().equals(
-											AnnotationOntology.SOURCE_REL()))
+									|| l.getType().equals(
+											AnnotationOntology.SOURCE_REL())) {
 								continue;
-							else if (link instanceof ValueLink)
-								serializer.writeValueLinkTag((ValueLink) link,
-										link.getNestedValue());
-							else
-								sengine.writeLink(serializer, link);
-						}
+							}
+							else if (l instanceof ValueLink) {
+								if (mapping.equals(OBOConstants.VALUE_LINK_TAG))
+									serializer.writeValueLinkTag((ValueLink) l,
+											l.getNestedValue());
+							}
+							else {
+								if (mapping.equals(OBOConstants.LINK_TAG))
+									sengine.writeLink(serializer, l);
+							}
+//						}
+//						else {
+//						System.out.println("xx"+l+" "+mapping+" "+l.getClass());
+//						}
 					}
 				}
 				return true;

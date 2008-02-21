@@ -650,6 +650,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 							optional, true, nv);
 				}
 			} catch (OBOParseException ex) {
+				/**
+				 * CJM: Note the logic here. specifically readPropertyValue in
+				 * OBOParseEngine. non-instance pvs will be passed here
+				 */
 				((OBOParser) parser).readTagValue(name, value, nv, false);
 			}
 			return true;

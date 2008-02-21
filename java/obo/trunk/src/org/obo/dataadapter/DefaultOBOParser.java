@@ -671,6 +671,13 @@ public class DefaultOBOParser implements OBOParser {
 	public void readPropertyValue(String propID, String val, String typeID,
 			boolean quoted, NestedValue nv) throws OBOParseException {
 
+		/*
+		 * CJM: Note the logic here: if we find property_value in a non-instance
+		 * stanza we throw an exception. This is caught in OBOParseEngine, in
+		 * which case readTagValue will be called.
+		 * Eventually we want to allow property values in Term stanzas. Not sure
+		 * how to do this yet.
+		 */ 
 		if (!(currentObject instanceof Instance))
 			throw new OBOParseException("Attempted to set instance_of "
 					+ "value for non-instance " + currentObject,
