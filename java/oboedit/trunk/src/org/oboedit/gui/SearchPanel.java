@@ -193,6 +193,7 @@ public class SearchPanel extends JPanel {
 		};
 
 		JButton addButton = new JButton(Preferences.loadLibraryIcon("plus.gif"));
+		addButton.setToolTipText("Add additional search filter");
 		MultiIcon doublePlusIcon = new MultiIcon();
 		doublePlusIcon.addIcon(Preferences.loadLibraryIcon("plus.gif"));
 		doublePlusIcon.addIcon(Preferences
@@ -243,7 +244,7 @@ public class SearchPanel extends JPanel {
 		statusPanel.setOpaque(false);
 		statusPanel.setLayout(new GridLayout(1, 1));
 
-		lightbulbButton = new JCheckBox("Show debugging hints", true);
+		lightbulbButton = new JCheckBox("Show debugging hints   ", true);
 		lightbulbButton.addActionListener(lightbulbActionListener);
 
 		buttonPanel = new JPanel();
@@ -609,6 +610,10 @@ public class SearchPanel extends JPanel {
 			leftButton.setOpaque(false);
 			rightButton.setOpaque(false);
 			removeButton.setOpaque(false);
+
+			removeButton.setToolTipText("Remove this filter");
+			leftButton.setToolTipText("Move filter up a level");
+			rightButton.setToolTipText("Move filter down a level");
 
 			rightButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
