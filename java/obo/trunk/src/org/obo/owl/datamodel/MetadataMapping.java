@@ -7,7 +7,6 @@ import org.obo.datamodel.OBOSession;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLEntity;
 
 public interface MetadataMapping {

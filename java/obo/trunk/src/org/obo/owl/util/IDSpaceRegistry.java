@@ -20,6 +20,7 @@ public class IDSpaceRegistry {
 		registerMapping("http://www.ifomis.org/bfo/1.0#","bfo_1_0");
 		registerMapping("http://purl.org/biotop/dev#","biotop_dev");
 		registerMapping("http://ccdb.ucsd.edu/SAO/1.2#","sao");
+		registerMapping("http://obi.sourceforge.net/ontology/OBI.owl#","obi");
 	}
 
 
@@ -40,6 +41,10 @@ public class IDSpaceRegistry {
 		return uriToIDSpace;
 	}
 
+	public String getIDSpace(URI uriPrefix) {
+		return uriToIDSpace.get(uriPrefix);
+	}
+	
 	public Collection<URI> getUris() {
 		return uriToIDSpace.keySet();
 	}

@@ -19,7 +19,7 @@ name: fred
 namespace: test
 property_value: dislikes shuggy  ! ?? same as instance
 property_value: has_ss_no "123-45-6789" xsd:string
-relationship: likes biggles  ! ?? the proper way of indicating relationships for instances
+relationship: likes biggles  ! not the proper way of indicating relationships for instances
 
 [Instance]
 id: mildred
@@ -39,19 +39,20 @@ id: likes
 name: likes
 
 [Annotation]
+id: _:annot1
+namespace: women
+subject: mildred
+relation: dislikes
+object: dread
+
+[Annotation]
+id: _:annot2
 namespace: test
 namespace: men
 subject: fred
 relation: likes
 object: bread
 property_value: confirmed_by freds_mum
-
-[Annotation]
-id: _:annot1
-namespace: women
-subject: mildred
-relation: dislikes
-object: dread
 
 [Annotation]
 subject: biggles

@@ -147,6 +147,9 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		for (PropertyValue pv : bread.getPropertyValues()) {
 			System.out.println("  pv:"+pv);
 		}
+		// check newlines written out OK
+		// this should really go in its own test; nothing to do with annotations per se
+		bread.setDefinition("test\na b c d e f\nggg\ty\rfoo");
 
 		testForAnnotation("fred","bread");
 		testForAnnotationAssignedBy("biggles","dread","GO");

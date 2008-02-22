@@ -271,15 +271,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected boolean writeModificationData;
 
-	protected static final char[] generic_escapes = { '{', '!' };
+	protected static final char[] generic_escapes = { '{', '!', '\n', '\r' };
 
-	protected static final char[] blocktext_escapes = { '{', '\n', '!' };
+	protected static final char[] blocktext_escapes = { '{', '\n', '\t', '!' };
 
 	protected static final char[] space_escapes = { '{', '"', ' ', '\t', '!' };
 
 	protected static final char[] single_quote_escapes = { '\'', '\n' };
 
-	protected static final char[] double_quote_escapes = { '"', '\n' };
+	protected static final char[] double_quote_escapes = { '"', '\n', '\r' };
 
 	protected static final char[] before_quote_escapes = { '"', '{', '!' };
 
@@ -350,6 +350,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (found) {
 				out.append('\\');
 				if (c == '\n')
+					out.append('n');
+				else if (c == '\r') // CJM - normalize newlines
 					out.append('n');
 				else if (c == '\\')
 					out.append('\\');
