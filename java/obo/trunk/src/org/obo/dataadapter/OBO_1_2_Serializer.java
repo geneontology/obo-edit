@@ -17,7 +17,6 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	protected List<PropertyValue> writeNestedValueScratch = new ArrayList<PropertyValue>();
 
 	protected Namespace defaultNamespace = new Namespace("<default namespace>");
-
 	protected IdentifiedObject currentObject;
 
 	protected OBOSerializationEngine engine;
@@ -481,7 +480,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	}
 
 	public void writeUnrecognizedTag(PropertyValue pv) throws IOException {
-		println(pv.getProperty() + ": " + pv.getValue());
+		println(pv.getProperty() + ": " + escape(pv.getValue()));
 	}
 
 	protected void print(String s) throws IOException {

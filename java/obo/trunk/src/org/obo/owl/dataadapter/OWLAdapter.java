@@ -2,6 +2,7 @@ package org.obo.owl.dataadapter;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,7 +48,6 @@ import org.obo.datamodel.Value;
 import org.obo.datamodel.ValueLink;
 import org.obo.datamodel.impl.DatatypeValueImpl;
 import org.obo.datamodel.impl.DefaultObjectFactory;
-import org.obo.datamodel.impl.InstanceImpl;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.owl.datamodel.MetadataMapping;
@@ -731,10 +731,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
    			String propid = getOboID(uri);
    			OBOProperty prop = this.getOboProperty(propid);
    			if (owlAnnot instanceof OWLConstantAnnotation) {
+   				// TODO -- allow for proper property value handling in org.obo
    				String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-   				PropertyValue pv =
-   					new PropertyValueImpl(propid,val);
-   				// lo.addPropertyValue(pv); TODO
+   				PropertyValueImpl pv = new PropertyValueImpl(propid,val);
+   				lo.addPropertyValue(pv);
    			}
    		}
 	}
@@ -806,6 +806,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new DataAdapterException(e, "Write error");
 		}
 	}
@@ -972,6 +973,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new DataAdapterException(e, "Write error");		
 		}
 		return ontology;
@@ -1108,6 +1110,20 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			db = "_global";
 			localId = idParts[0];
 		}
+		if (db.equals("http")) { // TODO - roundtrip from other schemes
+			return URI.create(id);
+		}
+		
+		IDSpaceRegistry registry = IDSpaceRegistry.getInstance();
+			
+		for (URI uriPrefix : registry.getUris()) {
+			if (db.equals(registry.getIDSpace(uriPrefix))) {
+				String uriPrefixString = uriPrefix.toString();
+				return URI.create(uriPrefixString+localId);
+			}
+		}
+
+		
 		String safeId;
 		try {
 			 safeId = java.net.URLEncoder.encode(localId,"US-ASCII");
