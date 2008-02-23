@@ -68,30 +68,16 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 	public void configureLook(ColorProvider darkColor,
 			ColorProvider lightColor, Font font, int cornerType) {
 
-		ColorProvider light = lightColor;
-		ColorProvider dark = new ColorBlender(darkColor, lightColor, 0.3f);
-		ColorProvider dark2 = new ColorBlender(darkColor,
-				FixedColorProvider.WHITE, 0.1f);
-		ColorProvider dark3 = darkColor;
-
-		Border roundedBorder = new RoundedCornerBorder(dark3, light,
-				cornerType, cornerType, 0, 0, true, true, true, true);
+		Border roundedBorder = new RoundedCornerBorder(darkColor, lightColor,
+							       cornerType, cornerType, 0, 0, true, true, true, true);
 
 		Border tabNormalBorder = roundedBorder;
 		
-		Border contentBorder = new RoundedCornerBorder(dark3, light,
-				cornerType, cornerType, cornerType, cornerType, false, true,
-				true, true);
+		Border contentBorder = new RoundedCornerBorder(darkColor, lightColor,
+							       cornerType, cornerType, cornerType, cornerType, false, true,
+							       true, true);
 
-		ComponentPainter areaPainter = new FixedTransformComponentPainter(
-				new GradientComponentPainter(dark2, light, light, dark2));
-		ComponentPainter contentPainter = new FixedTransformComponentPainter(
-				new GradientComponentPainter(light, dark2, dark2, light));
-		ComponentPainter highlightPainter = new FixedTransformComponentPainter(
-				new GradientComponentPainter(FixedColorProvider.WHITE, light,
-						light, light));
-		ComponentPainter normalPainter = new FixedTransformComponentPainter(
-				new GradientComponentPainter(light, dark, dark, dark));
+		setupGradient(darkColor, lightColor);
 
 		tabbedPanelProperties.setPaintTabAreaShadow(true).setTabSpacing(2)
 				.setShadowEnabled(false);
@@ -118,10 +104,6 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 				.getComponentProperties().setBorder(contentBorder).setInsets(
 						new Insets(3, 3, 4, 4));
 
-		tabbedPanelProperties.getContentPanelProperties()
-				.getShapedPanelProperties().setComponentPainter(contentPainter)
-				.setClipChildren(true).setOpaque(false);
-
 		titledTabProperties.setHighlightedRaised(0);
 		tabbedPanelProperties.setTabAreaOrientation(Direction.UP);
 
@@ -140,9 +122,6 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 								.getComponentProperties().getBackgroundColor())
 				.setFont(font);
 
-		titledTabProperties.getNormalProperties().getShapedPanelProperties()
-				.setComponentPainter(normalPainter).setOpaque(false);
-
 		Property[] linkedProperties = { ComponentProperties.BORDER,
 				ComponentProperties.INSETS, ComponentProperties.FONT };
 
@@ -154,11 +133,38 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 									.getComponentProperties().getMap(),
 							linkedProperties[i]);
 		}
-
-		titledTabProperties.getHighlightedProperties()
-				.getShapedPanelProperties().setComponentPainter(
-						highlightPainter);
 	}
+
+    // As per user request, I am removing the gradient on the tab titlebars and making them solid color.
+    // This could be configurable.
+    private void setupGradient(ColorProvider darkColor, ColorProvider lightColor) {
+	ColorProvider dark = new ColorBlender(darkColor, lightColor, 0.3f);
+	ColorProvider dark2 = new ColorBlender(darkColor,
+					       FixedColorProvider.WHITE, 0.1f);
+
+	// GradientComponentPainter(FixedColorProvider.WHITE, lightColor, lightColor, lightColor) makes selected tab white
+	// GradientComponentPainter(FixedColorProvider.WHITE, darkColor, darkColor, darkColor) makes selected tab blue with gradient
+	// GradientComponentPainter(darkColor, darkColor, darkColor, darkColor) makes selected tab solid blue
+	ComponentPainter highlightPainter = new FixedTransformComponentPainter(
+//	    new GradientComponentPainter(FixedColorProvider.WHITE, lightColor, lightColor, lightColor));
+	    new GradientComponentPainter(darkColor, darkColor, darkColor, darkColor));
+	titledTabProperties.getHighlightedProperties().getShapedPanelProperties().setComponentPainter(highlightPainter);
+
+	ComponentPainter contentPainter = new FixedTransformComponentPainter(
+	    new GradientComponentPainter(lightColor, dark2, dark2, lightColor));
+	tabbedPanelProperties.getContentPanelProperties()
+	    .getShapedPanelProperties().setComponentPainter(contentPainter)
+	    .setClipChildren(true).setOpaque(false);
+
+	// Unchosen tabs are now light gray
+	// If you use new GradientComponentPainter(dark, dark, dark, dark))
+	// and uncomment the titledTabProperties line, then the unchosen tabs are blue.
+//	ComponentPainter normalPainter = new FixedTransformComponentPainter(
+//	    new GradientComponentPainter(dark, dark, dark, dark));
+
+//	titledTabProperties.getNormalProperties().getShapedPanelProperties()
+//	    .setComponentPainter(normalPainter).setOpaque(false);
+    }
 
 	/**
 	 * Constructor.
@@ -171,9 +177,8 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 	 *            the amount of rounding to use for corners, 0-4
 	 */
 	public BBOPTabTheme(ColorProvider darkColor, ColorProvider lightColor,
-			Font font, int cornerType) {
-		configureLook(lightColor, darkColor, font);
-
+			    Font font, int cornerType) {
+	    configureLook(darkColor, lightColor, font);
 	}
 
 	public String getName() {
