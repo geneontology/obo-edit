@@ -43,6 +43,7 @@ public class FileUtil {
 	    OutputStream os = new BufferedOutputStream(
 						  new FileOutputStream(file));
 	    
+	    System.err.println("ensureExists: creating " + file.getAbsolutePath() + " from resource " + resource); // DEL
 	    for(int next = is.read(); next != -1; next = is.read()) {
 		os.write(next);
 	    }
