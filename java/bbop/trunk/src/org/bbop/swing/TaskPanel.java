@@ -63,7 +63,7 @@ public class TaskPanel extends JPanel {
 			layout.show(TaskPanel.this, CONTENT_KEY);
 		repaint();
 		validate();
-		System.err.println("done updating");
+//		System.err.println("done updating");
 
 	}
 
