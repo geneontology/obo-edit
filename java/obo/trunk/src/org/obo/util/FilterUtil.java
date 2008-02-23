@@ -113,6 +113,15 @@ public class FilterUtil {
 		out.addFilter(b);
 		return out;
 	}
+	
+	public static <T> Filter<T> mergeFilters(Collection<Filter<T>> filters) {
+		if (filters.size() == 1)
+			return filters.iterator().next();
+		CompoundFilter out = new CompoundFilterImpl(CompoundFilter.AND);
+		for (Filter<T> filter : filters)
+			out.addFilter(filter);
+		return out;
+	}
 
 	public static Collection filterComparisonByInput(Collection allComparisons,
 			Class c) {
