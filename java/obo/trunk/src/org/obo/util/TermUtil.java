@@ -1,6 +1,7 @@
 package org.obo.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
@@ -1379,6 +1381,20 @@ public class TermUtil {
 					labels.add(syn.toString());
 		}
 		return labels;
+	}
+	
+
+
+	
+	public static Collection<OBOObject> getOBOObjects(OBOSession session) {
+		Collection<OBOObject> objs  = new HashSet<OBOObject>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io.isBuiltIn())
+				continue;
+			if (io instanceof OBOObject)
+				objs.add((OBOObject)io);
+		}
+		return objs;
 	}
 	
 
