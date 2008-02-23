@@ -181,8 +181,10 @@ public class AutocompleteBox<T> extends JComboBox {
 			} else if (allowNonModelValues) {
 				setSelectedItem(autocompleteModel.createValue(getText()));
 			}
-			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math
-					.random() * Integer.MAX_VALUE), "commit");
+			// What's this big random number for??
+			ActionEvent e = new ActionEvent(AutocompleteBox.this, (int) (Math.random()
+										     // * Integer.MAX_VALUE
+							    ), "commit");
 			for (ActionListener listener : commitListeners) {
 				listener.actionPerformed(e);
 			}
@@ -415,18 +417,22 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	@Override
+	/* Before I added this, it was tending to select the first thing in the list even if user selected a different one. */
+	public void actionPerformed(ActionEvent e) {
+	}
+
+	@Override
 	public void setSelectedItem(Object anObject) {
-//		if (anObject != null)
+//	    if (anObject != null) {
 //			System.err.println("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
 //					+ anObject.getClass());
+//	    }
 		if (anObject == null) {
 			doSetSelectedItem(null);
 		} else if (autocompleteModel.getDisplayType().isAssignableFrom(
 				anObject.getClass())) {
 			doSetSelectedItem(anObject);
 			Object selected = getSelectedItem();
-//			System.err.println("  AutocompleteBox.setSelectedItem: selected = " + selected + ", anObject = "
-//					+ anObject);
 		} else if (autocompleteModel.getOutputType().isAssignableFrom(
 				anObject.getClass())) {
 			List values = autocompleteModel.getDisplayValues(anObject);
@@ -434,9 +440,9 @@ public class AutocompleteBox<T> extends JComboBox {
 				doSetSelectedItem(values.get(0));
 			else
 				doSetSelectedItem(null);
-		} else if (anObject instanceof String) {
+		} else if (anObject instanceof String)
 			doSetSelectedItem(autocompleteModel.createValue((String) anObject));
-		}
+
 		if (isEditable() && getEditor() != null) {
 			configureEditor(getEditor(), getSelectedItem());
 		}
@@ -818,7 +824,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			super.setSelectedItem(null);
 		else {
 			Object val = lastHits.get(0).getVal();
-			System.out.println("SELECTING: " + val);
+//			System.out.println("setResults: SELECTING: " + val);
 			super.setSelectedItem(null);
 			if (isShowing() && hasMeaningfulFocus()) {
 				// hidePopup();
