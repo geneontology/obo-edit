@@ -1,17 +1,13 @@
 package org.obo.test;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
+import org.obo.filters.CategorySearchCriterion;
 import org.obo.filters.EqualsComparison;
 import org.obo.filters.Filter;
 import org.obo.filters.IsCompleteLinkCriterion;
@@ -63,6 +59,15 @@ public class FilterTest extends AbstractOBOTest {
 		return matches;
 	}
 
+	public void testSubsetFilter() {
+		ObjectFilter filter = (ObjectFilter)off.createNewFilter();
+		CategorySearchCriterion c = new CategorySearchCriterion();
+		filter.setCriterion(c);
+		filter.setValue("test");
+		Collection<IdentifiedObject> matches = filterObjects(filter);
+		assertTrue(matches.size() == 2);
+
+	}
 
 	public void testSearch() throws Exception {
 		ObjectFilter filter = (ObjectFilter)off.createNewFilter();
