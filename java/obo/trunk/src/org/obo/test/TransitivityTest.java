@@ -4,17 +4,14 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.ReasonerFactory;
-import org.obo.reasoner.impl.LinkPileReasoner;
 import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class TransitivityTest extends AbstractReasonerTest {
 

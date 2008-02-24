@@ -12,13 +12,11 @@ import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
-import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TransitivityExplanation;
 

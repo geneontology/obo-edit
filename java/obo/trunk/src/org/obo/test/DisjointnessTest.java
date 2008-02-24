@@ -8,10 +8,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
-import org.obo.datamodel.IdentifiedObject;
-import org.obo.datamodel.Link;
-import org.obo.datamodel.LinkedObject;
-import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 
 public class DisjointnessTest extends AbstractReasonerTest {
 

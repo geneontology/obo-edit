@@ -1,14 +1,8 @@
 package org.obo.test;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.bbop.io.AuditedPrintStream;
-import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
-
-import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 
 
 public class IntersectionBloodCellExampleTestWithPellet extends IntersectionBloodCellExampleTest {

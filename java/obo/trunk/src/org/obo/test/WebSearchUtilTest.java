@@ -3,17 +3,12 @@ package org.obo.test;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
-import org.obo.datamodel.IdentifiedObject;
-import org.obo.filters.ObjectFilter;
-import org.obo.filters.ObjectFilterFactory;
-import org.obo.filters.RegexpComparison;
 import org.obo.util.WebSearchUtil;
 import org.obo.util.WebSearchUtil.SearchableDatabase;
 

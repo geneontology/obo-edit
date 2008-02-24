@@ -4,10 +4,10 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bbop.io.AuditedPrintStream;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.bbop.io.AuditedPrintStream;
 
 
 public class IntersectionBloodCellExampleTest extends AbstractReasonerTest {

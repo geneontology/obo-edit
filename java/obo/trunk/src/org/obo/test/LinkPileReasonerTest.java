@@ -4,12 +4,12 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.bbop.io.AuditedPrintStream;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.LinkPileReasoner;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class LinkPileReasonerTest extends AbstractReasonerFaceoffTest {
 

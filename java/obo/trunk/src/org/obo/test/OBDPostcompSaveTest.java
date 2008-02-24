@@ -4,14 +4,12 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
-import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBDSQLDatabaseAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;

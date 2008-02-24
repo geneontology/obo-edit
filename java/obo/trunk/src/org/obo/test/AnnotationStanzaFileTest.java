@@ -2,16 +2,11 @@ package org.obo.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.bbop.dataadapter.DataAdapterException;
-import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.datamodel.DatatypeValue;
 import org.obo.datamodel.IdentifiedObject;
@@ -25,7 +20,6 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.ValueLink;
-import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.util.AnnotationUtil;
 
 public class AnnotationStanzaFileTest extends AbstractAnnotationTest {

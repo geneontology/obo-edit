@@ -1,8 +1,10 @@
 package org.obo.test;
 
-import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import junit.framework.*;
+import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 
 public class AllReasonerTestsWithPellet extends TestCase {
 

@@ -4,13 +4,11 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bbop.io.AuditedPrintStream;
-import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
-import org.obo.reasoner.impl.TrimmedLinkDatabase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.bbop.io.AuditedPrintStream;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 public class ReasonerRedundancyTest extends AbstractReasonerTest {
 
