@@ -4,11 +4,10 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.bbop.io.AuditedPrintStream;
-import org.obo.reasoner.impl.TrimmedLinkDatabase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.bbop.io.AuditedPrintStream;
 
 public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTest {
 

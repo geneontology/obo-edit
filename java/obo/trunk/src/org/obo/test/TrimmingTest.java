@@ -3,7 +3,9 @@ package org.obo.test;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.IdentifiedObject;
@@ -11,9 +13,6 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class TrimmingTest extends AbstractReasonerTest {
 

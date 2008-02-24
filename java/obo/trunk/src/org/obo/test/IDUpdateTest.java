@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.bbop.io.AuditedPrintStream;
 import org.obo.identifier.LinkIDResolution;
 import org.obo.identifier.LinkIDWarning;
 import org.obo.identifier.UnresolvedIDsException;
 import org.obo.util.IDUtil;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 
 public class IDUpdateTest extends AbstractOBOTest {

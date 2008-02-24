@@ -1,27 +1,19 @@
 package org.obo.test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.bbop.dataadapter.DataAdapterException;
-import org.bbop.io.AuditedPrintStream;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Instance;
-import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.Namespace;
-import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.impl.DefaultLinkDatabase;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
-
-
-import junit.framework.*;
 
 public abstract class AbstractAnnotationTest extends AbstractOBOTest {
 

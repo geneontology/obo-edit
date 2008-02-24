@@ -6,11 +6,10 @@ import java.util.LinkedList;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
-import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.reasoner.Explanation;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
 
 public abstract class AbstractReasonerFaceoffTest extends AbstractOBOTest {

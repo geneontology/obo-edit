@@ -1,9 +1,18 @@
 package org.obo.test;
 
-import junit.framework.*;
-
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
 import org.obo.dataadapter.OBOAdapter;

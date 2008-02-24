@@ -1,15 +1,14 @@
 package org.obo.test;
 
-import java.util.Collection;
-
-import org.obo.datamodel.*;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
-import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
+import org.obo.reasoner.impl.LinkPileReasonerFactory;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.ReasonerUtil;
 
 public abstract class AbstractReasonerTest extends AbstractOBOTest {

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.Link;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class TrimmingLibraryTest extends AbstractReasonerTest {
 
