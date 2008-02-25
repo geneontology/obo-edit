@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import org.bbop.swing.KeyRecorder;
 import org.obo.datamodel.LinkedObject;
 import org.obo.history.HistoryItem;
+import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.IDUtil;
 import org.oboedit.controller.FilterManager;
@@ -222,13 +223,13 @@ public class GUIUtil {
 
 	public static RenderSpec getSpec(FilteredRenderable fr, Object o, Collection<RenderedFilter>... fs) {
 		RenderSpec out = null;
+		ReasonedLinkDatabase r = SessionManager.getManager().getReasoner();
 		for (Collection<RenderedFilter> f : fs) {
 			if (f.size() == 0)
 				continue;
 			for (RenderedFilter rf : f) {
 			    if (rf != null) {
-				rf.getFilter().setReasoner(
-				    SessionManager.getManager().getReasoner());
+				rf.getFilter().setReasoner(r);
 				if (rf.getFilter().satisfies(o)) {
 					if (out == null)
 						out = rf.getSpec();
