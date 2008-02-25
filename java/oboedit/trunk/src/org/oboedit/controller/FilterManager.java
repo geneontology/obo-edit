@@ -75,6 +75,7 @@ import org.obo.filters.StartsWithComparison;
 import org.obo.filters.SynonymDbxrefSearchCriterion;
 import org.obo.filters.SynonymSearchCriterion;
 import org.obo.filters.WildcardComparison;
+import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.util.FilterUtil;
 import org.oboedit.gui.LineType;
@@ -156,11 +157,9 @@ public class FilterManager {
 	}
 
 	protected void updateReasoner() {
+		ReasonedLinkDatabase r = SessionManager.getManager().getReasoner();
 		for (SearchCriterion<?, ?> crit : getCriteria()) {
-			if (SessionManager.getManager().getUseReasoner())
-				crit.setReasoner(SessionManager.getManager().getReasoner());
-			else
-				crit.setReasoner(null);
+			crit.setReasoner(r);
 		}
 	}
 
