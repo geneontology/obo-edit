@@ -36,7 +36,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		}
 	};
 
-	protected JButton checkButton = new JButton("Run Manual Check");
+	protected JButton checkButton = new JButton("Run manual check now");
 
 	protected JButton addCheckButton = new JButton("Add check");
 
