@@ -31,6 +31,7 @@ import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
+import org.obo.owl.datamodel.impl.OBIMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.owl.util.IDSpaceRegistry;
 import org.obo.reasoner.ReasonerFactory;
@@ -530,6 +531,8 @@ public class OWL2OBO {
 					mapping = new SimpleOWLMetadataMapping();
 				else if (name.equals("ncbo"))
 					mapping = new NCBOOboInOWLMetadataMapping();
+				else if (name.equals("obi"))
+					mapping = new OBIMetadataMapping();
 				else if (name.equals("axiom"))
 					mapping = new AxiomAnnotationBasedOWLMetadataMapping();
 				else

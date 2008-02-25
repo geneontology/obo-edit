@@ -169,47 +169,37 @@ public class OBOMapper {
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("obo-mapper [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
-						 + "             [-semanticparse [-addsynonyms]] \\\n"
-						 + "             [-parsecomments] [-writecomments] \\\n"
-					 + "             [-runscript <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-					 + "             [-o [-reasonerfactory <class>] [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
-					 + "             [-o [-f <filterfileN.xml>] <outputfileN>]\n");
+				.println("obo-mapper [-?] -ontology <filename 1> ... -ontology <filename N> \\\n"
+						 + "            [-subset <subset1> ... -subset <subsetN>]\\\n"
+						 + "             [-c] [-followconsider] \\\n"
+						 + "             [-o <outputfile>] \\\n"
+						 + "             assocfile1 [assocfile2 ..assocfileN]");
 		System.err
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
-		.println("  -semanticparse [-addsynonyms] - Does a semantic parse on term name/synonyms; optionally makes synonyms\n"
-				+ "                               generates intersection_of definition (which can be reasoned over)\n"
-				+ "                               so far only implemented for regulation terms.");
+		.println("  -ontology <filename> - Loads the ontology with this filename\n"
+				+ "                      multiple ontologies can be passed; use -ontology before each one\n"
+				+ "                      If you are mapping to a subset, you do not need to pass an extra 'slim' file\n"
+				+ "                      However, if the subset categorization is NOT included in the main .obo file, you\n"
+				+ "                      can pass in more files this way. E.g."
+				+ "                      -ontology gene_ontology_edit.obo -ontology my_slims.obo\n");
 		System.err
-		.println("  -reasonerfactory            - When saving implied links, calls a non-default reasoner\n"
-				+ "                               Options: ");
+		.println("  -subset <subsetID> - Maps to this subset. E.g. 'goslim_generic'\n"
+				+ "                      multiple subsets can be passed; use -subset before each one\n"
+				+ " \n");
 		System.err
-		.println("  -parsecomments             - Parses comments in obsolete terms looking for\n"
-				+ "                               GO-style formatted comments containing parseable\n"
-				+ "                               replacement and consider terms.");
+		.println("  -followconsider    - If set, annotations to obsolete nodes will be first mapped"
+				+ "                      via the consider link\n"
+				+ "                      Note that traversal through the replaced_by link is automatic\n");
 		System.err
-				.println("  -writecomments             - Writes replaced_by and consider tags into parseable\n"
-						+ "                               GO-style formatted comments.");
+		.println("  -c                   - Count mode"
+				+ "                      If set, the total distinct number of entities (eg gene products) .\n"
+				+ "                      Will be summarised for each mapped class. *Implied* counts will be used\n");
 		System.err
-				.println("  -formatversion <versionid> - The version of OBO to write. Allowed values are\n"
-						+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
-						+ "                               Optional.");
-		System.err
-				.println("  -runscript <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's\n"
-					 + "                               arguments MUST be followed by \\; so that obo2obo knows\n"
-					 + "                               where the script arguments stop and obo2obo arguments resume.");
-		System.err
-				.println("  <filenameN>                - An OBO file to load. Any number of OBO files may\n"
-					 + "                               be loaded.");
-		System.err
-				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo>\n"
-						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
-						+ "        filter file or a link filter file to apply to the output file before writing.\n"
-						+ "        If the -allowdangling flag is specified, dangling links will not be written.\n"
-						+ "        The optional -p flag specifies the id of a property to use for \n"
-						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
-						+ "        applies filters using strict root detection.");
-		System.exit(exitCode);
+		.println("  -out <outfile> - Output file\n"
+				+ "                      Format depends on whether -c option is set.\n"
+				+ "                      If not set, output file with mirror input files, with OBO IDs mapped forward\n");
+
+			System.exit(exitCode);
 	}
 }
