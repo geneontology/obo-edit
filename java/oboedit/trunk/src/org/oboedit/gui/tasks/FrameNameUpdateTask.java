@@ -9,16 +9,18 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 
 	@Override
 	public void reload() {
-		GUIManager.getManager().getFrame().setTitle(getFrameTitle());
+	        GUIManager.getManager().getFrame().setTitle(getFrameTitle());
 	}
 
 	protected String getFrameTitle() {
 		String out = "OBO-Edit version " + Preferences.getVersion();
 		OBOSession session = SessionManager.getManager().getSession();
-		if (session != null && session.getLoadRemark() != null
-				&& session.getLoadRemark().length() > 0)
-			return out + ": " + session.getLoadRemark();
-		else
-			return out;
+		    String loadRemark = session.getLoadRemark();
+		if (session != null && loadRemark != null
+		    && loadRemark.length() > 0)
+		    out +=  ": " + loadRemark;
+		if (SessionManager.getManager().getUseReasoner())
+		    out +=  " (REASONER ON)";
+		return out;
 	}
 }
