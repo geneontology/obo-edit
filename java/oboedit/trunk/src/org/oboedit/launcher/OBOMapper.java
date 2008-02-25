@@ -106,6 +106,7 @@ public class OBOMapper {
 		Collection<String> ontPaths = new LinkedList<String>();
 		Collection<String> inputPaths = new LinkedList<String>();
 		Collection<String> categoryNames = new LinkedList<String>();
+		Collection<String> relationNames = new LinkedList<String>();
 		String out = null;
 		boolean countMode = false;
 		boolean allSlims = false;
@@ -116,6 +117,7 @@ public class OBOMapper {
 		IDMapper mapper = new IDMapper();
 
 		for (int i = 0; i < args.length; i++) {
+			System.err.println("processing option: "+args[i]);
 			if (args[i].equals("-ontology")) {
 				if (i >= args.length - 1)
 					printUsage(1);
@@ -136,6 +138,14 @@ public class OBOMapper {
 			} else if (args[i].equals("-c")) {
 				countMode=true;
 			} else if (args[i].equals("-usereasoner")) {
+				useReasoner=true;
+			} else if (args[i].equals("-follow")) {
+				if (i >= args.length - 1)
+					printUsage(1);
+				i++;
+				relationNames.add(args[i]);
+				System.err.println("following links of type: "+relationNames);
+				System.err.println("is_a is always followed. Reasoner will be used");
 				useReasoner=true;
 			} else if (args[i].equals("-reasonerfactory")) {
 				if (i >= args.length - 1)
@@ -164,6 +174,9 @@ public class OBOMapper {
 		for (String cat : categoryNames) {
 			System.err.println("filtering on: "+cat);
 			mapper.addCategory(cat);
+		}
+		for (String prop : relationNames) {
+			mapper.addPropertyToTraverse(prop);
 		}
 		if (followConsiderTags)
 			mapper.setAutoReplaceConsiderTags(followConsiderTags);
@@ -196,6 +209,7 @@ public class OBOMapper {
 	protected static void printUsage(int exitCode) {
 		System.err
 				.println("obo-mapper [-?] -ontology <filename 1> ... -ontology <filename N> \\\n"
+						 + "            [-usereasoner]\\\n"
 						 + "            [-subset <subset1> ... -subset <subsetN>]\\\n"
 						 + "             [-c] [-followconsider] \\\n"
 						 + "             [-o <outputfile>] \\\n"
@@ -218,9 +232,23 @@ public class OBOMapper {
 				+ "                      via the consider link\n"
 				+ "                      Note that traversal through the replaced_by link is automatic\n");
 		System.err
+		.println("  -usereasoner       - If set, the reasoner will be used to compute mappings"
+				+ "                      Without the reasoner, all link types (relations) are ignored, a blind transitive closure is used.\n"
+				+ "                      With the reasoner on, links are traversed only if they can be implied AND they have been specified\n");
+		System.err
+		.println("  -follow <relation> - Follow links of this type. Reasoner will be used"
+				+ "                      Multiple link types can be passed: e.g. -follow part_of -follow regulates\n"
+				+ "                      If you use the reasoner and DO not specify any -follow options, then ALL relations are followed\n");
+		System.err
 		.println("  -c                   - Count mode"
 				+ "                      If set, the total distinct number of entities (eg gene products) .\n"
 				+ "                      Will be summarised for each mapped class. *Implied* counts will be used\n");
+		System.err
+		.println("  <assocfile>\n"
+				+ "                      A file associating entities with ontology classes.\n"
+				+ "                      For now this must be GO association format, but can easily be extended (eg GFF)\n"
+				+ "                      This will skip lines that have ANYTHING in the qualifier/operator column (will be configurable in later versions)\n"
+				+ "                      \n");
 		System.err
 		.println("  -out <outfile> - Output file\n"
 				+ "                      Format depends on whether -c option is set.\n"
