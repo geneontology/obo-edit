@@ -74,8 +74,7 @@ import org.oboedit.verify.CheckWarning;
 public class TextEditor extends AbstractXMLOBOEditComponent implements
 		RootTextEditComponent, SelectionDrivenComponent {
 
-	protected Icon warningIcon = Preferences
-			.loadLibraryIcon("warning_icon.gif");
+	protected Icon warningIcon = Preferences.loadLibraryIcon("warning_icon.gif");
 
 	protected Icon errorIcon = Preferences.loadLibraryIcon("error_icon.gif");
 
@@ -120,6 +119,16 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		}
 
 	};
+
+    // Didn't work.
+//        protected ReloadListener reloadListener = new ReloadListener() {
+//		public void reload(ReloadEvent e) {
+//		    System.err.println("TextEditor.reload");  // DEL
+//		    warningMap = new MultiHashMap<FieldPath, CheckWarning>();
+//		    setWarningMap(warningMap);
+//		}
+//	    };
+
 
 	public void setObjectSelector(ObjectSelector selector) {
 		if (this.selector != null)
@@ -404,6 +413,9 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 				public void run() {
 					String tooltip = CheckWarningComponent.getHTML(warnings,
 							"", "", true, false, false, false);
+					// Color warningColor = Color.orange;
+//					Color warningColor = new Color(255, 153, 51);
+					Color warningColor = Color.black;  // for now
 					ComponentManager.getManager().setLabel(TextEditor.this,
 							"Text Editor (" + buffer.toString() + ")");
 					ComponentManager.getManager().setTitlebarTooltip(
@@ -413,7 +425,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 								TextEditor.this, Color.red);
 					else
 						ComponentManager.getManager().setTitlebarColor(
-								TextEditor.this, Color.orange);
+								TextEditor.this, warningColor);
 					errorLabel.setText(htmlWrapperBuffer.toString());
 					errorLabel.setIcon(icon);
 					errorLabel.setToolTipText(tooltip);
