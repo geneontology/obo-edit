@@ -105,42 +105,29 @@
    <mapID target="Text_Checks" url="html/Text_Checks.htm"/>
    <mapID target="Text_Editing" url="html/Text_Editing.htm"/>
    <mapID target="The_Basic_Flat_File_Interface" url="html/The_Basic_Flat_File_Interface.htm"/>
-   <mapID target="The_Box_Tag" url="html/The_Box_Tag.htm"/>
    <mapID target="The_Category_Manager_Plugin" url="html/The_Category_Manager_Plugin.htm"/>
    <mapID target="The_Change_Tracker_Plugin" url="html/The_Change_Tracker_Plugin.htm"/>
-   <mapID target="The_Compactgrid_Tag" url="html/The_Compactgrid_Tag.htm"/>
    <mapID target="The_Complex_Class_Plugin" url="html/The_Complex_Class_Plugin.htm"/>
-   <mapID target="The_Component_Tag" url="html/The_Component_Tag.htm"/>
    <mapID target="Configuration_Manager" url="html/Configuration_Manager.htm"/>
    <mapID target="The_DAG_Viewer" url="html/The_DAG_Viewer.htm"/>
    <mapID target="The_Dbxref_Library_Plugin" url="html/The_Dbxref_Library_Plugin.htm"/>
    <mapID target="The_Default_Layout" url="html/Introduction.htm"/>
-   <mapID target="The_Divider_Tag" url="html/The_Divider_Tag.htm"/>
    <mapID target="The_Explanation_Plugin" url="html/The_Explanation_Plugin.htm"/>
    <mapID target="The_Extended_Info_Plugin" url="html/The_Extended_Info_Plugin.htm"/>
-   <mapID target="The_Glue_Tag" url="html/The_Glue_Tag.htm"/>
    <mapID target="The_GO_Flat_File_Adapter" url="html/The_GO_Flat_File_Adapter.htm"/>
    <mapID target="The_Graph_Viewer_Plugin" url="html/The_Graph_Viewer_Plugin.htm"/>
-   <mapID target="The_Grid_Tag" url="html/The_Grid_Tag.htm"/>
    <mapID target="The_History_Plugin" url="html/The_History_Plugin.htm"/>
    <mapID target="The_ID_Manager_Plugin" url="html/The_ID_Manager_Plugin.htm"/>
-   <mapID target="The_If_Tag" url="html/The_If_Tag.htm"/>
    <mapID target="The_Interface" url="html/The_Interface.htm"/>
-   <mapID target="The_Label_Tag" url="html/The_Label_Tag.htm"/>
    <mapID target="The_OBO_Adapter" url="html/The_OBO_Adapter.htm"/>
    <mapID target="The_OBO_Edit_Reasoner" url="html/The_OBO_Edit_Reasoner.htm"/>
    <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
-   <mapID target="The_Panel_Tag" url="html/The_Panel_Tag.htm"/>
    <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
    <mapID target="The_Reasoner_Plugin" url="html/The_Reasoner_Plugin.htm"/>
-   <mapID target="The_searchbutton_Tag" url="html/The_searchbutton_Tag.htm"/>
    <mapID target="The_Serial_Adapter" url="html/The_Serial_Adapter.htm"/>
-   <mapID target="The_Spacer_Tag" url="html/The_Spacer_Tag.htm"/>
    <mapID target="The_Synonym_Category_Manager_Plugin" url="html/The_Synonym_Category_Manager_Plugin.htm"/>
-   <mapID target="The_Tabs_Tag" url="html/The_Tabs_Tag.htm"/>
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
-   <mapID target="The_Window_Tag" url="html/The_Window_Tag.htm"/>
    <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
    <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
    <mapID target="Using_Filters" url="html/Using_Filters.htm"/>
