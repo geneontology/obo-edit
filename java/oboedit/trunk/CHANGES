@@ -1,3 +1,4 @@
+Changes in 2.000-b31 (2/25/2008):
 * Prevented java help indexer from double-indexing pages (it was looking in
   .svn as well as in the html dir), which was resulting in superfluous hits
   when you searched help.
@@ -14,3 +15,24 @@
   Now the unselected tabs are plain gray (no gradient) and the selected one is
   plain blue (no gradient).
   Ultimately, this could be user-configurable.
+* Commit words that are added to dictionary to user's dictionary file
+  (which now will no longer be in alphabetical order--oh well).
+* Fixed: When I choose a term from an autocompletion list, using arrow keys +
+  enter to select term, the chosen term changes to some other term from the
+  auto-completion list when the search is initiated using return or clicking
+  Search.
+* I didn't think ConfigurableMessage deserved its own submenu ("Misc"), so I
+  moved it to the Config menu (Misc menu now has no items, so doesn't show up).
+* Fixed problem that sometimes made it impossible to save ontologies that
+  generated warnings during the checks that are performed before saving.
+  This was reported as four different bugs, but they all came down to this
+  same problem:
+  1897062 verification checks stall save b30
+  1901239 Problem saving obo file
+  1853551 Canceling "Running ID Check" window leaves vestigial windows
+  1852713 save messed up
+* Title of TextEditor is now black (rather than hard-to-read yellow) when
+  there are warnings.  (Warning count shows up in title.)  Title still turns
+  red if there are actual errors.
+* Main OE window title now includes the text "(REASONER ON)" if the reasoner
+  is turned on.
