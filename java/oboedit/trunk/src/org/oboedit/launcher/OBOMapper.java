@@ -1,18 +1,95 @@
 package org.oboedit.launcher;
 
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.Reader;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.lang.StringUtils;
+import org.obo.datamodel.OBOObject;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.TermCategory;
+import org.obo.identifier.IDWarning;
+import org.obo.util.AdapterUtil;
 import org.obo.util.IDMapper;
 import org.obo.util.IDMapper.IDFileMetadata;
+import org.obo.util.IDMapper.SimpleAnnotation;
 import org.oboedit.gui.Preferences;
 
 public class OBOMapper {
 
+	public static void mapIDsInFile(IDMapper mapper,
+			String inputPath, String out, boolean countMode) throws IOException {
 
+		IDFileMetadata fileMetadata = mapper.getFileMetadata();
+		int ENTITY = fileMetadata.getEntityColumn()-1;
+		int ID = fileMetadata.getOboIDColumn()-1;
+		Reader reader;
+		//FileReader fr = new FileReader(inputPath);
+		if (inputPath.endsWith(".gz")) {
+			GZIPInputStream input =
+				new GZIPInputStream(new FileInputStream(inputPath));
+			reader = new LineNumberReader(new InputStreamReader(input));
+		}
+		else {
+			reader = new FileReader(inputPath);
+		}
+		BufferedWriter bw = new BufferedWriter(new FileWriter(out));
+		LineNumberReader lnr =  new LineNumberReader(reader);
+			Map<String, Collection<String>> e2ids = new HashMap<String,Collection<String>>();
+		for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
+			SimpleAnnotation annot = mapper.parseAndFilterLine(line);
+			if (annot == null)
+				continue;
+			String[] colVals = annot.getColVals();
+			String oboID = annot.getOboID();
+			String entityID = annot.getEntityID();
+			if (countMode) {
+				if (!e2ids.containsKey(entityID))
+					e2ids.put(entityID, new HashSet<String>());
+				e2ids.get(entityID).add(oboID);
+			}
+			else {
+				Collection<OBOObject> objs = mapper.mapIdentifierViaCategories(oboID,false);
+				for (OBOObject obj : objs) {
+					colVals[ID] = obj.getID();
+					// TODO - name
+					// TODO - allow passing in of handler
+					printLine(bw,colVals,fileMetadata.getColumnDelimiter());
+				}
+				if (objs.size() == 0) {
+					System.err.println("cannot map: "+oboID);
+				}
+			}
+		}
+		if (countMode) {
+			mapper.calcEntityCountByOboID(e2ids);
+			Map<String, Integer> entityCountByOboIDMap = mapper.getEntityCountByOboIDMap();
+			for (String id : entityCountByOboIDMap.keySet()) {
+				OBOObject obj = (OBOObject)mapper.getSession().getObject(id);
+				// TODO - handler class
+				bw.write(entityCountByOboIDMap.get(id)+"\t"+id+"\t"+obj.getName()+"\n");
+			}
 
-
-
+		}
+		bw.close();
+	}
+	
+	private static void printLine(BufferedWriter bw, String[] colVals, String sep) throws IOException {
+		bw.write(StringUtils.join(colVals,sep));
+		bw.write("\n");
+	}
 
 
 
@@ -25,8 +102,11 @@ public class OBOMapper {
 
 		Collection<String> ontPaths = new LinkedList<String>();
 		Collection<String> inputPaths = new LinkedList<String>();
-		String out;
+		Collection<String> categoryNames = new LinkedList<String>();
+		String out = null;
 		boolean countMode = false;
+		boolean allSlims = false;
+		boolean followConsiderTags = false;
 		IDMapper mapper = new IDMapper();
 
 		for (int i = 0; i < args.length; i++) {
@@ -40,23 +120,56 @@ public class OBOMapper {
 					printUsage(1);
 				i++;
 				out = args[i];
+			} else if (args[i].equals("-subset")) {
+				if (i >= args.length - 1)
+					printUsage(1);
+				i++;
+				categoryNames.add(args[i]);
+			} else if (args[i].equals("-followconsider")) {
+				followConsiderTags = true;
 			} else if (args[i].equals("-c")) {
 				countMode=true;
-			} else if (args[i].equals("-?")) {
+			} else if (args[i].equals("-?") || args[i].equals("-help")) {
 				printUsage(0);
 			} else {
 				inputPaths.add(args[i]);
 			}
 		}
+		OBOSession session = AdapterUtil.parseFiles(ontPaths);
+		mapper.setSession(session);
+		for (String cat : categoryNames) {
+			System.err.println("filtering on: "+cat);
+			mapper.addCategory(cat);
+		}
+		if (followConsiderTags)
+			mapper.setAutoReplaceConsiderTags(followConsiderTags);
+		if (out == null) {
+			System.err.println("You must specify an output file with -o FILE");
+			printUsage(1);
+		}
 		for (String inputPath : inputPaths) {
-			mapper.mapIDsInFile(inputPath);
+			System.err.println("mapping: "+inputPath);
+			if (allSlims) {
+				mapIDsInFile(mapper,inputPath,out,countMode);
+			}
+			else {
+				for (TermCategory cat : session.getCategories()) {
+					mapper.reset();
+					mapper.setSession(session);
+					mapper.setCategory(cat);
+					mapIDsInFile(mapper,inputPath,out,countMode);
+				}
+			}
+		}
+		for (IDWarning warning : mapper.getWarnings()) {
+			System.err.println(warning);
 		}
 		
 	}
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("obo2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
+				.println("obo-mapper [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
 						 + "             [-semanticparse [-addsynonyms]] \\\n"
 						 + "             [-parsecomments] [-writecomments] \\\n"
 					 + "             [-runscript <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
