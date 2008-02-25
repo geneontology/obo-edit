@@ -96,13 +96,19 @@ public class PreSaveVerifyTask implements GUITask {
 				public void run() {
 					fatal = true;
 					JOptionPane.showMessageDialog(GUIManager.getManager()
-							.getFrame(), "Save cancelled");
+								      .getFrame(), "Save cancelled");
+					// We also need to cancel the little "working" modal dialog window that was
+					// created by BackgroundUtil.scheduleTask
+//					sleep(100); // didn't help
+					task.cancel();  // didn't help
 				}
 
 			});
-			BackgroundUtil.scheduleTask(GUIManager.getManager()
-					.getScreenLockQueue(), task, true, "OBO-Edit: Working");
-			// GUIManager.getManager().runTaskNow(task, true);
+//			BackgroundUtil.scheduleTask(GUIManager.getManager()
+//						    .getScreenLockQueue(), task, true, "OBO-Edit: running verifier");
+			// The line below was commented out, but it works better than the one above (BackgroundUtil.scheduleTask),
+			// which tended to leave those vestigial "working" windows if the user hit Cancel.
+			GUIManager.getManager().runTaskNow(task, true);
 			return !fatal && !task.isCancelled() && !task.isFailed();
 		}
 	};
