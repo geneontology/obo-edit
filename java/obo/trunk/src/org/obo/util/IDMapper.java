@@ -1,41 +1,63 @@
 package org.obo.util;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.bbop.util.StringUtil;
+import org.bbop.util.MultiMap;
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermCategory;
+import org.obo.filters.CategorySearchCriterion;
+import org.obo.filters.Filter;
+import org.obo.filters.ObjectFilter;
+import org.obo.filters.ObjectFilterImpl;
+import org.obo.identifier.IDResolution;
+import org.obo.identifier.IDWarning;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 public class IDMapper extends SessionWrapper {
 
-	public class IDMapRules {
-		boolean useMostSpecific = true;
-
-
-
-		public IDMapRules() {
+	/**
+	 * Lightweight class for representing a line from an
+	 * annotation file. This is intentionally record-centric
+	 * 
+	 * @author cjm
+	 *
+	 */
+	public class SimpleAnnotation {
+		private String entityID;
+		private String oboID;
+		private String[] colVals;
+		public SimpleAnnotation(String entityID, String oboID) {
 			super();
-			// TODO Auto-generated constructor stub
+			this.oboID = oboID;
+			this.entityID = entityID;
 		}
-
-		public boolean isUseMostSpecific() {
-			return useMostSpecific;
+		public final String getEntityID() {
+			return entityID;
 		}
-
-		public void setUseMostSpecific(boolean useMostSpecific) {
-			this.useMostSpecific = useMostSpecific;
+		public final String getOboID() {
+			return oboID;
 		}
-
+		public String[] getColVals() {
+			return colVals;
+		}
+		public void setColVals(String[] colVals) {
+			this.colVals = colVals;
+		}
 
 	}
 
@@ -44,12 +66,14 @@ public class IDMapper extends SessionWrapper {
 	 * @author cjm
 	 *
 	 */
-	public class IDFileMetadata {
+	public final class IDFileMetadata {
 
 		private int entityColumn = 2;
 		private int oboIDColumn = 5;
 		private int qualifierColumn = 4;
+		private int minCols = 6;
 		private String columnDelimiter = "\t";
+		private String commentCharacter = "!";
 
 
 
@@ -75,21 +99,64 @@ public class IDMapper extends SessionWrapper {
 		public void setQualifierColumn(int qualifierColumn) {
 			this.qualifierColumn = qualifierColumn;
 		}
+		
+		public final int getMinCols() {
+			return minCols;
+		}
+		public final void setMinCols(int minCols) {
+			this.minCols = minCols;
+		}
 		public String getColumnDelimiter() {
 			return columnDelimiter;
 		}
 		public void setColumnDelimiter(String columnDelimiter) {
 			this.columnDelimiter = columnDelimiter;
 		}
+		public final String getCommentCharacter() {
+			return commentCharacter;
+		}
+		public final void setCommentCharacter(String commentCharacter) {
+			this.commentCharacter = commentCharacter;
+		}
+		
 
 	}
 
 	private ReasonedLinkDatabase reasoner;
 	private IDFileMetadata fileMetadata = new IDFileMetadata();
 	private Collection<TermCategory> categories = new HashSet<TermCategory>();
-	IDMapRules idmaprules = new IDMapRules();
+	private Filter filter;
+	private Map<String,Collection<OBOObject>> upMap = new HashMap<String,Collection<OBOObject>>();
+	private Map<String,Integer> entityCountByOboIDMap;
+	private MultiMap<String, IdentifiedObject> secondaryIDMap = null;
+	private Collection<IDWarning> warnings = new HashSet<IDWarning>();
+	private boolean autoReplaceConsiderTags = false;
 
 
+	public MultiMap<String, IdentifiedObject> getSecondaryIDMap() {
+		if (secondaryIDMap == null)
+			secondaryIDMap = IDUtil.getSecondaryIDMap(getSession());
+		return secondaryIDMap;
+	}
+
+
+
+	public  Collection<IDWarning> getWarnings() {
+		return warnings;
+	}
+
+	public  void setWarnings(Collection<IDWarning> warnings) {
+		this.warnings = warnings;
+	}
+	public void addWarning(IDWarning warning) {
+		getWarnings().add(warning);
+	}
+
+
+
+	public Map<String, Integer> getEntityCountByOboIDMap() {
+		return entityCountByOboIDMap;
+	}
 
 	public Collection<TermCategory> getCategories() {
 		return categories;
@@ -103,6 +170,14 @@ public class IDMapper extends SessionWrapper {
 		categories.add(session.getCategory(cat));
 	}
 
+	public void addCategory(TermCategory cat) {
+		categories.add(cat);
+	}
+	public void setCategory(TermCategory cat) {
+		categories = new  HashSet<TermCategory>();
+		addCategory(cat);
+	}
+
 	public IDFileMetadata getFileMetadata() {
 		return fileMetadata;
 	}
@@ -111,13 +186,6 @@ public class IDMapper extends SessionWrapper {
 		this.fileMetadata = fileMetadata;
 	}
 
-	public IDMapRules getIdmaprules() {
-		return idmaprules;
-	}
-
-	public void setIdmaprules(IDMapRules idmaprules) {
-		this.idmaprules = idmaprules;
-	}
 
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
@@ -126,6 +194,18 @@ public class IDMapper extends SessionWrapper {
 	public void setReasoner(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
 	}
+
+	public final boolean isAutoReplaceConsiderTags() {
+		return autoReplaceConsiderTags;
+	}
+
+
+
+	public final void setAutoReplaceConsiderTags(boolean autoReplaceConsiderTags) {
+		this.autoReplaceConsiderTags = autoReplaceConsiderTags;
+	}
+
+
 
 	public IDMapper() {
 		super();
@@ -138,7 +218,7 @@ public class IDMapper extends SessionWrapper {
 	}
 
 
-	public Collection<LinkedObject> getParentObjs(OBOObject obj) {
+	private Collection<LinkedObject> getParentObjs(OBOObject obj) {
 		if (reasoner != null) {
 			Collection<LinkedObject> pobjs = new HashSet<LinkedObject>();
 			for (Link link : reasoner.getParents(obj)) {
@@ -148,27 +228,53 @@ public class IDMapper extends SessionWrapper {
 		}
 		return TermUtil.getAncestors(obj);
 	}
-	public Collection<OBOObject> mapIdentifierViaCategories(String id) {
+
+	public Collection<OBOObject> mapIdentifierViaFilter(String id, boolean countMode) {
+		if (upMap.containsKey(id))
+			return upMap.get(id);
 		Collection<String> mappedIDs = new HashSet<String>();
-		Collection<OBOObject> mappedObjs = new HashSet<OBOObject>();
 		Collection<OBOObject> filteredMappedObjs = new HashSet<OBOObject>();
 		OBOObject obj = (OBOObject)session.getObject(id);
+		if (obj == null || obj.isObsolete()) {
+			IDWarning warning = IDUtil.getWarning(id, false, session, getSecondaryIDMap());
+			if (warning != null) {
+				addWarning(warning);
+				Collection<IDResolution> resols = warning.getResolutions();
+				Collection<OBOObject> replacementObjs = new HashSet<OBOObject>();
+				for (IDResolution resol : resols) {
+					if (resol.requiresUserIntervention() && !isAutoReplaceConsiderTags()) {
+						
+					}
+					else {
+						// TODO - this is not really valid. one replacement may subsume another
+						replacementObjs.addAll(mapIdentifierViaFilter(resol.getReplacementID(),
+								countMode));
+					}
+				}
+				return replacementObjs;
+			}
+			else {
+				// dangling objs
+				//System.err.println("don't know what to do with: "+id);
+				return filteredMappedObjs;
+			}
+		}
+
+		// we map the objects first, THEN apply the filter
+		// this saves repeated applications
+		Collection<OBOObject> mappedObjs = new HashSet<OBOObject>();
 		for (LinkedObject pobj : getParentObjs(obj)) {
 			mappedObjs.add((OBOObject)pobj);
 		}
-		mappedObjs.add(obj);
+		mappedObjs.add(obj); // reflexivity
 		for (OBOObject mappedObj : mappedObjs) {
-			for (TermCategory cat : mappedObj.getCategories()) {
-				if (categories.contains(cat)) {
-					filteredMappedObjs.add(mappedObj);
-					continue;
-				}
-			}
+			if (filter.satisfies(mappedObj))
+				filteredMappedObjs.add(mappedObj);
+
 		}
-		if (idmaprules.isUseMostSpecific()) {
-			Collection<OBOObject> specificObjs = new HashSet<OBOObject>();
+		if (!countMode) {
 			Collection<OBOObject> generalObjs = new HashSet<OBOObject>();
-			
+
 			for (OBOObject mappedObj : filteredMappedObjs) {
 				boolean isSpecific = true;
 				for (LinkedObject p : getParentObjs(mappedObj)) {
@@ -176,47 +282,100 @@ public class IDMapper extends SessionWrapper {
 							filteredMappedObjs.contains(p)) {
 						logger.info(p+" is more general than "+mappedObj+" [in set], so I am removing");
 						generalObjs.add((OBOObject)p);
-						//isSpecific = false;
-						//continue;
 					}	
 				}
-//				if (isSpecific)
-//					specificObjs.add(mappedObj);
 			}
 			filteredMappedObjs.removeAll(generalObjs);
-			//filteredMappedObjs = specificObjs;
 		}	
+		// cache mapping
+		upMap.put(id, filteredMappedObjs);
 		return filteredMappedObjs;
 	}
-
-	public void mapIDsInFile(String inputPath) throws IOException {
-	
-		FileReader fr = new FileReader(inputPath);
-		LineNumberReader lnr =  new LineNumberReader(fr);
-		int ENTITY = fileMetadata.getEntityColumn()-1;
-		int ID = fileMetadata.getOboIDColumn()-1;
-		for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
-			String[] colVals = line.split(fileMetadata.getColumnDelimiter(),-1); // include trailing separators
-
-			if (fileMetadata.getQualifierColumn() > 0) {
-				String qual = colVals[fileMetadata.getQualifierColumn()-1];
-				if (!qual.equals(""))
-					continue;
-			}
-			String oboID = colVals[ID];
-			String entityID = colVals[ENTITY];
-			Collection<OBOObject> objs = mapIdentifierViaCategories(oboID);
-			for (OBOObject obj : objs) {
-				colVals[ID] = obj.getID();
-				// TODO - name
-				printLine(colVals,fileMetadata.getColumnDelimiter());
-			}
+	public Collection<OBOObject> mapIdentifierViaCategories(String id, boolean countMode) {
+		Collection<Filter<LinkedObject>> filters = new LinkedList<Filter<LinkedObject>>();
+		for (TermCategory cat : categories) {
+			ObjectFilter f = new ObjectFilterImpl();
+			f.setCriterion(new CategorySearchCriterion());
+			f.setValue(cat.getName());
+			filters.add(f);
 		}
+		filter = FilterUtil.mergeFilters(filters);
+		return mapIdentifierViaFilter(id, countMode);	
 	}
 
-	private void printLine(String[] colVals, String sep) {
-		System.out.println(StringUtils.join(colVals,sep));
-		System.out.println("\n");
+	public SimpleAnnotation parseAndFilterLine(String line) {
+		if (line.substring(0,1).equals(fileMetadata.getCommentCharacter()))
+			return null;
+		String[] colVals = line.split(fileMetadata.getColumnDelimiter(),-1); // include trailing separators
+		if (colVals.length < fileMetadata.getMinCols())
+			return null;
+		int ENTITY = fileMetadata.getEntityColumn()-1;
+		int ID = fileMetadata.getOboIDColumn()-1;
+		if (fileMetadata.getQualifierColumn() > 0) {
+			String qual = colVals[fileMetadata.getQualifierColumn()-1];
+			if (!qual.equals(""))
+				return null;
+		}
+		SimpleAnnotation annot = new SimpleAnnotation(colVals[ENTITY], colVals[ID]);
+		annot.setColVals(colVals);
+		return annot;
+	}
+
+
+	public void calcEntityCountByOboID(Map<String,Collection<String>> e2ids) {
+		// example: GO slim term count by gene product ID
+		entityCountByOboIDMap = new HashMap<String,Integer>();
+
+		// iterate through entities first
+		for (String entityID : e2ids.keySet()) {
+
+			// what is this entity annotated to?
+			// we first build the unique set of mapped IDs, THEN we use this for counting
+			HashSet<String> allMappedIDsForEntity = new HashSet<String>();
+			for (String oboID : e2ids.get(entityID)) {
+				// TODO: other ways beyond categories
+				Collection<OBOObject> objs = mapIdentifierViaCategories(oboID,true);
+				for (OBOObject obj : objs) {
+					allMappedIDsForEntity.add(obj.getID());
+				}
+			}
+
+			// increment the total# of distinct entities for the mapped IDs
+			// mappedIDs is a set, so we cannot have double counting
+			for (String mappedID : allMappedIDsForEntity) {
+				if (!entityCountByOboIDMap.containsKey(mappedID))
+					entityCountByOboIDMap.put(mappedID, 1);
+				else
+					entityCountByOboIDMap.put(mappedID, entityCountByOboIDMap.get(mappedID)+1);
+			}
+		}
+
+	}
+
+	public Map<String, Collection<String>> simpleAnnotationFileParse(String inputPath) throws IOException { 
+		FileReader fr = new FileReader(inputPath);
+		LineNumberReader lnr =  new LineNumberReader(fr);
+		Map<String, Collection<String>> e2ids = new HashMap<String,Collection<String>>();
+		for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
+			SimpleAnnotation annot = parseAndFilterLine(line);
+			if (annot == null)
+				continue;
+			String[] colVals = annot.getColVals();
+			String oboID = annot.getOboID();
+			String entityID = annot.getEntityID();
+			if (!e2ids.containsKey(entityID))
+				e2ids.put(entityID, new HashSet<String>());
+			e2ids.get(entityID).add(oboID);
+		}
+		return e2ids;			
+	}
+
+
+
+	public void reset() {
+		setWarnings(new HashSet<IDWarning>());
+		upMap = new HashMap<String,Collection<OBOObject>>(); 
+		
 	}
 
 

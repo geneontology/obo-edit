@@ -84,7 +84,7 @@ public class IDUtil {
 		public java.util.List<String> getParams() {
 			return params;
 		}
-		
+
 		@Override
 		public String toString() {
 			return "[variable: " + name + ", params: " + params + "]";
@@ -129,7 +129,7 @@ public class IDUtil {
 			} else if (s.charAt(i) == '\\') {
 				if (i + 1 < s.length()
 						&& (s.charAt(i + 1) == '$' || s.charAt(i + 1) == ')'
-								|| s.charAt(i + 1) == '(' || s.charAt(i + 1) == ',')) {
+							|| s.charAt(i + 1) == '(' || s.charAt(i + 1) == ',')) {
 					i++;
 					buffer.append('$');
 				}
@@ -160,14 +160,14 @@ public class IDUtil {
 		Iterator it = matches.iterator();
 		while (it.hasNext()) {
 			DestroyObjectHistoryItem item = (DestroyObjectHistoryItem) it
-					.next();
+			.next();
 			destroyedIDs.add(item.getTarget());
 		}
 		VectorFilter secondaryFilter = new VectorFilter() {
 			public boolean satisfies(Object o) {
 				return o instanceof SecondaryIDHistoryItem
-						&& destroyedIDs.contains(((SecondaryIDHistoryItem) o)
-								.getSecondaryID());
+				&& destroyedIDs.contains(((SecondaryIDHistoryItem) o)
+						.getSecondaryID());
 			}
 		};
 		matches = HistoryUtil.findMatchingItems(list, secondaryFilter);
@@ -307,8 +307,19 @@ public class IDUtil {
 			throws UnresolvedIDsException {
 		return updateIDs(session, resolutions, applyImmediately, false);
 	}
-	
-	
+
+	public static MultiMap<String, IdentifiedObject> getSecondaryIDMap(OBOSession session) {
+		MultiMap<String, IdentifiedObject> secondaryIDMap = new MultiHashMap<String, IdentifiedObject>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (!TermUtil.isDangling(io) && io instanceof MultiIDObject) {
+				for (String id : ((MultiIDObject) io).getSecondaryIDs()) {
+					secondaryIDMap.add(id, io);
+				}
+			}
+		}
+		return secondaryIDMap;
+	}
+
 	public static List<HistoryItem> updateIDs(OBOSession session,
 			Collection<LinkIDResolution> resolutions, boolean applyImmediately,
 			boolean applyDespiteExceptions) throws UnresolvedIDsException {
@@ -337,7 +348,7 @@ public class IDUtil {
 			LinkIDWarning warning = getWarning(link, session, secondaryIDMap);
 			if (warning != null) {
 				Collection<LinkIDResolution> linkResolutions = resolutionMap
-						.get(link);
+				.get(link);
 				boolean parentProblem = warning.getParentWarning() != null;
 				boolean typeProblem = warning.getTypeWarning() != null;
 				if (parentProblem || typeProblem) {
