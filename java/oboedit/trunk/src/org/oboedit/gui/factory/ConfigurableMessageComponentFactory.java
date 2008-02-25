@@ -19,7 +19,8 @@ public class ConfigurableMessageComponentFactory extends AbstractComponentFactor
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.MISC;
+//		return FactoryCategory.MISC;
+		return FactoryCategory.CONFIG;
 	}
 
 	public String getName() {
