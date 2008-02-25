@@ -21,6 +21,9 @@ import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermCategory;
 import org.obo.identifier.IDWarning;
+import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.ReasonerFactory;
+import org.obo.reasoner.impl.DefaultReasonerFactory;
 import org.obo.util.AdapterUtil;
 import org.obo.util.IDMapper;
 import org.obo.util.IDMapper.IDFileMetadata;
@@ -107,6 +110,9 @@ public class OBOMapper {
 		boolean countMode = false;
 		boolean allSlims = false;
 		boolean followConsiderTags = false;
+		boolean allowDangling = false;
+		boolean useReasoner = false;
+		ReasonerFactory reasonerFactory = new DefaultReasonerFactory();
 		IDMapper mapper = new IDMapper();
 
 		for (int i = 0; i < args.length; i++) {
@@ -129,14 +135,32 @@ public class OBOMapper {
 				followConsiderTags = true;
 			} else if (args[i].equals("-c")) {
 				countMode=true;
+			} else if (args[i].equals("-usereasoner")) {
+				useReasoner=true;
+			} else if (args[i].equals("-reasonerfactory")) {
+				if (i >= args.length - 1)
+					printUsage(1);
+				i++;
+				reasonerFactory = (ReasonerFactory)Class.forName(args[i]).newInstance();
+				useReasoner=true;
+			} else if (args[i].equals("-allowdangling")) {
+				allowDangling = true;
 			} else if (args[i].equals("-?") || args[i].equals("-help")) {
 				printUsage(0);
 			} else {
 				inputPaths.add(args[i]);
 			}
 		}
-		OBOSession session = AdapterUtil.parseFiles(ontPaths);
+		OBOSession session = AdapterUtil.parseFiles(ontPaths, allowDangling);
 		mapper.setSession(session);
+		if (useReasoner) {
+			System.err.println("Setting up reasoner...");
+			ReasonedLinkDatabase reasoner = reasonerFactory.createReasoner();
+			mapper.setReasoner(reasoner);
+			reasoner.setLinkDatabase(session.getLinkDatabase());
+			System.err.println("Revving up reasoner...");
+			reasoner.recache();
+		}
 		for (String cat : categoryNames) {
 			System.err.println("filtering on: "+cat);
 			mapper.addCategory(cat);
@@ -147,6 +171,8 @@ public class OBOMapper {
 			System.err.println("You must specify an output file with -o FILE");
 			printUsage(1);
 		}
+		
+		// now perform the mapping
 		for (String inputPath : inputPaths) {
 			System.err.println("mapping: "+inputPath);
 			if (allSlims) {
