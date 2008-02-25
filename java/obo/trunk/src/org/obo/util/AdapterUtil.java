@@ -15,6 +15,10 @@ public class AdapterUtil {
 		return parseFiles(Collections.singleton(path));
 	}
 	public static OBOSession parseFiles(Collection<String> paths) throws DataAdapterException {
+		return parseFiles(paths, true);
+	}
+
+	public static OBOSession parseFiles(Collection<String> paths, boolean allowDangling) throws DataAdapterException {
 
 
 		OBOFileAdapter adapter = new OBOFileAdapter();
@@ -22,7 +26,7 @@ public class AdapterUtil {
 		for (String path : paths) {
 			config.getReadPaths().add(path);
 		}
-		config.setAllowDangling(true);
+		config.setAllowDangling(allowDangling);
 		config.setBasicSave(false);
 		config.setFailFast(false);
 		OBOSession 

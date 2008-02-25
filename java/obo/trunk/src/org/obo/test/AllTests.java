@@ -19,12 +19,20 @@ public class AllTests extends TestCase {
 		out.addTestSuite(IDUpdateTest.class);
 		out.addTestSuite(AllReasonerTestsWithLPR.class);
 		out.addTestSuite(AnnotationStanzaFileTest.class);
-		out.addTestSuite(FixedCacheMutableLinkDatabaseTest.class);
 		out.addTestSuite(DisjointnessTest.class);
+		out.addTestSuite(FilterTest.class);
+		out.addTestSuite(FixedCacheMutableLinkDatabaseTest.class);
 		out.addTestSuite(GOAnnotationFileTest.class);
 		out.addTestSuite(GOAnnotationFilePlusOntologyTest.class);
+		out.addTestSuite(IDMapperTest.class);
+		out.addTestSuite(IDMapperTestWithIDLifecycle.class);
+		out.addTestSuite(IDMapperTestWithReasoner.class);
+		out.addTestSuite(InverseAlwaysImpliedTest.class);
+		out.addTestSuite(NamespaceTest.class);
 		out.addTestSuite(PostcompSyntaxFileTest.class);
 		out.addTestSuite(TrimmingTest.class);
+		out.addTestSuite(TrimmingLibraryTest.class);
+		out.addTestSuite(WebSearchUtilTest.class);
 
 		return out;
 	}

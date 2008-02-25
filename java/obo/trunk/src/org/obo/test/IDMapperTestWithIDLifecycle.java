@@ -1,19 +1,13 @@
 package org.obo.test;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.identifier.IDWarning;
 import org.obo.util.IDMapper;
-import org.obo.util.IDMapper.SimpleAnnotation;
 
 public class IDMapperTestWithIDLifecycle extends AbstractOBOTest {
 

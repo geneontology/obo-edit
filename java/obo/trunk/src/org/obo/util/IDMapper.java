@@ -18,6 +18,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermCategory;
 import org.obo.filters.CategorySearchCriterion;
@@ -30,6 +31,41 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 
 public class IDMapper extends SessionWrapper {
 
+
+
+	public final class MapperInputParams {
+		private final boolean isSpecificOnly;
+		private final Filter filter;
+		
+		public MapperInputParams(final boolean isSpecificOnly, final Filter filter) {
+			super();
+			this.isSpecificOnly = isSpecificOnly;
+			this.filter = filter;
+		}
+		public final Filter getFilter() {
+			return filter;
+		}
+		public final boolean isSpecificOnly() {
+			return isSpecificOnly;
+		}
+		public final String toString() {
+			String s = isSpecificOnly ? "Specific-only" : "Include-ancestors";
+			return s + filter.toString();
+		}
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof MapperInputParams)
+				return o.toString().equals(toString());
+			else
+				return false;
+		}
+		
+		@Override
+		public final int hashCode() {
+			return toString().hashCode();
+		}
+		
+	}
 	/**
 	 * Lightweight class for representing a line from an
 	 * annotation file. This is intentionally record-centric
@@ -123,10 +159,15 @@ public class IDMapper extends SessionWrapper {
 	}
 
 	private ReasonedLinkDatabase reasoner;
+	private Collection<OBOProperty> propertiesToTraverse;
 	private IDFileMetadata fileMetadata = new IDFileMetadata();
 	private Collection<TermCategory> categories = new HashSet<TermCategory>();
 	private Filter filter;
-	private Map<String,Collection<OBOObject>> upMap = new HashMap<String,Collection<OBOObject>>();
+	private MapperInputParams inputParams;
+
+
+	private Map<MapperInputParams,Map<String,Collection<OBOObject>>> cacheMap =
+		new HashMap<MapperInputParams,Map<String,Collection<OBOObject>>>();
 	private Map<String,Integer> entityCountByOboIDMap;
 	private MultiMap<String, IdentifiedObject> secondaryIDMap = null;
 	private Collection<IDWarning> warnings = new HashSet<IDWarning>();
@@ -193,7 +234,34 @@ public class IDMapper extends SessionWrapper {
 
 	public void setReasoner(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
+		reasoner.setLinkDatabase(session.getLinkDatabase());
 	}
+	
+	
+
+	public Collection<OBOProperty> getPropertiesToTraverse() {
+		return propertiesToTraverse;
+	}
+
+
+
+	public void setPropertiesToTraverse(Collection<OBOProperty> propertiesToTraverse) {
+		this.propertiesToTraverse = propertiesToTraverse;
+	}
+	
+	public void addPropertyToTraverse(String propID) {
+		 OBOProperty prop = (OBOProperty)session.getObject(propID);
+		 addPropertyToTraverse(prop);
+	}
+	
+	public void addPropertyToTraverse(OBOProperty prop) {
+		 if (propertiesToTraverse == null)
+			 propertiesToTraverse = new HashSet<OBOProperty>();
+		 propertiesToTraverse.add(prop);
+	}
+
+
+
 
 	public final boolean isAutoReplaceConsiderTags() {
 		return autoReplaceConsiderTags;
@@ -218,20 +286,87 @@ public class IDMapper extends SessionWrapper {
 	}
 
 
-	private Collection<LinkedObject> getParentObjs(OBOObject obj) {
+	/**
+	 * returns all the ancestors of the specified OBOObject.
+	 * If the reasoner is NOT set, this will do a basic blind transitive
+	 * closure ignoring link type.
+	 * If the reasoner IS set, then only links computed by the reasoner are used.
+	 * - the reasoned link type must be in the set provided in {@link #setPropertiesToTraverse()}
+	 *   (or the IS_A link). If not properties are set, then any link matches
+	 *   
+	 * Example:
+	 * 
+	 * if the DAG says
+	 *  A is_a B regulates C is_a D part_of E is_a F foo G
+	 * 
+	 * If we do not have the reasoner set then F is an ancestor object of A
+	 * 
+	 * If we *do* have the reasoner set, then:
+	 *  - C is an ancestor of A by type regulates
+	 *  - E is an ancestor of C by type part_of
+	 *  - F is an ancestor of A by type regulates (assuming regulates is transitive over part_of)
+	 *  - G is an ancestor of E by type foo
+	 *  - G is *NOT* an ancestor of A-D
+	 * 
+	 * @param object  - focus object
+	 * @return all ancestor objects
+	 * @see #setPropertiesToTraverse()
+	 */
+	private Collection<LinkedObject> getAncestorObjects(OBOObject object) {
 		if (reasoner != null) {
 			Collection<LinkedObject> pobjs = new HashSet<LinkedObject>();
-			for (Link link : reasoner.getParents(obj)) {
-				pobjs.add(link.getParent());
+			for (Link link : reasoner.getParents(object)) {
+				if (propertiesToTraverse == null ||
+						propertiesToTraverse.size() == 0 ||
+						link.getType().equals(OBOProperty.IS_A) ||
+						propertiesToTraverse.contains(link.getType())) // TODO
+					pobjs.add(link.getParent());
 			}
 			return pobjs;
 		}
-		return TermUtil.getAncestors(obj);
+		return TermUtil.getAncestors(object);
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param id
+	 * @param countMode
+	 * @return
+	 */
 	public Collection<OBOObject> mapIdentifierViaFilter(String id, boolean countMode) {
-		if (upMap.containsKey(id))
-			return upMap.get(id);
+		// note that this method is just a memoization wrapper for mapIdentifierViaFilterUncached
+		// TODO: memoize on a per-filter basis
+		inputParams = new MapperInputParams(!countMode, filter);
+		//if (!mapCacheByFilter.containsKey(filter)) {
+	//		mapCacheByFilter.put(filter, new HashMap<String,Collection<OBOObject>>());
+		// }
+		if (!cacheMap.containsKey(inputParams)) {
+			logger.info("creating new cache for "+inputParams);
+			cacheMap.put(inputParams, new HashMap<String,Collection<OBOObject>>());
+		}
+		else {
+			logger.info("reusing cache for "+inputParams);
+		}
+		//Map<String, Collection<OBOObject>> map = mapCacheByFilter.get(filter);
+		Map<String, Collection<OBOObject>> map = cacheMap.get(inputParams);
+		
+		if (map.containsKey(id))
+			return map.get(id);
+		logger.info(id+" not in cache: "+map);
+		Collection<OBOObject> filteredMappedObjs = mapIdentifierViaFilterUncached(id, countMode);
+		// cache mapping
+		map.put(id, filteredMappedObjs);
+		return filteredMappedObjs;
+	}
+	/**
+	 * This class does the bulk of the work for {@link #mapIdentifierViaFilter(String, boolean)
+	 * 
+	 * @param id
+	 * @param countMode
+	 * @return
+	 */
+	private Collection<OBOObject> mapIdentifierViaFilterUncached(String id, boolean countMode) {
 		Collection<String> mappedIDs = new HashSet<String>();
 		Collection<OBOObject> filteredMappedObjs = new HashSet<OBOObject>();
 		OBOObject obj = (OBOObject)session.getObject(id);
@@ -263,7 +398,7 @@ public class IDMapper extends SessionWrapper {
 		// we map the objects first, THEN apply the filter
 		// this saves repeated applications
 		Collection<OBOObject> mappedObjs = new HashSet<OBOObject>();
-		for (LinkedObject pobj : getParentObjs(obj)) {
+		for (LinkedObject pobj : getAncestorObjects(obj)) {
 			mappedObjs.add((OBOObject)pobj);
 		}
 		mappedObjs.add(obj); // reflexivity
@@ -277,7 +412,7 @@ public class IDMapper extends SessionWrapper {
 
 			for (OBOObject mappedObj : filteredMappedObjs) {
 				boolean isSpecific = true;
-				for (LinkedObject p : getParentObjs(mappedObj)) {
+				for (LinkedObject p : getAncestorObjects(mappedObj)) {
 					if (!p.equals(mappedObj) &&
 							filteredMappedObjs.contains(p)) {
 						logger.info(p+" is more general than "+mappedObj+" [in set], so I am removing");
@@ -287,8 +422,6 @@ public class IDMapper extends SessionWrapper {
 			}
 			filteredMappedObjs.removeAll(generalObjs);
 		}	
-		// cache mapping
-		upMap.put(id, filteredMappedObjs);
 		return filteredMappedObjs;
 	}
 	public Collection<OBOObject> mapIdentifierViaCategories(String id, boolean countMode) {
@@ -374,8 +507,8 @@ public class IDMapper extends SessionWrapper {
 
 	public void reset() {
 		setWarnings(new HashSet<IDWarning>());
-		upMap = new HashMap<String,Collection<OBOObject>>(); 
-		
+		cacheMap =
+			new HashMap<MapperInputParams,Map<String,Collection<OBOObject>>>();	
 	}
 
 
