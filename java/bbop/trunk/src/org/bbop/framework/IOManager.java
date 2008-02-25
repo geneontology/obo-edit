@@ -115,7 +115,7 @@ public class IOManager {
 			};
 			BackgroundEventQueue queue = new BackgroundEventQueue();
 			BackgroundUtil.scheduleTask(queue, eventTask,
-					true, "OBO-Edit: Working");
+						    true, "OBO-Edit: IOManager working");
 			queue.die();
 			if (eventTask.getResults())
 				return null;

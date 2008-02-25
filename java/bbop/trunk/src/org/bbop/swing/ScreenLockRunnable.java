@@ -54,6 +54,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		dialog.setSize(400,200);
 		SwingUtil.center(frame, dialog);
 		dialog.toFront();
+		dialog.setVisible(true);  // ?
 	}
 
 	protected JDialog createDialog() {
@@ -74,7 +75,8 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 	@Override
 	protected void cleanupUpdate() {
 		if (dialog != null) {
-			dialog.setVisible(false);
+		    dialog.setVisible(false);  // not good enough!
+		    dialog.dispose();  // We're done!  Make it go away!
 		}
 	}
 
@@ -83,6 +85,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		return cancelled;
 	}
 
+    // For some reason, this method seems to take more time than you'd think.
 	@Override
 	protected void doUpdate(TaskDelegate<?> currentTask) {
 		if (lastSize == null)
@@ -104,15 +107,17 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		if (s != null)
 			messageLabel.setText(s);
 		if (!dialog.isVisible()) {
-			dialog.setVisible(true);
-			dialog
-					.setSize(
-							(int) (lastSize.getWidth()
-									+ dialog.getInsets().left + dialog
-									.getInsets().right), (int) (lastSize
-									.getHeight()
-									+ dialog.getInsets().bottom + dialog
-									.getInsets().top));
+//		    System.out.println("doUpdate: dialog was not visible");  // DEL
+		    // Not needed
+//  			dialog.setVisible(true);
+//  			dialog
+//  					.setSize(
+//  							(int) (lastSize.getWidth()
+//  									+ dialog.getInsets().left + dialog
+//  									.getInsets().right), (int) (lastSize
+//  									.getHeight()
+//  									+ dialog.getInsets().bottom + dialog
+//								.getInsets().top));
 		} else {
 			Dimension newSize = dialog.getContentPane().getPreferredSize();
 			if (newSize.width > lastSize.width
@@ -127,6 +132,6 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 										.getInsets().top));
 		}
 		lastSize = dialog.getContentPane().getSize();
-		SwingUtil.center(frame, dialog);
+//		SwingUtil.center(frame, dialog);
 	}
 }

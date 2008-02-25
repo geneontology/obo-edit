@@ -44,7 +44,7 @@ public class BackgroundUtil {
 		dialog.setTitle(blockMessage);
 		dialog.getContentPane().add(new JLabel(blockMessage));
 		dialog.setLocation(0, 0);
-		dialog.toBack();
+//		dialog.toBack();
 		TaskDelegate<?>[] newTasks = new TaskDelegate<?>[tasks.length + 1];
 		for (int i = 0; i < tasks.length; i++)
 			newTasks[i] = tasks[i];
@@ -73,8 +73,12 @@ public class BackgroundUtil {
 
 	protected static void block(JDialog dialog) {
 		dialog.pack();
-		dialog.toBack();
+		// I'm not sure it really needs to be visible, except that sometimes when you cancel an operation (e.g. Save As)
+		// this little vestigial dialog window hangs around and has to be killed by hand.
 		dialog.setVisible(true);
+//		dialog.toBack();
+		// Move to the front in case user needs to kill it (though they shouldn't really have to)
+		dialog.toFront();
 	}
 
 	public static void scheduleDependentTasks(TaskDelegate<?>... tasks) {
