@@ -196,6 +196,8 @@ public class CheckWarningComponent extends JEditorPane {
 			boolean showFatal, boolean showWarnings, boolean showTermNames) {
 		if (locked)
 			return;
+		if (warnings == null)
+		    return;
 		this.warnings = new ArrayList(warnings);
 		this.header = header;
 		this.footer = footer;
