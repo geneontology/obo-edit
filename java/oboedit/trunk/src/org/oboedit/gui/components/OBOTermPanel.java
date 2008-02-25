@@ -1198,8 +1198,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
-			System.err.println("removing selection listener "
-					+ selectionListeners[i]);
+//			System.err.println("removing selection listener " + selectionListeners[i]);
 			removeTreeSelectionListener(selectionListeners[i]);
 		}
 
@@ -1223,8 +1222,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			restoreSelectionPaths(selected);
 		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
-			System.err.println("adding selection listener "
-					+ selectionListeners[i]);
+//			System.err.println("adding selection listener " + selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
 		}
 //		System.err.println("reloaded in " + (System.currentTimeMillis() - time)
