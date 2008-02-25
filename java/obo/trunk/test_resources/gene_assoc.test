@@ -1,3 +1,5 @@
+! this file is for test purposes only
+! xxx
 FB	FBgn0024177	zpg		GO:0005921	FB:FBrf0132008	NAS		C	zero population growth	CG10125|Dm-inx4|inx-4|inx4	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0024177	zpg		GO:0016021	FB:FBrf0132008	NAS		C	zero population growth	CG10125|Dm-inx4|inx-4|inx4	gene	taxon:7227	20060803	FlyBase
 FB	FBgn0024177	zpg		GO:0005921	FB:FBrf0133862	NAS		C	zero population growth	CG10125|Dm-inx4|inx-4|inx4	gene	taxon:7227	20060803	FlyBase
@@ -31,3 +33,4 @@ MGI	MGI:95723	Gjb5		GO:0005243	MGI:MGI:1347124	IEA		F	gap junction membrane chan
 MGI	MGI:95723	Gjb5		GO:0007154	MGI:MGI:1347124	IEA		P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
 MGI	MGI:95723	Gjb5		GO:0007154	MGI:MGI:2152098	IEA	InterPro:IPR000500,InterPro:IPR002270	P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20071014	UniProt
 MGI	MGI:95723	Gjb5		GO:0007267	MGI:MGI:1347124	IEA		P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI
+X	X:1	madeup		GO:0005645	MGI:MGI:1347124	IEA		P	gap junction membrane channel protein beta 5	Cnx31.1|connexin 31.1|Cx31.1|Gjb-5	gene	taxon:10090	20070430	MGI

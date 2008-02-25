@@ -1,16 +1,21 @@
 package org.obo.test;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.obo.datamodel.OBOObject;
 import org.obo.util.IDMapper;
-
+import org.obo.util.IDMapper.SimpleAnnotation;
 
 public class IDMapperTest extends AbstractOBOTest {
 
-	
+	IDMapper mapper;
 	public IDMapperTest(String name) {
 		super(name);
 	}
@@ -20,17 +25,27 @@ public class IDMapperTest extends AbstractOBOTest {
 		return Arrays.asList(files);
 	}
 
-
-
 	public void testMapIDs() throws IOException {
-		IDMapper mapper = new IDMapper();
+		mapper = new IDMapper();
 		mapper.setSession(session);
 		mapper.addCategory("goslim_generic");
-		Collection<OBOObject> mappedObjs = mapper.mapIdentifierViaCategories("GO:0005921");
+		Collection<OBOObject> mappedObjs = mapper.mapIdentifierViaCategories("GO:0005921",false);
 		assertTrue(mappedObjs.size() == 1);
 		assertTrue(mappedObjs.iterator().next().getName().equals("plasma membrane"));
-		mapper.mapIDsInFile(getResourcePath() + "/gene_assoc.test");
+		
+		mapper = new IDMapper();
+		mapper.setSession(session);
+		mapper.addCategory("goslim_generic");
+		// now try annot counts
+		String inputPath = getResourcePath() + "/gene_assoc.test";
+		Map<String, Collection<String>> e2ids = mapper.simpleAnnotationFileParse(inputPath);
+		mapper.calcEntityCountByOboID(e2ids);
+		Map<String, Integer> entityCountByOboIDMap = mapper.getEntityCountByOboIDMap();
+		for (String id : entityCountByOboIDMap.keySet()) {
+			OBOObject obj = (OBOObject)mapper.getSession().getObject(id);
+			// TODO - handler class
+			System.out.println(entityCountByOboIDMap.get(id)+"\t"+id+"\t"+obj.getName());
+		}
 	}
-
 
 }
