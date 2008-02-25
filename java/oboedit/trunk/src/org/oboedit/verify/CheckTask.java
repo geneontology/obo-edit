@@ -232,9 +232,14 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	
 	@Override
 	public void cancel() {
+//	    System.out.println("CheckTask.cancel"); // DEL
 		super.cancel();
 		if (currentCheck != null)
 			currentCheck.cancel();
+		// Also need to close the little "working" dialogs
+		// (This doesn't always seem to do the trick.)
+		fireVerificationCompleteEvent(new VerificationEvent(this, this, null,
+								    session, path, condition));
 	}
 
 	protected void fireVerificationCompleteEvent(final VerificationEvent ve) {
