@@ -33,6 +33,7 @@ import org.obo.nlp.SemanticParser;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
+import org.obo.util.LexUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
@@ -81,7 +82,7 @@ public class OBO2OBO {
 
 	}
 
-	public static void convertFiles(
+	public static OBOSession convertFiles(
 			OBOFileAdapter.OBOAdapterConfiguration readConfig,
 			OBOFileAdapter.OBOAdapterConfiguration writeConfig,
 			boolean parseObsoleteComments, boolean writeObsoleteComments,
@@ -125,6 +126,7 @@ public class OBO2OBO {
 		System.err.println("writePath = " + writeConfig.getWritePath());
 		System.err.println("savePath = " + writeConfig.getSaveRecords());
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
+		return session;
 	}
 
 	public static void runScript(OBOSession session, String script, List args)
@@ -523,6 +525,11 @@ public class OBO2OBO {
 
 		parseCommentTime += System.currentTimeMillis() - time;
 	}
+	
+	public static void checkForSimilarDefs(OBOSession session) {
+		 LexUtil lex = new LexUtil(session);
+		 lex.findTermSetsWithSimilarDefinitions();
+	}
 
 	public static void main(String[] args) throws Exception {
 		System.err.println("version = "+Preferences.getVersion());
@@ -535,6 +542,7 @@ public class OBO2OBO {
 		boolean parseObsoleteComments = false;
 		boolean writeObsoleteComments = false;
 		boolean fixDbxrefs = false;
+		boolean checkForSimilarDefs = false;
 		LinkedList scripts = new LinkedList();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
@@ -557,6 +565,8 @@ public class OBO2OBO {
 				fixDbxrefs = true;
 			} else if (args[i].equals("-writecomments")) {
 				writeObsoleteComments = true;
+			} else if (args[i].equals("-lexcheck")) {
+				checkForSimilarDefs = true;
 			} else if (args[i].equals("-semanticparse")) {
 				// TODO: plugging in of specific rules
 				// Each rule has an extra embedded -rule argument
@@ -661,8 +671,11 @@ public class OBO2OBO {
 			}
 		}
 		writeConfig.setSerializer(formatVersion);
-		convertFiles(readConfig, writeConfig, parseObsoleteComments,
+		OBOSession session =
+			convertFiles(readConfig, writeConfig, parseObsoleteComments,
 				writeObsoleteComments, fixDbxrefs, scripts);
+		if (checkForSimilarDefs)
+			checkForSimilarDefs(session);
 	}
 
 	protected static void printUsage(int exitCode) {
