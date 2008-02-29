@@ -14,7 +14,6 @@ import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.owl.dataadapter.OWLAdapter;
-import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping.SAOVocabulary;
 import org.obo.owl.util.IDSpaceRegistry;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;

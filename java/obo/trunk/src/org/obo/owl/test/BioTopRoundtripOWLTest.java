@@ -11,8 +11,6 @@ import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
-import org.obo.datamodel.OBOSession;
-import org.obo.owl.dataadapter.OWLAdapter;
 
 public class BioTopRoundtripOWLTest extends AbstractOWLTest {
 

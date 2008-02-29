@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.obo.datamodel.CommentedObject;
-import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.SynonymImpl;

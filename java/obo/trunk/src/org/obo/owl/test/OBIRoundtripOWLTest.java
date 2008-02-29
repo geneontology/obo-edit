@@ -15,7 +15,7 @@ public class OBIRoundtripOWLTest extends AbstractOWLTest {
 		return true;
 	}
 	protected void addMappings(OWLAdapterConfiguration config) {
-		OBIMetadataMapping mapping = mapping = new OBIMetadataMapping();
+		OBIMetadataMapping mapping = new OBIMetadataMapping();
 		config.addMetadataMapping(mapping);
 	}
 

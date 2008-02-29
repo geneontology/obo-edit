@@ -1,11 +1,7 @@
 package org.obo.owl.datamodel.impl;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.obo.datamodel.CommentedObject;
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.semanticweb.owl.model.OWLAnnotation;
@@ -16,7 +12,6 @@ import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
 public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 
