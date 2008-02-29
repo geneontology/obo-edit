@@ -60,7 +60,7 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 				System.err.println("WARN: No username specified for database connection. Attempting to connect without a user.");
 				username = "";
 			} else {
-				System.err.println("WARN: No username specified for database connection. Substitution environmental username " + systemUser);
+				System.err.println("WARN: No username specified for database connection. Using environmental username " + systemUser);
 				username = systemUser;
 			}
 		}
