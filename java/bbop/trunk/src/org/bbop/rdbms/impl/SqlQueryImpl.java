@@ -108,6 +108,8 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	}
 	
 	public String addAutoAliasedTable(String tbl, String preferredAlias) {
+		if (preferredAlias == null)
+			return addAutoAliasedTable(tbl);
 		int num = 0;
 		if (!aliasNumByTable.containsKey(preferredAlias))
 			aliasNumByTable.put(preferredAlias,num);
@@ -141,6 +143,10 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 
 	public void setGroupByClause(GroupByClause groupByClause) {
 		this.groupByClause = groupByClause;
+	}
+	
+	public void setGroupByClause(String groupByClause) {
+		this.groupByClause = new SqlGroupByClauseImpl(groupByClause);
 	}
 
 	public OrderByClause getOrderByClause() {

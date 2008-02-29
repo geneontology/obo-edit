@@ -23,6 +23,7 @@ public interface RelationalQuery extends RelationalTerm {
 
 	public GroupByClause getGroupByClause();
 	public void setGroupByClause(GroupByClause groupByClause);
+	public void setGroupByClause(String groupByClause);
 
 	public OrderByClause getOrderByClause();
 	public void setOrderByClause(OrderByClause orderByClause);
