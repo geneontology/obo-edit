@@ -8,12 +8,9 @@ import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.DefinedObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.owl.dataadapter.OWLAdapter;
-import org.obo.owl.datamodel.MetadataMapping;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLConstant;
-import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 

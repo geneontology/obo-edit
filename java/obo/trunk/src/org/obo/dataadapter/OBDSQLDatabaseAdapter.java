@@ -974,10 +974,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		// node is saved in database. Now for additional metadata:
 		
 		if (lo instanceof ObsoletableObject) {
-			callSqlFunc("set_node_is_obsolete_i",iid,true);
-			for (IdentifiedObject x : ((ObsoletableObject)lo).getConsiderReplacements())
+			ObsoletableObject olo = (ObsoletableObject)lo;
+			callSqlFunc("set_node_is_obsolete_i",iid,olo.isObsolete());
+			for (IdentifiedObject x : olo.getConsiderReplacements())
 				callSqlFunc("store_link_si",iid,"oboMetaModel:consider",x.getID(),"",false);
-			for (IdentifiedObject x : ((ObsoletableObject)lo).getReplacedBy())
+			for (IdentifiedObject x : olo.getReplacedBy())
 				callSqlFunc("store_link_si",iid,"oboMetaModel:replaced_by",x.getID(),"",false);
 		}
 		if (lo instanceof DbxrefedObject) {
