@@ -140,6 +140,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		OBOObject bread = (OBOObject)session.getObject("bread");
 		for (PropertyValue pv : bread.getPropertyValues()) {
 			System.out.println("  pv:"+pv);
+			// TODO - property_value tags
 		}
 		// check newlines written out OK
 		// this should really go in its own test; nothing to do with annotations per se
