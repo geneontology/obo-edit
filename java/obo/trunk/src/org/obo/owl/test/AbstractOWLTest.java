@@ -3,6 +3,7 @@ package org.obo.owl.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
@@ -21,6 +22,9 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 		return false;
 	}
 	protected boolean isAllowLossyWhenWritingOWL() {
+		return false;
+	}
+	protected boolean isAllowLossyWhenReadingOWL() {
 		return false;
 	}
 	
@@ -44,26 +48,22 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 	throws DataAdapterException {
 		if (!isSourceOWL())
 			return super.getSessionFromResources(names);
-		OWLAdapter adapter = new OWLAdapter();
-		OWLAdapter.OWLAdapterConfiguration config = new OWLAdapter.OWLAdapterConfiguration();
-		for (String f : names) {
-			if (!f.contains("http:") && !f.contains("file:")) {
-				f = "file:"+getResourcePath()+"/"+f;
-				System.out.println(f);
-			}
-			config.getReadPaths().add(f);
-		}
-		config.setAllowLossy(true);
-		session = adapter.doOperation(OWLAdapter.READ_ONTOLOGY, config,
-				null);
+		readOWLFiles(names);
 		return session;
 	}
 
 
 	public void testHasLoaded() throws IOException, DataAdapterException {
-		File outFile = writeTempOWLFile();
-		readOWLFile(outFile);
-		writeTempOBOFile();
+		if (isSourceOWL()) {
+			File outFile = writeTempOBOFile();
+			readOBOFile(outFile);
+			writeTempOWLFile();	
+		}
+		else {
+			File outFile = writeTempOWLFile();
+			readOWLFile(outFile);
+			writeTempOBOFile();	
+		}
 	}
 	
 	public File writeTempOWLFile() throws IOException, DataAdapterException {
@@ -75,10 +75,6 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 		OWLAdapter adapter = new OWLAdapter();
 		OWLAdapter.OWLAdapterConfiguration config = new OWLAdapter.OWLAdapterConfiguration();
 		config.addMetadataMapping(mapping);
-		//config.addMetadataMapping(new AxiomAnnotationBasedOWLMetadataMapping());
-		//File outFile = File.createTempFile("foo", "bar");
-		//config.setOntologyFormat(new OWLFunctionalSyntaxOntologyFormat());
-		//config.setOntologyFormat(new ManchesterOWLSyntaxOntologyFormat());
 		if (isAllowLossyWhenWritingOWL()) {
 			config.setAllowLossy(true);
 		}
@@ -91,10 +87,16 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 	}
 	
 	public void readOWLFile(File file) throws DataAdapterException {
+		readOWLFiles(Collections.singleton(file.toString()));
+	}
+	
+	public void readOWLFiles(Collection<String> files) throws DataAdapterException {
 		OWLAdapter adapter = new OWLAdapter();
 		OWLAdapter.OWLAdapterConfiguration config = new OWLAdapter.OWLAdapterConfiguration();
 		addMappings(config);
-		config.getReadPaths().add(file.toString());
+		config.getReadPaths().addAll(files);
+		config.setAllowLossy(isAllowLossyWhenReadingOWL());
+
 		session = adapter.doOperation(OWLAdapter.READ_ONTOLOGY, config,
 				null);
 

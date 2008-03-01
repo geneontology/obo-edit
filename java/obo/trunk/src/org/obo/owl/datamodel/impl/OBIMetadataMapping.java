@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.obo.datamodel.CommentedObject;
+import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOObject;
+import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.owl.dataadapter.OWLAdapter;
+import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping.OboInOWLNamespaces;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -41,15 +44,21 @@ public class OBIMetadataMapping extends AbstractOWLMetadataMapping {
 	
 	public enum OBIVocabulary {
 		DEFINITION("definition"),
+		DEFINITION_EDITOR("definition_editor"),
+		DEFINITION_SOURCE("definition_source"),
 		SYNONYM("alternative_term");
 		URI uri;
 
 	    OBIVocabulary(String uri) {
-	    	this.uri = URI.create(uri);
+	    	this.uri = URI.create(OBINamespaces.OBI + uri);
 	    }
 
 	    public URI getURI() {
 	    	return uri;
+	    }
+	    
+	    public String toString() {
+	        return uri.toString();
 	    }
 	}
 	
@@ -81,6 +90,20 @@ public class OBIMetadataMapping extends AbstractOWLMetadataMapping {
 					((OBOObject)lo).setDefinition(val);
 				return true;
 			}	
+			if (uri.equals(OBIVocabulary.DEFINITION_EDITOR.getURI()) ||
+					uri.equals(OBIVocabulary.DEFINITION_SOURCE.getURI())) {
+				String db = "obi:";
+				DbxrefImpl xref = new DbxrefImpl(db,val);
+				xref.setType(Dbxref.DEFINITION);
+				if (lo instanceof OBOObject)
+					((OBOObject)lo).addDefDbxref(xref);
+				return true;
+			}	
+			if (uri.equals(OWLRDFVocabulary.RDFS_COMMENT.getURI())) {
+				if (lo instanceof CommentedObject)
+					((CommentedObject)lo).setComment(val);
+				return true;
+			}		
 		}
 		return false;
 	}

@@ -38,6 +38,9 @@ public abstract class AbstractOBOTest extends TestCase {
 	}
 
 	public abstract Collection<String> getFilesToLoad();
+	public boolean getAllowDangling() {
+		return false;
+	}
 
 	@Override
 	public void setUp() throws Exception {
@@ -73,6 +76,7 @@ public abstract class AbstractOBOTest extends TestCase {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(file.getAbsolutePath());
+		config.setAllowDangling(getAllowDangling());
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 
