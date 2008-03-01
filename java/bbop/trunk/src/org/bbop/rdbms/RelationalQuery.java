@@ -5,6 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+/**
+ * Representation of a query over a relational resource
+ * @author cjm
+ *
+ */
 public interface RelationalQuery extends RelationalTerm {
 		
 	public void setSelectClause(SelectClause sc);
