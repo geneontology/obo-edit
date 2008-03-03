@@ -368,34 +368,42 @@ public class IDWDriver implements LayoutDriver {
 		return new File(GUIManager.getPrefsDir(), "perspectives");
 	}
 
+  /** this is the name of the file that will get written in user prefs,
+      NOT the resource that gets read from jar/classfiles */
 	protected static File getPerspectivesFile() {
 		return new File(getPerspectivesDir(), "perspectives.xml");
 	}
 
+  /** load perspectives from jar/classes to user prefs perspective dir */
 	@SuppressWarnings("unchecked")
 	protected void loadPerspectives() {
-		File file = getPerspectivesFile();
+    // this is the file to copy to
+		File toFile = getPerspectivesFile();
 		if (getPerspectiveListResourcePath() != null) {
+      // if toFile doesnt exist then copy resource to it, throws file not found
 			try {
-				FileUtil.ensureExists(file, getPerspectiveListResourcePath());
+				FileUtil.ensureExists(toFile, getPerspectiveListResourcePath());
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
-		if (file.exists()) {
+
+    // get perspectives from toFile perspective.xml (listed in there)
+		if (toFile.exists()) {
 
 			XMLDecoder d;
 			perspectives = null;
 			Perspective currentPerspective = null;
 			try {
 				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
-						file)));
+                                                     toFile)));
 				perspectives = (List<Perspective>) d.readObject();
 				currentPerspective = (Perspective) d.readObject();
 				d.close();
-			} catch (Exception e) {
 			}
+      catch (Exception e) {}
+
 			if (perspectives == null)
 				perspectives = new LinkedList<Perspective>();
 			else {
@@ -419,7 +427,9 @@ public class IDWDriver implements LayoutDriver {
 					}
 				}
 			}
+      // reads in perspecteves from perpspectives file
 			createDefaultPerspectives();
+      // set perspective to 1st perspective
 			if (currentPerspective == null && perspectives.size() > 0)
 				currentPerspective = perspectives.get(0);
 			if (currentPerspective != null)
@@ -445,12 +455,24 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
+  private static final Logger LOG =  Logger.getLogger("org.bbop.framework.dock.idw");
+
 	protected String getResource(Perspective perspective) {
 
 		String out = perspectiveResourceDir + "/" + perspective.getID()
 				+ ".idw";
-		if (ClassLoader.getSystemClassLoader().getResource(out) == null)
+    boolean classLoaderCanFind =
+      ClassLoader.getSystemClassLoader().getResource(out) != null;
+    System.out.println("bbop IDWDriver trying to get resource "+out+" can get from "+
+                       "class loader? "+classLoaderCanFind);
+                       
+    LOG.info("bbop IDWDriver trying to get resource "+out+" can get from "+
+                       "class loader? "+classLoaderCanFind);
+    
+		//if (ClassLoader.getSystemClassLoader().getResource(out) == null)
+		if (!classLoaderCanFind)
 			out = defaultPerspectiveResourcePath;
+    //System.exit(1);
 		return out;
 	}
 
