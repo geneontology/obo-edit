@@ -4,11 +4,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.bbop.rdbms.ConstraintSet;
-import org.bbop.rdbms.FromClause;
 import org.bbop.rdbms.RelationalQuery;
-import org.bbop.rdbms.RelationalTerm;
 import org.bbop.rdbms.WhereClause;
-import org.bbop.rdbms.WhereClause.BooleanOperator;
+
 
 public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		WhereClause {
@@ -42,7 +40,7 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	}
 	
 	
-	public void addInConstraint(String s, Collection in) {
+	public void addInConstraint(String s, Collection<?> in) {
 		this.constraintSet.addConstraint(s + " IN (" + concatValues(",",in) + ")");
 	}
 	

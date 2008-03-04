@@ -10,7 +10,7 @@ public abstract class AbstractRelationalTerm implements RelationalTerm {
 		return toSQL();
 	}
 	
-	public String concat(String c, Collection set) {
+	public String concat(String c, Collection<?extends Object> set) {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
 			if (s.length() == 0) {
@@ -25,7 +25,7 @@ public abstract class AbstractRelationalTerm implements RelationalTerm {
 		}
 		return s.toString();
 	}
-	public String concatValues(String c, Collection set) {
+	public String concatValues(String c, Collection<?extends Object> set) {
 		StringBuffer s = new StringBuffer();
 		for (Object o : set) {
 			if (s.length() == 0) {
