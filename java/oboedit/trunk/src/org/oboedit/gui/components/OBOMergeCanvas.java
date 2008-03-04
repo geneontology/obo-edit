@@ -27,6 +27,9 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	String mainEditedFileTextFieldString;
 	String secondaryEditedFileTextFieldString;
 	String outputFileTextFieldString;
+	String ignoreClashOnIDsActivatedString = "";
+	String ignoreClashOnIDsChoiceString;
+
 
 	/** Creates new form OBOMergeCanvas */
 	public OBOMergeCanvas() {
@@ -449,6 +452,16 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 		pack();
 	}// </editor-fold>
+	
+	
+	protected void ignoreClashOnIDsCheckBoxActionPerformed(ActionEvent evt) {
+
+		if (ignoreClashOnIDsCheckBox.isSelected()) {
+			
+			ignoreClashOnIDsActivatedString = "new string";
+		}
+		
+	}
 	//GEN-END:initComponents
 
 	JFileChooser fileChooser = new JFileChooser();
@@ -496,7 +509,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private void ignoreClashOnIDsChoiceComboBoxActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
-		if (ignoreClashOnIDsActivatedCheckBox.isSelected()) {
+		if (ignoreClashOnIDsCheckBox.isSelected()) {
 			ignoreClashOnIDsChoiceString = (String) ignoreClashOnIDsChoiceComboBox
 					.getSelectedItem();
 			System.out.println("arg = " + ignoreClashOnIDsChoiceString);
