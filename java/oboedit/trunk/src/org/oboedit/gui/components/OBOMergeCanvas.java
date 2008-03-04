@@ -458,7 +458,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 		if (ignoreClashOnIDsCheckBox.isSelected()) {
 			
-			ignoreClashOnIDsActivatedString = "new string";
+			ignoreClashOnIDsActivatedString = "-ignore-clash-on-id";
 		}
 		
 	}
