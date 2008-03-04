@@ -1,8 +1,5 @@
 package org.bbop.rdbms.impl;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.bbop.rdbms.SelectClause;
 
 public class SqlSelectClauseImpl extends SqlColumnListClause implements SelectClause {
