@@ -1,0 +1,16 @@
+The GUI components in the OBOMergeCanvas programme were created using MyEclipse Matisse GUI Builder from:
+
+MyEclipse Enterprise Workbench
+Version: 6.0.1 GA
+Build id: 6.0.1-GA-200710
+
+Both org.oboedit.gui.components.OBOMergeCanvas.java and org.oboedit.gui.components.OBOMergeCanvas.form are 
+needed to make changes to the OBOMergeCanvas GUI. 
+
+To use this GUI builder to make changes, you need to open the source code in MyEclipse and then double click OBOMergeCanvas.form 
+(rather than the .java file). This will open the GUI in the Matisse editor, and will enable the automated code generation software to 
+continue updating changes automatically. It is also important  to configure the software to generate code that is 
+compliant with the java level that OBO-Edit is currently using. At the time of writing this is java 5. 
+
+J. Deegan 
+4 March 2008
