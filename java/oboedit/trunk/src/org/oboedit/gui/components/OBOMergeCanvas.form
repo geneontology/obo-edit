@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="outputFileFormatLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="fileFormatComboBox" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="parentFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="mainEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="secondaryEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="mergedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="parentFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
+                          <Component id="mainEditedFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
+                          <Component id="secondaryEditedFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
+                          <Component id="outputFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="outputFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="secondaryEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="mainEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="parentFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Group type="102" alignment="1" attributes="1">
+                              <Component id="ignoreClashOnIDsCheckBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="ignoreClashOnIDsChoiceComboBox" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="updateIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="updateIDsChoiceComboBox" min="-2" pref="107" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="failOnClashActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="failOnClashChoiceComboBox" pref="108" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
+                      <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="parentFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="parentFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="parentFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="mainEditedFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="mainEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="mainEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="secondaryEditedFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="secondaryEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="secondaryEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="mergedFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="outputFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="outputFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="outputFileFormatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="fileFormatComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="updateIDsActivatedCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="updateIDsChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace pref="14" max="32767" attributes="0"/>
+                      <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ignoreClashOnIDsCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="ignoreClashOnIDsChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="failOnClashActivatedCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="failOnClashChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTextField" name="parentFileTextField">
+    </Component>
+    <Component class="javax.swing.JButton" name="parentFileButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Browse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="parentFileButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="parentFileLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Parent File"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="mainEditedFileLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Main Edited File"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="secondaryEditedFileLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Secondary Edited File"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="mergedFileLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Merged File"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="mainEditedFileTextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="secondaryEditedFileTextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="outputFileTextField">
+    </Component>
+    <Component class="javax.swing.JButton" name="mainEditedFileButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Browse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mainEditedFileButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="secondaryEditedFileButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Browse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="secondaryEditedFileButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="outputFileButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Browse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFileButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="mergeButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Merge"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mergeButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="outputFileFormatLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Output File Format"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="fileFormatComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="OBO_1_2"/>
+            <StringItem index="1" value="OBO_1_0"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fileFormatComboBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="updateIDsActivatedCheckBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Update IDs"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateIDsActivatedCheckBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="updateIDsChoiceComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="NEVER"/>
+            <StringItem index="1" value="IF_LIKELY"/>
+            <StringItem index="2" value="ALWAYS"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateIDsChoiceComboBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="ignoreClashOnIDsCheckBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Ignore Clash on IDs"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ignoreClashOnIDsCheckBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="ignoreClashOnIDsChoiceComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="NEVER"/>
+            <StringItem index="1" value="IF_LIKELY"/>
+            <StringItem index="2" value="ALWAYS"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ignoreClashOnIDsChoiceComboBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="failOnClashActivatedCheckBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fail On Clash"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="failOnClashActivatedCheckBoxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="failOnClashChoiceComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="NEVER"/>
+            <StringItem index="1" value="IF_LIKELY"/>
+            <StringItem index="2" value="ALWAYS"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="failOnClashChoiceComboBoxActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>
