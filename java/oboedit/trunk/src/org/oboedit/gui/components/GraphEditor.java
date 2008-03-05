@@ -134,6 +134,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()) {
+//			    System.err.println("GraphEditor.reloadListener.reload"); // DEL
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
 					Collection<? extends LinkedObject> roots = TermUtil
@@ -141,7 +142,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
-							System.err.println("isLayoutOut = " + isLayingOut);
+//							System.err.println("GraphEditor.reloadListener.run.isLayoutOut = " + isLayingOut);
 							panToObjects();
 						}
 
@@ -284,6 +285,16 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		updateDatasources();
 		toolbar.updateGestureList();
+		// Didn't help.  Was trying to fix issue where the first time you open the Graph Editor,
+		// it is blank rather than showing the currently selected terms.
+//		reloadListener.reload(
+//		    new ReloadEvent(this, null, true, false, false, false, false)); // ?
+//		if (linkDatabase.getObjects().size() == 0) {
+//		    Collection<? extends LinkedObject> roots = TermUtil
+//			.getRoots(getRootAlgorithm(), getLinkDatabase());
+//		    System.err.println("init: setVisibleObjects(" + roots); // DEL
+//		    setVisibleObjects(roots);
+//		}
 	}
 
 	public void cleanup() {
