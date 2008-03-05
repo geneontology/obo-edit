@@ -457,21 +457,47 @@ public class IDWDriver implements LayoutDriver {
 
   private static final Logger LOG =  Logger.getLogger("org.bbop.framework.dock.idw");
 
+  /** check if resource/persepctive is findable from class loader in perspective
+      resource dir. try 3 different classloaders, system class loader,
+      class.getResource, and class.getClassLoader.getResource which can give different
+      results (odd). the last is what works for webstart (for phenote).
+      if not found at all return defaultPerspective which hopefully works
+      but obviously is probably a different perspective than whats passed in */
 	protected String getResource(Perspective perspective) {
 
 		String out = perspectiveResourceDir + "/" + perspective.getID()
 				+ ".idw";
     boolean classLoaderCanFind =
       ClassLoader.getSystemClassLoader().getResource(out) != null;
-    System.out.println("bbop IDWDriver trying to get resource "+out+" can get from "+
-                       "class loader? "+classLoaderCanFind);
+    if (!classLoaderCanFind) {
+      // IDWDriver.class is a different class loader than ClassLoader.getSysCL
+      // and even different than IDWD.class.getClassLoader()????
+      classLoaderCanFind = IDWDriver.class.getResource(out) != null;
+      if (!classLoaderCanFind) // this is what works in webstart (???)
+        classLoaderCanFind = IDWDriver.class.getClassLoader().getResource(out) != null;
+      //if (!classLoadCanFind) // not sure if this is needed
+      //classLoaderCanFind = IDWDriver.class.getResource("/"+out) != null;
+    }
+//   System.out.println("bbop IDWDriver trying to get resource "+out+" can get from"+
+//                        "class loader? "+classLoaderCanFind);
                        
-    LOG.info("bbop IDWDriver trying to get resource "+out+" can get from "+
-                       "class loader? "+classLoaderCanFind);
+//     try{    
+//     LOG.info("IDWDriver trying to get resource "+out+" can get from "+
+//              "class loader? "+classLoaderCanFind+" gonna use default resource "
+//              +defaultPerspectiveResourcePath+"\n"
+// +ClassLoader.getSystemClassLoader().getResource(out)
+// +"\n"+ClassLoader.getSystemClassLoader()
+// +"\n"+IDWDriver.class.getClassLoader()
+// +"\n"+IDWDriver.class.getClassLoader().getResource(out)
+// +"\n"+IDWDriver.class.getResource(out));
+//  } catch (Exception e) { System.out.println("err "+e); }
     
 		//if (ClassLoader.getSystemClassLoader().getResource(out) == null)
-		if (!classLoaderCanFind)
-			out = defaultPerspectiveResourcePath;
+  if (!classLoaderCanFind) {
+    LOG.info("Cant find resource "+out+" using default "
+             +defaultPerspectiveResourcePath);
+    out = defaultPerspectiveResourcePath;
+  }
     //System.exit(1);
 		return out;
 	}
