@@ -1,6 +1,7 @@
 package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.GUIManager;
 import org.bbop.util.*;
 import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonerListener;
@@ -13,6 +14,7 @@ import java.awt.event.*;
 
 public class ReasonerManagerComponent extends AbstractGUIComponent {
 
+    private static SessionManager sessionManager = SessionManager.getManager();
 	/**
 	 * 
 	 */
@@ -29,10 +31,11 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
 
 		public void reasoningFinished() {
-			updateProgressPanel(SessionManager.getManager().getUseReasoner());
+			updateProgressPanel(sessionManager.getUseReasoner());
 		}
 
 		public void reasoningStarted() {
+//		    System.out.println("ReasonaerManagerComponent: reasoningStarted"); // DEL
 		}
 	};
 
@@ -66,7 +69,8 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void enableReasoner(final boolean enableReasoner) {
-		SessionManager.getManager().setUseReasoner(enableReasoner);
+//	    System.out.println("ReasonaerManagerComponent: enableReasoner(" + enableReasoner + ")");
+		sessionManager.setUseReasoner(enableReasoner);
 	}
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
@@ -106,9 +110,9 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		 * useReasonerCheckbox.addActionListener(reasonerListener);
 		 */
 
-		SessionManager.getManager().addReasonerListener(reasonerActionListener, true);
+		sessionManager.addReasonerListener(reasonerActionListener, true);
 
-		updateProgressPanel(SessionManager.getManager().getUseReasoner());
+		updateProgressPanel(sessionManager.getUseReasoner());
 	}
 
 	@Override
@@ -118,7 +122,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	@Override
 	public void cleanup() {
-		SessionManager.getManager().removeReasonerListener(
+		sessionManager.removeReasonerListener(
 				reasonerActionListener);
 	}
 }
