@@ -28,7 +28,8 @@ public class DAGViewFactory extends AbstractComponentFactory<DAGView> {
 	
 	@Override
 	public boolean getPreferSeparateWindow() {
-		return true;
+	        // By user request, have this start out as a normal docked window rather than a free-floating (undocked) one.
+		return false;
 	}
 	
 	public FactoryCategory getCategory() {
