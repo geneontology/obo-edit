@@ -581,7 +581,8 @@ public class SearchPanel extends JPanel {
 			component = factory.createSubEditor();
 			factory.addUpdateListener(component, new GUIUpdateListener() {
 				public void guiupdated(GUIUpdateEvent e) {
-					updateMatchLabel();
+				    // Is this really necessary?
+//					updateMatchLabel();
 				}
 			});
 			JPanel p = new JPanel();
