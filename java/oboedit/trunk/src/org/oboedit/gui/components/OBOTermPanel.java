@@ -1027,7 +1027,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return createSelectionFromPaths(lead, paths);
 	}
 
-	protected static Selection createSelectionFromPaths(TreePath lead,
+    // NOT static.
+	protected Selection createSelectionFromPaths(TreePath lead,
 			TreePath[] paths) {
 		if (paths == null || paths.length == 0)
 			return SelectionManager.createEmptySelection();
@@ -1047,7 +1048,12 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				paths[leadIndex] = temp;
 			}
 		}
-		return SelectionManager.createSelectionFromPaths(null, paths, leadLink,
+		// createSelectionFromPaths was being called with null as the
+		// first arg because when this method was (incorrectly) made a
+		// static method it didn't have access to "this".  Not sure
+		// why it was done that way.
+//		return SelectionManager.createSelectionFromPaths(null, paths, leadLink,
+		return SelectionManager.createSelectionFromPaths(this, paths, leadLink,
 				SessionManager.getManager().getCurrentLinkDatabase(),
 				RootAlgorithm.GREEDY, true);
 	}
