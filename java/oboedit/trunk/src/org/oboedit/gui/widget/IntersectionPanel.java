@@ -682,7 +682,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		genusField.setValue(null);
 		linkListPanel.removeAll();
 
-		System.err.println("parents of " + oboClass + " = "
+		System.err.println("IntersectionPanel.setClass: parents of " + oboClass + " = "
 				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();
