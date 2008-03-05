@@ -404,7 +404,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		relationshipList.clear();
 		genusTerm = null;
 
-		System.err.println("parents of " + oboClass + " = "
+		System.err.println("CompleteDefPanel.setClass: parents of " + oboClass + " = "
 				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();
