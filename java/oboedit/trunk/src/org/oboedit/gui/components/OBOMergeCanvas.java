@@ -30,7 +30,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	String ignoreClashOnIDsActivatedString = "";
 	String ignoreClashOnIDsChoiceString;
 
-
 	/** Creates new form OBOMergeCanvas */
 	public OBOMergeCanvas() {
 		initComponents();
@@ -78,6 +77,13 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		secondaryEditedFileLabel.setText("Secondary Edited File");
 
 		mergedFileLabel.setText("Merged File");
+
+		outputFileTextField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						outputFileTextFieldActionPerformed(evt);
+					}
+				});
 
 		mainEditedFileButton.setText("Browse");
 		mainEditedFileButton
@@ -143,6 +149,8 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
 						ignoreClashOnIDsCheckBoxActionPerformed(evt);
 					}
+
+					
 				});
 
 		ignoreClashOnIDsChoiceComboBox
@@ -254,13 +262,13 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																						.createParallelGroup(
 																								org.jdesktop.layout.GroupLayout.LEADING)
 																						.add(
-																								outputFileButton)
-																						.add(
 																								secondaryEditedFileButton)
 																						.add(
 																								mainEditedFileButton)
 																						.add(
-																								parentFileButton))
+																								parentFileButton)
+																						.add(
+																								outputFileButton))
 																		.add(
 																				1,
 																				1,
@@ -329,7 +337,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 						.add(
 								layout
 										.createSequentialGroup()
-										.add(24, 24, 24)
+										.add(69, 69, 69)
 										.add(
 												layout
 														.createParallelGroup(
@@ -378,12 +386,12 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 														.createParallelGroup(
 																org.jdesktop.layout.GroupLayout.BASELINE)
 														.add(mergedFileLabel)
-														.add(outputFileButton)
 														.add(
 																outputFileTextField,
 																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
 																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(outputFileButton))
 										.add(41, 41, 41)
 										.add(
 												layout
@@ -452,17 +460,12 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 		pack();
 	}// </editor-fold>
-	
-	
-	protected void ignoreClashOnIDsCheckBoxActionPerformed(ActionEvent evt) {
-
-		if (ignoreClashOnIDsCheckBox.isSelected()) {
-			
-			ignoreClashOnIDsActivatedString = "-ignore-clash-on-id";
-		}
-		
-	}
 	//GEN-END:initComponents
+
+	private void outputFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		// TODO add your handling code here:
+	}
 
 	JFileChooser fileChooser = new JFileChooser();
 
@@ -506,6 +509,11 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 	}
 
+	private void ignoreClashOnIDsCheckBoxActionPerformed(
+			ActionEvent evt) {
+		ignoreClashOnIDsActivatedString = "-ignore-clash-on-id";
+	}
+	
 	private void ignoreClashOnIDsChoiceComboBoxActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
@@ -514,7 +522,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 					.getSelectedItem();
 			System.out.println("arg = " + ignoreClashOnIDsChoiceString);
 		}
-	
+
 	}
 
 	String updateIDsChoiceString = "never"; //Default value;
