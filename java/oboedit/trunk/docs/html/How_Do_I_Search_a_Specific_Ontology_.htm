@@ -8,5 +8,20 @@
 <BODY BGCOLOR=#ffffff>
 <H1>How Do I Search a Specific Ontology?</H1>
 <P>&nbsp;</P>
+<h2>Load and visualize ChEBI ontology</h2>
+
+<p>You might have trouble loading and visualizing the ChEBI ontology in OBO-Edit. OBO-Edit might show
+the ontology in an unhelpful "flat" form like this:</p>
+
+<p><img src="../images/chebi.png" width="623" height="411" border="0" alt=""></p>
+
+<p>To solve the problem, you need to select "View" -&gt; "Show" -&gt; "Config" -&gt; "Global Filters". Then select 
+"Link filters" and delete the second filter: <em>Select links where Type that have a Is Transitive.</em></p>
+
+<p><img src="../images/is_transitive.png" width="842" height="244" border="0" alt=""></p>
+<p>Once you have saved the changes, you need to restart OBO-Edit.
+After you reload the ChEBI ontology, it should display correctly:</p>
+<p><img src="../images/chebi_fixed.png" width="430" height="328" border="0" alt=""></p>
+<P>&nbsp;</P>
 </BODY>
 </HTML>

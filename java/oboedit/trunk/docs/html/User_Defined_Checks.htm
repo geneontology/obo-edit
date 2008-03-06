@@ -7,10 +7,32 @@
 </HEAD>
 <BODY BGCOLOR=#ffffff>
 <H1>User Defined Checks</H1>
-<P>User defined checks are checks that a user creates. User 
-defined checks display errors or warnings based on whether a user-specified 
+<P>User defined checks are checks that a user creates. They display errors or warnings based on whether a user-specified 
 filter is matched. See <A href="The_Verification_Plugin.htm#userdefined">The 
 Verification Manager</A> for information on how to create a user-defined 
 check.</P>
+
+<ul>
+<li><strong>Namespace Check</strong>
+<li><strong>is_a complete Check </strong></li>
+</ul>
+
+
+<h2>Namespace Check</h2>
+
+<p>The user might be interested in checking if all terms have the correct namespace setting.
+It is possible to create a user-defined Namespace Check and a warning will
+  appear if a term has, for example, 'gene_ontology' as its namespace.</p>
+<p><img src="../images/namespace.png" width="696" height="371" border="0" alt=""></p>
+
+<p>Note: The Part_of relation in Gene Ontology has default namespace equal to 'gene_ontology'.</p>
+
+
+<h2>is_a complete Check</h2>
+
+<p>A warning will appear if a term does not have an is_a path to the root (is_a complete rule). The user should create a
+ new check like this:</p>
+<p> <img src="../images/isa_complete.png" width="690" height="379" border="0" alt=""></p>
+<p>&nbsp;</p>
 </BODY>
 </HTML>
