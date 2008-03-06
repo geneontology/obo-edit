@@ -220,7 +220,7 @@ public class SessionManager {
 			Logger.getLogger("org.oboedit.datamodel.history").log(
 					Level.WARNING,
 					"Warning message while trying to apply history item",
-					params);
+					params + ": " + item + ", " + warning);
 		}
 
 		// if (getUseReasoner())
@@ -398,7 +398,7 @@ public class SessionManager {
 				Object[] params = { item, reasonerWarning };
 				Logger.getLogger("org.oboedit.datamodel.history").log(
 						Level.WARNING,
-						"Warning message while trying to apply history item",
+						"Reasoner warning message while trying to apply history item",
 						params);
 			}
 			if (warning != null) {
@@ -406,7 +406,7 @@ public class SessionManager {
 				Logger.getLogger("org.oboedit.datamodel.history").log(
 						Level.WARNING,
 						"Warning message while trying to apply history item",
-						params);
+						params + ": " + item + ", " + warning);
 
 				System.err.println("*** GOT WARNING = " + warning);
 			}
