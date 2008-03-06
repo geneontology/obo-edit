@@ -31,6 +31,10 @@ public class DanglingObjectImpl implements DanglingObject {
 	}
 
 	public String getName() {
+
+	    // Note: making the name be null caused a lot of exceptions (now
+	    // fixed) in places where there are comparisons done on getName(),
+	    // but Chris said we can't just give it a fake name (such as the ID).
 		return null; // CJM - changed from id to null. Need to thoroughly test
 	}
 
