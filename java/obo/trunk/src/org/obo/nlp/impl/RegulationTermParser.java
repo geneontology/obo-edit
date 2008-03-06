@@ -85,7 +85,7 @@ public class RegulationTermParser implements SemanticParser {
 				LinkedObject lo = (LinkedObject)io;
 				for (String label : TermUtil.getExactLabels(lo)) {
 					label = label.replace('_', ' ');
-					logger.info("label="+label);
+//					logger.info("label="+label);
 					name2obj.put(label, lo);
 				}
 			}

@@ -1086,7 +1086,7 @@ public class DefaultOBOParser implements OBOParser {
 					parent = objectFactory.createDanglingObject(rs.getParent(),
 							false);
 					session.addObject(parent);
-					System.err.println("added dangling object " + parent);
+					System.err.println("No parent for " + child + "--added dangling object " + parent);
 				} else {
 					danglingViolations.add(rs);
 					continue;
