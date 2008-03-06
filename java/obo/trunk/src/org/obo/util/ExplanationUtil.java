@@ -48,6 +48,11 @@ public class ExplanationUtil {
 			Collection subExplanations, Map<Link, String> cachedExplanations,
 			boolean documentation) {
 		StringBuffer out = new StringBuffer();
+		if (reasoner == null) {
+		    System.err.println("Can't get explanation--reasoner is null!");
+		    return "";
+		}
+
 		Collection explanations = reasoner.getExplanations(link);
 		out.append("<a name='" + link.getChild().getID().replace(':', '_')
 				+ "-" + link.getType().getID().replace(':', '_') + "-"
