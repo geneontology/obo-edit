@@ -59,6 +59,10 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		placeHolderVals.add(val);
 	}
 	
+	public void addJoinConstraint(String col1, String col2) {
+		constraintSet.addConstraint(col1+" = "+col2);
+	}
+	
 	
 	public BooleanOperator getOperator() {
 		return constraintSet.getOperator();

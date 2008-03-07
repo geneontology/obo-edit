@@ -12,5 +12,6 @@ public interface SelectClause extends RelationalTerm {
 	public void setColumns(LinkedList<String> columns);
 	
 	public void addColumn(String column);
+	public void addColumn(String column, String columnAlias);
 
 }

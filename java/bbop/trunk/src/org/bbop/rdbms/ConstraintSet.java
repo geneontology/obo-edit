@@ -15,6 +15,7 @@ public interface ConstraintSet {
 
 	public abstract boolean isEmpty();
 
+
 	public abstract void setConstraints(LinkedList<String> terms);
 
 	public abstract void addConstraint(String s);
