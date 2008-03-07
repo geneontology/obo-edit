@@ -1283,9 +1283,13 @@ public class DefaultOBOParser implements OBOParser {
 					type_o = Datatype.STRING;
 
 				if (type_o == null)
+					type_o = Datatype.STRING;
+				/*
+				  Changed to be more lenient -- CJM
 					throw new OBOParseException("Unrecognized datatype "
 							+ pvs.typeID, pvs.getPath(), pvs.getLine(), pvs
 							.getLineNum());
+							*/
 
 				if (!(type_o instanceof Datatype))
 					throw new OBOParseException("Non-datatype " + pvs.typeID

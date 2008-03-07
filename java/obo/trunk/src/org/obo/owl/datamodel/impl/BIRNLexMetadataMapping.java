@@ -17,18 +17,18 @@ import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
-public class SAO_1_2_OWLMetadataMapping extends AbstractOWLMetadataMapping {
+public class BIRNLexMetadataMapping extends AbstractOWLMetadataMapping {
 
 	public boolean isOboToOWLLossy() { return true; }
 	
-	public String getName() { return "SAO 1.2 mapping"; }
-	public String getDesc() { return "Uses SAO"; }
+	public String getName() { return "BIRNLex Annotation Property Mapping"; }
+	public String getDesc() { return "Uses "; }
 	
-	public String ns = "http://ccdb.ucsd.edu/SAO/1.2#";
+	public String ns = "http://purl.org/nbirn/birnlex/ontology/annotation/BIRNLex_annotation_properties.owl#";
 	
 	public enum SAONamespaces {
 
-	    SAO("http://ccdb.ucsd.edu/SAO/1.2#");
+	    BIRNLEX_ANNOT("http://purl.org/nbirn/birnlex/ontology/annotation/BIRNLex_annotation_properties.owl#");
 
 	    String ns;
 	    SAONamespaces(String ns) {
@@ -40,15 +40,16 @@ public class SAO_1_2_OWLMetadataMapping extends AbstractOWLMetadataMapping {
 	    }
 	}
 	
-	public enum SAOVocabulary {
+	public enum BIRNLexVocabulary {
 		CL_ID("cell_ontology_ID"),
 		GO_ID("gene_Ontology_ID"),
 		UMLS_ID("umls_ID"),
-		BONFIRE_ID("bonfire_ID"),
+		BONFIRE_ID("bonfireID"),
+		NIF_ID("nifID"),
 		SYNONYM("synonym");
 		URI uri;
 
-	    SAOVocabulary(String uri) {
+	    BIRNLexVocabulary(String uri) {
 	    	this.uri = URI.create(uri);
 	    }
 
@@ -78,23 +79,23 @@ public class SAO_1_2_OWLMetadataMapping extends AbstractOWLMetadataMapping {
 		OBOObject obj = (OBOObject) lo;
 		if (owlAnnot instanceof OWLConstantAnnotation) {
 			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-			if (uri.equals(SAOVocabulary.SYNONYM.getURI())) {
+			if (uri.equals(BIRNLexVocabulary.SYNONYM.getURI())) {
 				obj.addSynonym(new SynonymImpl(val));
 				return true;
 			}	
-			else if (uri.equals(SAOVocabulary.CL_ID.getURI())) {
+			else if (uri.equals(BIRNLexVocabulary.CL_ID.getURI())) {
 				addDbxref(obj, "CL", val);
 				return true;
 			}	
-			else if (uri.equals(SAOVocabulary.GO_ID.getURI())) {
+			else if (uri.equals(BIRNLexVocabulary.GO_ID.getURI())) {
 				addDbxref(obj, "GO", val);
 				return true;
 			}	
-			else if (uri.equals(SAOVocabulary.UMLS_ID.getURI())) {
+			else if (uri.equals(BIRNLexVocabulary.UMLS_ID.getURI())) {
 				addDbxref(obj, "UMLS", val);
 				return true;
 			}	
-			else if (uri.equals(SAOVocabulary.BONFIRE_ID.getURI())) {
+			else if (uri.equals(BIRNLexVocabulary.BONFIRE_ID.getURI())) {
 				addDbxref(obj, "BONFIRE", val);
 				return true;
 			}	

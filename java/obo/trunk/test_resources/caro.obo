@@ -6,6 +6,7 @@ default-namespace: caro
 pairwise-disjoint: true
 namespace-id-rule: * CARO:$sequence(7)$
 treat-xrefs-as-equivalent: GO
+subsetdef: test "test"
 
 [Term]
 id: CARO:0000000
@@ -282,12 +283,14 @@ id: CARO:0000074
 name: solid compound organ
 def: "Compound organ that does not contain macroscopic anatomical spaces." [CARO:MAH]
 is_a: CARO:0000024 ! compound organ
+subset: test
 
 [Term]
 id: CARO:0000077
 name: epithelial cell
 def: "Cell which has as its part a cytoskeleton that allows for tight cell to cell contact and which has apical-basal cell polarity." [CARO:MAH]
 is_a: CARO:0000013 ! cell
+subset: test
 
 [Typedef]
 id: part_of

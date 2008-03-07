@@ -21,6 +21,9 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 	protected boolean isSourceOWL() {
 		return false;
 	}
+	protected boolean isCombineOWLOntologies() {
+		return false;
+	}
 	protected boolean isAllowLossyWhenWritingOWL() {
 		return false;
 	}
@@ -96,7 +99,7 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 		addMappings(config);
 		config.getReadPaths().addAll(files);
 		config.setAllowLossy(isAllowLossyWhenReadingOWL());
-
+		config.setCombineOWLOntologies(isCombineOWLOntologies());
 		session = adapter.doOperation(OWLAdapter.READ_ONTOLOGY, config,
 				null);
 
