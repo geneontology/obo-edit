@@ -2,7 +2,10 @@ package org.obo.owl.datamodel.impl;
 
 import java.net.URI;
 
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
@@ -83,6 +86,10 @@ public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 		// TODO Auto-generated method stub
 	}
 	
+	protected void addDbxref(OBOObject obj, String db, String localID) {
+		Dbxref xref = new DbxrefImpl(db,localID);
+		obj.addDbxref(xref);
+	}
 
 }
 		

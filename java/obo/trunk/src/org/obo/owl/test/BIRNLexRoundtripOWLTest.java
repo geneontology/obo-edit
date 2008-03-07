@@ -8,26 +8,29 @@ import java.util.Collection;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.OBIMetadataMapping;
+import org.obo.owl.datamodel.impl.BIRNLexMetadataMapping;
 import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
 
-public class SAORoundtripOWLTest extends AbstractOWLTest {
 
-	protected SAORoundtripOWLTest(String name) {
+public class BIRNLexRoundtripOWLTest extends AbstractOWLTest {
+
+	public BIRNLexRoundtripOWLTest(String name) {
 		super(name);
 	}
 	
 	protected boolean isSourceOWL() {
 		return true;
 	}
+	protected boolean isCombineOWLOntologies() {
+		return true;
+	}
 	protected void addMappings(OWLAdapterConfiguration config) {
-		MetadataMapping mapping = new SAO_1_2_OWLMetadataMapping();
+		MetadataMapping mapping = new BIRNLexMetadataMapping();
 		config.addMetadataMapping(mapping);
 	}
 
-
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "http://ccdb.ucsd.edu/SAO/1.2/SAO.owl" };
+		String[] files = {  "http://purl.org/nbirn/birnlex/ontology/birnlex.owl" };
 		return Arrays.asList(files);
 	}
 	

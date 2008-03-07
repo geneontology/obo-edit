@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.bbop.dataadapter.AdapterConfiguration;
@@ -111,6 +112,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	protected OWLOntologyManager manager;
 	protected Map<OWLDescription,OBOClass> description2oboclass = 
 		new HashMap<OWLDescription,OBOClass>();
+	Logger logger = Logger.getLogger("org.obo.owl");
 
 	public final static String PURL_OBO = "http://purl.org/obo/";
 	public final static String PURL_OBO_OWL = "http://purl.org/obo/owl/";
@@ -137,6 +139,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		protected boolean failFast = false;
 
 		protected boolean saveImplied;
+		
+		protected boolean combineOWLOntologies = true;
 
 		protected List<FilteredPath> saveRecords = new ArrayList<FilteredPath>();
 
@@ -155,14 +159,6 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 		public void setSerializer(String serializer) {
 			this.serializer = serializer;
-		}
-
-		public void setFailFast(boolean failFast) {
-			this.failFast = failFast;
-		}
-
-		public boolean getFailFast() {
-			return failFast;
 		}
 
 		public String getSerializer() {
@@ -200,8 +196,30 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			return allowLossy;
 		}
 
+		/**
+		 * Not all OWL Constructs can be converted at this time. For example
+		 * universal restrictions.
+		 * 
+		 * @param allowLossy -- if false, then untranslatable constructs will be fatal
+		 */
 		public void setAllowLossy(boolean allowLossy) {
 			this.allowLossy = allowLossy;
+		}
+
+		public boolean isCombineOWLOntologies() {
+			return combineOWLOntologies;
+		}
+
+		/**
+		 * OWL Ontologies can be declared to import other ontologies. The OWLAPI
+		 * will by default follow imports and load these ontologies into memory. However,
+		 * each is still treated as a separate ontology.
+		 * If this toggle is set to true, then all these ontologies will be translated
+		 * into one OBO Session (and thus, when saved, into a single OBO file)
+		 * @param combineOWLOntologies
+		 */
+		public void setCombineOWLOntologies(boolean combineOWLOntologies) {
+			this.combineOWLOntologies = combineOWLOntologies;
 		}
 
 		public Set<MetadataMapping> getMetadataMappings() {
@@ -211,6 +229,14 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		public void setMetadataMappings(Set<MetadataMapping> metadataMappings) {
 			this.metadataMappings = metadataMappings;
 		}
+		
+		/**
+		 * Different ontologies use different annotation properties for
+		 * encoding synonyms, definitions, obsolete classes etc. This
+		 * must be set explicitly
+		 * 
+		 * @param metadataMapping
+		 */
 		public void addMetadataMapping(MetadataMapping metadataMapping) {
 			this.metadataMappings.add(metadataMapping);
 		}
@@ -222,6 +248,12 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			this.ontologyFormat = ontologyFormat;
 		}
 
+		/**
+		 * The OWL language has a number of different concrete serializations
+		 * 
+		 * @param owlFormat -- one of owlxml, owlfunctionalsyntax, manchesterowlsyntax, rdfxml
+		 * @throws DataAdapterException
+		 */
 		public void setOntologyFormat(String owlFormat) throws DataAdapterException {
 			if (owlFormat.equals("owlxml"))
 				ontologyFormat = new OWLXMLOntologyFormat();
@@ -307,7 +339,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 	public void fireLossyWarning(String message) throws DataAdapterException {
 		if (ioprofile.allowLossy) {
-			System.err.println(message);
+			logger.severe(message);
+			// TODO capture errors
 		}
 		else
 			throw new DataAdapterException(message+
@@ -350,7 +383,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 						null, null, ioprofile.getWritePath()));
 			} else {
-				System.err.println("gsr="+ioprofile.getSaveRecords());
+				logger.info("getSaveRecprds="+ioprofile.getSaveRecords());
 				filteredPaths.addAll(ioprofile.getSaveRecords());
 			}
 			streams.clear();
@@ -368,156 +401,174 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public void readOntology(OBOSession session, String f) throws DataAdapterException {
 		manager = OWLManager.createOWLOntologyManager();
 		this.session = session; // TODO : check
-		ObjectFactory oboFactory = session.getObjectFactory();
+		logger.info("reading OWL ontology from ="+f);
 		try {
-			System.out.println("f="+f);
 			ontology = manager.loadOntologyFromPhysicalURI(URI.create(f));
-			/* instances
-			 * 
-			 */	
-			for (OWLIndividual owlIndividual : ontology.getReferencedIndividuals()) {
-
-				String id = getOboID(owlIndividual.getURI());
-				Instance oboInstance = 
-					(Instance)oboFactory.createObject(id, OBOClass.OBO_INSTANCE, false);
-				session.addObject(oboInstance);
-				Map<OWLObjectPropertyExpression, Set<OWLIndividual>> opvs = 
-					owlIndividual.getObjectPropertyValues(ontology);
-				for (OWLObjectPropertyExpression owlProp : opvs.keySet()) {
-					if (owlProp instanceof OWLProperty) {
-						OBOProperty oboProp = this.getOboProperty((OWLProperty)owlProp);
-						for (OWLIndividual owlRefIndiv : opvs.get(owlProp)) {
-							String toID = this.getOboID(owlRefIndiv);
-							Instance oboRefInst = this.getOboInstance(toID);
-							if (!(oboRefInst instanceof Value)) {
-							}
-							else  {
-								oboInstance.addPropertyValue(oboProp, oboRefInst);
-							}
-						}
-					}
-				}
-				Map<OWLDataPropertyExpression, Set<OWLConstant>> dpvs = 
-					owlIndividual.getDataPropertyValues(ontology);
-				for (OWLDataPropertyExpression owlProp : dpvs.keySet()) {
-					if (owlProp instanceof OWLProperty) {
-						OBOProperty oboProp = this.getOboProperty((OWLProperty)owlProp);
-						for (OWLConstant owlConst : dpvs.get(owlProp)) {
-
-							DatatypeValueImpl dv = new DatatypeValueImpl(Datatype.STRING,
-									owlConst.getLiteral());
-							System.out.println("dv="+dv+" "+oboProp);
-							oboInstance.addPropertyValue(oboProp,dv);
-						}
-					}
-
-				}
-				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlIndividual.getAnnotationAxioms(ontology);
-				getMetadataFromAnnotationAxioms(oboInstance,owlAnnotationAxioms);				
-			}
-
-			/* classes
-			 */
-			for (OWLClass owlClass : ontology.getReferencedClasses()) {
-
-				String id = getOboID(owlClass.getURI());
-				//System.out.println("read class:"+id+" " +owlClass);
-				OBOClass oboClass = 
-					(OBOClass)oboFactory.createObject(id, OBOClass.OBO_CLASS, false);
-				session.addObject(oboClass);
-				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlClass.getAnnotationAxioms(ontology);
-				getMetadataFromAnnotationAxioms(oboClass,owlAnnotationAxioms);
-
-				/* Fetch all necessary conditions
-				 * In OWL, these are all subClass relations - between named classes
-				 * or restrictions
-				 */
-				for (OWLSubClassAxiom axiom : ontology.getSubClassAxiomsForLHS(owlClass)) {
-					OWLDescription owlSuper = axiom.getSuperClass();
-					OBORestriction link = getOboLinkFromOWLDescription(owlSuper, oboClass);
-					if (link == null) {
-						fireLossyWarning("Cannot convert OWLDescription: "+owlSuper);
-						continue;						
-					}
-					oboClass.addParent(link);					
-				}
-
-				/* Find all N+S conditions
-				 * 
-				 */
-				for (OWLEquivalentClassesAxiom axiom : 
-					ontology.getEquivalentClassesAxioms(owlClass)) {
-					Set<OWLDescription> ecDescs = axiom.getDescriptions();
-					if (ecDescs.size() != 2) {
-						fireLossyWarning("all OWLEquivalentClassesAxiom must be pairs; got:"+ecDescs);
-						continue; 
-					}
-					OWLDescription equivTo = null;
-					for (OWLDescription d : ecDescs) {
-						if (d.equals(owlClass))
-							continue;
-						if (equivTo != null) {
-							fireLossyWarning("all OWLEquivalentClassesAxiom must be pairs; got:"+ecDescs);
-							continue; 
-						}
-						equivTo = d;
-					}
-					addDescription(oboClass,equivTo);
-
-				}
-				/* Find all N+S conditions
-				 * 
-				 */
-				for (OWLDescription owlDisjointClass : owlClass.getDisjointClasses(ontology)) {
-					OBOClass oboDisjointClass = getOboClass(owlDisjointClass);
-					// all axioms are stored in OBO as "Restriction"s
-					oboClass.addParent(new OBORestrictionImpl(oboClass,
-							OBOProperty.DISJOINT_FROM,
-							oboDisjointClass));
-				}
-
-			}
-
-			/* properties
-			 * 
-			 */
-			for (OWLProperty owlProperty : ontology.getReferencedObjectProperties()) {
-				String id = getOboID(owlProperty);
-				OBOProperty oboProperty =
-					(OBOProperty)oboFactory.createObject(id, OBOClass.OBO_PROPERTY, false);
-				session.addObject(oboProperty);
-				Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlProperty.getAnnotationAxioms(ontology);
-				getMetadataFromAnnotationAxioms(oboProperty,owlAnnotationAxioms);			
-				if (owlProperty.isFunctional(ontology)) {
-					// TODO
-					//oboProperty.setFunctional(true);
-				}
-				if (owlProperty instanceof OWLObjectProperty) {
-					OWLObjectProperty owlObjectProperty = (OWLObjectProperty)owlProperty;
-					// TODO: check
-					if (owlObjectProperty.isTransitive(ontology))
-						oboProperty.setTransitive(true);
-					if (owlObjectProperty.isSymmetric(ontology))
-						oboProperty.setSymmetric(true);
-					if (owlObjectProperty.isReflexive(ontology))
-						oboProperty.setReflexive(true);
-				}
-
-			}
-
-			/* everything else
-			 * e.g. - OboInOWL creates fake superclasses
-			 */
-			for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
-				mapping.translateGraph(session);
-			}
-
-			TermUtil.resolveDanglingLinks(session);
-
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new DataAdapterException("error reading OWL ontology: "+e);
 		}
+		if (ioprofile.isCombineOWLOntologies()) {
+			for (OWLOntology ont : manager.getOntologies()) {
+				this.ontology = ont;
+				logger.info("ontology: "+ont);
+				transformToOBOSession(ontology, session);
+			}
+		}
+		else {
+			transformToOBOSession(ontology, session);			
+		}
+
+		
+	}
+	
+	public void transformToOBOSession(OWLOntology ontology, OBOSession session) throws DataAdapterException {
+		ObjectFactory oboFactory = session.getObjectFactory();
+
+		/* instances
+		 * 
+		 */	
+		for (OWLIndividual owlIndividual : ontology.getReferencedIndividuals()) {
+
+			String id = getOboID(owlIndividual.getURI());
+			Instance oboInstance = 
+				(Instance)oboFactory.createObject(id, OBOClass.OBO_INSTANCE, false);
+			session.addObject(oboInstance);
+			Map<OWLObjectPropertyExpression, Set<OWLIndividual>> opvs = 
+				owlIndividual.getObjectPropertyValues(ontology);
+			for (OWLObjectPropertyExpression owlProp : opvs.keySet()) {
+				if (owlProp instanceof OWLProperty) {
+					OBOProperty oboProp = this.getOboProperty((OWLProperty)owlProp);
+					for (OWLIndividual owlRefIndiv : opvs.get(owlProp)) {
+						String toID = this.getOboID(owlRefIndiv);
+						Instance oboRefInst = this.getOboInstance(toID);
+						if (!(oboRefInst instanceof Value)) {
+						}
+						else  {
+							oboInstance.addPropertyValue(oboProp, oboRefInst);
+						}
+					}
+				}
+			}
+			Map<OWLDataPropertyExpression, Set<OWLConstant>> dpvs = 
+				owlIndividual.getDataPropertyValues(ontology);
+			for (OWLDataPropertyExpression owlProp : dpvs.keySet()) {
+				if (owlProp instanceof OWLProperty) {
+					OBOProperty oboProp = this.getOboProperty((OWLProperty)owlProp);
+					for (OWLConstant owlConst : dpvs.get(owlProp)) {
+
+						DatatypeValueImpl dv = new DatatypeValueImpl(Datatype.STRING,
+								owlConst.getLiteral());
+						//System.out.println("dv="+dv+" "+oboProp);
+						oboInstance.addPropertyValue(oboProp,dv);
+					}
+				}
+
+			}
+			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlIndividual.getAnnotationAxioms(ontology);
+			getMetadataFromAnnotationAxioms(oboInstance,owlAnnotationAxioms);				
+		}
+
+		/* classes
+		 */
+		for (OWLClass owlClass : ontology.getReferencedClasses()) {
+
+			String id = getOboID(owlClass.getURI());
+			//System.out.println("read class:"+id+" " +owlClass);
+			OBOClass oboClass = 
+				(OBOClass)oboFactory.createObject(id, OBOClass.OBO_CLASS, false);
+			session.addObject(oboClass);
+			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlClass.getAnnotationAxioms(ontology);
+			getMetadataFromAnnotationAxioms(oboClass,owlAnnotationAxioms);
+
+			/* Fetch all necessary conditions
+			 * In OWL, these are all subClass relations - between named classes
+			 * or restrictions
+			 */
+			for (OWLSubClassAxiom axiom : ontology.getSubClassAxiomsForLHS(owlClass)) {
+				OWLDescription owlSuper = axiom.getSuperClass();
+				OBORestriction link = getOboLinkFromOWLDescription(owlSuper, oboClass);
+				if (link == null) {
+					fireLossyWarning("Cannot convert OWLDescription: "+owlSuper);
+					continue;						
+				}
+				oboClass.addParent(link);					
+			}
+
+			/* Find all N+S conditions
+			 * 
+			 */
+			for (OWLEquivalentClassesAxiom axiom : 
+				ontology.getEquivalentClassesAxioms(owlClass)) {
+				Set<OWLDescription> ecDescs = axiom.getDescriptions();
+				if (ecDescs.size() != 2) {
+					fireLossyWarning("all OWLEquivalentClassesAxiom must be pairs; got:"+ecDescs);
+					continue; 
+				}
+				OWLDescription equivTo = null;
+				for (OWLDescription d : ecDescs) {
+					if (d.equals(owlClass))
+						continue;
+					if (equivTo != null) {
+						fireLossyWarning("all OWLEquivalentClassesAxiom must be pairs; got:"+ecDescs);
+						continue; 
+					}
+					equivTo = d;
+				}
+				addDescription(oboClass,equivTo);
+
+			}
+			/* Find all N+S conditions
+			 * 
+			 */
+			for (OWLDescription owlDisjointClass : owlClass.getDisjointClasses(ontology)) {
+				OBOClass oboDisjointClass = getOboClass(owlDisjointClass);
+				// all axioms are stored in OBO as "Restriction"s
+				oboClass.addParent(new OBORestrictionImpl(oboClass,
+						OBOProperty.DISJOINT_FROM,
+						oboDisjointClass));
+			}
+
+		}
+
+		/* properties
+		 * 
+		 */
+		for (OWLProperty owlProperty : ontology.getReferencedObjectProperties()) {
+			String id = getOboID(owlProperty);
+			OBOProperty oboProperty =
+				(OBOProperty)oboFactory.createObject(id, OBOClass.OBO_PROPERTY, false);
+			session.addObject(oboProperty);
+			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlProperty.getAnnotationAxioms(ontology);
+			getMetadataFromAnnotationAxioms(oboProperty,owlAnnotationAxioms);			
+			if (owlProperty.isFunctional(ontology)) {
+				// TODO
+				//oboProperty.setFunctional(true);
+			}
+			if (owlProperty instanceof OWLObjectProperty) {
+				OWLObjectProperty owlObjectProperty = (OWLObjectProperty)owlProperty;
+				// TODO: check
+				if (owlObjectProperty.isTransitive(ontology))
+					oboProperty.setTransitive(true);
+				if (owlObjectProperty.isSymmetric(ontology))
+					oboProperty.setSymmetric(true);
+				if (owlObjectProperty.isReflexive(ontology))
+					oboProperty.setReflexive(true);
+			}
+
+		}
+
+		/* everything else
+		 * e.g. - OboInOWL creates fake superclasses
+		 */
+		for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
+			mapping.translateGraph(session);
+		}
+
+		TermUtil.resolveDanglingLinks(session);
+
+
 	}
 
 	public void addDescription(OBOClass oboClass, OWLDescription owlDesc) throws DataAdapterException {
@@ -661,9 +712,15 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				//System.out.println("dangling="+id+" "+oboClass);
 			}
 			else {
-				oboClass = (OBOClass)o;
+				if (o instanceof OBOClass)
+					oboClass = (OBOClass)o;
+				else {
+					fireLossyWarning("don't know what to do with "+owlDesc+"; expected class, got: "+o);
+					return null;
+				}
 			}
 			description2oboclass.put(owlDesc,oboClass);
+				
 			return oboClass;
 		}
 	}
