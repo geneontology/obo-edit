@@ -35,6 +35,9 @@ public abstract class SqlColumnListClause extends AbstractRelationalTerm impleme
 	public void addColumn(String column) {
 		getColumns().add(column);
 	}
+	public void addColumn(String column, String columnAlias) {
+		getColumns().add(column+" AS "+columnAlias);
+	}
 
 
 }

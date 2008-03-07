@@ -15,6 +15,7 @@ import org.bbop.rdbms.OrderByClause;
 import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.SelectClause;
 import org.bbop.rdbms.WhereClause;
+import org.bbop.rdbms.RelationalTerm;
 
 
 public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQuery {
@@ -172,14 +173,14 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 
 	public ResultSet execute(Connection conn) throws SQLException {
 		String sql = toSQL();
-		//Logger.getLogger("org.bbop.rdbms").info(toSQL());
+		Logger.getLogger("org.bbop.rdbms").info(toSQL());
 	
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		
 		// TODO: there must be a more generic way to do this!!
 		int i=1;
 		for (Object v : getPlaceHolderVals()) {
-			//Logger.getLogger("org.bbop.rdbms").info("  ?= "+v);
+			Logger.getLogger("org.bbop.rdbms").info("  ?= "+v);
 			if (v instanceof String)
 				stmt.setString(i, (String)v);
 			else if (v instanceof Boolean)
@@ -195,6 +196,33 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 		}
 		
 		return stmt.executeQuery();
+	}
+
+
+
+	// TODO: make this less hacky, use appropriate data structures to hold query
+	public String getTableAliasReferencedInJoin(String joinCol, String table) {
+		Map<String, String> aliasMap = fromClause.getAliasMap();
+		for (RelationalTerm rt : this.getWhereClause().getConstraintSet().getConstraints()) {
+			String c = rt.toString();
+			if (c.contains("=")) {
+				String[] toks = c.split(" += +",2);
+				String jc2 = null;
+				if (toks[0].equals(joinCol))
+					jc2 = toks[1];
+				else if (toks[1].equals(joinCol))
+					jc2 = toks[0];
+				
+				if (jc2 != null && jc2.contains(".")) {
+					String[] toks2 = c.split("\\.",2);
+					String alias = toks2[0];
+					if (aliasMap.containsKey(alias) && aliasMap.get(alias).equals(table))
+						return alias;
+				}
+					           
+			}
+		}
+		return null;
 	}
 
 

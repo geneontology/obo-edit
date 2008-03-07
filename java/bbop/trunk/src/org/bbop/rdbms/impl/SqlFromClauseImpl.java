@@ -1,6 +1,8 @@
 package org.bbop.rdbms.impl;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.bbop.rdbms.FromClause;
 
@@ -36,4 +38,18 @@ public class SqlFromClauseImpl extends AbstractRelationalTerm implements
 		getRelations().add(relation);
 	}
 
+	public Map<String,String> getAliasMap() {
+		Map<String,String> map = new HashMap<String,String>();
+		for (String r :getRelations()) {
+			if (r.toLowerCase().contains(" as ")) {
+				String[] toks = r.toLowerCase().split(" +as +",2);
+				map.put(toks[1], toks[0]);
+			}
+			else {
+				map.put(r, r);
+			}
+		}
+		return map;
+	}
+	
 }

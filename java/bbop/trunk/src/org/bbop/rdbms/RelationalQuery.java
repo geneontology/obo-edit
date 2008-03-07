@@ -39,4 +39,5 @@ public interface RelationalQuery extends RelationalTerm {
 	public Collection<Object> getPlaceHolderVals();
 	
 	public ResultSet execute(Connection conn) throws SQLException;
+	public String getTableAliasReferencedInJoin(String joinCol, String table);
 }
