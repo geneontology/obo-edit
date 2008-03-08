@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import org.bbop.dataadapter.DataAdapterException;
+
 /**
  *
  * @author  __USER__
@@ -37,6 +38,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	String outputFormatChoiceString = "OBO_1_2";
 	JFileChooser fileChooser = new JFileChooser();
 	JFrame missingPathFrame;
+	String saveFeedbackToFileTextFieldString;
 
 	/** Creates new form OBOMergeCanvas */
 	public OBOMergeCanvas() {
@@ -72,6 +74,10 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		jScrollPane1 = new javax.swing.JScrollPane();
 		progressTextArea = new javax.swing.JTextArea();
 		showProgressCheckBox = new javax.swing.JCheckBox();
+		saveFeedbackToFileCheckBox = new javax.swing.JCheckBox();
+		saveFeedbackToFileTextField = new javax.swing.JTextField();
+		saveFeedbackToFileBrowseButton = new javax.swing.JButton();
+		jSeparator1 = new javax.swing.JSeparator();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -183,6 +189,19 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		progressTextArea.setRows(5);
 		jScrollPane1.setViewportView(progressTextArea);
 
+		showProgressCheckBox.setText("Show feedback");
+
+		saveFeedbackToFileCheckBox.setText("Save feed back to file");
+
+		saveFeedbackToFileTextField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						saveFeedbackToFileTextFieldActionPerformed(evt);
+					}
+				});
+
+		saveFeedbackToFileBrowseButton.setText("Browse");
+
 		org.jdesktop.layout.GroupLayout progressPanelLayout = new org.jdesktop.layout.GroupLayout(
 				progressPanel);
 		progressPanel.setLayout(progressPanelLayout);
@@ -193,27 +212,74 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 						.add(
 								progressPanelLayout
 										.createSequentialGroup()
-										.addContainerGap()
 										.add(
-												jScrollPane1,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												637, Short.MAX_VALUE)
+												progressPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.LEADING)
+														.add(
+																progressPanelLayout
+																		.createSequentialGroup()
+																		.addContainerGap()
+																		.add(
+																				jScrollPane1,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				637,
+																				Short.MAX_VALUE))
+														.add(
+																progressPanelLayout
+																		.createSequentialGroup()
+																		.add(
+																				showProgressCheckBox)
+																		.add(
+																				32,
+																				32,
+																				32)
+																		.add(
+																				saveFeedbackToFileCheckBox)
+																		.add(
+																				18,
+																				18,
+																				18)
+																		.add(
+																				saveFeedbackToFileTextField,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				296,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				saveFeedbackToFileBrowseButton)))
 										.addContainerGap()));
 		progressPanelLayout
 				.setVerticalGroup(progressPanelLayout
 						.createParallelGroup(
 								org.jdesktop.layout.GroupLayout.LEADING)
 						.add(
+								org.jdesktop.layout.GroupLayout.TRAILING,
 								progressPanelLayout
 										.createSequentialGroup()
 										.addContainerGap()
 										.add(
+												progressPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE)
+														.add(
+																showProgressCheckBox)
+														.add(
+																saveFeedbackToFileCheckBox)
+														.add(
+																saveFeedbackToFileBrowseButton)
+														.add(
+																saveFeedbackToFileTextField,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.UNRELATED)
+										.add(
 												jScrollPane1,
 												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												100, Short.MAX_VALUE)
-										.addContainerGap()));
-
-		showProgressCheckBox.setText("Show Progress");
+												100, Short.MAX_VALUE)));
 
 		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(
 				getContentPane());
@@ -223,14 +289,14 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 						.createParallelGroup(
 								org.jdesktop.layout.GroupLayout.LEADING)
 						.add(
-								org.jdesktop.layout.GroupLayout.TRAILING,
 								layout
 										.createSequentialGroup()
 										.add(
 												layout
 														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
+																org.jdesktop.layout.GroupLayout.LEADING)
 														.add(
+																org.jdesktop.layout.GroupLayout.TRAILING,
 																layout
 																		.createSequentialGroup()
 																		.add(
@@ -380,22 +446,24 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																														.add(
 																																outputFileButton)))))
 														.add(
-																org.jdesktop.layout.GroupLayout.LEADING,
 																layout
 																		.createSequentialGroup()
 																		.addContainerGap()
 																		.add(
-																				layout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.LEADING)
-																						.add(
-																								showProgressCheckBox)
-																						.add(
-																								progressPanel,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								Short.MAX_VALUE))))
-										.addContainerGap()));
+																				progressPanel,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				Short.MAX_VALUE)))
+										.addContainerGap())
+						.add(
+								org.jdesktop.layout.GroupLayout.TRAILING,
+								layout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(
+												jSeparator1,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												667, Short.MAX_VALUE)));
 		layout
 				.setVerticalGroup(layout
 						.createParallelGroup(
@@ -527,12 +595,13 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
 																				57,
 																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED,
-												13, Short.MAX_VALUE)
-										.add(showProgressCheckBox)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.UNRELATED)
+										.add(18, 18, 18)
+										.add(
+												jSeparator1,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+												10,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+										.add(15, 15, 15)
 										.add(
 												progressPanel,
 												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
@@ -543,6 +612,16 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>
 	//GEN-END:initComponents
+
+	private void saveFeedbackToFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			outputFileTextField.setText(saveFeedbackToFileTextFieldString);
+		}	
+	}
 
 	private void failOnClashActivatedCheckBoxActionPerformed(
 			java.awt.event.ActionEvent evt) {
@@ -656,9 +735,14 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		if (showProgressCheckBox.isSelected()) {
-			PrintStream progressTextAreaPrintStream = new PrintStream( new TextAreaOutputStream( progressTextArea ) );
-			System.setOut( progressTextAreaPrintStream );
-			System.setErr( progressTextAreaPrintStream );
+			PrintStream progressTextAreaPrintStream = new PrintStream(
+					new TextAreaOutputStream(progressTextArea));
+			System.setOut(progressTextAreaPrintStream);
+			System.setErr(progressTextAreaPrintStream);
+		}
+		if (saveFeedbackToFileCheckBox.isSelected()) {
+			
+			
 		}
 		if (makeArgArrayList() == true) {
 			try {
@@ -689,6 +773,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JCheckBox ignoreClashOnIDsActivatedCheckBox;
 	private javax.swing.JComboBox ignoreClashOnIDsChoiceComboBox;
 	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JSeparator jSeparator1;
 	private javax.swing.JButton mainEditedFileButton;
 	private javax.swing.JLabel mainEditedFileLabel;
 	private javax.swing.JTextField mainEditedFileTextField;
@@ -702,6 +787,9 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JTextField parentFileTextField;
 	private javax.swing.JPanel progressPanel;
 	private javax.swing.JTextArea progressTextArea;
+	private javax.swing.JButton saveFeedbackToFileBrowseButton;
+	private javax.swing.JCheckBox saveFeedbackToFileCheckBox;
+	private javax.swing.JTextField saveFeedbackToFileTextField;
 	private javax.swing.JButton secondaryEditedFileButton;
 	private javax.swing.JLabel secondaryEditedFileLabel;
 	private javax.swing.JTextField secondaryEditedFileTextField;
@@ -718,19 +806,24 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		 *  GUI controls and puts them
 		 * into the array to be fed to obomerge.
 		 */
-
+		System.out.println("Arguments applied are:");
 		//obomergeArgsArrayList
 		if (failOnClashActivatedCheckBox.isSelected()) {
 			obomergeArgsArrayList.add("-fail-on-clash");
 			obomergeArgsArrayList.add(failOnClashChoiceString);
+			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
+
 		}
 		if (updateIDsActivatedCheckBox.isSelected()) {
 			obomergeArgsArrayList.add("-update-ids");
 			obomergeArgsArrayList.add(updateIDsChoiceString);
+			System.out.println("    -update-ids " + updateIDsChoiceString);
 		}
 		if (ignoreClashOnIDsActivatedCheckBox.isSelected()) {
 			obomergeArgsArrayList.add("-ignore-clash-on-id");
 			obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
+			System.out.println("    -ignore-clash-on-id "
+					+ ignoreClashOnIDsChoiceString);
 		}
 
 		parentFileTextFieldString = parentFileTextField.getText();
@@ -752,60 +845,50 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		}
 		obomergeArgsArrayList.add("-version");
 		obomergeArgsArrayList.add(outputFormatChoiceString);
+		System.out.println("    -version " + outputFormatChoiceString);
+
 		obomergeArgsArrayList.add("-original");
 		obomergeArgsArrayList.add(parentFileTextFieldString);
+		System.out.println("    -original " + parentFileTextFieldString);
+
 		obomergeArgsArrayList.add("-revision");
 		obomergeArgsArrayList.add(mainEditedFileTextFieldString);
+		System.out.println("    -revision " + mainEditedFileTextFieldString);
+
 		obomergeArgsArrayList.add("-revision");
 		obomergeArgsArrayList.add(secondaryEditedFileTextFieldString);
+		System.out.println("    -revision "
+				+ secondaryEditedFileTextFieldString);
+
 		obomergeArgsArrayList.add("-o");
 		obomergeArgsArrayList.add(outputFileTextFieldString);
+		System.out.println("    -o " + outputFileTextFieldString);
+
 		obomergeArgsArrayList.trimToSize();
-		System.out.println(obomergeArgsArrayList.size());
-		System.out.println(obomergeArgsArrayList.toString());
 		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
 		return true;
 	};
-	
-	
+
 	/**
-	* An output stream that writes its output to a javax.swing.JTextArea
-	* control: This class will be used to divert System.err from OBO Merge
-	* to a jTextArea in the OBOMerge GUI.
-	*
-	* @author  Ranganath Kini
-	* @see      javax.swing.JTextArea
-	* http://www.jcreator.com/forums/index.php?showtopic=773
-	*/
+	 * @author  Ranganath Kini
+	 * @see      javax.swing.JTextArea
+	 * http://www.jcreator.com/forums/index.php?showtopic=773
+	 */
 	public class TextAreaOutputStream extends OutputStream {
-	    private JTextArea textControl;
-	    
-	    /**
-	     * Creates a new instance of TextAreaOutputStream which writes
-	     * to the specified instance of javax.swing.JTextArea control.
-	     *
-	     * @param control   A reference to the javax.swing.JTextArea
-	     *                  control to which the output must be redirected
-	     *                  to.
-	     */
-	    public TextAreaOutputStream( JTextArea control ) {
-	        textControl = control;
-	    }
-	    
-	    /**
-	     * Writes the specified byte as a character to the
-	     * javax.swing.JTextArea.
-	     *
-	     * @param   b   The byte to be written as character to the
-	     *              JTextArea.
-	     */
-	    public void write( int b ) throws IOException {
-	        // append the data as characters to the JTextArea control
-	        textControl.append( String.valueOf( ( char )b ) );
-	    }  
+		private JTextArea textControl;
+
+		public TextAreaOutputStream(JTextArea control) {
+			textControl = control;
+		}
+
+		public void write(int b) throws IOException {
+			// append the data as characters to the JTextArea control
+			textControl.append(String.valueOf((char) b));
+		}
 	}
-	
-	
-	
-	
+
+
+
+
+
 }
