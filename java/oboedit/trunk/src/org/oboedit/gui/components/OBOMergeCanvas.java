@@ -9,14 +9,16 @@ package org.oboedit.gui.components;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 import org.bbop.dataadapter.DataAdapterException;
-
 /**
  *
  * @author  __USER__
@@ -66,8 +68,10 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		ignoreClashOnIDsChoiceComboBox = new javax.swing.JComboBox();
 		failOnClashActivatedCheckBox = new javax.swing.JCheckBox();
 		failOnClashChoiceComboBox = new javax.swing.JComboBox();
-		jCheckBox1 = new javax.swing.JCheckBox();
-		jProgressBar2 = new javax.swing.JProgressBar();
+		progressPanel = new javax.swing.JPanel();
+		jScrollPane1 = new javax.swing.JScrollPane();
+		progressTextArea = new javax.swing.JTextArea();
+		showProgressCheckBox = new javax.swing.JCheckBox();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -175,12 +179,41 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 					}
 				});
 
-		jCheckBox1.setText("jCheckBox1");
-		jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jCheckBox1ActionPerformed(evt);
-			}
-		});
+		progressTextArea.setColumns(20);
+		progressTextArea.setRows(5);
+		jScrollPane1.setViewportView(progressTextArea);
+
+		org.jdesktop.layout.GroupLayout progressPanelLayout = new org.jdesktop.layout.GroupLayout(
+				progressPanel);
+		progressPanel.setLayout(progressPanelLayout);
+		progressPanelLayout
+				.setHorizontalGroup(progressPanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								progressPanelLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(
+												jScrollPane1,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												637, Short.MAX_VALUE)
+										.addContainerGap()));
+		progressPanelLayout
+				.setVerticalGroup(progressPanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								progressPanelLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(
+												jScrollPane1,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												100, Short.MAX_VALUE)
+										.addContainerGap()));
+
+		showProgressCheckBox.setText("Show Progress");
 
 		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(
 				getContentPane());
@@ -190,12 +223,13 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 						.createParallelGroup(
 								org.jdesktop.layout.GroupLayout.LEADING)
 						.add(
+								org.jdesktop.layout.GroupLayout.TRAILING,
 								layout
 										.createSequentialGroup()
 										.add(
 												layout
 														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
+																org.jdesktop.layout.GroupLayout.TRAILING)
 														.add(
 																layout
 																		.createSequentialGroup()
@@ -215,95 +249,76 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																														.createParallelGroup(
 																																org.jdesktop.layout.GroupLayout.LEADING)
 																														.add(
-																																layout
-																																		.createSequentialGroup()
-																																		.add(
-																																				47,
-																																				47,
-																																				47)
-																																		.add(
-																																				outputFileFormatLabel))
+																																updateIDsActivatedCheckBox)
 																														.add(
+																																failOnClashActivatedCheckBox)
+																														.add(
+																																ignoreClashOnIDsActivatedCheckBox))
+																										.add(
+																												17,
+																												17,
+																												17)
+																										.add(
+																												layout
+																														.createParallelGroup(
+																																org.jdesktop.layout.GroupLayout.TRAILING)
+																														.add(
+																																org.jdesktop.layout.GroupLayout.LEADING,
 																																layout
 																																		.createSequentialGroup()
 																																		.add(
 																																				layout
 																																						.createParallelGroup(
-																																								org.jdesktop.layout.GroupLayout.TRAILING)
-																																						.add(
-																																								layout
-																																										.createSequentialGroup()
-																																										.add(
-																																												layout
-																																														.createParallelGroup(
-																																																org.jdesktop.layout.GroupLayout.LEADING)
-																																														.add(
-																																																layout
-																																																		.createSequentialGroup()
-																																																		.add(
-																																																				updateIDsActivatedCheckBox)
-																																																		.add(
-																																																				44,
-																																																				44,
-																																																				44))
-																																														.add(
-																																																failOnClashActivatedCheckBox))
-																																										.add(
-																																												2,
-																																												2,
-																																												2))
-																																						.add(
-																																								layout
-																																										.createSequentialGroup()
-																																										.add(
-																																												ignoreClashOnIDsActivatedCheckBox)
-																																										.addPreferredGap(
-																																												org.jdesktop.layout.LayoutStyle.UNRELATED)))
-																																		.add(
-																																				layout
-																																						.createParallelGroup(
-																																								org.jdesktop.layout.GroupLayout.LEADING)
-																																						.add(
-																																								layout
-																																										.createParallelGroup(
-																																												org.jdesktop.layout.GroupLayout.LEADING)
-																																										.add(
-																																												failOnClashChoiceComboBox,
-																																												0,
-																																												88,
-																																												Short.MAX_VALUE)
-																																										.add(
-																																												ignoreClashOnIDsChoiceComboBox,
-																																												0,
-																																												88,
-																																												Short.MAX_VALUE))
+																																								org.jdesktop.layout.GroupLayout.LEADING,
+																																								false)
 																																						.add(
 																																								updateIDsChoiceComboBox,
-																																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																																								88,
-																																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED,
-																												100,
-																												Short.MAX_VALUE)
+																																								0,
+																																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																																								Short.MAX_VALUE)
+																																						.add(
+																																								ignoreClashOnIDsChoiceComboBox,
+																																								0,
+																																								137,
+																																								Short.MAX_VALUE))
+																																		.addPreferredGap(
+																																				org.jdesktop.layout.LayoutStyle.RELATED,
+																																				50,
+																																				Short.MAX_VALUE)
+																																		.add(
+																																				layout
+																																						.createParallelGroup(
+																																								org.jdesktop.layout.GroupLayout.LEADING,
+																																								false)
+																																						.add(
+																																								fileFormatComboBox,
+																																								0,
+																																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																																								Short.MAX_VALUE)
+																																						.add(
+																																								outputFileFormatLabel,
+																																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																																								Short.MAX_VALUE)))
+																														.add(
+																																org.jdesktop.layout.GroupLayout.LEADING,
+																																failOnClashChoiceComboBox,
+																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																																137,
+																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
 																										.add(
-																												fileFormatComboBox,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED,
-																												159,
-																												Short.MAX_VALUE)
+																												26,
+																												26,
+																												26)
 																										.add(
 																												mergeButton,
 																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												85,
+																												190,
 																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
 																										.add(
-																												10,
-																												10,
-																												10))
+																												8,
+																												8,
+																												8))
 																						.add(
 																								org.jdesktop.layout.GroupLayout.TRAILING,
 																								layout
@@ -365,21 +380,21 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																														.add(
 																																outputFileButton)))))
 														.add(
-																org.jdesktop.layout.GroupLayout.TRAILING,
+																org.jdesktop.layout.GroupLayout.LEADING,
 																layout
 																		.createSequentialGroup()
 																		.addContainerGap()
 																		.add(
-																				jProgressBar2,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				649,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-														.add(
-																layout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.add(
-																				jCheckBox1)))
+																				layout
+																						.createParallelGroup(
+																								org.jdesktop.layout.GroupLayout.LEADING)
+																						.add(
+																								showProgressCheckBox)
+																						.add(
+																								progressPanel,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								Short.MAX_VALUE))))
 										.addContainerGap()));
 		layout
 				.setVerticalGroup(layout
@@ -443,40 +458,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
 														.add(outputFileButton))
-										.add(6, 6, 6)
-										.add(
-												layout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
-														.add(
-																layout
-																		.createSequentialGroup()
-																		.add(
-																				updateIDsActivatedCheckBox)
-																		.add(
-																				4,
-																				4,
-																				4)
-																		.add(
-																				ignoreClashOnIDsActivatedCheckBox)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				failOnClashActivatedCheckBox)
-																		.add(
-																				2,
-																				2,
-																				2))
-														.add(
-																layout
-																		.createSequentialGroup()
-																		.add(
-																				updateIDsChoiceComboBox,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)))
 										.add(
 												layout
 														.createParallelGroup(
@@ -485,72 +466,79 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																layout
 																		.createSequentialGroup()
 																		.add(
+																				6,
+																				6,
+																				6)
+																		.add(
 																				layout
 																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.LEADING,
-																								false)
+																								org.jdesktop.layout.GroupLayout.BASELINE)
 																						.add(
-																								layout
-																										.createSequentialGroup()
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED)
-																										.add(
-																												layout
-																														.createParallelGroup(
-																																org.jdesktop.layout.GroupLayout.BASELINE)
-																														.add(
-																																fileFormatComboBox,
-																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																														.add(
-																																outputFileFormatLabel)
-																														.add(
-																																mergeButton,
-																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																																57,
-																																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																										.add(
-																												50,
-																												50,
-																												50))
+																								updateIDsActivatedCheckBox)
 																						.add(
-																								org.jdesktop.layout.GroupLayout.TRAILING,
-																								layout
-																										.createSequentialGroup()
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												Short.MAX_VALUE)
-																										.add(
-																												jCheckBox1)
-																										.add(
-																												36,
-																												36,
-																												36)))
+																								outputFileFormatLabel)
+																						.add(
+																								updateIDsChoiceComboBox,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
 																		.add(
-																				jProgressBar2,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+																				4,
+																				4,
+																				4)
+																		.add(
+																				layout
+																						.createParallelGroup(
+																								org.jdesktop.layout.GroupLayout.BASELINE)
+																						.add(
+																								ignoreClashOnIDsActivatedCheckBox)
+																						.add(
+																								fileFormatComboBox,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+																						.add(
+																								ignoreClashOnIDsChoiceComboBox,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				layout
+																						.createParallelGroup(
+																								org.jdesktop.layout.GroupLayout.BASELINE)
+																						.add(
+																								failOnClashActivatedCheckBox)
+																						.add(
+																								failOnClashChoiceComboBox,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
 														.add(
 																layout
 																		.createSequentialGroup()
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
 																		.add(
-																				ignoreClashOnIDsChoiceComboBox,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
+																				25,
+																				25,
+																				25)
 																		.add(
-																				failOnClashChoiceComboBox,
+																				mergeButton,
 																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				57,
 																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-										.addContainerGap(24, Short.MAX_VALUE)));
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.RELATED,
+												13, Short.MAX_VALUE)
+										.add(showProgressCheckBox)
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.UNRELATED)
+										.add(
+												progressPanel,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap()));
 
 		pack();
 	}// </editor-fold>
@@ -558,10 +546,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 	private void failOnClashActivatedCheckBoxActionPerformed(
 			java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
-	}
-
-	private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
 	}
 
@@ -671,6 +655,11 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	}
 
 	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		if (showProgressCheckBox.isSelected()) {
+			PrintStream progressTextAreaPrintStream = new PrintStream( new TextAreaOutputStream( progressTextArea ) );
+			System.setOut( progressTextAreaPrintStream );
+			System.setErr( progressTextAreaPrintStream );
+		}
 		if (makeArgArrayList() == true) {
 			try {
 				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
@@ -684,9 +673,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		}
 	}
 
-	/**
-	 * @param args the command line arguments
-	 */
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -702,8 +688,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JComboBox fileFormatComboBox;
 	private javax.swing.JCheckBox ignoreClashOnIDsActivatedCheckBox;
 	private javax.swing.JComboBox ignoreClashOnIDsChoiceComboBox;
-	private javax.swing.JCheckBox jCheckBox1;
-	private javax.swing.JProgressBar jProgressBar2;
+	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JButton mainEditedFileButton;
 	private javax.swing.JLabel mainEditedFileLabel;
 	private javax.swing.JTextField mainEditedFileTextField;
@@ -715,9 +700,12 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JButton parentFileButton;
 	private javax.swing.JLabel parentFileLabel;
 	private javax.swing.JTextField parentFileTextField;
+	private javax.swing.JPanel progressPanel;
+	private javax.swing.JTextArea progressTextArea;
 	private javax.swing.JButton secondaryEditedFileButton;
 	private javax.swing.JLabel secondaryEditedFileLabel;
 	private javax.swing.JTextField secondaryEditedFileTextField;
+	private javax.swing.JCheckBox showProgressCheckBox;
 	private javax.swing.JCheckBox updateIDsActivatedCheckBox;
 	private javax.swing.JComboBox updateIDsChoiceComboBox;
 
@@ -778,4 +766,46 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
 		return true;
 	};
+	
+	
+	/**
+	* An output stream that writes its output to a javax.swing.JTextArea
+	* control: This class will be used to divert System.err from OBO Merge
+	* to a jTextArea in the OBOMerge GUI.
+	*
+	* @author  Ranganath Kini
+	* @see      javax.swing.JTextArea
+	* http://www.jcreator.com/forums/index.php?showtopic=773
+	*/
+	public class TextAreaOutputStream extends OutputStream {
+	    private JTextArea textControl;
+	    
+	    /**
+	     * Creates a new instance of TextAreaOutputStream which writes
+	     * to the specified instance of javax.swing.JTextArea control.
+	     *
+	     * @param control   A reference to the javax.swing.JTextArea
+	     *                  control to which the output must be redirected
+	     *                  to.
+	     */
+	    public TextAreaOutputStream( JTextArea control ) {
+	        textControl = control;
+	    }
+	    
+	    /**
+	     * Writes the specified byte as a character to the
+	     * javax.swing.JTextArea.
+	     *
+	     * @param   b   The byte to be written as character to the
+	     *              JTextArea.
+	     */
+	    public void write( int b ) throws IOException {
+	        // append the data as characters to the JTextArea control
+	        textControl.append( String.valueOf( ( char )b ) );
+	    }  
+	}
+	
+	
+	
+	
 }
