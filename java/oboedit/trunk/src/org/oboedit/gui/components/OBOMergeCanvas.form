@@ -20,66 +20,90 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="outputFileFormatLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="fileFormatComboBox" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
+                                      <Component id="outputFileFormatLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="updateIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Component id="failOnClashActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="1" attributes="0">
+                                              <Component id="ignoreClashOnIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="failOnClashChoiceComboBox" pref="88" max="32767" attributes="1"/>
+                                              <Component id="ignoreClashOnIDsChoiceComboBox" pref="88" max="32767" attributes="1"/>
+                                          </Group>
+                                          <Component id="updateIDsChoiceComboBox" min="-2" pref="88" max="-2" attributes="1"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <EmptySpace pref="100" max="32767" attributes="0"/>
+                              <Component id="fileFormatComboBox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="159" max="32767" attributes="0"/>
+                              <Component id="mergeButton" min="-2" pref="85" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="parentFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="mainEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="secondaryEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="mergedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="parentFileTextField" alignment="1" pref="459" max="32767" attributes="0"/>
+                                  <Component id="mainEditedFileTextField" alignment="1" pref="459" max="32767" attributes="0"/>
+                                  <Component id="secondaryEditedFileTextField" alignment="1" pref="459" max="32767" attributes="0"/>
+                                  <Component id="outputFileTextField" alignment="1" pref="459" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="secondaryEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="mainEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="parentFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="outputFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jProgressBar2" min="-2" pref="649" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="parentFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="mainEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="secondaryEditedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="mergedFileLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="parentFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
-                          <Component id="mainEditedFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
-                          <Component id="secondaryEditedFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
-                          <Component id="outputFileTextField" alignment="1" pref="438" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="secondaryEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="mainEditedFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="parentFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="outputFileButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Group type="102" alignment="1" attributes="1">
-                              <Component id="ignoreClashOnIDsCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="ignoreClashOnIDsChoiceComboBox" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="updateIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="updateIDsChoiceComboBox" min="-2" pref="107" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="failOnClashActivatedCheckBox" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="failOnClashChoiceComboBox" pref="108" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
-                      <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="parentFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="parentFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -103,33 +127,49 @@
                   <Component id="outputFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="outputFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="outputFileFormatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="fileFormatComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="updateIDsActivatedCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="updateIDsChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace pref="14" max="32767" attributes="0"/>
-                      <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <Component id="updateIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                      <Component id="ignoreClashOnIDsActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="failOnClashActivatedCheckBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="ignoreClashOnIDsCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="ignoreClashOnIDsChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="failOnClashActivatedCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="failOnClashChoiceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="updateIDsChoiceComboBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="fileFormatComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="outputFileFormatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="mergeButton" alignment="3" min="-2" pref="57" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="1">
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="jProgressBar2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="ignoreClashOnIDsChoiceComboBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="failOnClashChoiceComboBox" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace pref="24" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -228,9 +268,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Update IDs"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateIDsActivatedCheckBoxActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="updateIDsChoiceComboBox">
       <Properties>
@@ -246,13 +283,10 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateIDsChoiceComboBoxActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="ignoreClashOnIDsCheckBox">
+    <Component class="javax.swing.JCheckBox" name="ignoreClashOnIDsActivatedCheckBox">
       <Properties>
         <Property name="text" type="java.lang.String" value="Ignore Clash on IDs"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ignoreClashOnIDsCheckBoxActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="ignoreClashOnIDsChoiceComboBox">
       <Properties>
@@ -289,6 +323,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="failOnClashChoiceComboBoxActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckBox1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jCheckBox1"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBox1ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JProgressBar" name="jProgressBar2">
     </Component>
   </SubComponents>
 </Form>
