@@ -107,7 +107,7 @@ annotation sources in set:
     </table>
     
    <!-- by quality -->
-     <#
+     <#--
     <#list homolview.getQualityIdsForAnnotationClass(hset) as qid>
    
     </#list>
