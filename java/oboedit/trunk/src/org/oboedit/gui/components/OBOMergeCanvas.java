@@ -8,7 +8,10 @@ package org.oboedit.gui.components;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -80,6 +83,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		jSeparator1 = new javax.swing.JSeparator();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		setTitle("OBO Merge");
 
 		parentFileButton.setText("Browse");
 		parentFileButton.addActionListener(new java.awt.event.ActionListener() {
@@ -168,12 +172,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 				});
 
 		failOnClashActivatedCheckBox.setText("Fail On Clash");
-		failOnClashActivatedCheckBox
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						failOnClashActivatedCheckBoxActionPerformed(evt);
-					}
-				});
 
 		failOnClashChoiceComboBox
 				.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
@@ -193,14 +191,13 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 		saveFeedbackToFileCheckBox.setText("Save feed back to file");
 
-		saveFeedbackToFileTextField
+		saveFeedbackToFileBrowseButton.setText("Browse");
+		saveFeedbackToFileBrowseButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						saveFeedbackToFileTextFieldActionPerformed(evt);
+						saveFeedbackToFileBrowseButtonActionPerformed(evt);
 					}
 				});
-
-		saveFeedbackToFileBrowseButton.setText("Browse");
 
 		org.jdesktop.layout.GroupLayout progressPanelLayout = new org.jdesktop.layout.GroupLayout(
 				progressPanel);
@@ -613,19 +610,15 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	}// </editor-fold>
 	//GEN-END:initComponents
 
-	private void saveFeedbackToFileTextFieldActionPerformed(
+	private void saveFeedbackToFileBrowseButtonActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		int returnVal = fileChooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile()
-			.getAbsolutePath();
-			outputFileTextField.setText(saveFeedbackToFileTextFieldString);
-		}	
-	}
-
-	private void failOnClashActivatedCheckBoxActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+					.getAbsolutePath();
+			saveFeedbackToFileTextField
+					.setText(saveFeedbackToFileTextFieldString);
+		}
 	}
 
 	/*
@@ -741,8 +734,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 			System.setErr(progressTextAreaPrintStream);
 		}
 		if (saveFeedbackToFileCheckBox.isSelected()) {
-			
-			
+			WriteFeedbackToFile();
 		}
 		if (makeArgArrayList() == true) {
 			try {
@@ -887,8 +879,24 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		}
 	}
 
+	private void WriteFeedbackToFile() {
+		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
+		try {
 
+			PrintStream feedbackFileOutputStream = new PrintStream(
+					saveFeedbackToFileTextFieldString);
+			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
+					feedbackFileOutputStream);
 
+			System.setOut(feedbackFileOutputStream);
+			System.setErr(feedbackFileOutputStream);
 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 }
