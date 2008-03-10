@@ -100,7 +100,9 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 					continue;
 				if (!checkObsoletes && TermUtil.isObsolete(io))
 					continue;
-				if (io.getName().equals(currentObject.getName())) {
+				// Dangling objects have null names
+				String ioName = (io.getName() == null) ? "" : io.getName();
+				if (ioName.equals(currentObject.getName())) {
 					CheckWarning warning = new CheckWarning(
 							"The current term has the same name " + "as "
 									+ io.getID(), false, this, currentObject);

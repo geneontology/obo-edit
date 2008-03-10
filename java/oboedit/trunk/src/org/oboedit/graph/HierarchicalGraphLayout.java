@@ -392,10 +392,17 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			Object oa = o1.getNode();
 			Object ob = o2.getNode();
 			if (oa instanceof IdentifiedObject
-					&& ob instanceof IdentifiedObject) {
+			    && ob instanceof IdentifiedObject) {
 				IdentifiedObject a = (IdentifiedObject) o1.getNode();
 				IdentifiedObject b = (IdentifiedObject) o2.getNode();
-				return a.getName().compareToIgnoreCase(b.getName());
+				// Dangling objects have null names (Chris did it that way on purpose)
+				String aName = a.getName();
+				if (aName == null)
+				    return -1;
+				String bName = b.getName();
+				if (bName == null)
+				    return 1;
+				return aName.compareToIgnoreCase(bName);
 			} else if (ob instanceof IdentifiedObject)
 				return -1;
 			else if (oa instanceof IdentifiedObject)
