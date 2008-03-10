@@ -136,17 +136,10 @@ public class OBOEdit {
 				while (it2.hasNext()) {
 					Tag t = (Tag) it2.next();
 //					System.out.println("t = " + t.getName() + ", t.args = " + t.getArguments()); // DEL
-					if (t.getName().equals("-adapter")) {
+					if (t.getName().equals("-adapter") && t.getArguments().size() >= 1) {
 						if (loadTag != null)
 							throw new DataAdapterUIException("Can't do two "
 									+ "load commands " + "at once.");
-//						if (t.getArguments().isEmpty()) {
-//						    // See if the next arg is a file
-//						    Tag file = (Tag) it2.next();
-//						    System.out.println("file = " + file.getName()); // DEL
-//						    t.addArgument(file);  // ?
-//						    System.out.println("added file argument, now t = " + t.getName() + ", t.args = " + t.getArguments()); // DEL
-//						}
 						loadTag = t;
 
 						break;
@@ -162,7 +155,6 @@ public class OBOEdit {
 				verbose = true;
 			}
 		}
-		// ! This doesn't work--we never get here.
 		if (loadTag != null) {
 			java.util.List progressListeners = new Vector();
 
