@@ -112,6 +112,7 @@ public class AmigoRestApplication extends OBDRestApplication {
 	
 	public void attachApplicationSpecificRoutes(Router router) {
 		router.attach("/{format}/entity/{id}", NodeDetailResource.class);
+		router.attach("/{format}/phset/{geneLabel}", PhenotypeGeneHomologSetResource.class);
 		router.attach("/{format}/extsearch/{id}", ExternalSearchResource.class);
 	}
 	public void attachRoutes(Router router) {
