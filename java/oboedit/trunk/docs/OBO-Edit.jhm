@@ -55,6 +55,8 @@
    <mapID target="Frequently_Asked_Questions" url="html/Frequently_Asked_Questions.htm"/>
    <mapID target="Getting_Started" url="html/Getting_Started.htm"/>
    <mapID target="Global_Filters___Renderers" url="html/Global_Filters___Renderers.htm"/>
+   <mapID target="Graph_Editor" url="html/Graph_Editor.htm"/>
+   <mapID target="Graph_Viewer" url="html/Graph_Viewer.htm"/>
    <mapID target="How_Do_I_Find_Terms_Without_an_is_a_Parent_" url="html/How_Do_I_Find_Terms_Without_an_is_a_Parent_.htm"/>
    <mapID target="How_Do_I_Make_a__Slim__Ontology_" url="html/How_Do_I_Make_a__Slim__Ontology_.htm"/>
    <mapID target="How_Do_I_Not_Search_Obsoletes_" url="html/How_Do_I_Not_Search_Obsoletes_.htm"/>
@@ -109,9 +111,8 @@
    <mapID target="The_Change_Tracker_Plugin" url="html/The_Change_Tracker_Plugin.htm"/>
    <mapID target="The_Complex_Class_Plugin" url="html/The_Complex_Class_Plugin.htm"/>
    <mapID target="Configuration_Manager" url="html/Configuration_Manager.htm"/>
-   <mapID target="The_DAG_Viewer" url="html/The_DAG_Viewer.htm"/>
+   <mapID target="Tree_Viewer" url="html/Tree_Viewer.htm"/>
    <mapID target="The_Dbxref_Library_Plugin" url="html/The_Dbxref_Library_Plugin.htm"/>
-   <mapID target="The_Default_Layout" url="html/Introduction.htm"/>
    <mapID target="The_Explanation_Plugin" url="html/The_Explanation_Plugin.htm"/>
    <mapID target="The_Extended_Info_Plugin" url="html/The_Extended_Info_Plugin.htm"/>
    <mapID target="The_GO_Flat_File_Adapter" url="html/The_GO_Flat_File_Adapter.htm"/>

@@ -17,8 +17,9 @@
      <tocitem text="Perspectives *" target="Perspectives"/>
      <tocitem text="Components *" target="Components">
        <tocitem text="Configuration Manager *" target="Configuration_Manager"/>
-       <tocitem text="The Ontology Editor Component *" target="The_Term_Editor_Panel"/>
-       <tocitem text="The DAG Viewer *" target="The_DAG_Viewer"/>
+       <tocitem text="The Ontology Tree Editor *" target="The_Term_Editor_Panel"/>
+       <tocitem text="The Tree Viewer *" target="Tree_Viewer"/>
+       <tocitem text="The Graph Viewer *" target="Graph_Viewer"/>
        <tocitem text="Table of Contents Component *" target="Table_of_Contents"/>
        <tocitem text="The Extended Info Component *" target="The_Extended_Info_Plugin"/>
        <tocitem text="Configurable Message *" target="Configurable_Message"/>
@@ -63,6 +64,7 @@
           <tocitem text="Changing Relationship Types *" target="Changing_Relationship_Types"/>
           <tocitem text="Changing Link Attributes" target="Changing_Link_Attributes"/>
      </tocitem>
+     <tocitem text="The Graph Editor" target="Graph_Editor"/>
      <tocitem text="The Parent Plugin *" target="Parent_Editor"/>
      <tocitem text="Organizing Your Ontology: Editing Metadata *" target="Metadata">
           <tocitem text="Working with Categories *" target="Working_with_Categories"/>
