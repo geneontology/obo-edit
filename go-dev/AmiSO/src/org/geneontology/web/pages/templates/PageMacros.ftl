@@ -49,9 +49,6 @@
           src="http://toy.lbl.gov:9012/amigo2/bbop/sortabletable.js">
   </script>
 
-  <script type="text/javascript"
-          src="http://toy.lbl.gov:9012/amigo2/obd/model.js">
-  </script>
 
   <script type="text/javascript"
           src="http://toy.lbl.gov:9012/amigo2/obd/handle.js">
@@ -138,14 +135,32 @@ ${format}
 </#macro>
 
 
+<#macro href id label="">
+ <span class="identifier">
+  <a href="/view/entity/${id}">${label}</a>
+ </span>
+</#macro>
 
 <#macro nodePageLink id>
 <span class="identifier">
 <a href="/view/entity/${id}">
 <#if graph.getNode(id)?exists>
-${graph.getNode(id).getLabel()!""}
+${graph.getNode(id).getLabel()!id}
 <#else>
 ${id}
+</#if>
+</a>
+</span>
+</#macro>
+
+
+<#macro nodePageLinkNode node>
+<span class="identifier">
+<a href="/view/entity/${node.getId()}">
+<#if node.getLabel()?exists>
+${node.getLabel()}
+<#else>
+${node.getId()}
 </#if>
 </a>
 </span>
@@ -167,7 +182,11 @@ ${graph.getNode(id).getLabel()!""}
  <tr>
    <td class="node">
     <#if statement.getNodeId() != focusId>  
+    <i>
     <@nodePageLink id="${statement.getNodeId()}"/>
+    </i>
+    <#else>
+     <@nodePageLink id="${statement.getNodeId()}"/>   
     </#if>
    </td>
    <td class="relation">
@@ -176,6 +195,10 @@ ${graph.getNode(id).getLabel()!""}
   <td >
     <#if statement.getTargetId()?exists>
      <#if statement.getTargetId() != focusId>  
+      <i>
+      <@nodePageLink id="${statement.getTargetId()}"/>
+      </i>
+     <#else>
       <@nodePageLink id="${statement.getTargetId()}"/>
      </#if>
    </#if>

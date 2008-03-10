@@ -63,6 +63,12 @@ ${graph.getNode(focusId).getLabel()!""}
 
 </@section>
 
+<@section title="Actions">
+<div class="block" id="actions">
+<a href="/html/nodes/${focusId}/blast">find similar</a>
+</div>
+</@section>
+
 <@section title="Value Statements">
  <table>
  <#list graph.getLiteralStatements() as statement>
@@ -92,7 +98,7 @@ ${graph.getNode(focusId).getLabel()!""}
  </@section>
  <@section title="Links from this class">
  
- <table>
+  <table>
   <#list graph.getAllLinkStatementsForNode(focusId) as s>
   <#-- only show plain links: not links that for N+S conditions -->
   <#if (!s.isIntersectionSemantics() && !s.isUnionSemantics())>
