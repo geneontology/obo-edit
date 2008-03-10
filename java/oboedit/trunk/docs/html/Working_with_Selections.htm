@@ -8,7 +8,7 @@
 <BODY bgColor=#ffffff>
 <H1>Working with Selections</H1>
 <P>There are two notions of selection in OBO-Edit: the global selection, and 
-local ontology editor panel selections.</P>
+local ontology tree editor panel selections.</P>
 <H2>The Global Selection</H2>
 <P>The global selection is available to every component in OBO-Edit. Every 
 control, plugin, data adapter, etc can find out which terms are globally 
@@ -16,7 +16,7 @@ selected. Some components respond to changes in the global selection. For
 example, <A href="The_DAG_Viewer.htm">the DAG Viewer</A> plugin changes its 
 display when the global selection changes.</P>
 <P>Users can change the global selection by left-clicking on relationships in 
-the <STRONG>primary</STRONG> <A href="The_Term_Editor_Panel.htm">ontology editor 
+the <STRONG>primary</STRONG> <A href="The_Term_Editor_Panel.htm">ontology tree editor 
 panel</A>.&nbsp; When a relationship is selected, it will be surrounded by a 
 blue box:</P>
 <P><IMG height=250 hspace=0 src="../images/primary_selection.gif" width=291 
@@ -31,7 +31,7 @@ subsequent terms by holding down the <STRONG>Ctrl</STRONG> key and left-clicking
 <P>The global selection may be changed in other ways. Other OBO-Edit components 
 (like the <A href="Searching.htm">Search</A>&nbsp; control) may change the 
 current global selection. If the global selection changes, the primary ontology 
-editor panel will reflect that change.</P>
+tree editor panel will reflect that change.</P>
 <H2>The Sub-Selection<A name=subselection></A> </H2>
 <P>Any number of relationships can be selected at a time. However, components 
 like the <A href="Text_Editing.htm">text editor</A>&nbsp;can only operate on a 
@@ -52,7 +52,7 @@ border=0></P>
 <P>The global selection and the sub-selection actually designate 
 <STRONG>different kinds of objects</STRONG>. This can be confusing for novice 
 users.</P>
-<P>The global selection (and any local ontology editor panel selection) is a 
+<P>The global selection (and any local ontology tree editor panel selection) is a 
 collection of relationships betwen terms. In the image above, the actual 
 selection consists of the following two relationships:</P>
 <UL>
@@ -67,14 +67,14 @@ selection</EM>.</P>
 <P>Ocasionally this guide will refer to the "selected terms". This 
 is shorthand for "the child terms of the selected relationships".</P>
 <H2>Local Selections</H2>
-<P>Terms can also be selected in ontology editor panels that are not the primary 
+<P>Terms can also be selected in ontology tree editor panels that are not the primary 
 panel. However, when these terms are selected, the global selection does not 
 change. Further, these panels do not respond to changes in the global 
 selection.</P>
 <P>Local selections can be very useful when using drag and drop. For example, a 
 user may want to (globally) select a term, and then drag and drop some new 
 parents into the cross products tab of the text editor. The user would need to 
-select and drag the new parents from a non-primary ontology editor panel, so that 
+select and drag the new parents from a non-primary ontology tree editor panel, so that 
 the global selection does not change (if the global selection did change, the 
 contents of the text editor would change accordingly, which would make it 
 impossible to drag the new terms onto the correct target).<BR></P>
