@@ -130,7 +130,15 @@ public class LinkDatabaseLayoutEngine {
 		objects.addAll(linkDatabase.getObjects());
 		Collections.sort(objects, new Comparator<IdentifiedObject>() {
 			public int compare(IdentifiedObject o1, IdentifiedObject o2) {
-				return o1.getName().compareToIgnoreCase(o2.getName());
+//				return o1.getName().compareToIgnoreCase(o2.getName());
+			    // Dangling objects have null names
+				String aName = o1.getName();
+				if (aName == null)
+				    return -1;
+				String bName = o2.getName();
+				if (bName == null)
+				    return 1;
+				return aName.compareToIgnoreCase(bName);
 			}
 		});
 		for (IdentifiedObject io : objects) {

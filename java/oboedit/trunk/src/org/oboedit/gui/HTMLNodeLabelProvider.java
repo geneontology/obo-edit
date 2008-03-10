@@ -90,7 +90,10 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 										.toString())));
 					}
 				} else {
-					out.append(HTMLUtil.escapeHTML(vals.get(index).toString()));
+				    if (vals.get(index) != null) { // It can be null if there's a dangling reference
+					String val = vals.get(index).toString();
+					out.append(HTMLUtil.escapeHTML(val));
+				    }
 				}
 			} else
 				out.append(token.toString());

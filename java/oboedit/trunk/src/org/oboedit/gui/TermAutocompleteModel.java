@@ -78,7 +78,9 @@ public class TermAutocompleteModel extends
 	}
 
 	public String toString(FieldPath val) {
-		return val.getLastValue().toString();
+	    if (val.getLastValue() == null)
+		return "";
+	    return val.getLastValue().toString();
 	}
 
 	@Override
