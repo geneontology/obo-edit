@@ -115,7 +115,7 @@
    <mapID target="The_Explanation_Plugin" url="html/The_Explanation_Plugin.htm"/>
    <mapID target="The_Extended_Info_Plugin" url="html/The_Extended_Info_Plugin.htm"/>
    <mapID target="The_GO_Flat_File_Adapter" url="html/The_GO_Flat_File_Adapter.htm"/>
-   <mapID target="The_Graph_Viewer_Plugin" url="html/The_Graph_Viewer_Plugin.htm"/>
+   <mapID target="The_GraphViz_Plugin" url="html/The_GraphViz_Plugin.htm"/>
    <mapID target="The_History_Plugin" url="html/The_History_Plugin.htm"/>
    <mapID target="The_ID_Manager_Plugin" url="html/The_ID_Manager_Plugin.htm"/>
    <mapID target="The_Interface" url="html/The_Interface.htm"/>

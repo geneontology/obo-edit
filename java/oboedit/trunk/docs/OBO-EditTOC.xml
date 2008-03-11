@@ -130,7 +130,7 @@
 </tocitem>
 <tocitem text="Plugins">
      <tocitem text="Introduction to Plugins *" target="Introduction_to_Plugins"/>
-     <tocitem text="The Graph Viewer Plugin" target="The_Graph_Viewer_Plugin"/>
+     <tocitem text="The GraphViz Plugin" target="The_GraphViz_Plugin"/>
      <tocitem text="The Dbxref Library Plugin *" target="The_Dbxref_Library_Plugin"/>
 </tocitem>
 <tocitem text="The Command Line">
