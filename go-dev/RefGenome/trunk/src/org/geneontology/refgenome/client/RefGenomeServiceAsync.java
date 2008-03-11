@@ -16,6 +16,8 @@
 package org.geneontology.refgenome.client;
 
 
+
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -38,5 +40,9 @@ public interface RefGenomeServiceAsync  {
 	public void fetchReferenceTargetIds( AsyncCallback callback);
 	
 	public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
+
+	public void assignGeneTargetStatus(String geneId, AsyncCallback callback) ;
+
+	public void retractGeneTargetStatus(String geneId, AsyncCallback callback) ;
 
 }

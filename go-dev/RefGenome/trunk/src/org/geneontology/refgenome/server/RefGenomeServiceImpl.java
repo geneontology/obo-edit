@@ -36,7 +36,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class RefGenomeServiceImpl extends RemoteServiceServlet implements
 RefGenomeService {
 
-	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_phenotype_mouse";
+	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_phenotype_all";
 
 	Shard shard = null;
 
@@ -140,6 +140,16 @@ RefGenomeService {
 	public String getTaxonIdPrefix() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void assignGeneTargetStatus(String geneId)  {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void retractGeneTargetStatus(String geneId) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
