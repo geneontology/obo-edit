@@ -287,7 +287,7 @@
 		<move todir="docssvntmp">
 		  <fileset dir="docs/.svn" />
 		</move>
-		<move todir="apitmp">
+		<move todir="apitmp" failonerror="false">
 		  <fileset dir="docs/api" />
 		</move>
 
@@ -305,7 +305,7 @@
 		<move todir="docs/.svn">
 		  <fileset dir="docssvntmp" />
 		</move>
-		<move todir="docs/api">
+		<move todir="docs/api" failonerror="false">
 		  <fileset dir="apitmp" />
 		</move>
 	</target>
