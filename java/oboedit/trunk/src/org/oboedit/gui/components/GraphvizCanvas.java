@@ -808,7 +808,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	public String getName() {
-		return "Graph Viewer";
+	    return "GraphViz Viewer";  // was "Graph Viewer"
 	}
 
 	protected String getOptions(Link tr) {
@@ -1452,11 +1452,4 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			//doUpdate();
 		}
 	}
-	
-	
 }
-
-
-
-
-
