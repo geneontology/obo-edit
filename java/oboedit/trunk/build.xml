@@ -171,7 +171,7 @@
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
 
-	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, platform_independent_installer, -install4j_installers" description="Build installers">
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, -install4j_installers" description="Build installers">
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
@@ -279,11 +279,17 @@
 
 	<target name="-dojhindex" if="javahelp_indexer">
 		<delete dir="docs/JavaHelpSearch" />
-		<!-- Move docs/html/.svn out of the way so .html files don't get double-indexed -->
-		<copy todir="svntmp">
+		<!-- Move docs/html/.svn, docs/.svn, and docs/api out of the
+		way so the files in them don't get indexed -->
+		<move todir="htmlsvntmp">
 		  <fileset dir="docs/html/.svn" />
-		</copy>
-		<delete dir="docs/html/.svn" />
+		</move>
+		<move todir="docssvntmp">
+		  <fileset dir="docs/.svn" />
+		</move>
+		<move todir="apitmp">
+		  <fileset dir="docs/api" />
+		</move>
 
 		<!-- Run jhindexer -->
 		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="false" failifexecutionfails="true">
@@ -292,11 +298,16 @@
 			<arg value="JavaHelpSearch" />
 		</exec>
 
-		<!-- Restore docs/html/.svn -->
-		<copy todir="docs/html/.svn">
-		  <fileset dir="svntmp" />
-		</copy>
-		<delete dir="svntmp" />
+		<!-- Restore directories that were moved out of the way -->
+		<move todir="docs/html/.svn">
+		  <fileset dir="htmlsvntmp" />
+		</move>
+		<move todir="docs/.svn">
+		  <fileset dir="docssvntmp" />
+		</move>
+		<move todir="docs/api">
+		  <fileset dir="apitmp" />
+		</move>
 	</target>
 
 	<target name="docindex" depends="-dojhindex">
