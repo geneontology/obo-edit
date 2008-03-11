@@ -79,7 +79,7 @@ the following rules are used:</p>
 <h1>Diagnosing Disappearing Links</h1>
 <hr>
 <p>You merged two terms, but OBO-Edit keeps refusing to 
-copy a certain link from the source term! You hit undo, but you can figure out what's going on! Here's a technique to figure out why OBO-Edit is&nbsp;discarding a link when you merge...</p>
+copy a certain link from the source term! You hit Undo, but you can't figure out what's going on! Here's a technique to figure out why OBO-Edit is&nbsp;discarding a link when you merge...</p>
 <p>First, do a search for all the&nbsp;descendants of your target term, and 
 leave the search results on screen. Then, do a search for all the ancestors of 
 your target term, and leave those results on screen too. Now look at the parents 
@@ -89,7 +89,7 @@ target term, that link will be discarded. If any <em>parent</em> of the source
 term is a <em>descendant</em> of the target term, that link will be 
 discarded.</p>
 <p>Once you've verified that OBO-Edit is right about the potential cycle, use 
-the DAG Viewer to figure out how the potentially cyclic term connects to the 
+the <a href="Tree_Viewer.htm">Tree Viewer</a> to figure out how the potentially cyclic term connects to the 
 source term. There's probably one or two links that you need to delete somewhere 
 to disconnect the source term from the potentially cyclic term before you can 
 merge.</p>
