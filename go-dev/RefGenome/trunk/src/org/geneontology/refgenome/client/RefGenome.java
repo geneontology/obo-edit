@@ -2,6 +2,8 @@ package org.geneontology.refgenome.client;
 
 
 
+import org.geneontology.refgenome.client.model.GraphDTO;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,9 +30,11 @@ public class RefGenome implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Button button = new Button("Press me ");
+		final Button button = new Button("Search ");
 		final Label label = new Label();
 		final TextBox tb = new TextBox();
+		
+		GraphDTO graph = new GraphDTO();
 
 		ServiceDefTarget endpoint = (ServiceDefTarget) srv;
 		moduleRelativeURL = GWT.getModuleBaseURL() + "email";
@@ -43,7 +47,7 @@ public class RefGenome implements EntryPoint {
 		endpoint.setServiceEntryPoint(moduleRelativeURL );
 
 		button.addClickListener(new ClickListener() {
-			String msg = "Hello!";
+			String msg = "Hello!!!";
 			public void onClick(Widget sender) {
 				System.err.println("clicked... "+srv);
 				srv.fetchIdsByName(tb.getText(), new AsyncCallback() {
