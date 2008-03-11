@@ -112,12 +112,12 @@ import org.oboedit.gui.factory.CategoryManagerFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
 import org.oboedit.gui.factory.CrossProductInfoFactory;
 import org.oboedit.gui.factory.CrossProductMatrixEditorFactory;
-import org.oboedit.gui.factory.DAGViewFactory;
+import org.oboedit.gui.factory.TreeViewFactory;
 import org.oboedit.gui.factory.DbxrefLibraryFactory;
 import org.oboedit.gui.factory.ExplanationComponentFactory;
 import org.oboedit.gui.factory.ExtendedInfoFactory;
 import org.oboedit.gui.factory.GlobalFilterManagerFactory;
-import org.oboedit.gui.factory.GraphDAGViewFactory;
+import org.oboedit.gui.factory.GraphViewFactory;
 import org.oboedit.gui.factory.GraphEditorFactory;
 import org.oboedit.gui.factory.GraphvizViewFactory;
 import org.oboedit.gui.factory.HistoryBrowserFactory;
@@ -203,8 +203,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		return (Collection) CollectionUtil.list(new TermPanelFactory(),
 				new GraphEditorFactory(), new TextEditorFactory(),
 				new TableOfContentsFactory(),
-				new IDResolutionComponentFactory(), new DAGViewFactory(),
-				new GraphDAGViewFactory(), new SearchComponentFactory(),
+				new IDResolutionComponentFactory(), new TreeViewFactory(),
+				new GraphViewFactory(), new SearchComponentFactory(),
 				new LinkSearchComponentFactory(),
 				new IntersectionEditorFactory(), new CategoryManagerFactory(),
 				new GraphvizViewFactory(), new SynonymCategoryManagerFactory(),
