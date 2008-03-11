@@ -9,7 +9,7 @@ public class TermPanelFactory extends AbstractComponentFactory<OBOTermPanel> {
 	}
 	
 	public String getID() {
-		return "DAG";
+		return "ONTOLOGY_TREE_EDITOR";
 	}
 
 	public OBOTermPanel doCreateComponent(String id) {
@@ -17,7 +17,8 @@ public class TermPanelFactory extends AbstractComponentFactory<OBOTermPanel> {
 	}
 
 	public String getName() {
-		return "Ontology Editor Panel";
+//		return "Ontology Editor Panel";
+		return "Ontology Tree Editor";
 	}
 	
 	public FactoryCategory getCategory() {
