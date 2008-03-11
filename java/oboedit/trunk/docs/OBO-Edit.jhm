@@ -47,7 +47,6 @@
    <mapID target="Disjointedness_Check" url="html/Disjointedness_Check.htm"/>
    <mapID target="Editing" url="html/Editing.htm"/>
    <mapID target="Editing_Obsoletes" url="html/Editing_Obsoletes.htm"/>
-   <mapID target="Example_Layouts" url="html/Example_Layouts.htm"/>
    <mapID target="Example_Scripts" url="html/Example_Scripts.htm"/>
    <mapID target="Expression_Syntax" url="html/Expression_Syntax.htm"/>
    <mapID target="Filtering" url="html/Filtering.htm"/>
@@ -140,8 +139,6 @@
    <mapID target="Working_with_Obsoletes" url="html/Working_with_Obsoletes.htm"/>
    <mapID target="Working_with_Selections" url="html/Working_with_Selections.htm"/>
    <mapID target="Working_with_Synonym_Categories" url="html/Working_with_Synonym_Categories.htm"/>
-   <mapID target="Working_with_XML_Layouts" url="html/Working_with_XML_Layouts.htm"/>
-   <mapID target="ZFIN_Layout" url="html/ZFIN_Layout.htm"/>
 
 <!-- Index Bookmarks -->
 
