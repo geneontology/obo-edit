@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE obdRESTServletConfig SYSTEM "http://www.berkeleybop.org/obd/obd-rest-servlet-config-0.1.dtd">
+ 
+<obdRESTServletConfig>
+    <dataSource>
+        <resourcePath>obdPhenotypeAll</resourcePath>
+        <OBDSQLAdaptor>
+        	<hostname>131.243.192.78</hostname>
+            <port>5432</port>
+            <username>cjm</username>
+            <password></password>
+            <databaseName>obd_phenotype_all</databaseName>
+        </OBDSQLAdaptor>
+    </dataSource>
+	
+	<!-- Core Mappings -->
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.NodesBySearchResource</resourceClass>
+		<path>/{dataSource}/{format}/search/{operator}/{term}</path>
+	</resourcePathMap>
+    
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.AmigoHomeResource</resourceClass>
+		<path>/</path>
+		<path></path>
+	</resourcePathMap>
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.NodeDetailResource</resourceClass>
+		<path>/{dataSource}/{format}/entity/{id}</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.PhenotypeGeneHomologSetResource</resourceClass>
+		<path>/{dataSource}/{format}/phset/{geneLabel}</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.ExternalSearchResource</resourceClass>
+		<path>/{dataSource}/{format}/extsearch/{id}</path>
+	</resourcePathMap>
+	
+    
+	<resourcePathMap>
+		<directoryPath>/images/</directoryPath>
+		<path>/images/</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<directoryPath>/css/</directoryPath>
+		<path>/css/</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<directoryPath>/js/</directoryPath>
+		<path>/js/</path>
+	</resourcePathMap>
+
+	<ftlTemplateDirectory>/pageTemplates</ftlTemplateDirectory>
+	
+</obdRESTServletConfig>

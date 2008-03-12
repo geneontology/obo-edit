@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="ODBWS">
+    <property environment="env"/>
+    <property name="BBOP.location" value="../BBOP"/>
+    <property name="OBO.location" value="../OBO"/>
+    <property name="OBDAPI.location" value="../OBDAPI"/>
+	<property name="obo-vocab-java.location" value="../obo-vocab-java"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <path id="Apache Tomcat v5.5 [Apache Tomcat v5.5].libraryclasspath">
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/commons-el.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/commons-fileupload-1.2.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/commons-io-1.4.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/jasper-compiler-jdt.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/jasper-compiler.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/jasper-runtime.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/jsp-api.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/naming-factory-dbcp.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/naming-factory.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/naming-resources.jar"/>
+        <pathelement location="../../../../../../../usr/local/tomcat5.5/common/lib/servlet-api.jar"/>
+    </path>
+    <path id="Web App Libraries.libraryclasspath">
+        <pathelement location="WebContent/WEB-INF/lib/com.noelios.restlet.ext.servlet_2.4.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/com.noelios.restlet.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/freemarker.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/org.restlet.ext.freemarker_2.3.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/org.restlet.jar"/>
+    </path>
+    <path id="EAR Libraries.libraryclasspath"/>
+    <path id="BBOP.classpath">
+        <pathelement location="${BBOP.location}/classes"/>
+        <pathelement location="${BBOP.location}/lib/idw-gpl.jar"/>
+        <pathelement location="${BBOP.location}/lib/jhall.jar"/>
+        <pathelement location="${BBOP.location}/lib/macify-1.1.jar"/>
+    </path>
+    <path id="OBO.classpath">
+        <pathelement location="${OBO.location}/classes"/>
+        <path refid="BBOP.classpath"/>
+        <pathelement location="${OBO.location}/lib/junit.jar"/>
+        <pathelement location="${OBO.location}/lib/jpl.jar"/>
+        <pathelement location="${OBO.location}/lib/pellet.jar"/>
+        <pathelement location="${OBO.location}/lib/aterm-java-1.6.jar"/>
+        <pathelement location="${OBO.location}/lib/jena.jar"/>
+        <pathelement location="${OBO.location}/lib/arq.jar"/>
+        <pathelement location="${OBO.location}/lib/hsqldb.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-api.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-apibinding.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-oboparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-util.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-rdfxmlrenderer.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-rdfxmlparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-rdfapi.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-owlxmlrenderer.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-owlxmlparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-metrics.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-mansyntaxrenderer.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-mansyntaxparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-krssparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-impl.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-functionalrenderer.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-functionalparser.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-dig1_1.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-debugging.jar"/>
+        <pathelement location="${OBO.location}/lib/owlapi-change.jar"/>
+        <pathelement location="${OBO.location}/lib/commons-lang-2.3.jar"/>
+        <pathelement location="${OBO.location}/lib/antlr-runtime-3.0.jar"/>
+        <pathelement location="${OBO.location}/lib/postgresql-8.2-506.jdbc3.jar"/>
+    </path>
+    <path id="OBDAPI.classpath">
+        <pathelement location="${OBDAPI.location}/bin"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/junit.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/org.restlet.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/com.noelios.restlet.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/javax.servlet.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/org.simpleframework.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/com.noelios.restlet.ext.simple_3.1.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/commons-lang-2.3.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/json.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-util.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-rdfxmlrenderer.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-rdfxmlparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-rdfapi.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-owlxmlrenderer.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-owlxmlparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-oboparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-metrics.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-mansyntaxrenderer.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-mansyntaxparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-krssparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-impl.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-functionalrenderer.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-functionalparser.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-dig1_1.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-debugging.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-change.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-apibinding.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/owlapi-api.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/org.restlet.ext.freemarker_2.3.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/buildlibs/freemarker.jar"/>
+        <pathelement location="${OBDAPI.location}/lib/runlibs/postgresql-8.2-504.jdbc3.jar"/>
+        <path refid="BBOP.classpath"/>
+        <path refid="OBO.classpath"/>
+    </path>
+	<path id="obd-vocab-java.classpath">
+		<pathelement location="${obo-vocab-java.location}/classes"/>
+	</path>
+    <path id="ODBWS.classpath">
+        <pathelement location="build/classes"/>
+        <path refid="Apache Tomcat v5.5 [Apache Tomcat v5.5].libraryclasspath"/>
+        <path refid="Web App Libraries.libraryclasspath"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <path refid="OBDAPI.classpath"/>
+        <path refid="BBOP.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="src" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="build/classes"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="${BBOP.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${OBO.location}/build.xml" inheritAll="false" target="clean"/>
+        <ant antfile="${OBDAPI.location}/build.xml" inheritAll="false" target="clean"/>
+    	<ant antfile="${obo-vocab-java.location}/build.xml" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="${BBOP.location}/build.xml" inheritAll="false" target="jar">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    	
+    	<move file="../BBOP/bbop.jar" todir="WebContent/WEB-INF/lib/"/>
+    	
+        <ant antfile="${OBO.location}/build.xml" inheritAll="false" target="jar">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    	
+    	<move file="../OBO/obo.jar" todir="WebContent/WEB-INF/lib/"/>
+    	
+        <ant antfile="${OBDAPI.location}/build.xml" inheritAll="false" target="jar">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+
+    	<move file="../OBDAPI/lib/runlibs/obdapi.jar" todir="WebContent/WEB-INF/lib/"/>
+    	
+    	<ant antfile="${obo-vocab-java.location}/build.xml" inheritAll="false" target="jar">
+    		<propertyset>
+    			<propertyref name="build.compiler"/>
+    		</propertyset>
+		</ant>
+    		
+    	<move file="../obo-vocab-java/obo-vocab.jar" todir="WebContent/WEB-INF/lib/"/>
+    	
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="ODBWS.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>
