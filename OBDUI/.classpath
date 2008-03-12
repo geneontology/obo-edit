@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/json.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/postgresql-8.2-504.jdbc3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-util.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-rdfxmlrenderer.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-rdfxmlparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-rdfapi.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-owlxmlrenderer.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-owlxmlparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-oboparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-metrics.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-mansyntaxrenderer.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-mansyntaxparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-krssparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-impl.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-functionalrenderer.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-functionalparser.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-dig1_1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-debugging.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-change.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-apibinding.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/owlapi-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.ext.freemarker_2.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obo.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obdapi.jar" sourcepath="/OBDAPI/src"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/freemarker.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/bbop.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.ext.servlet_2.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obo-vocab.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v5.5"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

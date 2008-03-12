@@ -1,0 +1,176 @@
+/* Style sheet made to go with the UCSC Japanese Program. */
+
+/* ---------- Default properties. ---------- */
+body {
+       font-family: arial, helvetica, sans-serif;
+       font-size: 100%;
+        background: white url(bg-music.jpg) repeat top right;
+       color: black;
+       margin: 0;
+       padding: 0;
+       /*border: 3px solid #f4ecd9;*/
+}
+
+/* ---------- "page_head" area. ---------- */
+
+/**/
+#page_head{
+	top: 0px;
+        height: 110px;
+        /*border: 5px solid yellow;*/
+}
+
+.ehead{
+        white-space: nowrap;
+        left: 1em;
+        font-size: 1.25em;
+        font-weight: bold;
+        color: red;
+        /*color: #121212;*/
+        position: absolute;
+        /*border: 5px solid red;*/
+        z-index: 2;
+}
+
+.jhead{
+        white-space: nowrap;
+        position: absolute;
+        left: 5em;
+        top: 1em;
+        font-size: 1.5em;
+        color: yellow;
+        /*border: 5px solid blue;*/
+        z-index: 1;
+}
+
+.language2j{
+        padding: .5em;
+        float: right;
+        color: #888888;
+        /*border: 5px solid #black;*/
+}
+
+/* ---------- "page_body" class. ---------- */
+
+/**/
+#page_body{
+	padding: 1.5em;
+/*        border: 5px solid purple;*/
+}
+
+/* ---------- "page_foot" class. ---------- */
+
+/**/
+#page_foot{
+	padding: .5em;
+/*        border: 5px solid grey;*/
+}
+
+/* ---------- "main_content" class. ---------- */
+
+/**/
+#main_content{
+height: auto;
+       background: #f4ecd9;
+       padding-left: 1em;
+       padding-right: 1em;
+       padding-bottom: 1em;
+       margin-left: 12em;
+       border: 2px solid black;
+}
+
+#main_content img{
+        /*float: left;*/
+        padding: 1em;
+}
+
+.portrait {
+   float: left;
+}
+
+/**/
+.contact{
+	/*float: left;*/
+        /*border: 5px solid yellow;*/
+}
+
+/* ---------- "copyright" class. ---------- */
+
+/**/
+.copyright{
+        /*float: right;*/
+        /*border: 5px solid orange;*/
+}
+
+/* ---------- "navi" id. ---------- */
+
+/* Tell us what/where a "navi" is... */
+#navi {
+        background: #f4ecd9;
+        float: left;
+	width:8em;
+	padding-top: .5em;
+	padding-bottom: 1em;
+	padding-left: 1em;
+	padding-right: 1em;
+        border: 2px solid blue;
+}
+
+/*  How to display "h2"s in a "navi". */
+.navi_head {
+	font-size: 1.1em;
+	color: #36c;
+	font-weight: bold;
+        margin-bottom: .15em;
+        /*border: 1px solid red;*/
+}
+
+/* Give non-anchors a little breathing space. */
+#navi ul {
+	list-style: none;
+	margin: 0 0 0 0;
+	padding: 0;
+        /*border: 1px solid yellow;*/
+}
+
+#navi li {
+        margin: .25em;
+}
+
+#navi li a {
+	text-decoration: none;
+	display: block;
+	color: #0000c0;
+	background: #f4ecd9;
+	/*border: 1px solid grey;*/
+}
+
+/* Highlight "li"'s "a"s on hover. */
+#navi li a:hover {
+	background: #e0e0e0;
+	/*border-color: #0c0c0c;*/
+}
+
+/*  */
+#navi ul li {
+	display: block;
+	background: #f4ecd9;
+	/*border: 1px solid green;*/
+}
+
+/*  */
+#navi ul li ul{
+	text-decoration: none;
+	display: block;
+	margin-left: 1em;
+	/*border: 1px solid orange;*/
+}
+
+/*  */
+#navi ul li ul li{
+        font-size: .85em;
+	text-decoration: none;
+	display: block;
+	background: #f4ecd9;
+	/*border: 1px solid purple;*/
+}
