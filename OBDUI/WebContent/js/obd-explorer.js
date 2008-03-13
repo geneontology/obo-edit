@@ -8,28 +8,29 @@ function _search_Response_DEPREC(xml_response){
   //document.getElementById("replace_me").innerHTML = xml_response;
 }
 
-function nodeSearch(){
+function nodeSearch(contextName){
 
   //global_amigo_work_tag.start();
 
   // A timer for debugging.
   var timer = new BBOP.Timer("123");
+  var dataSource = document.getElementById("dataSource").value;
   timer.displayClear();
   timer.start();
-
+	
   // Start AJAX action: Request initial data from server.
-  var resource = "/obdxml/search/contains/" +
+  var resource = "/" + contextName + "/" + dataSource + "/obdxml/search/contains/" +
   	 document.getElementById("search_term").value;
   //var ajax = new BBOP.AjaxAction(_search_Response);
   var ajax = 
     new BBOP.AjaxAction( 
                         function(xml_response) {
-                          var table = resultTable(xml_response);
+                          var table = resultTable(xml_response,dataSource,contextName);
                           document.getElementById("replace_me").innerHTML = table;
                         }
                         
                         );
-  alert(resource);
+  
   ajax.start(resource, "", "GET");
 }
 
@@ -85,17 +86,17 @@ function statementRow(s) {
 }
 
 
-function resultTable(graph) {
+function resultTable(graph,dataSource,contextName) {
   nodes = graph.Node;
   table = <table border="1"/>;
   for (var i=0; i<graph.Node.length(); i++) {
-    table.tr += tableRow(nodes[i]);
+    table.tr += tableRow(nodes[i],dataSource,contextName);
   }
   return table;
 }
 
-function tableRow(node) {
-  href = nodeHref(node.@id);
+function tableRow(node,dataSource,contextName) {
+  href = nodeHref(node.@id,dataSource,contextName);
   row =<tr/>;
   row.tr += <td>{href}</td>;
   row.tr += <td>{node.label}</td>;
@@ -104,10 +105,11 @@ function tableRow(node) {
   return row;                       
 }
 
-function nodeHref(id) {
+function nodeHref(id,dataSource,contextName) {
+
   //href = new XML('<a href="#" onClick="updateDetailDiv( '+id+'} )">{id}</a>');
   href = <a>{id}</a>;
-  href.@href = "/view/entity/"+id;
+  href.@href = "/" + contextName + "/" + dataSource + "/view/entity/"+id;
   //href.@onClick = "updateDetailDiv('"+id+"')";
   //href = <a href="#" onClick="updateDetailDiv(&apos;{id}&apos;)">{id}</a>;
   

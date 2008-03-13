@@ -1,6 +1,10 @@
 package org.obd.ws.restServlet;
 
 import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.obd.query.Shard;
 import org.obd.query.impl.MultiShard;
 import org.restlet.Application;
@@ -17,7 +21,6 @@ public class OBDRestApplication extends Application {
 	public Map<String, MultiShard> resourceMap; 
 	private OBDRestServerServlet serverServlet;
 	
-	
 	private final String servletConfigFile = "obdRestServletConfig.xml";
 	
     public OBDRestApplication() {  	
@@ -27,6 +30,11 @@ public class OBDRestApplication extends Application {
     public OBDRestApplication(Context context) throws Exception {
     	super(context);
     	this.setConfiguration(new ServletConfiguration());
+    	Handler[] handlers =
+  	      Logger.getLogger( "" ).getHandlers();
+  	    for ( int index = 0; index < handlers.length; index++ ) {
+  	      handlers[index].setLevel( Level.FINE );
+  	    }
     }
 
     @Override

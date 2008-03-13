@@ -74,7 +74,12 @@ public class ExternalSearchResource extends NodeResource {
 		map.put("urlmap", sdb2url);
 		map.put("focusId",getNodeId());
 
-		return getTemplateRepresentation("templates/ExternalSearchView",map);
+		String[] dataSourceKeys = (String[]) this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0]);
+		map.put("contextName", this.getContextName());
+		map.put("dataSources", dataSourceKeys);
+
+
+		return getTemplateRepresentation("ExternalSearchView",map);
 	}
 
 

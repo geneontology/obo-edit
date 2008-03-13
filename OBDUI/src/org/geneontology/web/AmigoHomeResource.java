@@ -37,9 +37,10 @@ public class AmigoHomeResource extends NodeResource {
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		TreeMap<String, Object> map = new TreeMap<String, Object>();
-		//map.put("shard",getShard());
-		System.out.println("amigo home page");
-		//return getTemplateRepresentation("explorer",map, "src/org/geneontology/web/pages/templates/");
+		
+		String[] dataSourceKeys = (String[]) this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0]);
+		map.put("contextName", this.getContextName());
+		map.put("dataSources", dataSourceKeys);
 		return getTemplateRepresentation("explorer",map);
 	}
 

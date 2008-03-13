@@ -57,11 +57,10 @@ public abstract class OBDResource extends Resource {
 	 * 
 	 * @return the parent OBDRestApplication.
 	 */
-	/*
+	
 	public OBDRestApplication getOBDRestApplication() {
 		return (OBDRestApplication) getContext().getAttributes().get(OBDRestApplication.KEY);
 	}
-	*/
 
 	/**
 	 * Returns the database container.
