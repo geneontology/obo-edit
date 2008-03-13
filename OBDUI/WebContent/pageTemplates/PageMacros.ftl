@@ -7,12 +7,27 @@
 
 <#macro searchForm>
  <div id="searchbar">
+
       <form id="search_form">
-        <input id="search_term" name="search_term"/>
-      <input name="button"
-            type="button"
-            onclick="nodeSearch()"
-            value="Search" />
+      	<table cellspacing="5">
+      		<tr>
+      			<td>Search for</td><td>In:</td>
+      		</tr>
+      		<tr>
+      			<td>
+        			<input id="search_term" name="search_term"/>
+        		</td>
+        		<td>
+        			<select id="dataSource" name="dataSource">
+        				<#list dataSources as dataSource>
+        					<option value="${dataSource}">${dataSource}</option>
+        				</#list>
+        			</select>
+        		</td>
+        	</tr>
+        </table>
+        
+        <input name="button" type="button" onclick="nodeSearch('${contextName}')" value="Search" />
      </form>
  </div>
 </#macro>
@@ -244,7 +259,7 @@ ${graph.getNode(id).getLabel()!""}
       rel="Stylesheet"
       type="text/css" />
       <#-- 
-<link href="/css/main.css"
+<link href="/${contextPath}/css/main.css"
       media="all"
       rel="Stylesheet"
       type="text/css" />

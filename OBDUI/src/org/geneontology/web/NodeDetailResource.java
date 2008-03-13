@@ -125,7 +125,13 @@ public class NodeDetailResource extends NodeResource {
 			return result;
 		}
 		else if (format.equals("view")) {
+			
 			TreeMap<String, Object> map = new TreeMap<String, Object>();
+			
+			String[] dataSourceKeys = (String[]) this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0]);
+			map.put("contextName", this.getContextName());
+			map.put("dataSources", dataSourceKeys);
+
 			TermView termview = new TermView(g);
 			map.put("graph", g);
 			map.put("termview", termview);
@@ -135,7 +141,7 @@ public class NodeDetailResource extends NodeResource {
 				
 			}
 			//return getTemplateRepresentation("NodeDetailView",map, "src/org/geneontology/web/pages/templates/");
-			return getTemplateRepresentation("templates/NodeDetailView",map);
+			return getTemplateRepresentation("NodeDetailView",map);
 		}
 		else {
 			StringBuilder sb = new StringBuilder();

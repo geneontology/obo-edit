@@ -4,7 +4,7 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="ODBWS">
+<project basedir="." default="build" name="OBDUI">
     <property environment="env"/>
     <property name="BBOP.location" value="../BBOP"/>
     <property name="OBO.location" value="../OBO"/>
@@ -111,7 +111,7 @@
 	<path id="obd-vocab-java.classpath">
 		<pathelement location="${obo-vocab-java.location}/classes"/>
 	</path>
-    <path id="ODBWS.classpath">
+    <path id="OBDUI.classpath">
         <pathelement location="build/classes"/>
         <path refid="Apache Tomcat v5.5 [Apache Tomcat v5.5].libraryclasspath"/>
         <path refid="Web App Libraries.libraryclasspath"/>
@@ -173,7 +173,7 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="ODBWS.classpath"/>
+            <classpath refid="OBDUI.classpath"/>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>

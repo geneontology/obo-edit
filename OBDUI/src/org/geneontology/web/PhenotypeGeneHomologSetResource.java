@@ -72,7 +72,12 @@ public class PhenotypeGeneHomologSetResource extends NodeResource {
 		map.put("graph", hv.getOntolGraph()); // PageMacros assumes this is populated
 		map.put("focusLabel",geneLabel);
 		map.put("focusId",geneLabel);
-		return getTemplateRepresentation("templates/PhenotypeGeneHomologSetView",map);
+		
+		String[] dataSourceKeys = (String[]) this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0]);
+		map.put("contextName", this.getContextName());
+		map.put("dataSources", dataSourceKeys);
+
+		return getTemplateRepresentation("PhenotypeGeneHomologSetView",map);
 	}
 	
 	protected String cacheFilePath(String base, String id) {
