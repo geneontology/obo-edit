@@ -1,4 +1,26 @@
-
+<#macro mappedPathsList>
+	Mapped Paths:
+	<ul>
+	<#list mappedPaths as path>
+		<li>${path}</li>
+	</#list>
+	</ul>
+</#macro>
+<#macro dataSourceList>
+	Available Data Sources:
+	<ul>
+	<#list dataSources as dataSource>
+		<li>${dataSource}</li>
+	</#list>
+	</ul>
+	<br/>
+	Configuration Messages:
+	<ul>
+	<#list configurationMessages as message>
+		<li>${message}</li>
+	</#list>
+	</ul>
+</#macro>
 <#macro border>
   <table border=4 cellspacing=0 cellpadding=4><tr><td>
     <#nested>
@@ -9,7 +31,7 @@
  <div id="searchbar">
 
       <form id="search_form">
-      	<table cellspacing="5">
+      	<table>
       		<tr>
       			<td>Search for</td><td>In:</td>
       		</tr>
