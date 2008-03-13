@@ -37,7 +37,10 @@
    <@searchForm/>
    </div>
    <div class="container">
-     <div id="replace_me">replace me</div>
+     <div id="replace_me">
+     	<@dataSourceList/>
+     	<@mappedPathsList/>
+     </div>
    </div>
    
  
