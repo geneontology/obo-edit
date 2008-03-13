@@ -58,4 +58,13 @@
 
 	<ftlTemplateDirectory>/pageTemplates</ftlTemplateDirectory>
 	
+	<logLevel>
+		<logName>org.bbop.rdbms</logName>
+		<level>FINE</level>
+	</logLevel>
+	<logLevel>
+		<logName>org.obd</logName>
+		<level>FINE</level>
+	</logLevel>
+
 </obdRESTServletConfig>

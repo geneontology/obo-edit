@@ -30,8 +30,7 @@ public class OBDRestApplication extends Application {
     public OBDRestApplication(Context context) throws Exception {
     	super(context);
     	this.setConfiguration(new ServletConfiguration());
-    	Handler[] handlers =
-  	      Logger.getLogger( "" ).getHandlers();
+    	Handler[] handlers = Logger.getLogger( "" ).getHandlers();
   	    for ( int index = 0; index < handlers.length; index++ ) {
   	      handlers[index].setLevel( Level.FINE );
   	    }
@@ -50,6 +49,32 @@ public class OBDRestApplication extends Application {
 			e.printStackTrace();
 			return null;
 		}
+		
+		for (String logName : this.getConfiguration().getLogLevels().keySet()){
+  	    	
+  	    	Logger l = Logger.getLogger(logName);
+  	    	String levelName = this.getConfiguration().getLogLevels().get(logName);
+  	    	System.out.println("Trying to set log level of " + logName + " to " + levelName);
+  	    	if (levelName.equals("FINEST")){
+  	    		l.setLevel(Level.FINEST);
+  	    	} else if (levelName.equals("FINER")){
+  	    		l.setLevel(Level.FINER);
+  	    	} else if (levelName.equals("FINE")){
+  	    		l.setLevel(Level.FINE);
+  	    	} else if (levelName.equals("INFO")){
+  	    		l.setLevel(Level.INFO);
+  	    	} else if (levelName.equals("CONFIG")){
+  	    		l.setLevel(Level.CONFIG);
+  	    	} else if (levelName.equals("OFF")){
+  	    		l.setLevel(Level.OFF);
+  	    	} else if (levelName.equals("WARNING")){
+  	    		l.setLevel(Level.WARNING);
+  	    	} else if (levelName.equals("SEVER")){
+  	    		l.setLevel(Level.SEVERE);
+  	    	} else {
+  	    		System.err.println("WARNING: No log level " + levelName);
+  	    	}
+  	    }
     	
         this.resourceMap = this.getConfiguration().getDataSources();
     	System.err.println("Available data sources:");
