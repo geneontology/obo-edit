@@ -33,6 +33,7 @@ public class ServletConfiguration{
 	protected Map<String,Class<? extends Resource>> pathResourceMap;
 	protected Map<String,Directory> pathDirectoryMap;
 	protected Map<String, Vector<String>> sourceMessages;
+	protected Map<String,String> logLevels;
 	protected Vector<String> pathMappingMessages;
 	protected String fremarkerTemplateDirectory;
 	
@@ -43,6 +44,7 @@ public class ServletConfiguration{
 		this.pathDirectoryMap = new HashMap<String,Directory>();
 		this.sourceMessages = new HashMap<String,Vector<String>>();
 		this.pathMappingMessages = new Vector<String>();
+		this.logLevels = new HashMap<String,String>();
 	}
 
 	private static class ServerConfigValidatorErrorHandler extends DefaultHandler {
@@ -127,6 +129,10 @@ public class ServletConfiguration{
         		
         	}
         	
+        	for (Node logLevelNode : this.getChildNodes(orscNode, "logLevel")){
+        		this.logLevels.put(this.getParam(logLevelNode, "logName"),this.getParam(logLevelNode, "level"));
+        	}
+        	
         	for (Node resourcePathMapNode : this.getChildNodes(orscNode, "resourcePathMap")){
         		
             	String className = this.getParam(resourcePathMapNode, "resourceClass");
@@ -176,8 +182,9 @@ public class ServletConfiguration{
             			
             			}
             		}
-        		
             	}
+            	
+            	
         	}
         } catch (SAXException e) {
         	System.out.println("Document is not well-formed.");
@@ -310,6 +317,14 @@ public class ServletConfiguration{
 
 	public void setFremarkerTemplateDirectory(String fremarkerTemplateDirectory) {
 		this.fremarkerTemplateDirectory = fremarkerTemplateDirectory;
+	}
+
+	public Map<String, String> getLogLevels() {
+		return logLevels;
+	}
+
+	public void setLogLevels(Map<String, String> logLevels) {
+		this.logLevels = logLevels;
 	}
 
 }
