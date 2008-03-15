@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -92,6 +91,10 @@ public class CodeGenUtil {
 				ns = args[i];
 				continue;
 			}
+			if (args[i].equals("-help")) {
+				printUsage();
+				System.exit(0);
+			}
 			if (args[i].equals("-source")) {
 				i++;
 				String srcPath = args[i];
@@ -111,6 +114,10 @@ public class CodeGenUtil {
 		);
 	}
 
+	public static void printUsage() {
+		System.out.println(
+				"obocodegen [-ns <namespace>] [-source <java-source-file-path>] <obo-file>*");
+	}
 
 	public static String makeJavaSafe(String label) {
 		return label.replaceAll(" ", "_").replaceAll("[^A-Za-z0-9_]", "");

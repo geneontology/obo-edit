@@ -7,13 +7,10 @@ import java.util.Collection;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
-import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.OBIMetadataMapping;
-import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
 
-public class SAORoundtripOWLTest extends AbstractOWLTest {
+public class MORoundtripOWLTest extends AbstractOWLTest {
 
-	public SAORoundtripOWLTest(String name) {
+	public MORoundtripOWLTest(String name) {
 		super(name);
 	}
 	
@@ -21,13 +18,13 @@ public class SAORoundtripOWLTest extends AbstractOWLTest {
 		return true;
 	}
 	protected void addMappings(OWLAdapterConfiguration config) {
-		MetadataMapping mapping = new SAO_1_2_OWLMetadataMapping();
-		config.addMetadataMapping(mapping);
+//		MetadataMapping mapping = new SAO_1_2_OWLMetadataMapping();
+//		config.addMetadataMapping(mapping);
 	}
 
 
 	public Collection<String> getFilesToLoad() {
-		String[] files = {  "http://ccdb.ucsd.edu/SAO/1.2/SAO.owl" };
+		String[] files = {  "http://mged.sourceforge.net/ontologies/MGEDOntology.owl" };
 		return Arrays.asList(files);
 	}
 	
