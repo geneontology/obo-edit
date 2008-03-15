@@ -53,19 +53,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private void initComponents() {
 
 		oboMergeTabbedPane1 = new javax.swing.JTabbedPane();
-		inputFilePanel = new javax.swing.JPanel();
-		parentFileTextField = new javax.swing.JTextField();
-		parentFileButton = new javax.swing.JButton();
-		parentFileLabel = new javax.swing.JLabel();
-		mainEditedFileLabel = new javax.swing.JLabel();
-		secondaryEditedFileLabel = new javax.swing.JLabel();
-		secondaryEditedFileTextField = new javax.swing.JTextField();
-		mainEditedFileButton = new javax.swing.JButton();
-		secondaryEditedFileButton = new javax.swing.JButton();
-		outputFileButton = new javax.swing.JButton();
-		mergedFileLabel = new javax.swing.JLabel();
-		outputFileTextField = new javax.swing.JTextField();
-		mainEditedFileTextField = new javax.swing.JTextField();
 		advancedOptionPanel = new javax.swing.JPanel();
 		outputFileFormatLabel = new javax.swing.JLabel();
 		fileFormatComboBox = new javax.swing.JComboBox();
@@ -79,276 +66,29 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		saveFeedbackToFileBrowseButton = new javax.swing.JButton();
 		saveFeedbackToFileCheckBox = new javax.swing.JCheckBox();
 		saveFeedbackToFileTextField = new javax.swing.JTextField();
-		showFeedbackButton = new javax.swing.JButton();
 		showProgressPanel = new javax.swing.JPanel();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		progressTextArea = new javax.swing.JTextArea();
+		inputFilePanel = new javax.swing.JPanel();
+		jLabel2 = new javax.swing.JLabel();
+		jTextField2 = new javax.swing.JTextField();
+		ontologyPathPanel = new javax.swing.JPanel();
+		parentFileButton = new javax.swing.JButton();
+		outputFileTextField = new javax.swing.JTextField();
+		mergedFileLabel = new javax.swing.JLabel();
+		mainEditedFileLabel = new javax.swing.JLabel();
+		parentFileTextField = new javax.swing.JTextField();
+		secondaryEditedFileButton = new javax.swing.JButton();
+		parentFileLabel = new javax.swing.JLabel();
+		mainEditedFileButton = new javax.swing.JButton();
+		secondaryEditedFileTextField = new javax.swing.JTextField();
+		outputFileButton = new javax.swing.JButton();
+		mainEditedFileTextField = new javax.swing.JTextField();
+		secondaryEditedFileLabel = new javax.swing.JLabel();
 		mergeButton = new javax.swing.JButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("OBO Merge");
-
-		inputFilePanel.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Input Files"));
-
-		parentFileButton.setText("Browse");
-		parentFileButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				parentFileButtonActionPerformed(evt);
-			}
-		});
-
-		parentFileLabel.setText("Parent File");
-
-		mainEditedFileLabel.setText("Primary Edited File");
-
-		secondaryEditedFileLabel.setText("Secondary Edited File");
-
-		mainEditedFileButton.setText("Browse");
-		mainEditedFileButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						mainEditedFileButtonActionPerformed(evt);
-					}
-				});
-
-		secondaryEditedFileButton.setText("Browse");
-		secondaryEditedFileButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						secondaryEditedFileButtonActionPerformed(evt);
-					}
-				});
-
-		outputFileButton.setText("Browse");
-		outputFileButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				outputFileButtonActionPerformed(evt);
-			}
-		});
-
-		mergedFileLabel.setText("Merged File");
-
-		outputFileTextField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						outputFileTextFieldActionPerformed(evt);
-					}
-				});
-
-		mainEditedFileTextField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						mainEditedFileTextFieldActionPerformed(evt);
-					}
-				});
-
-		org.jdesktop.layout.GroupLayout inputFilePanelLayout = new org.jdesktop.layout.GroupLayout(
-				inputFilePanel);
-		inputFilePanel.setLayout(inputFilePanelLayout);
-		inputFilePanelLayout
-				.setHorizontalGroup(inputFilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								org.jdesktop.layout.GroupLayout.TRAILING,
-								inputFilePanelLayout
-										.createSequentialGroup()
-										.addContainerGap(
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
-														.add(
-																inputFilePanelLayout
-																		.createParallelGroup(
-																				org.jdesktop.layout.GroupLayout.LEADING,
-																				false)
-																		.add(
-																				org.jdesktop.layout.GroupLayout.TRAILING,
-																				inputFilePanelLayout
-																						.createSequentialGroup()
-																						.add(
-																								parentFileLabel)
-																						.addPreferredGap(
-																								org.jdesktop.layout.LayoutStyle.RELATED,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								Short.MAX_VALUE)
-																						.add(
-																								parentFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								432,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								18,
-																								18,
-																								18)
-																						.add(
-																								parentFileButton))
-																		.add(
-																				org.jdesktop.layout.GroupLayout.TRAILING,
-																				inputFilePanelLayout
-																						.createSequentialGroup()
-																						.add(
-																								mainEditedFileLabel)
-																						.addPreferredGap(
-																								org.jdesktop.layout.LayoutStyle.UNRELATED)
-																						.add(
-																								mainEditedFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								436,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								18,
-																								18,
-																								18)
-																						.add(
-																								mainEditedFileButton)))
-														.add(
-																inputFilePanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				inputFilePanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.TRAILING,
-																								false)
-																						.add(
-																								inputFilePanelLayout
-																										.createSequentialGroup()
-																										.add(
-																												secondaryEditedFileLabel)
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED)
-																										.add(
-																												secondaryEditedFileTextField,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												435,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																						.add(
-																								inputFilePanelLayout
-																										.createSequentialGroup()
-																										.add(
-																												23,
-																												23,
-																												23)
-																										.add(
-																												mergedFileLabel,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												64,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												Short.MAX_VALUE)
-																										.add(
-																												outputFileTextField,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												397,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-																		.add(
-																				18,
-																				18,
-																				18)
-																		.add(
-																				inputFilePanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.TRAILING,
-																								false)
-																						.add(
-																								org.jdesktop.layout.GroupLayout.LEADING,
-																								outputFileButton,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								Short.MAX_VALUE)
-																						.add(
-																								org.jdesktop.layout.GroupLayout.LEADING,
-																								secondaryEditedFileButton,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								Short.MAX_VALUE))
-																		.add(
-																				11,
-																				11,
-																				11)))
-										.add(207, 207, 207)));
-		inputFilePanelLayout
-				.setVerticalGroup(inputFilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								inputFilePanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
-														.add(
-																inputFilePanelLayout
-																		.createParallelGroup(
-																				org.jdesktop.layout.GroupLayout.BASELINE)
-																		.add(
-																				parentFileButton)
-																		.add(
-																				parentFileTextField,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-														.add(parentFileLabel))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(
-																mainEditedFileButton)
-														.add(
-																mainEditedFileLabel)
-														.add(
-																mainEditedFileTextField,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.add(5, 5, 5)
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(
-																secondaryEditedFileButton)
-														.add(
-																secondaryEditedFileTextField,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																secondaryEditedFileLabel))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.UNRELATED)
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(outputFileButton)
-														.add(
-																outputFileTextField,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																mergedFileLabel,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																24,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.add(287, 287, 287)));
-
-		oboMergeTabbedPane1.addTab("Ontology Files", inputFilePanel);
-
-		advancedOptionPanel.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Advanced Options"));
 
 		outputFileFormatLabel.setText("Output File Format");
 
@@ -544,14 +284,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 		saveFeedbackToFileCheckBox.setText("Save feed back to file");
 
-		showFeedbackButton.setText("Show Feedback");
-		showFeedbackButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						showFeedbackButtonActionPerformed(evt);
-					}
-				});
-
 		progressTextArea.setColumns(20);
 		progressTextArea.setRows(5);
 		jScrollPane2.setViewportView(progressTextArea);
@@ -566,26 +298,19 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 						.add(
 								showProgressPanelLayout
 										.createSequentialGroup()
-										.addContainerGap()
 										.add(
 												jScrollPane2,
 												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												539, Short.MAX_VALUE)
-										.addContainerGap()));
-		showProgressPanelLayout
-				.setVerticalGroup(showProgressPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								showProgressPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												jScrollPane2,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												670,
 												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(12, Short.MAX_VALUE)));
+										.addContainerGap(
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+		showProgressPanelLayout.setVerticalGroup(showProgressPanelLayout
+				.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+				.add(jScrollPane2,
+						org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 164,
+						Short.MAX_VALUE));
 
 		org.jdesktop.layout.GroupLayout processFeedbackPanelLayout = new org.jdesktop.layout.GroupLayout(
 				processFeedbackPanel);
@@ -615,7 +340,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																		.add(
 																				saveFeedbackToFileTextField,
 																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				310,
+																				431,
 																				Short.MAX_VALUE)
 																		.addPreferredGap(
 																				org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -629,10 +354,7 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
 																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 																Short.MAX_VALUE))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(showFeedbackButton)
-										.addContainerGap()));
+										.add(123, 123, 123)));
 		processFeedbackPanelLayout
 				.setVerticalGroup(processFeedbackPanelLayout
 						.createParallelGroup(
@@ -642,46 +364,371 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 										.createSequentialGroup()
 										.addContainerGap()
 										.add(
+												showProgressPanel,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.RELATED,
+												9, Short.MAX_VALUE)
+										.add(
 												processFeedbackPanelLayout
 														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(showFeedbackButton)
+																org.jdesktop.layout.GroupLayout.TRAILING)
 														.add(
-																org.jdesktop.layout.GroupLayout.TRAILING,
 																processFeedbackPanelLayout
-																		.createSequentialGroup()
+																		.createParallelGroup(
+																				org.jdesktop.layout.GroupLayout.BASELINE)
 																		.add(
-																				showProgressPanel,
+																				saveFeedbackToFileCheckBox)
+																		.add(
+																				saveFeedbackToFileTextField,
 																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED,
-																				19,
-																				Short.MAX_VALUE)
-																		.add(
-																				processFeedbackPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.TRAILING)
-																						.add(
-																								processFeedbackPanelLayout
-																										.createParallelGroup(
-																												org.jdesktop.layout.GroupLayout.BASELINE)
-																										.add(
-																												saveFeedbackToFileCheckBox)
-																										.add(
-																												saveFeedbackToFileTextField,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												28,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																						.add(
-																								saveFeedbackToFileBrowseButton,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								33,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+																				21,
+																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+														.add(
+																saveFeedbackToFileBrowseButton))
 										.addContainerGap()));
 
 		oboMergeTabbedPane1.addTab("Process Feedback", processFeedbackPanel);
+
+		jLabel2.setText("Stored adapter settings");
+
+		jTextField2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jTextField2ActionPerformed(evt);
+			}
+		});
+
+		ontologyPathPanel.setBorder(javax.swing.BorderFactory
+				.createTitledBorder("Ontology Paths"));
+
+		parentFileButton.setText("Browse");
+		parentFileButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				parentFileButtonActionPerformed(evt);
+			}
+		});
+
+		outputFileTextField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						outputFileTextFieldActionPerformed(evt);
+					}
+				});
+
+		mergedFileLabel.setText("Merged File");
+
+		mainEditedFileLabel.setText("Primary Edited File");
+
+		secondaryEditedFileButton.setText("Browse");
+		secondaryEditedFileButton
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						secondaryEditedFileButtonActionPerformed(evt);
+					}
+				});
+
+		parentFileLabel.setText("Parent File");
+
+		mainEditedFileButton.setText("Browse");
+		mainEditedFileButton
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						mainEditedFileButtonActionPerformed(evt);
+					}
+				});
+
+		outputFileButton.setText("Browse");
+		outputFileButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				outputFileButtonActionPerformed(evt);
+			}
+		});
+
+		mainEditedFileTextField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						mainEditedFileTextFieldActionPerformed(evt);
+					}
+				});
+
+		secondaryEditedFileLabel.setText("Secondary Edited File");
+
+		org.jdesktop.layout.GroupLayout ontologyPathPanelLayout = new org.jdesktop.layout.GroupLayout(
+				ontologyPathPanel);
+		ontologyPathPanel.setLayout(ontologyPathPanelLayout);
+		ontologyPathPanelLayout
+				.setHorizontalGroup(ontologyPathPanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								ontologyPathPanelLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(
+												ontologyPathPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.LEADING)
+														.add(
+																ontologyPathPanelLayout
+																		.createSequentialGroup()
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				ontologyPathPanelLayout
+																						.createParallelGroup(
+																								org.jdesktop.layout.GroupLayout.LEADING)
+																						.add(
+																								ontologyPathPanelLayout
+																										.createSequentialGroup()
+																										.add(
+																												mergedFileLabel,
+																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																												107,
+																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+																										.add(
+																												50,
+																												50,
+																												50)
+																										.add(
+																												outputFileTextField,
+																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																												466,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												org.jdesktop.layout.LayoutStyle.RELATED)
+																										.add(
+																												outputFileButton,
+																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																												69,
+																												Short.MAX_VALUE))
+																						.add(
+																								ontologyPathPanelLayout
+																										.createSequentialGroup()
+																										.add(
+																												secondaryEditedFileLabel,
+																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																												153,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												org.jdesktop.layout.LayoutStyle.RELATED)
+																										.add(
+																												secondaryEditedFileTextField,
+																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																												466,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												org.jdesktop.layout.LayoutStyle.RELATED)
+																										.add(
+																												secondaryEditedFileButton,
+																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																												69,
+																												Short.MAX_VALUE)))
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED))
+														.add(
+																org.jdesktop.layout.GroupLayout.TRAILING,
+																ontologyPathPanelLayout
+																		.createSequentialGroup()
+																		.add(
+																				mainEditedFileLabel,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				128,
+																				Short.MAX_VALUE)
+																		.add(
+																				29,
+																				29,
+																				29)
+																		.add(
+																				mainEditedFileTextField,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				466,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				mainEditedFileButton,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				69,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED))
+														.add(
+																ontologyPathPanelLayout
+																		.createSequentialGroup()
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				parentFileLabel,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				153,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				parentFileTextField,
+																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																				466,
+																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(
+																				org.jdesktop.layout.LayoutStyle.RELATED)
+																		.add(
+																				parentFileButton,
+																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																				69,
+																				Short.MAX_VALUE)))
+										.add(0, 0, 0)));
+
+		ontologyPathPanelLayout.linkSize(new java.awt.Component[] {
+				mainEditedFileButton, outputFileButton, parentFileButton,
+				secondaryEditedFileButton },
+				org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+		ontologyPathPanelLayout.linkSize(new java.awt.Component[] {
+				mainEditedFileTextField, outputFileTextField,
+				secondaryEditedFileTextField },
+				org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
+		ontologyPathPanelLayout
+				.setVerticalGroup(ontologyPathPanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								ontologyPathPanelLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(
+												ontologyPathPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE,
+																false)
+														.add(parentFileButton)
+														.add(
+																parentFileLabel,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																23,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(
+																parentFileTextField,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.RELATED)
+										.add(
+												ontologyPathPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE,
+																false)
+														.add(
+																mainEditedFileLabel,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																23,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(
+																mainEditedFileTextField,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(
+																mainEditedFileButton))
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.RELATED)
+										.add(
+												ontologyPathPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE,
+																false)
+														.add(
+																secondaryEditedFileLabel,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																23,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(
+																secondaryEditedFileTextField,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(
+																secondaryEditedFileButton))
+										.addPreferredGap(
+												org.jdesktop.layout.LayoutStyle.RELATED)
+										.add(
+												ontologyPathPanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE,
+																false)
+														.add(
+																mergedFileLabel,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																23,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+														.add(outputFileButton)
+														.add(
+																outputFileTextField,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+										.addContainerGap()));
+
+		ontologyPathPanelLayout.linkSize(new java.awt.Component[] {
+				mainEditedFileLabel, mergedFileLabel, parentFileButton,
+				parentFileLabel, secondaryEditedFileLabel },
+				org.jdesktop.layout.GroupLayout.VERTICAL);
+
+		org.jdesktop.layout.GroupLayout inputFilePanelLayout = new org.jdesktop.layout.GroupLayout(
+				inputFilePanel);
+		inputFilePanel.setLayout(inputFilePanelLayout);
+		inputFilePanelLayout
+				.setHorizontalGroup(inputFilePanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								inputFilePanelLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.add(jLabel2)
+										.add(49, 49, 49)
+										.add(
+												jTextField2,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+												468,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(83, Short.MAX_VALUE))
+						.add(ontologyPathPanel,
+								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+								Short.MAX_VALUE));
+		inputFilePanelLayout
+				.setVerticalGroup(inputFilePanelLayout
+						.createParallelGroup(
+								org.jdesktop.layout.GroupLayout.LEADING)
+						.add(
+								inputFilePanelLayout
+										.createSequentialGroup()
+										.add(24, 24, 24)
+										.add(
+												inputFilePanelLayout
+														.createParallelGroup(
+																org.jdesktop.layout.GroupLayout.BASELINE)
+														.add(jLabel2)
+														.add(
+																jTextField2,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+										.add(13, 13, 13)
+										.add(
+												ontologyPathPanel,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(
+												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+
+		oboMergeTabbedPane1.addTab("Ontology Files", inputFilePanel);
 
 		mergeButton.setText("Merge");
 		mergeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -695,33 +742,30 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(
 				org.jdesktop.layout.GroupLayout.LEADING).add(
-				layout.createSequentialGroup().add(oboMergeTabbedPane1,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 697,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(
-								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)).add(
+				org.jdesktop.layout.GroupLayout.TRAILING, oboMergeTabbedPane1,
+				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 729,
+				Short.MAX_VALUE).add(
 				org.jdesktop.layout.GroupLayout.TRAILING,
-				layout.createSequentialGroup().addContainerGap(554,
-						Short.MAX_VALUE).add(mergeButton,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 132,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).add(21,
-						21, 21)));
+				layout.createSequentialGroup().addContainerGap(656,
+						Short.MAX_VALUE).add(mergeButton).addContainerGap()));
 		layout.setVerticalGroup(layout.createParallelGroup(
 				org.jdesktop.layout.GroupLayout.LEADING).add(
 				layout.createSequentialGroup().add(oboMergeTabbedPane1,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 217,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).add(18,
-						18, 18).add(mergeButton,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 40,
+						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 246,
 						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(
+						.addPreferredGap(
+								org.jdesktop.layout.LayoutStyle.RELATED).add(
+								mergeButton).addContainerGap(
 								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 								Short.MAX_VALUE)));
 
 		pack();
 	}// </editor-fold>
 	//GEN-END:initComponents
+
+	private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {
+		// TODO add your handling code here:
+	}
 
 	private void mainEditedFileTextFieldActionPerformed(
 			java.awt.event.ActionEvent evt) {
@@ -730,17 +774,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
-	}
-
-	private void showFeedbackButtonActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		boolean showProgressPanelVisibility = showProgressPanel.isVisible();
-
-		showProgressPanel.setVisible(!showProgressPanelVisibility);
-
-		if (showProgressPanelVisibility) {
-
-		}
 	}
 
 	private void saveFeedbackToFileBrowseButtonActionPerformed(
@@ -849,12 +882,12 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	}
 
 	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
-//		if (showProgressCheckBox.isSelected()) {
-//			PrintStream progressTextAreaPrintStream = new PrintStream(
-//					new TextAreaOutputStream(progressTextArea));
-//			System.setOut(progressTextAreaPrintStream);
-//			System.setErr(progressTextAreaPrintStream);
-//		}
+		//		if (showProgressCheckBox.isSelected()) {
+		//			PrintStream progressTextAreaPrintStream = new PrintStream(
+		//					new TextAreaOutputStream(progressTextArea));
+		//			System.setOut(progressTextAreaPrintStream);
+		//			System.setErr(progressTextAreaPrintStream);
+		//		}
 		if (saveFeedbackToFileCheckBox.isSelected()) {
 			WriteFeedbackToFile();
 		}
@@ -887,15 +920,17 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JComboBox fileFormatComboBox;
 	private javax.swing.JPanel inputFilePanel;
 	private javax.swing.JLabel jLabel1;
-	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JLabel jLabel2;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JTextField jTextField1;
+	private javax.swing.JTextField jTextField2;
 	private javax.swing.JButton mainEditedFileButton;
 	private javax.swing.JLabel mainEditedFileLabel;
 	private javax.swing.JTextField mainEditedFileTextField;
 	private javax.swing.JButton mergeButton;
 	private javax.swing.JLabel mergedFileLabel;
 	private javax.swing.JTabbedPane oboMergeTabbedPane1;
+	private javax.swing.JPanel ontologyPathPanel;
 	private javax.swing.JButton outputFileButton;
 	private javax.swing.JLabel outputFileFormatLabel;
 	private javax.swing.JTextField outputFileTextField;
@@ -910,7 +945,6 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 	private javax.swing.JButton secondaryEditedFileButton;
 	private javax.swing.JLabel secondaryEditedFileLabel;
 	private javax.swing.JTextField secondaryEditedFileTextField;
-	private javax.swing.JButton showFeedbackButton;
 	private javax.swing.JPanel showProgressPanel;
 	private javax.swing.JComboBox updateIDsChoiceComboBox;
 	private javax.swing.JLabel updateIDsLabel;
