@@ -22,23 +22,20 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <Component id="oboMergeTabbedPane1" min="-2" pref="697" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
-          </Group>
+          <Component id="oboMergeTabbedPane1" alignment="1" pref="729" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="554" max="32767" attributes="0"/>
-              <Component id="mergeButton" min="-2" pref="132" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+              <EmptySpace pref="656" max="32767" attributes="0"/>
+              <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="oboMergeTabbedPane1" min="-2" pref="217" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="mergeButton" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="oboMergeTabbedPane1" min="-2" pref="246" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="mergeButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -49,181 +46,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="inputFilePanel">
-          <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                <TitledBorder title="Input Files"/>
-              </Border>
-            </Property>
-          </Properties>
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Ontology Files">
-                <Property name="tabTitle" type="java.lang.String" value="Ontology Files"/>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="102" alignment="1" attributes="1">
-                                  <Component id="parentFileLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="parentFileTextField" min="-2" pref="432" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="parentFileButton" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="mainEditedFileLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="mainEditedFileTextField" min="-2" pref="436" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                                  <Component id="mainEditedFileButton" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="secondaryEditedFileLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="secondaryEditedFileTextField" min="-2" pref="435" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="1">
-                                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                                      <Component id="mergedFileLabel" min="-2" pref="64" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="outputFileTextField" min="-2" pref="397" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="outputFileButton" alignment="0" max="32767" attributes="1"/>
-                                  <Component id="secondaryEditedFileButton" alignment="0" max="32767" attributes="1"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace min="-2" pref="207" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="parentFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="parentFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="parentFileLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="mainEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="mainEditedFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="mainEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="secondaryEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="secondaryEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="secondaryEditedFileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="outputFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="outputFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="mergedFileLabel" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="287" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Component class="javax.swing.JTextField" name="parentFileTextField">
-            </Component>
-            <Component class="javax.swing.JButton" name="parentFileButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Browse"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="parentFileButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="parentFileLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Parent File"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="mainEditedFileLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Primary Edited File"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="secondaryEditedFileLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Secondary Edited File"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="secondaryEditedFileTextField">
-            </Component>
-            <Component class="javax.swing.JButton" name="mainEditedFileButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Browse"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mainEditedFileButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="secondaryEditedFileButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Browse"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="secondaryEditedFileButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="outputFileButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Browse"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFileButtonActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="mergedFileLabel">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Merged File"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="outputFileTextField">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFileTextFieldActionPerformed"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JTextField" name="mainEditedFileTextField">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mainEditedFileTextFieldActionPerformed"/>
-              </Events>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JPanel" name="advancedOptionPanel">
-          <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                <TitledBorder title="Advanced Options"/>
-              </Border>
-            </Property>
-          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Advanced Options">
@@ -385,15 +208,13 @@
                           <Group type="102" attributes="0">
                               <Component id="saveFeedbackToFileCheckBox" min="-2" pref="160" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="saveFeedbackToFileTextField" pref="310" max="32767" attributes="0"/>
+                              <Component id="saveFeedbackToFileTextField" pref="431" max="32767" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="saveFeedbackToFileBrowseButton" min="-2" pref="77" max="-2" attributes="0"/>
                           </Group>
                           <Component id="showProgressPanel" alignment="0" min="-2" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="showFeedbackButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -401,19 +222,14 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="showFeedbackButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="showProgressPanel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="19" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                                      <Component id="saveFeedbackToFileCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="saveFeedbackToFileTextField" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Component id="saveFeedbackToFileBrowseButton" min="-2" pref="33" max="-2" attributes="0"/>
-                              </Group>
+                      <Component id="showProgressPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="9" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="saveFeedbackToFileCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="saveFeedbackToFileTextField" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="saveFeedbackToFileBrowseButton" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -436,33 +252,20 @@
             </Component>
             <Component class="javax.swing.JTextField" name="saveFeedbackToFileTextField">
             </Component>
-            <Component class="javax.swing.JButton" name="showFeedbackButton">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Show Feedback"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showFeedbackButtonActionPerformed"/>
-              </Events>
-            </Component>
             <Container class="javax.swing.JPanel" name="showProgressPanel">
 
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" min="-2" pref="539" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jScrollPane2" min="-2" pref="670" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="12" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="jScrollPane2" alignment="0" pref="164" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -479,6 +282,213 @@
                     </Component>
                   </SubComponents>
                 </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="inputFilePanel">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ontology Files">
+                <Property name="tabTitle" type="java.lang.String" value="Ontology Files"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
+                      <Component id="jTextField2" min="-2" pref="468" max="-2" attributes="0"/>
+                      <EmptySpace pref="83" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="ontologyPathPanel" alignment="0" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" max="-2" attributes="0">
+                      <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                      <Component id="ontologyPathPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="jLabel2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Stored adapter settings"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="jTextField2">
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField2ActionPerformed"/>
+              </Events>
+            </Component>
+            <Container class="javax.swing.JPanel" name="ontologyPathPanel">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Ontology Paths"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="mergedFileLabel" min="-2" pref="107" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                                          <Component id="outputFileTextField" linkSize="3" pref="466" max="32767" attributes="1"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="outputFileButton" linkSize="1" pref="69" max="32767" attributes="1"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="secondaryEditedFileLabel" pref="153" max="32767" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="secondaryEditedFileTextField" linkSize="3" pref="466" max="32767" attributes="1"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="secondaryEditedFileButton" linkSize="1" pref="69" max="32767" attributes="1"/>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="mainEditedFileLabel" pref="128" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                                  <Component id="mainEditedFileTextField" linkSize="3" pref="466" max="32767" attributes="1"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="mainEditedFileButton" linkSize="1" pref="69" max="32767" attributes="1"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="parentFileLabel" pref="153" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="parentFileTextField" min="-2" pref="466" max="-2" attributes="2"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="parentFileButton" linkSize="1" pref="69" max="32767" attributes="1"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" max="-2" attributes="0">
+                              <Component id="parentFileButton" linkSize="5" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="parentFileLabel" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="parentFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" max="-2" attributes="0">
+                              <Component id="mainEditedFileLabel" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="mainEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="mainEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" max="-2" attributes="0">
+                              <Component id="secondaryEditedFileLabel" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="secondaryEditedFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="secondaryEditedFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" max="-2" attributes="0">
+                              <Component id="mergedFileLabel" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="outputFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="outputFileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JButton" name="parentFileButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Browse"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="parentFileButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JTextField" name="outputFileTextField">
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFileTextFieldActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="mergedFileLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Merged File"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="mainEditedFileLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Primary Edited File"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="parentFileTextField">
+                </Component>
+                <Component class="javax.swing.JButton" name="secondaryEditedFileButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Browse"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="secondaryEditedFileButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="parentFileLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Parent File"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="mainEditedFileButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Browse"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mainEditedFileButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JTextField" name="secondaryEditedFileTextField">
+                </Component>
+                <Component class="javax.swing.JButton" name="outputFileButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Browse"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="outputFileButtonActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JTextField" name="mainEditedFileTextField">
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mainEditedFileTextFieldActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="secondaryEditedFileLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Secondary Edited File"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
