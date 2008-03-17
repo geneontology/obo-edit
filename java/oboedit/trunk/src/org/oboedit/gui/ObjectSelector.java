@@ -13,7 +13,7 @@ public interface ObjectSelector {
 
 	/**
 	 * Most object selectors will just use this method as a delegate to
-	 * {@link getSelection()}. This method should be overridden if a special
+	 * {@link #getSelection()}. This method should be overridden if a special
 	 * selection should be used for right-clicks, drags, etc based on mouse position
 	 */
 	public Selection getSelection(MouseEvent e);
