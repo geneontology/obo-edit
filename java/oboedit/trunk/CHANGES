@@ -1,38 +1,45 @@
-Changes in 2.000-b31 (2/25/2008):
-* Prevented java help indexer from double-indexing pages (it was looking in
-  .svn as well as in the html dir), which was resulting in superfluous hits
-  when you searched help.
-* Committed midori's enhanced dictionary that includes terms from GODict.DAT.
-* Height of ID textbox was changing for no apparent reason, causing Jen to
-  report the following issue: "When I am working in the text Editor Panel and I
-  click somewhere or change a bit of text the top part of the text editor panel
-  jiggles up and down continuously."  Now fixed.
-* On the search panel, the buttons for new/load/save filter now show the
-  correct tooltips when you hover over them.
-* New improved icons for clear/load/save filter.
-* Changed coloring of tabs.  They were blue with a gradient, which perhaps was
-  pretty but was not informative--it was hard to tell which tab was selected.
-  Now the unselected tabs are plain gray (no gradient) and the selected one is
-  plain blue (no gradient).
-  Ultimately, this could be user-configurable.
-* Commit words that are added to dictionary to user's dictionary file
-  (which now will no longer be in alphabetical order--oh well).
-* Fixed: When I choose a term from an autocompletion list, using arrow keys +
-  enter to select term, the chosen term changes to some other term from the
-  auto-completion list when the search is initiated using return or clicking
-  Search.
-* I didn't think ConfigurableMessage deserved its own submenu ("Misc"), so I
-  moved it to the Config menu (Misc menu now has no items, so doesn't show up).
-* Fixed problem that sometimes made it impossible to save ontologies that
-  generated warnings during the checks that are performed before saving.
-  This was reported as four different bugs, but they all came down to this
-  same problem:
-  1897062 verification checks stall save b30
-  1901239 Problem saving obo file
-  1853551 Canceling "Running ID Check" window leaves vestigial windows
-  1852713 save messed up
-* Title of TextEditor is now black (rather than hard-to-read yellow) when
-  there are warnings.  (Warning count shows up in title.)  Title still turns
-  red if there are actual errors.
-* Main OE window title now includes the text "(REASONER ON)" if the reasoner
-  is turned on.
+Changes in 2.000-b33:
+* Tried to fix overzealous delete bug, where deleting (in the Ontology Editor
+Panel) one relationship from a term that had two relationships would cause the
+term to be silently deleted.  Unfortunately, it's not completely fixed.
+Shouldn't allow user to delete/destroy a term that has REAL children--but if
+it has only obsolete children (why does it still have them if they are
+obsolete?), that's ok.
+Also, it's not always warning that a term is about to become obsolete.  This
+needs more work.
+Test case:  load so.obo, find insertion, show parents (in graph view).  Then
+in OEP, say "Delete" (which should delete the relationship that is shown but
+not "insertion" itself).
+* Changed some confusing component names as follows:
+Ontology Editor Panel -> Ontology Tree Editor
+Graph Editor -> (Graph Editor) (unchanged) [added preliminary web page]
+Graph DAG View -> Graph Viewer [added preliminary web page]
+DAG Viewer -> Tree Viewer
+Graphviz Viewer -> (unchanged) [web page was called Graph Viewer]
+* Tree Viewer (was called DAG View) now comes up as a docked component rather
+than a free-floating one.
+* Couldn't specify on the command line an obo file to load.  I got this
+working in a rather kludgy special-case way (because I couldn't figure out the
+baroque argument parsing approach that oboedit uses--obomerge and its siblings
+use a more comprehensible approach, and oboedit should probably switch to
+using that method, but I wasn't up for doing all the work to convert it).
+You can now say "oboedit foo.obo" and it will automatically load foo.obo.
+* Fixed problem with ontologies that have dangling references: "Having even a
+single dangling reference in a file (an intersection_of line which refers to a
+term from another ontology, not currently loaded) is sufficient to screw up
+term selection from the ontology editor panel. No term info is shown in the
+text editor window. No graphs are shown in the graph editor or the graph dag
+view."  (The problem was that exceptions were flying because the dangling
+terms are assigned null as their names.)
+* Prevented java help indexer from double-indexing pages (it was including
+docs/.svn and docs/api, so the ant target now moves those out of the way as
+well as docs/html/.svn), which was resulting in superfluous hits when you
+searched help.
+* Added icon candidates for regulates, positively_regulates,
+negatively_regulates.  For now, defaults are regs-square.svg, upregs-arrow.svg
+(green), and downregs-arrow.svg (reddish), respectively.  Other candidates are
+included in release; use "Browse built-in icons" to view.
+I had a pick a link color for the regulates relations.  For now, they're all
+maroon.  Let me know what they should be.
+* Included obo-mapper (added by Chris) in release.  Needs to be invoked from
+the shell rather than by double-clicking because it requires arguments.
