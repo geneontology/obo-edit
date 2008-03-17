@@ -198,9 +198,15 @@ public class Preferences {
 		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:is_a.svg");
 		iconURLIndex.put("part_of", "resource:part_of.svg");
 		iconURLIndex.put("develops_from", "resource:develops_from.svg");
+		iconURLIndex.put("regulates", "resource:regs-square.svg");
+		iconURLIndex.put("positively_regulates", "resource:upregs-arrow.svg");
+		iconURLIndex.put("negatively_regulates", "resource:downregs-arrow.svg");
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", Color.orange);
 		colorIndex.put("develops_from", Color.green.darker());
+		colorIndex.put("regulates", Color.red.darker());
+		colorIndex.put("positively_regulates", Color.red.darker());
+		colorIndex.put("negatively_regulates", Color.red.darker());
 		
 	}
 
