@@ -370,6 +370,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			}
 
 		} catch (Throwable t) {
+		    System.err.println("getTreeCellRendererComponent: caught error.  Stack trace:");
 			t.printStackTrace();
 		}
 		validate();

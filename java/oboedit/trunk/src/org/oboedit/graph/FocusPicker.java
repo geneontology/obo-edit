@@ -28,9 +28,9 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 						.getPath(), PCNode.class);
 				if (node != null) {
 					if (node instanceof OENode)
-						System.err.println("node dim = " + node.getWidth()
-								+ "," + node.getHeight() + ", prefWidth = "
-								+ ((OENode) node).getPreferredWidth());
+//						System.err.println("node dim = " + node.getWidth()
+//								+ "," + node.getHeight() + ", prefWidth = "
+//								+ ((OENode) node).getPreferredWidth());
 					if (!ObjectUtil.equals(canvas.getFocusedNode(), node)) {
 						canvas.setFocusedObject(node.getObject());
 					}
