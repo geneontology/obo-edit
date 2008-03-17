@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="60"
+   height="60"
+   viewBox="0 0 60 60"
+   id="svg2268"
+   xml:space="preserve">
+<defs
+   id="defs2270">
+</defs>
+<rect
+   width="60"
+   height="60"
+   style="fill:#ffffff"
+   x="0"
+   y="0"
+   opacity="0.0"
+   id="squr1" />
+<g
+   id="Rectangle_1_">
+	<g
+   style="display:inline"
+   id="g2273">
+		<rect
+   width="52"
+   height="36"
+   x="4"
+   y="12"
+   style="fill-rule:evenodd"
+   id="rect2275" />
+	</g>
+</g>
+<g
+   id="R_1_">
+	<g
+   style="display:inline"
+   id="g2328">
+		<path
+   d="M 28,24 C 28,19 25,16 20,16 C 12.4,16 8,16 8,16 L 8,44 C 8,44 10.2,44 12,44 L 12,32 L 15,32 L 23,44 L 28,44 L 20,32 C 25,32 28,29 28,24 z M 12,28 L 12,20 L 20,20 C 22,20 24,22 24,24 C 24,26.3 22,28 20,28 L 12,28 z "
+   style="fill:#ffffff;fill-rule:evenodd"
+   id="path2330" />
+	</g>
+</g>
+</svg>
+
