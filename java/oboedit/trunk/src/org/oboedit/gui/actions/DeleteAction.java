@@ -86,6 +86,7 @@ public class DeleteAction implements ClickMenuAction {
 		}
 		if (!isLegal)
 			return;
+		// But we would have returned anyway!!  What's really supposed to happen here?
 	}
 
 	protected void cullFakeItems(List<PathCapable> deleteThese) {
@@ -104,28 +105,34 @@ public class DeleteAction implements ClickMenuAction {
 	protected boolean getDeletionItems(Selection selection,
 					   Collection<PathCapable> out) {
 		deleteThese.clear();
+
 		legacyMode = selection.getSelector() != null
 				&& selection.getSelector().hasCombinedTermsAndLinks();
+		if (legacyMode) // DEL
+		    System.out.println("DeleteAction.getDeletionItems: legacyMode is TRUE!");  // DEL
+		boolean warnBeforeDelete = Preferences.getPreferences().getWarnBeforeDelete();
 
-		if (Preferences.getPreferences().getWarnBeforeDelete()) {
-		    for (Link tr : selection.getLinks()) {
-			LinkedObject parent = tr.getParent();
-			LinkedObject child = tr.getChild();
-			if (TermUtil.isObsolete(parent))
-			    continue;
-			if (child.getParents().size() == 1) {
-			    lastInstanceCount++;
-			    instanceString += child.getName() + " ("
-				+ child.getID() + ")\n";
-			}
-		    }
-		}
 		if (legacyMode) {
 			Map temp = new HashMap();
 
 			for (Link tr : selection.getLinks()) {
-				Collection trackedParents = (Collection) temp
-						.get(tr.getChild());
+			    System.out.println("DeleteAction: checking link " + tr); // DEL
+			    Collection trackedParents = (Collection) temp.get(tr.getChild());
+			    // 3/2008: If node has children, don't allow user to delete it.
+			    LinkedObject child = tr.getChild();
+			    if (child.getChildren().size() > 0
+				&& !TermUtil.hasAncestor(child, child)) { // ?
+				System.out.println("Can't delete " + child.getName() + "--it has children: " + child.getChildren()); // DEL
+			    }
+			    else {
+				if (warnBeforeDelete && 
+				    !(TermUtil.isObsolete(tr.getParent())) && 
+				    child.getParents().size() == 1) {
+				    lastInstanceCount++;
+				    instanceString += child.getName() + " ("
+					+ child.getID() + ")\n";
+				}
+
 				if (trackedParents == null) {
 					trackedParents = new LinkedList<Link>(tr.getChild()
 							.getParents());
@@ -137,6 +144,7 @@ public class DeleteAction implements ClickMenuAction {
 				}
 				out.add(tr);
 				trackedParents.remove(tr);
+			    }
 			}
 
 			Iterator it = temp.keySet().iterator();
@@ -148,21 +156,40 @@ public class DeleteAction implements ClickMenuAction {
 			}
 
 			return true;
-		} else {
+		} else { // Not legacyMode
 			for (PathCapable pc : selection.getAllSelectedObjects()) {
 				if (pc instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) pc;
-					for (Link parentLink : lo.getParents()) {
+					// 3/2008: If node has children, don't allow user to delete it.
+					if ((lo.getChildren().size() > 0)) {
+//					    && TermUtil.hasAncestor(lo, lo)) {
+					    // What if the children are obsolete??
+					    System.out.println("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
+					}
+					else {  // No children
+					    System.out.println(lo.getName() + " has no (real) children: " + lo.getChildren() + "--ok to delete. Parent count = " + lo.getParents().size() + "; parents = " + lo.getParents()); // DEL
+					    if (warnBeforeDelete &&
+						lo.getParents().size() <= 1) { // Sometimes it's 0--??
+//						!(TermUtil.isObsolete(lo.getParents().iterator().next()))) {
+						lastInstanceCount++;
+						instanceString += lo.getName() + " ("
+						    + lo.getID() + ")\n";
+//						System.out.println("now instanceString = " + instanceString); // DEL
+					    }
+
+					    for (Link parentLink : lo.getParents()) {
 						if (!out.contains(parentLink))
-							out.add(parentLink);
-					}
-					for (Link childLink : lo.getChildren()) {
+						    out.add(parentLink);
+					    }
+					    for (Link childLink : lo.getChildren()) { // ??
 						if (!out.contains(childLink))
-							out.add(childLink);
-					}
+						    out.add(childLink);
+					    }
 					out.add(lo);
+					}
 				} else if (pc instanceof Link) {
 					Link link = (Link) pc;
+				    System.out.println("Adding to delete list: link " + link); // DEL
 					if (!TermUtil.isImplied(link))
 						out.add(pc);
 				}
@@ -188,22 +215,31 @@ public class DeleteAction implements ClickMenuAction {
 			} else {
 			    // Is this the right test?  Is it failing to warn in some cases where it should?
 				if (lastInstanceCount > 0) {
-					if (JOptionPane.showConfirmDialog(GUIManager.getManager()
-							.getFrame(), "These are the last appearances of "
-							+ "the following terms:\n" + instanceString
-							+ "Are you sure you want to "
-							+ "make these terms permanently obsolete?", "Delete warning",
-							JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
-						return null;
+				    int answer = JOptionPane.showConfirmDialog(GUIManager.getManager().getFrame(),
+									       ((lastInstanceCount > 1) ?
+										"These are the last appearances of the following terms:"
+										:
+										"This is the last appearance of the following term:")
+									       + "\n" + instanceString
+									       + "Are you sure you want to "
+									       + "make these terms permanently obsolete?", "Delete warning",
+									       JOptionPane.YES_NO_OPTION);
+				    if (answer != JOptionPane.YES_OPTION) {
+					System.out.println("User decided not to delete " + instanceString);
+					return null;
+				    }
 				}
 			}
 //		}
 		Collections.sort(deleteThese, pcComparator);
+		System.out.println("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
 		TermMacroHistoryItem out = new TermMacroHistoryItem(
-				"Deleted multiple items");
+//		    "No items to delete"); // ??
+		    );
 		for (PathCapable pc : deleteThese) {
 			if (pc instanceof Link) {
 				Link link = (Link) pc;
+				System.out.println(link + " is a Link--adding to " + (shouldDestroy ? "destroy" : "obsolete") + "list"); // DEL
 				if (link.getType() == null)
 					out.addItem(new DeleteLinkHistoryItem((Link) pc));
 				else if (link.getType().equals(OBOProperty.CONSIDER)) {
@@ -215,6 +251,7 @@ public class DeleteAction implements ClickMenuAction {
 				} else
 					out.addItem(new DeleteLinkHistoryItem((Link) pc));
 			} else if (pc instanceof LinkedObject) {
+			    System.out.println(pc + " is a LinkedObject--adding to " + (shouldDestroy ? "destroy" : "obsolete") + "list"); // DEL
 				if (shouldDestroy)
 					out
 							.addItem(new DestroyObjectHistoryItem(
@@ -225,12 +262,19 @@ public class DeleteAction implements ClickMenuAction {
 									(LinkedObject) pc));
 			}
 		}
-		if (out.size() == 0)
+//		System.out.println("Terms to delete: " + out);
+		if (out.size() == 0) {
+		    System.out.println("DeleteAction.execute: no items to delete"); // DEL
 			return null;
-		else if (out.size() == 1)
+		}
+		else if (out.size() == 1) {
+		    System.out.println("DeleteAction.execute: returning one item to delete: " + out.getItemAt(0)); // DEL
 			return out.getItemAt(0);
-		else
+		}
+		else {
+		    System.out.println("DeleteAction.execute: returning " + out.size() + " items to delete: " + out); // DEL
 			return out;
+		}
 	}
 
 	public KeyStroke getKeyStroke() {
