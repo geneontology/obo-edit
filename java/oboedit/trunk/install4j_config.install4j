@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.0.6" transformSequenceNumber="1">
   <directoryPresets config="./src/org/oboedit/gui/resources/icons" />
-  <application name="OBO-Edit" distributionSourceDir="" applicationId="7283-8148-3557-0894" mediaDir="./releases" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.version}_${compiler:sys.platform}_install4j" compression="9" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="oboedit" publisher="Gene Ontology Consortium" publisherWeb="http://www.geneontology.org" version="0.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="" allowBetaVM="true">
+  <application name="OBO-Edit2" distributionSourceDir="" applicationId="7283-8148-3557-2000" mediaDir="./releases" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.version}_${compiler:sys.platform}_install4j" compression="9" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="oboedit" publisher="Gene Ontology Consortium" publisherWeb="http://www.geneontology.org" version="0.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="" allowBetaVM="true">
     <languages skipLanguageSelection="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -46,8 +46,8 @@
       </dirEntry>
     </entries>
     <components>
-      <component name="OBO-Edit" id="61" displayDescription="false" selected="true" mandatory="true" downloadable="false">
-        <description>The OBO-Edit application.</description>
+      <component name="OBO-Edit2" id="61" displayDescription="false" selected="true" mandatory="true" downloadable="false">
+        <description>OBO-Edit 2.000</description>
         <include all="false">
           <entry location="extensions" launcher="false" />
           <entry location="runtime" launcher="false" />
@@ -57,6 +57,7 @@
           <entry location="LICENSE" launcher="false" />
           <entry location="OBO-Edit" launcher="true" />
           <entry location="obo2obo" launcher="true" />
+          <entry location="obo-mapper" launcher="true" />
           <entry location="obodiff" launcher="true" />
           <entry location="obomerge" launcher="true" />
           <entry location="obo2flat" launcher="true" />
@@ -75,7 +76,7 @@
     </components>
   </files>
   <launchers>
-    <launcher name="OBO-Edit" id="8" external="false" excludeFromMenu="false" menuName="OBO-Edit" icnsFile="./src/org/oboedit/gui/resources/icons/oboedit_icon_mac.icns" pngIcon16File="./src/org/oboedit/gui/resources/icons/oboedit_icon_16x16.png" pngIcon32File="./src/org/oboedit/gui/resources/icons/oboedit_icon_32x32.png" macServiceDependencies="" swtApp="false">
+    <launcher name="OBO-Edit2" id="8" external="false" excludeFromMenu="false" menuName="OBO-Edit2" icnsFile="./src/org/oboedit/gui/resources/icons/oboedit_icon_mac.icns" pngIcon16File="./src/org/oboedit/gui/resources/icons/oboedit_icon_16x16.png" pngIcon32File="./src/org/oboedit/gui/resources/icons/oboedit_icon_32x32.png" macServiceDependencies="" swtApp="false">
       <executable name="OBO-Edit" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="false" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
       </executable>
@@ -108,6 +109,28 @@
         </text>
       </splashScreen>
       <java mainClass="org.oboedit.launcher.OBO2OBO" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obo2obo&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <scanDirectory location="runtime" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
+    <launcher name="obo-mapper" id="10" external="false" excludeFromMenu="true" menuName="" icnsFile="" pngIcon16File="" pngIcon32File="" macServiceDependencies="" swtApp="false">
+      <executable name="obo-mapper" type="1" iconSet="false" iconFile="" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="false" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.oboedit.launcher.OBOMapper" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=obo-mapper&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
         <classPath>
           <scanDirectory location="runtime" failOnError="false" />
         </classPath>
@@ -249,7 +272,7 @@
           <java class="java.beans.XMLDecoder">
             <object class="com.install4j.runtime.beans.screens.FormScreen">
               <void property="subTitle">
-                <string>Maximum Memory for OBO-Edit</string>
+                <string>Maximum Memory for OBO-Edit2</string>
               </void>
               <void property="title">
                 <string>Memory Settings</string>
@@ -266,7 +289,7 @@
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                   <void property="labelText">
-                    <string>Because OBO-Edit is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit can use. OBO-Edit will crash if it needs more memory than the amount you have allocated.
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. OBO-Edit2 will crash if it needs more memory than the amount you have allocated.
 
 It is recommended that you allocate as much memory as possible. The installer has attempted to suggest a reasonable value for your system. This value may not be accurate on all platforms, so review the suggestion carefully. Due to limitations in Java itself, you must choose a value that is less than 2048 Mb, even if you are using a computer with more memory.</string>
                   </void>
@@ -283,7 +306,7 @@ It is recommended that you allocate as much memory as possible. The installer ha
                     <int>1024</int>
                   </void>
                   <void property="labelText">
-                    <string>Maximum Memory for OBO-Edit (in Mb)</string>
+                    <string>Maximum Memory for OBO-Edit2 (in Mb)</string>
                   </void>
                   <void property="maxValue">
                     <int>2048</int>
@@ -627,7 +650,7 @@ configurationObject.setValue(val);</initScript>
     </uninstallerStartup>
   </installerGui>
   <mediaSets>
-    <win32 name="Windows" id="21" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
+    <win32 name="Windows" id="21" mediaFileName="" installDir="OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
       <excludedLaunchers />
       <excludedComponents />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -636,7 +659,7 @@ configurationObject.setValue(val);</initScript>
       <excludedInstallerScreens />
       <excludedUninstallerScreens />
     </win32>
-    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <macosFolder name="Mac OS X Folder" id="24" mediaFileName="" installDir="OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -645,7 +668,7 @@ configurationObject.setValue(val);</initScript>
       <excludedInstallerScreens />
       <excludedUninstallerScreens />
     </macosFolder>
-    <unixInstaller name="Unix Installer" id="26" mediaFileName="" installDir="OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+    <unixInstaller name="Unix Installer" id="26" mediaFileName="" installDir="OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedComponents />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -657,7 +680,7 @@ configurationObject.setValue(val);</initScript>
         <scriptLines />
       </installerScript>
     </unixInstaller>
-    <linuxRPM name="Linux RPM" id="35" mediaFileName="" installDir="/opt/OBO-Edit" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
+    <linuxRPM name="Linux RPM" id="35" mediaFileName="" installDir="/opt/OBO-Edit2" overridePrincipalLanguage="true" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" os="linux" arch="i386">
       <excludedLaunchers />
       <excludedComponents />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
