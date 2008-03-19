@@ -5,13 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.obo.datamodel.CommentedObject;
-import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOObject;
-import org.obo.datamodel.impl.DbxrefImpl;
+import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.owl.dataadapter.OWLAdapter;
-import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping.OboInOWLNamespaces;
 import org.obo.owl.util.IDSpaceRegistry;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
@@ -20,21 +18,28 @@ import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
-public class OBIMetadataMapping extends AbstractOWLMetadataMapping {
+public class MgedOntologyOWLMetadataMapping extends AbstractOWLMetadataMapping {
 
 	public boolean isOboToOWLLossy() { return true; }
 	
-	public String getName() { return "OBI mapping"; }
-	public String getDesc() { return "Uses OBI annotation properties"; }
+	public String getName() { return "MO mapping"; }
+	public String getDesc() { return "Uses MO"; }
 	
-	public String ns = "http://obi.sourceforge.net/ontology/OBI.owl#";
-	
-	public enum OBINamespaces {
+	public String getOWLNamespace()  {
+		return "http://mged.sourceforge.net/ontologies/MGEDOntology.owl#";
+	}
 
-	    OBI("http://obi.sourceforge.net/ontology/OBI.owl#");
+	public void registerIDSpaces() {
+		IDSpaceRegistry.getInstance().registerMapping(getOWLNamespace(),"mged");
+		
+	}
+
+	public enum MONamespaces {
+
+	    MO("http://mged.sourceforge.net/ontologies/MGEDOntology.owl#");
 
 	    String ns;
-	    OBINamespaces(String ns) {
+	    MONamespaces(String ns) {
 	        this.ns = ns;
 	    }
 
@@ -43,28 +48,21 @@ public class OBIMetadataMapping extends AbstractOWLMetadataMapping {
 	    }
 	}
 	
-	public enum OBIVocabulary {
-		DEFINITION("definition"),
-		DEFINITION_EDITOR("definition_editor"),
-		DEFINITION_SOURCE("definition_source"),
-		SYNONYM("alternative_term");
+	public enum MOVocabulary {
+		DEPRECATION_IN("deprecation_in"),
+		DEPRECATED_FROM_VERSION("deprecated_from_version"),
+		DEPRECATION_REPLACEMENT_TERM("deprecation_replacement_term"),
+		WAS_REPLACED_BY("was_replaced_by"),
+		SYNONYM("synonym");
 		URI uri;
 
-	    OBIVocabulary(String uri) {
-	    	this.uri = URI.create(OBINamespaces.OBI + uri);
+	    MOVocabulary(String uri) {
+	    	this.uri = URI.create(uri);
 	    }
 
 	    public URI getURI() {
 	    	return uri;
 	    }
-	    
-	    public String toString() {
-	        return uri.toString();
-	    }
-	}
-	
-	public void registerIDSpaces() {
-		IDSpaceRegistry.getInstance().registerMapping("http://obi.sourceforge.net/ontology/OBI.owl#","obi");	
 	}
 	
 	public Set<OWLAxiom> getOWLAxioms(OWLAdapter adapter, OWLEntity owlEntity, IdentifiedObject io) {
@@ -83,35 +81,39 @@ public class OBIMetadataMapping extends AbstractOWLMetadataMapping {
 	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		OWLAnnotation owlAnnot = axiom.getAnnotation();
 		URI uri = owlAnnot.getAnnotationURI();
+		if (!(lo instanceof OBOObject))
+			return false;
+		OBOObject obj = (OBOObject) lo;
 		if (owlAnnot instanceof OWLConstantAnnotation) {
 			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-			if (uri.equals(OBIVocabulary.SYNONYM.getURI())) {
-				if (lo instanceof OBOObject) // TODO - use OBOObject everywhere
-					((OBOObject)lo).addSynonym(new SynonymImpl(val));
-				return true;
-			}	
-			if (uri.equals(OBIVocabulary.DEFINITION.getURI())) {
-				if (lo instanceof OBOObject)
-					((OBOObject)lo).setDefinition(val);
-				return true;
-			}	
-			if (uri.equals(OBIVocabulary.DEFINITION_EDITOR.getURI()) ||
-					uri.equals(OBIVocabulary.DEFINITION_SOURCE.getURI())) {
-				String db = "obi:";
-				DbxrefImpl xref = new DbxrefImpl(db,val);
-				xref.setType(Dbxref.DEFINITION);
-				if (lo instanceof OBOObject)
-					((OBOObject)lo).addDefDbxref(xref);
-				return true;
-			}	
+
 			if (uri.equals(OWLRDFVocabulary.RDFS_COMMENT.getURI())) {
 				if (lo instanceof CommentedObject)
 					((CommentedObject)lo).setComment(val);
 				return true;
 			}		
+
+			if (uri.equals(MOVocabulary.SYNONYM.getURI())) {
+				obj.addSynonym(new SynonymImpl(val));
+				return true;
+			}	
+			
+			if (uri.equals(MOVocabulary.DEPRECATION_IN.getURI())) {
+				obj.setObsolete(true);
+				return true;
+			}	
+			if (uri.equals(MOVocabulary.DEPRECATION_REPLACEMENT_TERM.getURI()) ||
+					uri.equals(MOVocabulary.WAS_REPLACED_BY.getURI())) {
+				obj.setObsolete(true);
+//				obj.addReplacedBy(o); TODO
+				return true;
+			}	
 		}
 		return false;
 	}
+
+	
+
 
 }
 		
