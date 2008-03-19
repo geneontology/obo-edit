@@ -8,7 +8,6 @@ import java.util.Collection;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.owl.datamodel.MetadataMapping;
-import org.obo.owl.datamodel.impl.OBIMetadataMapping;
 import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
 
 public class SAORoundtripOWLTest extends AbstractOWLTest {
@@ -20,6 +19,10 @@ public class SAORoundtripOWLTest extends AbstractOWLTest {
 	protected boolean isSourceOWL() {
 		return true;
 	}
+	protected boolean isAllowLossyWhenReadingOWL() {
+		return true;
+	}
+
 	protected void addMappings(OWLAdapterConfiguration config) {
 		MetadataMapping mapping = new SAO_1_2_OWLMetadataMapping();
 		config.addMetadataMapping(mapping);

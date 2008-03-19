@@ -39,6 +39,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
@@ -337,6 +338,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		}
 	}
 
+	public void fireLossyWarning(String message, OBOObject obj) throws DataAdapterException {
+		fireLossyWarning(message+" object:"+obj);
+	}
 	public void fireLossyWarning(String message) throws DataAdapterException {
 		if (ioprofile.allowLossy) {
 			logger.severe(message);
@@ -466,6 +470,15 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				}
 
 			}
+			Set<OWLDescription> owlTypes = owlIndividual.getTypes(ontology);
+			for (OWLDescription owlDesc : owlTypes) {
+				OBOClass oboClass = getOboClass(owlDesc);
+				oboInstance.setType(oboClass);
+			}
+			if (owlTypes.size() > 1) {
+				this.fireLossyWarning("multiple instance_of links set (obo allows only one for now)",oboInstance);
+			}
+
 			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlIndividual.getAnnotationAxioms(ontology);
 			getMetadataFromAnnotationAxioms(oboInstance,owlAnnotationAxioms);				
 		}
@@ -535,7 +548,17 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		/* properties
 		 * 
 		 */
+		for (OWLProperty owlProperty : ontology.getReferencedDataProperties()) {
+			String id = getOboID(owlProperty);
+			OBOProperty oboProperty =
+				(OBOProperty)oboFactory.createObject(id, OBOClass.OBO_PROPERTY, false);
+			session.addObject(oboProperty);
+			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlProperty.getAnnotationAxioms(ontology);
+			getMetadataFromAnnotationAxioms(oboProperty,owlAnnotationAxioms);			
+
+		}
 		for (OWLProperty owlProperty : ontology.getReferencedObjectProperties()) {
+			// TODO - DRY
 			String id = getOboID(owlProperty);
 			OBOProperty oboProperty =
 				(OBOProperty)oboFactory.createObject(id, OBOClass.OBO_PROPERTY, false);

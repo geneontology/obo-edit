@@ -21,6 +21,7 @@ public class IDSpaceRegistry {
 		registerMapping("http://purl.org/biotop/dev#","biotop_dev");
 		registerMapping("http://ccdb.ucsd.edu/SAO/1.2#","sao");
 		registerMapping("http://obi.sourceforge.net/ontology/OBI.owl#","obi");
+		registerMapping("http://www.w3.org/2000/01/rdf-schema#","rdfs");
 	}
 
 

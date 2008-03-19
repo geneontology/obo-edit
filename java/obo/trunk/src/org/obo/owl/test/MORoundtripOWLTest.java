@@ -7,6 +7,8 @@ import java.util.Collection;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
+import org.obo.owl.datamodel.MetadataMapping;
+import org.obo.owl.datamodel.impl.MgedOntologyOWLMetadataMapping;
 
 public class MORoundtripOWLTest extends AbstractOWLTest {
 
@@ -17,9 +19,13 @@ public class MORoundtripOWLTest extends AbstractOWLTest {
 	protected boolean isSourceOWL() {
 		return true;
 	}
+	protected boolean isAllowLossyWhenReadingOWL() {
+		return true;
+	}
+
 	protected void addMappings(OWLAdapterConfiguration config) {
-//		MetadataMapping mapping = new SAO_1_2_OWLMetadataMapping();
-//		config.addMetadataMapping(mapping);
+		MetadataMapping mapping = new MgedOntologyOWLMetadataMapping();
+		config.addMetadataMapping(mapping);
 	}
 
 

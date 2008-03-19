@@ -21,6 +21,17 @@ public abstract class AbstractOWLMetadataMapping implements MetadataMapping {
 	protected OWLDataFactory factory;
 	protected OBOSession session;
 	
+	
+	
+	public AbstractOWLMetadataMapping() {
+		super();
+		registerIDSpaces();
+	}
+	
+	public void registerIDSpaces() {
+		
+	}
+
 	public OBOSession getSession() {
 		return session;
 	}
