@@ -27,13 +27,13 @@
       <dirEntry mountPoint="3" file="./runtime" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn" dirMode="755">
+      <dirEntry mountPoint="4" file="./docs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn, ~, .bak" dirMode="755">
         <exclude>
           <entry location="api" launcher="false" />
           <entry location="CVS" launcher="false" />
         </exclude>
       </dirEntry>
-      <dirEntry mountPoint="5" file="./test_resources" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn" dirMode="755">
+      <dirEntry mountPoint="5" file="./test_resources" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="CVS, .svn, ~, .bak" dirMode="755">
         <exclude>
           <entry location="CVS" launcher="false" />
         </exclude>
@@ -41,7 +41,7 @@
       <dirEntry mountPoint="118" file="./apidocs" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
         <exclude />
       </dirEntry>
-      <dirEntry mountPoint="1" file="./release_resources" overwrite="1" shared="false" mode="644" uninstallMode="2" excludeSuffixes="CVS,.svn" dirMode="755">
+      <dirEntry mountPoint="1" file="./release_resources" overwrite="1" shared="false" mode="755" uninstallMode="2" excludeSuffixes="CVS,.svn" dirMode="755">
         <exclude />
       </dirEntry>
     </entries>
@@ -61,6 +61,7 @@
           <entry location="obodiff" launcher="true" />
           <entry location="obomerge" launcher="true" />
           <entry location="obo2flat" launcher="true" />
+          <entry location="oe-command-line" launcher="true" />
         </include>
         <dependencies />
       </component>
