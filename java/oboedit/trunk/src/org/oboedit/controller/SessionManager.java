@@ -24,6 +24,7 @@ import org.obo.query.QueryEngine;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.ReasonerListener;
+import org.obo.reasoner.ReasonerRegistry;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasoner;
@@ -62,8 +63,9 @@ public class SessionManager {
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
 
-//	protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
-	protected ReasonerFactory reasonerFactory = new LinkPileReasonerFactory(); // TODO: configurable
+        protected ReasonerFactory reasonerFactory;
+
+        protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
 
 	protected ReasonedLinkDatabase reasoner;
 
@@ -74,6 +76,8 @@ public class SessionManager {
 	protected boolean unflushedChanges = false;
 
 	protected boolean recacheInBackground = true;
+
+    protected String reasonerName = "OFF";
 
 	public SessionManager() {
 		setSession(new OBOSessionImpl());
@@ -168,6 +172,7 @@ public class SessionManager {
 	}
 
 	public void setUseReasoner(final boolean useReasoner) {
+//	    System.out.println("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
 		if (getUseReasoner() != useReasoner) {
 			Preferences.getPreferences().setUseReasoner(useReasoner);
 			fireReasonerStatusChange(new ReasonerStatusEvent(this, useReasoner));
@@ -177,6 +182,20 @@ public class SessionManager {
 				clearReasonerDatabase();
 		}
 	}
+
+    public String getReasonerName() {
+	return reasonerName;
+    }
+    public void setReasonerName(String newReasonerName) {
+	if (!(newReasonerName.equals(getReasonerName()))) {
+	    this.reasonerName = newReasonerName;
+	    setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
+	    if (newReasonerName.equals("") || newReasonerName.equalsIgnoreCase("off"))
+		return;  // we already turned it off
+	    else
+		setUseReasoner(true); // initialize the newly selected reasoner
+	}
+    }
 
 	public void addRootChangeListener(RootChangeListener listener) {
 		rootChangeListeners.add(listener);
@@ -194,11 +213,7 @@ public class SessionManager {
 
 	protected void fireHistoryApplied(HistoryAppliedEvent event) {
 		for (HistoryListener listener : historyListeners) {
-			long time = System.currentTimeMillis();
 			listener.applied(event);
-			time = System.currentTimeMillis() - time;
-//			System.err.println("fired history applied on " + listener + " in "
-//					+ time);
 		}
 	}
 
@@ -225,7 +240,7 @@ public class SessionManager {
 
 		// if (getUseReasoner())
 		// reasonerOpModel.apply(item);
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
 //		System.err.println("fired history applied in "
 //				+ (System.currentTimeMillis() - time));
@@ -295,21 +310,13 @@ public class SessionManager {
 			reasoner.removeReasonerListener(masterReasonerListener);
 			session.getOperationModel().removeLockstepModel(reasonerOpModel);
 		}
-		reasoner = createReasoner();
+		reasoner = createReasoner(getReasonerName());
 		reasoner.setLinkDatabase(session.getLinkDatabase());
 		reasonerOpModel = new ReasonerOperationModel(reasoner);
 		reasonerOpModel.setSession(session);
 		session.getOperationModel().addLockstepModel(reasonerOpModel);
 		reasoner.addReasonerListener(masterReasonerListener);
 
-		/*
-		 * if (recacheInBackground) { SwingWorker<Void, Void> worker = new
-		 * SwingWorker<Void, Void>() {
-		 * 
-		 * @Override protected Void doInBackground() throws Exception {
-		 * reasoner.recache(); return null; } }; worker.execute(); } else
-		 * reasoner.recache();
-		 */
 		AbstractTaskDelegate<Void> reasoningTask = new AbstractTaskDelegate<Void>() {
 			@Override
 			public void execute() {
@@ -348,8 +355,17 @@ public class SessionManager {
 			}
 	}
 
-	public ReasonedLinkDatabase createReasoner() {
+	public ReasonedLinkDatabase createReasoner(String reasonerName) {
+	    reasonerFactory = registry.lookupFactory(reasonerName);
+	    if (reasonerFactory == null) {
+		reasonerFactory = registry.getDefaultReasonerFactory();
+		System.err.println("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner" + reasonerFactory); 
 		return reasonerFactory.createReasoner();
+	    }
+	    else {
+//		System.out.println("Got factory for reasoner " + reasonerName);  // DEL
+		return reasonerFactory.createReasoner();
+	    }
 	}
 
 	public ReasonedLinkDatabase getReasoner() {
