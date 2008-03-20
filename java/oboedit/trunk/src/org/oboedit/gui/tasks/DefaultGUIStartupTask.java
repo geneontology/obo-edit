@@ -419,12 +419,16 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				}
 				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().add(bc);
+					// Also add to tab in case theme is not using titlebar style
+					v.getCustomTabComponents().add(bc);
 				}
 			}
 
 			public void viewDestroyed(View v, GUIComponent c) {
 				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().remove(bc);
+					// Also remove from tab in case theme is not using titlebar style
+					v.getCustomTabComponents().add(bc);
 				}
 				compMap.remove(c);
 			}
