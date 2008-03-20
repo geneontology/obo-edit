@@ -7,248 +7,86 @@
 </head>
 <body bgcolor="#ffffff">
 <h1>Reasoner Prefilters</h1>
-<h2>          
-              
-            
-         
-             
-          
-              
-            
-         
-             The 
-Trouble with Link Filters</h2>
+<h2>The Trouble with Link Filters</h2>
 <p>          
-              
-            
-         
     Often, a user will want to see a version of the ontology 
 that is filtered to show a single relationship type. But when the user tries to 
 apply a          
-              
-            
-         
-    simple link filter to do the job, the user 
-often          
-              
-            
-         
+    simple link filter to do the job, the user often          
     finds himself facing a highly fragmented mess of an ontology 
 with many orphaned branches.</p>
 <p>          
-              
-            
-         
     This happens because most well-designed ontologies do not 
 have complete paths to the root for every relationship          
-              
-            
-         
     type (except is_a). A well-designed ontology specifies relationships where 
 they're          
-              
-            
-         
     needed, but leaves a great many relationships implicit. For example, 
 consider this small ontology.</p>
 <UL>
   <LI>
 <div><FONT face=Courier>heart 
   <STRONG>-part_of-&gt;</STRONG> animal</FONT>          
-              
-            
-         
-             
-          
-              
-            
-         
-              
    </div>
   <LI>
 <div><FONT face=Courier>
 <p><FONT face=Courier>cat <STRONG>-is_a-&gt;</STRONG> 
   animal</FONT>          
-              
-            
-         
-             
-          
-              
-            
-         
-              
    </p></FONT>          
-              
-            
-         
-             
-          
-              
-            
-         
-              
    </div></LI></UL>
 <p>          
-              
-            
-         
     There's no need to include a <FONT face=Courier>heart 
 <STRONG>-part_of-&gt;</STRONG>&nbsp;cat </FONT>link,          
-              
-            
-         
     because it is implied by the other two relationships.&nbsp;It 
 would          
-              
-            
-         
     be redundant, and many such links would make the ontology 
 very hard to maintain.</p>
 <p>          
-              
-            
-         
     But, if we were to apply a link filter to only show 
 <STRONG>part_of</STRONG> relationships, we would not be able to tell that <FONT 
 face=Courier>heart <STRONG>-part_of-&gt;</STRONG>&nbsp;cat</FONT><FONT 
 face=Arial>.&nbsp;Cat would become a root node because the filter would hide its 
 <STRONG>is_a</STRONG> link to animal.</FONT>          
-              
-            
-         
-             
-          
-              
-            
-         
-              
    </p>
 <p>          
-              
-            
-         
     Reasoner prefilters solve this problem by querying the 
 reasoner for the complete, reasoned graph for a relationship type. As long as 
 there          
-              
-            
-         
-    is a complete is_a heirarchy in an ontology, a 
-reasoned          
-              
-            
+    is a complete is_a heirarchy in an ontology, a reasoned          
          
     prefilter can show a complete, connected graph for any relationship 
 type in the ontology.</p>
-<h2>          
-              
-            
-         
-             
-          
-              
-            
-         
-             How 
-Reasoner Prefilters Are Applied</h2>
+<h2>How Reasoner Prefilters Are Applied</h2>
 <p>          
-              
-            
-         
-             
-          
-              
-            
-         
-         Filters in OBO-Edit are applied 
-in the following way:</p>
+         Filters in OBO-Edit are applied in the following way:</p>
 <OL>
   <LI>
 <div>          
-              
-            
-         
-    The reasoner prefilter          
-              
-            
-         
-    looks at the (hundreds of thousands) of links discovered 
-by          
-              
-            
-         
+    The reasoner prefilter                     
+    looks at the (hundreds of thousands) of links discovered by          
     the reasoner, and filters out links that do not match 
 the specified relationship type.</div>
   <LI>
 <div>          
-              
-            
-         
     A&nbsp;redundancy          
-              
-            
-         
-    filter looks through the (still huge) number of links 
-that          
-              
-            
-         
+    filter looks through the (still huge) number of links that          
     passed the prefilter, and removes redundant links that a user 
 wouldn't want to see.</div>
   <LI>
 <div>          
-              
-            
-         
-             
-          
-              
-            
-         
-          Any regular filters or 
-link filters are applied.</div></LI></OL>
+          Any regular filters or link filters are applied.</div></LI></OL>
 <p>          
-              
-            
-         
-           For now, 
-reasoner          
-              
-            
-         
+           For now, reasoner          
     prefilters only filter by relationship type. More complex reasoner prefiltering 
 is not yet supported.</p>
-<h2>          
-              
-            
-         
-             
-          
-              
-            
-         
-             Using 
+<h2>Using 
 Reasoner Prefilters in OBO-Edit</h2>
 <p>          
-              
-            
-         
     Reasoner prefilters are specified using the <IMG 
 height=20 hspace=0 src="../images/term_editor_panel_prefilter_button.gif" 
 width=20 border=0> &nbsp;button 
 under an ontology editor panel. Each ontology editor panel can have a different 
 reasoner prefilter. See <A href="The_Term_Editor_Panel.htm#display_controls">The 
 Ontology Editor Panel</A>          
-              
-            
-         
-             
-          
-              
-            
-         
-              
  for more information.</p>
 <P>It is possible to apply a reasoner prefilter to an ontology before saving it 
 to disk. See <A href="The_OBO_Adapter.htm">The OBO Adapter</A> and <A 
