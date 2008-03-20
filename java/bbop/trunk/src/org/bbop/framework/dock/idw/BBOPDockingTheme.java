@@ -23,6 +23,7 @@ package org.bbop.framework.dock.idw;
 
 import net.infonode.docking.properties.RootWindowProperties;
 import net.infonode.docking.theme.DockingWindowsTheme;
+import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.gui.colorprovider.ColorBlender;
 import net.infonode.gui.colorprovider.ColorProvider;
 import net.infonode.gui.colorprovider.FixedColorProvider;
@@ -77,6 +78,9 @@ public class BBOPDockingTheme extends DockingWindowsTheme {
 			Font font) {
 		theme = new BBOPTabTheme(darkColor, lightColor, rootWindowProperties
 				.getComponentProperties().getFont(), cornerType);
+		
+		RootWindowProperties titleBarStyleProperties = PropertiesUtil.createTitleBarStyleRootWindowProperties();
+		rootWindowProperties.addSuperObject(titleBarStyleProperties);
 		
 		rootWindowProperties.setRecursiveTabsEnabled(false);
 		// TODO Come back here if the font messes up in IDW

@@ -1,12 +1,10 @@
 package org.bbop.framework.dock.idw;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +12,6 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -44,9 +40,6 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicTextFieldUI;
 
 import net.infonode.docking.DefaultButtonFactories;
 import net.infonode.docking.DockingWindow;
@@ -59,11 +52,9 @@ import net.infonode.docking.SplitWindow;
 import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.internal.ViewTitleBar;
-import net.infonode.docking.model.TabWindowItem;
 import net.infonode.docking.properties.RootWindowProperties;
 import net.infonode.docking.theme.DockingWindowsTheme;
 import net.infonode.docking.theme.ShapedGradientDockingTheme;
-import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.gui.colorprovider.FixedColorProvider;
 import net.infonode.tabbedpanel.Tab;
@@ -74,9 +65,9 @@ import net.infonode.util.Direction;
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.FrameworkUtil;
-import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIComponentFactory;
+import org.bbop.framework.GUIManager;
 import org.bbop.framework.HelpManager;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.LayoutListener;
@@ -85,8 +76,6 @@ import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.SwingUtil;
 import org.bbop.util.ObjectUtil;
-
-import com.sun.java.swing.plaf.windows.WindowsTabbedPaneUI;
 
 public class IDWDriver implements LayoutDriver {
 
@@ -572,9 +561,6 @@ public class IDWDriver implements LayoutDriver {
 		rootWindow.getWindowBar(Direction.DOWN).setEnabled(true);
 		properties.addSuperObject(currentTheme.getRootWindowProperties());
 		rootWindow.getRootWindowProperties().addSuperObject(properties);
-		RootWindowProperties titleBarStyleProperties = PropertiesUtil
-				.createTitleBarStyleRootWindowProperties();
-		properties.addSuperObject(titleBarStyleProperties);
 
 		BBOPDockingTheme theme = new BBOPDockingTheme(new FixedColorProvider(
 				getDarkColor()), new FixedColorProvider(getLightColor()),
@@ -677,8 +663,11 @@ public class IDWDriver implements LayoutDriver {
 		});
 		if (c.getConfigurationPanel() == null)
 			configButton.setEnabled(false);
-		if (c.getConfigurationPanel() != null)
+		if (c.getConfigurationPanel() != null) {
 			v.getCustomTitleBarComponents().add(configButton);
+			// Also add to tab in case theme is not using titlebar style
+		    v.getCustomTabComponents().add(configButton);
+		}
 		if (factory.getHelpTopicID() != null) {
 			try {
 				if (HelpManager.getManager().isEnabled()) {
