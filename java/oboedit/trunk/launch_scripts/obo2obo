@@ -136,4 +136,6 @@ fi
 
 echo CMDARGS=$CMDARGS
 
-sh -c "$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+CMD="$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+echo $CMD
+sh -c "$CMD"

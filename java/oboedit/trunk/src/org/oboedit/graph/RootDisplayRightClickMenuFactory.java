@@ -224,6 +224,13 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 
 		protected boolean showIntransitives;
 
+	    // Trying this to prevent null pointer exception
+//		ReasonedLinkDatabase reasoner;
+//		if (SessionManager.getManager().getUseReasoner())
+//		    reasoner = canvas.getReasoner()
+//		else
+//			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
+
 		public AncestorVisiblesProvider(String label, OBOProperty type,
 				boolean showTransitives, boolean showIntransitives,
 				SelectionProvider selectionProvider,
