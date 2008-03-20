@@ -22,13 +22,17 @@ public class ReasonerRegistry {
 
 	private Map<String,ReasonerFactory> factoryMap;
 	private ReasonerFactory defaultReasonerFactory;
+        private String defaultReasonerName;
 
 	private ReasonerRegistry() {
 		factoryMap = new HashMap<String,ReasonerFactory>();
-		defaultReasonerFactory = new ForwardChainingReasonerFactory();
 		// defaults: these can be overridden at runtime
-		registerReasoner("FCR (old)", defaultReasonerFactory);
-		registerReasoner("LPR (new)", new LinkPileReasonerFactory());
+		// Using strings as identifiers for reasoners seems a bit dangerous--shouldn't they have
+		// IDs or something?
+		defaultReasonerFactory = new ForwardChainingReasonerFactory();  // For now
+		defaultReasonerName = "ForwardChainingReasoner (old, faster)";  // For now
+		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
+		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
 	}
 
 
@@ -72,9 +76,16 @@ public class ReasonerRegistry {
 		factoryMap.put(name, factory);
 	}
 
-
 	public void unregisterMapping(String name) {
 		factoryMap.remove(name);
 	}
-}
 
+    public ReasonerFactory getDefaultReasonerFactory() {
+	return defaultReasonerFactory;
+    }
+    public String getDefaultReasonerName() {
+	return defaultReasonerName;
+    }
+
+
+}
