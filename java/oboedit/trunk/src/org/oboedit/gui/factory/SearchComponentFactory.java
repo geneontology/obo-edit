@@ -24,4 +24,9 @@ public class SearchComponentFactory extends AbstractComponentFactory<SearchCompo
 	public FactoryCategory getCategory() {
 		return FactoryCategory.SEARCH;
 	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Searching";
+	}
 }

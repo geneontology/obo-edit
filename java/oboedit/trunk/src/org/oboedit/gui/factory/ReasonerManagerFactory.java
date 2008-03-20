@@ -29,4 +29,9 @@ public class ReasonerManagerFactory extends AbstractComponentFactory<ReasonerMan
 		return FactoryCategory.REASONER;
 	}
 
+	@Override
+	public String getHelpTopicID() {
+		return "The_Reasoner_and_the_Interface";
+	}
+
 }
