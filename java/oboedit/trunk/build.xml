@@ -161,17 +161,19 @@
 		</javac>
 	</target>
 
-	<target name="-install4j_installers" depends="-check_install4j_available, -install4j_custom_actions, versionnumbers" if="install4j_available">
+	<target name="install4j_installers" depends="-check_install4j_available, -install4j_custom_actions, versionnumbers" if="install4j_available">
 		<mkdir dir="${release_path}" />
 		<taskdef name="install4j" classname="com.install4j.Install4JTask" classpath="${install4j_ant_library_path}" />
 		<condition property="install4j_formatted_version_number" value="${major_version}.${minor_version}.${beta_version}" else="${major_version}.${minor_version}">
 			<isset property="beta_version" />
 		</condition>
+		<copy file="oboedit" tofile="release_resources/oe-command-line" overwrite="true" />
+		<chmod file="release_resources/oe-command-line" perm="ugo+x" />
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
 
-	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, -install4j_installers" description="Build installers">
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
