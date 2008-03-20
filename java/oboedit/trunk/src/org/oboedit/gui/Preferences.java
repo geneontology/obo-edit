@@ -51,6 +51,7 @@ public class Preferences {
 	protected boolean confirmOnExit = true;
 
 	protected boolean useReasoner = false;
+        protected String reasonerName = "OFF";
 
 	protected boolean showComplete = false;
 
@@ -493,7 +494,17 @@ public class Preferences {
 	}
 
 	public void setUseReasoner(boolean useReasoner) {
+//	    System.out.println("Prefs.setUseReasoner " + useReasoner); // DEL
 		this.useReasoner = useReasoner;
+	}
+
+	public String getReasonerName() {
+		return reasonerName;
+	}
+
+	public void setReasonerName(String name) {
+//	    System.out.println("Prefs.setReasonerName " + name); // DEL
+	        this.reasonerName = name;
 	}
 
 	public boolean getConfirmOnExit() {

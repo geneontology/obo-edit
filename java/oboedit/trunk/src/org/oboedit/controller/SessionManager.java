@@ -77,11 +77,10 @@ public class SessionManager {
 
 	protected boolean recacheInBackground = true;
 
-    protected String reasonerName = "OFF";
-
 	public SessionManager() {
 		setSession(new OBOSessionImpl());
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
+		setReasonerName(Preferences.getPreferences().getReasonerName());
 	}
 
 	public void addOntologyReloadListener(OntologyReloadListener listener) {
@@ -184,11 +183,12 @@ public class SessionManager {
 	}
 
     public String getReasonerName() {
-	return reasonerName;
+	return Preferences.getPreferences().getReasonerName();
     }
     public void setReasonerName(String newReasonerName) {
+//	System.out.println("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
 	if (!(newReasonerName.equals(getReasonerName()))) {
-	    this.reasonerName = newReasonerName;
+	    Preferences.getPreferences().setReasonerName(newReasonerName);
 	    setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
 	    if (newReasonerName.equals("") || newReasonerName.equalsIgnoreCase("off"))
 		return;  // we already turned it off
@@ -310,7 +310,9 @@ public class SessionManager {
 			reasoner.removeReasonerListener(masterReasonerListener);
 			session.getOperationModel().removeLockstepModel(reasonerOpModel);
 		}
-		reasoner = createReasoner(getReasonerName());
+		String reasonerName = getReasonerName();
+//	    System.out.println("initializeReasonerDatabase(" + reasonerName + ")"); // DEL
+		reasoner = createReasoner(reasonerName);
 		reasoner.setLinkDatabase(session.getLinkDatabase());
 		reasonerOpModel = new ReasonerOperationModel(reasoner);
 		reasonerOpModel.setSession(session);
@@ -359,7 +361,7 @@ public class SessionManager {
 	    reasonerFactory = registry.lookupFactory(reasonerName);
 	    if (reasonerFactory == null) {
 		reasonerFactory = registry.getDefaultReasonerFactory();
-		System.err.println("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner" + reasonerFactory); 
+		System.err.println("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
 		return reasonerFactory.createReasoner();
 	    }
 	    else {
@@ -439,7 +441,7 @@ public class SessionManager {
 	protected void reverse(HistoryItem item) {
 		OperationWarning warning = getOperationModel().reverse(item);
 		if (warning != null)
-			System.err.println("warning = " + warning);
+			System.err.println("SessionManager.reverse: warning = " + warning);
 		if (getUseReasoner()) {
 			reasonerOpModel.reverse(item);
 		}
