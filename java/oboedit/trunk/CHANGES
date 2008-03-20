@@ -1,45 +1,21 @@
-Changes in 2.000-b33:
-* Tried to fix overzealous delete bug, where deleting (in the Ontology Editor
-Panel) one relationship from a term that had two relationships would cause the
-term to be silently deleted.  Unfortunately, it's not completely fixed.
-Shouldn't allow user to delete/destroy a term that has REAL children--but if
-it has only obsolete children (why does it still have them if they are
-obsolete?), that's ok.
-Also, it's not always warning that a term is about to become obsolete.  This
-needs more work.
-Test case:  load so.obo, find insertion, show parents (in graph view).  Then
-in OEP, say "Delete" (which should delete the relationship that is shown but
-not "insertion" itself).
-* Changed some confusing component names as follows:
-Ontology Editor Panel -> Ontology Tree Editor
-Graph Editor -> (Graph Editor) (unchanged) [added preliminary web page]
-Graph DAG View -> Graph Viewer [added preliminary web page]
-DAG Viewer -> Tree Viewer
-Graphviz Viewer -> (unchanged) [web page was called Graph Viewer]
-* Tree Viewer (was called DAG View) now comes up as a docked component rather
-than a free-floating one.
-* Couldn't specify on the command line an obo file to load.  I got this
-working in a rather kludgy special-case way (because I couldn't figure out the
-baroque argument parsing approach that oboedit uses--obomerge and its siblings
-use a more comprehensible approach, and oboedit should probably switch to
-using that method, but I wasn't up for doing all the work to convert it).
-You can now say "oboedit foo.obo" and it will automatically load foo.obo.
-* Fixed problem with ontologies that have dangling references: "Having even a
-single dangling reference in a file (an intersection_of line which refers to a
-term from another ontology, not currently loaded) is sufficient to screw up
-term selection from the ontology editor panel. No term info is shown in the
-text editor window. No graphs are shown in the graph editor or the graph dag
-view."  (The problem was that exceptions were flying because the dangling
-terms are assigned null as their names.)
-* Prevented java help indexer from double-indexing pages (it was including
-docs/.svn and docs/api, so the ant target now moves those out of the way as
-well as docs/html/.svn), which was resulting in superfluous hits when you
-searched help.
-* Added icon candidates for regulates, positively_regulates,
-negatively_regulates.  For now, defaults are regs-square.svg, upregs-arrow.svg
-(green), and downregs-arrow.svg (reddish), respectively.  Other candidates are
-included in release; use "Browse built-in icons" to view.
-I had a pick a link color for the regulates relations.  For now, they're all
-maroon.  Let me know what they should be.
-* Included obo-mapper (added by Chris) in release.  Needs to be invoked from
-the shell rather than by double-clicking because it requires arguments.
+Changes in 2.000-b34:
+* Installers will now keep separate install histories for OE1, OE2, and
+Phenote, to avoid misleadingly prompting you to install any of them on top of
+each other.
+(Note: this application is now referred to as "OBO-Edit2" to reduce confusion
+with OE(1).)
+* For those who prefer to launch OE from the command line, "oe-command-line"
+script is now included.  (I gave it that somewhat awkward name because I
+didn't want users to confuse it with the "real" OBO-Edit application.)
+Note that you can also double-click on oe-command-line and it will launch just
+like OBO-Edit, but with a Terminal that shows all the stderr/stdout, which
+seems even better, at least for the power users who can then report error
+messages more easily.
+* There are now two different reasoners that you can choose from with a new
+pulldown list in the Reasoner Manager.  The two that are currently registered
+are ForwardChainingReasoner (old; faster but less complete) and
+LinkPileReasoner (Chris recently switched OE to using this one--better but
+slower).
+* Reasoner Manager now comes up docked by default.
+* SemanticParser Manager no longer shows Reasoner checkbox.
+

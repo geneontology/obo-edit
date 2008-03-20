@@ -32,9 +32,10 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 
 	protected boolean isLegal = false;
 
-	protected KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_M,
-			Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-					| KeyEvent.SHIFT_MASK);
+    protected KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_M,
+							   Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+							   | KeyEvent.SHIFT_MASK);
+//	KeyEvent.VK_7, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()); // DEL
 
 	public boolean isDropAllowed() {
 		return true;
@@ -159,8 +160,10 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 	}
 
 	public KeyStroke getShortcut() {
-		return KeyStroke.getKeyStroke(KeyEvent.VK_M, java.awt.Toolkit
-				.getDefaultToolkit().getMenuShortcutKeyMask());
-
+//		return KeyStroke.getKeyStroke(KeyEvent.VK_M, java.awt.Toolkit
+//					      .getDefaultToolkit().getMenuShortcutKeyMask()
+//					      | KeyEvent.SHIFT_MASK);
+	    return keyStroke;
+//	    return null;
 	}
 }

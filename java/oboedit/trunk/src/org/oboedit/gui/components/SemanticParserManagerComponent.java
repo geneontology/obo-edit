@@ -26,9 +26,9 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 	Logger logger = Logger.getLogger("org.obo.nlp");
 
 
-	protected JCheckBox useReasonerCheckbox = new JCheckBox("Use reasoner");
+//	protected JCheckBox useReasonerCheckbox = new JCheckBox("Use reasoner");
 	protected JCheckBox useSemanticParserCheckbox = new JCheckBox("Use semantic parser");
-	protected JCheckBox addSynonymsCheckbox = new JCheckBox("Add synonyms");
+//	protected JCheckBox addSynonymsCheckbox = new JCheckBox("Add synonyms");
 
 	protected JEditorPane summaryField = new JEditorPane();
 
@@ -36,22 +36,22 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
+// 	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
 
-		public void reasoningFinished() {
-			updateProgressPanel(SessionManager.getManager().getUseReasoner());
-		}
+// 		public void reasoningFinished() {
+// 			updateProgressPanel(SessionManager.getManager().getUseReasoner());
+// 		}
 
-		public void reasoningStarted() {
-		}
-	};
+// 		public void reasoningStarted() {
+// 		}
+// 	};
 
-	protected ActionListener reasonerListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			enableReasoner(useReasonerCheckbox.isSelected());
-			// updateProgressPanel(useReasonerCheckbox.isSelected());
-		}
-	};
+// 	protected ActionListener reasonerListener = new ActionListener() {
+// 		public void actionPerformed(ActionEvent e) {
+// 			enableReasoner(useReasonerCheckbox.isSelected());
+// 			// updateProgressPanel(useReasonerCheckbox.isSelected());
+// 		}
+// 	};
 
 	protected ActionListener semanticParserListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -69,23 +69,23 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 
 	public SemanticParserManagerComponent(String id) {
 		super(id);
-		setPreferredSize(new Dimension(100,50));
+		setPreferredSize(new Dimension(250,50));
 		setLayout(new BorderLayout());
 		summaryField.setPreferredSize(new Dimension(300, 200));
 		summaryField.setContentType("text/html");
 
 		setLayout(new BorderLayout());
-		useReasonerCheckbox.setOpaque(false);
+//		useReasonerCheckbox.setOpaque(false);
 		// add(progressBar, "North");
 		add(useSemanticParserCheckbox, "North");
-		add(useReasonerCheckbox, "South");
+//		add(useReasonerCheckbox, "South");
 
 		summaryField.setEditable(false);
 	}
 
-	protected void enableReasoner(final boolean enableReasoner) {
-		SessionManager.getManager().setUseReasoner(enableReasoner);
-	}
+// 	protected void enableReasoner(final boolean enableReasoner) {
+// 		SessionManager.getManager().setUseReasoner(enableReasoner);
+// 	}
 	protected void enableSemanticParser(final boolean enableParser) {
 		if (enableParser) {
 			logger.info("creating parser");
@@ -114,8 +114,8 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 				else
 					remove(summaryScroller);
 
-				useReasonerCheckbox.removeActionListener(reasonerListener);
-				useReasonerCheckbox.setSelected(enableReasoner);
+//				useReasonerCheckbox.removeActionListener(reasonerListener);
+//				useReasonerCheckbox.setSelected(enableReasoner);
 				useSemanticParserCheckbox.addActionListener(semanticParserListener);
 
 				validate();
@@ -136,19 +136,19 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		 * useReasonerCheckbox.addActionListener(reasonerListener);
 		 */
 
-		SessionManager.getManager().addReasonerListener(reasonerActionListener, true);
+//		SessionManager.getManager().addReasonerListener(reasonerActionListener, true);
 
-		updateProgressPanel(SessionManager.getManager().getUseReasoner());
+//		updateProgressPanel(SessionManager.getManager().getUseReasoner());
 	}
 
 	@Override
 	public String getName() {
-		return "Reasoner Plugin";
+		return "Semantic Parser Manager";
 	}
 
 	@Override
 	public void cleanup() {
-		SessionManager.getManager().removeReasonerListener(
-				reasonerActionListener);
+//		SessionManager.getManager().removeReasonerListener(
+//				reasonerActionListener);
 	}
 }
