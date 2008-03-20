@@ -5,6 +5,7 @@ import org.bbop.framework.GUIManager;
 import org.bbop.util.*;
 import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonerListener;
+import org.obo.reasoner.ReasonerRegistry;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 
@@ -20,13 +21,15 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected JCheckBox useReasonerCheckbox = new JCheckBox("Use reasoner");
+	protected JComboBox reasonerChoice = new JComboBox();
 
 	protected JEditorPane summaryField = new JEditorPane();
 
 	protected JScrollPane summaryScroller = new JScrollPane(summaryField,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
 
 	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
 
@@ -35,14 +38,14 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void reasoningStarted() {
-//		    System.out.println("ReasonaerManagerComponent: reasoningStarted"); // DEL
+//		    System.out.println("ReasonerManagerComponent: reasoningStarted"); // DEL
 		}
 	};
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			enableReasoner(useReasonerCheckbox.isSelected());
-			// updateProgressPanel(useReasonerCheckbox.isSelected());
+		    System.out.println("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
 
@@ -55,42 +58,46 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	public ReasonerManagerComponent(String id) {
 		super(id);
-		setPreferredSize(new Dimension(100,50));
+		setPreferredSize(new Dimension(250,100));
 		setLayout(new BorderLayout());
-		summaryField.setPreferredSize(new Dimension(300, 200));
+		summaryField.setPreferredSize(new Dimension(200, 50));
 		summaryField.setContentType("text/html");
+		summaryField.setEditable(false);
 
 		setLayout(new BorderLayout());
-		useReasonerCheckbox.setOpaque(false);
-		// add(progressBar, "North");
-		add(useReasonerCheckbox, "South");
-
-		summaryField.setEditable(false);
+		add(new JLabel("Reasoner "), "West");
+		add(reasonerChoice, "East");
+		reasonerChoice.addItem("OFF");
+		// Get reasoner names from registry
+		ReasonerRegistry registry = ReasonerRegistry.getInstance();
+//		System.out.println("Registered reasoners: " + registry.getRegisteredNames()); // DEL
+		for (String registryName : registry.getRegisteredNames()) 
+		    reasonerChoice.addItem(registryName);
+		reasonerChoice.setSelectedItem(sessionManager.getReasonerName());
 	}
 
-	protected void enableReasoner(final boolean enableReasoner) {
-//	    System.out.println("ReasonaerManagerComponent: enableReasoner(" + enableReasoner + ")");
-		sessionManager.setUseReasoner(enableReasoner);
+	protected void enableReasoner(String reasonerChoice) {
+	    summaryField.setText("");
+	    sessionManager.setReasonerName(reasonerChoice);
 	}
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
-
 		String text = "<html><body>\n";
 		text += "Reasoning completed.";
 		text += "</body></html>";
-		// System.err.println("newLinks = "+reasoner.getNewLinks());
 		final String summaryText = text;
 
 		Runnable screenUpdate = new Runnable() {
 			public void run() {
+			    summaryField.setText("");
 				if (enableReasoner)
 					add(summaryScroller, "Center");
 				else
 					remove(summaryScroller);
 
-				useReasonerCheckbox.removeActionListener(reasonerListener);
-				useReasonerCheckbox.setSelected(enableReasoner);
-				useReasonerCheckbox.addActionListener(reasonerListener);
+				reasonerChoice.removeActionListener(reasonerListener);
+				reasonerChoice.setSelectedItem(sessionManager.getReasonerName());
+				reasonerChoice.addActionListener(reasonerListener);
 
 				validate();
 				repaint();
@@ -102,14 +109,6 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	@Override
 	public void init() {
-		/*
-		 * useReasonerCheckbox.removeActionListener(reasonerListener);
-		 * useReasonerCheckbox.setSelected(controller.getUseReasoner()); for(int
-		 * i=1; i < 4; i++) tabbedPane.setEnabledAt(i,
-		 * controller.getUseReasoner());
-		 * useReasonerCheckbox.addActionListener(reasonerListener);
-		 */
-
 		sessionManager.addReasonerListener(reasonerActionListener, true);
 
 		updateProgressPanel(sessionManager.getUseReasoner());
@@ -117,7 +116,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	@Override
 	public String getName() {
-		return "Reasoner Plugin";
+		return "Reasoner Manager";
 	}
 
 	@Override
