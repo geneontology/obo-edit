@@ -84,7 +84,9 @@ public class IDWDriver implements LayoutDriver {
 	protected RootWindow rootWindow;
 
 	protected DockingWindowsTheme currentTheme = new ShapedGradientDockingTheme();
-
+	
+	protected DockingWindowsTheme customTheme = null;
+	
 	protected RootWindowProperties properties = new RootWindowProperties();
 
 	protected List<Perspective> perspectives = new LinkedList<Perspective>();
@@ -562,10 +564,12 @@ public class IDWDriver implements LayoutDriver {
 		properties.addSuperObject(currentTheme.getRootWindowProperties());
 		rootWindow.getRootWindowProperties().addSuperObject(properties);
 
-		BBOPDockingTheme theme = new BBOPDockingTheme(new FixedColorProvider(
+		if (customTheme == null) {
+		    customTheme = new BBOPDockingTheme(new FixedColorProvider(
 				getDarkColor()), new FixedColorProvider(getLightColor()),
 				new FixedColorProvider(getBackground()), 4, getFont());
-		setTheme(theme);
+		}
+		setTheme(customTheme);
 		loadPerspectives();
 	}
 
@@ -584,6 +588,10 @@ public class IDWDriver implements LayoutDriver {
 				.setTabAreaOrientation(Direction.UP);
 		currentTheme = theme;
 		configureTheme();
+	}
+	
+	public void setCustomTheme(DockingWindowsTheme theme) {
+	    customTheme = theme;
 	}
 
 	public RootWindow getRootWindow() {
