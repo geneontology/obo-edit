@@ -76,7 +76,7 @@ clo = CommandLineOptions.new()
 ## First gauntlet: want help?
 if clo.wanted_help
 
-  puts "Usage: sync [-h] [-x] [-f | -o | -i] [-p <name>] -g <directory>"
+  puts "Usage: sink [-h] [-x] [-f | -o | -i] [-p <name>] -g <directory>"
   puts ""
   puts "Note: Always run from the geneontology/go-dev/gwt/scripts directory."
   puts ""
@@ -90,13 +90,13 @@ if clo.wanted_help
   puts "   -g, --gwt <directory> location of an unpacked GWT; defaults to \"/tmp\""
   puts ""
   puts "Example usage, to initially bootstrap the project from SVN:"
-  puts "\t./sync -v -x -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts "\t./sink -v -x -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
   puts ""
   puts "Example usage, to rync files from your SVN repo to the project directory:"
-  puts "\t./sync -v -x -o -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts "\t./sink -v -x -o -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
   puts ""
   puts "Example usage, to rync files from your project directory to the SVN repo:"
-  puts "\t./sync -v -x -i -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts "\t./sink -v -x -i -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
 
   puts ""
 
