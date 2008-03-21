@@ -207,7 +207,7 @@ public class AmiGO implements EntryPoint {
 			}
 
 			public void onFailure(Throwable caught) {
-				Window.alert("Server error (getRInt): " + caught.toString());
+				Window.alert("Server error (SNIFF): " + caught.toString());
 			}
 		});
 	}
