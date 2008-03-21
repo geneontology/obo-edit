@@ -11,4 +11,5 @@ public interface GOLookupService extends RemoteService {
 	public String[] getTermInfo(String acc);
 	public Integer getGPCount(String identifier);
 	public Boolean isTerm(String identifier);
+	public String getSniff();
 }

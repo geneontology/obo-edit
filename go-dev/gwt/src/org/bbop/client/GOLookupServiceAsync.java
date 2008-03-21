@@ -9,4 +9,5 @@ public interface GOLookupServiceAsync {
 	void getGPs(String identifier, int limit, int offset, AsyncCallback async);
 	void getGPInfo(String id, AsyncCallback async);
 	void getTermInfo(String acc, AsyncCallback async);
+	void getSniff(AsyncCallback async);
 }
