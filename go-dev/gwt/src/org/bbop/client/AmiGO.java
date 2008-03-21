@@ -359,7 +359,7 @@ public class AmiGO implements EntryPoint {
 	    VerticalPanel vpRight = new VerticalPanel();
 	    //vpRight.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	    vpRight.add(new HTML("<br />"));
-	    vpRight.add(new HTML("<b>Term Lookup:</b>"));
+	    vpRight.add(new HTML("<b>Term xxx Lookup:</b>"));
 	    vpRight.add(textBox);
 	    vpRight.add(submit);
 	    vpRight.add(new HTML("<br />"));

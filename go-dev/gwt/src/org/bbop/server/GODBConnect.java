@@ -13,7 +13,7 @@ public class GODBConnect {
     private String JDBC = "jdbc:mysql://";
     //private String HOST = "localhost";
     private String HOST = "spitz";
-    private String DB = "go_latest_lite";
+    private String DB = "go";
     private String USER = "";
     private String PASSWORD = "";
     
