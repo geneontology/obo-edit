@@ -28,8 +28,16 @@ import org.obo.util.TermUtil;
 
 /**
  * 
+ * This parser implements the rule
+ * 
+ *   process --> Direction? regulation of ?Process
+ *   Direction --> negative ; positive
+ *   
+ * See also: http://www.berkeleybop.org/obol
+ * 
  * @author cjm
  *
+ * TODO: use some grammar. Direct conversion of prolog rules
  * TODO: remove part_ofs where regulates relation exists
  * TODO: do not replace existing xps
  * TODO: add relations to ontology if they do not exist
@@ -191,6 +199,10 @@ public class RegulationTermParser implements SemanticParser {
 				report("NO_TARGET",lo,name,"cannot find regulated entity term");
 				logger.info("no target: "+targetName);
 			}
+			else if (target.equals(lo)) {
+				report("SELF_REFERENCE",lo,name,"cannot regulate itself");
+				logger.info("self reference: "+targetName);
+			}
 			else {
 				String relationName;
 				// we use specific relations since we don't have + and -
@@ -252,7 +264,7 @@ public class RegulationTermParser implements SemanticParser {
 	}
 
 	public LinkedObject lookup(String n) {
-		n = n.replace('_', ' ');
+		n = n.replace('_', ' '); // e.g. biological_process
 		return name2obj.get(n);
 	}
 
