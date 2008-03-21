@@ -11,14 +11,16 @@ public class GODBConnect {
     
     // Connect.
     private String JDBC = "jdbc:mysql://";
-    private String HOST = "localhost";
-    //private String HOST = "spitz";
+    //private String HOST = "localhost";
+    private String HOST = "spitz";
     private String DB = "go_latest_lite";
     private String USER = "";
     private String PASSWORD = "";
     
     private Connection connector;
-   
+    
+    private String SNIFF = "";
+    
     // 
     public GODBConnect() {
 
@@ -37,7 +39,10 @@ public class GODBConnect {
     		connector = DriverManager.getConnection(connection);
     	} catch (SQLException e) {
     		System.err.println("___ERROR (" + connection + "): " + e.getMessage());
-    	}       
+    	}
+    	
+    	SNIFF = Double.toString(Math.random());
+    	System.err.println("___Connection: (" + connector + "): " + SNIFF);
     }
 
     //
@@ -288,6 +293,9 @@ public class GODBConnect {
      	
     	return info;
     }
+    
+    //
+    public String getSniff() { return SNIFF; }
     
     //
     public String getDB() { return DB; }

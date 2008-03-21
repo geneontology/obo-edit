@@ -192,6 +192,26 @@ public class AmiGO implements EntryPoint {
 		});
 	}
 	
+	//
+	private void doSniff(){
+		
+		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
+				
+		lookupService.getSniff(new AsyncCallback(){
+
+			public void onSuccess(Object result) {
+
+				String s = (String) result;
+				Window.alert("SNIFF:  " + s);
+			}
+
+			public void onFailure(Throwable caught) {
+				Window.alert("Server error (getRInt): " + caught.toString());
+			}
+		});
+	}
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -295,6 +315,12 @@ public class AmiGO implements EntryPoint {
 	    	    
 		//
 		MenuBar fileMenu = new MenuBar(true);
+		fileMenu.addItem("Sniff", true, new Command(){
+			public void execute() {
+				doSniff();
+				//Window.alert("Save not yet implemented.");
+			}
+		});
 		fileMenu.addItem("Load", true, new Command(){
 			public void execute() {
 				Window.alert("Load not yet implemented.");

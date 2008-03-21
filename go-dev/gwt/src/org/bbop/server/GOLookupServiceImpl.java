@@ -39,4 +39,9 @@ public class GOLookupServiceImpl
 	public Boolean isTerm(String identifier) {
 		return godb.isTerm(identifier);
 	}
+	
+	// 
+	public String getSniff() {
+		return godb.getSniff();
+	}
 }
