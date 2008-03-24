@@ -99,8 +99,10 @@ public class SearchResultsTable extends JTable {
 					break;
 			}
 			if (model.columnHasMaxWidth(i)) {
-				tc.setMinWidth(width + 10);
-				tc.setMaxWidth(width + 10);
+//				tc.setMinWidth(width + 10);
+				tc.setMinWidth(width-10);
+				// Don't restrict the maximum width
+//				tc.setMaxWidth(width + 10);
 			}
 			tc.setPreferredWidth(width + 10);
 
