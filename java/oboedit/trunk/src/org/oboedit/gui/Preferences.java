@@ -48,6 +48,8 @@ public class Preferences {
 
 	protected Color lightSelectionColor = null;
 
+    protected Color orange = new Color(255, 153, 0); // a nice orangey orange
+
 	protected boolean confirmOnExit = true;
 
 	protected boolean useReasoner = false;
@@ -203,11 +205,11 @@ public class Preferences {
 		iconURLIndex.put("positively_regulates", "resource:upregs-arrow.svg");
 		iconURLIndex.put("negatively_regulates", "resource:downregs-arrow.svg");
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
-		colorIndex.put("part_of", Color.orange);
+		colorIndex.put("part_of", Color.yellow);
 		colorIndex.put("develops_from", Color.green.darker());
-		colorIndex.put("regulates", Color.red.darker());
-		colorIndex.put("positively_regulates", Color.red.darker());
-		colorIndex.put("negatively_regulates", Color.red.darker());
+		colorIndex.put("regulates", orange); // orange
+		colorIndex.put("positively_regulates", orange);
+		colorIndex.put("negatively_regulates", orange);
 		
 	}
 
@@ -434,6 +436,9 @@ public class Preferences {
 	}
 
 	public static Icon getIconForURL(URL url) {
+	    if (url == null)
+		return null;
+
 		try {
 			String urlStr = url.toString();
 			if (urlStr.endsWith("svg"))
