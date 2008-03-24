@@ -25,4 +25,9 @@ public class GlobalFilterManagerFactory extends
 		return FactoryCategory.CONFIG;
 	}
 
+	@Override
+	public String getHelpTopicID() {
+	    return "Global_Filters___Renderers";
+	}
+
 }
