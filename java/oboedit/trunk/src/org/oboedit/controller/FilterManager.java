@@ -318,22 +318,24 @@ public class FilterManager {
 		iclfilter.setNegate(true);
 		iclfilter.setCriterion(new IsCompleteLinkCriterion());
 
-		ObjectFilter istransitiveobjectfilter = new ObjectFilterImpl();
-		istransitiveobjectfilter.setCriterion(new IsTransitiveCriterion());
+		// 3/24/08: Don't filter out links that aren't transitive.  That excludes the regulates links.
+//		ObjectFilter istransitiveobjectfilter = new ObjectFilterImpl();
+//		istransitiveobjectfilter.setCriterion(new IsTransitiveCriterion());
 
 		LinkFilter completeFilter = new LinkFilterImpl();
 		completeFilter.setAspect(LinkFilter.SELF);
 		completeFilter.setFilter(iclfilter);
 
-		LinkFilter transitiveFilter = new LinkFilterImpl();
-		transitiveFilter.setAspect(LinkFilter.TYPE);
-		transitiveFilter.setFilter(istransitiveobjectfilter);
+//		LinkFilter transitiveFilter = new LinkFilterImpl();
+//		transitiveFilter.setAspect(LinkFilter.TYPE);
+//		transitiveFilter.setFilter(istransitiveobjectfilter);
 
-		CompoundFilter andCompleteFilter = new CompoundFilterImpl();
-		andCompleteFilter.addFilter(completeFilter);
-		andCompleteFilter.addFilter(transitiveFilter);
+//		CompoundFilter andCompleteFilter = new CompoundFilterImpl();
+//		andCompleteFilter.addFilter(completeFilter);
+//		andCompleteFilter.addFilter(transitiveFilter);
 
-		setGlobalLinkFilter(andCompleteFilter);
+//		setGlobalLinkFilter(andCompleteFilter);
+		setGlobalLinkFilter(completeFilter);
 	}
 
 	protected void buildDefaultGlobalLinkRenderers() {
