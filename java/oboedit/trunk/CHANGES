@@ -1,9 +1,9 @@
 Changes in 2.000-b34:
 * Installers will now keep separate install histories for OE1, OE2, and
 Phenote, to avoid misleadingly prompting you to install any of them on top of
-each other.
+each other.  (In fact, it will now explicitly warn you if you try to do that.)
 (Note: this application is now referred to as "OBO-Edit2" to reduce confusion
-with OE(1).)
+with OBO-Edit 1.)
 * For those who prefer to launch OE from the command line, "oe-command-line"
 script is now included.  (I gave it that somewhat awkward name because I
 didn't want users to confuse it with the "real" OBO-Edit application.)
@@ -18,4 +18,9 @@ LinkPileReasoner (Chris recently switched OE to using this one--better but
 slower).
 * Reasoner Manager now comes up docked by default.
 * SemanticParser Manager no longer shows Reasoner checkbox.
-
+* "Regulates" links are now orange (were dark red, but that didn't work well
+with the red negatively_regulates icon).
+* Removed default global filter "Select links where Type that have a 'Is
+Transitive'" in order to let regulates relationships show up.  (This global
+filter can be re-added by the user if desired.)
+* Width of search results columns can now be adjusted.
