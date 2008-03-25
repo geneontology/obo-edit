@@ -21,7 +21,7 @@ public class ProgressBarUpdateRunnable extends AbstractPeriodicUpdateRunnable {
 	@Override
 	protected void doUpdate(TaskDelegate<?> task) {
 		Number n = task.getProgressValue();
-		System.err.println("!!!updating progress bar with "+n);
+//		System.err.println("!!!updating progress bar with "+n);
 		if (n != null) {
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(n.intValue());
