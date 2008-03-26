@@ -22,8 +22,8 @@ import net.mygwt.ui.client.widget.layout.FillLayout;
 /**
  * @author  sid
  */
-public class RefGenomeView implements WebViewI {
-	private Viewport refgcontainer ;
+public class RefGenomeView   extends  Viewport implements WebViewI {
+	//private Viewport refgcontainer ;
 	private WidgetContainer refgviewer ;
 	private WidgetContainer northpanel ;
 	private ContentPanel westpanel;
@@ -46,8 +46,9 @@ public class RefGenomeView implements WebViewI {
 
 	
 	public RefGenomeView (RefGenomeViewListenerI listener) {
+		super();
 		refglistener = listener;
-		refgcontainer = new Viewport();
+	//	refgcontainer = new Viewport();
 		refgviewer = new WidgetContainer();
 		northpanel = new WidgetContainer();
 		westpanel = new ContentPanel(Style.HEADER);
@@ -85,13 +86,13 @@ public class RefGenomeView implements WebViewI {
 	}
 	
 	public void setLoginPanel(){
-		loginview = new LoginPanelView(refglistener,northpanel);
+		loginview = new LoginPanelView(refglistener,this);
 		loginview.createView();	
 		northpanel.add(loginview.getView());	
 	}
 	
 	public void setNavPanel() {
-		navpanelview = new  NavPanelView(refglistener,westpanel);
+		navpanelview = new  NavPanelView(refglistener,this);
 		navpanelview.createView();
 		westpanel.add(navpanelview.getView());
 		
@@ -114,13 +115,13 @@ public class RefGenomeView implements WebViewI {
 		refgviewer.add(westpanel,westData);
 		refgviewer.add(resultview.getView(),centerData);
 		
-		refgcontainer.add(refgviewer);
-		refgcontainer.setLayout(new FillLayout(8));
-		refgcontainer.layout();
+		this.add(refgviewer);
+		this.setLayout(new FillLayout(8));
+		this.layout();
 	}
 	
 	public Viewport getViewPort(){
-		return refgcontainer;
+		return this;
 	}
 
 
