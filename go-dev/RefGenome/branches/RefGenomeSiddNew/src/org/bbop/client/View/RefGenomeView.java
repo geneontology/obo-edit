@@ -91,7 +91,7 @@ public class RefGenomeView implements WebViewI {
 	}
 	
 	public void setNavPanel() {
-		navpanelview = new NavPanelView(refglistener,westpanel);
+		navpanelview = new  NavPanelView(refglistener,westpanel);
 		navpanelview.createView();
 		westpanel.add(navpanelview.getView());
 		

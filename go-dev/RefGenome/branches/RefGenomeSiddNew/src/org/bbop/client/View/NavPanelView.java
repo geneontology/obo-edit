@@ -10,7 +10,7 @@ import net.mygwt.ui.client.widget.ExpandBar;
 import net.mygwt.ui.client.widget.ExpandItem;
 import net.mygwt.ui.client.widget.WidgetContainer;
 
-public abstract class NavPanelView  implements NavPanelManagerI {
+public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandBar exbar;
 	private ExpandItem browseitem;
 	private ExpandItem searchitem;
