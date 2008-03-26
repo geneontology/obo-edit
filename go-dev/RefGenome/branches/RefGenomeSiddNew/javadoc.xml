@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+<target name="javadoc">
+<javadoc access="package" author="true" classpath="/Users/sid/Documents/Projects/Reference_Genome_DB/Software/Libraries/GWT/gwt-user.jar:/Users/sid/Documents/Projects/eclipse/plugins/org.junit_3.8.2.v200706111738/junit.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.bbop.client.Pages.RefGenome,org.bbop.client.Widgets,org.bbop.client.View,org.bbop.server,org.bbop.client" source="1.5" sourcepath="src:test" splitindex="true" use="true" version="true">
+<link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+</javadoc>
+</target>
+</project>
