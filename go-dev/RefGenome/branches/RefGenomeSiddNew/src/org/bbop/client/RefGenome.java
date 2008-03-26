@@ -20,7 +20,7 @@ public class RefGenome implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		RefGenomeServiceClientImpl refgservice = new RefGenomeServiceClientImpl(GWT.getModuleBaseURL() + "refgenome"); 
+		RefGenomeServiceClientImpl refgservice = new RefGenomeServiceClientImpl(GWT.getModuleBaseURL() + "/RefGenome"); 
        refgservice.getView().getViewPort().hideLoadingPanel("loading");
        
 	   

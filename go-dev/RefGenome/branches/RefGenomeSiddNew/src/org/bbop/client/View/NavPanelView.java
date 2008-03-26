@@ -8,7 +8,7 @@ import org.bbop.client.Manager.NavPanelManagerI;
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ExpandBar;
 import net.mygwt.ui.client.widget.ExpandItem;
-import net.mygwt.ui.client.widget.WidgetContainer;
+
 
 public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandBar exbar;
@@ -16,9 +16,9 @@ public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandItem searchitem;
 	private ExpandItem curationitem;
 	private RefGenomeViewListenerI refglistener;
-	private WidgetContainer mainview;
+	private RefGenomeView mainview;
 	
-	public NavPanelView(RefGenomeViewListenerI listener,WidgetContainer parent){
+	public NavPanelView(RefGenomeViewListenerI listener,RefGenomeView parent){
 		refglistener = listener;
 		mainview = parent;
 		exbar = new ExpandBar(Style.MULTI);
@@ -51,6 +51,11 @@ public  class NavPanelView  implements NavPanelManagerI {
 	public void addCurationBar(){
 		exbar.add(curationitem);
 		mainview.layout();
+		
+	}
+	
+	public void removeCurationBar() {
+		exbar.remove(curationitem);
 		
 	}
 
