@@ -68,7 +68,7 @@ public interface RefGenomeService extends RemoteService {
 	 */
 	public String[] fetchLabelsById(String id);
 
-	public NodeDTO fetchNodeById(String id);
+/*	public NodeDTO fetchNodeById(String id);*/
 
 	//public Map<String,String> fetchLabelMapsById(String searchTerm);
 	 /**
@@ -119,33 +119,34 @@ public interface RefGenomeService extends RemoteService {
 	 * @param entityId
 	 * @return
 	 */
-	public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
+//	public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
 	
 	// ===================
 	// admin 
 	// ===================
 	public void addUser(String userId, String fullName, String password); // encrypt?
 	public boolean checkUserPassword(String userId, String password); // encrypt?
-	public NodeDTO[] getAllUsers();
+//	public NodeDTO[] getAllUsers();
 
 	// ===================
 	// big-cheese role methods
 	// ===================
 
-	public NodeDTO[] getStatusCodeNodes();
+//	public NodeDTO[] getStatusCodeNodes();
 	
 	// TODO: do each of these require a userId? Is this stateful?
 	
 	// generic status operations: actual status codes are extensible
-	public void assignEntityStatusCode(String userId, String statusId, String geneId, DateDTO date); // datatype?
+//	public void assignEntityStatusCode(String userId, String statusId, String geneId, DateDTO date); // datatype?
 	public void retractEntityStatusCode(String userId, String statusId, String geneId); // datatype?
 
 	// these two methods are convenience wrappers for the above
-	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date); // datatype?
+//	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date); // datatype?
 	public void retractEntityTargetStatus(String userId, String geneId);
 	
 	// these two methods are convenience wrappers for the above
-	public void assignEntityComprehensivelyAnnotatedStatus(String userId, String geneId, DateDTO date);
+//	public void assignEntityComprehensivelyAnnotatedStatus(String userId, String geneId, DateDTO date);
+	
 	public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId);
 
 	public void attachCommentToEntity(String entityId, String comment, String curatorId);
@@ -154,7 +155,8 @@ public interface RefGenomeService extends RemoteService {
 	 * e.g. PPOD, Homologene, ...
 	 * @return list of node objects, with IDs, labels and descriptions
 	 */
-	public NodeDTO[] getHomologyMethodTypeNodes();
+//	public NodeDTO[] getHomologyMethodTypeNodes();
+	
 	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
 	public void assignNegativeHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
 	
