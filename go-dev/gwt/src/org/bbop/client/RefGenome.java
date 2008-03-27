@@ -4,6 +4,7 @@ package org.bbop.client;
 import org.bbop.client.Pages.RefGenome.General;
 import org.bbop.client.Pages.RefGenome.Login;
 import org.bbop.client.Pages.RefGenome.Logout;
+import org.bbop.client.Pages.RefGenome.Search;
 import org.bbop.client.Pages.RefGenome.Summary;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -22,7 +23,8 @@ public class RefGenome implements EntryPoint, HistoryListener {
 	private Logout logout = new Logout(session);
 	private General general = new General(session);
 	private Summary summary = new Summary(session);
-
+	private Search search = new Search(session);
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -61,6 +63,10 @@ public class RefGenome implements EntryPoint, HistoryListener {
 
 		    root.add(general.getWidget());
 		    root.add(summary.getWidget());
+
+		}else if( passToken.equalsIgnoreCase("search") ){
+
+		    root.add(search.getWidget());
 
 		}else{
 			// Missed, so retry with login.

@@ -41,8 +41,8 @@ public class Login implements WebUIInterface {
 	// These can be as dumb as stone--don't need any listeners (we'll use the button for action).
 	private TextBox usernameBox = new TextBox();
 	private PasswordTextBox passwordBox = new PasswordTextBox();
-	private RadioButton modRB = new RadioButton("interfaceRadioGroup", "MOD Curator");
-	private RadioButton refRB = new RadioButton("interfaceRadioGroup", "Reference Genome");
+	private RadioButton bigCheeseRB = new RadioButton("interfaceRadioGroup", "Big Cheese");
+	private RadioButton littleCheesesRB = new RadioButton("interfaceRadioGroup", "little cheeses");
 	private PushButton loginButton = new PushButton("Login", "Login");    
 	//	 Some HTML.
 	// private HTML termTabHTML = new HTML("There is currently no data available.");
@@ -51,16 +51,16 @@ public class Login implements WebUIInterface {
 
 		session = webSession;
 		
-		modRB.setChecked(true);
+		bigCheeseRB.setChecked(true);
 
 		// Setup the button to perform login duties.
 		loginButton.addClickListener( new ClickListener() {
 			public void onClick(Widget sender) {
 
 				String iface = "";
-				if( refRB.isChecked() ){
+				if( littleCheesesRB.isChecked() ){
 					iface = "ref";
-				}else if( modRB.isChecked() ){
+				}else if( bigCheeseRB.isChecked() ){
 					iface = "mod";				
 				}else{
 					Window.alert("Something has gone very wrong with the interface selection. Logging in as ref anyways.");				
@@ -94,8 +94,8 @@ public class Login implements WebUIInterface {
 		vp.add(new PageTitle("Login"));
 		vp.add(usernameBox);
 		vp.add(passwordBox);
-		vp.add(refRB);
-		vp.add(modRB);
+		vp.add(littleCheesesRB);
+		vp.add(bigCheeseRB);
 		vp.add(loginButton);
 
 		return vp;
