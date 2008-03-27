@@ -29,7 +29,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 			if (property.isTransitive() && !property.isCyclic())
 				properties.add(property);
 		}
-		System.err.println("CycleCheck: properties = " + properties);
+//		System.err.println("CycleCheck: properties = " + properties);
 		List out = new LinkedList();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
