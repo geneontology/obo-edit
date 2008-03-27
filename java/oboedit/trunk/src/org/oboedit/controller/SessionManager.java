@@ -326,7 +326,7 @@ public class SessionManager {
 				long time = System.currentTimeMillis();
 				reasoner.recache();
 				System.err.println("reasoning finished in "
-						+ (System.currentTimeMillis() - time));
+						+ (System.currentTimeMillis() - time) + " milliseconds");
 			}
 
 			@Override
