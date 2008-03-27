@@ -48,29 +48,29 @@ href="http://java.sun.com/javase/downloads/index_jdk5.jsp">Sun</a> (the fourth
 <p>Download the latest version of OBO-Edit from our SourceForge project 
 at&nbsp;<a 
 href="http://sourceforge.net/projects/geneontology">http://sourceforge.net/projects/geneontology</a></p>
-<p>There will be several downloads to choose from.</p>
-<ul>
-  <li>If you are a <b>Windows</b> (PC) user: Always download the Windows installer 
-  <li>If you are a <b>Mac</b> user: You can either use the Mac installer or the 
-  platform independent installation. The Mac installer is easier to use, and will 
-  create a shortcut in the Mac OS dock for you.
-  <li>If you are a <b>Linux/Unix</b> user: Choose between the platform independent release, 
-  the Linux release, or the general Unix release. The
-  platform independent release is probably your most reliable choice.</li></ul>
+<p>There will be several downloads to choose from (Windows, Mac, Linux/Unix).
 <h2>3) Install and Launch OBO-Edit</h2>
 <ul>
-  <li>If you are using a platform-specific installer: Run the installer program 
+  <li>Run the installer program 
   and follow the onscreen prompts. Icons for running/uninstalling 
-  the program will be created on your start menu (or dock, or whatever). 
-  <li>If you are using the platform independent version: 
-  Unzip the .tar.gz archive you downloaded (on unix platforms, run "tar zxvf &lt;filename&gt;") into the directory of your 
-  choice. On Unix platforms (including Mac OS), run the "oboedit" 
-  shell script to start the program (to do this on most Unix platforms, 
-  go to the OBO-Edit directory and type "./oboedit"). On other platforms, launch 
-  the oboedit.jar file in the OBO-Edit installation directory. This can be done 
-  either by double-clicking, or by running the command "java -jar oboedit.jar" 
-  at a command prompt.</li></ul>
-<h2>4) Open an ontology</h2>
+  the program will be created on your start menu (or desktop).  On Macs, if
+  you want an OBO-Edit icon in your Dock, let the installer create a desktop
+  icon and then drag it into your Dock.
+  <li>If you prefer to launch OBO-Edit from the shell (on Unix or Mac), you
+  can use the oe-command-line script.  You can make it automatically load an
+  OBO-format file by giving the filename as the command-line argument:<br>
+  <code>/Applications/OBO-Edit2/oe-command-line /blahblahblah/foo.obo</code>
+</li></ul>
+<div class="sidebar">
+<h1>Stale files in your .oboeditbeta directory</h1>
+<hr>
+<p>If you had already installed a previous version of OBO-Edit2, your
+.oboeditbeta subdirectory (which lives in your home directory, and is
+  "hidden") may contain stale configuration files that clash with
+the new version, which can cause problems when you try to run the new OBO-Edit2.  For best results, remove your .oboeditbeta directory before
+launching the new OBO-Edit2.</p>
+</div>
+<h2>5) Open an ontology</h2>
 <p>Go to the "File" menu and choose "Load Ontologies..." (shortcut is command-O). A box will appear that looks like 
 this...</p>
 <p><IMG hspace=0 src="../images/load_with_default.png" center border=0></p>
