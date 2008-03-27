@@ -42,6 +42,8 @@ public class DeleteAction implements ClickMenuAction {
 
 	protected boolean shouldDestroy = false;
 
+    	protected boolean deleteTerm = false;
+
 	protected boolean legacyMode = false;
 
 	protected List<PathCapable> deleteThese = new ArrayList<PathCapable>();
@@ -79,13 +81,14 @@ public class DeleteAction implements ClickMenuAction {
 			isLegal = false;
 			return;
 		}
+		deleteTerm = false;
 		isLegal = getDeletionItems(selection, deleteThese);
 		cullFakeItems(deleteThese);
 		if (deleteThese.size() < 1) {
 			isLegal = false;
 		}
-		if (!isLegal)
-			return;
+//		if (!isLegal)
+//			return;
 		// But we would have returned anyway!!  What's really supposed to happen here?
 	}
 
@@ -106,101 +109,134 @@ public class DeleteAction implements ClickMenuAction {
 					   Collection<PathCapable> out) {
 		deleteThese.clear();
 
+		// What *is* legacyMode really??  It seems to be true whenever the selection
+		// was made in the Ontology Tree Editor (rather than in the Graph Editor).
 		legacyMode = selection.getSelector() != null
-				&& selection.getSelector().hasCombinedTermsAndLinks();
-		if (legacyMode) // DEL
-		    System.out.println("DeleteAction.getDeletionItems: legacyMode is TRUE!");  // DEL
+		    && selection.getSelector().hasCombinedTermsAndLinks();
+// 		if (legacyMode) // DEL
+// 		    System.out.println("DeleteAction.getDeletionItems: legacyMode is TRUE!");
+// 		else { // DEL
+// 		    System.out.println("DeleteAction.getDeletionItems: legacyMode is not true. # selected objects = " + selection.getAllSelectedObjects().size()); // DEL
+// 		    System.out.println("DeleteAction.getDeletionItems: termsubselection = " + selection.getTermSubSelection()); // DEL
+// 		}
+
 		boolean warnBeforeDelete = Preferences.getPreferences().getWarnBeforeDelete();
 
-		if (legacyMode) {
-			Map temp = new HashMap();
+// 		if (legacyMode) {
+// 			Map temp = new HashMap();
 
-			for (Link tr : selection.getLinks()) {
-			    System.out.println("DeleteAction: checking link " + tr); // DEL
-			    Collection trackedParents = (Collection) temp.get(tr.getChild());
-			    // 3/2008: If node has children, don't allow user to delete it.
-			    LinkedObject child = tr.getChild();
-			    if (child.getChildren().size() > 0
-				&& !TermUtil.hasAncestor(child, child)) { // ?
-				System.out.println("Can't delete " + child.getName() + "--it has children: " + child.getChildren()); // DEL
-			    }
-			    else {
-				if (warnBeforeDelete && 
-				    !(TermUtil.isObsolete(tr.getParent())) && 
-				    child.getParents().size() == 1) {
-				    lastInstanceCount++;
-				    instanceString += child.getName() + " ("
-					+ child.getID() + ")\n";
-				}
+// 			for (Link tr : selection.getLinks()) {
+// 			    System.out.println("DeleteAction: legacyMode is true, checking link " + tr); // DEL
+// 			    Collection trackedParents = (Collection) temp.get(tr.getChild());
+// 			    // 3/2008: If node has children, don't allow user to delete it.
+// 			    LinkedObject child = tr.getChild();
+// 			    if (child.getChildren().size() > 0
+// 				&& !TermUtil.hasAncestor(child, child)) { // ?
+// 				System.out.println("Can't delete " + child.getName() + "--it has children: " + child.getChildren()); // DEL
+// 			    }
+// 			    else { // No children--ok to delete
+// 				if (
+// //				    !(TermUtil.isObsolete(tr.getParent())) && 
+// 				    child.getParents().size() == 1) {
+// 				    lastInstanceCount++;
+// 				    instanceString += child.getName() + " ("
+// 					+ child.getID() + ")\n";
+// 				}
 
-				if (trackedParents == null) {
-					trackedParents = new LinkedList<Link>(tr.getChild()
-							.getParents());
-					if (trackedParents.size() == 0) {
-						out.add(tr.getChild());
-						continue;
-					} else
-						temp.put(tr.getChild(), trackedParents);
-				}
-				out.add(tr);
-				trackedParents.remove(tr);
-			    }
-			}
+// 				if (trackedParents == null) {
+// 					trackedParents = new LinkedList<Link>(tr.getChild()
+// 							.getParents());
+// 					if (trackedParents.size() == 0) {
+// 						out.add(tr.getChild());
+// 						continue;
+// 					} else
+// 						temp.put(tr.getChild(), trackedParents);
+// 				}
+// 				out.add(tr);
+// 				trackedParents.remove(tr);
+// 			    }
+// 			}
 
-			Iterator it = temp.keySet().iterator();
-			while (it.hasNext()) {
-				LinkedObject lo = (LinkedObject) it.next();
-				Collection parents = (Collection) temp.get(lo);
-				if (parents.size() == 0)
-					out.add(lo);
-			}
+// 			Iterator it = temp.keySet().iterator();
+// 			while (it.hasNext()) {
+// 				LinkedObject lo = (LinkedObject) it.next();
+// 				Collection parents = (Collection) temp.get(lo);
+// 				if (parents.size() == 0)
+// 					out.add(lo);
+// 			}
 
-			return true;
-		} else { // Not legacyMode
+// 			return true;
+//		} 
+
+//	else { // Not legacyMode
+		    deleteTerm = false;
 			for (PathCapable pc : selection.getAllSelectedObjects()) {
 				if (pc instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) pc;
+//					System.out.println("Checking linkedobject " + lo.getName()); // DEL
 					// 3/2008: If node has children, don't allow user to delete it.
-					if ((lo.getChildren().size() > 0)) {
-//					    && TermUtil.hasAncestor(lo, lo)) {
-					    // What if the children are obsolete??
-					    System.out.println("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
+					if (hasNonObsoleteChildren(lo)) {
+//					    && TermUtil.hasAncestor(lo, lo)) { 
+					    // What if the children are all obsolete?
+//					    System.out.println("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
 					}
-					else {  // No children
-					    System.out.println(lo.getName() + " has no (real) children: " + lo.getChildren() + "--ok to delete. Parent count = " + lo.getParents().size() + "; parents = " + lo.getParents()); // DEL
-					    if (warnBeforeDelete &&
-						lo.getParents().size() <= 1) { // Sometimes it's 0--??
+					else {  // No children--ok to delete
+					    if (!legacyMode || lo.getParents().size() <= 1) { // Sometimes it's 0--??
+//						System.out.println(lo.getName() + " has no (real) children: " + lo.getChildren() + "--ok to delete term. Parent count = " + lo.getParents().size() + "; parents = " + lo.getParents()); // DEL
 //						!(TermUtil.isObsolete(lo.getParents().iterator().next()))) {
+						deleteTerm = true;
 						lastInstanceCount++;
 						instanceString += lo.getName() + " ("
 						    + lo.getID() + ")\n";
 //						System.out.println("now instanceString = " + instanceString); // DEL
-					    }
 
-					    for (Link parentLink : lo.getParents()) {
-						if (!out.contains(parentLink))
-						    out.add(parentLink);
+						// Delete the parent links for this term
+						for (Link parentLink : lo.getParents()) {
+						    if (!out.contains(parentLink)) {
+//							System.out.println("Adding to delete list: parent link " + parentLink); // DEL
+							out.add(parentLink);
+						    }
+						}
 					    }
-					    for (Link childLink : lo.getChildren()) { // ??
-						if (!out.contains(childLink))
-						    out.add(childLink);
-					    }
-					out.add(lo);
+					    // It doesn't have children, right?  We already checked.
+//					    for (Link childLink : lo.getChildren()) { // ??
+//						if (!out.contains(childLink))
+//						    out.add(childLink);
+//					    }
+					out.add(lo);  // Add the term itself to the delete list
 					}
 				} else if (pc instanceof Link) {
 					Link link = (Link) pc;
-				    System.out.println("Adding to delete list: link " + link); // DEL
-					if (!TermUtil.isImplied(link))
-						out.add(pc);
+//					System.out.println("Checking link " + link); // DEL
+					// ! Check whether the link is to null (as for a singleton)?
+					if (!TermUtil.isImplied(link) 
+					    && link.getType() != null) {  // ?
+//					    System.out.println("Adding to delete list: link " + link); // DEL
+					    out.add(pc);
+					}
 				}
 			}
 			return true;
-		}
+//		}
 	}
 
+    private boolean hasNonObsoleteChildren(LinkedObject lo) {
+	if (lo.getChildren().size() == 0)
+	    return false;
+	for (Link childLink : lo.getChildren()) {
+	    LinkedObject child = childLink.getChild();
+	    if (TermUtil.isObsolete(child))
+//		System.out.println("Child " + child.getName() + " is obsolete");
+		;
+	    else {
+//		System.out.println("Child " + child.getName() + " is NOT obsolete");
+		return true;
+	    }
+	}
+	return false;
+    }
+
 	public HistoryItem execute() {
-	    // Show "Are you sure you want to destroy?" warning whether it's legacyMode or not.
-//		if (legacyMode) {
 			if (shouldDestroy) {
 				if (JOptionPane
 						.showConfirmDialog(
@@ -212,17 +248,20 @@ public class DeleteAction implements ClickMenuAction {
 										+ "you sure you want to proceed?",
 								"Destroy warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 					return null;
-			} else {
-			    // Is this the right test?  Is it failing to warn in some cases where it should?
+			} else if (Preferences.getPreferences().getWarnBeforeDelete()) {
 				if (lastInstanceCount > 0) {
+				    String deleteQuestion = 
+					((lastInstanceCount > 1) ?
+					 "These are the last appearances of the following terms:"
+					 : "This is the last appearance of the following term:")
+					+ "\n" + instanceString
+					+ "Are you sure you want to make "
+					+ ((lastInstanceCount > 1) ?
+					 "these terms" : "this term")
+					+ " permanently obsolete?";
+				    System.out.println(deleteQuestion);
 				    int answer = JOptionPane.showConfirmDialog(GUIManager.getManager().getFrame(),
-									       ((lastInstanceCount > 1) ?
-										"These are the last appearances of the following terms:"
-										:
-										"This is the last appearance of the following term:")
-									       + "\n" + instanceString
-									       + "Are you sure you want to "
-									       + "make these terms permanently obsolete?", "Delete warning",
+									       deleteQuestion, "Delete warning",
 									       JOptionPane.YES_NO_OPTION);
 				    if (answer != JOptionPane.YES_OPTION) {
 					System.out.println("User decided not to delete " + instanceString);
@@ -230,16 +269,14 @@ public class DeleteAction implements ClickMenuAction {
 				    }
 				}
 			}
-//		}
 		Collections.sort(deleteThese, pcComparator);
-		System.out.println("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
+//		System.out.println("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
 		TermMacroHistoryItem out = new TermMacroHistoryItem(
-//		    "No items to delete"); // ??
-		    );
+		    "No items to delete"); // ??
 		for (PathCapable pc : deleteThese) {
 			if (pc instanceof Link) {
 				Link link = (Link) pc;
-				System.out.println(link + " is a Link--adding to " + (shouldDestroy ? "destroy" : "obsolete") + "list"); // DEL
+//				System.out.println(link + " is a Link--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
 				if (link.getType() == null)
 					out.addItem(new DeleteLinkHistoryItem((Link) pc));
 				else if (link.getType().equals(OBOProperty.CONSIDER)) {
@@ -250,8 +287,11 @@ public class DeleteAction implements ClickMenuAction {
 							.getID(), link.getChild().getID()));
 				} else
 					out.addItem(new DeleteLinkHistoryItem((Link) pc));
-			} else if (pc instanceof LinkedObject) {
-			    System.out.println(pc + " is a LinkedObject--adding to " + (shouldDestroy ? "destroy" : "obsolete") + "list"); // DEL
+			} else if (pc instanceof LinkedObject
+				   && (!legacyMode 
+				       // This test is to allow user to delete singleton terms from OTE
+				       || (legacyMode && deleteTerm))) {
+//			    System.out.println(pc + " is a LinkedObject--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
 				if (shouldDestroy)
 					out
 							.addItem(new DestroyObjectHistoryItem(
@@ -282,10 +322,11 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	public String getName() {
+//	    System.out.println("DeleteAction.getName: deleteTerm = " + deleteTerm); // DEL
 		if (shouldDestroy)
-			return "Destroy";
+		    return "Destroy " + ((deleteTerm) ? "term" : "relationship");
 		else
-			return "Delete";
+		    return "Delete " + ((deleteTerm) ? "term" : "relationship");
 	}
 
 	public String getDesc() {
