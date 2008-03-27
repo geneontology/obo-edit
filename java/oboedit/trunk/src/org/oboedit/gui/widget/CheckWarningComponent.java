@@ -305,13 +305,16 @@ public class CheckWarningComponent extends JEditorPane {
 				return -1;
 			if (iob == null)
 				return 1;
-			/*
-			 * Collection ca = (Collection) warningMap.get(ioa); Collection cb =
-			 * (Collection) warningMap.get(iob); if (ca != null && cb != null) {
-			 * boolean cafatal = VerificationEngine.isFatal(ca); boolean cbfatal =
-			 * VerificationEngine.isFatal(cb); if (cafatal != cbfatal) { if
-			 * (cafatal) return -1; else return 1; } }
-			 */
+
+			String namea = ioa.getName();
+			String nameb = iob.getName();
+			if (namea == null && nameb == null)
+			    return 0;
+			if (namea == null)
+			    return -1;
+			if (nameb == null)
+			    return 1;
+
 			return ioa.getName().compareToIgnoreCase(iob.getName());
 		}
 	};
