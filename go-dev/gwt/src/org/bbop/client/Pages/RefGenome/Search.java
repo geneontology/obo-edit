@@ -1,6 +1,5 @@
 package org.bbop.client.Pages.RefGenome;
 
-
 import org.bbop.client.WebSession;
 import org.bbop.client.WebUIInterface;
 import org.bbop.client.Widgets.PageTitle;
@@ -31,11 +30,11 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class General implements WebUIInterface {
+public class Search implements WebUIInterface {
 
 	private WebSession session = null;
 	
-	public General (WebSession webSession) {
+	public Search (WebSession webSession) {
 
 		session = webSession;
 		
@@ -45,8 +44,8 @@ public class General implements WebUIInterface {
 
 		VerticalPanel vp = new VerticalPanel();
 
-		vp.add(new PageTitle("General"));
-		vp.add(new Hyperlink("Search", "search"));
+		vp.add(new PageTitle("Search"));
+		vp.add(new Hyperlink("General", "general"));
 		vp.add(new Hyperlink("Logout", "logout"));
 
 		return vp;
