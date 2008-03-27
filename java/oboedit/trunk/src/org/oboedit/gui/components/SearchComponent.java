@@ -1,5 +1,6 @@
 package org.oboedit.gui.components;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -126,19 +127,21 @@ public class SearchComponent extends AbstractGUIComponent {
 					true);
 			protected JComboBox resultLabelDropdown = new JComboBox();
 
-			{
+			    {
 				for (ResultLabelType type : ResultLabelType.values()) {
 					resultLabelDropdown.addItem(type);
 				}
 				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 				add(shortenResultsBox);
+				resultLabelDropdown.setMaximumSize(
+				    new Dimension(Integer.MAX_VALUE, resultLabelDropdown.getPreferredSize().height));
 
 				Box resultPanel = Box.createHorizontalBox();
 				resultPanel.add(new JLabel(
 						"End title of search results panels with: "));
 				resultPanel.add(resultLabelDropdown);
 				add(resultPanel);
-			}
+			    }
 
 			@Override
 			public void commit() {
