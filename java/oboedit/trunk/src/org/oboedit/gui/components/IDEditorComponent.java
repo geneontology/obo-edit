@@ -37,9 +37,11 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 		idLabel.setEditable(false);
 		idLabel.setBorder(null);
 		idLabel.setOpaque(false);
+		idLabel.setBackground(getBackground()); // so that it looks non-editable
 		secondaryIDLabel.setEditable(false);
 		secondaryIDLabel.setBorder(null);
 		secondaryIDLabel.setOpaque(false);
+		secondaryIDLabel.setBackground(getBackground()); // so that it looks non-editable
 	}
 
 	@Override
