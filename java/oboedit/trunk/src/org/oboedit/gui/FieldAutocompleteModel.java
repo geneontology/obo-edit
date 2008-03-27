@@ -131,7 +131,9 @@ public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
 	}
 
 	public String toString(T val) {
-		return val.toString();
+	    if (val == null)
+		return "";
+	    return val.toString();
 	}
 
 
