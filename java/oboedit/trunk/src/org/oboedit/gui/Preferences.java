@@ -629,8 +629,9 @@ public class Preferences {
 		if (mem == null)
 			return;
 		File infoPlist = new File(getInstallationDirectory(), Preferences
-				.getLauncherName()
-				+ ".app/Contents/Info.plist");
+					  .getAppName()
+					  + ".app/Contents/Info.plist");
+		System.out.println("infoPlist = " + infoPlist); // DEL
 		Map params = new HashMap();
 		params.put("memoryOption", mem);
 		try {
@@ -658,6 +659,10 @@ public class Preferences {
 
 	public static String getLauncherName() {
 		return System.getProperty("launcherName", "oboedit");
+	}
+
+	public static String getAppName() {
+	    return "OBO-Edit";
 	}
 
 	public static List<URL> getIconLibrary() {
