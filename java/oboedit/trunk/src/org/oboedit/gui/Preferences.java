@@ -49,6 +49,7 @@ public class Preferences {
 	protected Color lightSelectionColor = null;
 
     protected Color orange = new Color(255, 153, 0); // a nice orangey orange
+    protected Color purple = new Color(102, 0, 204);
 
 	protected boolean confirmOnExit = true;
 
@@ -205,11 +206,11 @@ public class Preferences {
 		iconURLIndex.put("positively_regulates", "resource:upregs-arrow.svg");
 		iconURLIndex.put("negatively_regulates", "resource:downregs-arrow.svg");
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
-		colorIndex.put("part_of", Color.yellow);
+		colorIndex.put("part_of", orange);
 		colorIndex.put("develops_from", Color.green.darker());
-		colorIndex.put("regulates", orange); // orange
-		colorIndex.put("positively_regulates", orange);
-		colorIndex.put("negatively_regulates", orange);
+		colorIndex.put("regulates", purple);
+		colorIndex.put("positively_regulates", purple);
+		colorIndex.put("negatively_regulates", purple);
 		
 	}
 
