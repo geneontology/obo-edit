@@ -17,7 +17,7 @@ package org.bbop.client;
 
 //add methods here from RefGenomeServiceSleep once they gets implemented
 
-import java.util.Map;
+
 
 //import org.bbop.client.model.DateDTO;
 //import org.bbop.client.model.NodeDTO;
@@ -45,6 +45,6 @@ public interface RefGenomeService extends RemoteService {
 	
 	public Boolean checkUserPassword(String userId, String password); // encrypt?
 		
-		
+	public String[] fetchReferenceTargetIds();
 
 }

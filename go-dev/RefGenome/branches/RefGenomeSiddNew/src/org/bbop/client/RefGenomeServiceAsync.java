@@ -29,4 +29,5 @@ public interface RefGenomeServiceAsync  {
 	
 	public void checkUserPassword(String userId, String password, AsyncCallback callback); 
 
+	public void fetchReferenceTargetIds( AsyncCallback callback);
 }
