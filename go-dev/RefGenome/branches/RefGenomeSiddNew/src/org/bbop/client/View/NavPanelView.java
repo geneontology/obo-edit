@@ -16,6 +16,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandItem searchitem;
 	private ExpandItem curationitem;
 	private RefGenomeViewListenerI refglistener;
+	
 	private RefGenomeView mainview;
 	private BrowsePanelView browseview;
 	
@@ -34,7 +35,6 @@ public  class NavPanelView  implements NavPanelManagerI {
 	
 	public void createView(){
 		browseitem.setText("Browse");
-	//	browseitem.getContainer().addText("List of genes");
 		browseitem.getContainer().add(browseview.getView());
 		searchitem.setText("Search");
 		searchitem.getContainer().addText("Search genes");

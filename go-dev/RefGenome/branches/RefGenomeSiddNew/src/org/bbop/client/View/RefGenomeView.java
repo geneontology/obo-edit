@@ -23,7 +23,7 @@ import net.mygwt.ui.client.widget.layout.FillLayout;
  * @author  sid
  */
 public class RefGenomeView   extends  Viewport implements WebViewI {
-	//private Viewport refgcontainer ;
+	
 	private WidgetContainer refgviewer ;
 	private WidgetContainer northpanel ;
 	private ContentPanel westpanel;
@@ -48,7 +48,6 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 	public RefGenomeView (RefGenomeViewListenerI listener) {
 		super();
 		refglistener = listener;
-	//	refgcontainer = new Viewport();
 		refgviewer = new WidgetContainer();
 		northpanel = new WidgetContainer();
 		westpanel = new ContentPanel(Style.HEADER);
@@ -166,6 +165,17 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 	public ResultPanelView getResultPanel() {
 		// TODO Auto-generated method stub
 		return resultview;
+	}
+
+
+
+
+
+
+
+	public BrowsePanelView getBrowsePanel() {
+		// TODO Auto-generated method stub
+		return navpanelview.getBrowseView();
 	}
 
 

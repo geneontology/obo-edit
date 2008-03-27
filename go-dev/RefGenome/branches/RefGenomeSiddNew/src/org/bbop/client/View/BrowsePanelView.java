@@ -7,13 +7,15 @@ import net.mygwt.ui.client.widget.Button;
 import net.mygwt.ui.client.widget.ButtonBar;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
+import org.bbop.client.Manager.BrowsePanelManagerI;
 
-public class BrowsePanelView {
+public class BrowsePanelView implements BrowsePanelManagerI {
 	private RefGenomeViewListenerI refglistener;
 	private RefGenomeView mainview;
 	private ButtonBar browsebar;
 	private Button targetbtn;
-	public BrowsePanelView(RefGenomeViewListenerI listener, RefGenomeView parent){
+	
+	public  BrowsePanelView (RefGenomeViewListenerI listener, RefGenomeView parent){
 		refglistener = listener;
 		mainview = parent;
 		
@@ -37,10 +39,18 @@ public class BrowsePanelView {
 		
 	}
 	
+	public void addTargetIds(String[] ids) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 	private class TargetListListener implements SelectionListener {
 		public void widgetSelected(BaseEvent be) {
 			refglistener.fetchTargetIds();
 		}
 	}
+
+	
 
 }
