@@ -44,7 +44,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    System.out.println("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+//		    System.out.println("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
 		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -91,7 +91,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 			public void run() {
 			    summaryField.setText("");
 				if (enableReasoner)
-					add(summaryScroller, "Center");
+					add(summaryScroller, "South");
 				else
 					remove(summaryScroller);
 
