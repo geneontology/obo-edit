@@ -1,5 +1,6 @@
 package org.oboedit.gui.components;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -131,8 +132,8 @@ public class SearchComponent extends AbstractGUIComponent {
 				for (ResultLabelType type : ResultLabelType.values()) {
 					resultLabelDropdown.addItem(type);
 				}
-				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-				add(shortenResultsBox);
+				setLayout(new BorderLayout());
+				add(shortenResultsBox, "North");
 				resultLabelDropdown.setMaximumSize(
 				    new Dimension(Integer.MAX_VALUE, resultLabelDropdown.getPreferredSize().height));
 
@@ -140,7 +141,7 @@ public class SearchComponent extends AbstractGUIComponent {
 				resultPanel.add(new JLabel(
 						"End title of search results panels with: "));
 				resultPanel.add(resultLabelDropdown);
-				add(resultPanel);
+				add(resultPanel, "Center");
 			    }
 
 			@Override
