@@ -8,6 +8,7 @@ import org.bbop.client.Manager.NavPanelManagerI;
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ExpandBar;
 import net.mygwt.ui.client.widget.ExpandItem;
+import net.mygwt.ui.client.widget.layout.FillLayout;
 
 
 public  class NavPanelView  implements NavPanelManagerI {
@@ -17,8 +18,11 @@ public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandItem curationitem;
 	private RefGenomeViewListenerI refglistener;
 	
-	private RefGenomeView mainview;
+	private RefGenomeView mainview; //parent view
+	
+	//child view attached to it
 	private BrowsePanelView browseview;
+	private SearchPanelView searchview;
 	
 	public NavPanelView(RefGenomeViewListenerI listener,RefGenomeView parent){
 		refglistener = listener;
@@ -27,8 +31,12 @@ public  class NavPanelView  implements NavPanelManagerI {
 		browseitem = new ExpandItem();
 		searchitem = new ExpandItem();
 		curationitem = new ExpandItem();
+		
 		browseview = new BrowsePanelView(refglistener,mainview);
 		browseview.creatView();
+		
+		searchview = new SearchPanelView(refglistener,mainview);
+		searchview.createView();
 		
 		
 	}
@@ -36,8 +44,12 @@ public  class NavPanelView  implements NavPanelManagerI {
 	public void createView(){
 		browseitem.setText("Browse");
 		browseitem.getContainer().add(browseview.getView());
+		
 		searchitem.setText("Search");
-		searchitem.getContainer().addText("Search genes");
+		FillLayout layout = new FillLayout(6);
+		layout.setType(Style.VERTICAL);
+		searchitem.getContainer().setLayout(layout);
+		searchitem.getContainer().add(searchview.getView());
 		
 		curationitem.setText("Curation");
 		curationitem.getContainer().addText("Curate genes");

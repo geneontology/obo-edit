@@ -64,7 +64,7 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 		
 		//layout setup for navigation panel
 		westpanel.setLayout(new FillLayout());
-		westpanel.setText("Tools");
+		westpanel.setText("Navigation bar");
 		westpanel.setStyleName("title");
 		
 		
