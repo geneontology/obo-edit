@@ -1,26 +1,46 @@
-Changes in 2.000-b34:
-* Installers will now keep separate install histories for OE1, OE2, and
-Phenote, to avoid misleadingly prompting you to install any of them on top of
-each other.  (In fact, it will now explicitly warn you if you try to do that.)
-(Note: this application is now referred to as "OBO-Edit2" to reduce confusion
-with OBO-Edit 1.)
-* For those who prefer to launch OE from the command line, "oe-command-line"
-script is now included.  (I gave it that somewhat awkward name because I
-didn't want users to confuse it with the "real" OBO-Edit application.)
-Note that you can also double-click on oe-command-line and it will launch just
-like OBO-Edit, but with a Terminal that shows all the stderr/stdout, which
-seems even better, at least for the power users who can then report error
-messages more easily.
-* There are now two different reasoners that you can choose from with a new
-pulldown list in the Reasoner Manager.  The two that are currently registered
-are ForwardChainingReasoner (old; faster but less complete) and
-LinkPileReasoner (Chris recently switched OE to using this one--better but
-slower).
-* Reasoner Manager now comes up docked by default.
-* SemanticParser Manager no longer shows Reasoner checkbox.
-* "Regulates" links are now orange (were dark red, but that didn't work well
-with the red negatively_regulates icon).
-* Removed default global filter "Select links where Type that have a 'Is
-Transitive'" in order to let regulates relationships show up.  (This global
-filter can be re-added by the user if desired.)
-* Width of search results columns can now be adjusted.
+Changes in 2.000-b35-36:
+* "Regulates" links are now purple; "part_of" links are orange.
+* Delete behavior mostly fixed:
+- it now differentiates between selecting a relationship to delete and
+selecting a term to delete.
+- you cannot delete a term that has children.
+- whenever you are about to delete a term, you will get the "this term will
+become obsolete" warning.
+- in the Ontology Term Editor, if the term-relationship you have selected
+is the only relationship for that term, it counts as selecting a term.
+(that means that for singletons, you can only delete the term, since they
+don't have relationships.)  if a term has multiple parents (i.e., appears
+multiple times in the tree), you can't delete the term.  selecting one of
+the instances of the term in the tree counts as deleting that relationship,
+not that term.
+- the delete menu item now says "delete relationship" or "delete term"
+depending on what will be deleted if you go through with it.
+- "delete relationship" will never make a term obsolete, though it may make
+it a singleton.
+- if you select multiple things, and some are legal to delete and some
+aren't, it will offer you the delete option and then only delete the legal
+ones.  i would probably choose not to let the user delete anything if
+multiple things are selected, but clearly it was set up to allow this.
+- in the Graph Editor, you can select either a relationship or a term.  you
+are allowed to delete a term if you've selected it, even if it has multiple
+parents (though, as above, not if it has any children).
+HOWEVER, the thing that isn't working right is that in the graph editor,
+you can right-mouse over an item that isn't really selected (it doesn't
+have a blue border around it) and the item it will try to delete is the one
+that is selected, NOT the one you are currently hovering over.
+
+* Terms with dangling refs now are labeled in graph editor with their IDs
+(since they don't have names).
+* Dangling objects were causing lots of exceptions to fly.  Fixed these by
+making DanglingObjectImpl extend OBOClassImpl.  This fixed one of David S's
+problems:
+(a) These result in a very long line of empty boxes in the graph editor. 
+If the reasoner is turned on, the first box clicked prompts the Text Editor
+to show a dangling ID (& said boxes do this cute little shuffling thing
+when clicked). After this, the Text Editor sticks on the orginally chosen
+term - and fails to respond to new selection from the ontology tree editor
+or the graph editor.
+* Made background of ID field the same as the component background (light
+gray) so that it's clear that it's not editable.
+* Fixed (I think) Windows-only appearance problem with pulldown list in
+Search config (bug #1897924).  (Can't test.)
