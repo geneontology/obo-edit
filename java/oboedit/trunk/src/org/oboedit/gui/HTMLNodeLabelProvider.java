@@ -58,7 +58,7 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 			if (token instanceof IDUtil.Variable) {
 				IDUtil.Variable var = (IDUtil.Variable) token;
 				SearchCriterion sc = FilterManager.getManager().getCriterion(
-						var.getName());
+				    var.getName());
 				if (sc == null)
 					out.append("??cannot-resolve-"+var.getName()+"??");
 				List vals = (List) sc.getValues(new ArrayList(), lo);
@@ -93,6 +93,11 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 				    if (vals.get(index) != null) { // It can be null if there's a dangling reference
 					String val = vals.get(index).toString();
 					out.append(HTMLUtil.escapeHTML(val));
+				    }
+				    else {
+					// No name--use ID
+//					System.out.println("val is null for object " + lo + "--using id " + lo.getID());
+					out.append(lo.getID());
 				    }
 				}
 			} else
