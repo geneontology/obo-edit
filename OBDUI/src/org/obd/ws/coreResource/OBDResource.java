@@ -2,6 +2,8 @@
 package org.obd.ws.coreResource;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +39,8 @@ public abstract class OBDResource extends Resource {
 	protected int from;
 	
 	protected Set<String> imports;
+	
+	protected String[] fmts = {"json","html","obo","owl","obdxml"};
 
 	public OBDResource(Context context, Request request, Response response) {
 		super(context, request, response);
@@ -82,7 +86,10 @@ public abstract class OBDResource extends Resource {
 		return href(id,dataSource);
 	}
 	
-	
+	public String hrefLabel(String label, String id, String dataSource){
+		String eid = Reference.encode(id);
+		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+label+"</a>";
+	}
 	public String href(String id,String dataSource) {
 		String eid = Reference.encode(id);
 		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+id+"</a>";
@@ -147,11 +154,21 @@ public abstract class OBDResource extends Resource {
 		return sb.toString();
 	}
 
+	public Set<Map<String,String>> mapToOtherFormats(String res,String dataSource){
+		Set<Map<String,String>> links = new HashSet<Map<String,String>>();
+		for (String fmt : this.fmts) {
+			Map<String,String> m = new HashMap<String,String>();
+			m.put("format", fmt);
+			m.put("link", "<a href=\"/" + this.getContextName() + "/" + dataSource + "/"+fmt+res+"\">"+fmt+"</a>");
+			links.add(m);
+		}
+		return links;
+	}
 	public String hrefToOtherFormats(String res, String dataSource) {
-		String[] fmts = {"json","html","obo","owl","obdxml"};
+		
 		StringBuilder sb = new StringBuilder();
 		int i=0;
-		for (String fmt : fmts) {
+		for (String fmt : this.fmts) {
 			if (i>0) {
 				sb.append(" | ");
 			}
@@ -179,6 +196,7 @@ public abstract class OBDResource extends Resource {
 			map.put("baseUri", this.getRequest().getResourceRef(). getParentRef().toString());
 			result = new TemplateRepresentation(path, fmc,map, MediaType.TEXT_HTML);
 		} catch (Exception ex) {
+			System.err.println("Unable to get Template Representation: " + ex.getMessage());
 			result = null;
 		}
 		return result;

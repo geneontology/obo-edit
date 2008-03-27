@@ -49,13 +49,17 @@ public class NodeDetailResource extends NodeResource {
 	 */
 	public NodeDetailResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		
 		relationId = (String) request.getAttributes().get("relation");
 		aspect = (String) request.getAttributes().get("aspect");
 		this.dataSource = (String) request.getAttributes().get("dataSource");
-		getVariants().clear();
-		if (getNode() != null) {
+		
+		this.getVariants().clear();
+		
+		if (this.getNode() != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}
+	
 	}
 
 	protected Graph getGraph() { // TODO - DRY
@@ -82,8 +86,9 @@ public class NodeDetailResource extends NodeResource {
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
+		
 		Representation result = null;
-
+	
 		//Collection<Statement> stmts = getStatements();
 		Graph g =  getGraph();
 
@@ -136,6 +141,7 @@ public class NodeDetailResource extends NodeResource {
 			map.put("graph", g);
 			map.put("termview", termview);
 			map.put("focusId",getNodeId());
+			map.put("dataSource", this.dataSource);
 			if (getShard(this.dataSource) instanceof OBOSessionShard) {
 				//OBOSession session = ((OBOSessionShard)getShard(this.dataSource)).getSession();
 				

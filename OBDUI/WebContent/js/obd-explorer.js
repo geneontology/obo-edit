@@ -4,34 +4,31 @@ function _search_Response_DEPREC(xml_response){
   //global_amigo_work_tag.stop();
   //global_amigo_load_tag.start();
   var table = resultTable(xml_response);
-  document.getElementById("replace_me").innerHTML = table;
-  //document.getElementById("replace_me").innerHTML = xml_response;
+  document.getElementById("content_container").innerHTML = table;
+  //document.getElementById("content_container").innerHTML = xml_response;
 }
 
 function nodeSearch(contextName){
 
-  //global_amigo_work_tag.start();
-
-  // A timer for debugging.
-  var timer = new BBOP.Timer("123");
-  var dataSource = document.getElementById("dataSource").value;
-  timer.displayClear();
-  timer.start();
+    //global_amigo_work_tag.start();
+    // A timer for debugging.
+    var timer = new BBOP.Timer("123");
+    var dataSource = document.getElementById("dataSource").value;
+    timer.displayClear();
+    timer.start();
 	
-  // Start AJAX action: Request initial data from server.
-  var resource = "/" + contextName + "/" + dataSource + "/obdxml/search/contains/" +
-  	 document.getElementById("search_term").value;
-  //var ajax = new BBOP.AjaxAction(_search_Response);
-  var ajax = 
-    new BBOP.AjaxAction( 
-                        function(xml_response) {
-                          var table = resultTable(xml_response,dataSource,contextName);
-                          document.getElementById("replace_me").innerHTML = table;
-                        }
-                        
-                        );
+    // Start AJAX action: Request initial data from server.
+    var resource = "/" + contextName + "/" + dataSource + "/obdxml/search/contains/" + document.getElementById("search_term").value;
+    //var ajax = new BBOP.AjaxAction(_search_Response);
+    var ajax = new BBOP.AjaxAction( 
+                                    function(xml_response) {
+                                        //var table = resultTable(xml_response,dataSource,contextName);
+                                        var table ='Hello, world!';
+                                        document.getElementById("content_container").innerHTML = table;
+                                    } 
+                                   );
   
-  ajax.start(resource, "", "GET");
+    ajax.start(resource, "", "GET");
 }
 
 function updateDetailDiv(id){
@@ -48,7 +45,7 @@ function updateDetailDiv(id){
   var ajax = 
     new BBOP.AjaxAction( 
                         function(xml_response) {
-                          document.getElementById("replace_me").innerHTML = nodeDetailDiv(xml_response);
+                          document.getElementById("content_container").innerHTML = nodeDetailDiv(xml_response);
                         }
                         );
 
@@ -59,7 +56,7 @@ function updateDetailDiv(id){
 
 function nodeDetailDiv(graph) {
   statements = graph.LinkStatement;
-  table = <table border="1"/>;
+  table = '<table border="1"/>';
   for (var i=0; i<statements.length(); i++) {
     table.tr += statementRow(statements[i]);
   }
@@ -88,7 +85,7 @@ function statementRow(s) {
 
 function resultTable(graph,dataSource,contextName) {
   nodes = graph.Node;
-  table = <table border="1"/>;
+  table = '<table border="1"/>';
   for (var i=0; i<graph.Node.length(); i++) {
     table.tr += tableRow(nodes[i],dataSource,contextName);
   }
@@ -121,14 +118,14 @@ function testSearch() {
 
   table =
     resultTable(<Graph><Node id="x"><label>ooo</label></Node><Node/></Graph>);
-  document.getElementById("replace_me").innerHTML = 
+  document.getElementById("content_container").innerHTML = 
     table;
 
 }
 
 function xxtestSearch() {
   var foo=5;
-  document.getElementById("replace_me").innerHTML = 
+  document.getElementById("content_container").innerHTML = 
  <table border="1">
   <tr>
     <td>foo</td>
