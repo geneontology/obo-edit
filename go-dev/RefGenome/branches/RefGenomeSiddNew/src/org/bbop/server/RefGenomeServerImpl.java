@@ -16,6 +16,9 @@ public class RefGenomeServerImpl extends RemoteServiceServlet implements RefGeno
 		return new Boolean(logstatus);
 		
 	}
-
+	public String[] fetchReferenceTargetIds() {
+		return new String[6];
+	}
+	
 	
 }

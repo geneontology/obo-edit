@@ -17,6 +17,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandItem curationitem;
 	private RefGenomeViewListenerI refglistener;
 	private RefGenomeView mainview;
+	private BrowsePanelView browseview;
 	
 	public NavPanelView(RefGenomeViewListenerI listener,RefGenomeView parent){
 		refglistener = listener;
@@ -25,14 +26,16 @@ public  class NavPanelView  implements NavPanelManagerI {
 		browseitem = new ExpandItem();
 		searchitem = new ExpandItem();
 		curationitem = new ExpandItem();
+		browseview = new BrowsePanelView(refglistener,mainview);
+		browseview.creatView();
 		
 		
 	}
 	
 	public void createView(){
 		browseitem.setText("Browse");
-		browseitem.getContainer().addText("List of genes");
-		
+	//	browseitem.getContainer().addText("List of genes");
+		browseitem.getContainer().add(browseview.getView());
 		searchitem.setText("Search");
 		searchitem.getContainer().addText("Search genes");
 		
@@ -47,6 +50,8 @@ public  class NavPanelView  implements NavPanelManagerI {
 	public ExpandBar getView() {
 		return exbar;
 	}
+	
+	public BrowsePanelView getBrowseView() { return browseview; }
 	
 	public void addCurationBar(){
 		exbar.add(curationitem);

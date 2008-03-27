@@ -32,6 +32,10 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 	
+	public void fetchTargetIds() {
+		refgservice.fetchReferenceTargetIds(new TargetIdsCallback());
+	}
+	
 	private class LoginCallback implements AsyncCallback {
 		public void onFailure(Throwable throwable){ GWT.log("error sign in",throwable); }
 
@@ -48,6 +52,20 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 				refgview.getLoginPanel().denyLogin();
 			}
 		}
+	}
+	
+	private class TargetIdsCallback implements AsyncCallback {
+
+		public void onFailure(Throwable throwable) {
+			// TODO Auto-generated method stub
+			GWT.log("error getting target ids",throwable);
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 }
