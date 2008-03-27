@@ -126,8 +126,7 @@ public class StatementsResource extends NodeResource {
 		else if (format.equals("obdxml")) {
 			result = new StringRepresentation(OBDXMLBridge.toXML(g), MediaType.TEXT_XML);
 			return result;
-		}
-		else if (format.equals("view")) {
+		} else if (format.equals("view")) {
 			TreeMap<String, Object> map = new TreeMap<String, Object>();
 			map.put("graph", g);
 			map.put("focusId",getNodeId());

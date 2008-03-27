@@ -4,6 +4,7 @@ package org.obd.ws.coreResource;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import org.obd.model.Node;
 import org.obd.model.bridge.OBDJSONBridge;
@@ -78,12 +79,12 @@ public class NodeResource extends OBDResource {
     public Node findNode() {
         Node result = null;
 
-        System.out.println("FINDING NODE: " + nodeId);
-        System.out.println("Shard: " + this.getShard(this.dataSource));
+        System.out.print("Looking for Node " + nodeId + " in data source " + this.dataSource + ".");
         if (nodeId != null) {       	
-        	result = getShard(this.dataSource).getNode(nodeId);    	
-        }
-
+        	result = getShard(this.dataSource).getNode(nodeId);
+        } 
+        
+        
         return result;
     }
     
@@ -98,6 +99,8 @@ public class NodeResource extends OBDResource {
  
     @Override
     public Representation getRepresentation(Variant variant) {
+    	
+    	
     	Representation result = null;
 
     	if (format == null) {
@@ -116,7 +119,11 @@ public class NodeResource extends OBDResource {
     		return result;
     	}
     	else {
+    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+
+    		
     		// Creates a text representation
+    		/*
     		StringBuilder sb = new StringBuilder();
     		sb.append("<pre>");
     		sb.append("------------\n");
@@ -132,6 +139,11 @@ public class NodeResource extends OBDResource {
             
     		sb.append("<pre>");
     		result = new StringRepresentation(sb, MediaType.TEXT_HTML);
+    		*/
+    		resourceMap.put("contextName", this.getContextName());
+    		resourceMap.put("dataSource", this.dataSource);
+    		resourceMap.put("formatLinks",mapToOtherFormats("/nodes/"+this.nodeId,this.dataSource));
+    		return getTemplateRepresentation("NodeDetails",resourceMap);
     	}
     	return result;
     }

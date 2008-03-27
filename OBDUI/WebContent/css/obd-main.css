@@ -1,0 +1,152 @@
+body {
+	border-width: 0px;
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	font-size:12px;
+}
+
+a:link {
+    text-decoration: none; 
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+.new_page_header{
+	width: 100%;
+}
+
+.new_page_logo{
+    width:800px;
+    color:#000077;
+	font-size: 30px;
+}
+
+.full_div_blue{
+    width:100%;
+    background-color:#000077;
+    height:1px;
+}
+
+.menu_bar{
+    padding-top:2px;
+    padding-bottom:2px;
+    padding-right:5px;
+    padding-left:5px;
+    font-size:12px;
+    background-color:#efefef;
+}
+
+.menu_items {
+    float: left;   
+}
+
+.contact {
+    text-align:right;
+}
+
+#content_body {
+}
+
+
+#vertical_divider{
+    float:left;
+    
+}
+
+#content{
+    float: left;
+    padding:5px;
+}
+
+#footer{
+    clear:both;
+    font-size:10px;
+}
+
+#footer_content{
+    padding:3px;
+    text-align:center;
+}
+
+#searchbar{
+    font-size:12px;
+}
+
+table.std_table{
+	border-style: none;
+	border-spacing:0px ;
+	border-color: #000077;
+	background-color:#000077;
+	border-collapse: collapse;
+	font-size:11px;
+}
+
+table.std_table th{
+    border-width: 1px;
+	padding: 2px;
+	border-style: inset;
+	border-color: #cccccc;
+	background-color:#fdfdfd;
+	font-weight: normal;
+	text-align: left;
+}
+
+table.std_table td{
+    border-width: 1px;
+	padding: 1px;
+	border-style: inset;
+	border-color: #cccccc;
+	background-color: #efefef;
+	text-align:left;
+	padding:2px;
+}
+
+table.threecol {
+    width:100%;
+    border-style: none;
+	border-spacing:0px ;
+	border-collapse: collapse;
+}
+
+#left_bar{
+    vertical-align:top;
+    padding:5px;
+    width:180px;
+}
+
+#vertical_divider {
+    width:1px;
+    padding:0px;
+    background-color:#afafaf;
+    height:400px;
+}
+
+#content_container{
+    vertical-align:top;
+    padding:5px;
+    font-size:12px;
+}
+
+#search_term{
+    font-size:12px;
+}
+
+#external_links{
+    font-size:12px;
+}
+
+.divider{
+    height:0px;
+    border-top-style:dotted;
+    border-top-color:#afafaf;
+    border-collapse:collapse;
+    border-bottom-style:none;
+    
+    
+    
+}

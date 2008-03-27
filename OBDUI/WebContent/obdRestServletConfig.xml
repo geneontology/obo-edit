@@ -15,16 +15,77 @@
     </dataSource>
 	
 	<!-- Core Mappings -->
+	
 	<resourcePathMap>
-		<resourceClass>org.obd.ws.coreResource.NodesBySearchResource</resourceClass>
-		<path>/{dataSource}/{format}/search/{operator}/{term}</path>
+		<resourceClass>org.obd.ws.coreResource.ShardMetadataResource</resourceClass>
+		<path>/{dataSource}/{format}/metadata/</path>
 	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.PageResource</resourceClass>
+		<path>/pages/{page}.html</path>
+		<path>/usecases/{usecase}.html</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.NodeResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{id}</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.StatementsResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{id}/statements</path>
+		<path>/{dataSource}/{format}/nodes/{id}/statements/{aspect}</path>
+		<path>/{dataSource}/{format}/nodes/{id}/statements/{aspect}/{relation}</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.DescriptionResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{id}/description</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.ScoredNodesResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{id}/blast</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.GraphResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{id}/graph</path>
+		<path>/{dataSource}/{format}/nodes/{id}/graph/{aspect}</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.SourcesResource</resourceClass>
+		<path>/{dataSource}/{format}/sources</path>
+		<path>/{dataSource}/{format}/sources/{id}</path>
+		<path>/{dataSource}/{format}/sources/{id}/nodes</path>
+		<path>/{dataSource}/{format}/sources/{id}/statements</path>
+		<path>/{dataSource}/{format}/sources/{id}/graph</path>
+		<path>/{dataSource}/{format}/sources/{id}/annotations</path>
+	</resourcePathMap>
+	
+	
+	
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.StatementsBySearchResource</resourceClass>
+		<path>/{dataSource}/{format}/search/{operator}/{term}/statements</path>
+		<path>/{dataSource}/{format}/search/{operator}/{term}/statements/{aspect}</path>
+	</resourcePathMap>
+	
+	<!-- AMIGO Resources -->
     
 	<resourcePathMap>
 		<resourceClass>org.geneontology.web.AmigoHomeResource</resourceClass>
 		<path>/</path>
 		<path></path>
 	</resourcePathMap>
+	
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.NodeSearchResource</resourceClass>
+		<path>/{dataSource}/{format}/search/{operator}/{term}</path>
+	</resourcePathMap>
+	
 	<resourcePathMap>
 		<resourceClass>org.geneontology.web.NodeDetailResource</resourceClass>
 		<path>/{dataSource}/{format}/entity/{id}</path>
@@ -66,5 +127,6 @@
 		<logName>org.obd</logName>
 		<level>INFO</level>
 	</logLevel>
+	
 
 </obdRESTServletConfig>

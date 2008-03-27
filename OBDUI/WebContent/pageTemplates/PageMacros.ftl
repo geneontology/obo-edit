@@ -1,18 +1,32 @@
+<#macro otherFormats>
+	<div id="external_links">
+	This page in other formats:<br/>
+	<#list formatLinks as formatLink>
+		&nbsp;&bull;&nbsp;${formatLink.link}<br/>
+	</#list>
+	</div>
+</#macro>
+
 <#macro mappedPathsList>
 	Mapped Paths:
-	<ul>
-	<#list mappedPaths as path>
-		<li>${path}</li>
+	<table class="std_table">
+	<#list pathMaps as path>
+		<tr>
+			<th>${path.className}</th><td>${path.mappedPath}</td>
+		</tr>
 	</#list>
-	</ul>
+	</table>
 </#macro>
 <#macro dataSourceList>
 	Available Data Sources:
+	<ul><li>${dataSource}</li></ul>
+	<#--
 	<ul>
 	<#list dataSources as dataSource>
 		<li>${dataSource}</li>
 	</#list>
 	</ul>
+	-->
 	<br/>
 	Configuration Messages:
 	<ul>
@@ -21,6 +35,33 @@
 	</#list>
 	</ul>
 </#macro>
+
+<#macro header>
+	<div class="new_page_header">
+		<span class="new_page_logo">OBD</span>
+		<div class="full_div_blue"></div>
+		<div class="menu_bar">
+			<div class="menu_items">
+				Menu Items Here
+			</div>
+			<div class="contact">
+				Contact Us&nbsp;&raquo; 
+			</div>
+		</div>
+		<div class="full_div_blue"></div>	
+	</div>
+</#macro>
+
+<#macro footer>
+	<div id="footer">
+		<div class="full_div_blue">
+		</div>
+		<div id="footer_content">
+			Footer stuff
+		</div>
+	</div>
+</#macro>
+
 <#macro border>
   <table border=4 cellspacing=0 cellpadding=4><tr><td>
     <#nested>
@@ -29,27 +70,13 @@
 
 <#macro searchForm>
  <div id="searchbar">
-
-      <form id="search_form">
-      	<table>
-      		<tr>
-      			<td>Search for</td><td>In:</td>
-      		</tr>
-      		<tr>
-      			<td>
-        			<input id="search_term" name="search_term"/>
-        		</td>
-        		<td>
-        			<select id="dataSource" name="dataSource">
-        				<#list dataSources as dataSource>
-        					<option value="${dataSource}">${dataSource}</option>
-        				</#list>
-        			</select>
-        		</td>
-        	</tr>
-        </table>
-        
-        <input name="button" type="button" onclick="nodeSearch('${contextName}')" value="Search" />
+ 	 <script type="text/javascript" src="/${contextName}/js/search.js">
+  	</script>
+	<form id="search_form" onsubmit="nodeSearch('${contextName})">
+		Search for:<br/>
+       	<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}')" value="Go" />
+       	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
+        <input type="hidden" name="dataSource" id="dataSource" value="${dataSource}"/>
      </form>
  </div>
 </#macro>
