@@ -121,13 +121,20 @@ public class DefaultTermModel implements TermModel {
 				Link lb = (Link) b;
 				IdentifiedObject terma = la.getChild();
 				IdentifiedObject termb = lb.getChild();
+				String namea = terma.getName();
+				String nameb = termb.getName();
+				if (namea == null && nameb == null)
+				    return 0;
+				if (namea == null)
+				    return -1;
+				if (nameb == null)
+				    return 1;
 
 				int compval;
 				if (ignoreCase)
-					compval = terma.getName().compareToIgnoreCase(
-							termb.getName());
+				    compval = namea.compareToIgnoreCase(nameb);
 				else
-					compval = terma.getName().compareTo(termb.getName());
+				    compval = namea.compareTo(nameb);
 
 				if (compval == 0) {
 					if (la.getType() != lb.getType()) {
