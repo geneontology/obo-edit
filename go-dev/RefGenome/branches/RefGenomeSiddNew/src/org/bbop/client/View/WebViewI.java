@@ -15,5 +15,6 @@ public interface WebViewI {
 	public LoginPanelView getLoginPanel();
 	public NavPanelView getNavPanel();
 	public ResultPanelView getResultPanel();
+	public BrowsePanelView getBrowsePanel();
 	
 }
