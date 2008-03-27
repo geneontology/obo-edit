@@ -4,7 +4,8 @@ import org.obo.datamodel.*;
 
 import java.util.*;
 
-public class DanglingObjectImpl implements DanglingObject {
+//public class DanglingObjectImpl implements DanglingObject {
+public class DanglingObjectImpl extends OBOClassImpl implements DanglingObject {
 
 	/**
 	 * 
@@ -18,9 +19,14 @@ public class DanglingObjectImpl implements DanglingObject {
 	protected boolean root;
 
 	public DanglingObjectImpl(String id) {
+	    super(id);
 		this.id = id;
-		setName(id);
+		setName(id); // ?
 	}
+
+    public boolean isDangling() {
+	return true;
+    }
 
 	public String getID() {
 		return id;
@@ -185,7 +191,7 @@ public class DanglingObjectImpl implements DanglingObject {
 	public Object clone() {
 		try {
 			return super.clone();
-		} catch (CloneNotSupportedException ex) {
+		} catch (Exception ex) {
 			return null;
 		}
 	}
