@@ -322,7 +322,7 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	public String getName() {
-//	    System.out.println("DeleteAction.getName: deleteTerm = " + deleteTerm); // DEL
+// 	        System.out.println("DeleteAction.getName: deleteTerm = " + deleteTerm); // DEL
 		if (shouldDestroy)
 		    return "Destroy " + ((deleteTerm) ? "term" : "relationship");
 		else
