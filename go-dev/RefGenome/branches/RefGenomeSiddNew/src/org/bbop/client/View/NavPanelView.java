@@ -3,9 +3,12 @@ package org.bbop.client.View;
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.Manager.NavPanelManagerI;
 
+import com.google.gwt.user.client.ui.TextBox;
+
 
 
 import net.mygwt.ui.client.Style;
+import net.mygwt.ui.client.widget.Button;
 import net.mygwt.ui.client.widget.ExpandBar;
 import net.mygwt.ui.client.widget.ExpandItem;
 import net.mygwt.ui.client.widget.layout.FillLayout;
@@ -46,10 +49,9 @@ public  class NavPanelView  implements NavPanelManagerI {
 		browseitem.getContainer().add(browseview.getView());
 		
 		searchitem.setText("Search");
-		FillLayout layout = new FillLayout(6);
-		layout.setType(Style.VERTICAL);
-		searchitem.getContainer().setLayout(layout);
 		searchitem.getContainer().add(searchview.getView());
+		
+		
 		
 		curationitem.setText("Curation");
 		curationitem.getContainer().addText("Curate genes");
