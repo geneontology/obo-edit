@@ -1,5 +1,7 @@
 package org.oboedit.gui.components;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,17 +23,6 @@ import org.bbop.swing.PlusIcon;
 
 public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
-
-
-
-
-
-
-//	private static final long serialVersionUID = 1L;
-//	public static void main(String args[]) {
-//	java.awt.EventQueue.invokeLater(new Runnable() {
-//	public void run() {
-
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
 		// TODO Auto-generated constructor stub
@@ -40,9 +31,6 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 	
 	
 	
-//	}
-//	});
-//	}
 	private javax.swing.JButton activateAdvancedOptionButton;
 	private javax.swing.JComboBox failOnClashChoiceComboBox;
 	private javax.swing.JLabel failOnClashLabel;
@@ -60,7 +48,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 	private javax.swing.JPanel mergeOptionPanel;
 	private javax.swing.JLabel mergedFileLabel;
 	private javax.swing.JButton minusButton;
-	private javax.swing.JTabbedPane oboMergeTabbedPane1;
+	private javax.swing.JTabbedPane oboMergeTabbedPane;
 	private javax.swing.JPanel ontologyPathPanel;
 	private javax.swing.JButton outputFileButton;
 	private javax.swing.JLabel outputFileFormatLabel;
@@ -100,8 +88,14 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 	private void buildGUI() {
 		// TODO Auto-generated method stub
+		initComponents();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+		add(oboMergeTabbedPane, "Center");
+		oboMergeTabbedPane.addTab("Process Feedback", processFeedbackPanel);
+		oboMergeTabbedPane.addTab("Ontology Files", inputFilePanel);
+
+	
 	}
 	
 	/**
@@ -123,7 +117,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 	private void initComponents() {
 
-		oboMergeTabbedPane1 = new javax.swing.JTabbedPane();
+		oboMergeTabbedPane = new javax.swing.JTabbedPane();
 		processFeedbackPanel = new javax.swing.JPanel();
 		saveFeedbackToFileBrowseButton = new javax.swing.JButton();
 		saveFeedbackToFileCheckBox = new javax.swing.JCheckBox();
@@ -165,6 +159,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 //		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("OBO Merge");
 
+		
 		saveFeedbackToFileBrowseButton.setText("Browse");
 		saveFeedbackToFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -185,8 +180,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 		saveFeedbackToFileCheckBox.setText("Save feed back to file");
 
-		oboMergeTabbedPane1.addTab("Process Feedback", processFeedbackPanel);
-
+		
 		saveProfilePanel.setBorder(javax.swing.BorderFactory
 				.createTitledBorder("Save Profile"));
 
@@ -445,7 +439,6 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		});
 
 
-		oboMergeTabbedPane1.addTab("Ontology Files", inputFilePanel);
 
 		mergeButton.setText("Merge");
 		mergeButton.addActionListener(new java.awt.event.ActionListener() {
