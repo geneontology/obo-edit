@@ -29,7 +29,6 @@ import javax.swing.UIManager;
 import net.infonode.docking.View;
 
 import org.bbop.dataadapter.DataAdapter;
-import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.expression.ExpressionException;
 import org.bbop.framework.AbstractApplicationStartupTask;
 import org.bbop.framework.DockPanelFactory;
@@ -38,7 +37,6 @@ import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
 import org.bbop.framework.HelpManager;
-import org.bbop.framework.IOManager;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.VetoableShutdownListener;
@@ -74,7 +72,6 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.FocusMenuManager;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.example.LineNumberFetchBehaviorTask; //import org.oboedit.example.LineNumberFetchBehaviorTask;
 import org.oboedit.gui.AdvancedOBOUI;
 import org.oboedit.gui.AdvancedOWLUI;
 import org.oboedit.gui.DefaultInputHandler;
@@ -106,19 +103,18 @@ import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
-import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
 import org.oboedit.gui.factory.CategoryManagerFactory;
+import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
 import org.oboedit.gui.factory.CrossProductInfoFactory;
 import org.oboedit.gui.factory.CrossProductMatrixEditorFactory;
-import org.oboedit.gui.factory.TreeViewFactory;
 import org.oboedit.gui.factory.DbxrefLibraryFactory;
 import org.oboedit.gui.factory.ExplanationComponentFactory;
 import org.oboedit.gui.factory.ExtendedInfoFactory;
 import org.oboedit.gui.factory.GlobalFilterManagerFactory;
-import org.oboedit.gui.factory.GraphViewFactory;
 import org.oboedit.gui.factory.GraphEditorFactory;
+import org.oboedit.gui.factory.GraphViewFactory;
 import org.oboedit.gui.factory.GraphvizViewFactory;
 import org.oboedit.gui.factory.HistoryBrowserFactory;
 import org.oboedit.gui.factory.IDManagerFactory;
@@ -126,6 +122,7 @@ import org.oboedit.gui.factory.IDResolutionComponentFactory;
 import org.oboedit.gui.factory.IntersectionEditorFactory;
 import org.oboedit.gui.factory.LinkSearchComponentFactory;
 import org.oboedit.gui.factory.NamespaceManagerFactory;
+import org.oboedit.gui.factory.OBOMergeCanvasMark2Factory;
 import org.oboedit.gui.factory.OntologyChangeTrackerFactory;
 import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
@@ -136,6 +133,7 @@ import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
+import org.oboedit.gui.factory.TreeViewFactory;
 import org.oboedit.gui.factory.VerificationManagerFactory;
 import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.MaxParentCountCriterion;
@@ -213,7 +211,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new IDManagerFactory(), new ReasonerManagerFactory(),
 				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
-
+//				new OBOMergeCanvasMark2Factory(),
 				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
 
 				new CrossProductMatrixEditorFactory(),
