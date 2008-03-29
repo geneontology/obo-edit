@@ -27,7 +27,7 @@ public interface RefGenomeServiceAsync  {
 	
 	public void fetchIdsByName(String searchTerm, AsyncCallback callback);
 
-	public void fetchIdsByName(String searchTerm, String taxonId, AsyncCallback callback);
+	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
 
 	public void fetchLabelsById(String searchTerm, AsyncCallback callback);
 
@@ -39,10 +39,10 @@ public interface RefGenomeServiceAsync  {
 	
 	public void fetchReferenceTargetIds( AsyncCallback callback);
 	
-	public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
+	//public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
 
-	public void assignGeneTargetStatus(String geneId, AsyncCallback callback) ;
+	//public void assignGeneTargetStatus(String geneId, AsyncCallback callback) ;
 
-	public void retractGeneTargetStatus(String geneId, AsyncCallback callback) ;
+	//public void retractGeneTargetStatus(String geneId, AsyncCallback callback) ;
 
 }

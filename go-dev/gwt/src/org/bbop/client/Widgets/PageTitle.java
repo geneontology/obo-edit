@@ -1,12 +1,9 @@
 package org.bbop.client.Widgets;
 
-import java.util.Iterator;
-
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
+
+//
 public class PageTitle extends HTML{
 
 	public PageTitle (String title) {
