@@ -49,13 +49,12 @@ public class QueryButton extends VerticalPanel{
 				String[] res = (String[]) result;
 
 				if( res.length > 0 ){					
-					//Window.alert("Found query, \"" + res.length + "\".");
 					rt.clear();
 					for (int i = 0; i < res.length; i++) {
 						rt.add(res[i]);
 					}
 				}else{
-					Window.alert("Unknown query from \"" + "\".");
+					Window.alert("Unknown query.");
 				}
 			}
 

@@ -17,10 +17,6 @@ package org.bbop.client;
 
 import java.util.Map;
 
-import org.bbop.client.model.DateDTO;
-import org.bbop.client.model.NodeDTO;
-import org.bbop.client.model.StatementDTO;
-
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**

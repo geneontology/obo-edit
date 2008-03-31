@@ -118,19 +118,21 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		return "foo";
 	}
 
+	// NOTE: This doesn't seem to do anything.
 	public String[] fetchIdsByName(String searchTerm) {
 		Collection<Node> nodes;
 		try {
 			nodes = shard.getNodesBySearch(searchTerm, 
 					ComparisonQueryTerm.Operator.STARTS_WITH); // TODO
 			Collection<String> nids = new LinkedList<String>();
+			System.err.println("nodes size = "+ nodes.size() + "");
 			for (Node n : nodes) {
 				System.err.println("n="+n);
 				nids.add(n.getId());
 			}
 			String[] nidArr = 
 				(String[]) nids.toArray(new String[0]);
-			System.err.println("nids array="+nidArr);
+			System.err.println("nids array("+ nidArr.length + ")="+nidArr);
 			return nidArr;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -143,7 +145,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	// NOTE: This works fine.
 	public String[] fetchReferenceTaxonIds() {
 		return nodesToIds(speciesInfoShard.getNodes());
 	}
@@ -162,7 +165,6 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		return null;
 	}
 
-
 	public Map<String, String> fetchLabelMapsById(String searchTerm) {
 		// TODO Auto-generated method stub
 		return null;
@@ -175,7 +177,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	public String[] fetchReferenceTargetIds() {
 		// TODO Auto-generated method stub
-		return null;
+		String[] sa =  new String[0];
+		return sa;
 	}
 
 	public String getTaxonIdPrefix() {
