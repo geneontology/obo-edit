@@ -215,15 +215,24 @@ ${graph.getNode(id).getLabel()!""}
    </td>
    <td class="provenance">
     <#list statement.getSubStatements() as ss>
-     <span class="tag">
-      <@nodePageLink id="${ss.getRelationId()}"/>
-     <span class="tag">
-     </span>
-      <@nodePageLink id="${ss.getTargetId()}"/>
-      <#if ss.isLiteral()>
-      <@nodePageLink id="${ss.getValue()}"/>
-      </#if>
-     </span>
+     <#if ss.getRelationId() == "OBO_REL:instance_of">
+     <#else>
+      <span class="tag">
+       <#if ss.getRelationId() == "oban:assigned_by">
+       <i>assigned-by</i>
+       <#elseif ss.getRelationId() == "oban:has_data_source">
+       <i>provenance</i>
+       <#else>
+       <@nodePageLink id="${ss.getRelationId()}"/>
+       </#if>
+      <span class="tag">
+      </span>
+       <@nodePageLink id="${ss.getTargetId()}"/>
+       <#if ss.isLiteral()>
+       <@nodePageLink id="${ss.getValue()}"/>
+       </#if>
+      </span>
+     </#if>
     </#list>
    </td>
   </tr>
