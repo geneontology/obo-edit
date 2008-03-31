@@ -34,7 +34,9 @@ public class OBDRestApplication extends Application {
   	    for ( int index = 0; index < handlers.length; index++ ) {
   	      handlers[index].setLevel( Level.FINE );
   	    }
-    }
+ 	    Logger.getLogger( "org.bbop.rdbms").setLevel(Level.FINEST);
+ 	    Logger.getLogger( "org.obd.rdbms").setLevel(Level.FINEST);
+ 	      }
 
     @Override
     public Restlet createRoot() {
