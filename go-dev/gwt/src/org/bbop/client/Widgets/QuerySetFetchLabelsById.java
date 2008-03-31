@@ -17,19 +17,20 @@ import com.google.gwt.user.client.ui.Widget;
 
 	
 //
-public class QueryButtonFetchReferenceTaxonIds extends QueryButton{
+public class QuerySetFetchLabelsById extends QuerySet{
 
+	//
+	public QuerySetFetchLabelsById (String label, TrivialResultsTable resultsTable){
 
-	public QueryButtonFetchReferenceTaxonIds (String label, TrivialResultsTable resultsTable){
 		super(label, resultsTable);
+
 	}
 	
 	//
-	public void callbackAction(){
-
+	public void callbackAction(String str){
 		RefGenomeServiceAsync rgService = (RefGenomeServiceAsync) GWT.create(RefGenomeService.class);
 		((ServiceDefTarget) rgService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/RefGenomeService");
-		rgService.fetchReferenceTaxonIds(async);
+		rgService.fetchLabelsById(str, async);
 	}
-		
+
 }

@@ -8,9 +8,11 @@ import org.bbop.client.Widgets.FreeInputBox;
 import org.bbop.client.Widgets.PageTitle;
 import org.bbop.client.Widgets.QueryButtonFetchReferenceTargetIds;
 import org.bbop.client.Widgets.QueryButtonFetchReferenceTaxonIds;
+import org.bbop.client.Widgets.QueryDoubleSetFetchIdsByNameAndTxon;
 import org.bbop.client.Widgets.QuerySet;
 import org.bbop.client.Widgets.QuerySetFetchIdsByName;
-import org.bbop.client.Widgets.StringArrayDump;
+import org.bbop.client.Widgets.QuerySetFetchLabelsById;
+import org.bbop.client.Widgets.TrivialResultsTable;
 import org.bbop.client.Widgets.QueryButton;
 
 import com.google.gwt.core.client.GWT;
@@ -47,21 +49,25 @@ public class Search implements WebUIInterface {
     //
     final QueryButtonFetchReferenceTaxonIds b1;
     final QueryButtonFetchReferenceTargetIds b2;
-    final QuerySetFetchIdsByName t1;
+    final QuerySetFetchIdsByName s1;
+    final QuerySetFetchLabelsById s2;
+    final QueryDoubleSetFetchIdsByNameAndTxon ds1;
     
     //
-    final StringArrayDump resultsTable;
+    final TrivialResultsTable resultsTable;
 	
 	//	
 	public Search (WebSession webSession) {
 
 		session = webSession;
 
-	    resultsTable = new StringArrayDump();
+	    resultsTable = new TrivialResultsTable();
 	    
-		b1 = new QueryButtonFetchReferenceTaxonIds("referenceTaxonIds", resultsTable);
-		b2 = new QueryButtonFetchReferenceTargetIds("referenceTargetIds", resultsTable);
-		t1 = new QuerySetFetchIdsByName("idsByName", resultsTable);
+		b1 = new QueryButtonFetchReferenceTaxonIds("Fetch Reference Taxon Ids", resultsTable);
+		b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTable);
+		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name", resultsTable);
+		s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTable);
+		ds1 = new QueryDoubleSetFetchIdsByNameAndTxon("Fetch Ids By Name And Taxon", resultsTable);
 	}
 
 	
@@ -78,7 +84,9 @@ public class Search implements WebUIInterface {
 
 		vp.add(b1);
 		vp.add(b2);
-		vp.add(t1);
+		vp.add(s1);
+		vp.add(s2);
+		vp.add(ds1);
 		
 		vp.add(resultsTable);
 		vp.add(new Hyperlink("General", "general"));
