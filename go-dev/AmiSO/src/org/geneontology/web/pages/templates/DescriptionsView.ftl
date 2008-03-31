@@ -12,7 +12,7 @@
  </tr>
  <#list desc.getDifferentiaArguments() as diff>
  <tr>
-   <td></td>
+   <td> </td>
    <td>
    <#if diff_index==0>
     <i>that</i>

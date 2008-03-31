@@ -8,10 +8,11 @@ ${graph.getNode(focusId).getLabel()!""}
 </h1>
 
 
-<@section title="Class details">
+<@section title="Entity details">
 <div class="block" id="info">
 <nodePageLink id=${focusId}/>
 <dl class="term-info">
+ <#if termview.getSynonymStatements(focusId).size() != 0 > 
  <dt>Synonyms</dt>
  <#list termview.getSynonymStatements(focusId) as statement>
   <dd class="syn">
@@ -19,29 +20,36 @@ ${graph.getNode(focusId).getLabel()!""}
    ${statement.getValue()}
   </dd>
  </#list>
+ </#if>
 
-<dt>Text Definition</dt>
+<#if termview.getTextualDefinitionStatements(focusId).size() != 0 > 
+ <dt>Text Definition</dt>
 <#list termview.getTextualDefinitionStatements(focusId) as statement>
  <dd class="def">
   ${statement.getValue()}
  </dd>
 </#list>
+</#if>
 
+<#if termview.getSubsetStatements(focusId).size() != 0 > 
 <dt>Subset</dt>
  <#list termview.getSubsetStatements(focusId) as statement>
   <dd class="subset">
     <@nodePageLink id="${statement.getTargetId()}"/>
   </dd>
  </#list>
+ </#if>
+ 
 
+<#if graph.getCompositionalDescription(focusId)?exists>
+<#-- TODO: non-G-D style -->
+<#if graph.getCompositionalDescription(focusId).isGenusDifferentia()>
 <!-- Genus-differentia (cross-product) definition -->
 <dt>compositional description</dt>
-<#if graph.getCompositionalDescription(focusId)?exists>
 <dd class="logical_definition">
  ${graph.getCompositionalDescription(focusId).toString()}
 </dd>
 </dt>
-<#if graph.getCompositionalDescription(focusId).isGenusDifferentia()>
 <dt>Genus</dt>
 
  <dd> <@nodePageLink id="${graph.getCompositionalDescription(focusId).getGenus().getNodeId()}"/>
@@ -96,16 +104,26 @@ ${graph.getNode(focusId).getLabel()!""}
  </table>
  
  </@section>
- <@section title="Links from this class">
+ <@section title="Link Statements">
  
   <table>
   <#list graph.getAllLinkStatementsForNode(focusId) as s>
-  <#-- only show plain links: not links that for N+S conditions -->
-  <#if (!s.isIntersectionSemantics() && !s.isUnionSemantics())>
-    <@statementRow statement=s/>
-  </#if>
- </#list>
- </table>
+   <#-- only show plain links: not links that for N+S conditions -->
+   <#if (!s.isInferred())>
+    <#if (!s.isIntersectionSemantics() && !s.isUnionSemantics())>
+     <@statementRow statement=s/>
+    </#if>
+   </#if>
+  </#list>
+ <#list graph.getAllLinkStatementsForNode(focusId) as s>
+   <#-- only show plain links: not links that for N+S conditions -->
+   <#if (s.isInferred())>
+    <#if (!s.isIntersectionSemantics() && !s.isUnionSemantics())>
+     <@statementRow statement=s/>
+    </#if>
+   </#if>
+  </#list>
+  </table>
  </@section>
  <@section title="Links to this class">
  
