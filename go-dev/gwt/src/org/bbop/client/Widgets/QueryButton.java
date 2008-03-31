@@ -20,11 +20,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class QueryButton extends VerticalPanel{
 
 	final PushButton pb;
-	final StringArrayDump rt;
+	final TrivialResultsTable rt;
 	final AsyncCallback async;
 	
 	//
-	public QueryButton (String label, StringArrayDump resultsTable){
+	public QueryButton (String label, TrivialResultsTable resultsTable){
 
 		super();
 

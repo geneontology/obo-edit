@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class QueryButtonFetchReferenceTargetIds extends QueryButton{
 
 
-	public QueryButtonFetchReferenceTargetIds (String label, StringArrayDump resultsTable){
+	public QueryButtonFetchReferenceTargetIds (String label, TrivialResultsTable resultsTable){
 		super(label, resultsTable);
 	}
 	

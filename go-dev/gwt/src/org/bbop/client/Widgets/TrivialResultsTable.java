@@ -4,10 +4,10 @@ import com.google.gwt.user.client.ui.FlexTable;
 
 
 //
-public class StringArrayDump extends FlexTable{
+public class TrivialResultsTable extends FlexTable{
 
 	
-	public StringArrayDump (){
+	public TrivialResultsTable (){
 
 		super();
 	}

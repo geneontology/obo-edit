@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class QuerySetFetchIdsByName extends QuerySet{
 
 	//
-	public QuerySetFetchIdsByName (String label, StringArrayDump resultsTable){
+	public QuerySetFetchIdsByName (String label, TrivialResultsTable resultsTable){
 
 		super(label, resultsTable);
 

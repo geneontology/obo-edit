@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.PushButton;
@@ -17,32 +18,47 @@ import com.google.gwt.user.client.ui.Widget;
 
 	
 //
-public class QuerySet extends VerticalPanel{
+public class QueryDoubleSetFetchIdsByNameAndTxon extends VerticalPanel{
 
-	final TextBox tb;
+	final TextBox tb1;
+	final TextBox tb2;
 	final PushButton pb;
 	final TrivialResultsTable rt;
 	final AsyncCallback async;
 	
 	//
-	public QuerySet (String label, TrivialResultsTable resultsTable){
+	public QueryDoubleSetFetchIdsByNameAndTxon (String label, TrivialResultsTable resultsTable){
 
 		super();
 
 		rt = resultsTable;
 		
-		tb = new TextBox();		
-		tb.setVisibleLength(30);
-		tb.setText("???");
+		tb1 = new TextBox();		
+		tb1.setVisibleLength(30);
+		tb1.setText("???");
+		
+		tb2 = new TextBox();		
+		tb2.setVisibleLength(30);
+		tb2.setText("???");
 		
 		pb = new PushButton(label, "Looking...");
 
 	    // When the user hits enter in the textbox submit data.
-	    tb.addKeyboardListener(new KeyboardListenerAdapter() {
+	    tb1.addKeyboardListener(new KeyboardListenerAdapter() {
 	    	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 	    		// Check for enter
 	    		if ((keyCode == KeyboardListener.KEY_ENTER) && (modifiers == 0)) {
-	    			callbackAction(tb.getText());
+	    			callbackAction(tb1.getText(), tb2.getText());
+	    		}
+	    	}
+	    });
+
+	    // When the user hits enter in the textbox submit data.
+	    tb2.addKeyboardListener(new KeyboardListenerAdapter() {
+	    	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+	    		// Check for enter
+	    		if ((keyCode == KeyboardListener.KEY_ENTER) && (modifiers == 0)) {
+	    			callbackAction(tb1.getText(), tb2.getText());
 	    		}
 	    	}
 	    });
@@ -50,12 +66,16 @@ public class QuerySet extends VerticalPanel{
 	    // Setup the button to call the service
 	    pb.addClickListener( new ClickListener() {
 	    	public void onClick(Widget sender) {
-	    		callbackAction(tb.getText());
+	    		callbackAction(tb1.getText(), tb2.getText());
 	    	}
 	    });
 
 		
-		this.add(tb);
+	    HorizontalPanel hp = new HorizontalPanel();
+	    
+		hp.add(tb1);
+		hp.add(tb2);
+		this.add(hp);
 		this.add(pb);
 
 		//
@@ -83,9 +103,9 @@ public class QuerySet extends VerticalPanel{
 	}
 	
 	//
-	public void callbackAction(String str){
+	public void callbackAction(String str1, String str2){
 
-		Window.alert("Need to properly override callbackAction! (" + str + ")");
+		Window.alert("Need to properly override callbackAction! (" + str1 + ", " + str2 + ")");
 	}
 
 }
