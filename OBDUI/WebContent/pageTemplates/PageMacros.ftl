@@ -36,13 +36,23 @@
 	</ul>
 </#macro>
 
+<#macro genTitle pageName>
+		<head>
+		<title>
+			${pageName}
+		</title>
+		<link rel="stylesheet" type="text/css" href="/OBDUI/css/obd-main.css"/>
+		 <script type="text/javascript" src="/OBDUI/js/table-toggle.js"></script>
+	</head>
+</#macro>
+
 <#macro header>
 	<div class="new_page_header">
 		<span class="new_page_logo">OBD</span>
 		<div class="full_div_blue"></div>
 		<div class="menu_bar">
 			<div class="menu_items">
-				Menu Items Here
+				OBD Home&nbsp;&raquo;&nbsp;Node Detail
 			</div>
 			<div class="contact">
 				Contact Us&nbsp;&raquo; 
@@ -57,7 +67,7 @@
 		<div class="full_div_blue">
 		</div>
 		<div id="footer_content">
-			Footer stuff
+			Page Last Updated March, 2008&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&copy;&nbsp;Berkeley Bioinformatics and Ontologies Group and the National Center for Biomedical Ontologies 
 		</div>
 	</div>
 </#macro>

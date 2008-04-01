@@ -130,6 +130,8 @@ public class StatementsResource extends NodeResource {
 			TreeMap<String, Object> map = new TreeMap<String, Object>();
 			map.put("graph", g);
 			map.put("focusId",getNodeId());
+    		map.put("contextName", this.getContextName());
+    		map.put("dataSource", this.dataSource);
 			return getTemplateRepresentation("StatementsResourceView",map);
 		}
 		else {

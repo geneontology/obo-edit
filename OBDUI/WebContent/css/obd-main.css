@@ -4,6 +4,11 @@ body {
 	font-size:12px;
 }
 
+h2 {
+    color:#000055;
+    padding-bottom:0px;
+    margin-bottom:2px;
+}
 a:link {
     text-decoration: none; 
 }
@@ -15,6 +20,12 @@ a:hover {
 a:visited {
     text-decoration: none;
 }
+
+a:visited:hover {
+    text-decoration: underline;
+}
+
+
 
 .new_page_header{
 	width: 100%;
@@ -146,7 +157,52 @@ table.threecol {
     border-top-color:#afafaf;
     border-collapse:collapse;
     border-bottom-style:none;
-    
-    
-    
 }
+
+
+.nodeDetailBox{
+    padding:4px;
+    background-color:#efefef;
+    margin-top:2px;
+}
+
+table.statementTableWrapper {
+    border-style: none;
+	border-spacing:0px ;
+	background-color:#fdfdfd;
+	border-collapse: collapse;
+	width:100%;
+}
+
+table.statementTableWrapper td {
+    border-style: none;
+	border-spacing:0px ;
+	background-color:#fdfdfd;
+	border-collapse: collapse;
+	width:100%;
+	padding:10px;
+}
+
+ul.annotationStatement {
+    font-size:12px;
+    padding-left:12px;
+}
+
+ul.annotationStatement li {
+    padding-bottom:12px;
+}
+
+.li_divider{
+    padding:0px;
+    margin:0px;
+    height:0px;
+    border-top-style:dotted;
+    border-top-color:#afafaf;
+    border-collapse:collapse;
+    border-bottom-style:none;
+}
+
+.li_lowerspan{
+    font-size:11px;
+}
+
