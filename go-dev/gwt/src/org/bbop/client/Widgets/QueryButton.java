@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.Widgets.Results.Trivial;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -20,11 +21,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class QueryButton extends VerticalPanel{
 
 	final PushButton pb;
-	final TrivialResultsTable rt;
+	final Trivial rt;
 	final AsyncCallback async;
 	
 	//
-	public QueryButton (String label, TrivialResultsTable resultsTable){
+	public QueryButton (String label, Trivial resultsTable){
 
 		super();
 
@@ -46,16 +47,7 @@ public class QueryButton extends VerticalPanel{
 
 			public void onSuccess(Object result) {
 
-				String[] res = (String[]) result;
-
-				if( res.length > 0 ){					
-					rt.clear();
-					for (int i = 0; i < res.length; i++) {
-						rt.add(res[i]);
-					}
-				}else{
-					Window.alert("Unknown query.");
-				}
+						rt.add(result);
 			}
 
 			public void onFailure(Throwable caught) {

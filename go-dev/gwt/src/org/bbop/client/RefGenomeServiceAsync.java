@@ -26,7 +26,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface RefGenomeServiceAsync  {
 	
 	public void fetchIdsByName(String searchTerm, AsyncCallback callback);
-
+	
 	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
 
 	public void fetchLabelsById(String searchTerm, AsyncCallback callback);

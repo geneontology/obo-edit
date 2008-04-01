@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.model.DateDTO;
@@ -100,6 +103,16 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		}
 		System.err.println("//shard="+shard);
 
+		// Use this in case of mystery errors.
+		//		// Optional: Crank up the logging.
+		//		Handler[] handlers = Logger.getLogger( "" ).getHandlers();
+		//		for ( int index = 0; index < handlers.length; index++ ) {
+		//		handlers[index].setLevel( Level.FINE );
+		//		}
+		//		Logger l1 = Logger.getLogger("org.bbop.rdbms");
+		//		Logger l2 = Logger.getLogger("org.obd");
+		//		l1.setLevel(Level.FINEST);
+		//		l2.setLevel(Level.FINEST);
 	}
 	public String testCall() {
 		System.err.println("foobar");
@@ -118,22 +131,57 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		return "foo";
 	}
 
-	// NOTE: This doesn't seem to do anything.
-	public String[] fetchIdsByName(String searchTerm) {
+//	//
+//	public String[] fetchIdsByName(String searchTerm) {
+//		Collection<Node> nodes;
+//		try {
+//			nodes = shard.getNodesBySearch(searchTerm, 
+//					ComparisonQueryTerm.Operator.STARTS_WITH); // TODO
+//			Collection<String> nids = new LinkedList<String>();
+//			//System.err.println("nodes size = "+ nodes.size() + "");
+//			for (Node n : nodes) {
+//				System.err.println("n="+n);
+//				nids.add(n.getId());
+//			}
+//			String[] nidArr = 
+//				(String[]) nids.toArray(new String[0]);
+//			System.err.println("nids array("+ nidArr.length + ")="+nidArr);
+//			return nidArr;
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null; // TODO
+//	}
+
+	//
+	public NodeDTO[] fetchIdsByName(String searchTerm) {
+
 		Collection<Node> nodes;
+		
 		try {
+			//NodeDTO[] nodeDTOs;
 			nodes = shard.getNodesBySearch(searchTerm, 
 					ComparisonQueryTerm.Operator.STARTS_WITH); // TODO
-			Collection<String> nids = new LinkedList<String>();
-			System.err.println("nodes size = "+ nodes.size() + "");
+			//Collection<NodeDTO> nodeDTOs = new LinkedList<NodeDTO>();
+			//System.err.println("nodes size = "+ nodes.size() + "");
+			NodeDTO[] nodeDTOs = new NodeDTO[nodes.size()];
+			int i = 0;
 			for (Node n : nodes) {
 				System.err.println("n="+n);
-				nids.add(n.getId());
+				NodeDTO nDTO = new NodeDTO(n.getId());
+				nDTO.setLabel(n.getLabel());
+				nDTO.setSourceId(n.getSourceId());
+				//nodeDTOs.add(nDTO);
+				nodeDTOs[i] = nDTO;
+				i++;
 			}
-			String[] nidArr = 
-				(String[]) nids.toArray(new String[0]);
-			System.err.println("nids array("+ nidArr.length + ")="+nidArr);
-			return nidArr;
+			//String[] nidArr = 
+			//	(String[]) nids.toArray(new String[0]);
+			//System.err.println("nids array("+ nidArr.length + ")="+nidArr);
+			//return nidArr;
+			//return (NodeDTO[])nodeDTOs.toArray();
+			return nodeDTOs;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
