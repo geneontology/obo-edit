@@ -191,6 +191,7 @@ public class NodeSearchResource extends NodeResource {
         groups.put("adult_mouse_anatomy.gxd", "Anatomical Part");
         groups.put("zebrafish_anatomy", "Anatomical Part");
         groups.put("fly_anatomy.ontology", "Anatomical Part");
+        groups.put("ZFA","Anatomical Part");
         groups.put("cell", "Anatomical Part");
         
         groups.put("disease_ontology", "Disease");

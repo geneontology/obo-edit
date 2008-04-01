@@ -117,11 +117,10 @@ public abstract class OBDResource extends Resource {
 	public String hrefStatement(Statement s,String dataSource) {
 		return  hrefStatement(new Graph(), s,dataSource);
 	}
+	
 
 	public String hrefStatement(Graph g, Statement s,String dataSource) {
 		StringBuilder sb = new StringBuilder();
-
-
 		sb.append(href(s.getNodeId(),dataSource));
 		Node n = g.getNode(s.getNodeId());
 		if (n != null && n.getLabel() != null)
@@ -153,6 +152,8 @@ public abstract class OBDResource extends Resource {
 
 		return sb.toString();
 	}
+	
+	
 
 	public Set<Map<String,String>> mapToOtherFormats(String res,String dataSource){
 		Set<Map<String,String>> links = new HashSet<Map<String,String>>();

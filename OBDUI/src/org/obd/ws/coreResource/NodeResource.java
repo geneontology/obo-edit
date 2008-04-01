@@ -2,14 +2,26 @@
 package org.obd.ws.coreResource;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
+import org.obd.model.Graph;
+import org.obd.model.LinkStatement;
+import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
+import org.obd.model.Statement;
+import org.obd.model.TermView;
 import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
+import org.obd.query.AnnotationLinkQueryTerm;
+import org.obd.query.LinkQueryTerm;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -117,13 +129,43 @@ public class NodeResource extends OBDResource {
     	else if (format.equals("owl")) {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
     		return result;
-    	}
-    	else {
+    	} else if (format.equals("html")){
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+    		resourceMap.put("contextName", this.getContextName());
+    		resourceMap.put("dataSource", this.dataSource);
+    		resourceMap.put("formatLinks",mapToOtherFormats("/nodes/"+this.nodeId,this.dataSource));
+    		resourceMap.put("node",this.node);
+
+    		List<Map<String,Set<String>>> annotationStatements = new ArrayList<Map<String,Set<String>>>();
+    		for (Statement s : this.getGraph("annotations").getStatements()){
+    			annotationStatements.add(this.organize(s, this.dataSource));
+    		}
+    		
+    		if (annotationStatements.size()>0){
+    			resourceMap.put("annotationStatements", annotationStatements);
+    		}
+    		
+    		List<Map<String,String>> aboutStatements = new ArrayList<Map<String,String>>();
+    		for (Statement s : this.getGraph("about").getStatements()){
+    			Map<String,String> m = new HashMap<String,String>();
+    			m.put("statement",this.organize(s, dataSource).get("statement").toArray(new String[0])[0]);
+    			if (s.isInferred()){
+    				m.put("entailment","Inferred");
+    			} else {
+    				m.put("entailment","Asserted");
+    			}
+    			aboutStatements.add(m);
+    		}
+    		if (aboutStatements.size()>0){
+    			resourceMap.put("aboutStatements", aboutStatements);
+    		}
+    		
+    		return getTemplateRepresentation("NodeDetails",resourceMap);
+    	} else {
+    		
 
     		
     		// Creates a text representation
-    		/*
     		StringBuilder sb = new StringBuilder();
     		sb.append("<pre>");
     		sb.append("------------\n");
@@ -136,14 +178,9 @@ public class NodeResource extends OBDResource {
     		sb.append("Description: ").append(hrefDescriptionFor(node.getId(),this.dataSource)).append("\n\n");
     		sb.append("Graph: ").append(hrefGraph(node.getId(),this.dataSource)).append("\n\n");
            	sb.append(hrefToOtherFormats("/nodes/"+getNodeId(),this.dataSource));
-            
-    		sb.append("<pre>");
-    		result = new StringRepresentation(sb, MediaType.TEXT_HTML);
-    		*/
-    		resourceMap.put("contextName", this.getContextName());
-    		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("formatLinks",mapToOtherFormats("/nodes/"+this.nodeId,this.dataSource));
-    		return getTemplateRepresentation("NodeDetails",resourceMap);
+    		sb.append("</pre>");
+    		return new StringRepresentation(sb, MediaType.TEXT_HTML);
+
     	}
     	return result;
     }
@@ -180,6 +217,130 @@ public class NodeResource extends OBDResource {
 		this.nodeId = nodeId;
 	}
     
-    
+	
+	protected Graph getGraph(String aspect) {
+		Graph graph;
+		if (aspect == null || aspect.equals(""))
+			aspect = "about";
 
+		LinkQueryTerm lq = new LinkQueryTerm();
+		if (aspect.equals("annotations")) {
+			lq = new AnnotationLinkQueryTerm(getNodeId());
+		} else {
+			if (aspect.equals("about") || aspect.equals("all"))
+				lq.setNode(getNodeId());
+			else if (aspect.equals("to"))
+				lq.setTarget(getNodeId());
+			else if (aspect.equals("source"))
+				lq.setSource(getNodeId());
+			else
+				lq.setNode(getNodeId());
+		}
+
+		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
+
+		if (aspect.equals("all")) {
+			lq = new LinkQueryTerm();
+			//lq.setRelation(relationId);
+			lq.setTarget(getNodeId());
+			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+		}
+		graph = new Graph(stmts);
+		if (true) {
+			String[] nids = graph.getReferencedNodeIds();
+			for (String nid : nids) {
+				Node n = getShard(this.dataSource).getNode(nid);
+				graph.addNode(n);
+			}
+		}
+		return graph;
+	}
+	
+	public Map<String,Set<String>> organize( Statement s,String dataSource) {
+		
+		Map<String,Set<String>> organizedStatements = new HashMap<String,Set<String>>();
+		organizedStatements.put("statement", new HashSet<String>());
+		organizedStatements.put("provenance", new HashSet<String>());
+		organizedStatements.put("assigned_by", new HashSet<String>());
+		
+		
+		Graph g = new Graph();
+		StringBuilder sb = new StringBuilder();
+		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
+		if (sourceNode != null && sourceNode.getLabel() != null){
+			sb.append(hrefLabel(sourceNode.getLabel(),sourceNode.getId(),dataSource));
+		} else {
+			sb.append(href(s.getNodeId(),dataSource));
+		}
+		Node n = g.getNode(s.getNodeId());
+		if (n != null && n.getLabel() != null)
+			sb.append(" \""+n.getLabel()+"\"");
+		sb.append("  ");
+		
+		sb.append(hrefLabel(this.prettifyRelationshipTerm(s.getRelationId()),s.getRelationId(),dataSource));
+		sb.append(" ");
+		
+		
+		n = g.getNode(s.getTargetId());
+		
+		
+		if (n != null && n.getLabel() != null)
+			sb.append(" \""+n.getLabel()+"\"");
+		if (s instanceof LinkStatement) {
+			
+			Node target = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
+			if (target != null && target.getLabel() != null){
+				sb.append(hrefLabel(target.getLabel(),target.getId(),dataSource));	
+			} else {
+				sb.append(href(s.getTargetId(),dataSource));
+			}
+			
+			LinkStatement ls = (LinkStatement)s;
+			if (ls.isIntersectionSemantics()) {
+				sb.append(" [n+s condition element]");    			
+			}
+		}
+		
+		organizedStatements.get("statement").add(sb.toString());
+		
+		
+		for (Statement subStatement : s.getSubStatements()){
+			System.out.println("SUBSTATEMENT: " + subStatement.getRelationId());
+			
+			if (subStatement.getRelationId().equals("oban:assigned_by")){
+				organizedStatements.get("assigned_by").add(subStatement.getTargetId());
+			}
+			if (subStatement.getRelationId().equals("oban:has_data_source")){
+				organizedStatements.get("provenance").add(subStatement.getTargetId());
+			}
+		}
+		
+		sb = new StringBuilder();
+		if (s instanceof LiteralStatement) {
+			sb.append(" "+((LiteralStatement)s).getSValue());
+		}
+		if (s.isInferred())
+			sb.append(" [Implied]");
+		if (s.getSourceId() != null)
+			sb.append(" [source:"+href(s.getSourceId(),dataSource)+"]");
+		if (s.getPositedByNodeId() != null)
+			sb.append(" [positedBy:"+href(s.getPositedByNodeId(),dataSource)+"]");
+		for (Statement ss : s.getSubStatements())
+			sb.append(" <<"+hrefStatement(g,ss,dataSource)+">> ");
+
+		return organizedStatements;
+	}
+	
+	private String hrefAboutStatement(Statement s,String dataSource){
+		
+		return null;
+	}
+	
+	private String prettifyRelationshipTerm(String term){
+		if (term.contains("OBO_REL:")||term.contains("OBOL:")){
+			return  term.substring(term.indexOf(":")+1).replace("_", " ");
+		} else {
+			return term.replace("_", " ");
+		}
+	}
 }
