@@ -84,7 +84,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 			OBDSQLShard obd;
 			obd = new OBDSQLShard();
 			System.err.println("connecting="+shard);
-			obd.connect(defaultJdbcPath);
+			obd.connect(defaultJdbcPath, "sjcarbon", "");
 			System.err.println("obd="+obd);
 			((MultiShard)shard).addShard(obd);
 		} catch (SQLException e) {
