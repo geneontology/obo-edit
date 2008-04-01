@@ -18,20 +18,29 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class RefGenome implements EntryPoint, HistoryListener {
 				
-	private WebSession session = new WebSession();
+	private WebSession session;
 	
-	private Login login = new Login(session);
-	private Logout logout = new Logout(session);
-	private General general = new General(session);
-	private Summary summary = new Summary(session);
-	private Search search = new Search(session);
-	private Salutation salutation = new Salutation(session);
+	private Login login;
+	private Logout logout;
+	private General general;
+	private Summary summary;
+	private Search search;
+	private Salutation salutation;
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 
+		session = new WebSession();
+		
+		login = new Login(session);
+		logout = new Logout(session);
+		general = new General(session);
+		summary = new Summary(session);
+		search = new Search(session);
+		salutation = new Salutation(session);
+		
 	    //String initToken = History.getToken();
 	    //if (initToken.length() == 0)
 	    String initToken = "login";
@@ -49,6 +58,7 @@ public class RefGenome implements EntryPoint, HistoryListener {
 		// TODO: Nuke root window.
 		RootPanel root = RootPanel.get();
 		root.clear();
+		root.add(session.getBlocker());
 		
 		if( passToken.equalsIgnoreCase("login") ){
 			

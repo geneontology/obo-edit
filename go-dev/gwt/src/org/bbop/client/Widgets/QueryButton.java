@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.WebSession;
 import org.bbop.client.Widgets.Results.Trivial;
 
 import com.google.gwt.core.client.GWT;
@@ -23,19 +24,23 @@ public class QueryButton extends VerticalPanel{
 	final PushButton pb;
 	final Trivial rt;
 	final AsyncCallback async;
+	final WebSession session;
 	
 	//
-	public QueryButton (String label, Trivial resultsTable){
+	public QueryButton (String label, Trivial resultsTable, WebSession wsession){
 
 		super();
 
 		rt = resultsTable;
+		
+		session = wsession;
 		
 		pb = new PushButton(label, "Looking...");
 
 	    // Setup the button to call the service
 	    pb.addClickListener( new ClickListener() {
 	    	public void onClick(Widget sender) {
+	    		session.block();
 	    		callbackAction();
 	    	}
 	    });
@@ -48,9 +53,11 @@ public class QueryButton extends VerticalPanel{
 			public void onSuccess(Object result) {
 
 						rt.add(result);
+			    		session.unblock();
 			}
 
 			public void onFailure(Throwable caught) {
+	    		session.unblock();
 				Window.alert("Server error (callbackAction): " + caught.toString());
 			}
 		};

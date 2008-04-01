@@ -1,5 +1,9 @@
 package org.bbop.client;
 
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
+
 
 public class WebSession {
 		
@@ -7,31 +11,48 @@ public class WebSession {
 	private String capacity;
 	private boolean authenticated_p ;
 	
+	private SimplePanel blockingPanel;
 	
     // Create the object according to a session.
     public WebSession () {
-    	username = "";
-    	capacity = "";
+
+    	//
+    	username = "UERROR";
+    	capacity = "CERROR";
     	authenticated_p = false;
-	}
+
+    	//
+    	blockingPanel = new SimplePanel();
+    	blockingPanel.add(new HTML("Please be patient..."));
+    	blockingPanel.setVisible(false);
+    	blockingPanel.setStyleName("blocking-panel");
+    }
 	
 	public boolean tryAuthentication (String uname, String pass, String cap) {
 
 		boolean boo = false;
 
-		if( uname.equals("foo") &&
-			pass.equals("bar") ){
+		if( uname.equals("foo") &&	pass.equals("bar") ){
 			
 			authenticated_p = true;
 			username = "Foo";
 			capacity = cap;	
 			boo = true;
 		}
+		if( uname.equals("") &&	pass.equals("") ){
+				
+				authenticated_p = true;
+				username = "Anonymous";
+				capacity = cap;	
+				boo = true;
+		}
 		
 		return boo;
 	}
 
 	public void revokeAuthentication () {
+		username = "UERROR";
+		capacity = "CERROR";	
 		authenticated_p = false;
 	}
 
@@ -47,17 +68,17 @@ public class WebSession {
 		return capacity;
 	}
 
-//	//
-//	// TODO/BUG: Everything below here should be be gotten on auto from a database. 
-//	//
-//	
-//	public void setAuthentication (boolean boo) {
-//		authenticated_p = boo;
-//	}
-//	public void setUsername (String str) {
-//		username = str;
-//	}
-//	public void setAuthentication (String str) {
-//		capacity = str;
-//	}
+
+	public SimplePanel getBlocker () {
+		return blockingPanel;
+	}
+
+	public void block () {
+		blockingPanel.setVisible(true);
+	}
+	
+	public void unblock () {
+		blockingPanel.setVisible(false);
+	}
+	
 }
