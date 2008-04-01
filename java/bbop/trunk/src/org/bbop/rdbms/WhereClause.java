@@ -16,6 +16,9 @@ public interface WhereClause extends RelationalTerm {
 	
 	public void addOperatorConstraint(String op, String arg1, Object arg2);
 	
+	public void addContainsAnyConstraint(String colName,String in);
+	public void addContainsAllConstraint(String colName,String in);
+	
 	public void addConstraint(String constr);
 
 	public Collection<Object> getPlaceHolderVals();

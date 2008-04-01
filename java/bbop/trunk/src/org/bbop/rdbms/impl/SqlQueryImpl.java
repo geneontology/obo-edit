@@ -173,14 +173,14 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 
 	public ResultSet execute(Connection conn) throws SQLException {
 		String sql = toSQL();
-		Logger.getLogger("org.bbop.rdbms").info(toSQL());
+		Logger.getLogger("org.bbop.rdbms").fine(toSQL());
 	
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		
 		// TODO: there must be a more generic way to do this!!
 		int i=1;
 		for (Object v : getPlaceHolderVals()) {
-			Logger.getLogger("org.bbop.rdbms").info("  ?= "+v);
+			Logger.getLogger("org.bbop.rdbms").fine("  ?= "+v);
 			if (v instanceof String)
 				stmt.setString(i, (String)v);
 			else if (v instanceof Boolean)

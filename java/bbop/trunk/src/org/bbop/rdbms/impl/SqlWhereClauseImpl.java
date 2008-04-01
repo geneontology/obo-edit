@@ -44,6 +44,46 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		this.constraintSet.addConstraint(s + " IN (" + concatValues(",",in) + ")");
 	}
 	
+	public void addContainsAllConstraint(String colName,String in){
+		
+		String[] parts = in.split("\\s");
+		
+		String constraints = "(";
+		for (int i=0;i<parts.length;i++){
+			if (parts[i].trim().length()>0){
+				if (i>0){
+					constraints += " AND ";
+				}
+				constraints += (lower(colName) + " LIKE " + lower("?"));
+				placeHolderVals.add(("%" + parts[i].trim() + "%"));
+			}
+		}
+		constraints += ")";
+		this.constraintSet.addConstraint(constraints);
+		
+	}
+	
+	public void addContainsAnyConstraint(String colName,String in){
+		String[] parts = in.split("\\s");
+		
+		String constraints = "(";
+		for (int i=0;i<parts.length;i++){
+			if (parts[i].trim().length()>0){
+				if (i>0){
+					constraints += " OR ";
+				}
+				constraints += (lower(colName) + " LIKE " + lower("?"));
+				placeHolderVals.add(("%" + parts[i].trim() + "%"));
+			}
+		}
+		constraints += ")";
+		this.constraintSet.addConstraint(constraints);
+	}
+	
+	private String lower(String s){
+		return "lower(" + s + ")";
+	}
+	
 	public void addInConstraint(String s, RelationalQuery subQuery) {
 		// TODO: delayed access?
 		this.constraintSet.addConstraint(s + " IN (" + subQuery.toSQL() + ")");
