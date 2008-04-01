@@ -207,19 +207,21 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 			String c = rt.toString();
 			if (c.contains("=")) {
 				String[] toks = c.split(" += +",2);
-				String jc2 = null;
-				if (toks[0].equals(joinCol))
-					jc2 = toks[1];
-				else if (toks[1].equals(joinCol))
-					jc2 = toks[0];
-				
-				if (jc2 != null && jc2.contains(".")) {
-					String[] toks2 = c.split("\\.",2);
-					String alias = toks2[0];
-					if (aliasMap.containsKey(alias) && aliasMap.get(alias).equals(table))
-						return alias;
+				if (toks.length == 2) {
+					String jc2 = null;
+					if (toks[0].equals(joinCol))
+						jc2 = toks[1];
+					else if (toks[1].equals(joinCol))
+						jc2 = toks[0];
+
+					if (jc2 != null && jc2.contains(".")) {
+						String[] toks2 = c.split("\\.",2);
+						String alias = toks2[0];
+						if (aliasMap.containsKey(alias) && aliasMap.get(alias).equals(table))
+							return alias;
+					}
 				}
-					           
+
 			}
 		}
 		return null;
