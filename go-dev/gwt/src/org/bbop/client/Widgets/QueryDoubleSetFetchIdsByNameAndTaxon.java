@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.Widgets.Results.Trivial;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -11,7 +12,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 public class QueryDoubleSetFetchIdsByNameAndTaxon extends QueryDoubleSet{
 
 	//
-	public QueryDoubleSetFetchIdsByNameAndTaxon (String label, TrivialResultsTable resultsTable){
+	public QueryDoubleSetFetchIdsByNameAndTaxon (String label, Trivial resultsTable){
 
 		super(label, resultsTable);
 

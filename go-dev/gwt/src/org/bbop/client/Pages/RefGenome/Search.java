@@ -8,8 +8,11 @@ import org.bbop.client.Widgets.QueryButtonFetchReferenceTaxonIds;
 import org.bbop.client.Widgets.QueryButtonGetTaxonIdPrefix;
 import org.bbop.client.Widgets.QueryDoubleSetFetchIdsByNameAndTaxon;
 import org.bbop.client.Widgets.QuerySetFetchIdsByName;
+import org.bbop.client.Widgets.QuerySetFetchIdsByName;
 import org.bbop.client.Widgets.QuerySetFetchLabelsById;
-import org.bbop.client.Widgets.TrivialResultsTable;
+import org.bbop.client.Widgets.Results.TrivialNodeDTOs;
+import org.bbop.client.Widgets.Results.Trivial;
+import org.bbop.client.Widgets.Results.TrivialStrings;
 
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -29,21 +32,23 @@ public class Search implements WebUIInterface {
     final QueryDoubleSetFetchIdsByNameAndTaxon ds1;
     
     //
-    final TrivialResultsTable resultsTable;
+    final TrivialStrings resultsTableStrings;
+    final TrivialNodeDTOs resultsTableNodeDTO;
 	
 	//	
 	public Search (WebSession webSession) {
 
 		session = webSession;
 
-	    resultsTable = new TrivialResultsTable();
+	    resultsTableStrings = new TrivialStrings();
+	    resultsTableNodeDTO = new TrivialNodeDTOs();
 	    
-		b1 = new QueryButtonFetchReferenceTaxonIds("Fetch Reference Taxon Ids", resultsTable);
-		b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTable);
-		b3 = new QueryButtonGetTaxonIdPrefix("Get Taxon Id Prefix", resultsTable);
-		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name", resultsTable);
-		s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTable);
-		ds1 = new QueryDoubleSetFetchIdsByNameAndTaxon("Fetch Ids By Name And Taxon", resultsTable);
+		b1 = new QueryButtonFetchReferenceTaxonIds("Fetch Reference Taxon Ids", resultsTableStrings);
+		b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTableStrings);
+		b3 = new QueryButtonGetTaxonIdPrefix("Get Taxon Id Prefix", resultsTableStrings);
+		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name 2", resultsTableNodeDTO);
+		s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTableStrings);
+		ds1 = new QueryDoubleSetFetchIdsByNameAndTaxon("Fetch Ids By Name And Taxon", resultsTableStrings);
 	}
 
 	
@@ -54,7 +59,7 @@ public class Search implements WebUIInterface {
 
 
 	    // A results table to catch searches.
-	    resultsTable.reset("No data yet.");
+	    resultsTableStrings.reset("No data yet.");
 	    
 	    vp.add(new PageTitle("Search"));
 
@@ -65,7 +70,8 @@ public class Search implements WebUIInterface {
 		vp.add(s2);
 		vp.add(ds1);
 		
-		vp.add(resultsTable);
+		vp.add(resultsTableStrings);
+		vp.add(resultsTableNodeDTO);
 		vp.add(new Hyperlink("General", "general"));
 		vp.add(new Hyperlink("Logout", "logout"));
 

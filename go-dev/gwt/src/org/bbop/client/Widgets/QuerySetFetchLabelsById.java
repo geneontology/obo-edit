@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.Widgets.Results.TrivialStrings;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -20,7 +21,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class QuerySetFetchLabelsById extends QuerySet{
 
 	//
-	public QuerySetFetchLabelsById (String label, TrivialResultsTable resultsTable){
+	public QuerySetFetchLabelsById (String label, TrivialStrings resultsTable){
 
 		super(label, resultsTable);
 

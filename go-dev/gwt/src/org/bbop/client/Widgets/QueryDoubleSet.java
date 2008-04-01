@@ -1,5 +1,7 @@
 package org.bbop.client.Widgets;
 
+import org.bbop.client.Widgets.Results.Trivial;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -18,11 +20,11 @@ public class QueryDoubleSet extends VerticalPanel{
 	final TextBox tb1;
 	final TextBox tb2;
 	final PushButton pb;
-	final TrivialResultsTable rt;
+	final Trivial rt;
 	final AsyncCallback async;
 	
 	//
-	public QueryDoubleSet (String label, TrivialResultsTable resultsTable){
+	public QueryDoubleSet (String label, Trivial resultsTable){
 
 		super();
 

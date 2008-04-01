@@ -17,6 +17,8 @@ package org.bbop.client;
 
 import java.util.Map;
 
+import org.bbop.client.model.NodeDTO;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -36,16 +38,17 @@ public interface RefGenomeService extends RemoteService {
 	// user operations 
 	// ===================
 	
-
 	/**
-	 * query ALL nodes by a searchTerm, return matching node IDs
+	 * query ALL nodes by a searchTerm, return matching nodes
 	 * 
 	 * returned nodes can represent ontology classes, genes, homologsets etc
 	 * @param searchTerm
 	 * @return 
 	 */
-	public String[] fetchIdsByName(String searchTerm);
+	public NodeDTO[] fetchIdsByName(String searchTerm);
+	//public String[] fetchIdsByName(String searchTerm);
 	//public String[] fetchIdsByName(String searchTerm, String operator);
+
 	
 	/**
 	 * limits search results by taxon
