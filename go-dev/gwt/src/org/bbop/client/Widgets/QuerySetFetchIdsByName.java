@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.WebSession;
 import org.bbop.client.Widgets.Results.TrivialNodeDTOs;
 import org.bbop.client.Widgets.Results.Trivial;
 
@@ -22,9 +23,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class QuerySetFetchIdsByName extends QuerySet{
 
 	//
-	public QuerySetFetchIdsByName (String label, TrivialNodeDTOs resultsTableNodeDTO){
+	public QuerySetFetchIdsByName (String label, TrivialNodeDTOs resultsTableNodeDTO, WebSession sess){
 
-		super(label, resultsTableNodeDTO);
+		super(label, resultsTableNodeDTO, sess);
 
 	}
 	

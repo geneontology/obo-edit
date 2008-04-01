@@ -2,6 +2,7 @@ package org.bbop.client.Widgets;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
+import org.bbop.client.WebSession;
 import org.bbop.client.Widgets.Results.Trivial;
 
 import com.google.gwt.core.client.GWT;
@@ -24,13 +25,16 @@ public class QuerySet extends VerticalPanel{
 	final PushButton pb;
 	final Trivial rt;
 	final AsyncCallback async;
+	final WebSession session;
 	
 	//
-	public QuerySet (String label, Trivial resultsTable){
+	public QuerySet (String label, Trivial resultsTable, WebSession wsession){
 
 		super();
 
 		rt = resultsTable;
+		
+		session = wsession;
 		
 		tb = new TextBox();		
 		tb.setVisibleLength(30);
@@ -43,6 +47,7 @@ public class QuerySet extends VerticalPanel{
 	    	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 	    		// Check for enter
 	    		if ((keyCode == KeyboardListener.KEY_ENTER) && (modifiers == 0)) {
+	    			session.block();
 	    			callbackAction(tb.getText());
 	    		}
 	    	}
@@ -51,6 +56,7 @@ public class QuerySet extends VerticalPanel{
 	    // Setup the button to call the service
 	    pb.addClickListener( new ClickListener() {
 	    	public void onClick(Widget sender) {
+	    		session.block();
 	    		callbackAction(tb.getText());
 	    	}
 	    });
@@ -65,9 +71,11 @@ public class QuerySet extends VerticalPanel{
 			public void onSuccess(Object result) {
 
 				rt.add(result);
+				session.unblock();
 			}
 
 			public void onFailure(Throwable caught) {
+				session.unblock();
 				Window.alert("Server error (callbackAction): " + caught.toString());
 			}
 		};
