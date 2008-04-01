@@ -42,7 +42,7 @@ public class Login implements WebUIInterface {
 	private TextBox usernameBox = new TextBox();
 	private PasswordTextBox passwordBox = new PasswordTextBox();
 	private RadioButton bigCheeseRB = new RadioButton("interfaceRadioGroup", "Big Cheese");
-	private RadioButton littleCheesesRB = new RadioButton("interfaceRadioGroup", "little cheeses");
+	private RadioButton littleCheeseRB = new RadioButton("interfaceRadioGroup", "little cheese");
 	private PushButton loginButton = new PushButton("Login", "Login");    
 	//	 Some HTML.
 	// private HTML termTabHTML = new HTML("There is currently no data available.");
@@ -58,13 +58,13 @@ public class Login implements WebUIInterface {
 			public void onClick(Widget sender) {
 
 				String iface = "";
-				if( littleCheesesRB.isChecked() ){
-					iface = "ref";
+				if( littleCheeseRB.isChecked() ){
+					iface = "little cheese";
 				}else if( bigCheeseRB.isChecked() ){
-					iface = "mod";				
+					iface = "Big Cheese";				
 				}else{
 					Window.alert("Something has gone very wrong with the interface selection. Logging in as ref anyways.");				
-					iface = "ref";
+					iface = "little cheese";
 				}
 
 				doLogin(usernameBox.getText(),
@@ -78,12 +78,15 @@ public class Login implements WebUIInterface {
 	//
 	private void doLogin(String uname, String pass, String iface){
 
-		// TODO: Add some kind of check against the database.
+		//
+		if( session.tryAuthentication(uname, pass, iface) ){
 		
-		//Window.alert("Login not yet implemented.");
-		String passToken = History.getToken();
-		passToken = "general";
-		History.newItem(passToken);
+			String passToken = History.getToken();
+			passToken = "general";
+			History.newItem(passToken);
+		}else{
+			Window.alert("Unable to authenticate.");
+		}
 	}
 	
 	
@@ -94,7 +97,7 @@ public class Login implements WebUIInterface {
 		vp.add(new PageTitle("Login"));
 		vp.add(usernameBox);
 		vp.add(passwordBox);
-		vp.add(littleCheesesRB);
+		vp.add(littleCheeseRB);
 		vp.add(bigCheeseRB);
 		vp.add(loginButton);
 

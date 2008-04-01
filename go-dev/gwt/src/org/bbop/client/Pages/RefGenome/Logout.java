@@ -26,7 +26,8 @@ public class Logout implements WebUIInterface {
 
 	//
 	private boolean doLogout(){
-		// TODO: Close out session.
+		// Close out session.
+		session.revokeAuthentication();
 		return true;
 	}
 	

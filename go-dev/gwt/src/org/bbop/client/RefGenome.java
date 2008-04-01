@@ -4,6 +4,7 @@ package org.bbop.client;
 import org.bbop.client.Pages.RefGenome.General;
 import org.bbop.client.Pages.RefGenome.Login;
 import org.bbop.client.Pages.RefGenome.Logout;
+import org.bbop.client.Pages.RefGenome.Salutation;
 import org.bbop.client.Pages.RefGenome.Search;
 import org.bbop.client.Pages.RefGenome.Summary;
 
@@ -24,6 +25,7 @@ public class RefGenome implements EntryPoint, HistoryListener {
 	private General general = new General(session);
 	private Summary summary = new Summary(session);
 	private Search search = new Search(session);
+	private Salutation salutation = new Salutation(session);
 	
 	/**
 	 * This is the entry point method.
@@ -36,7 +38,6 @@ public class RefGenome implements EntryPoint, HistoryListener {
 	    //onHistoryChanged(initToken);
 
 	    History.addHistoryListener(this);
-
 	    History.newItem(initToken);
 	}
 
@@ -54,18 +55,23 @@ public class RefGenome implements EntryPoint, HistoryListener {
 			root.add(login.getWidget());
 			root.add(summary.getWidget());
 
-		}else if( passToken.equalsIgnoreCase("logout") ){
+		}else if( passToken.equalsIgnoreCase("logout") &&
+				session.getAuthentication() ){
 			
 			//root.add(general.getWidget());
 		    root.add(logout.getWidget());
 
-		}else if( passToken.equalsIgnoreCase("general") ){
+		}else if( passToken.equalsIgnoreCase("general") &&
+				session.getAuthentication() ){
 
+		    root.add(salutation.getWidget());
 		    root.add(general.getWidget());
 		    root.add(summary.getWidget());
 
-		}else if( passToken.equalsIgnoreCase("search") ){
+		}else if( passToken.equalsIgnoreCase("search") &&
+				session.getAuthentication() ){
 
+			root.add(salutation.getWidget());
 		    root.add(search.getWidget());
 
 		}else{
