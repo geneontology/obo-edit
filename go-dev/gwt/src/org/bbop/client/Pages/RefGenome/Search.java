@@ -46,7 +46,7 @@ public class Search implements WebUIInterface {
 		b1 = new QueryButtonFetchReferenceTaxonIds("Fetch Reference Taxon Ids", resultsTableStrings);
 		b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTableStrings);
 		b3 = new QueryButtonGetTaxonIdPrefix("Get Taxon Id Prefix", resultsTableStrings);
-		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name 2", resultsTableNodeDTO);
+		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name", resultsTableNodeDTO);
 		s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTableStrings);
 		ds1 = new QueryDoubleSetFetchIdsByNameAndTaxon("Fetch Ids By Name And Taxon", resultsTableStrings);
 	}
