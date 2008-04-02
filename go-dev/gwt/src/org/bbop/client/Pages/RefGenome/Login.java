@@ -57,14 +57,14 @@ public class Login implements WebUIInterface {
 		loginButton.addClickListener( new ClickListener() {
 			public void onClick(Widget sender) {
 
-				String iface = "";
+				int iface;
 				if( littleCheeseRB.isChecked() ){
-					iface = "little cheese";
+					iface = WebSession.LITTLE;
 				}else if( bigCheeseRB.isChecked() ){
-					iface = "Big Cheese";				
+					iface = WebSession.BIG;				
 				}else{
 					Window.alert("Something has gone very wrong with the interface selection. Logging in as ref anyways.");				
-					iface = "little cheese";
+					iface = WebSession.LITTLE;
 				}
 
 				doLogin(usernameBox.getText(),
@@ -76,7 +76,7 @@ public class Login implements WebUIInterface {
 
 
 	//
-	private void doLogin(String uname, String pass, String iface){
+	private void doLogin(String uname, String pass, int iface){
 
 		//
 		if( session.tryAuthentication(uname, pass, iface) ){

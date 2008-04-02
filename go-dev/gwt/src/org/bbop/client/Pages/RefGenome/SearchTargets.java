@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Search implements WebUIInterface {
+public class SearchTargets implements WebUIInterface {
 
 	private WebSession session;
 	private String defaultQuery;
@@ -36,7 +36,7 @@ public class Search implements WebUIInterface {
     final TrivialNodeDTOs resultsTableNodeDTO;
 	
 	//	
-	public Search (WebSession webSession) {
+	public SearchTargets (WebSession webSession) {
 
 		session = webSession;
 
@@ -61,7 +61,7 @@ public class Search implements WebUIInterface {
 	    // A results table to catch searches.
 	    resultsTableStrings.reset("No data yet.");
 	    
-	    vp.add(new PageTitle("Search"));
+	    vp.add(new PageTitle("Search Targets"));
 
 		vp.add(b1);
 		vp.add(b2);
@@ -72,8 +72,6 @@ public class Search implements WebUIInterface {
 		
 		vp.add(resultsTableStrings);
 		vp.add(resultsTableNodeDTO);
-		vp.add(new Hyperlink("General", "general"));
-		vp.add(new Hyperlink("Logout", "logout"));
 
 		return vp;
 	}

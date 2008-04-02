@@ -49,7 +49,7 @@ public class Salutation implements WebUIInterface {
 		VerticalPanel vp = new VerticalPanel();
 		//vp.add(new PageTitle("Logout"));
 		vp.add(new HTML("Welcome, " + session.getUsername() +
-				". You are logged in as a " + session.getCapacity() + "."));	
+				". You are logged in as a " + session.getCapacityLabel( session.getCapacity() ) + "."));	
 		return vp;
 	}
 

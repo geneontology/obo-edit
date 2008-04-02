@@ -30,54 +30,33 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Summary implements WebUIInterface {
+public class Reports implements WebUIInterface {
 		
 	private WebSession session = null;
-	
-	//	 Le Table.
-    private FlexTable table = new FlexTable();
 
     // Create the object according to a session.
-    public Summary (WebSession webSession) {
+    public Reports (WebSession webSession) {
 
     	session = webSession;
     	
-    	drawTable();
 	}
 
 	public Widget getWidget() {
 
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new PageTitle("Summary"));
-		vp.add(table);
+
+		vp.add(new PageTitle("Reports"));
+
+		vp.add(new HTML("Reports 1 (button)"));	
+		vp.add(new HTML("Reports 2 (button)"));	
+		vp.add(new HTML("Reports 3 (button)"));	
+		vp.add(new HTML("Reports 4 (button)"));	
+
 		return vp;
 	}
 
 	public void updateWidget() {
-		drawTable();
+		//
 	}
 	
-	private void drawTable (){
-		
-		// Populate table with data from somewhere.
-    	table.setText(0, 0, "[Species]");
-    	table.setText(0, 1, "[Homologs]");
-    	table.setText(0, 2, "[! Homologs]");
-    	table.setText(0, 3, "[Comprehensive]");
-    	
-    	table.setText(1, 0, "worm");
-    	table.setText(1, 1, "200");
-    	table.setText(1, 2, "30");
-    	table.setText(1, 3, "189");
-    	
-    	table.setText(2, 0, "fly");
-    	table.setText(2, 1, "185");
-    	table.setText(2, 2, "19");
-    	table.setText(2, 3, "160");
-
-    	table.setText(3, 0, "human");
-    	table.setText(3, 1, "274");
-    	table.setText(3, 2, "2");
-    	table.setText(3, 3, "100");
-	}
 }
