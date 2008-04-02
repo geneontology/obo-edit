@@ -1,0 +1,15 @@
+MyGWT - Widget Library
+Copyright (c) 2007, MyGWT
+All rights reserved.
+licensing@mygwt.net
+
+http://mygwt.net/license
+
+
+License of CSS and Graphics ("Assets")
+------------------------------------------------------------------------------------------
+The Assets distributed with MyGWT are licensed for use ONLY
+with their associated MyGWT Java component ("Component"). Use of the Assets in
+any way that does not also include the Component is prohibited without explicit
+permission from MyGWT.  Deriving images and CSS from the Assets in an effort
+to bypass this license is also prohibited.
