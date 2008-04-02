@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
@@ -30,54 +31,29 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Summary implements WebUIInterface {
+public class InternalFooter implements WebUIInterface {
 		
 	private WebSession session = null;
 	
-	//	 Le Table.
-    private FlexTable table = new FlexTable();
-
     // Create the object according to a session.
-    public Summary (WebSession webSession) {
+    public InternalFooter (WebSession webSession) {
 
     	session = webSession;
     	
-    	drawTable();
 	}
 
 	public Widget getWidget() {
 
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new PageTitle("Summary"));
-		vp.add(table);
+		vp.add(new HTML("<br />"));		
+		//vp.add(new HTML("Other links of interest:"));
+		vp.add(new Hyperlink("General", "general"));
+		vp.add(new Hyperlink("Logout", "logout"));
 		return vp;
 	}
 
 	public void updateWidget() {
-		drawTable();
+		//
 	}
 	
-	private void drawTable (){
-		
-		// Populate table with data from somewhere.
-    	table.setText(0, 0, "[Species]");
-    	table.setText(0, 1, "[Homologs]");
-    	table.setText(0, 2, "[! Homologs]");
-    	table.setText(0, 3, "[Comprehensive]");
-    	
-    	table.setText(1, 0, "worm");
-    	table.setText(1, 1, "200");
-    	table.setText(1, 2, "30");
-    	table.setText(1, 3, "189");
-    	
-    	table.setText(2, 0, "fly");
-    	table.setText(2, 1, "185");
-    	table.setText(2, 2, "19");
-    	table.setText(2, 3, "160");
-
-    	table.setText(3, 0, "human");
-    	table.setText(3, 1, "274");
-    	table.setText(3, 2, "2");
-    	table.setText(3, 3, "100");
-	}
 }

@@ -1,14 +1,17 @@
 package org.bbop.client;
 
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 
 public class WebSession {
-		
+	
+	public static final int ERROR = -1;
+	public static final int BIG = 0;
+	public static final int LITTLE = 1;
+	
 	private String username;
-	private String capacity;
+	private int capacity;
 	private boolean authenticated_p ;
 	
 	private SimplePanel blockingPanel;
@@ -18,7 +21,7 @@ public class WebSession {
 
     	//
     	username = "UERROR";
-    	capacity = "CERROR";
+    	capacity = ERROR;
     	authenticated_p = false;
 
     	//
@@ -28,7 +31,7 @@ public class WebSession {
     	blockingPanel.setStyleName("blocking-panel");
     }
 	
-	public boolean tryAuthentication (String uname, String pass, String cap) {
+	public boolean tryAuthentication (String uname, String pass, int iface) {
 
 		boolean boo = false;
 
@@ -36,14 +39,14 @@ public class WebSession {
 			
 			authenticated_p = true;
 			username = "Foo";
-			capacity = cap;	
+			capacity = iface;	
 			boo = true;
 		}
 		if( uname.equals("") &&	pass.equals("") ){
 				
 				authenticated_p = true;
 				username = "Anonymous";
-				capacity = cap;	
+				capacity = iface;	
 				boo = true;
 		}
 		
@@ -52,7 +55,7 @@ public class WebSession {
 
 	public void revokeAuthentication () {
 		username = "UERROR";
-		capacity = "CERROR";	
+		capacity = ERROR;	
 		authenticated_p = false;
 	}
 
@@ -60,14 +63,28 @@ public class WebSession {
 		return authenticated_p;
 	}
 
+	public String getCapacityLabel (int cap) {
+
+		String str;
+		
+		if( cap == LITTLE ){
+			str = "little cheese";
+		}else if( cap == BIG ){
+			str = "Big Cheese";
+		}else{
+			str = "Unknown Capacity";
+		}
+
+		return str;
+	}
+	
 	public String getUsername () {
 		return username;
 	}
 
-	public String getCapacity () {
+	public int getCapacity () {
 		return capacity;
 	}
-
 
 	public SimplePanel getBlocker () {
 		return blockingPanel;

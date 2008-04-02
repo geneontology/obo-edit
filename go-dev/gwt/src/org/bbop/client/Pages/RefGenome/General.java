@@ -46,8 +46,25 @@ public class General implements WebUIInterface {
 		VerticalPanel vp = new VerticalPanel();
 
 		vp.add(new PageTitle("General"));
-		vp.add(new Hyperlink("Search", "search"));
-		vp.add(new Hyperlink("Logout", "logout"));
+
+		if( session.getCapacity() == WebSession.BIG ){
+
+			vp.add(new HTML("You may add targets here:"));
+			vp.add(new Hyperlink("Upload New Targets", "target_up"));
+			vp.add(new HTML("<br />"));
+			
+			vp.add(new HTML("You may also search current targets:"));
+			vp.add(new Hyperlink("Search Targets", "search_targets"));
+			vp.add(new HTML("<br />"));
+			
+			vp.add(new HTML("View reports about various aspects:"));
+			vp.add(new Hyperlink("View Reports", "reports"));
+			vp.add(new HTML("<br />"));
+			
+		}else{
+			vp.add(new HTML("You may upload orthologs here:"));
+			vp.add(new Hyperlink("Upload Orthologs", "ortho_up"));
+		}
 
 		return vp;
 	}
