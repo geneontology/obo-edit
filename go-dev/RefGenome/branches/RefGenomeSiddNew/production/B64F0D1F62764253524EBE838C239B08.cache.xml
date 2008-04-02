@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache-entry>
+	<generated-type-hash class="com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException_FieldSerializer" hash="FF198044879E67E1ACF2E0C29CC58CB5"/>
+	<generated-type-hash class="net.mygwt.ui.client.messages.MyMessages_" hash="6B9C7DE43196B8BF6D10565F4D16EA8B"/>
+	<generated-type-hash class="org.bbop.client.RefGenomeService_Proxy" hash="2E0E23C44DDE89BC7616277BFF807D01"/>
+	<generated-type-hash class="org.bbop.client.RefGenomeService_TypeSerializer" hash="4F7E07F2301F5609C8213474AAB27384"/>
+	<rebind-decision in="org.bbop.client.RefGenome" out="org.bbop.client.RefGenome"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.TextBoxImpl" out="com.google.gwt.user.client.ui.impl.TextBoxImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.ListBox.Impl" out="com.google.gwt.user.client.ui.ListBox.Impl"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FocusImpl" out="com.google.gwt.user.client.ui.impl.FocusImplOld"/>
+	<rebind-decision in="net.mygwt.ui.client.impl.MyDOMImpl" out="net.mygwt.ui.client.impl.MyDOMImpl"/>
+	<rebind-decision in="org.bbop.client.RefGenomeService" out="org.bbop.client.RefGenomeService_Proxy"/>
+	<rebind-decision in="net.mygwt.ui.client.messages.MyMessages" out="net.mygwt.ui.client.messages.MyMessages_"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.FormPanelImpl" out="com.google.gwt.user.client.ui.impl.FormPanelImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.HistoryImpl" out="com.google.gwt.user.client.impl.HistoryImplStandard"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.HTTPRequestImpl" out="com.google.gwt.user.client.impl.HTTPRequestImpl"/>
+	<rebind-decision in="com.google.gwt.user.client.impl.DOMImpl" out="com.google.gwt.user.client.impl.DOMImplOpera"/>
+	<rebind-decision in="com.google.gwt.user.client.ui.impl.PopupImpl" out="com.google.gwt.user.client.ui.impl.PopupImpl"/>
+</cache-entry>

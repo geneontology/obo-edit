@@ -1,0 +1,410 @@
+.my-expand-bar {
+  border: 1px solid #B7B7B7;
+  border-top: none;
+}
+
+.my-expand-item-hdr {
+  width: 100%;
+  background: transparent url(images/gray/expandbar/expand-item-bg.gif)
+    repeat-x;
+  border-bottom: 1px solid #B7B7B7;
+}
+.my-border {
+  border: 1px solid #DADADA;
+}.my-info {
+  background: url(images/gray/info/info-bg.gif) no-repeat;
+}.my-menu {
+  border: 1px solid #979797;
+}.my-message-box .my-shell-body {
+  background-color: #F2F0F0;
+}
+
+.my-mbox-info {
+  background: url(images/gray/dialog/info.gif) no-repeat;
+}
+
+.my-mbox-question {
+  background: url(images/gray/dialog/question.gif) no-repeat;
+}
+
+.my-mbox-warning {
+  background: url(images/gray/dialog/warning.gif) no-repeat;
+}
+
+.my-mbox-error {
+  background: url(images/gray/dialog/error.gif) no-repeat;
+}.my-paging-toolbar {
+  background: #D0DEF0 url(images/gray/toolbar/bg.gif) repeat-x scroll left top;
+  border-top: 1px solid #DADADA;
+}.my-border-layout {
+  border: 1px solid #DADADA;
+  background-color: #F0F1F3;
+}
+
+.my-cpanel-frame .my-cpanel-body-header {
+  border: 1px solid #d0d0d0;
+}
+
+.my-cpanel-frame .my-toolbar {
+  background: url(images/gray/toolbar/bg.gif) repeat-x;
+  border: 1px solid #d0d0d0;
+}
+
+.my-cpanel-box-mc {
+  background: #f1f1f1;
+}
+
+.my-cpanel-box-ml {
+  background: #fff url(images/gray/panel/left-right.gif) repeat-y 0 0;
+  zoom: 1;
+}
+
+.my-cpanel-box-mr {
+  background: transparent url(images/gray/panel/left-right.gif) repeat-y right 0;
+}
+
+.my-cpanel-box-mr div {
+  width: 6px;
+}
+
+.my-cpanel-box-bl {
+  background: transparent url(images/gray/panel/corners-sprite.gif) no-repeat 0 bottom;
+}
+
+.my-cpanel-box-br {
+  background: transparent url(images/gray/panel/corners-sprite.gif) no-repeat right
+    bottom;
+}
+
+.my-cpanel-box-bc {
+  background: transparent url(images/gray/panel/top-bottom.gif) repeat-x 0 bottom;
+  zoom: 1;
+}
+
+.my-cpanel-small-hdr {
+  height: 25px;
+  cursor: default;
+  border-bottom: 1px solid #BEBEBE;
+}
+
+.my-cpanel-small-hdr-l {
+  background: url(images/gray/panel/corners-sprite.gif) no-repeat 0px 0px;
+}
+
+.my-cpanel-small-hdr-c {
+  width: 100%;
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-small-hdr-ml {
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-small-hdr-mr {
+  padding-right: 2px;
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-small-hdr-r {
+  background: url(images/gray/panel/corners-sprite.gif) no-repeat right 0px;
+}
+
+.my-cpanel-small-hdr-r div {
+  width: 3px;
+}
+
+.my-cpanel-small-hdr-text {
+  padding-left: 4px;
+  color: #333333;
+  font-weight: bold;
+  cursor: default;
+}
+
+.my-cpanel-small-body {
+  position: relative;
+  overflow: hidden;
+  background-color: #F6F6F6;
+  border-left: 1px solid #E5E5E5;
+  border-right: 1px solid #E5E5E5;
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.my-cpanel {
+  border: 1px solid #BEBEBE;
+}
+
+.my-cpanel-showheader {
+  border: none;
+}
+
+.my-cpanel-hdr {
+  border-bottom: 1px solid #BEBEBE;
+}
+
+.my-cpanel-hdr-text {
+  padding: 0 4px;
+  font-weight: bold;
+  color: #333333;
+  font-size: 12px;
+}
+
+.my-cpanel-hdr-l {
+  background: url(images/gray/panel/corners-sprite.gif) no-repeat 0px 0px;
+}
+
+.my-cpanel-hdr-l div {
+  width: 3px;
+}
+
+.my-cpanel-hdr-ml {
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-hdr-c {
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-hdr-mr {
+  background: url(images/gray/panel/top-bottom.gif) repeat-x;
+}
+
+.my-cpanel-hdr-r {
+  background: url(images/gray/panel/corners-sprite.gif) no-repeat right 0px;
+}
+
+.my-cpanel-body-header {
+  border: 1px solid #DADADA;
+  border-top: none;
+}
+
+.my-tool {
+  background-image: url(images/gray/panel/tool-sprites.gif);
+}.my-resize-proxy {
+  border: 1px dotted #B8B4B4;
+  background-color: #EDEDED;
+}.my-shell-hdr-text {
+  color:#555;
+}
+
+.my-shell-hdr-l {
+  background: transparent url(images/gray/window/left-corners.png) no-repeat 0 0;
+}
+
+.my-shell-hdr-c {
+  background: transparent url(images/gray/window/top-bottom.png) repeat-x 0 0;
+}
+
+.my-shell-hdr-ml,.my-shell-hdr-mr {
+  background: transparent url(images/gray/window/top-bottom.png) repeat-x 0 0;
+}
+
+.my-shell-hdr-r {
+  background: transparent url(images/gray/window/right-corners.png) no-repeat right 0;
+}
+
+.my-shell-body-ml {
+  background: transparent url(images/gray/window/left-right.png) repeat-y 0 0;
+}
+
+.my-shell-body-mr {
+  background: transparent url(images/gray/window/left-right.png) repeat-y right 0;
+}
+
+.my-shell-body-mc {
+  border:1px solid #d0d0d0;
+  background:#e8e8e8;
+}
+.my-shell-body-wrapper {
+  border: 1px solid #d0d0d0;
+}
+
+.my-shell-body-wrapper-inner {
+  background-color: #E4E4E4;
+}
+
+.my-shell-plain .my-shell-body-mc {
+  border: none;
+  background:#F2F0F0 none repeat scroll 0%;
+}
+
+.my-shell-body-bl {
+  background: transparent url(images/gray/window/left-corners.png) no-repeat 0 bottom;
+}
+
+.my-shell-body-bc {
+  background: transparent url(images/gray/window/top-bottom.png) repeat-x 0 bottom;
+}
+
+.my-shell-body-br {
+  background: transparent url(images/gray/window/right-corners.png) no-repeat right bottom;
+}.my-tab-close {
+	background: url(images/gray/tabfolder/tab-close.gif) no-repeat 0px -9px;
+	width: 9px;
+	height: 9px;
+}
+
+.my-tab-close-over {
+	background: url(images/gray/tabfolder/tab-close.gif) no-repeat 0px -18px;
+}
+
+.my-tabfolder {
+  border: 1px solid #DADADA;
+  background-color: white;
+}
+
+.my-tabfolder-header {
+  background: url(images/gray/tabfolder/tabs.gif) repeat-x 0px -108px;
+}
+
+.my-tabitem {
+  cursor: pointer;	
+}
+
+.my-tabitem-text {
+  padding: 0 2 0 5px;
+  color: black;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.my-tabitem-over .my-tabitem-l {
+  background: url(images/gray/tabfolder/tabs.gif) no-repeat 0px -27px;
+}
+
+.my-tabitem-over .my-tabitem-ml, .my-tabitem-over .my-tabitem-c {
+  background: url(images/gray/tabfolder/tabs.gif) repeat-x 0px -81px;
+}
+
+.my-tabitem-over .my-tabitem-mr {
+  background: url(images/gray/tabfolder/tabs.gif) repeat-x 0px -81px;
+}
+
+.my-tabitem-over .my-tabitem-r {
+  background: url(images/gray/tabfolder/tabs.gif) no-repeat right -27px;
+}
+
+.my-tabitem-sel .my-tabitem-text {
+  color: black;
+}
+
+.my-tabitem-sel .my-tabitem-l {
+  background: url(images/gray/tabfolder/tabs.gif) no-repeat;
+}
+
+.my-tabitem-sel .my-tabitem-ml, .my-tabitem-sel .my-tabitem-c {
+  background: url(images/gray/tabfolder/tabs.gif) repeat-x 0px -54px;
+}
+
+.my-tabitem-sel .my-tabitem-mr {
+  background: url(images/gray/tabfolder/tabs.gif) repeat-x 0px -54px;
+}
+
+.my-tabitem-sel .my-tabitem-r {
+  background: url(images/gray/tabfolder/tabs.gif) no-repeat right 0px;
+}.my-tbl {
+	border: 1px solid #C6C5C5;
+}.my-toolbar {
+  background: #D0DEF0 url(images/gray/toolbar/bg.gif) repeat-x scroll left top;
+  border-top: 1px solid white;
+  border-bottom: 1px solid #d0d0d0;
+}
+
+.my-toolitem-seperator {
+  background: url(images/gray/toolbar/split.gif) no-repeat 50% 50%;
+}
+
+.my-toolitem-mr div {
+  background:transparent url(images/gray/toolbar/btn-arrow.gif) no-repeat scroll 0pt 3px;
+}
+
+.my-toolitem-over .my-toolitem-l {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat;
+}
+
+.my-toolitem-over .my-toolitem-ml,.my-toolitem-over .my-toolitem-c {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0 -42px;
+}
+
+.my-toolitem-over .my-toolitem-ml, .my-toolitem-over .my-toolitem-c {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0 -42px;
+}
+
+.my-toolitem-over .my-toolitem-mr {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0 -42px;
+}
+
+.my-toolitem-split div {
+  background:transparent url(images/gray/toolbar/btn-arrow.gif) no-repeat 0px -47px;
+}
+
+.my-toolitem-over .my-toolitem-r {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat 0px -21px;
+}
+
+.my-toolitem-down .my-toolitem-l {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat 0 -63px;
+}
+
+.my-toolitem-down .my-toolitem-ml,.my-toolitem-down .my-toolitem-c {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0px -105px;
+}
+
+.my-toolitem-down .my-toolitem-mr {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0px -105px;
+}
+
+.my-toolitem-down .my-toolitem-r {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat 0px -84px;
+}
+
+.my-toolitem-sel .my-toolitem-l {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat 0 -63px;
+}
+
+.my-toolitem-sel .my-toolitem-ml,.my-toolitem-sel .my-toolitem-c {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0px -105px;
+}
+
+.my-toolitem-sel .my-toolitem-mr {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) repeat-x 0px -105px;
+}
+
+.my-toolitem-sel .my-toolitem-r {
+  background: url(images/gray/toolbar/tb-btn-sprite.gif) no-repeat 0px -84px;
+}.my-tooltip-tl {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat;
+}
+
+.my-tooltip-tc {
+  background: url(images/gray/tooltip/tooltip-bg.gif) repeat-x 0px -8px;
+}
+
+.my-tooltip-tr {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat -448px 0px;
+}
+
+.my-tooltip-ml {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat 0px -16px;
+}
+
+.my-tooltip-mc {
+  background-color: #EDEDED;
+}
+
+.my-tooltip-mr {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat -448px -16px;
+}
+
+.my-tooltip-bl {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat 0px -4px;
+}
+
+.my-tooltip-bc {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat 0px -12px;
+}
+
+.my-tooltip-br {
+  background: url(images/gray/tooltip/tooltip-bg.gif) no-repeat -448px -4px;
+}.my-treetbl {
+	border: 1px solid #C6C5C5;
+}
