@@ -60,6 +60,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	private String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
 	private String ON_DATE = "dc:date";
 
+	static String userName = "remote_user";
+    static String password = "glurp";
 	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_homologene";
 
 	private String currentUserId;
@@ -84,7 +86,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 			OBDSQLShard obd;
 			obd = new OBDSQLShard();
 			System.err.println("connecting="+shard);
-			obd.connect(defaultJdbcPath, "sjcarbon", "");
+			obd.connect(defaultJdbcPath, userName, password);
 			System.err.println("obd="+obd);
 			((MultiShard)shard).addShard(obd);
 		} catch (SQLException e) {
