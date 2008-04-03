@@ -367,8 +367,9 @@ public class SearchPanel extends JPanel {
 
 	public static void save(Filter filterPair) {
 		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle("Save this search");
 		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
-				.getFrame());
+						       .getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
 			FilterUtil.save(file.toString(), filterPair);
