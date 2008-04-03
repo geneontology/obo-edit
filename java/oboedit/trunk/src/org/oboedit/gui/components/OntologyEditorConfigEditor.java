@@ -1,6 +1,7 @@
 package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -55,6 +56,9 @@ public class OntologyEditorConfigEditor extends ConfigurationPanel {
 		showToolbarBox.addItem("Never");
 		showToolbarBox.addItem("After using a hotkey");
 		showToolbarBox.addItem("Always");
+		showToolbarBox.setMaximumSize(
+		    new Dimension(Integer.MAX_VALUE, showToolbarBox.getPreferredSize().height));
+
 
 		showToolbarBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
