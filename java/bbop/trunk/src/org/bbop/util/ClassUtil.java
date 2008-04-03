@@ -62,11 +62,15 @@ public class ClassUtil {
 		String regexp = path.replaceAll("\\*\\*", ".`").replaceAll("\\*",
 				"[^/]`").replace('`', '*');
 		Pattern p = Pattern.compile(regexp);
+		// This is a pretty inefficient approach--it considers ALL the files in the entire jar, not just the ones
+		// in the specified path.  But I don't know a good way to fix that.
 		while (it.hasNext()) {
 			URL url = it.next();
 			String upath = getFilePath(url);
 			File file = new File(upath);
-			Matcher m = p.matcher(file.getPath());
+			String filePath = file.getPath();
+			filePath = filePath.replace("\\", "/");  // for Windows--otherwise, filePath has backslashes that make it not match
+			Matcher m = p.matcher(filePath);
 			if (!m.matches()) {
 				it.remove();
 				continue;
