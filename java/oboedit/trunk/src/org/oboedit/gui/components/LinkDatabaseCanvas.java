@@ -717,11 +717,13 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		PCNode node = getNode(e.getX(), e.getY());
 		if (node == null)
 			return SelectionManager.createEmptySelection(this);
-		if (getSelection().getAllSelectedObjects().contains(node.getObject()))
+//		if (getSelection().getAllSelectedObjects().contains(node.getObject()))
 			return getSelection();
-		else
-			return SelectionManager.createSelection(this, node.getObject(),
-					getRootAlgorithm(), getLinkProviderDatabase());
+			// No, don't do this--this makes the moused-over object the main selection,
+			// when it is already going to be the gesture target!
+//		else
+//			return SelectionManager.createSelection(this, node.getObject(),
+//					getRootAlgorithm(), getLinkProviderDatabase());
 	}
 
 	public GestureTarget getTarget(int x, int y) {
@@ -1283,6 +1285,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void select(final Selection selection) {
+//	    System.out.println("LinkDatabaseCanvas.select: " + selection + ", expand = " + isExpandSelectionPaths()); // DEL
 		this.selection = selection;
 		Collection<PathCapable> visible = getVisibleObjects();
 		int lastCount = visible.size();
