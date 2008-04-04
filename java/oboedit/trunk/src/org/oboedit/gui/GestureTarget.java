@@ -15,4 +15,5 @@ public interface GestureTarget {
 	public TreePath getPath(RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase);
 	public JComponent getComponent();
 	public boolean isEmpty();
+        public String toString();
 }
