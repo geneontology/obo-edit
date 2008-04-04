@@ -74,14 +74,14 @@ public class SearchComponent extends AbstractGUIComponent {
 
 	public static class SearchConfig implements ComponentConfiguration {
 		protected boolean shortenResultsDesc;
-		protected String type = ResultLabelType.QUERY_NAME.name();
+		protected String labelType = ResultLabelType.QUERY_NAME.name();
 		protected Filter<?> filter;
 
-		public SearchConfig(boolean shortenResultsDesc, ResultLabelType type,
+		public SearchConfig(boolean shortenResultsDesc, ResultLabelType labelType,
 				Filter<?> filter) {
 			super();
 			this.shortenResultsDesc = shortenResultsDesc;
-			this.type = type.name();
+			this.labelType = labelType.name();
 			this.filter = filter;
 		}
 
@@ -96,18 +96,18 @@ public class SearchComponent extends AbstractGUIComponent {
 			this.shortenResultsDesc = shortenResultsDesc;
 		}
 
-		protected String getType() {
-			return type;
+	        public String getLabelType() {
+			return labelType;
 		}
 
 		public ResultLabelType getRealizedType() {
-			return ResultLabelType.valueOf(type);
+			return ResultLabelType.valueOf(labelType);
 		}
 
-		public void setType(String type) {
-			if (type == null)
-				this.type = ResultLabelType.QUERY_NAME.name();
-			this.type = type;
+		public void setLabelType(String labelType) {
+			if (labelType == null)
+				this.labelType = ResultLabelType.QUERY_NAME.name();
+			this.labelType = labelType;
 		}
 
 		public Filter<?> getFilter() {
@@ -149,7 +149,7 @@ public class SearchComponent extends AbstractGUIComponent {
 				SearchConfig config = (SearchConfig) getComponent()
 						.getConfiguration();
 				config.setShortenResultsDesc(!shortenResultsBox.isSelected());
-				config.setType(((ResultLabelType) resultLabelDropdown
+				config.setLabelType(((ResultLabelType) resultLabelDropdown
 						.getSelectedItem()).name());
 				getComponent().setConfiguration(config);
 			}
@@ -168,7 +168,7 @@ public class SearchComponent extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		return new SearchConfig(isShortenResultsDesc(), getLabelType(),
-				component.getFilter());
+					component.getFilter());
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
@@ -258,11 +258,11 @@ public class SearchComponent extends AbstractGUIComponent {
 		this.shortenResultsDesc = shortenResultsDesc;
 	}
 
-	public ResultLabelType getLabelType() {
+	protected ResultLabelType getLabelType() {
 		return labelType;
 	}
 
-	public void setLabelType(ResultLabelType labelType) {
+	protected void setLabelType(ResultLabelType labelType) {
 		if (labelType == null)
 			this.labelType = ResultLabelType.QUERY_NAME;
 		else
