@@ -38,6 +38,8 @@ import org.oboedit.util.GUIUtil;
 
 public class Preferences {
 
+    protected static String DEFAULT_MEMORY_SETTING = "999M";  // Was 512M
+
 	protected Font font;
 
 	protected Color backgroundColor = null;
@@ -458,10 +460,11 @@ public class Preferences {
 
 	public static String readMemStringFromDisk() {
 		File optionFile = new File(getInstallationDirectory(), Preferences
-				.getLauncherName()
-				+ ".vmoptions");
+					   .getLauncherName()
+					   + ".vmoptions");
 		String mem = null;
 		if (optionFile.exists()) {
+//		    JOptionPane.showMessageDialog(null, "optionFile exists: " + optionFile); // DEL
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(
 						optionFile));
@@ -471,6 +474,7 @@ public class Preferences {
 					if (line.toLowerCase().trim().startsWith("-xmx")) {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
+//						JOptionPane.showMessageDialog(null, "got memory string " + mem + "from option file " + optionFile); // DEL
 						break;
 					}
 				}
@@ -479,8 +483,10 @@ public class Preferences {
 				ex.printStackTrace();
 			}
 		}
-		if (mem == null)
-			mem = "512M";
+		if (mem == null) {
+		    mem = DEFAULT_MEMORY_SETTING;
+		    JOptionPane.showMessageDialog(null, "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem); // DEL
+		}
 		return mem;
 	}
 
@@ -682,8 +688,9 @@ public class Preferences {
 		// e.printStackTrace();
 		// }
 		// return iconLib;
+
 		return ClassUtil.getResources(Preferences.class.getClassLoader(),
-				"**/org/oboedit/gui/resources/icons/typeicons/**", "gif",
+				"/org/oboedit/gui/resources/icons/typeicons/**", "gif",
 				"jpg", "svg");
 	}
 
