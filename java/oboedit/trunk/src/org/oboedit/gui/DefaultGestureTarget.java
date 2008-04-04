@@ -70,4 +70,9 @@ public class DefaultGestureTarget implements GestureTarget {
 		return component;
 	}
 
+    public String toString() {
+	if (getTerm() == null)
+	    return "";
+	return "GestureTarget: " + getTerm().getName();
+    }
 }

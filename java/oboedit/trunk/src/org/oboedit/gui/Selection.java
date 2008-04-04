@@ -48,4 +48,6 @@ public interface Selection {
 	public PathCalcMode getMode();
 
 	public RootAlgorithm getRootAlgorithm();
+
+    public String toString();
 }
