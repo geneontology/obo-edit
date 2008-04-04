@@ -173,4 +173,23 @@ public class DefaultSelection implements Selection {
 		} else
 			return false;
 	}
+
+
+    public String toString() {
+	String s = "Selection with " + getAllSelectedObjects().size() + " objects: ";
+	for (PathCapable pc : getAllSelectedObjects()) {
+	    if (pc instanceof LinkedObject) {
+		LinkedObject lo = (LinkedObject) pc;
+		s += lo.getName() + " ";
+	    }
+	    else if (pc instanceof Link) {
+		Link link = (Link) pc;
+		s += "link:" + link + " ";
+	    }
+	    else
+		s += pc;
+	}
+	return s;
+    }
+
 }
