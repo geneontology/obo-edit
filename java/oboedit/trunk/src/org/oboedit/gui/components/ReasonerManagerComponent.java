@@ -66,14 +66,19 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 		setLayout(new BorderLayout());
 		add(new JLabel("Reasoner "), "West");
-		add(reasonerChoice, "East");
 		reasonerChoice.addItem("OFF");
 		// Get reasoner names from registry
 		ReasonerRegistry registry = ReasonerRegistry.getInstance();
 //		System.out.println("Registered reasoners: " + registry.getRegisteredNames()); // DEL
 		for (String registryName : registry.getRegisteredNames()) 
 		    reasonerChoice.addItem(registryName);
+
+		// Why is this not constraining the height of the combobox (on Windows)?
+		reasonerChoice.setMaximumSize(
+		    new Dimension(Integer.MAX_VALUE, reasonerChoice.getPreferredSize().height));
+
 		reasonerChoice.setSelectedItem(sessionManager.getReasonerName());
+		add(reasonerChoice, "East");
 	}
 
 	protected void enableReasoner(String reasonerChoice) {
