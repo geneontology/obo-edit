@@ -62,7 +62,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	public static class GraphEditorConfiguration extends
 			OntologyEditorConfiguration {
 		protected boolean disableAnimations;
-		protected long layoutDuration = 1000;
+	        protected long layoutDuration = 700;  // milliseconds (user-configurable)
 		protected boolean expandPaths = true;
 
 		public GraphEditorConfiguration() {
