@@ -60,8 +60,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	private String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
 	private String ON_DATE = "dc:date";
 
-	static String userName = "remote_user";
-    static String password = "glurp";
+	static String userName = "sjcarbon"; //"remote_user";
+    static String password = ""; //"glurp";
 	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_homologene";
 
 	private String currentUserId;

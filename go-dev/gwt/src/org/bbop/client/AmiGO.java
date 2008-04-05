@@ -53,7 +53,7 @@ public class AmiGO implements EntryPoint {
 		
 		currentTerm = identifier;
 		
-		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		AmiGOLookupServiceAsync lookupService = (AmiGOLookupServiceAsync) GWT.create(AmiGOLookupService.class);
 		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
 		
 		lookupService.isTerm(currentTerm, new AsyncCallback(){
@@ -98,7 +98,7 @@ public class AmiGO implements EntryPoint {
 	//
 	private void doListUpdate(String acc){
 		
-		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		AmiGOLookupServiceAsync lookupService = (AmiGOLookupServiceAsync) GWT.create(AmiGOLookupService.class);
 		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
 				
 		lookupService.getGPs(acc, dbLimit, dbOffset, new AsyncCallback(){
@@ -136,7 +136,7 @@ public class AmiGO implements EntryPoint {
 	//
 	private void doTermUpdate(String acc){
 		
-		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		AmiGOLookupServiceAsync lookupService = (AmiGOLookupServiceAsync) GWT.create(AmiGOLookupService.class);
 		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
 				
 		lookupService.getTermInfo(acc, new AsyncCallback(){
@@ -165,7 +165,7 @@ public class AmiGO implements EntryPoint {
 	//
 	private void doGPUpdate(String id){
 		
-		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		AmiGOLookupServiceAsync lookupService = (AmiGOLookupServiceAsync) GWT.create(AmiGOLookupService.class);
 		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
 				
 		lookupService.getGPInfo(id, new AsyncCallback(){
@@ -194,7 +194,7 @@ public class AmiGO implements EntryPoint {
 	//
 	private void doSniff(){
 		
-		GOLookupServiceAsync lookupService = (GOLookupServiceAsync) GWT.create(GOLookupService.class);
+		AmiGOLookupServiceAsync lookupService = (AmiGOLookupServiceAsync) GWT.create(AmiGOLookupService.class);
 		((ServiceDefTarget) lookupService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOLookupService");
 				
 		lookupService.getSniff(new AsyncCallback(){

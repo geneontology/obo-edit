@@ -10,8 +10,9 @@ import org.bbop.client.Widgets.QueryDoubleSetFetchIdsByNameAndTaxon;
 import org.bbop.client.Widgets.QuerySetFetchIdsByName;
 import org.bbop.client.Widgets.QuerySetFetchIdsByName;
 import org.bbop.client.Widgets.QuerySetFetchLabelsById;
-import org.bbop.client.Widgets.Results.TrivialNodeDTOs;
+import org.bbop.client.Widgets.Results.TrivialGeneProducts;
 import org.bbop.client.Widgets.Results.Trivial;
+import org.bbop.client.Widgets.Results.TrivialNodeDTOs;
 import org.bbop.client.Widgets.Results.TrivialStrings;
 
 import com.google.gwt.user.client.ui.Hyperlink;

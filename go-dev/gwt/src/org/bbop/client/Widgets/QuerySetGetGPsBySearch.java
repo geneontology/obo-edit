@@ -1,5 +1,7 @@
 package org.bbop.client.Widgets;
 
+import org.bbop.client.GOService;
+import org.bbop.client.GOServiceAsync;
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.RefGenomeServiceAsync;
 import org.bbop.client.WebSession;
@@ -21,20 +23,20 @@ import com.google.gwt.user.client.ui.Widget;
 
 	
 //
-public class QuerySetFetchIdsByName extends QuerySet{
+public class QuerySetGetGPsBySearch extends QuerySet{
 
 	//
-	public QuerySetFetchIdsByName (String label, TrivialNodeDTOs resultsTableNodeDTO, WebSession sess){
+	public QuerySetGetGPsBySearch (String label, TrivialGeneProducts resultsTableGeneProduct, WebSession sess){
 
-		super(label, resultsTableNodeDTO, sess);
-
+		super(label, resultsTableGeneProduct, sess);
+		tb.setText("SOX");
 	}
 	
 	//
 	public void callbackAction(String str){
-		RefGenomeServiceAsync rgService = (RefGenomeServiceAsync) GWT.create(RefGenomeService.class);
-		((ServiceDefTarget) rgService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/RefGenomeService");
-		rgService.fetchIdsByName(str, async);
+		GOServiceAsync goService = (GOServiceAsync) GWT.create(GOService.class);
+		((ServiceDefTarget) goService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/GOService");
+		goService.getGPsBySearch(str, async);
 	}
 
 }
