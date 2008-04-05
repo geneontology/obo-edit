@@ -1,14 +1,10 @@
 package org.bbop.client.Widgets;
 
-import org.bbop.client.RefGenomeService;
-import org.bbop.client.RefGenomeServiceAsync;
 import org.bbop.client.WebSession;
 import org.bbop.client.Widgets.Results.Trivial;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
