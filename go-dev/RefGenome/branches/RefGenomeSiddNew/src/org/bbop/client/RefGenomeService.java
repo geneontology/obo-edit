@@ -23,6 +23,8 @@ package org.bbop.client;
 //import org.bbop.client.model.NodeDTO;
 //import org.bbop.client.model.StatementDTO;
 
+import org.bbop.client.model.NodeDTO;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -46,5 +48,7 @@ public interface RefGenomeService extends RemoteService {
 	public Boolean checkUserPassword(String userId, String password); // encrypt?
 		
 	public String[] fetchReferenceTargetIds();
+	
+	public NodeDTO[] fetchIdsByName(String searchTerm);
 
 }

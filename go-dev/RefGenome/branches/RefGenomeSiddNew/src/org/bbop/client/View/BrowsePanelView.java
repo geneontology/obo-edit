@@ -1,41 +1,55 @@
 package org.bbop.client.View;
 
-import net.mygwt.ui.client.Style;
+
 import net.mygwt.ui.client.event.BaseEvent;
 import net.mygwt.ui.client.event.SelectionListener;
 import net.mygwt.ui.client.widget.Button;
-import net.mygwt.ui.client.widget.ButtonBar;
+
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.Manager.BrowsePanelManagerI;
 
+import com.google.gwt.user.client.ui.VerticalPanel;
+
 public class BrowsePanelView implements BrowsePanelManagerI {
 	private RefGenomeViewListenerI refglistener;
 	private RefGenomeView mainview;
-	private ButtonBar browsebar;
-	private Button targetbtn;
+	private VerticalPanel browseBar;
+	private Button targetBtn;
+	private Button orthologBtn;
 	
 	public  BrowsePanelView (RefGenomeViewListenerI listener, RefGenomeView parent){
 		refglistener = listener;
 		mainview = parent;
 		
-		browsebar = new ButtonBar(Style.VERTICAL);
-		targetbtn = new Button("List target");
-		targetbtn.setIconStyle("icon-list");
+		browseBar = new VerticalPanel();
+		targetBtn = new Button("List Target");
+		orthologBtn = new Button("List Ortholog");
 		
+		
+		setAttr();
 		addObservers();
 	}
 	
 	public void creatView() {
-		browsebar.add(targetbtn);
+		browseBar.add(targetBtn);
+		browseBar.add(orthologBtn);
 		
 		
 	}
 	
-	public ButtonBar getView() { return browsebar; }
+	public void setAttr() {
+		browseBar.setSpacing(8);
+		targetBtn.setIconStyle("icon-list");
+		orthologBtn.setIconStyle("icon-list");
+		
+		
+	}
+	
+	public VerticalPanel getView() { return browseBar; }
 	
 	private void addObservers() {
-		targetbtn.addSelectionListener(new TargetListListener());
+		targetBtn.addSelectionListener(new TargetListListener());
 		
 	}
 	

@@ -18,6 +18,8 @@ package org.bbop.client;
 
 
 
+import org.bbop.client.model.NodeDTO;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -30,4 +32,6 @@ public interface RefGenomeServiceAsync  {
 	public void checkUserPassword(String userId, String password, AsyncCallback callback); 
 
 	public void fetchReferenceTargetIds( AsyncCallback callback);
+	
+	public void fetchIdsByName(String searchTerm, AsyncCallback callback);
 }
