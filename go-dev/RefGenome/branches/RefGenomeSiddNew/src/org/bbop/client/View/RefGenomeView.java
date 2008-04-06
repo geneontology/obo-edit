@@ -54,7 +54,7 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 		
 		
 		northData = new BorderLayoutData(Style.NORTH,68);
-		westData = new BorderLayoutData(Style.WEST,200,150,300);
+		westData = new BorderLayoutData(Style.WEST,320,220,340);
 		centerData = new BorderLayoutData(Style.CENTER);
 		
 		//layout setup for title and login panel
@@ -98,7 +98,7 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 	}
 	
 	public void setResultPanel() {
-		resultview = new ResultPanelView();
+		resultview = new ResultPanelView(refglistener,this);
 		resultview.createView();
 		
 	}

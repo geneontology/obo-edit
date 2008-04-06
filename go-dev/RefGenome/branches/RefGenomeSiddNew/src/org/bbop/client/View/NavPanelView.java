@@ -19,6 +19,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 	private ExpandItem browseitem;
 	private ExpandItem searchitem;
 	private ExpandItem curationitem;
+	private ExpandItem reportItem; 
 	private RefGenomeViewListenerI refglistener;
 	
 	private RefGenomeView mainview; //parent view
@@ -26,6 +27,8 @@ public  class NavPanelView  implements NavPanelManagerI {
 	//child view attached to it
 	private BrowsePanelView browseview;
 	private SearchPanelView searchview;
+	private ReportPanelView reportView;
+	private CurationPanelView curationView;
 	
 	public NavPanelView(RefGenomeViewListenerI listener,RefGenomeView parent){
 		refglistener = listener;
@@ -33,6 +36,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 		exbar = new ExpandBar(Style.MULTI);
 		browseitem = new ExpandItem();
 		searchitem = new ExpandItem();
+		reportItem = new ExpandItem();
 		curationitem = new ExpandItem();
 		
 		browseview = new BrowsePanelView(refglistener,mainview);
@@ -40,6 +44,12 @@ public  class NavPanelView  implements NavPanelManagerI {
 		
 		searchview = new SearchPanelView(refglistener,mainview);
 		searchview.createView();
+		
+		reportView = new ReportPanelView(refglistener, mainview);
+		reportView.createView();
+		
+		curationView = new CurationPanelView(refglistener,mainview);
+		curationView.createView();
 		
 		
 	}
@@ -51,13 +61,16 @@ public  class NavPanelView  implements NavPanelManagerI {
 		searchitem.setText("Search");
 		searchitem.getContainer().add(searchview.getView());
 		
+		reportItem.setText("Report");
+		reportItem.getContainer().add(reportView.getView());
 		
 		
 		curationitem.setText("Curation");
-		curationitem.getContainer().addText("Curate genes");
+		curationitem.getContainer().add(curationView.getView());
 		
 		exbar.add(browseitem);
 		exbar.add(searchitem);
+		exbar.add(reportItem);
 		
 	}
 	

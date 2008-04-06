@@ -4,6 +4,8 @@ package org.bbop.client;
 
 import java.util.Map;
 
+import org.bbop.client.model.NodeDTO;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface RefGenomeServiceSleep extends RemoteService{
@@ -31,7 +33,7 @@ public interface RefGenomeServiceSleep extends RemoteService{
 		 * @param searchTerm
 		 * @return 
 		 */
-		public String[] fetchIdsByName(String searchTerm);
+		public NodeDTO[] fetchIdsByName(String searchTerm);
 		//public String[] fetchIdsByName(String searchTerm, String operator);
 		
 		/**
