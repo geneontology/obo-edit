@@ -120,6 +120,15 @@ public interface RefGenomeService extends RemoteService {
 	 */
 	//public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
 	
+	/**
+	 * Given a target gene, is it and all homologous genes comprehensively
+	 * annotated?
+	 * 
+	 * @param entityId
+	 * @return
+	 */
+	public boolean isSetComprehensivelyAnnotated(String entityId);
+	
 	// ===================
 	// admin 
 	// ===================
