@@ -17,8 +17,9 @@ public class TrivialGeneProducts extends Trivial{
 			for (int i = 0; i < res.length; i++) {
 				GeneProduct n = res[i];
 				this.setText(i, 0, n.getId());
-				this.setText(i, 1, n.getLabel());
-				this.setText(i, 2, n.getFullName());
+				this.setHTML(i, 1, n.makeURL());
+				this.setText(i, 2, n.getLabel());
+				this.setText(i, 3, n.getFullName());
 			}
 		}else{
 			Window.alert("Unknown query.");

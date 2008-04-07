@@ -57,6 +57,10 @@ public class General implements WebUIInterface {
 			vp.add(new Hyperlink("Search Targets", "search_targets"));
 			vp.add(new HTML("<br />"));
 			
+			vp.add(new HTML("Go to the GO sandbox:"));
+			vp.add(new Hyperlink("Use GO interface", "sandbox"));
+			vp.add(new HTML("<br />"));
+			
 			vp.add(new HTML("View reports about various aspects:"));
 			vp.add(new Hyperlink("View Reports", "reports"));
 			vp.add(new HTML("<br />"));

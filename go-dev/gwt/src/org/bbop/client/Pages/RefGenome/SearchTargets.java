@@ -26,11 +26,11 @@ public class SearchTargets implements WebUIInterface {
 
     //
     final QueryButtonFetchReferenceTaxonIds b1;
-    final QueryButtonFetchReferenceTargetIds b2;
-    final QueryButtonGetTaxonIdPrefix b3;
+    //final QueryButtonFetchReferenceTargetIds b2;
+    //final QueryButtonGetTaxonIdPrefix b3;
     final QuerySetFetchIdsByName s1;
-    final QuerySetFetchLabelsById s2;
-    final QueryDoubleSetFetchIdsByNameAndTaxon ds1;
+    //final QuerySetFetchLabelsById s2;
+    //final QueryDoubleSetFetchIdsByNameAndTaxon ds1;
     
     //
     final TrivialStrings resultsTableStrings;
@@ -45,11 +45,11 @@ public class SearchTargets implements WebUIInterface {
 	    resultsTableNodeDTO = new TrivialNodeDTOs();
 	    
 		b1 = new QueryButtonFetchReferenceTaxonIds("Fetch Reference Taxon Ids", resultsTableStrings, session);
-		b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTableStrings, session);
-		b3 = new QueryButtonGetTaxonIdPrefix("Get Taxon Id Prefix", resultsTableStrings, session);
+		//b2 = new QueryButtonFetchReferenceTargetIds("Fetch Reference Target Ids", resultsTableStrings, session);
+		//b3 = new QueryButtonGetTaxonIdPrefix("Get Taxon Id Prefix", resultsTableStrings, session);
 		s1 = new QuerySetFetchIdsByName("Fetch Ids By Name", resultsTableNodeDTO, session);
-		s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTableStrings, session);
-		ds1 = new QueryDoubleSetFetchIdsByNameAndTaxon("Fetch Ids By Name And Taxon", resultsTableStrings);
+		//s2 = new QuerySetFetchLabelsById("Fetch Labels By Id", resultsTableStrings, session);
+		//ds1 = new QueryDoubleSetFetchIdsByNameAndTaxon("Fetch Ids By Name And Taxon", resultsTableStrings);
 	}
 
 	
@@ -60,16 +60,17 @@ public class SearchTargets implements WebUIInterface {
 
 
 	    // A results table to catch searches.
-	    resultsTableStrings.reset("No data yet.");
+	    resultsTableStrings.reset("[No data yet for first results table.]");
+	    resultsTableNodeDTO.reset("[No data yet for second results table.]");
 	    
 	    vp.add(new PageTitle("Search Targets"));
 
 		vp.add(b1);
-		vp.add(b2);
-		vp.add(b3);
+		//vp.add(b2);
+		//vp.add(b3);
 		vp.add(s1);
-		vp.add(s2);
-		vp.add(ds1);
+		//vp.add(s2);
+		//vp.add(ds1);
 		
 		vp.add(resultsTableStrings);
 		vp.add(resultsTableNodeDTO);
