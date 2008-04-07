@@ -30,7 +30,7 @@ public class GOServiceImpl
 
     	String[][] info = godb.makeQuery(sql);
     	
-    	LinkedList<GeneProduct> gp_list = null;
+    	LinkedList<GeneProduct> gp_list = new LinkedList<GeneProduct>();
     	for( int i = 0; i < info.length; i++ ){
     		
     		String[] row = info[i];
@@ -42,7 +42,7 @@ public class GOServiceImpl
         	gp_list.add(gp);
     	}
     	
-    	return (GeneProduct[]) gp_list.toArray();
+    	return (GeneProduct[]) gp_list.toArray(new GeneProduct[0]);
     }
     
 }

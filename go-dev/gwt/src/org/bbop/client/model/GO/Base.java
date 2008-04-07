@@ -16,20 +16,20 @@ public class Base implements IsSerializable {
 
 	//
 	public Base() {
-		this.id = "null_base";
+		id = "null_base";
 	}
 	
 	//
-	public Base(String id) {
-		this.id = id;
+	public Base(String in_id) {
+		id = in_id;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setId(String in_id) {
+		id = in_id;
 	}
 
 	public String getLabel() {
@@ -37,32 +37,32 @@ public class Base implements IsSerializable {
 	}
 
 	public void setLabel(String name) {
-		this.label = name;
+		label = name;
 	}	
 	
 	public String getSourceId() {
 		return sourceId;
 	}
 	
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
+	public void setSourceId(String in_sourceId) {
+		sourceId = in_sourceId;
 	}
 
 	public boolean isAnonymous() {
 		return isAnonymous;
 	}
 
-	public void setAnonymous(boolean isAnonymous) {
-		this.isAnonymous = isAnonymous;
+	public void setAnonymous(boolean in_isAnonymous) {
+		isAnonymous = in_isAnonymous;
 	}
 
 	//
 	public String toString() {
-		String s = id + " \""+label+"\"";
+		String s = id + " \"" + label + "\"";
 		if (isAnonymous)
-			s = " ANON:"+id;
+			s = " ANON:" + id;
 		if (sourceId != null)
-			s = s + " src:"+sourceId;
+			s = s + " src:" + sourceId;
 		return s;
 	}
 	

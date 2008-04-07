@@ -107,7 +107,7 @@ public class GOConnect {
     		System.err.println("ERROR___: " + e.getMessage());
     	}
      	
-    	return (String[][]) list.toArray();
+    	return (String[][]) list.toArray(new String[0][0]);
     }
     
     //
