@@ -11,27 +11,46 @@
 				<td id="left_bar">
 					<@searchForm/>
 					<hr class="divider"/>
-					<@otherFormats/>
+					
 				</td>
 				<td id="vertical_divider">
 				</td>
 				<td id="content_container">
 					<h2>${node.getId()}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
-					<#if node.getSourceId()?has_content><b>Source:</b> ${node.getSourceId()}</#if>
+					<#if nodeDefinition?exists>
+						<span class="nodeDef">${nodeDefinition}</span>
+						<br/>
+					</#if>
 					<br/>
-					<br/>
-					<a href="#" onclick="toggleTable('statementsAbout');return false;"><div class="nodeDetailBox" id="aboutStatements">
-						Statements About This Node
-					</div></a>
+					<a href="#" onclick="toggleTable('statementsAbout');return false;">
+						<div class="nodeDetailBox"><img id="statementsAbout_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
+					</a>
 					<table class="statementTableWrapper">
 						<tr>
 							<td id="statementsAbout" style="display:none;">
-								
 								<#if aboutStatements?exists>
-									<ul class="annotationStatement">
-									<#list aboutStatements as statement>
-										<li>[${statement.entailment}] ${statement.statement}</li>
-									</#list>
+									<table class="otherFormats">
+										<tr>
+											<th>This data in other formats:</th>
+											<#list ["obdxml","owl","obo","json"] as format>
+											<td>
+												<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="about"/>
+											</td>
+											</#list>
+										</tr>
+									</table>
+									<table class="annotationStatementTable">
+										<#list aboutStatements as statement>
+										<tr>
+											<th>
+												&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>		
+											</th>
+									 		<td>
+									 			${statement.statement}
+									 		</td>
+									 	</tr>
+									 	</#list>
+									 </table>
 								<#else>
 									None
 								</#if>
@@ -39,48 +58,104 @@
 							</td>
 						</tr>
 					</table>
-					<div class="nodeDetailBox" id="toStatements">
-						Statements To This Node
-					</div>
-					<a href="#" onclick="toggleTable('annotationStatements');return false;"><div class="nodeDetailBox">
-						Class Annotations
-					</div></a>
+					<a href="#" onclick="toggleTable('statementsTo');return false;">
+						<div class="nodeDetailBox"><img id="statementsTo_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
+					</a>
+					<table class="statementTableWrapper">
+						<tr>
+							<td id="statementsTo" style="display:none;">
+							
+								<#if toStatements?exists>
+									<table class="otherFormats">
+										<tr>
+											<th>This data in other formats:</th>
+											<#list ["obdxml","owl","obo","json"] as format>
+											<td>
+												<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="to"/>
+											</td>
+											</#list>
+										</tr>
+									</table>
+									<table class="annotationStatementTable">
+										<#list toStatements as statement>
+											<tr>
+												<th>
+													&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>		
+												</th>
+										 		<td>
+										 			${statement.statement}
+										 		</td>
+										 	</tr>
+										</#list>
+									</table>
+								<#else>
+									None
+								</#if>
+							</td>
+						</tr>
+					</table>
+					<a href="#" onclick="toggleTable('annotationStatements');return false;">
+						<div class="nodeDetailBox"><img id="annotationStatements_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Class Annotations</div>
+					</a>
 					<table class="statementTableWrapper">
 						<tr>
 							<td id="annotationStatements" style="display:none;">
-								
-									<#if annotationStatements?exists>
-										<ul class="annotationStatement">
-										
-										<#list annotationStatements as statementMap>
-											<li>		
-											<#list statementMap.statement as statement>
-												${statement}
-											</#list><hr class="li_divider"/>
-											<span class="li_lowerspan">Provenance:
-											<#if statementMap.provenance?has_content>
-												<#list statementMap.provenance as p>
-													${p} 
-												</#list>
-											<#else>
-												None.
-											</#if><br/>
-											Source:
-											<#if statementMap.assigned_by?has_content>
-												<#list statementMap.assigned_by as c>
-													${c} 
-												</#list>
-											<#else>
-												None.
-											</#if><br/>
-											</span>
-											
-											 
-											</li>
-										</#list>
-										</ul>
-									</#if>
-								
+								<#if annotationStatements?exists>
+									<table class="otherFormats">
+										<tr>
+											<th>This data in other formats:</th>
+											<#list ["obdxml","owl","obo","json"] as format>
+											<td>
+												<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="annotations"/>
+											</td>
+											</#list>
+										</tr>
+									</table>
+										<table class="annotationStatementTable">
+											<#list annotationStatements as statementMap>
+											<tr>
+												<th rowspan="3">
+													&bull;
+												</th>
+												<td>
+													${statementMap.statement}
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<hr class="li_divider"/>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Provenance:
+													<#if statementMap.provenance?has_content>
+														<#list statementMap.provenance as p>
+															${p},  
+														</#list>
+													<#else>
+														None.
+													</#if>&nbsp;&nbsp;
+													Source:
+													<#if statementMap.assigned_by?has_content>
+														<#list statementMap.assigned_by as c>
+															${c} 
+														</#list>
+													<#else>
+														None.
+													</#if>
+												</td>
+											</tr>
+											<tr>
+												<td colspan="2" height="10"></td>
+											</tr>
+											</#list>
+										</table>
+									
+									
+								<#else>
+									No Class Annotations.
+								</#if>
 							</td>
 						</tr>
 					</table>

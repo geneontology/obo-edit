@@ -121,11 +121,11 @@
 	
 	<logLevel>
 		<logName>org.bbop.rdbms</logName>
-		<level>INFO</level>
+		<level>FINEST</level>
 	</logLevel>
 	<logLevel>
 		<logName>org.obd</logName>
-		<level>INFO</level>
+		<level>FINEST</level>
 	</logLevel>
 	
 

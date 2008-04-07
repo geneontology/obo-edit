@@ -1,11 +1,21 @@
 function toggleTable(div_id){
 
+	plus = new Image();
+	plus.src = "/OBDUI/images/plus-box.gif";
+	minus = new Image();
+	minus.src = "/OBDUI/images/min-box.gif";
+	
 	var detailsDiv = document.getElementById(div_id);
-	if (detailsDiv){			
+	var toggleImage = document.getElementById((div_id+'_image'));
+	
+	if (detailsDiv && toggleImage){
+					
 		if (detailsDiv.style.display == "none"){
-			detailsDiv.style.display='table-row';
+			detailsDiv.style.display='table-cell';
+			toggleImage.src=minus.src;
 		} else {
 			detailsDiv.style.display="none";
+			toggleImage.src=plus.src;
 		}			
 	}
 }
