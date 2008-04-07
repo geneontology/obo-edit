@@ -57,6 +57,7 @@ public class TermFilterEditor extends JPanel {
 	protected JComboBox typeBox = new JComboBox();
 
 	protected Box aspectLineBox = new Box(BoxLayout.X_AXIS);
+        protected Box advancedButtonAndAspectLineBox = new Box(BoxLayout.X_AXIS);
 
 	protected Box valueBox = new Box(BoxLayout.X_AXIS);
 
@@ -260,13 +261,15 @@ public class TermFilterEditor extends JPanel {
 		mainPanel.setLayout(new TableLayout(sizes));
 		// setLayout(new GridLayout(3, 1));
 		valueField = new AutocompleteBox<String>(model);
-		model.clear();
+//		System.out.println("TermFilterEditor: valueField = new"); // DEL
+//		model.clear();  // Need?
 		valueField.setAllowNonModelValues(true);
 		valueField.setMinLength(1);
 
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
+//				System.out.println("actioPerformed: model.clear"); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
 			}
@@ -282,26 +285,28 @@ public class TermFilterEditor extends JPanel {
 		Box topBox = new Box(BoxLayout.X_AXIS);
 		topBox.add(selectTermsLabel);
 		topBox.add(notBox);
-		topBox.add(new JLabel(" a "));
+		topBox.add(new JLabel(" a"));
 		topBox.add(criterionBox);
 		topBox.add(comparisonPanel);
 		topBox.add(Box.createHorizontalGlue());
 
-		valuePanel.add(new JLabel(" the value"));
+		valuePanel.add(new JLabel(" the value "));
 		valuePanel.add(valueField);
-		valuePanel.add(Box.createHorizontalStrut(5));
+		valuePanel.add(Box.createHorizontalStrut(20));
 
 		valueBox.add(valuePanel);
-		valueBox.add(advancedButton);
 
-		aspectLineBox.add(new JLabel(" in"));
+		advancedButtonAndAspectLineBox.add(advancedButton);
+		aspectLineBox.add(new JLabel(" in "));
 		aspectLineBox.add(aspectBox);
 		aspectLineBox.add(reachedViaLabel);
 		aspectLineBox.add(typeBox);
+		aspectLineBox.add(Box.createHorizontalStrut(20));
+		advancedButtonAndAspectLineBox.add(aspectLineBox);
 
 		mainPanel.add(topBox, "0,0");
 		mainPanel.add(valueBox, "0,1");
-		mainPanel.add(aspectLineBox, "0,2");
+		mainPanel.add(advancedButtonAndAspectLineBox, "0,2");
 		setAspectControlsVisible(false);
 
 		aspectBox.setOpaque(false);
@@ -331,15 +336,11 @@ public class TermFilterEditor extends JPanel {
 	protected void setAspectControlsVisible(boolean visible) {
 		this.aspectVisible = visible;
 		if (visible) {
-			mainPanel.add(aspectLineBox, "0,2");
-			valueBox.remove(advancedButton);
-			aspectLineBox.add(advancedButton);
-			advancedButton.setIcon(leftIcon);
+		    advancedButtonAndAspectLineBox.add(aspectLineBox);
+		    advancedButton.setIcon(leftIcon);
 		} else {
-			mainPanel.remove(aspectLineBox);
-			aspectLineBox.remove(advancedButton);
-			valueBox.add(advancedButton);
-			advancedButton.setIcon(rightIcon);
+		    advancedButtonAndAspectLineBox.remove(aspectLineBox);
+		    advancedButton.setIcon(rightIcon);
 		}
 		SearchPanel p = getSearchPanel();
 		if (p != null)
