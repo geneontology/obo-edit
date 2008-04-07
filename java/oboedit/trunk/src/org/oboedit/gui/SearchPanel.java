@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -494,7 +495,7 @@ public class SearchPanel extends JPanel {
 		protected JButton removeButton = new JButton(Preferences
 				.loadLibraryIcon("minus.gif"));
 		protected JLabel matchLabel;
-		protected JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
+//		protected JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
 
 		protected JComponent component;
 		protected boolean highlighted;
@@ -603,12 +604,13 @@ public class SearchPanel extends JPanel {
 
 			JPanel buttonPanel = new JPanel();
 			buttonPanel.setOpaque(false);
-			buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-			// buttonPanel.setLayout(new FlowLayout());
+//			buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+			 buttonPanel.setLayout(new FlowLayout());
 			Box buttonBox = new Box(BoxLayout.X_AXIS);
-			buttonBox.add(sep);
+//			buttonBox.add(sep);
 			buttonBox.add(buttonPanel);
-			p.add(buttonBox, "East");
+//			p.add(buttonBox, "East");
+			p.add(buttonBox, "South");
 			leftButton.setOpaque(false);
 			rightButton.setOpaque(false);
 			removeButton.setOpaque(false);
@@ -690,8 +692,8 @@ public class SearchPanel extends JPanel {
 			leftButton.setVisible(!isSubQuery() && hasOuterSearchPanel);
 			removeButton.setVisible(!isSubQuery()
 					&& (contents.size() > 1 || hasOuterSearchPanel));
-			sep.setVisible(rightButton.isVisible() || leftButton.isVisible()
-					|| removeButton.isVisible());
+//			sep.setVisible(rightButton.isVisible() || leftButton.isVisible()
+//					|| removeButton.isVisible());
 		}
 
 		public void setLightbulbsVisible(boolean visible) {
