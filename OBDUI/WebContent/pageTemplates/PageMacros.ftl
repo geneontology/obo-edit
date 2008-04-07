@@ -1,10 +1,7 @@
-<#macro otherFormats>
-	<div id="external_links">
-	This page in other formats:<br/>
-	<#list formatLinks as formatLink>
-		&nbsp;&bull;&nbsp;${formatLink.link}<br/>
-	</#list>
-	</div>
+
+
+<#macro otherFormatLink contextName dataSource format view id statementType>
+	<a href="/${contextName}/${dataSource}/${format}/${view}/${id}/statements/${statementType}">${format}</a>
 </#macro>
 
 <#macro mappedPathsList>

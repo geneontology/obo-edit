@@ -1,7 +1,6 @@
 package org.obd.ws.restServlet;
 
 import java.util.Map;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,13 +29,7 @@ public class OBDRestApplication extends Application {
     public OBDRestApplication(Context context) throws Exception {
     	super(context);
     	this.setConfiguration(new ServletConfiguration());
-    	Handler[] handlers = Logger.getLogger( "" ).getHandlers();
-  	    for ( int index = 0; index < handlers.length; index++ ) {
-  	      handlers[index].setLevel( Level.FINE );
-  	    }
- 	    Logger.getLogger( "org.bbop.rdbms").setLevel(Level.FINEST);
- 	    Logger.getLogger( "org.obd.rdbms").setLevel(Level.FINEST);
- 	      }
+    }
 
     @Override
     public Restlet createRoot() {
@@ -55,6 +48,7 @@ public class OBDRestApplication extends Application {
 		for (String logName : this.getConfiguration().getLogLevels().keySet()){
   	    	
   	    	Logger l = Logger.getLogger(logName);
+  	    	
   	    	String levelName = this.getConfiguration().getLogLevels().get(logName);
   	    	System.out.println("Trying to set log level of " + logName + " to " + levelName);
   	    	if (levelName.equals("FINEST")){

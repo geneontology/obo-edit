@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
 import org.obd.model.Statement;
-import org.obd.model.TermView;
 import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
@@ -30,6 +28,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+
+import freemarker.template.SimpleHash;
 
 /**
  * Resource for a node
@@ -111,7 +111,7 @@ public class NodeResource extends OBDResource {
  
     @Override
     public Representation getRepresentation(Variant variant) {
-    	
+    	   	
     	
     	Representation result = null;
 
@@ -133,28 +133,65 @@ public class NodeResource extends OBDResource {
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("formatLinks",mapToOtherFormats("/nodes/"+this.nodeId,this.dataSource));
     		resourceMap.put("node",this.node);
-
-    		List<Map<String,Set<String>>> annotationStatements = new ArrayList<Map<String,Set<String>>>();
-    		for (Statement s : this.getGraph("annotations").getStatements()){
-    			annotationStatements.add(this.organize(s, this.dataSource));
-    		}
     		
+    		
+    		// Annotation Statements 
+    		List<SimpleHash> annotationStatements = new ArrayList<SimpleHash>();
+    		for (Statement s : this.getGraph("annotations").getStatements()){
+        		SimpleHash annotationStatement = new SimpleHash();
+    			annotationStatement.put("statement", this.prettifyStatement(s, dataSource));
+        		Set<String> assignmentSources = new HashSet<String>();
+    			Set<String> provenanceSources = new HashSet<String>();
+    			for (Statement subStatement : s.getSubStatements()){
+    				if (subStatement.getRelationId().equals("oban:assigned_by")){
+    					assignmentSources.add(subStatement.getTargetId());
+    				}
+    				if (subStatement.getRelationId().equals("oban:has_data_source")){
+    					provenanceSources.add(subStatement.getTargetId());
+    				}
+        			annotationStatement.put("assigned_by",assignmentSources);
+        			annotationStatement.put("provenance",provenanceSources);
+    			}
+    			annotationStatements.add(annotationStatement);
+    		}
     		if (annotationStatements.size()>0){
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
+    		
+    		// Statements to Node
+    		List<Map<String,String>> toStatements = new ArrayList<Map<String,String>>();
+    		for (Statement s : this.getGraph("to").getStatements()){
+    			Map<String,String> m = new HashMap<String,String>();
+    			m.put("statement",this.prettifyStatement(s, dataSource));
+    			if (s.isInferred()){
+    				m.put("entailment","I");
+    			} else {
+    				m.put("entailment","A");
+    			}
+    			toStatements.add(m);
+    		}
+    		if (toStatements.size()>0){
+    			resourceMap.put("toStatements", toStatements);
+    		}
+    		
+    		
+    		// Statements about node
     		List<Map<String,String>> aboutStatements = new ArrayList<Map<String,String>>();
     		for (Statement s : this.getGraph("about").getStatements()){
     			Map<String,String> m = new HashMap<String,String>();
-    			m.put("statement",this.organize(s, dataSource).get("statement").toArray(new String[0])[0]);
+    			m.put("statement",this.prettifyStatement(s, dataSource));
     			if (s.isInferred()){
-    				m.put("entailment","Inferred");
+    				m.put("entailment","I");
     			} else {
-    				m.put("entailment","Asserted");
+    				m.put("entailment","A");
     			}
     			aboutStatements.add(m);
+    			
+    			if ((s.getRelationId().equals("oboMetamodel:description")||s.getRelationId().equals("oboInOwl:hasDefinition")) && (s instanceof LiteralStatement)){
+    				resourceMap.put("nodeDefinition",((LiteralStatement)s).getSValue());
+    			}
     		}
     		if (aboutStatements.size()>0){
     			resourceMap.put("aboutStatements", aboutStatements);
@@ -256,14 +293,8 @@ public class NodeResource extends OBDResource {
 		return graph;
 	}
 	
-	public Map<String,Set<String>> organize( Statement s,String dataSource) {
-		
-		Map<String,Set<String>> organizedStatements = new HashMap<String,Set<String>>();
-		organizedStatements.put("statement", new HashSet<String>());
-		organizedStatements.put("provenance", new HashSet<String>());
-		organizedStatements.put("assigned_by", new HashSet<String>());
-		
-		
+	public String prettifyStatement(Statement s,String dataSource) {
+				
 		Graph g = new Graph();
 		StringBuilder sb = new StringBuilder();
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
@@ -277,12 +308,19 @@ public class NodeResource extends OBDResource {
 			sb.append(" \""+n.getLabel()+"\"");
 		sb.append("  ");
 		
-		sb.append(hrefLabel(this.prettifyRelationshipTerm(s.getRelationId()),s.getRelationId(),dataSource));
+		String label="";
+		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
+		if (rn != null && rn.getLabel() != null){
+			label = rn.getLabel();
+		} else {
+			label = s.getRelationId();
+		}
+		label = this.prettifyRelationshipTerm(label);
+	
+		sb.append(hrefLabel(label,s.getRelationId(),dataSource));
 		sb.append(" ");
 		
-		
 		n = g.getNode(s.getTargetId());
-		
 		
 		if (n != null && n.getLabel() != null)
 			sb.append(" \""+n.getLabel()+"\"");
@@ -299,45 +337,18 @@ public class NodeResource extends OBDResource {
 			if (ls.isIntersectionSemantics()) {
 				sb.append(" [n+s condition element]");    			
 			}
-		}
-		
-		organizedStatements.get("statement").add(sb.toString());
-		
-		
-		for (Statement subStatement : s.getSubStatements()){
-			System.out.println("SUBSTATEMENT: " + subStatement.getRelationId());
-			
-			if (subStatement.getRelationId().equals("oban:assigned_by")){
-				organizedStatements.get("assigned_by").add(subStatement.getTargetId());
-			}
-			if (subStatement.getRelationId().equals("oban:has_data_source")){
-				organizedStatements.get("provenance").add(subStatement.getTargetId());
-			}
-		}
-		
-		sb = new StringBuilder();
+		}		
+
 		if (s instanceof LiteralStatement) {
 			sb.append(" "+((LiteralStatement)s).getSValue());
 		}
-		if (s.isInferred())
-			sb.append(" [Implied]");
-		if (s.getSourceId() != null)
-			sb.append(" [source:"+href(s.getSourceId(),dataSource)+"]");
-		if (s.getPositedByNodeId() != null)
-			sb.append(" [positedBy:"+href(s.getPositedByNodeId(),dataSource)+"]");
-		for (Statement ss : s.getSubStatements())
-			sb.append(" <<"+hrefStatement(g,ss,dataSource)+">> ");
 
-		return organizedStatements;
+		return sb.toString();
 	}
 	
-	private String hrefAboutStatement(Statement s,String dataSource){
-		
-		return null;
-	}
 	
 	private String prettifyRelationshipTerm(String term){
-		if (term.contains("OBO_REL:")||term.contains("OBOL:")){
+		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))){
 			return  term.substring(term.indexOf(":")+1).replace("_", " ");
 		} else {
 			return term.replace("_", " ");

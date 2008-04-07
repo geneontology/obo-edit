@@ -161,9 +161,10 @@ table.threecol {
 
 
 .nodeDetailBox{
-    padding:4px;
+    padding:2px;
     background-color:#efefef;
     margin-top:2px;
+    vertical-align:middle;
 }
 
 table.statementTableWrapper {
@@ -183,14 +184,6 @@ table.statementTableWrapper td {
 	padding:10px;
 }
 
-ul.annotationStatement {
-    font-size:12px;
-    padding-left:12px;
-}
-
-ul.annotationStatement li {
-    padding-bottom:12px;
-}
 
 .li_divider{
     padding:0px;
@@ -202,7 +195,65 @@ ul.annotationStatement li {
     border-bottom-style:none;
 }
 
-.li_lowerspan{
-    font-size:11px;
+.fixed_width{
+    font-family: courier, fixed, monospace;
+    font-weight:normal;
 }
 
+table.annotationStatementTable{
+    font-size:12px;
+    width:100%;
+    border-style:none;
+    border-spacing:1px;
+    border-collapse:separate;
+    padding-top:5px;
+}
+
+table.annotationStatementTable th{
+    width:12px;
+    vertical-align:top;
+    padding-right:8px;
+    padding-top:0px;
+    
+}
+
+table.annotationStatementTable td{
+    padding:0px
+}
+
+.expandoImage{
+    vertical-align:bottom;
+    border:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+    padding-left:0px;
+    padding-right:4px;
+}
+
+table.otherFormats {
+    width:100%;
+    font-size:11px;
+    border-style:none;
+    border-spacing:1px;
+    border-collapse:separate;
+    background-color:#acacac;
+    padding:0px;
+}
+
+table.otherFormats th{
+    padding-left:4px;
+    text-align:left;
+    background-color:#dfdfdf;
+}
+
+table.otherFormats td{
+    text-align:center;
+    padding:2px;
+    background-color:white;
+    width:18%;
+}
+
+.nodeDef{
+    color:#5c5c5c;
+    font-size:11px;
+}

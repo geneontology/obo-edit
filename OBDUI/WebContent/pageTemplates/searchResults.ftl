@@ -12,7 +12,6 @@
 				<td id="left_bar">
 					<@searchForm/>
 					<hr class="divider"/>
-					<@otherFormats/>
 				</td>
 				<td id="vertical_divider">
 				</td>
