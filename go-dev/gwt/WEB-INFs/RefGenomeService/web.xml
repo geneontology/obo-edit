@@ -4,11 +4,19 @@
   <servlet>
     <servlet-name>RefGenomeService</servlet-name>
     <servlet-class>org.bbop.server.RefGenomeServiceImpl</servlet-class>
+  </servlet>	
+  <servlet>
+    <servlet-name>GOService</servlet-name>
+    <servlet-class>org.bbop.server.GOServiceImpl</servlet-class>
   </servlet>
 	
   <servlet-mapping>
     <servlet-name>RefGenomeService</servlet-name>
     <url-pattern>/RefGenomeService</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GOService</servlet-name>
+    <url-pattern>/GOService</url-pattern>
   </servlet-mapping>
 
 </web-app>
