@@ -1,24 +1,27 @@
 package org.bbop.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 public class DateDTO implements IsSerializable {
 
 	
-	protected final Integer year;
-	protected final Integer month;
-	protected final Integer day;
+	protected Integer year;
+	protected Integer month;
+	protected Integer day;
+
+	public DateDTO() {
+		super();
+		this.year = new Integer(1970);
+		this.month = new Integer(1);
+		this.day = new Integer(1);
+	}
 
 	public DateDTO(Integer year, Integer month) {
 		super();
 		this.year = year;
 		this.month = month;
-		this.day = null;
+		this.day = new Integer(-1);
 	}
 
 	public Integer getDay() {

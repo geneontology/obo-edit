@@ -15,9 +15,7 @@
  */
 package org.bbop.client;
 
-
-
-
+import org.bbop.client.model.DateDTO;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -29,20 +27,52 @@ public interface RefGenomeServiceAsync  {
 	
 	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
 
+	public void fetchReferenceTaxonIds( AsyncCallback callback);
+
+	public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
+	
+	public void fetchLabelMapsById(String searchTerm, AsyncCallback callback);
+	
 	public void fetchLabelsById(String searchTerm, AsyncCallback callback);
 
-	public void fetchLabelMapsById(String searchTerm, AsyncCallback callback);
-
-	public void fetchReferenceTaxonIds( AsyncCallback callback);
+	public void fetchReferenceTargetIds( AsyncCallback callback);
 	
 	public void getTaxonIdPrefix( AsyncCallback callback);
 	
-	public void fetchReferenceTargetIds( AsyncCallback callback);
+	public void addUser(String userId, String fullName, String password, AsyncCallback callback);
+
+	public void assignEntityComprehensivelyAnnotatedStatus(String userId, String geneId, DateDTO date, AsyncCallback callback);
+
+	public void assignEntityStatusCode(String userId, String statusId, String geneId, DateDTO date, AsyncCallback callback);
+
+	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date, AsyncCallback callback);
+
+	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment, AsyncCallback callback);
+
+	public void assignNegativeHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment, AsyncCallback callback);
+
+	public void attachCommentToEntity(String entityId, String comment, String curatorId, AsyncCallback callback);
+
+	public void checkUserPassword(String userId, String password, AsyncCallback callback);
+
+	public void fetchHomologousEntityIds(String entityId, AsyncCallback callback);
+
+	public void fetchHomologyLinkStatementsByEntityId(String entityId, AsyncCallback callback);
 	
-	//public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
+	public void fetchNodeById(String id, AsyncCallback callback);
+	
+	public void getAllUsers(AsyncCallback callback);
 
-	//public void assignGeneTargetStatus(String geneId, AsyncCallback callback) ;
+	public void getHomologyMethodTypeNodes(AsyncCallback callback);
 
-	//public void retractGeneTargetStatus(String geneId, AsyncCallback callback) ;
+	public void getStatusCodeNodes(AsyncCallback callback);
+
+	public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId, AsyncCallback callback);
+
+	public void retractEntityStatusCode(String userId, String statusId, String geneId, AsyncCallback callback);
+
+	public void retractEntityTargetStatus(String userId, String geneId, AsyncCallback callback);
+	
+	public void isSetComprehensivelyAnnotated(String entityId, AsyncCallback callback);
 
 }

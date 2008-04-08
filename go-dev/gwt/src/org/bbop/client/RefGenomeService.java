@@ -17,7 +17,9 @@ package org.bbop.client;
 
 import java.util.Map;
 
+import org.bbop.client.model.DateDTO;
 import org.bbop.client.model.NodeDTO;
+import org.bbop.client.model.StatementDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -46,9 +48,6 @@ public interface RefGenomeService extends RemoteService {
 	 * @return 
 	 */
 	public NodeDTO[] fetchIdsByName(String searchTerm);
-	//public String[] fetchIdsByName(String searchTerm);
-	//public String[] fetchIdsByName(String searchTerm, String operator);
-
 	
 	/**
 	 * limits search results by taxon
@@ -59,24 +58,6 @@ public interface RefGenomeService extends RemoteService {
 	public String[] fetchIdsByNameAndTaxon(String searchTerm, String taxonId);
 
 	/**
-	 * Given an Id, return all labels, names, synonyms etc by which this Id is
-	 * known
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public String[] fetchLabelsById(String id);
-
-	//public NodeDTO fetchNodeById(String id);
-
-	//public Map<String,String> fetchLabelMapsById(String searchTerm);
-	 /**
-	   * @gwt.typeArgs <java.lang.String,java.lang.String>
-	   */
-	public Map fetchLabelMapsById(String searchTerm);
-
-	
-	/**
 	 * all taxon IDs that are part of some reference set.
 	 * the API is extensible to multiple reference sets - this call
 	 * will always return the superset. In the case of the RefG
@@ -85,31 +66,59 @@ public interface RefGenomeService extends RemoteService {
 	 * @return IDs for taxon nodes, typically NCBITaxon
 	 */
 	public String[] fetchReferenceTaxonIds();
-	
-	/**
-	 * typical NCBITaxon
-	 * @return IDSpace of the taxononymy database
-	 */
-	public String getTaxonIdPrefix();
-	
-	/**
-	 * @return all target gene Ids
-	 */
-	public String[] fetchReferenceTargetIds();
-	
+
 	/**
 	 * Given an ID for the homology set, return the IDs of all members
 	 * @param homologSetId
 	 * @return
 	 */
-	//public String[] fetchEntityIdsInHomologSet(String homologSetId);
+	public String[] fetchEntityIdsInHomologSet(String homologSetId);
 	
+	//public Map<String,String> fetchLabelMapsById(String searchTerm);
+	public Map fetchLabelMapsById(String searchTerm);
+	
+	/**
+	 * Given an Id, return all labels, names, synonyms etc by which this Id is
+	 * known
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String[] fetchLabelsById(String id);
+	
+	/**
+	 * @return all target gene Ids
+	 */
+	public String[] fetchReferenceTargetIds();
+
+	/**
+	 * typical NCBITaxon
+	 * @return IDSpace of the taxononymy database
+	 */
+	public String getTaxonIdPrefix();
+
+	public void addUser(String userId, String fullName, String password); // encrypt?
+
+	public void assignEntityComprehensivelyAnnotatedStatus(String userId, String geneId, DateDTO date);
+
+	public void assignEntityStatusCode(String userId, String statusId, String geneId, DateDTO date); // datatype?
+
+	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date); // datatype?
+	
+	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
+
+	public void assignNegativeHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
+
+	public void attachCommentToEntity(String entityId, String comment, String curatorId);
+	
+	public void checkUserPassword(String userId, String password); // encrypt?
+
 	/**
 	 * given a gene (or similar entity) return all homologs
 	 * @param entityId  -- e.g. a gene or gene product Id
 	 * @return
 	 */
-	//public String[] fetchHomologousEntityIds(String entityId);
+	public String[] fetchHomologousEntityIds(String entityId);
 	
 	/**
 	 * given an entity Id (e.g. a MOD gene ID), return all edges in
@@ -118,8 +127,29 @@ public interface RefGenomeService extends RemoteService {
 	 * @param entityId
 	 * @return
 	 */
-	//public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
+	public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
+		
+	public NodeDTO fetchNodeById(String id);
+
+	public NodeDTO[] getAllUsers();
+
+	/**
+	 * e.g. PPOD, Homologene, ...
+	 * @return list of node objects, with IDs, labels and descriptions
+	 */
+	public NodeDTO[] getHomologyMethodTypeNodes();
 	
+	public NodeDTO[] getStatusCodeNodes();
+
+	// these two methods are convenience wrappers for the above
+	public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId);
+	
+	// generic status operations: actual status codes are extensible
+	public void retractEntityStatusCode(String userId, String statusId, String geneId); // datatype?
+
+	// these two methods are convenience wrappers for the above
+	public void retractEntityTargetStatus(String userId, String geneId);
+
 	/**
 	 * Given a target gene, is it and all homologous genes comprehensively
 	 * annotated?
@@ -128,44 +158,5 @@ public interface RefGenomeService extends RemoteService {
 	 * @return
 	 */
 	public boolean isSetComprehensivelyAnnotated(String entityId);
-	
-	// ===================
-	// admin 
-	// ===================
-	//public void addUser(String userId, String fullName, String password); // encrypt?
-	//public void checkUserPassword(String userId, String password); // encrypt?
-	//public NodeDTO[] getAllUsers();
-
-	// ===================
-	// big-cheese role methods
-	// ===================
-
-	//public NodeDTO[] getStatusCodeNodes();
-	
-	// TODO: do each of these require a userId? Is this stateful?
-	
-	// generic status operations: actual status codes are extensible
-	//public void assignEntityStatusCode(String userId, String statusId, String geneId, DateDTO date); // datatype?
-	//public void retractEntityStatusCode(String userId, String statusId, String geneId); // datatype?
-
-	// these two methods are convenience wrappers for the above
-	//public void assignEntityTargetStatus(String userId, String geneId, DateDTO date); // datatype?
-	//public void retractEntityTargetStatus(String userId, String geneId);
-	
-	// these two methods are convenience wrappers for the above
-	//public void assignEntityComprehensivelyAnnotatedStatus(String userId, String geneId, DateDTO date);
-	//public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId);
-
-	//public void attachCommentToEntity(String entityId, String comment, String curatorId);
-	
-	/**
-	 * e.g. PPOD, Homologene, ...
-	 * @return list of node objects, with IDs, labels and descriptions
-	 */
-	//public NodeDTO[] getHomologyMethodTypeNodes();
-	//public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
-	//public void assignNegativeHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
-	
-
 
 }
