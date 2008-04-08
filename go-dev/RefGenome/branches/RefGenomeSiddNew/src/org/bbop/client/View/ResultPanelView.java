@@ -54,7 +54,7 @@ public class ResultPanelView {
 	
 	public void addTableView(Table tbl) {
 		WidgetContainer tblHolder = new WidgetContainer();
-		tblHolder.setLayout(new FillLayout(6));
+		//tblHolder.setLayout(new FillLayout(6));
 		tblHolder.add(tbl);
 		centerPanel.setText("Search Result");
 		centerPanel.add(tblHolder);

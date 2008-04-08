@@ -49,6 +49,8 @@ public interface RefGenomeService extends RemoteService {
 		
 	public String[] fetchReferenceTargetIds();
 	
+	//Search methods
+	
 	public NodeDTO[] fetchIdsByName(String searchTerm);
 
 }

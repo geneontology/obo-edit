@@ -36,13 +36,13 @@ public class SummaryTableView {
 		summColModel = new TableColumnModel(summCols);
 		
 		summTbl = new Table(Style.MULTI, summColModel);
-		summTbl.setBorders(true);
+		summTbl.setBorders(false);
 		summTbl.add(new TableItem(new String[]{"Worm","200","300","189"}));
 		summTbl.add(new TableItem(new String[]{"Fly","185","19","160"}));
 		summTbl.add(new TableItem(new String[]{"Human","268","30","100"}));
 		
 			
-		summaryWidget.setLayout(new FillLayout(10));
+		//summaryWidget.setLayout(new FillLayout(10));
 		summaryWidget.add(summTbl);
 	}
 	
