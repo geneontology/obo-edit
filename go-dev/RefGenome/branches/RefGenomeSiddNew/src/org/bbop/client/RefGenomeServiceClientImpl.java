@@ -38,6 +38,21 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	
 	public void fetchByName(String name) {
 		// TODO Auto-generated method stub
+		refgservice.fetchIdsByName(name, new SearchByNameCallback());
+		
+	}
+	
+	private class SearchByNameCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("error in search",caught);
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+			refgview.getNavPanel().getSearchPanelView().displayNameSearchResult(result);
+		}
 		
 	}
 	

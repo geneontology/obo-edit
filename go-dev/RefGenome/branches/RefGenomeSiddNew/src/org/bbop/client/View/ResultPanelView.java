@@ -4,6 +4,9 @@ import org.bbop.client.Listener.RefGenomeViewListenerI;
 
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ContentPanel;
+import net.mygwt.ui.client.widget.WidgetContainer;
+import net.mygwt.ui.client.widget.layout.FillLayout;
+import net.mygwt.ui.client.widget.table.Table;
 
 
 public class ResultPanelView {
@@ -43,6 +46,18 @@ public class ResultPanelView {
 	
 	public ContentPanel getView(){
 		return centerPanel;
+	}
+	
+	public void removeChildViews() {
+		centerPanel.removeAll();
+	}
+	
+	public void addTableView(Table tbl) {
+		WidgetContainer tblHolder = new WidgetContainer();
+		tblHolder.setLayout(new FillLayout(6));
+		tblHolder.add(tbl);
+		centerPanel.setText("Search Result");
+		centerPanel.add(tblHolder);
 	}
 	
 	

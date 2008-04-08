@@ -1,10 +1,16 @@
 package org.bbop.client.View;
 
 
+import net.mygwt.ui.client.Style;
+import net.mygwt.ui.client.event.BaseEvent;
+import net.mygwt.ui.client.event.SelectionListener;
 import net.mygwt.ui.client.widget.Button;
+import net.mygwt.ui.client.widget.MessageBox;
 
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
+import org.bbop.client.Manager.SearchPanelManagerI;
+import org.bbop.client.model.NodeDTO;
 
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -13,7 +19,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SearchPanelView {
+public class SearchPanelView implements SearchPanelManagerI {
 	private RefGenomeViewListenerI refgListener;
 	private RefGenomeView mainView;
 	
@@ -85,6 +91,7 @@ public class SearchPanelView {
 		idSearchTerm.addFocusListener(new UserFocusListener());
 		nameSearchTerm.addFocusListener(new UserFocusListener());
 		txnSearchTerm.addFocusListener(new UserFocusListener());
+		nameSearchBtn.addSelectionListener(new NameSearchListener());
 	}
 	
 	private void setAttr () {
@@ -106,6 +113,13 @@ public class SearchPanelView {
 			
 	}
 	
+	private boolean validateInput(String input) {
+		if (input == null || input.length() == 0) {
+			return false;
+		}
+		return true;
+	}
+	
 	private class UserFocusListener implements FocusListener {
 
 		public void onFocus(Widget sender) {
@@ -120,6 +134,41 @@ public class SearchPanelView {
 			// TODO Auto-generated method stub
 			
 		}
+		
+	}
+	
+	private class NameSearchListener implements SelectionListener {
+
+		public void widgetSelected(BaseEvent be) {
+			// TODO Auto-generated method stub
+			final String userInput = nameSearchTerm.getText();
+			if (!validateInput(userInput)) {
+				final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
+				alert.setText("Invalid input");
+				alert.setMessage("Please try again");
+				alert.open();
+			}
+			else {
+				refgListener.fetchByName(userInput);
+			}
+		}
+		
+	}
+
+	public void displayNameSearchResult(Object obj) {
+		
+		ResultPanelView resultView = mainView.getResultPanel();
+		NameSearchTableView tableView = new NameSearchTableView(refgListener, mainView);
+		
+		//Get the DTO object
+		NodeDTO[] result = (NodeDTO[]) obj;
+		tableView.createView(result);
+		
+		// Remove the initial table view
+		resultView.removeChildViews();
+		//Add the new one
+		resultView.addTableView(tableView.getView());
+		mainView.layout();
 		
 	}
 	

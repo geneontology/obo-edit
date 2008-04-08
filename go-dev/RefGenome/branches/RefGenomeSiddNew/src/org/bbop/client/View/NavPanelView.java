@@ -90,5 +90,9 @@ public  class NavPanelView  implements NavPanelManagerI {
 		exbar.remove(curationitem);
 		
 	}
+	
+	public SearchPanelView getSearchPanelView() {
+		return searchview;
+	}
 
 }
