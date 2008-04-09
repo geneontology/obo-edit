@@ -15,6 +15,8 @@ public class WebSession {
 	private boolean authenticated_p ;
 	
 	private SimplePanel blockingPanel;
+	private HTML bpText;
+	private String defaultBPText;
 	
     // Create the object according to a session.
     public WebSession () {
@@ -25,8 +27,10 @@ public class WebSession {
     	authenticated_p = false;
 
     	//
+    	defaultBPText = "Please be patient...";
+    	bpText = new HTML(defaultBPText);
     	blockingPanel = new SimplePanel();
-    	blockingPanel.add(new HTML("Please be patient..."));
+    	blockingPanel.add(bpText);
     	blockingPanel.setVisible(false);
     	blockingPanel.setStyleName("blocking-panel");
     }
@@ -91,6 +95,12 @@ public class WebSession {
 	}
 
 	public void block () {
+		bpText.setText(defaultBPText);
+		blockingPanel.setVisible(true);
+	}
+	
+	public void block (String str) {
+		bpText.setText(str);
 		blockingPanel.setVisible(true);
 	}
 	
