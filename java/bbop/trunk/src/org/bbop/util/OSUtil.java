@@ -188,23 +188,21 @@ public class OSUtil
   public static String getConfigDirectory(String projectName)
   {
     String userHome = System.getProperty("user.home");
-    String pname = Character.toUpperCase(projectName.charAt(0)) +
-                   projectName.substring(1).toLowerCase();
-
     if (isLinux()) {
-      return userHome + "/." + pname.toLowerCase();
+      return userHome + "/." + projectName;
     }
     else if (isMacOSX()) {
-      return userHome + "/Library/Application Support/" + pname;
+      return userHome + "/Library/Application Support/" + projectName;
     }
     else if (isWindowsVista()) {
-      return userHome + "\\AppData\\Roaming\\" + pname;
+      return userHome + "\\AppData\\Roaming\\" + projectName;
     }
     else if (isWindowsXP() || isWindows2000()) {
-      return userHome + "\\Application Data\\" + pname;
+      return userHome + "\\Application Data\\" + projectName;
     }
     else if (isWindows98() || isWindowsME()) {
-      return File.listRoots()[0] + "\\Windows\\Application Data\\" + pname;
+      return File.listRoots()[0] + "\\Windows\\Application Data\\" +
+             projectName;
     }
     return null;
   }
