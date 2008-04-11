@@ -1,0 +1,255 @@
+#!/usr/bin/ruby -w
+
+
+## This class handles the command line for:
+## flags, numerics, strings, files, directories.
+class CommandLineOptions
+
+  require 'getoptlong'
+  require 'pathname'
+
+  attr_reader :wanted_in, :wanted_out, :wanted_first
+  attr_reader :wanted_help, :wanted_verbose
+  attr_reader :wanted_gwt
+  attr_reader :wanted_project
+  attr_reader :wanted_execute
+  attr_accessor :wanted_dir
+
+  def initialize()
+    # The real big boy.
+    command_line_options =
+      GetoptLong.new(
+                     ["--in", "-i", GetoptLong::NO_ARGUMENT],
+                     ["--out", "-o", GetoptLong::NO_ARGUMENT],
+                     ["--first", "-f", GetoptLong::NO_ARGUMENT],
+                     ["--help",    "-h", GetoptLong::NO_ARGUMENT],
+                     ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
+                     ["--execute", "-x", GetoptLong::NO_ARGUMENT],
+                     ["--project",     "-p", GetoptLong::REQUIRED_ARGUMENT],
+                     ["--gwt",     "-g", GetoptLong::REQUIRED_ARGUMENT],
+                     ["--dir",     "-d", GetoptLong::REQUIRED_ARGUMENT]
+                     )
+
+    # Default values.
+    @wanted_in = nil
+    @wanted_out = nil
+    @wanted_first = nil
+    @wanted_help = @wanted_verbose = nil
+    @wanted_project = "GO"
+    @wanted_gwt = "/tmp"
+    @wanted_execute = nil
+    @wanted_dir = Pathname.new(Dir.pwd).parent.parent
+
+    # Get values using the case statement.
+    command_line_options.each do |option, argument|
+      # Option cases.
+      case option
+      when "--in", "-i"
+        @wanted_in = true
+      when "--out", "-o"
+        @wanted_out = true
+      when "--first", "-f"
+        @wanted_first = true
+      when "--help", "-h"
+        @wanted_help = true
+      when "--execute", "-x"
+        @wanted_execute = true
+      when "--verbose", "-v"
+        @wanted_verbose = true
+      when "--gwt", "-g"
+        @wanted_gwt = argument
+      when "--project", "-p"
+        @wanted_project = argument
+      when "--dir", "-d"
+      	 @wanted_dir = argument
+      end
+    end
+    
+    puts "Will be verbose." if @wanted_verbose
+
+  end
+
+end
+
+## START MAIN ###
+
+require 'find'
+
+rsync_cmd = "rsync -avz -P --stats --exclude '.svn' --ignore-errors"
+
+clo = CommandLineOptions.new()
+
+## First gauntlet: want help?
+if clo.wanted_help
+
+  puts "Usage: sink [-h] [-x] [-f | -o | -i] [-p <name>] [-d <directory>] -g <directory>"
+  puts ""
+  puts "Note: Always run from the geneontology/go-dev/gwt/scripts directory."
+  puts ""
+  puts "   -h, --help            print this message and exit"
+  puts "   -v, --verbose         print a lot of information during execution"
+  puts "   -f, --first           runs "
+  puts "   -o, --out             rsync files out of this SVN repository"
+  puts "   -i, --in              rsync files back in to this SVN repository"
+  puts "   -x, --execute         actually do things instead of a dry run"
+  puts "   -p, --project <name>  name of the project; defaults to \"GO\""
+  puts "   -g, --gwt <directory> location of an unpacked GWT; defaults to \"/tmp\""
+  puts "   -d, --dir <directory> location where project will be created, defaults to two folders up from current working dir" 
+  puts ""
+  puts "Example usage, to initially bootstrap the project from SVN:"
+  puts "\t./sink -v -x -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "\t./sink -v -x -d /home/sjcarbon/MyRefGenome -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "Example usage, to rync files from your SVN repo to the project directory:"
+  puts "\t./sink -v -x -o -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "\t./sink -v -x -o -d /home/sjcarbon/MyRefGenome -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "Example usage, to rync files from your project directory to the SVN repo:"
+  puts "\t./sink -v -x -i -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+
+  puts ""
+
+  exit(0);
+end
+
+
+## Second gauntlet: got a GWT directory?
+gwt_dir = clo.wanted_gwt
+proj_exe = gwt_dir + '/projectCreator';
+app_exe = gwt_dir + '/applicationCreator';
+
+## small thingy to have an absolute path
+tmppath = Pathname.new(clo.wanted_dir)
+if not tmppath.absolute?
+	 clo.wanted_dir = tmppath.realpath
+end
+
+
+begin
+
+  puts "Checking GWT location..." if clo.wanted_verbose
+  if not File.stat(gwt_dir).directory? or
+      not File.stat(app_exe).executable? or
+      not File.stat(proj_exe).executable?
+    
+    puts "Error: Must specify a legal unpacked GWT directory."
+    exit(-1);
+  else
+    puts "Found GWT directory..." if clo.wanted_verbose
+  end
+
+rescue
+  puts "Error: Must specify a legal unpacked GWT directory."
+  exit(-1);
+end
+
+
+## Third gauntlet: do we have a single action flag?
+if not ( clo.wanted_first or
+         clo.wanted_in or
+         clo.wanted_out )
+
+  puts "Error: Must specify an action flag."
+  exit(-1);
+
+elsif ( clo.wanted_first and clo.wanted_in ) or
+    ( clo.wanted_in and clo.wanted_out ) or
+    ( clo.wanted_out and clo.wanted_first )
+    
+  puts "Error: Must specify a single action flag."
+  exit(-1);
+
+end
+
+
+## Case on action flags.
+if clo.wanted_first
+
+  puts "Initializing run..." if clo.wanted_verbose
+
+  ## Get all of the projects  
+  apps = [];
+  Find.find("../src") do |f|
+    if File.basename(f) =~ /(.+)\.gwt\.xml$/
+      puts "Found project: "  + f if clo.wanted_verbose
+      base_proj = $1
+      #puts "Found project: "  + p if clo.wanted_verbose
+
+      project_bits = []
+      elements = f.split('/')
+      elements.slice(2, elements.length - 3).each{ |e|
+        project_bits.push(e)
+      }
+      project_bits.push('client')
+      project_bits.push(base_proj)
+
+      app_class = project_bits.join('.')
+      puts "Will making class: "  + app_class if clo.wanted_verbose
+      apps.push(app_class)
+
+    end
+  end
+  if apps.empty?
+    puts "Error: couldn't find any applications"
+    exit(-1)
+  end
+
+  ## -- check the dir where the project will be created
+  if not File.directory?(clo.wanted_dir)
+  	 #puts "Error: Given project directory do not exist."
+  	 Dir.mkdir(clo.wanted_dir)
+  	 #exit (-1)
+	end
+ 
+
+  ## Move to GWT
+  here = Dir.pwd();
+  Dir.chdir(clo.wanted_gwt)
+  puts "Have entered: "  + Dir.pwd() if clo.wanted_verbose
+
+  ## Forcably set up projects.
+  create_project = './projectCreator -overwrite -eclipse ' + clo.wanted_project + ' -out ' +  clo.wanted_dir
+  puts "Running: #{create_project}" if clo.wanted_verbose
+  system(create_project) if clo.wanted_execute
+
+  ## Forcably set up applications.
+  apps.each{ |app|
+
+    create_application =
+    './applicationCreator -overwrite -eclipse ' + clo.wanted_project + ' -out ' + clo.wanted_dir + ' ' + app
+    
+    puts "Running: #{create_application}" if clo.wanted_verbose
+    system(create_application) if clo.wanted_execute
+  }
+
+elsif clo.wanted_out
+
+  puts "Will rsync OUT..." if clo.wanted_verbose
+
+  ## Get command straight.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} ../src #{clo.wanted_dir}/"
+
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+elsif clo.wanted_in
+
+  puts "Will rsync IN..." if clo.wanted_verbose
+
+  ## Get command straight.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} #{clo.wanted_dir}/src ../"
+
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+else
+  puts "Error: seeing this message is impossible."
+end
+
+puts "Finished." if clo.wanted_verbose
