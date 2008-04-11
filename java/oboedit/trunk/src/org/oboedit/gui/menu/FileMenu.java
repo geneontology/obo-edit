@@ -75,7 +75,7 @@ public class FileMenu extends DynamicMenu {
 
 		JMenuItem saveHistoryItem = new JMenuItem("Save History...");
 		JMenuItem applyHistoryItem = new JMenuItem("Load History...");
-		JMenuItem exitItem = new JMenuItem("Exit");
+		JMenuItem exitItem = new JMenuItem("Quit");  // Was Exit
 
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
