@@ -94,10 +94,16 @@ public class AutosaveTask implements GUITask, Runnable {
 			if (!preferences.getAutosavePath().exists()) {
 				if (!preferences.getAutosavePath().mkdirs()) {
 					logger.warning("Couldn't create " + "autosave "
-							+ "directory. " + "Autosave " + "disabled.");
+						       + "directory " +
+						       preferences.getAutosavePath() + "\nAutosave " + "disabled.");
 					GUIManager.getManager().notifyComplete(this);
 					return;
 				}
+			}
+			// Only do the autosave if there are unsaved changes.
+			if (!SessionManager.getManager().needsSave()) {
+//			    System.err.println("No changes--no need to autosave.");
+			    return;
 			}
 			String saveFile = new File(preferences.getAutosavePath(),
 					getFileName(calendar)).toString();
@@ -107,7 +113,9 @@ public class AutosaveTask implements GUITask, Runnable {
 			DataAdapterOperationTask task = new DataAdapterOperationTask(
 					adapter, adapter.WRITE_ONTOLOGY, config, SessionManager
 							.getManager().getSession());
-			GUIManager.getManager().scheduleTask(task, true);
+//			GUIManager.getManager().scheduleTask(task, true);
+			// false means *don't* grab focus
+			GUIManager.getManager().scheduleTask(task, false);
 		}
 	}
 }
