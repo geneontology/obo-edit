@@ -1,46 +1,68 @@
-Changes in 2.000-b35-36:
-* "Regulates" links are now purple; "part_of" links are orange.
-* Delete behavior mostly fixed:
-- it now differentiates between selecting a relationship to delete and
-selecting a term to delete.
-- you cannot delete a term that has children.
-- whenever you are about to delete a term, you will get the "this term will
-become obsolete" warning.
-- in the Ontology Term Editor, if the term-relationship you have selected
-is the only relationship for that term, it counts as selecting a term.
-(that means that for singletons, you can only delete the term, since they
-don't have relationships.)  if a term has multiple parents (i.e., appears
-multiple times in the tree), you can't delete the term.  selecting one of
-the instances of the term in the tree counts as deleting that relationship,
-not that term.
-- the delete menu item now says "delete relationship" or "delete term"
-depending on what will be deleted if you go through with it.
-- "delete relationship" will never make a term obsolete, though it may make
-it a singleton.
-- if you select multiple things, and some are legal to delete and some
+Changes in 2.000-b37
+* Delete behavior is pretty much fixed, although the Graph Editor still
+occasionally gets confused if you try to delete multiple terms at once (please
+report any observed bugs).
+- The delete menu item now says "Delete/Destroy term" or "Delete relationship"
+(with "Destroy" grayed out--you can't destroy a relationship).
+- If you select multiple things, and some are legal to delete and some
 aren't, it will offer you the delete option and then only delete the legal
-ones.  i would probably choose not to let the user delete anything if
-multiple things are selected, but clearly it was set up to allow this.
-- in the Graph Editor, you can select either a relationship or a term.  you
-are allowed to delete a term if you've selected it, even if it has multiple
-parents (though, as above, not if it has any children).
-HOWEVER, the thing that isn't working right is that in the graph editor,
-you can right-mouse over an item that isn't really selected (it doesn't
-have a blue border around it) and the item it will try to delete is the one
-that is selected, NOT the one you are currently hovering over.
+ones (those without children).  It will notify you in the popup about the
+term(s) it can't delete.
+- The Ontology Tree Editor and the Graph Editor were behaving differently if
+you selected a term and then hovered over a different term and right-clicked
+and selected Delete.  Now both of them are consistent.  They both disallow
+deleteion of an unselected term.  If you are hovering over a term that you
+haven't selected, the Delete menu options will be grayed out.
 
-* Terms with dangling refs now are labeled in graph editor with their IDs
-(since they don't have names).
-* Dangling objects were causing lots of exceptions to fly.  Fixed these by
-making DanglingObjectImpl extend OBOClassImpl.  This fixed one of David S's
-problems:
-(a) These result in a very long line of empty boxes in the graph editor. 
-If the reasoner is turned on, the first box clicked prompts the Text Editor
-to show a dangling ID (& said boxes do this cute little shuffling thing
-when clicked). After this, the Text Editor sticks on the orginally chosen
-term - and fails to respond to new selection from the ontology tree editor
-or the graph editor.
-* Made background of ID field the same as the component background (light
-gray) so that it's clear that it's not editable.
-* Fixed (I think) Windows-only appearance problem with pulldown list in
-Search config (bug #1897924).  (Can't test.)
+* Fixed Windows problem where built-in icons wouldn't show up.
+* Fixed Windows problem where combobox in OTE config window was too tall (but
+for some reason the same fix didn't work on the Reasoner Manager combobox).
+* Fixed problem where user's memory settings were being lost.  Also bumped up
+(from 512M to 1024M) the default memory setting used inside OBO-Edit if it for
+some reason can't find/read OBO-Edit.vmoptions where the user-selected memory
+setting is stored.
+* Configuration setting for "End title of search results panel with" in Search
+panel is now saved between sessions.
+* At user request, "minus" buttons to remove filters are now below the filters
+rather than on the right (where they tend to be invisible unless you have that
+panel really stretched out).  Also (again at user request) moved the gear
+button ("advanced") so it's to the left of the added field rather than to the
+right.
+[Need to update screenshots in manual.]
+* Reworded two menu options: "Add root" is now "Add root class"; "Add type
+root" is now "Add root relation".  (Suggested by Alan Gussman,
+http://sourceforge.net/tracker/index.php?func=detail&aid=1594409&group_id=36855&atid=418260)
+* Now autosave will only save if there are unsaved edits, and it won't grab the
+focus and pop to the front.
+* "Allow dangling refs" is now true by default, so you can load ontologies
+that have dangling refs.  (Dangling refs result in a warning message when you
+load and when you save.)
+* "Regulates" typedefs in the input file are now roundtripped--they weren't
+being saved because I had made the regulates relations built-in and built-ins
+aren't saved as typedefs.
+If you have an obo file that has regulates relationships without the regulates
+typedefs, OBO-Edit would refuse to load it *if* allowDangling is set to false.
+However, allowDangling is now true by default.
+* Don't write out fake objects that are created from dangling refs.  These were
+resulting in [null] stanzas like:
+       	      [null]
+	      id: FBAR:1234567
+I fixed this in OBOSerializationEngine.  Not 100% sure I did this the right
+way (Chris will probably let me know if it's not).
+
+TODO:
+x more prominent (new tab?) config dir in config manager and documentation
+  (Need to ok new config manager layout with users)
+pull out bug report about color chooser
+x make "allow dangling refs" default
+  (This needs more testing)
+change date parsing (April 10, 2008 3:18:18 PM PDT)
+
+NOT PUTTING IN THIS RELEASE:
+* User config files that were stored in ~/.oboeditbeta are now being put in an
+OS-appropriate directory:
+	       Mac: /Library/Application Support/OBO-Edit2-beta
+	       Windows XP or 2000: [user home]\Application Data\OBO-Edit2-beta
+	       Windows Vista: [user home]\AppData\Roaming\OBO-Edit2-beta
+	       Linux: [user home]/OBO-Edit2-beta
+Still need:  copy old .oboeditbeta files to new location
