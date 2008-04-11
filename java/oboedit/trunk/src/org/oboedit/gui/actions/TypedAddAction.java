@@ -38,9 +38,9 @@ public class TypedAddAction extends AddAction {
 	@Override
 	public String getName() {
 		if (isType)
-			return "Add type root";
+			return "Add root relation";
 		else
-			return "Add root";
+			return "Add root class";
 	}
 
 	@Override
