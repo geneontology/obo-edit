@@ -111,6 +111,9 @@ public class IDWDriver implements LayoutDriver {
 
 	protected Collection<LayoutListener> layoutListeners = new ArrayList<LayoutListener>();
 
+  /** whether to save layout when exiting - default is true */
+  private boolean saveLayoutOnExit = true;
+
 	protected DockingWindowListener floatingWindowCloseListener = new DockingWindowAdapter() {
 		public void windowClosed(DockingWindow window) {
 			View v = SwingUtil.getDescendantOfType(window, View.class);
@@ -288,12 +291,20 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
+  /** cleanup is called on exitin and changing layout managers (though there currently
+      is only 1 layout mgt - this - and saves all perspectives,
+      unless saveLayoutOnExit is set to false (default true) */
 	public void cleanup() {
-		if (currentPerspective != null) {
+		if (saveLayoutOnExit && currentPerspective != null) {
 			savePerspectiveAs(currentPerspective, currentPerspective.getName());
 			savePerspectives();
 		}
 	}
+
+  /** Whether to save layout on exit - default true */
+  public void setSaveLayoutOnExit(boolean saveLayout) {
+    this.saveLayoutOnExit = saveLayout;
+  }
 
 	protected void savePerspectives() {
 		File file = getPerspectivesFile();

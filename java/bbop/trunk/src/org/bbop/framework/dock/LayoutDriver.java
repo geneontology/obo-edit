@@ -64,4 +64,6 @@ public interface LayoutDriver {
   
   public void unlockDockingPanels(); 
   
+  /** Whether to save layout on exit - default true */
+  public void setSaveLayoutOnExit(boolean saveLayout);
 }
