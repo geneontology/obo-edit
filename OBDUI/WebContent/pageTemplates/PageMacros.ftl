@@ -1,7 +1,14 @@
-
-
-<#macro otherFormatLink contextName dataSource format view id statementType>
-	<a href="/${contextName}/${dataSource}/${format}/${view}/${id}/statements/${statementType}">${format}</a>
+<#macro searchForm>
+ <div id="searchbar">
+ 	 <script type="text/javascript" src="/${contextName}/js/search.js">
+  	</script>
+	<form id="search_form" onsubmit="nodeSearch('${contextName})">
+		Search for:<br/>
+       	<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}')" value="Go" />
+       	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
+        <input type="hidden" name="dataSource" id="dataSource" value="${dataSource}"/>
+     </form>
+ </div>
 </#macro>
 
 <#macro mappedPathsList>
@@ -39,7 +46,6 @@
 			${pageName}
 		</title>
 		<link rel="stylesheet" type="text/css" href="/OBDUI/css/obd-main.css"/>
-		 <script type="text/javascript" src="/OBDUI/js/table-toggle.js"></script>
 	</head>
 </#macro>
 
@@ -75,18 +81,7 @@
   </tr></td></table>
 </#macro>
 
-<#macro searchForm>
- <div id="searchbar">
- 	 <script type="text/javascript" src="/${contextName}/js/search.js">
-  	</script>
-	<form id="search_form" onsubmit="nodeSearch('${contextName})">
-		Search for:<br/>
-       	<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}')" value="Go" />
-       	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
-        <input type="hidden" name="dataSource" id="dataSource" value="${dataSource}"/>
-     </form>
- </div>
-</#macro>
+
 
 <#macro javascriptTags>
   

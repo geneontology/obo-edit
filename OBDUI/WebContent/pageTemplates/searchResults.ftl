@@ -1,4 +1,5 @@
-<#include "PageMacros.ftl"> 
+<#include "PageMacros.ftl">
+<#include "NodeDetailsMacro.ftl"> 
 <html>
 
 	<body>

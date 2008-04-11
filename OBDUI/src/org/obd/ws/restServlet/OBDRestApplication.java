@@ -1,6 +1,7 @@
 package org.obd.ws.restServlet;
 
 import java.util.Map;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,11 @@ public class OBDRestApplication extends Application {
 			e.printStackTrace();
 			return null;
 		}
+		
+		Handler[] handlers = Logger.getLogger("").getHandlers();
+ 	    for ( int index = 0; index < handlers.length; index++ ) {
+ 	      handlers[index].setLevel( Level.FINEST );
+ 	    }
 		
 		for (String logName : this.getConfiguration().getLogLevels().keySet()){
   	    	

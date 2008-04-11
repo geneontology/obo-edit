@@ -257,3 +257,25 @@ table.otherFormats td{
     color:#5c5c5c;
     font-size:11px;
 }
+
+table.scoredNodeResults {
+    font-size:12px;
+    border-collapse:separate;
+    border-spacing:2px;
+    background-color:#ffffff;
+}
+
+
+table.scoredNodeResults th{
+    font-weight:normal;
+    text-align:left;
+    vertical-align:bottom;    
+    padding-left:2px;
+    padding-right:2px;
+    background-color:#fdfdfd;
+}
+
+table.scoredNodeResults td{
+    padding-left:2px;
+    background-color:#fdfdfd;
+}

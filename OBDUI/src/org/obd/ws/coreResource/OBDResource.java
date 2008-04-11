@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
@@ -87,12 +85,14 @@ public abstract class OBDResource extends Resource {
 	}
 	
 	public String hrefLabel(String label, String id, String dataSource){
+		
 		String eid = Reference.encode(id);
-		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+label+"</a>";
+		
+		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+this.HTMLEntityEncode(label)+"</a>";
 	}
 	public String href(String id,String dataSource) {
 		String eid = Reference.encode(id);
-		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+id+"</a>";
+		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+this.HTMLEntityEncode(id)+"</a>";
 	}
 	
 	public String href(String path, String id,String dataSource) {
@@ -103,6 +103,7 @@ public abstract class OBDResource extends Resource {
 	}
 	public String hrefStatementsFor(String id,String dataSource) {
 		String eid = Reference.encode(id);
+		
 
 		return "[ <a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/about\">about</a> | " +
 		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/to\">to</a> | " +
@@ -111,7 +112,8 @@ public abstract class OBDResource extends Resource {
 	}
 
 	public String hrefDescriptionFor(String id,String dataSource) {
-		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+id+"/description\">"+id+"</a>";
+		String eid = Reference.encode(id);
+		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/description\">"+id+"</a>";
 	}
 
 	public String hrefStatement(Statement s,String dataSource) {
@@ -205,5 +207,22 @@ public abstract class OBDResource extends Resource {
 	
 	public String getContextName(){
 		return ((OBDRestApplication)this.getApplication()).getServerServlet().getServletContext().getServletContextName();
+	}
+	
+	
+	private String HTMLEntityEncode(String s){
+		StringBuffer buf = new StringBuffer();
+		int len = (s == null ? -1 : s.length());
+
+		for ( int i = 0; i < len; i++ ){
+			char c = s.charAt( i );
+			if ( c>='a' && c<='z' || c>='A' && c<='Z' || c>='0' && c<='9' ){
+				buf.append( c );
+			} else {
+				buf.append( "&#" + (int)c + ";" );
+			}
+		}
+		
+		return buf.toString();
 	}
 }
