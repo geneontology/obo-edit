@@ -17,6 +17,9 @@ public interface LayoutDriver {
 	public Perspective getCurrentPerspective();
 
 	public Perspective savePerspectiveAs(Perspective p, String name);
+	
+	/** Saves current list of perspectives, and default, to perspective.xml*/
+	public void savePerspectives();
 
 	public Perspective getPerspective(String name);
 	
