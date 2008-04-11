@@ -374,7 +374,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				List<URL> icons = Preferences.getIconLibrary();
 				final JDialog dialog = new JDialog();
 				dialog.setTitle("Click an icon to select it");
-				dialog.setModal(true);
+				dialog.setModal(true);  // Is this really necessary?
 
 				for (final URL url : icons) {
 					ActionListener listener = new ActionListener() {
@@ -674,91 +674,104 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autoCommitPanel.add(allowExtendedCheckbox);
 		autoCommitPanel.add(Box.createHorizontalGlue());
 
-		Box configFileLabelBox = new Box(BoxLayout.X_AXIS);
-		JLabel configFileLabel = new JLabel("Config directory");
-		// This shouldn't be hardcoded!!
-//		JLabel configFilePath = new JLabel(System.getProperty("user.home")
-//				+ "/.oboedit");
-		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
-		configFileLabelBox.add(configFileLabel);
-		configFileLabelBox.add(Box.createHorizontalStrut(20));
-		configFileLabelBox.add(Box.createHorizontalGlue());
-		configFileLabelBox.add(configFilePath);
-
 		Box autosaveEnabledBox = new Box(BoxLayout.X_AXIS);
 		autosaveEnabledBox.add(autosaveEnabledCheckBox);
 		autosaveEnabledBox.add(Box.createHorizontalGlue());
 
-		JLabel autosavePathLabel = new JLabel("Autosave file path");
+		JLabel autosavePathLabel = new JLabel("Directory for autosave");
 		Box autosavePathBox = new Box(BoxLayout.X_AXIS);
 		autosavePathBox.add(Box.createHorizontalStrut(20));
 		autosavePathBox.add(autosavePathLabel);
-		autosavePathBox.add(Box.createHorizontalStrut(20));
+		autosavePathBox.add(Box.createHorizontalStrut(10));
 		autosavePathBox.add(Box.createHorizontalGlue());
+		autosavePathField.setMaximumSize(new Dimension(Integer.MAX_VALUE, autosavePathField.getPreferredSize().height));
 		autosavePathBox.add(autosavePathField);
+		autosavePathBox.add(Box.createHorizontalStrut(5));
 
 		JLabel autosaveWaitLabel = new JLabel("Do autosave every");
 		JLabel minutesLabel = new JLabel("minutes");
 		Box autosaveWaitBox = new Box(BoxLayout.X_AXIS);
 		autosaveWaitBox.add(Box.createHorizontalStrut(20));
 		autosaveWaitBox.add(autosaveWaitLabel);
-		autosaveWaitBox.add(Box.createHorizontalStrut(20));
+		autosaveWaitBox.add(Box.createHorizontalStrut(10));
+		autosaveWaitField.setMaximumSize(new Dimension(Integer.MAX_VALUE, autosaveWaitField.getPreferredSize().height));
 		autosaveWaitBox.add(autosaveWaitField);
 		autosaveWaitBox.add(Box.createHorizontalStrut(5));
 		autosaveWaitBox.add(minutesLabel);
+		autosaveWaitBox.add(Box.createHorizontalStrut(5));
 
 		JLabel autosaveExpirationLabel = new JLabel("Autosave files expire in");
 		Box autosaveExpirationBox = new Box(BoxLayout.X_AXIS);
 		JLabel daysLabel = new JLabel("days");
 		autosaveExpirationBox.add(Box.createHorizontalStrut(20));
 		autosaveExpirationBox.add(autosaveExpirationLabel);
-		autosaveExpirationBox.add(Box.createHorizontalStrut(20));
+		autosaveExpirationBox.add(Box.createHorizontalStrut(10));
 		autosaveExpirationBox.add(autosaveExpirationField);
+		autosaveExpirationField.setMaximumSize(new Dimension(Integer.MAX_VALUE, autosaveExpirationField.getPreferredSize().height));
 		autosaveExpirationBox.add(Box.createHorizontalStrut(5));
 		autosaveExpirationBox.add(daysLabel);
+		autosaveExpirationBox.add(Box.createHorizontalStrut(5));
 
 		JPanel userPanel = new JPanel();
 		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
 		dbxrefEditor.setBorder(new TitledBorder("Personal Dbxref"));
-		JPanel fieldsPanel = new JPanel(new SpringLayout());
-		fieldsPanel.setOpaque(false);
-		fieldsPanel.add(userLabel);
-		fieldsPanel.add(userField);
-		fieldsPanel.add(fullnameLabel);
-		fieldsPanel.add(fullnameField);
-		fieldsPanel.add(emailLabel);
-		fieldsPanel.add(emailField);
 
-		userPanel.add(fieldsPanel);
+		Box configFileLabelBox = new Box(BoxLayout.X_AXIS);
+		JLabel configFileLabel = new JLabel("Directory for user configuration");
+//		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
+		JTextField configFilePath = new JTextField(GUIManager.getPrefsDir().getPath()); // so it can be copied
+		configFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
+		configFilePath.setBackground(getBackground()); // so that it looks non-editable
+		configFileLabelBox.add(configFileLabel);
+		configFileLabelBox.add(Box.createHorizontalStrut(5));
+		configFileLabelBox.add(Box.createHorizontalGlue());
+		configFileLabelBox.add(configFilePath);
+		configFileLabelBox.add(Box.createHorizontalStrut(5));
+
 		// userPanel.add(dbxrefEditor);
 		userPanel.add(Box.createVerticalGlue());
 
-		SwingUtil.makeCompactGrid(fieldsPanel, 3, 2, 5, 5, 5, 5);
+//		JPanel fieldsPanel = new JPanel(new SpringLayout());
+		Box fieldsPanel = new Box(BoxLayout.X_AXIS);
+		fieldsPanel.setOpaque(false);
+		fieldsPanel.add(userLabel);
+		fieldsPanel.add(Box.createHorizontalStrut(5));
+		fieldsPanel.add(Box.createHorizontalGlue());
+		fieldsPanel.add(userField);
+		fieldsPanel.add(Box.createHorizontalStrut(5));
+//		fieldsPanel.add(fullnameLabel);
+//		fieldsPanel.add(fullnameField);
+//		fieldsPanel.add(emailLabel);
+//		fieldsPanel.add(emailField);
 
-		JPanel autosavePanel = new JPanel();
-		autosavePanel.setOpaque(false);
-		autosavePanel.setLayout(new BoxLayout(autosavePanel, BoxLayout.Y_AXIS));
-		autosavePanel.setBorder(new TitledBorder("Autosave Options"));
-		autosavePanel.add(autosaveEnabledBox);
-		autosavePanel.add(autosavePathBox);
-		autosavePanel.add(autosaveWaitBox);
-		autosavePanel.add(autosaveExpirationBox);
+//		SwingUtil.makeCompactGrid(fieldsPanel, 3, 2, 5, 5, 5, 5);
+//		SwingUtil.makeCompactGrid(fieldsPanel, 1, 2, 5, 5, 5, 5);
 
-		JPanel pathPanel = new JPanel();
-		pathPanel.setLayout(new BorderLayout());
+// 		JPanel pathPanel = new JPanel();
+// 		pathPanel.setLayout(new BorderLayout());
 
-		Box pathBox = new Box(BoxLayout.Y_AXIS);
+// 		Box pathBox = new Box(BoxLayout.Y_AXIS);
+// 		pathBox.add(configFileLabelBox);
+// 		pathBox.add(Box.createVerticalStrut(5));
+// 		pathBox.add(autosavePanel);
 
-		pathBox.add(configFileLabelBox);
-		pathBox.add(Box.createVerticalStrut(5));
-		pathBox.add(autosavePanel);
-
-		pathPanel.add(pathBox, "North");
-		pathPanel.add(Box.createVerticalGlue());
-		pathPanel.setBorder(new TitledBorder("Config file paths"));
+// 		pathPanel.add(pathBox, "North");
+// 		pathPanel.add(Box.createVerticalGlue());
+// 		pathPanel.setBorder(new TitledBorder("Config file paths"));
 
 		memoryField = new JTextField();
 		memoryField.setText(Preferences.getPreferences().getMemString());
+		JLabel memoryLabel = new JLabel("OBO-Edit memory allocation");
+
+		Box memoryBox = new Box(BoxLayout.X_AXIS);
+		memoryBox.add(memoryLabel);
+		memoryBox.add(Box.createHorizontalStrut(5));
+		memoryBox.add(memoryField);
+		memoryBox.add(Box.createHorizontalStrut(5));
+
+		userPanel.add(configFileLabelBox);
+		userPanel.add(memoryBox);
+		userPanel.add(fieldsPanel);
 
 		String[] sizes = { "6", "8", "10", "12", "14", "16", "18", "20", "24",
 				"30", "36", "42", "48", "56", "64", "72", "80", "90", "100" };
@@ -783,17 +796,21 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fontPreviewArea.setEditable(false);
 		fontPreviewArea.setOpaque(false);
 
+//		memoryBox.add(fontPreviewArea);
+		memoryBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, memoryBox.getPreferredSize().height));
+
+		JPanel autosavePanel = new JPanel();
+		autosavePanel.setOpaque(false);
+		autosavePanel.setLayout(new BoxLayout(autosavePanel, BoxLayout.Y_AXIS));
+		autosavePanel.setBorder(new TitledBorder("Autosave Options"));
+		autosavePanel.add(autosaveEnabledBox);
+		autosavePanel.add(autosavePathBox);
+		autosavePanel.add(autosaveWaitBox);
+		autosavePanel.add(autosaveExpirationBox);
+
 		JPanel guiPanel = new JPanel();
 		guiPanel.setLayout(new BorderLayout());
-		guiPanel.setBorder(new TitledBorder("GUI Options"));
-
-		JLabel memoryLabel = new JLabel("OBO-Edit memory allocation");
-
-		Box memoryBox = new Box(BoxLayout.X_AXIS);
-		memoryBox.add(memoryLabel);
-		memoryBox.add(Box.createHorizontalStrut(15));
-		memoryBox.add(memoryField);
-		memoryBox.add(fontPreviewArea);
+//		guiPanel.setBorder(new TitledBorder("GUI Options"));
 
 		Box fontLine = new Box(BoxLayout.X_AXIS);
 		fontLine.add(fontNameList);
@@ -838,14 +855,14 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		moreOptionsPanel.setBorder(new TitledBorder(
 				"Startup Options (changes do not take effect until restart)"));
 		moreOptionsPanel.add(Box.createVerticalStrut(10));
-		moreOptionsPanel.add(memoryBox);
-		moreOptionsPanel.add(Box.createVerticalStrut(10));
+//		moreOptionsPanel.add(memoryBox);
+//		moreOptionsPanel.add(Box.createVerticalStrut(10));
 		moreOptionsPanel.add(fontBox);
-		moreOptionsPanel.setMaximumSize(moreOptionsPanel.getPreferredSize());
+//		moreOptionsPanel.setMaximumSize(moreOptionsPanel.getPreferredSize());
 
 		JPanel runtimeDisplayPanel = new JPanel();
-		runtimeDisplayPanel.setBorder(new TitledBorder(
-				"Runtime display options"));
+//		runtimeDisplayPanel.setBorder(new TitledBorder(
+//				"Runtime display options"));
 		runtimeDisplayPanel.setOpaque(false);
 		runtimeDisplayPanel.setLayout(new BoxLayout(runtimeDisplayPanel,
 				BoxLayout.Y_AXIS));
@@ -871,11 +888,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		showConfirmOnExitPanel.add(confirmOnExitBox);
 		showConfirmOnExitPanel.add(Box.createHorizontalGlue());
 
-		runtimeDisplayPanel.add(caseSensitiveSortPanel);
-		runtimeDisplayPanel.add(showToolTipsPanel);
-		runtimeDisplayPanel.add(showConfirmOnExitPanel);
-		runtimeDisplayPanel.setMaximumSize(runtimeDisplayPanel
-				.getPreferredSize());
+// 		runtimeDisplayPanel.add(caseSensitiveSortPanel);
+// 		runtimeDisplayPanel.add(showToolTipsPanel);
+// 		runtimeDisplayPanel.add(showConfirmOnExitPanel);
+// 		runtimeDisplayPanel.setMaximumSize(runtimeDisplayPanel
+// 				.getPreferredSize());
 
 		JPanel iconPanel = new JPanel();
 		iconPanel.setOpaque(false);
@@ -883,17 +900,22 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		iconPanel.add(iconList);
 		iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
 		// guiPanel.add(iconPanel);
-		guiPanel.add(runtimeDisplayPanel, "North");
+//		guiPanel.add(runtimeDisplayPanel, "North");
 		guiPanel.add(moreOptionsPanel, "Center");
 
 		JPanel behaviorPanel = new JPanel();
 
 		behaviorPanel.setLayout(new BoxLayout(behaviorPanel, BoxLayout.Y_AXIS));
 
+//		behaviorPanel.add(runtimeDisplayPanel, "North");
+ 		behaviorPanel.add(caseSensitiveSortPanel);
+ 		behaviorPanel.add(showToolTipsPanel);
 		behaviorPanel.add(allowBox);
+		behaviorPanel.add(advancedRootBox);
+ 		behaviorPanel.add(Box.createVerticalStrut(10));
 		behaviorPanel.add(warnDeleteBox);
 		behaviorPanel.add(warnDefinitionBox);
-		behaviorPanel.add(advancedRootBox);
+ 		behaviorPanel.add(showConfirmOnExitPanel);
 		behaviorPanel.add(Box.createVerticalGlue());
 
 		/*
@@ -955,14 +977,16 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		textEditPanel.add(personalDefinitionPanel, "Center");
 		textEditPanel.add(textEditTopPanel, "North");
 
-		mainPanel.addTab("General GUI", null, guiPanel, "General gui options");
-		mainPanel.addTab("Icons & Colors", null, iconPanel,
-				"Set up default colors and icons for relationship types");
-		mainPanel.addTab("Paths & Autosave", null, pathPanel, "Set paths");
-		mainPanel.addTab("Behavior", null, behaviorPanel, "Set ID options");
-		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
+ 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
+// 		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
+ 		mainPanel.addTab("Font", null, guiPanel, "Set default font");
+ 		mainPanel.addTab("Icons & Colors", null, iconPanel,
+ 				 "Set up default colors and icons for relationship types");
+// 		mainPanel.addTab("Autosave", null, pathPanel, "Set paths");
+ 		mainPanel.addTab("Autosave", null, autosavePanel, "Set autosave behavior");
+		mainPanel.addTab("Behavior", null, behaviorPanel, "Set behavior options");
 		mainPanel.addTab("Text Editing", null, textEditPanel,
-				"Set text editing options");
+				 "Set text editing options");
 
 		add(mainPanel, "Center");
 		Box buttonBox = Box.createVerticalBox();
@@ -971,6 +995,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		buttonBox.add(Box.createVerticalStrut(15));
 		add(buttonBox, "South");
 		buildFontPreview();
+//		moreOptionsPanel.setPreferredSize(new Dimension(moreOptionsPanel.getPreferredSize().width, moreOptionsPanel.getPreferredSize().height + 35));
+//		guiPanel.setSize(guiPanel.getPreferredSize().height + 50, guiPanel.getPreferredSize().width + 20);
+//		mainPanel.setSize(mainPanel.getPreferredSize().height + 50, mainPanel.getPreferredSize().width + 20);
 	}
 
 	private String getDefaultFontName() {
