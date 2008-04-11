@@ -15,13 +15,15 @@ required</p>
 <p><strong>Target requirement</strong>: No target required</p>
 </div>
 <p>The Delete operation removes a relationship from the 
-ontology. When a term's last parent relationship is Deleted, the term becomes obsolete. If a term has children, it cannot be deleted; the children must be removed first.</p>
+ontology. When a term has no parents, the menu item
+  will say "Delete term", and if you delete it, the term will become obsolete. If a term has children, it cannot be deleted; the children must be removed first.</p>
 <p>To delete one or more relationships, first select the relationships to be 
-deleted. Choose the "Delete" option from the edit menu or right-click menu. The 
+deleted. Choose the "Delete relationship" option from the edit menu or right-click menu. The 
 relationships will be removed, and - if appropriate - orphaned terms will be 
 marked obsolete.</p>
-<p>The Delete operation can also be used to make a root term obsolete. To 
-obsolete a root term, select the term, and choose "Delete" from the right-click 
+<p>The Delete operation can also be used to make a term with no children and
+  no parents (a singleton root) obsolete. To 
+obsolete a singleton term, select the term, and choose "Delete term" from the right-click 
 or edit menu.</p>
 </body>
 </html>
