@@ -50,6 +50,7 @@ import org.bbop.swing.GhostImageController;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.MultiArrayListMap;
 import org.bbop.util.MultiMap;
+import org.bbop.util.OSUtil;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -141,6 +142,7 @@ import org.oboedit.gui.menu.EditMenu;
 import org.oboedit.gui.menu.FileMenu;
 import org.oboedit.gui.menu.OEHelpMenu;
 import org.oboedit.script.GUIScriptDelegate;
+
 
 public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
@@ -559,14 +561,62 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	@Override
 	protected String getAppID() {
 		// TODO Auto-generated method stub
-		return "oboedit";
+//		return "oboedit";
+	    return Preferences.getAppName();
 	}
 
+    // Why is this here rather than in Preferences?
 	@Override
 	protected File getPrefsDir() {
 		VersionNumber version = Preferences.getVersion();
+		// Leaving it as .oboeditbeta for now--will change in next release.
 		File prefsDir = new File(System.getProperty("user.home") + "/.oboedit"
 				+ (version.isBeta() ? "beta" : "") + "/");
+// 		File prefsDir = new File(OSUtil.getConfigDirectory(
+// 					     getAppID() +
+// 					     version.getMajorVersion() + 
+// 					     (version.isBeta() ? "-beta" : "") + 
+// 					     "/"));
+
+		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
+		// for (temporary) backwards compatibility.
+		// 4/11/08: This is not working yet.  Commenting out for this release.
+// 		if (!prefsDir.exists() && (OSUtil.isMacOSX() || OSUtil.isLinux())) {
+// 		    String userHome = System.getProperty("user.home");
+// 		    System.out.println("prefs directory " + prefsDir + " does not yet exist--creating.");
+// 		    if (!prefsDir.mkdir()) {
+// 			String err = "Error: could not create " + prefsDir;
+// 			System.out.println(err);
+// 			// pop up
+// 		    }
+// 		    else {
+// 			String beta = userHome + "/.oboeditbeta";
+// 			File oldConfig = new File(beta + "/perspectives");
+// 			if (oldConfig.exists()) {
+// 			    String m = "I see you have user settings in " + beta + 
+// 				".\nUser settings are now stored in " + prefsDir +
+// 				".\nWould you like to copy your old settings from " + beta +
+// 				",\n keeping in mind that if they are from old versions of OBO-Edit2, they might not work right?";
+// 			    int val = JOptionPane.showConfirmDialog(null, m, "Copy user settings to new directory?", JOptionPane.YES_NO_OPTION);
+// 			    if (val == JOptionPane.YES_OPTION) {
+// 				try {
+// //				    String cmd = "cp -r " + beta + "/* /Users/nomi/Library/Application\\ Support/OBO-Edit2-beta";
+// //				    String cmd = "/bin/cp -r " + beta + "/* /Users/nomi/tmp";
+// 				    String cmd = "/bin/cp /users/nomi/tmp/foo /users/nomi/tmp/bar";
+// 				    Process p = Runtime.getRuntime().exec(cmd);
+// 				    int returnVal = p.waitFor();
+// 				    if (returnVal != 0) 
+// 					System.out.println("Error: failed to exec " + cmd + ". return val " + returnVal);
+// 				} catch (Exception e) {
+// 				    System.out.println("Caught exception while trying to ln " + prefsDir);
+// 				}
+// 			    }
+// 			}
+// 		    }
+// 		}
+// 		else // DEL
+// 		    System.out.println("prefs directory " + prefsDir + " already exists");
+
 		return prefsDir;
 	}
 
