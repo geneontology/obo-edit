@@ -145,10 +145,16 @@ public class ComponentManager {
 
 	public void deletePerspective(Perspective p) {
 		driver.deletePerspective(p);
+		// MG - also need to save perspectives state, perspective.xml, without this
+		// if you crash deleted perspective will come back on reboot
+		driver.savePerspectives();
 	}
 
 	public void savePerspectiveAs(Perspective p, String name) {
 		driver.savePerspectiveAs(p, name);
+		// MG - also need to save perspectives state, perspective.xml, without this
+		// if you crash or whatnot new perspectives wont be seen on reboot
+		driver.savePerspectives();
 	}
 
 	public String showComponent(GUIComponentFactory factory,

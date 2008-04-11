@@ -305,8 +305,11 @@ public class IDWDriver implements LayoutDriver {
   public void setSaveLayoutOnExit(boolean saveLayout) {
     this.saveLayoutOnExit = saveLayout;
   }
-
-	protected void savePerspectives() {
+  	
+  	/** Saves known list of perspectives and current perspective to 
+  	 * 	perpectives.xml
+  	 */
+	public void savePerspectives() {
 		File file = getPerspectivesFile();
 		XMLEncoder encoder;
 		try {
