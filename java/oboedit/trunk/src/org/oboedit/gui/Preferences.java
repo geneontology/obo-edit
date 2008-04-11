@@ -38,7 +38,7 @@ import org.oboedit.util.GUIUtil;
 
 public class Preferences {
 
-    protected static String DEFAULT_MEMORY_SETTING = "999M";  // Was 512M
+    protected static String DEFAULT_MEMORY_SETTING = "1024M";  // Was 512M
 
 	protected Font font;
 
@@ -235,7 +235,6 @@ public class Preferences {
 			GUIManager.addShutdownHook(new Runnable() {
 				public void run() {
 					try {
-						System.err.println("writing preferences");
 						writePreferences(getPreferences());
 					} catch (IOException ex) {
 						System.err
@@ -459,12 +458,10 @@ public class Preferences {
 	}
 
 	public static String readMemStringFromDisk() {
-		File optionFile = new File(getInstallationDirectory(), Preferences
-					   .getLauncherName()
-					   + ".vmoptions");
+		File optionFile = new File(getInstallationDirectory(), 
+					   getLauncherName() + ".vmoptions");
 		String mem = null;
 		if (optionFile.exists()) {
-//		    JOptionPane.showMessageDialog(null, "optionFile exists: " + optionFile); // DEL
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(
 						optionFile));
@@ -474,7 +471,9 @@ public class Preferences {
 					if (line.toLowerCase().trim().startsWith("-xmx")) {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
-//						JOptionPane.showMessageDialog(null, "got memory string " + mem + "from option file " + optionFile); // DEL
+//						String m = "got memory string " + mem + " from option file " + optionFile;
+//						System.out.println(m);
+//						JOptionPane.showMessageDialog(null, m); // DEL
 						break;
 					}
 				}
@@ -485,7 +484,9 @@ public class Preferences {
 		}
 		if (mem == null) {
 		    mem = DEFAULT_MEMORY_SETTING;
-		    JOptionPane.showMessageDialog(null, "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem); // DEL
+		    String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
+		    System.err.println(warning);
+//		    JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		return mem;
 	}
@@ -622,9 +623,9 @@ public class Preferences {
 	}
 
 	public void updateInstallJLaunchers() throws IOException {
-		File optionFile = new File(getInstallationDirectory(), Preferences
-				.getLauncherName()
-				+ ".vmoptions");
+	    File optionFile = new File(getInstallationDirectory(),
+				       getLauncherName() + ".vmoptions");
+		System.out.println("updateInstallJLaunchers: adding -Xmx" + getMemString() + " to " + optionFile); // DEL
 		PrintWriter stream = new PrintWriter(new FileWriter(optionFile));
 		stream.println("-Xmx" + getMemString());
 		stream.close();
@@ -634,8 +635,8 @@ public class Preferences {
 		String mem = getMemString();
 		if (mem == null)
 			return;
-		File infoPlist = new File(getInstallationDirectory(), Preferences
-					  .getAppName()
+		File infoPlist = new File(getInstallationDirectory(),
+					  getAppName()
 					  + ".app/Contents/Info.plist");
 		System.out.println("infoPlist = " + infoPlist); // DEL
 		Map params = new HashMap();
@@ -664,7 +665,8 @@ public class Preferences {
 	}
 
 	public static String getLauncherName() {
-		return System.getProperty("launcherName", "oboedit");
+//		return System.getProperty("launcherName", "oboedit");
+	    return System.getProperty("launcherName", getAppName());
 	}
 
 	public static String getAppName() {
@@ -698,6 +700,7 @@ public class Preferences {
 			throws IOException {
 		XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
 				new FileOutputStream(getPrefsXMLFile())));
+		System.err.println("Writing preferences to " + getPrefsXMLFile());
 		encoder.writeObject(preferences);
 		encoder.close();
 		preferences.updateLauncherConfigurations();
