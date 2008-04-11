@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -42,6 +43,7 @@ import org.bbop.util.ObjectUtil;
 
 public class ComponentManager {
 
+  private static final Logger LOG =  Logger.getLogger("org.bbop.framework");
 	protected static ComponentManager manager;
 
 	protected static File prefsPath;
@@ -166,6 +168,11 @@ public class ComponentManager {
 	    if (factory.isSingleton()) {
 	        // shouldn't create a new component if one already exists, just bring it forward
 	        for (GUIComponent component : this.getActiveComponents()) {
+            if (getFactory(component) == null) {
+              String m = "Cant find factory for "+component;
+              LOG.severe(m); System.out.println(m);
+              return null; // ?
+            }
 	            if (this.getFactory(component).equals(factory)) {
 	                this.focusComponent(component);
 	                return component.getID();
