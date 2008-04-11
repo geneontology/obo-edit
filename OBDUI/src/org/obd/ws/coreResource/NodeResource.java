@@ -66,6 +66,11 @@ public class NodeResource extends OBDResource {
     	super(context, request, response);
         
         this.nodeId = (String) request.getAttributes().get("id");
+        System.err.println("Node is: " + this.nodeId);
+        if (this.nodeId != null){
+        	this.nodeId = Reference.decode(this.nodeId);
+        	System.out.println("Decoded is: " + this.nodeId);
+        }
         this.format = (String) request.getAttributes().get("format");
         this.dataSource = (String) request.getAttributes().get("dataSource");
         
@@ -78,7 +83,7 @@ public class NodeResource extends OBDResource {
         this.node = findNode();
 
         if (node != null) {
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
 
@@ -129,12 +134,12 @@ public class NodeResource extends OBDResource {
     	else if (format.equals("owl")) {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
     		return result;
-    	} else if (format.equals("html")){
+    	} else if (format.equals("html")||(format.equals("bioPortal"))){
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
-    		
+    		resourceMap.put("nodeId",this.nodeId);
     		
     		// Annotation Statements 
     		List<SimpleHash> annotationStatements = new ArrayList<SimpleHash>();
@@ -145,10 +150,10 @@ public class NodeResource extends OBDResource {
     			Set<String> provenanceSources = new HashSet<String>();
     			for (Statement subStatement : s.getSubStatements()){
     				if (subStatement.getRelationId().equals("oban:assigned_by")){
-    					assignmentSources.add(subStatement.getTargetId());
+    					assignmentSources.add(this.href(subStatement.getTargetId(),dataSource));
     				}
     				if (subStatement.getRelationId().equals("oban:has_data_source")){
-    					provenanceSources.add(subStatement.getTargetId());
+    					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
     				}
         			annotationStatement.put("assigned_by",assignmentSources);
         			annotationStatement.put("provenance",provenanceSources);
@@ -196,8 +201,11 @@ public class NodeResource extends OBDResource {
     		if (aboutStatements.size()>0){
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
-    		
-    		return getTemplateRepresentation("NodeDetails",resourceMap);
+    		if (format.equals("html")){
+    			return getTemplateRepresentation("NodeDetails",resourceMap);
+    		} else {
+    			return getTemplateRepresentation("BPNodeDetails",resourceMap);
+    		}
     	} else {
     		
 

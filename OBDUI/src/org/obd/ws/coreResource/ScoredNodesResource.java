@@ -1,9 +1,10 @@
-
-
 package org.obd.ws.coreResource;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
+import org.obd.model.Node;
 import org.obd.model.stats.ScoredNode;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -12,6 +13,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+
+import freemarker.template.SimpleHash;
 
 /**
  * Resource for a node
@@ -35,10 +38,12 @@ public class ScoredNodesResource extends NodeResource {
         super(context, request, response);
         this.dataSource = (String) request.getAttributes().get("dataSource");
         
+        /*
         getVariants().clear();
         if (getNode() != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
+        */
         
         
     }
@@ -70,8 +75,34 @@ public class ScoredNodesResource extends NodeResource {
         else if (format.equals("obo")) {
  //       	result = new StringRepresentation(OBOBridge.toOBOString(scoredNodes));
   //      	return result;
-        }
-        else {
+        } else if (format.equals("html")){
+        	
+        	TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+    		resourceMap.put("contextName", this.getContextName());
+    		resourceMap.put("dataSource", this.dataSource);
+    		resourceMap.put("node",this.getNode());
+    		
+        	
+    		List<SimpleHash> scores = new ArrayList<SimpleHash>();
+        	for (ScoredNode sn : scoredNodes) {
+        		Node n = this.getShard(dataSource).getNode(sn.getNodeId());
+        		SimpleHash scoreMap = new SimpleHash();
+        		String label = this.href(this.getNode(), dataSource);
+        		if (n != null && (n.getLabel() != null)){
+        			label = this.hrefLabel(n.getLabel(), n.getId(), dataSource);
+        		}
+        		Double score = new Double(sn.getScore());
+        		scoreMap.put("node", label);
+        		scoreMap.put("score", score.toString());
+        		scores.add(scoreMap);
+            }
+        	if (scores.size()>0){
+        		resourceMap.put("results", scores);
+        	}
+        	
+        	return getTemplateRepresentation("ScoredNodeResult",resourceMap);
+        	
+        } else {
         	//if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
         	StringBuilder sb = new StringBuilder();
         	sb.append("<pre>");

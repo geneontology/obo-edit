@@ -127,6 +127,12 @@
 		<logName>org.obd</logName>
 		<level>FINEST</level>
 	</logLevel>
+	<logLevel>
+		<logName>org.obd.ws.restServlet.OBDRestComponent</logName>
+		<level>FINEST</level>
+	</logLevel>
+
+	
 	
 
 </obdRESTServletConfig>
