@@ -20,10 +20,10 @@ public class ReasonerManagerFactory extends AbstractComponentFactory<ReasonerMan
 		return "Reasoner Manager";
 	}
 	
-//	@Override
-//	public boolean getPreferSeparateWindow() {
-//		return true;
-//	}
+	@Override
+	public boolean getPreferSeparateWindow() {
+		return true;
+	}
 
 	public FactoryCategory getCategory() {
 		return FactoryCategory.REASONER;
