@@ -19,6 +19,8 @@ public class AllTests extends TestCase {
 		out.addTestSuite(IDUpdateTest.class);
 		out.addTestSuite(AllReasonerTestsWithLPR.class);
 		out.addTestSuite(AnnotationStanzaFileTest.class);
+		out.addTestSuite(CardinalityTest.class);
+		out.addTestSuite(CardinalityIntersectionTest.class);
 		out.addTestSuite(DisjointnessTest.class);
 		out.addTestSuite(FilterTest.class);
 		out.addTestSuite(FixedCacheMutableLinkDatabaseTest.class);
