@@ -87,7 +87,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
         </text>
       </splashScreen>
-      <java mainClass="org.oboedit.launcher.OBOEdit" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=oboedit&quot; &quot;-Dcom.apple.mrj.application.apple.menu.about.name=OBO-Edit&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
+      <java mainClass="org.oboedit.launcher.OBOEdit" vmParameters="&quot;-DlauncherDir=${launcher:sys.launcherDirectory}&quot; &quot;-DlauncherName=OBO-Edit&quot; &quot;-Dcom.apple.mrj.application.apple.menu.about.name=OBO-Edit&quot;" arguments="" allowVMPassthroughParameters="true" preferredVM="">
         <classPath>
           <scanDirectory location="runtime" failOnError="false" />
         </classPath>
@@ -528,7 +528,7 @@ configurationObject.setValue(val);</initScript>
                 <object class="com.install4j.runtime.beans.actions.files.DeleteFileAction">
                   <void property="file">
                     <object class="java.io.File">
-                      <string>${installer:sys.installationDir}/oboedit.vmoptions</string>
+                      <string>${installer:sys.installationDir}/OBO-Edit.vmoptions</string>
                     </object>
                   </void>
                 </object>
@@ -542,7 +542,7 @@ configurationObject.setValue(val);</initScript>
                 <object class="com.install4j.runtime.beans.actions.text.AppendToFileAction">
                   <void property="file">
                     <object class="java.io.File">
-                      <string>${installer:sys.installationDir}/oboedit.vmoptions</string>
+                      <string>${installer:sys.installationDir}/OBO-Edit.vmoptions</string>
                     </object>
                   </void>
                   <void property="text">
