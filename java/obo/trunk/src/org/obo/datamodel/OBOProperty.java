@@ -202,10 +202,10 @@ public interface OBOProperty extends OBOObject {
 			return false;
 		}
 
-		@Override
-		public boolean isBuiltIn() {
-			return true;
-		}
+//		@Override
+//		public boolean isBuiltIn() {
+//			return true;
+//		}
 
 		public boolean isNonInheritable() {
 			return true;
@@ -221,10 +221,10 @@ public interface OBOProperty extends OBOObject {
 			return false;
 		}
 
-		@Override
-		public boolean isBuiltIn() {
-			return true;
-		}
+//		@Override
+//		public boolean isBuiltIn() {
+//			return true;
+//		}
 
 		public boolean isNonInheritable() {
 			return true;
@@ -240,10 +240,10 @@ public interface OBOProperty extends OBOObject {
 			return false;
 		}
 
-		@Override
-		public boolean isBuiltIn() {
-			return true;
-		}
+//		@Override
+//		public boolean isBuiltIn() {
+//			return true;
+//		}
 
 		public boolean isNonInheritable() {
 			return true;
@@ -251,8 +251,9 @@ public interface OBOProperty extends OBOObject {
 	};
 
 	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
-							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER,
-							    REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
+							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER};
+    // 4/11/08: Don't make these builtin
+//							    REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
 
 	public void setCyclic(boolean cyclic);
 
