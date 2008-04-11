@@ -49,6 +49,9 @@ resulting in [null] stanzas like:
 	      id: FBAR:1234567
 I fixed this in OBOSerializationEngine.  Not 100% sure I did this the right
 way (Chris will probably let me know if it's not).
+* Significantly rearranged configuration options and tabs.  The new layout
+makes the user config directory much more obvious, and hopefully is more
+logical in general.  Awaiting user feedback.
 
 TODO:
 x more prominent (new tab?) config dir in config manager and documentation
