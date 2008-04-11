@@ -64,6 +64,7 @@ public class ComponentManager {
 
 	protected LayoutDriver driver;
 
+
 	public void addComponentListener(GUIComponentListener listener) {
 		componentListeners.add(listener);
 	}
@@ -110,6 +111,7 @@ public class ComponentManager {
 			removeActiveComponent(c);
 		}
 	}
+
 
 	public void addLayoutListener(LayoutListener listener) {
 		driver.addLayoutListener(listener);
