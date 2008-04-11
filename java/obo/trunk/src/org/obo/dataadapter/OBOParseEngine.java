@@ -1158,8 +1158,11 @@ public class OBOParseEngine extends AbstractParseEngine {
 					dumpEm.add(pv);
 				} else if (pv.getProperty().equalsIgnoreCase("cardinality")) {
 					try {
-						cardinality = new Integer(pv.getValue().trim());
+						String sv = pv.getValue().trim();
+						cardinality = new Integer(sv);
 					} catch (NumberFormatException ex) {
+						throw new OBOParseException("Expected integer for cardinality; in: "+pv, line, value,
+								linenum, 0);
 						// in the future, throw an error if this is
 						// malformed
 					}

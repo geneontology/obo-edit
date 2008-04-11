@@ -32,6 +32,7 @@ public class OBORestrictionImpl implements OBORestriction {
 			!inverseNecessarilyTrue &&
 			!completes &&
 			!inverseCompletes &&
+			cardinality == null &&
 			maxCardinality == null &&
 			minCardinality == null &&
 			namespace == null;

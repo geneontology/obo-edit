@@ -1397,5 +1397,28 @@ public class TermUtil {
 		return objs;
 	}
 	
+	public static Collection<OBOObject> getSubclasses(OBOObject obj) {
+		Collection<OBOObject> subclasses = new HashSet<OBOObject>();
+		for (Link link : obj.getChildren())
+			if (link.getType().equals(OBOProperty.IS_A))
+				subclasses.add((OBOObject) link.getChild());
+		return subclasses;
+		
+	}
+	
+	public static TermMacroHistoryItem makeAllSubclassesMutuallyDisjointHistoryItem(OBOObject obj) {
+		Collection<OBOObject> subclasses = getSubclasses(obj);
+		TermMacroHistoryItem item = new TermMacroHistoryItem("Created new disjoint set");
+		for (OBOObject c1 : subclasses) {
+			for (OBOObject c2 : subclasses) {
+				if (c1.equals(c2))
+					continue;
+				item.addItem(new CreateLinkHistoryItem(c1, 
+						OBOProperty.DISJOINT_FROM, c2));
+
+			}
+		}
+		return item;
+	}
 
 }

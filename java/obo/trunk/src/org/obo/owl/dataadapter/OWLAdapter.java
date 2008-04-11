@@ -969,7 +969,18 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 					Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
 					for (Link link : oboClass.getParents()) {
-						OWLClass owlParentClass = getOWLClass(link.getParent());
+
+						OWLClass owlParentClass = null;
+						try {
+							owlParentClass = getOWLClass(link.getParent());
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (owlParentClass == null) {
+							// TODO
+							continue;
+						}
 						OBOProperty oboProp = link.getType();
 						NestedValue nv = link.getNestedValue();
 						if (oboProp.equals(OBOProperty.DISJOINT_FROM)) {
@@ -1238,7 +1249,14 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			}
 		}
 
-
+		try {
+			db = java.net.URLEncoder.encode(db,"US-ASCII");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			db = "";
+		}
+		
 		String safeId;
 		try {
 			safeId = java.net.URLEncoder.encode(localId,"US-ASCII");
@@ -1250,7 +1268,18 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		if (safeId.matches("^\\d.*")) {
 			safeId = db+"_"+safeId;
 		}
-		return URI.create(PURL_OBO_OWL + db + "#" + safeId); // TODO
+		if (safeId.contains(" "))
+			safeId = safeId.replace(" ", "_");
+		URI uri = null; 
+		try {
+			uri = URI.create(PURL_OBO_OWL + db + "#" + safeId); // TODO
+		} catch (Exception e) {
+			System.out.println(db+" : "+safeId + " is not safe!");
+			e.printStackTrace();
+			uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
+		}
+
+		return  uri;
 		//return URI.create("http://purl.org/obo/" + db + "#" + db + "_" + safeId); // TODO
 	}
 
