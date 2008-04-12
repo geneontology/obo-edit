@@ -169,6 +169,7 @@ public class NodeSearchResource extends NodeResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("nodeProperties", resultNodes);
+    		resourceMap.put("searchTerm",searchTerm);
     		resourceMap.put("formatLinks",mapToOtherFormats("/search/contains_all/"+searchTerm,this.dataSource));
     		
     		

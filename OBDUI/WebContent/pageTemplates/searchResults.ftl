@@ -17,6 +17,9 @@
 				<td id="vertical_divider">
 				</td>
 				<td id="content_container">
+					<#if searchTerm?exists>
+						<h2><span style="font-weight:normal;">Search results for</span> ${searchTerm} </h2><br/>
+					</#if>
 					<#list ["Disease","Gene","Anatomical Part","Other"] as searchCategory>
 						${searchCategory} information:	
 						<table class="std_table">
