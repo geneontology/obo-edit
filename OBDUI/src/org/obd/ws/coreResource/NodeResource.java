@@ -136,6 +136,7 @@ public class NodeResource extends OBDResource {
     		return result;
     	} else if (format.equals("html")||(format.equals("bioPortal"))){
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+    		
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
