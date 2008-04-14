@@ -555,8 +555,8 @@ public class DefaultTermModel implements TermModel {
 				if (TermUtil.isObsolete(lo)) {
 					out = wrapSet(getReplacements((ObsoletableObject) lo));
 				} else {
-					if (lo.getName().equals("cell division"))
-						System.err.println("HERE we go");
+//					if (lo.getName().equals("cell division"))
+//						System.err.println("HERE we go");
 					Collection<Link> children = linkDatabase.getChildren(lo);
 					Collection<Link> realChildren = SessionManager.getManager()
 							.getSession().getLinkDatabase().getChildren(lo);
@@ -565,13 +565,13 @@ public class DefaultTermModel implements TermModel {
 				childCache.put(lo, out);
 				leafCache.remove(lo);
 			}
-			if (lo.getName().equals("cell activation")) {
-				System.err.println("children of " + lo + ":");
-				for (Object link : out) {
-					System.err.println("   " + link);
-				}
-				System.err.println("done");
-			}
+// 			if (lo.getName().equals("cell activation")) {
+// 				System.err.println("children of " + lo + ":");
+// 				for (Object link : out) {
+// 					System.err.println("   " + link);
+// 				}
+// 				System.err.println("done");
+// 			}
 			return out;
 		} else {
 			System.err
