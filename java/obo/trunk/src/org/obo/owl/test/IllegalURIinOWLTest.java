@@ -11,11 +11,12 @@ import junit.framework.TestSuite;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
+import org.obo.datamodel.OBOClass;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
-public class TransitiveOverOWLTest extends AbstractOWLTest {
+public class IllegalURIinOWLTest extends AbstractOWLTest {
 
-	public TransitiveOverOWLTest(String name) {
+	public IllegalURIinOWLTest(String name) {
 		super(name);
 	}
 
@@ -24,35 +25,24 @@ public class TransitiveOverOWLTest extends AbstractOWLTest {
 		return Arrays.asList(files);
 	}
 	
-	public static Test suite() {
-		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
-
-		System.setErr(audited);
-		TestSuite suite = new TestSuite();
-		addTests(suite);
-		return suite;
+	public boolean isAllowLossyWhenWritingOWL() {
+		return true;
 	}
-	
-	public void testLinks() throws Exception {
-		testForTransitiveOver("negatively_regulates","part_of");
-		
-	}
-
-	
 
 
 	public void testHasLoaded() throws IOException, DataAdapterException {
+		OBOClass cls = (OBOClass) session.getObjectFactory().createObject("a^b:c", OBOClass.OBO_CLASS, false);
+		cls.setName("you shouldn't see this in lossy mode");
+		session.addObject(cls);
+		
 		File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
+		System.out.println("written "+outFile);
 		//outFile = writeTempOWLFile();
 		//outFile = writeTempOWLFile();
 		readOWLFile(outFile);
 		writeTempOBOFile();
 	}
 
-	public static void addTests(TestSuite suite) {
-		suite.addTest(new TransitiveOverOWLTest("testHasLoaded"));
-		suite.addTest(new TransitiveOverOWLTest("testLinks"));
-	}
 	
 
 }

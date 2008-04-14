@@ -21,7 +21,7 @@ import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
 public class NCBOStyleOWLTest extends AbstractOWLTest {
 
-	protected NCBOStyleOWLTest(String name) {
+	public NCBOStyleOWLTest(String name) {
 		super(name);
 	}
 

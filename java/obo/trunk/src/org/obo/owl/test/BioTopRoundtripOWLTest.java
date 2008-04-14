@@ -14,7 +14,7 @@ import org.bbop.io.AuditedPrintStream;
 
 public class BioTopRoundtripOWLTest extends AbstractOWLTest {
 
-	protected BioTopRoundtripOWLTest(String name) {
+	public BioTopRoundtripOWLTest(String name) {
 		super(name);
 	}
 	

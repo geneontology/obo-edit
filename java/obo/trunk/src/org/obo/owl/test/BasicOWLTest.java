@@ -15,7 +15,7 @@ import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
 public class BasicOWLTest extends AbstractOWLTest {
 
-	protected BasicOWLTest(String name) {
+	public BasicOWLTest(String name) {
 		super(name);
 	}
 
