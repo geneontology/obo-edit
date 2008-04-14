@@ -12,12 +12,15 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 	protected boolean isRoot = false;
 
 	public OBOClassImpl(String id) {
-		this(id, id);
+	    // Hey, this sets the name to the id!  I thought we didn't want that.  --NH, 4/2008
+//		this(id, id);
+	    this(null, id);
 	}
 
 	public OBOClassImpl(String term, String id) {
 		super(id);
 		setName(term);
+//	    System.out.println("OBOClassImpl: id = " + id + ", term = " + term); // DEL
 	}
 
 	public Type<OBOClass> getType() {
