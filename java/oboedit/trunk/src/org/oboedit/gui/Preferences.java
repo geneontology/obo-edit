@@ -865,6 +865,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
+//	    System.out.println("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {
@@ -884,7 +885,7 @@ public class Preferences {
 				}
 			}
 			if (out == null) {
-				out = new TextIcon(name);
+			    out = new TextIcon((name == null) ? id : name);
 			}
 			iconIndex.put(id, out);
 		}
