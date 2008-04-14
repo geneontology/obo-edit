@@ -46,7 +46,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 			TransferHandler handler = c.getTransferHandler();
 			// Tell the transfer handler to initiate the drag.
 			handler.exportAsDrag(c, firstMouseEvent, TransferHandler.COPY);
-			System.err.println("exporting drag "+e);
+//			System.err.println("exporting drag "+e);
 			firstMouseEvent = null;
 		}
 	}
