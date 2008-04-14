@@ -49,7 +49,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		protected boolean allowDangling = false;
+	    protected boolean allowDangling = true;  // Default is now true!
 
 		protected boolean saveImplied = false;
 
@@ -674,8 +674,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				break;
 			}
 		}
-		if (!written)
+		if (!written) {
+		    // Don't write out bogus objects (which would come out as "[null]" stanzas).
+		    // These bogus objects are created from dangling identifiers.
+		    if (isRealObject(obj))
 			serializer.startStanza(obj);
+		    else {
+			System.out.println("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
+			return;
+		    }
+		}
 
 		Iterator it = tagOrdering.iterator();
 		while (it.hasNext()) {
@@ -694,6 +702,17 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		if (!written)
 			serializer.endStanza(obj);
 	}
+
+    /** Don't write out bogus objects (which would come out as "[null]" stanzas).
+	(Is this the right test?) */
+    protected boolean isRealObject(IdentifiedObject obj) {
+	if (TermUtil.isClass(obj) ||
+	    TermUtil.isProperty(obj) ||
+	    TermUtil.isInstance(obj))
+	    return true;
+	else
+	    return false;
+    }
 
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer)
