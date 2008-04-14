@@ -623,7 +623,10 @@ public class OBO2Flat {
 				RootRecord rr = (RootRecord) rootHash.get(t.getID());
 				String type_id = OBOProperty.IS_A.getID();
 				if (rr != null) {
-					OBOClass type = (OBOClass) history.getObject(rr.type_id);
+//				    OBOClass type = (OBOClass) (history.getObject(rr.type_id));
+				    // The line above was throwing a class cast exception.
+				    // This is one of those "how did that ever work??" bugs.
+				    OBOObject type = (OBOObject) (history.getObject(rr.type_id));
 					if (type != null && TermUtil.isProperty(type)) {
 						type_id = type.getID();
 					}
