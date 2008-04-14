@@ -42,14 +42,18 @@ public class OBOFileAdapter implements OBOAdapter {
 			FileAdapterConfiguration {
 		
 		// WARNING: you need to set this AND basicSave=false. --CJM
-		protected boolean allowDangling = false;
+//		protected boolean allowDangling = false;
+	        // Changed to true because of users' request.  --NH, 4/11/08
+	        protected boolean allowDangling = true;
 
 		protected boolean failFast = false;
 
 		protected boolean saveImplied;
 
 		protected java.util.List saveRecords = new ArrayList();
-
+	    
+	    // If we make this false, it gets made true anyway in doOperation
+	    // and if we comment that out, save doesn't work at all!
 		protected boolean basicSave = true;
 
 	        protected String serializer = "OBO_1_2";  // new default
@@ -132,6 +136,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			public void acceptComponentConfig(boolean storeonly)
 					throws DataAdapterUIException {
 				super.acceptComponentConfig(storeonly);
+				// ?
 				((OBOAdapterConfiguration) config).setBasicSave(true);
 			}
 
@@ -209,12 +214,16 @@ public class OBOFileAdapter implements OBOAdapter {
 				// CJM: Not sure I understand the following logic
 				// be careful - setting allowdangling is not enough
 				parser.setAllowDanglingParents(ioprofile.getAllowDangling()
-						&& !ioprofile.getBasicSave());
+							       // Why does getBasicSave have to return false?
+							       // If it does, then saving doesn't work at all!  --NH
+//						&& !ioprofile.getBasicSave());
+				    );
 				parser.setFailFast(ioprofile.getFailFast());
 				engine = new OBOParseEngine(parser);
 
 				engine.setPaths(ioprofile.getReadPaths());
-				System.err.println("Reading " + ioprofile.getReadPaths());
+				System.err.println("Reading " +	ioprofile.getReadPaths()
+						   + " (allowDangling = " + ioprofile.getAllowDangling() + ")"); // DEL this part
 				engine.parse();
 
 				OBOSession history = parser.getSession();
@@ -247,6 +256,9 @@ public class OBOFileAdapter implements OBOAdapter {
 				else if (ioprofile.getSerializer().equals("OBO_1_0"))
 					serializer = new OBO_1_0_Serializer();
 
+				System.err.println("Writing " +	ioprofile.getSaveRecords()
+						   + " (serializer = " + ioprofile.getSerializer() + ", allowDangling = " + ioprofile.getAllowDangling() + ")"); // DEL this part
+
 				if (serializer == null)
 					throw new DataAdapterException("Could not serialize to "
 							+ "serializer " + ioprofile.getSerializer());
@@ -261,6 +273,7 @@ public class OBOFileAdapter implements OBOAdapter {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 							null, null, ioprofile.getWritePath()));
 				} else {
+				    // This doesn't seem to work--it saves nothing (but doesn't complain)
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
 
