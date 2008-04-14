@@ -65,8 +65,11 @@ public class RefGenomeServerImpl extends RemoteServiceServlet implements RefGeno
 	private String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
 	private String ON_DATE = "dc:date";
 
+	//static String userName = "sjcarbon";
+    //static String password = "";
 	static String userName = "remote_user";
     static String password = "glurp";
+    
 	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_homologene";
 
 	private String currentUserId;
@@ -234,6 +237,18 @@ public class RefGenomeServerImpl extends RemoteServiceServlet implements RefGeno
 	public String[] fetchReferenceTargetIds() {
 		// TODO Auto-generated method stub
 		String[] sa =  new String[0];
+		
+		String ob = "";
+		String rel = "";
+		String su = "";
+		Collection<Statement> stmts = shard.getStatements(su , rel, ob, null, null, null);
+		for (Statement s : stmts) {
+			s.setRelationId(HAS_EX_STATUS);
+		}
+		Graph g = new Graph(stmts);
+		shard.putGraph(g);
+		
+		
 		return sa;
 	}
 
@@ -298,7 +313,11 @@ public class RefGenomeServerImpl extends RemoteServiceServlet implements RefGeno
 
 	}
 
-	
+	public Boolean checkUserPassword(String userId, String password) {
+		// TODO Auto-generated method stub
+		boolean logstatus = true;
+		return new Boolean(logstatus);
+	}
 
 	public String[] fetchHomologousEntityIds(String entityId) {
 		// TODO Auto-generated method stub
@@ -365,13 +384,6 @@ public class RefGenomeServerImpl extends RemoteServiceServlet implements RefGeno
 	public boolean isSetComprehensivelyAnnotated(String entityId) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-	
-	public Boolean checkUserPassword(String userId, String password) {
-		// TODO Auto-generated method stub
-		boolean logstatus = true;
-		return new Boolean(logstatus);
-		
 	}
 	
 }

@@ -6,8 +6,7 @@ import org.bbop.client.Listener.RefGenomeViewListenerI;
 
 import net.mygwt.ui.client.Style;
 
-import net.mygwt.ui.client.widget.WidgetContainer;
-import net.mygwt.ui.client.widget.layout.FillLayout;
+
 import net.mygwt.ui.client.widget.table.Table;
 import net.mygwt.ui.client.widget.table.TableColumn;
 import net.mygwt.ui.client.widget.table.TableColumnModel;
@@ -17,7 +16,7 @@ public class SummaryTableView {
 	private RefGenomeViewListenerI refgListener;
 	private RefGenomeView mainView;
 	
-	private WidgetContainer summaryWidget;
+	//private WidgetContainer summaryWidget;
 	private TableColumnModel summColModel;
 	private Table summTbl;
 	private TableColumn[] summCols;
@@ -26,7 +25,7 @@ public class SummaryTableView {
 		refgListener = listener;
 		mainView = parent;
 		
-		summaryWidget = new WidgetContainer();
+		//summaryWidget = new WidgetContainer();
 		setAttr();
 		addObservers();
 		
@@ -43,7 +42,7 @@ public class SummaryTableView {
 		
 			
 		//summaryWidget.setLayout(new FillLayout(10));
-		summaryWidget.add(summTbl);
+		//summaryWidget.add(summTbl);
 	}
 	
 	public void addObservers() {
@@ -74,8 +73,8 @@ public class SummaryTableView {
 		
 	}
 	
-	public WidgetContainer getView() {
-		return summaryWidget;
+	public Table getView() {
+		return summTbl;
 	}
 
 }

@@ -42,6 +42,10 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 	
+	public void fetchTaxonids() {
+		refgservice.fetchReferenceTaxonIds(new TaxonIdsCallback());
+	}
+	
 	private class SearchByNameCallback implements AsyncCallback {
 
 		public void onFailure(Throwable caught) {
@@ -83,6 +87,22 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 
 		public void onSuccess(Object result) {
 			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class TaxonIdsCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("Error fetching taxonids", caught);
+			
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+			refgview.getSearchPanel().fillTaxonIds(result);
 			
 		}
 		

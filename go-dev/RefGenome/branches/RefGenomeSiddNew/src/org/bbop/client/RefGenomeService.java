@@ -52,5 +52,15 @@ public interface RefGenomeService extends RemoteService {
 	//Search methods
 	
 	public NodeDTO[] fetchIdsByName(String searchTerm);
+	
+	/**
+	 * all taxon IDs that are part of some reference set.
+	 * the API is extensible to multiple reference sets - this call
+	 * will always return the superset. In the case of the RefG
+	 * project, there should always be 12 IDs returned
+	 * 
+	 * @return IDs for taxon nodes, typically NCBITaxon
+	 */
+	public String[] fetchReferenceTaxonIds();
 
 }
