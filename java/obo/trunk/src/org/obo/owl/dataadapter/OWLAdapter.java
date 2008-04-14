@@ -73,6 +73,7 @@ import org.semanticweb.owl.model.OWLDataPropertyExpression;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectAllRestriction;
 import org.semanticweb.owl.model.OWLObjectCardinalityRestriction;
@@ -959,146 +960,153 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				if (io.isBuiltIn()) 
 					continue;
 				String id = io.getID();
-				if (io instanceof OBOClass) {
-					OBOClass oboClass = (OBOClass)io;
-					OWLClass owlClass = getOWLClass(io);
-					addOboMetadataToOwlEntity(owlClass,io);
+				try {
+					if (io instanceof OBOClass) {
+						OBOClass oboClass = (OBOClass)io;
+						OWLClass owlClass = getOWLClass(io);
+						addOboMetadataToOwlEntity(owlClass,io);
 
-					//if (io.isAnonymous())
-					//	addAxiom(owlFactory.
+						//if (io.isAnonymous())
+						//	addAxiom(owlFactory.
 
-					Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
-					for (Link link : oboClass.getParents()) {
+						Set<OWLDescription> intersectionElements = new HashSet<OWLDescription>();
+						for (Link link : oboClass.getParents()) {
 
-						OWLClass owlParentClass = null;
-						try {
-							owlParentClass = getOWLClass(link.getParent());
+							OWLClass owlParentClass = null;
+							try {
+								owlParentClass = getOWLClass(link.getParent());
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+							if (owlParentClass == null) {
+								// TODO
+								continue;
+							}
+							OBOProperty oboProp = link.getType();
+							NestedValue nv = link.getNestedValue();
+							if (oboProp.equals(OBOProperty.DISJOINT_FROM)) {
+								HashSet<OWLDescription> pair = 
+									new HashSet<OWLDescription>();
+								pair.add(owlClass);
+								pair.add(owlParentClass);
+								addAxiom(owlFactory.getOWLDisjointClassesAxiom(pair));
+							}
+							else {
+								Collection<OWLDescription> owlSuperClasses =
+									new LinkedList<OWLDescription>();
+								//Map<OWLDescription,NestedValue> class2nv = 
+								//	new HashMap<OWLDescription,NestedValue>();
+								if (oboProp.equals(OBOProperty.IS_A)) {
+									owlSuperClasses.add(owlParentClass);
+								}
+								else {
+									OWLObjectProperty owlProp = getOWLObjectProperty(oboProp);
+									owlSuperClasses.add( 
+											owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass));
+									if (oboProp.isUniversallyQuantified()) {
+										owlSuperClasses.add( 
+												owlFactory.getOWLObjectAllRestriction(owlProp, owlParentClass));
+
+									}
+								}
+
+								if (TermUtil.isIntersection(link)) {
+									for (OWLDescription owlSuperClass : owlSuperClasses)
+										intersectionElements.add(owlSuperClass);
+								}
+								else {
+									for (OWLDescription owlSuperClass : owlSuperClasses) {
+										OWLAxiom axiom = 
+											owlFactory.getOWLSubClassAxiom(owlClass, owlSuperClass);
+										AddAxiom addAxiom = new AddAxiom(ontology, axiom);
+										// We now use the manager to apply the change
+										manager.applyChange(addAxiom);
+
+										if (nv != null) {
+											Set<PropertyValue> pvs = nv.getPropertyValues();
+											for (PropertyValue pv : pvs) {
+												OWLConstant con = 
+													owlFactory.getOWLUntypedConstant(pv.getValue());
+												URI predURI = getURI(pv.getProperty());
+												OWLConstantAnnotation owlAnnot = owlFactory.getOWLConstantAnnotation(predURI,
+														con);
+												OWLAxiomAnnotationAxiom aaa = owlFactory.getOWLAxiomAnnotationAxiom(axiom, 
+														owlAnnot);
+												AddAxiom addAAA = new AddAxiom(ontology, aaa);
+												manager.applyChange(addAAA);
+											}
+										}
+
+									}
+								}           
+							}
 						}
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-						if (owlParentClass == null) {
-							// TODO
-							continue;
-						}
-						OBOProperty oboProp = link.getType();
-						NestedValue nv = link.getNestedValue();
-						if (oboProp.equals(OBOProperty.DISJOINT_FROM)) {
-							HashSet<OWLDescription> pair = 
-								new HashSet<OWLDescription>();
+						if (intersectionElements.size() > 0) {
+							OWLDescription owlIntersection =
+								owlFactory.getOWLObjectIntersectionOf(intersectionElements);
+							HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
 							pair.add(owlClass);
-							pair.add(owlParentClass);
-							addAxiom(owlFactory.getOWLDisjointClassesAxiom(pair));
+							pair.add(owlIntersection);
+							OWLAxiom ecAxiom =
+								owlFactory.getOWLEquivalentClassesAxiom(pair);
+							manager.applyChange(new AddAxiom(ontology,ecAxiom));
+						}
+					}
+					else if (io instanceof OBOProperty) {
+						OBOProperty oboProp = (OBOProperty)io;
+						if (oboProp.isNonInheritable()) {
+							// TODO Annotation Property
 						}
 						else {
-							Collection<OWLDescription> owlSuperClasses =
-								new LinkedList<OWLDescription>();
-							//Map<OWLDescription,NestedValue> class2nv = 
-							//	new HashMap<OWLDescription,NestedValue>();
-							if (oboProp.equals(OBOProperty.IS_A)) {
-								owlSuperClasses.add(owlParentClass);
-							}
-							else {
-								OWLObjectProperty owlProp = getOWLObjectProperty(oboProp);
-								owlSuperClasses.add( 
-										owlFactory.getOWLObjectSomeRestriction(owlProp, owlParentClass));
-								if (oboProp.isUniversallyQuantified()) {
-									owlSuperClasses.add( 
-											owlFactory.getOWLObjectAllRestriction(owlProp, owlParentClass));
-
+							OWLObjectProperty owlProp;
+							owlProp = getOWLObjectProperty(io);
+							addOboMetadataToOwlEntity(owlProp,io);
+							for (Link link : oboProp.getParents()) {
+								OWLObjectProperty owlParentProp = getOWLObjectProperty(link.getParent());
+								OBOProperty linkType = link.getType();
+								if (linkType.equals(OBOProperty.IS_A)) {
+									addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp, owlParentProp));
+								}
+								else {
+									// TODO: throw?
 								}
 							}
-
-							if (TermUtil.isIntersection(link)) {
-								for (OWLDescription owlSuperClass : owlSuperClasses)
-									intersectionElements.add(owlSuperClass);
+							if (oboProp.getTransitiveOver() != null) {
+								List<OWLObjectProperty> chain = new ArrayList<OWLObjectProperty>();
+								chain.add(owlProp);
+								chain.add(getOWLObjectProperty(oboProp.getTransitiveOver()));
+								OWLAxiom ax = 
+									owlFactory.getOWLObjectPropertyChainSubPropertyAxiom(chain, owlProp);
+								addAxiom(ax);
 							}
-							else {
-								for (OWLDescription owlSuperClass : owlSuperClasses) {
-									OWLAxiom axiom = 
-										owlFactory.getOWLSubClassAxiom(owlClass, owlSuperClass);
-									AddAxiom addAxiom = new AddAxiom(ontology, axiom);
-									// We now use the manager to apply the change
-									manager.applyChange(addAxiom);
-
-									if (nv != null) {
-										Set<PropertyValue> pvs = nv.getPropertyValues();
-										for (PropertyValue pv : pvs) {
-											OWLConstant con = 
-												owlFactory.getOWLUntypedConstant(pv.getValue());
-											URI predURI = getURI(pv.getProperty());
-											OWLConstantAnnotation owlAnnot = owlFactory.getOWLConstantAnnotation(predURI,
-													con);
-											OWLAxiomAnnotationAxiom aaa = owlFactory.getOWLAxiomAnnotationAxiom(axiom, 
-													owlAnnot);
-											AddAxiom addAAA = new AddAxiom(ontology, aaa);
-											manager.applyChange(addAAA);
-										}
-									}
-
-								}
-							}           
+							if (oboProp.getDomain() != null) {
+								addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
+										getOWLClass(oboProp.getDomain())));
+							}
+							// TODO symmetric
+							if (oboProp.isTransitive()) // TODO
+								addAxiom(owlFactory.getOWLTransitiveObjectPropertyAxiom(owlProp));
 						}
 					}
-					if (intersectionElements.size() > 0) {
-						OWLDescription owlIntersection =
-							owlFactory.getOWLObjectIntersectionOf(intersectionElements);
-						HashSet<OWLDescription> pair = new HashSet<OWLDescription>();
-						pair.add(owlClass);
-						pair.add(owlIntersection);
-						OWLAxiom ecAxiom =
-							owlFactory.getOWLEquivalentClassesAxiom(pair);
-						manager.applyChange(new AddAxiom(ontology,ecAxiom));
+					else if (io instanceof Annotation) {
+						addOboAnnotation((Annotation)io);
 					}
-				}
-				else if (io instanceof OBOProperty) {
-					OBOProperty oboProp = (OBOProperty)io;
-					if (oboProp.isNonInheritable()) {
-						// TODO Annotation Property
+					else if (io instanceof Instance) {
+						addInstance((Instance)io);
 					}
 					else {
-						OWLObjectProperty owlProp;
-						owlProp = getOWLObjectProperty(io);
-						addOboMetadataToOwlEntity(owlProp,io);
-						for (Link link : oboProp.getParents()) {
-							OWLObjectProperty owlParentProp = getOWLObjectProperty(link.getParent());
-							OBOProperty linkType = link.getType();
-							if (linkType.equals(OBOProperty.IS_A)) {
-								addAxiom(owlFactory.getOWLSubObjectPropertyAxiom(owlProp, owlParentProp));
-							}
-							else {
-								// TODO: throw?
-							}
-						}
-						if (oboProp.getTransitiveOver() != null) {
-							List<OWLObjectProperty> chain = new ArrayList<OWLObjectProperty>();
-							chain.add(owlProp);
-							chain.add(getOWLObjectProperty(oboProp.getTransitiveOver()));
-							OWLAxiom ax = 
-								owlFactory.getOWLObjectPropertyChainSubPropertyAxiom(chain, owlProp);
-							addAxiom(ax);
-						}
-						if (oboProp.getDomain() != null) {
-							addAxiom(owlFactory.getOWLObjectPropertyDomainAxiom(owlProp,
-									getOWLClass(oboProp.getDomain())));
-						}
-						// TODO symmetric
-						if (oboProp.isTransitive()) // TODO
-							addAxiom(owlFactory.getOWLTransitiveObjectPropertyAxiom(owlProp));
+						// TODO
 					}
 				}
-				else if (io instanceof Annotation) {
-					addOboAnnotation((Annotation)io);
-				}
-				else if (io instanceof Instance) {
-					addInstance((Instance)io);
-				}
-				else {
-					// TODO
+
+				catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+					fireLossyWarning("problem with "+io.getID());
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (OWLException e) {
 			e.printStackTrace();
 			throw new DataAdapterException(e, "Write error");		
 		}
@@ -1149,77 +1157,99 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		 */
 	}
 
-	public void addTriple(IdentifiedObject su, OBOProperty prop, IdentifiedObject ob) throws OWLOntologyChangeException {
-		OWLIndividual owlSu = getOWLIndividual(su);
-		OWLIndividual owlOb = getOWLIndividual(ob);
-		OWLObjectProperty owlProp = getOWLObjectProperty(prop);
-		addAxiom(owlFactory.getOWLObjectPropertyAssertionAxiom(owlSu, owlProp, owlOb));
+	public void addTriple(IdentifiedObject su, OBOProperty prop, IdentifiedObject ob) throws OWLOntologyChangeException, DataAdapterException {
+		try {
+			OWLIndividual owlSu = getOWLIndividual(su);
+			OWLIndividual owlOb = getOWLIndividual(ob);
+			OWLObjectProperty owlProp = getOWLObjectProperty(prop);
+			addAxiom(owlFactory.getOWLObjectPropertyAssertionAxiom(owlSu, owlProp, owlOb));
+		} catch (UnsupportedEncodingException e) {
+			fireLossyWarning("Cannot convert propertyId: ",prop);
+		}
 
 	}
 
-	public void addTriple(IdentifiedObject su, String propId, IdentifiedObject ob) throws OWLOntologyChangeException {
-		OWLIndividual owlSu = getOWLIndividual(su);
-		OWLIndividual owlOb = getOWLIndividual(ob);
-		OWLObjectProperty owlProp = getOWLObjectProperty(propId);
-		addAxiom(owlFactory.getOWLObjectPropertyAssertionAxiom(owlSu, owlProp, owlOb));	
+	public void addTriple(IdentifiedObject su, String propId, IdentifiedObject ob) throws OWLOntologyChangeException, DataAdapterException {
+		try {
+			OWLIndividual owlSu = getOWLIndividual(su);
+			OWLIndividual owlOb = getOWLIndividual(ob);
+			OWLObjectProperty owlProp = getOWLObjectProperty(propId);
+			addAxiom(owlFactory.getOWLObjectPropertyAssertionAxiom(owlSu, owlProp, owlOb));	
+		} catch (UnsupportedEncodingException e) {
+			fireLossyWarning("Cannot convert propertyId: "+propId);
+		}
 	}
 
 	public void addInstance(Instance oboInst) throws OWLOntologyChangeException, DataAdapterException {
-		OWLIndividual owlIndividual = getOWLIndividual(oboInst);
-		if (oboInst.getType() != null) {
-			addAxiom(owlFactory.getOWLClassAssertionAxiom(owlIndividual, 
-					getOWLClass(oboInst.getType())));
-		}
-		addOboMetadataToOwlEntity(owlIndividual,oboInst);
-		for (Link link : oboInst.getParents()) {
-			if (link instanceof ValueLink) {
-				ValueLink vl = (ValueLink)link;
-				String message = "cannot handle value links (datatype properties) yet";
-				if (ioprofile.allowLossy) {
-					System.err.println(message);
-					continue;
+		try {
+			OWLIndividual owlIndividual = getOWLIndividual(oboInst);
+			if (oboInst.getType() != null) {
+				OWLClass owlClass;
+				try {
+					owlClass = getOWLClass(oboInst.getType());
+					addAxiom(owlFactory.getOWLClassAssertionAxiom(owlIndividual, 
+							owlClass));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+					fireLossyWarning("cannot convert to class");
 				}
-				else
-					throw new DataAdapterException(message+
-					" -- set allowLossy to true to ignore this message");				
-
-				/** TODO
-				Object dt = owlFactory.getOWLDataType(vl.getValue().getType().toString());
-				Object owlConst = 
-					owlFactory.getOWLTypedConstant(vl.getValue().toString(),
-
-
-				OWLIndividual owlSu = getOWLIndividual(oboInst);
-				OWLObjectProperty owlProp = getOWLObjectProperty(link.getType());
-
-
-				addAxiom(owlFactory.
-						getOWLDataPropertyAssertionAxiom(owlSu, 
-								owlProp, 
-								owlFactory.getOWLTypedConstant(((ValueLink)link).getValue().toString())));
-				 **/
-
 			}
-			else {
-				addTriple(oboInst,link.getType(),link.getParent());
+			addOboMetadataToOwlEntity(owlIndividual,oboInst);
+			for (Link link : oboInst.getParents()) {
+				if (link instanceof ValueLink) {
+					ValueLink vl = (ValueLink)link;
+					String message = "cannot handle value links (datatype properties) yet";
+					if (ioprofile.allowLossy) {
+						System.err.println(message);
+						continue;
+					}
+					else
+						throw new DataAdapterException(message+
+						" -- set allowLossy to true to ignore this message");				
+
+					/** TODO
+					Object dt = owlFactory.getOWLDataType(vl.getValue().getType().toString());
+					Object owlConst = 
+						owlFactory.getOWLTypedConstant(vl.getValue().toString(),
+
+
+					OWLIndividual owlSu = getOWLIndividual(oboInst);
+					OWLObjectProperty owlProp = getOWLObjectProperty(link.getType());
+
+
+					addAxiom(owlFactory.
+							getOWLDataPropertyAssertionAxiom(owlSu, 
+									owlProp, 
+									owlFactory.getOWLTypedConstant(((ValueLink)link).getValue().toString())));
+					 **/
+
+				}
+				else {
+					addTriple(oboInst,link.getType(),link.getParent());
+				}
 			}
+
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			fireLossyWarning("cannot convert to class");
 		}
 	}
 
 
 
-	public URI getURI(IdentifiedObject io) {
+	public URI getURI(IdentifiedObject io) throws UnsupportedEncodingException {
 
 		return getURI(io.getID());
 	}
 
-	public URI getURI(Dbxref x) {
+	public URI getURI(Dbxref x) throws UnsupportedEncodingException {
 		return getURI(x.getDatabase() + ":" + x.getDatabaseID());
 	}
 
 
 
-	public URI getURI(String id) {
+	public URI getURI(String id) throws UnsupportedEncodingException {
 		//System.out.println("getting uri for "+id);
 		String[] idParts = StringUtils.split(id,":",2);
 		String db;
@@ -1249,48 +1279,41 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			}
 		}
 
-		try {
-			db = java.net.URLEncoder.encode(db,"US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			db = "";
-		}
-		
+		//db = java.net.URLEncoder.encode(db,"US-ASCII");
+
 		String safeId;
-		try {
-			safeId = java.net.URLEncoder.encode(localId,"US-ASCII");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			safeId = "";
-		}
+		safeId = java.net.URLEncoder.encode(localId,"US-ASCII");
 		if (safeId.matches("^\\d.*")) {
 			safeId = db+"_"+safeId;
 		}
 		if (safeId.contains(" "))
 			safeId = safeId.replace(" ", "_");
-		URI uri = null; 
+		URI uri = null;
 		try {
 			uri = URI.create(PURL_OBO_OWL + db + "#" + safeId); // TODO
-		} catch (Exception e) {
-			System.out.println(db+" : "+safeId + " is not safe!");
-			e.printStackTrace();
-			uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
+		} catch (IllegalArgumentException e) {
+			// TODO - define new exception class for this
+			throw new UnsupportedEncodingException();
 		}
+
+//		} catch (Exception e) {
+//		System.out.println(db+" : "+safeId + " is not safe!");
+//		e.printStackTrace();
+//		uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
+//		}
 
 		return  uri;
 		//return URI.create("http://purl.org/obo/" + db + "#" + db + "_" + safeId); // TODO
 	}
 
 
-	public OWLClass getOWLClass(IdentifiedObject io) {
+	public OWLClass getOWLClass(IdentifiedObject io) throws UnsupportedEncodingException {
 		return owlFactory.getOWLClass(getURI(io)); 
 	}
 
 
 
-	public OWLIndividual getOWLIndividual(IdentifiedObject io) {
+	public OWLIndividual getOWLIndividual(IdentifiedObject io) throws UnsupportedEncodingException {
 		URI uri = getURI(io);
 		if (uri == null) {
 			System.err.println("no URI for "+io);
@@ -1298,10 +1321,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		return owlFactory.getOWLIndividual(uri);
 	}
 
-	public OWLObjectProperty getOWLObjectProperty(IdentifiedObject io) {
+	public OWLObjectProperty getOWLObjectProperty(IdentifiedObject io) throws UnsupportedEncodingException {
 		return owlFactory.getOWLObjectProperty(getURI(io));
 	}
-	public OWLObjectProperty getOWLObjectProperty(String id) {
+	public OWLObjectProperty getOWLObjectProperty(String id) throws UnsupportedEncodingException {
 		return owlFactory.getOWLObjectProperty(getURI(id));
 	}
 

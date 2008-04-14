@@ -11,7 +11,7 @@ import org.bbop.io.AuditedPrintStream;
 
 public class AnnotationsInOWLTest extends AbstractOWLTest {
 
-	protected AnnotationsInOWLTest(String name) {
+	public AnnotationsInOWLTest(String name) {
 		super(name);
 	}
 

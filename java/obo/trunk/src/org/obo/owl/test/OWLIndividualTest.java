@@ -18,7 +18,7 @@ import org.obo.owl.dataadapter.OWLAdapter;
 
 public class OWLIndividualTest extends AbstractOWLTest {
 
-	protected OWLIndividualTest(String name) {
+	public OWLIndividualTest(String name) {
 		super(name);
 	}
 

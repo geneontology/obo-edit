@@ -1,5 +1,6 @@
 package org.obo.owl.datamodel.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -103,33 +104,41 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 				// n=ary relation
 				
 				// TODO: is it necessary to create the anon ID?			
-				OWLIndividual defInst = 
-//					owlFactory.getOWLIndividual(adapter.getURI("_"));
+				OWLIndividual defInst;
+				try {
+					defInst = //					owlFactory.getOWLIndividual(adapter.getURI("_"));
 					owlFactory.getOWLIndividual(adapter.getURI(io.getID()+"__def"));
-				OWLAnnotationAxiom axiom1 = 
-					getAnnotationAxiom(owlEntity,
-							getVocabURI(HAS_DEFINITION),
-							defInst);
-				axioms.add(axiom1);
-				
-				OWLConstant defCon = owlFactory.getOWLUntypedConstant(def);
-				OWLDataProperty rdfsHasLabel = 
-					owlFactory.getOWLDataProperty(OWLRDFVocabulary.RDFS_LABEL.getURI());
-				OWLAxiom axiom2 = 
-					owlFactory.getOWLDataPropertyAssertionAxiom(defInst, 
-							rdfsHasLabel, defCon);
-				axioms.add(axiom2);
+					OWLAnnotationAxiom axiom1 = 
+						getAnnotationAxiom(owlEntity,
+								getVocabURI(HAS_DEFINITION),
+								defInst);
+					axioms.add(axiom1);
+					
+					OWLConstant defCon = owlFactory.getOWLUntypedConstant(def);
+					OWLDataProperty rdfsHasLabel = 
+						owlFactory.getOWLDataProperty(OWLRDFVocabulary.RDFS_LABEL.getURI());
+					OWLAxiom axiom2 = 
+						owlFactory.getOWLDataPropertyAssertionAxiom(defInst, 
+								rdfsHasLabel, defCon);
+					axioms.add(axiom2);
 
-				/*
-				OWLProperty hasDbxrefOwlProperty = 
-					owlFactory.getOWL getOWLObjectProperty(OWLRDFVocabulary.RDFS_LABEL.getURI())
-				for (Dbxref x : ((DefinedObject)io).getDefDbxrefs()) {
-					OWLEntity xOwl = owlFactory.getOWLIndividual(adapter.getURI(x));
-					axioms.add(owlFactory.getOWLObjectPropertyAssertionAxiom(defInst,
-							hasDbxrefOwlProperty, 
-							xOwl));
+					/*
+					OWLProperty hasDbxrefOwlProperty = 
+						owlFactory.getOWL getOWLObjectProperty(OWLRDFVocabulary.RDFS_LABEL.getURI())
+					for (Dbxref x : ((DefinedObject)io).getDefDbxrefs()) {
+						OWLEntity xOwl = owlFactory.getOWLIndividual(adapter.getURI(x));
+						axioms.add(owlFactory.getOWLObjectPropertyAssertionAxiom(defInst,
+								hasDbxrefOwlProperty, 
+								xOwl));
+					}
+					*/
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					if (!isOboToOWLLossy()) {
+						// TODO
+					}
 				}
-				*/
 
 			}
 		}

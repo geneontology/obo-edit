@@ -1,5 +1,6 @@
 package org.obo.owl.datamodel.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,8 +46,14 @@ public class AxiomAnnotationBasedOWLMetadataMapping extends NCBOOboInOWLMetadata
 							def);
 				axioms.add(axiom);
 				for (Dbxref x : ((DefinedObject)io).getDefDbxrefs()) {
-					axioms.add(getAxiomAnnotationAxiom(axiom,OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
-							adapter.getURI(x)));
+					try {
+						axioms.add(getAxiomAnnotationAxiom(axiom,OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
+								adapter.getURI(x)));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						// TODO
+					}
 
 				}
 
@@ -60,17 +67,29 @@ public class AxiomAnnotationBasedOWLMetadataMapping extends NCBOOboInOWLMetadata
 							s.getText());
 				axioms.add(axiom);
 				for (Dbxref x : s.getDbxrefs()) {
-					axioms.add(getAxiomAnnotationAxiom(axiom,OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
-							adapter.getURI(x)));
+					try {
+						axioms.add(getAxiomAnnotationAxiom(axiom,OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
+								adapter.getURI(x)));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						// TODO
+					}
 				}
 			}
 		}
 		if (io instanceof DbxrefedObject) {
 			for (Dbxref x : ((DbxrefedObject)io).getDbxrefs()) {
-				OWLAnnotationAxiom axiom = 
-					getAnnotationAxiom(owlEntity,
-							OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
-							adapter.getURI(x));
+				try {
+					OWLAnnotationAxiom axiom = 
+						getAnnotationAxiom(owlEntity,
+								OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
+								adapter.getURI(x));
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					// TODO
+				}
 			}
 		}
 		return axioms;

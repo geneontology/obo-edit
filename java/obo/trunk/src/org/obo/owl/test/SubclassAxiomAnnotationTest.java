@@ -15,7 +15,7 @@ import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
 public class SubclassAxiomAnnotationTest extends AbstractOWLTest {
 
-	protected SubclassAxiomAnnotationTest(String name) {
+	public SubclassAxiomAnnotationTest(String name) {
 		super(name);
 	}
 
