@@ -297,8 +297,10 @@ public class IDWDriver implements LayoutDriver {
 	public void cleanup() {
 		if (saveLayoutOnExit && currentPerspective != null) {
 			savePerspectiveAs(currentPerspective, currentPerspective.getName());
-			savePerspectives();
+			//savePerspectives(); // need to keep as it tracks which perspective is current
 		}
+    if (currentPerspective != null)
+      savePerspectives(); // need to keep as it tracks which perspective is current
 	}
 
   /** Whether to save layout on exit - default true */
