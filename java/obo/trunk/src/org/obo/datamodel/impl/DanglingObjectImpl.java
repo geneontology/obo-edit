@@ -21,7 +21,8 @@ public class DanglingObjectImpl extends OBOClassImpl implements DanglingObject {
 	public DanglingObjectImpl(String id) {
 	    super(id);
 		this.id = id;
-		setName(id); // ?
+//		setName(id); // No!
+		setName(null);
 	}
 
     public boolean isDangling() {
