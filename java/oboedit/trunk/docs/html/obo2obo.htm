@@ -39,6 +39,9 @@ more new obo files.</p>
   <li><strong> -formatversion</strong>&nbsp;&nbsp;-&nbsp;The version of 
   OBO to use&nbsp;when           
    writing the output file. Allowed values are <code><strong>OBO_1_0</strong></code> and <code><strong>OBO_1_2</strong></code> 
+  <li><strong>-allowdangling</strong>&nbsp;- Optional. If this flag is 
+  present, dangling links will be allowed in the input.
+[Note:  this is now the default.]
   <LI><STRONG>-parsecomments</STRONG> - Attempt to parse obsolete term comments 
   for information about replacement and consider terms. The comment must end 
   with a sentence of the form <EM>To update annotations, [use|consider] the 
@@ -86,7 +89,7 @@ Filters</A>
        ).
   <li><strong>-allowdangling</strong>&nbsp;- Optional. If this flag is 
   present, dangling links will be saved to the file. Otherwise, they are trimmed 
-  out.
+  out.  [Note: -allowdangling is now the default.]
   <li><strong>-p &lt;prefilter_property_id&gt;</strong> - Optional. Applies a <A 
   href="Reasoner_Prefilters.htm">reasoner prefilter</A>&nbsp;with the given id. 
   This can add a lot of time to the operation, because the reasoner must be 
