@@ -526,7 +526,8 @@ public class DefaultOBOParser implements OBOParser {
 
 	public String mapID(String id) {
 
-		if (idPrefix != null && id.indexOf(':') == -1 && !isBuiltInID(id))
+		if (idPrefix != null && id.indexOf(':') == -1 
+		    && !isBuiltInID(id))
 			id = idPrefix + ":" + id;
 		String newid = (String) idMapping.get(id);
 		if (newid != null)
@@ -1086,7 +1087,7 @@ public class DefaultOBOParser implements OBOParser {
 					parent = objectFactory.createDanglingObject(rs.getParent(),
 							false);
 					session.addObject(parent);
-					System.err.println("No parent for " + child + "--added dangling object " + parent);
+					System.err.println("No parent for " + child + "--added dangling object " + parent + " (id = " + parent.getID() + ", name = " + parent.getName() + ")");
 				} else {
 					danglingViolations.add(rs);
 					continue;
@@ -1101,6 +1102,7 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					type = (OBOProperty) objectFactory.createDanglingObject(rs
 							.getType(), true);
+					System.err.println("No type for " + child + "--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Unrecognized type "
 							+ rs.getType(), rs.getPath(), rs.getLine(), rs
@@ -1156,7 +1158,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (o == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-					.createDanglingObject(rangeID, false);
+					    .createDanglingObject(rangeID, false);
 					System.err.println("assigned DANGLING " + dangling
 							+ " to property " + t.getID());
 					t.setRange(dangling);
@@ -1184,7 +1186,8 @@ public class DefaultOBOParser implements OBOParser {
 			if (domain == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-					.createDanglingObject(domainID, false);
+					    .createDanglingObject(domainID, false);
+				    System.out.println("Domain is null for domainID " + domainID + "--added dangling object");
 					t.setDomain(dangling);
 				} else
 					throw new OBOParseException("Assigned non-existant domain "
@@ -1219,6 +1222,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (instanceOfObj == null) {
 				if (allowDanglingParents) {
 					instanceOfObj = new DanglingClassImpl(is.instanceOf);
+					System.out.println("instanceOfObj is null-added dangling object");
 				} else {
 					throw new OBOParseException("Unrecognized instance_of id "
 							+ is.instanceOf + " specified for "
@@ -1322,7 +1326,7 @@ public class DefaultOBOParser implements OBOParser {
 					if (allowDanglingParents) {
 						o = objectFactory.createDanglingObject(pvs.val, false);
 						session.addObject(o);
-						System.err.println("added dangling object " + o);
+						System.err.println("Created dangling object " + o);
 					} else {
 						danglingViolations.add(pvs);
 						continue;
@@ -1405,6 +1409,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (object == null) {
 				if (allowDanglingParents) {
 					object = new DanglingClassImpl(bm.getObject());
+					System.out.println("object is null for " + bm.getObject() + "--added dangling class impl");
 				} else
 					throw new OBOParseException("Could not resolve id "
 							+ bm.getObject() + " in replaced_by "
@@ -1474,8 +1479,10 @@ public class DefaultOBOParser implements OBOParser {
 			IdentifiedObject object = session.getObject(bm.getObject());
 
 			if (object == null) {
-				if (allowDanglingParents)
+				if (allowDanglingParents) {
 					object = new DanglingClassImpl(bm.getObject());
+					System.out.println("object is null for " + bm.getObject() + "--added dangling class impl");
+				}
 				else
 					throw new OBOParseException("Could not resolve id "
 							+ bm.getObject() + " in consider " + "tag.", bm
