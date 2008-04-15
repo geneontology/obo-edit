@@ -32,7 +32,7 @@ public class IllegalURIinOWLTest extends AbstractOWLTest {
 
 
 	public void testHasLoaded() throws IOException, DataAdapterException {
-		OBOClass cls = (OBOClass) session.getObjectFactory().createObject("a^b:c", OBOClass.OBO_CLASS, false);
+		OBOClass cls = (OBOClass) session.getObjectFactory().createObject("PATO:0000963^OBO_REL:inheres_in(FMA:58882^union of(FMA:58899))", OBOClass.OBO_CLASS, false);
 		cls.setName("you shouldn't see this in lossy mode");
 		session.addObject(cls);
 
