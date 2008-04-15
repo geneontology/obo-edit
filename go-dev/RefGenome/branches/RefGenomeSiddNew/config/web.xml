@@ -3,7 +3,7 @@
 
 	<servlet>
 		<servlet-name>RefGenome</servlet-name>
-		<servlet-class>org.bbop.server.RefGenomeServerImpl</servlet-class>
+		<servlet-class>org.bbop.server.RefGenomeMyGWTServerImpl</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
