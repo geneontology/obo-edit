@@ -1,0 +1,40 @@
+Display
+--------
+
+1. RefGenomeView is the major class which implements the WebViewI interface. It is composed of 
+multiple views ....
+
+TitlePanelView : Displays the title
+LoginPanleView : Displays the login toolbar
+
+NavPanelView : It contains the search and browse components.
+ SearchPanelView: Placeholder for tools(buttons/forms) for doing the searches.
+ BrowsePanelView: Placeholder for tools(buttons/links) for browsing dataset.
+ 
+ 
+ResultPanelView: Where the result will be displayed, such as lists, tables etc.
+
+2. The views communicate with each other by passing the RefGenomeView object to each instances
+   of each child views. The parent RefGenomeView has some handy accessors(get based) to access
+   the other view object. 
+   
+3. The view communicates with the server side through RefGenomeViewListenerI interface methods.
+   Each view constructor receives a RefGenomeClientImplI class which is extends the above
+   interface. 
+   
+   
+   
+View -> Server communication
+-----------------------------
+
+As mentioned earlier, this is done via RefGenomeViewListenerI interface and RefGenomeClientImplI
+class. Each of its interface calls(such as doLogin) dispatch it to server side through rpc along
+with a Async callback inner class which handles the server response.
+
+Example:
+  public void doLogin(String user, String pass) {
+		// TODO Auto-generated method stub
+		refgservice.checkUserPassword(user, pass, new LoginCallback());
+		
+	}
+	
