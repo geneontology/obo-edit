@@ -13,6 +13,7 @@ import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.OBOClass;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
+import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 
 public class IllegalURIinOWLTest extends AbstractOWLTest {
 
@@ -34,8 +35,13 @@ public class IllegalURIinOWLTest extends AbstractOWLTest {
 		OBOClass cls = (OBOClass) session.getObjectFactory().createObject("a^b:c", OBOClass.OBO_CLASS, false);
 		cls.setName("you shouldn't see this in lossy mode");
 		session.addObject(cls);
-		
-		File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
+
+		OBOClass cls2 = (OBOClass) session.getObjectFactory().createObject("abcdef:c^d", OBOClass.OBO_CLASS, false);
+		//cls2.setName("you shouldn't see this in lossy mode");
+		session.addObject(cls2);
+
+		//File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
+		File outFile = writeTempOWLFile(new SimpleOWLMetadataMapping());
 		System.out.println("written "+outFile);
 		//outFile = writeTempOWLFile();
 		//outFile = writeTempOWLFile();

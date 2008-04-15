@@ -1118,17 +1118,18 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	}
 
 	public void addOboMetadataToOwlEntity(OWLEntity owlEntity, IdentifiedObject io ) throws OWLOntologyChangeException {
-		OWLConstant labelCon = owlFactory.getOWLUntypedConstant(io.getName());
+		if (io.getName() != null) {
+			OWLConstant labelCon = owlFactory.getOWLUntypedConstant(io.getName());
 
-		// name gets mapped to rdfs:label
+			// name gets mapped to rdfs:label
 
-		// The above constant is just a plain literal containing the version info text/comment
-		// we need to create an annotation, which pairs a URI with the constant
-		OWLAnnotation anno = 
-			owlFactory.getOWLConstantAnnotation(OWLRDFVocabulary.RDFS_LABEL.getURI(), labelCon);
+			// The above constant is just a plain literal containing the version info text/comment
+			// we need to create an annotation, which pairs a URI with the constant
+			OWLAnnotation anno = 
+				owlFactory.getOWLConstantAnnotation(OWLRDFVocabulary.RDFS_LABEL.getURI(), labelCon);
 
-		addAxiom(owlFactory.getOWLEntityAnnotationAxiom(owlEntity, anno));
-
+			addAxiom(owlFactory.getOWLEntityAnnotationAxiom(owlEntity, anno));
+		}
 		if (ioprofile != null && ioprofile.getMetadataMappings() != null) {
 			for (MetadataMapping mapping : ioprofile.getMetadataMappings()) {
 				for (OWLAxiom axiom : mapping.getOWLAxioms(this,owlEntity,io))
