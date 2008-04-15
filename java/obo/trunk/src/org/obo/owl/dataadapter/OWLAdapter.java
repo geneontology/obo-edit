@@ -1252,6 +1252,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 	public URI getURI(String id) throws UnsupportedEncodingException {
 		//System.out.println("getting uri for "+id);
+		if (id.contains(" ")) {
+			throw new UnsupportedEncodingException();
+		}
 		String[] idParts = StringUtils.split(id,":",2);
 		String db;
 		String localId;
