@@ -14,7 +14,7 @@ import com.google.gwt.core.client.GWT;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class RefGenome implements EntryPoint {
+public class RefGenomeMyGWT implements EntryPoint {
 		
 	/**
 	 * This is the entry point method.
