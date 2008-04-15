@@ -6,12 +6,14 @@
 class CommandLineOptions
 
   require 'getoptlong'
+  require 'pathname'
 
   attr_reader :wanted_in, :wanted_out, :wanted_first
   attr_reader :wanted_help, :wanted_verbose
   attr_reader :wanted_gwt
   attr_reader :wanted_project
   attr_reader :wanted_execute
+  attr_accessor :wanted_dir
 
   def initialize()
     # The real big boy.
@@ -24,7 +26,8 @@ class CommandLineOptions
                      ["--verbose", "-v", GetoptLong::NO_ARGUMENT],
                      ["--execute", "-x", GetoptLong::NO_ARGUMENT],
                      ["--project",     "-p", GetoptLong::REQUIRED_ARGUMENT],
-                     ["--gwt",     "-g", GetoptLong::REQUIRED_ARGUMENT]
+                     ["--gwt",     "-g", GetoptLong::REQUIRED_ARGUMENT],
+                     ["--dir",     "-d", GetoptLong::REQUIRED_ARGUMENT]
                      )
 
     # Default values.
@@ -35,6 +38,7 @@ class CommandLineOptions
     @wanted_project = "GO"
     @wanted_gwt = "/tmp"
     @wanted_execute = nil
+    @wanted_dir = Pathname.new(Dir.pwd).parent.parent
 
     # Get values using the case statement.
     command_line_options.each do |option, argument|
@@ -56,6 +60,8 @@ class CommandLineOptions
         @wanted_gwt = argument
       when "--project", "-p"
         @wanted_project = argument
+      when "--dir", "-d"
+      	 @wanted_dir = argument
       end
     end
     
@@ -76,7 +82,7 @@ clo = CommandLineOptions.new()
 ## First gauntlet: want help?
 if clo.wanted_help
 
-  puts "Usage: sink [-h] [-x] [-f | -o | -i] [-p <name>] -g <directory>"
+  puts "Usage: sink [-h] [-x] [-f | -o | -i] [-p <name>] [-d <directory>] -g <directory>"
   puts ""
   puts "Note: Always run from the geneontology/go-dev/gwt/scripts directory."
   puts ""
@@ -88,12 +94,17 @@ if clo.wanted_help
   puts "   -x, --execute         actually do things instead of a dry run"
   puts "   -p, --project <name>  name of the project; defaults to \"GO\""
   puts "   -g, --gwt <directory> location of an unpacked GWT; defaults to \"/tmp\""
+  puts "   -d, --dir <directory> location where project will be created, defaults to two folders up from current working dir" 
   puts ""
   puts "Example usage, to initially bootstrap the project from SVN:"
   puts "\t./sink -v -x -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
   puts ""
+  puts "\t./sink -v -x -d /home/sjcarbon/MyRefGenome -f -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
   puts "Example usage, to rync files from your SVN repo to the project directory:"
   puts "\t./sink -v -x -o -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
+  puts ""
+  puts "\t./sink -v -x -o -d /home/sjcarbon/MyRefGenome -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
   puts ""
   puts "Example usage, to rync files from your project directory to the SVN repo:"
   puts "\t./sink -v -x -i -g /home/sjcarbon/local/src/gwt/gwt-linux-1.4.61"
@@ -108,6 +119,13 @@ end
 gwt_dir = clo.wanted_gwt
 proj_exe = gwt_dir + '/projectCreator';
 app_exe = gwt_dir + '/applicationCreator';
+
+## small thingy to have an absolute path
+tmppath = Pathname.new(clo.wanted_dir)
+if not tmppath.absolute?
+	 clo.wanted_dir = tmppath.realpath
+end
+
 
 begin
 
@@ -178,13 +196,21 @@ if clo.wanted_first
     exit(-1)
   end
 
+  ## -- check the dir where the project will be created
+  if not File.directory?(clo.wanted_dir)
+  	 #puts "Error: Given project directory do not exist."
+  	 Dir.mkdir(clo.wanted_dir)
+  	 #exit (-1)
+	end
+ 
+
   ## Move to GWT
   here = Dir.pwd();
   Dir.chdir(clo.wanted_gwt)
   puts "Have entered: "  + Dir.pwd() if clo.wanted_verbose
 
   ## Forcably set up projects.
-  create_project = './projectCreator -overwrite -eclipse ' + clo.wanted_project
+  create_project = './projectCreator -overwrite -eclipse ' + clo.wanted_project + ' -out ' +  clo.wanted_dir
   puts "Running: #{create_project}" if clo.wanted_verbose
   system(create_project) if clo.wanted_execute
 
@@ -192,7 +218,7 @@ if clo.wanted_first
   apps.each{ |app|
 
     create_application =
-    './applicationCreator -overwrite -eclipse ' + clo.wanted_project + ' ' + app
+    './applicationCreator -overwrite -eclipse ' + clo.wanted_project + ' -out ' + clo.wanted_dir + ' ' + app
     
     puts "Running: #{create_application}" if clo.wanted_verbose
     system(create_application) if clo.wanted_execute
@@ -205,7 +231,7 @@ elsif clo.wanted_out
   ## Get command straight.
   command = rsync_cmd
   command = "#{command} -n" if not clo.wanted_execute
-  command = "#{command} ../src #{clo.wanted_gwt}/"
+  command = "#{command} ../src #{clo.wanted_dir}/"
 
   puts "Running: #{command}" if clo.wanted_verbose
   system(command) 
@@ -217,7 +243,7 @@ elsif clo.wanted_in
   ## Get command straight.
   command = rsync_cmd
   command = "#{command} -n" if not clo.wanted_execute
-  command = "#{command} #{clo.wanted_gwt}/src ../"
+  command = "#{command} #{clo.wanted_dir}/src ../"
 
   puts "Running: #{command}" if clo.wanted_verbose
   system(command) 
