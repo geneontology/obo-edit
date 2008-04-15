@@ -14,5 +14,20 @@ shown as nodes in the graph, and the relationships form the links.
 <p><IMG hspace=0 src="../images/graph_editor.png" border=0></p>
 <p>[NEED MORE TEXT]</p>
 <p>[Mention detachable toolbar]</p>
+
+<h2>Tip: getting "regulates" links to show up</h2>
+<p>Users sometimes ask how to get regulates links to show up in the Graph Editor.  The answer is that earlier versions (pre-b34) of OBO-Edit2 came with a built-in link filter that showed only transitive links (which the "regulates" links are not).  Even if you have installed later versions of OBO-Edit2, that filter is stored in your user configuration.
+</p><p>
+To fix this, open the Global Filters component and select "Link filters".  If you have that transitive filter, you will see it:
+</p><p>
+<img src="../images/global-link-filter.png" border=0>
+</p><p>
+Use the "-" button to remove that filter and click "Save Changes".  You will then need to quit and restart OBO-Edit in order to see the regulates links.  (This is a bug--global filter changes should take effect immediately, but they don't always.)
+Once you remove that "is transitive" filter and restart, you should see the regulates links:
+</p><p>
+<img src="../images/regulates-links.png" border=0>
+</p><p>
+If you don't like the regulates icons or colors, you can change them in the "Icons & Colors" tab of the <a href="Configuration_Manager.htm">Configuration Manager</a>.
+</p>
 </body>
 </html>
