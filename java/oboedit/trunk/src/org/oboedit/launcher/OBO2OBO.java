@@ -121,7 +121,7 @@ public class OBO2OBO {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
-		System.err.println("About to write files..., session object count = "
+		System.err.println("About to write files... session object count = "
 				+ session.getObjects().size());
 		System.err.println("writePath = " + writeConfig.getWritePath());
 		System.err.println("savePath = " + writeConfig.getSaveRecords());
@@ -560,6 +560,7 @@ public class OBO2OBO {
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
+			    System.out.println("Please note: allowdangling is already set to true by default.");
 				readConfig.setAllowDangling(true);
 			} else if (args[i].equals("-fixdbxrefs")) {
 				fixDbxrefs = true;
@@ -647,8 +648,8 @@ public class OBO2OBO {
 						break;
 					}
 				}
-				System.err
-						.println("Allowdangling = " + path.getAllowDangling());
+//				System.err
+//						.println("Allowdangling = " + path.getAllowDangling());
 				if (path.getPath() == null)
 					printUsage(1);
 				else
@@ -717,7 +718,7 @@ public class OBO2OBO {
 				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo>\n"
 						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
 						+ "        filter file or a link filter file to apply to the output file before writing.\n"
-						+ "        If the -allowdangling flag is specified, dangling links will not be written.\n"
+					        + "        -allowdangling is now the default and need not be specified.\n"
 						+ "        The optional -p flag specifies the id of a property to use for \n"
 						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
 						+ "        applies filters using strict root detection.");
