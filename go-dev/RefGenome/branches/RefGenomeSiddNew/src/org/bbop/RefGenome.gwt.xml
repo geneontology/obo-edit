@@ -1,0 +1,10 @@
+<module>
+	<stylesheet src='mygwt-all.css'/>
+	<stylesheet src='mygwt-all-gray.css'/>
+	<stylesheet src='RefGenomeMyGwT.css'/>
+	<inherits name="net.mygwt.ui.MyGWT" />
+	<entry-point class='org.bbop.client.RefGenomeMyGWT'/>
+	<servlet path="/RefGenome" class="org.bbop.server.RefGenomeMyGWTServerImpl"/>
+	
+	
+</module>
