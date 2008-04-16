@@ -38,7 +38,7 @@ class CommandLineOptions
     @wanted_project = "GO"
     @wanted_gwt = "/tmp"
     @wanted_execute = nil
-    @wanted_dir = Pathname.new(Dir.pwd).parent.parent
+    @wanted_dir = @wanted_gwt
 
     # Get values using the case statement.
     command_line_options.each do |option, argument|
@@ -120,6 +120,7 @@ end
 gwt_dir = clo.wanted_gwt
 proj_exe = gwt_dir + '/projectCreator';
 app_exe = gwt_dir + '/applicationCreator';
+clo.wanted_dir = clo.wanted_gwt
 
 ## -- check the dir where the project will be created
 if not File.directory?(clo.wanted_dir)
