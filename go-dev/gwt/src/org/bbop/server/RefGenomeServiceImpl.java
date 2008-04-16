@@ -313,8 +313,10 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	}
 
-	public void checkUserPassword(String userId, String password) {
+	public Boolean checkUserPassword(String userId, String password) {
 		// TODO Auto-generated method stub
+		boolean logstatus = true;
+		return new Boolean(logstatus);
 
 	}
 
