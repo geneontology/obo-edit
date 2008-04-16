@@ -74,6 +74,7 @@ end
 ## START MAIN ###
 
 require 'find'
+require 'fileutils'
 
 rsync_cmd = "rsync -avz -P --stats --exclude '.svn' --ignore-errors"
 
@@ -119,6 +120,14 @@ end
 gwt_dir = clo.wanted_gwt
 proj_exe = gwt_dir + '/projectCreator';
 app_exe = gwt_dir + '/applicationCreator';
+
+## -- check the dir where the project will be created
+if not File.directory?(clo.wanted_dir)
+  	 #puts "Error: Given project directory do not exist."
+  	 Dir.mkdir(clo.wanted_dir)
+  	 #exit (-1)
+end
+ 
 
 ## small thingy to have an absolute path
 tmppath = Pathname.new(clo.wanted_dir)
@@ -169,6 +178,12 @@ if clo.wanted_first
 
   puts "Initializing run..." if clo.wanted_verbose
 
+  ['ant','config','docs','external'].each do |folder|
+  	 from = File.join(Pathname.new(Dir.pwd).parent,folder)
+  	 FileUtils.cp_r from,clo.wanted_dir, :verbose => true
+	end
+  	
+
   ## Get all of the projects  
   apps = [];
   Find.find("../src") do |f|
@@ -196,13 +211,7 @@ if clo.wanted_first
     exit(-1)
   end
 
-  ## -- check the dir where the project will be created
-  if not File.directory?(clo.wanted_dir)
-  	 #puts "Error: Given project directory do not exist."
-  	 Dir.mkdir(clo.wanted_dir)
-  	 #exit (-1)
-	end
- 
+
 
   ## Move to GWT
   here = Dir.pwd();
