@@ -1,12 +1,5 @@
 package org.bbop.client;
 
-
-
-
-
-
-
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 
@@ -20,9 +13,7 @@ public class RefGenome implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		RefGenomeServiceClientImpl refgservice = new RefGenomeServiceClientImpl(GWT.getModuleBaseURL() + "/RefGenome"); 
-       refgservice.getView().getViewPort().hideLoadingPanel("loading");
-       
-	   
+		RefGenomeServiceClientImpl refgservice = new RefGenomeServiceClientImpl(GWT.getModuleBaseURL() + "/RefGenomeService"); 
+		refgservice.getView().getViewPort().hideLoadingPanel("loading");
 	}	
 }
