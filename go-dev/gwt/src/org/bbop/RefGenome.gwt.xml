@@ -4,7 +4,6 @@
 	<stylesheet src='RefGenome.css'/>
 	<inherits name="net.mygwt.ui.MyGWT" />
 	<entry-point class='org.bbop.client.RefGenome'/>
-	<servlet path="/RefGenome" class="org.bbop.server.RefGenomeServiceImpl"/>
-	
-	
+  	<servlet path="/GOService" class="org.bbop.server.GOServiceImpl"/>
+ 	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl"/>
 </module>

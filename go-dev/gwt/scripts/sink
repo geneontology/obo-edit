@@ -179,7 +179,7 @@ if clo.wanted_first
 
   puts "Initializing run..." if clo.wanted_verbose
 
-  ['ant','config','docs','external'].each do |folder|
+  ['ant','docs','external'].each do |folder|
   	 from = File.join(Pathname.new(Dir.pwd).parent,folder)
   	 FileUtils.cp_r from,clo.wanted_dir, :verbose => true
 	end
