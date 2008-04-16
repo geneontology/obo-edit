@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bbop.client.model.GO.GeneProduct;
+import org.bbop.client.model.GOGeneProduct;
 
 public class GOConnect {
 
