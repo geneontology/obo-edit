@@ -111,7 +111,7 @@ public interface RefGenomeService extends RemoteService {
 
 	public void attachCommentToEntity(String entityId, String comment, String curatorId);
 	
-	public void checkUserPassword(String userId, String password); // encrypt?
+	public Boolean checkUserPassword(String userId, String password); // encrypt?
 
 	/**
 	 * given a gene (or similar entity) return all homologs
