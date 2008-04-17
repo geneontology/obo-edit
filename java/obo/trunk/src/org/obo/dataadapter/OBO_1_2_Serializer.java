@@ -21,7 +21,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	protected OBOSerializationEngine engine;
 	
-	protected SimpleDateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy HH:mm");
+//	protected SimpleDateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy HH:mm");
+    // Using 'Z' for timezone because ISO 8601 requires the timezone to be 'Z' or +hh:mm or -hh:mm
+    // and SimpleDateFormat can only handle timezones of the form hhmm
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
 
 	public void setOutputStream(PrintStream stream) throws IOException {
 		this.stream = stream;

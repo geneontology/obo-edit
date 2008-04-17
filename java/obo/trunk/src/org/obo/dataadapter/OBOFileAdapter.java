@@ -256,9 +256,6 @@ public class OBOFileAdapter implements OBOAdapter {
 				else if (ioprofile.getSerializer().equals("OBO_1_0"))
 					serializer = new OBO_1_0_Serializer();
 
-				System.err.println("Writing " +	ioprofile.getSaveRecords()
-						   + " (serializer = " + ioprofile.getSerializer() + ", allowDangling = " + ioprofile.getAllowDangling() + ")"); // DEL this part
-
 				if (serializer == null)
 					throw new DataAdapterException("Could not serialize to "
 							+ "serializer " + ioprofile.getSerializer());
@@ -272,6 +269,8 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 							null, null, ioprofile.getWritePath()));
+					System.err.println("Writing " +	ioprofile.getWritePath()
+							   + " (serializer = " + ioprofile.getSerializer() + ")");
 				} else {
 				    // This doesn't seem to work--it saves nothing (but doesn't complain)
 					filteredPaths.addAll(ioprofile.getSaveRecords());

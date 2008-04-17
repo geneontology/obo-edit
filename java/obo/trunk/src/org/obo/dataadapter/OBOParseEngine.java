@@ -30,8 +30,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 	protected StringBuffer tempBuffer = new StringBuffer();
 
-	protected SimpleDateFormat dateFormat = new SimpleDateFormat(
-	"dd:MM:yyyy HH:mm");
+        // Handle both old and new date formats
+	protected SimpleDateFormat oldDateFormat = new SimpleDateFormat(
+	    "dd:MM:yyyy HH:mm");  // old date format
+	protected SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
 
 	protected static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
 
@@ -452,30 +454,41 @@ public class OBOParseEngine extends AbstractParseEngine {
 			((OBOParser) parser).readFileVersion(value);
 			return true;
 		} else if (name.equals("date")) {
-
 			try {
-				((OBOParser) parser).readDate(dateFormat.parse(value));
+				((OBOParser) parser).readDate(oldDateFormat.parse(value));
 			} catch (ParseException ex) {
-				throw new OBOParseException("Badly formatted date: " + value,
-						getCurrentPath(), line, linenum, 0);
+			    try {
+				((OBOParser) parser).readDate(newDateFormat.parse(value));
+			    } catch (ParseException ex2) {
+				throw new OBOParseException("Badly formatted date--couldn't parse with old or new format: " + value,
+							    getCurrentPath(), line, linenum, 0);
+			    }
 			}
 			return true;
 		} else if (name.equals("creation_date")) {
 			try {
-				((OBOParser) parser).readCreationDate(dateFormat.parse(value),
+				((OBOParser) parser).readCreationDate(oldDateFormat.parse(value),
 						nv);
 			} catch (ParseException ex) {
-				throw new OBOParseException("Badly formatted date: " + value,
+			    try {
+				((OBOParser) parser).readCreationDate(newDateFormat.parse(value), nv);
+			    } catch (ParseException ex2) {
+				throw new OBOParseException("Badly formatted creation date: " + value,
 						getCurrentPath(), line, linenum, 0);
+			    }
 			}
 			return true;
 		} else if (name.equals("modification_date")) {
 			try {
-				((OBOParser) parser).readModificationDate(dateFormat
+				((OBOParser) parser).readModificationDate(oldDateFormat
 						.parse(value), nv);
 			} catch (ParseException ex) {
-				throw new OBOParseException("Badly formatted date: " + value,
+			    try {
+				((OBOParser) parser).readModificationDate(newDateFormat.parse(value), nv);
+			    } catch (ParseException ex2) {
+				throw new OBOParseException("Badly formatted modification_date: " + value,
 						getCurrentPath(), line, linenum, 0);
+			    }
 			}
 			return true;
 		} else if (name.equals("saved-by")) {
