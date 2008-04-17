@@ -18,29 +18,27 @@ click the "Save Configuration" button to accept your changes and
 update the display. There are several different configuration tabs. The first tab is "General 
 GUI".</p>
 
-<h2>General GUI Options</h2>
-<h3>Runtime display options</h3>
+<h2>User Settings</h2>
 <ul>
-  <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
-  taken into account when sorting terms. Lower case letters will appear before 
-  upper case letters. 
-  <li><strong>Show terms ids as tool tips in term panels</strong> - If this box 
-  is checked, the id of a term will appear if the mouse hovers over a term in 
-  the <A href="The_Term_Editor_Panel.htm">ontology editor panel</a>               
-    . Enabling this feature will make OBO-Edit run slightly slower 
-  on older machines. 
-  <li><strong>Confirm on exit</strong>- If this 
-  box is checked, OBO-Edit will ask for confirmation before exiting.</li></ul>
-
-<h3>Startup Options</h3>
-<p>These are options that do not take effect until OBO-Edit is restarted.</p>
-<ul>
+  <li><strong>User name</strong> - The user name OBO-Edit should use. This 
+  information is used in the "saved-by" header field when using the <A 
+  href="The_OBO_Adapter.htm">OBO adapter</a>. 
+  <li><strong>Configuration directory</strong> - 
+  Displays the path to the directory that contains your personal OBO-Edit 
+  configuration info. This field is not editable; it is for
+  informational purposes only.
   <li><strong>OBO-Edit memory allocation</strong> - The text box specifies the amount of memory that should 
   be allocated to OBO-Edit. The value is given as an integer followed by the 
   letter M, indicating the number of megabytes of memory that should be 
   allocated. A high value will prevent OBO-Edit from running out of memory and 
   crashing, but higher values will lessen the amount of memory available to 
   other programs and may cause OBO-Edit to run slower on some platforms. 
+  (Requires restart.)
+</ul>
+
+<h3>Font</h3>
+<p>This option does not take effect until OBO-Edit is restarted.</p>
+<ul>
   <li><strong>Default font</strong> - These controls specify the font OBO-Edit 
   should use when displaying buttons, labels, dropdown menus, etc. The first 
   dropdown specifies the font family name, the second specifies the font size, 
@@ -68,7 +66,7 @@ icon path&gt;".</p>
 <p>To change the link color for a relationship, click the button below "Link
 color" that says the color name (e.g., "blue (click to modify)").
 </p>
-
+</ul>
 <div class="sidebar">
 <h1>Why won't my is_a icon appear?</h1>
 <hr>
@@ -86,11 +84,37 @@ As when you select a new icon, the OBO-Edit
 display will not automatically refresh.  You will see the new link color when you do
 something that changes the display (e.g., click open a node).</p>
 
-<h2>Paths &amp; Autosave</h2>
+<h2>Behavior</h2>
 <ul>
-  <li><strong>Config directory</strong> - 
-  Displays the path to the ".oboedit" directory that contains your person OBO-Edit 
-  configuration info. This field is not editable; it provides information alone.
+  <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
+  taken into account when sorting terms. Lower case letters will appear before 
+  upper case letters. 
+  <li><strong>Show terms ids as tool tips in term panels</strong> - If this box 
+  is checked, the id of a term will appear if the mouse hovers over a term in 
+  the <A href="The_Term_Editor_Panel.htm">ontology editor panel</a>. Enabling this feature will make OBO-Edit run slightly slower 
+  on older machines. 
+  <li><strong>Allow new cycles to be created</strong> - If this box is checked, OBO-Edit will allow cycles to be 
+  created. If it is not checked, OBO-Edit will refuse to allow new cycles to be 
+  made. Only enable this option if an ontology requires cycles. Most do not. See 
+  <A href="Text_Editing.htm#is_cyclic">cyclic relations</a>                
+       &nbsp;&nbsp;for more information about what constitutes a cycle.
+  <li><strong>Use advanced root detection</strong> - If this box is selected, 
+  OBO-Edit will use advanced root detection. Normally, OBO-Edit treats a term as 
+  a root if it has no parents. If advanced root detection is enabled, terms with 
+  no <em>transitive</em> parents are treated as roots.</li>
+  <li><strong>Warn before final delete</strong> - If this box is checked, OBO-Edit displays a warning before 
+  the last instance of a term is deleted and the term becomes obsolete. 
+  <li><strong>Warn before discarding definitions on save</strong> - If this box 
+  is checked, the old <A href="The_GO_Flat_File_Adapter.htm">GO Flat File 
+  Adapter</a> will 
+  issue a warning when saving with no definition file. 
+
+  <li><strong>Confirm on exit</strong>- If this 
+  box is checked, OBO-Edit will ask for confirmation before exiting.</li></ul>
+</ul>
+
+<h2>Autosave</h2>
+<ul>
   <li><strong>Enable autosave</strong> - If this box is checked, autosave will 
   be enabled. The ontology will be saved periodically in the autosave file
   path (see next item).  The default is for autosave
@@ -99,35 +123,8 @@ something that changes the display (e.g., click open a node).</p>
   files will be stored. 
   <li><strong>Do autosave every</strong> - This field specifies the number of minutes between autosaves.
   <li><strong>Autosave files expire in </strong>- The number of days old an 
-  autosave file must be before it is automatically deleted.</li></ul>
-
-<h2>Behavior</h2>
-<ul>
-  <li><strong>Allow new cycles to be created</strong> - If this box is checked, OBO-Edit will allow cycles to be 
-  created. If it is not checked, OBO-Edit will refuse to allow new cycles to be 
-  made. Only enable this option if an ontology requires cycles. Most do not. See 
-  <A href="Text_Editing.htm#is_cyclic">cyclic relations</a>                
-                 
-       &nbsp;&nbsp;for more information about what constitutes a cycle.&nbsp; 
-  <li><strong>Warn before final delete</strong> - If this box is checked, OBO-Edit displays a warning before 
-  the last instance of a term is deleted and the term becomes obsolete. 
-  <li><strong>Warn before discarding definitions on save</strong> - If this box 
-  is checked, the old <A href="The_GO_Flat_File_Adapter.htm">GO Flat File 
-  Adapter</a> will 
-  issue a warning when saving with no definition file. 
-  <li><strong>Use advanced root detection</strong> - If this box is selected, 
-  OBO-Edit will use advanced root detection. Normally, OBO-Edit treats a term as 
-  a root if it has no parents. If advanced root detection is enabled, terms with 
-  no <em>transitive</em> parents are treated as roots.</li></ul>
-<h2>User Settings</h2>
-<ul>
-  <li><strong>User name</strong> - The user name OBO-Edit should use. This 
-  information is used in the "saved-by" header field when using the <A 
-  href="The_OBO_Adapter.htm">OBO adapter</a>. 
-  <li><strong>Full name</strong> - The 
-  user's full name. This information is not currently used. 
-  <li><strong>Email address</strong> - The user's email address. This 
-  information is not currently used.</li></ul>
+  autosave file must be before it is automatically deleted.</li>
+</ul>
 <h2><a name="textedit"></a>Text Editing</h2>
 <ul>
   <li><strong>Auto commit text edits</strong> - If this box 
@@ -148,5 +145,6 @@ something that changes the display (e.g., click open a node).</p>
   <li><strong>Use personal definition</strong> - If this box is selected, a user 
   may specify a default definition and dbxrefs that will automatically be used 
   when a new term is created.</li></ul>
+
 </body>
 </html>
