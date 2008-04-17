@@ -68,6 +68,12 @@ public interface RefGenomeService extends RemoteService {
 	public String[] fetchReferenceTaxonIds();
 
 	/**
+	 * As fetchReferenceTaxonIds()
+	 * @return Nodes representing the taxon IDs of interest
+	 */
+	public NodeDTO[] fetchReferenceTaxonNodes();
+
+	/**
 	 * Given an ID for the homology set, return the IDs of all members
 	 * @param homologSetId
 	 * @return

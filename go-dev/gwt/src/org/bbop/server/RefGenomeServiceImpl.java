@@ -208,15 +208,11 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	public String[] fetchReferenceTaxonIds() {
 		return nodesToIds(speciesInfoShard.getNodes());
 	}
-
-	private String[] nodesToIds(Collection<Node> nodes) {
-		String[] nids = new String[nodes.size()];
-		Iterator<Node> it = nodes.iterator();
-		for (int i=0; it.hasNext(); i++) {
-			nids[i] = it.next().getId();
-		}
-		return nids;
+	public NodeDTO[] fetchReferenceTaxonNodes() {
+		return nodesToDTOs(speciesInfoShard.getNodes());
 	}
+
+
 
 	public String[] fetchEntityIdsInHomologSet(String homologSetId) {
 		// TODO Auto-generated method stub
@@ -385,6 +381,32 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	public boolean isSetComprehensivelyAnnotated(String entityId) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private String[] nodesToIds(Collection<Node> nodes) {
+		String[] nids = new String[nodes.size()];
+		Iterator<Node> it = nodes.iterator();
+		for (int i=0; it.hasNext(); i++) {
+			nids[i] = it.next().getId();
+		}
+		return nids;
+	}
+	private NodeDTO[] nodesToDTOs(Collection<Node> nodes) {
+		NodeDTO[] dtos = new NodeDTO[nodes.size()];
+		Iterator<Node> it = nodes.iterator();
+		for (int i=0; it.hasNext(); i++) {
+			dtos[i] = nodeToDTO(it.next());
+		}
+		return dtos;
+	}
+	
+	
+	private NodeDTO nodeToDTO(Node node) {
+		NodeDTO dto = new NodeDTO(node.getId());
+		dto.setLabel(node.getLabel());
+		dto.setSourceId(node.getSourceId());
+		// TODO - statements
+		return dto;
 	}
 	
 }
