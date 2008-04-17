@@ -1,11 +1,17 @@
 package org.oboedit.gui.components;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,18 +32,19 @@ import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
 import org.bbop.swing.MinusIcon;
 import org.bbop.swing.PlusIcon;
+import javax.swing.JFileChooser;
 
 public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
 		// TODO Auto-generated constructor stub
-			}
+	}
 
 	public void save(){
 		System.out.println("all going well so far.");
 	}
-	
+
 	protected LayoutListener layoutListener = new LayoutAdapter() {
 		public boolean closing(GUIComponent c) {
 			if (c.equals(OBOMergeCanvasMark2.this)) {
@@ -47,9 +54,9 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		}
 
 	};
-	
-	
-@Override
+
+
+	@Override
 	public void init() {
 		JPanel inputFilePanel = new JPanel();
 		JPanel filePathPanel = new JPanel();
@@ -87,104 +94,236 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		JComponent failOnClashLabel = new JLabel("Fail On Clash");
 		JComboBox failOnClashCombobox = new JComboBox(idOptions);
 		JLabel ignoreClashOnIDsLabel = new JLabel("Ignore Clash on ID");
-		JTextField ignoreClashOnIDsTextField = new JTextField();
+		JTextArea ignoreClashOnIDsTextArea = new JTextArea();
 		String id;
 		JTabbedPane oboMergeTabbedPane = new JTabbedPane();
 		JPanel processFeedbackPanel = new JPanel();
+		JButton saveFeedbackToFileBrowseButton = new JButton("Browse");
+		JLabel saveFeedbackToFileLabel = new JLabel("Save Feedback to File");
+		JTextField saveFeedbackToFileTextField = new JTextField();
+		JTextField ProgressTextField = new JTextField();
+		String saveFeedbackToFileTextFieldString = new String();
+		JFileChooser fileChooser = new JFileChooser();
+
 		
-
-
 		//not sure what this is for:
 		ComponentManager.getManager().addLayoutListener(layoutListener);
-		removeAll();
+
+		setLayout(new BorderLayout());
+
+		
+		JPanel mainGUIPanel = new JPanel();
 
 		add(oboMergeTabbedPane, "Center");
 		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
-		oboMergeTabbedPane.addTab("Ontology Files", null, inputFilePanel, "Ontology Files");
+		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanel, "Ontology Files");
 
+		mainGUIPanel.setLayout(new BorderLayout());
 		
-		inputFilePanel.setLayout(new BoxLayout(inputFilePanel, BoxLayout.Y_AXIS));
-		addAComponentYAlignment(saveProfilePanel, inputFilePanel);
-		addAComponentYAlignment(filePathPanel, inputFilePanel);
-		addAComponentYAlignment(mergeOptionPanel, inputFilePanel);
-
+		mainGUIPanel.add(saveProfilePanel, BorderLayout.NORTH);
+		mainGUIPanel.add(inputFilePanel, BorderLayout.CENTER);
+		mainGUIPanel.add(mergeOptionPanel, BorderLayout.SOUTH);
+		
 		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
 		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
+	      		
+		//Make GridBag layout for the contents of the inputFilePanel. 
+		inputFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints inputFilePanelGBC = new GridBagConstraints();
 
+		inputFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 0;
+		inputFilePanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
+		inputFilePanelGBC.weightx = 1;
+		//Add the four horizontal panels to take a path each. 
+		inputFilePanel.add(parentFilePanel, inputFilePanelGBC);
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 1;
+		inputFilePanel.add(liveFilePanel, inputFilePanelGBC);
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 2;
+		inputFilePanel.add(branchFilePanel, inputFilePanelGBC);
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 3;
+		inputFilePanel.add(mergedFilePanel, inputFilePanelGBC);
 
-		filePathPanel.setLayout(new BoxLayout(filePathPanel, BoxLayout.Y_AXIS));
+		//set up the contents for the parent file path. 
+		parentFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints parentFilePanelGBC = new GridBagConstraints();
 
-		//Add four lines in which the file paths will be loaded. 		
-		addAComponentXAlignment(parentFilePanel, filePathPanel);
-		addAComponentXAlignment(liveFilePanel, filePathPanel);
-		addAComponentXAlignment(branchFilePanel, filePathPanel);
-		addAComponentXAlignment(mergedFilePanel, filePathPanel);
+		parentFilePanelGBC.fill = GridBagConstraints.NONE;
+		parentFilePanelGBC.gridx = 0;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		parentFilePanel.add(parentFileLabel, parentFilePanelGBC);
+		
+		parentFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		parentFilePanelGBC.gridx = 1;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		parentFilePanelGBC.weightx = 1;
+		parentFilePanel.add(parentFileTextField, parentFilePanelGBC);
 
-		parentFilePanel.setLayout(new BoxLayout(parentFilePanel, BoxLayout.X_AXIS));
+		parentFilePanelGBC.fill = GridBagConstraints.NONE;
+		parentFilePanelGBC.gridx = 2;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		parentFilePanelGBC.weightx = 0;
+		parentFilePanel.add(parentFileBrowseButton, parentFilePanelGBC);
 
-		addAComponentYAlignment(parentFileLabel, parentFilePanel);
-		addAComponentYAlignment(parentFileTextField, parentFilePanel);
-		addAComponentYAlignment(parentFileBrowseButton, parentFilePanel);
+		//set up the contents for the parent file path. 
+		liveFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints liveFilePanelGBC = new GridBagConstraints();
 
-		liveFilePanel.setLayout(new BoxLayout(liveFilePanel, BoxLayout.X_AXIS));
+		liveFilePanelGBC.fill = GridBagConstraints.NONE;
+		liveFilePanelGBC.gridx = 0;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		liveFilePanel.add(liveFileLabel, liveFilePanelGBC);
+		
+		liveFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		liveFilePanelGBC.gridx = 1;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		liveFilePanelGBC.weightx = 1;
+		liveFilePanel.add(liveFileTextField, liveFilePanelGBC);
 
-		addAComponentYAlignment(liveFileLabel, liveFilePanel);
-		addAComponentYAlignment(liveFileTextField, liveFilePanel);
-		addAComponentYAlignment(liveFileBrowseButton, liveFilePanel);
+		liveFilePanelGBC.fill = GridBagConstraints.NONE;
+		liveFilePanelGBC.gridx = 2;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		liveFilePanelGBC.weightx = 0;
+		liveFilePanel.add(liveFileBrowseButton, liveFilePanelGBC);
 
-		branchFilePanel.setLayout(new BoxLayout(branchFilePanel, BoxLayout.X_AXIS));
+		//set up the contents for the branch file path. 
+		branchFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints branchFilePanelGBC = new GridBagConstraints();
 
-		addAComponentYAlignment(branchFileLabel, branchFilePanel);
-		addAComponentYAlignment(branchFileTextField, branchFilePanel);
-		addAComponentYAlignment(branchFileBrowseButton, branchFilePanel);
+		branchFilePanelGBC.fill = GridBagConstraints.NONE;
+		branchFilePanelGBC.gridx = 0;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		branchFilePanel.add(branchFileLabel, branchFilePanelGBC);
+		
+		branchFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		branchFilePanelGBC.gridx = 1;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		branchFilePanelGBC.weightx = 1;
+		branchFilePanel.add(branchFileTextField, branchFilePanelGBC);
 
-		mergedFilePanel.setLayout(new BoxLayout(mergedFilePanel, BoxLayout.X_AXIS));
+		branchFilePanelGBC.fill = GridBagConstraints.NONE;
+		branchFilePanelGBC.gridx = 2;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		branchFilePanelGBC.weightx = 0;
+		branchFilePanel.add(branchFileBrowseButton, branchFilePanelGBC);
 
-		addAComponentYAlignment(mergedFileLabel, mergedFilePanel);
-		addAComponentYAlignment(mergedFileTextField, mergedFilePanel);
-		addAComponentYAlignment(mergedFileBrowseButton, mergedFilePanel);
+		//set up the contents for the merged file path. 
+		mergedFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints mergedFilePanelGBC = new GridBagConstraints();
 
+		mergedFilePanelGBC.fill = GridBagConstraints.NONE;
+		mergedFilePanelGBC.gridx = 0;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		mergedFilePanel.add(mergedFileLabel, mergedFilePanelGBC);
+		
+		mergedFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		mergedFilePanelGBC.gridx = 1;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		mergedFilePanelGBC.weightx = 1;
+		mergedFilePanel.add(mergedFileTextField, mergedFilePanelGBC);
+
+		mergedFilePanelGBC.fill = GridBagConstraints.NONE;
+		mergedFilePanelGBC.gridx = 2;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		mergedFilePanelGBC.weightx = 0;
+		mergedFilePanel.add(mergedFileBrowseButton, mergedFilePanelGBC);
 		saveProfilePanel.setLayout(new BoxLayout(saveProfilePanel, BoxLayout.X_AXIS));
 
-		//Add four lines in which the file paths will be loaded. 		
-		addAComponentXAlignment(saveProfileLabel, saveProfilePanel);
-		addAComponentXAlignment(saveProfileComboBox, saveProfilePanel);
+		saveProfilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints saveProfilePanelGBC = new GridBagConstraints();
+
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 0;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		saveProfilePanel.add(saveProfileLabel, saveProfilePanelGBC);
+
+		saveProfilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
+		saveProfilePanelGBC.weightx = 1;
+		saveProfilePanel.add(saveProfileComboBox, saveProfilePanelGBC);
 		saveProfileComboBox.setEditable(true);
-		//look at this to complete:
-		//http://72.5.124.55/docs/books/tutorial/uiswing/components/combobox.html#editable
-		addAComponentXAlignment(addProfilePlusButton, saveProfilePanel);
-		addAComponentXAlignment(removeProfileMinusButton, saveProfilePanel);
+		
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridy = 0;
+//		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
+		saveProfilePanelGBC.weightx = 1;
+		saveProfilePanel.add(addProfilePlusButton, saveProfilePanelGBC);
 
-		mergeOptionPanel.setLayout(new BoxLayout(mergeOptionPanel, BoxLayout.Y_AXIS));
-
-		//make a grid for four comboboxes.		
-		addAComponentYAlignment(topLinePanel, mergeOptionPanel);
-		addAComponentYAlignment(bottomLinePanel, mergeOptionPanel);
-
-		topLinePanel.setLayout(new BoxLayout(topLinePanel, BoxLayout.X_AXIS));
-
-		//add two option		
-		addAComponentXAlignment(updateIDsLabel, topLinePanel);
-		addAComponentXAlignment(updateIDsCombobox, topLinePanel);
-		addAComponentXAlignment(outputFileFormatLabel, topLinePanel);
-		addAComponentXAlignment(outputFileFormatCombobox, topLinePanel);
-
-		bottomLinePanel.setLayout(new BoxLayout(bottomLinePanel, BoxLayout.X_AXIS));
-
-		//add other two options	
-		addAComponentXAlignment(failOnClashLabel, bottomLinePanel);
-		addAComponentXAlignment(failOnClashCombobox, bottomLinePanel);
-		addAComponentXAlignment(ignoreClashOnIDsLabel, bottomLinePanel);
-		addAComponentXAlignment(ignoreClashOnIDsTextField, bottomLinePanel);
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		saveProfilePanelGBC.weightx = 1;
+		saveProfilePanel.add(removeProfileMinusButton, saveProfilePanelGBC);
 
 
-//		mainGUIPanel.add(Box.createVerticalGlue());
+		mergeOptionPanel.setLayout(new GridBagLayout());
+		GridBagConstraints mergeOptionPanelGBC = new GridBagConstraints();
+		
+		mergeOptionPanelGBC.fill = GridBagConstraints.NONE;
+		mergeOptionPanelGBC.gridx = 0;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanelGBC.ipadx = 5;
+		mergeOptionPanelGBC.ipady = 5;
+		mergeOptionPanelGBC.insets = new Insets(5,5,5,5);
+//		mergeOptionPanelGBC.anchor = GridBagConstraints.CENTER;
+//		mergeOptionPanelGBC.weightx = 1;
+		mergeOptionPanel.add(updateIDsLabel, mergeOptionPanelGBC);
 
-//		addAComponentYAlignment(liveFileLabel, parentFilePanel);
-//		addAComponentYAlignment(branchFileLabel, parentFilePanel);
-//		addAComponentYAlignment(mergedFileLabel, parentFilePanel);
+		mergeOptionPanelGBC.gridx = 1;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(updateIDsCombobox, mergeOptionPanelGBC);
+	
+		mergeOptionPanelGBC.gridx = 2;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(outputFileFormatLabel, mergeOptionPanelGBC);
+		
+		mergeOptionPanelGBC.gridx = 3;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(outputFileFormatCombobox, mergeOptionPanelGBC);
 
+		mergeOptionPanelGBC.gridx = 0;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(failOnClashLabel, mergeOptionPanelGBC);
+		
+		mergeOptionPanelGBC.gridx = 1;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(failOnClashCombobox, mergeOptionPanelGBC);
+	
+		mergeOptionPanelGBC.gridx = 2;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(ignoreClashOnIDsLabel, mergeOptionPanelGBC);
+		
+		mergeOptionPanelGBC.gridx = 3;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
+
+		mainGUIPanel.add(Box.createVerticalGlue());
+	
+
+
+		
 	}
 
 
@@ -200,7 +339,6 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 	}
 
 
-	//
 
 
 
@@ -210,11 +348,11 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 
 
-	private static void addAPanel(JPanel panelName, Container container) {
-//		JPanel panel = new JPanel();
-		panelName.setAlignmentX(Component.CENTER_ALIGNMENT);
-		container.add(panelName);
-	}
+
+
+
+
+
 
 
 	/**
@@ -234,4 +372,5 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		}
 	}
 }
+
 
