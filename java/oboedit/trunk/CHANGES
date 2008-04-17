@@ -1,67 +1,25 @@
-Changes in 2.000-b37
-* Delete behavior is pretty much fixed, although the Graph Editor still
-occasionally gets confused if you try to delete multiple terms at once (please
-report any observed bugs).
-- The delete menu item now says "Delete/Destroy term" or "Delete relationship"
-(with "Destroy" grayed out--you can't destroy a relationship).
-- If you select multiple things, and some are legal to delete and some
-aren't, it will offer you the delete option and then only delete the legal
-ones (those without children).  It will notify you in the popup about the
-term(s) it can't delete.
-- The Ontology Tree Editor and the Graph Editor were behaving differently if
-you selected a term and then hovered over a different term and right-clicked
-and selected Delete.  Now both of them are consistent.  They both disallow
-deleteion of an unselected term.  If you are hovering over a term that you
-haven't selected, the Delete menu options will be grayed out.
+Changes in 2.000-b38
+* allowDangling is now true by default for both reading and writing.
+* Dangling objects don't get name (= id) in the output.  (Also fixed a
+bug introducted in b37 where dangling objects didn't print their
+relationships.)
+* Improved layout of Advanced interface for saving OBO files (wasn't
+providing enough room for checkboxes).  It's still not perfect--if you
+add both term and link filters, it gets crowded, and if you don't,
+it's overly stretched.  Would like to have the size adjust more
+dynamically.
+* Made Text Editor titlebar error text color a darker red (for Jen).
+* Made TextIcons (black & white icons used in the Ontology Tree Editor
+for unknown relationships) readable.  Font is now based on user's
+preferred font.  (Note: not yet fixed in Graph Editor.)
+* Ontology Tree Editor now uses your preferred font for the text in
+the tree.  (Note: not yet fixed in Graph Editor and other components.)
+* OBO_1_2 serializer now outputs dates in ISO 8601 format:
+yyyy-MM-dd'T'hh:mm:ss'Z' (e.g., 2008-04-17T04:04:00Z)
+OBO reader can now handle both old date format (dd:MM:yyyy HH:mm) and
+new.
 
-* Fixed Windows problem where built-in icons wouldn't show up.
-* Fixed Windows problem where combobox in OTE config window was too tall (but
-for some reason the same fix didn't work on the Reasoner Manager combobox).
-* Fixed problem where user's memory settings were being lost.  Also bumped up
-(from 512M to 1024M) the default memory setting used inside OBO-Edit if it for
-some reason can't find/read OBO-Edit.vmoptions where the user-selected memory
-setting is stored.
-* Configuration setting for "End title of search results panel with" in Search
-panel is now saved between sessions.
-* At user request, "minus" buttons to remove filters are now below the filters
-rather than on the right (where they tend to be invisible unless you have that
-panel really stretched out).  Also (again at user request) moved the gear
-button ("advanced") so it's to the left of the added field rather than to the
-right.
-[Need to update screenshots in manual.]
-* Reworded two menu options: "Add root" is now "Add root class"; "Add type
-root" is now "Add root relation".  (Suggested by Alan Gussman,
-http://sourceforge.net/tracker/index.php?func=detail&aid=1594409&group_id=36855&atid=418260)
-* Now autosave will only save if there are unsaved edits, and it won't grab the
-focus and pop to the front.
-* "Allow dangling refs" is now true by default, so you can load ontologies
-that have dangling refs.  (Dangling refs result in a warning message when you
-load and when you save.)
-* "Regulates" typedefs in the input file are now roundtripped--they weren't
-being saved because I had made the regulates relations built-in and built-ins
-aren't saved as typedefs.
-If you have an obo file that has regulates relationships without the regulates
-typedefs, OBO-Edit would refuse to load it *if* allowDangling is set to false.
-However, allowDangling is now true by default.
-* Don't write out fake objects that are created from dangling refs.  These were
-resulting in [null] stanzas like:
-       	      [null]
-	      id: FBAR:1234567
-I fixed this in OBOSerializationEngine.  Not 100% sure I did this the right
-way (Chris will probably let me know if it's not).
-* Significantly rearranged configuration options and tabs.  The new layout
-makes the user config directory much more obvious, and hopefully is more
-logical in general.  Awaiting user feedback.
-
-TODO:
-x more prominent (new tab?) config dir in config manager and documentation
-  (Need to ok new config manager layout with users)
-pull out bug report about color chooser
-x make "allow dangling refs" default
-  (This needs more testing)
-change date parsing (April 10, 2008 3:18:18 PM PDT)
-
-NOT PUTTING IN THIS RELEASE:
+STILL NOT PUTTING IN THIS RELEASE:
 * User config files that were stored in ~/.oboeditbeta are now being put in an
 OS-appropriate directory:
 	       Mac: /Library/Application Support/OBO-Edit2-beta
