@@ -2,6 +2,7 @@ package org.oboedit.gui.widget;
 
 import java.awt.*;
 import javax.swing.*;
+import org.oboedit.gui.Preferences;
 
 public class TextIcon implements Icon {
 	private static JComponent tempComponent = new JPanel();
@@ -16,10 +17,13 @@ public class TextIcon implements Icon {
 
 	public TextIcon(String text) {
 		setText(text, false);
-		setFont(new Font("Arial", 0, 9), false);
+//		setFont(new Font("Arial", 0, 9), false);
+		// Check user's font setting (Preferences.getPreferences().getFont()) and use that
+		setFont(Preferences.getPreferences().getFont(), false);
 		setBackground(Color.black);
 		setForeground(Color.white);
 		recalculateBounds();
+//		System.out.println("Created TextIcon(" + text + "), width = " + iconWidth + ", height = " + iconHeight); // DEL
 	}
 
 	public void setForeground(Color foreground) {
@@ -52,8 +56,9 @@ public class TextIcon implements Icon {
 	}
 
 	protected void recalculateBounds() {
-		iconWidth = 2 + metrics.stringWidth(text);
-		iconHeight = 2 + metrics.getHeight();
+//		iconWidth = 2 + metrics.stringWidth(text);
+		iconWidth = 1 + metrics.stringWidth(text);
+		iconHeight = 1 + metrics.getHeight();
 	}
 
 	public int getIconWidth() {
@@ -73,7 +78,8 @@ public class TextIcon implements Icon {
 			g.fillRect(x, y, getIconWidth(), getIconHeight());
 		}
 		g.setColor(foreground);
-		g.drawString(text, x + 1, y + iconHeight - 2);
+//		g.drawString(text, x + 1, y + iconHeight - 2);
+		g.drawString(text, x, y + iconHeight - 4);
 		g.setFont(oldFont);
 		g.setColor(oldColor);
 	}
