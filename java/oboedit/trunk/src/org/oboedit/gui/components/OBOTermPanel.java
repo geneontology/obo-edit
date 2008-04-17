@@ -991,6 +991,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		 * Controller.getController().setPrimarySelector(OBOTermPanel.this); }
 		 * });
 		 */
+//		setFont(Preferences.getPreferences().getFont()); // doesn't do anything--need to set font in OBOCellRenderer
 		scrollPane = new JScrollPane(this);
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -1200,7 +1201,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void reload() {
-		System.err.println("reloading OBO Term Panel...");
+//		System.err.println("Reloading OBO Term Panel...");
 		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
@@ -1222,11 +1223,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 		clearToggledPaths();
 
-		long time2 = System.currentTimeMillis();
+//		long time2 = System.currentTimeMillis();
 		restorePaths(expanded);
 		if (selected != null)
 			restoreSelectionPaths(selected);
-		time2 = System.currentTimeMillis() - time2;
+//		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
 //			System.err.println("adding selection listener " + selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
