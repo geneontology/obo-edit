@@ -499,15 +499,16 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Box advancedRootBox = new Box(BoxLayout.X_AXIS);
 		Box autoCommitPanel = new Box(BoxLayout.X_AXIS);
 
-		JLabel userLabel = new JLabel("User Name", JLabel.TRAILING);
+		JLabel userLabel = new JLabel("User name", JLabel.TRAILING);
+		// Next two are not currently used
 		JLabel fullnameLabel = new JLabel("Full Name", JLabel.TRAILING);
 		JLabel emailLabel = new JLabel("Email Address", JLabel.TRAILING);
 
-		JLabel startLabel = new JLabel("Start of id range", JLabel.TRAILING);
-		JLabel endLabel = new JLabel("End of id range", JLabel.TRAILING);
-		JLabel prefixLabel = new JLabel("Default id prefix", JLabel.TRAILING);
-		JLabel idLengthLabel = new JLabel("Default id length", JLabel.TRAILING);
-		JLabel idAdapterLabel = new JLabel("Default id adapter name",
+		JLabel startLabel = new JLabel("Start of ID range", JLabel.TRAILING);
+		JLabel endLabel = new JLabel("End of ID range", JLabel.TRAILING);
+		JLabel prefixLabel = new JLabel("Default ID prefix", JLabel.TRAILING);
+		JLabel idLengthLabel = new JLabel("Default ID length", JLabel.TRAILING);
+		JLabel idAdapterLabel = new JLabel("Default ID adapter name",
 				JLabel.TRAILING);
 		JLabel selectionBatchLabel = new JLabel("Selection batch size",
 				JLabel.TRAILING);
@@ -995,9 +996,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		buttonBox.add(Box.createVerticalStrut(15));
 		add(buttonBox, "South");
 		buildFontPreview();
-//		moreOptionsPanel.setPreferredSize(new Dimension(moreOptionsPanel.getPreferredSize().width, moreOptionsPanel.getPreferredSize().height + 35));
-//		guiPanel.setSize(guiPanel.getPreferredSize().height + 50, guiPanel.getPreferredSize().width + 20);
-//		mainPanel.setSize(mainPanel.getPreferredSize().height + 50, mainPanel.getPreferredSize().width + 20);
 	}
 
 	private String getDefaultFontName() {
