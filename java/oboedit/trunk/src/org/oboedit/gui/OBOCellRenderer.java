@@ -21,6 +21,7 @@ import org.oboedit.gui.filter.LinkRenderSpec;
 import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
+import org.oboedit.gui.widget.TextIcon;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
@@ -88,6 +89,9 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 		nec_icon = Preferences.loadLibraryIcon("nec_icon.gif");
 		completes_icon = Preferences.loadLibraryIcon("completes.gif");
 
+		// Use preferred font for text
+		setFont(Preferences.getPreferences().getFont());
+//		System.out.println("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
 		setIcon(multiIcon);
 	}
 
@@ -285,10 +289,19 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 						link.getType());
 			}
 			scaledIcon.setIcon(icon);
+			Icon origIcon = icon;
 			setIcon(null);
-			int newHeight = (int) getPreferredSize().getHeight() - 2;
-			setIcon(multiIcon);
-			scaledIcon.setDimension(newHeight);
+			// Don't scale TextIcons
+			if (origIcon instanceof TextIcon) {
+			    setIcon(multiIcon);
+//			    scaledIcon.setDimension((int)getPreferredSize().getWidth(), newHeight);
+//			    System.out.println("Scaling text icon to width = " + getPreferredSize().getWidth() + ", height = " + newHeight); // DEL
+			}
+			else {
+			    int newHeight = (int) getPreferredSize().getHeight() - 2;
+			    setIcon(multiIcon);
+			    scaledIcon.setDimension(newHeight);
+			}
 
 			if (link instanceof OBORestriction) {
 				OBORestriction tr = (OBORestriction) link;
