@@ -120,7 +120,11 @@ end
 gwt_dir = clo.wanted_gwt
 proj_exe = gwt_dir + '/projectCreator';
 app_exe = gwt_dir + '/applicationCreator';
-clo.wanted_dir = clo.wanted_gwt
+
+if not clo.wanted_dir
+	clo.wanted_dir = clo.wanted_gwt
+end
+
 
 ## -- check the dir where the project will be created
 if not File.directory?(clo.wanted_dir)
@@ -179,7 +183,7 @@ if clo.wanted_first
 
   puts "Initializing run..." if clo.wanted_verbose
 
-  ['ant','docs','external'].each do |folder|
+  ['ant','docs','external','WEB-INFs'].each do |folder|
   	 from = File.join(Pathname.new(Dir.pwd).parent,folder)
   	 FileUtils.cp_r from,clo.wanted_dir, :verbose => true
 	end

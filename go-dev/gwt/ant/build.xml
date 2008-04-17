@@ -50,7 +50,6 @@
         	maxmemory="256m">
         	
         	<classpath refid="classpath.gwt.client.compile"/>
-        	<jvmarg line="-XstartOnFirstThread"/>
         	<arg value="-out"/>
         	<arg value="${tmp.compile.dir}"/>
         	<arg value="-logLevel"/>
@@ -88,9 +87,8 @@
         		<include name="obo.jar"/>
 			</fileset>
         </copy>
-    	<copy todir="${build.dir}/WEB-INF">
-    		<fileset dir="${conf.dir}"/>
-    	</copy>
+    	<copy file="WEB-INFs/${project.name}/${conf.file}" todir="${build.dir}/WEB-INF"/>
+    		
 			<copy todir="${build.dir}">
 				 <fileset dir="${tmp.compile.dir}/${module.name}"/>
 			</copy>
