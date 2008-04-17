@@ -547,9 +547,10 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 				}
 
 			} catch (Exception ex) {
+			    System.err.println("GraphicalAdapterChooser.storeCurrentProfile: did not store current config!"); // DEL
+			    ex.getMessage(); // DEL
 			}
-		} else
-			System.err.println("did not store current config!");
+		}
 	}
 
 	protected void storeProfileList() {
@@ -818,10 +819,25 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		} catch (DataAdapterUIException ex) {
 
 		}
-		if (showAdvanced && currentUI.getAdvancedUI() != null)
-			setAdapterUI(currentUI.getAdvancedUI());
-		else if (!showAdvanced && currentUI.getSimpleUI() != null)
+		if (showAdvanced && currentUI.getAdvancedUI() != null) {
+		    setPreferredSize(new Dimension(800,550));
+		    setAdapterUI(currentUI.getAdvancedUI());
+		    // Didn't work right
+//		    setPreferredSize(currentUI.getPreferredSize());
+//		    System.out.println("GraphicalAdapterchooser: for advanced ui, setPreferredSize " + getPreferredSize()); // DEL
+		    // Would like to set the size depending on whether we're reading or writing, but
+ 		    // BBOP doesn't know about OBO, so we can't do this
+//		    if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
+// 			setPreferredSize(new Dimension(700,500));
+//		    }
+//		    else
+//			setPreferredSize(new Dimension(700,300));
+		}
+		else if (!showAdvanced && currentUI.getSimpleUI() != null) {
+			setPreferredSize(new Dimension(600,160));
 			setAdapterUI(currentUI.getSimpleUI());
+//			System.out.println("GraphicalAdapterchooser: for simple ui, setPreferredSize " + getPreferredSize()); // DEL
+		}
 		currentUI.setConfiguration(config);
 	}
 

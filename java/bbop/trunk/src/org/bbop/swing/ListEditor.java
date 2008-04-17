@@ -408,7 +408,8 @@ public class ListEditor extends JPanel {
 	JPanel listPanel = new JPanel();
 	listPanel.setLayout(new BorderLayout());
 	listScrollPane = new JScrollPane(valueList);
-//	listScrollPane.setPreferredSize(new Dimension(100, 300));
+	listScrollPane.setPreferredSize(new Dimension(200, 300));
+	listScrollPane.setMinimumSize(new Dimension(100, 300));
 	listPanel.add(listScrollPane, "Center");
 	if (vectorEditable) {
 	    initButtons();
