@@ -153,7 +153,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 			if (txnList.getItemCount() <= 2 ) {
 				txnList.clear();
 				txnList.addItem("Wait.....");
-				refgListener.fetchTaxonids();
+				refgListener.fetchTaxonNodes();
 				listInfo = new MessageBox(Style.ICON_INFO,Style.MODAL);
 				listInfo.setText("Fetching taxon ids.........");
 				listInfo.setMessage("Please wait");
@@ -214,13 +214,14 @@ public class SearchPanelView implements SearchPanelManagerI {
 		
 	}
 
-	public void fillTaxonIds(Object obj) {
+	public void fillTaxonNodes(Object obj) {
 		// TODO Auto-generated method stub
 		listInfo.close();
 		txnList.clear();
-		String[] list = (String[]) obj;
+		System.err.println("got taxon list: "+obj);
+		NodeDTO[] list = (NodeDTO[]) obj;
 		for(int i = 0; i < list.length; i++) {
-			txnList.addItem(list[i]);
+			txnList.addItem(list[i].getId()+" "+list[i].getLabel());
 		}
 		
 	}

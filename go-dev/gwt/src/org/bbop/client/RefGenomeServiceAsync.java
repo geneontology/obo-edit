@@ -28,6 +28,7 @@ public interface RefGenomeServiceAsync  {
 	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
 
 	public void fetchReferenceTaxonIds( AsyncCallback callback);
+	public void fetchReferenceTaxonNodes( AsyncCallback callback);
 
 	public void fetchEntityIdsInHomologSet(String homologSetId, AsyncCallback callback);
 	
