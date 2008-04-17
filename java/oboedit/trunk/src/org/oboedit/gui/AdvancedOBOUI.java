@@ -37,6 +37,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected ListEditor namespaceList;
 
+    protected JLabel addInstruction = new JLabel("Click 'Add' to create a new save profile");
+
 	protected OBOFileAdapter.OBOAdapterConfiguration currentProfile;
 
 	protected JLabel pathLabel;
@@ -51,7 +53,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	protected JCheckBox allowDanglingBox = new JCheckBox(
 			"Allow dangling references");
 
-	protected JTextField pathField = new JTextField(20);
+	protected JTextField pathField = new JTextField(30);
 
 	protected JTextField urlField = new JTextField(20);
 
@@ -93,6 +95,18 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected GraphicalUI advancedUI;
 
+        protected Dimension preferredSize;
+
+    // Not yet being used--the goal is to have GraphicalAdapterChooser call this method, but it wasn't working right
+    public Dimension getPreferredSize() {
+//	System.out.println("AdvancedOBOUI.getPreferredSize " + preferredSize); // DEL
+	return preferredSize;
+    }
+    public void setPreferredSize(Dimension dim) {
+	preferredSize = dim;
+//	System.out.println("AdvancedOBOUI.setPreferredSize " + preferredSize); // DEL
+    }
+
 	public void setUIConfiguration(UIConfiguration uiconfig) {
 	}
 
@@ -107,15 +121,14 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 				OBOSerializationEngine.FilteredPath path = (OBOSerializationEngine.FilteredPath) o;
 				if (path.getPath().length() == 0) {
-					throw new DataAdapterUIException("Cannot save to empty "
-							+ "path.");
+					throw new DataAdapterUIException("Cannot save to empty path.");
 				}
 				if ((new File(path.getPath())).exists())
 					overwrite.add(path.getPath());
 			}
 			if (overwrite.size() > 0) {
 				StringBuffer out = new StringBuffer();
-				out.append("The following files exist:\n");
+				out.append("The following file(s) already exist:\n");
 				it = overwrite.iterator();
 				while (it.hasNext()) {
 					String s = (String) it.next();
@@ -169,9 +182,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		protected FilterComponent linkFilterEditor = new FilterComponent(
 				new LinkFilterEditorFactory());
 
-		protected JTextField pathField = new JTextField();
+		protected JTextField pathField = new JTextField(30);
 
-		protected JTextArea remarkField = new JTextArea();
+	        protected JTextArea remarkField = new JTextArea(1, 60);
 
 		protected JScrollPane remarkScroller = new JScrollPane(remarkField,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -297,22 +310,30 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			labelBox.add(Box.createHorizontalStrut(10));
 
 			JPanel pathPanel = new JPanel();
-			pathPanel.setLayout(new BorderLayout());
-			pathPanel.add(labelBox, "West");
-			pathPanel.add(pathField, "Center");
-			pathPanel.add(browseButton, "East");
+// 			pathPanel.setLayout(new BorderLayout());
+// 			pathPanel.add(labelBox, "West");
+// 			pathPanel.add(pathField, "Center");
+// 			pathPanel.add(browseButton, "East");
+			pathPanel.setLayout(new BoxLayout(pathPanel, BoxLayout.X_AXIS));
+//			pathPanel.add(labelBox);
+			pathPanel.add(pathLabel);
+			pathPanel.add(pathField);
+			pathPanel.add(browseButton);
 			pathPanel.setOpaque(false);
 
 			add(pathPanel, "North");
 
 			panel.setOpaque(false);
-			// panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // ?
+			
 			Box checkboxMainPanel = new Box(BoxLayout.Y_AXIS);
 			Box checkboxPanelA = new Box(BoxLayout.X_AXIS);
+			Box checkboxPanelA1 = new Box(BoxLayout.X_AXIS);
 			Box checkboxPanelA2 = new Box(BoxLayout.X_AXIS);
+			Box checkboxPanelA3 = new Box(BoxLayout.X_AXIS);
 			Box checkboxPanelB = new Box(BoxLayout.X_AXIS);
 			Box checkboxPanelC = new Box(BoxLayout.X_AXIS);
-			checkboxPanelA.add(Box.createHorizontalGlue());
+//			checkboxPanelA.add(Box.createHorizontalGlue());
 			checkboxPanelA.add(filterBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(filterTypesBox);
@@ -320,41 +341,60 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA.add(linkFilterBox);
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(allowDanglingBox);
-			checkboxPanelA.add(Box.createHorizontalStrut(10));
-			checkboxPanelA.add(writeModificationBox);
-			checkboxPanelA.add(Box.createHorizontalGlue());
+//			checkboxPanelA.add(Box.createHorizontalStrut(10));
+
+			checkboxPanelA1.add(writeModificationBox);
+			checkboxPanelA1.add(Box.createHorizontalGlue());
+			// Todo: add "save creation info" checkbox to A1
 
 			checkboxPanelA2.add(prefilterBox);
 			checkboxPanelA2.add(prefilterTypeChooser);
 			checkboxPanelA2.add(Box.createHorizontalStrut(10));
 			checkboxPanelA2.add(categoryBox);
-			checkboxPanelA2.add(Box.createHorizontalStrut(10));
-			checkboxPanelA2.add(rootAlgorithmLabel);
-			checkboxPanelA2.add(Box.createHorizontalStrut(5));
-			checkboxPanelA2.add(rootAlgorithmChooser);
+//			checkboxPanelA2.add(Box.createHorizontalStrut(10));
+
+			checkboxPanelA3.add(rootAlgorithmLabel);
+			checkboxPanelA3.add(Box.createHorizontalStrut(5));
+			checkboxPanelA3.add(rootAlgorithmChooser);
 
 			checkboxPanelB.add(saveImpliedBox);
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
 			checkboxPanelB.add(impliedTypeBox);
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
 			checkboxPanelB.add(realizeImpliedBox);
-			checkboxPanelC.add(Box.createHorizontalGlue());
+
+//			checkboxPanelC.add(Box.createHorizontalGlue());
+			checkboxPanelC.add(new JLabel("ID rules"));
+			checkboxPanelC.add(Box.createHorizontalStrut(10));
 			checkboxPanelC.add(idRuleSelector);
-			checkboxPanelC.add(Box.createHorizontalGlue());
+//			checkboxPanelC.add(Box.createHorizontalGlue());
 
 			checkboxMainPanel.add(checkboxPanelA);
+			checkboxMainPanel.add(checkboxPanelA1);
 			checkboxMainPanel.add(checkboxPanelA2);
+			checkboxMainPanel.add(checkboxPanelA3);
 			checkboxMainPanel.add(checkboxPanelB);
 			checkboxMainPanel.add(checkboxPanelC);
 
+//			JPanel southPanel = new JPanel();
+//			southPanel.setLayout(new BorderLayout());
+//			southPanel.add(checkboxMainPanel, "West");
+//			southPanel.add(remarkScroller, "Center");
+//			add(southPanel, "South");
+
 			JPanel southPanel = new JPanel();
 			southPanel.setLayout(new BorderLayout());
+//			southPanel.add(checkboxMainPanel, "Center");
+//			southPanel.add(remarkScroller, "South");
 			southPanel.add(checkboxMainPanel, "West");
 			southPanel.add(remarkScroller, "Center");
-
-			add(panel, "Center");
-			// add(checkboxMainPanel, "South");
+			southPanel.add(remarkScroller, "South");
+//			southPanel.add(panel, "North");
 			add(southPanel, "South");
+
+//			add(checkboxMainPanel, "West");
+			// "panel" is where the object/link filters go when you check those checkboxes
+			add(panel, "Center");
 
 			filterBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -380,7 +420,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			});
 
 			rebuildPanel();
-			setPreferredSize(new Dimension(400, 300));
+//			setPreferredSize(new Dimension(400, 300));
 		}
 
 		protected void rebuildPanel() {
@@ -388,11 +428,11 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			panel.remove(linkFilterEditor);
 			int count = 0;
 			if (filterBox.isSelected()) {
-				panel.add(objectFilterEditor);
+			    panel.add(objectFilterEditor);
 				count++;
 			}
 			if (linkFilterBox.isSelected()) {
-				panel.add(linkFilterEditor);
+			    panel.add(linkFilterEditor);
 				count++;
 			}
 			boolean rootAlgorithmControlsEnabled = filterBox.isSelected()
@@ -412,6 +452,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			panel.setLayout(new GridLayout(count, 1));
 			panel.validate();
 			panel.repaint();
+			// ! Todo:  fire a resize event that GraphicalAdapterChooser could hear and respond to?
 		}
 
 		public Object createNewValue() {
@@ -555,9 +596,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 					editor.commit();
 				}
 			});
-			setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//			setAlignmentX(JComponent.LEFT_ALIGNMENT);
 			add(pathOrURLLabel);
-			pathOrURLLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//			pathOrURLLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 			JPanel temp = new JPanel();
 			temp.setOpaque(false);
 			temp.setLayout(new BoxLayout(temp, BoxLayout.X_AXIS));
@@ -565,7 +606,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			temp.add(pathField);
 			temp.add(Box.createHorizontalStrut(10));
 			temp.add(browseButton);
-			add(temp);
+			add(temp, "Center");
 		}
 
 		public Object createNewValue() {
@@ -589,16 +630,18 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	public AdvancedOBOUI() {
 		serializerBox.addItem("OBO_1_2");
 		serializerBox.addItem("OBO_1_0");
+		serializerBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, serializerBox.getPreferredSize().height));
 
 		serializerPanel.setOpaque(false);
 		serializerPanel.setLayout(new BoxLayout(serializerPanel,
 				BoxLayout.X_AXIS));
-		serializerPanel.add(Box.createHorizontalGlue());
+//		serializerPanel.add(Box.createHorizontalGlue());
 		serializerPanel.add(serializerLabel);
 		serializerPanel.add(Box.createHorizontalStrut(10));
 		serializerPanel.add(serializerBox);
-		serializerPanel.add(Box.createHorizontalGlue());
+//		serializerPanel.add(Box.createHorizontalGlue());
 
+		// nsPanel (with Namespace box) is not currently added to the layout!
 		nsPanel.setLayout(new BoxLayout(nsPanel, BoxLayout.X_AXIS));
 		nsPanel.add(nsLabel);
 		nsPanel.add(Box.createHorizontalStrut(10));
@@ -608,8 +651,10 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		namespaceList = new ListEditor(new IOProfileEditor(), false, true,
 				true, true, false);
-		pathList = new ListEditor(new PathEditor(), true, true, true, true,
-				false);
+		pathList = new ListEditor(new PathEditor(), true, true, true, true, false);
+		// Not working--label doesn't change
+//		pathList = new ListEditor(new PathEditor(), new JLabel("Select a path or click the Add button to create a new one"), 
+//					  new Vector(), true, true, true, true, false);
 		addSaveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				namespaceList.add();
@@ -622,7 +667,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		});
 
 		pathLabel = new JLabel("File path");
-		pathList.setPreferredSize(new Dimension(500, 200));
+//		pathList.setPreferredSize(new Dimension(700, 200));
+//		pathList.setMinimumSize(new Dimension(200, 400));
 		namespaceList.setPreferredSize(new Dimension(500, 200));
 
 		saveButtonPanel.setLayout(new BoxLayout(saveButtonPanel,
@@ -641,7 +687,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		allowDanglingBox.setOpaque(false);
 		allowDanglingBox.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		pathBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+//		pathBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+		pathBox.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		pathLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		urlLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		importExternalRefsBox.setAlignmentX(JComponent.LEFT_ALIGNMENT);
@@ -652,8 +699,10 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		nsField.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 		nsPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
 
+		// Things are added to pathBox in init()
+		add(Box.createHorizontalStrut(10));
+		add(Box.createHorizontalGlue());
 		add(pathBox);
-
 	}
 
 	protected void storeProfile(OBOFileAdapter.OBOAdapterConfiguration profile) {
@@ -680,9 +729,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		pathList.setData(out);
 		allowDanglingBox.setSelected(profile.getAllowDangling());
-		System.err
-				.println("setConfiguration called, allowDanglingBox.setSelected("
-						+ profile.getAllowDangling() + ")");
+//		System.err
+//				.println("setConfiguration called, allowDanglingBox.setSelected("
+//						+ profile.getAllowDangling() + ")");
 		serializerBox.setSelectedItem(profile.getSerializer());
 
 		Vector v = new Vector();
@@ -705,14 +754,23 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		this.op = op;
 		currentHistory = (OBOSession) input;
 
-		// this.op = op;
 		pathBox.removeAll();
 		if (op.equals(OBOAdapter.READ_ONTOLOGY)) {
-			pathBox.add(pathList, "Center");
+//		    setPreferredSize(new Dimension(800,550));
+		    pathList.setPreferredSize(new Dimension(700, 200));
+//			pathBox.add(pathList, "Center");
+		        // Center puts it on the left and it ends up getting shrunken.  West seems to work better
+			pathBox.add(pathList, "West");
+			pathBox.add(addInstruction, "North"); // this puts it outside the bordered panel--oh well
 			pathBox.add(allowDanglingBox, "South");
 		} else {
+//		    setPreferredSize(new Dimension(600,160));
 			pathBox.add(namespaceList, "Center");
-			pathBox.add(serializerPanel, "South");
+			pathBox.add(addInstruction, "South");
+			pathBox.add(serializerPanel, "North");
+			// Not adding namespace panel because putting something in the namespace box
+			// doesn't seem to change the output.  (That is presumably a bug.)
+//			pathBox.add(nsPanel, "North");
 		}
 
 		// setDefaultGUIValues(currentHistory);
@@ -736,30 +794,6 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		return currentProfile;
 	}
 
-	/*
-	 * protected void setDefaultGUIValues(OBOSession history) { new
-	 * Exception("Someone called setDefaultGUIValues()").printStackTrace();
-	 * nsmap.clear(); Vector v = new Vector(); if (history.getDefaultNamespace() !=
-	 * null) { String path = history.getDefaultNamespace().getPath(); try { URL
-	 * url = new URL(path); if (url.getProtocol().equals("file")) { path =
-	 * url.getPath(); } } catch (MalformedURLException e) {}
-	 * OBOFileAdapter.SaveProfileRecord spr = new OBOFileAdapter.
-	 * SaveProfileRecord(history.getDefaultNamespace(), path, path,
-	 * OBOFileSerializer.PRIMARY, true); v.add(spr);
-	 * nsmap.put(spr.getNamespace(), spr); } Iterator it =
-	 * history.getNamespaces().iterator(); while(it.hasNext()) { Namespace ns =
-	 * (Namespace) it.next();
-	 * 
-	 * if (!ns.equals(history.getDefaultNamespace())) { String path =
-	 * ns.getPath(); try { URL url = new URL(path); if
-	 * (url.getProtocol().equals("file")) path = url.getPath(); } catch
-	 * (MalformedURLException e) {} OBOFileAdapter.SaveProfileRecord spr = new
-	 * OBOFileAdapter.SaveProfileRecord(ns, path, path,
-	 * OBOFileSerializer.ABSORB, true); v.add(spr);
-	 * nsmap.put(spr.getNamespace(), spr); } }
-	 * 
-	 * namespaceList.setData(v); }
-	 */
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
