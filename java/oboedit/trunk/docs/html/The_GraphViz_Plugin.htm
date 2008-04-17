@@ -114,8 +114,8 @@ that will be used to display term names.</p>
 <h4>Colors</h4>
 <p>The colors tab controls the colors in the graph 
 image:</p>
-<p><IMG height=327 hspace=0 
-src="../images/graph_viewer_options_colors.gif" width=595 border=0></p>
+<p><IMG 
+src="../images/graph_viewer_options_colors.gif" border=0></p>
 <p>The list on the left contains the names of all the 
 configurable colors. The first 10 color options are the same in every ontology; 
 these are called <strong>named colors</strong>. The rest of the 
@@ -230,12 +230,25 @@ to make OBO-Edit trick GraphViz into putting the root nodes on
 top.</p>
 
 <div class="sidebar">
-<h1>Layout Information</h1>
+<h1>Controlling response to double-clicking a term in the GraphViz viewer</h1>
 <hr>
-<p class="sidebar">This component's layout id is<br>
-<code><b>plugin:org.geneontology.oboedit.plugin.GraphPlugin</b></code></p>
-<p>See <A href="Customizing_the_Interface.htm">Customizing 
-the Interface</A> for more information </p>
+<p class="sidebar">
+You can use the global/local 
+controls on the Ontology Term Editor to control where a term shows if you double-click 
+the term in the GraphViz viewer. This
+means that if you see two unconnected terms in the GraphViz Viewer
+that  ought to be connected, you can connect then as follows:
+<nl>
+<li> With two Ontology Term Editor (OTE) panels open, set #1 to global and #2 to local.<br>
+<li> Double click one of the terms of interest in the GraphViz Viewer so 
+that it shows up in OTE panel #1.<br>
+<li> Change the OTE global/local setting so that they are reversed from 
+before. #1 is now local and #2 is now global.<br>
+<li> Double click the other term of interest in the GraphViz Viewer so 
+that it shows up in OTE panel #2.<br>
+<li> You now have the two terms conveniently shown in two different OTE 
+panels and can drag one to the other to create the relationship.
+</nl>
 </div>
 
 </body>
