@@ -106,6 +106,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	};
 
+        private Color titlebarErrorColor = Color.red.darker();
+
 	protected ObjectSelector selector;
 
 	protected Timer checkTimer;
@@ -422,7 +424,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 							TextEditor.this, tooltip);
 					if (errorCountFinal > 0)
 						ComponentManager.getManager().setTitlebarColor(
-								TextEditor.this, Color.red);
+								TextEditor.this, titlebarErrorColor);
 					else
 						ComponentManager.getManager().setTitlebarColor(
 								TextEditor.this, warningColor);
