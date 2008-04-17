@@ -401,8 +401,8 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		packColumns(table, 0);
 		packRows(table, 0);
 
-		System.err
-				.println("table preferred size = " + table.getPreferredSize());
+//		System.err
+//				.println("table preferred size = " + table.getPreferredSize());
 
 		configPanel.setLayout(new BorderLayout());
 		configPanel.add(new JScrollPane(table,
