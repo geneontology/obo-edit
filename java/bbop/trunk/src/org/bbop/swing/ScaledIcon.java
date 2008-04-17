@@ -40,7 +40,8 @@ public class ScaledIcon implements Icon {
 		if (icon == null)
 			setDimension(0, 0);
 		else
-			this.setDimension(icon.getIconWidth(), icon.getIconWidth());
+//			this.setDimension(icon.getIconWidth(), icon.getIconWidth());  // typo?
+			this.setDimension(icon.getIconWidth(), icon.getIconHeight());
 	}
 
 	public void setDimension(int dimension) {
