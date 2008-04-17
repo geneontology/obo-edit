@@ -27,7 +27,7 @@ class CommandLineOptions
                      ["--execute", "-x", GetoptLong::NO_ARGUMENT],
                      ["--project",     "-p", GetoptLong::REQUIRED_ARGUMENT],
                      ["--gwt",     "-g", GetoptLong::REQUIRED_ARGUMENT],
-                     ["--dir",     "-d", GetoptLong::REQUIRED_ARGUMENT]
+                     ["--dir",     "-d", GetoptLong::OPTIONAL_ARGUMENT]
                      )
 
     # Default values.
@@ -38,7 +38,6 @@ class CommandLineOptions
     @wanted_project = "GO"
     @wanted_gwt = "/tmp"
     @wanted_execute = nil
-    @wanted_dir = @wanted_gwt
 
     # Get values using the case statement.
     command_line_options.each do |option, argument|
@@ -126,6 +125,12 @@ if not clo.wanted_dir
 end
 
 
+## small thingy to have an absolute path
+tmppath = Pathname.new(clo.wanted_dir)
+if not tmppath.absolute?
+	 clo.wanted_dir = tmppath.realpath
+end
+
 ## -- check the dir where the project will be created
 if not File.directory?(clo.wanted_dir)
   	 #puts "Error: Given project directory do not exist."
@@ -133,12 +138,6 @@ if not File.directory?(clo.wanted_dir)
   	 #exit (-1)
 end
  
-
-## small thingy to have an absolute path
-tmppath = Pathname.new(clo.wanted_dir)
-if not tmppath.absolute?
-	 clo.wanted_dir = tmppath.realpath
-end
 
 
 begin
