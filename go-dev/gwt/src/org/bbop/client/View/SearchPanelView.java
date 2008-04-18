@@ -97,6 +97,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 		txnSearchTerm.addFocusListener(new UserFocusListener());
 		nameSearchBtn.addSelectionListener(new NameSearchListener());
 		txnList.addClickListener(new ListBoxListener());
+		//txnList.addFocusListener(new ListFocusListener());
 	}
 	
 	private void setAttr () {
@@ -136,6 +137,28 @@ public class SearchPanelView implements SearchPanelManagerI {
 			TextBox textFocus = (TextBox) sender;
 			textFocus.setText("");
 			
+			
+		}
+
+		public void onLostFocus(Widget sender) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class ListFocusListener implements FocusListener {
+
+		public void onFocus(Widget sender) {
+			// TODO Auto-generated method stub
+			if (txnList.getItemCount() <= 2 ) {
+				txnList.insertItem("Wait.....",0);
+				refgListener.fetchTaxonNodes();
+				listInfo = new MessageBox(Style.ICON_INFO,Style.MODAL);
+				listInfo.setText("Fetching taxon ids.........");
+				listInfo.setMessage("Please wait");
+				listInfo.open();
+			}
 			
 		}
 
@@ -186,6 +209,8 @@ public class SearchPanelView implements SearchPanelManagerI {
 		}
 		
 	}
+	
+	
 
 	public void displayNameSearchResult(Object obj) {
 		
@@ -208,8 +233,8 @@ public class SearchPanelView implements SearchPanelManagerI {
 		// Remove the initial table view
 		resultView.removeChildViews();
 		//Add the new one
-		resultView.addTableView(tableView.getView());
-		//mainView.layout();
+		resultView.addTableView(tableView.getView(), "Search result");
+		resultView.resetView();
 		}
 		
 	}

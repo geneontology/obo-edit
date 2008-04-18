@@ -36,9 +36,18 @@ public class SummaryTableView {
 		
 		summTbl = new Table(Style.MULTI, summColModel);
 		summTbl.setBorders(false);
-		summTbl.add(new TableItem(new String[]{"Worm","200","300","189"}));
-		summTbl.add(new TableItem(new String[]{"Fly","185","19","160"}));
-		summTbl.add(new TableItem(new String[]{"Human","268","30","100"}));
+		summTbl.add(new TableItem(new String[]{"Fly","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Worm","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Fission yeast","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Budding yeast","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Mouse","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Plant","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Zebrafish","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"Social ameoba","185","19","160","86%"}));
+		summTbl.add(new TableItem(new String[]{"E.coli","185","19","160","86%"}));	
+		summTbl.add(new TableItem(new String[]{"Rat","185","19","160","86%"}));
+		
+		
 		
 			
 		//summaryWidget.setLayout(new FillLayout(10));
@@ -53,23 +62,27 @@ public class SummaryTableView {
 		
 		
 		
-		summCols = new TableColumn[4];
+		summCols = new TableColumn[5];
 		
-		summCols[0] = new TableColumn("Species",.30f);
+		summCols[0] = new TableColumn("Species",.20f);
 		summCols[0].setMinWidth(30);
 		summCols[0].setMaxWidth(200);
 		
-		summCols[1] = new TableColumn("Homologs",.25f);
+		summCols[1] = new TableColumn("Homologs",.20f);
 		summCols[1].setMinWidth(30);
 		summCols[1].setMaxWidth(200);
 		
-		summCols[2] = new TableColumn("Not Homologs",.25f);
+		summCols[2] = new TableColumn("No Homologs",.20f);
 		summCols[2].setMinWidth(30);
 		summCols[2].setMaxWidth(200);
 		
 		summCols[3] = new TableColumn("Comprehensive",.20f);
 		summCols[3].setMinWidth(30);
 		summCols[3].setMaxWidth(200);
+		
+		summCols[4] = new TableColumn("Completed",.20f);
+		summCols[4].setMinWidth(30);
+		summCols[4].setMaxWidth(200);
 		
 	}
 	

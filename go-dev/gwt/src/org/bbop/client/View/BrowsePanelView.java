@@ -16,7 +16,8 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	private RefGenomeView mainview;
 	private VerticalPanel browseBar;
 	private Button targetBtn;
-	private Button orthologBtn;
+	private Button orthologBtn;	
+	private ResultPanelView resultView;
 	
 	public  BrowsePanelView (RefGenomeViewListenerI listener, RefGenomeView parent){
 		refglistener = listener;
@@ -61,7 +62,17 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	
 	private class TargetListListener implements SelectionListener {
 		public void widgetSelected(BaseEvent be) {
-			refglistener.fetchTargetIds();
+			//refglistener.fetchTargetIds();
+			TargetTableView tableView = new TargetTableView(refglistener, mainview);
+			TargetToolBarView toolBarView = new TargetToolBarView(refglistener, mainview);
+			// the following method should pass server side data
+			tableView.createView();
+			toolBarView.createView();
+			resultView = mainview.getResultPanel();
+			resultView.removeChildViews();
+			resultView.addTableToolBarView(tableView.getView(), toolBarView.getView(), "List of target");
+			resultView.resetView();
+		
 		}
 	}
 
