@@ -28,6 +28,28 @@
   padding-bottom: 3px;
 }
 
+.target-info {
+	background-color: #F0F0F0;
+	border: 2px groove silver;
+	
+}
+
+.target-label {
+	background-color: #0000FF;
+	color: white;
+	font-weight: bold;
+	padding: 6px;
+	width:50%
+	
+}
+
+.target-value {
+	font-style: italic;
+	padding: 6px;
+	background-color: #CCFF99;
+	width:50%;
+}
+
 .icon-add {
   background: url(images/icons/add.gif) no-repeat;
 }
@@ -150,4 +172,8 @@
 
 .icon-database-delete {
   background: url(images/icons/database_delete.png) no-repeat 50% 50%;
+}
+
+.icon-application-view-list {
+  background: url(images/icons/application_view_list.png) no-repeat 50% 50%;
 }

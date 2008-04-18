@@ -12,6 +12,7 @@ import net.mygwt.ui.client.widget.layout.FillLayout;
 import net.mygwt.ui.client.widget.layout.RowData;
 import net.mygwt.ui.client.widget.layout.RowLayout;
 import net.mygwt.ui.client.widget.table.Table;
+import net.mygwt.ui.client.widget.table.TableItem;
 
 
 public class ResultPanelView {
@@ -108,6 +109,47 @@ public class ResultPanelView {
 		
 		tblHolder.add(tbar,new RowData(RowData.FILL_HORIZONTAL));
 		tblHolder.add(tblFolder, new RowData(RowData.FILL_BOTH));
+		
+	}
+	
+	public void addTargetListView(Table tbl, ToolBar[] tbars, String title) {
+		tblHolder = new WidgetContainer();
+		TabFolder tblFolder = new TabFolder(Style.TOP);
+		tblFolder.setTabWidth(80);
+		
+		TabItem tblItem = new TabItem(Style.NONE);
+		tblItem.setText(title);
+		tblItem.setIconStyle("icon-tabs");
+		WidgetContainer itemContainer = tblItem.getContainer();
+		itemContainer.setLayout(new RowLayout(Style.VERTICAL));
+		
+		//adds the toolbar for target list manipulation
+		itemContainer.add(tbars[1],new RowData(RowData.FILL_HORIZONTAL));
+		itemContainer.add(tbl,new RowData(RowData.FILL_BOTH));
+		tblFolder.add(tblItem);
+		tblFolder.setSelection(tblItem);
+		
+		tblHolder.setScrollEnabled(false);  
+		RowLayout layout = new RowLayout(Style.VERTICAL);  
+		layout.setMargin(8);  
+		tblHolder.setLayout(layout); 
+		
+		//Add toolbar and tabview
+		tblHolder.add(tbars[0],new RowData(RowData.FILL_HORIZONTAL));
+		tblHolder.add(tblFolder, new RowData(RowData.FILL_BOTH));
+		
+		//Now add the target information view
+		TargetInfoView infoView = new TargetInfoView(refgListener, mainView);
+		TableItem targetInfo = tbl.getItem(0);
+		infoView.setGeneSymbol((String) targetInfo.getValue(0));
+		infoView.setGeneId(targetInfo.getValue(1).toString());
+		infoView.setProteinId(targetInfo.getValue(2).toString());
+		infoView.setTargetDate(targetInfo.getValue(3).toString());
+		infoView.setOmimId("omim value");
+		infoView.setCurator("Best curator");
+		
+		infoView.createView();
+		tblHolder.add(infoView.getView(),new RowData(RowData.FILL_BOTH));
 		
 	}
 	
