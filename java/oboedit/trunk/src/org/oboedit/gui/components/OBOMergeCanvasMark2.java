@@ -36,6 +36,8 @@ import javax.swing.JFileChooser;
 
 public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
+	
+	
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
 		// TODO Auto-generated constructor stub
@@ -107,27 +109,25 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 		
 		//not sure what this is for:
-		ComponentManager.getManager().addLayoutListener(layoutListener);
+//		ComponentManager.getManager().addLayoutListener(layoutListener);
 
 		setLayout(new BorderLayout());
-
-		
 		JPanel mainGUIPanel = new JPanel();
 
 		add(oboMergeTabbedPane, "Center");
-		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
 		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanel, "Ontology Files");
+		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
 
 		mainGUIPanel.setLayout(new BorderLayout());
 		
 		mainGUIPanel.add(saveProfilePanel, BorderLayout.NORTH);
-		mainGUIPanel.add(inputFilePanel, BorderLayout.CENTER);
-		mainGUIPanel.add(mergeOptionPanel, BorderLayout.SOUTH);
-		
-		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
-		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
 		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
-	      		
+		mainGUIPanel.add(inputFilePanel, BorderLayout.CENTER);
+		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
+		mainGUIPanel.add(mergeOptionPanel, BorderLayout.SOUTH);
+		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
+ 
+
 		//Make GridBag layout for the contents of the inputFilePanel. 
 		inputFilePanel.setLayout(new GridBagLayout());
 		GridBagConstraints inputFilePanelGBC = new GridBagConstraints();
@@ -137,16 +137,21 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		inputFilePanelGBC.gridy = 0;
 		inputFilePanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
 		inputFilePanelGBC.weightx = 1;
+		inputFilePanelGBC.insets = new Insets(5,5,5,5);
 		//Add the four horizontal panels to take a path each. 
 		inputFilePanel.add(parentFilePanel, inputFilePanelGBC);
+
 		inputFilePanelGBC.gridx = 0;
 		inputFilePanelGBC.gridy = 1;
+
 		inputFilePanel.add(liveFilePanel, inputFilePanelGBC);
 		inputFilePanelGBC.gridx = 0;
 		inputFilePanelGBC.gridy = 2;
+
 		inputFilePanel.add(branchFilePanel, inputFilePanelGBC);
 		inputFilePanelGBC.gridx = 0;
 		inputFilePanelGBC.gridy = 3;
+
 		inputFilePanel.add(mergedFilePanel, inputFilePanelGBC);
 
 		//set up the contents for the parent file path. 
@@ -157,6 +162,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		parentFilePanelGBC.gridx = 0;
 		parentFilePanelGBC.gridy = 0;
 		parentFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		parentFilePanelGBC.insets = new Insets(0,2,2,0);
 		parentFilePanel.add(parentFileLabel, parentFilePanelGBC);
 		
 		parentFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
@@ -164,6 +170,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		parentFilePanelGBC.gridy = 0;
 		parentFilePanelGBC.anchor = GridBagConstraints.CENTER;
 		parentFilePanelGBC.weightx = 1;
+
 		parentFilePanel.add(parentFileTextField, parentFilePanelGBC);
 
 		parentFilePanelGBC.fill = GridBagConstraints.NONE;
@@ -171,6 +178,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		parentFilePanelGBC.gridy = 0;
 		parentFilePanelGBC.anchor = GridBagConstraints.LINE_END;
 		parentFilePanelGBC.weightx = 0;
+
 		parentFilePanel.add(parentFileBrowseButton, parentFilePanelGBC);
 
 		//set up the contents for the parent file path. 
@@ -181,6 +189,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		liveFilePanelGBC.gridx = 0;
 		liveFilePanelGBC.gridy = 0;
 		liveFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		liveFilePanelGBC.insets = new Insets(0,2,2,0);
 		liveFilePanel.add(liveFileLabel, liveFilePanelGBC);
 		
 		liveFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
@@ -188,6 +197,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		liveFilePanelGBC.gridy = 0;
 		liveFilePanelGBC.anchor = GridBagConstraints.CENTER;
 		liveFilePanelGBC.weightx = 1;
+
 		liveFilePanel.add(liveFileTextField, liveFilePanelGBC);
 
 		liveFilePanelGBC.fill = GridBagConstraints.NONE;
@@ -195,6 +205,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		liveFilePanelGBC.gridy = 0;
 		liveFilePanelGBC.anchor = GridBagConstraints.LINE_END;
 		liveFilePanelGBC.weightx = 0;
+
 		liveFilePanel.add(liveFileBrowseButton, liveFilePanelGBC);
 
 		//set up the contents for the branch file path. 
@@ -205,6 +216,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		branchFilePanelGBC.gridx = 0;
 		branchFilePanelGBC.gridy = 0;
 		branchFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		branchFilePanelGBC.insets = new Insets(0,2,2,0);
 		branchFilePanel.add(branchFileLabel, branchFilePanelGBC);
 		
 		branchFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
@@ -212,6 +224,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		branchFilePanelGBC.gridy = 0;
 		branchFilePanelGBC.anchor = GridBagConstraints.CENTER;
 		branchFilePanelGBC.weightx = 1;
+
 		branchFilePanel.add(branchFileTextField, branchFilePanelGBC);
 
 		branchFilePanelGBC.fill = GridBagConstraints.NONE;
@@ -219,6 +232,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		branchFilePanelGBC.gridy = 0;
 		branchFilePanelGBC.anchor = GridBagConstraints.LINE_END;
 		branchFilePanelGBC.weightx = 0;
+
 		branchFilePanel.add(branchFileBrowseButton, branchFilePanelGBC);
 
 		//set up the contents for the merged file path. 
@@ -229,6 +243,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergedFilePanelGBC.gridx = 0;
 		mergedFilePanelGBC.gridy = 0;
 		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		mergedFilePanelGBC.insets = new Insets(0,2,2,0);
 		mergedFilePanel.add(mergedFileLabel, mergedFilePanelGBC);
 		
 		mergedFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
@@ -236,6 +251,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergedFilePanelGBC.gridy = 0;
 		mergedFilePanelGBC.anchor = GridBagConstraints.CENTER;
 		mergedFilePanelGBC.weightx = 1;
+
 		mergedFilePanel.add(mergedFileTextField, mergedFilePanelGBC);
 
 		mergedFilePanelGBC.fill = GridBagConstraints.NONE;
@@ -243,6 +259,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergedFilePanelGBC.gridy = 0;
 		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_END;
 		mergedFilePanelGBC.weightx = 0;
+
 		mergedFilePanel.add(mergedFileBrowseButton, mergedFilePanelGBC);
 		saveProfilePanel.setLayout(new BoxLayout(saveProfilePanel, BoxLayout.X_AXIS));
 
@@ -253,6 +270,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		saveProfilePanelGBC.gridx = 0;
 		saveProfilePanelGBC.gridy = 0;
 		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		saveProfilePanelGBC.insets = new Insets(5,5,5,5);
 		saveProfilePanel.add(saveProfileLabel, saveProfilePanelGBC);
 
 		saveProfilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
@@ -260,6 +278,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		saveProfilePanelGBC.gridy = 0;
 		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
 		saveProfilePanelGBC.weightx = 1;
+
 		saveProfilePanel.add(saveProfileComboBox, saveProfilePanelGBC);
 		saveProfileComboBox.setEditable(true);
 		
@@ -268,6 +287,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		saveProfilePanelGBC.gridy = 0;
 //		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
 		saveProfilePanelGBC.weightx = 1;
+
 		saveProfilePanel.add(addProfilePlusButton, saveProfilePanelGBC);
 
 		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
@@ -275,6 +295,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		saveProfilePanelGBC.gridy = 0;
 		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_END;
 		saveProfilePanelGBC.weightx = 1;
+
 		saveProfilePanel.add(removeProfileMinusButton, saveProfilePanelGBC);
 
 
@@ -319,8 +340,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
 
-		mainGUIPanel.add(Box.createVerticalGlue());
-	
+		validate();
+		repaint();
 
 
 		
