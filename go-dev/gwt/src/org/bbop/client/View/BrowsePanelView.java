@@ -4,7 +4,7 @@ package org.bbop.client.View;
 import net.mygwt.ui.client.event.BaseEvent;
 import net.mygwt.ui.client.event.SelectionListener;
 import net.mygwt.ui.client.widget.Button;
-
+import net.mygwt.ui.client.widget.ToolBar;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.Manager.BrowsePanelManagerI;
@@ -65,12 +65,20 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 			//refglistener.fetchTargetIds();
 			TargetTableView tableView = new TargetTableView(refglistener, mainview);
 			TargetToolBarView toolBarView = new TargetToolBarView(refglistener, mainview);
+			TargetListToolBarView toolBarListView = new TargetListToolBarView(refglistener, mainview);
 			// the following method should pass server side data
 			tableView.createView();
 			toolBarView.createView();
+			toolBarListView.createView();
+			
+			//Get the two toolbarviews
+			ToolBar[] tbars = new ToolBar[2];
+			tbars[0] = toolBarView.getView();
+			tbars[1] = toolBarListView.getView();
+			
 			resultView = mainview.getResultPanel();
 			resultView.removeChildViews();
-			resultView.addTableToolBarView(tableView.getView(), toolBarView.getView(), "List of target");
+			resultView.addTargetListView(tableView.getView(), tbars, "List of target");
 			resultView.resetView();
 		
 		}

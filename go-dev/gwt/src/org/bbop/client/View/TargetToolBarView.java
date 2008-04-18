@@ -27,24 +27,41 @@ public class TargetToolBarView {
 	private RefGenomeView mainView;
 	private ToolBar tbar;
 	
+	private Button summBtn;
+//	private Button orthoBtn;
+//	private Button reportBtn;
 	private Button addTarget;
-	private Button delTarget;
+//	private Button delTarget;
 	
+	private ToolItemAdapter summItem;
+//	private ToolItemAdapter orthoItem;
+//	private ToolItemAdapter reportItem;
 	private ToolItemAdapter addTargetItem;
-	private ToolItemAdapter delTargetItem;
+//	private ToolItemAdapter delTargetItem;
 	
 	public TargetToolBarView(RefGenomeViewListenerI listener, RefGenomeView parent) {
 		refgListener = listener;
 		parent = mainView;
 		
 		tbar = new ToolBar();
-		addTarget = new Button("Add target");
-		delTarget = new Button("Delete target");
-		addTarget.setIconStyle("icon-database-add");
-		delTarget.setIconStyle("icon-database-delete");
 		
+		summBtn = new Button("Summary");
+	//	orthoBtn = new Button("Ortholog");
+	//	reportBtn = new Button("Curation report");
+		addTarget = new Button("Add target");
+	//	delTarget = new Button("Delete target");
+		
+		summBtn.setIconStyle("icon-application-view-list");
+	//	orthoBtn.setIconStyle("icon-view");
+	//	reportBtn.setIconStyle("icon-report");
+		addTarget.setIconStyle("icon-database-add");
+	//	delTarget.setIconStyle("icon-database-delete");
+		
+		summItem = new ToolItemAdapter(summBtn);
+	//	orthoItem = new ToolItemAdapter(orthoBtn);
+	//	reportItem = new ToolItemAdapter(reportBtn);
 		addTargetItem = new ToolItemAdapter(addTarget);
-		delTargetItem = new ToolItemAdapter(delTarget);
+	//	delTargetItem = new ToolItemAdapter(delTarget);
 		
 		setAttr();
 		addObservers();
@@ -52,20 +69,42 @@ public class TargetToolBarView {
 	}
 	
 	public void createView() {
-		tbar.add(addTargetItem);
+		tbar.add(summItem);
 		tbar.add(new ToolItem(Style.SEPARATOR));
-		tbar.add(delTargetItem);
+	//	tbar.add(orthoItem);
+	//	tbar.add(new ToolItem(Style.SEPARATOR));
+	//	tbar.add(reportItem);
+	//	tbar.add(new ToolItem(Style.SEPARATOR));
+		tbar.add(addTargetItem);
+	//	tbar.add(new ToolItem(Style.SEPARATOR));
+	//	tbar.add(delTargetItem);
 		
 	}
 	
 	public void setAttr() {
+		summItem.setStyleAttribute("paddingTop", "4px");
+		summItem.setStyleAttribute("paddingLeft", "5px");
+		summItem.setStyleAttribute("paddingBottom", "6px");
+		summItem.setStyleAttribute("paddingRight", "8px");
+		
+//		orthoItem.setStyleAttribute("paddingTop", "4px");
+//		orthoItem.setStyleAttribute("paddingRight", "5px");
+//		orthoItem.setStyleAttribute("paddingBottom", "6px");
+//		orthoItem.setStyleAttribute("paddingLeft", "8px");
+		
+//		reportItem.setStyleAttribute("paddingTop", "4px");
+//		reportItem.setStyleAttribute("paddingRight", "5px");
+//		reportItem.setStyleAttribute("paddingBottom", "6px");
+//		reportItem.setStyleAttribute("paddingLeft", "8px");
+		
 		addTargetItem.setStyleAttribute("paddingTop", "4px");
-		addTargetItem.setStyleAttribute("paddingLeft", "5px");
+		addTargetItem.setStyleAttribute("paddingRigth", "5px");
 		addTargetItem.setStyleAttribute("paddingBottom", "6px");
-		addTargetItem.setStyleAttribute("paddingRight", "15px");	
-		delTargetItem.setStyleAttribute("paddingTop", "4px");
-		delTargetItem.setStyleAttribute("paddingBottom", "6px");
-		delTargetItem.setStyleAttribute("paddingLeft", "15px");
+		addTargetItem.setStyleAttribute("paddingLeft", "8px");
+		
+//		delTargetItem.setStyleAttribute("paddingTop", "4px");
+//		delTargetItem.setStyleAttribute("paddingBottom", "6px");
+//		delTargetItem.setStyleAttribute("paddingLeft", "8px");
 	}
 	
 	public void addObservers() {

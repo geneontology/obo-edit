@@ -37,36 +37,36 @@ public class TargetTableView {
 	public void createView() {
 		
 		// This is where it should receive data from server
-		targetCols = new TableColumn[7];
+		targetCols = new TableColumn[4];
 		
-		targetCols[0] = new TableColumn(" ",.5f);
-		targetCols[0].setMinWidth(10);
-		targetCols[0].setMaxWidth(20);
+//		targetCols[0] = new TableColumn(" ",.5f);
+//		targetCols[0].setMinWidth(10);
+//		targetCols[0].setMaxWidth(20);
 		
-		targetCols[1] = new TableColumn("Gene symbol",.10f);
+		targetCols[0] = new TableColumn("Gene symbol",.15f);
+		targetCols[0].setMinWidth(20);
+		targetCols[0].setMaxWidth(100);
+		
+		targetCols[1] = new TableColumn("Gene id",.25f);
 		targetCols[1].setMinWidth(20);
 		targetCols[1].setMaxWidth(100);
 		
-		targetCols[2] = new TableColumn("Gene id",.10f);
+		targetCols[2] = new TableColumn("Protein id",.28f);
 		targetCols[2].setMinWidth(20);
 		targetCols[2].setMaxWidth(100);
 		
-		targetCols[3] = new TableColumn("Protein id",.10f);
+		targetCols[3] = new TableColumn("Completion date",.15f);
 		targetCols[3].setMinWidth(20);
 		targetCols[3].setMaxWidth(100);
+		targetCols[3].setRenderer(new DateTimeCellRenderer("MMM yy"));
 		
-		targetCols[4] = new TableColumn("Completion date",.10f);
-		targetCols[4].setMinWidth(20);
-		targetCols[4].setMaxWidth(100);
-		targetCols[4].setRenderer(new DateTimeCellRenderer("MMM yy"));
+		//targetCols[5] = new TableColumn(" ",.20f);
+		//targetCols[5].setMinWidth(20);
+		//targetCols[5].setMaxWidth(180);
 		
-		targetCols[5] = new TableColumn(" ",.20f);
-		targetCols[5].setMinWidth(20);
-		targetCols[5].setMaxWidth(180);
-		
-		targetCols[6] = new TableColumn("Curation",.20f);
-		targetCols[6].setMinWidth(20);
-		targetCols[6].setMaxWidth(180);
+		//targetCols[6] = new TableColumn("Curation",.20f);
+		//targetCols[6].setMinWidth(20);
+		//targetCols[6].setMaxWidth(180);
 		
 		targetColModel = new TableColumnModel(targetCols);
 		targetTbl = new Table(Style.MULTI,targetColModel);
@@ -75,22 +75,22 @@ public class TargetTableView {
 		setTestData();
 		
 		for(int i = 0; i < testData.size(); i++) {
-			Object[] targetData = new Object[7];
+			Object[] targetData = new Object[5];
 			String[] data = (String[]) testData.get(i);
-			CheckBox cb = new CheckBox();
-			Button orthoBtn = new Button("View ortholog");
-			Button reportBtn = new Button("Curation report");
-			orthoBtn.setIconStyle("icon-view");
-			reportBtn.setIconStyle("icon-report-go");
+	//		CheckBox cb = new CheckBox();
+			//Button orthoBtn = new Button("View ortholog");
+			//Button reportBtn = new Button("Curation report");
+			//orthoBtn.setIconStyle("icon-view");
+			//reportBtn.setIconStyle("icon-report");
 			
-			cb.setName(Integer.toString(i));
-			targetData[0] = cb;
-			targetData[1] = data[0];
-			targetData[2] = data[1];
-			targetData[3] = data[2];
-			targetData[4] = currDate;
-			targetData[5] = orthoBtn;
-			targetData[6] = reportBtn;
+	//		cb.setName(Integer.toString(i));
+	//		targetData[0] = cb;
+			targetData[0] = data[0];
+			targetData[1] = data[1];
+			targetData[2] = data[2];
+			targetData[3] = currDate;
+		//	targetData[5] = orthoBtn;
+		//	targetData[6] = reportBtn;
 			
 			targetTbl.add(new TableItem(targetData));
 			
