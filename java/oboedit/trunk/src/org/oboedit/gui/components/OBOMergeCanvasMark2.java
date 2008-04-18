@@ -222,11 +222,17 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		centerPanelGBC.gridx = 0;
 		centerPanelGBC.gridy = 0;
 		centerPanelGBC.weightx = 1;
+		centerPanelGBC.gridheight = 1;
+		centerPanelGBC.gridwidth = 1;
+		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
 		centerPanel.add(inputFilePanel, mainGUIPanelGBC);
 		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
 
+		centerPanelGBC.gridheight = 1;
+		centerPanelGBC.gridwidth = 1;
 		centerPanelGBC.gridx = 1;
 		centerPanelGBC.gridy = 0;
+		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_END;
 		centerPanel.add(finalOptionPanel, centerPanelGBC);
 		finalOptionPanel.setBorder(new TitledBorder ("Final Options"));
 
