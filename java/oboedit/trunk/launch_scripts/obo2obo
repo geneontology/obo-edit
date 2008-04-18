@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 # Set the classname of the Java class to execute
 CLASSNAME=org.oboedit.launcher.OBO2OBO
 
