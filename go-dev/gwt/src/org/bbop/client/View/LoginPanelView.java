@@ -116,7 +116,7 @@ public class LoginPanelView implements LoginPanelManagerI {
 	public void enableLogin() {
 		// TODO Auto-generated method stub
 		tbar.removeAll();
-		Label loggeduser = new Label(user.getText());
+		Label loggeduser = new Label("Logged in as: " + user.getText());
 		ToolItemAdapter loggeduseritem = new ToolItemAdapter(loggeduser);
 
 		loggeduseritem.setStyleAttribute("paddingTop", "4px");

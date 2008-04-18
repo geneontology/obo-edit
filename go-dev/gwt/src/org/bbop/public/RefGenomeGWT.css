@@ -131,3 +131,23 @@
 .icon-tabs {
   background-image: url(images/icons/tabs.gif);
 }
+
+.icon-view {
+  background: url(images/icons/eye.png) no-repeat 50% 50%;
+}
+
+.icon-report-go {
+  background: url(images/icons/report_go.png) no-repeat 50% 50%;
+}
+
+.icon-report {
+  background: url(images/icons/report.png) no-repeat 50% 50%;
+}
+
+.icon-database-add {
+  background: url(images/icons/database_add.png) no-repeat 50% 50%;
+}
+
+.icon-database-delete {
+  background: url(images/icons/database_delete.png) no-repeat 50% 50%;
+}

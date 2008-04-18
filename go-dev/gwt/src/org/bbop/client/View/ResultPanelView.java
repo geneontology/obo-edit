@@ -6,8 +6,11 @@ import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ContentPanel;
 import net.mygwt.ui.client.widget.TabFolder;
 import net.mygwt.ui.client.widget.TabItem;
+import net.mygwt.ui.client.widget.ToolBar;
 import net.mygwt.ui.client.widget.WidgetContainer;
 import net.mygwt.ui.client.widget.layout.FillLayout;
+import net.mygwt.ui.client.widget.layout.RowData;
+import net.mygwt.ui.client.widget.layout.RowLayout;
 import net.mygwt.ui.client.widget.table.Table;
 
 
@@ -17,6 +20,7 @@ public class ResultPanelView {
 	
 	
 	private ContentPanel centerPanel;
+	private WidgetContainer tblHolder;
 	private boolean bootStrap = true;
 	
 	
@@ -27,6 +31,7 @@ public class ResultPanelView {
 		mainView = parent;
 		centerPanel = new ContentPanel(Style.HEADER);
 		centerPanel.setLayout(new FillLayout());
+		
 	}
 
 	public void createView() {
@@ -62,13 +67,13 @@ public class ResultPanelView {
 		centerPanel.removeAll();
 	}
 	
-	public void addTableView(Table tbl) {
-		WidgetContainer tblHolder = new WidgetContainer();
+	public void addTableView(Table tbl,String title) {
+		tblHolder = new WidgetContainer();
 		TabFolder tblFolder = new TabFolder(Style.TOP);
 		tblFolder.setTabWidth(80);
 		
 		TabItem tblItem = new TabItem(Style.NONE);
-		tblItem.setText("Search result");
+		tblItem.setText(title);
 		tblItem.setIconStyle("icon-tabs");
 		WidgetContainer itemContainer = tblItem.getContainer();
 		itemContainer.setLayout(new FillLayout());
@@ -78,9 +83,39 @@ public class ResultPanelView {
 		
 		tblHolder.setLayout(new FillLayout(15));
 		tblHolder.add(tblFolder);
+		
+		
+	}
+	
+	public void addTableToolBarView(Table tbl, ToolBar tbar, String title) {
+		tblHolder = new WidgetContainer();
+		TabFolder tblFolder = new TabFolder(Style.TOP);
+		tblFolder.setTabWidth(80);
+		
+		TabItem tblItem = new TabItem(Style.NONE);
+		tblItem.setText(title);
+		tblItem.setIconStyle("icon-tabs");
+		WidgetContainer itemContainer = tblItem.getContainer();
+		itemContainer.setLayout(new FillLayout());
+		itemContainer.add(tbl);
+		tblFolder.add(tblItem);
+		tblFolder.setSelection(tblItem);
+		
+		tblHolder.setScrollEnabled(false);  
+		RowLayout layout = new RowLayout(Style.VERTICAL);  
+		layout.setMargin(8);  
+		tblHolder.setLayout(layout); 
+		
+		tblHolder.add(tbar,new RowData(RowData.FILL_HORIZONTAL));
+		tblHolder.add(tblFolder, new RowData(RowData.FILL_BOTH));
+		
+	}
+	
+
+	
+	public void resetView() {
 		centerPanel.add(tblHolder);
 		centerPanel.layout(true);
-		
 	}
 	
 	

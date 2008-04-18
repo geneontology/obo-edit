@@ -32,7 +32,7 @@ public class CurationPanelView {
 	}
 	
 	public void setAttr() {
-		targetBtn.setIconStyle("icon-add");
+		targetBtn.setIconStyle("icon-database-add");
 		curationBar.setSpacing(8);
 		
 	}
