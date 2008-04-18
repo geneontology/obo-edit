@@ -163,7 +163,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 	JButton advancedButton = new JButton("Advanced");
 	JPanel showProgressPanel = new JPanel();
 	JPanel saveProgressToFilePanel = new JPanel();
-
+	JPanel centerPanel = new JPanel();
 	
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
@@ -179,15 +179,47 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanel, "Ontology Files");
 		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
 
-		mainGUIPanel.setLayout(new BorderLayout());
+//		mainGUIPanel.setLayout(new BorderLayout());
+		mainGUIPanel.setLayout(new GridBagLayout());
+		GridBagConstraints mainGUIPanelGBC = new GridBagConstraints();
 
-		mainGUIPanel.add(saveProfilePanel, BorderLayout.PAGE_START);
+		mainGUIPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 0;
+		mainGUIPanelGBC.anchor = GridBagConstraints.PAGE_START;
+		mainGUIPanelGBC.weightx = 1;
+		mainGUIPanelGBC.insets = new Insets(5,5,5,5);
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(saveProfilePanel, mainGUIPanelGBC);
 		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
-		mainGUIPanel.add(inputFilePanel, BorderLayout.CENTER);
-		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
-		mainGUIPanel.add(mergeOptionPanel, BorderLayout.PAGE_END);
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 1;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 2;
+		mainGUIPanel.add(centerPanel, mainGUIPanelGBC);
+		centerPanel.setBorder(new TitledBorder ("Center Panel"));
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 3;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(mergeOptionPanel, mainGUIPanelGBC);
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
-		mainGUIPanel.add(finalOptionPanel, BorderLayout.LINE_END);
+
+		centerPanel.setLayout(new GridBagLayout());
+		GridBagConstraints centerPanelGBC = new GridBagConstraints();
+
+		centerPanelGBC.gridx = 0;
+		centerPanelGBC.gridy = 0;
+		centerPanelGBC.weightx = 1;
+		centerPanel.add(inputFilePanel, mainGUIPanelGBC);
+		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
+
+		centerPanelGBC.gridx = 1;
+		centerPanelGBC.gridy = 0;
+		centerPanel.add(finalOptionPanel, centerPanelGBC);
 		finalOptionPanel.setBorder(new TitledBorder ("Final Options"));
 
 		
