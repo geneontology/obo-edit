@@ -1,43 +1,101 @@
 package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
 import org.bbop.swing.MinusIcon;
 import org.bbop.swing.PlusIcon;
-import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
-public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
-	
-	
+public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
+
+
+	JPanel inputFilePanel = new JPanel();
+	JPanel filePathPanel = new JPanel();
+	JPanel mergeOptionPanel = new JPanel();
+	JPanel saveProfilePanel = new JPanel();
+	JPanel parentFilePanel = new JPanel();
+	JPanel liveFilePanel = new JPanel();
+	JPanel branchFilePanel = new JPanel();
+	JPanel mergedFilePanel = new JPanel();
+	JLabel parentFileLabel = new JLabel("Parent File");
+	JTextField parentFileTextField = new JTextField("                      ");
+	JButton parentFileBrowseButton = new JButton("Browse");
+	JLabel branchFileLabel = new JLabel("Branch File");
+	JTextField branchFileTextField = new JTextField("                      ");
+	JButton branchFileBrowseButton = new JButton("Browse");
+	JLabel liveFileLabel = new JLabel("Live File");
+	JTextField liveFileTextField = new JTextField("                      ");
+	JButton liveFileBrowseButton = new JButton("Browse");
+	JLabel mergedFileLabel = new JLabel("Merged File");
+	JTextField mergedFileTextField = new JTextField("                      ");
+	JButton mergedFileBrowseButton = new JButton("Browse");
+	JLabel saveProfileLabel = new JLabel("Save Profile");
+	String[] savedProfiles = {"new profile", ""};
+	JComboBox saveProfileComboBox = new JComboBox(savedProfiles);
+	JButton addProfilePlusButton = new JButton(new PlusIcon(1.5f, 8, 8));
+	JButton removeProfileMinusButton = new JButton(new MinusIcon(1.5f, 8, 8));
+	JPanel topLinePanel = new JPanel();
+	JPanel bottomLinePanel = new JPanel();
+	JLabel updateIDsLabel = new JLabel("Update IDs");
+	String[] idOptions = { "NEVER", "ALWAYS", "IF_LIKELY" };
+	JComboBox updateIDsCombobox = new JComboBox(idOptions);
+	JLabel mergedFileFormatLabel = new JLabel("Output File Format");
+	String[] fileFormatOptions = { "OBO_1_2", "OBO_1_0" };
+	JComboBox mergedFileFormatCombobox = new JComboBox(fileFormatOptions);
+	JComponent failOnClashLabel = new JLabel("Fail On Clash");
+	JComboBox failOnClashCombobox = new JComboBox(idOptions);
+	JLabel ignoreClashOnIDsLabel = new JLabel("Ignore Clash on ID");
+	JTextArea ignoreClashOnIDsTextArea = new JTextArea();
+	String id;
+	JTabbedPane oboMergeTabbedPane = new JTabbedPane();
+	JPanel processFeedbackPanel = new JPanel();
+	JButton saveFeedbackToFileBrowseButton = new JButton("Browse");
+	JLabel saveFeedbackToFileLabel = new JLabel("Save Feedback to File");
+	JTextField saveFeedbackToFileTextField = new JTextField();
+	JTextField ProgressTextField = new JTextField();
+	String saveFeedbackToFileTextFieldString = new String();
+	JFileChooser fileChooser = new JFileChooser();
+	JButton mergedFileButton = new JButton();
+	String updateIDsChoiceString = new String();
+	String failOnClashChoiceString = new String();
+	String outputFormatChoiceString = new String();
+	String[] obomergeArgsArray = new String[0];
+	JFrame missingPathFrame;
+	ArrayList<String> obomergeArgsArrayList = new ArrayList<String>();
+
+
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
 		// TODO Auto-generated constructor stub
@@ -60,54 +118,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 	@Override
 	public void init() {
-		JPanel inputFilePanel = new JPanel();
-		JPanel filePathPanel = new JPanel();
-		JPanel mergeOptionPanel = new JPanel();
-		JPanel saveProfilePanel = new JPanel();
-		JPanel parentFilePanel = new JPanel();
-		JPanel liveFilePanel = new JPanel();
-		JPanel branchFilePanel = new JPanel();
-		JPanel mergedFilePanel = new JPanel();
-		JLabel parentFileLabel = new JLabel("Parent File");
-		JTextField parentFileTextField = new JTextField("                      ");
-		JButton parentFileBrowseButton = new JButton("Browse");
-		JLabel branchFileLabel = new JLabel("Branch File");
-		JTextField branchFileTextField = new JTextField("                      ");
-		JButton branchFileBrowseButton = new JButton("Browse");
-		JLabel liveFileLabel = new JLabel("Live File");
-		JTextField liveFileTextField = new JTextField("                      ");
-		JButton liveFileBrowseButton = new JButton("Browse");
-		JLabel mergedFileLabel = new JLabel("Merged File");
-		JTextField mergedFileTextField = new JTextField("                      ");
-		JButton mergedFileBrowseButton = new JButton("Browse");
-		JLabel saveProfileLabel = new JLabel("Save Profile");
-		String[] savedProfiles = {"new profile", ""};
-		JComboBox saveProfileComboBox = new JComboBox(savedProfiles);
-		JButton addProfilePlusButton = new JButton(new PlusIcon(1.5f, 8, 8));
-		JButton removeProfileMinusButton = new JButton(new MinusIcon(1.5f, 8, 8));
-		JPanel topLinePanel = new JPanel();
-		JPanel bottomLinePanel = new JPanel();
-		JLabel updateIDsLabel = new JLabel("Update IDs");
-		String[] idOptions = { "NEVER", "ALWAYS", "IF_LIKELY" };
-		JComboBox updateIDsCombobox = new JComboBox(idOptions);
-		JLabel outputFileFormatLabel = new JLabel("Output File Format");
-		String[] fileFormatOptions = { "OBO_1_2", "OBO_1_0" };
-		JComponent outputFileFormatCombobox = new JComboBox(fileFormatOptions);
-		JComponent failOnClashLabel = new JLabel("Fail On Clash");
-		JComboBox failOnClashCombobox = new JComboBox(idOptions);
-		JLabel ignoreClashOnIDsLabel = new JLabel("Ignore Clash on ID");
-		JTextArea ignoreClashOnIDsTextArea = new JTextArea();
-		String id;
-		JTabbedPane oboMergeTabbedPane = new JTabbedPane();
-		JPanel processFeedbackPanel = new JPanel();
-		JButton saveFeedbackToFileBrowseButton = new JButton("Browse");
-		JLabel saveFeedbackToFileLabel = new JLabel("Save Feedback to File");
-		JTextField saveFeedbackToFileTextField = new JTextField();
-		JTextField ProgressTextField = new JTextField();
-		String saveFeedbackToFileTextFieldString = new String();
-		JFileChooser fileChooser = new JFileChooser();
 
-		
 		//not sure what this is for:
 //		ComponentManager.getManager().addLayoutListener(layoutListener);
 
@@ -119,14 +130,14 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
 
 		mainGUIPanel.setLayout(new BorderLayout());
-		
+
 		mainGUIPanel.add(saveProfilePanel, BorderLayout.NORTH);
 		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
 		mainGUIPanel.add(inputFilePanel, BorderLayout.CENTER);
 		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
 		mainGUIPanel.add(mergeOptionPanel, BorderLayout.SOUTH);
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
- 
+
 
 		//Make GridBag layout for the contents of the inputFilePanel. 
 		inputFilePanel.setLayout(new GridBagLayout());
@@ -164,7 +175,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		parentFilePanelGBC.anchor = GridBagConstraints.LINE_START;
 		parentFilePanelGBC.insets = new Insets(0,2,2,0);
 		parentFilePanel.add(parentFileLabel, parentFilePanelGBC);
-		
+
 		parentFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		parentFilePanelGBC.gridx = 1;
 		parentFilePanelGBC.gridy = 0;
@@ -191,7 +202,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		liveFilePanelGBC.anchor = GridBagConstraints.LINE_START;
 		liveFilePanelGBC.insets = new Insets(0,2,2,0);
 		liveFilePanel.add(liveFileLabel, liveFilePanelGBC);
-		
+
 		liveFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		liveFilePanelGBC.gridx = 1;
 		liveFilePanelGBC.gridy = 0;
@@ -218,7 +229,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		branchFilePanelGBC.anchor = GridBagConstraints.LINE_START;
 		branchFilePanelGBC.insets = new Insets(0,2,2,0);
 		branchFilePanel.add(branchFileLabel, branchFilePanelGBC);
-		
+
 		branchFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		branchFilePanelGBC.gridx = 1;
 		branchFilePanelGBC.gridy = 0;
@@ -245,7 +256,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_START;
 		mergedFilePanelGBC.insets = new Insets(0,2,2,0);
 		mergedFilePanel.add(mergedFileLabel, mergedFilePanelGBC);
-		
+
 		mergedFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		mergedFilePanelGBC.gridx = 1;
 		mergedFilePanelGBC.gridy = 0;
@@ -281,7 +292,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 		saveProfilePanel.add(saveProfileComboBox, saveProfilePanelGBC);
 		saveProfileComboBox.setEditable(true);
-		
+
 		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
 		saveProfilePanelGBC.gridx = 1;
 		saveProfilePanelGBC.gridy = 0;
@@ -301,7 +312,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 
 		mergeOptionPanel.setLayout(new GridBagLayout());
 		GridBagConstraints mergeOptionPanelGBC = new GridBagConstraints();
-		
+
 		mergeOptionPanelGBC.fill = GridBagConstraints.NONE;
 		mergeOptionPanelGBC.gridx = 0;
 		mergeOptionPanelGBC.gridy = 0;
@@ -315,27 +326,27 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		mergeOptionPanelGBC.gridx = 1;
 		mergeOptionPanelGBC.gridy = 0;
 		mergeOptionPanel.add(updateIDsCombobox, mergeOptionPanelGBC);
-	
+
 		mergeOptionPanelGBC.gridx = 2;
 		mergeOptionPanelGBC.gridy = 0;
-		mergeOptionPanel.add(outputFileFormatLabel, mergeOptionPanelGBC);
-		
+		mergeOptionPanel.add(mergedFileFormatLabel, mergeOptionPanelGBC);
+
 		mergeOptionPanelGBC.gridx = 3;
 		mergeOptionPanelGBC.gridy = 0;
-		mergeOptionPanel.add(outputFileFormatCombobox, mergeOptionPanelGBC);
+		mergeOptionPanel.add(mergedFileFormatCombobox, mergeOptionPanelGBC);
 
 		mergeOptionPanelGBC.gridx = 0;
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(failOnClashLabel, mergeOptionPanelGBC);
-		
+
 		mergeOptionPanelGBC.gridx = 1;
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(failOnClashCombobox, mergeOptionPanelGBC);
-	
+
 		mergeOptionPanelGBC.gridx = 2;
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(ignoreClashOnIDsLabel, mergeOptionPanelGBC);
-		
+
 		mergeOptionPanelGBC.gridx = 3;
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
@@ -344,8 +355,380 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 		repaint();
 
 
-		
+//		saveFeedbackToFileBrowseButton
+//		.addActionListener(new java.awt.event.ActionListener() {
+//		public void actionPerformed(java.awt.event.ActionEvent evt) {
+//		saveFeedbackToFileBrowseButtonActionPerformed(evt);
+//		}
+//		});
+
+		mergedFileFormatCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileFormatComboboxActionPerformed(evt);
+			}
+
+			private void mergedFileFormatComboboxActionPerformed(
+					ActionEvent evt) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		updateIDsCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				updateIDsComboboxActionPerformed(evt);
+			}
+		});
+
+		failOnClashCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				failOnClashChoiceComboBoxActionPerformed(evt);
+			}
+		});
+
+
+		parentFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				parentFileButtonActionPerformed(evt);
+			}
+		});
+
+		mergedFileTextField
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileTextFieldActionPerformed(evt);
+			}
+		});
+
+		branchFileBrowseButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				branchFileBrowseButtonActionPerformed(evt);
+			}
+		});
+
+		liveFileBrowseButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				liveFileBrowseButtonActionPerformed(evt);
+			}
+		});
+
+		mergedFileButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileButtonActionPerformed(evt);
+			}
+		});
+
+		liveFileTextField
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				liveFileTextFieldActionPerformed(evt);
+			}
+		});
+
+
+//		activateAdvancedOptionButton
+//		.addActionListener(new java.awt.event.ActionListener() {
+//		public void actionPerformed(java.awt.event.ActionEvent evt) {
+//		activateAdvancedOptionButtonActionPerformed(evt);
+//		}
+//		});
+
+
+//		protected void activateAdvancedOptionButtonActionPerformed(ActionEvent evt) {
+		//
+//		boolean saveProfilePanelVisibility = saveProfilePanel.isVisible();
+//		saveProfilePanel.setVisible(!saveProfilePanelVisibility);
+		//
+//		boolean mergeOptionPanelVisibility = mergeOptionPanel.isVisible();
+//		mergeOptionPanel.setVisible(!mergeOptionPanelVisibility);
+		//
+//		if (saveProfilePanelVisibility) {
+//		activateAdvancedOptionButton.setText("Advanced");
+//		} else {
+//		activateAdvancedOptionButton.setText("Basic");
+		//
+//		}
+
 	}
+
+//	private void plusButtonActionPerformed(java.awt.event.ActionEvent evt) {
+//	addNewNamedOntologyMergePathProfile();
+//	}
+
+//	private void addNewNamedOntologyMergePathProfile() {
+	//
+//	}
+
+	private void liveFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		// TODO add your handling code here:
+	}
+
+
+	private void saveFeedbackToFileBrowseButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			saveFeedbackToFileTextField
+			.setText(saveFeedbackToFileTextFieldString);
+		}
+	}
+
+	/*
+	 * ActionPerformed methods for the file path mechanism are below.
+	 * If the path is pasted straight into the box rather then 
+	 * using the browse buttons then that also 
+	 * works because the doMerge method takes account of that. 
+	 */
+
+	private void mergedFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			mergedFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			mergedFileTextField.setText(mergedFileTextFieldString);
+
+			System.out.println("arg = " + mergedFileTextFieldString);
+		}
+
+	}
+
+	protected void liveFileBrowseButtonActionPerformed(ActionEvent evt) {
+
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			liveFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			liveFileTextField.setText(liveFileTextFieldString);
+
+			System.out.println("arg = " + liveFileTextFieldString);
+
+		}
+
+	}
+
+	private void failOnClashChoiceComboBoxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		failOnClashChoiceString = (String) failOnClashCombobox
+		.getSelectedItem();
+		System.out.println("arg = " + failOnClashChoiceString);
+
+	}
+
+	private void updateIDsComboboxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		updateIDsChoiceString = (String) updateIDsCombobox
+		.getSelectedItem();
+		System.out.println("arg = " + updateIDsChoiceString);
+	}
+
+	private void mergedFileFormatComboboxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		outputFormatChoiceString = (String) mergedFileFormatCombobox.getSelectedItem();
+	}
+
+	private void mergedFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			mergedFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			mergedFileTextField.setText(mergedFileTextFieldString);
+
+			System.out.println("arg = " + mergedFileTextFieldString);
+		}
+	}
+
+	private void branchFileBrowseButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int showOpenDialogReturnValue = fileChooser.showOpenDialog(null);
+		if (showOpenDialogReturnValue == JFileChooser.APPROVE_OPTION) {
+			File SecondaryEditedChosenFile = fileChooser.getSelectedFile();
+			branchFileTextField.setText(SecondaryEditedChosenFile
+					.getAbsolutePath());
+			branchFileTextFieldString = branchFileTextField
+			.getText();
+
+			System.out.println("arg = " + branchFileTextFieldString);
+
+		}
+
+	}
+
+	private void parentFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			parentFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			parentFileTextField.setText(parentFileTextFieldString);
+
+			System.out.println("arg = " + parentFileTextFieldString);
+		}
+
+	}
+
+	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		//		if (showProgressCheckBox.isSelected()) {
+		//			PrintStream progressTextAreaPrintStream = new PrintStream(
+		//					new TextAreaOutputStream(progressTextArea));
+		//			System.setOut(progressTextAreaPrintStream);
+		//			System.setErr(progressTextAreaPrintStream);
+		//		}
+//		if (saveFeedbackToFileCheckBox.isSelected()) {
+//		WriteFeedbackToFile();
+//		}
+		if (makeArgArrayList() == true) {
+			try {
+				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DataAdapterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void main(String args[]) {
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new OBOMergeCanvas().setVisible(true);
+			}
+		});
+	}
+
+	private Boolean makeArgArrayList() {
+		// TODO Auto-generated method stub
+		/*
+		 * This class takes the return strings from all the
+		 *  GUI controls and puts them
+		 * into the array to be fed to obomerge.
+		 */
+		System.out.println("Arguments applied are:");
+		//obomergeArgsArrayList
+		//		if (failOnClashActivatedCheckBox.isSelected()) {
+		//			obomergeArgsArrayList.add("-fail-on-clash");
+		//			obomergeArgsArrayList.add(failOnClashChoiceString);
+		//			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
+		//
+		//		}
+		//		if (updateIDsActivatedCheckBox.isSelected()) {
+		//			obomergeArgsArrayList.add("-update-ids");
+		//			obomergeArgsArrayList.add(updateIDsChoiceString);
+		//			System.out.println("    -update-ids " + updateIDsChoiceString);
+		//		}
+		//		//		if (ignoreClashOnIDsActivatedCheckBox.isSelected()) {
+		//			obomergeArgsArrayList.add("-ignore-clash-on-id");
+		//			obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
+		//			System.out.println("    -ignore-clash-on-id "
+		//					+ ignoreClashOnIDsChoiceString);
+		//		}
+
+		parentFileTextFieldString = parentFileTextField.getText();
+		liveFileTextFieldString = liveFileTextField.getText();
+		branchFileTextFieldString = branchFileTextField
+		.getText();
+		mergedFileTextFieldString = mergedFileTextField.getText();
+
+		if (parentFileTextFieldString.length() == 0
+ 				|| liveFileTextFieldString.length() == 0
+				|| branchFileTextFieldString.length() == 0
+				|| mergedFileTextFieldString.length() == 0) {
+
+			JOptionPane.showMessageDialog(missingPathFrame,
+					"Please fill in all of the necessary file paths.",
+					"Missing Information", getDefaultCloseOperation());
+
+			return false;
+		}
+		obomergeArgsArrayList.add("-version");
+		obomergeArgsArrayList.add(outputFormatChoiceString);
+		System.out.println("    -version " + outputFormatChoiceString);
+
+		obomergeArgsArrayList.add("-original");
+		obomergeArgsArrayList.add(parentFileTextFieldString);
+		System.out.println("    -original " + parentFileTextFieldString);
+
+		obomergeArgsArrayList.add("-revision");
+		obomergeArgsArrayList.add(liveFileTextFieldString);
+		System.out.println("    -revision " + liveFileTextFieldString);
+
+		obomergeArgsArrayList.add("-revision");
+		obomergeArgsArrayList.add(branchFileTextFieldString);
+		System.out.println("    -revision "
+				+ branchFileTextFieldString);
+
+		obomergeArgsArrayList.add("-o");
+		obomergeArgsArrayList.add(mergedFileTextFieldString);
+		System.out.println("    -o " + mergedFileTextFieldString);
+
+		obomergeArgsArrayList.trimToSize();
+		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
+		return true;
+	};
+
+	private int defaultCloseOperation = HIDE_ON_CLOSE;
+	public static final int HIDE_ON_CLOSE = 1;
+
+	private int getDefaultCloseOperation() {
+		// TODO Auto-generated method stub
+		return defaultCloseOperation;
+
+	}
+
+	/**
+	 * @author  Ranganath Kini
+	 * @see      javax.swing.JTextArea
+	 * http://www.jcreator.com/forums/index.php?showtopic=773
+	 */
+	public class TextAreaOutputStream extends OutputStream {
+		private JTextArea textControl;
+
+		public TextAreaOutputStream(JTextArea control) {
+			textControl = control;
+		}
+
+		public void write(int b) throws IOException {
+			// append the data as characters to the JTextArea control
+			textControl.append(String.valueOf((char) b));
+		}
+	}
+
+	private void WriteFeedbackToFile() {
+		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
+		try {
+
+			PrintStream feedbackFileOutputStream = new PrintStream(
+					saveFeedbackToFileTextFieldString);
+			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
+					feedbackFileOutputStream);
+
+			System.setOut(feedbackFileOutputStream);
+			System.setErr(feedbackFileOutputStream);
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	//	public class OntologyMergePathProfile {
+	String parentFileTextFieldString;
+	String liveFileTextFieldString;
+	String branchFileTextFieldString;
+	String mergedFileTextFieldString;
+	//	}
+
 
 
 	private static void addAComponentXAlignment(JComponent componentName, Container container) {
@@ -381,9 +764,9 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent{
 	 * @see      javax.swing.JTextArea
 	 * http://www.jcreator.com/forums/index.php?showtopic=773
 	 */
-	abstract class TextAreaOutputStream extends OutputStream {
+	private class TextAreaOutputStream1 extends OutputStream {
 		private JTextArea textControl;
-		public TextAreaOutputStream(JTextArea control) {
+		public void TextAreaOutputStream(JTextArea control) {
 			textControl = control;
 		}
 		@Override
