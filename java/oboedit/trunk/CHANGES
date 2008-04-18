@@ -1,4 +1,4 @@
-Changes in 2.000-b38
+Changes in 2.000-b38 (4/17/2008):
 * allowDangling is now true by default for both reading and writing.
 * Dangling objects don't get name (= id) in the output.  (Also fixed a
 bug introducted in b37 where dangling objects didn't print their
@@ -18,12 +18,4 @@ the tree.  (Note: not yet fixed in Graph Editor and other components.)
 yyyy-MM-dd'T'hh:mm:ss'Z' (e.g., 2008-04-17T04:04:00Z)
 OBO reader can now handle both old date format (dd:MM:yyyy HH:mm) and
 new.
-
-STILL NOT PUTTING IN THIS RELEASE:
-* User config files that were stored in ~/.oboeditbeta are now being put in an
-OS-appropriate directory:
-	       Mac: /Library/Application Support/OBO-Edit2-beta
-	       Windows XP or 2000: [user home]\Application Data\OBO-Edit2-beta
-	       Windows Vista: [user home]\AppData\Roaming\OBO-Edit2-beta
-	       Linux: [user home]/OBO-Edit2-beta
-Still need:  copy old .oboeditbeta files to new location
+* Cloning somehow broke--need to fix in next release.
