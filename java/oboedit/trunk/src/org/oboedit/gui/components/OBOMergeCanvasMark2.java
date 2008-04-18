@@ -23,6 +23,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -74,14 +75,14 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 			textControl.append(String.valueOf((char) b));
 		}
 	}
-	public static final int HIDE_ON_CLOSE = 1;
-	public static void main(String args[]) {
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new OBOMergeCanvas().setVisible(true);
-			}
-		});
-	}
+//	public static final int HIDE_ON_CLOSE = 1;
+//	public static void main(String args[]) {
+//		java.awt.EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				new OBOMergeCanvasMark2().setVisible(true);
+//			}
+//		});
+//	}
 	private static void addAComponentXAlignment(JComponent componentName, Container container) {
 //		componentName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		container.add(componentName);
@@ -93,6 +94,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 
 	}
 	private int defaultCloseOperation = HIDE_ON_CLOSE;
+	   public static final int HIDE_ON_CLOSE = 1;
 	protected LayoutListener layoutListener = new LayoutAdapter() {
 		public boolean closing(GUIComponent c) {
 			if (c.equals(OBOMergeCanvasMark2.this)) {
@@ -164,6 +166,12 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 	JPanel showProgressPanel = new JPanel();
 	JPanel saveProgressToFilePanel = new JPanel();
 	JPanel centerPanel = new JPanel();
+	JPanel saveFeedbackToFileDetailPanel = new JPanel();
+	JTextArea feedbackTextArea = new JTextArea("This is working");
+	JLabel feedbackFilePathLabel = new JLabel("Feedback File Path");
+	JTextField feedbackFileTextField = new JTextField();
+	JButton feedbackFileBrowseButton = new JButton("Browse");
+
 	
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
@@ -465,8 +473,55 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		finalOptionPanelGBC.gridy = 3;
 		finalOptionPanel.add(mergeButton, finalOptionPanelGBC);
 
+		processFeedbackPanel.setLayout(new GridBagLayout());
+		GridBagConstraints processFeedbackPanelGBC = new GridBagConstraints();
+
+		JScrollPane feedbackTextAreaScrollPane = new JScrollPane(feedbackTextArea);
+		
+		processFeedbackPanelGBC.fill = GridBagConstraints.BOTH;
+		processFeedbackPanelGBC.gridx = 0;
+		processFeedbackPanelGBC.gridy = 1;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_END;
+		processFeedbackPanelGBC.weightx = 1;
+		processFeedbackPanelGBC.gridheight = 5;
+		processFeedbackPanelGBC.gridwidth = 1;
+		processFeedbackPanelGBC.insets = new Insets(5,5,5,5);
+		processFeedbackPanel.add(feedbackTextAreaScrollPane, processFeedbackPanelGBC);
+		
+		processFeedbackPanelGBC.gridheight = 1;
+		processFeedbackPanelGBC.gridwidth = 1;
+		processFeedbackPanelGBC.gridx = 0;
+		processFeedbackPanelGBC.gridy = 0;
+		processFeedbackPanelGBC.gridheight = 1;
+		processFeedbackPanelGBC.gridwidth = 1;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_START;
+		processFeedbackPanel.add(saveFeedbackToFileDetailPanel, processFeedbackPanelGBC);
 		
 		
+		saveFeedbackToFileDetailPanel.setLayout(new GridBagLayout());
+		GridBagConstraints saveFeedbackToFileDetailPanelGBC = new GridBagConstraints();
+
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
+		saveFeedbackToFileDetailPanelGBC.gridx = 0;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.LINE_START;
+		saveFeedbackToFileDetailPanelGBC.weightx = 1;
+		saveFeedbackToFileDetailPanelGBC.insets = new Insets(5,5,5,5);
+		saveFeedbackToFileDetailPanel.add(feedbackFilePathLabel, saveFeedbackToFileDetailPanelGBC);
+		
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+//		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.CENTER;
+		saveFeedbackToFileDetailPanelGBC.gridx = 1;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanel.add(feedbackFileTextField, saveFeedbackToFileDetailPanelGBC);
+
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
+//		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.LINE_END;
+		saveFeedbackToFileDetailPanelGBC.gridx = 2;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanel.add(feedbackFileBrowseButton, saveFeedbackToFileDetailPanelGBC);
+		
+	
 		validate();
 		repaint();
 
@@ -547,30 +602,33 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		});
 
 
-//		activateAdvancedOptionButton
-//		.addActionListener(new java.awt.event.ActionListener() {
-//		public void actionPerformed(java.awt.event.ActionEvent evt) {
-//		activateAdvancedOptionButtonActionPerformed(evt);
-//		}
-//		});
+		advancedButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				advancedButtonActionPerformed(evt);
+			}
 
-
-//		protected void activateAdvancedOptionButtonActionPerformed(ActionEvent evt) {
-		//
-//		boolean saveProfilePanelVisibility = saveProfilePanel.isVisible();
-//		saveProfilePanel.setVisible(!saveProfilePanelVisibility);
-		//
-//		boolean mergeOptionPanelVisibility = mergeOptionPanel.isVisible();
-//		mergeOptionPanel.setVisible(!mergeOptionPanelVisibility);
-		//
-//		if (saveProfilePanelVisibility) {
-//		activateAdvancedOptionButton.setText("Advanced");
-//		} else {
-//		activateAdvancedOptionButton.setText("Basic");
-		//
-//		}
+			private void advancedButtonActionPerformed(ActionEvent evt) {
+				boolean saveProfilePanelVisibility = saveProfilePanel.isVisible();
+				saveProfilePanel.setVisible(!saveProfilePanelVisibility);
+	
+				boolean mergeOptionPanelVisibility = mergeOptionPanel.isVisible();
+				mergeOptionPanel.setVisible(!mergeOptionPanelVisibility);
+	
+				if (saveProfilePanelVisibility) {
+					advancedButton.setText("Advanced");
+				} else {
+					advancedButton.setText("Basic");
+				}			
+			}
+		});
 
 	}
+
+		
+
+
+
+	
 
 	public void save(){
 		System.out.println("all going well so far.");
