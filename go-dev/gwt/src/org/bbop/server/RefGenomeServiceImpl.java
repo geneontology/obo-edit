@@ -69,17 +69,6 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// Vocabulary
-	public String HAS_STATUS = "RefG:has_status";
-	public String HAS_EX_STATUS = "RefG:has_ex_status";
-	public String STATUS_TARGET = "RefG:Target";
-	public String HOMOLOGOUS_TO = "OBO_REL:homologous_to";
-	public String HAS_PROVENANCE = "oban:has_data_source";
-	public String HAS_EVIDENCE = "oban:has_evidence";
-	public String HAS_COMMENT = "dc:comment";
-	public String STATUS_COMPREHENSIVELY_ANNOTATED = "RefG:comprehensively_annotated";
-	public String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
-	public String ON_DATE = "dc:date";
 	private Map<String,NodeDTO> nodeCache = new HashMap<String,NodeDTO>();
 
 	//static String userName = "sjcarbon";
@@ -90,6 +79,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	//static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
 	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
 
+	private String jdbcPath = null;
+	
 	private String currentUserId;
 	private DateDTO currentDate;
 
@@ -102,6 +93,20 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		setup();
 	}
 
+	public RefGenomeServiceImpl(String jdbcPath) {
+		super();
+		setJdbcPath(jdbcPath);
+		setup();
+	}
+
+	public String getJdbcPath() {
+		return jdbcPath == null ? defaultJdbcPath : jdbcPath;
+	}
+
+	public void setJdbcPath(String jdbcPath) {
+		this.jdbcPath = jdbcPath;
+	}
+
 	// TODO: make configurable
 	public void setup() {
 		if (shard != null)
@@ -112,7 +117,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 			OBDSQLShard obd;
 			obd = new OBDSQLShard();
 			System.err.println("connecting="+shard);
-			obd.connect(defaultJdbcPath, userName, password);
+			obd.connect(getJdbcPath(), userName, password);
 			System.err.println("obd="+obd);
 			((MultiShard)shard).addShard(obd);
 		} catch (SQLException e) {
