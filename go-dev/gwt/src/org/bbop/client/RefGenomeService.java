@@ -70,6 +70,14 @@ public interface RefGenomeService extends RemoteService {
 	public String[] fetchIdsByNameAndTaxon(String searchTerm, String taxonId);
 
 	/**
+	 * limits search results by taxon
+	 * @param searchTerm       -- eg SOX9
+	 * @param taxonId          -- eg NCBITax:7227
+	 * @return
+	 */
+	public NodeDTO[] fetchNodesByNameAndTaxon(String searchTerm, String taxonId);
+
+	/**
 	 * all taxon IDs that are part of some reference set.
 	 * the API is extensible to multiple reference sets - this call
 	 * will always return the superset. In the case of the RefG
@@ -114,6 +122,11 @@ public interface RefGenomeService extends RemoteService {
 	 * @return all target gene nodes
 	 */
 	public NodeDTO[] fetchReferenceTargetNodes();
+
+	/**
+	 * @return all target gene nodes
+	 */
+	public NodeDTO[] fetchReferenceTargetNodesByName(String name);
 
 	/**
 	 * typical NCBITaxon
