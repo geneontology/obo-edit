@@ -35,10 +35,22 @@ import com.google.gwt.user.client.rpc.RemoteService;
  */
 public interface RefGenomeService extends RemoteService {
 
+	// ===================
+	// consts 
+	// ===================
 
+	public String IN_ORGANISM = "OBO_REL:in_organism";
+	public String HAS_DBXREF = "oboInOwl:hasDbXref";
+	
 	// ===================
 	// user operations 
 	// ===================
+	
+	/**
+	 * @param id
+	 * @return node with this unique ID
+	 */
+	public NodeDTO fetchNodeById(String id);
 	
 	/**
 	 * query ALL nodes by a searchTerm, return matching nodes
@@ -72,6 +84,7 @@ public interface RefGenomeService extends RemoteService {
 	 * @return Nodes representing the taxon IDs of interest
 	 */
 	public NodeDTO[] fetchReferenceTaxonNodes();
+	
 
 	/**
 	 * Given an ID for the homology set, return the IDs of all members
@@ -96,6 +109,11 @@ public interface RefGenomeService extends RemoteService {
 	 * @return all target gene Ids
 	 */
 	public String[] fetchReferenceTargetIds();
+
+	/**
+	 * @return all target gene nodes
+	 */
+	public NodeDTO[] fetchReferenceTargetNodes();
 
 	/**
 	 * typical NCBITaxon
@@ -148,7 +166,7 @@ public interface RefGenomeService extends RemoteService {
 	 */
 	public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId);
 		
-	public NodeDTO fetchNodeById(String id);
+
 
 	public NodeDTO[] getAllUsers();
 

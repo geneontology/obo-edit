@@ -37,6 +37,8 @@ public interface RefGenomeServiceAsync  {
 	public void fetchLabelsById(String searchTerm, AsyncCallback callback);
 
 	public void fetchReferenceTargetIds( AsyncCallback callback);
+
+	public void fetchReferenceTargetNodes( AsyncCallback callback);
 	
 	public void getTaxonIdPrefix( AsyncCallback callback);
 	

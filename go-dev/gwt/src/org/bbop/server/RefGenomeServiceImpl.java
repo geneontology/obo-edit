@@ -81,7 +81,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	static String userName = "remote_user";
 	static String password = "glurp";
 
-	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
+	//static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
+	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
 
 	private String currentUserId;
 	private DateDTO currentDate;
@@ -126,14 +127,19 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 		// Use this in case of mystery errors.
 		//		// Optional: Crank up the logging.
-		//		Handler[] handlers = Logger.getLogger( "" ).getHandlers();
-		//		for ( int index = 0; index < handlers.length; index++ ) {
-		//		handlers[index].setLevel( Level.FINE );
-		//		}
-		//		Logger l1 = Logger.getLogger("org.bbop.rdbms");
-		//		Logger l2 = Logger.getLogger("org.obd");
-		//		l1.setLevel(Level.FINEST);
-		//		l2.setLevel(Level.FINEST);
+		if (true) {
+			Handler[] handlers = Logger.getLogger( "" ).getHandlers();
+
+			for ( int index = 0; index < handlers.length; index++ ) {
+				handlers[index].setLevel( Level.FINE );
+			}
+			Logger l1 = Logger.getLogger("org.bbop.rdbms");
+			Logger l2 = Logger.getLogger("org.obd");
+			Logger l3 = Logger.getLogger("org.obd..shard.OBDSQLShard");
+			l1.setLevel(Level.FINEST);
+			l2.setLevel(Level.FINEST);
+			l3.setLevel(Level.FINEST);
+		}
 	}
 
 	public NodeDTO fetchNodeByIdCached(String id) {
@@ -155,7 +161,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		}
 		return null;
 	}
-	
+
 	//
 	public NodeDTO[] fetchNodesByName(String searchTerm) {
 
@@ -165,34 +171,26 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 			//NodeDTO[] nodeDTOs;
 			nodes = shard.getNodesBySearch(searchTerm, 
 					ComparisonQueryTerm.Operator.STARTS_WITH); // TODO
-			//Collection<NodeDTO> nodeDTOs = new LinkedList<NodeDTO>();
-			//System.err.println("nodes size = "+ nodes.size() + "");
-			NodeDTO[] nodeDTOs = new NodeDTO[nodes.size()];
-			int i = 0;
-			for (Node n : nodes) {
-				NodeDTO nDTO = slurpNodeInfo(n);
-				nodeDTOs[i] = nDTO;
-				i++;
-			}
-			return nodeDTOs;
+			return slurpNodesInfo(nodes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null; // TODO
 	}
-	
+
 	private NodeDTO slurpNodeInfo(Node n) {
 		if (n == null)
 			return null;
 		// attach metadata to node
 		LinkQueryTerm qt = new LinkQueryTerm(n.getId(),null,null);
+		qt.setInferred(false);
 		Collection<Statement> stmts = shard.getStatementsByQuery(qt);
 		System.err.println("adding statements for "+n+" :: "+stmts.size());
 		n.addStatements(stmts);
 		NodeDTO taxon = null;
 		for (Statement s : stmts) {
-			if (s.getRelationId().equals("OBO_REL:in_organism")) {
+			if (s.getRelationId().equals(IN_ORGANISM)) {
 				taxon = this.fetchNodeByIdCached(s.getTargetId());
 				System.err.println("TAXON="+taxon);
 			}
@@ -203,7 +201,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		NodeDTO nDTO = new NodeDTO(n.getId());
 		nDTO.setLabel(n.getLabel());
 		nDTO.setSourceId(n.getSourceId());
-		*/
+		 */
 		NodeDTO nDTO = nodeToDTO(n);
 		if (taxon != null)
 			nDTO.setInOrganismType(taxon);
@@ -212,6 +210,21 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		return nDTO;
 	}
 	
+	private NodeDTO[] slurpNodesInfo(Collection<Node> nodes) {
+		//Collection<NodeDTO> nodeDTOs = new LinkedList<NodeDTO>();
+		//System.err.println("nodes size = "+ nodes.size() + "");
+		NodeDTO[] nodeDTOs = new NodeDTO[nodes.size()];
+		int i = 0;
+		for (Node n : nodes) {
+			NodeDTO nDTO = slurpNodeInfo(n);
+			nodeDTOs[i] = nDTO;
+			i++;
+		}
+		return nodeDTOs;
+	
+	}
+	
+
 	public GeneOrGeneProductNodeDTO[] fetchGeneOrGeneProductNodesByName(String searchTerm) {
 		NodeDTO[] nodes = fetchNodesByName(searchTerm);
 		GeneOrGeneProductNodeDTO[] gps = new GeneOrGeneProductNodeDTO[nodes.length];
@@ -232,14 +245,14 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	public NodeDTO[] fetchReferenceTaxonNodes() {
 		return nodesToDTOs(speciesInfoShard.getNodes());
 	}
-	
+
 	public NodeDTO fetchTaxonNodeForEntity(String id) {
 		Collection<Node> taxons = shard.getNodesByQuery(new LinkQueryTerm(id,"OBO_REL:in_organism",null));
 		Iterator<Node> it = taxons.iterator();
 		if (it.hasNext())
 			return nodeToDTO(it.next());
 		return null;
-		
+
 	}
 
 
@@ -261,6 +274,20 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 
 	public String[] fetchReferenceTargetIds() {
+		String rel = HAS_STATUS;
+		String ob = STATUS_TARGET;
+		Collection<Node> nodes = shard.getNodesByQuery(new LinkQueryTerm(rel,ob));
+		return this.nodesToIds(nodes);
+	}
+
+	public NodeDTO[] fetchReferenceTargetNodes() {
+		String rel = HAS_STATUS;
+		String ob = STATUS_TARGET;
+		Collection<Node> nodes = shard.getNodesByQuery(new LinkQueryTerm(rel,ob));
+		return slurpNodesInfo(nodes);
+	}
+	/*
+	public String[] fetchReferenceTargetIds() {
 		// TODO Auto-generated method stub
 		String[] sa =  new String[0];
 
@@ -277,6 +304,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 		return sa;
 	}
+	 */
 
 	public String getTaxonIdPrefix() {
 		// TODO Auto-generated method stub
@@ -305,7 +333,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date) {
 		System.err.println("assigning target status to "+geneId);
-		addStatement(geneId,HAS_STATUS,STATUS_TARGET,userId,currentDate);	
+		addStatement(geneId,HAS_STATUS,STATUS_TARGET,userId,date);	
 	}
 
 
@@ -378,7 +406,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void uploadFile(String userId, String filePath, String fileType) {
 		if (filePath == null)
 			filePath = RefGenomeTargetHomologsParser.getDefaultURL();
@@ -391,12 +419,16 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 				return; // TODO - fail
 			}
 			filePath = "/tmp/refg.txt"; // TODO - use URLs
-			
+
 		}
 		RefGenomeTargetHomologsParser parser = new RefGenomeTargetHomologsParser(filePath);
 		RefGenomeService rgs = this;
 		parser.setRefgService(rgs);
 		parser.setUserId(userId);
+
+		DateDTO date = new DateDTO(2008,4,16); // TODO
+		parser.setDate(date);
+
 		try {
 			parser.parse();
 		} catch (Exception e) {

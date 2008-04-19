@@ -6,6 +6,7 @@ import net.mygwt.ui.client.widget.Button;
 import net.mygwt.ui.client.widget.ToolBar;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
+import org.bbop.client.model.DateDTO;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -55,6 +56,7 @@ public class CurationPanelView {
 	private class ImportButtonListener implements SelectionListener {
 		public void widgetSelected(BaseEvent be) {
 			//refglistener.fetchTargetIds();
+			
 			refgListener.uploadFile("test",null,null); // TODO - set userId
 		}
 	}
