@@ -81,8 +81,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	static String userName = "remote_user";
 	static String password = "glurp";
 
-	//static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
-	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
+	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
+	//static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
 
 	private String currentUserId;
 	private DateDTO currentDate;
