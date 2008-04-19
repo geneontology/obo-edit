@@ -2,6 +2,7 @@ package org.bbop.client;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.View.RefGenomeView;
+import org.bbop.client.model.NodeDTO;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -51,6 +52,11 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 
+	public void fetchTargets() {
+		refgservice.fetchReferenceTargetNodes(new FetchTargetNodesCallback());
+		
+	}
+
 	
 	private class SearchByNameCallback implements AsyncCallback {
 
@@ -62,6 +68,21 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		public void onSuccess(Object result) {
 			// TODO Auto-generated method stub
 			refgview.getNavPanel().getSearchPanelView().displayNameSearchResult(result);
+		}
+		
+	}
+	
+	private class FetchTargetNodesCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("error in search",caught);
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+			System.err.println("showing results...");
+			refgview.getNavPanel().getBrowseView().displayTargets((NodeDTO[])result);
 		}
 		
 	}
@@ -93,7 +114,6 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 
 		public void onSuccess(Object result) {
 			// TODO Auto-generated method stub
-			
 		}
 		
 	}
@@ -127,6 +147,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		}
 		
 	}
+
 
 
 

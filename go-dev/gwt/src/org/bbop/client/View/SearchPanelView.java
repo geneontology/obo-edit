@@ -216,11 +216,11 @@ public class SearchPanelView implements SearchPanelManagerI {
 		
 		
 		NameSearchTableView tableView = new NameSearchTableView(refgListener, mainView);
-		
+
 		//Get the DTO object
 		NodeDTO[] result = (NodeDTO[]) obj;
 		info.close();
-		
+
 		if (result.length < 3) {
 			final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
 			alert.setText("Search result");
@@ -228,13 +228,13 @@ public class SearchPanelView implements SearchPanelManagerI {
 			alert.open();
 		}
 		else {
-		tableView.createView(result);
-		resultView = mainView.getResultPanel();
-		// Remove the initial table view
-		resultView.removeChildViews();
-		//Add the new one
-		resultView.addTableView(tableView.getView(), "Search result");
-		resultView.resetView();
+			tableView.createView(result);
+			resultView = mainView.getResultPanel();
+			// Remove the initial table view
+			resultView.removeChildViews();
+			//Add the new one
+			resultView.addTableView(tableView.getView(), "Search result");
+			resultView.resetView();
 		}
 		
 	}

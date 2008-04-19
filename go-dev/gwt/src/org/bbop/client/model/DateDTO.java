@@ -23,6 +23,12 @@ public class DateDTO implements IsSerializable {
 		this.month = month;
 		this.day = new Integer(-1);
 	}
+	public DateDTO(Integer year, Integer month, Integer day) {
+		super();
+		this.year = year;
+		this.month = month;
+		this.day = day;
+	}
 
 	public Integer getDay() {
 		return day;

@@ -78,7 +78,7 @@ public class NodeDTO implements IsSerializable {
 	}
 
 	/**
-	 * @gwt.typeArgs <org.bbop.client.model.StatementDTO>
+	 * @gwt.typeArgs newStatements <org.bbop.client.model.StatementDTO>
 	 */
 	public void addStatements(List newStatements) {
 		statements.addAll(newStatements);
@@ -107,7 +107,7 @@ public class NodeDTO implements IsSerializable {
 
 	/**
 	 * @param relationId
-	 * @return  <org.bbop.client.model.StatementDTO>
+	 * @gwt.typeArgs <org.bbop.client.model.StatementDTO>
 	 */
 	public List getTargetIds(String relationId) {
 		ArrayList idArr = new ArrayList();

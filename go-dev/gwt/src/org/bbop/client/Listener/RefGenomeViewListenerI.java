@@ -7,5 +7,6 @@ public interface RefGenomeViewListenerI {
 	public void fetchByName(String name);
 	public void fetchTaxonNodes();
 	public void uploadFile(String userId, String filePath, String fileType);
+	public void fetchTargets();
 	
 }
