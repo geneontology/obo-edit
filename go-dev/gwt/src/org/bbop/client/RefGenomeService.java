@@ -38,7 +38,18 @@ public interface RefGenomeService extends RemoteService {
 	// ===================
 	// consts 
 	// ===================
+	public String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
 
+	// Vocabulary
+	public String HAS_STATUS = "RefG:has_status";
+	public String HAS_EX_STATUS = "RefG:has_ex_status";
+	public String STATUS_TARGET = "RefG:Target";
+	public String HOMOLOGOUS_TO = "OBO_REL:homologous_to";
+	public String HAS_PROVENANCE = "oban:has_data_source";
+	public String HAS_EVIDENCE = "oban:has_evidence";
+	public String HAS_COMMENT = "dc:comment";
+	public String STATUS_COMPREHENSIVELY_ANNOTATED = "RefG:comprehensively_annotated";
+	public String ON_DATE = "dc:date";
 	public String IN_ORGANISM = "OBO_REL:in_organism";
 	public String HAS_DBXREF = "oboInOwl:hasDbXref";
 	
