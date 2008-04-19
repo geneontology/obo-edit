@@ -47,7 +47,7 @@ public interface RefGenomeService extends RemoteService {
 	 * @param searchTerm
 	 * @return 
 	 */
-	public NodeDTO[] fetchIdsByName(String searchTerm);
+	public NodeDTO[] fetchNodesByName(String searchTerm);
 	
 	/**
 	 * limits search results by taxon

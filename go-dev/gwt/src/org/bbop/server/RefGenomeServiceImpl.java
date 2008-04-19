@@ -17,7 +17,9 @@ package org.bbop.server;
 
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,14 +29,17 @@ import java.util.logging.Logger;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.model.DateDTO;
+import org.bbop.client.model.GeneOrGeneProductNodeDTO;
 import org.bbop.client.model.NodeDTO;
 import org.bbop.client.model.StatementDTO;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
+import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
 import org.obd.model.Statement;
 import org.obd.query.ComparisonQueryTerm;
+import org.obd.query.LinkQueryTerm;
 import org.obd.query.Shard;
 import org.obd.query.impl.MultiShard;
 import org.obd.query.impl.MutableOBOSessionShard;
@@ -64,13 +69,14 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	private String STATUS_COMPREHENSIVELY_ANNOTATED = "RefG:comprehensively_annotated";
 	private String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
 	private String ON_DATE = "dc:date";
+	private Map<String,NodeDTO> nodeCache = new HashMap<String,NodeDTO>();
 
 	//static String userName = "sjcarbon";
-    //static String password = "";
+	//static String password = "";
 	static String userName = "remote_user";
-    static String password = "glurp";
-    
-	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_homologene";
+	static String password = "glurp";
+
+	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
 
 	private String currentUserId;
 	private DateDTO currentDate;
@@ -124,51 +130,32 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		//		l1.setLevel(Level.FINEST);
 		//		l2.setLevel(Level.FINEST);
 	}
-	public String testCall() {
-		System.err.println("foobar");
-		setup();
-		System.err.println("getNode");
-		Node n = shard.getNode("CL:0000148");
-		System.err.println("getNode="+n);
-		String label = n.getLabel();
-		System.err.println("getNode="+label);
 
-		return n.getLabel();
+	public NodeDTO fetchNodeByIdCached(String id) {
+		if (nodeCache.containsKey(id))
+			return nodeCache.get(id);
+		NodeDTO dto = fetchNodeById(id);
+		nodeCache.put(id, dto);
+		return dto;
 	}
-
-	public String testCall(String id) {
-		System.err.println("foobar");
-		return "foo";
+	public NodeDTO fetchNodeById(String id) {
+		try {
+			//NodeDTO[] nodeDTOs;
+			Node n = shard.getNode(id);
+			NodeDTO nDTO = slurpNodeInfo(n);
+			return nDTO;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
-
-//	//
-//	public String[] fetchIdsByName(String searchTerm) {
-//		Collection<Node> nodes;
-//		try {
-//			nodes = shard.getNodesBySearch(searchTerm, 
-//					ComparisonQueryTerm.Operator.STARTS_WITH); // TODO
-//			Collection<String> nids = new LinkedList<String>();
-//			//System.err.println("nodes size = "+ nodes.size() + "");
-//			for (Node n : nodes) {
-//				System.err.println("n="+n);
-//				nids.add(n.getId());
-//			}
-//			String[] nidArr = 
-//				(String[]) nids.toArray(new String[0]);
-//			System.err.println("nids array("+ nidArr.length + ")="+nidArr);
-//			return nidArr;
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return null; // TODO
-//	}
-
+	
 	//
-	public NodeDTO[] fetchIdsByName(String searchTerm) {
+	public NodeDTO[] fetchNodesByName(String searchTerm) {
 
 		Collection<Node> nodes;
-		
+
 		try {
 			//NodeDTO[] nodeDTOs;
 			nodes = shard.getNodesBySearch(searchTerm, 
@@ -178,19 +165,10 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 			NodeDTO[] nodeDTOs = new NodeDTO[nodes.size()];
 			int i = 0;
 			for (Node n : nodes) {
-				System.err.println("n="+n);
-				NodeDTO nDTO = new NodeDTO(n.getId());
-				nDTO.setLabel(n.getLabel());
-				nDTO.setSourceId(n.getSourceId());
-				//nodeDTOs.add(nDTO);
+				NodeDTO nDTO = slurpNodeInfo(n);
 				nodeDTOs[i] = nDTO;
 				i++;
 			}
-			//String[] nidArr = 
-			//	(String[]) nids.toArray(new String[0]);
-			//System.err.println("nids array("+ nidArr.length + ")="+nidArr);
-			//return nidArr;
-			//return (NodeDTO[])nodeDTOs.toArray();
 			return nodeDTOs;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -198,18 +176,63 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		}
 		return null; // TODO
 	}
+	
+	private NodeDTO slurpNodeInfo(Node n) {
+		// attach metadata to node
+		LinkQueryTerm qt = new LinkQueryTerm(n.getId(),null,null);
+		Collection<Statement> stmts = shard.getStatementsByQuery(qt);
+		System.err.println("adding statements for "+n+" :: "+stmts.size());
+		n.addStatements(stmts);
+		NodeDTO taxon = null;
+		for (Statement s : stmts) {
+			if (s.getRelationId().equals("OBO_REL:in_organism")) {
+				taxon = this.fetchNodeByIdCached(s.getTargetId());
+				System.err.println("TAXON="+taxon);
+			}
+		}
+
+		System.err.println("n="+n);
+		/*
+		NodeDTO nDTO = new NodeDTO(n.getId());
+		nDTO.setLabel(n.getLabel());
+		nDTO.setSourceId(n.getSourceId());
+		*/
+		NodeDTO nDTO = nodeToDTO(n);
+		if (taxon != null)
+			nDTO.setInOrganismType(taxon);
+		//nodeDTOs.add(nDTO);
+
+		return nDTO;
+	}
+	
+	public GeneOrGeneProductNodeDTO[] fetchGeneOrGeneProductNodesByName(String searchTerm) {
+		NodeDTO[] nodes = fetchNodesByName(searchTerm);
+		GeneOrGeneProductNodeDTO[] gps = new GeneOrGeneProductNodeDTO[nodes.length];
+		// TODO
+		return gps;
+	}
+
 
 	public String[] fetchIdsByNameAndTaxon(String searchTerm, String taxonId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	// NOTE: This works fine.
 	public String[] fetchReferenceTaxonIds() {
 		return nodesToIds(speciesInfoShard.getNodes());
 	}
 	public NodeDTO[] fetchReferenceTaxonNodes() {
 		return nodesToDTOs(speciesInfoShard.getNodes());
+	}
+	
+	public NodeDTO fetchTaxonNodeForEntity(String id) {
+		Collection<Node> taxons = shard.getNodesByQuery(new LinkQueryTerm(id,"OBO_REL:in_organism",null));
+		Iterator<Node> it = taxons.iterator();
+		if (it.hasNext())
+			return nodeToDTO(it.next());
+		return null;
+		
 	}
 
 
@@ -233,7 +256,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	public String[] fetchReferenceTargetIds() {
 		// TODO Auto-generated method stub
 		String[] sa =  new String[0];
-		
+
 		String ob = "";
 		String rel = "";
 		String su = "";
@@ -243,8 +266,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		}
 		Graph g = new Graph(stmts);
 		shard.putGraph(g);
-		
-		
+
+
 		return sa;
 	}
 
@@ -277,17 +300,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		addStatement(geneId,HAS_STATUS,STATUS_TARGET,userId,currentDate);	
 	}
 
-	private Statement makeHomologyStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment) {
-		LinkStatement s = new LinkStatement(e1id,HOMOLOGOUS_TO,e2id,userId);
-		s.addSubLiteralStatement(ON_DATE, currentDate.toString());
-		s.addSubLiteralStatement(HAS_PROVENANCE, provenanceId);
-		for (String methodId : methodIds)
-			s.addSubLiteralStatement(HAS_EVIDENCE, methodId);
-		if (comment != null)
-			s.addSubLiteralStatement(HAS_COMMENT, comment);
-		return s;
-	}
-	
+
 	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment) {
 		Graph g = new Graph();
 		Statement s = makeHomologyStatement(userId,e1id,e2id,methodIds,provenanceId,comment);
@@ -326,10 +339,7 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		return null;
 	}
 
-	public NodeDTO fetchNodeById(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	public NodeDTO[] getAllUsers() {
 		// TODO Auto-generated method stub
@@ -382,7 +392,18 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
+	private Statement makeHomologyStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment) {
+		LinkStatement s = new LinkStatement(e1id,HOMOLOGOUS_TO,e2id,userId);
+		s.addSubLiteralStatement(ON_DATE, currentDate.toString());
+		s.addSubLiteralStatement(HAS_PROVENANCE, provenanceId);
+		for (String methodId : methodIds)
+			s.addSubLiteralStatement(HAS_EVIDENCE, methodId);
+		if (comment != null)
+			s.addSubLiteralStatement(HAS_COMMENT, comment);
+		return s;
+	}
+
 	private String[] nodesToIds(Collection<Node> nodes) {
 		String[] nids = new String[nodes.size()];
 		Iterator<Node> it = nodes.iterator();
@@ -399,14 +420,43 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		}
 		return dtos;
 	}
-	
-	
+
+
 	private NodeDTO nodeToDTO(Node node) {
 		NodeDTO dto = new NodeDTO(node.getId());
 		dto.setLabel(node.getLabel());
 		dto.setSourceId(node.getSourceId());
+		if (node.getStatements().length > 0) {
+			dto.setStatements(statementsToDTOs(node.getStatements()));
+		}
 		// TODO - statements
 		return dto;
 	}
-	
+
+	private StatementDTO statementToDTO(Statement s) {
+		StatementDTO dto = new StatementDTO(s.getNodeId(),s.getRelationId(),null);
+		if (s instanceof LiteralStatement) {
+			dto.setTargetId(((LiteralStatement)s).getSValue());
+		}
+		else {
+			dto.setTargetId(s.getTargetId());
+		}
+		return dto;
+
+	}
+
+	private StatementDTO[] statementsToDTOs(Collection<Statement> stmts) {
+		StatementDTO[] dtos = new StatementDTO[stmts.size()];
+		Iterator<Statement> it = stmts.iterator();
+		for (int i=0; it.hasNext(); i++) {
+			dtos[i] = statementToDTO(it.next());
+		}
+		return dtos;
+	}
+
+	private StatementDTO[] statementsToDTOs(Statement[] stmts) {
+		Collection<Statement> al = java.util.Arrays.asList(stmts);
+		return statementsToDTOs(al);
+	}
+
 }

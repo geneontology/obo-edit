@@ -246,7 +246,8 @@ public class SearchPanelView implements SearchPanelManagerI {
 		System.err.println("got taxon list: "+obj);
 		NodeDTO[] list = (NodeDTO[]) obj;
 		for(int i = 0; i < list.length; i++) {
-			txnList.addItem(list[i].getId()+" "+list[i].getLabel());
+			if (list[i].getLabel() != null)
+				txnList.addItem(list[i].getId()+" "+list[i].getLabel());
 		}
 		
 	}

@@ -2,6 +2,8 @@ package org.bbop.client.View;
 
 
 
+import java.util.Iterator;
+
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ContentPanel;
 import net.mygwt.ui.client.widget.MessageBox;
@@ -17,6 +19,7 @@ import net.mygwt.ui.client.widget.table.TableItem;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.model.NodeDTO;
+import org.bbop.client.model.StatementDTO;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -45,14 +48,14 @@ public class NameSearchTableView {
 		
 	}
 	
-	public void createView(NodeDTO[] result) {
-		nameCols = new TableColumn[3];
+	public void createView(NodeDTO[] resultNodes) {
+		nameCols = new TableColumn[4];
 		
-		nameCols[0] = new TableColumn("Label",.50f);
+		nameCols[0] = new TableColumn("Label",.40f);
 		nameCols[0].setMinWidth(30);
 		nameCols[0].setMaxWidth(300);
 		
-		nameCols[1] = new TableColumn("Id",.25f);
+		nameCols[1] = new TableColumn("Id",.20f);
 		nameCols[1].setMinWidth(30);
 		nameCols[1].setMaxWidth(300);
 	//	nameCols[1].setRenderer(new CellRenderer() {
@@ -66,22 +69,38 @@ public class NameSearchTableView {
 			
 	//	});
 		
-		nameCols[2] = new TableColumn("Source Id",.25f);
+		nameCols[2] = new TableColumn("Source Id",.20f);
 		nameCols[2].setMinWidth(30);
 		nameCols[2].setMaxWidth(300);
-		
+
+		nameCols[3] = new TableColumn("Taxon",.20f);
+		nameCols[3].setMinWidth(30);
+		nameCols[3].setMaxWidth(300);
+
 		nameColModel = new TableColumnModel(nameCols);
 		nameTbl = new Table(Style.MULTI, nameColModel);
 		nameTbl.setBorders(true);
 		
 		
-		for(int i = 0 ; i < result.length; i++) {
-			Object[] nodeData = new Object[3];
-			nodeData[0] = result[i].getLabel();
-			HTML linkedId = new HTML(result[i].getId());
+		for(int i = 0 ; i < resultNodes.length; i++) {
+			NodeDTO node = resultNodes[i];
+			Object[] nodeData = new Object[4];
+			nodeData[0] = node.getLabel();
+			HTML linkedId = new HTML(node.getId());
 			linkedId.addClickListener(new LinkedIdListener());
 			nodeData[1] = linkedId;
-			nodeData[2] = result[i].getSourceId();
+			nodeData[2] = node.getSourceId();
+			nodeData[3] = "-";
+			if (node.getInOrganismType() != null)
+				nodeData[3] = node.getInOrganismType().getLabel();
+			/*
+			Iterator it = node.getStatements().iterator();
+			System.err.println("statements for node "+node+" ;; "+node.getStatements().size());
+			while (it.hasNext()) {
+				StatementDTO stmt = (StatementDTO) it.next();
+				System.err.println(stmt.toString());
+			}
+			*/
 			nameTbl.add(new TableItem(nodeData));
 			
 		}

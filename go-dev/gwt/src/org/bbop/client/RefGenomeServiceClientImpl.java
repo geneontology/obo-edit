@@ -38,7 +38,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	
 	public void fetchByName(String name) {
 		// TODO Auto-generated method stub
-		refgservice.fetchIdsByName(name, new SearchByNameCallback());
+		refgservice.fetchNodesByName(name, new SearchByNameCallback());
 		
 	}
 	
