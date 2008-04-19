@@ -111,9 +111,22 @@ public interface RefGenomeService extends RemoteService {
 
 	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date); // datatype?
 	
-	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
+	/**
+	 * make a statement of homology between a mod node ID and a target ID
+	 * 
+	 * @param userId
+	 * @param nodeId
+	 * @param targetId - note we have terminology overloading here: in the OBD model, target refers to the 2nd arg in a relational statement. In the context of
+	 * refG, target means the entity specifically designated as the target gene. In this case, the target of the homology statement coincides with the gene
+	 * target: homology statements are always asserted in the direction modId -> targetId
+	 * 
+	 * @param methodIds
+	 * @param provenanceId
+	 * @param comment
+	 */
+	public void assignHomologyLinkStatement(String userId, String nodeId, String targetId, String[] methodIds, String provenanceId, String comment);
 
-	public void assignNegativeHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment);
+	public void assignNegativeHomologyLinkStatement(String userId, String nodeId, String targetId, String[] methodIds, String provenanceId, String comment);
 
 	public void attachCommentToEntity(String entityId, String comment, String curatorId);
 	
@@ -155,6 +168,9 @@ public interface RefGenomeService extends RemoteService {
 
 	// these two methods are convenience wrappers for the above
 	public void retractEntityTargetStatus(String userId, String geneId);
+	
+	public void uploadFile(String userId, String filePath, String fileType);
+
 
 	/**
 	 * Given a target gene, is it and all homologous genes comprehensively
