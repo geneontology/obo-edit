@@ -42,10 +42,21 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		testAnnot(session);
 	}
 	private void testAnnot(OBOSession session) throws IOException, DataAdapterException {
+
+		/*
+		 * instance-level checks
+		 */
+		
 		Instance fred = (Instance)session.getObject("fred");
 		System.out.println(fred);
+		
+		// these must all be satisfied by the end of this part of the test
 		boolean likesBread = false;
+		boolean dislikesShuggy = false;
+		boolean hasSSNo = false;
 		// instance-level links such as "fred likes bread" are stored as normal links
+		// this holds for both "DataType" links (ie those in obof with an xsd datatype)
+		// and for "ObjectProperty" links (ie links between instances, or I-C links)
 		for (Link link : fred.getParents()) {
 			System.out.println("  link: "+link+" :: "+link.getClass());
 			if (link.getType().getID().equals("likes")) {
@@ -58,6 +69,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 				assertTrue(link instanceof ValueLink);
 
 				if (link.getParent().getID().equals("shuggy")) {
+					dislikesShuggy = true;
 					assertTrue(link instanceof ValueLink);
 				}
 			}
@@ -75,6 +87,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 								v.getType());
 						assertTrue(dv.getValue().equals("123-45-6789"));
 						assertTrue(v.getType().getID().equals("xsd:string"));
+						hasSSNo = true;
 					}
 					else {
 						assertTrue(false);
@@ -89,6 +102,10 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		}
 		for (PropertyValue pv : fred.getPropertyValues()) {
 			// THIS IS NEVER REACHED!!!
+			// everything we want to know about fred is in fact in
+			// normal links from fred, NOT propertyValues()
+			// (even if property_value tags are used in obof)
+			assertTrue(false);
 
 			System.out.println("  fred pv:"+pv);
 
@@ -105,10 +122,21 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 			if (prop.equals("likes"))
 				assertTrue(false);
 		}
+		
+		// check we found everything we need
 		assertTrue(likesBread); 
+		assertTrue(dislikesShuggy); 
+		assertTrue(hasSSNo); 
+	
+		
 		assertTrue(fred.getNamespace().getID().equals("test"));
+		
+		/*
+		 * annotation stanza checks
+		 */
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		System.err.println("N annots:"+annots.size());
+		assertTrue(annots.size() > 0);
 		boolean annotCompareTestOk = false;
 		for (Annotation annot : annots) {
 			System.out.println(annot.getNamespace()+" annot: "+annot+":: "+annot.getSubject()+" -"+annot.getRelationship()+"-> "+annot.getObject());  
@@ -124,6 +152,8 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 								annotCompareTestOk = true;
 						}
 					}
+					
+					// test annotation comparisons
 					OBOProperty property = (OBOProperty)session.getObject("holds_more_strongly_than");
 					IdentifiedObject annot2 = session.getObject("_:annot2");
 					annot.addPropertyValue(property, annot2);
@@ -131,24 +161,49 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 			}
 		}
 		assertTrue(annotCompareTestOk);
+		
+		testForAnnotation("fred","bread");
+		testForAnnotationAssignedBy("biggles","dread","GO");
+		testForAnnotationPublication("biggles","dread","PMID:biggles_flies_again");
+
 		for(IdentifiedObject io : session.getObjects()) {
 			if (!io.isBuiltIn() && !(io instanceof Annotation)) {
 				System.out.println(" regular object "+io);
 			}
 		}
 
+		/*
+		 * class-level entity checks
+		 */
+
 		OBOObject bread = (OBOObject)session.getObject("bread");
 		for (PropertyValue pv : bread.getPropertyValues()) {
-			System.out.println("  pv:"+pv);
+			/*
+			 * unfortunately it appears that property_value: tags in obof
+			 * in Term stanzas are treated as unknown tags. This means the tag
+			 * name (property_value) is the property and the actual P,V pair
+			 * gets treated as an atomic unit separated by a space.
+			 * This is not the desired behavior!!
+			 * however, if we do put the actual P in property then we may break
+			 * parsing of unknown tags if we are not careful. 
+			 * 
+			 * This is all a bit of a mess. I think we want to reserve
+			 * getProperty and getValue for unknown tags (they don't bear much
+			 * resemblance to property_value in obof), and I think we want to
+			 * parse property_value for classes the same way we do for instances
+			 * (see above). But if we do this we have to be very careful that these
+			 * don't get mixed up with relationship: tags which have ALL-SOME semantics
+			 * (contrast with property_value, which in a Term stanza means a property
+			 * at the level of the class unit, ie class metadata)
+			 */
+			System.out.println("  property:"+pv.getProperty()); // String
+			System.out.println("     value:"+pv.getValue()+"\n"); // String
 			// TODO - property_value tags
 		}
 		// check newlines written out OK
 		// this should really go in its own test; nothing to do with annotations per se
 		bread.setDefinition("test\na b c d e f\nggg\ty\rfoo");
 
-		testForAnnotation("fred","bread");
-		testForAnnotationAssignedBy("biggles","dread","GO");
-		testForAnnotationPublication("biggles","dread","PMID:biggles_flies_again");
 
 	}
 	
