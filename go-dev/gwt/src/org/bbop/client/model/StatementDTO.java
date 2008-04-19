@@ -17,6 +17,7 @@ public class StatementDTO extends NodeDTO implements IsSerializable {
 	protected String positedByNodeId;
 	protected String contextId;
 	protected boolean isInferred;
+	protected boolean isLiteralStatement;
 	
 	 /**
 	   * @gwt.typeArgs <org.bbop.client.model.StatementDTO>
@@ -100,8 +101,19 @@ public class StatementDTO extends NodeDTO implements IsSerializable {
 		subStatements.add(s);
 	}
 	
+	
+	public boolean isLiteralStatement() {
+		return isLiteralStatement;
+	}
+	public void setLiteralStatement(boolean isLiteralStatement) {
+		this.isLiteralStatement = isLiteralStatement;
+	}
 	public int hashCode() {
 		return toString().hashCode();
+	}
+	
+	public String toString() {
+		return getNodeId() + " --" + getRelationId() + "-- " + getTargetId();
 	}
 
 }

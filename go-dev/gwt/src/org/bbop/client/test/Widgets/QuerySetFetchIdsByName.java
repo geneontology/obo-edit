@@ -34,7 +34,7 @@ public class QuerySetFetchIdsByName extends QuerySet{
 	public void callbackAction(String str){
 		RefGenomeServiceAsync rgService = (RefGenomeServiceAsync) GWT.create(RefGenomeService.class);
 		((ServiceDefTarget) rgService).setServiceEntryPoint( GWT.getModuleBaseURL() + "/RefGenomeService");
-		rgService.fetchIdsByName(str, async);
+		rgService.fetchNodesByName(str, async);
 	}
 
 }
