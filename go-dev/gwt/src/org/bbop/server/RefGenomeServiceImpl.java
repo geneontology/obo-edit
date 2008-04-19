@@ -43,9 +43,15 @@ import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
 import org.obd.model.Statement;
+import org.obd.query.BooleanQueryTerm;
 import org.obd.query.ComparisonQueryTerm;
+import org.obd.query.LabelQueryTerm;
 import org.obd.query.LinkQueryTerm;
+import org.obd.query.QueryTerm;
 import org.obd.query.Shard;
+import org.obd.query.BooleanQueryTerm.BooleanOperator;
+import org.obd.query.LabelQueryTerm.AliasType;
+import org.obd.query.QueryTerm.Aspect;
 import org.obd.query.impl.MultiShard;
 import org.obd.query.impl.MutableOBOSessionShard;
 import org.obd.query.impl.OBDSQLShard;
@@ -81,8 +87,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	static String userName = "remote_user";
 	static String password = "glurp";
 
-	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
-	//static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
+	//static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
+	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
 
 	private String currentUserId;
 	private DateDTO currentDate;
@@ -237,6 +243,23 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public NodeDTO[] fetchNodesByNameAndTaxon(String searchTerm, String taxonId) {
+		Collection<Node> nodes;
+
+		try {
+			BooleanQueryTerm bqt = new BooleanQueryTerm(BooleanOperator.AND);
+			bqt.addQueryTerm(new LinkQueryTerm(IN_ORGANISM,taxonId));
+			bqt.addQueryTerm(new LabelQueryTerm(AliasType.ANY_LABEL,searchTerm));
+			//NodeDTO[] nodeDTOs;
+			nodes = shard.getNodesByQuery(bqt);
+			return slurpNodesInfo(nodes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	// NOTE: This works fine.
 	public String[] fetchReferenceTaxonIds() {
@@ -284,6 +307,17 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		String rel = HAS_STATUS;
 		String ob = STATUS_TARGET;
 		Collection<Node> nodes = shard.getNodesByQuery(new LinkQueryTerm(rel,ob));
+		return slurpNodesInfo(nodes);
+	}
+
+	public NodeDTO[] fetchReferenceTargetNodesByName(String name) {
+		BooleanQueryTerm bqt = new BooleanQueryTerm(BooleanOperator.AND);
+		String rel = HAS_STATUS;
+		String ob = STATUS_TARGET;
+		LinkQueryTerm lqt = new LinkQueryTerm(rel,ob);
+		bqt.addQueryTerm(lqt);
+		bqt.addQueryTerm(new LabelQueryTerm(AliasType.ANY_LABEL, name));
+		Collection<Node> nodes = shard.getNodesByQuery(bqt);
 		return slurpNodesInfo(nodes);
 	}
 	/*

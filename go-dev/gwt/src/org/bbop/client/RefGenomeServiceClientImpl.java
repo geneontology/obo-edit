@@ -57,6 +57,17 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 
+	public void fetchByNameAndTaxon(String name, String taxonId) {
+		refgservice.fetchNodesByNameAndTaxon(name, taxonId, new SearchByNameCallback());
+		
+	}
+
+	public void fetchTargetNodesByName(String name) {
+		refgservice.fetchReferenceTargetNodesByName(name, new FetchTargetNodesDetailCallback());
+		
+	}
+
+
 	
 	private class SearchByNameCallback implements AsyncCallback {
 
@@ -83,6 +94,24 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 			// TODO Auto-generated method stub
 			System.err.println("showing results...");
 			refgview.getNavPanel().getBrowseView().displayTargets((NodeDTO[])result);
+		}
+		
+	}
+	
+	// TODO - merge with the above
+	private class FetchTargetNodesDetailCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("error in search",caught);
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+			System.err.println("showing results...");
+			//refgview.getNavPanel().getBrowseView().displayTargets((NodeDTO[])result);
+
+			refgview.getSearchPanel().displaySearchTargets((NodeDTO[])result);
 		}
 		
 	}
@@ -147,7 +176,6 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		}
 		
 	}
-
 
 
 

@@ -15,6 +15,8 @@
  */
 package org.bbop.client;
 
+
+
 import org.bbop.client.model.DateDTO;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -26,6 +28,7 @@ public interface RefGenomeServiceAsync  {
 	public void fetchNodesByName(String searchTerm, AsyncCallback callback);
 	
 	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
+	public void fetchNodesByNameAndTaxon(String name, String taxonId, AsyncCallback callback);
 
 	public void fetchReferenceTaxonIds( AsyncCallback callback);
 	public void fetchReferenceTaxonNodes( AsyncCallback callback);
@@ -39,6 +42,8 @@ public interface RefGenomeServiceAsync  {
 	public void fetchReferenceTargetIds( AsyncCallback callback);
 
 	public void fetchReferenceTargetNodes( AsyncCallback callback);
+	
+	public void fetchReferenceTargetNodesByName(String name, AsyncCallback callback);
 	
 	public void getTaxonIdPrefix( AsyncCallback callback);
 	
@@ -80,5 +85,6 @@ public interface RefGenomeServiceAsync  {
 	public void retractEntityTargetStatus(String userId, String geneId, AsyncCallback callback);
 	
 	public void isSetComprehensivelyAnnotated(String entityId, AsyncCallback callback);
+
 
 }
