@@ -16,6 +16,10 @@
 package org.bbop.server;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +37,7 @@ import org.bbop.client.model.GeneOrGeneProductNodeDTO;
 import org.bbop.client.model.NodeDTO;
 import org.bbop.client.model.StatementDTO;
 import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.server.parser.RefGenomeTargetHomologsParser;
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
@@ -59,16 +64,16 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	private static final long serialVersionUID = 1L;
 
 	// Vocabulary
-	private String HAS_STATUS = "RefG:has_status";
-	private String HAS_EX_STATUS = "RefG:has_ex_status";
-	private String STATUS_TARGET = "RefG:Target";
-	private String HOMOLOGOUS_TO = "OBO_REL:homologous_to";
-	private String HAS_PROVENANCE = "oban:has_data_source";
-	private String HAS_EVIDENCE = "oban:has_evidence";
-	private String HAS_COMMENT = "dc:comment";
-	private String STATUS_COMPREHENSIVELY_ANNOTATED = "RefG:comprehensively_annotated";
-	private String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
-	private String ON_DATE = "dc:date";
+	public String HAS_STATUS = "RefG:has_status";
+	public String HAS_EX_STATUS = "RefG:has_ex_status";
+	public String STATUS_TARGET = "RefG:Target";
+	public String HOMOLOGOUS_TO = "OBO_REL:homologous_to";
+	public String HAS_PROVENANCE = "oban:has_data_source";
+	public String HAS_EVIDENCE = "oban:has_evidence";
+	public String HAS_COMMENT = "dc:comment";
+	public String STATUS_COMPREHENSIVELY_ANNOTATED = "RefG:comprehensively_annotated";
+	public String refGenomeSpeciesPath = "ftp://ftp.geneontology.org/pub/go/doc/reference-genome-species.obo";
+	public String ON_DATE = "dc:date";
 	private Map<String,NodeDTO> nodeCache = new HashMap<String,NodeDTO>();
 
 	//static String userName = "sjcarbon";
@@ -178,6 +183,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 	
 	private NodeDTO slurpNodeInfo(Node n) {
+		if (n == null)
+			return null;
 		// attach metadata to node
 		LinkQueryTerm qt = new LinkQueryTerm(n.getId(),null,null);
 		Collection<Statement> stmts = shard.getStatementsByQuery(qt);
@@ -297,13 +304,14 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 
 	public void assignEntityTargetStatus(String userId, String geneId, DateDTO date) {
+		System.err.println("assigning target status to "+geneId);
 		addStatement(geneId,HAS_STATUS,STATUS_TARGET,userId,currentDate);	
 	}
 
 
-	public void assignHomologyLinkStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment) {
+	public void assignHomologyLinkStatement(String userId, String nodeId, String targetId, String[] methodIds, String provenanceId, String comment) {
 		Graph g = new Graph();
-		Statement s = makeHomologyStatement(userId,e1id,e2id,methodIds,provenanceId,comment);
+		Statement s = makeHomologyStatement(userId,nodeId,targetId,methodIds,provenanceId,comment);
 		g.addStatement(s);
 		shard.putGraph(g);
 	}
@@ -370,10 +378,41 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void uploadFile(String userId, String filePath, String fileType) {
+		if (filePath == null)
+			filePath = RefGenomeTargetHomologsParser.getDefaultURL();
+		if (filePath.startsWith("ftp:") || filePath.startsWith("http:")) {
+			try {
+				Runtime.getRuntime().exec("wget -O /tmp/refg.txt "+filePath);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return; // TODO - fail
+			}
+			filePath = "/tmp/refg.txt"; // TODO - use URLs
+			
+		}
+		RefGenomeTargetHomologsParser parser = new RefGenomeTargetHomologsParser(filePath);
+		RefGenomeService rgs = this;
+		parser.setRefgService(rgs);
+		parser.setUserId(userId);
+		try {
+			parser.parse();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	private void addStatement(String su, String rel, String ob, String userId, DateDTO date) {
 		LinkStatement s = new LinkStatement(su,rel,ob,userId);
-		s.addSubLiteralStatement(ON_DATE, date.toString());
+		if (date == null) {
+			System.err.println("no date!");
+		}
+		else 
+			s.addSubLiteralStatement(ON_DATE, date.toString());
 		Graph g = new Graph();
 		g.addStatement(s);
 		shard.putGraph(g);
@@ -395,7 +434,8 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	private Statement makeHomologyStatement(String userId, String e1id, String e2id, String[] methodIds, String provenanceId, String comment) {
 		LinkStatement s = new LinkStatement(e1id,HOMOLOGOUS_TO,e2id,userId);
-		s.addSubLiteralStatement(ON_DATE, currentDate.toString());
+		if (currentDate != null)
+			s.addSubLiteralStatement(ON_DATE, currentDate.toString());
 		s.addSubLiteralStatement(HAS_PROVENANCE, provenanceId);
 		for (String methodId : methodIds)
 			s.addSubLiteralStatement(HAS_EVIDENCE, methodId);

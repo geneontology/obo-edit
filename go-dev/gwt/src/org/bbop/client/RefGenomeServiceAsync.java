@@ -63,6 +63,9 @@ public interface RefGenomeServiceAsync  {
 	public void fetchNodeById(String id, AsyncCallback callback);
 	
 	public void getAllUsers(AsyncCallback callback);
+	
+	public void uploadFile(String userId, String filePath, String fileType, AsyncCallback callback);
+
 
 	public void getHomologyMethodTypeNodes(AsyncCallback callback);
 

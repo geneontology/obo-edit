@@ -46,6 +46,12 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		refgservice.fetchReferenceTaxonNodes(new TaxonIdsCallback());
 	}
 	
+	public void uploadFile(String userId, String filePath, String fileType) {
+		refgservice.uploadFile(userId, filePath, fileType, new UploadFileCallback());
+		
+	}
+
+	
 	private class SearchByNameCallback implements AsyncCallback {
 
 		public void onFailure(Throwable caught) {
@@ -106,6 +112,23 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		}
 		
 	}
+	
+	private class UploadFileCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("Error uploading file", caught);	
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+
+			// TODO - signal to user somehow
+		}
+		
+	}
+
+
 
 	
 
