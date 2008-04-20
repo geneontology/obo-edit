@@ -434,8 +434,9 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 
 	public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId) {
-		// TODO Auto-generated method stub
-
+		System.err.println("retracting target status to "+geneId);
+		removeStatement(geneId,HAS_STATUS,STATUS_TARGET);
+		addStatement(geneId,HAS_EX_STATUS,STATUS_TARGET,userId,currentDate);	
 	}
 
 	public void retractEntityStatusCode(String userId, String statusId, String geneId) {
@@ -490,6 +491,12 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 		g.addStatement(s);
 		shard.putGraph(g);
 	}
+	
+	
+	private void removeStatement(String su, String rel, String ob) {
+		//shard.removeStatements(su, rel, ob);
+	}
+	
 
 	private void retractStatement(String su, String rel, String ob, String userId, DateDTO date) {
 		Collection<Statement> stmts = shard.getStatements(su, rel, ob, null, null, null);
