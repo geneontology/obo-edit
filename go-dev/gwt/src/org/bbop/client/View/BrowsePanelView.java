@@ -1,6 +1,9 @@
 package org.bbop.client.View;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.event.BaseEvent;
 import net.mygwt.ui.client.event.SelectionListener;
@@ -50,6 +53,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	public void setAttr() {
 		browseBar.setSpacing(8);
 		targetBtn.setIconStyle("icon-list");
+		targetBtn2.setIconStyle("icon-list");
 		orthologBtn.setIconStyle("icon-list");
 
 
@@ -60,6 +64,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	private void addObservers() {
 		targetBtn.addSelectionListener(new TargetListListener());
 		targetBtn2.addSelectionListener(new TargetList2Listener());
+		//orthologBtn.addSelectionListener(new OrthologListListener());
 
 	}
 
@@ -104,6 +109,29 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 			info.open();
 
 		}
+	}
+	
+	private class OrthologListListener implements SelectionListener {
+
+		public void widgetSelected(BaseEvent be) {
+			// TODO Auto-generated method stub
+			OrthologTableView orthoView = new OrthologTableView(refglistener,mainview);
+			List colHeadings = new ArrayList();
+			String[] colNames = new String[] {"Target","R.norvegicus","C.elegans","D.discoideum","A.thaliana","S.cerevisiae","S.pombe","M.musculus","D.melanogaster","E.coli","D.rio"};
+			for(int i =0; i<colNames.length; i++) {
+				colHeadings.add(colNames[i]);
+			}
+			
+			orthoView.setColumnHeadings(colHeadings);
+			orthoView.createView();
+			
+			resultView = mainview.getResultPanel();
+			resultView.removeChildViews();
+			resultView.addOrthologListView(orthoView.getView(), orthoView.getDataProvider(), "Ortholog List");
+			resultView.resetView();
+			orthoView.getDataProvider().load(0,10);
+		}
+		
 	}
 
 	public void displayTargets(NodeDTO[] targetNodes) {

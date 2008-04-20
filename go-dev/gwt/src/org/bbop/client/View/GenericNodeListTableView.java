@@ -52,6 +52,11 @@ public class GenericNodeListTableView {
 	public List getColumnHeadings() {
 		return columnHeadings;
 	}
+	
+	public Map getColumnHeadingMap() {
+		return columnLabelMap;
+	}
+	
 	public void addColumnHeading(String c) {
 		 columnHeadings.add(c);
 	}
