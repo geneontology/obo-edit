@@ -3,6 +3,7 @@ package org.bbop.client.View;
 
 
 import java.util.Iterator;
+import java.util.List;
 
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.widget.ContentPanel;
@@ -17,22 +18,27 @@ import net.mygwt.ui.client.widget.table.TableColumn;
 import net.mygwt.ui.client.widget.table.TableColumnModel;
 import net.mygwt.ui.client.widget.table.TableItem;
 
+import org.bbop.client.RefGenomeService;
 import org.bbop.client.Listener.RefGenomeViewListenerI;
+import org.bbop.client.model.DateDTO;
 import org.bbop.client.model.NodeDTO;
 import org.bbop.client.model.StatementDTO;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NameSearchTableView {
-    RefGenomeViewListenerI refgListener;
-    RefGenomeView mainView;
+public class NameSearchTableView extends GenericNodeListTableView {
+	// now inherited
+	//RefGenomeViewListenerI refgListener;
+    //RefGenomeView mainView;
 	
     private TableColumnModel nameColModel;
 	private Table nameTbl;
 	private TableColumn[] nameCols;
+	private int numCols = 6;
 	
 	final String entrezUrl = "http://view.ncbi.nlm.nih.gov/gene/"; 
 	final String omimUrl = "http://www.ncbi.nlm.nih.gov/entrez/dispomim.cgi?id=";
@@ -40,8 +46,7 @@ public class NameSearchTableView {
  
     
 	public NameSearchTableView (RefGenomeViewListenerI listener, RefGenomeView parent) {
-		refgListener = listener;
-		mainView = parent;
+		super(listener,parent);
 	}
 	
 	public void addObservers () {
@@ -49,11 +54,11 @@ public class NameSearchTableView {
 	}
 	
 	public void createView(NodeDTO[] resultNodes) {
-		nameCols = new TableColumn[4];
+		nameCols = new TableColumn[numCols];
 		
-		nameCols[0] = new TableColumn("Label",.40f);
+		nameCols[0] = new TableColumn("Label",.35f);
 		nameCols[0].setMinWidth(30);
-		nameCols[0].setMaxWidth(300);
+		nameCols[0].setMaxWidth(2000);
 		
 		nameCols[1] = new TableColumn("Id",.20f);
 		nameCols[1].setMinWidth(30);
@@ -69,13 +74,21 @@ public class NameSearchTableView {
 			
 	//	});
 		
-		nameCols[2] = new TableColumn("Source Id",.20f);
+		nameCols[2] = new TableColumn("Source Id",.15f);
 		nameCols[2].setMinWidth(30);
-		nameCols[2].setMaxWidth(300);
+		nameCols[2].setMaxWidth(600);
 
-		nameCols[3] = new TableColumn("Taxon",.20f);
+		nameCols[3] = new TableColumn("Taxon",.15f);
 		nameCols[3].setMinWidth(30);
-		nameCols[3].setMaxWidth(300);
+		nameCols[3].setMaxWidth(600);
+
+		nameCols[4] = new TableColumn("Status",.10f);
+		nameCols[4].setMinWidth(30);
+		nameCols[4].setMaxWidth(300);
+
+		nameCols[5] = new TableColumn("+/-",.05f);
+		nameCols[5].setMinWidth(10);
+		nameCols[5].setMaxWidth(300);
 
 		nameColModel = new TableColumnModel(nameCols);
 		nameTbl = new Table(Style.MULTI, nameColModel);
@@ -84,7 +97,7 @@ public class NameSearchTableView {
 		
 		for(int i = 0 ; i < resultNodes.length; i++) {
 			NodeDTO node = resultNodes[i];
-			Object[] nodeData = new Object[4];
+			Object[] nodeData = new Object[numCols];
 			nodeData[0] = node.getLabel();
 			HTML linkedId = new HTML(node.getId());
 			linkedId.addClickListener(new LinkedIdListener());
@@ -93,6 +106,33 @@ public class NameSearchTableView {
 			nodeData[3] = "-";
 			if (node.getInOrganismType() != null)
 				nodeData[3] = node.getInOrganismType().getLabel();
+			
+			List statusCodes = node.getTargetIds(RefGenomeService.HAS_STATUS);
+			nodeData[4] = flattenMultipleVals(statusCodes);
+			
+			final String statusButtonLabel = statusCodes.size() > 0 ? "-" : "+";
+			
+			Button statusBtn = new Button(statusButtonLabel);
+			//statusBtn.set
+			nodeData[5] = statusBtn;
+			final String nid = node.getId();
+			statusBtn.addClickListener(new ClickListener() {
+				public void onClick(Widget sender) {
+					String buttonTxt = ((Button)sender).getText();
+					System.err.println(nid);
+					String userId = "test";
+					if (statusButtonLabel.equals("+")) {
+						DateDTO date = new DateDTO(1000,1,1); // test. need popup?
+						getRefgListener().assignEntityTargetStatus(userId, nid, date);
+					}
+					else {
+						getRefgListener().retractEntityTargetStatus(userId, nid);
+						
+					}
+				}
+
+			});
+			
 			/*
 			Iterator it = node.getStatements().iterator();
 			System.err.println("statements for node "+node+" ;; "+node.getStatements().size());

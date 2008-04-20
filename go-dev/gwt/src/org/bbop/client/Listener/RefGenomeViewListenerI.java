@@ -1,5 +1,7 @@
 package org.bbop.client.Listener;
 
+import org.bbop.client.model.DateDTO;
+
 public interface RefGenomeViewListenerI {
 
 	public void doLogin(String user, String pass);
@@ -10,5 +12,7 @@ public interface RefGenomeViewListenerI {
 	public void fetchTaxonNodes();
 	public void uploadFile(String userId, String filePath, String fileType);
 	public void fetchTargets();
+	public void assignEntityTargetStatus(String userId, String id, DateDTO date);
+	public void retractEntityTargetStatus(String userId, String id);
 	
 }

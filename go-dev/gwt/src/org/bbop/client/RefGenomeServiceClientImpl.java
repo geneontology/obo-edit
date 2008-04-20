@@ -2,6 +2,7 @@ package org.bbop.client;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.View.RefGenomeView;
+import org.bbop.client.model.DateDTO;
 import org.bbop.client.model.NodeDTO;
 
 import com.google.gwt.core.client.GWT;
@@ -67,6 +68,13 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 
+	public void assignEntityTargetStatus(String userId, String id, DateDTO date) {
+		refgservice.assignEntityTargetStatus(userId, id, date, new ChangeEntityTargetStatusCallback());
+	}
+
+	public void retractEntityTargetStatus(String userId, String id) {
+		refgservice.retractEntityTargetStatus(userId, id, new ChangeEntityTargetStatusCallback());
+	}
 
 	
 	private class SearchByNameCallback implements AsyncCallback {
@@ -177,7 +185,22 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		
 	}
 
+	
 
+	private class ChangeEntityTargetStatusCallback implements AsyncCallback {
+
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			GWT.log("Error uploading file", caught);	
+		}
+
+		public void onSuccess(Object result) {
+			// TODO Auto-generated method stub
+
+			// TODO - signal to user somehow
+		}
+		
+	}
 
 	
 

@@ -28,37 +28,37 @@ import com.google.gwt.user.client.ui.CheckBox;
  */
 public class GenericNodeListTableView {
 
-	private RefGenomeViewListenerI refgListener;
-	private RefGenomeView mainView;
-	
+	protected RefGenomeViewListenerI refgListener;
+	protected RefGenomeView mainView;
+
 	//private WidgetContainer summaryWidget;
 	private TableColumnModel colModel;
 	private Table targetTbl;
 	private TableColumn[] tableCols;
 	private Map columnLabelMap = new HashMap();
-	
+
 	/**
 	 * @gwt.typeArgs <java.langString>
 	 */
 	private List columnHeadings = new ArrayList();
-	
+
 	public GenericNodeListTableView (RefGenomeViewListenerI listener, RefGenomeView parent) {
 		refgListener = listener;
 		mainView = parent;
 		addColumnHeading("id");
 		addColumnHeading("label");
 	}
-	
+
 	public List getColumnHeadings() {
 		return columnHeadings;
 	}
-	
+
 	public Map getColumnHeadingMap() {
 		return columnLabelMap;
 	}
-	
+
 	public void addColumnHeading(String c) {
-		 columnHeadings.add(c);
+		columnHeadings.add(c);
 	}
 	public void addColumnHeading(String c, String label) {
 		addColumnHeading(c);
@@ -111,18 +111,11 @@ public class GenericNodeListTableView {
 				}
 				else {
 					List vals = n.getTargetIds(cn);
-					StringBuffer sb = new StringBuffer();
-					Iterator it = vals.iterator();
-					while (it.hasNext()) {
-						sb.append(it.next().toString());
-						if (it.hasNext())
-							sb.append(", ");
-					}
-					val = sb.toString();
+					val = flattenMultipleVals(vals);
 				}
 				targetData[c] = val;
 			}
- 
+
 			targetTbl.add(new TableItem(targetData));
 
 		}
@@ -130,21 +123,41 @@ public class GenericNodeListTableView {
 
 
 	}
-	
+
+	protected String flattenMultipleVals(List vals) {
+		StringBuffer sb = new StringBuffer();
+		Iterator it = vals.iterator();
+		while (it.hasNext()) {
+			sb.append(it.next().toString());
+			if (it.hasNext())
+				sb.append(", ");
+		}
+		return sb.toString();
+	}
+
+
 	public void setAttr() {
-		
+
 	}
-	
+
 	public void addObservers () {
-		
+
 	}
-	
+
 	public Table getView() {
 		return targetTbl;
 	}
 
+	public RefGenomeViewListenerI getRefgListener() {
+		return refgListener;
+	}
+
+	public void setRefgListener(RefGenomeViewListenerI refgListener) {
+		this.refgListener = refgListener;
+	}
 
 
-	
-	
+
+
+
 }
