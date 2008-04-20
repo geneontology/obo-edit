@@ -410,8 +410,10 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 
 	public StatementDTO[] fetchHomologyLinkStatementsByEntityId(String entityId) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<LinkStatement> stmts = shard.getLinkStatementsByQuery(new LinkQueryTerm(HOMOLOGOUS_TO,entityId));
+		// get reciprocal
+		stmts.addAll(shard.getLinkStatementsByQuery(new LinkQueryTerm(entityId,HOMOLOGOUS_TO,null))); 
+		return statementsToDTOs(stmts);
 	}
 
 
@@ -556,9 +558,9 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	}
 
-	private StatementDTO[] statementsToDTOs(Collection<Statement> stmts) {
+	private StatementDTO[] statementsToDTOs(Collection<? extends Statement> stmts) {
 		StatementDTO[] dtos = new StatementDTO[stmts.size()];
-		Iterator<Statement> it = stmts.iterator();
+		Iterator<? extends Statement> it = stmts.iterator();
 		for (int i=0; it.hasNext(); i++) {
 			dtos[i] = statementToDTO(it.next());
 		}
