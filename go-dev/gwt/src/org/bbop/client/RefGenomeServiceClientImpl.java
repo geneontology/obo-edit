@@ -73,6 +73,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	}
 
 	public void retractEntityTargetStatus(String userId, String id) {
+		System.err.println("retracting");
 		refgservice.retractEntityTargetStatus(userId, id, new ChangeEntityTargetStatusCallback());
 	}
 
@@ -191,7 +192,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 
 		public void onFailure(Throwable caught) {
 			// TODO Auto-generated method stub
-			GWT.log("Error uploading file", caught);	
+			GWT.log("Error changing status", caught);	
 		}
 
 		public void onSuccess(Object result) {
