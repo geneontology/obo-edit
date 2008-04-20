@@ -52,6 +52,7 @@ import org.obd.query.Shard;
 import org.obd.query.BooleanQueryTerm.BooleanOperator;
 import org.obd.query.LabelQueryTerm.AliasType;
 import org.obd.query.QueryTerm.Aspect;
+import org.obd.query.exception.ShardExecutionException;
 import org.obd.query.impl.MultiShard;
 import org.obd.query.impl.MutableOBOSessionShard;
 import org.obd.query.impl.OBDSQLShard;
@@ -434,18 +435,19 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	}
 
 	public void retractEntityComprehensivelyAnnotatedStatus(String userId, String geneId) {
-		System.err.println("retracting target status to "+geneId);
-		removeStatement(geneId,HAS_STATUS,STATUS_TARGET);
-		addStatement(geneId,HAS_EX_STATUS,STATUS_TARGET,userId,currentDate);	
+		removeStatement(geneId,HAS_STATUS,STATUS_COMPREHENSIVELY_ANNOTATED);
+		addStatement(geneId,HAS_EX_STATUS,STATUS_COMPREHENSIVELY_ANNOTATED,userId,currentDate);	
 	}
 
 	public void retractEntityStatusCode(String userId, String statusId, String geneId) {
-		// TODO Auto-generated method stub
-
+		removeStatement(geneId,HAS_STATUS,statusId);
+		addStatement(geneId,HAS_EX_STATUS,statusId,userId,currentDate);	
 	}
 
 	public void retractEntityTargetStatus(String userId, String geneId) {
-		// TODO Auto-generated method stub
+		System.err.println("retracting target status to "+geneId);
+		removeStatement(geneId,HAS_STATUS,STATUS_TARGET);
+		addStatement(geneId,HAS_EX_STATUS,STATUS_TARGET,userId,currentDate);	
 
 	}
 
@@ -494,7 +496,14 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 	
 	
 	private void removeStatement(String su, String rel, String ob) {
-		//shard.removeStatements(su, rel, ob);
+		try {
+			System.err.println("removing "+su+" "+rel+" "+ob);
+			shard.removeMatchingStatements(su, rel, ob);
+		} catch (ShardExecutionException e) {
+			// TODO Auto-generated catch block
+			System.err.println("uh oh");
+			e.printStackTrace();
+		}
 	}
 	
 
