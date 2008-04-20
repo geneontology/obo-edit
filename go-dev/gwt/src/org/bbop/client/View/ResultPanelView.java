@@ -3,7 +3,9 @@ package org.bbop.client.View;
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 
 import net.mygwt.ui.client.Style;
+import net.mygwt.ui.client.viewer.RemoteContentProvider;
 import net.mygwt.ui.client.widget.ContentPanel;
+import net.mygwt.ui.client.widget.PagingToolBar;
 import net.mygwt.ui.client.widget.TabFolder;
 import net.mygwt.ui.client.widget.TabItem;
 import net.mygwt.ui.client.widget.ToolBar;
@@ -153,11 +155,43 @@ public class ResultPanelView {
 		
 	}
 	
+	public void addOrthologListView(Table tbl, RemoteContentProvider cp, String title) {
+		tblHolder = new WidgetContainer();
+		TabFolder tblFolder = new TabFolder(Style.TOP);
+		tblFolder.setTabWidth(80);
+		
+		TabItem tblItem = new TabItem(Style.NONE);
+		tblItem.setText(title);
+		tblItem.setIconStyle("icon-tabs");
+		WidgetContainer itemContainer = tblItem.getContainer();
+		itemContainer.setLayout(new RowLayout(Style.VERTICAL));
+		
+		PagingToolBar pbar = new PagingToolBar(10);
+		pbar.bind(cp);
+		
+		itemContainer.add(tbl,new RowData(RowData.FILL_BOTH));
+		itemContainer.add(pbar, new RowData(RowData.FILL_HORIZONTAL));
+		tblFolder.add(tblItem);
+		tblFolder.setSelection(tblItem);
+		
+		tblHolder.setScrollEnabled(false);
+		tblHolder.setLayout(new FillLayout());
+		tblHolder.add(tblFolder);
+		
+	
+		//cp.load();
+		
+	}
+	
 
 	
 	public void resetView() {
 		centerPanel.add(tblHolder);
 		centerPanel.layout(true);
+	}
+	
+	public void attachView() {
+		centerPanel.add(tblHolder);
 	}
 	
 	
