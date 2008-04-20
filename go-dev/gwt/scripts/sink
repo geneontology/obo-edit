@@ -241,11 +241,17 @@ elsif clo.wanted_out
 
   puts "Will rsync OUT..." if clo.wanted_verbose
 
-  ## Get command straight.
+  ## Get command straight test.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} ../test #{clo.wanted_dir}/"
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+  ## Get command straight src.
   command = rsync_cmd
   command = "#{command} -n" if not clo.wanted_execute
   command = "#{command} ../src #{clo.wanted_dir}/"
-
   puts "Running: #{command}" if clo.wanted_verbose
   system(command) 
 
@@ -253,11 +259,17 @@ elsif clo.wanted_in
 
   puts "Will rsync IN..." if clo.wanted_verbose
 
-  ## Get command straight.
+  ## Get command straight test.
+  command = rsync_cmd
+  command = "#{command} -n" if not clo.wanted_execute
+  command = "#{command} #{clo.wanted_dir}/test ../"
+  puts "Running: #{command}" if clo.wanted_verbose
+  system(command) 
+
+  ## Get command straight src.
   command = rsync_cmd
   command = "#{command} -n" if not clo.wanted_execute
   command = "#{command} #{clo.wanted_dir}/src ../"
-
   puts "Running: #{command}" if clo.wanted_verbose
   system(command) 
 
