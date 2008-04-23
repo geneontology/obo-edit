@@ -45,6 +45,8 @@ public class OBOFileAdapter implements OBOAdapter {
 //		protected boolean allowDangling = false;
 	        // Changed to true because of users' request.  --NH, 4/11/08
 	        protected boolean allowDangling = true;
+	        
+	  protected boolean followImports = true;
 
 		protected boolean failFast = false;
 
@@ -108,6 +110,15 @@ public class OBOFileAdapter implements OBOAdapter {
 			this.allowDangling = allowDangling;
 		}
 
+		public boolean getFollowImports() {
+			return followImports;
+		}
+
+		public void setFollowImports(boolean followImports) {
+			this.followImports = followImports;
+		}
+
+		
 		public SemanticParser getSemanticParser() {
 			return semanticParser;
 		}
@@ -219,11 +230,13 @@ public class OBOFileAdapter implements OBOAdapter {
 //						&& !ioprofile.getBasicSave());
 				    );
 				parser.setFailFast(ioprofile.getFailFast());
+				parser.setFollowImports(ioprofile.getFollowImports());
 				engine = new OBOParseEngine(parser);
 
 				engine.setPaths(ioprofile.getReadPaths());
 				System.err.println("Reading " +	ioprofile.getReadPaths()
-						   + " (allowDangling = " + ioprofile.getAllowDangling() + ")"); // DEL this part
+						   + "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
+						   + "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
 				engine.parse();
 
 				OBOSession history = parser.getSession();
@@ -243,7 +256,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (cancelled)
 					throw new CancelledAdapterException();
 
-				throw new DataAdapterException(e, "Load error");
+				throw new DataAdapterException(e, "Load error with path "+engine.getCurrentPath());
 			}
 		} else if (op.equals(WRITE_ONTOLOGY)) {
 			try {

@@ -69,6 +69,9 @@ public class DefaultOBOParser implements OBOParser {
 	protected OBOMetaData metaData;
 
 	protected boolean failFast = false;
+	
+	//need this so that flag can be changed in case if offline
+	protected boolean followImports = true;
 
 	// CJM: all link namespaces appear to be false by default
 	// I have added this to allow link nss to inherit the default namespace.
@@ -394,8 +397,16 @@ public class DefaultOBOParser implements OBOParser {
 		this.allowDanglingParents = allowDanglingParents;
 	}
 
+	public void setFollowImports(boolean followImports) {
+		this.followImports = followImports;
+	}
+
 	public boolean getAllowDanglingParents() {
 		return allowDanglingParents;
+	}
+	
+	public boolean getFollowImports() {
+		return followImports;
 	}
 
 	public OBOSession getSession() {
@@ -448,8 +459,10 @@ public class DefaultOBOParser implements OBOParser {
 			path = url.toString();
 			if (!pathSet.contains(path)) {
 				metaData.addImport(getCurrentPath(), path);
-				engine.parse(path);
-			}
+				if (getFollowImports()) {
+						engine.parse(path);
+					}
+				}
 		} catch (MalformedURLException ex) {
 			// throw new OBOParseException("Bad import URL:
 			// "+originalURL+"/"+path);

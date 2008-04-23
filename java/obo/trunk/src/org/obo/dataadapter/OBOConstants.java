@@ -203,6 +203,8 @@ public class OBOConstants {
 	public static final String NAMESPACE_ID_RULE_HEADER_TAG = "namespace-id-rule";
 
 	public static final String REMARK_HEADER_TAG = "remark";
+	
+	public static final String IMPORT_HEADER_TAG = "import";
 
 	public static final TagMapping ID_TAG = new TagMapping("id",
 			IdentifiedObject.class);
@@ -304,6 +306,7 @@ public class OBOConstants {
 		_defaultHeaderTagOrder.add(DEFAULT_NAMESPACE_HEADER_TAG);
 		_defaultHeaderTagOrder.add(NAMESPACE_ID_RULE_HEADER_TAG);
 		_defaultHeaderTagOrder.add(IDSPACE_HEADER_TAG);
+		_defaultHeaderTagOrder.add(IMPORT_HEADER_TAG);
 
 		_defaultHeaderTagOrder.add(REMARK_HEADER_TAG);
 
