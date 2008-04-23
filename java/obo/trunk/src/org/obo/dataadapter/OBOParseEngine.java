@@ -6,6 +6,7 @@ import java.util.regex.*;
 import java.net.*;
 import java.text.*;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.obo.datamodel.*;
@@ -374,8 +375,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 						parseTag(currentStanza, line, linenum, pair.index + 1,
 								name, value, nv);
 					} catch (OBOParseException ex) {
-						ex.printStackTrace();
-						translateAndThrow(ex, line, linenum, pair.index + 1);
+								ex.printStackTrace();
+								translateAndThrow(ex, line, linenum, pair.index + 1);
+
 					}
 				} else {
 					try {

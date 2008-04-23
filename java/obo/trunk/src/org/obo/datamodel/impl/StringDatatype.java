@@ -8,6 +8,10 @@ public class StringDatatype extends SimpleDatatype<String> {
 	 * 
 	 */
 	private static final long serialVersionUID = -3023102931769871953L;
+	
+	public StringDatatype() {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public String getID() {
