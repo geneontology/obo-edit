@@ -58,7 +58,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	public ReasonerManagerComponent(String id) {
 		super(id);
-		setPreferredSize(new Dimension(250,100));
+		setPreferredSize(new Dimension(450,150));
 		setLayout(new BorderLayout());
 		summaryField.setPreferredSize(new Dimension(200, 50));
 		summaryField.setContentType("text/html");
