@@ -39,6 +39,12 @@ import org.bbop.swing.PlusIcon;
 import javax.swing.JFrame;
 
 
+/*
+ * By Jennifer Deegan and Nicolas Rodriguez
+ * EMBL-EBI
+ * January to April 2008
+ */
+
 public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 
 
@@ -118,7 +124,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 	JLabel branchFileLabel = new JLabel("Branch File");
 	JTextField branchFileTextField = new JTextField("");
 	JButton branchFileBrowseButton = new JButton("Browse");
-	JLabel liveFileLabel = new JLabel("Live File");
+	JLabel liveFileLabel = new JLabel("Live File   ");
 	JTextField liveFileTextField = new JTextField("");
 	JButton liveFileBrowseButton = new JButton("Browse");
 	JLabel mergedFileLabel = new JLabel("Merged File");
@@ -172,9 +178,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 	JTextArea feedbackTextArea = new JTextArea(feedbackTextAreaString);
 	JLabel feedbackFilePathLabel = new JLabel("Feedback File Path");
 	JTextField feedbackFileTextField = new JTextField();
-	JButton feedbackFileBrowseButton = new JButton("Browse");
 	String ignoreClashOnIDsChoiceString = new String();
-
+	PrintStream feedbackFileOutputStream;
 
 	public OBOMergeCanvasMark2(String id) {
 		super(id);
@@ -186,10 +191,15 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		setLayout(new BorderLayout());
 		JPanel mainGUIPanel = new JPanel();
 
+		JScrollPane mainGUIPanelScrollPane = new JScrollPane(mainGUIPanel);
+
+		
 		add(oboMergeTabbedPane, "Center");
-		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanel, "Ontology Files");
+		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanelScrollPane, "Ontology Files");
 		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
 
+		
+		
 //		mainGUIPanel.setLayout(new BorderLayout());
 		mainGUIPanel.setLayout(new GridBagLayout());
 		GridBagConstraints mainGUIPanelGBC = new GridBagConstraints();
@@ -219,6 +229,16 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		mainGUIPanel.add(mergeOptionPanel, mainGUIPanelGBC);
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
 
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 4;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(finalOptionPanel, mainGUIPanelGBC);
+		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
+
+				
+		
 		centerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints centerPanelGBC = new GridBagConstraints();
 
@@ -231,13 +251,13 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		centerPanel.add(inputFilePanel, mainGUIPanelGBC);
 		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
 
-		centerPanelGBC.gridheight = 1;
-		centerPanelGBC.gridwidth = 1;
-		centerPanelGBC.gridx = 1;
-		centerPanelGBC.gridy = 0;
-		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_END;
-		centerPanel.add(finalOptionPanel, centerPanelGBC);
-		finalOptionPanel.setBorder(new TitledBorder ("Final Options"));
+//		centerPanelGBC.gridheight = 1;
+//		centerPanelGBC.gridwidth = 1;
+//		centerPanelGBC.gridx = 1;
+//		centerPanelGBC.gridy = 0;
+//		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_END;
+//		centerPanel.add(finalOptionPanel, centerPanelGBC);
+//		finalOptionPanel.setBorder(new TitledBorder ("Final Options"));
 
 
 		//Make GridBag layout for the contents of the inputFilePanel. 
@@ -397,18 +417,18 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		saveProfileComboBox.setEditable(true);
 
 		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
-		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridx = 2;
 		saveProfilePanelGBC.gridy = 0;
 //		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
-		saveProfilePanelGBC.weightx = 1;
+		saveProfilePanelGBC.weightx = 0;
 
 		saveProfilePanel.add(addProfilePlusButton, saveProfilePanelGBC);
 
 		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
-		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridx = 3;
 		saveProfilePanelGBC.gridy = 0;
 		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_END;
-		saveProfilePanelGBC.weightx = 1;
+		saveProfilePanelGBC.weightx = 0;
 
 		saveProfilePanel.add(removeProfileMinusButton, saveProfilePanelGBC);
 
@@ -457,7 +477,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		finalOptionPanel.setLayout(new GridBagLayout());
 		GridBagConstraints finalOptionPanelGBC = new GridBagConstraints();
 
-		finalOptionPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		finalOptionPanelGBC.fill = GridBagConstraints.NONE;
 		finalOptionPanelGBC.gridx = 0;
 		finalOptionPanelGBC.gridy = 0;
 		//	finalOptionPanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -465,21 +485,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 //		finalOptionPanelGBC.insets = new Insets(5,5,5,5);
 		finalOptionPanel.add(advancedButton, finalOptionPanelGBC);
 
-		finalOptionPanelGBC.fill = GridBagConstraints.HORIZONTAL;
-		finalOptionPanelGBC.gridx = 0;
-		finalOptionPanelGBC.gridy = 1;
-		finalOptionPanel.add(showProgressPanel, finalOptionPanelGBC);
-		showProgressPanel.setBorder(new TitledBorder("Show Progress"));
-
-		finalOptionPanelGBC.fill = GridBagConstraints.HORIZONTAL;
-		finalOptionPanelGBC.gridx = 0;
-		finalOptionPanelGBC.gridy = 2;
-		finalOptionPanel.add(saveProgressToFilePanel, finalOptionPanelGBC);
-		saveProgressToFilePanel.setBorder(new TitledBorder("Save Progress"));
-
-		finalOptionPanelGBC.fill = GridBagConstraints.HORIZONTAL;
-		finalOptionPanelGBC.gridx = 0;
-		finalOptionPanelGBC.gridy = 3;
+		finalOptionPanelGBC.gridx = 1;
 		finalOptionPanel.add(mergeButton, finalOptionPanelGBC);
 
 		processFeedbackPanel.setLayout(new GridBagLayout());
@@ -492,17 +498,14 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		processFeedbackPanelGBC.gridy = 1;
 		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_END;
 		processFeedbackPanelGBC.weightx = 1;
-		processFeedbackPanelGBC.gridheight = 5;
-		processFeedbackPanelGBC.gridwidth = 1;
+		processFeedbackPanelGBC.weighty = 1;
 		processFeedbackPanelGBC.insets = new Insets(5,5,5,5);
 		processFeedbackPanel.add(feedbackTextAreaScrollPane, processFeedbackPanelGBC);
 
-		processFeedbackPanelGBC.gridheight = 1;
-		processFeedbackPanelGBC.gridwidth = 1;
-		processFeedbackPanelGBC.gridx = 0;
+		processFeedbackPanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		processFeedbackPanelGBC.gridy = 0;
-		processFeedbackPanelGBC.gridheight = 1;
-		processFeedbackPanelGBC.gridwidth = 1;
+		processFeedbackPanelGBC.weightx = 1;
+		processFeedbackPanelGBC.weighty = 0;
 		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_START;
 		processFeedbackPanel.add(saveFeedbackToFileDetailPanel, processFeedbackPanelGBC);
 
@@ -513,22 +516,21 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
 		saveFeedbackToFileDetailPanelGBC.gridx = 0;
 		saveFeedbackToFileDetailPanelGBC.gridy = 0;
-		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.LINE_START;
-		saveFeedbackToFileDetailPanelGBC.weightx = 1;
+		saveFeedbackToFileDetailPanelGBC.weightx = 0;
 		saveFeedbackToFileDetailPanelGBC.insets = new Insets(5,5,5,5);
 		saveFeedbackToFileDetailPanel.add(feedbackFilePathLabel, saveFeedbackToFileDetailPanelGBC);
 
 		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.HORIZONTAL;
-//		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.CENTER;
 		saveFeedbackToFileDetailPanelGBC.gridx = 1;
 		saveFeedbackToFileDetailPanelGBC.gridy = 0;
-		saveFeedbackToFileDetailPanel.add(feedbackFileTextField, saveFeedbackToFileDetailPanelGBC);
+		saveFeedbackToFileDetailPanelGBC.weightx = 1;
+		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileTextField, saveFeedbackToFileDetailPanelGBC);
 
 		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
-//		saveFeedbackToFileDetailPanelGBC.anchor = GridBagConstraints.LINE_END;
 		saveFeedbackToFileDetailPanelGBC.gridx = 2;
 		saveFeedbackToFileDetailPanelGBC.gridy = 0;
-		saveFeedbackToFileDetailPanel.add(feedbackFileBrowseButton, saveFeedbackToFileDetailPanelGBC);
+		saveFeedbackToFileDetailPanelGBC.weightx = 0;
+		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileBrowseButton, saveFeedbackToFileDetailPanelGBC);
 
 
 		validate();
@@ -602,7 +604,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 				mergedFileBrowseButtonActionPerformed(evt);
 			}
 		});
-
+		
+		
 		liveFileTextField
 		.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -630,7 +633,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 				}			
 			}
 		});
-
+		saveProfilePanel.setVisible(false);
+		mergeOptionPanel.setVisible(false);
 	}
 
 
@@ -755,8 +759,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		if (makeArgArrayList() == true) {
 			try {
 				WriteFeedbackToFile();
-//				ShowFeedbackInWindow();
 				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
+				ShowFeedbackInWindow();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -812,6 +816,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile().getAbsolutePath();
 			saveFeedbackToFileTextField.setText(saveFeedbackToFileTextFieldString);
 		}
+System.out.println("saveFeedbackToFileBrowseButtonActionPerformed : We are in button action performed.");
 	}
 
 
@@ -828,7 +833,7 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
 		try {
 
-			PrintStream feedbackFileOutputStream = new PrintStream(
+			feedbackFileOutputStream = new PrintStream(
 					feedbackFile);
 //			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
 //					feedbackFileOutputStream);
@@ -845,23 +850,9 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 	}
 
 
-//	private void ShowFeedbackInWindow() {
-////		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
-//		try {
-//			PrintStream feedbackWindowOutputStream = new PrintStream(
-//					feedbackTextAreaString);
-//			PrintStream feedbackTextAreaString = new PrintStream(
-//					feedbackFile);			
-//			System.setOut(feedbackFileOutputStream);
-//			System.setErr(feedbackFileOutputStream);
-//
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
+	private void ShowFeedbackInWindow() {
+			feedbackTextArea.setText(feedbackFileOutputStream.toString());
+	}
 
 
 
