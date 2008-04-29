@@ -208,6 +208,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
+			cellRenderer.setFont(Preferences.getPreferences().getFont());
+			reload();
 			setToolTips();
 		}
 	};
@@ -357,7 +359,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		}
 		rendererPane.removeAll();
-		System.err.println("   CREATING IMAGE W/ TITLE " + dragTitle);
+//		System.err.println("   CREATING IMAGE W/ TITLE " + dragTitle);
 		return out;
 	}
 
@@ -1463,13 +1465,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected SelectionTransferHandler selectionTransferHandler;
 
+	protected OBOCellRenderer cellRenderer;
+
 	public void init() {
 		selectionTransferHandler = SelectionTransferHandler
 				.installHandler(this);
 		setDropTarget(dropTarget);
 		attachListeners();
 		setToolTips();
-		setCellRenderer(new OBOCellRenderer());
+		cellRenderer = new OBOCellRenderer();
+		setCellRenderer(cellRenderer);
 
 		toolbar.updateGestureList();
 	}
