@@ -13,7 +13,7 @@ import junit.framework.*;
 
 public class SimpleOBORoundtripTest extends TestCase {
 
-	public String[] testFiles = { "lib/resources/testfile.1.0.obo" };
+	public String[] testFiles = { "test_resources/testfile.1.0.obo" };
 
 	public void testRoundtrip() throws DataAdapterException, IOException {
 		for (int i = 0; i < testFiles.length; i++) {
