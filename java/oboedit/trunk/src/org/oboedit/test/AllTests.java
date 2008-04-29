@@ -9,6 +9,7 @@ public class AllTests extends TestCase {
 	public static Test suite() {
 		TestSuite out = new TestSuite();
 
+
 		out.addTestSuite(SimpleOBORoundtripTest.class);
 
 		out.addTestSuite(OBO2FlatTest.class);
@@ -18,7 +19,9 @@ public class AllTests extends TestCase {
 
 		out.addTestSuite(DatamodelTest.class);
 
+		out.addTestSuite(CloneTest.class);
 		out.addTestSuite(AddActionTest.class);
+
 		out.addTestSuite(TermScopeSynonymTest.class);
 		out.addTestSuite(TermRemoveSynonymTest.class);
 		out.addTestSuite(TermSynonymTest.class);
