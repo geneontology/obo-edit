@@ -81,23 +81,11 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 			textControl.append(String.valueOf((char) b));
 		}
 	}
-//	public static final int HIDE_ON_CLOSE = 1;
-//	public static void main(String args[]) {
-//	java.awt.EventQueue.invokeLater(new Runnable() {
-//	public void run() {
-//	new OBOMergeCanvasMark2().setVisible(true);
-//	}
-//	});
-//	}
 	private static void addAComponentXAlignment(JComponent componentName, Container container) {
-//		componentName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		container.add(componentName);
-
 	}
 	private static void addAComponentYAlignment(JComponent componentName, Container container) {
-//		componentName.setAlignmentY(Component.CENTER_ALIGNMENT);
 		container.add(componentName);
-
 	}
 	private int defaultCloseOperation = HIDE_ON_CLOSE;
 	public static final int HIDE_ON_CLOSE = 1;
@@ -190,17 +178,12 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 
 		setLayout(new BorderLayout());
 		JPanel mainGUIPanel = new JPanel();
-
 		JScrollPane mainGUIPanelScrollPane = new JScrollPane(mainGUIPanel);
-
 		
 		add(oboMergeTabbedPane, "Center");
 		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanelScrollPane, "Ontology Files");
 		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
-
 		
-		
-//		mainGUIPanel.setLayout(new BorderLayout());
 		mainGUIPanel.setLayout(new GridBagLayout());
 		GridBagConstraints mainGUIPanelGBC = new GridBagConstraints();
 
@@ -219,8 +202,8 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		mainGUIPanelGBC.gridy = 1;
 		mainGUIPanelGBC.gridwidth = 4;
 		mainGUIPanelGBC.gridheight = 2;
-		mainGUIPanel.add(centerPanel, mainGUIPanelGBC);
-		centerPanel.setBorder(new TitledBorder ("Center Panel"));
+		mainGUIPanel.add(inputFilePanel, mainGUIPanelGBC);
+		inputFilePanel.setBorder(new TitledBorder ("File Paths"));
 
 		mainGUIPanelGBC.gridx = 0;
 		mainGUIPanelGBC.gridy = 3;
@@ -241,24 +224,6 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		
 		centerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints centerPanelGBC = new GridBagConstraints();
-
-		centerPanelGBC.gridx = 0;
-		centerPanelGBC.gridy = 0;
-		centerPanelGBC.weightx = 1;
-		centerPanelGBC.gridheight = 1;
-		centerPanelGBC.gridwidth = 1;
-		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
-		centerPanel.add(inputFilePanel, mainGUIPanelGBC);
-		inputFilePanel.setBorder(new TitledBorder ("Ontology File Paths"));
-
-//		centerPanelGBC.gridheight = 1;
-//		centerPanelGBC.gridwidth = 1;
-//		centerPanelGBC.gridx = 1;
-//		centerPanelGBC.gridy = 0;
-//		centerPanelGBC.anchor = GridBagConstraints.FIRST_LINE_END;
-//		centerPanel.add(finalOptionPanel, centerPanelGBC);
-//		finalOptionPanel.setBorder(new TitledBorder ("Final Options"));
-
 
 		//Make GridBag layout for the contents of the inputFilePanel. 
 		inputFilePanel.setLayout(new GridBagLayout());
@@ -466,13 +431,13 @@ public class OBOMergeCanvasMark2 extends AbstractGUIComponent {
 		mergeOptionPanelGBC.gridy = 1;
 		mergeOptionPanel.add(failOnClashCombobox, mergeOptionPanelGBC);
 
-		mergeOptionPanelGBC.gridx = 2;
-		mergeOptionPanelGBC.gridy = 1;
-		mergeOptionPanel.add(ignoreClashOnIDsLabel, mergeOptionPanelGBC);
+//		mergeOptionPanelGBC.gridx = 2;
+//		mergeOptionPanelGBC.gridy = 1;
+//		mergeOptionPanel.add(ignoreClashOnIDsLabel, mergeOptionPanelGBC);
 
-		mergeOptionPanelGBC.gridx = 3;
-		mergeOptionPanelGBC.gridy = 1;
-		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
+//		mergeOptionPanelGBC.gridx = 3;
+//		mergeOptionPanelGBC.gridy = 1;
+//		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
 
 		finalOptionPanel.setLayout(new GridBagLayout());
 		GridBagConstraints finalOptionPanelGBC = new GridBagConstraints();
