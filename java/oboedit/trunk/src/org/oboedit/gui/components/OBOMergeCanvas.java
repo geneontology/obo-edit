@@ -1,1205 +1,52 @@
-/*
- * OBOMergeCanvas.java
- *
- * Created on __DATE__, __TIME__
- */
-
 package org.oboedit.gui.components;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.GUIComponent;
+import org.bbop.framework.dock.LayoutAdapter;
+import org.bbop.framework.dock.LayoutListener;
 import org.bbop.swing.MinusIcon;
 import org.bbop.swing.PlusIcon;
+import javax.swing.JFrame;
 
-/**
- *
- * @author  __USER__
+
+/*
+ * By Jennifer Deegan and Nicolas Rodriguez
+ * EMBL-EBI
+ * January to April 2008
  */
-public class OBOMergeCanvas extends javax.swing.JFrame {
 
-	ArrayList<String> obomergeArgsArrayList = new ArrayList<String>();
-	String[] obomergeArgsArray = new String[0];
-	String ignoreClashOnIDsChoiceString = "NEVER";
-	String failOnClashChoiceString = "NEVER"; //Default value.
-	String updateIDsChoiceString = "NEVER"; //Default value;
-	String outputFormatChoiceString = "OBO_1_2";
-	JFileChooser fileChooser = new JFileChooser();
-	JFrame missingPathFrame;
-	String saveFeedbackToFileTextFieldString;
+public class OBOMergeCanvas extends AbstractGUIComponent {
 
-	/** Creates new form OBOMergeCanvas */
-	public OBOMergeCanvas() {
-		initComponents();
-	}
-
-	//GEN-BEGIN:initComponents
-	// <editor-fold defaultstate="collapsed" desc="Generated Code">
-	private void initComponents() {
-
-		oboMergeTabbedPane1 = new javax.swing.JTabbedPane();
-		processFeedbackPanel = new javax.swing.JPanel();
-		saveFeedbackToFileBrowseButton = new javax.swing.JButton();
-		saveFeedbackToFileCheckBox = new javax.swing.JCheckBox();
-		saveFeedbackToFileTextField = new javax.swing.JTextField();
-		showProgressPanel = new javax.swing.JPanel();
-		jScrollPane2 = new javax.swing.JScrollPane();
-		progressTextArea = new javax.swing.JTextArea();
-		inputFilePanel = new javax.swing.JPanel();
-		saveProfilePanel = new javax.swing.JPanel();
-		jLabel2 = new javax.swing.JLabel();
-		jComboBox1 = new javax.swing.JComboBox();
-		plusButton = new javax.swing.JButton(new PlusIcon(1.5f, 8, 8));
-		minusButton = new javax.swing.JButton(new MinusIcon(1.5f, 8, 8));
-		mergeOptionPanel = new javax.swing.JPanel();
-		outputFileFormatLabel = new javax.swing.JLabel();
-		fileFormatComboBox = new javax.swing.JComboBox();
-		updateIDsChoiceComboBox = new javax.swing.JComboBox();
-		failOnClashChoiceComboBox = new javax.swing.JComboBox();
-		jTextField1 = new javax.swing.JTextField();
-		updateIDsLabel = new javax.swing.JLabel();
-		failOnClashLabel = new javax.swing.JLabel();
-		jLabel1 = new javax.swing.JLabel();
-		ontologyPathPanel = new javax.swing.JPanel();
-		parentFileButton = new javax.swing.JButton();
-		outputFileTextField = new javax.swing.JTextField();
-		mergedFileLabel = new javax.swing.JLabel();
-		mainEditedFileLabel = new javax.swing.JLabel();
-		parentFileTextField = new javax.swing.JTextField();
-		secondaryEditedFileButton = new javax.swing.JButton();
-		parentFileLabel = new javax.swing.JLabel();
-		mainEditedFileButton = new javax.swing.JButton();
-		secondaryEditedFileTextField = new javax.swing.JTextField();
-		outputFileButton = new javax.swing.JButton();
-		mainEditedFileTextField = new javax.swing.JTextField();
-		secondaryEditedFileLabel = new javax.swing.JLabel();
-		activateAdvancedOptionButton = new javax.swing.JButton();
-		mergeButton = new javax.swing.JButton();
-
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		setTitle("OBO Merge");
-
-		saveFeedbackToFileBrowseButton.setText("Browse");
-		saveFeedbackToFileBrowseButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						saveFeedbackToFileBrowseButtonActionPerformed(evt);
-					}
-				});
-
-		saveFeedbackToFileCheckBox.setText("Save feed back to file");
-
-		progressTextArea.setColumns(20);
-		progressTextArea.setRows(5);
-		jScrollPane2.setViewportView(progressTextArea);
-
-		org.jdesktop.layout.GroupLayout showProgressPanelLayout = new org.jdesktop.layout.GroupLayout(
-				showProgressPanel);
-		showProgressPanel.setLayout(showProgressPanelLayout);
-		showProgressPanelLayout
-				.setHorizontalGroup(showProgressPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								showProgressPanelLayout
-										.createSequentialGroup()
-										.add(
-												jScrollPane2,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												670,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-		showProgressPanelLayout
-				.setVerticalGroup(showProgressPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								showProgressPanelLayout
-										.createSequentialGroup()
-										.add(
-												jScrollPane2,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												392,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-
-		org.jdesktop.layout.GroupLayout processFeedbackPanelLayout = new org.jdesktop.layout.GroupLayout(
-				processFeedbackPanel);
-		processFeedbackPanel.setLayout(processFeedbackPanelLayout);
-		processFeedbackPanelLayout
-				.setHorizontalGroup(processFeedbackPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								processFeedbackPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												processFeedbackPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																processFeedbackPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				saveFeedbackToFileCheckBox,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				160,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				saveFeedbackToFileTextField,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				431,
-																				Short.MAX_VALUE)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.UNRELATED)
-																		.add(
-																				saveFeedbackToFileBrowseButton,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				77,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-														.add(
-																showProgressPanel,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE))
-										.add(123, 123, 123)));
-		processFeedbackPanelLayout
-				.setVerticalGroup(processFeedbackPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								processFeedbackPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												showProgressPanel,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.add(
-												processFeedbackPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
-														.add(
-																processFeedbackPanelLayout
-																		.createParallelGroup(
-																				org.jdesktop.layout.GroupLayout.BASELINE)
-																		.add(
-																				saveFeedbackToFileCheckBox)
-																		.add(
-																				saveFeedbackToFileTextField,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				21,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-														.add(
-																saveFeedbackToFileBrowseButton))
-										.addContainerGap()));
-
-		oboMergeTabbedPane1.addTab("Process Feedback", processFeedbackPanel);
-
-		saveProfilePanel.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Save Profile"));
-
-		jLabel2.setText("Stored adapter settings");
-
-		jComboBox1.setEditable(true);
-		jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "<create new profile>" }));
-
-		plusButton.setBackground(new java.awt.Color(51, 51, 255));
-		plusButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				plusButtonActionPerformed(evt);
-			}
-		});
-
-		minusButton.setBackground(new java.awt.Color(0, 0, 255));
-
-		org.jdesktop.layout.GroupLayout saveProfilePanelLayout = new org.jdesktop.layout.GroupLayout(
-				saveProfilePanel);
-		saveProfilePanel.setLayout(saveProfilePanelLayout);
-		saveProfilePanelLayout
-				.setHorizontalGroup(saveProfilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								saveProfilePanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(jLabel2)
-										.add(18, 18, 18)
-										.add(
-												jComboBox1,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												316,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.UNRELATED)
-										.add(
-												plusButton,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												24,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												minusButton,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												25,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(55, Short.MAX_VALUE)));
-		saveProfilePanelLayout
-				.setVerticalGroup(saveProfilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								saveProfilePanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												saveProfilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(jLabel2)
-														.add(
-																jComboBox1,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																plusButton,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																23,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																minusButton,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																24,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.add(28, 28, 28)));
-
-		mergeOptionPanel.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Merge Options"));
-
-		outputFileFormatLabel.setText("Output File Format");
-
-		fileFormatComboBox.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "OBO_1_2", "OBO_1_0" }));
-		fileFormatComboBox
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						fileFormatComboBoxActionPerformed(evt);
-					}
-				});
-
-		updateIDsChoiceComboBox.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "", "NEVER", "IF_LIKELY", "ALWAYS" }));
-		updateIDsChoiceComboBox
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						updateIDsChoiceComboBoxActionPerformed(evt);
-					}
-				});
-
-		failOnClashChoiceComboBox
-				.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-						"IF_LIKELY", "NEVER", "ALWAYS" }));
-		failOnClashChoiceComboBox
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						failOnClashChoiceComboBoxActionPerformed(evt);
-					}
-				});
-
-		jTextField1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jTextField1ActionPerformed(evt);
-			}
-		});
-
-		updateIDsLabel.setText("Update IDs");
-
-		failOnClashLabel.setText("Fail on Clash");
-
-		jLabel1.setText("Ignore Clash on IDs");
-
-		org.jdesktop.layout.GroupLayout mergeOptionPanelLayout = new org.jdesktop.layout.GroupLayout(
-				mergeOptionPanel);
-		mergeOptionPanel.setLayout(mergeOptionPanelLayout);
-		mergeOptionPanelLayout
-				.setHorizontalGroup(mergeOptionPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								mergeOptionPanelLayout
-										.createSequentialGroup()
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																mergeOptionPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				37,
-																				37,
-																				37)
-																		.add(
-																				mergeOptionPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.TRAILING)
-																						.add(
-																								updateIDsLabel)
-																						.add(
-																								failOnClashLabel)))
-														.add(
-																mergeOptionPanelLayout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.add(
-																				outputFileFormatLabel,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				98,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																fileFormatComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																updateIDsChoiceComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																failOnClashChoiceComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																137,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																mergeOptionPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				18,
-																				18,
-																				18)
-																		.add(
-																				jTextField1,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																				230,
-																				org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-														.add(
-																mergeOptionPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				30,
-																				30,
-																				30)
-																		.add(
-																				jLabel1)))
-										.add(122, 122, 122)));
-		mergeOptionPanelLayout
-				.setVerticalGroup(mergeOptionPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								mergeOptionPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(updateIDsLabel)
-														.add(
-																updateIDsChoiceComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(jLabel1))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(
-																failOnClashChoiceComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(failOnClashLabel)
-														.add(
-																jTextField1,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																32,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												mergeOptionPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.BASELINE)
-														.add(
-																fileFormatComboBox,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-														.add(
-																outputFileFormatLabel))
-										.addContainerGap()));
-
-		ontologyPathPanel.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Ontology Paths"));
-
-		parentFileButton.setText("Browse");
-		parentFileButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				parentFileButtonActionPerformed(evt);
-			}
-		});
-
-		outputFileTextField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						outputFileTextFieldActionPerformed(evt);
-					}
-				});
-
-		mergedFileLabel.setText("Merged File");
-
-		mainEditedFileLabel.setText("Primary Edited File");
-
-		secondaryEditedFileButton.setText("Browse");
-		secondaryEditedFileButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						secondaryEditedFileButtonActionPerformed(evt);
-					}
-				});
-
-		parentFileLabel.setText("Parent File");
-
-		mainEditedFileButton.setText("Browse");
-		mainEditedFileButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						mainEditedFileButtonActionPerformed(evt);
-					}
-				});
-
-		outputFileButton.setText("Browse");
-		outputFileButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				outputFileButtonActionPerformed(evt);
-			}
-		});
-
-		mainEditedFileTextField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						mainEditedFileTextFieldActionPerformed(evt);
-					}
-				});
-
-		secondaryEditedFileLabel.setText("Secondary Edited File");
-
-		org.jdesktop.layout.GroupLayout ontologyPathPanelLayout = new org.jdesktop.layout.GroupLayout(
-				ontologyPathPanel);
-		ontologyPathPanel.setLayout(ontologyPathPanelLayout);
-		ontologyPathPanelLayout
-				.setHorizontalGroup(ontologyPathPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								ontologyPathPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												ontologyPathPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																ontologyPathPanelLayout
-																		.createSequentialGroup()
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.LEADING)
-																						.add(
-																								ontologyPathPanelLayout
-																										.createSequentialGroup()
-																										.add(
-																												secondaryEditedFileLabel,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												153,
-																												Short.MAX_VALUE)
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED))
-																						.add(
-																								ontologyPathPanelLayout
-																										.createSequentialGroup()
-																										.add(
-																												mergedFileLabel,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												107,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																										.add(
-																												20,
-																												20,
-																												20)))
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.LEADING,
-																								false)
-																						.add(
-																								outputFileTextField)
-																						.add(
-																								secondaryEditedFileTextField,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								322,
-																								Short.MAX_VALUE))
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.UNRELATED))
-														.add(
-																ontologyPathPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.TRAILING)
-																						.add(
-																								ontologyPathPanelLayout
-																										.createSequentialGroup()
-																										.add(
-																												mainEditedFileLabel,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												128,
-																												Short.MAX_VALUE)
-																										.add(
-																												29,
-																												29,
-																												29)
-																										.add(
-																												mainEditedFileTextField,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												322,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																						.add(
-																								ontologyPathPanelLayout
-																										.createSequentialGroup()
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED)
-																										.add(
-																												parentFileLabel,
-																												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																												153,
-																												Short.MAX_VALUE)
-																										.addPreferredGap(
-																												org.jdesktop.layout.LayoutStyle.RELATED)
-																										.add(
-																												parentFileTextField,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																												322,
-																												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-																		.add(
-																				10,
-																				10,
-																				10)))
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.UNRELATED)
-										.add(
-												ontologyPathPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																secondaryEditedFileButton,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																69,
-																Short.MAX_VALUE)
-														.add(
-																outputFileButton,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																69,
-																Short.MAX_VALUE)
-														.add(
-																parentFileButton,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																69,
-																Short.MAX_VALUE)
-														.add(
-																mainEditedFileButton,
-																org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																69,
-																Short.MAX_VALUE))
-										.addContainerGap()));
-
-		ontologyPathPanelLayout.linkSize(new java.awt.Component[] {
-				mainEditedFileButton, outputFileButton, parentFileButton,
-				secondaryEditedFileButton },
-				org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
-		ontologyPathPanelLayout
-				.setVerticalGroup(ontologyPathPanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								ontologyPathPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.add(
-												ontologyPathPanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																ontologyPathPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.BASELINE,
-																								false)
-																						.add(
-																								parentFileLabel,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								23,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								parentFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.BASELINE,
-																								false)
-																						.add(
-																								mainEditedFileLabel,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								23,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								mainEditedFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.BASELINE,
-																								false)
-																						.add(
-																								secondaryEditedFileLabel,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								23,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								secondaryEditedFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				ontologyPathPanelLayout
-																						.createParallelGroup(
-																								org.jdesktop.layout.GroupLayout.BASELINE)
-																						.add(
-																								mergedFileLabel,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								23,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-																						.add(
-																								outputFileTextField,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-														.add(
-																ontologyPathPanelLayout
-																		.createSequentialGroup()
-																		.add(
-																				parentFileButton)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				mainEditedFileButton)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				secondaryEditedFileButton)
-																		.addPreferredGap(
-																				org.jdesktop.layout.LayoutStyle.RELATED)
-																		.add(
-																				outputFileButton)))
-										.addContainerGap(29, Short.MAX_VALUE)));
-
-		ontologyPathPanelLayout.linkSize(new java.awt.Component[] {
-				mainEditedFileLabel, mergedFileLabel, parentFileButton,
-				parentFileLabel, secondaryEditedFileLabel },
-				org.jdesktop.layout.GroupLayout.VERTICAL);
-
-		activateAdvancedOptionButton.setText("Advanced");
-		activateAdvancedOptionButton
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						activateAdvancedOptionButtonActionPerformed(evt);
-					}
-				});
-
-		org.jdesktop.layout.GroupLayout inputFilePanelLayout = new org.jdesktop.layout.GroupLayout(
-				inputFilePanel);
-		inputFilePanel.setLayout(inputFilePanelLayout);
-		inputFilePanelLayout
-				.setHorizontalGroup(inputFilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								inputFilePanelLayout
-										.createSequentialGroup()
-										.add(
-												inputFilePanelLayout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.TRAILING)
-														.add(
-																activateAdvancedOptionButton)
-														.add(
-																inputFilePanelLayout
-																		.createParallelGroup(
-																				org.jdesktop.layout.GroupLayout.TRAILING,
-																				false)
-																		.add(
-																				org.jdesktop.layout.GroupLayout.LEADING,
-																				saveProfilePanel,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE)
-																		.add(
-																				org.jdesktop.layout.GroupLayout.LEADING,
-																				inputFilePanelLayout
-																						.createSequentialGroup()
-																						.addContainerGap()
-																						.add(
-																								mergeOptionPanel,
-																								0,
-																								584,
-																								Short.MAX_VALUE))
-																		.add(
-																				org.jdesktop.layout.GroupLayout.LEADING,
-																				ontologyPathPanel,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE)))
-										.addContainerGap()));
-		inputFilePanelLayout
-				.setVerticalGroup(inputFilePanelLayout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								inputFilePanelLayout
-										.createSequentialGroup()
-										.add(activateAdvancedOptionButton)
-										.add(4, 4, 4)
-										.add(
-												saveProfilePanel,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												93,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												ontologyPathPanel,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												org.jdesktop.layout.LayoutStyle.RELATED)
-										.add(
-												mergeOptionPanel,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(
-												org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-
-		oboMergeTabbedPane1.addTab("Ontology Files", inputFilePanel);
-
-		mergeButton.setText("Merge");
-		mergeButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				mergeButtonActionPerformed(evt);
-			}
-		});
-
-		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(
-				getContentPane());
-		getContentPane().setLayout(layout);
-		layout
-				.setHorizontalGroup(layout
-						.createParallelGroup(
-								org.jdesktop.layout.GroupLayout.LEADING)
-						.add(
-								layout
-										.createSequentialGroup()
-										.add(
-												layout
-														.createParallelGroup(
-																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(
-																layout
-																		.createSequentialGroup()
-																		.add(
-																				523,
-																				523,
-																				523)
-																		.add(
-																				mergeButton))
-														.add(
-																oboMergeTabbedPane1,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-																727,
-																org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap(29, Short.MAX_VALUE)));
-		layout.setVerticalGroup(layout.createParallelGroup(
-				org.jdesktop.layout.GroupLayout.LEADING).add(
-				layout.createSequentialGroup().add(oboMergeTabbedPane1,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 481,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(
-								org.jdesktop.layout.LayoutStyle.RELATED).add(
-								mergeButton).addContainerGap(
-								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)));
-
-		pack();
-	}// </editor-fold>
-	//GEN-END:initComponents
-
-	protected void activateAdvancedOptionButtonActionPerformed(ActionEvent evt) {
-
-		boolean saveProfilePanelVisibility = saveProfilePanel.isVisible();
-		saveProfilePanel.setVisible(!saveProfilePanelVisibility);
-
-		boolean mergeOptionPanelVisibility = mergeOptionPanel.isVisible();
-		mergeOptionPanel.setVisible(!mergeOptionPanelVisibility);
-
-		if (saveProfilePanelVisibility) {
-			activateAdvancedOptionButton.setText("Advanced");
-		} else {
-			activateAdvancedOptionButton.setText("Basic");
-
-		}
-
-	}
-
-	private void plusButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		addNewNamedOntologyMergePathProfile();
-	}
-
-	private void addNewNamedOntologyMergePathProfile() {
-
-	}
-
-	private void mainEditedFileTextFieldActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
-	}
-
-	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
-	}
-
-	private void saveFeedbackToFileBrowseButtonActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile()
-					.getAbsolutePath();
-			saveFeedbackToFileTextField
-					.setText(saveFeedbackToFileTextFieldString);
-		}
-	}
-
-	/*
-	 * ActionPerformed methods for the file path mechanism are below.
-	 * If the path is pasted straight into the box rather then 
-	 * using the browse buttons then that also 
-	 * works because the doMerge method takes account of that. 
-	 */
-
-	private void outputFileTextFieldActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			outputFileTextFieldString = fileChooser.getSelectedFile()
-					.getAbsolutePath();
-			outputFileTextField.setText(outputFileTextFieldString);
-
-			System.out.println("arg = " + outputFileTextFieldString);
-		}
-
-	}
-
-	protected void mainEditedFileButtonActionPerformed(ActionEvent evt) {
-
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			mainEditedFileTextFieldString = fileChooser.getSelectedFile()
-					.getAbsolutePath();
-			mainEditedFileTextField.setText(mainEditedFileTextFieldString);
-
-			System.out.println("arg = " + mainEditedFileTextFieldString);
-
-		}
-
-	}
-
-	private void failOnClashChoiceComboBoxActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		failOnClashChoiceString = (String) failOnClashChoiceComboBox
-				.getSelectedItem();
-		System.out.println("arg = " + failOnClashChoiceString);
-
-	}
-
-	private void updateIDsChoiceComboBoxActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		updateIDsChoiceString = (String) updateIDsChoiceComboBox
-				.getSelectedItem();
-		System.out.println("arg = " + updateIDsChoiceString);
-	}
-
-	private void fileFormatComboBoxActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		outputFormatChoiceString = (String) fileFormatComboBox
-				.getSelectedItem();
-	}
-
-	private void outputFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			outputFileTextFieldString = fileChooser.getSelectedFile()
-					.getAbsolutePath();
-			outputFileTextField.setText(outputFileTextFieldString);
-
-			System.out.println("arg = " + outputFileTextFieldString);
-		}
-	}
-
-	private void secondaryEditedFileButtonActionPerformed(
-			java.awt.event.ActionEvent evt) {
-		int showOpenDialogReturnValue = fileChooser.showOpenDialog(null);
-		if (showOpenDialogReturnValue == JFileChooser.APPROVE_OPTION) {
-			File SecondaryEditedChosenFile = fileChooser.getSelectedFile();
-			secondaryEditedFileTextField.setText(SecondaryEditedChosenFile
-					.getAbsolutePath());
-			secondaryEditedFileTextFieldString = secondaryEditedFileTextField
-					.getText();
-
-			System.out.println("arg = " + secondaryEditedFileTextFieldString);
-
-		}
-
-	}
-
-	private void parentFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		int returnVal = fileChooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			parentFileTextFieldString = fileChooser.getSelectedFile()
-					.getAbsolutePath();
-			parentFileTextField.setText(parentFileTextFieldString);
-
-			System.out.println("arg = " + parentFileTextFieldString);
-		}
-
-	}
-
-	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		//		if (showProgressCheckBox.isSelected()) {
-		//			PrintStream progressTextAreaPrintStream = new PrintStream(
-		//					new TextAreaOutputStream(progressTextArea));
-		//			System.setOut(progressTextAreaPrintStream);
-		//			System.setErr(progressTextAreaPrintStream);
-		//		}
-		if (saveFeedbackToFileCheckBox.isSelected()) {
-			WriteFeedbackToFile();
-		}
-		if (makeArgArrayList() == true) {
-			try {
-				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (DataAdapterException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void main(String args[]) {
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new OBOMergeCanvas().setVisible(true);
-			}
-		});
-	}
-
-	//GEN-BEGIN:variables
-	// Variables declaration - do not modify
-	private javax.swing.JButton activateAdvancedOptionButton;
-	private javax.swing.JComboBox failOnClashChoiceComboBox;
-	private javax.swing.JLabel failOnClashLabel;
-	private javax.swing.JComboBox fileFormatComboBox;
-	private javax.swing.JPanel inputFilePanel;
-	private javax.swing.JComboBox jComboBox1;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JLabel jLabel2;
-	private javax.swing.JScrollPane jScrollPane2;
-	private javax.swing.JTextField jTextField1;
-	private javax.swing.JButton mainEditedFileButton;
-	private javax.swing.JLabel mainEditedFileLabel;
-	private javax.swing.JTextField mainEditedFileTextField;
-	private javax.swing.JButton mergeButton;
-	private javax.swing.JPanel mergeOptionPanel;
-	private javax.swing.JLabel mergedFileLabel;
-	private javax.swing.JButton minusButton;
-	private javax.swing.JTabbedPane oboMergeTabbedPane1;
-	private javax.swing.JPanel ontologyPathPanel;
-	private javax.swing.JButton outputFileButton;
-	private javax.swing.JLabel outputFileFormatLabel;
-	private javax.swing.JTextField outputFileTextField;
-	private javax.swing.JButton parentFileButton;
-	private javax.swing.JLabel parentFileLabel;
-	private javax.swing.JTextField parentFileTextField;
-	private javax.swing.JButton plusButton;
-	private javax.swing.JPanel processFeedbackPanel;
-	private javax.swing.JTextArea progressTextArea;
-	private javax.swing.JButton saveFeedbackToFileBrowseButton;
-	private javax.swing.JCheckBox saveFeedbackToFileCheckBox;
-	private javax.swing.JTextField saveFeedbackToFileTextField;
-	private javax.swing.JPanel saveProfilePanel;
-	private javax.swing.JButton secondaryEditedFileButton;
-	private javax.swing.JLabel secondaryEditedFileLabel;
-	private javax.swing.JTextField secondaryEditedFileTextField;
-	private javax.swing.JPanel showProgressPanel;
-	private javax.swing.JComboBox updateIDsChoiceComboBox;
-	private javax.swing.JLabel updateIDsLabel;
-
-	// End of variables declaration//GEN-END:variables
-
-	private Boolean makeArgArrayList() {
-		// TODO Auto-generated method stub
-		/*
-		 * This class takes the return strings from all the
-		 *  GUI controls and puts them
-		 * into the array to be fed to obomerge.
-		 */
-		System.out.println("Arguments applied are:");
-		//obomergeArgsArrayList
-		//		if (failOnClashActivatedCheckBox.isSelected()) {
-		//			obomergeArgsArrayList.add("-fail-on-clash");
-		//			obomergeArgsArrayList.add(failOnClashChoiceString);
-		//			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
-		//
-		//		}
-		//		if (updateIDsActivatedCheckBox.isSelected()) {
-		//			obomergeArgsArrayList.add("-update-ids");
-		//			obomergeArgsArrayList.add(updateIDsChoiceString);
-		//			System.out.println("    -update-ids " + updateIDsChoiceString);
-		//		}
-		//		//		if (ignoreClashOnIDsActivatedCheckBox.isSelected()) {
-		//			obomergeArgsArrayList.add("-ignore-clash-on-id");
-		//			obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
-		//			System.out.println("    -ignore-clash-on-id "
-		//					+ ignoreClashOnIDsChoiceString);
-		//		}
-
-		parentFileTextFieldString = parentFileTextField.getText();
-		mainEditedFileTextFieldString = mainEditedFileTextField.getText();
-		secondaryEditedFileTextFieldString = secondaryEditedFileTextField
-				.getText();
-		outputFileTextFieldString = outputFileTextField.getText();
-
-		if (parentFileTextFieldString.length() == 0
-				|| mainEditedFileTextFieldString.length() == 0
-				|| secondaryEditedFileTextFieldString.length() == 0
-				|| outputFileTextFieldString.length() == 0) {
-
-			JOptionPane.showMessageDialog(missingPathFrame,
-					"Please fill in all of the necessary file paths.",
-					"Missing Information", getDefaultCloseOperation());
-
-			return false;
-		}
-		obomergeArgsArrayList.add("-version");
-		obomergeArgsArrayList.add(outputFormatChoiceString);
-		System.out.println("    -version " + outputFormatChoiceString);
-
-		obomergeArgsArrayList.add("-original");
-		obomergeArgsArrayList.add(parentFileTextFieldString);
-		System.out.println("    -original " + parentFileTextFieldString);
-
-		obomergeArgsArrayList.add("-revision");
-		obomergeArgsArrayList.add(mainEditedFileTextFieldString);
-		System.out.println("    -revision " + mainEditedFileTextFieldString);
-
-		obomergeArgsArrayList.add("-revision");
-		obomergeArgsArrayList.add(secondaryEditedFileTextFieldString);
-		System.out.println("    -revision "
-				+ secondaryEditedFileTextFieldString);
-
-		obomergeArgsArrayList.add("-o");
-		obomergeArgsArrayList.add(outputFileTextFieldString);
-		System.out.println("    -o " + outputFileTextFieldString);
-
-		obomergeArgsArrayList.trimToSize();
-		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
-		return true;
-	};
 
 	/**
 	 * @author  Ranganath Kini
@@ -1218,15 +65,743 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 			textControl.append(String.valueOf((char) b));
 		}
 	}
+	/**
+	 * @author  Ranganath Kini
+	 * @see      javax.swing.JTextArea
+	 * http://www.jcreator.com/forums/index.php?showtopic=773
+	 */
+	private class TextAreaOutputStream1 extends OutputStream {
+		private JTextArea textControl;
+		public void TextAreaOutputStream(JTextArea control) {
+			textControl = control;
+		}
+		@Override
+		public void write(int b) throws IOException {
+			// append the data as characters to the JTextArea control
+			textControl.append(String.valueOf((char) b));
+		}
+	}
+	private static void addAComponentXAlignment(JComponent componentName, Container container) {
+		container.add(componentName);
+	}
+	private static void addAComponentYAlignment(JComponent componentName, Container container) {
+		container.add(componentName);
+	}
+	private int defaultCloseOperation = HIDE_ON_CLOSE;
+	public static final int HIDE_ON_CLOSE = 1;
+	protected LayoutListener layoutListener = new LayoutAdapter() {
+		public boolean closing(GUIComponent c) {
+			if (c.equals(OBOMergeCanvas.this)) {
+				save();
+			}
+			return true;
+		}
+
+	};
+	JPanel inputFilePanel = new JPanel();
+	JPanel filePathPanel = new JPanel();
+	JPanel mergeOptionPanel = new JPanel();
+	JPanel saveProfilePanel = new JPanel();
+	JPanel parentFilePanel = new JPanel();
+	JPanel liveFilePanel = new JPanel();
+	JPanel branchFilePanel = new JPanel();
+	JPanel mergedFilePanel = new JPanel();
+	JLabel parentFileLabel = new JLabel("Parent File");
+	JTextField parentFileTextField = new JTextField("");
+	JButton parentFileBrowseButton = new JButton("Browse");
+	JLabel branchFileLabel = new JLabel("Branch File");
+	JTextField branchFileTextField = new JTextField("");
+	JButton branchFileBrowseButton = new JButton("Browse");
+	JLabel liveFileLabel = new JLabel("Live File   ");
+	JTextField liveFileTextField = new JTextField("");
+	JButton liveFileBrowseButton = new JButton("Browse");
+	JLabel mergedFileLabel = new JLabel("Merged File");
+	JTextField mergedFileTextField = new JTextField("");
+	JButton mergedFileBrowseButton = new JButton("Browse");
+	JLabel saveProfileLabel = new JLabel("Save Profile");
+	String[] savedProfiles = {"new profile", ""};
+	JComboBox saveProfileComboBox = new JComboBox(savedProfiles);
+	JButton addProfilePlusButton = new JButton(new PlusIcon(1.5f, 8, 8));
+	JButton removeProfileMinusButton = new JButton(new MinusIcon(1.5f, 8, 8));
+	JPanel topLinePanel = new JPanel();
+	JPanel bottomLinePanel = new JPanel();
+	JLabel updateIDsLabel = new JLabel("Update IDs");
+	String[] idOptionsFailOnClash = { "IF_LIKELY", "   ", "NEVER", "ALWAYS" };
+	String[] idOptionsUpdateIDs = { "   ", "NEVER", "ALWAYS", "IF_LIKELY" };
+	JComboBox updateIDsCombobox = new JComboBox(idOptionsUpdateIDs);
+	JLabel mergedFileFormatLabel = new JLabel("Output File Format");
+	String[] fileFormatOptions = { "OBO_1_2", "OBO_1_0" };
+	JComboBox mergedFileFormatCombobox = new JComboBox(fileFormatOptions);
+	JComponent failOnClashLabel = new JLabel("Fail On Clash");
+	JComboBox failOnClashCombobox = new JComboBox(idOptionsFailOnClash);
+	JLabel ignoreClashOnIDsLabel = new JLabel("Ignore Clash on ID");
+	JTextArea ignoreClashOnIDsTextArea = new JTextArea();
+	String id;
+	JTabbedPane oboMergeTabbedPane = new JTabbedPane();
+	JPanel processFeedbackPanel = new JPanel();
+	JButton saveFeedbackToFileBrowseButton = new JButton("Browse");
+	JLabel saveFeedbackToFileLabel = new JLabel("Save Feedback to File");
+	JTextField saveFeedbackToFileTextField = new JTextField();
+	JTextField ProgressTextField = new JTextField();
+	String saveFeedbackToFileTextFieldString = new String("C:\\output.txt");
+	JFileChooser fileChooser = new JFileChooser();
+	String updateIDsChoiceString = new String("   ");
+	String failOnClashChoiceString = new String("IF_LIKELY");
+	String outputFormatChoiceString = new String("OBO_1_2");
+	String[] obomergeArgsArray = new String[0];
+	JButton mergeButton = new JButton("Merge");
+	JFrame missingPathFrame = new JFrame();
+	ArrayList<String> obomergeArgsArrayList = new ArrayList<String>();
+	String parentFileTextFieldString = new String();
+	String liveFileTextFieldString = new String();
+	String branchFileTextFieldString = new String();
+	String mergedFileTextFieldString = new String();
+	JPanel finalOptionPanel = new JPanel();
+	JButton advancedButton = new JButton("Advanced");
+	JPanel showProgressPanel = new JPanel();
+	JPanel saveProgressToFilePanel = new JPanel();
+	JPanel centerPanel = new JPanel();
+	JPanel saveFeedbackToFileDetailPanel = new JPanel();
+	String feedbackTextAreaString = new String();
+	JTextArea feedbackTextArea = new JTextArea(feedbackTextAreaString);
+	JLabel feedbackFilePathLabel = new JLabel("Feedback File Path");
+	JTextField feedbackFileTextField = new JTextField();
+	String ignoreClashOnIDsChoiceString = new String();
+	PrintStream feedbackFileOutputStream;
+
+	public OBOMergeCanvas(String id) {
+		super(id);
+	}
+
+	@Override
+	public void init() {
+
+		setLayout(new BorderLayout());
+		JPanel mainGUIPanel = new JPanel();
+		JScrollPane mainGUIPanelScrollPane = new JScrollPane(mainGUIPanel);
+		
+		add(oboMergeTabbedPane, "Center");
+		oboMergeTabbedPane.addTab("Ontology Files", null, mainGUIPanelScrollPane, "Ontology Files");
+		oboMergeTabbedPane.addTab("Process Feedback", null, processFeedbackPanel, "Process Feedback");
+		
+		mainGUIPanel.setLayout(new GridBagLayout());
+		GridBagConstraints mainGUIPanelGBC = new GridBagConstraints();
+
+		mainGUIPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 0;
+		mainGUIPanelGBC.anchor = GridBagConstraints.PAGE_START;
+		mainGUIPanelGBC.weightx = 1;
+		mainGUIPanelGBC.insets = new Insets(5,5,5,5);
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(saveProfilePanel, mainGUIPanelGBC);
+		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 1;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 2;
+		mainGUIPanel.add(inputFilePanel, mainGUIPanelGBC);
+		inputFilePanel.setBorder(new TitledBorder ("File Paths"));
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 3;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(mergeOptionPanel, mainGUIPanelGBC);
+		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
+
+
+		mainGUIPanelGBC.gridx = 0;
+		mainGUIPanelGBC.gridy = 4;
+		mainGUIPanelGBC.gridwidth = 4;
+		mainGUIPanelGBC.gridheight = 1;
+		mainGUIPanel.add(finalOptionPanel, mainGUIPanelGBC);
+		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
+
+				
+		
+		centerPanel.setLayout(new GridBagLayout());
+		GridBagConstraints centerPanelGBC = new GridBagConstraints();
+
+		//Make GridBag layout for the contents of the inputFilePanel. 
+		inputFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints inputFilePanelGBC = new GridBagConstraints();
+
+		inputFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 0;
+		inputFilePanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
+		inputFilePanelGBC.weightx = 1;
+		inputFilePanelGBC.insets = new Insets(5,5,5,5);
+		//Add the four horizontal panels to take a path each. 
+		inputFilePanel.add(parentFilePanel, inputFilePanelGBC);
+
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 1;
+
+		inputFilePanel.add(liveFilePanel, inputFilePanelGBC);
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 2;
+
+		inputFilePanel.add(branchFilePanel, inputFilePanelGBC);
+		inputFilePanelGBC.gridx = 0;
+		inputFilePanelGBC.gridy = 3;
+
+		inputFilePanel.add(mergedFilePanel, inputFilePanelGBC);
+
+
+
+
+		//set up the contents for the parent file path. 
+		parentFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints parentFilePanelGBC = new GridBagConstraints();
+
+		parentFilePanelGBC.fill = GridBagConstraints.NONE;
+		parentFilePanelGBC.gridx = 0;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		parentFilePanelGBC.insets = new Insets(0,2,2,0);
+		parentFilePanel.add(parentFileLabel, parentFilePanelGBC);
+
+		parentFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		parentFilePanelGBC.gridx = 1;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		parentFilePanelGBC.weightx = 1;
+
+		parentFilePanel.add(parentFileTextField, parentFilePanelGBC);
+
+		parentFilePanelGBC.fill = GridBagConstraints.NONE;
+		parentFilePanelGBC.gridx = 2;
+		parentFilePanelGBC.gridy = 0;
+		parentFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		parentFilePanelGBC.weightx = 0;
+
+		parentFilePanel.add(parentFileBrowseButton, parentFilePanelGBC);
+
+		//set up the contents for the parent file path. 
+		liveFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints liveFilePanelGBC = new GridBagConstraints();
+
+		liveFilePanelGBC.fill = GridBagConstraints.NONE;
+		liveFilePanelGBC.gridx = 0;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		liveFilePanelGBC.insets = new Insets(0,2,2,0);
+		liveFilePanel.add(liveFileLabel, liveFilePanelGBC);
+
+		liveFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		liveFilePanelGBC.gridx = 1;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		liveFilePanelGBC.weightx = 1;
+
+		liveFilePanel.add(liveFileTextField, liveFilePanelGBC);
+
+		liveFilePanelGBC.fill = GridBagConstraints.NONE;
+		liveFilePanelGBC.gridx = 2;
+		liveFilePanelGBC.gridy = 0;
+		liveFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		liveFilePanelGBC.weightx = 0;
+
+		liveFilePanel.add(liveFileBrowseButton, liveFilePanelGBC);
+
+		//set up the contents for the branch file path. 
+		branchFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints branchFilePanelGBC = new GridBagConstraints();
+
+		branchFilePanelGBC.fill = GridBagConstraints.NONE;
+		branchFilePanelGBC.gridx = 0;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		branchFilePanelGBC.insets = new Insets(0,2,2,0);
+		branchFilePanel.add(branchFileLabel, branchFilePanelGBC);
+
+		branchFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		branchFilePanelGBC.gridx = 1;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		branchFilePanelGBC.weightx = 1;
+
+		branchFilePanel.add(branchFileTextField, branchFilePanelGBC);
+
+		branchFilePanelGBC.fill = GridBagConstraints.NONE;
+		branchFilePanelGBC.gridx = 2;
+		branchFilePanelGBC.gridy = 0;
+		branchFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		branchFilePanelGBC.weightx = 0;
+
+		branchFilePanel.add(branchFileBrowseButton, branchFilePanelGBC);
+
+		//set up the contents for the merged file path. 
+		mergedFilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints mergedFilePanelGBC = new GridBagConstraints();
+
+		mergedFilePanelGBC.fill = GridBagConstraints.NONE;
+		mergedFilePanelGBC.gridx = 0;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		mergedFilePanelGBC.insets = new Insets(0,2,2,0);
+		mergedFilePanel.add(mergedFileLabel, mergedFilePanelGBC);
+
+		mergedFilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		mergedFilePanelGBC.gridx = 1;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.CENTER;
+		mergedFilePanelGBC.weightx = 1;
+
+		mergedFilePanel.add(mergedFileTextField, mergedFilePanelGBC);
+
+		mergedFilePanelGBC.fill = GridBagConstraints.NONE;
+		mergedFilePanelGBC.gridx = 2;
+		mergedFilePanelGBC.gridy = 0;
+		mergedFilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		mergedFilePanelGBC.weightx = 0;
+
+		mergedFilePanel.add(mergedFileBrowseButton, mergedFilePanelGBC);
+
+		saveProfilePanel.setLayout(new GridBagLayout());
+		GridBagConstraints saveProfilePanelGBC = new GridBagConstraints();
+
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 0;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_START;
+		saveProfilePanelGBC.insets = new Insets(5,5,5,5);
+		saveProfilePanel.add(saveProfileLabel, saveProfilePanelGBC);
+
+		saveProfilePanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		saveProfilePanelGBC.gridx = 1;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
+		saveProfilePanelGBC.weightx = 1;
+
+		saveProfilePanel.add(saveProfileComboBox, saveProfilePanelGBC);
+		saveProfileComboBox.setEditable(true);
+
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 2;
+		saveProfilePanelGBC.gridy = 0;
+//		saveProfilePanelGBC.anchor = GridBagConstraints.CENTER;
+		saveProfilePanelGBC.weightx = 0;
+
+		saveProfilePanel.add(addProfilePlusButton, saveProfilePanelGBC);
+
+		saveProfilePanelGBC.fill = GridBagConstraints.NONE;
+		saveProfilePanelGBC.gridx = 3;
+		saveProfilePanelGBC.gridy = 0;
+		saveProfilePanelGBC.anchor = GridBagConstraints.LINE_END;
+		saveProfilePanelGBC.weightx = 0;
+
+		saveProfilePanel.add(removeProfileMinusButton, saveProfilePanelGBC);
+
+
+		mergeOptionPanel.setLayout(new GridBagLayout());
+		GridBagConstraints mergeOptionPanelGBC = new GridBagConstraints();
+
+		mergeOptionPanelGBC.fill = GridBagConstraints.NONE;
+		mergeOptionPanelGBC.gridx = 0;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanelGBC.ipadx = 5;
+		mergeOptionPanelGBC.ipady = 5;
+		mergeOptionPanelGBC.insets = new Insets(5,5,5,5);
+//		mergeOptionPanelGBC.anchor = GridBagConstraints.CENTER;
+//		mergeOptionPanelGBC.weightx = 1;
+		mergeOptionPanel.add(updateIDsLabel, mergeOptionPanelGBC);
+
+		mergeOptionPanelGBC.gridx = 1;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(updateIDsCombobox, mergeOptionPanelGBC);
+
+		mergeOptionPanelGBC.gridx = 2;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(mergedFileFormatLabel, mergeOptionPanelGBC);
+
+		mergeOptionPanelGBC.gridx = 3;
+		mergeOptionPanelGBC.gridy = 0;
+		mergeOptionPanel.add(mergedFileFormatCombobox, mergeOptionPanelGBC);
+
+		mergeOptionPanelGBC.gridx = 0;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(failOnClashLabel, mergeOptionPanelGBC);
+
+		mergeOptionPanelGBC.gridx = 1;
+		mergeOptionPanelGBC.gridy = 1;
+		mergeOptionPanel.add(failOnClashCombobox, mergeOptionPanelGBC);
+
+//		mergeOptionPanelGBC.gridx = 2;
+//		mergeOptionPanelGBC.gridy = 1;
+//		mergeOptionPanel.add(ignoreClashOnIDsLabel, mergeOptionPanelGBC);
+
+//		mergeOptionPanelGBC.gridx = 3;
+//		mergeOptionPanelGBC.gridy = 1;
+//		mergeOptionPanel.add(ignoreClashOnIDsTextArea, mergeOptionPanelGBC);
+
+		finalOptionPanel.setLayout(new GridBagLayout());
+		GridBagConstraints finalOptionPanelGBC = new GridBagConstraints();
+
+		finalOptionPanelGBC.fill = GridBagConstraints.NONE;
+		finalOptionPanelGBC.gridx = 0;
+		finalOptionPanelGBC.gridy = 0;
+		//	finalOptionPanelGBC.anchor = GridBagConstraints.FIRST_LINE_START;
+		finalOptionPanelGBC.weightx = 1;
+//		finalOptionPanelGBC.insets = new Insets(5,5,5,5);
+		finalOptionPanel.add(advancedButton, finalOptionPanelGBC);
+
+		finalOptionPanelGBC.gridx = 1;
+		finalOptionPanel.add(mergeButton, finalOptionPanelGBC);
+
+		processFeedbackPanel.setLayout(new GridBagLayout());
+		GridBagConstraints processFeedbackPanelGBC = new GridBagConstraints();
+
+		JScrollPane feedbackTextAreaScrollPane = new JScrollPane(feedbackTextArea);
+
+		processFeedbackPanelGBC.fill = GridBagConstraints.BOTH;
+		processFeedbackPanelGBC.gridx = 0;
+		processFeedbackPanelGBC.gridy = 1;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_END;
+		processFeedbackPanelGBC.weightx = 1;
+		processFeedbackPanelGBC.weighty = 1;
+		processFeedbackPanelGBC.insets = new Insets(5,5,5,5);
+		processFeedbackPanel.add(feedbackTextAreaScrollPane, processFeedbackPanelGBC);
+
+		processFeedbackPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		processFeedbackPanelGBC.gridy = 0;
+		processFeedbackPanelGBC.weightx = 1;
+		processFeedbackPanelGBC.weighty = 0;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_START;
+		processFeedbackPanel.add(saveFeedbackToFileDetailPanel, processFeedbackPanelGBC);
+
+
+		saveFeedbackToFileDetailPanel.setLayout(new GridBagLayout());
+		GridBagConstraints saveFeedbackToFileDetailPanelGBC = new GridBagConstraints();
+
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
+		saveFeedbackToFileDetailPanelGBC.gridx = 0;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanelGBC.weightx = 0;
+		saveFeedbackToFileDetailPanelGBC.insets = new Insets(5,5,5,5);
+		saveFeedbackToFileDetailPanel.add(feedbackFilePathLabel, saveFeedbackToFileDetailPanelGBC);
+
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.HORIZONTAL;
+		saveFeedbackToFileDetailPanelGBC.gridx = 1;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanelGBC.weightx = 1;
+		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileTextField, saveFeedbackToFileDetailPanelGBC);
+
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
+		saveFeedbackToFileDetailPanelGBC.gridx = 2;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanelGBC.weightx = 0;
+		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileBrowseButton, saveFeedbackToFileDetailPanelGBC);
+
+
+		validate();
+		repaint();
+
+
+		saveFeedbackToFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				saveFeedbackToFileBrowseButtonActionPerformed(evt);
+			}
+		});
+
+		mergedFileFormatCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileFormatComboboxActionPerformed(evt);
+			}
+		});
+
+		updateIDsCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				updateIDsComboboxActionPerformed(evt);
+			}
+		});
+
+		failOnClashCombobox
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				failOnClashChoiceComboBoxActionPerformed(evt);
+			}
+		});
+
+
+		parentFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				parentFileButtonActionPerformed(evt);
+			}
+		});
+
+		mergedFileTextField
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileTextFieldActionPerformed(evt);
+			}
+		});
+
+		branchFileBrowseButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				branchFileBrowseButtonActionPerformed(evt);
+			}
+		});
+
+		liveFileBrowseButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				liveFileBrowseButtonActionPerformed(evt);
+			}
+		});
+
+		mergeButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergeButtonActionPerformed(evt);
+			}
+		});
+
+		mergedFileBrowseButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				mergedFileBrowseButtonActionPerformed(evt);
+			}
+		});
+		
+		
+		liveFileTextField
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				liveFileTextFieldActionPerformed(evt);
+			}
+		});
+
+
+		advancedButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				advancedButtonActionPerformed(evt);
+			}
+
+			private void advancedButtonActionPerformed(ActionEvent evt) {
+				boolean saveProfilePanelVisibility = saveProfilePanel.isVisible();
+				saveProfilePanel.setVisible(!saveProfilePanelVisibility);
+
+				boolean mergeOptionPanelVisibility = mergeOptionPanel.isVisible();
+				mergeOptionPanel.setVisible(!mergeOptionPanelVisibility);
+
+				if (saveProfilePanelVisibility) {
+					advancedButton.setText("Advanced");
+				} else {
+					advancedButton.setText("Basic");
+				}			
+			}
+		});
+		saveProfilePanel.setVisible(false);
+		mergeOptionPanel.setVisible(false);
+	}
+
+
+
+
+
+
+
+	public void save(){
+		System.out.println("all going well so far.");
+	}
+
+	private void branchFileBrowseButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int showOpenDialogReturnValue = fileChooser.showOpenDialog(null);
+		if (showOpenDialogReturnValue == JFileChooser.APPROVE_OPTION) {
+			File SecondaryEditedChosenFile = fileChooser.getSelectedFile();
+			branchFileTextField.setText(SecondaryEditedChosenFile
+					.getAbsolutePath());
+			branchFileTextFieldString = branchFileTextField
+			.getText();
+
+			System.out.println("arg = " + branchFileTextFieldString);
+
+		}
+
+	}
+
+	private void failOnClashChoiceComboBoxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		failOnClashChoiceString = (String) failOnClashCombobox
+		.getSelectedItem();
+		System.out.println("arg = " + failOnClashChoiceString);
+
+	};
+
+	private int getDefaultCloseOperation() {
+		// TODO Auto-generated method stub
+		return defaultCloseOperation;
+
+	}
+	private void liveFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		// TODO add your handling code here:
+	}
+
+	private Boolean makeArgArrayList() {
+		/*
+		 * This class takes the return strings from all the
+		 *  GUI controls and puts them
+		 * into the array to be fed to obomerge.
+		 */
+		System.out.println("Arguments applied are:");
+
+		if (failOnClashChoiceString != "   ") {
+			obomergeArgsArrayList.add("-fail-on-clash");
+			obomergeArgsArrayList.add(failOnClashChoiceString);
+			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
+
+		}
+//		Need to fix this. The "!=" is not working. 
+		//				if (updateIDsChoiceString != "   ") {
+//		obomergeArgsArrayList.add("-update-ids");
+//		obomergeArgsArrayList.add(updateIDsChoiceString);
+//		System.out.println("    -update-ids " + updateIDsChoiceString);
+//		}
+		//This feature not fully implemented. 
+//		if (ignoreClashOnIDsChoiceString != "") {
+//		obomergeArgsArrayList.add("-ignore-clash-on-id");
+//		obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
+//		System.out.println("    -ignore-clash-on-id "
+//		+ ignoreClashOnIDsChoiceString);
+//		}
+
+
+		parentFileTextFieldString = parentFileTextField.getText();
+		liveFileTextFieldString = liveFileTextField.getText();
+		branchFileTextFieldString = branchFileTextField
+		.getText();
+		mergedFileTextFieldString = mergedFileTextField.getText();
+
+		if (parentFileTextFieldString.length() == 0
+				|| liveFileTextFieldString.length() == 0
+				|| branchFileTextFieldString.length() == 0
+				|| mergedFileTextFieldString.length() == 0) {
+
+			JOptionPane.showMessageDialog(missingPathFrame,
+					"Please fill in all of the necessary file paths.",
+					"Missing Information", getDefaultCloseOperation());
+
+			return false;
+		}
+		obomergeArgsArrayList.add("-version");
+		obomergeArgsArrayList.add(outputFormatChoiceString);
+		System.out.println("    -version " + outputFormatChoiceString);
+
+		obomergeArgsArrayList.add("-original");
+		obomergeArgsArrayList.add(parentFileTextFieldString);
+		System.out.println("    -original " + parentFileTextFieldString);
+
+		obomergeArgsArrayList.add("-revision");
+		obomergeArgsArrayList.add(liveFileTextFieldString);
+		System.out.println("    -revision " + liveFileTextFieldString);
+
+		obomergeArgsArrayList.add("-revision");
+		obomergeArgsArrayList.add(branchFileTextFieldString);
+		System.out.println("    -revision "
+				+ branchFileTextFieldString);
+
+		obomergeArgsArrayList.add("-o");
+		obomergeArgsArrayList.add(mergedFileTextFieldString);
+		System.out.println("    -o " + mergedFileTextFieldString);
+
+		System.out.println(obomergeArgsArrayList);
+		obomergeArgsArrayList.trimToSize();
+		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
+		return true;
+	}
+
+	private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+
+		if (makeArgArrayList() == true) {
+			try {
+				WriteFeedbackToFile();
+				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
+				ShowFeedbackInWindow();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DataAdapterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void mergedFileBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			mergedFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			mergedFileTextField.setText(mergedFileTextFieldString);
+
+			System.out.println("arg = " + mergedFileTextFieldString);
+		}
+	}
+
+	private void mergedFileFormatComboboxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		outputFormatChoiceString = (String) mergedFileFormatCombobox.getSelectedItem();
+	}
+	private void mergedFileTextFieldActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			mergedFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			mergedFileTextField.setText(mergedFileTextFieldString);
+
+			System.out.println("arg = " + mergedFileTextFieldString);
+		}
+
+	}
+	private void parentFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			parentFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			parentFileTextField.setText(parentFileTextFieldString);
+
+			System.out.println("arg = " + parentFileTextFieldString);
+		}
+
+	}
+	private void saveFeedbackToFileBrowseButtonActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile().getAbsolutePath();
+			saveFeedbackToFileTextField.setText(saveFeedbackToFileTextFieldString);
+		}
+System.out.println("saveFeedbackToFileBrowseButtonActionPerformed : We are in button action performed.");
+	}
+
+
+
+	private void updateIDsComboboxActionPerformed(
+			java.awt.event.ActionEvent evt) {
+		updateIDsChoiceString = (String) updateIDsCombobox
+		.getSelectedItem();
+		System.out.println("arg = " + updateIDsChoiceString);
+	}
+
 
 	private void WriteFeedbackToFile() {
 		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
 		try {
 
-			PrintStream feedbackFileOutputStream = new PrintStream(
-					saveFeedbackToFileTextFieldString);
-			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
-					feedbackFileOutputStream);
+			feedbackFileOutputStream = new PrintStream(
+					feedbackFile);
+//			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
+//					feedbackFileOutputStream);
 
 			System.setOut(feedbackFileOutputStream);
 			System.setErr(feedbackFileOutputStream);
@@ -1239,11 +814,40 @@ public class OBOMergeCanvas extends javax.swing.JFrame {
 
 	}
 
-	//	public class OntologyMergePathProfile {
-	String parentFileTextFieldString;
-	String mainEditedFileTextFieldString;
-	String secondaryEditedFileTextFieldString;
-	String outputFileTextFieldString;
-	//	}
 
+	private void ShowFeedbackInWindow() {
+			feedbackTextArea.setText(feedbackFileOutputStream.toString());
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	protected void liveFileBrowseButtonActionPerformed(ActionEvent evt) {
+
+		int returnVal = fileChooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			liveFileTextFieldString = fileChooser.getSelectedFile()
+			.getAbsolutePath();
+			liveFileTextField.setText(liveFileTextFieldString);
+
+			System.out.println("arg = " + liveFileTextFieldString);
+
+		}
+
+	}
 }
+
+
