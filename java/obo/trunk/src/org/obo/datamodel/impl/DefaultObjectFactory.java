@@ -22,6 +22,7 @@ public class DefaultObjectFactory implements ObjectFactory {
 		return new OBOSessionImpl(this);
 	}
 
+        // Shouldn't there be a version of this method that takes a name as well as an ID?
 	public IdentifiedObject createObject(String id, OBOClass type,
 			boolean isAnonymousID) {
 		IdentifiedObject out;

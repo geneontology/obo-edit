@@ -13,14 +13,17 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 
 	public OBOClassImpl(String id) {
 	    // Hey, this sets the name to the id!  I thought we didn't want that.  --NH, 4/2008
-//		this(id, id);
-	    this(null, id);
+	    // this(id, id);
+//	    this(null, id);
+	    // I'm putting this back the way it was, because making the name null broke cloning.
+	    // If you want to assign a different name to the object, you can
+	    // use the method below that takes a term name and an id.
+	    this(id, id);
 	}
 
 	public OBOClassImpl(String term, String id) {
 		super(id);
 		setName(term);
-//	    System.out.println("OBOClassImpl: id = " + id + ", term = " + term); // DEL
 	}
 
 	public Type<OBOClass> getType() {
