@@ -95,7 +95,7 @@ public class TestUtil extends TestCase {
 	public static OBOSession createSession() {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
-		config.getReadPaths().add("lib/resources/testfile.1.0.obo");
+		config.getReadPaths().add("test_resources/testfile.1.0.obo");
 		try {
 			OBOSession session = (OBOSession) adapter.doOperation(
 					OBOAdapter.READ_ONTOLOGY, config, null);
