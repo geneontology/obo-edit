@@ -123,7 +123,7 @@ import org.oboedit.gui.factory.IDResolutionComponentFactory;
 import org.oboedit.gui.factory.IntersectionEditorFactory;
 import org.oboedit.gui.factory.LinkSearchComponentFactory;
 import org.oboedit.gui.factory.NamespaceManagerFactory;
-import org.oboedit.gui.factory.OBOMergeCanvasMark2Factory;
+import org.oboedit.gui.factory.OBOMergeCanvasFactory;
 import org.oboedit.gui.factory.OntologyChangeTrackerFactory;
 import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
@@ -213,7 +213,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new IDManagerFactory(), new ReasonerManagerFactory(),
 				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
-//				new OBOMergeCanvasMark2Factory(),
+//				new OBOMergeCanvasFactory(),
 				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
 
 				new CrossProductMatrixEditorFactory(),
