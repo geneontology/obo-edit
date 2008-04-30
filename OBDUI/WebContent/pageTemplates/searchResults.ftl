@@ -1,10 +1,12 @@
 <#include "PageMacros.ftl">
 <#include "NodeDetailsMacro.ftl"> 
 <html>
-
+	<head>
+		<@genTitle pageName="Search Results"/>
+		<@stylize/>
+	</head>
 	<body>
         
-        <@genTitle pageName="Search Results"/>
         
    		<@header/>
 	

@@ -241,7 +241,7 @@ div.nav_empty
 	background-color: #033C63; 
 	height: 5px;
 	font-size: 1px;
-	line-height: 0;
+	line-height: 0px;
 	width: 100%;
 }
 
@@ -297,7 +297,7 @@ div.subnav_empty
   background-color: #CCDDCC;
 	height: 5px;
 	font-size: 1px;
-	line-height: 0;
+	line-height: 0px;
 	width: 100%;
 }
 

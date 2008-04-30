@@ -1,10 +1,8 @@
 <#include "PageMacros.ftl"> 
 <html>
 	<head>
-		<title>
-			OBD Search
-		</title>
-		<link rel="stylesheet" type="text/css" href="/OBDUI/css/obd-main.css"/>
+    	<@genTitle pageName="Node Search"/>
+    	<@stylize/>
 	</head>
 	<body>
         

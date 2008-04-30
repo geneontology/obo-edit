@@ -3,6 +3,7 @@
 package org.geneontology.web;
 
 
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,9 +72,7 @@ public class NodeSearchResource extends NodeResource {
         format = (String) request.getAttributes().get("format");
         this.nodes = findNodes();
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        
-        
-        
+                
     }
 
  
@@ -165,6 +164,15 @@ public class NodeSearchResource extends NodeResource {
     			}
     			
     		}
+    		
+    		String hostname = null;
+    		try {
+    			hostname = java.net.InetAddress.getLocalHost().getCanonicalHostName();
+    		} catch (UnknownHostException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    		resourceMap.put("hostname", hostname);
     		
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);

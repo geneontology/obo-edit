@@ -1,7 +1,7 @@
 <#macro nodeDetailsTable>
- 	<script type="text/javascript" src="/OBDUI/js/table-toggle.js"></script>
-	<a href="#" onclick="toggleTable('statementsAbout');return false;">
-		<div class="nodeDetailBox"><img id="statementsAbout_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
+ 	<script type="text/javascript" src="http://${hostname}/OBDUI/js/table-toggle.js"></script>
+	<a href="#" onclick="toggleTable('statementsAbout','${hostname}');return false;">
+		<div class="nodeDetailBox"><img id="statementsAbout_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -21,10 +21,17 @@
 						<#list aboutStatements as statement>
 						<tr>
 							<th>
-								&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>		
+								<#if statement.statement.nscondition?exists>
+									<span style="font-weight:normal;">&otimes;</span>&nbsp;<span class="fixed_width">[${statement.entailment}]</span>
+								<#else>
+									&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>
+								</#if>		
 							</th>
+							
 					 		<td>
-					 			${statement.statement}
+					 			<@labelhref target=statement.statement.sourceHref label=statement.statement.sourceLabel/> 
+					 			<@labelhref target=statement.statement.relationHref label=statement.statement.relationLabel/> 
+					 			<@labelhref target=statement.statement.targetHref label=statement.statement.targetLabel/>
 					 		</td>
 					 	</tr>
 					 	</#list>
@@ -36,8 +43,8 @@
 			</td>
 		</tr>
 	</table>
-	<a href="#" onclick="toggleTable('statementsTo');return false;">
-		<div class="nodeDetailBox"><img id="statementsTo_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
+	<a href="#" onclick="toggleTable('statementsTo','${hostname}');return false;">
+		<div class="nodeDetailBox"><img id="statementsTo_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -61,7 +68,9 @@
 									&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>		
 								</th>
 						 		<td>
-						 			${statement.statement}
+						 			<@labelhref target=statement.statement.sourceHref label=statement.statement.sourceLabel/> 
+						 			<@labelhref target=statement.statement.relationHref label=statement.statement.relationLabel/> 
+						 			<@labelhref target=statement.statement.targetHref label=statement.statement.targetLabel/>
 						 		</td>
 						 	</tr>
 						</#list>
@@ -72,8 +81,8 @@
 			</td>
 		</tr>
 	</table>
-	<a href="#" onclick="toggleTable('annotationStatements');return false;">
-		<div class="nodeDetailBox"><img id="annotationStatements_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Class Annotations</div>
+	<a href="#" onclick="toggleTable('annotationStatements','${hostname}');return false;">
+		<div class="nodeDetailBox"><img id="annotationStatements_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Class Annotations</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -96,7 +105,7 @@
 									&bull;
 								</th>
 								<td>
-									${statementMap.statement}
+									<@labelhref target=statementMap.statement.sourceHref label=statementMap.statement.sourceLabel/> <@labelhref target=statementMap.statement.relationHref label=statementMap.statement.relationLabel/> <@labelhref target=statementMap.statement.targetHref label=statementMap.statement.targetLabel/>
 								</td>
 							</tr>
 							<tr>
@@ -138,6 +147,7 @@
 		</tr>
 	</table>
 </#macro>		
+
 
 
 <#macro otherFormatLink contextName dataSource format view id statementType>

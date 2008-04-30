@@ -1,7 +1,6 @@
 
 package org.obd.ws.coreResource;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,8 +51,9 @@ public abstract class OBDResource extends Resource {
 		String fromVal = form.getFirstValue("from");
 		if (fromVal != null)
 			limit = Integer.parseInt(fromVal);
+		
 	}
-
+	
 	/**
 	 * Returns the parent OBDRestApplication.
 	 * 
@@ -79,7 +79,6 @@ public abstract class OBDResource extends Resource {
 
 
 	public String href(Node node,String dataSource) {
-		this.getContextName();
 		String id = node.getId();
 		return href(id,dataSource);
 	}
@@ -210,7 +209,7 @@ public abstract class OBDResource extends Resource {
 	}
 	
 	
-	private String HTMLEntityEncode(String s){
+	protected String HTMLEntityEncode(String s){
 		StringBuffer buf = new StringBuffer();
 		int len = (s == null ? -1 : s.length());
 
