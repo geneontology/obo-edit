@@ -2,6 +2,8 @@
 package org.obd.ws.coreResource;
 
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -141,12 +143,19 @@ public class NodeResource extends OBDResource {
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
     		resourceMap.put("nodeId",this.nodeId);
+
+    		try {
+    			InetAddress addr = InetAddress.getLocalHost();
+    			resourceMap.put("hostname",addr.getCanonicalHostName());
+    		} catch (UnknownHostException e) {
+    			System.err.println("Hostname fetching error: " + e.getMessage());
+    		}
     		
     		// Annotation Statements 
     		List<SimpleHash> annotationStatements = new ArrayList<SimpleHash>();
     		for (Statement s : this.getGraph("annotations").getStatements()){
         		SimpleHash annotationStatement = new SimpleHash();
-    			annotationStatement.put("statement", this.prettifyStatement(s, dataSource));
+    			annotationStatement.put("statement", this.hashifyStatement(s));
         		Set<String> assignmentSources = new HashSet<String>();
     			Set<String> provenanceSources = new HashSet<String>();
     			for (Statement subStatement : s.getSubStatements()){
@@ -167,10 +176,10 @@ public class NodeResource extends OBDResource {
     		
     		
     		// Statements to Node
-    		List<Map<String,String>> toStatements = new ArrayList<Map<String,String>>();
+    		List<SimpleHash> toStatements = new ArrayList<SimpleHash>();
     		for (Statement s : this.getGraph("to").getStatements()){
-    			Map<String,String> m = new HashMap<String,String>();
-    			m.put("statement",this.prettifyStatement(s, dataSource));
+    			SimpleHash m = new SimpleHash();
+    			m.put("statement",this.hashifyStatement(s));
     			if (s.isInferred()){
     				m.put("entailment","I");
     			} else {
@@ -182,12 +191,11 @@ public class NodeResource extends OBDResource {
     			resourceMap.put("toStatements", toStatements);
     		}
     		
-    		
     		// Statements about node
-    		List<Map<String,String>> aboutStatements = new ArrayList<Map<String,String>>();
+    		List<SimpleHash> aboutStatements = new ArrayList<SimpleHash>();
     		for (Statement s : this.getGraph("about").getStatements()){
-    			Map<String,String> m = new HashMap<String,String>();
-    			m.put("statement",this.prettifyStatement(s, dataSource));
+    			SimpleHash m = new SimpleHash();
+    			m.put("statement",this.hashifyStatement(s));
     			if (s.isInferred()){
     				m.put("entailment","I");
     			} else {
@@ -273,14 +281,18 @@ public class NodeResource extends OBDResource {
 		if (aspect.equals("annotations")) {
 			lq = new AnnotationLinkQueryTerm(getNodeId());
 		} else {
-			if (aspect.equals("about") || aspect.equals("all"))
+			if (aspect.equals("about")){
 				lq.setNode(getNodeId());
-			else if (aspect.equals("to"))
+				lq.setInferred(false);
+			} else if (aspect.equals("all")){
+				lq.setNode(getNodeId());
+			} else if (aspect.equals("to")){ 
 				lq.setTarget(getNodeId());
-			else if (aspect.equals("source"))
+			} else if (aspect.equals("source")){
 				lq.setSource(getNodeId());
-			else
+			} else {
 				lq.setNode(getNodeId());
+			}
 		}
 
 		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
@@ -302,57 +314,45 @@ public class NodeResource extends OBDResource {
 		return graph;
 	}
 	
-	public String prettifyStatement(Statement s,String dataSource) {
+	public SimpleHash hashifyStatement(Statement s) {
 				
 		Graph g = new Graph();
-		StringBuilder sb = new StringBuilder();
+		SimpleHash statementHash = new SimpleHash();
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
+
 		if (sourceNode != null && sourceNode.getLabel() != null){
-			sb.append(hrefLabel(sourceNode.getLabel(),sourceNode.getId(),dataSource));
+			statementHash.put("sourceLabel", sourceNode.getLabel());
 		} else {
-			sb.append(href(s.getNodeId(),dataSource));
+			statementHash.put("sourceLabel", s.getNodeId());
 		}
-		Node n = g.getNode(s.getNodeId());
-		if (n != null && n.getLabel() != null)
-			sb.append(" \""+n.getLabel()+"\"");
-		sb.append("  ");
+		statementHash.put("sourceHref", "/" + this.getContextName() + "/" + this.dataSource + "/html/nodes/" + Reference.encode(s.getNodeId()));
 		
-		String label="";
 		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
 		if (rn != null && rn.getLabel() != null){
-			label = rn.getLabel();
+			statementHash.put("relationLabel", this.prettifyRelationshipTerm(rn.getLabel()));
 		} else {
-			label = s.getRelationId();
+			statementHash.put("relationLabel", this.prettifyRelationshipTerm(s.getRelationId()));
 		}
-		label = this.prettifyRelationshipTerm(label);
-	
-		sb.append(hrefLabel(label,s.getRelationId(),dataSource));
-		sb.append(" ");
-		
-		n = g.getNode(s.getTargetId());
-		
-		if (n != null && n.getLabel() != null)
-			sb.append(" \""+n.getLabel()+"\"");
+		statementHash.put("relationHref","/" + this.getContextName() + "/" + this.dataSource + "/html/nodes/" + Reference.encode(s.getRelationId()));
+			
 		if (s instanceof LinkStatement) {
 			
-			Node target = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
-			if (target != null && target.getLabel() != null){
-				sb.append(hrefLabel(target.getLabel(),target.getId(),dataSource));	
+			Node tn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
+			if (tn != null && tn.getLabel() != null){
+				statementHash.put("targetLabel",tn.getLabel());
 			} else {
-				sb.append(href(s.getTargetId(),dataSource));
+				statementHash.put("targetLabel",s.getTargetId());
 			}
+			statementHash.put("targetHref","/" + this.getContextName() + "/" + this.dataSource + "/html/nodes/" + Reference.encode(s.getTargetId()));
 			
 			LinkStatement ls = (LinkStatement)s;
 			if (ls.isIntersectionSemantics()) {
-				sb.append(" [n+s condition element]");    			
+				statementHash.put("nscondition", true);    			
 			}
-		}		
-
-		if (s instanceof LiteralStatement) {
-			sb.append(" "+((LiteralStatement)s).getSValue());
+		} else if (s instanceof LiteralStatement) {
+			statementHash.put("targetLabel",((LiteralStatement)s).getSValue());
 		}
-
-		return sb.toString();
+		return statementHash;
 	}
 	
 	

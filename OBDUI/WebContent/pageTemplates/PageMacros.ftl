@@ -1,3 +1,11 @@
+<#macro labelhref target='blank' label='blank'>
+	<#if target=='blank'>
+		${label}
+	<#else>
+		<a href="http://obd.berkeleybop.org${target}" style="text-decoration:none;">${label}</a>
+	</#if>
+</#macro>
+
 <#macro searchForm>
  <div id="searchbar">
  	 <script type="text/javascript" src="/${contextName}/js/search.js">
@@ -8,7 +16,7 @@
 		Search for:<br/>
        	<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}')" value="Go" />
        	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
-        <input type="hidden" name="dataSource" id="dataSource" value="${dataSource}"/>
+        <input type="hidden" name="dataSource" id="dataSource" value="obdPhenotypeAll"/>
      
      </form>
      
@@ -27,14 +35,12 @@
 </#macro>
 <#macro dataSourceList>
 	Available Data Sources:
-	<ul><li>${dataSource}</li></ul>
-	<#--
 	<ul>
 	<#list dataSources as dataSource>
 		<li>${dataSource}</li>
 	</#list>
 	</ul>
-	-->
+	
 	<br/>
 	Configuration Messages:
 	<ul>
@@ -45,12 +51,15 @@
 </#macro>
 
 <#macro genTitle pageName>
-		<head>
+		
 		<title>
 			${pageName}
 		</title>
-		<link rel="stylesheet" type="text/css" href="/OBDUI/css/obd-main.css"/>
-	</head>
+	
+</#macro>
+
+<#macro stylize>
+	<link rel="stylesheet" type="text/css" href="/OBDUI/css/obd-main.css"/>
 </#macro>
 
 <#macro header>

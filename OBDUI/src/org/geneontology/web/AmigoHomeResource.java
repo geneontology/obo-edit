@@ -1,5 +1,6 @@
 package org.geneontology.web;
 
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.restlet.resource.Variant;
  */
 public class AmigoHomeResource extends NodeResource {
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -44,7 +46,7 @@ public class AmigoHomeResource extends NodeResource {
 		Set<Map<String,String>> pathMaps = new HashSet<Map<String,String>>();
 		
 		// This is dumbed down for use with a single data source. Should be extended to use multiple data sources.
-		String dataSource =  this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0])[0];
+		String[] dataSources =  this.getOBDRestApplication().getResourceMap().keySet().toArray(new String[0]);
 		
 		for (String s : this.getOBDRestApplication().getConfiguration().getPathResourceMap().keySet()){
 			if (!s.trim().equals("")){
@@ -65,10 +67,20 @@ public class AmigoHomeResource extends NodeResource {
 			messages.add(message);
 		}
 		
+		String hostname = null;
+		try {
+			hostname = java.net.InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		resourceMap.put("hostname", hostname);
+		
 		resourceMap.put("contextName", this.getContextName());
-		resourceMap.put("dataSource", dataSource);
+		resourceMap.put("dataSources", dataSources);
 		resourceMap.put("pathMaps",pathMaps);
 		resourceMap.put("configurationMessages", messages);
+		
 		
 		Representation result = getTemplateRepresentation("explorer",resourceMap);
 		return result; 

@@ -1,7 +1,10 @@
 <#include "PageMacros.ftl"> 
 <#include "NodeDetailsMacro.ftl"> 
 <html>
-    <@genTitle pageName="Node Details"/>	
+	<head>
+		<@stylize/>
+    	<@genTitle pageName="Node Details"/>
+    </head>	
 	<body>
 		<@header/>	
 		<table class="threecol">

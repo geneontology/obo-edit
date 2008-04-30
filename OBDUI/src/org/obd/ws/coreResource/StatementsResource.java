@@ -3,6 +3,7 @@
 package org.obd.ws.coreResource;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.TreeMap;
 
 import org.obd.model.Graph;
@@ -58,34 +59,53 @@ public class StatementsResource extends NodeResource {
 
 	protected Graph getGraph() {
 		Graph graph;
-
-		if (aspect == null || aspect.equals(""))
+		
+		Collection<Statement> stmts = new HashSet<Statement>();
+		
+		if (aspect == null || aspect.equals("")){
 			aspect = "about";
-
-		LinkQueryTerm lq = new LinkQueryTerm();
-		if (relationId != null)
-			lq.setRelation(relationId);
-		if (aspect.equals("annotations")) {
-			lq = new AnnotationLinkQueryTerm(getNodeId());
-		}
-		else {
-			if (aspect.equals("about") || aspect.equals("all"))
-				lq.setNode(getNodeId());
-			else if (aspect.equals("to"))
-				lq.setTarget(getNodeId());
-			else if (aspect.equals("source"))
-				lq.setSource(getNodeId());
-			else
-				lq.setNode(getNodeId());
 		}
 
-		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
-
-		if (aspect.equals("all")) {
-			lq = new LinkQueryTerm();
-			lq.setRelation(relationId);
+		if (aspect.equals("immediate")){
+			LinkQueryTerm lq = new LinkQueryTerm();
+			if (relationId != null){
+				lq.setRelation(relationId);
+			}
 			lq.setTarget(getNodeId());
+			lq.setInferred(false);
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+			
+			lq = new LinkQueryTerm();
+			lq.setNode(getNodeId());
+			lq.setInferred(false);
+			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+			
+		} else {
+			LinkQueryTerm lq = new LinkQueryTerm();
+	
+			if (relationId != null)
+				lq.setRelation(relationId);
+			if (aspect.equals("annotations")) {
+				lq = new AnnotationLinkQueryTerm(getNodeId());
+			} else {
+				if (aspect.equals("about") || aspect.equals("all")){
+					lq.setNode(getNodeId());
+				}else if (aspect.equals("to")){
+					lq.setTarget(getNodeId());
+				} else if (aspect.equals("source"))
+					lq.setSource(getNodeId());
+				else
+					lq.setNode(getNodeId());
+			}
+			
+			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+	
+			if (aspect.equals("all")) {
+				lq = new LinkQueryTerm();
+				lq.setRelation(relationId);
+				lq.setTarget(getNodeId());
+				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+			}
 		}
 		graph = new Graph(stmts);
 		if (true) {

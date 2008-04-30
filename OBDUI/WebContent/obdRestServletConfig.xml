@@ -3,7 +3,8 @@
 <!DOCTYPE obdRESTServletConfig SYSTEM "http://www.berkeleybop.org/obd/obd-rest-servlet-config-0.1.dtd">
  
 <obdRESTServletConfig>
-    <dataSource>
+
+	<dataSource>
         <resourcePath>obdPhenotypeAll</resourcePath>
         <OBDSQLAdaptor>
         	<hostname>131.243.192.78</hostname>
@@ -13,6 +14,18 @@
             <databaseName>obd_phenotype_all</databaseName>
         </OBDSQLAdaptor>
     </dataSource>
+	
+	<dataSource>
+		<resourcePath>obdRefg</resourcePath>
+		<OBDSQLAdaptor>
+			<hostname>131.243.192.78</hostname>
+			<port>5432</port>
+			<username>cjm</username>
+			<password></password>
+			<databaseName>obd_refg</databaseName>
+		</OBDSQLAdaptor>
+	</dataSource>
+	
 	
 	<!-- Core Mappings -->
 	
@@ -121,15 +134,15 @@
 	
 	<logLevel>
 		<logName>org.bbop.rdbms</logName>
-		<level>FINEST</level>
+		<level>FINE</level>
 	</logLevel>
 	<logLevel>
 		<logName>org.obd</logName>
-		<level>FINEST</level>
+		<level>FINE</level>
 	</logLevel>
 	<logLevel>
 		<logName>org.obd.ws.restServlet.OBDRestComponent</logName>
-		<level>FINEST</level>
+		<level>FINE</level>
 	</logLevel>
 
 	
