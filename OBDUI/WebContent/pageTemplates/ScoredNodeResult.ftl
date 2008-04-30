@@ -1,7 +1,10 @@
 <#include "PageMacros.ftl"> 
 <#include "NodeDetailsMacro.ftl"> 
 <html>
-    <@genTitle pageName="Node Similarities"/>	
+    <head>
+		<@stylize/>
+    	<@genTitle pageName="Node Similarities"/>
+    </head>	
 	<body>
 		<@header/>	
 		<table class="threecol">

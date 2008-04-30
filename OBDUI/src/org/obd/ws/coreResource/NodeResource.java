@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -142,7 +143,8 @@ public class NodeResource extends OBDResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
-    		resourceMap.put("nodeId",this.nodeId);
+    		//resourceMap.put("nodeId",this.nodeId);
+    		resourceMap.put("encodedId", Reference.encode(this.nodeId));
 
     		try {
     			InetAddress addr = InetAddress.getLocalHost();
@@ -171,6 +173,7 @@ public class NodeResource extends OBDResource {
     			annotationStatements.add(annotationStatement);
     		}
     		if (annotationStatements.size()>0){
+    			Collections.sort(annotationStatements,new StatementComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
@@ -188,6 +191,7 @@ public class NodeResource extends OBDResource {
     			toStatements.add(m);
     		}
     		if (toStatements.size()>0){
+    			Collections.sort(toStatements,new StatementComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
@@ -208,6 +212,7 @@ public class NodeResource extends OBDResource {
     			}
     		}
     		if (aboutStatements.size()>0){
+    			Collections.sort(aboutStatements,new StatementComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
     		if (format.equals("html")){
@@ -316,7 +321,6 @@ public class NodeResource extends OBDResource {
 	
 	public SimpleHash hashifyStatement(Statement s) {
 				
-		Graph g = new Graph();
 		SimpleHash statementHash = new SimpleHash();
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
 
@@ -352,6 +356,7 @@ public class NodeResource extends OBDResource {
 		} else if (s instanceof LiteralStatement) {
 			statementHash.put("targetLabel",((LiteralStatement)s).getSValue());
 		}
+		
 		return statementHash;
 	}
 	
