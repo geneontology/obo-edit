@@ -406,13 +406,21 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public void readOntology(OBOSession session, String f) throws DataAdapterException {
 		manager = OWLManager.createOWLOntologyManager();
 		this.session = session; // TODO : check
-		logger.info("reading OWL ontology from ="+f);
+		URI uri;
+		if (f.indexOf(":") > 0)  // already has scheme
+			uri = URI.create(f);
+		else // file path
+			uri = URI.create("file:" + f);
+
+		logger.info("reading OWL ontology from URI " + uri);
 		try {
-			ontology = manager.loadOntologyFromPhysicalURI(URI.create(f));
-		} catch (OWLOntologyCreationException e) {
+			ontology = manager.loadOntologyFromPhysicalURI(uri);
+		} //
+		catch (Exception e) {
 			// TODO Auto-generated catch block
+			System.out.println("Error reading OWL ontology from " + uri + ": "+e);
 			e.printStackTrace();
-			throw new DataAdapterException("error reading OWL ontology: "+e);
+			throw new DataAdapterException("error reading OWL ontology from " + uri + ": "+e);
 		}
 		if (ioprofile.isCombineOWLOntologies()) {
 			for (OWLOntology ont : manager.getOntologies()) {
