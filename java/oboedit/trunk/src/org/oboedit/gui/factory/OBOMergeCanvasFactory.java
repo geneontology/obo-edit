@@ -5,7 +5,6 @@ package org.oboedit.gui.factory;
  */
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.oboedit.gui.components.GraphViewCanvas;
 import org.oboedit.gui.components.OBOMergeCanvas;
 
 public class OBOMergeCanvasFactory extends AbstractComponentFactory<OBOMergeCanvas> {
