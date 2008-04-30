@@ -2,6 +2,14 @@
 	<#if target=='blank'>
 		${label}
 	<#else>
+		<a href="${target}" style="text-decoration:none;">${label}</a>
+	</#if>
+</#macro>
+
+<#macro labelabsolutehref target='blank' label='blank'>
+	<#if target=='blank'>
+		${label}
+	<#else>
 		<a href="http://${hostname}${target}" style="text-decoration:none;">${label}</a>
 	</#if>
 </#macro>

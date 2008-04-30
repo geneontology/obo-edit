@@ -24,7 +24,7 @@
 							&bull;
 						</th>
 						<td style="font-family:Arial;font-size:12px;padding-top:4px;">
-							<@labelhref target=statementMap.statement.sourceHref label=statementMap.statement.sourceLabel/> <@labelhref target=statementMap.statement.relationHref label=statementMap.statement.relationLabel/> <@labelhref target=statementMap.statement.targetHref label=statementMap.statement.targetLabel/>
+							<@labelabsolutehref target=statementMap.statement.sourceHref label=statementMap.statement.sourceLabel/> <@labelabsolutehref target=statementMap.statement.relationHref label=statementMap.statement.relationLabel/> <@labelabsolutehref target=statementMap.statement.targetHref label=statementMap.statement.targetLabel/>
 						</td>
 					</tr>
 					<tr>
