@@ -2,7 +2,7 @@
 	<#if target=='blank'>
 		${label}
 	<#else>
-		<a href="http://obd.berkeleybop.org${target}" style="text-decoration:none;">${label}</a>
+		<a href="http://${hostname}${target}" style="text-decoration:none;">${label}</a>
 	</#if>
 </#macro>
 

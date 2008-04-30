@@ -1,9 +1,9 @@
 function toggleTable(div_id,hostname){
 
 	plus = new Image();
-	plus.src = "http://" + hostname + "/OBDUI/images/plus-box.gif";
+	plus.src = "/OBDUI/images/plus-box.gif";
 	minus = new Image();
-	minus.src = "http://" + hostname + "/OBDUI/images/min-box.gif";
+	minus.src = "/OBDUI/images/min-box.gif";
 	
 	var detailsDiv = document.getElementById(div_id);
 	var toggleImage = document.getElementById((div_id+'_image'));

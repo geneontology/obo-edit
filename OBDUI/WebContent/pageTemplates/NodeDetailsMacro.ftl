@@ -1,7 +1,7 @@
 <#macro nodeDetailsTable>
- 	<script type="text/javascript" src="http://${hostname}/OBDUI/js/table-toggle.js"></script>
+ 	<script type="text/javascript" src="/OBDUI/js/table-toggle.js"></script>
 	<a href="#" onclick="toggleTable('statementsAbout','${hostname}');return false;">
-		<div class="nodeDetailBox"><img id="statementsAbout_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
+		<div class="nodeDetailBox"><img id="statementsAbout_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -44,7 +44,7 @@
 		</tr>
 	</table>
 	<a href="#" onclick="toggleTable('statementsTo','${hostname}');return false;">
-		<div class="nodeDetailBox"><img id="statementsTo_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
+		<div class="nodeDetailBox"><img id="statementsTo_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -82,7 +82,7 @@
 		</tr>
 	</table>
 	<a href="#" onclick="toggleTable('annotationStatements','${hostname}');return false;">
-		<div class="nodeDetailBox"><img id="annotationStatements_image" src="http://${hostname}/OBDUI/images/plus-box.gif" class="expandoImage"/>Class Annotations</div>
+		<div class="nodeDetailBox"><img id="annotationStatements_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Class Annotations</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>

@@ -13,7 +13,7 @@
 					<@searchForm/>
 					<#if node?exists>
 						<hr class="divider"/>
-						<@phat id=node.getId()/>
+						<@phat id=encodedId/>
 						<hr class="divider"/>
 						<@nodeMetaData/>
 					</#if>

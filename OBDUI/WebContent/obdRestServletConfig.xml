@@ -134,15 +134,15 @@
 	
 	<logLevel>
 		<logName>org.bbop.rdbms</logName>
-		<level>FINE</level>
+		<level>INFO</level>
 	</logLevel>
 	<logLevel>
 		<logName>org.obd</logName>
-		<level>FINE</level>
+		<level>INFO</level>
 	</logLevel>
 	<logLevel>
 		<logName>org.obd.ws.restServlet.OBDRestComponent</logName>
-		<level>FINE</level>
+		<level>INFO</level>
 	</logLevel>
 
 	
