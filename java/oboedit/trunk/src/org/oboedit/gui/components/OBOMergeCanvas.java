@@ -6,11 +6,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -26,6 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import org.apache.batik.ext.awt.image.renderable.RedRable;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIComponent;
@@ -33,6 +39,8 @@ import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
 import org.bbop.swing.MinusIcon;
 import org.bbop.swing.PlusIcon;
+import org.oboedit.launcher.OBOMerge;
+
 import javax.swing.JFrame;
 
 
@@ -45,32 +53,15 @@ import javax.swing.JFrame;
 public class OBOMergeCanvas extends AbstractGUIComponent {
 
 
+
 	/**
 	 * @author  Ranganath Kini
 	 * @see      javax.swing.JTextArea
 	 * http://www.jcreator.com/forums/index.php?showtopic=773
 	 */
-	public class TextAreaOutputStream extends OutputStream {
+	private class TextAreaOutputStream extends OutputStream {
 		private JTextArea textControl;
-
 		public TextAreaOutputStream(JTextArea control) {
-			textControl = control;
-		}
-
-		@Override
-		public void write(int b) throws IOException {
-			// append the data as characters to the JTextArea control
-			textControl.append(String.valueOf((char) b));
-		}
-	}
-	/**
-	 * @author  Ranganath Kini
-	 * @see      javax.swing.JTextArea
-	 * http://www.jcreator.com/forums/index.php?showtopic=773
-	 */
-	private class TextAreaOutputStream1 extends OutputStream {
-		private JTextArea textControl;
-		public void TextAreaOutputStream(JTextArea control) {
 			textControl = control;
 		}
 		@Override
@@ -106,16 +97,16 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	JPanel branchFilePanel = new JPanel();
 	JPanel mergedFilePanel = new JPanel();
 	JLabel parentFileLabel = new JLabel("Parent File");
-	JTextField parentFileTextField = new JTextField("");
+	JTextField parentFileTextField = new JTextField(5);
 	JButton parentFileBrowseButton = new JButton("Browse");
 	JLabel branchFileLabel = new JLabel("Branch File");
-	JTextField branchFileTextField = new JTextField("");
+	JTextField branchFileTextField = new JTextField(5);
 	JButton branchFileBrowseButton = new JButton("Browse");
 	JLabel liveFileLabel = new JLabel("Live File   ");
-	JTextField liveFileTextField = new JTextField("");
+	JTextField liveFileTextField = new JTextField(5);
 	JButton liveFileBrowseButton = new JButton("Browse");
 	JLabel mergedFileLabel = new JLabel("Merged File");
-	JTextField mergedFileTextField = new JTextField("");
+	JTextField mergedFileTextField = new JTextField(5);
 	JButton mergedFileBrowseButton = new JButton("Browse");
 	JLabel saveProfileLabel = new JLabel("Save Profile");
 	String[] savedProfiles = {"new profile", ""};
@@ -167,6 +158,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	JTextField feedbackFileTextField = new JTextField();
 	String ignoreClashOnIDsChoiceString = new String();
 	PrintStream feedbackFileOutputStream;
+	JButton saveFeedbackToFileSaveButton = new JButton("Save");
 
 	public OBOMergeCanvas(String id) {
 		super(id);
@@ -461,7 +453,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		mergeAndAdvancedButtonPanel.add(mergeButton, mergeAndAdvancedButtonPanelGBC);
 //		End of contents of panel with advanced button and merge button on it. 
 
-//		Start of contents of panel in other tab that shows contents. 		
+//		Start of contents of panel in other tab that shows progress. 		
 		processFeedbackPanel.setLayout(new GridBagLayout());
 		GridBagConstraints processFeedbackPanelGBC = new GridBagConstraints();
 
@@ -471,8 +463,8 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 //		Scroll pane enclosing progress window now on tab. 		
 		processFeedbackPanelGBC.fill = GridBagConstraints.BOTH;
 		processFeedbackPanelGBC.gridx = 0;
-		processFeedbackPanelGBC.gridy = 1;
-		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_END;
+		processFeedbackPanelGBC.gridy = 0;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_START;
 		processFeedbackPanelGBC.weightx = 1;
 		processFeedbackPanelGBC.weighty = 1;
 		processFeedbackPanelGBC.insets = new Insets(5,5,5,5);
@@ -480,10 +472,10 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 
 //		Panel to contain part to let you select where progress feedback is saved to a file. 		
 		processFeedbackPanelGBC.fill = GridBagConstraints.HORIZONTAL;
-		processFeedbackPanelGBC.gridy = 0;
+		processFeedbackPanelGBC.gridy = 1;
 		processFeedbackPanelGBC.weightx = 1;
 		processFeedbackPanelGBC.weighty = 0;
-		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_START;
+		processFeedbackPanelGBC.anchor = GridBagConstraints.PAGE_END;
 		processFeedbackPanel.add(saveFeedbackToFileDetailPanel, processFeedbackPanelGBC);
 
 //		Contents of panel for saving feedback to file. 
@@ -510,6 +502,13 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		saveFeedbackToFileDetailPanelGBC.gridy = 0;
 		saveFeedbackToFileDetailPanelGBC.weightx = 0;
 		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileBrowseButton, saveFeedbackToFileDetailPanelGBC);
+
+//		Save feedback to file save button. 
+		saveFeedbackToFileDetailPanelGBC.fill = GridBagConstraints.NONE;
+		saveFeedbackToFileDetailPanelGBC.gridx = 3;
+		saveFeedbackToFileDetailPanelGBC.gridy = 0;
+		saveFeedbackToFileDetailPanelGBC.weightx = 0;
+		saveFeedbackToFileDetailPanel.add(saveFeedbackToFileSaveButton, saveFeedbackToFileDetailPanelGBC);
 //		End of save feedback to file panel contents. 
 
 //		These to lines are needed or the GUI components will not show up. 		
@@ -559,6 +558,19 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			}
 		});
 
+		saveFeedbackToFileSaveButton
+		.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try {
+					saveFeedbackToFileSaveButtonActionPerformed(evt);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
+		
 		branchFileBrowseButton
 		.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -608,7 +620,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 					advancedButton.setText("Advanced");
 				} else {
 					advancedButton.setText("Basic");
-				}			
+				}
 			}
 		});
 		saveProfilePanel.setVisible(false);
@@ -620,7 +632,8 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 
 
 
-//	This is part of the mechanism to close the dialog now that shows if someone has not filled
+
+	//	This is part of the mechanism to close the dialog now that shows if someone has not filled
 //	in all the file paths. 	
 	public void save(){
 		System.out.println("all going well so far.");
@@ -642,7 +655,17 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		}
 
 	}
+	protected void saveFeedbackToFileSaveButtonActionPerformed(ActionEvent evt) throws IOException {
 
+		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
+		String feedbackTextAreaContents = feedbackTextArea.getText();
+			BufferedWriter out = new BufferedWriter(new FileWriter(feedbackFile));
+			out.write(feedbackTextAreaContents);
+			out.flush();
+			out.close();
+			
+		
+	}
 
 
 	private void failOnClashChoiceComboBoxActionPerformed(
@@ -670,7 +693,12 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		 *  GUI controls and puts them
 		 * into the array to be fed to obomerge.
 		 */
-		System.out.println("Arguments applied are:");
+		
+		PrintStream toTextArea = new PrintStream( new TextAreaOutputStream( feedbackTextArea ) );
+		System.setOut( toTextArea );
+		System.setErr( toTextArea );
+		
+		System.out.println("Arguments applied were:\n");
 
 		if (failOnClashChoiceString != "   ") {
 			obomergeArgsArrayList.add("-fail-on-clash");
@@ -678,13 +706,13 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
 
 		}
-//		Need to fix this. The "!=" is not working. 
-		//				if (updateIDsChoiceString != "   ") {
-//		obomergeArgsArrayList.add("-update-ids");
-//		obomergeArgsArrayList.add(updateIDsChoiceString);
-//		System.out.println("    -update-ids " + updateIDsChoiceString);
-//		}
-		//This feature not fully implemented. 
+
+		if (updateIDsChoiceString != "   ") {
+			obomergeArgsArrayList.add("-update-ids");
+			obomergeArgsArrayList.add(updateIDsChoiceString);
+			System.out.println("    -update-ids " + updateIDsChoiceString);
+		}
+		//This feature not implemented. 
 //		if (ignoreClashOnIDsChoiceString != "") {
 //		obomergeArgsArrayList.add("-ignore-clash-on-id");
 //		obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
@@ -731,9 +759,11 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		obomergeArgsArrayList.add(mergedFileTextFieldString);
 		System.out.println("    -o " + mergedFileTextFieldString);
 
-		System.out.println(obomergeArgsArrayList);
+//		System.out.println(obomergeArgsArrayList);
 		obomergeArgsArrayList.trimToSize();
 		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
+		
+		System.out.println("\nThe merge process gave the following feedback:\n");
 		return true;
 	}
 
@@ -743,9 +773,8 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 
 		if (makeArgArrayList() == true) {
 			try {
-				WriteFeedbackToFile();
+				WriteFeedbackToTextArea();
 				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
-				ShowFeedbackInWindow();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -797,7 +826,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	}
 
 
-private void saveFeedbackToFileBrowseButtonActionPerformed(
+	private void saveFeedbackToFileBrowseButtonActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		int returnVal = fileChooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -807,35 +836,24 @@ private void saveFeedbackToFileBrowseButtonActionPerformed(
 		System.out.println("saveFeedbackToFileBrowseButtonActionPerformed : We are in button action performed.");
 	}
 
-private void ShowFeedbackInWindow() {
+	private void ShowFeedbackInWindow() {
 		feedbackTextArea.setText(feedbackFileOutputStream.toString());
 	}
 
-private void updateIDsComboboxActionPerformed(
+	private void updateIDsComboboxActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		updateIDsChoiceString = (String) updateIDsCombobox
 		.getSelectedItem();
 		System.out.println("arg = " + updateIDsChoiceString);
 	}
 
-	private void WriteFeedbackToFile() {
-		File feedbackFile = new File(saveFeedbackToFileTextFieldString);
-		try {
-
-			feedbackFileOutputStream = new PrintStream(
-					feedbackFile);
-//			ObjectOutputStream feedbackFileObjectOutputStream = new ObjectOutputStream(
-//			feedbackFileOutputStream);
-
-			System.setOut(feedbackFileOutputStream);
-			System.setErr(feedbackFileOutputStream);
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	private void WriteFeedbackToTextArea() {
+		
+		PrintStream toTextArea = new PrintStream( new TextAreaOutputStream( feedbackTextArea ) );
+		
+		System.setOut( toTextArea );
+		System.setErr( toTextArea );
+		
 	}
 
 
