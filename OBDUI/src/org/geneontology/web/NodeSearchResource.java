@@ -4,10 +4,14 @@ package org.geneontology.web;
 
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -20,6 +24,7 @@ import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.ComparisonQueryTerm.Operator;
 import org.obd.ws.coreResource.NodeResource;
+import org.obd.ws.coreResource.sorter.NodeLabelComparator;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -28,6 +33,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+
+import freemarker.template.SimpleHash;
 
 /**
  * Resource for a node
@@ -135,34 +142,51 @@ public class NodeSearchResource extends NodeResource {
     		return result;
     	} else {
     		
-    		Map<String,String> categoryMap = this.groupingInit();
+ 
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
-    		Set<HashMap<String,String>> resultNodes = new HashSet<HashMap<String,String>>();
+    		List<SimpleHash> resultNodes = new ArrayList<SimpleHash>();
+    		List<Node> nodeList = Arrays.asList(this.nodes.toArray(new Node[0]));
+    		Map<String,Integer> categoryCount = new HashMap<String,Integer>();
+    		
+    		Collections.sort(nodeList,new NodeLabelComparator());
     		
     		
-    		for (Node n : nodes){
-    			
-    			
+    		for (Node n : nodeList){
     			if (n.getLabel() != null){
-	    			HashMap<String, String> nodeProperties = new HashMap<String,String>();
-	    			nodeProperties.put("id", n.getId());
-	    			String label = "" + n.getLabel();
-	    			nodeProperties.put("label", label);
+    				
+	    			SimpleHash nodeProperties = new SimpleHash();
+	    			nodeProperties.put("nodeId", n.getId());
+	    			if (n.getLabel() != null){
+	    				nodeProperties.put("nodeLabel", n.getLabel());
+	    			} else {
+	    				nodeProperties.put("nodeLabel", n.getId());
+	    			}
 	    			
-	    			nodeProperties.put("linkedLabel",hrefLabel(label,n.getId(),this.dataSource));
+	    			nodeProperties.put("nodeHref","/" + this.getContextName() + "/" + this.dataSource + "/html/nodes/" + Reference.encode(n.getId()));
 	    			
 	    			String source = "";
 	    			source += n.getSourceId();
+	    			
 	    			nodeProperties.put("source",source);
-	    			nodeProperties.put("linkedId", href(n,this.dataSource));
-	    			if (categoryMap.keySet().contains(n.getSourceId())){
-	    				nodeProperties.put("category", categoryMap.get(n.getSourceId()));
-	    			} else {
-	    				nodeProperties.put("category", "Other");
+	    			String category = this.getGroup(source);
+	    			nodeProperties.put("category",category);
+	    			if (!categoryCount.containsKey(category)){
+	    				categoryCount.put(category, 0);
 	    			}
+	    			categoryCount.put(category,(categoryCount.get(category)+1));
 	    			resultNodes.add(nodeProperties);
     			}
-    			
+    		}
+    		
+    		List<SimpleHash> resultCounts = new ArrayList<SimpleHash>();
+    		for (String category : categoryCount.keySet()){
+    			SimpleHash count = new SimpleHash();
+    			count.put("category", category);
+    			count.put("count", categoryCount.get(category));
+    			resultCounts.add(count);
+    		}
+    		if (resultCounts.size()>0){
+    			resourceMap.put("resultCounts", resultCounts);
     		}
     		
     		String hostname = null;
@@ -176,9 +200,8 @@ public class NodeSearchResource extends NodeResource {
     		
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("nodeProperties", resultNodes);
+    		resourceMap.put("resultNodes", resultNodes);
     		resourceMap.put("searchTerm",searchTerm);
-    		resourceMap.put("formatLinks",mapToOtherFormats("/search/contains_all/"+searchTerm,this.dataSource));
     		
     		
     		return getTemplateRepresentation("searchResults",resourceMap);
@@ -187,7 +210,7 @@ public class NodeSearchResource extends NodeResource {
     	return result;
     }
     
-    private Map<String,String> groupingInit(){
+    private String getGroup(String source){
     	
     	Map<String,String> groups = new HashMap<String,String>();
     	
@@ -205,7 +228,12 @@ public class NodeSearchResource extends NodeResource {
         
         groups.put("disease_ontology", "Disease");
         groups.put("NCBI:OMIM", "Disease");
-        return groups;
+        
+        if (groups.containsKey(source)){
+        	return groups.get(source);
+        } else {
+        	return "Other";
+        }
     }
     
 
