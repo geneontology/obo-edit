@@ -1,4 +1,4 @@
-package org.obd.ws.coreResource;
+package org.obd.ws.coreResource.sorter;
 
 import java.util.Comparator;
 

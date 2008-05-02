@@ -6,10 +6,7 @@
 		<@stylize/>
 	</head>
 	<body>
-        
-        
-   		<@header/>
-	
+        <@header/>
 		<table class="threecol">
 			<tr>
 				<td id="left_bar">
@@ -22,19 +19,28 @@
 					<#if searchTerm?exists>
 						<h2><span style="font-weight:normal;">Search results for</span> ${searchTerm} </h2><br/>
 					</#if>
-					<#list ["Disease","Gene","Anatomical Part","Other"] as searchCategory>
-						${searchCategory} information:	
+					<#if resultCounts?exists>
+						<#list resultCounts as result>
+							${result.count}
+							<#if (result.count>1) >
+								results
+							<#else>
+								result
+							</#if> in ${result.category}:	
 						<table class="std_table">
-							<#list nodeProperties as node>
-							<#if searchCategory == node.category>
-							<tr>
-								<th style="width:400px;">${node.linkedLabel}</th><td style="width:120px;">${node.id}</td><td style="width:120px;">${node.source}</td>
-							</tr>
-							</#if>
+							<#list resultNodes as node>
+								<#if node.category == result.category>
+									<tr>
+										<td style="width:400px;"><@labelhref target=node.nodeHref label=node.nodeLabel/></td><td style="width:150px;">${node.nodeId}</td><td style="width:200px;">${node.source}</td>
+									</tr>
+								</#if>
 							</#list>
 						</table>
 						<br/>	
-					</#list>
+					</#list>	
+					<#else>
+						No Results.
+					</#if>
 				</td>
 			</tr>
 		</table>
