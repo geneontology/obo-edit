@@ -96,16 +96,16 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	JPanel liveFilePanel = new JPanel();
 	JPanel branchFilePanel = new JPanel();
 	JPanel mergedFilePanel = new JPanel();
-	JLabel parentFileLabel = new JLabel("Parent File");
+	JLabel parentFileLabel = new JLabel("Parent File   ");
 	JTextField parentFileTextField = new JTextField(5);
 	JButton parentFileBrowseButton = new JButton("Browse");
-	JLabel branchFileLabel = new JLabel("Branch File");
+	JLabel branchFileLabel = new JLabel("Branch File  ");
 	JTextField branchFileTextField = new JTextField(5);
 	JButton branchFileBrowseButton = new JButton("Browse");
-	JLabel liveFileLabel = new JLabel("Live File   ");
+	JLabel liveFileLabel =   new JLabel("Live File       ");
 	JTextField liveFileTextField = new JTextField(5);
 	JButton liveFileBrowseButton = new JButton("Browse");
-	JLabel mergedFileLabel = new JLabel("Merged File");
+	JLabel mergedFileLabel = new JLabel("Merged File ");
 	JTextField mergedFileTextField = new JTextField(5);
 	JButton mergedFileBrowseButton = new JButton("Browse");
 	JLabel saveProfileLabel = new JLabel("Save Profile");
@@ -186,27 +186,20 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 		mainGUIPanelGBC.fill = GridBagConstraints.HORIZONTAL;
 		mainGUIPanelGBC.gridx = 0;
 		mainGUIPanelGBC.gridy = 0;
-		mainGUIPanelGBC.anchor = GridBagConstraints.PAGE_START;
 		mainGUIPanelGBC.weightx = 1;
 		mainGUIPanelGBC.insets = new Insets(5,5,5,5);
-		mainGUIPanelGBC.gridwidth = 4;
-		mainGUIPanelGBC.gridheight = 1;
 		mainGUIPanel.add(saveProfilePanel, mainGUIPanelGBC);
 		saveProfilePanel.setBorder(new TitledBorder ("Saved Profiles"));
 
 		mainGUIPanelGBC.gridy = 1;
-		mainGUIPanelGBC.gridheight = 2;
 		mainGUIPanel.add(inputFilePanel, mainGUIPanelGBC);
 		inputFilePanel.setBorder(new TitledBorder ("File Paths"));
 
-		mainGUIPanelGBC.gridy = 3;
+		mainGUIPanelGBC.gridy = 2;
 		mainGUIPanel.add(mergeOptionPanel, mainGUIPanelGBC);
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
 
-		mainGUIPanelGBC.gridy = 4;
-		mainGUIPanelGBC.gridwidth = 4;
-		mainGUIPanelGBC.gridheight = 1;
-		mainGUIPanelGBC.anchor = GridBagConstraints.LINE_START;
+		mainGUIPanelGBC.gridy = 3;
 		mainGUIPanel.add(mergeAndAdvancedButtonPanel, mainGUIPanelGBC);
 		mergeOptionPanel.setBorder(new TitledBorder ("Merge Options"));
 
@@ -636,7 +629,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	//	This is part of the mechanism to close the dialog now that shows if someone has not filled
 //	in all the file paths. 	
 	public void save(){
-		System.out.println("all going well so far.");
+//		System.out.println("all going well so far.");
 	}
 
 
@@ -650,7 +643,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			branchFileTextFieldString = branchFileTextField
 			.getText();
 
-			System.out.println("arg = " + branchFileTextFieldString);
+//			System.out.println("arg = " + branchFileTextFieldString);
 
 		}
 
@@ -672,7 +665,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			java.awt.event.ActionEvent evt) {
 		failOnClashChoiceString = (String) failOnClashCombobox
 		.getSelectedItem();
-		System.out.println("arg = " + failOnClashChoiceString);
+//		System.out.println("arg = " + failOnClashChoiceString);
 
 	}
 
@@ -791,7 +784,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			.getAbsolutePath();
 			mergedFileTextField.setText(mergedFileTextFieldString);
 
-			System.out.println("arg = " + mergedFileTextFieldString);
+//			System.out.println("arg = " + mergedFileTextFieldString);
 		}
 	}
 	private void mergedFileFormatComboboxActionPerformed(
@@ -806,7 +799,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			.getAbsolutePath();
 			mergedFileTextField.setText(mergedFileTextFieldString);
 
-			System.out.println("arg = " + mergedFileTextFieldString);
+	//		System.out.println("arg = " + mergedFileTextFieldString);
 		}
 
 	}
@@ -820,7 +813,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			.getAbsolutePath();
 			parentFileTextField.setText(parentFileTextFieldString);
 
-			System.out.println("arg = " + parentFileTextFieldString);
+//			System.out.println("arg = " + parentFileTextFieldString);
 		}
 
 	}
@@ -833,7 +826,6 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			saveFeedbackToFileTextFieldString = fileChooser.getSelectedFile().getAbsolutePath();
 			saveFeedbackToFileTextField.setText(saveFeedbackToFileTextFieldString);
 		}
-		System.out.println("saveFeedbackToFileBrowseButtonActionPerformed : We are in button action performed.");
 	}
 
 	private void ShowFeedbackInWindow() {
@@ -844,7 +836,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			java.awt.event.ActionEvent evt) {
 		updateIDsChoiceString = (String) updateIDsCombobox
 		.getSelectedItem();
-		System.out.println("arg = " + updateIDsChoiceString);
+	//	System.out.println("arg = " + updateIDsChoiceString);
 	}
 
 	private void WriteFeedbackToTextArea() {
@@ -865,7 +857,7 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 			.getAbsolutePath();
 			liveFileTextField.setText(liveFileTextFieldString);
 
-			System.out.println("arg = " + liveFileTextFieldString);
+	//		System.out.println("arg = " + liveFileTextFieldString);
 
 		}
 
