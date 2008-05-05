@@ -142,7 +142,7 @@ public class NodeResource extends OBDResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
-    		//resourceMap.put("nodeId",this.nodeId);
+    		resourceMap.put("nodeId",this.nodeId);
     		resourceMap.put("encodedId", Reference.encode(this.nodeId));
 
     		try {
@@ -361,7 +361,7 @@ public class NodeResource extends OBDResource {
 	
 	
 	private String prettifyRelationshipTerm(String term){
-		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))){
+		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
 			return  term.substring(term.indexOf(":")+1).replace("_", " ");
 		} else {
 			return term.replace("_", " ");
