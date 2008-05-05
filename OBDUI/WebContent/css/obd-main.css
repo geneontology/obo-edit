@@ -9,6 +9,11 @@ h2 {
     padding-bottom:0px;
     margin-bottom:2px;
 }
+h3 {
+    color:#000055;
+    padding-bottom:0px;
+    margin-bottom:2px;
+}
 a:link {
     text-decoration: none; 
 }

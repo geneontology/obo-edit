@@ -34,26 +34,27 @@ public class PageResource extends OBDResource {
      */
     public PageResource(Context context, Request request, Response response) {
         super(context, request, response);
-        this.page = (String) request.getAttributes().get("page");
-        if (request.getAttributes().get("usecase") != null &&
-        		!request.getAttributes().get("usecase").equals("")) {
-        	page = "UseCase"+request.getAttributes().get("usecase");
+        if (request.getAttributes().get("case")==null){
+        	this.page = "index";
+        } else {
+        	this.page = (String) request.getAttributes().get("case");
         }
-         if (page != null) {
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        }
+        page += ".ftl";
+        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        
     }
 
     @Override
     public Representation getRepresentation(Variant variant) {
     	Representation result = null;
-    	String path = page + ".ftl";
 		Configuration fmc = new Configuration();
 		fmc.setServletContextForTemplateLoading(((OBDRestApplication)this.getApplication()).getServerServlet().getServletContext(), ((OBDRestApplication)this.getApplication()).getConfiguration().getFremarkerTemplateDirectory());
     	try {
     		TreeMap<String, Object> map = new TreeMap<String, Object>();
+    		map.put("contextName", this.getContextName());
     		map.put("baseUri", this.getRequest().getResourceRef(). getParentRef().toString());
-    		result = new TemplateRepresentation(path, fmc,map, MediaType.TEXT_HTML);
+    		map.put("includePage", this.page);
+    		result = new TemplateRepresentation("usecases/UseCaseWrapper.ftl", fmc,map, MediaType.TEXT_HTML);
     	} catch (Exception ex) {
     		result = null;
     		System.err.println("Template Exception: " + ex.getMessage());

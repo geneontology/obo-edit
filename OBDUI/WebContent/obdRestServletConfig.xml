@@ -36,8 +36,8 @@
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.PageResource</resourceClass>
-		<path>/pages/{page}.html</path>
-		<path>/usecases/{usecase}.html</path>
+		<path>/usecases/{case}.html</path>
+		<path>/usecases/</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>

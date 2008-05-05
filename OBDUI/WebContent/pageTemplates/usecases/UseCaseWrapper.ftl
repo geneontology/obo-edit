@@ -1,7 +1,7 @@
-<#include "PageMacros.ftl"> 
+<#include "/PageMacros.ftl"> 
 <html>
 	<head>
-    	<@genTitle pageName="Node Search"/>
+    	<@genTitle pageName="OBD Use Cases"/>
     	<@stylize/>
 	</head>
 	<body>
@@ -18,8 +18,7 @@
 				<td id="vertical_divider">
 				</td>
 				<td id="content_container">
-					<@dataSourceList/>
-	     			<@mappedPathsList/>
+					<#include includePage> 
 				</td>
 			</tr>
 		</table>
