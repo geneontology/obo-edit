@@ -87,7 +87,7 @@ public class DeleteAction implements ClickMenuAction {
 		// If user has selected one term but is mousing over a different term, that's not a legal scenario for deletion.
 		if (destItem != null && destItem.getTerm() != null &&
 		    !(selection.getAllSelectedObjects().contains(destItem.getTerm()))) {
-		    System.out.println("Can't delete--" + destItem.getTerm().getName() + " isn't in selection");
+//		    System.out.println("Can't delete--" + destItem.getTerm().getName() + " isn't in selection");
 		    isLegal = false;
 		    return;
 		}
