@@ -2,11 +2,14 @@ package org.oboedit.util;
 
 import java.awt.Font;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import org.bbop.io.IOUtil;
 import org.bbop.swing.KeyRecorder;
 import org.obo.datamodel.LinkedObject;
 import org.obo.history.HistoryItem;
@@ -282,4 +285,30 @@ public class GUIUtil {
 	// if (f != null)
 	// r.addObjectRenderer(f);
 	// }
+
+    public static void copyExistingConfigFiles(File oldPrefsDir, File newPrefsDir) {
+		System.out.println("prefs directory " + newPrefsDir + " does not yet exist--creating.");
+		if (!newPrefsDir.mkdir()) {
+			String err = "Error: could not create " + newPrefsDir;
+			System.out.println(err);
+			JOptionPane.showMessageDialog(null,err,"Error creating configuration directory",JOptionPane.ERROR_MESSAGE);
+		}
+		else {
+			if (oldPrefsDir.exists()) {
+				String m = "I see you have user settings in " + oldPrefsDir + 
+					".\nUser settings are now stored in " + newPrefsDir +
+					".\nWould you like to copy your old settings from " + oldPrefsDir +
+					",\n keeping in mind that if they are from old versions of OBO-Edit2, they might not work right?";
+				int val = JOptionPane.showConfirmDialog(null, m, "Copy user settings to new directory?", JOptionPane.YES_NO_OPTION);
+				if (val == JOptionPane.YES_OPTION) {
+					try {
+						IOUtil.copyFiles(oldPrefsDir, newPrefsDir);
+
+					} catch (Exception e) {
+						System.out.println("Caught exception while trying to copy " + oldPrefsDir + " to " + newPrefsDir);
+					}
+				}
+			}
+		}
+	}
 }
