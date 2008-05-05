@@ -50,8 +50,8 @@ public class Preferences {
 
 	protected Color lightSelectionColor = null;
 
-    protected Color orange = new Color(255, 153, 0); // a nice orangey orange
-    protected Color purple = new Color(102, 0, 204);
+	protected Color orange = new Color(255, 153, 0); // a nice orangey orange
+	protected Color purple = new Color(102, 0, 204);
 
 	protected boolean confirmOnExit = true;
 
@@ -63,7 +63,7 @@ public class Preferences {
 	protected boolean useBasicRootDetection = true;
 
 //	protected boolean autosaveEnabled = false;
-    protected boolean autosaveEnabled = true;  // Make this true by default.  --NH, 1/4/2008
+	protected boolean autosaveEnabled = true;  // Make this true by default.  --NH, 1/4/2008
 
 	protected boolean caseSensitiveSort = false;
 
@@ -618,6 +618,8 @@ public class Preferences {
 			}
 		}
 		for (Frame f : Frame.getFrames()) {
+			// Doesn't update the window title font if user has
+			// changed font with the Config Manager
 			SwingUtilities.updateComponentTreeUI(f);
 		}
 	}
