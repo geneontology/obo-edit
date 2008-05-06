@@ -1,0 +1,150 @@
+remark: A small excerpt of biological_process.obo to use for testing purposes.
+
+[Term]
+id: GO:0008150
+name: biological_process
+alt_id: GO:0000004
+alt_id: GO:0007582
+namespace: biological_process
+def: "Those processes specifically pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms. A process is a collection of molecular events with a defined beginning and end." [GOC:go_curators, GOC:isa_complete]
+comment: Note that, in addition to forming the root of the biological process ontology, this term is recommended for use for the annotation of gene products whose biological process is unknown. Note that when this term is used for annotation, it indicates that no information was available about the biological process of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.
+synonym: "biological process unknown" NARROW []
+synonym: "physiological process" EXACT []
+
+[Term]
+id: GO:0008152
+name: metabolic process
+namespace: biological_process
+def: "Processes that cause many of the chemical changes in living organisms, including anabolism and catabolism. Metabolic processes typically transform small molecules, but also include macromolecular processes such as DNA repair and replication, and protein synthesis and degradation." [GOC:go_curators, ISBN:0198547684]
+comment: Note that metabolic processes do not include single functions or processes such as protein-protein interactions, protein-nucleic acids, nor receptor-ligand interactions.
+is_a: GO:0008150
+synonym: "metabolic process resulting in cell growth" NARROW []
+synonym: "metabolism" EXACT []
+synonym: "metabolism resulting in cell growth" NARROW []
+xref: Reactome:212093
+xref: Reactome:221851
+xref: Reactome:230419
+xref: Reactome:238461
+xref: Reactome:245002
+xref: Reactome:249887
+xref: Reactome:252604
+xref: Reactome:255791
+xref: Reactome:259186
+xref: Reactome:262542
+xref: Reactome:265367
+xref: Reactome:268496
+xref: Reactome:274223
+xref: Reactome:280692
+xref: Reactome:282903
+xref: Reactome:286711
+xref: Reactome:288374
+xref: Reactome:289882
+xref: Reactome:290414
+xref: Reactome:291791
+xref: Reactome:292439
+xref: Reactome:293772
+xref: Reactome:71408
+
+[Term]
+id: GO:0050789
+name: regulation of biological process
+alt_id: GO:0050791
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:ai, GOC:go_curators]
+is_a: GO:0065007
+relationship: regulates GO:0008150
+synonym: "regulation of physiological process" EXACT []
+
+[Term]
+id: GO:0048518
+name: positive regulation of biological process
+alt_id: GO:0043119
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:jic]
+is_a: GO:0050789
+relationship: positively_regulates GO:0008150
+synonym: "activation of biological process" NARROW []
+synonym: "positive regulation of physiological process" EXACT []
+synonym: "stimulation of biological process" NARROW []
+synonym: "up regulation of biological process" EXACT []
+synonym: "up-regulation of biological process" EXACT []
+synonym: "upregulation of biological process" EXACT []
+
+[Term]
+id: GO:0048519
+name: negative regulation of biological process
+alt_id: GO:0043118
+namespace: biological_process
+def: "Any process that stops, prevents or reduces the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:jic]
+is_a: GO:0050789
+relationship: negatively_regulates GO:0008150
+synonym: "down regulation of biological process" EXACT []
+synonym: "down-regulation of biological process" EXACT []
+synonym: "downregulation of biological process" EXACT []
+synonym: "inhibition of biological process" NARROW []
+synonym: "negative regulation of physiological process" EXACT []
+
+[Term]
+id: GO:0009058
+name: biosynthetic process
+namespace: biological_process
+def: "The energy-requiring part of metabolism in which simpler substances are transformed into more complex ones, as in growth and other biosynthetic processes." [ISBN:0198547684]
+is_a: GO:0008152
+synonym: "anabolism" EXACT []
+synonym: "biosynthesis" EXACT []
+synonym: "formation" EXACT []
+synonym: "synthesis" EXACT []
+
+[Term]
+id: GO:0065007
+name: biological regulation
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of any biological process, quality or function." [GOC:isa_complete]
+is_a: GO:0008150
+synonym: "regulation" BROAD []
+
+[Term]
+id: GO:0007569
+name: cell aging
+namespace: biological_process
+def: "Progression of the cell from its inception to the end of its lifespan." [GOC:jh, PMID:12044934]
+is_a: GO:0007568
+synonym: "cell ageing" EXACT []
+synonym: "cell aging (sensu Fungi)" NARROW []
+synonym: "cell aging (sensu Saccharomyces)" NARROW []
+synonym: "cellular senescence" EXACT []
+
+[Term]
+id: GO:0007568
+name: aging
+alt_id: GO:0016280
+namespace: biological_process
+def: "The inherent decline over time, from the optimal fertility and viability of early maturity, that may precede death and may be preceded by other indications, such as sterility." [GOC:dph, GOC:ems]
+is_a: GO:0032502
+synonym: "ageing" EXACT []
+
+[Term]
+id: GO:0032502
+name: developmental process
+namespace: biological_process
+def: "A biological process whose specific outcome is the progression of an integrated living unit: a cell, tissue, organ, or organism over time from an initial condition to a later condition." [GOC:isa_complete]
+is_a: GO:0008150
+synonym: "development" NARROW []
+
+[Term]
+id: GO:0007576
+name: nucleolar fragmentation
+alt_id: GO:0046616
+namespace: biological_process
+is_a: GO:0007000
+relationship: part_of GO:0007569
+synonym: "nucleolar fragmentation (sensu Saccharomyces)" NARROW []
+synonym: "nucleolar size increase" RELATED []
+synonym: "nucleolar size increase (sensu Saccharomyces)" RELATED []
+
+[Term]
+id: GO:0007000
+name: nucleolus organization and biogenesis
+namespace: biological_process
+def: "A process that is carried out at the cellular level which results in the formation, arrangement of constituent parts, or disassembly the nucleolus." [GOC:jic]
+synonym: "nucleolus organisation and biogenesis" EXACT []
