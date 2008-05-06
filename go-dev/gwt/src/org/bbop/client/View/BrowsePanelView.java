@@ -64,7 +64,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	private void addObservers() {
 		targetBtn.addSelectionListener(new TargetListListener());
 		targetBtn2.addSelectionListener(new TargetList2Listener());
-		//orthologBtn.addSelectionListener(new OrthologListListener());
+		orthologBtn.addSelectionListener(new OrthologListListener());
 
 	}
 
