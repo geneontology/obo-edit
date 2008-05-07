@@ -21,6 +21,7 @@ public class AllTests extends TestCase {
 		out.addTestSuite(AnnotationStanzaFileTest.class);
 		out.addTestSuite(CardinalityTest.class);
 		out.addTestSuite(CardinalityIntersectionTest.class);
+		out.addTestSuite(DanglingObjectTest.class);
 		out.addTestSuite(DisjointnessTest.class);
 		out.addTestSuite(FilterTest.class);
 		out.addTestSuite(FixedCacheMutableLinkDatabaseTest.class);
