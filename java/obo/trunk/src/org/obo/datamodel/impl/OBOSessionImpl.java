@@ -390,6 +390,7 @@ public class OBOSessionImpl implements OBOSession {
 					}
 				}
 				else {
+					// TODO - merge objects
 					if (!idHash.containsKey(lo.getID()))
 						addObject(lo);
 				}

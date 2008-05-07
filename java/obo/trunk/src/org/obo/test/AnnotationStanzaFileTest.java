@@ -28,6 +28,12 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		super(name);
 	}
 
+	@Override
+	public Collection<String> getFilesToLoad() {
+		String[] files={"simple-annot-stanza-example.obo"};
+		return Arrays.asList(files);
+	}
+	
 	public void testAnnot() throws IOException, DataAdapterException {
 		/*
 		 * Instance testing:
@@ -208,9 +214,4 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 	}
 	
 
-	@Override
-	public Collection<String> getFilesToLoad() {
-		String[] files={"simple-annot-stanza-example.obo"};
-		return Arrays.asList(files);
-	}
 }

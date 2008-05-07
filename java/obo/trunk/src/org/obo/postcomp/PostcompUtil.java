@@ -637,6 +637,19 @@ public class PostcompUtil {
 				if (TermUtil.isIntersection(link))
 					links.add(link);
 			}
+			
+			// sometimes we create post-comps without having the full ontology
+			// loaded - in these cases we can't create the name
+			boolean nameable = false;
+			for (Link link : links) {
+				if (link.getParent().getName() != null) {
+					nameable = true;
+					break;
+				}
+			}
+			if (!nameable)
+				return null;
+			
 			Collections.sort(links, PostcompUtil.intersectionComparator);
 			StringBuffer buffer = new StringBuffer();
 			boolean first = true;
@@ -649,7 +662,7 @@ public class PostcompUtil {
 			}
 			return buffer.toString();
 		} else
-			return io.getName();
+			return io.getName() == null ? io.getName() : io.getID();
 	}
 
 	public static String getPostcompName(Collection<Link> linksIn,

@@ -75,7 +75,8 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 
 	public OBOPropertyImpl(String id) {
 		super(id);
-		this.name = id;
+		// CJM 2008-05-07 : leave name as null if not set
+		//this.name = id;
 		categories = new HashSet();
 	}
 

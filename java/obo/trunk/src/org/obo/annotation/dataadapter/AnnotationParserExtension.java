@@ -82,6 +82,12 @@ public class AnnotationParserExtension implements ParserExtension,
 	protected static final TagMapping EVIDENCE_TAG = new TagMapping("evidence",
 			null, null);
 
+	protected static final TagMapping DESCRIPTION_TAG = new TagMapping("description",
+			null, null);
+
+	protected static final TagMapping CONTEXT_TAG = new TagMapping("context",
+			null, null);
+
 	protected static final TagMapping SOURCE_TAG = new TagMapping("source",
 			null, null);
 
@@ -234,6 +240,8 @@ public class AnnotationParserExtension implements ParserExtension,
 					}
 					annotation.addEvidence((LinkedObject) object);
 					it.remove();
+				} else {
+					// ...
 				}
 			}
 		}
