@@ -19,7 +19,8 @@ public class InstanceImpl extends LinkedAnnotatedObjectImpl implements
 	public InstanceImpl(String id, OBOClass type) {
 		super(id);
 		setType(type);
-		setName(id);
+		// CJM 2008-05-07 : leave name as null if not set
+		//setName(id);
 	}
 
 	public InstanceImpl(String id) {

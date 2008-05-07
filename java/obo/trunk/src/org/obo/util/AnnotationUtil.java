@@ -8,6 +8,7 @@ import java.util.Set;
 import org.obo.annotation.datamodel.Annotation;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 
 public class AnnotationUtil {
@@ -44,11 +45,11 @@ public class AnnotationUtil {
 		return annots;
 	}
 	
-	public static Set<LinkedObject> getSubjectsAnnotatedWithObject(OBOSession session, IdentifiedObject ob) {
+	public static Set<OBOObject> getSubjectsAnnotatedWithObject(OBOSession session, IdentifiedObject ob) {
 		Collection<Annotation> annots = getAnnotationsForObject(session, ob);
-		Set<LinkedObject> subjs = new HashSet<LinkedObject>();
+		Set<OBOObject> subjs = new HashSet<OBOObject>();
 		for (Annotation annot: annots)
-			subjs.add(annot.getSubject());
+			subjs.add((OBOObject) annot.getSubject());
 		return subjs;
 	}
 	
@@ -66,8 +67,8 @@ public class AnnotationUtil {
 		return annots;
 	}
 
-	public static Collection<LinkedObject> getAnnotationSubjects(OBOSession session) {
-		Collection<LinkedObject> subjs = new HashSet<LinkedObject>();
+	public static Collection<OBOObject> getAnnotationSubjects(OBOSession session) {
+		Collection<OBOObject> subjs = new HashSet<OBOObject>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
 				Annotation annot = (Annotation)io;
@@ -75,7 +76,7 @@ public class AnnotationUtil {
 				// Extra defence against null annotations from Phenote
 				if (annot.getSubject() != null &&
 						annot.getObject() != null) {
-					LinkedObject subj = annot.getSubject();
+					OBOObject subj = (OBOObject) annot.getSubject();
 					subjs.add(subj);
 				}
 			}
@@ -83,11 +84,19 @@ public class AnnotationUtil {
 		return subjs;	
 	}
 	
-	public static Collection<LinkedObject> getAnnotationObjects(OBOSession session) {
-		Collection<LinkedObject> objs = new HashSet<LinkedObject>();
+	/**
+	 * warning: we have a horrible terminology clash here
+	 * the Annotation model uses 'object' to denote the role played by the
+	 * OBOObject in the context of a subject-relation-object statement
+	 * 
+	 * @param session
+	 * @return all OBOObjects that are the object of an annotation
+	 */
+	public static Collection<OBOObject> getAnnotationObjects(OBOSession session) {
+		Collection<OBOObject> objs = new HashSet<OBOObject>();
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io instanceof Annotation) {
-				LinkedObject obj = ((Annotation)io).getObject();
+				OBOObject obj = (OBOObject) ((Annotation)io).getObject();
 				objs.add(obj);
 			}
 		}
