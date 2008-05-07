@@ -21,10 +21,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	protected OBOSerializationEngine engine;
 	
-//	protected SimpleDateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy HH:mm");
-    // Using 'Z' for timezone because ISO 8601 requires the timezone to be 'Z' or +hh:mm or -hh:mm
-    // and SimpleDateFormat can only handle timezones of the form hhmm
-    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
+	protected SimpleDateFormat oldDateFormat = new SimpleDateFormat("dd:MM:yyyy HH:mm");
+	// Using 'Z' for timezone because ISO 8601 requires the timezone to be 'Z' or +hh:mm or -hh:mm
+	// and SimpleDateFormat can only handle timezones of the form hhmm
+	protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
 
 	public void setOutputStream(PrintStream stream) throws IOException {
 		this.stream = stream;
@@ -147,8 +147,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		print("data-version: " + dataVersion + "\n");
 	}
 
+	/** For now, use old date format for date field in header so that it doesn't choke older versions of OBO-Edit */
 	public void writeDateHeaderTag(Date date) throws IOException {
-		print("date: " + dateFormat.format(date) + "\n");
+		print("date: " + oldDateFormat.format(date) + "\n");
 	}
 
 	public void writeSavedByHeaderTag(String user) throws IOException {
@@ -591,6 +592,9 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		println();
 	}
 
+	// OE1 will ignore creation_date tags.  However, note that using the new date format
+	// for creation_date tags will choke older OE2 betas (which are expecting the old
+	// date format.)
 	public void writeCreationDateTag(Date date, NestedValue nv) throws IOException {
 		print("creation_date: "+dateFormat.format(date));
 		writeNestedValue(nv);
