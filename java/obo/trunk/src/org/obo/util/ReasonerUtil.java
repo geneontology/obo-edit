@@ -449,8 +449,9 @@ public class ReasonerUtil {
 			String propName) {
 		Collection<OBOClass> out = new LinkedList<OBOClass>();
 		for (Link parentLink : oboClass.getParents()) {
-			if (parentLink.getType().getName().equals(propName)
-					&& TermUtil.isIntersection(parentLink))
+			if (parentLink.getType().getName() != null
+			    && parentLink.getType().getName().equals(propName)
+			    && TermUtil.isIntersection(parentLink))
 				out.add(TermUtil.castToClass(parentLink.getParent()));
 		}
 		return out;
