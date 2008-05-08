@@ -7,9 +7,11 @@ import org.obo.datamodel.*;
 public class LinkNamespaceSearchCriterion extends AbstractStringCriterion {
 
 	public Collection getValues(Collection scratch, Object obj) {
-		if (!(obj instanceof Link))
-			System.err.println("Got bad value in LNSC: " + obj + ", class = "
-					+ obj.getClass());
+		if (!(obj instanceof Link)) {
+//			System.err.println("Got bad value in LNSC: " + obj + ", class = "
+//					   + obj.getClass());
+			return scratch; // Return the empty Collection that was passed in
+		}
 		if (((Link) obj).getNamespace() != null)
 			scratch.add(((Link) obj).getNamespace().getID());
 		return scratch;
