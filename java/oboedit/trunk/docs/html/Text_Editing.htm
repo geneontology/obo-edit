@@ -25,11 +25,14 @@ for making text edits permanent: <STRONG>auto-commit mode</STRONG> and
 term is selected or the ontology is saved. To commit edits immediately, press 
 Ctrl+Enter.</P>
 <P>In <STRONG>manual commit mode</STRONG>, text edits are applied when the 
-"Commit" button is pressed. The "Commit" button is only visible in manual commit 
+"Commit" button in the Text Editor is pressed. The "Commit" button is only visible in manual commit 
 mode.</P>
 <P>See the <A href="The_Configuration_Plugin.htm#textedit">Text Editing section 
 of the Configuration Manager</A> page for information about choosing the text editing 
 mode.</P>
+<p>Note that you can't Undo changes made in the Text Editor until you've
+committed your changes as above (select a different term or click the Commit
+button).</p>
 
 <h2>Text Checking</h2>
 <p>The Text Editor performs <a href="Text_Checks.htm">text checks</a> on the
@@ -106,7 +109,9 @@ fields:</p>
   <li><strong>Description</strong> - A descriptive name for the 
 dbxref.</li></ul>
 <p>To add a new dbxref, click the "+" button. A new dbxref "XX:&lt;new 
-dbxref&gt;" will be created.  Modify the fields as desired.</p>
+dbxref&gt;" will be created.  Modify the fields as desired.  To save
+your new dbxref and close the dbxref editor, click somewhere in the
+gray area in the dbxref editor panel.</p>
 <p>To remove a dbxref, select the dbxref to remove, and click the "-" button.</p>
 
 <p><strong>Synonyms Tab</strong></p>
@@ -154,14 +159,15 @@ synonym editor panel:</p>
   click the "+" button next to the Scope pulldown:
 <p><IMG hspace=0 src="../images/synonym_dbxref_editor.png" border=0></p>
 <p>  The interface for modifying the synonym dbxref list is exactly 
-  the same as the interface for modifying general dbxrefs (described above).</p>
-<p>To add a 
-new dbxref, click the "Add" button. A new dbxref "XX:&lt;new dbxref&gt;" will be 
-created.</p>
-<p>To remove a dbxref, select the dbxref to remove, click the "-" button. The 
-dbxref will be removed.</p>
+  the same as the interface for modifying general dbxrefs (described
+  above).</p>
+</ul>
+<p>To add a new synonym, click the "Add" button. When you are done editing your new
+synonym, click somewhere in the gray area in the synonym editor panel to commit it
+and close the synonym editor.
+<p>To remove a synonym, select the synonym to remove, and click the "-" button.</p>
 
-</li></ul>
+</li>
 <p><strong>Categories Tab</strong></p>
 <p><IMG hspace=0 src="../images/category_tab.png" border=0></p>
 <p>Categories are used to designate subsets of terms within an ontology. The 
@@ -174,9 +180,7 @@ href="Working_with_Categories.htm">Category Manager</A>.</p>
 <h2>Relation-Specific Attributes</h2>
 <p>The display is slightly different when a relation (rather than a class) has 
 been selected.</p>
-<p>[?? I don't see this display--how do you invoke it?]</p>
-<p><IMG height=115 hspace=0 src="../images/prop_text_editor.gif" width=419 
-border=0></p>
+<p><IMG src="../images/relation-text-edit.png" border=0></p>
 <ul>
   <li><strong>Range</strong> - The 
   relation range restricts the possible parents for any relationship that uses 
@@ -194,13 +198,6 @@ border=0></p>
   button. To clear the domain, click the blue&nbsp;domain button. See <A 
   href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO 
   Ontologies</A> for more information about domain.
-  <li><strong>Is cyclic</strong> -<a 
-  name=is_cyclic></a>  <a 
-  name=is_cyclic></a>  If this 
-  box is checked, it is legal to create cycles out of this relationship type. 
-  That is, it is legal to say that a term has a relationship to itself over this 
-  relation. Note that if "Is cyclic" isn't selected, even indirect cycles (that 
-  is, cycles that are made of implied relationships) are illegal. 
   <li><strong>Is transitive</strong> - If 
   this box is checked, the relationship type is transitive. It is very important 
   to that this box is marked correctly; the OBO-Edit reasoner makes extensive 
@@ -210,6 +207,15 @@ border=0></p>
   type is symmetric. It is very important to mark this box correctly; 
   the OBO-Edit reasoner makes extensive use of this information. If the 
   symmetric status of a relation is incorrectly indicated, the reasoner may make 
-  many incorrect inferences.</li></ul>
+  many incorrect inferences.
+  <li><strong>Is cyclic</strong> -<a 
+  name=is_cyclic></a>  <a 
+  name=is_cyclic></a>  If this 
+  box is checked, it is legal to create cycles out of this relationship type. 
+  That is, it is legal to say that a term has a relationship to itself over this 
+  relation. Note that if "Is cyclic" isn't selected, even indirect cycles (that 
+  is, cycles that are made of implied relationships) are illegal. 
+
+</li></ul>
 </body>
 </html>
