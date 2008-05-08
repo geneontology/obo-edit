@@ -252,6 +252,7 @@ public class SearchPanel extends JPanel {
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(addButton);
 		// buttonPanel.add(addRecursiveButton);
+		buttonPanel.add(Box.createHorizontalStrut(20));
 		buttonPanel.add(lightbulbButton);
 		buttonPanel.add(Box.createHorizontalGlue());
 		buttonPanel.setOpaque(false);
@@ -583,7 +584,7 @@ public class SearchPanel extends JPanel {
 			component = factory.createSubEditor();
 			factory.addUpdateListener(component, new GUIUpdateListener() {
 				public void guiupdated(GUIUpdateEvent e) {
-				    // Is this really necessary?
+				    // Is this really necessary?  It gets updated anyway.
 //					updateMatchLabel();
 				}
 			});
