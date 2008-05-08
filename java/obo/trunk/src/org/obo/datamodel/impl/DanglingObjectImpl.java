@@ -29,21 +29,23 @@ public class DanglingObjectImpl extends OBOClassImpl implements DanglingObject {
 	return true;
     }
 
-	public String getID() {
-		return id;
-	}
+    /* Don't need to implement these methods because this class now inherits from OBOClassImpl */
+// 	public String getID() {
+// 		return id;
+// 	}
 	
-	public void setID(String id) {
-		this.id = id;
-	}
+// 	public void setID(String id) {
+// 		this.id = id;
+// 	}
 
-	public String getName() {
+       /* Don't override getName--if it has a name, let it return the name */
+// 	public String getName() {
 
-	    // Note: making the name be null caused a lot of exceptions (now
-	    // fixed) in places where there are comparisons done on getName(),
-	    // but Chris said we can't just give it a fake name (such as the ID).
-		return null; // CJM - changed from id to null. Need to thoroughly test
-	}
+// 	    // Note: making the name be null caused a lot of exceptions (now
+// 	    // fixed) in places where there are comparisons done on getName(),
+// 	    // but Chris said we can't just give it a fake name (such as the ID).
+// 		return null; // CJM - changed from id to null. Need to thoroughly test
+// 	}
 
 	public boolean isAnonymous() {
 		return false;
