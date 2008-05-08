@@ -219,8 +219,9 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 
 	@Override
 	public String toString() {
-		return (description != null ? description + " (macro)"
-				: "unnamed macro");
+//		return (description != null ? description + " (macro)"
+//				: "unnamed macro");
+	    return historyItems.toString();
 	}
 
 	@Override
