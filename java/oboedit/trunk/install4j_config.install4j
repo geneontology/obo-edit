@@ -55,6 +55,7 @@
           <entry location="test_resources" launcher="false" />
           <entry location="ARTISTIC_LICENSE" launcher="false" />
           <entry location="LICENSE" launcher="false" />
+          <entry location="CHANGES" launcher="false" />
           <entry location="OBO-Edit" launcher="true" />
           <entry location="obo2obo" launcher="true" />
           <entry location="obo-mapper" launcher="true" />
