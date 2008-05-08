@@ -70,6 +70,12 @@ public class CopyAction implements ClickMenuAction, DropMenuAction,
 				return 1;
 			if (sb.getType().isBuiltIn())
 				return -1;
+			if (sa.getName() == null && sa.getName() == null)
+				return 0;
+			if (sa.getName() == null)
+				return -1;
+			if (sb.getName() == null)
+				return 1;
 			return sa.getName().compareToIgnoreCase(sb.getName());
 		}
 	};
