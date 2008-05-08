@@ -7,8 +7,11 @@ import org.obo.datamodel.*;
 public class NameSynonymSearchCriterion extends AbstractStringCriterion {
 
 	public Collection getValues(Collection scratch, Object obj) {
-		if (obj instanceof IdentifiedObject)
-			scratch.add(((IdentifiedObject) obj).getName());
+		if (obj instanceof IdentifiedObject) {
+			String name = ((IdentifiedObject) obj).getName();
+			if (name != null)
+				scratch.add(name);
+		}
 		if (obj instanceof SynonymedObject) {
 			Iterator it = ((SynonymedObject) obj).getSynonyms().iterator();
 			while (it.hasNext()) {

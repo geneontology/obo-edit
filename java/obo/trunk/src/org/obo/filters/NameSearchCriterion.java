@@ -15,7 +15,8 @@ public class NameSearchCriterion extends
 	
 	public Collection<String> getValues(Collection<String> scratch,
 			IdentifiedObject obj) {
-		scratch.add(obj.getName());
+		if (obj.getName() != null)
+			scratch.add(obj.getName());
 		return scratch;
 	}
 

@@ -414,7 +414,8 @@ public class HistoryGenerator implements Serializable {
 			boolean ignoreSecondaryIDs, Collection<String> warnings) {
 
 		// check for text edits
-		if (!io.getName().equals(newio.getName()))
+		if (io.getName() == null || newio.getName() == null ||
+		    !io.getName().equals(newio.getName()))
 			history.addItem(new NameChangeHistoryItem(io, newio.getName()));
 
 		if (checkInterface(io, history, CommentedObject.class, warnings) != checkInterface(
