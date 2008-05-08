@@ -7,15 +7,25 @@
 </HEAD>
 <BODY BGCOLOR=#ffffff>
 <H1>Bugs and Troubleshooting</H1>
-<P>When installing a new version of OBO-Edit, check the README 
-file for a summary of changes in the new version, any known issues, and any 
-last-minute release notes or documentation.</P>
-<H2>.oboeditbeta</H2>
-<p>OBO-Edit configuration and history files are kept in your home directory in a
-(usually hidden) subdirectory called .oboeditbeta.  When you install a new
-version of OBO-Edit2, it may clash with the files in your .oboeditbeta and
+<P>
+The <a href="http://www.oboedit.org/">OBO-Edit website</a> is a good place to
+       look for more information about OBO-Edit. Check the CHANGES
+file in the directory where you installed OBO-Edit for a summary of changes in this release.</P>
+<H2>Configuration Directory</H2>
+<p>OBO-Edit configuration and history files used to be kept in your home directory in a
+(usually hidden) subdirectory called .oboeditbeta.  They are now stored in a visible
+directory appropriate to your operating system (for example, on a Mac, it is ~/Library/Application Support/OBO-Edit2-beta)
+.  You can find the name of the
+directory by opening the <a href="Configuration_Manager.htm">Configuration
+    Manager</a>.
+<P>
+If you have configuration files in .oboeditbeta but not in the new
+configuration directory, OBO-Edit will offer copy your existing configuration
+files to the new directory.  However, when you install a new
+version of OBO-Edit, there may be clashes with your saved configuration files
+that can
 cause strange behavior.  If you install a new OBO-Edit and it is behaving
-oddly, try removing your .oboeditbeta directory and relaunching--this often
+oddly, try removing your OBO-Edit configuration directory and relaunching--this often
 fixes the problem.</p>
 <H2>Bug Reports</H2>
 <P>OBO-Edit is a work in progress. Bugs can and will creep in. Please report any 

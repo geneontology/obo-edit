@@ -6,25 +6,58 @@
 </head>
 <body bgcolor="#ffffff">
 <h1>Term Image Display Panel</h1>
-<p>&nbsp;</p>
-<p><font color="red">Question: Does this require the image plugin?  If so, we should
-explain how to get that plugin--or maybe it should come with the standard
-OBO-Edit installation.</font>
-<p>
-The Term Image Display Panel enables users to view an image that is connected
+
+<p>The Term Image Display Panel enables users to view an image that is connected
 to an ontology term. For example, in the GO cellular component ontology a user
 can select the term 'Chloroplast' in the Ontology Editor Panel, and view
-images of chloroplasts in the Term Image Display Panel.
-</p>
+images of chloroplasts in the Term Image Display Panel.</p>
 <p><img border=0 src="../images/TermImageDisplayPanel.PNG"></p>
 <p>(The image in this figure is drawn from The Molecular Biology of the Cell
-ISBN 0-8153-3218-1.)
-</p><p>
-It is easy to add new images to your ontology. To do this, make sure
-the filename of the image file is the term identifier for the term with which the image will be
-connected. For example, in this case the term is
-GO:0009507 and the image was given the name GO_0009507.jpg. Then
-save the image to your .oboeditbeta/images folder. Once this is done, the image will
+ISBN 0-8153-3218-1.)</p>
+<p>This component is currently available as a plugin.  It requires a bit of work
+to get it and set it up.</p>
+<h2>Installing the plugin</h2>
+<h3>Getting the Source</h3>
+<p>First you need to <a target=_new href="http://wiki.geneontology.org/index.php?OBO-Edit:_Getting_the_Source_Code">obtain the OBO, BBOP, and OBO-Edit source code</a>, if you don't already have it.
+You then need to check out the plugin source code from
+<a target=_new href="https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/oboedit-plugins/"/>https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/oboedit-plugins/</a>.
+If you're running from the shell, go to the directory where you want the plugin code to go.  Then say:
+<br>
+<code>svn co https://geneontology.svn.sourceforge.net/svnroot/geneontology/java/oboedit-plugins/ plugins
+</code>
+</p>
+
+<h3>Building imageplugin.jar</h3>
+<p>Go to the plugins/ImagePlugin directory.
+Now edit build.xml to tell it where to find the BBOP, OBO, and OBO-Edit code relative to the current
+directory.  You should then be able to build the jar by saying "ant".</p>
+
+<h3>Where to put imageplugin.jar</h3>
+<p>
+OBO-Edit looks for jars in two places:
+<ul>
+<li> The directory <code>&lt;OBO-Edit Installation Dir&gt;/extensions</code></li>
+<li> The directory  <code>&lt;Your OBO-Edit Configuration Dir&gt;/extensions</code></li>
+</ul>
+I would suggest the first one, since you may end up deleting your configuration directory
+if it clashes with a future OBO-Edit version.
+You will probably
+need to create the extensions subdirectory in your OBO-Edit directory before you
+can copy imageplugin.jar to it.
+</p>
+
+<h3>Launching the term image plugin</h3>
+<p>Once you've put imageplugin.jar in the appropriate place, restart OBO-Edit.  You should see the menu item "Term Image Display Panel" in the Show -> Info menu.
+</p>
+
+<h3>Adding term images</h3>
+<p>OBO-Edit looks for images in the directory  <code>&lt;Your OBO-Edit Configuration Dir&gt;/images</code>
+</p>
+<p>The images are associated with terms by the term IDs.  For example, if you wanted to have
+an image of a chromosome show up when the user selects "chromosome" (GO:0005694), you'd
+save the chromosome image in a file called GO_0005694.jpg and put it in the images subdirectory
+in your configuration directory.</p>
+<p>Once this is done, the image will
 automatically appear in the Term Image Display Panel when its associated term
 is selected.
 </p>
