@@ -52,7 +52,7 @@ User asks for all annotations to ONE OF vs ALL OF these classes.
 <li>
 presentation layer makes query to OBD REST. URLs loos like:
    <ul>
-   <li> <@obdurl path="nodes/MP:0001306+FMA:58241"/> (small lens & Lens)</li>
+   <li> <a href="/OBDUI/obdPhenotypeAll/html/nodes/MP:0001306%2BFMA:58241"/>/{contextPath}/{dataSource}/{format}/nodes/MP:0001306+FMA:58241</a> (small lens & Lens)</li>
    <li> <@obdurl path="nodes/MP:0001306+FMA:58241[ONEOF]"/> (same as above)</li>
    <li> <@obdurl path="nodes/MP:0001306+FMA:58241[ALLOF]"/> </li>
 </li>

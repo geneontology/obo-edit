@@ -13,7 +13,18 @@
             <password></password>
             <databaseName>obd_phenotype_all</databaseName>
         </OBDSQLAdaptor>
-    </dataSource>
+	</dataSource>
+	
+	<dataSource>
+		<resourcePath>obdPhenotypeAll2008</resourcePath>
+		<OBDSQLAdaptor>
+			<hostname>131.243.192.78</hostname>
+			<port>5432</port>
+			<username>cjm</username>
+			<password></password>
+			<databaseName>obd_phenotype_200805</databaseName>
+		</OBDSQLAdaptor>
+	</dataSource>
 	
 	<dataSource>
 		<resourcePath>obdRefg</resourcePath>
@@ -42,30 +53,34 @@
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodeResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{id}</path>
+		<path>/{dataSource}/{format}/node/{id}</path>
+	</resourcePathMap>
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.NodesResource</resourceClass>
+		<path>/{dataSource}/{format}/nodes/{nodeList}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.StatementsResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{id}/statements</path>
-		<path>/{dataSource}/{format}/nodes/{id}/statements/{aspect}</path>
-		<path>/{dataSource}/{format}/nodes/{id}/statements/{aspect}/{relation}</path>
+		<path>/{dataSource}/{format}/node/{id}/statements</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}/{relation}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.DescriptionResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{id}/description</path>
+		<path>/{dataSource}/{format}/node/{id}/description</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.ScoredNodesResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{id}/blast</path>
+		<path>/{dataSource}/{format}/node/{id}/blast</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.GraphResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{id}/graph</path>
-		<path>/{dataSource}/{format}/nodes/{id}/graph/{aspect}</path>
+		<path>/{dataSource}/{format}/node/{id}/graph</path>
+		<path>/{dataSource}/{format}/node/{id}/graph/{aspect}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>

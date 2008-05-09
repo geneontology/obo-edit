@@ -103,7 +103,6 @@ public class NodesBySearchResource extends NodeResource {
     public Representation getRepresentation(Variant variant) {
     	Representation result = null;
 
-    	
     	if (format == null) {
     		format = "";
     	}
@@ -118,7 +117,6 @@ public class NodesBySearchResource extends NodeResource {
     		return result;
     	}
         else if (format.equals("obdxml")) {
- 
         	result = new StringRepresentation(OBDXMLBridge.toXML(g), MediaType.TEXT_XML);
         	return result;
         }

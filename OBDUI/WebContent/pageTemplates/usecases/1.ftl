@@ -60,7 +60,7 @@ User requests annotation summary for COI
 User selects COI (eg, the class for <i>motor neuron</i>) via presentation layer
 </li>
 <li>
-Presentation layer requests information from OBD REST Service. Uses URL such as <@obdurl path="nodes/CL:0000100/statements/annotations"/>
+Presentation layer requests information from OBD REST Service. Uses URL such as <@obdurl path="node/CL:0000100/statements/annotations"/>
 </li>
 <li>
 Service responds with message in some pre-defined concrete serialization (eg obd-json, owl1.1xml)
@@ -155,15 +155,15 @@ Presentation layer transforms message into displayable form, and presents to use
   <li>
    The annotation of genotype <@hrefNode id="Shh%3Ctm1Chg%3E%2FShh%3Ctm1Chg%3E" label="Shh<sub>tm1Chg</sub>"/> (a mouse <@hrefNode id="SO:0001027" label="genotype"/> in which the gene <@hrefNode id="" label="Shh"/> is mutated)
    to mammalian phenotype class <@hrefNode id="MP:0000937"/> (<i>abnormal motor neuron morphology</i>) is shown.
-   This is because this MP class has been given a logical definition in MP-XP involving CL:0000100. See <@obdurl path="nodes/MP:0000937/description/"/>, linking to the COI via the inheres_in relation
+   This is because this MP class has been given a logical definition in MP-XP involving CL:0000100. See <@obdurl path="node/MP:0000937/description/"/>, linking to the COI via the inheres_in relation
   </li>
   <li>
   The annotation of zebrafish genotype <@hrefNode id="ZFIN:ZDB-GENO-071004-3" label=""/> to the <i>class expression</i>
   <@hrefNode id="PATO%3A0000419%5Eduring%28ZFIN%3AZDB-STAGE-010723-16%29%5Einheres_in%28CL%3A0000533%5Epart_of%28ZFA%3A0000075%29%29"
     label="PATO:decreased number THAT inheres_in CL:primary motor neuron THAT part_of ZFA:spinal cord"/> is shown because
     this class expression can be shown to be linked to motor neuron via inheres_in. You can see the class expression description here: 
-    <@obdurl path="nodes/PATO:0000419%5Eduring(ZFIN:ZDB-STAGE-010723-16)%5Einheres_in(CL:0000533%5Epart_of(ZFA:0000075))/description/" format="owl"/>,
-    and the full pre-reasoned subsumption path here: <@obdurl path="nodes/PATO:0000419%5Eduring(ZFIN:ZDB-STAGE-010723-16)%5Einheres_in(CL:0000533%5Epart_of(ZFA:0000075))/statements/about/"/>
+    <@obdurl path="node/PATO:0000419%5Eduring(ZFIN:ZDB-STAGE-010723-16)%5Einheres_in(CL:0000533%5Epart_of(ZFA:0000075))/description/" format="owl"/>,
+    and the full pre-reasoned subsumption path here: <@obdurl path="node/PATO:0000419%5Eduring(ZFIN:ZDB-STAGE-010723-16)%5Einheres_in(CL:0000533%5Epart_of(ZFA:0000075))/statements/about/"/>
   </li>
  </ul>
  </p>

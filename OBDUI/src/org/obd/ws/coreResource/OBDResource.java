@@ -87,11 +87,11 @@ public abstract class OBDResource extends Resource {
 		
 		String eid = Reference.encode(id);
 		
-		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+this.HTMLEntityEncode(label)+"</a>";
+		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/node/"+eid+"\">"+this.HTMLEntityEncode(label)+"</a>";
 	}
 	public String href(String id,String dataSource) {
 		String eid = Reference.encode(id);
-		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/nodes/"+eid+"\">"+this.HTMLEntityEncode(id)+"</a>";
+		return "<a href=\"/" + this.getContextName() + "/" +  dataSource + "/html/node/"+eid+"\">"+this.HTMLEntityEncode(id)+"</a>";
 	}
 	
 	public String href(String path, String id,String dataSource) {
@@ -104,15 +104,15 @@ public abstract class OBDResource extends Resource {
 		String eid = Reference.encode(id);
 		
 
-		return "[ <a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/about\">about</a> | " +
-		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/to\">to</a> | " +
-		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/annotations\">annotations</a> | " +
-		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/statements/all\">all</a> ]";
+		return "[ <a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/about\">about</a> | " +
+		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/to\">to</a> | " +
+		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/annotations\">annotations</a> | " +
+		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/all\">all</a> ]";
 	}
 
 	public String hrefDescriptionFor(String id,String dataSource) {
 		String eid = Reference.encode(id);
-		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+eid+"/description\">"+id+"</a>";
+		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/description\">"+id+"</a>";
 	}
 
 	public String hrefStatement(Statement s,String dataSource) {
@@ -182,7 +182,7 @@ public abstract class OBDResource extends Resource {
 
 
 	public String hrefGraph(String id,String dataSource) {
-		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/nodes/"+id+"/graph\">"+id+"</a>";
+		return "<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+id+"/graph\">"+id+"</a>";
 	}
 
 	@SuppressWarnings("unchecked")

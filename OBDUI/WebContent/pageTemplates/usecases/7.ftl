@@ -61,8 +61,8 @@ User asks for all similar entities
 <li>
 presentation layer makes query to OBD REST. URLs loos like:
    <ul>
-   <li> <@obdurl path="nodes/OMIM:601653.0008/blast"/>an OMIM allele record for eya1</li>
-   <li> <@obdurl path="nodes/ZFIN:ZDB-GENO-980202-1557/blast"/> similar to this eya1 genotype in zfin</li>
+   <li> <@obdurl path="node/OMIM:601653.0008/blast"/>an OMIM allele record for eya1</li>
+   <li> <@obdurl path="node/ZFIN:ZDB-GENO-980202-1557/blast"/> similar to this eya1 genotype in zfin</li>
 </li>
 </ul>
 </ul>

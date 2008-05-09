@@ -65,7 +65,7 @@ ${graph.getNode(focusId).getLabel()!""}
 
 <@section title="Actions">
 <div class="block" id="actions">
-<a href="/html/nodes/${focusId}/blast">find similar</a>
+<a href="/html/node/${focusId}/blast">find similar</a>
 </div>
 </@section>
 

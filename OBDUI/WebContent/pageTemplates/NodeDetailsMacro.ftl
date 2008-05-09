@@ -1,7 +1,13 @@
 <#macro nodeDetailsTable>
  	<script type="text/javascript" src="/OBDUI/js/table-toggle.js"></script>
 	<a href="#" onclick="toggleTable('statementsAbout','${hostname}');return false;">
-		<div class="nodeDetailBox"><img id="statementsAbout_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements About This Node</div>
+		<div class="nodeDetailBox"><img id="statementsAbout_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>
+			<#if manyNodes?exists>
+				Statements About These Nodes				
+			<#else>
+				Statements About This Node
+			</#if>
+		</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -12,7 +18,11 @@
 							<th>This data in other formats:</th>
 							<#list ["obdxml","owl","obo","json"] as format>
 							<td>
-								<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="about"/>
+								<#if manyNodes?exists>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=encodedNodeString statementType="about"/>
+								<#else>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="node" id=encodedId statementType="about"/>
+								</#if>
 							</td>
 							</#list>
 						</tr>
@@ -44,7 +54,13 @@
 		</tr>
 	</table>
 	<a href="#" onclick="toggleTable('statementsTo','${hostname}');return false;">
-		<div class="nodeDetailBox"><img id="statementsTo_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>Statements To This Node	</div>
+		<div class="nodeDetailBox"><img id="statementsTo_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>
+			<#if manyNodes?exists>
+				Statements To These Nodes				
+			<#else>
+				Statements To This Node
+			</#if>
+		</div>
 	</a>
 	<table class="statementTableWrapper">
 		<tr>
@@ -56,7 +72,11 @@
 							<th>This data in other formats:</th>
 							<#list ["obdxml","owl","obo","json"] as format>
 							<td>
-								<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="to"/>
+								<#if manyNodes?exists>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=encodedNodeString statementType="to"/>
+								<#else>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="node" id=encodedId statementType="to"/>
+								</#if>
 							</td>
 							</#list>
 						</tr>
@@ -93,7 +113,11 @@
 							<th>This data in other formats:</th>
 							<#list ["obdxml","owl","obo","json"] as format>
 							<td>
-								<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="annotations"/>
+								<#if manyNodes?exists>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=encodedNodeString statementType="annotations"/>
+								<#else>
+									<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="node" id=encodedId statementType="annotations"/>
+								</#if>
 							</td>
 							</#list>
 						</tr>
@@ -157,7 +181,7 @@
 
 
 <#macro phat id>
-	<a style="font-size:12px;" href="/${contextName}/${dataSource}/html/nodes/${id}/blast">Find similar nodes&nbsp;&raquo;</a>
+	<a style="font-size:12px;" href="/${contextName}/${dataSource}/html/node/${id}/blast">Find similar nodes&nbsp;&raquo;</a>
 </#macro>
 
 <#macro nodeMetaData>

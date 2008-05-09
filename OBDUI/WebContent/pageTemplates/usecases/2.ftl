@@ -69,5 +69,5 @@ As for <@usecase id="1"/>
  	</p>
    </li>
   </ul>
-  Example: <@obdurl path="nodes/CL:0000100/statements/annotations/develops_from"/>
+  Example: <@obdurl path="node/CL:0000100/statements/annotations/develops_from"/>
  </p>

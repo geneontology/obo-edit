@@ -160,7 +160,7 @@ public class NodeDetailResource extends NodeResource {
 				sb.append(hrefStatement(s,this.dataSource));
 				sb.append("\n");
 			}
-			sb.append(hrefToOtherFormats("/nodes/"+getNodeId()+"/statements/"+aspect,this.dataSource));
+			sb.append(hrefToOtherFormats("/node/"+getNodeId()+"/statements/"+aspect,this.dataSource));
 
 			sb.append("</pre>");
 			result = new StringRepresentation(sb, MediaType.TEXT_HTML);
