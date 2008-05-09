@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
@@ -188,9 +190,9 @@ public class NodesResource extends OBDResource {
     		for (Node n : this.nodes){
     			SimpleHash nodeHash = new SimpleHash();
     			if (n.getLabel() != null){
-    				nodeHash.put("label", n.getLabel());
+    				nodeHash.put("label", StringEscapeUtils.escapeHtml(n.getLabel()));
     			} else {
-    				nodeHash.put("label", n.getId());
+    				nodeHash.put("label", StringEscapeUtils.escapeHtml(n.getId()));
     			}
     			nodeHash.put("id", n.getId());
     			nodeHash.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()));
@@ -293,17 +295,17 @@ public class NodesResource extends OBDResource {
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
 
 		if (sourceNode != null && sourceNode.getLabel() != null){
-			statementHash.put("sourceLabel", sourceNode.getLabel());
+			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(sourceNode.getLabel()));
 		} else {
-			statementHash.put("sourceLabel", s.getNodeId());
+			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(s.getNodeId()));
 		}
 		statementHash.put("sourceHref", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getNodeId()));
 		
 		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
 		if (rn != null && rn.getLabel() != null){
-			statementHash.put("relationLabel", this.prettifyRelationshipTerm(rn.getLabel()));
+			statementHash.put("relationLabel", this.prettifyRelationshipTerm(StringEscapeUtils.escapeHtml(rn.getLabel())));
 		} else {
-			statementHash.put("relationLabel", this.prettifyRelationshipTerm(s.getRelationId()));
+			statementHash.put("relationLabel", this.prettifyRelationshipTerm(StringEscapeUtils.escapeHtml(s.getRelationId())));
 		}
 		statementHash.put("relationHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getRelationId()));
 			
@@ -311,9 +313,9 @@ public class NodesResource extends OBDResource {
 			
 			Node tn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
 			if (tn != null && tn.getLabel() != null){
-				statementHash.put("targetLabel",tn.getLabel());
+				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(tn.getLabel()));
 			} else {
-				statementHash.put("targetLabel",s.getTargetId());
+				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(s.getTargetId()));
 			}
 			statementHash.put("targetHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getTargetId()));
 			

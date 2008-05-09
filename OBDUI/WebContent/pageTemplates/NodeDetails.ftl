@@ -22,7 +22,7 @@
 				</td>
 				<td id="content_container">
 					<#if node?exists>
-						<h2>${node.getId()}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
+						<h2>${nodeId}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
 						<#if nodeDefinition?exists>
 							<span class="nodeDef">${nodeDefinition}</span>
 							<br/>
