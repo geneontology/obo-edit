@@ -71,7 +71,7 @@ public class ScoredNodesResource extends NodeResource {
         }
         else if (format.equals("owl")) {
  //       	result = new StringRepresentation(OWLBridge.toOWLString(scoredNodes));
-  //      	return result;
+ //       	return result;
         }
         else if (format.equals("obo")) {
  //       	result = new StringRepresentation(OBOBridge.toOBOString(scoredNodes));
@@ -82,7 +82,7 @@ public class ScoredNodesResource extends NodeResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.getNode());
-    		
+    		resourceMap.put("nodeId", this.getNodeId());
         	
     		List<SimpleHash> scores = new ArrayList<SimpleHash>();
         	for (ScoredNode sn : scoredNodes) {

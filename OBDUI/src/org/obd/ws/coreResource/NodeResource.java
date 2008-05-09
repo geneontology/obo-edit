@@ -30,6 +30,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import freemarker.template.SimpleHash;
 
@@ -142,7 +143,7 @@ public class NodeResource extends OBDResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
-    		resourceMap.put("nodeId",this.nodeId);
+    		resourceMap.put("nodeId",StringEscapeUtils.escapeHtml(this.nodeId));
     		resourceMap.put("encodedId", Reference.encode(this.nodeId));
 
     		try {
@@ -324,17 +325,17 @@ public class NodeResource extends OBDResource {
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
 
 		if (sourceNode != null && sourceNode.getLabel() != null){
-			statementHash.put("sourceLabel", sourceNode.getLabel());
+			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(sourceNode.getLabel()));
 		} else {
-			statementHash.put("sourceLabel", s.getNodeId());
+			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(s.getNodeId()));
 		}
 		statementHash.put("sourceHref", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getNodeId()));
 		
 		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
 		if (rn != null && rn.getLabel() != null){
-			statementHash.put("relationLabel", this.prettifyRelationshipTerm(rn.getLabel()));
+			statementHash.put("relationLabel", StringEscapeUtils.escapeHtml(this.prettifyRelationshipTerm(rn.getLabel())));
 		} else {
-			statementHash.put("relationLabel", this.prettifyRelationshipTerm(s.getRelationId()));
+			statementHash.put("relationLabel", StringEscapeUtils.escapeHtml(this.prettifyRelationshipTerm(s.getRelationId())));
 		}
 		statementHash.put("relationHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getRelationId()));
 			
@@ -342,9 +343,9 @@ public class NodeResource extends OBDResource {
 			
 			Node tn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
 			if (tn != null && tn.getLabel() != null){
-				statementHash.put("targetLabel",tn.getLabel());
+				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(tn.getLabel()));
 			} else {
-				statementHash.put("targetLabel",s.getTargetId());
+				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(s.getTargetId()));
 			}
 			statementHash.put("targetHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getTargetId()));
 			
