@@ -12,7 +12,7 @@
 						<th style="width:20%;font-family:Arial;font-weight:normal;font-size:12px;background-color:#cccccc;border:1px solid #aaaaaa;">This data in other formats:</th>
 						<#list ["obdxml","owl","obo","json"] as format>
 						<td style="width:20%;text-align:center;font-family:Arial;font-size:12px;background-color:#efefef;border:1px solid #aaaaaa;">
-							<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="nodes" id=node.getId() statementType="annotations"/>
+							<@otherFormatLink contextName=contextName dataSource=dataSource format=format view="node" id=node.getId() statementType="annotations"/>
 						</td>
 						</#list>
 					</tr>

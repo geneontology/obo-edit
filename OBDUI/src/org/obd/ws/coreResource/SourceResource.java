@@ -94,7 +94,7 @@ public class SourceResource extends OBDResource {
         	sb.append("Id:  ").append(href(node,dataSource)).append('\n');
           	sb.append("Label: ").append(this.node.getLabel()).append("\n");
           	String base = "sources/"+node.getId()+"/";
-          	sb.append("Nodes: ").append(href(base+"/nodes",node.getId(),dataSource)).append("\n\n");
+          	sb.append("Nodes: ").append(href(base+"/node",node.getId(),dataSource)).append("\n\n");
           	sb.append("Statements: ").append(href(base+"/statements",node.getId(),dataSource)).append("\n\n");
           	sb.append("Graph: ").append(href(base+"/graph",node.getId(),dataSource)).append("\n\n");
           	          	            

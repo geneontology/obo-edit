@@ -69,7 +69,7 @@
 
 <#macro header>
 	<div class="new_page_header">
-		<span class="new_page_logo">OBD</span>
+		<a href="/OBDUI/" class="new_page_logo">OBD</a>
 		<div class="full_div_blue"></div>
 		<div class="menu_bar">
 			<div class="menu_items">
@@ -151,7 +151,7 @@
 </#macro>
 
 <#macro hrefNode id format="html" label="${id}" dataSource="obdPhenotypeAll" contextPath="OBDUI">
-<a href="/${contextPath}/${dataSource}/${format}/nodes/${id}">${label}</a>
+<a href="/${contextPath}/${dataSource}/${format}/node/${id}">${label}</a>
 </#macro>
 
 <#macro hrefSearch term format="html" label="${term}" dataSource="obdPhenotypeAll" contextPath="OBDUI">
@@ -167,7 +167,7 @@
 <a href="${url}">${url}</a>
 </#macro>
 
-<#macro obdurl path format="json" dataSource="obdPhenotypeAll" contextPath="OBDUI">
+<#macro obdurl path format="html" dataSource="obdPhenotypeAll" contextPath="OBDUI">
 <a href="/${contextPath}/${dataSource}/${format}/${path}">/{contextPath}/{dataSource}/{format}/${path}</a> (see <a href="/${contextPath}/${dataSource}/html/${path}">HTML</a>)
 </#macro>
 

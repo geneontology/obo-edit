@@ -4,7 +4,7 @@
 
 <#macro nodePageLink id dataSource="obdPhenotypeAll" contextPath="OBDWS">
 <span class="identifier">
-<a href="/${contextPath}/${dataSource}/view/nodes/${id}">
+<a href="/${contextPath}/${dataSource}/view/node/${id}">
 ${id}
 </a>
 </span>

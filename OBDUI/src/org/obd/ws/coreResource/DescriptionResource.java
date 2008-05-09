@@ -78,7 +78,7 @@ public class DescriptionResource extends NodeResource {
         	sb.append("Description\n");
         	sb.append("------------\n\n");
           	sb.append(toHTML(desc));
-          	sb.append(hrefToOtherFormats("/nodes/"+getNodeId()+"/description",this.dataSource));
+          	sb.append(hrefToOtherFormats("/node/"+getNodeId()+"/description",this.dataSource));
            	sb.append("</pre>");
          	result = new StringRepresentation(sb, MediaType.TEXT_HTML);
         }

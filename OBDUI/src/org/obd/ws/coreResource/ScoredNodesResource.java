@@ -2,9 +2,11 @@ package org.obd.ws.coreResource;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 import org.obd.model.Node;
+import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.stats.ScoredNode;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -57,16 +59,15 @@ public class ScoredNodesResource extends NodeResource {
     public Representation getRepresentation(Variant variant) {
         Representation result = null;
 
-        List<ScoredNode> scoredNodes = getScoredNodes();
+        Collection<ScoredNode> scoredNodes = getScoredNodes();
          
         if (format == null) {
         	format = "";
         }
 
-          if (format.equals("json")) {
- //       	result = new StringRepresentation(OBDJSONBridge.toJSON(scoredNodes).toString());
-  //      	return result;
-
+        if (format.equals("json")) {
+        	result = new StringRepresentation(OBDJSONBridge.scoredNodesToJSON(scoredNodes).toString());
+        	return result;
         }
         else if (format.equals("owl")) {
  //       	result = new StringRepresentation(OWLBridge.toOWLString(scoredNodes));
@@ -114,7 +115,7 @@ public class ScoredNodesResource extends NodeResource {
         		sb.append(sn.getScore()+" :: "+href(sn.getNodeId(),dataSource));
         		sb.append("\n");
              }
-        	sb.append(hrefToOtherFormats("/nodes/"+getNodeId()+"/blast/",this.dataSource));
+        	sb.append(hrefToOtherFormats("/node/"+getNodeId()+"/blast/",this.dataSource));
         	 
          	sb.append("</pre>");
          	result = new StringRepresentation(sb, MediaType.TEXT_HTML);

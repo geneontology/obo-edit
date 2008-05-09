@@ -159,7 +159,7 @@ public class NodeSearchResource extends NodeResource {
 	    				nodeProperties.put("nodeLabel", n.getId());
 	    			}
 	    			
-	    			nodeProperties.put("nodeHref","/" + this.getContextName() + "/" + this.dataSource + "/html/nodes/" + Reference.encode(n.getId()));
+	    			nodeProperties.put("nodeHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()));
 	    			
 	    			String source = "";
 	    			source += n.getSourceId();

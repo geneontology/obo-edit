@@ -20,7 +20,9 @@ import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
+import org.obd.query.BooleanQueryTerm;
 import org.obd.query.LinkQueryTerm;
+import org.obd.query.BooleanQueryTerm.BooleanOperator;
 import org.obd.ws.coreResource.sorter.StatementComparator;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -36,14 +38,14 @@ import freemarker.template.SimpleHash;
 /**
  * Resource for a node
  */
-public class NodeResource extends OBDResource {
+public class NodesResource extends OBDResource {
 
-    private Node node;
-    private String nodeId;
+    private Collection<Node> nodes;
 	protected String format;
 	protected String dataSource;
 	protected String uriString;
-
+	protected String nodeString;
+	
     public String getFormat() {
 		return format;
 	}
@@ -63,88 +65,55 @@ public class NodeResource extends OBDResource {
      * @param response
      *                The response to return.
      */
-    public NodeResource(Context context, Request request, Response response) {
+    public NodesResource(Context context, Request request, Response response) {
         
     	super(context, request, response);
-        
-        this.nodeId = (String) request.getAttributes().get("id");
-        System.err.println("Node is: " + this.nodeId);
-        if (this.nodeId != null){
-        	this.nodeId = Reference.decode(this.nodeId);
-        	System.out.println("Decoded is: " + this.nodeId);
-        }
         this.format = (String) request.getAttributes().get("format");
         this.dataSource = (String) request.getAttributes().get("dataSource");
+        this.nodeString = (String) request.getAttributes().get("nodeList");
+        this.nodes = new HashSet<Node>();
         
-        if (nodeId != null){
-        	this.nodeId = Reference.decode(nodeId);
+        
+        if (this.nodeString != null){
+        	System.out.print("Node List: " + this.nodeString + "\t");
+        	this.nodeString = Reference.decode(nodeString);
+        	System.out.println("Decoded: " + this.nodeString);
+        	getVariants().add(new Variant(MediaType.TEXT_HTML));
+        	for (String uid : this.nodeString.split("\\+")){
+        		Node n = this.getShard(this.dataSource).getNode(uid);
+        		if (n != null){
+        			this.nodes.add(n);
+        		}
+        	}
         }
-
-        uriString = (String) request.getResourceRef().toString();
-  
-        this.node = findNode();
-
-        if (node != null) {
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
-        }
     }
-
- 
-    /**
-     * Finds the associated node.
-     * 
-     * @return The node found or null.
-     */
-    public Node findNode() {
-        Node result = null;
-
-        System.out.print("Looking for Node " + nodeId + " in data source " + this.dataSource + ".");
-        if (nodeId != null) {       	
-        	result = getShard(this.dataSource).getNode(nodeId);
-        } 
-        
-        
-        return result;
-    }
-    
-    public Collection<Node> findNodes() throws Exception {
-    	HashSet<Node> nodes = new HashSet<Node>();
-    	Node n = findNode();
-    	if (n!= null)
-    		nodes.add(n);
-    	return nodes;
-    }
-
  
     @Override
     public Representation getRepresentation(Variant variant) {
     	   	
-    	
     	Representation result = null;
 
     	if (format == null) {
     		format = "";
     	}
 
+    	Graph g = new Graph();
+    	g.setNodes(this.nodes);
     	if (format.equals("json")) {
-    		result = new StringRepresentation(OBDJSONBridge.toJSON(this.node).toString());
-    	}
-    	else if (format.equals("obo")) {
-    		result = new StringRepresentation(OBOBridge.toOBOString(node));
+    		result = new StringRepresentation(OBDJSONBridge.nodesToJSON(this.nodes).toString());
+    	}  	else if (format.equals("obo")) {
+    		result = new StringRepresentation(OBOBridge.toOBOString(g));
     		return result;
-    	}
-    	else if (format.equals("owl")) {
-    		result = new StringRepresentation(OWLBridge.toOWLString(node));
+    	}  	else if (format.equals("owl")) {
+    		result = new StringRepresentation(OWLBridge.toOWLString(g));
     		return result;
-    	} else if (format.equals("html")||(format.equals("bioPortal"))){
+    	} else if (format.equals("html")){
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
-    		
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("node",this.node);
-    		resourceMap.put("nodeId",this.nodeId);
-    		resourceMap.put("encodedId", Reference.encode(this.nodeId));
-
+    		resourceMap.put("nodeString", this.nodeString);
+    		resourceMap.put("encodedNodeString", Reference.encode(this.nodeString));
+    		resourceMap.put("manyNodes",true);
     		try {
     			InetAddress addr = InetAddress.getLocalHost();
     			resourceMap.put("hostname",addr.getCanonicalHostName());
@@ -214,11 +183,24 @@ public class NodeResource extends OBDResource {
     			Collections.sort(aboutStatements,new StatementComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
-    		if (format.equals("html")){
-    			return getTemplateRepresentation("NodeDetails",resourceMap);
-    		} else {
-    			return getTemplateRepresentation("BPNodeDetails",resourceMap);
+    		
+    		List<SimpleHash> nodes = new ArrayList<SimpleHash>();
+    		for (Node n : this.nodes){
+    			SimpleHash nodeHash = new SimpleHash();
+    			if (n.getLabel() != null){
+    				nodeHash.put("label", n.getLabel());
+    			} else {
+    				nodeHash.put("label", n.getId());
+    			}
+    			nodeHash.put("id", n.getId());
+    			nodeHash.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()));
+    			nodes.add(nodeHash);
     		}
+    		
+    		resourceMap.put("nodes", nodes);
+    		
+    		return getTemplateRepresentation("NodesDetails",resourceMap);
+    		
     	} else {
     		
 
@@ -227,15 +209,18 @@ public class NodeResource extends OBDResource {
     		StringBuilder sb = new StringBuilder();
     		sb.append("<pre>");
     		sb.append("------------\n");
-    		sb.append("Node details\n");
+    		sb.append("Nodes details\n");
     		sb.append("------------\n\n");
-    		sb.append("Id:  ").append(href(node,this.dataSource)).append('\n');
-    		sb.append("Label: ").append(this.node.getLabel()).append("\n");
-    		sb.append("Source: ").append(this.node.getSourceId()).append("\n\n");
-    		sb.append("Statements: ").append(hrefStatementsFor(node.getId(),this.dataSource)).append("\n\n");
-    		sb.append("Description: ").append(hrefDescriptionFor(node.getId(),this.dataSource)).append("\n\n");
-    		sb.append("Graph: ").append(hrefGraph(node.getId(),this.dataSource)).append("\n\n");
-           	sb.append(hrefToOtherFormats("/node/"+getNodeId(),this.dataSource));
+    		for (Node node : this.nodes){
+	    		sb.append("Id:  ").append(href(node,this.dataSource)).append('\n');
+	    		sb.append("Label: ").append(node.getLabel()).append("\n");
+	    		sb.append("Source: ").append(node.getSourceId()).append("\n\n");
+	    		sb.append("Statements: ").append(hrefStatementsFor(node.getId(),this.dataSource)).append("\n\n");
+	    		sb.append("Description: ").append(hrefDescriptionFor(node.getId(),this.dataSource)).append("\n\n");
+	    		sb.append("Graph: ").append(hrefGraph(node.getId(),this.dataSource)).append("\n\n");
+	           	sb.append(hrefToOtherFormats("/node/"+node.getId(),this.dataSource));
+	           	sb.append("\n");
+    		}
     		sb.append("</pre>");
     		return new StringRepresentation(sb, MediaType.TEXT_HTML);
 
@@ -245,68 +230,52 @@ public class NodeResource extends OBDResource {
     
  
 
-    /**
-     * Returns the associated node.
-     * 
-     * @return The associated node.
-     */
-    public Node getNode() {
-        return this.node;
-    }
-
-  
-    /**
-     * Sets the associated node.
-     * 
-     * @param node
-     *                The node to set.
-     */
-    public void setNode(Node node) {
-        this.node = node;
-    }
-
-
-	public String getNodeId() {
-		return nodeId;
-	}
-
-
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
-	}
-    
 	
 	protected Graph getGraph(String aspect) {
 		Graph graph;
-		if (aspect == null || aspect.equals(""))
+		if (aspect == null || aspect.equals("")){
 			aspect = "about";
-
-		LinkQueryTerm lq = new LinkQueryTerm();
-		if (aspect.equals("annotations")) {
-			lq = new AnnotationLinkQueryTerm(getNodeId());
-		} else {
-			if (aspect.equals("about")){
-				lq.setNode(getNodeId());
-				lq.setInferred(false);
-			} else if (aspect.equals("all")){
-				lq.setNode(getNodeId());
-			} else if (aspect.equals("to")){ 
-				lq.setTarget(getNodeId());
-			} else if (aspect.equals("source")){
-				lq.setSource(getNodeId());
-			} else {
-				lq.setNode(getNodeId());
-			}
+		} else if (aspect.equals("all")){
+			
 		}
 
-		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
+		BooleanQueryTerm bqt = new BooleanQueryTerm();
+		bqt.setOperator(BooleanOperator.AND);
+		
+		for (Node n : this.nodes){
+			LinkQueryTerm lq = new LinkQueryTerm();
+			if (aspect.equals("annotations")) {
+				lq = new AnnotationLinkQueryTerm(n.getId());
+			} else {
+				if (aspect.equals("about")){
+					lq.setNode(n.getId());
+					lq.setInferred(false);
+				} else if (aspect.equals("all")){
+					lq.setNode(n.getId());
+				} else if (aspect.equals("to")){ 
+					lq.setTarget(n.getId());
+				} else if (aspect.equals("source")){
+					lq.setSource(n.getId());
+				} else {
+					lq.setNode(n.getId());
+				}
+			}
+			bqt.addQueryTerm(lq);
+		}
+
+		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(bqt);
 
 		if (aspect.equals("all")) {
-			lq = new LinkQueryTerm();
-			//lq.setRelation(relationId);
-			lq.setTarget(getNodeId());
-			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+			bqt = new BooleanQueryTerm();
+			bqt.setOperator(BooleanOperator.AND);
+			for (Node n : this.nodes){
+				LinkQueryTerm lq = new LinkQueryTerm();
+				lq.setTarget(n.getId());
+				bqt.addQueryTerm(lq);
+			}
+			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(bqt));
 		}
+		
 		graph = new Graph(stmts);
 		if (true) {
 			String[] nids = graph.getReferencedNodeIds();
