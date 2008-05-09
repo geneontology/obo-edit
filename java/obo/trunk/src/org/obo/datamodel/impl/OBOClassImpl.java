@@ -44,7 +44,7 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 
 	@Override
 	public String toString() {
-		return getName();
+		return getName() == null ? getID() : getName();
 	}
 
 	public void setID(String id) {
