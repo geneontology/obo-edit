@@ -224,4 +224,9 @@ public abstract class OBDResource extends Resource {
 		
 		return buf.toString();
 	}
+
+	protected Graph getGraph(String aspect) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

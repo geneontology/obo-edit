@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.obd.model.Node;
 import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.stats.ScoredNode;
@@ -82,7 +84,8 @@ public class ScoredNodesResource extends NodeResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.getNode());
-    		resourceMap.put("nodeId", this.getNodeId());
+    		resourceMap.put("nodeId", StringEscapeUtils.escapeHtml(this.getNodeId()));
+    		
         	
     		List<SimpleHash> scores = new ArrayList<SimpleHash>();
         	for (ScoredNode sn : scoredNodes) {
