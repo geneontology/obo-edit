@@ -87,6 +87,7 @@
    <mapID target="OBO_Edit_Features" url="html/OBO_Edit_Features.htm"/>
    <mapID target="OBO_Edit_Specific_Variables" url="html/OBO_Edit_Specific_Variables.htm"/>
    <mapID target="obomerge" url="html/obomerge.htm"/>
+   <mapID target="OBOMerge_User_Interface" url="html/OBOMerge_User_Interface.htm"/>
    <mapID target="Obsolete_Items" url="html/Obsolete_Items.htm"/>
    <mapID target="Other_Uses_of_Filters" url="html/Other_Uses_of_Filters.htm"/>
    <mapID target="placeholder" url="html/placeholder.htm"/>
