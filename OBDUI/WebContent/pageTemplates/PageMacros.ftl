@@ -21,7 +21,11 @@
   	
 	<form id="search_form" action="" method="get" onsubmit="return nodeSearch('${contextName}')">
 		Search for:<br/>
-       	<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}')" value="Go" />
+		<#if dataSource?exists>
+       		<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}','${dataSource}')" value="Go" />
+       	<#else>
+       		<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}','obdPhenotypeAll')" value="Go" />
+       	</#if>
        	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
         <input type="hidden" name="dataSource" id="dataSource" value="obdPhenotypeAll"/>
      </form>

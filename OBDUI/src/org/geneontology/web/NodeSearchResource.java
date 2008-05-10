@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.obd.model.Graph;
 import org.obd.model.Node;
 import org.obd.model.bridge.OBDJSONBridge;
@@ -152,11 +154,19 @@ public class NodeSearchResource extends NodeResource {
     			if (n.getLabel() != null){
     				
 	    			SimpleHash nodeProperties = new SimpleHash();
-	    			nodeProperties.put("nodeId", n.getId());
+	    			
+	    			String nodeLabel = null;
 	    			if (n.getLabel() != null){
-	    				nodeProperties.put("nodeLabel", n.getLabel());
+	    				nodeLabel = n.getLabel();
 	    			} else {
-	    				nodeProperties.put("nodeLabel", n.getId());
+	    				nodeLabel = n.getId();
+	    			}
+	    			if (n.getSourceId().equals("ZFIN")){
+	    				nodeProperties.put("nodeId", n.getId());
+	    				nodeProperties.put("nodeLabel", nodeLabel);
+	    			} else {
+	    				nodeProperties.put("nodeId", StringEscapeUtils.escapeHtml(n.getId()));
+	    				nodeProperties.put("nodeLabel", StringEscapeUtils.escapeHtml(nodeLabel));
 	    			}
 	    			
 	    			nodeProperties.put("nodeHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()));

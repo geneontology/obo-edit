@@ -40,7 +40,7 @@ import freemarker.template.SimpleHash;
 public class NodeResource extends OBDResource {
 
     private Node node;
-    private String nodeId;
+    protected String nodeString;
 	protected String format;
 	protected String dataSource;
 	protected String uriString;
@@ -68,26 +68,19 @@ public class NodeResource extends OBDResource {
         
     	super(context, request, response);
         
-        this.nodeId = (String) request.getAttributes().get("id");
-        System.err.println("Node is: " + this.nodeId);
-        if (this.nodeId != null){
-        	this.nodeId = Reference.decode(this.nodeId);
-        	System.out.println("Decoded is: " + this.nodeId);
+        this.nodeString = (String) request.getAttributes().get("nodeString");
+        System.out.println("Requested Node String is: " + this.nodeString);
+        if (this.nodeString != null){
+        	this.nodeString = Reference.decode(this.nodeString);
+        	System.out.println("Decoded is: " + this.nodeString);
         }
         this.format = (String) request.getAttributes().get("format");
         this.dataSource = (String) request.getAttributes().get("dataSource");
         
-        if (nodeId != null){
-        	this.nodeId = Reference.decode(nodeId);
-        }
-
         uriString = (String) request.getResourceRef().toString();
   
-        this.node = findNode();
-
-        if (node != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
-        }
+        
     }
 
  
@@ -99,10 +92,15 @@ public class NodeResource extends OBDResource {
     public Node findNode() {
         Node result = null;
 
-        System.out.print("Looking for Node " + nodeId + " in data source " + this.dataSource + ".");
-        if (nodeId != null) {       	
-        	result = getShard(this.dataSource).getNode(nodeId);
+        System.out.print("Looking for Node " + this.nodeString + " in data source " + this.dataSource + "..... ");
+        if (nodeString != null) {       	
+        	result = getShard(this.dataSource).getNode(nodeString);
         } 
+        if (result != null){
+        	System.out.println("Found.");
+        } else {
+        	System.out.println("Not Found.");
+        }
         
         
         return result;
@@ -120,6 +118,7 @@ public class NodeResource extends OBDResource {
     @Override
     public Representation getRepresentation(Variant variant) {
     	   	
+    	this.node = findNode();
     	
     	Representation result = null;
 
@@ -138,14 +137,13 @@ public class NodeResource extends OBDResource {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
     		return result;
     	} else if (format.equals("html")||(format.equals("bioPortal"))){
-    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		
+    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
-    		resourceMap.put("nodeId",StringEscapeUtils.escapeHtml(this.nodeId));
-    		resourceMap.put("encodedId", Reference.encode(this.nodeId));
-
+    		resourceMap.put("encodedId", Reference.encode(this.nodeString));
+    		
     		try {
     			InetAddress addr = InetAddress.getLocalHost();
     			resourceMap.put("hostname",addr.getCanonicalHostName());
@@ -153,25 +151,21 @@ public class NodeResource extends OBDResource {
     			System.err.println("Hostname fetching error: " + e.getMessage());
     		}
     		
-    		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = new ArrayList<SimpleHash>();
-    		for (Statement s : this.getGraph("annotations").getStatements()){
-        		SimpleHash annotationStatement = new SimpleHash();
-    			annotationStatement.put("statement", this.hashifyStatement(s));
-        		Set<String> assignmentSources = new HashSet<String>();
-    			Set<String> provenanceSources = new HashSet<String>();
-    			for (Statement subStatement : s.getSubStatements()){
-    				if (subStatement.getRelationId().equals("oban:assigned_by")){
-    					assignmentSources.add(this.href(subStatement.getTargetId(),dataSource));
-    				}
-    				if (subStatement.getRelationId().equals("oban:has_data_source")){
-    					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
-    				}
-        			annotationStatement.put("assigned_by",assignmentSources);
-        			annotationStatement.put("provenance",provenanceSources);
+    		if ((node != null) && (node.getSourceId()!=null) && (node.getSourceId().equals("ZFIN"))){
+    			resourceMap.put("nodeId",this.nodeString);
+    			if (this.node.getLabel() != null){
+    				resourceMap.put("nodeLabel", this.node.getLabel());
     			}
-    			annotationStatements.add(annotationStatement);
+    		} else {
+    			resourceMap.put("nodeId",StringEscapeUtils.escapeHtml(this.nodeString));
+	    		if ((node != null) && (this.node.getLabel() != null)){
+	    			resourceMap.put("nodeLabel", StringEscapeUtils.escapeHtml(this.node.getLabel()));
+	    		}
     		}
+    		
+
+    		// Annotation Statements 
+    		List<SimpleHash> annotationStatements = this.getStatements("annotation");
     		if (annotationStatements.size()>0){
     			Collections.sort(annotationStatements,new StatementComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
@@ -179,52 +173,26 @@ public class NodeResource extends OBDResource {
     		
     		
     		// Statements to Node
-    		List<SimpleHash> toStatements = new ArrayList<SimpleHash>();
-    		for (Statement s : this.getGraph("to").getStatements()){
-    			SimpleHash m = new SimpleHash();
-    			m.put("statement",this.hashifyStatement(s));
-    			if (s.isInferred()){
-    				m.put("entailment","I");
-    			} else {
-    				m.put("entailment","A");
-    			}
-    			toStatements.add(m);
-    		}
+    		List<SimpleHash> toStatements = this.getStatements("to");
     		if (toStatements.size()>0){
     			Collections.sort(toStatements,new StatementComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
-    		List<SimpleHash> aboutStatements = new ArrayList<SimpleHash>();
-    		for (Statement s : this.getGraph("about").getStatements()){
-    			SimpleHash m = new SimpleHash();
-    			m.put("statement",this.hashifyStatement(s));
-    			if (s.isInferred()){
-    				m.put("entailment","I");
-    			} else {
-    				m.put("entailment","A");
-    			}
-    			aboutStatements.add(m);
-    			
-    			if ((s.getRelationId().equals("oboMetamodel:description")||s.getRelationId().equals("oboInOwl:hasDefinition")) && (s instanceof LiteralStatement)){
-    				resourceMap.put("nodeDefinition",((LiteralStatement)s).getSValue());
-    			}
-    		}
+    		List<SimpleHash> aboutStatements = this.getStatements("about");
     		if (aboutStatements.size()>0){
     			Collections.sort(aboutStatements,new StatementComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
+    		
     		if (format.equals("html")){
     			return getTemplateRepresentation("NodeDetails",resourceMap);
     		} else {
     			return getTemplateRepresentation("BPNodeDetails",resourceMap);
     		}
     	} else {
-    		
-
-    		
-    		// Creates a text representation
+    		    		// Creates a text representation
     		StringBuilder sb = new StringBuilder();
     		sb.append("<pre>");
     		sb.append("------------\n");
@@ -244,7 +212,59 @@ public class NodeResource extends OBDResource {
     	return result;
     }
     
- 
+    protected List<SimpleHash> getStatements(String aspect){
+    	
+    	List<SimpleHash> statements = new ArrayList<SimpleHash>();
+    	if (aspect.equals("annotation")){
+    		for (Statement s : this.getGraph("annotations").getStatements()){
+    			
+        		SimpleHash annotationStatement = new SimpleHash();
+    			annotationStatement.put("statement", this.hashifyStatement(s));
+        		Set<String> assignmentSources = new HashSet<String>();
+    			Set<String> provenanceSources = new HashSet<String>();
+    			for (Statement subStatement : s.getSubStatements()){
+    				if (subStatement.getRelationId().equals("oban:assigned_by")){
+    					assignmentSources.add(this.href(subStatement.getTargetId(),dataSource));
+    				}
+    				if (subStatement.getRelationId().equals("oban:has_data_source")){
+    					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
+    				}
+        			annotationStatement.put("assigned_by",assignmentSources);
+        			annotationStatement.put("provenance",provenanceSources);
+    			}
+    			statements.add(annotationStatement);
+    		} 
+    	} else if (aspect.equals("about")){
+    		for (Statement s : this.getGraph("about").getStatements()){
+    			SimpleHash m = new SimpleHash();
+    			m.put("statement",this.hashifyStatement(s));
+    			if (s.isInferred()){
+    				m.put("entailment","I");
+    			} else {
+    				m.put("entailment","A");
+    			}
+    			statements.add(m);
+    			
+    			
+    		}
+		} else if (aspect.equals("to")){
+			for (Statement s : this.getGraph("to").getStatements()){
+    			SimpleHash m = new SimpleHash();
+    			m.put("statement",this.hashifyStatement(s));
+    			if (s.isInferred()){
+    				m.put("entailment","I");
+    			} else {
+    				m.put("entailment","A");
+    			}
+    			statements.add(m);
+    		}
+		}  else {
+			System.err.println("What Aspect? ");
+			Exception e = new Exception();
+			e.printStackTrace();
+		}
+    	return statements;
+    }
 
     /**
      * Returns the associated node.
@@ -268,12 +288,12 @@ public class NodeResource extends OBDResource {
 
 
 	public String getNodeId() {
-		return nodeId;
+		return nodeString;
 	}
 
 
 	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
+		this.nodeString = nodeId;
 	}
     
 	
@@ -319,34 +339,49 @@ public class NodeResource extends OBDResource {
 		return graph;
 	}
 	
-	public SimpleHash hashifyStatement(Statement s) {
+	protected SimpleHash hashifyStatement(Statement s) {
 				
 		SimpleHash statementHash = new SimpleHash();
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
 
+		String sourceLabel = null;
 		if (sourceNode != null && sourceNode.getLabel() != null){
-			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(sourceNode.getLabel()));
+			sourceLabel = sourceNode.getLabel();
 		} else {
-			statementHash.put("sourceLabel", StringEscapeUtils.escapeHtml(s.getNodeId()));
+			sourceLabel = s.getNodeId();
 		}
+		if (sourceNode != null && (sourceNode.getSourceId() != null) && !sourceNode.getSourceId().equals("ZFIN")){
+			sourceLabel = StringEscapeUtils.escapeHtml(sourceLabel);
+		} 
+		statementHash.put("sourceLabel", sourceLabel);
 		statementHash.put("sourceHref", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getNodeId()));
 		
 		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
+		String relationLabel = null;
 		if (rn != null && rn.getLabel() != null){
-			statementHash.put("relationLabel", StringEscapeUtils.escapeHtml(this.prettifyRelationshipTerm(rn.getLabel())));
+			relationLabel = this.prettifyRelationshipTerm(rn.getLabel());
 		} else {
-			statementHash.put("relationLabel", StringEscapeUtils.escapeHtml(this.prettifyRelationshipTerm(s.getRelationId())));
+			relationLabel = this.prettifyRelationshipTerm(s.getRelationId());
 		}
+		if ((rn!= null) && (rn.getSourceId() != null) && !rn.getSourceId().equals("ZFIN")){
+			relationLabel = StringEscapeUtils.escapeHtml(relationLabel);
+		}
+		statementHash.put("relationLabel", relationLabel);
 		statementHash.put("relationHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getRelationId()));
 			
 		if (s instanceof LinkStatement) {
 			
 			Node tn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
+			String targetLabel = null;
 			if (tn != null && tn.getLabel() != null){
-				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(tn.getLabel()));
+				targetLabel = tn.getLabel();
 			} else {
-				statementHash.put("targetLabel",StringEscapeUtils.escapeHtml(s.getTargetId()));
+				targetLabel = s.getTargetId();
 			}
+			if (tn != null && (tn.getSourceId() != null) && !tn.getSourceId().equals("ZFIN")){
+				targetLabel = StringEscapeUtils.escapeHtml(targetLabel);
+			}
+			statementHash.put("targetLabel",targetLabel);
 			statementHash.put("targetHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getTargetId()));
 			
 			LinkStatement ls = (LinkStatement)s;
@@ -360,8 +395,7 @@ public class NodeResource extends OBDResource {
 		return statementHash;
 	}
 	
-	
-	private String prettifyRelationshipTerm(String term){
+	protected String prettifyRelationshipTerm(String term){
 		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
 			return  term.substring(term.indexOf(":")+1).replace("_", " ");
 		} else {

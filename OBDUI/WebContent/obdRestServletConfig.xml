@@ -53,11 +53,11 @@
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodeResource</resourceClass>
-		<path>/{dataSource}/{format}/node/{id}</path>
+		<path>/{dataSource}/{format}/node/{nodeString}</path>
 	</resourcePathMap>
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodesResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{nodeList}</path>
+		<path>/{dataSource}/{format}/nodes/{nodeString}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>

@@ -18,7 +18,7 @@
 				</td>
 				<td id="content_container">
 					<#if node?exists>
-						<h2>Similar to ${node.getId()}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
+						<h2>Similar to ${nodeId}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
 						<br/>
 						<#if results?exists>
 							<table class="scoredNodeResults">
