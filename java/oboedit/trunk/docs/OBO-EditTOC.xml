@@ -4,149 +4,218 @@
          "http://java.sun.com/products/javahelp/toc_2_0.dtd">
 <toc version="2.0">
 
-<tocitem text="OBO-Edit User's Guide">
-     <tocitem text="What is OBO-Edit?" target="What_is_OBO_Edit_"/>
-     <tocitem text="What is an ontology?" target="What_is_an_ontology_"/>
-     <tocitem text="Basic Concepts and Vocabulary" target="Basic_Concepts_and_Vocabulary"/>
-     <tocitem text="An Introduction to OBO Ontologies" target="An_Introduction_to_OBO_Ontologies"/>
-     <tocitem text="Getting OBO-Edit Started" target="Getting_Started"/>
-     <tocitem text="Bugs and Troubleshooting" target="Bugs_and_Troubleshooting"/>
-</tocitem>
-<tocitem text="Viewing Ontologies">
-     <tocitem text="Working with Selections" target="Working_with_Selections"/>
-     <tocitem text="Perspectives" target="Perspectives"/>
-     <tocitem text="Components" target="Components">
-       <tocitem text="Configuration Manager" target="Configuration_Manager"/>
-       <tocitem text="The Ontology Tree Editor" target="The_Term_Editor_Panel"/>
-       <tocitem text="The Tree Viewer" target="Tree_Viewer"/>
-       <tocitem text="The Graph Viewer" target="Graph_Viewer"/>
-       <tocitem text="Table of Contents Component" target="Table_of_Contents"/>
-       <tocitem text="The Extended Info Component" target="The_Extended_Info_Plugin"/>
-       <tocitem text="Configurable Message" target="Configurable_Message"/>
-     </tocitem>
-</tocitem>
-<tocitem text="Filtering, Rendering &amp; Searching">
-     <tocitem text="Filters" target="Filters"/>
-     <tocitem text="Link Filters vs Term Filters" target="Link_Filters_vs_Term_Filters"/>
-     <tocitem text="Building Filters" target="Building_Filters">
-          <tocitem text="Setting the Filter Mode" target="Setting_the_Filter_Mode"/>
-          <tocitem text="Term Filters" target="Term_Filters"/>
-          <tocitem text="Link Filters" target="Link_Filters"/>
-          <tocitem text="Compound Filtering" target="Compound_Filtering"/>
-          <tocitem text="Reusing Filters" target="Reusing_Filters"/>
-     </tocitem>
-     <tocitem text="Using Filters" target="Using_Filters">
-          <tocitem text="Searching" target="Searching"/>
-          <tocitem text="Filtering" target="Filtering"/>
-          <tocitem text="Rendering" target="Rendering"/>
-          <tocitem text="Global Filters &amp; Renderers" target="Global_Filters___Renderers"/>
-          <tocitem text="Other Uses of Filters" target="Other_Uses_of_Filters"/>
-          <tocitem text="Custom Search Buttons" target="Custom_Search_Buttons"/>
-     </tocitem>
-     <tocitem text="Advanced Searching" target="Advanced_Searching">
-     <tocitem text="HTML Rendering" target="HTML_Rendering"/>
-     <tocitem text="Term Image Display Panel" target="Term_Image_Display_Panel"/>
-     </tocitem>
-</tocitem>
-<tocitem text="Editing">
-     <tocitem text="Undo/Redo" target="Undo_Redo"/>
-     <tocitem text="Text Editing" target="Text_Editing"/>
-     <tocitem text="Structural Editing" target="Structural_Editing">
-          <tocitem text="The Interface" target="The_Interface"/>
-          <tocitem text="Adding New Terms" target="Adding_New_Terms"/>
-          <tocitem text="Adding New Relationships" target="Adding_New_Relationships"/>
-          <tocitem text="Deleting" target="Deleting"/>
-          <tocitem text="Destroying" target="Destroying"/>
-          <tocitem text="Rerooting" target="Assigning_New_Roots"/>
-          <tocitem text="Cloning" target="Cloning"/>
-          <tocitem text="Moving" target="Moving"/>
-          <tocitem text="Merging" target="Merging"/>
-          <tocitem text="Changing Relationship Types" target="Changing_Relationship_Types"/>
-          <tocitem text="Changing Link Attributes" target="Changing_Link_Attributes"/>
-     </tocitem>
-     <tocitem text="The Graph Editor" target="Graph_Editor"/>
-     <tocitem text="The Parent Plugin" target="Parent_Editor"/>
-     <tocitem text="Organizing Your Ontology: Editing Metadata" target="Metadata">
-          <tocitem text="Working with Categories" target="Working_with_Categories"/>
-	  <tocitem text="Working with IDs">
-	    <tocitem text="How ID Generation Works" target="How_ID_Generation_Works"/>
-	    <tocitem text="The ID Manager" target="The_ID_Manager_Plugin"/>
-	  </tocitem>
-          <tocitem text="Working with Namespaces" target="Working_with_Namespaces"/>
-          <tocitem text="Working with Synonym Categories" target="Working_with_Synonym_Categories"/>
-     </tocitem>
-     <tocitem text="Working with Obsoletes">
-          <tocitem text="Editing Obsoletes" target="Editing_Obsoletes"/>
-          <tocitem text="Assigning Replacement Terms" target="Assigning_Replacement_Terms"/>
-     </tocitem>
-</tocitem>
-<tocitem text="History">
-     <tocitem text="How OBO-Edit Understands Histories" target="How_OBO_Edit_Understands_Histories"/>
-     <tocitem text="The History Plugin" target="The_History_Plugin"/>
-     <tocitem text="Saving a History File" target="Saving_a_History_File"/>
-     <tocitem text="Loading a History File" target="Loading_a_History_File"/>
-     <tocitem text="The Change Tracker Plugin" target="The_Change_Tracker_Plugin"/>
-</tocitem>
-<tocitem text="Working with Data Adapters">
-     <tocitem text="Introduction to Adapters" target="Introduction_to_Adapters"/>
-     <tocitem text="Loading &amp; Saving" target="Loading___Saving"/>
-     <tocitem text="The Basic Flat File Interface" target="The_Basic_Flat_File_Interface"/>
-     <tocitem text="The OBO Adapter" target="The_OBO_Adapter"/>
-     <tocitem text="The GO Flat File Adapter" target="The_GO_Flat_File_Adapter"/>
-     <tocitem text="The Serial Adapter" target="The_Serial_Adapter"/>
-     <tocitem text="Custom Data Adapters" target="Custom_Data_Adapters"/>
-</tocitem>
-<tocitem text="The Reasoner">
-     <tocitem text="The OBO-Edit Reasoner" target="The_OBO_Edit_Reasoner"/>
-     <tocitem text="The Reasoner and the Interface" target="The_Reasoner_and_the_Interface"/>
-     <tocitem text="The Reasoner Plugin" target="The_Reasoner_Plugin"/>
-     <tocitem text="The Explanation Plugin" target="The_Explanation_Plugin"/>
-     <tocitem text="Reasoner Prefilters" target="Reasoner_Prefilters"/>
-</tocitem>
-<tocitem text="Ontology Verification">
-     <tocitem text="Introduction to Verification" target="Introduction_to_Verification"/>
-     <tocitem text="The Verification Plugin" target="The_Verification_Plugin"/>
-     <tocitem text="Text Checks" target="Text_Checks"/>
-     <tocitem text="Definition Check" target="Definition_Check"/>
-     <tocitem text="Dangling Intersection Check" target="Dangling_Intersection_Check"/>
-     <tocitem text="Dbxref Check" target="Dbxref_Check"/>
-     <tocitem text="Disjointedness Check" target="Disjointedness_Check"/>
-     <tocitem text="Cycle Check" target="ISA_Cycle_Check"/>
-     <tocitem text="Name Redundancy Check" target="Name_Redundancy_Check"/>
-     <tocitem text="User Defined Checks" target="User_Defined_Checks"/>
-</tocitem>
-<tocitem text="Cross Products">
-     <tocitem text="Introduction to Cross Products" target="Introduction_to_Cross_Products"/>
-     <tocitem text="Cross Products in the Text Editor" target="Cross_Products_in_the_Text_Editor"/>
-     <tocitem text="Cross Products By Hand" target="Cross_Products_By_Hand"/>
-</tocitem>
-<tocitem text="Expressions">
-     <tocitem text="Introduction to Expressions" target="Introduction_to_Expressions"/>
-     <tocitem text="Expression Syntax" target="Expression_Syntax"/>
-     <tocitem text="Language Concepts" target="Language_Concepts"/>
-     <tocitem text="OBO-Edit-Specific Variables" target="OBO_Edit_Specific_Variables"/>
-     <tocitem text="Backtick Expressions" target="Backtick_Expressions"/>
-     <tocitem text="Example Scripts" target="Example_Scripts"/>
-</tocitem>
-<tocitem text="Plugins">
-     <tocitem text="Introduction to Plugins" target="Introduction_to_Plugins"/>
-     <tocitem text="The GraphViz Plugin" target="The_GraphViz_Plugin"/>
-     <tocitem text="The Dbxref Library Plugin" target="The_Dbxref_Library_Plugin"/>
-</tocitem>
-<tocitem text="The Command Line">
-     <tocitem text="OBO-Edit Command-line Options" target="OBO_Edit_Command_line_Options"/>
-     <tocitem text="obodiff" target="obodiff"/>
-     <tocitem text="obomerge" target="obomerge"/>
-     <tocitem text="obo2flat" target="obo2flat"/>
-     <tocitem text="obo2obo" target="obo2obo"/>
-     <tocitem text="Java Options on the Command-line" target="Java_Options_on_the_Command_line"/>
-</tocitem>
-<tocitem text="Frequently Asked Questions" target="Frequently_Asked_Questions">
-     <tocitem text="How Do I Make a 'Slim' Ontology?" target="How_Do_I_Make_a__Slim__Ontology_">
-       <tocitem text="Creating Your Own GO Slim in OBO-Edit" target="Creating_Your_Own_GO_Slim_in_OBO_Edit"/>
-     </tocitem>
-     <tocitem text="How Do I Find Terms Without an is_a Parent?" target="How_Do_I_Find_Terms_Without_an_is_a_Parent_"/>
-     <tocitem text="How Do I Spell Check?" target="How_Do_I_Spell_Check_"/>
-     <tocitem text="How Do I Not Search Obsoletes?" target="How_Do_I_Not_Search_Obsoletes_"/>
-</tocitem>
+	<tocitem text="OBO-Edit User's Guide">
+		<tocitem text="What is OBO-Edit?" target="What_is_OBO_Edit_" />
+		<tocitem text="What is an ontology?"
+			target="What_is_an_ontology_" />
+		<tocitem text="Basic Concepts and Vocabulary"
+			target="Basic_Concepts_and_Vocabulary" />
+		<tocitem text="An Introduction to OBO Ontologies"
+			target="An_Introduction_to_OBO_Ontologies" />
+		<tocitem text="Getting OBO-Edit Started"
+			target="Getting_Started" />
+		<tocitem text="Bugs and Troubleshooting"
+			target="Bugs_and_Troubleshooting" />
+	</tocitem>
+	<tocitem text="Viewing Ontologies">
+		<tocitem text="Working with Selections"
+			target="Working_with_Selections" />
+		<tocitem text="Perspectives" target="Perspectives" />
+		<tocitem text="Components" target="Components">
+			<tocitem text="Configuration Manager"
+				target="Configuration_Manager" />
+			<tocitem text="The Ontology Tree Editor"
+				target="The_Term_Editor_Panel" />
+			<tocitem text="The Tree Viewer" target="Tree_Viewer" />
+			<tocitem text="The Graph Viewer" target="Graph_Viewer" />
+			<tocitem text="Table of Contents Component"
+				target="Table_of_Contents" />
+			<tocitem text="The Extended Info Component"
+				target="The_Extended_Info_Plugin" />
+			<tocitem text="Configurable Message"
+				target="Configurable_Message" />
+		</tocitem>
+	</tocitem>
+	<tocitem text="Filtering, Rendering &amp; Searching">
+		<tocitem text="Filters" target="Filters" />
+		<tocitem text="Link Filters vs Term Filters"
+			target="Link_Filters_vs_Term_Filters" />
+		<tocitem text="Building Filters" target="Building_Filters">
+			<tocitem text="Setting the Filter Mode"
+				target="Setting_the_Filter_Mode" />
+			<tocitem text="Term Filters" target="Term_Filters" />
+			<tocitem text="Link Filters" target="Link_Filters" />
+			<tocitem text="Compound Filtering"
+				target="Compound_Filtering" />
+			<tocitem text="Reusing Filters" target="Reusing_Filters" />
+		</tocitem>
+		<tocitem text="Using Filters" target="Using_Filters">
+			<tocitem text="Searching" target="Searching" />
+			<tocitem text="Filtering" target="Filtering" />
+			<tocitem text="Rendering" target="Rendering" />
+			<tocitem text="Global Filters &amp; Renderers"
+				target="Global_Filters___Renderers" />
+			<tocitem text="Other Uses of Filters"
+				target="Other_Uses_of_Filters" />
+			<tocitem text="Custom Search Buttons"
+				target="Custom_Search_Buttons" />
+		</tocitem>
+		<tocitem text="Advanced Searching"
+			target="Advanced_Searching">
+			<tocitem text="HTML Rendering" target="HTML_Rendering" />
+			<tocitem text="Term Image Display Panel"
+				target="Term_Image_Display_Panel" />
+		</tocitem>
+	</tocitem>
+	<tocitem text="Editing">
+		<tocitem text="Undo/Redo" target="Undo_Redo" />
+		<tocitem text="Text Editing" target="Text_Editing" />
+		<tocitem text="Structural Editing"
+			target="Structural_Editing">
+			<tocitem text="The Interface" target="The_Interface" />
+			<tocitem text="Adding New Terms" target="Adding_New_Terms" />
+			<tocitem text="Adding New Relationships"
+				target="Adding_New_Relationships" />
+			<tocitem text="Deleting" target="Deleting" />
+			<tocitem text="Destroying" target="Destroying" />
+			<tocitem text="Rerooting" target="Assigning_New_Roots" />
+			<tocitem text="Cloning" target="Cloning" />
+			<tocitem text="Moving" target="Moving" />
+			<tocitem text="Merging" target="Merging" />
+			<tocitem text="Changing Relationship Types"
+				target="Changing_Relationship_Types" />
+			<tocitem text="Changing Link Attributes"
+				target="Changing_Link_Attributes" />
+			<tocitem text="Merging Ontology Files"
+				target="OBOMerge_User_Interface" />
+		</tocitem>
+		<tocitem text="The Graph Editor" target="Graph_Editor" />
+		<tocitem text="The Parent Plugin" target="Parent_Editor" />
+		<tocitem text="Organizing Your Ontology: Editing Metadata"
+			target="Metadata">
+			<tocitem text="Working with Categories"
+				target="Working_with_Categories" />
+			<tocitem text="Working with IDs">
+				<tocitem text="How ID Generation Works"
+					target="How_ID_Generation_Works" />
+				<tocitem text="The ID Manager"
+					target="The_ID_Manager_Plugin" />
+			</tocitem>
+			<tocitem text="Working with Namespaces"
+				target="Working_with_Namespaces" />
+			<tocitem text="Working with Synonym Categories"
+				target="Working_with_Synonym_Categories" />
+		</tocitem>
+		<tocitem text="Working with Obsoletes">
+			<tocitem text="Editing Obsoletes"
+				target="Editing_Obsoletes" />
+			<tocitem text="Assigning Replacement Terms"
+				target="Assigning_Replacement_Terms" />
+		</tocitem>
+	</tocitem>
+	<tocitem text="History">
+		<tocitem text="How OBO-Edit Understands Histories"
+			target="How_OBO_Edit_Understands_Histories" />
+		<tocitem text="The History Plugin" target="The_History_Plugin" />
+		<tocitem text="Saving a History File"
+			target="Saving_a_History_File" />
+		<tocitem text="Loading a History File"
+			target="Loading_a_History_File" />
+		<tocitem text="The Change Tracker Plugin"
+			target="The_Change_Tracker_Plugin" />
+	</tocitem>
+	<tocitem text="Working with Data Adapters">
+		<tocitem text="Introduction to Adapters"
+			target="Introduction_to_Adapters" />
+		<tocitem text="Loading &amp; Saving" target="Loading___Saving" />
+		<tocitem text="The Basic Flat File Interface"
+			target="The_Basic_Flat_File_Interface" />
+		<tocitem text="The OBO Adapter" target="The_OBO_Adapter" />
+		<tocitem text="The GO Flat File Adapter"
+			target="The_GO_Flat_File_Adapter" />
+		<tocitem text="The Serial Adapter" target="The_Serial_Adapter" />
+		<tocitem text="Custom Data Adapters"
+			target="Custom_Data_Adapters" />
+	</tocitem>
+	<tocitem text="The Reasoner">
+		<tocitem text="The OBO-Edit Reasoner"
+			target="The_OBO_Edit_Reasoner" />
+		<tocitem text="The Reasoner and the Interface"
+			target="The_Reasoner_and_the_Interface" />
+		<tocitem text="The Reasoner Plugin"
+			target="The_Reasoner_Plugin" />
+		<tocitem text="The Explanation Plugin"
+			target="The_Explanation_Plugin" />
+		<tocitem text="Reasoner Prefilters"
+			target="Reasoner_Prefilters" />
+	</tocitem>
+	<tocitem text="Ontology Verification">
+		<tocitem text="Introduction to Verification"
+			target="Introduction_to_Verification" />
+		<tocitem text="The Verification Plugin"
+			target="The_Verification_Plugin" />
+		<tocitem text="Text Checks" target="Text_Checks" />
+		<tocitem text="Definition Check" target="Definition_Check" />
+		<tocitem text="Dangling Intersection Check"
+			target="Dangling_Intersection_Check" />
+		<tocitem text="Dbxref Check" target="Dbxref_Check" />
+		<tocitem text="Disjointedness Check"
+			target="Disjointedness_Check" />
+		<tocitem text="Cycle Check" target="ISA_Cycle_Check" />
+		<tocitem text="Name Redundancy Check"
+			target="Name_Redundancy_Check" />
+		<tocitem text="User Defined Checks"
+			target="User_Defined_Checks" />
+	</tocitem>
+	<tocitem text="Cross Products">
+		<tocitem text="Introduction to Cross Products"
+			target="Introduction_to_Cross_Products" />
+		<tocitem text="Cross Products in the Text Editor"
+			target="Cross_Products_in_the_Text_Editor" />
+		<tocitem text="Cross Products By Hand"
+			target="Cross_Products_By_Hand" />
+	</tocitem>
+	<tocitem text="Expressions">
+		<tocitem text="Introduction to Expressions"
+			target="Introduction_to_Expressions" />
+		<tocitem text="Expression Syntax" target="Expression_Syntax" />
+		<tocitem text="Language Concepts" target="Language_Concepts" />
+		<tocitem text="OBO-Edit-Specific Variables"
+			target="OBO_Edit_Specific_Variables" />
+		<tocitem text="Backtick Expressions"
+			target="Backtick_Expressions" />
+		<tocitem text="Example Scripts" target="Example_Scripts" />
+	</tocitem>
+	<tocitem text="Plugins">
+		<tocitem text="Introduction to Plugins"
+			target="Introduction_to_Plugins" />
+		<tocitem text="The GraphViz Plugin"
+			target="The_GraphViz_Plugin" />
+		<tocitem text="The Dbxref Library Plugin"
+			target="The_Dbxref_Library_Plugin" />
+	</tocitem>
+	<tocitem text="The Command Line">
+		<tocitem text="OBO-Edit Command-line Options"
+			target="OBO_Edit_Command_line_Options" />
+		<tocitem text="obodiff" target="obodiff" />
+		<tocitem text="obomerge" target="obomerge" />
+		<tocitem text="obo2flat" target="obo2flat" />
+		<tocitem text="obo2obo" target="obo2obo" />
+		<tocitem text="Java Options on the Command-line"
+			target="Java_Options_on_the_Command_line" />
+	</tocitem>
+	<tocitem text="Frequently Asked Questions"
+		target="Frequently_Asked_Questions">
+		<tocitem text="How Do I Make a 'Slim' Ontology?"
+			target="How_Do_I_Make_a__Slim__Ontology_">
+			<tocitem text="Creating Your Own GO Slim in OBO-Edit"
+				target="Creating_Your_Own_GO_Slim_in_OBO_Edit" />
+		</tocitem>
+		<tocitem text="How Do I Find Terms Without an is_a Parent?"
+			target="How_Do_I_Find_Terms_Without_an_is_a_Parent_" />
+		<tocitem text="How Do I Spell Check?"
+			target="How_Do_I_Spell_Check_" />
+		<tocitem text="How Do I Not Search Obsoletes?"
+			target="How_Do_I_Not_Search_Obsoletes_" />
+	</tocitem>
 </toc>
