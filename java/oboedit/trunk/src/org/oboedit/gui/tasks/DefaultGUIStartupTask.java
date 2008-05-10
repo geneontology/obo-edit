@@ -104,7 +104,7 @@ import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
-import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
+//import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
 import org.oboedit.gui.factory.CategoryManagerFactory;
 import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
@@ -214,7 +214,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new IDManagerFactory(), new ReasonerManagerFactory(),
 				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
-//				new OBOMergeCanvasFactory(),
+				new OBOMergeCanvasFactory(),
 				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
 
 				new CrossProductMatrixEditorFactory(),
