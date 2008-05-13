@@ -6,8 +6,8 @@ import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
 
+// import org.obo.datamodel.PathCapable;
 import org.oboedit.gui.ObjectSelector;
-
 
 
 public class SelectorDragHandler extends MouseInputAdapter {
@@ -27,7 +27,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		System.err.println("called mousedragged "+e);
+//		System.err.println("SelectionDragHandler.mousedragged "+e +",\nfirstMouseEvent = " + firstMouseEvent);
 		// Don't bother to drag if the component displays no image.
 		if (selector.getSelection().isEmpty())
 			return;
@@ -39,9 +39,11 @@ public class SelectorDragHandler extends MouseInputAdapter {
 		if (!inSelection)
 			return;
 			*/
+//		System.err.println("SelectionDragHandler.mousedragged: c = " + c + ", selected objects = " + selector.getSelection().getAllSelectedObjects()); // DEL
+//		if (!selector.getSelection().getAllSelectedObjects().contains(c))
+//		    return;
 
 		if (firstMouseEvent != null) {
-
 			JComponent c = (JComponent) e.getComponent();
 			TransferHandler handler = c.getTransferHandler();
 			// Tell the transfer handler to initiate the drag.

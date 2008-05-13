@@ -49,13 +49,22 @@ public class AddReplacementAction implements DropMenuAction {
 			return;
 		}
 		
-		for(LinkedObject term : selection.getTerms()) {
+		// If the selection is the same as the gesture target, isLegal should be false
+		isLegal = false;
+		for (LinkedObject term : selection.getTerms()) {
 			if (term instanceof ObsoletableObject) {
+				if (!(term.getName().equals(lo.getName()))) {
+//					System.out.println("term.getName() = " + term.getName() + ", destItem.getName() = " + lo.getName()); // DEL
+					isLegal = true;
+				}
 				ObsoletableObject consider = (ObsoletableObject) term;
 				if (!target.getConsiderReplacements().contains(consider))
 					replacementTerms.add(consider);
 			}
 		}
+
+		if (isLegal == false)
+			return;
 
 		if (replacementTerms.size() < 1) {
 			isLegal = false;
