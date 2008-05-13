@@ -123,8 +123,14 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		return title;
 	}
 
+        // Note: if this method returns false, then this component continues
+        // to run in the background even when it's not in the current layout.
+        // The downside of returning true (which is the default for this
+        // method) is that if the user switches between layouts (e.g. Edit and
+        // Verify), the component forgets what it was showing.
 	public boolean teardownWhenHidden() {
-		return false;
+//		return false;
+		return true;
 	}
 
 	public void setTitle(String title) {
@@ -134,7 +140,6 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()) {
-//			    System.err.println("GraphEditor.reloadListener.reload"); // DEL
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
 					Collection<? extends LinkedObject> roots = TermUtil
@@ -142,7 +147,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
-//							System.err.println("GraphEditor.reloadListener.run.isLayoutOut = " + isLayingOut);
+//							System.err.println("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
 							panToObjects();
 						}
 
