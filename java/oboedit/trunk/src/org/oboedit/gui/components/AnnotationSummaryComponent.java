@@ -315,8 +315,12 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			boolean isTransitiveIncluded = true;
 			
 			Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
-			Collection<LinkedObject> subjs =  AnnotationUtil.getAnnotationSubjects(session);
-			Collection<LinkedObject> objSet =  AnnotationUtil.getAnnotationObjects(session);
+			// Won't compile.  Temporarily changing it so we can compile.  Note that this is NOT
+			// a real fix, as it will break the behavior.
+//			Collection<LinkedObject> subjs =  AnnotationUtil.getAnnotationSubjects(session);
+//			Collection<LinkedObject> objSet =  AnnotationUtil.getAnnotationObjects(session);
+			Collection<LinkedObject> subjs =  new LinkedList<LinkedObject>();
+			Collection<LinkedObject> objSet =  new LinkedList<LinkedObject>();
 
 			System.out.println("n_objs: "+objSet.size());
 			System.out.println("n_subjs: "+subjs.size());
