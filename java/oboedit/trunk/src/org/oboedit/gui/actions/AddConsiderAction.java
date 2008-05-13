@@ -49,13 +49,20 @@ public class AddConsiderAction implements DropMenuAction {
 			return;
 		}
 
+		// If the selection is the same as the gesture target, isLegal should be false
+		isLegal = false;
 		for (LinkedObject term : selection.getTerms()) {
 			if (term instanceof ObsoletableObject) {
+				if (!(term.getName().equals(lo.getName()))) {
+					isLegal = true;
+				}
 				ObsoletableObject consider = (ObsoletableObject) term;
 				if (!target.getConsiderReplacements().contains(consider))
 					considerTerms.add(consider);
 			}
 		}
+		if (isLegal == false)
+			return;
 
 		if (considerTerms.size() < 1) {
 			isLegal = false;
