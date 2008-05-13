@@ -235,5 +235,5 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 		this.universallyQuantified = universallyQuantified;
 	}
 	
-	
+
 }
