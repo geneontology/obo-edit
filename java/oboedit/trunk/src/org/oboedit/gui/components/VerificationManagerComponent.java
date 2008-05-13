@@ -532,6 +532,12 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 	}
 
 	@Override
+        // Note: if this method returns false, then this component continues
+        // to run in the background even when it's not in the current layout.
+        // This is probably not a major issue for this component (though it is
+        // for Graph Editor).  The downside of returning true is that if the
+        // user switches between layouts (e.g. Edit and Verify), the component
+        // forgets what it was showing.
 	public boolean teardownWhenHidden() {
 		return false;
 	}
