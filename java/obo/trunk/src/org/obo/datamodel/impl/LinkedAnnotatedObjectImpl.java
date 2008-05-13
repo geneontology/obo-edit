@@ -114,4 +114,27 @@ public abstract class LinkedAnnotatedObjectImpl extends AnnotatedObjectImpl
 			return null;
 		}
 	}
+	/** Comparable */
+	public int compareTo(Object in) {
+		if (in instanceof OBOObject) {
+			String namea = getName();
+			String nameb = ((OBOObject) in).getName();
+			if (namea == null && nameb == null)
+			    return 0;
+			if (namea == null)
+			    return -1;
+			if (nameb == null)
+			    return 1;
+
+			int cmp = getName().toUpperCase().compareTo(
+				((OBOObject) in).getName().toUpperCase());
+			if (cmp == 0)
+				return getID().toUpperCase().compareTo(
+					((OBOObject) in).getID().toUpperCase());
+			else
+				return cmp;
+		} else {
+			return toString().compareToIgnoreCase(in.toString());
+		}
+	}
 }
