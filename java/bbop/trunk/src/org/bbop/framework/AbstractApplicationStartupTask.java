@@ -335,7 +335,7 @@ AbstractSingleActionTask {
 
 		final Logger global = Logger.getLogger("");
 
-		PropertyConfigurator.configure("/BBOP/log4j.properties");
+		PropertyConfigurator.configure("log4j.properties");
 
 		/*try {
 			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
