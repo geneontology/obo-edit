@@ -240,9 +240,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				public void actionPerformed(ActionEvent e) {
 					Color c = JColorChooser.showDialog(
 							ConfigurationManager.this, "Select link color",
-							colorButton.getBackground());
+							colorButton.getForeground());
 					if (c != null) {
-					    colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray
+//					    colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray.  (May be a Mac-specific problem.)
 					    colorButton.setForeground(c);
 					    colorButton.setText(ColorUtil.getName(c)
 								+ " (click to modify)");
@@ -349,7 +349,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			typeField.setText(iw.getType());
 			urlField.setCaretPosition(0);
 			typeField.setCaretPosition(0);
-			colorButton.setBackground(iw.getColor());  // Doesn't seem to do anything--background stays light gray
+//			colorButton.setBackground(iw.getColor());  // Doesn't seem to do anything--background stays light gray
 			colorButton.setForeground(iw.getColor());
 			colorButton.setText(ColorUtil.getName(iw.getColor())
 					+ " (click to modify)");
@@ -360,7 +360,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			IconWrapper iw = (IconWrapper) o;
 			iw.setURL(urlField.getText());
 			iw.setType(typeField.getText());
-			iw.setColor(colorButton.getBackground());
+			iw.setColor(colorButton.getForeground());
 		}
 
 		public Object createNewValue() {
