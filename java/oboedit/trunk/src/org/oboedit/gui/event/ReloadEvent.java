@@ -49,4 +49,10 @@ public class ReloadEvent extends EventObject {
 	public boolean isOntologyReload() {
 		return isOntologyReload;
 	}
+
+	public String toString() {
+		return "ReloadEvent: isHistory = " + isHistory + ", isFilter = " + isFilter + 
+			", isReasoner = " + isReasoner + ", isRoot = " + isRoot +
+			", isOntologyReload = " + isOntologyReload;
+	}
 }

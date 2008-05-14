@@ -59,6 +59,14 @@ public class GUIUtil {
 				.getManager(), listener);
 	}
 
+	// Note: args to ReloadEvent constructor are
+// 	public ReloadEvent(Object source, EventObject parentEvent,
+// 			boolean isHistory,
+// 			boolean isFilter,
+// 			boolean isReasoner,
+// 			boolean isRoot,
+// 			boolean isOntologyReload) {
+
 	public static void addReloadListener(SessionManager sessionManager,
 			FilterManager filterManager, final ReloadListener listener) {
 		ListenerBundle bundle = new ListenerBundle();

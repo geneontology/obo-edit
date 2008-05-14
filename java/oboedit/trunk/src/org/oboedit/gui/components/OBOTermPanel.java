@@ -34,6 +34,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.AbstractInputHandlerBridge;
 import org.oboedit.gui.AbstractSelectableHandlerBridge;
 import org.oboedit.gui.DefaultTermModel;
@@ -56,6 +57,8 @@ import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
+
+/** Ontology Tree Editor (aka OTE) */
 
 public class OBOTermPanel extends JTree implements ObjectSelector,
 		FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
@@ -131,6 +134,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
+//			System.out.println("OBOTermPanel.reloadListener.reload " + e); // DEL
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
@@ -363,6 +367,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return out;
 	}
 
+	// NOT WORKING
 	protected void ensureLockedPathIsShowing() {
 		if (lockedPath != null && !isShowing(lockedPath)) {
 			FreezableViewport freezableViewport = (FreezableViewport) SwingUtilities
@@ -399,6 +404,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			super.collapsePath(path);
 	}
 
+        // Note: if this method returns false, then this component continues
+        // to run in the background even when it's not in the current layout.
+        // This is how it remembers what it's showing when the user switches
+        // between layouts (e.g. Edit and Verify).
 	public boolean teardownWhenHidden() {
 		return false;
 	}
@@ -746,6 +755,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void setLinkFilter(Filter<?> linkFilter) {
+//		System.out.println("OBOTermPanel.setLinkFilter " + linkFilter + ", getModel = " + getModel() + ((getModel() instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		if (getModel() instanceof TermModel) {
 			((TermModel) getModel()).setLinkFilter(linkFilter);
 			reload();
@@ -768,8 +778,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public Filter<?> getLinkFilter() {
-		if (getModel() instanceof TermModel)
+		if (getModel() instanceof TermModel) {
+//			System.out.println("OBOTermPanel.getLinkFilter: " + ((TermModel) getModel()).getLinkFilter());
 			return ((TermModel) getModel()).getLinkFilter();
+		}
 		else
 			return null;
 	}
@@ -1219,10 +1231,15 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-
+//		System.out.println("OBOTermPanel.reload: before reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		if (model instanceof TermModel) {
+			// Get the current filters before reloading
+			FilterManager manager = FilterManager.getManager();
+			((TermModel) getModel()).setLinkFilter(manager.getGlobalLinkFilter());
+			((TermModel) getModel()).setTermFilter(manager.getGlobalTermFilter());
 			((TermModel) model).reload();
 		}
+//		System.out.println("OBOTermPanel.reload: after reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		clearToggledPaths();
 
 //		long time2 = System.currentTimeMillis();
@@ -1236,6 +1253,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 //		System.err.println("reloaded in " + (System.currentTimeMillis() - time)
 //				+ " (expanding took " + time2 + " ms)");
+
+//		FilterManager.getManager().fireGlobalFilterChange();  // ?
+//		if (reloadListener != null)
+//			reloadListener.reload(new ReloadEvent(this, null, false, true, false, false, false)); // ?
 	}
 
 	public void restorePaths(TreePath[] expanded) {
