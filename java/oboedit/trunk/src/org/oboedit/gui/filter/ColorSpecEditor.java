@@ -32,6 +32,8 @@ import org.obo.datamodel.Relationship;
 import org.obo.filters.SearchCriterion;
 import org.oboedit.controller.FilterManager;
 
+import net.infonode.util.ColorUtil;
+
 public class ColorSpecEditor extends JPanel implements
 		GeneralRendererSpecFieldEditor<ColorProvider> {
 
@@ -47,18 +49,18 @@ public class ColorSpecEditor extends JPanel implements
 
 		public void actionPerformed(ActionEvent e) {
 			Color color = JColorChooser.showDialog(colorButton,
-					"Choose a color", colorButton.getBackground());
+							       "Choose a color", colorButton.getForeground());
 			if (color != null)
-				colorButton.setBackground(color);
+				colorButton.setForeground(color);
 		}
 	}
 
 	protected JCheckBox blendBox = new JCheckBox("Do blending");
-	protected JButton colorButton = new JButton(" ");
+	protected JButton colorButton = new JButton("CHANGE");
 
-	protected JButton minColorButton = new JButton(" ");
-	protected JButton maxColorButton = new JButton(" ");
-	protected JButton noColorButton = new JButton(" ");
+	protected JButton minColorButton = new JButton("Change min color");
+	protected JButton maxColorButton = new JButton("Change max color");
+	protected JButton noColorButton = new JButton("Change blank color");
 
 	protected JComboBox minComboBox = new JComboBox();
 	protected JComboBox maxComboBox = new JComboBox();
@@ -78,8 +80,8 @@ public class ColorSpecEditor extends JPanel implements
 
 	public ColorSpecEditor() {
 		colorButton.addActionListener(new ColorButtonListener(colorButton));
-		colorButton.setBorderPainted(false);
-		colorButton.setBackground(Color.red);
+//		colorButton.setBorderPainted(false);
+//		colorButton.setBackground(Color.red);  // Doesn't do anything (at least on Mac).  Using foreground color instead.
 		setLayout(new BorderLayout());
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
@@ -147,9 +149,9 @@ public class ColorSpecEditor extends JPanel implements
 		maxColorButton
 				.addActionListener(new ColorButtonListener(maxColorButton));
 		noColorButton.addActionListener(new ColorButtonListener(noColorButton));
-		minColorButton.setBorderPainted(false);
-		maxColorButton.setBorderPainted(false);
-		noColorButton.setBorderPainted(false);
+//		minColorButton.setBorderPainted(false);
+//		maxColorButton.setBorderPainted(false);
+//		noColorButton.setBorderPainted(false);
 
 
 		heatmapButton.addActionListener(new ActionListener() {
@@ -169,6 +171,40 @@ public class ColorSpecEditor extends JPanel implements
 
 		add(southPanel, "South");
 		add(centerPanel, "Center");
+
+		initializeColors();
+	}
+
+	private void initializeColors() {
+		colorButton.setForeground(Color.red);
+		minColorButton.setForeground(Color.black);
+		maxColorButton.setForeground(Color.red);
+		noColorButton.setForeground(Color.white);
+		blendBox.setSelected(false);
+		setMode(COLOR_KEY);
+		criteriaBox.removeAllItems();
+		maxComboBox.removeAllItems();
+		minComboBox.removeAllItems();
+		minComboBox.addItem("<auto-calculate>");
+		maxComboBox.addItem("<auto-calculate>");
+		minComboBox.addItem("<enter constant>");
+		maxComboBox.addItem("<enter constant>");
+		for (SearchCriterion<?, ?> c : FilterManager.getManager()
+			     .getDisplayableCriteria()) {
+			Class<?> returnType = c.getReturnType();
+			if (!Number.class.isAssignableFrom(returnType))
+				continue;
+			if (IdentifiedObject.class.isAssignableFrom(c.getInputType())
+			    || Relationship.class
+			    .isAssignableFrom(c.getInputType()))
+				criteriaBox.addItem(c);
+			if (OBOSession.class.isAssignableFrom(c.getInputType())) {
+				minComboBox.addItem(c);
+				maxComboBox.addItem(c);
+			}
+		}
+		minField.setText("0");
+		maxField.setText("10");
 	}
 
 	public void setMode(String mode) {
@@ -191,13 +227,19 @@ public class ColorSpecEditor extends JPanel implements
 		if (o != null) {
 			if (o instanceof ConfiguredColor) {
 				ConfiguredColor c = (ConfiguredColor) o;
-				colorButton.setBackground(c.getColor(null, null));
+				Color color = c.getColor(null, null);
+//				colorButton.setBackground(c.getColor(null, null));
+				colorButton.setForeground(color);
 				setMode(COLOR_KEY);
 			} else if (o instanceof HeatmapColor) {
 				HeatmapColor c = (HeatmapColor) o;
-				minColorButton.setBackground(c.getMinColor());
-				maxColorButton.setBackground(c.getMaxColor());
-				noColorButton.setBackground(c.getNoValueColor());
+//				minColorButton.setBackground(c.getMinColor());
+//				maxColorButton.setBackground(c.getMaxColor());
+//				noColorButton.setBackground(c.getNoValueColor());
+				minColorButton.setForeground(c.getMinColor());
+				// Wanted to change text to say color name using ColorUtil.getName, but couldn't get that to work
+				maxColorButton.setForeground(c.getMaxColor());
+				noColorButton.setForeground(c.getNoValueColor());
 				String minVal = c.getMinValue();
 				if (minVal.equals("$min$")) {
 					minComboBox.setSelectedIndex(0);
@@ -230,42 +272,13 @@ public class ColorSpecEditor extends JPanel implements
 				setMode(HEATMAP_KEY);
 			}
 			blendBox.setSelected(o.isDoBlend());
-		} else {
-			colorButton.setBackground(Color.red);
-			minColorButton.setBackground(Color.black);
-			maxColorButton.setBackground(Color.red);
-			noColorButton.setBackground(Color.white);
-			blendBox.setSelected(false);
-			setMode(COLOR_KEY);
-			criteriaBox.removeAllItems();
-			maxComboBox.removeAllItems();
-			minComboBox.removeAllItems();
-			minComboBox.addItem("<auto-calculate>");
-			maxComboBox.addItem("<auto-calculate>");
-			minComboBox.addItem("<enter constant>");
-			maxComboBox.addItem("<enter constant>");
-			for (SearchCriterion<?, ?> c : FilterManager.getManager()
-					.getDisplayableCriteria()) {
-				Class<?> returnType = c.getReturnType();
-				if (!Number.class.isAssignableFrom(returnType))
-					continue;
-				if (IdentifiedObject.class.isAssignableFrom(c.getInputType())
-						|| Relationship.class
-								.isAssignableFrom(c.getInputType()))
-					criteriaBox.addItem(c);
-				if (OBOSession.class.isAssignableFrom(c.getInputType())) {
-					minComboBox.addItem(c);
-					maxComboBox.addItem(c);
-				}
-			}
-			minField.setText("0");
-			maxField.setText("10");
-		}
+		} 
+		// Don't reset the fields if o==null--do that only on initialization.
 	}
 
 	public ColorProvider getValue() {
 		if (simpleButton.isSelected())
-			return new ConfiguredColor(colorButton.getBackground(), blendBox
+			return new ConfiguredColor(colorButton.getForeground(), blendBox
 					.isSelected());
 		else if (heatmapButton.isSelected()) {
 			String minValue;
@@ -289,9 +302,9 @@ public class ColorSpecEditor extends JPanel implements
 						+ ((SearchCriterion) maxComboBox.getSelectedItem())
 								.getID() + "$";
 			}
-			return new HeatmapColor(minColorButton.getBackground(),
-					maxColorButton.getBackground(), noColorButton
-							.getBackground(), minValue, maxValue,
+			return new HeatmapColor(minColorButton.getForeground(),
+						maxColorButton.getForeground(), noColorButton
+						.getForeground(), minValue, maxValue,
 					((SearchCriterion) criteriaBox.getSelectedItem()).getID(),
 					blendBox.isSelected());
 		} else
