@@ -34,6 +34,9 @@ public class NamespaceObjQuery implements Query<OBOObject, OBOObject> {
 
 	protected Comparator<OBOObject> comparator = new Comparator<OBOObject>() {
 		public int compare(OBOObject o1, OBOObject o2) {
+      if (o1.getName()==null && o2.getName()==null) return 0;
+      if (o1.getName()==null) return 1;
+      if (o2.getName()==null) return -1;
 			return o1.getName().compareToIgnoreCase(o2.getName());
 		}
 	};
@@ -108,9 +111,9 @@ public class NamespaceObjQuery implements Query<OBOObject, OBOObject> {
 	public OBOObject matches(OBOObject a) {
     // a builtIn is one of the building block obo terms, like obo:term
     if (a.isBuiltIn()) return null;
+    if (!typeCheck(a)) return null;
     if (!namespaceMatch(a)) return null;
     if (!obsoleteCheck(a)) return null;
-    if (!typeCheck(a)) return null;
     return a;
 // 		//boolean isObsolete = TermUtil.isObsolete(a);
 // 		if (!a.isBuiltIn()
@@ -126,6 +129,11 @@ public class NamespaceObjQuery implements Query<OBOObject, OBOObject> {
   /** return true if obj id in namespaceIDs, or if namespaceIDs are empty */
   private boolean namespaceMatch(OBOObject obj) {
     if (namespaceIDs.isEmpty()) return true; // no namespaces
+    if (obj.getNamespace() == null) {
+      // odd - this wont print - think stdout is being taken somewhere
+      //System.err.println("OBOObject with null namespace "+obj.getName());
+      return false;
+    }
     return namespaceIDs.contains(obj.getNamespace().getID());
   }
   /** returns true if is not obsolete and allowNonObsolete, or vice versa */
