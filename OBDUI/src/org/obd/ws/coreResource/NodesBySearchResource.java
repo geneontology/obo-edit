@@ -86,13 +86,16 @@ public class NodesBySearchResource extends NodeResource {
         				op = currOp;
         		}
         	}
-        	String[] searchTerms = searchTerm.split("\\s");
-        	for (String s : searchTerms) {
-        		if (op == null)
-        			nodes.addAll(getShard(this.dataSource).getNodesBySearch(s));
-        		else
-        			nodes.addAll(getShard(this.dataSource).getNodesBySearch(s, op));
+        	//String[] searchTerms = searchTerm.split("\\s");
+        	//for (String s : searchTerms) {
+        		//if (op == null)
+        			//nodes.addAll(getShard(this.dataSource).getNodesBySearch(s));
+        		//else
+        	if (op == null){
+        		op = Operator.CONTAINS_ALL;
         	}
+        	nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm, op));
+        	//}
         }
 
         return nodes;

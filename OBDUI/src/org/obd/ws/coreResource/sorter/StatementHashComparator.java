@@ -5,7 +5,7 @@ import java.util.Comparator;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
 
-public class StatementComparator implements Comparator<SimpleHash> {
+public class StatementHashComparator implements Comparator<SimpleHash> {
 
 	public int compare(SimpleHash o1, SimpleHash o2) {
 		

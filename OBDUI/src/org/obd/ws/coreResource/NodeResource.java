@@ -17,11 +17,12 @@ import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
 import org.obd.model.Statement;
 import org.obd.model.bridge.OBDJSONBridge;
+import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.LinkQueryTerm;
-import org.obd.ws.coreResource.sorter.StatementComparator;
+import org.obd.ws.coreResource.sorter.StatementHashComparator;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -68,7 +69,7 @@ public class NodeResource extends OBDResource {
         
     	super(context, request, response);
         
-        this.nodeString = (String) request.getAttributes().get("nodeString");
+        this.nodeString = (String) request.getAttributes().get("id");
         System.out.println("Requested Node String is: " + this.nodeString);
         if (this.nodeString != null){
         	this.nodeString = Reference.decode(this.nodeString);
@@ -79,7 +80,7 @@ public class NodeResource extends OBDResource {
         
         uriString = (String) request.getResourceRef().toString();
   
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
+        getVariants().add(new Variant(MediaType.TEXT_HTML));
         
     }
 
@@ -98,10 +99,10 @@ public class NodeResource extends OBDResource {
         } 
         if (result != null){
         	System.out.println("Found.");
+        	this.node = result;
         } else {
         	System.out.println("Not Found.");
         }
-        
         
         return result;
     }
@@ -136,7 +137,11 @@ public class NodeResource extends OBDResource {
     	else if (format.equals("owl")) {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
     		return result;
-    	} else if (format.equals("html")||(format.equals("bioPortal"))){
+    	} else if (format.equals("obdxml")){
+    		result = new StringRepresentation(OBDXMLBridge.toXML(node));
+    		return result;
+    	}
+    	else if (format.equals("html")||(format.equals("bioPortal"))){
     		
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
@@ -167,7 +172,7 @@ public class NodeResource extends OBDResource {
     		// Annotation Statements 
     		List<SimpleHash> annotationStatements = this.getStatements("annotation");
     		if (annotationStatements.size()>0){
-    			Collections.sort(annotationStatements,new StatementComparator());
+    			Collections.sort(annotationStatements,new StatementHashComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
@@ -175,14 +180,14 @@ public class NodeResource extends OBDResource {
     		// Statements to Node
     		List<SimpleHash> toStatements = this.getStatements("to");
     		if (toStatements.size()>0){
-    			Collections.sort(toStatements,new StatementComparator());
+    			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
     		List<SimpleHash> aboutStatements = this.getStatements("about");
     		if (aboutStatements.size()>0){
-    			Collections.sort(aboutStatements,new StatementComparator());
+    			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
     		
@@ -192,7 +197,7 @@ public class NodeResource extends OBDResource {
     			return getTemplateRepresentation("BPNodeDetails",resourceMap);
     		}
     	} else {
-    		    		// Creates a text representation
+    		//Creates a text representation
     		StringBuilder sb = new StringBuilder();
     		sb.append("<pre>");
     		sb.append("------------\n");
@@ -288,7 +293,7 @@ public class NodeResource extends OBDResource {
 
 
 	public String getNodeId() {
-		return nodeString;
+		return this.nodeString;
 	}
 
 
@@ -299,8 +304,9 @@ public class NodeResource extends OBDResource {
 	
 	protected Graph getGraph(String aspect) {
 		Graph graph;
-		if (aspect == null || aspect.equals(""))
+		if (aspect == null || aspect.equals("")){
 			aspect = "about";
+		}
 
 		LinkQueryTerm lq = new LinkQueryTerm();
 		if (aspect.equals("annotations")) {
@@ -321,13 +327,15 @@ public class NodeResource extends OBDResource {
 		}
 
 		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
-
+		
 		if (aspect.equals("all")) {
 			lq = new LinkQueryTerm();
 			//lq.setRelation(relationId);
 			lq.setTarget(getNodeId());
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
 		}
+		
+		
 		graph = new Graph(stmts);
 		if (true) {
 			String[] nids = graph.getReferencedNodeIds();
@@ -343,7 +351,12 @@ public class NodeResource extends OBDResource {
 				
 		SimpleHash statementHash = new SimpleHash();
 		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
-
+		//if (sourceNode.getCompositionalDescription() != null && sourceNode.getCompositionalDescription().getPredicate().equals(Predicate.INTERSECTION)){
+		//	System.out.println("Source Node " + s.getNodeId() + " is complex.");
+		//} else {
+		//	System.out.println("Source Node " + s.getNodeId() + " is not complex.");
+		//}
+		
 		String sourceLabel = null;
 		if (sourceNode != null && sourceNode.getLabel() != null){
 			sourceLabel = sourceNode.getLabel();

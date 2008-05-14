@@ -21,7 +21,7 @@ import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.BooleanQueryTerm;
 import org.obd.query.LinkQueryTerm;
 import org.obd.query.BooleanQueryTerm.BooleanOperator;
-import org.obd.ws.coreResource.sorter.StatementComparator;
+import org.obd.ws.coreResource.sorter.StatementHashComparator;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -54,7 +54,7 @@ public class NodesResource extends NodeResource {
         
     	super(context, request, response);
         this.nodes = new HashSet<Node>();
-
+        this.nodeString = (String) request.getAttributes().get("nodeList");
         if (this.nodeString != null){
         	//getVariants().add(new Variant(MediaType.TEXT_HTML));
         	for (String uid : this.nodeString.split("\\+")){
@@ -102,21 +102,21 @@ public class NodesResource extends NodeResource {
     		// Annotation Statements 
     		List<SimpleHash> annotationStatements = this.getStatements("annotation");
     		if (annotationStatements.size()>0){
-    			Collections.sort(annotationStatements,new StatementComparator());
+    			Collections.sort(annotationStatements,new StatementHashComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
     		// Statements to Node
     		List<SimpleHash> toStatements = this.getStatements("to");
     		if (toStatements.size()>0){
-    			Collections.sort(toStatements,new StatementComparator());
+    			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
     		List<SimpleHash> aboutStatements = this.getStatements("about");
     		if (aboutStatements.size()>0){
-    			Collections.sort(aboutStatements,new StatementComparator());
+    			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
     		

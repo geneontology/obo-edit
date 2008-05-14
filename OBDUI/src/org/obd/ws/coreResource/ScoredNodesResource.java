@@ -41,7 +41,6 @@ public class ScoredNodesResource extends NodeResource {
     public ScoredNodesResource(Context context, Request request, Response response) {
         super(context, request, response);
         this.dataSource = (String) request.getAttributes().get("dataSource");
-        
         /*
         getVariants().clear();
         if (getNode() != null) {
@@ -53,14 +52,14 @@ public class ScoredNodesResource extends NodeResource {
     }
     
     protected List<ScoredNode> getScoredNodes() {
-       List<ScoredNode> scoredNodes = getShard(this.dataSource).getSimilarNodes(getNodeId());
-          return scoredNodes;
+    	List<ScoredNode> scoredNodes = getShard(this.dataSource).getSimilarNodes(getNodeId());
+    	return scoredNodes;
     }
 
     @Override
     public Representation getRepresentation(Variant variant) {
         Representation result = null;
-
+        this.findNode();
         Collection<ScoredNode> scoredNodes = getScoredNodes();
          
         if (format == null) {
