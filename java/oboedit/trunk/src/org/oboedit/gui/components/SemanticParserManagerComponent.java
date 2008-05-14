@@ -14,7 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Collection;
-import java.util.logging.Logger;
+
+import org.apache.log4j.*;
+//import java.util.logging.Logger;
 
 public class SemanticParserManagerComponent extends AbstractGUIComponent {
 

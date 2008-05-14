@@ -12,7 +12,7 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractOBOTest;
 import org.obo.test.AbstractReasonerTest;
-import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 public class OBO2OBOSemanticParserTest extends AbstractOBOTest {
 

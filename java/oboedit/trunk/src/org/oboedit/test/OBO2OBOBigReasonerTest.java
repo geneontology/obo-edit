@@ -11,6 +11,7 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
+import org.apache.log4j.*;
 
 public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 	

@@ -6,7 +6,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
+
+import org.apache.log4j.*;
 
 import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
