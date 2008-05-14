@@ -241,27 +241,40 @@ public class DefaultTermModel implements TermModel {
 
 		termFilter.addFilter(FilterManager.getManager().getGlobalTermFilter());
 
+//		System.out.println("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
 		if (userLinkFilter != null)
 			linkFilter.addFilter(userLinkFilter);
 
 		linkFilter.addFilter(FilterManager.getManager().getGlobalLinkFilter());
+//		System.out.println("DefaultTermModel.initializeFilters: adding global link filter " + FilterManager.getManager().getGlobalLinkFilter());
 	}
 
 	public void setLinkFilter(Filter filter) {
-		if (userLinkFilter != null)
-			linkFilter.removeFilter(userLinkFilter);
+//		System.out.println("DefaultTermModel.setLinkFilter: linkfilter = " + linkFilter + ", new filter = " + filter); // DEL
+		// This wasn't letting user remove filters that were present at startup time
+//		if (userLinkFilter != null)
+//			linkFilter.removeFilter(userLinkFilter);
 		this.userLinkFilter = filter;
-		if (userLinkFilter != null)
-			linkFilter.addFilter(userLinkFilter);
+		if (userLinkFilter != null) {
+//			linkFilter.addFilter(userLinkFilter);
+			LinkedList filters = new LinkedList<Filter>();
+			filters.add(userLinkFilter);
+			linkFilter.setFilters(filters);
+		}
+//		System.out.println("DefaultTermModel.setLinkFilter: after adding new filter, now linkfilter = " + linkFilter); // DEL
 		reload();
 	}
 
 	public void setTermFilter(Filter filter) {
-		if (userTermFilter != null)
-			termFilter.removeFilter(userTermFilter);
+		// This wasn't letting user remove filters that were present at startup time
+//		if (userTermFilter != null)
+//			termFilter.removeFilter(userTermFilter);
 		this.userTermFilter = filter;
-		if (userTermFilter != null)
-			termFilter.addFilter(userTermFilter);
+		if (userTermFilter != null) {
+			LinkedList filters = new LinkedList<Filter>();
+			filters.add(userTermFilter);
+			termFilter.setFilters(filters);
+		}
 		reload();
 	}
 
@@ -359,8 +372,11 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	protected void buildFilteredDatabase() {
+		// I think this may be the reason that filters that are in place at load time don't go away
+		// when removed by the user:  it is going back to the session to get the original link database.
 		FilteredLinkDatabase filteredLinkDatabase = new FilteredLinkDatabase(
-				SessionManager.getManager().getSession().getLinkDatabase());
+//				SessionManager.getManager().getSession().getLinkDatabase());
+				SessionManager.getManager().getCurrentLinkDatabase());
 		if (SessionManager.getManager().getUseReasoner()) {
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
 					.getManager().getReasoner());
@@ -555,8 +571,6 @@ public class DefaultTermModel implements TermModel {
 				if (TermUtil.isObsolete(lo)) {
 					out = wrapSet(getReplacements((ObsoletableObject) lo));
 				} else {
-//					if (lo.getName().equals("cell division"))
-//						System.err.println("HERE we go");
 					Collection<Link> children = linkDatabase.getChildren(lo);
 					Collection<Link> realChildren = SessionManager.getManager()
 							.getSession().getLinkDatabase().getChildren(lo);
@@ -578,5 +592,9 @@ public class DefaultTermModel implements TermModel {
 					.println("requested children of unknown object " + parent);
 			return null;
 		}
+	}
+
+	public String toString() { // For debugging
+		return "DefaultTermModel: linkFilter = " + linkFilter; 
 	}
 }
