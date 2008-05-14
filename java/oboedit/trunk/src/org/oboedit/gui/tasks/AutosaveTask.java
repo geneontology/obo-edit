@@ -6,8 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterOperationTask;
@@ -84,7 +83,7 @@ public class AutosaveTask implements GUITask, Runnable {
 					logger.log(Level.INFO, "Deleting autosave file " + files[i]
 							+ "...");
 					if (!files[i].delete())
-						logger.warning("Couldn't delete expired "
+						logger.warn("Couldn't delete expired "
 								+ "autosave file " + files[i]);
 				}
 			}
@@ -93,7 +92,7 @@ public class AutosaveTask implements GUITask, Runnable {
 			final OBOFileAdapter adapter = new OBOFileAdapter();
 			if (!preferences.getAutosavePath().exists()) {
 				if (!preferences.getAutosavePath().mkdirs()) {
-					logger.warning("Couldn't create " + "autosave "
+					logger.warn("Couldn't create " + "autosave "
 						       + "directory " +
 						       preferences.getAutosavePath() + "\nAutosave " + "disabled.");
 					GUIManager.getManager().notifyComplete(this);

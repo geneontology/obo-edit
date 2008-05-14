@@ -11,7 +11,7 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
-import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 public class OBO2OBOReasonerTest extends TestCase {
 	

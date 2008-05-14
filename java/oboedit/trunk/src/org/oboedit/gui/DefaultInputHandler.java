@@ -11,8 +11,7 @@ import org.bbop.swing.*;
 
 import java.util.*;
 import java.util.List;
-import java.util.logging.Logger;
-
+import org.apache.log4j.*;
 import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.EditActionManager;
@@ -273,7 +272,8 @@ public class DefaultInputHandler implements InputHandlerI {
 
 		}
 		if (enabledCount > 0) {
-			Logger.getLogger("").throwing(getClass().getName(), "drop", new Exception("logging popup event"));
+			//Logger.getLogger("").throwing(getClass().getName(), "drop", new Exception("logging popup event"));
+			Logger.getLogger("").trace(getClass().getName(), new Exception("logging popup event"));
 			dragMenu.show(dropPanel, (int) p.getX(), (int) p.getY());
 			return true;
 		} /*

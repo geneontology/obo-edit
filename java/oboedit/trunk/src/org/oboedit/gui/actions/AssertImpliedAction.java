@@ -7,7 +7,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.apache.log4j.*;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -144,6 +145,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 		Iterator<Link> it = TermUtil.getAllLinks(reasoner);
 		impliedLinks = new LinkedHashSet<Link>();
 		int count = 0;
+
 		Logger logger = Logger.getLogger("org.oboedit.gui");
 		logger.info("iterating through all links");
 		while (it.hasNext()) {

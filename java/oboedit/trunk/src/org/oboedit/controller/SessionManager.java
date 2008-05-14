@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+//asa
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
@@ -76,8 +79,12 @@ public class SessionManager {
 	protected boolean unflushedChanges = false;
 
 	protected boolean recacheInBackground = true;
+	
+	protected static Logger logger = Logger.getLogger("org.oboedit.datamodel.history");
+	
 
 	public SessionManager() {
+		
 		setSession(new OBOSessionImpl());
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
 		setReasonerName(Preferences.getPreferences().getReasonerName());
@@ -232,10 +239,7 @@ public class SessionManager {
 		OperationWarning warning = getOperationModel().apply(item);
 		if (warning != null) {
 			Object[] params = { item, warning };
-			Logger.getLogger("org.oboedit.datamodel.history").log(
-					Level.WARNING,
-					"Warning message while trying to apply history item",
-					params + ": " + item + ", " + warning);
+			
 		}
 
 		// if (getUseReasoner())
@@ -352,8 +356,7 @@ public class SessionManager {
 			try {
 				reasoningTask.execute();
 			} catch (Exception ex) {
-				Logger.getLogger("").log(Level.SEVERE,
-						"Failed to create reasoner", ex);
+				logger.fatal("Failed to create reasoner", ex);
 			}
 	}
 
@@ -414,17 +417,16 @@ public class SessionManager {
 			if (getUseReasoner()) {
 				OperationWarning reasonerWarning = reasonerOpModel.apply(item);
 				Object[] params = { item, reasonerWarning };
-				Logger.getLogger("org.oboedit.datamodel.history").log(
-						Level.WARNING,
-						"Reasoner warning message while trying to apply history item",
-						params);
+/*				Logger.getLogger("org.oboedit.datamodel.history").log(
+						Level.WARN,
+						"Reasoner warning message while trying to apply history item");*/
+				
+				
+				logger.warn("Reasoner warning message while trying to apply history item");
 			}
 			if (warning != null) {
 				Object[] params = { item, warning };
-				Logger.getLogger("org.oboedit.datamodel.history").log(
-						Level.WARNING,
-						"Warning message while trying to apply history item",
-						params + ": " + item + ", " + warning);
+				logger.warn("Warning message while trying to apply history item");
 
 				System.err.println("*** GOT WARNING = " + warning);
 			}

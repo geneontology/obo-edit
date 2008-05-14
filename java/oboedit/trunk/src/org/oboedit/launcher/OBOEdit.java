@@ -1,5 +1,6 @@
 package org.oboedit.launcher;
 
+import org.apache.log4j.*;
 import org.bbop.dataadapter.*;
 import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
@@ -172,7 +173,10 @@ public class OBOEdit {
     public static String getAppName() {
 	return "OBO-Edit2";
     }
-
+    
+    
+    static Logger logger = Logger.getLogger("org.oboedit.launcher");
+    
 	/**
 	 * Initialize some things, read the command line and start
 	 */

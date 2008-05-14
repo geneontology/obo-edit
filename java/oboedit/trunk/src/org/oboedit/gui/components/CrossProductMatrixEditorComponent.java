@@ -13,7 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
+
+import org.apache.log4j.*;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -73,7 +74,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		NORMAL
 	}
 
-	Logger logger = Logger.getLogger("org.oboedit.gui");
+	static Logger logger = Logger.getLogger("org.oboedit.gui");
 
 	protected JTable xpTable;
 	protected JComboBox relationChooser = new JComboBox();
