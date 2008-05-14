@@ -285,7 +285,7 @@ public class TermFilterEditor extends JPanel {
 		Box topBox = new Box(BoxLayout.X_AXIS);
 		topBox.add(selectTermsLabel);
 		topBox.add(notBox);
-		topBox.add(new JLabel(" a"));
+		topBox.add(new JLabel(" a "));
 		topBox.add(criterionBox);
 		topBox.add(comparisonPanel);
 		topBox.add(Box.createHorizontalGlue());
@@ -396,6 +396,7 @@ public class TermFilterEditor extends JPanel {
 		if (filter instanceof ObjectFilter) {
 			ObjectFilter of = (ObjectFilter) filter;
 			criterionBox.setSelectedItem(of.getCriterion());
+			valueField.setSelectedItem(of.getValue());
 			if (of.getNegate())
 				notBox.setSelectedIndex(1);
 			else
