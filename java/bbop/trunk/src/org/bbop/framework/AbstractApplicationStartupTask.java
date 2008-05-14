@@ -8,15 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
-
+import org.apache.log4j.*;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -40,7 +32,7 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.simplericity.macify.eawt.DefaultApplication;
 
 public abstract class AbstractApplicationStartupTask extends
-		AbstractSingleActionTask {
+AbstractSingleActionTask {
 
 	protected VetoableShutdownListener vetoableShutdownListener = new VetoableShutdownListener() {
 
@@ -60,7 +52,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected abstract Collection<GUITask> getDefaultTasks();
 
 	protected abstract Collection<DataAdapter> getDefaultDataAdapters();
-	
+
 	protected abstract Collection<GUIComponentFactory<?>> getDefaultComponentFactories();
 
 	protected abstract String getAppID();
@@ -148,7 +140,7 @@ public abstract class AbstractApplicationStartupTask extends
 		public void handleReopenApplication(ApplicationEvent event) {
 		}
 	}
-	
+
 	protected Action getOpenFileAction(String filename) {
 		return null;
 	}
@@ -160,7 +152,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected Action getExitAction() {
 		return null;
 	}
-	
+
 	protected Action getPreferencesAction() {
 		return null;
 	}
@@ -217,7 +209,7 @@ public abstract class AbstractApplicationStartupTask extends
 			GUIManager.getManager().installMenuItem(null, menu);
 		}
 	}
-	
+
 	protected void installDefaultToolBars() {
 		for (JToolBar toolbar : getDefaultToolBars()) {
 			GUIManager.getManager().installToolBar(toolbar);
@@ -227,7 +219,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
 		return CollectionUtil.list(new ViewMenu());
 	}
-	
+
 	protected Collection<JToolBar> getDefaultToolBars() {
 		return null;
 	}
@@ -252,7 +244,7 @@ public abstract class AbstractApplicationStartupTask extends
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = new IDWDriver();
 		driver
-				.setDefaultPerspectiveResourcePath(getDefaultPerspectiveResourcePath());
+		.setDefaultPerspectiveResourcePath(getDefaultPerspectiveResourcePath());
 		driver.setPerspectiveResourceDir(getPerspectiveResourceDir());
 		driver.setPerspectiveListResourcePath(getPerspectiveListResourcePath());
 		if (getBackgroundColor() != null)
@@ -307,7 +299,7 @@ public abstract class AbstractApplicationStartupTask extends
 				UIManager.put("TabbedPane.background", getBackgroundColor());
 				UIManager.put("ToolBar.background", getBackgroundColor());
 				UIManager
-						.put("ToolBar.dockingBackground", getBackgroundColor());
+				.put("ToolBar.dockingBackground", getBackgroundColor());
 				UIManager.put("ToolBar.floatingBackground",
 						getBackgroundColor());
 				UIManager.put("ToolBar.viewportBackground",
@@ -340,6 +332,42 @@ public abstract class AbstractApplicationStartupTask extends
 	}
 
 	protected void configureLogging() {
+
+		final Logger global = Logger.getLogger("");
+
+		PropertyConfigurator.configure("/BBOP/log4j.properties");
+
+		/*try {
+			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
+					getAppID() + "%u.log").getAbsolutePath(), 10485760, 1);
+			fh.setLevel(Level.ALL);
+			global.addHandler(fh);
+			global.addHandler(new ConsoleHandler());
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+		global.info("Configured logging output destinations");
+		global.info("Reset standard error stream");
+		global.info("Testing raw log stream");
+		global.info("Testing standard error stream");
+
+		Thread
+		.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+			public void uncaughtException(Thread t, Throwable e) {
+				Logger global = Logger.getLogger("");
+				global.log(Level.FATAL,
+						"Uncaught event dispatch exception", e);
+			}
+		});
+		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
+				.getName());
+		global.info("Configured final exception handlers");
+	}
+
+	/*	protected void configureLogging() {
 		LogManager.getLogManager().reset();
 		final Logger global = Logger.getLogger("");
 		try {
@@ -372,5 +400,5 @@ public abstract class AbstractApplicationStartupTask extends
 		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
 				.getName());
 		global.info("Configured final exception handlers");
-	}
+	}*/
 }
