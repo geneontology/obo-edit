@@ -49,20 +49,22 @@
 		<resourceClass>org.obd.ws.coreResource.PageResource</resourceClass>
 		<path>/usecases/{case}.html</path>
 		<path>/usecases/</path>
+		<path>/usecases</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodeResource</resourceClass>
-		<path>/{dataSource}/{format}/node/{nodeString}</path>
+		<path>/{dataSource}/{format}/node/{id}</path>
 	</resourcePathMap>
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodesResource</resourceClass>
-		<path>/{dataSource}/{format}/nodes/{nodeString}</path>
+		<path>/{dataSource}/{format}/nodes/{nodeList}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.StatementsResource</resourceClass>
 		<path>/{dataSource}/{format}/node/{id}/statements</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/</path>
 		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}</path>
 		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}/{relation}</path>
 	</resourcePathMap>

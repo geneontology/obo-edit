@@ -1,9 +1,15 @@
 function nodeSearch(contextName,dataSource){
 
     var searchTerm = document.getElementById("search_term");
-    
-    if ((searchTerm != null)&&(dataSource != null)){
-    	var url = "/" + contextName + "/" + dataSource + "/html/search/contains_all/" + searchTerm.value;    	
+	var target = document.getElementById("search_target_data");
+	    
+    if ((searchTerm != null)&&(dataSource != null)&&(target != null)){
+    	var url = "";
+    	if (target.value == 'statements'){
+    		url = "/" + contextName + "/" + dataSource + "/html/search/contains_all/" + searchTerm.value + "/statements/all";
+    	} else {
+    		url = "/" + contextName + "/" + dataSource + "/html/search/contains_all/" + searchTerm.value;
+    	}    	
     	window.location = url;
     }
     return false;

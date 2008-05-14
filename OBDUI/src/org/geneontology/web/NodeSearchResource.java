@@ -161,7 +161,7 @@ public class NodeSearchResource extends NodeResource {
 	    			} else {
 	    				nodeLabel = n.getId();
 	    			}
-	    			if (n.getSourceId().equals("ZFIN")){
+	    			if (n != null && (n.getSourceId() != null) && n.getSourceId().equals("ZFIN")){
 	    				nodeProperties.put("nodeId", n.getId());
 	    				nodeProperties.put("nodeLabel", nodeLabel);
 	    			} else {
@@ -204,7 +204,6 @@ public class NodeSearchResource extends NodeResource {
     			e.printStackTrace();
     		}
     		resourceMap.put("hostname", hostname);
-    		
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("resultNodes", resultNodes);

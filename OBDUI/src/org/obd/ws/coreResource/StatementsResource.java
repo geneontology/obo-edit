@@ -50,9 +50,9 @@ public class StatementsResource extends NodeResource {
 		aspect = (String) request.getAttributes().get("aspect");
 		this.dataSource = (String) request.getAttributes().get("dataSource");
 		getVariants().clear();
-		if (getNode() != null) {
+		//if (getNode() != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
-		}
+		//}
 	}
 
 
