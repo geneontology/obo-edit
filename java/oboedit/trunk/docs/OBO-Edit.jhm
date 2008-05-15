@@ -100,6 +100,7 @@
    <mapID target="Saving_a_History_File" url="html/Saving_a_History_File.htm"/>
    <mapID target="Searching" url="html/Searching.htm"/>
    <mapID target="Setting_the_Filter_Mode" url="html/Setting_the_Filter_Mode.htm"/>
+   <mapID target="Slowness" url="html/Slowness.htm"/>
    <mapID target="Some_terminology" url="html/Some_terminology.htm"/>
    <mapID target="Structural_Editing" url="html/Structural_Editing.htm"/>
    <mapID target="Term_Filters" url="html/Term_Filters.htm"/>
