@@ -332,22 +332,9 @@ AbstractSingleActionTask {
 	}
 
 	protected void configureLogging() {
-
 		final Logger global = Logger.getLogger("");
-
 		PropertyConfigurator.configure("log4j.properties");
 
-		/*try {
-			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
-					getAppID() + "%u.log").getAbsolutePath(), 10485760, 1);
-			fh.setLevel(Level.ALL);
-			global.addHandler(fh);
-			global.addHandler(new ConsoleHandler());
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 		global.info("Configured logging output destinations");
 		global.info("Reset standard error stream");
 		global.info("Testing raw log stream");
@@ -367,38 +354,4 @@ AbstractSingleActionTask {
 		global.info("Configured final exception handlers");
 	}
 
-	/*	protected void configureLogging() {
-		LogManager.getLogManager().reset();
-		final Logger global = Logger.getLogger("");
-		try {
-			Handler fh = new FileHandler(new File(GUIManager.getPrefsDir(),
-					getAppID() + "%u.log").getAbsolutePath(), 10485760, 1);
-			fh.setLevel(Level.ALL);
-			global.addHandler(fh);
-			global.addHandler(new ConsoleHandler());
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		global.info("Configured logging output destinations");
-		LoggerStream logStream = new LoggerStream(global, Level.INFO);
-		System.setErr(logStream);
-		global.info("Reset standard error stream");
-		logStream.println("Testing raw log stream");
-		System.err.println("Testing standard error stream");
-		Thread
-				.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
-					public void uncaughtException(Thread t, Throwable e) {
-						Logger global = Logger.getLogger("");
-						global.log(Level.SEVERE,
-								"Uncaught event dispatch exception", e);
-					}
-
-				});
-		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
-				.getName());
-		global.info("Configured final exception handlers");
-	}*/
 }
