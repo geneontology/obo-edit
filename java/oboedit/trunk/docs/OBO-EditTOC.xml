@@ -15,7 +15,10 @@
 		<tocitem text="Getting OBO-Edit Started"
 			target="Getting_Started" />
 		<tocitem text="Bugs and Troubleshooting"
-			target="Bugs_and_Troubleshooting" />
+			target="Bugs_and_Troubleshooting" >
+		  <tocitem text="Slowness"
+			   target="Slowness" />
+		</tocitem>
 	</tocitem>
 	<tocitem text="Viewing Ontologies">
 		<tocitem text="Working with Selections"
