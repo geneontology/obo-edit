@@ -513,7 +513,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JLabel selectionBatchLabel = new JLabel("Selection batch size",
 				JLabel.TRAILING);
 		JTextArea noDbxLabel = new JTextArea("Select a dbxref from the list "
-				+ "to edit it, or press add to " + "create a new dbxref");
+				+ "to edit it, or press 'Add' to " + "create a new dbxref");
 		noDbxLabel.setMinimumSize(new Dimension(0, 0));
 		noDbxLabel.setOpaque(false);
 		noDbxLabel.setLineWrap(true);
@@ -558,7 +558,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		warnBeforeDeleteBox = new JCheckBox("Warn before final delete");
 		warnBeforeDefinitionLossBox = new JCheckBox("Warn before discarding "
 				+ "definitions on save");
-		autoCommitCheckBox = new JCheckBox("Auto commit text edits");
+		autoCommitCheckBox = new JCheckBox("Autocommit text edits");
 		autoCommitCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				warnBeforeDiscardingEditsBox.setEnabled(!autoCommitCheckBox
@@ -566,16 +566,16 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			}
 		});
 		warnBeforeDiscardingEditsBox = new JCheckBox(
-				"Warn before discarding text edits.");
+				"Warn before discarding text edits");
 		advancedRootDetectionBox = new JCheckBox("Use advanced root "
 				+ "detection");
 		showUndefinedTermsBox = new JCheckBox("Gray out undefined terms");
-		caseSensitiveSortBox = new JCheckBox("Case sensitive term sorting");
-		showToolTipsBox = new JCheckBox("Show terms ids as tool tips in "
+		caseSensitiveSortBox = new JCheckBox("Case-sensitive term sorting");
+		showToolTipsBox = new JCheckBox("Show terms IDs as tool tips in "
 				+ "term panels");
 		confirmOnExitBox = new JCheckBox("Confirm on exit");
 
-		autosaveEnabledCheckBox = new JCheckBox("Enable Autosave");
+		autosaveEnabledCheckBox = new JCheckBox("Enable autosave");
 		autosavePathField = new JTextField();
 		autosaveExpirationField = new JTextField();
 		autosaveWaitField = new JTextField();
