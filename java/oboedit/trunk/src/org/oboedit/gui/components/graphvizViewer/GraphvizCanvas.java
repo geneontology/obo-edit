@@ -104,7 +104,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	static int idgen = 0;
 
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected GraphViewConfiguration config = new GraphViewConfiguration();
+	protected GraphvizViewConfiguration config = new GraphvizViewConfiguration();
 
 	protected JCheckBox succinctCheckbox = new JCheckBox("Succinct", true);
 	protected JCheckBox showBreakdownBox = new JCheckBox(
