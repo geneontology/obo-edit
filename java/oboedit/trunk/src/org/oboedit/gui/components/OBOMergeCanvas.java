@@ -773,9 +773,15 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 				org.oboedit.launcher.OBOMerge.main(obomergeArgsArray);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				System.out.println("There has been an error in reading one or " +
+						"more of the input files. Only " +
+						"OBO format files can be used with this utility.");
 				e.printStackTrace();
 			} catch (DataAdapterException e) {
 				// TODO Auto-generated catch block
+				System.out.println("There has been an error in reading one or " +
+						"more of the input files. Only " +
+						"OBO format files can be used with this utility.");
 				e.printStackTrace();
 			}
 			catch (RuntimeException e) {
