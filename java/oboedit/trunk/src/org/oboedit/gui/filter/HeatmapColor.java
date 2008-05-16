@@ -11,7 +11,12 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.ObjectSelector;
 
+import org.apache.log4j.*;
+
 public class HeatmapColor implements ColorProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HeatmapColor.class);
 
 	protected Color minColor;
 	protected Color maxColor;

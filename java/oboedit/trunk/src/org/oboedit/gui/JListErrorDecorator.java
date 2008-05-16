@@ -21,7 +21,12 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.util.TextEditUtil;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class JListErrorDecorator implements ErrorDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JListErrorDecorator.class);
 
 	protected PropertyChangeListener listener = new PropertyChangeListener() {
 

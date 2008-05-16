@@ -9,7 +9,12 @@ import javax.swing.Action;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class CheckWarning {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CheckWarning.class);
 
 	protected Check source;
 	protected String message;

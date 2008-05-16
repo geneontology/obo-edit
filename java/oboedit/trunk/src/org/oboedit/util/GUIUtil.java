@@ -37,7 +37,12 @@ import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
 
+import org.apache.log4j.*;
+
 public class GUIUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GUIUtil.class);
 	protected static class ListenerBundle {
 		public GlobalFilterListener globalFilterListener;
 
@@ -295,10 +300,10 @@ public class GUIUtil {
 	// }
 
     public static void copyExistingConfigFiles(File oldPrefsDir, File newPrefsDir) {
-		System.out.println("prefs directory " + newPrefsDir + " does not yet exist--creating.");
+		logger.info("prefs directory " + newPrefsDir + " does not yet exist--creating.");
 		if (!newPrefsDir.mkdir()) {
 			String err = "Error: could not create " + newPrefsDir;
-			System.out.println(err);
+			logger.info(err);
 			JOptionPane.showMessageDialog(null,err,"Error creating configuration directory",JOptionPane.ERROR_MESSAGE);
 		}
 		else {
@@ -313,7 +318,7 @@ public class GUIUtil {
 						IOUtil.copyFiles(oldPrefsDir, newPrefsDir);
 
 					} catch (Exception e) {
-						System.out.println("Caught exception while trying to copy " + oldPrefsDir + " to " + newPrefsDir);
+						logger.info("Caught exception while trying to copy " + oldPrefsDir + " to " + newPrefsDir);
 					}
 				}
 			}

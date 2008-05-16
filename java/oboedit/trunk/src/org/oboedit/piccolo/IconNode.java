@@ -10,7 +10,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.util.PBounds;
 import edu.umd.cs.piccolo.util.PPaintContext;
 
+import org.apache.log4j.*;
+
 public class IconNode extends PNode implements Morphable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IconNode.class);
 
 	protected Icon icon;
 

@@ -18,7 +18,12 @@ import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
 
+import org.apache.log4j.*;
+
 public class NamedChildMorpher extends MorphableMorpher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamedChildMorpher.class);
 
 	protected NamedChildProvider provider = DefaultNamedChildProvider
 			.getInstance();
@@ -40,7 +45,7 @@ public class NamedChildMorpher extends MorphableMorpher {
 					PNode parent = delNode.getParent();
 					Object name = delMap.get(delNode);
 					if (parent == null) {
-						System.err.println("delNode " + delNode
+						logger.error("delNode " + delNode
 								+ " has null parent");
 						continue;
 					}

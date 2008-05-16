@@ -15,7 +15,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 
+import org.apache.log4j.*;
+
 public class RightClickMenuBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RightClickMenuBehavior.class);
 
 	protected LinkDatabaseCanvas canvas;
 	protected List<RightClickMenuFactory> menuFactories = new ArrayList<RightClickMenuFactory>();

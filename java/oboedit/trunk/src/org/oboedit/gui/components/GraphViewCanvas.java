@@ -78,8 +78,13 @@ import org.oboedit.gui.filter.BackgroundColorSpecField;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
-		FilteredRenderable {
+	FilteredRenderable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphViewCanvas.class);
 
 	public static class GraphViewConfiguration implements
 			ComponentConfiguration {
@@ -266,7 +271,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 			}
 			setProgressValue(100);
 			setResults(databases);
-//			System.err.println("found paths in "
+//			logger.error("found paths in "
 //					+ (System.currentTimeMillis() - time));
 		}
 

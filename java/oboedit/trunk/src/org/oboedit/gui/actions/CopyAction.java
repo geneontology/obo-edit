@@ -15,8 +15,13 @@ import org.oboedit.gui.*;
 
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.*;
+
 public class CopyAction implements ClickMenuAction, DropMenuAction,
-		InputHandlerI {
+	InputHandlerI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CopyAction.class);
 
 	protected Selection preSelection;
 

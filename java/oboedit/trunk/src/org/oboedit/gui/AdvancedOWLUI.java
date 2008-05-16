@@ -7,7 +7,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import org.apache.log4j.*;
 
 import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
@@ -25,7 +24,12 @@ import org.obo.filters.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class AdvancedOWLUI extends JPanel implements GraphicalUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AdvancedOWLUI.class);
 
 	/**
 	 * 
@@ -455,7 +459,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
 			allowLossyBox.setSelected(currentProfile.isAllowLossy());
-			Logger logger = Logger.getLogger("org.oboedit");
 			logger.info("setting OWL metadata mappings");
 			for (MetadataMapping m : mapping2CheckBox.keySet()) {
 				logger.info("testing "+m);
@@ -508,7 +511,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.setAllowDangling(allowDanglingBox.isSelected());
 			currentProfile.setAllowLossy(allowLossyBox.isSelected());
 			
-			Logger logger = Logger.getLogger("org.oboedit");
 			logger.info("setting OWL metadata mappings");
 			for (MetadataMapping m : mapping2CheckBox.keySet()) {
 				logger.info("testing "+m);
@@ -719,7 +721,6 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
 		profile.setAllowLossy(allowLossyBox.isSelected());
-		Logger logger = Logger.getLogger("org.oboedit");
 		logger.info("setting OWL metadata mappings");
 		for (MetadataMapping m : mapping2CheckBox.keySet()) {
 			logger.info("testing "+m);

@@ -13,7 +13,12 @@ import org.oboedit.verify.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefinitionCheck.class);
 
 	public static final FieldPathSpec TERM_PATH_SPEC = new FieldPathSpec();
 

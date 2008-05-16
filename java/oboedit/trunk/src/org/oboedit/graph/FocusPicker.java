@@ -14,7 +14,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 
+import org.apache.log4j.*;
+
 public class FocusPicker implements ViewBehavior, NodeDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FocusPicker.class);
 
 	protected static final Object REAL_PAINT = new Object();
 
@@ -28,7 +33,7 @@ public class FocusPicker implements ViewBehavior, NodeDecorator {
 						.getPath(), PCNode.class);
 				if (node != null) {
 					if (node instanceof OENode)
-//						System.err.println("node dim = " + node.getWidth()
+//						logger.error("node dim = " + node.getWidth()
 //								+ "," + node.getHeight() + ", prefWidth = "
 //								+ ((OENode) node).getPreferredWidth());
 					if (!ObjectUtil.equals(canvas.getFocusedNode(), node)) {

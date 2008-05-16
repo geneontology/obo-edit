@@ -7,8 +7,13 @@ import org.oboedit.verify.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class DanglingIntersectionCheck extends AbstractCheck implements
-		OntologyCheck {
+	OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingIntersectionCheck.class);
 
 	@Override
 	protected void initConfiguration() {

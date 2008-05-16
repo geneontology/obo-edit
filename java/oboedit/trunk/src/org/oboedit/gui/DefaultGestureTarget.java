@@ -10,7 +10,12 @@ import org.obo.datamodel.RootAlgorithm;
 import org.oboedit.gui.Selection.PathCalcMode;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultGestureTarget implements GestureTarget {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultGestureTarget.class);
 	protected Link link;
 	protected LinkedObject term;
 	protected JComponent component;

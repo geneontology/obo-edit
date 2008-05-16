@@ -8,8 +8,13 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.geom.*;
 
+import org.apache.log4j.*;
+
 public class fatlin extends Applet
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(fatlin.class);
 
  public class Vec2 {
 	 public double u;

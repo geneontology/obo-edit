@@ -2,8 +2,13 @@ package org.oboedit.gui.components.graphvizViewer;
 
 import org.bbop.framework.ComponentConfiguration;
 
+import org.apache.log4j.*;
+
 public class GraphvizViewConfiguration implements
-ComponentConfiguration {
+	ComponentConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphvizViewConfiguration.class);
 	protected boolean succinctDisplay = true;
 	protected boolean showPerType = true;
 	protected boolean allTypes = true;

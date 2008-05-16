@@ -8,7 +8,12 @@ import org.oboedit.verify.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NameRedundancyCheck.class);
 
 	@Override
 	protected void initConfiguration() {

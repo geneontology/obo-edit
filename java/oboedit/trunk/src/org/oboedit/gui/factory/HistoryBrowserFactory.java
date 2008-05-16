@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.HistoryBrowser;
 
+import org.apache.log4j.*;
+
 public class HistoryBrowserFactory extends AbstractComponentFactory<HistoryBrowser> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryBrowserFactory.class);
 
 	public HistoryBrowserFactory() {
 	}

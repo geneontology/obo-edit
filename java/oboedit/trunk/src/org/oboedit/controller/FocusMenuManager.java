@@ -17,7 +17,12 @@ import javax.swing.SwingUtilities;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
 
+import org.apache.log4j.*;
+
 public class FocusMenuManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FocusMenuManager.class);
 
 	protected static FocusMenuManager manager;
 

@@ -3,8 +3,13 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.SynonymCategoryManager;
 
+import org.apache.log4j.*;
+
 public class SynonymCategoryManagerFactory extends
-		AbstractComponentFactory<SynonymCategoryManager> {
+	AbstractComponentFactory<SynonymCategoryManager> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymCategoryManagerFactory.class);
 	public SynonymCategoryManagerFactory() {
 	}
 

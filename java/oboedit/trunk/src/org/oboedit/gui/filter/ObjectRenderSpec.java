@@ -5,7 +5,12 @@ import java.awt.Color;
 import org.oboedit.gui.FilteredRenderable;
 
 
+import org.apache.log4j.*;
+
 public class ObjectRenderSpec implements RenderSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ObjectRenderSpec.class);
 
 	protected Color foregroundColor;
 	protected String fontName;

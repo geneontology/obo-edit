@@ -22,7 +22,12 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.apache.log4j.*;
+
 public class ConfigurationManager extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ConfigurationManager.class);
 
 	/**
 	 * 

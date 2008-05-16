@@ -30,7 +30,12 @@ import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.HTMLSpecField;
 import org.oboedit.gui.filter.HeatmapColor;
 
+import org.apache.log4j.*;
+
 public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDAnnotationNumberFetchBehaviorTask.class);
 
 	protected OBDConnect gdbc = new OBDConnect();
 	
@@ -112,7 +117,7 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 	protected Integer getValue(IdentifiedObject io) {
 		int num = -1; 
 		num = gdbc.getAssociationCount( io.getID() );
-		//System.err.println("\t___ SQL_COMPLETE");
+		//logger.error("\t___ SQL_COMPLETE");
 		return num;
 	}
 

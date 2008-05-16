@@ -10,7 +10,12 @@ import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.filter.SpecEditor;
 
+import org.apache.log4j.*;
+
 public class LinkSpecEditor extends JPanel implements SpecEditor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkSpecEditor.class);
 
 	/**
 	 * 

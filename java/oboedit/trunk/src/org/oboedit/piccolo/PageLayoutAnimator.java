@@ -15,13 +15,18 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 
+import org.apache.log4j.*;
+
 public class PageLayoutAnimator extends PLayoutNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PageLayoutAnimator.class);
 	protected Map objectToCloneMap = new HashMap();
 	protected Map cloneToObjectMap = new HashMap();
 	
 	public void addChild(PNode node) {
 		PNode clone = cloneAndFile(node);
-		System.err.println("node = "+node+", clone = "+clone+", clone == node is "+(clone == node));
+		logger.error("node = "+node+", clone = "+clone+", clone == node is "+(clone == node));
 		super.addChild(clone);
 	}
 	

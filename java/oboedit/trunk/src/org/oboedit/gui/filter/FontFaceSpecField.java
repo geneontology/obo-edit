@@ -2,7 +2,12 @@ package org.oboedit.gui.filter;
 
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class FontFaceSpecField extends AbstractRendererSpecField<String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FontFaceSpecField.class);
 
 	public static final FontFaceSpecField FIELD = new FontFaceSpecField();
 

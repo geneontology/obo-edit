@@ -8,7 +8,12 @@ import java.io.*;
 import java.util.*;
 import junit.framework.*;
 
+import org.apache.log4j.*;
+
 public class DatamodelTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DatamodelTest.class);
 
 	public static OBOSession createSerialSession(OBOSession session)
 			throws DataAdapterException, IOException {

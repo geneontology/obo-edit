@@ -11,8 +11,13 @@ import org.oboedit.gui.event.ReloadEvent;
 import org.oboedit.gui.event.ReloadListener;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class MaxParentCountCriterion extends
-		AbstractNumberCriterion<OBOSession> {
+	AbstractNumberCriterion<OBOSession> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MaxParentCountCriterion.class);
 
 	protected int max = -1;
 

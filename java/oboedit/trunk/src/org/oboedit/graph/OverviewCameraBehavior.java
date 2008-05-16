@@ -28,7 +28,12 @@ import edu.umd.cs.piccolo.util.PPaintContext;
 import edu.umd.cs.piccolox.handles.PBoundsHandle;
 import edu.umd.cs.piccolox.nodes.PClip;
 
+import org.apache.log4j.*;
+
 public class OverviewCameraBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OverviewCameraBehavior.class);
 
 	protected PCamera widget;
 	protected PPath viewRect = new PPath();
@@ -89,7 +94,7 @@ public class OverviewCameraBehavior implements ViewBehavior {
 		cameraWrapper.addInputEventListener(new PBasicInputEventHandler() {
 			@Override
 			public void mouseDragged(PInputEvent event) {
-//				System.err.println("event = "+event);
+//				logger.error("event = "+event);
 			}
 		});
 		clip.setPathTo(ShapeUtil.createRoundRectangle(0, 0, 100, 50));

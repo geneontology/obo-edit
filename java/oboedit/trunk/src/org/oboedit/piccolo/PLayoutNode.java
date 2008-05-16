@@ -2,7 +2,12 @@ package org.oboedit.piccolo;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class PLayoutNode extends PNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PLayoutNode.class);
 	
 	protected PiccoloLayoutManager layoutManager;
 

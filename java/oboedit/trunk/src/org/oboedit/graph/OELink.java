@@ -48,7 +48,12 @@ import edu.umd.cs.piccolox.nodes.PStyledText;
 
 // TODO Modify OELink to create a distinct path node so decorations can appear behind it6
 
+import org.apache.log4j.*;
+
 public class OELink extends PCNode implements Morphable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OELink.class);
 
 	protected static final int ICON_PANEL_MARGIN = 2;
 
@@ -213,7 +218,7 @@ public class OELink extends PCNode implements Morphable {
 			OELink linkNode = (OELink) node;
 			Link link = (Link) linkNode.getObject();
 			Link oldLink = (Link) getObject();
-//			System.err.println("link = "+link);
+//			logger.error("link = "+link);
 		}
 		return new PActivity(0);
 	}

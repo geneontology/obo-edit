@@ -22,7 +22,12 @@ import org.oboedit.gui.filter.SpecEditor;
 import org.oboedit.gui.widget.LinkSpecEditor;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
+import org.apache.log4j.*;
+
 public class RendererEditor extends AbstractListTableEditor<RenderedFilter> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RendererEditor.class);
 
 	protected boolean isLinkRenderer;
 	protected FilterComponent filterComponent;

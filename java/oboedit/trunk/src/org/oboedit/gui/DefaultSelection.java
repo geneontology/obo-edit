@@ -15,7 +15,12 @@ import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultSelection implements Selection {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultSelection.class);
 
 	protected JComponent component;
 

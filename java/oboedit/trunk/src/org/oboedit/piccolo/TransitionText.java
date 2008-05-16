@@ -16,7 +16,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.util.PPaintContext;
 import edu.umd.cs.piccolox.nodes.PStyledText;
 
+import org.apache.log4j.*;
+
 public class TransitionText extends ViewRenderedStyleText implements Morphable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TransitionText.class);
 
 	protected boolean disablePaint = false;
 	protected ViewRenderedStyleText dummyOld;

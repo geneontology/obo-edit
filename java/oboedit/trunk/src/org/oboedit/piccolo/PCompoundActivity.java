@@ -8,7 +8,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.activities.PActivityScheduler;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 
+import org.apache.log4j.*;
+
 public class PCompoundActivity extends PInterpolatingActivity {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PCompoundActivity.class);
 
 	protected List<PActivity> activityList = new LinkedList<PActivity>();
 

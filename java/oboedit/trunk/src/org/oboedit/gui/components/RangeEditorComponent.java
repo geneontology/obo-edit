@@ -24,7 +24,12 @@ import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
+import org.apache.log4j.*;
+
 public class RangeEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RangeEditorComponent.class);
 
 	/**
 	 * 

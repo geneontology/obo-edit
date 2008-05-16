@@ -2,7 +2,12 @@ package org.oboedit.gui.event;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class ReasonerStatusEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerStatusEvent.class);
 
 	/**
 	 * 

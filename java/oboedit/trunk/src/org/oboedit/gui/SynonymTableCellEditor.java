@@ -35,7 +35,12 @@ import org.obo.filters.SynonymDbxrefSearchCriterion;
 import org.obo.filters.SynonymTextSearchCriterion;
 import org.oboedit.gui.components.SynonymEditorComponent;
 
+import org.apache.log4j.*;
+
 public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymTableCellEditor.class);
 
 	protected JTextPane synonymField = new JTextPane();
 

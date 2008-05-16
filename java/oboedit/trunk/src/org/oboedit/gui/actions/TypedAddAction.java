@@ -24,7 +24,12 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class TypedAddAction extends AddAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TypedAddAction.class);
 	protected boolean isType;
 
 	public TypedAddAction(boolean isType) {

@@ -34,7 +34,12 @@ import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.gui.ObjectSelector;
 
+import org.apache.log4j.*;
+
 public class PathUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PathUtil.class);
 
 	public static TreePath[] getPaths(Collection items,
 			ObjectSelector displayer, boolean shortestPathOnly) {

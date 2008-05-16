@@ -24,7 +24,12 @@ import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.event.PInputEventListener;
 
+import org.apache.log4j.*;
+
 public class EraseButtonBehavior extends AbstractClickActionButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EraseButtonBehavior.class);
 
 	protected DeleteAction delAction = new DeleteAction(false);
 

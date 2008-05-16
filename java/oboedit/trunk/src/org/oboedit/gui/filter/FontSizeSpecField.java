@@ -2,7 +2,12 @@ package org.oboedit.gui.filter;
 
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class FontSizeSpecField extends AbstractRendererSpecField<Integer> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FontSizeSpecField.class);
 
 	public static final FontSizeSpecField FIELD = new FontSizeSpecField();
 

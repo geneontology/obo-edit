@@ -8,7 +8,12 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
+import org.apache.log4j.*;
+
 public class MiniBrowser extends JDialog {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MiniBrowser.class);
 
 	/**
 	 * 
@@ -134,7 +139,7 @@ public class MiniBrowser extends JDialog {
 		try {
 			htmlPane.setPage(url);
 		} catch (Exception e) {
-			System.err.println("could not load " + url);
+			logger.error("could not load " + url);
 		}
 	}
 
@@ -147,7 +152,7 @@ public class MiniBrowser extends JDialog {
 			setTitle(title);
 			htmlPane.validate();
 		} catch (Exception e) {
-			System.err.println("could not load " + url);
+			logger.error("could not load " + url);
 		}
 	}
 

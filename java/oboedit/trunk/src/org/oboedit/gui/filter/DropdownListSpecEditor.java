@@ -6,8 +6,13 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 
+import org.apache.log4j.*;
+
 public class DropdownListSpecEditor<T> extends JPanel implements
-		GeneralRendererSpecFieldEditor<T> {
+	GeneralRendererSpecFieldEditor<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropdownListSpecEditor.class);
 
 	protected JComboBox valueBox = new JComboBox();
 

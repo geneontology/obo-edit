@@ -21,7 +21,12 @@ import javax.swing.text.html.HTMLDocument;
 import edu.umd.cs.piccolo.util.PPaintContext;
 import edu.umd.cs.piccolox.nodes.PStyledText;
 
+import org.apache.log4j.*;
+
 public class StyledText extends PStyledText {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StyledText.class);
 	/**
 	 * Compute the bounds of the text wrapped by this node. The text layout
 	 * is wrapped based on the bounds of this node. If the shrinkBoundsToFit parameter

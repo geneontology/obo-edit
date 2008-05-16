@@ -15,7 +15,12 @@ import org.obo.util.TermUtil;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.RootTextEditComponent;
 
+import org.apache.log4j.*;
+
 public class DefinitionEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefinitionEditorComponent.class);
 
 	/**
 	 * 

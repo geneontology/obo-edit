@@ -11,7 +11,12 @@ import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.verify.CheckTask;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class PostLoadVerifyTask extends AbstractReloadTask {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PostLoadVerifyTask.class);
 
 	public PostLoadVerifyTask() {
 	}

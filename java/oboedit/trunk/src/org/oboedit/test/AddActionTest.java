@@ -18,7 +18,12 @@ import org.bbop.util.*;
 import java.util.*;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.*;
+
 public class AddActionTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddActionTest.class);
 
 	protected Set<String> expectedIDs = new HashSet<String>();
 

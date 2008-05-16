@@ -6,7 +6,12 @@ import java.util.LinkedList;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.IdentifiedObject;
 
+import org.apache.log4j.*;
+
 public class TextCheckWarning extends CheckWarning {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextCheckWarning.class);
 
 	protected int startIndex;
 

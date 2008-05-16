@@ -4,7 +4,12 @@ import java.util.Iterator;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class PiccoloBoxLayout implements PiccoloLayoutManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PiccoloBoxLayout.class);
 
 	public static final int HORZ = 0;
 	public static final int VERT = 1;

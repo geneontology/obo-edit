@@ -18,7 +18,12 @@ import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
 import org.oboedit.gui.TermFilterEditor.BasicActionListener;
 
+import org.apache.log4j.*;
+
 public class LinkFilterEditor extends TermFilterEditor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkFilterEditor.class);
 
 	protected static String[] values = { "Self", "Type", "Child", "Parent" };
 	protected JComboBox aspectBox;

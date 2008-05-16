@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.DbxrefLibrary;
 
+import org.apache.log4j.*;
+
 public class DbxrefLibraryFactory extends AbstractComponentFactory<DbxrefLibrary> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefLibraryFactory.class);
 
 	public DbxrefLibraryFactory() {
 	}

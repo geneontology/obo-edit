@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.*;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -64,7 +63,12 @@ import org.oboedit.util.GUIUtil;
 
 
 
+import org.apache.log4j.*;
+
 public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CrossProductMatrixEditorComponent.class);
 
 	private static final long serialVersionUID = -7919246476674947971L;
 
@@ -74,7 +78,6 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		NORMAL
 	}
 
-	static Logger logger = Logger.getLogger("org.oboedit.gui");
 
 	protected JTable xpTable;
 	protected JComboBox relationChooser = new JComboBox();

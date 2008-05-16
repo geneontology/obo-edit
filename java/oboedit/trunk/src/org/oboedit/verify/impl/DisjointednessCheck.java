@@ -7,7 +7,12 @@ import org.obo.util.ReasonerUtil;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.verify.*;
 
+import org.apache.log4j.*;
+
 public class DisjointednessCheck extends AbstractCheck implements OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DisjointednessCheck.class);
 
 	public static final int MAX_BAD_ITEMS = 100;
 

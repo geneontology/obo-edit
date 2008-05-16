@@ -8,7 +8,12 @@ import org.oboedit.gui.ClickMenuAction;
 import org.oboedit.gui.DropMenuAction;
 import org.oboedit.gui.InputHandlerI;
 
+import org.apache.log4j.*;
+
 public class EditActionManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EditActionManager.class);
 	protected List<DropMenuAction> dropMenuActions = new LinkedList<DropMenuAction>();
 
 	protected List<ClickMenuAction> editActions = new LinkedList<ClickMenuAction>();

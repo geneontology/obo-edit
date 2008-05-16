@@ -59,7 +59,12 @@ import org.obo.history.TransitiveHistoryItem;
 import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class HistoryTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryTest.class);
 
 	protected OBOSession session;
 	protected OBOClass term;
@@ -98,7 +103,7 @@ public class HistoryTest extends TestCase {
 
 		if (randomTerm.equals(randomTerm2) || randomTerm2.equals(randomTerm3)
 				|| randomTerm.equals(randomTerm3)) {
-			System.err.println("duplicate random terms!!!");
+			logger.error("duplicate random terms!!!");
 			System.exit(1);
 		}
 
@@ -346,7 +351,7 @@ public class HistoryTest extends TestCase {
 	 * FileAdapterConfiguration("/home/jrichter/history.xml"); List histories =
 	 * (List) adapter. doOperation(OBOEditAdapter.READ_HISTORY, config, null);
 	 * Iterator it2 = histories.iterator(); while(it2.hasNext()) { HistoryList
-	 * historyList = (HistoryList) it2.next(); System.err.println("Applying
+	 * historyList = (HistoryList) it2.next(); logger.error("Applying
 	 * history "+historyList); Iterator it = historyList.getHistoryItems();
 	 * while(it.hasNext()) { HistoryItem item = (HistoryItem) it.next();
 	 * operationModel.apply(item); } } }

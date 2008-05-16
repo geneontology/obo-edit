@@ -19,7 +19,12 @@ import java.util.Map;
 import org.bbop.swing.ShapeUtil;
 import org.obo.datamodel.IdentifiedObject;
 
+import org.apache.log4j.*;
+
 public class HierarchicalGraphLayout implements GraphLayout {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HierarchicalGraphLayout.class);
 	//
 	// Magic constants.
 	// WARNING! Playing with these constants will mess with yo6ur head.
@@ -592,7 +597,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		int childLevel = e.getLayoutChild().getLevel().levelNumber;
 
 		if (parentLevel < childLevel - 1) {
-			// System.out.println("Rationalise "+parentLevel+" "+childLevel);
+			// logger.info("Rationalise "+parentLevel+" "+childLevel);
 			NodeObj a = e.getLayoutParent();
 			for (int i = parentLevel + 1; i <= childLevel; i++) {
 

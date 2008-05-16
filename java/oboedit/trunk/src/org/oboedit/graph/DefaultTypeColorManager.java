@@ -20,7 +20,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
 
+import org.apache.log4j.*;
+
 public class DefaultTypeColorManager implements TypeColorManager, TypeIconManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultTypeColorManager.class);
 	
 	protected Map colorMap = new HashMap();
 	protected Map iconMap = new HashMap();

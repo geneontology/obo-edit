@@ -11,13 +11,16 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
+
 import org.apache.log4j.*;
 
 public class OBO2OBOReasonerTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OBOReasonerTest.class);
 	
 	protected OBOSession session;
 	
-	Logger logger = Logger.getLogger("org.oboedit.test");
 
 	
 	public Collection<String> getReasonerFactoryNames() {
@@ -33,11 +36,11 @@ public class OBO2OBOReasonerTest extends TestCase {
 	public void testForIsA(String childID, String parentID) {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		System.out.println(child.getID());
+		logger.info(child.getID());
 		logger.info("testing for isA: "+child+" "+parent);
 
 		for (Link link : child.getParents()) {
-			System.out.println("  "+link.getParent().getID());
+			logger.info("  "+link.getParent().getID());
 		}
 		assertTrue(child.getParents().contains(
 				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
@@ -77,12 +80,12 @@ public class OBO2OBOReasonerTest extends TestCase {
 				" -reasonerfactory "
 				+ factoryName + " "
 				+ outFile.getPath();
-			System.err.println(cmd);
+			logger.error(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int returnVal = p.waitFor();
 			assertTrue("Exit value should be zero", returnVal == 0);
 
-			System.out.println("parsing: "+outFile.toString());
+			logger.info("parsing: "+outFile.toString());
 			session = TestUtil.getSession(outFile.toString());
 			
 			testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */

@@ -17,7 +17,12 @@ import java.io.*;
 import java.util.Iterator;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.*;
+
 public class TestUtil extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TestUtil.class);
 
 	protected OBOSession session;
 	protected OperationModel operationModel;
@@ -125,7 +130,7 @@ public class TestUtil extends TestCase {
 		Namespace ns;
 		do {
 			ns = getRandomNamespace();
-			System.err.println("randomns = " + ns + ", notThis = " + notThis);
+			logger.error("randomns = " + ns + ", notThis = " + notThis);
 		} while (notThis != null && ns.equals(notThis));
 
 		return ns;
@@ -141,7 +146,7 @@ public class TestUtil extends TestCase {
 	public Namespace getRandomNamespace() {
 		Iterator it = session.getNamespaces().iterator();
 		int index = (int) (Math.random() * session.getNamespaces().size());
-		System.err.println("random_index = " + index);
+		logger.error("random_index = " + index);
 		Namespace o = null;
 		for (int i = 0; it.hasNext() && (i < index || o == null); i++) {
 			o = (Namespace) it.next();

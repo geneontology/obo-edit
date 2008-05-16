@@ -8,7 +8,12 @@ import org.oboedit.gui.components.LinkDatabaseCanvas;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class DefaultNodeFactory implements NodeFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultNodeFactory.class);
 
 	protected TypeIconManager iconManager;
 	protected TypeColorManager colorManager;

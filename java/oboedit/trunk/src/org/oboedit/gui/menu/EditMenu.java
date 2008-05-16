@@ -22,7 +22,12 @@ import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.DefaultInputHandler;
 
+import org.apache.log4j.*;
+
 public class EditMenu extends DynamicMenu {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EditMenu.class);
 
 	public EditMenu() {
 		super("Edit");

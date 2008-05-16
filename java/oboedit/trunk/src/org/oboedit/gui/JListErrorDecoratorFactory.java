@@ -6,7 +6,12 @@ import javax.swing.text.JTextComponent;
 
 import org.obo.datamodel.FieldPathSpec;
 
+import org.apache.log4j.*;
+
 public class JListErrorDecoratorFactory implements ErrorDecoratorFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JListErrorDecoratorFactory.class);
 
 	public ErrorDecorator install(FieldPathSpec spec, OBOTextEditComponent parent,
 			JComponent c) {

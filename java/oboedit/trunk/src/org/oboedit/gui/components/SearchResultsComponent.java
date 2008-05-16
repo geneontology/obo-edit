@@ -41,8 +41,13 @@ import org.oboedit.gui.SearchResultsTableModel;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
 
+import org.apache.log4j.*;
+
 public class SearchResultsComponent extends AbstractGUIComponent implements
-		GUIComponent {
+	GUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SearchResultsComponent.class);
 
 	protected SearchComponentFactory factory;
 

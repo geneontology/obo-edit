@@ -21,7 +21,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
 
+import org.apache.log4j.*;
+
 public class BoundsGuarantor extends KeyedBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BoundsGuarantor.class);
 
 	protected StateCycler boundsGuarantor = new StateCycler();
 	protected StatusMessageDisplayer messageDisplayer;

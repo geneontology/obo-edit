@@ -8,7 +8,12 @@ import org.oboedit.piccolo.ViewRenderedStyleText;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class LinkTooltipFactory extends AbstractTooltipFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkTooltipFactory.class);
 
 	ViewRenderedStyleText text = new ViewRenderedStyleText();
 

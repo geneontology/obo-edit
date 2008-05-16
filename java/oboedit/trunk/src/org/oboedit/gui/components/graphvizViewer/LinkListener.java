@@ -14,7 +14,12 @@ import org.obo.datamodel.LinkedObject;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class LinkListener implements HyperlinkListener {	
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkListener.class);
 	
 	private JComponent graphvizCanvas;
 

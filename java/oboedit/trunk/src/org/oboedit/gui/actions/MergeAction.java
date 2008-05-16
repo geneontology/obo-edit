@@ -19,8 +19,13 @@ import org.oboedit.util.GUIUtil;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.*;
+
 public class MergeAction implements ClickMenuAction, DropMenuAction,
-		InputHandlerI {
+	InputHandlerI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MergeAction.class);
 
 	protected Selection preSelection;
 

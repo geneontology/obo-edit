@@ -5,7 +5,12 @@ import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.QuickFix.ReloadLevel;
 
+import org.apache.log4j.*;
+
 public class DefaultHistoryQuickFix implements HistoryQuickFix {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultHistoryQuickFix.class);
 
 	protected String desc;
 	protected HistoryItem item;

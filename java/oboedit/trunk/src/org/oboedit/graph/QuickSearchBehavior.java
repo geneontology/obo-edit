@@ -31,7 +31,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 
+import org.apache.log4j.*;
+
 public class QuickSearchBehavior implements ViewBehavior, NodeDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(QuickSearchBehavior.class);
 
 	protected static final int MAX_SEARCH_RESULTS = 10;
 

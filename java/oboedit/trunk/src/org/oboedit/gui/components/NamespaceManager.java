@@ -15,7 +15,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class NamespaceManager extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamespaceManager.class);
 
 	/**
 	 * 

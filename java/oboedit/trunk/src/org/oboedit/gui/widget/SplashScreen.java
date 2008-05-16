@@ -10,7 +10,12 @@ import org.oboedit.gui.Preferences;
 import java.net.URL;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class SplashScreen extends JWindow {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SplashScreen.class);
 
 	/**
 	 * 

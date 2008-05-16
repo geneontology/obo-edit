@@ -19,8 +19,13 @@ import org.oboedit.util.PathUtil;
 
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
-		InputHandlerI {
+	InputHandlerI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TypeChangeAction.class);
 
 	protected GestureTarget dest;
 

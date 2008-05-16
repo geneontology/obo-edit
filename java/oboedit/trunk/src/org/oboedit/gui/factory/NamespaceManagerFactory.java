@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.NamespaceManager;
 
+import org.apache.log4j.*;
+
 public class NamespaceManagerFactory extends AbstractComponentFactory<NamespaceManager> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamespaceManagerFactory.class);
 
 	public NamespaceManagerFactory() {
 	}

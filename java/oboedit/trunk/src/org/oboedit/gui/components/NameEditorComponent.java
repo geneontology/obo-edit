@@ -21,7 +21,12 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class NameEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NameEditorComponent.class);
 
 	/**
 	 * 

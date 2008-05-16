@@ -21,7 +21,12 @@ import org.bbop.swing.*;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.event.*;
 
+import org.apache.log4j.*;
+
 public class OBOEditComponentNameResolver implements ComponentNameResolver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOEditComponentNameResolver.class);
 
 	protected Map buttonGroups;
 

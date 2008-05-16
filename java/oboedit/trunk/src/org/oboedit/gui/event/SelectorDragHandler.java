@@ -10,7 +10,12 @@ import javax.swing.event.MouseInputAdapter;
 import org.oboedit.gui.ObjectSelector;
 
 
+import org.apache.log4j.*;
+
 public class SelectorDragHandler extends MouseInputAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectorDragHandler.class);
 	MouseEvent firstMouseEvent;
 	protected ObjectSelector selector;
 	
@@ -27,7 +32,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 	}
 
 	public void mouseDragged(MouseEvent e) {
-//		System.err.println("SelectionDragHandler.mousedragged "+e +",\nfirstMouseEvent = " + firstMouseEvent);
+//		logger.error("SelectionDragHandler.mousedragged "+e +",\nfirstMouseEvent = " + firstMouseEvent);
 		// Don't bother to drag if the component displays no image.
 		if (selector.getSelection().isEmpty())
 			return;
@@ -39,7 +44,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 		if (!inSelection)
 			return;
 			*/
-//		System.err.println("SelectionDragHandler.mousedragged: c = " + c + ", selected objects = " + selector.getSelection().getAllSelectedObjects()); // DEL
+//		logger.error("SelectionDragHandler.mousedragged: c = " + c + ", selected objects = " + selector.getSelection().getAllSelectedObjects()); // DEL
 //		if (!selector.getSelection().getAllSelectedObjects().contains(c))
 //		    return;
 
@@ -48,7 +53,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 			TransferHandler handler = c.getTransferHandler();
 			// Tell the transfer handler to initiate the drag.
 			handler.exportAsDrag(c, firstMouseEvent, TransferHandler.COPY);
-//			System.err.println("exporting drag "+e);
+//			logger.error("exporting drag "+e);
 			firstMouseEvent = null;
 		}
 	}

@@ -37,7 +37,12 @@ import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.event.TermHyperlinkListener;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class TableOfContentsComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TableOfContentsComponent.class);
 
 	JEditorPane pane = new JEditorPane("text/html", null);
 	protected File file;

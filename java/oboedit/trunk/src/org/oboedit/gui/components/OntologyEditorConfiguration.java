@@ -9,7 +9,12 @@ import org.obo.filters.Filter;
 import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.filter.RenderedFilter;
 
+import org.apache.log4j.*;
+
 public class OntologyEditorConfiguration implements ComponentConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OntologyEditorConfiguration.class);
 	public static final int SHOW_TOOLBAR_NEVER = 0;
 	public static final int SHOW_TOOLBAR_ON_HOTKEY = 1;
 	public static final int SHOW_TOOLBAR_ALWAYS = 2;

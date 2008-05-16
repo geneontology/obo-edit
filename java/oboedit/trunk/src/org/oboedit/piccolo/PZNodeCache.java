@@ -16,7 +16,12 @@ import edu.umd.cs.piccolo.util.PDimension;
 import edu.umd.cs.piccolo.util.PPaintContext;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class PZNodeCache extends PNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PZNodeCache.class);
 
 	protected PCamera camera;
 	protected transient Image imageCache;

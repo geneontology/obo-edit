@@ -11,7 +11,12 @@ import org.obo.datamodel.*;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class SynonymListEditor extends JPanel implements GenericEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymListEditor.class);
 
 	/**
 	 * 
@@ -206,7 +211,7 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		 * referencePane.getVerticalScrollBar(). addAdjustmentListener(new
 		 * AdjustmentListener() { public void
 		 * adjustmentValueChanged(AdjustmentEvent e) {
-		 * System.err.println("adjusted "+e); } });
+		 * logger.error("adjusted "+e); } });
 		 * referencePane.getVerticalScrollBar().setVisibleAmount(1);
 		 */
 		add(textPanel, "North");

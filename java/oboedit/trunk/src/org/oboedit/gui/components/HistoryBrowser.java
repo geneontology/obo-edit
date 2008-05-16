@@ -26,7 +26,12 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
+import org.apache.log4j.*;
+
 public class HistoryBrowser extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryBrowser.class);
 
 	/**
 	 * 

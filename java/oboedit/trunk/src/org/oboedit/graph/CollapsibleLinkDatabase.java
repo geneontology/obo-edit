@@ -10,7 +10,12 @@ import java.util.*;
 
 import javax.security.auth.Refreshable;
 
+import org.apache.log4j.*;
+
 public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CollapsibleLinkDatabase.class);
 
 	/**
 	 * 

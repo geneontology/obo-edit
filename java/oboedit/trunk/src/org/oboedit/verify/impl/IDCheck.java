@@ -37,7 +37,12 @@ import org.oboedit.verify.OntologyCheck;
 import org.oboedit.verify.QuickFix;
 import org.oboedit.verify.QuickFix.ReloadLevel;
 
+import org.apache.log4j.*;
+
 public class IDCheck extends AbstractCheck implements OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDCheck.class);
 
 	public IDCheck() {
 		// TODO Auto-generated constructor stub

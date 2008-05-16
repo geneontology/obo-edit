@@ -24,7 +24,12 @@ import java.io.*;
 import java.beans.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class IDManagerComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDManagerComponent.class);
 
 	/**
 	 * 
@@ -229,7 +234,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void selectProfile(IDProfile profile) {
-		System.err.println("selecting profile " + profile);
+		logger.error("selecting profile " + profile);
 		if (profile == null)
 			(new Exception("Selected null profile")).printStackTrace();
 		currentProfile = profile;

@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.SemanticParserManagerComponent;
 
+import org.apache.log4j.*;
+
 public class SemanticParserManagerFactory extends AbstractComponentFactory<SemanticParserManagerComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SemanticParserManagerFactory.class);
 
 	public SemanticParserManagerFactory() {
 	}

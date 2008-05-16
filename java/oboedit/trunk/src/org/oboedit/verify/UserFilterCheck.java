@@ -10,8 +10,13 @@ import org.obo.filters.*;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.*;
 
+import org.apache.log4j.*;
+
 public class UserFilterCheck extends AbstractCheck implements ObjectCheck,
-		UserCheck {
+	UserCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(UserFilterCheck.class);
 
 	public static class UserFilterConfiguration extends CheckConfiguration {
 		protected Filter filter = new ObjectFilterImpl();

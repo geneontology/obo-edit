@@ -18,7 +18,12 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.VerificationEvent;
 import org.oboedit.gui.event.VerificationListener;
 
+import org.apache.log4j.*;
+
 public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CheckTask.class);
 
 	protected boolean checkObsoletes;
 
@@ -232,7 +237,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	
 	@Override
 	public void cancel() {
-//	    System.out.println("CheckTask.cancel"); // DEL
+//	    logger.info("CheckTask.cancel"); // DEL
 		super.cancel();
 		if (currentCheck != null)
 			currentCheck.cancel();

@@ -20,7 +20,12 @@ import org.oboedit.gui.actions.TypedAddAction;
 
 import edu.umd.cs.piccolo.event.PInputEvent;
 
+import org.apache.log4j.*;
+
 public class AddNodeButtonBehavior extends AbstractClickActionButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddNodeButtonBehavior.class);
 
 	protected AddAction addAction = new AddAction();
 

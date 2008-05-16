@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.apache.log4j.*;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterOperationTask;
@@ -22,7 +21,12 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 
+import org.apache.log4j.*;
+
 public class AutosaveTask implements GUITask, Runnable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AutosaveTask.class);
 
 	protected Timer timer;
 
@@ -68,8 +72,6 @@ public class AutosaveTask implements GUITask, Runnable {
 	}
 
 	public void run() {
-		final Logger logger = Logger
-				.getLogger("org.geneontology.oboedit.autosave");
 		final Preferences preferences = Preferences.getPreferences();
 		final GregorianCalendar calendar = new GregorianCalendar();
 		if (preferences.getAutosaveExpirationDays() > 0) {
@@ -101,12 +103,12 @@ public class AutosaveTask implements GUITask, Runnable {
 			}
 			// Only do the autosave if there are unsaved changes.
 			if (!SessionManager.getManager().needsSave()) {
-//			    System.err.println("No changes--no need to autosave.");
+//			    logger.error("No changes--no need to autosave.");
 			    return;
 			}
 			String saveFile = new File(preferences.getAutosavePath(),
 					getFileName(calendar)).toString();
-			System.err.println("Autosaving backup file " + saveFile + " at " + (new Date()));
+			logger.error("Autosaving backup file " + saveFile + " at " + (new Date()));
 			final FileAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.setWritePath(saveFile);
 			DataAdapterOperationTask task = new DataAdapterOperationTask(

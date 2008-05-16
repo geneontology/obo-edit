@@ -17,7 +17,12 @@ import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class TooltipBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TooltipBehavior.class);
 
 	public static long DEFAULT_TOOLTIP_VISIBILITY_DELAY = 1000;
 

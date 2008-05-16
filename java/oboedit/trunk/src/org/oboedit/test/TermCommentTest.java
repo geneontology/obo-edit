@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.CommentChangeHistoryItem;
 import org.obo.history.HistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermCommentTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermCommentTest.class);
 
 	@Override
 	public Collection getTestBundles() {

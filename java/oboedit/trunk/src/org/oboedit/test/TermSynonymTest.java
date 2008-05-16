@@ -8,7 +8,12 @@ import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.history.AddSynonymHistoryItem;
 import org.obo.history.HistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermSynonymTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermSynonymTest.class);
 
 	@Override
 	public Collection getTestBundles() {

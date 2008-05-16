@@ -2,7 +2,12 @@ package org.oboedit.gui.components.graphvizViewer;
 
 import java.io.File;
 
+import org.apache.log4j.*;
+
 public class ExtensionFilter extends javax.swing.filechooser.FileFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExtensionFilter.class);
 	protected String ext;
 	protected String desc;
 

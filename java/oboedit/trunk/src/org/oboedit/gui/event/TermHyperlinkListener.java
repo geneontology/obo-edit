@@ -7,14 +7,19 @@ import java.util.regex.Pattern;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.apache.log4j.Logger;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
+import org.oboedit.verify.impl.CycleCheck;
 
 public abstract class TermHyperlinkListener implements HyperlinkListener {
 
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(TermHyperlinkListener.class);
+	
 	protected LinkDatabase linkDatabase;
 	
 	public TermHyperlinkListener() {
@@ -56,9 +61,9 @@ public abstract class TermHyperlinkListener implements HyperlinkListener {
 				} else
 					return;
 			}
-			System.err.println("linkType = "+linkType);
-			System.err.println("linkParam = "+linkParam);
-			System.err.println("linkVal = "+linkVal);
+			logger.error("linkType = "+linkType);
+			logger.error("linkParam = "+linkParam);
+			logger.error("linkVal = "+linkVal);
 			if (linkType.equals("term")) {
 				String id = linkVal.replaceAll("%3A", ":");
 				IdentifiedObject io = linkDatabase.getObject(id);

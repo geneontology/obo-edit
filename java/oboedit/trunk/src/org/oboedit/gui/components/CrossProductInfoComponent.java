@@ -22,7 +22,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.apache.log4j.*;
+
 public class CrossProductInfoComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CrossProductInfoComponent.class);
 
 
 	/**
@@ -105,7 +110,7 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 
 		// build sets
 		for (PathCapable io : gs.getAllSelectedObjects()) {
-			System.out.println("selected: " + io + " ? "+
+			logger.info("selected: " + io + " ? "+
 					(io instanceof LinkedObject));
 
 			if (io instanceof LinkedObject) {
@@ -154,15 +159,15 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 		boolean showCrossProductPanel = xpObjs.size() > 0;
 		if (showCrossProductPanel) {
 
-			System.out.println("about to write xps.."+xpObjs);
+			logger.info("about to write xps.."+xpObjs);
 
 			for (LinkedObject xp : xpObjs) {
 
-				System.out.println("xp = "+xp);
+				logger.info("xp = "+xp);
 				IdentifiedObject xpGenus = ReasonerUtil.getGenus((OBOClass)xp);
-				System.out.println("genus = "+xpGenus);
+				logger.info("genus = "+xpGenus);
 				Collection<Link> xpDiffs = ReasonerUtil.getDifferentia((OBOClass)xp);
-				System.out.println("diffs = "+xpDiffs);
+				logger.info("diffs = "+xpDiffs);
 				out.append("<h3>" + xp + "</h3>");
 				out.append("<b>Genus:</b> " + objectHref(xpGenus)
 						+ "<br><br>");
@@ -190,7 +195,7 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 
 		// show xps in which this is a genus or differentium
 		for (PathCapable io : gs.getAllSelectedObjects()) {
-			System.out.println("selected: " + io + " ? "+
+			logger.info("selected: " + io + " ? "+
 					(io instanceof LinkedObject));
 			if (io instanceof LinkedObject) {
 				LinkedObject xo = (LinkedObject)io;

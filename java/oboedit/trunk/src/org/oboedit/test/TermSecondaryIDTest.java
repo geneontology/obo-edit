@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.HistoryItem;
 import org.obo.history.SecondaryIDHistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermSecondaryIDTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermSecondaryIDTest.class);
 
 	@Override
 	public Collection getTestBundles() {
@@ -21,7 +26,7 @@ public class TermSecondaryIDTest extends OperationTest {
 
 		HistoryItem item = new SecondaryIDHistoryItem(oboClass, newText, false);
 
-		System.err.println("setting secondary id to = " + newText
+		logger.error("setting secondary id to = " + newText
 				+ ", newids = " + resultClass.getSecondaryIDs());
 
 		ObjectPair pair = new ObjectPair(oboClass, resultClass);

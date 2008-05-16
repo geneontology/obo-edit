@@ -12,8 +12,13 @@ import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
 import org.oboedit.gui.components.SearchResultsComponent;
 
+import org.apache.log4j.*;
+
 public class SearchResultsComponentFactory extends
-		AbstractComponentFactory<SearchResultsComponent> {
+	AbstractComponentFactory<SearchResultsComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SearchResultsComponentFactory.class);
 
 	public static class TemporaryRestoreStruct {
 		protected String title;

@@ -50,7 +50,12 @@ import org.obo.util.IDUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.DefaultTermHyperlinkListener;
 
+import org.apache.log4j.*;
+
 public class IDResolutionComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDResolutionComponent.class);
 
 	protected boolean checkImmediately;
 	protected JPanel resultsPanel = new JPanel();

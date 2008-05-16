@@ -11,7 +11,12 @@ import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIComponentFactory.FactoryCategory;
 import org.oboedit.gui.components.TreeView;
 
+import org.apache.log4j.*;
+
 public class TreeViewFactory extends AbstractComponentFactory<TreeView> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TreeViewFactory.class);
 	
 	public TreeViewFactory() {
 	}

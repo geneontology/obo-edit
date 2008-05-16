@@ -11,7 +11,6 @@ import org.bbop.swing.*;
 
 import java.util.*;
 import java.util.List;
-import org.apache.log4j.*;
 import org.obo.datamodel.*;
 import org.obo.history.HistoryItem;
 import org.oboedit.controller.EditActionManager;
@@ -19,7 +18,12 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultInputHandler implements InputHandlerI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultInputHandler.class);
 
 	protected JPopupMenu dragMenu = new JPopupMenu();
 
@@ -115,7 +119,7 @@ public class DefaultInputHandler implements InputHandlerI {
 			JMenuItem item = getMenuItem(selected, dest, editAction,
 					liveSelection, fromDrop, (fromDrop ? index : null),
 					inUseSet);
-//			System.err.println("item = " + item);
+//			logger.error("item = " + item);
 			if (item.isEnabled()) {
 				enabledCount++;
 				menu.add(item);
@@ -272,13 +276,11 @@ public class DefaultInputHandler implements InputHandlerI {
 
 		}
 		if (enabledCount > 0) {
-			//Logger.getLogger("").throwing(getClass().getName(), "drop", new Exception("logging popup event"));
-			Logger.getLogger("").trace(getClass().getName(), new Exception("logging popup event"));
 			dragMenu.show(dropPanel, (int) p.getX(), (int) p.getY());
 			return true;
 		} /*
 			 * else if (enabledCount == 1) {
-			 * System.err.println("DefaultInputHandler: applying "+liveAction);
+			 * logger.error("DefaultInputHandler: applying "+liveAction);
 			 * controller.apply(liveAction.execute()); return true; }
 			 */
 		else

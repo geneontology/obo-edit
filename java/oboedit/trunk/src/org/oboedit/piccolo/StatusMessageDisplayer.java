@@ -23,7 +23,12 @@ import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
 
+import org.apache.log4j.*;
+
 public class StatusMessageDisplayer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StatusMessageDisplayer.class);
 	protected PCamera camera;
 	protected Paint messageBoxPaint = Color.blue;
 	

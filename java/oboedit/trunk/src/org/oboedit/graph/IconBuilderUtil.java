@@ -16,7 +16,12 @@ import edu.umd.cs.piccolo.nodes.PText;
 import edu.umd.cs.piccolox.nodes.PComposite;
 import edu.umd.cs.piccolox.nodes.PNodeCache;
 
+import org.apache.log4j.*;
+
 public class IconBuilderUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IconBuilderUtil.class);
 
 	public static PNode createIcon(Shape backgroundShape,
 			Paint backgroundPaint, Stroke backgroundStroke, Paint strokePaint,

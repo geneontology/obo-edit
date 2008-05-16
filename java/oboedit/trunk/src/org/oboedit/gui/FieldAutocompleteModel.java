@@ -18,7 +18,12 @@ import org.obo.query.QueryEngine;
 import org.obo.util.QueryUtil;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class FieldAutocompleteModel<T> extends AbstractAutocompleteModel<T, T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FieldAutocompleteModel.class);
 
 	protected Collection<FieldPathSpec> specs;
 	protected LinkDatabase linkDatabase;

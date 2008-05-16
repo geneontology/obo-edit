@@ -32,7 +32,6 @@
 	<classpathentry exported="true" kind="lib" path="/OBO/lib/commons-lang-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-apibinding.jar"/>
@@ -53,5 +52,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlparser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlrenderer.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-util.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/BBOP"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OBO"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

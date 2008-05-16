@@ -13,8 +13,13 @@ import org.obo.history.AddDbxrefHistoryItem;
 import org.obo.history.DelDbxrefHistoryItem;
 import org.obo.history.HistoryItem;
 
+import org.apache.log4j.*;
+
 public class DefinitionDbxrefEditorComponent extends
-		AbstractDbxrefEditorComponent {
+	AbstractDbxrefEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefinitionDbxrefEditorComponent.class);
 	protected final static FieldPathSpec spec = new FieldPathSpec(
 			DefinitionDbxrefSearchCriterion.CRITERION);
 

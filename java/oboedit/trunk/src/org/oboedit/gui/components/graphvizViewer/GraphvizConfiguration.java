@@ -12,7 +12,12 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class GraphvizConfiguration implements ComponentConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphvizConfiguration.class);
 	protected Map colorMap = new HashMap();
 	protected Color bgcolor = Color.black;
 

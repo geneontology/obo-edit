@@ -4,7 +4,12 @@ import org.obo.datamodel.LinkedObject;
 import org.oboedit.gui.FilteredRenderable;
 import org.oboedit.gui.HTMLNodeLabelProvider;
 
+import org.apache.log4j.*;
+
 public class HTMLSpecField extends AbstractRendererSpecField<String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLSpecField.class);
 
 	public static final HTMLSpecField FIELD = new HTMLSpecField();
 	protected static final String REPLACE_SEQ = "$term$";

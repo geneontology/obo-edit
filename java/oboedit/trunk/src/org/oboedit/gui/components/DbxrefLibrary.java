@@ -17,7 +17,12 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class DbxrefLibrary extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefLibrary.class);
 
 	/**
 	 * 

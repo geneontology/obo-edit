@@ -56,7 +56,12 @@ import org.oboedit.gui.event.SelectionListener;
 
 
 
+import org.apache.log4j.*;
+
 public class AnnotationSummaryComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationSummaryComponent.class);
 
 	private static final long serialVersionUID = -7919246476674947971L;
 
@@ -122,7 +127,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		AnnotationSummaryTableModel asTableModel = new AnnotationSummaryTableModel(session);
 		
 				
-		System.out.println("making asTable");
+		logger.info("making asTable");
 		// create a JTable with per-cell tooltips
 		asTable = new JTable(asTableModel) {
 			public String getToolTipText(MouseEvent e) {
@@ -322,12 +327,12 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			Collection<LinkedObject> subjs =  new LinkedList<LinkedObject>();
 			Collection<LinkedObject> objSet =  new LinkedList<LinkedObject>();
 
-			System.out.println("n_objs: "+objSet.size());
-			System.out.println("n_subjs: "+subjs.size());
+			logger.info("n_objs: "+objSet.size());
+			logger.info("n_subjs: "+subjs.size());
 			if (checkBoxUseTransitive.isSelected()) {
 				Set<LinkedObject> objsWithAncs = new HashSet<LinkedObject>();
 				for (LinkedObject obj : objSet) {
-					//System.out.println("  direct annotation to:"+obj.getID()+" :: "+obj);
+					//logger.info("  direct annotation to:"+obj.getID()+" :: "+obj);
 					if (obj == null)
 						continue;
 					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true);
@@ -335,7 +340,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				}
 				objSet = objsWithAncs;
 			}
-			System.out.println("n_objs (after including transitive): "+objSet.size());
+			logger.info("n_objs (after including transitive): "+objSet.size());
 			
 			if (checkBoxConcise.isSelected()) {
 				//MultiMap<LinkedObject, LinkedObject> obj2subj = 
@@ -362,22 +367,22 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					for (Link link : obj.getChildren())
 						if (objSet.contains(link.getChild()))
 							parentsAndChildren.add(link.getChild());
-					//System.out.println(parentsAndChildren.size()+" ::: "+obj);
+					//logger.info(parentsAndChildren.size()+" ::: "+obj);
 					Collection<LinkedObject> profile =
 						obj2subj.get(obj);
 						//AnnotationUtil.getSubjectsAnnotatedWithObject(session, obj);
 					boolean isInformative = false; // only informative if a neighbour is different
-					//System.out.println("  profile="+profile);
+					//logger.info("  profile="+profile);
 					for (LinkedObject neighbor : parentsAndChildren) {
 						Set<LinkedObject> neighborProfile =
 							obj2subj.get(neighbor);
 							//AnnotationUtil.getSubjectsAnnotatedWithObject(session, neighbor);
-							//System.out.println("      Nprofile="+neighborProfile+" "+neighbor);
+							//logger.info("      Nprofile="+neighborProfile+" "+neighbor);
 						if (neighborProfile == null ||
 								profile == null ||
 								!neighborProfile.equals(profile))
 							isInformative = true;
-						//System.out.println("      INF:"+isInformative);
+						//logger.info("      INF:"+isInformative);
 					}
 					if (parentsAndChildren.size() == 0)
 						isInformative = true; // graph singletons are informative
@@ -385,13 +390,13 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 						filteredObjSet.add(obj);
 				}
 				objSet = filteredObjSet;
-				System.out.println("n_objs (uniformative nodes trimmed): "+objSet.size());
+				logger.info("n_objs (uniformative nodes trimmed): "+objSet.size());
 
 			}
 			
 			LinkedList<LinkedObject> objs = new LinkedList<LinkedObject>(objSet);
 			Collections.sort(objs, new ClassSorter());
-			//System.out.println("sorted objs="+objs);
+			//logger.info("sorted objs="+objs);
 			rowObjs = objs.toArray(new LinkedObject[0]);
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
@@ -399,7 +404,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					
 			rowCount = objs.size();
 			columnCount = subjs.size();
-			System.out.println(rowCount + "/" + columnCount);
+			logger.info(rowCount + "/" + columnCount);
 			
 			HashMap<LinkedObject, Integer> hdr2rownum =
 				new HashMap<LinkedObject, Integer>();
@@ -408,11 +413,11 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 			// fill edges of grid
 			for (int i=0; i< objs.size(); i++) {
-				//System.out.println("row: "+i+" ="+((IdentifiedObject)objs.toArray()[i]).getID()+" :: "+objs.toArray()[i]);
+				//logger.info("row: "+i+" ="+((IdentifiedObject)objs.toArray()[i]).getID()+" :: "+objs.toArray()[i]);
 				hdr2rownum.put((LinkedObject) objs.toArray()[i], i);
 			}
 			for (int i=0; i< subjs.size(); i++) {
-				//System.out.println("col: "+i+" ="+subjs.toArray()[i]);
+				//logger.info("col: "+i+" ="+subjs.toArray()[i]);
 				hdr2colnum.put((LinkedObject) subjs.toArray()[i], i);
 			}
 			
@@ -423,30 +428,30 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			//cellStatus = new CellStatus[rowCount][columnCount];
 			
 			for (Annotation annot : annots) {
-				//System.out.println(annot);
+				//logger.info(annot);
 				LinkedObject annotatedEntity = annot.getSubject();
 				LinkedObject annotatedWithObject = annot.getObject();
 				
 				int row = hdr2rownum.get(annotatedWithObject); // classes
 				int col = hdr2colnum.get(annotatedEntity); // annotated entities
 				setCell(annot,row,col);
-				//System.out.println("  setting cell " + row + ","+col);
+				//logger.info("  setting cell " + row + ","+col);
 				
 				if (checkBoxUseTransitive.isSelected()) {
 					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true)) {
-						//System.out.println("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
+						//logger.info("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
 						if (hdr2rownum.containsKey(objAnc)) {
 							row = hdr2rownum.get(objAnc);
 							setCellTransitive(annot,row,col);
 						}
 						else {
 							if (!checkBoxConcise.isSelected())
-								System.err.println("THIS SHOULD NOT HAPPEN!! "+objAnc);
+								logger.error("THIS SHOULD NOT HAPPEN!! "+objAnc);
 						}
 					}
 				}
 			}
-			System.out.println("made table model");
+			logger.info("made table model");
 		}
 		
 		public int getRowCount() {
@@ -494,7 +499,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		 */
 		public void setCell(Annotation lo,
 							int row, int column) {
-			//System.out.println("adding "+row+" "+column+" = "+lo);
+			//logger.info("adding "+row+" "+column+" = "+lo);
 			if (matrix[row][column] == null) {
 				matrix[row][column] = new AnnotationSummary();
 			}
@@ -507,7 +512,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		
 		public void setCellTransitive(Annotation lo,
 				int row, int column) {
-//			System.out.println("adding "+row+" "+column+" = "+lo);
+//			logger.info("adding "+row+" "+column+" = "+lo);
 			if (matrix[row][column] == null) {
 				matrix[row][column] = new AnnotationSummary();
 			}
@@ -544,10 +549,10 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				return "-";
 			}
 			else {
-				//System.out.println("cn for "+col+" = "+columnObjs[col-1].getName());
+				//logger.info("cn for "+col+" = "+columnObjs[col-1].getName());
 				LinkedObject co = columnObjs[col-1];
 				if (co == null) {
-					System.err.println("nothing in col: "+col);
+					logger.error("nothing in col: "+col);
 					return "";
 				}
 				else

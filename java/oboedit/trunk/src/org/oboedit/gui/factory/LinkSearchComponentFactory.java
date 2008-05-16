@@ -5,7 +5,12 @@ import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
 import org.oboedit.gui.components.SearchComponent;
 
+import org.apache.log4j.*;
+
 public class LinkSearchComponentFactory extends AbstractComponentFactory<SearchComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkSearchComponentFactory.class);
 
 	public LinkSearchComponentFactory() {
 	}

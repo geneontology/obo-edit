@@ -9,7 +9,12 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.io.IOException;
 
+import org.apache.log4j.*;
+
 public class DropUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropUtil.class);
 	public static Selection getSelection(Transferable t) {
 		Object transferData = null;
 		try {

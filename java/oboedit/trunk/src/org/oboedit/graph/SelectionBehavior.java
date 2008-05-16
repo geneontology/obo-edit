@@ -27,7 +27,12 @@ import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PBounds;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class SelectionBehavior implements ViewBehavior, NodeDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectionBehavior.class);
 
 	public static final Object STROKE_PATH_KEY = new Object();
 

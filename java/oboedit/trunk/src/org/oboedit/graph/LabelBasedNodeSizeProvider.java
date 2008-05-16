@@ -7,7 +7,12 @@ import org.oboedit.gui.NodeLabelProvider;
 import org.oboedit.gui.ObjectSelector;
 import org.oboedit.piccolo.ViewRenderedStyleText;
 
+import org.apache.log4j.*;
+
 public class LabelBasedNodeSizeProvider implements NodeSizeProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LabelBasedNodeSizeProvider.class);
 
 	protected ViewRenderedStyleText text = null;
 	protected int initialNodeWidth = 200;

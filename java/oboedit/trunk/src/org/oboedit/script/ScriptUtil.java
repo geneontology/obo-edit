@@ -21,7 +21,12 @@ import org.bbop.io.IOUtil;
  * 
  * @author jrichter
  */
+import org.apache.log4j.*;
+
 public class ScriptUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScriptUtil.class);
 	public Set createSet() {
 		return new HashSet();
 	}

@@ -23,7 +23,12 @@ import org.oboedit.gui.SVGIcon;
 import org.w3c.dom.Document;
 
 
+import org.apache.log4j.*;
+
 public class SVGUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SVGUtil.class);
 
 	public static GraphicsNode getSVG(String uri) throws IOException {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();

@@ -5,7 +5,12 @@ import java.awt.Color;
 import org.oboedit.gui.FilteredRenderable;
 
 
+import org.apache.log4j.*;
+
 public class LinkRenderSpec implements RenderSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkRenderSpec.class);
 
 	public static final int SOLID_LINE = 0;
 	public static final int WAVY_LINE = 1;

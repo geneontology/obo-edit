@@ -12,7 +12,12 @@ import javax.swing.event.ChangeListener;
 import org.bbop.swing.GenericEditorComponent;
 import org.bbop.swing.ListEditor;
 
+import org.apache.log4j.*;
+
 public class ColorEditor extends JPanel implements GenericEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ColorEditor.class);
 
 	/**
 	 * 

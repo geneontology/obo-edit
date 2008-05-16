@@ -3,7 +3,12 @@ package org.oboedit.gui.components.graphvizViewer;
 import java.awt.Color;
 import java.io.Serializable;
 
+import org.apache.log4j.*;
+
 public class NamedColor implements Serializable, Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamedColor.class);
 	/**
 	 * 
 	 */

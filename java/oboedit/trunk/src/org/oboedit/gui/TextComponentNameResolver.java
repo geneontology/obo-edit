@@ -22,8 +22,13 @@ import org.oboedit.gui.components.RangeEditorComponent;
 import org.oboedit.gui.components.SynonymEditorComponent;
 import org.oboedit.gui.widget.IntersectionPanel;
 
+import org.apache.log4j.*;
+
 public class TextComponentNameResolver implements
-		ComponentNameResolver {
+	ComponentNameResolver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextComponentNameResolver.class);
 
 	protected Collection<OBOTextEditComponent> components = new LinkedList<OBOTextEditComponent>();
 

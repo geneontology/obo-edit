@@ -3,8 +3,13 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.IntersectionEditor;
 
+import org.apache.log4j.*;
+
 public class IntersectionEditorFactory extends
-		AbstractComponentFactory<IntersectionEditor> {
+	AbstractComponentFactory<IntersectionEditor> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionEditorFactory.class);
 
 	public IntersectionEditorFactory() {
 	}

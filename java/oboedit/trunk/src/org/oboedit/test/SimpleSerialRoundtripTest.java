@@ -11,7 +11,12 @@ import org.obo.datamodel.OBOSession;
 
 import junit.framework.*;
 
+import org.apache.log4j.*;
+
 public class SimpleSerialRoundtripTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleSerialRoundtripTest.class);
 
 	public String[] testFiles = { "test_resources/testfile.1.0.obo" };
 

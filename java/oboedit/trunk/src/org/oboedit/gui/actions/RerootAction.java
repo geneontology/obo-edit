@@ -10,7 +10,12 @@ import org.oboedit.util.GUIUtil;
 
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class RerootAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RerootAction.class);
 
 	protected Selection sources;
 

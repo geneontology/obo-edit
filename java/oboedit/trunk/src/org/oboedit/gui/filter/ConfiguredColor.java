@@ -4,7 +4,12 @@ import java.awt.Color;
 
 import org.oboedit.gui.ObjectSelector;
 
+import org.apache.log4j.*;
+
 public class ConfiguredColor implements ColorProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ConfiguredColor.class);
 	protected Color color;
 	protected boolean doBlend;
 

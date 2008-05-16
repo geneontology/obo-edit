@@ -21,7 +21,12 @@ import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.util.TermUtil;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PathTask.class);
 	protected LinkDatabase linkDatabase = DefaultLinkDatabase.getDefault();
 	protected RootAlgorithm rootAlgorithm = RootAlgorithm.GREEDY;
 	protected double progress;

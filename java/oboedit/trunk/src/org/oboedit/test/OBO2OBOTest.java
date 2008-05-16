@@ -5,7 +5,12 @@ import java.io.*;
 
 import org.obo.datamodel.OBOSession;
 
+import org.apache.log4j.*;
+
 public class OBO2OBOTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OBOTest.class);
 
 	public void testScript() throws Exception {
 		File testFile = new File("test_resources/testfile.1.0.obo");
@@ -18,7 +23,7 @@ public class OBO2OBOTest extends TestCase {
 			"./launch_scripts/obo2obo " + testFile.getPath() + " "
 			+ "-formatversion OBO_1_2 " + "-o "
 			+ out12File.getPath();
-		System.err.println(cmd);
+		logger.error(cmd);
 		Process p = Runtime.getRuntime().exec(cmd);
 		int returnVal = p.waitFor();
 		assertTrue("Exit value should be zero", returnVal == 0);

@@ -11,7 +11,12 @@ import org.obo.history.HistoryList;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class OBODiff {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBODiff.class);
 
 	public static void main(String[] args) throws IOException,
 			DataAdapterException {
@@ -78,7 +83,6 @@ public class OBODiff {
 	}
 
 	public static void printUsage() {
-		System.err.println("Usage: obodiff file1 file2");
-		System.err.println();
+		logger.error("Usage: obodiff file1 file2");
 	}
 }

@@ -145,7 +145,12 @@ import org.oboedit.script.GUIScriptDelegate;
 import org.oboedit.util.GUIUtil;
 
 
+import org.apache.log4j.*;
+
 public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultGUIStartupTask.class);
 
 	@Override
 	protected Collection<GUITask> getDefaultTasks() {

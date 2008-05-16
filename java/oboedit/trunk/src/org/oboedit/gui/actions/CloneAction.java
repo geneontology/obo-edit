@@ -16,7 +16,12 @@ import org.oboedit.util.GUIUtil;
 
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class CloneAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CloneAction.class);
 
 	protected Selection sources;
 

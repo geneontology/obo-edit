@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.log4j.*;
+
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
@@ -58,7 +60,12 @@ import org.oboedit.gui.filter.RenderedFilter;
  */
 public abstract class AbstractFetchTask<T> implements GUITask {
 
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractFetchTask.class);
+	
 	public static class FetchTaskConfiguration {
+	
+		
 		protected boolean enabled;
 
 		public FetchTaskConfiguration() {
@@ -127,7 +134,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 				IdentifiedObject obj) {
 			try {
 				T val = decoratedObjects.get(obj);
-				// System.err.println("val = " + val
+				// logger.error("val = " + val
 				// + ", decoratedObjects.get("+obj+") = "
 				// + decoratedObjects.get(obj) + " decoratedObjects = "
 				// + decoratedObjects);
@@ -182,7 +189,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 					// while (pendingObjects.size() > 0) {
 					// IdentifiedObject io = pendingObjects.removeFirst();
 					// decoratedObjects.put(io, getValue(io));
-					// System.err.println("decoratedObjects =
+					// logger.error("decoratedObjects =
 					// "+decoratedObjects);
 					// canvas.relayout();
 					// }
@@ -560,7 +567,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 			encoder.writeObject(getConfiguration());
 			encoder.close();
 		} catch (IOException ex) {
-			System.err.println("Couldn't flush component config successfully");
+			logger.error("Couldn't flush component config successfully");
 		}
 	}
 

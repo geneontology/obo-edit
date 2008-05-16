@@ -4,8 +4,13 @@ import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.ExtendedInfoComponent;
 import org.oboedit.gui.components.TableOfContentsComponent;
 
+import org.apache.log4j.*;
+
 public class TableOfContentsFactory extends
-		AbstractComponentFactory<TableOfContentsComponent> {
+	AbstractComponentFactory<TableOfContentsComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TableOfContentsFactory.class);
 
 	public TableOfContentsFactory() {
 	}

@@ -7,7 +7,12 @@ import org.obo.datamodel.LinkedObject;
 import org.oboedit.graph.OENode;
 
 
+import org.apache.log4j.*;
+
 public class GODBConnect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GODBConnect.class);
 
 	// Driver.
 	private String DRIVER = "com.mysql.jdbc.Driver";
@@ -34,7 +39,7 @@ public class GODBConnect {
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -49,7 +54,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			System.err.println("___ERROR (" + connection + "): " + e.getMessage());
+			logger.error("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 	
@@ -61,7 +66,7 @@ public class GODBConnect {
 		try {
 			connector.close();
 		} catch (SQLException e) {
-			System.err.println("___ERROR: " + e.getMessage());
+			logger.error("___ERROR: " + e.getMessage());
 		}
 
 		// Assemble connection string and SQL string.
@@ -71,7 +76,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			System.err.println("___ERROR (" + connection + "): " + e.getMessage());
+			logger.error("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 
@@ -89,17 +94,17 @@ public class GODBConnect {
 			Statement stmt = connector.createStatement();
 			rs = stmt.executeQuery(sql);
 			
-			System.err.println("SQL: " + sql);
-			System.err.println("\tDB: " + DB);
-			System.err.println("\tHOST: " + HOST);
-			System.err.println("\tUSER: " + USER);
-			System.err.println("\tPASSWORD: " + PASSWORD);
+			logger.error("SQL: " + sql);
+			logger.error("\tDB: " + DB);
+			logger.error("\tHOST: " + HOST);
+			logger.error("\tUSER: " + USER);
+			logger.error("\tPASSWORD: " + PASSWORD);
 			while( rs.next() ){
 				number = rs.getInt("count");
-				System.err.println("SQL (RESULT): " + number);
+				logger.error("SQL (RESULT): " + number);
 			}
 		} catch (SQLException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 		
 		//this.disconnect();

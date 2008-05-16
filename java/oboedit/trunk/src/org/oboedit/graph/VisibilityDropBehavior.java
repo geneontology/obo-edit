@@ -13,7 +13,12 @@ import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
+import org.apache.log4j.*;
+
 public class VisibilityDropBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(VisibilityDropBehavior.class);
 	protected DropTargetListener dropListener = new DropTargetListener() {
 
 		public void dragEnter(DropTargetDragEvent dtde) {

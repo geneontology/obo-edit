@@ -10,7 +10,12 @@ import java.util.Map;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class GeneralRendererSpec implements RenderSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GeneralRendererSpec.class);
 
 	protected Map<GeneralRendererSpecField<?>, Object> map = new HashMap<GeneralRendererSpecField<?>, Object>();
 

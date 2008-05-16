@@ -9,7 +9,12 @@ import org.oboedit.verify.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class SynonymCheck extends AbstractTextCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymCheck.class);
 	public static final FieldPathSpec PATH_SPEC = new FieldPathSpec(
 			SynonymSearchCriterion.CRITERION,
 			SynonymTextSearchCriterion.CRITERION);

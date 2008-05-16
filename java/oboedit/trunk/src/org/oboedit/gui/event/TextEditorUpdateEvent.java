@@ -19,7 +19,12 @@ import org.obo.datamodel.*;
  * to an empty value, such as "" or an empty vector.
  */
 
+import org.apache.log4j.*;
+
 public class TextEditorUpdateEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextEditorUpdateEvent.class);
 
 	/**
 	 * 

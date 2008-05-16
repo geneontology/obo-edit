@@ -18,7 +18,12 @@ import org.obo.util.IDUtil;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
 
+import org.apache.log4j.*;
+
 public class IDManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDManager.class);
 
 	protected static IDManager idManager;
 

@@ -25,7 +25,12 @@ import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import java.util.Iterator;
 
+import org.apache.log4j.*;
+
 public class ExplanationComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExplanationComponent.class);
 
 	/**
 	 * 

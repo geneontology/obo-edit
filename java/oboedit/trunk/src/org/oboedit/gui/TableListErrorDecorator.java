@@ -41,8 +41,13 @@ import org.oboedit.verify.TextReplaceQuickFix;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
+import org.apache.log4j.*;
+
 public class TableListErrorDecorator extends
-		AbstractErrorDecorator<TableList<?>> {
+	AbstractErrorDecorator<TableList<?>> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TableListErrorDecorator.class);
 
 	protected TableModelListener listener;
 

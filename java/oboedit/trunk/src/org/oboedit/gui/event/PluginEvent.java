@@ -5,7 +5,12 @@ import org.oboedit.gui.*;
 
 import java.util.EventObject;
 
+import org.apache.log4j.*;
+
 public class PluginEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PluginEvent.class);
 
 	/**
 	 * 

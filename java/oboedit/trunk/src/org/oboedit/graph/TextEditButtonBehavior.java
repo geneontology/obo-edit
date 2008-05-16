@@ -26,7 +26,12 @@ import org.oboedit.piccolo.PiccoloUtil;
 import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 
+import org.apache.log4j.*;
+
 public class TextEditButtonBehavior implements ToolbarButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextEditButtonBehavior.class);
 
 	protected PBasicInputEventHandler handler = new PBasicInputEventHandler() {
 		@Override

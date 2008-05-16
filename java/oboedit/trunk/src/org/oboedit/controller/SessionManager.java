@@ -8,7 +8,6 @@ import java.util.List;
 //asa
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
-import org.apache.log4j.*;
 
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
@@ -49,7 +48,12 @@ import org.oboedit.gui.event.RootChangeListener;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class SessionManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SessionManager.class);
 	protected static SessionManager manager;
 
 	protected OBOSession session;
@@ -80,7 +84,6 @@ public class SessionManager {
 
 	protected boolean recacheInBackground = true;
 	
-	protected static Logger logger = Logger.getLogger("org.oboedit.datamodel.history");
 	
 
 	public SessionManager() {
@@ -178,7 +181,7 @@ public class SessionManager {
 	}
 
 	public void setUseReasoner(final boolean useReasoner) {
-//	    System.out.println("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
+//	    logger.info("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
 		if (getUseReasoner() != useReasoner) {
 			Preferences.getPreferences().setUseReasoner(useReasoner);
 			fireReasonerStatusChange(new ReasonerStatusEvent(this, useReasoner));
@@ -193,7 +196,7 @@ public class SessionManager {
 	return Preferences.getPreferences().getReasonerName();
     }
     public void setReasonerName(String newReasonerName) {
-//	System.out.println("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
+//	logger.info("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
 	if (!(newReasonerName.equals(getReasonerName()))) {
 	    Preferences.getPreferences().setReasonerName(newReasonerName);
 	    setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
@@ -246,7 +249,7 @@ public class SessionManager {
 		// reasonerOpModel.apply(item);
 //		long time = System.currentTimeMillis();
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
-//		System.err.println("fired history applied in "
+//		logger.error("fired history applied in "
 //				+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
@@ -315,7 +318,7 @@ public class SessionManager {
 			session.getOperationModel().removeLockstepModel(reasonerOpModel);
 		}
 		String reasonerName = getReasonerName();
-//	    System.out.println("initializeReasonerDatabase(" + reasonerName + ")"); // DEL
+//	    logger.info("initializeReasonerDatabase(" + reasonerName + ")"); // DEL
 		reasoner = createReasoner(reasonerName);
 		reasoner.setLinkDatabase(session.getLinkDatabase());
 		reasonerOpModel = new ReasonerOperationModel(reasoner);
@@ -326,10 +329,10 @@ public class SessionManager {
 		AbstractTaskDelegate<Void> reasoningTask = new AbstractTaskDelegate<Void>() {
 			@Override
 			public void execute() {
-				System.err.println("reasoning started...");
+				logger.error("reasoning started...");
 				long time = System.currentTimeMillis();
 				reasoner.recache();
-				System.err.println("reasoning finished in "
+				logger.error("reasoning finished in "
 						+ (System.currentTimeMillis() - time) + " milliseconds");
 			}
 
@@ -364,11 +367,11 @@ public class SessionManager {
 	    reasonerFactory = registry.lookupFactory(reasonerName);
 	    if (reasonerFactory == null) {
 		reasonerFactory = registry.getDefaultReasonerFactory();
-		System.err.println("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
+		logger.error("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
 		return reasonerFactory.createReasoner();
 	    }
 	    else {
-//		System.out.println("Got factory for reasoner " + reasonerName);  // DEL
+//		logger.info("Got factory for reasoner " + reasonerName);  // DEL
 		return reasonerFactory.createReasoner();
 	    }
 	}
@@ -417,9 +420,6 @@ public class SessionManager {
 			if (getUseReasoner()) {
 				OperationWarning reasonerWarning = reasonerOpModel.apply(item);
 				Object[] params = { item, reasonerWarning };
-/*				Logger.getLogger("org.oboedit.datamodel.history").log(
-						Level.WARN,
-						"Reasoner warning message while trying to apply history item");*/
 				
 				
 				logger.warn("Reasoner warning message while trying to apply history item");
@@ -428,7 +428,7 @@ public class SessionManager {
 				Object[] params = { item, warning };
 				logger.warn("Warning message while trying to apply history item");
 
-				System.err.println("*** GOT WARNING = " + warning);
+				logger.error("*** GOT WARNING = " + warning);
 			}
 			fireHistoryApplied(new HistoryAppliedEvent(this, item));
 		}
@@ -443,7 +443,7 @@ public class SessionManager {
 	protected void reverse(HistoryItem item) {
 		OperationWarning warning = getOperationModel().reverse(item);
 		if (warning != null)
-			System.err.println("SessionManager.reverse: warning = " + warning);
+			logger.error("SessionManager.reverse: warning = " + warning);
 		if (getUseReasoner()) {
 			reasonerOpModel.reverse(item);
 		}
