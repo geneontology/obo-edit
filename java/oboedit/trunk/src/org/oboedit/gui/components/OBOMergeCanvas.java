@@ -70,7 +70,12 @@ import javax.swing.JFrame;
  * 
  */
 
+import org.apache.log4j.*;
+
 public class OBOMergeCanvas extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOMergeCanvas.class);
 
 	public static final int HIDE_ON_CLOSE = 1;
 	private static void addAComponentXAlignment(JComponent componentName, Container container) {
@@ -622,7 +627,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 //	This is part of the mechanism to close the dialog now that shows if someone has not filled
 //	in all the file paths.       
 	public void save(){
-//		System.out.println("all going well so far.");
+//		logger.info("all going well so far.");
 	}
 
 
@@ -636,7 +641,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			branchFileTextFieldString = branchFileTextField
 			.getText();
 
-//			System.out.println("arg = " + branchFileTextFieldString);
+//			logger.info("arg = " + branchFileTextFieldString);
 
 		}
 
@@ -667,7 +672,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			java.awt.event.ActionEvent evt) {
 		failOnClashChoiceString = (String) failOnClashCombobox
 		.getSelectedItem();
-//		System.out.println("arg = " + failOnClashChoiceString);
+//		logger.info("arg = " + failOnClashChoiceString);
 
 	}
 
@@ -691,25 +696,25 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 
 		obomergeArgsArrayList.clear();
 
-		System.out.println("Arguments applied were:\n");
+		logger.info("Arguments applied were:\n");
 
 		if ( ! failOnClashChoiceString.trim().equals("")) {
 			obomergeArgsArrayList.add("-fail-on-clash");
 			obomergeArgsArrayList.add(failOnClashChoiceString);
-			System.out.println("    -fail-on-clash " + failOnClashChoiceString);
+			logger.info("    -fail-on-clash " + failOnClashChoiceString);
 
 		}
 
 		if ( ! updateIDsChoiceString.trim().equals("")) {
 			obomergeArgsArrayList.add("-update-ids");
 			obomergeArgsArrayList.add(updateIDsChoiceString);
-			System.out.println("    -update-ids " + updateIDsChoiceString);
+			logger.info("    -update-ids " + updateIDsChoiceString);
 		}
 		//This feature not implemented.
 //		if (ignoreClashOnIDsChoiceString != "") {
 //		obomergeArgsArrayList.add("-ignore-clash-on-id");
 //		obomergeArgsArrayList.add(ignoreClashOnIDsChoiceString);
-//		System.out.println("    -ignore-clash-on-id "
+//		logger.info("    -ignore-clash-on-id "
 //		+ ignoreClashOnIDsChoiceString);
 //		}
 
@@ -733,30 +738,30 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 		}
 		obomergeArgsArrayList.add("-version");
 		obomergeArgsArrayList.add(outputFormatChoiceString);
-		System.out.println("    -version " + outputFormatChoiceString);
+		logger.info("    -version " + outputFormatChoiceString);
 
 		obomergeArgsArrayList.add("-original");
 		obomergeArgsArrayList.add(parentFileTextFieldString);
-		System.out.println("    -original " + parentFileTextFieldString);
+		logger.info("    -original " + parentFileTextFieldString);
 
 		obomergeArgsArrayList.add("-revision");
 		obomergeArgsArrayList.add(liveFileTextFieldString);
-		System.out.println("    -revision " + liveFileTextFieldString);
+		logger.info("    -revision " + liveFileTextFieldString);
 
 		obomergeArgsArrayList.add("-revision");
 		obomergeArgsArrayList.add(branchFileTextFieldString);
-		System.out.println("    -revision "
+		logger.info("    -revision "
 				+ branchFileTextFieldString);
 
 		obomergeArgsArrayList.add("-o");
 		obomergeArgsArrayList.add(mergedFileTextFieldString);
-		System.out.println("    -o " + mergedFileTextFieldString);
+		logger.info("    -o " + mergedFileTextFieldString);
 
-//		System.out.println(obomergeArgsArrayList);
+//		logger.info(obomergeArgsArrayList);
 		obomergeArgsArrayList.trimToSize();
 		obomergeArgsArray = obomergeArgsArrayList.toArray(obomergeArgsArray);
 
-		System.out.println("\nThe merge process gave the following feedback:\n");
+		logger.info("\nThe merge process gave the following feedback:\n");
 		return true;
 	}
 
@@ -796,7 +801,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			.getAbsolutePath();
 			mergedFileTextField.setText(mergedFileTextFieldString);
 
-//			System.out.println("arg = " + mergedFileTextFieldString);
+//			logger.info("arg = " + mergedFileTextFieldString);
 		}
 	}
 	private void mergedFileFormatComboboxActionPerformed(
@@ -811,7 +816,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			.getAbsolutePath();
 			mergedFileTextField.setText(mergedFileTextFieldString);
 
-			//        System.out.println("arg = " + mergedFileTextFieldString);
+			//        logger.info("arg = " + mergedFileTextFieldString);
 		}
 
 	}
@@ -825,7 +830,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			.getAbsolutePath();
 			parentFileTextField.setText(parentFileTextFieldString);
 
-//			System.out.println("arg = " + parentFileTextFieldString);
+//			logger.info("arg = " + parentFileTextFieldString);
 		}
 
 	}
@@ -840,7 +845,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			java.awt.event.ActionEvent evt) {
 		updateIDsChoiceString = (String) updateIDsCombobox
 		.getSelectedItem();
-		//    System.out.println("arg = " + updateIDsChoiceString);
+		//    logger.info("arg = " + updateIDsChoiceString);
 	}
 
 	private void WriteFeedbackToTextArea() {
@@ -861,7 +866,7 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 			.getAbsolutePath();
 			liveFileTextField.setText(liveFileTextFieldString);
 
-			//        System.out.println("arg = " + liveFileTextFieldString);
+			//        logger.info("arg = " + liveFileTextFieldString);
 
 		}
 
