@@ -44,6 +44,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.AnnotationUtil;
 import org.obo.util.ReasonerUtil;
@@ -316,9 +317,9 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 		 * differentium terms
 		 */
 		AnnotationSummaryTableModel(OBOSession session) {
-			
+
 			boolean isTransitiveIncluded = true;
-			
+
 			Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 			// Won't compile.  Temporarily changing it so we can compile.  Note that this is NOT
 			// a real fix, as it will break the behavior.
@@ -326,6 +327,8 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 //			Collection<LinkedObject> objSet =  AnnotationUtil.getAnnotationObjects(session);
 			Collection<LinkedObject> subjs =  new LinkedList<LinkedObject>();
 			Collection<LinkedObject> objSet =  new LinkedList<LinkedObject>();
+			subjs.addAll(AnnotationUtil.getAnnotationSubjects(session));
+			subjs.addAll(AnnotationUtil.getAnnotationObjects(session));
 
 			logger.info("n_objs: "+objSet.size());
 			logger.info("n_subjs: "+subjs.size());
@@ -336,18 +339,18 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					if (obj == null)
 						continue;
 					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true);
-						objsWithAncs.addAll(ancs);
+					objsWithAncs.addAll(ancs);
 				}
 				objSet = objsWithAncs;
 			}
 			logger.info("n_objs (after including transitive): "+objSet.size());
-			
+
 			if (checkBoxConcise.isSelected()) {
 				//MultiMap<LinkedObject, LinkedObject> obj2subj = 
 				//	new MultiHashMap<LinkedObject, LinkedObject>();
 				Map<LinkedObject, HashSet<LinkedObject>> obj2subj = 
 					new HashMap<LinkedObject, HashSet<LinkedObject>>();
-				
+
 				// build annotation mapping; eg Phenotype to Genotype
 				for (Annotation annot : annots)
 					for (LinkedObject obj : TermUtil.getAncestors(annot.getObject()))
@@ -356,9 +359,9 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 						else
 							obj2subj.put(obj, 
 									new HashSet(Collections.singleton(annot.getSubject())));
-				
+
 				Collection<LinkedObject> filteredObjSet =  objSet;
-				
+
 				for (LinkedObject obj : objSet) {
 					Set<LinkedObject> parentsAndChildren = new HashSet<LinkedObject>();
 					for (Link link : obj.getParents())
@@ -370,14 +373,14 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					//logger.info(parentsAndChildren.size()+" ::: "+obj);
 					Collection<LinkedObject> profile =
 						obj2subj.get(obj);
-						//AnnotationUtil.getSubjectsAnnotatedWithObject(session, obj);
+					//AnnotationUtil.getSubjectsAnnotatedWithObject(session, obj);
 					boolean isInformative = false; // only informative if a neighbour is different
 					//logger.info("  profile="+profile);
 					for (LinkedObject neighbor : parentsAndChildren) {
 						Set<LinkedObject> neighborProfile =
 							obj2subj.get(neighbor);
-							//AnnotationUtil.getSubjectsAnnotatedWithObject(session, neighbor);
-							//logger.info("      Nprofile="+neighborProfile+" "+neighbor);
+						//AnnotationUtil.getSubjectsAnnotatedWithObject(session, neighbor);
+						//logger.info("      Nprofile="+neighborProfile+" "+neighbor);
 						if (neighborProfile == null ||
 								profile == null ||
 								!neighborProfile.equals(profile))
@@ -393,7 +396,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				logger.info("n_objs (uniformative nodes trimmed): "+objSet.size());
 
 			}
-			
+
 			LinkedList<LinkedObject> objs = new LinkedList<LinkedObject>(objSet);
 			Collections.sort(objs, new ClassSorter());
 			//logger.info("sorted objs="+objs);
@@ -401,11 +404,11 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
 			columnObjs = subjs.toArray(new LinkedObject[0]);
-					
+
 			rowCount = objs.size();
 			columnCount = subjs.size();
 			logger.info(rowCount + "/" + columnCount);
-			
+
 			HashMap<LinkedObject, Integer> hdr2rownum =
 				new HashMap<LinkedObject, Integer>();
 			HashMap<LinkedObject, Integer> hdr2colnum =
@@ -420,23 +423,23 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				//logger.info("col: "+i+" ="+subjs.toArray()[i]);
 				hdr2colnum.put((LinkedObject) subjs.toArray()[i], i);
 			}
-			
+
 			// initialize arrays. 
 			// cols = genus cols+1 -- left col shows diff term
 			// (we are using a JTable to show a matrix)
 			matrix = new AnnotationSummary[rowCount][columnCount];
 			//cellStatus = new CellStatus[rowCount][columnCount];
-			
+
 			for (Annotation annot : annots) {
 				//logger.info(annot);
 				LinkedObject annotatedEntity = annot.getSubject();
 				LinkedObject annotatedWithObject = annot.getObject();
-				
+
 				int row = hdr2rownum.get(annotatedWithObject); // classes
 				int col = hdr2colnum.get(annotatedEntity); // annotated entities
 				setCell(annot,row,col);
 				//logger.info("  setting cell " + row + ","+col);
-				
+
 				if (checkBoxUseTransitive.isSelected()) {
 					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true)) {
 						//logger.info("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
