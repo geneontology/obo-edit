@@ -5,8 +5,13 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 
+import org.apache.log4j.*;
+
 public class IntegerSpecEditor extends JPanel implements
-		GeneralRendererSpecFieldEditor<Integer> {
+	GeneralRendererSpecFieldEditor<Integer> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntegerSpecEditor.class);
 
 	protected JSpinner spinner = new JSpinner();
 

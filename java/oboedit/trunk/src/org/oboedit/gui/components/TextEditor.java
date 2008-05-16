@@ -71,8 +71,13 @@ import org.oboedit.script.TextEditorScriptDelegate;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class TextEditor extends AbstractXMLOBOEditComponent implements
-		RootTextEditComponent, SelectionDrivenComponent {
+	RootTextEditComponent, SelectionDrivenComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextEditor.class);
 
 	protected Icon warningIcon = Preferences.loadLibraryIcon("warning_icon.gif");
 
@@ -99,7 +104,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
-//			System.err.println("reloaded config");
+//			logger.error("reloaded config");
 			reload();
 			setObject(getObject());
 		}
@@ -125,7 +130,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
     // Didn't work.
 //        protected ReloadListener reloadListener = new ReloadListener() {
 //		public void reload(ReloadEvent e) {
-//		    System.err.println("TextEditor.reload");  // DEL
+//		    logger.error("TextEditor.reload");  // DEL
 //		    warningMap = new MultiHashMap<FieldPath, CheckWarning>();
 //		    setWarningMap(warningMap);
 //		}

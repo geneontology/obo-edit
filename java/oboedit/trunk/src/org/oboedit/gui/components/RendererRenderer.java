@@ -10,7 +10,12 @@ import org.obo.util.FilterUtil;
 import org.obo.util.HTMLUtil;
 import org.oboedit.gui.filter.RenderedFilter;
 
+import org.apache.log4j.*;
+
 public class RendererRenderer extends HTMLTableRenderer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RendererRenderer.class);
 	protected boolean isLink;
 
 	public RendererRenderer(boolean isLink) {

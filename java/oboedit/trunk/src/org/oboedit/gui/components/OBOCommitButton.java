@@ -17,7 +17,12 @@ import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.event.TermLoadEvent;
 import org.oboedit.gui.event.TermLoadListener;
 
+import org.apache.log4j.*;
+
 public class OBOCommitButton extends JButton implements OBOTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOCommitButton.class);
 	/**
 	 * 
 	 */

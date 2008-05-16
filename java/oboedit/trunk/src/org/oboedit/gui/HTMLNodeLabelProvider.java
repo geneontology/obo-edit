@@ -15,7 +15,12 @@ import org.oboedit.gui.filter.GeneralRendererSpecField;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class HTMLNodeLabelProvider implements NodeLabelProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLNodeLabelProvider.class);
 
 	protected FilteredRenderable renderable;
 	protected Collection<RenderedFilter> preRenderers = new ArrayList<RenderedFilter>();
@@ -96,7 +101,7 @@ public class HTMLNodeLabelProvider implements NodeLabelProvider {
 				    }
 				    else {
 					// No name--use ID
-//					System.out.println("val is null for object " + lo + "--using id " + lo.getID());
+//					logger.info("val is null for object " + lo + "--using id " + lo.getID());
 					out.append(lo.getID());
 				    }
 				}

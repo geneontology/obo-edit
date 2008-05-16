@@ -28,7 +28,12 @@ import org.oboedit.verify.impl.NameCheck;
 import org.oboedit.verify.impl.NameRedundancyCheck;
 import org.oboedit.verify.impl.SynonymCheck;
 
+import org.apache.log4j.*;
+
 public class VerificationManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(VerificationManager.class);
 	public static final byte TEXT_EDIT_COMMIT = 1;
 
 	public static final byte REASONER_ACTIVATED = 2;
@@ -433,9 +438,9 @@ public class VerificationManager {
 				path, condition);
 		task.run();
 		if (task.getException() != null) {
-		    System.err.println("runChecks: CheckTask got an exception.  Here's the stack trace.");
+		    logger.error("runChecks: CheckTask got an exception.  Here's the stack trace.");
 			task.getException().printStackTrace();
-		    System.err.println("runChecks: re-throwing exception.");
+		    logger.error("runChecks: re-throwing exception.");
 			throw new RuntimeException(task.getException());
 		}
 		return task.getResults();

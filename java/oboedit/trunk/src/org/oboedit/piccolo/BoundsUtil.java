@@ -3,7 +3,12 @@ package org.oboedit.piccolo;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.apache.log4j.*;
+
 public class BoundsUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BoundsUtil.class);
 	public static final double DEFAULT_ERR = 30;
 
 	public static boolean nearlyEquals(double a, double b, double err) {

@@ -5,7 +5,12 @@ import org.obo.history.SessionHistoryList;
 
 import java.util.Comparator;
 
+import org.apache.log4j.*;
+
 public class HistoryComparator implements Comparator<SessionHistoryList> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryComparator.class);
 
 	protected static HistoryComparator comparator = new HistoryComparator();
 

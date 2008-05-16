@@ -4,8 +4,13 @@ import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.GUIComponentFactory.FactoryCategory;
 import org.oboedit.gui.components.CrossProductMatrixEditorComponent;
 
+import org.apache.log4j.*;
+
 public class CrossProductMatrixEditorFactory extends
-		AbstractComponentFactory<CrossProductMatrixEditorComponent> {
+	AbstractComponentFactory<CrossProductMatrixEditorComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CrossProductMatrixEditorFactory.class);
 
 	public CrossProductMatrixEditorFactory() {
 	}

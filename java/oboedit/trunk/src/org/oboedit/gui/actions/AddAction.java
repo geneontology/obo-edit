@@ -16,7 +16,12 @@ import org.oboedit.util.GUIUtil;
 import javax.swing.tree.TreePath;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class AddAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddAction.class);
 
 	protected LinkedObject target;
 

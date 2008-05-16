@@ -18,7 +18,12 @@ import org.bbop.swing.ReselectListSelectionModel;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.query.impl.SearchHit;
 
+import org.apache.log4j.*;
+
 public class SearchResultsTable extends JTable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SearchResultsTable.class);
 
 	protected SearchResultsTableModel<?> searchModel;
 	protected long maximumFormattingTime = 1000;

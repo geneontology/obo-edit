@@ -18,7 +18,12 @@ import org.bbop.util.*;
 import java.util.*;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.*;
+
 public class CloneTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CloneTest.class);
 
 	public void testClone() {
 		Iterator it;
@@ -95,7 +100,7 @@ public class CloneTest extends TestCase {
 			int termCount = terms.size();
 			HistoryItem item = (HistoryItem) it.next();
 			OBOClass currentClass = (OBOClass) itemObjectMap.get(item);
-			System.out.println("currentClass = " + item); // DEL
+			logger.info("currentClass = " + item); // DEL
 			assertTrue("Current object collection should contain " + currentClass,
 				   terms.contains(currentClass));
 			testUtil.reverse(item);

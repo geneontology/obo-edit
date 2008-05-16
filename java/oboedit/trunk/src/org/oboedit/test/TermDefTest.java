@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.DefinitionChangeHistoryItem;
 import org.obo.history.HistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermDefTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermDefTest.class);
 
 	@Override
 	public Collection getTestBundles() {

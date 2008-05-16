@@ -9,7 +9,12 @@ import org.obo.datamodel.*;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class DbxrefListEditor extends JPanel implements GenericEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefListEditor.class);
 
 	/**
 	 * 

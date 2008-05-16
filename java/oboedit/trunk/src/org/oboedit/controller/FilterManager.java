@@ -100,7 +100,12 @@ import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.gui.filter.StrikeoutSpecField;
 import org.oboedit.gui.filter.UnderlineSpecField;
 
+import org.apache.log4j.*;
+
 public class FilterManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilterManager.class);
 
 	protected static FilterManager manager;
 
@@ -468,7 +473,7 @@ public class FilterManager {
 			encoder.writeObject(config);
 			encoder.close();
 		} catch (IOException ex) {
-			System.err.println("Couldn't flush component config successfully");
+			logger.error("Couldn't flush component config successfully");
 		}
 	}
 

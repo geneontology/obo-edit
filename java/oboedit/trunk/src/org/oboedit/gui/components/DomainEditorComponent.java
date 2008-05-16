@@ -21,7 +21,12 @@ import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
+import org.apache.log4j.*;
+
 public class DomainEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DomainEditorComponent.class);
 
 	/**
 	 * 

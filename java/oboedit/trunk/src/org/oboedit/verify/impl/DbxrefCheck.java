@@ -55,8 +55,13 @@ import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.OntologyCheck;
 import org.oboedit.verify.QuickFix;
 
+import org.apache.log4j.*;
+
 public class DbxrefCheck extends AbstractCheck implements FieldCheck,
-		OntologyCheck {
+	OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefCheck.class);
 	public static final FieldPathSpec DEF_DBXREF_PATH_SPEC = new FieldPathSpec(
 			DefinitionDbxrefSearchCriterion.CRITERION);
 

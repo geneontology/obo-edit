@@ -10,7 +10,12 @@ import org.obo.datamodel.impl.*;
 import org.obo.history.*;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class OBO2Flat {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2Flat.class);
 
 	protected static String ROOT_ID = "GO:0003673";
 
@@ -43,34 +48,28 @@ public class OBO2Flat {
 		if (args.length == 0) {
 			System.err
 					.println("Usage: obo2flat [options] inputfile1 inputfile2");
-			System.err.println();
-			System.err.println("IO Switches:");
-			System.err.println("  -def <path to write definition file>");
+			logger.error("IO Switches:");
+			logger.error("  -def <path to write definition file>");
 			System.err
 					.println("  -def4root <output root> <path to definition file>");
-			System.err.println("  -o <output root> <path to the ouput file>");
-			System.err.println();
-			System.err.println("Graph rearrangement (required):");
-			System.err.println("  -cr <dummy root id> <dummy root name>");
+			logger.error("  -o <output root> <path to the ouput file>");
+			logger.error("Graph rearrangement (required):");
+			logger.error("  -cr <dummy root id> <dummy root name>");
 			System.err
 					.println("  -co <parent id> <obsolete holder id> <obsolete holder name>");
-			System.err.println("  -adddef <term id> <definition>");
-			System.err.println("  -addref <term id> <dbxref>");
-			System.err.println("  -mapobs <namespace> <obsolete holder id>");
-			System.err.println("  -defaultobs <default obsolete holder id>");
-			System.err.println();
-			System.err.println("Optional switches:");
-			System.err.println("  -rootreltype <root id> <type>");
-			System.err.println("  -symbol <type id> <symbol>");
-			System.err.println("  -reducefilesize");
-			System.err.println("  -dangling");
-			System.err.println();
-			System.err.println("Presets:");
-			System.err
-					.println("  --gopresets <biological_process output file> <cellular_component output file> <molecular_function output file> <defs output file>");
-			System.err.println();
-			System.err.println("Other switches:");
-			System.err.println("  -v\tVerbose mode");
+			logger.error("  -adddef <term id> <definition>");
+			logger.error("  -addref <term id> <dbxref>");
+			logger.error("  -mapobs <namespace> <obsolete holder id>");
+			logger.error("  -defaultobs <default obsolete holder id>");
+			logger.error("Optional switches:");
+			logger.error("  -rootreltype <root id> <type>");
+			logger.error("  -symbol <type id> <symbol>");
+			logger.error("  -reducefilesize");
+			logger.error("  -dangling");
+			logger.error("Presets:");
+			System.err.println("  --gopresets <biological_process output file> <cellular_component output file> <molecular_function output file> <defs output file>");
+			logger.error("Other switches:");
+			logger.error("  -v\tVerbose mode");
 			System.exit(1);
 		}
 		ConvertRecord record = new ConvertRecord();
@@ -83,29 +82,29 @@ public class OBO2Flat {
 			} else if (args[i].equals("-def")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-def tag must specify a file name");
+					logger.error("-def tag must specify a file name");
 					System.exit(1);
 				}
 				record.defFile = args[i];
 			} else if (args[i].equals("-def4root")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-def4root tag must specify "
+					logger.error("-def4root tag must specify "
 							+ "a root term");
 					System.exit(1);
 				}
 				String id = args[i++];
 				if (i >= args.length) {
-					System.err.println("-def4root tag must specify "
+					logger.error("-def4root tag must specify "
 							+ "an output path");
 					System.exit(1);
 				}
-				System.err.println("id = " + id + ", path = " + args[i]);
+				logger.error("id = " + id + ", path = " + args[i]);
 				record.defFileHash.put(id, args[i]);
 			} else if (args[i].equals("-o")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-o tag must specify a root id");
+					logger.error("-o tag must specify a root id");
 					System.exit(1);
 				}
 				String id = args[i];
@@ -120,26 +119,26 @@ public class OBO2Flat {
 			} else if (args[i].equals("-cr")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-cr tag must specify a root id");
+					logger.error("-cr tag must specify a root id");
 					System.exit(1);
 				}
 				record.fakeRootID = args[i];
 				i++;
 				if (i >= args.length) {
-					System.err.println("-cr tag must specify a root name");
+					logger.error("-cr tag must specify a root name");
 					System.exit(1);
 				}
 				record.fakeRootName = args[i];
 			} else if (args[i].equals("-adddef")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-adddef tag must specify a term id");
+					logger.error("-adddef tag must specify a term id");
 					System.exit(1);
 				}
 				String id = args[i];
 				i++;
 				if (i >= args.length) {
-					System.err.println("-adddef tag must specify "
+					logger.error("-adddef tag must specify "
 							+ "a definition");
 					System.exit(1);
 				}
@@ -148,13 +147,13 @@ public class OBO2Flat {
 			} else if (args[i].equals("-addref")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-addref tag must specify a term id");
+					logger.error("-addref tag must specify a term id");
 					System.exit(1);
 				}
 				String id = args[i];
 				i++;
 				if (i >= args.length) {
-					System.err.println("-addref tag must specify "
+					logger.error("-addref tag must specify "
 							+ "a dbxref to add");
 					System.exit(1);
 				}
@@ -171,7 +170,7 @@ public class OBO2Flat {
 			} else if (args[i].equals("-co")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-co tag must specify a parent id");
+					logger.error("-co tag must specify a parent id");
 					System.exit(1);
 				}
 				String id = args[i];
@@ -196,7 +195,7 @@ public class OBO2Flat {
 			} else if (args[i].equals("-mapobs")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-mapobs tag must specify a namespace");
+					logger.error("-mapobs tag must specify a namespace");
 					System.exit(1);
 				}
 				String ns = args[i];
@@ -241,7 +240,7 @@ public class OBO2Flat {
 			} else if (args[i].equals("-symbol")) {
 				i++;
 				if (i >= args.length) {
-					System.err.println("-symbol tag must specify a type id");
+					logger.error("-symbol tag must specify a type id");
 					System.exit(1);
 				}
 				String typeid = args[i];
@@ -251,7 +250,7 @@ public class OBO2Flat {
 							.println("-symbol tag must specify a symbol character");
 					System.exit(1);
 				}
-				System.err.println("mapping " + typeid + " to " + args[i]);
+				logger.error("mapping " + typeid + " to " + args[i]);
 				record.typeToChar.put(typeid, args[i]);
 			} else if (args[i].equals("--gopresets")) {
 				i++;
@@ -399,7 +398,7 @@ public class OBO2Flat {
 			if ((record.fakeRootID != null && id.equals(record.fakeRootID)))
 				valid = true;
 			if (!valid) {
-				System.err.println(id
+				logger.error(id
 						+ " is not allowed in an -adddef switch. "
 						+ "-adddef switches may only specify "
 						+ "terms created with -co or -cr");
@@ -408,7 +407,7 @@ public class OBO2Flat {
 
 			Vector v = (Vector) record.refHash.get(id);
 			if (v == null || v.size() == 0) {
-				System.err.println("You must specify at least one dbxref if "
+				logger.error("You must specify at least one dbxref if "
 						+ "you want to do an -adddef on " + id);
 				System.exit(1);
 			}
@@ -418,7 +417,7 @@ public class OBO2Flat {
 			String id = (String) it.next();
 			String def = (String) record.defHash.get(id);
 			if (def == null) {
-				System.err.println("You must specify a definition if "
+				logger.error("You must specify a definition if "
 						+ "you want to do an -addref on " + id);
 				System.exit(1);
 			}
@@ -495,7 +494,7 @@ public class OBO2Flat {
 		OBOSession history = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				config, null);
 		if (cr.verbose) {
-			System.err.println("done");
+			logger.error("done");
 			System.err.print("applying changes...");
 			System.err.flush();
 		}
@@ -522,9 +521,9 @@ public class OBO2Flat {
 		HistoryItem item = getChangeItem(history, cr.fakeRootID,
 				cr.fakeRootName, obsHash, rootHash, cr.defHash, cr.refHash);
 		OperationWarning ow = opmodel.apply(item);
-		System.err.println("PO:obsolete = " + history.getObject("PO:obsolete"));
+		logger.error("PO:obsolete = " + history.getObject("PO:obsolete"));
 		if (ow != null) {
-			System.err.println("+++***+++ got operation warning "
+			logger.error("+++***+++ got operation warning "
 					+ ow.getMessage());
 		}
 
@@ -532,12 +531,12 @@ public class OBO2Flat {
 				cr.defaultObsolete);
 		ow = opmodel.reverse(item);
 		if (ow != null) {
-			System.err.println("+++***+++ got operation warning "
+			logger.error("+++***+++ got operation warning "
 					+ ow.getMessage());
 		}
 
 		if (cr.verbose) {
-			System.err.println("done");
+			logger.error("done");
 		}
 
 		oldValue = 0;
@@ -586,7 +585,7 @@ public class OBO2Flat {
 			sr.setDefFilename(defPath);
 		}
 
-		System.err.println("saveRecords = " + fconfig.getSaveRecords());
+		logger.error("saveRecords = " + fconfig.getSaveRecords());
 		fadapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, fconfig, history);
 	}
 
@@ -635,7 +634,7 @@ public class OBO2Flat {
 
 				CreateLinkHistoryItem mi = new CreateLinkHistoryItem(t
 						.getID(), type_id, falseRoot);
-				System.err.println("copying " + t.getID() + " to " + falseRoot);
+				logger.error("copying " + t.getID() + " to " + falseRoot);
 				item.addItem(mi);
 			}
 		}
@@ -710,7 +709,7 @@ public class OBO2Flat {
 				OBOClass a = (OBOClass) history.getObject(obsNode);
 				OBOClass b = (OBOClass) history.getObject(t.getID());
 				/*
-				 * System.err.println("adding reverse item with obsNode.id
+				 * logger.error("adding reverse item with obsNode.id
 				 * "+obsNode+ ": node = "+a+", child.id = "+t.getID()+": "+ b);
 				 */
 				StringRelationship sr = new StringRelationship(

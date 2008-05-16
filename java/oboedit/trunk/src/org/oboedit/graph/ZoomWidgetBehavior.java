@@ -5,7 +5,12 @@ import java.beans.PropertyChangeListener;
 
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
+import org.apache.log4j.*;
+
 public class ZoomWidgetBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ZoomWidgetBehavior.class);
 
 	protected ZoomWidget widget;
 	

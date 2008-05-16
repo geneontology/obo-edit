@@ -2,7 +2,12 @@ package org.oboedit.gui.filter;
 
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class StrikeoutSpecField extends AbstractRendererSpecField<Boolean> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StrikeoutSpecField.class);
 
 	public static final StrikeoutSpecField FIELD = new StrikeoutSpecField();
 

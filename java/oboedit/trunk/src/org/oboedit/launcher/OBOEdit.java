@@ -1,6 +1,5 @@
 package org.oboedit.launcher;
 
-import org.apache.log4j.*;
 import org.bbop.dataadapter.*;
 import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
@@ -21,13 +20,19 @@ import javax.swing.SwingUtilities;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.*;
+import org.obo.util.VersionNumber;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
 import org.oboedit.gui.menu.OEHelpMenu;
 import org.oboedit.gui.menu.FileMenu;
 
+import org.apache.log4j.*;
+
 public class OBOEdit {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOEdit.class);
 
 	/**
 	 * Creates a TagSpec object for the command line.
@@ -93,8 +98,8 @@ public class OBOEdit {
 	 * files
 	 */
 	public static CommandLineActions getActions(DataAdapterRegistry registry,
-						    Tag topLevel,
-						    String[] args) throws DataAdapterException, DataAdapterUIException {
+			Tag topLevel,
+			String[] args) throws DataAdapterException, DataAdapterUIException {
 
 		Class[] classes = { ParameterUI.class };
 
@@ -110,33 +115,33 @@ public class OBOEdit {
 		// appears to be an OBO file, and if so, parsing it.
 		// THIS IS A KLUDGE.
 		if (args.length == 1 && !(args[0].startsWith("-")) && args[0].endsWith(".obo")) {
-		    String path = args[0];
-		    OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
-		    config.getReadPaths().add(path);
-		    String oboVersion = "OBO_1_2";  // current default
-		    System.out.println("Assuming " + path + " is an obo file of obo version " + oboVersion);
-		    config.setSerializer(oboVersion);
-		    OBOFileAdapter adapter = new OBOFileAdapter();
-		    OBOSession o = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
-		    actions.setLoadMe(o);
-		    return actions;
+			String path = args[0];
+			OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
+			config.getReadPaths().add(path);
+			String oboVersion = "OBO_1_2";  // current default
+			logger.info("Assuming " + path + " is an obo file of obo version " + oboVersion);
+			config.setSerializer(oboVersion);
+			OBOFileAdapter adapter = new OBOFileAdapter();
+			OBOSession o = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
+			actions.setLoadMe(o);
+			return actions;
 		}
 
 		Iterator it = topLevel.getArguments().iterator();
 		while (it.hasNext()) {
 			Tag tag = (Tag) it.next();
-//			System.out.println("getActions: tag = " + tag.getName() + ", args = " + tag.getArguments()); // DEL
+//			logger.info("getActions: tag = " + tag.getName() + ", args = " + tag.getArguments()); // DEL
 			if (tag.getName().endsWith("-help") ||
-			    tag.getName().endsWith("-usage")) {
-			    printUsage();
-			    System.exit(0);
+					tag.getName().endsWith("-usage")) {
+				printUsage();
+				System.exit(0);
 			}
 			else if (tag.getName().equals("-load")) {
 				Iterator it2 = tag.getArguments().iterator();
-//				System.out.println("getActions: tag is load, args = " + tag.getArguments()); // DEL
+//				logger.info("getActions: tag is load, args = " + tag.getArguments()); // DEL
 				while (it2.hasNext()) {
 					Tag t = (Tag) it2.next();
-//					System.out.println("t = " + t.getName() + ", t.args = " + t.getArguments()); // DEL
+//					logger.info("t = " + t.getName() + ", t.args = " + t.getArguments()); // DEL
 					if (t.getName().equals("-adapter") && t.getArguments().size() >= 1) {
 						if (loadTag != null)
 							throw new DataAdapterUIException("Can't do two "
@@ -145,14 +150,14 @@ public class OBOEdit {
 
 						break;
 					} else if (t.getName().equals("--listadapters")) {
-					    System.err.println("Available load adapters...");
-					    printAdapters();
-					    System.err.println();
-					    System.exit(0);
+						logger.error("Available load adapters...");
+						printAdapters();
+
+						System.exit(0);
 					}
 				}
 			} else if (tag.getName().equals("-v")
-				   || tag.getName().equals("-verbose")) {
+					|| tag.getName().equals("-verbose")) {
 				verbose = true;
 			}
 		}
@@ -160,23 +165,22 @@ public class OBOEdit {
 			java.util.List progressListeners = new Vector();
 
 			// Actually read in the command line file
-			System.out.println("Loading file " + loadTag);
+			logger.info("Loading file " + loadTag);
 			OBOSession o = (OBOSession) CommandLineWidget.execute(registry,
 					OBOAdapter.READ_ONTOLOGY, loadTag, null);
 			actions.setLoadMe(o);
-			System.err.println("done");
+			logger.error("done");
 		}
 
 		return actions;
 	}
 
-    public static String getAppName() {
-	return "OBO-Edit2";
-    }
-    
-    
-    static Logger logger = Logger.getLogger("org.oboedit.launcher");
-    
+	public static String getAppName() {
+		return "OBO-Edit2";
+	}
+
+
+
 	/**
 	 * Initialize some things, read the command line and start
 	 */
@@ -192,11 +196,26 @@ public class OBOEdit {
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();
 
-					System.err.println("Starting " + getAppName() + " "
-							   + Preferences.getVersion() + ": " + (new Date()));
+					VersionNumber version = Preferences.getVersion();
+					String configDir = OSUtil.getConfigDirectory(
+							getAppName() + (version.isBeta() ? "-beta" : "") + "/");
+
+					Properties props = new Properties();
+					try {
+						InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
+						props.load(configStream);
+						configStream.close();
+					} catch(IOException e) {
+						System.out.println("Error: Cannot laod configuration file ");
+					}
+					setupLog4j(props, configDir);
+					logger.info("Starting " + getAppName() + " "
+							+ Preferences.getVersion() + ": " + (new Date()));
+
+					logger.info("Saving logfile to OBO-Edit config directory: " + configDir);
 
 					DataAdapterRegistry registry = IOManager.getManager()
-							.getAdapterRegistry();
+					.getAdapterRegistry();
 
 					TagSpec spec = getCommandLineSpec(registry);
 
@@ -207,7 +226,7 @@ public class OBOEdit {
 					if (actions.getLoadMe() != null)
 						SessionManager.getManager().setSession(
 								actions.getLoadMe());
-					
+
 					// Also start thread to check free memory
 					CheckMemoryThread cmt = new CheckMemoryThread();
 					cmt.start();
@@ -220,19 +239,39 @@ public class OBOEdit {
 
 		SwingUtilities.invokeAndWait(r);
 	}
-	public static void printUsage() {
-	    System.err.println("OBO-Edit supports the following command-line options:\n -help (or --help or -usage) - Print this usage message and exit\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name\nwith no other arguments, e.g., oboedit test_resources/camphor_catabolism.obo\n(The obo file is assumed to be in the default obo version of OBO_1_2).\n The following adapters are available:");
-	    printAdapters();
-	    System.err.println();
+
+	private static void setupLog4j(Properties props, String configDir){
+
+		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
+
+		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
+
+		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
+		props.setProperty("log4j.appender.A2.file",configDir + "log/oboedit_log4j.log");
+		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
+		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
+		props.setProperty("log4j.appender.A2.append","true");
+		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+		LogManager.resetConfiguration();
+		PropertyConfigurator.configure(props);
 	}
 
-    private static void printAdapters() {
-	DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
-	Class[] classes = { ParameterUI.class };
-	DataAdapter[] adapters = DataAdapterUtil.getAdapters(
-	    registry, OBOAdapter.READ_ONTOLOGY, classes);
-	for (int i = 0; i < adapters.length; i++)
-	    System.err.println("   -" + adapters[i].getID());
-    }
+	public static void printUsage() {
+		logger.error("OBO-Edit supports the following command-line options:\n -help (or --help or -usage) - Print this usage message and exit\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name\nwith no other arguments, e.g., oboedit test_resources/camphor_catabolism.obo\n(The obo file is assumed to be in the default obo version of OBO_1_2).\n The following adapters are available:");
+		printAdapters();
+
+	}
+
+	private static void printAdapters() {
+		DataAdapterRegistry registry = IOManager.getManager().getAdapterRegistry();
+		Class[] classes = { ParameterUI.class };
+		DataAdapter[] adapters = DataAdapterUtil.getAdapters(
+				registry, OBOAdapter.READ_ONTOLOGY, classes);
+		for (int i = 0; i < adapters.length; i++)
+			logger.error("   -" + adapters[i].getID());
+	}
 
 }

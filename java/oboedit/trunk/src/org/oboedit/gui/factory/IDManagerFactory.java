@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.IDManagerComponent;
 
+import org.apache.log4j.*;
+
 public class IDManagerFactory extends AbstractComponentFactory<IDManagerComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDManagerFactory.class);
 
 	public IDManagerFactory() {
 	}

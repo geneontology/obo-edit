@@ -31,7 +31,12 @@ import org.obo.filters.DbxrefIDSearchCriterion;
 import org.obo.filters.DefinitionDbxrefSearchCriterion;
 import org.oboedit.gui.components.AbstractDbxrefEditorComponent;
 
+import org.apache.log4j.*;
+
 public class DbxrefListTableEditor extends AbstractListTableEditor<Dbxref> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefListTableEditor.class);
 
 	protected JTextField dbField = new JTextField();
 

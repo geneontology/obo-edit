@@ -19,7 +19,12 @@ import org.bbop.swing.ZigZagStroke;
 import org.obo.datamodel.Link;
 import org.oboedit.gui.filter.LinkRenderSpec;
 
+import org.apache.log4j.*;
+
 public class ArrowIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ArrowIcon.class);
 
 	protected final int[] triangleXBuffer = new int[3];
 

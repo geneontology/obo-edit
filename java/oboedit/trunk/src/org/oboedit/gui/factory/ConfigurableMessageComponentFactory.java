@@ -4,7 +4,12 @@ import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.GUIComponent;
 import org.oboedit.gui.components.ConfigurableTextComponent;
 
+import org.apache.log4j.*;
+
 public class ConfigurableMessageComponentFactory extends AbstractComponentFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ConfigurableMessageComponentFactory.class);
 
 	public ConfigurableMessageComponentFactory() {
 	}

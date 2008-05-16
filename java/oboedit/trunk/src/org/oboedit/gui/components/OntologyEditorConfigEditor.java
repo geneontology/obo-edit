@@ -23,7 +23,12 @@ import org.oboedit.gui.FilterComponent;
 import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
 
+import org.apache.log4j.*;
+
 public class OntologyEditorConfigEditor extends ConfigurationPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OntologyEditorConfigEditor.class);
 
 	protected FilterComponent termFilterComponent;
 	protected FilterComponent linkFilterComponent;

@@ -18,7 +18,12 @@ import org.obo.filters.*;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class AdvancedOBOUI extends JPanel implements GraphicalUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AdvancedOBOUI.class);
 
 	/**
 	 * 
@@ -99,12 +104,12 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
     // Not yet being used--the goal is to have GraphicalAdapterChooser call this method, but it wasn't working right
     public Dimension getPreferredSize() {
-//	System.out.println("AdvancedOBOUI.getPreferredSize " + preferredSize); // DEL
+//	logger.info("AdvancedOBOUI.getPreferredSize " + preferredSize); // DEL
 	return preferredSize;
     }
     public void setPreferredSize(Dimension dim) {
 	preferredSize = dim;
-//	System.out.println("AdvancedOBOUI.setPreferredSize " + preferredSize); // DEL
+//	logger.info("AdvancedOBOUI.setPreferredSize " + preferredSize); // DEL
     }
 
 	public void setUIConfiguration(UIConfiguration uiconfig) {

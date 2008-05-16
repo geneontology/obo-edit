@@ -17,7 +17,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class SynonymCategoryManager extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymCategoryManager.class);
 
 	/**
 	 * 
@@ -302,7 +307,7 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 			for (int j = 0; j < data.size(); j++) {
 				CategoryWrapper tw = (CategoryWrapper) data.get(j);
 				if (tw.getCategory() == cat) {
-					System.err.println(tw.getCategory() + " == " + cat);
+					logger.error(tw.getCategory() + " == " + cat);
 					newcats.remove(tw);
 					if (tw.isChanged()) {
 						SynonymCategoryHistoryItem catitem = new SynonymCategoryHistoryItem(

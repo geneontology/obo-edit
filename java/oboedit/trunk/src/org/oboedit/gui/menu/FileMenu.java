@@ -54,7 +54,12 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.factory.IDResolutionComponentFactory;
 
+import org.apache.log4j.*;
+
 public class FileMenu extends DynamicMenu {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FileMenu.class);
 
 	public FileMenu() {
 		super("File");
@@ -153,7 +158,7 @@ public class FileMenu extends DynamicMenu {
 
 		saveItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.err.println("Not currently implemented");
+				logger.error("Not currently implemented");
 			}
 		});
 

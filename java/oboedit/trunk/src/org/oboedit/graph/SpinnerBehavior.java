@@ -13,7 +13,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 
+import org.apache.log4j.*;
+
 public class SpinnerBehavior implements ViewBehavior, NodeDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpinnerBehavior.class);
 
 	protected LinkDatabaseCanvas canvas;
 

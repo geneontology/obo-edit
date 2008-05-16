@@ -15,8 +15,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.util.PBounds;
 
+import org.apache.log4j.*;
+
 public abstract class BoundsGuarantorCycleState extends ActivityCycleState {
 
+	protected final static Logger logger = Logger.getLogger(BoundsGuarantorCycleState.class);
+	
 	protected BoundsGuarantor boundsGuarantor;
 
 	public void setBoundsGuarantor(BoundsGuarantor boundsGuarantor) {
@@ -54,12 +58,12 @@ public abstract class BoundsGuarantorCycleState extends ActivityCycleState {
 	public boolean isActive() {
 		Rectangle2D bounds = getNewBounds();
 		if (bounds == null) {
-			System.err.println("Null bounds!");
+			logger.error("Null bounds!");
 			return true;
 		}
 		Rectangle2D camBounds = canvas.getCamera().getViewBounds();
-		System.err.println("isActive:  CAM BOUNDS = " + camBounds);
-		System.err.println("isActive: NODE BOUNDS = " + bounds);
+		logger.error("isActive:  CAM BOUNDS = " + camBounds);
+		logger.error("isActive: NODE BOUNDS = " + bounds);
 		if (getZoom())
 			return BoundsUtil
 					.snugFit(bounds, camBounds, BoundsUtil.DEFAULT_ERR);

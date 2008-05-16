@@ -6,7 +6,12 @@ import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.PRoot;
 import edu.umd.cs.piccolo.util.PUtil;
 
+import org.apache.log4j.*;
+
 public class ExtensibleCanvas extends PCanvas {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExtensibleCanvas.class);
 	protected PCamera createDefaultCamera() {
 		PRoot r = createRoot();
 		PLayer l = createLayer();

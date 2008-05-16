@@ -64,7 +64,12 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 
+import org.apache.log4j.*;
+
 public class GraphvizCanvas extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphvizCanvas.class);
 
 
 	private class ColorEditor extends JPanel implements GenericEditorComponent {
@@ -648,7 +653,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();
-			//System.out.println("now updating selection.");
+			//logger.info("now updating selection.");
 		}
 	};
 	JPanel imagePanel = new JPanel();
@@ -889,7 +894,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		HashSet relationshipSet = new HashSet();
 		populateSet(relationshipSet);
 
-		//System.out.println("DEBUG : GraphPlugin : outputFile : relationSet size = " + relationshipSet.size());
+		//logger.info("DEBUG : GraphPlugin : outputFile : relationSet size = " + relationshipSet.size());
 
 		Iterator it = relationshipSet.iterator();
 		Set termSet = new HashSet();
@@ -988,14 +993,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						configuration.getDotPath() + " -T"
 						+ configuration.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + textFile.getPath());
-				//System.out.println(configuration.getDotPath() + " -T"
+				//logger.info(configuration.getDotPath() + " -T"
 					//	+ configuration.getViewerFormat() + " -o "
 						//+ imageFile.getPath() + " " + textFile.getPath());
 				p.waitFor();
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
 						+ textFile.getPath());
-				//System.out.println(configuration.getDotPath() + " -Tcmapx "
+				//logger.info(configuration.getDotPath() + " -Tcmapx "
 					//	+ textFile.getPath());
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
@@ -1351,7 +1356,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// check the user answer, is  he press  "ok" continue in the if  block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				//System.out.println("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
+				//logger.info("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
 
 				// Creating the .dot file for graphviz
 				outputFile(textFile);
@@ -1369,7 +1374,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					outputFile += ef.getExt();
 				}
 
-				//System.out.println(configuration.getDotPath() + " -T"
+				//logger.info(configuration.getDotPath() + " -T"
 				//		+ ef.getExtNoDot() + " -o " + outputFile + " -v "
 				//		+ textFile.getPath());
 				Process p = Runtime.getRuntime().exec(

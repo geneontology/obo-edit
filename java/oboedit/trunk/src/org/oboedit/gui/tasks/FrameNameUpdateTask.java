@@ -5,7 +5,12 @@ import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class FrameNameUpdateTask extends AbstractReloadTask {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FrameNameUpdateTask.class);
 
 	@Override
 	public void reload() {

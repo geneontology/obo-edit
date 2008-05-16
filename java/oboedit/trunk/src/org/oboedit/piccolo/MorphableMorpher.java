@@ -3,7 +3,12 @@ package org.oboedit.piccolo;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 
+import org.apache.log4j.*;
+
 public class MorphableMorpher extends DefaultMorpher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MorphableMorpher.class);
 	@Override
 	public PCompoundActivity morph(PNode oldNode, PNode newNode, long duration) {
 

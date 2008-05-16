@@ -13,7 +13,12 @@ import org.oboedit.gui.*;
 import javax.swing.tree.TreePath;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class AddRootAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddRootAction.class);
 
 	protected List<EditAction> subActions = new Vector<EditAction>();
 

@@ -49,7 +49,12 @@ import edu.umd.cs.piccolo.event.PInputEventListener;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class LinkButtonBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkButtonBehavior.class);
 
 	public static enum ButtonLocations {
 		EXPAND_PARENTS(true, false, false), EXPAND_CHILDREN(true, true, false), COLLAPSE_PARENTS(

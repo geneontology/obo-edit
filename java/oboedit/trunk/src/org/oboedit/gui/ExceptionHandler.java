@@ -4,7 +4,12 @@ import javax.swing.JOptionPane;
 import java.io.File;
 import org.bbop.framework.GUIManager;
 
+import org.apache.log4j.*;
+
 public class ExceptionHandler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExceptionHandler.class);
 	public void handle(Throwable throwable) {
 		if (throwable instanceof OutOfMemoryError)
 			JOptionPane.showMessageDialog(null, "Out of memory!\n" +

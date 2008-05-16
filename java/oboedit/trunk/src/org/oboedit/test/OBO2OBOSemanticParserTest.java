@@ -12,9 +12,13 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractOBOTest;
 import org.obo.test.AbstractReasonerTest;
+
 import org.apache.log4j.*;
 
 public class OBO2OBOSemanticParserTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OBOSemanticParserTest.class);
 
 	public OBO2OBOSemanticParserTest(String name) {
 		super(name);
@@ -23,7 +27,6 @@ public class OBO2OBOSemanticParserTest extends AbstractOBOTest {
 
 	protected OBOSession session;
 	String file = "regulation_of_somitogenesis.obo";
-	Logger logger = Logger.getLogger("org.oboedit.test");
 
 
 
@@ -40,7 +43,7 @@ public class OBO2OBOSemanticParserTest extends AbstractOBOTest {
 			"./launch_scripts/obo2obo -allowdangling -semanticparse -addsynonyms " + testFile.getPath() + " "
 			+ "-o -saveimpliedlinks "
 			+ outFile.getPath();
-		System.err.println(cmd);
+		logger.error(cmd);
 		Process p = Runtime.getRuntime().exec(cmd);
 		int returnVal = p.waitFor();
 		assertTrue("Exit value should be zero", returnVal == 0);

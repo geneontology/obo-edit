@@ -12,7 +12,12 @@ import org.oboedit.verify.ImmediateQuickFix;
 import org.oboedit.verify.QuickFix;
 import org.oboedit.verify.TextReplaceQuickFix;
 
+import org.apache.log4j.*;
+
 public class TextEditUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextEditUtil.class);
 
 	private TextEditUtil() {}
 	

@@ -7,8 +7,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.apache.log4j.*;
+
 public class HTMLSpecEditor extends JPanel implements
-		GeneralRendererSpecFieldEditor<String> {
+	GeneralRendererSpecFieldEditor<String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLSpecEditor.class);
 
 	JTextArea textArea = new JTextArea();
 

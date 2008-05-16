@@ -15,7 +15,12 @@ import org.oboedit.controller.FilterManager;
 
 import info.clearthought.layout.TableLayout;
 
+import org.apache.log4j.*;
+
 public class GeneralSpecEditor extends JPanel implements SpecEditor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GeneralSpecEditor.class);
 
 	protected Map<GeneralRendererSpecField<?>, JCheckBox> checkboxMap = new HashMap<GeneralRendererSpecField<?>, JCheckBox>();
 	protected Map<GeneralRendererSpecField<?>, JComponent> panelMap = new HashMap<GeneralRendererSpecField<?>, JComponent>();

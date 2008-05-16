@@ -8,7 +8,12 @@ import org.obo.datamodel.*;
 import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class IDEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDEditorComponent.class);
 
 	/**
 	 * 
@@ -24,7 +29,7 @@ public class IDEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	public Component resolveName(String id, Properties props, String xml) {
-//		System.err.println("calling resolveName " + id);
+//		logger.error("calling resolveName " + id);
 		if (id.equals("id_label"))
 			return idLabel;
 		else if (id.equals("secondary_id_label"))

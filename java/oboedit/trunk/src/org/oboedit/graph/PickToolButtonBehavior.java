@@ -28,7 +28,12 @@ import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PBounds;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class PickToolButtonBehavior implements ToolbarButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PickToolButtonBehavior.class);
 	
 	protected PBasicInputEventHandler dragAndDropGestureListener = new PBasicInputEventHandler() {
 		PInputEvent firstMouseEvent;
@@ -86,7 +91,7 @@ public class PickToolButtonBehavior implements ToolbarButtonBehavior {
 		canvas.setTransferHandler(null);
 		canvas.removeInputEventListener(dragAndDropGestureListener);
 		canvas.removeInputEventListener(selectionMouseListener);
-		System.err.println("Uninstalled drag & drop behavior");
+		logger.error("Uninstalled drag & drop behavior");
 		this.canvas = null;
 	}
 

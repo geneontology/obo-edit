@@ -7,7 +7,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.HistoryItem;
 import org.obo.history.NamespaceHistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermNoNamespaceTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermNoNamespaceTest.class);
 
 	@Override
 	public Collection getTestBundles() {

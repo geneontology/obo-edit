@@ -16,7 +16,12 @@ import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolox.nodes.PComposite;
 
+import org.apache.log4j.*;
+
 public class WordBubbleNode extends PComposite {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(WordBubbleNode.class);
 	protected PPath bubble = new PPath(ShapeUtil.createRoundRectangle(0, 0,
 			100, 100));
 	protected PPath flare = new PPath();

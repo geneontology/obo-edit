@@ -15,7 +15,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.obo.datamodel.Dbxref;
 import org.oboedit.gui.components.AbstractDbxrefEditorComponent;
 
+import org.apache.log4j.*;
+
 public class DbxrefTableRenderer extends DefaultTableCellRenderer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefTableRenderer.class);
 	
 	protected static final Color REALLY_LIGHT_GRAY = new Color(230, 230, 230);
 	

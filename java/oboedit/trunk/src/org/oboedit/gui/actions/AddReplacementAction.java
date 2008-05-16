@@ -11,7 +11,12 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class AddReplacementAction implements DropMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddReplacementAction.class);
 
 	protected boolean isLegal = false;
 
@@ -54,7 +59,7 @@ public class AddReplacementAction implements DropMenuAction {
 		for (LinkedObject term : selection.getTerms()) {
 			if (term instanceof ObsoletableObject) {
 				if (!(term.getName().equals(lo.getName()))) {
-//					System.out.println("term.getName() = " + term.getName() + ", destItem.getName() = " + lo.getName()); // DEL
+//					logger.info("term.getName() = " + term.getName() + ", destItem.getName() = " + lo.getName()); // DEL
 					isLegal = true;
 				}
 				ObsoletableObject consider = (ObsoletableObject) term;

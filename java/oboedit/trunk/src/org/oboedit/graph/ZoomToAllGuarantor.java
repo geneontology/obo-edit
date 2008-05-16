@@ -4,7 +4,12 @@ import java.awt.geom.Rectangle2D;
 
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
+import org.apache.log4j.*;
+
 public class ZoomToAllGuarantor extends BoundsGuarantorCycleState {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ZoomToAllGuarantor.class);
 	
 	protected double maxScale = Double.MAX_VALUE;
 	

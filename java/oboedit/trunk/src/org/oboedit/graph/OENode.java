@@ -28,7 +28,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
 
+import org.apache.log4j.*;
+
 public class OENode extends PCNode implements Morphable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OENode.class);
 
 	protected static final Object KEY_LABEL = "KEY";
 

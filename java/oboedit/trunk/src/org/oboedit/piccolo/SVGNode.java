@@ -10,7 +10,12 @@ import org.oboedit.gui.SVGIcon;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolox.PFrame;
 
+import org.apache.log4j.*;
+
 public class SVGNode extends IconNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SVGNode.class);
 	
 	public SVGNode(String uri) throws IOException {
 		super(new SVGIcon(uri));

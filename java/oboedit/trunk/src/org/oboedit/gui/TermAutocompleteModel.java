@@ -17,8 +17,13 @@ import org.obo.filters.NameSearchCriterion;
 import org.obo.filters.SynonymSearchCriterion;
 import org.oboedit.controller.SessionManager;
 
+import org.apache.log4j.*;
+
 public class TermAutocompleteModel extends
-		AbstractQueryAutocompleteModel<FieldPath, IdentifiedObject> {
+	AbstractQueryAutocompleteModel<FieldPath, IdentifiedObject> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermAutocompleteModel.class);
 
 	protected Map<FieldPathSpec, Double> pathSpecs = new LinkedHashMap<FieldPathSpec, Double>();
 

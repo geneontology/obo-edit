@@ -18,7 +18,12 @@ import org.oboedit.piccolo.ViewRenderedStyleText;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class LinkDatabaseLayoutEngine {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkDatabaseLayoutEngine.class);
 
 	protected LinkDatabase linkDatabase;
 

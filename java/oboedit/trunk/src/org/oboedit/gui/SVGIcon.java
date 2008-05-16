@@ -12,7 +12,12 @@ import javax.swing.Icon;
 import org.apache.batik.gvt.GraphicsNode;
 import org.oboedit.util.SVGUtil;
 
+import org.apache.log4j.*;
+
 public class SVGIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SVGIcon.class);
 
 	protected GraphicsNode node;
 	protected String uri;

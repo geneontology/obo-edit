@@ -11,7 +11,12 @@ import org.obo.history.HistoryList;
 
 import junit.framework.*;
 
+import org.apache.log4j.*;
+
 public class SimpleOBORoundtripTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleOBORoundtripTest.class);
 
 	public String[] testFiles = { "test_resources/testfile.1.0.obo", "test_resources/testfile.1.2.obo" };
 

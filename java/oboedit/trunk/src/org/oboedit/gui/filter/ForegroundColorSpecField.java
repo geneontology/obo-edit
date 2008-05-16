@@ -6,8 +6,13 @@ import org.bbop.swing.ColorUtil;
 import org.obo.util.HTMLUtil;
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class ForegroundColorSpecField extends
-		AbstractRendererSpecField<ColorProvider> {
+	AbstractRendererSpecField<ColorProvider> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ForegroundColorSpecField.class);
 
 	public static final ForegroundColorSpecField FIELD = new ForegroundColorSpecField();
 

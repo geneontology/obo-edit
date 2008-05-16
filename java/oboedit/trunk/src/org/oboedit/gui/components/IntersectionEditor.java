@@ -76,7 +76,12 @@ import org.oboedit.gui.event.RootChangeListener;
 import org.oboedit.gui.widget.IntersectionPanel;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class IntersectionEditor extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionEditor.class);
 
 	protected static final String JUNK_ID = "_if_you_can_read_this_something_is_wrong_";
 
@@ -182,7 +187,7 @@ public class IntersectionEditor extends AbstractGUIComponent {
 					if (TermUtil.isDangling(link))
 						return null;
 				}
-				System.err.println("setting object to " + value);
+				logger.error("setting object to " + value);
 				editorPanel.setCreateNewObject(io.getID().equals(JUNK_ID));
 				editorPanel.setObject(io);
 				return editorPanel;

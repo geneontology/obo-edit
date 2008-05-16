@@ -10,7 +10,12 @@ import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIComponentFactory.FactoryCategory;
 import org.oboedit.gui.components.GraphViewCanvas;
 
+import org.apache.log4j.*;
+
 public class GraphViewFactory extends AbstractComponentFactory<GraphViewCanvas> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphViewFactory.class);
 
 	public GraphViewFactory() {
 	}

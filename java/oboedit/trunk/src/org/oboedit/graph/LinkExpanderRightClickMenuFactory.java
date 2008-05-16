@@ -19,7 +19,12 @@ import org.oboedit.gui.components.LinkDatabaseCanvas;
 
 import edu.umd.cs.piccolo.event.PInputEvent;
 
+import org.apache.log4j.*;
+
 public class LinkExpanderRightClickMenuFactory implements RightClickMenuFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkExpanderRightClickMenuFactory.class);
 
 	public List<JMenuItem> getMenuItems(final LinkDatabaseCanvas canvas,
 			final PInputEvent e) {

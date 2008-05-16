@@ -62,7 +62,12 @@ import org.oboedit.verify.QuickFix;
 import org.oboedit.verify.TextCheckWarning;
 import org.oboedit.verify.TextReplaceQuickFix;
 
+import org.apache.log4j.*;
+
 public class TextErrorDecorator implements ErrorDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextErrorDecorator.class);
 
 	protected class DelegateUI extends TextUI {
 		protected TextUI delegate;

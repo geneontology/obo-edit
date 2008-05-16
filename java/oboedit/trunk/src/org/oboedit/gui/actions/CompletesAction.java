@@ -7,7 +7,12 @@ import org.oboedit.gui.*;
 
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class CompletesAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompletesAction.class);
 
 	protected Selection sources;
 

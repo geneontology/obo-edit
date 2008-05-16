@@ -15,17 +15,20 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Collection;
 
-import org.apache.log4j.*;
 //import java.util.logging.Logger;
 
+import org.apache.log4j.*;
+
 public class SemanticParserManagerComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SemanticParserManagerComponent.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	Logger logger = Logger.getLogger("org.obo.nlp");
 
 
 //	protected JCheckBox useReasonerCheckbox = new JCheckBox("Use reasoner");
@@ -106,7 +109,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		String text = "<html><body>\n";
 		text += "Reasoning completed.";
 		text += "</body></html>";
-		// System.err.println("newLinks = "+reasoner.getNewLinks());
+		// logger.error("newLinks = "+reasoner.getNewLinks());
 		final String summaryText = text;
 
 		Runnable screenUpdate = new Runnable() {

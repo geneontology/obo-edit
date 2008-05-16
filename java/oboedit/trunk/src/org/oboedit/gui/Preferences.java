@@ -36,7 +36,12 @@ import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.widget.TextIcon;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class Preferences {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Preferences.class);
 
     protected static String DEFAULT_MEMORY_SETTING = "1024M";  // Was 512M
 
@@ -226,7 +231,7 @@ public class Preferences {
 				preferences = (Preferences) p;
 				d.close();
 			} catch (Exception e) {
-				System.err.println("Could not read preferences file from "
+				logger.error("Could not read preferences file from "
 						+ Preferences.getPrefsXMLFile());
 			}
 			if (preferences == null)
@@ -446,7 +451,7 @@ public class Preferences {
 			if (urlStr.endsWith("svg"))
 				return new SVGIcon(urlStr);
 		} catch (Exception e) {
-		    System.err.println("WARNING: Exception getting icon for " + url + ": " + e); // DEL
+		    logger.error("WARNING: Exception getting icon for " + url + ": " + e); // DEL
 		}
 		return new ImageIcon(url);
 	}
@@ -472,7 +477,7 @@ public class Preferences {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
 //						String m = "got memory string " + mem + " from option file " + optionFile;
-//						System.out.println(m);
+//						logger.info(m);
 //						JOptionPane.showMessageDialog(null, m); // DEL
 						break;
 					}
@@ -485,7 +490,7 @@ public class Preferences {
 		if (mem == null) {
 		    mem = DEFAULT_MEMORY_SETTING;
 		    String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
-		    System.err.println(warning);
+		    logger.error(warning);
 //		    JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		return mem;
@@ -507,7 +512,7 @@ public class Preferences {
 	}
 
 	public void setUseReasoner(boolean useReasoner) {
-//	    System.out.println("Prefs.setUseReasoner " + useReasoner); // DEL
+//	    logger.info("Prefs.setUseReasoner " + useReasoner); // DEL
 		this.useReasoner = useReasoner;
 	}
 
@@ -516,7 +521,7 @@ public class Preferences {
 	}
 
 	public void setReasonerName(String name) {
-//	    System.out.println("Prefs.setReasonerName " + name); // DEL
+//	    logger.info("Prefs.setReasonerName " + name); // DEL
 	        this.reasonerName = name;
 	}
 
@@ -627,7 +632,7 @@ public class Preferences {
 	public void updateInstallJLaunchers() throws IOException {
 	    File optionFile = new File(getInstallationDirectory(),
 				       getLauncherName() + ".vmoptions");
-		System.out.println("updateInstallJLaunchers: adding -Xmx" + getMemString() + " to " + optionFile); // DEL
+		logger.info("updateInstallJLaunchers: adding -Xmx" + getMemString() + " to " + optionFile); // DEL
 		PrintWriter stream = new PrintWriter(new FileWriter(optionFile));
 		stream.println("-Xmx" + getMemString());
 		stream.close();
@@ -640,7 +645,7 @@ public class Preferences {
 		File infoPlist = new File(getInstallationDirectory(),
 					  getAppName()
 					  + ".app/Contents/Info.plist");
-		System.out.println("infoPlist = " + infoPlist); // DEL
+		logger.info("infoPlist = " + infoPlist); // DEL
 		Map params = new HashMap();
 		params.put("memoryOption", mem);
 		try {
@@ -655,13 +660,13 @@ public class Preferences {
 			try {
 				updateInfoPlist();
 			} catch (IOException ex) {
-				System.err.println("Could not update Mac application launcher script (Info.plist)");
+				logger.error("Could not update Mac application launcher script (Info.plist)");
 			}
 		}
 		try {
 			updateInstallJLaunchers();
 		} catch (IOException ex) {
-			System.err.println("Could not update InstallJ "
+			logger.error("Could not update InstallJ "
 					+ "launcher scripts");
 		}
 	}
@@ -702,7 +707,7 @@ public class Preferences {
 			throws IOException {
 		XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
 				new FileOutputStream(getPrefsXMLFile())));
-		System.err.println("Writing preferences to " + getPrefsXMLFile());
+		logger.error("Writing preferences to " + getPrefsXMLFile());
 		encoder.writeObject(preferences);
 		encoder.close();
 		preferences.updateLauncherConfigurations();
@@ -837,7 +842,7 @@ public class Preferences {
 	 * rClass = extensionLoader.loadClass(classname); FilteredRenderer renderer =
 	 * (FilteredRenderer) rClass.newInstance(); //
 	 * renderer.setProperties(subrprops); addGlobalFilteredRenderer(renderer); }
-	 * catch (Exception e) { System.err.println("couldn't load "+classname+"
+	 * catch (Exception e) { logger.error("couldn't load "+classname+"
 	 * because of "+e); } } } }
 	 */
 
@@ -867,7 +872,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
-//	    System.out.println("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
+//	    logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {

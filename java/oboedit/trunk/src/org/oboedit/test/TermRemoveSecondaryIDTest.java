@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.HistoryItem;
 import org.obo.history.SecondaryIDHistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermRemoveSecondaryIDTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermRemoveSecondaryIDTest.class);
 
 	@Override
 	public Collection getTestBundles() {

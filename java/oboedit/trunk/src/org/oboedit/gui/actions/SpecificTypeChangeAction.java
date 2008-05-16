@@ -13,7 +13,12 @@ import org.oboedit.util.GUIUtil;
 import javax.swing.tree.TreePath;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class SpecificTypeChangeAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpecificTypeChangeAction.class);
 
 	protected OBOProperty type;
 

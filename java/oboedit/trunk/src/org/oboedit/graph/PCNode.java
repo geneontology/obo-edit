@@ -14,7 +14,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PPaintContext;
 
+import org.apache.log4j.*;
+
 public class PCNode extends PPath {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PCNode.class);
 
 	public static final Object PATH_NODE = new Object();
 	protected NamedChildProvider provider;

@@ -6,7 +6,12 @@ import java.util.LinkedHashSet;
 
 import edu.umd.cs.piccolo.PNode;
 
+import org.apache.log4j.*;
+
 public class DefaultNamedChildProvider implements NamedChildProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultNamedChildProvider.class);
 
 	protected static DefaultNamedChildProvider instance;
 	

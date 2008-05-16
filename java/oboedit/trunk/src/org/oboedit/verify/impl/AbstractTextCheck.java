@@ -8,7 +8,9 @@ import java.net.*;
 import java.util.*;
 
 import javax.swing.*;
+import org.apache.log4j.*;
 
+import org.apache.log4j.Logger;
 import org.bbop.framework.GUIManager;
 import org.bbop.io.FileUtil;
 import org.bbop.swing.*;
@@ -33,6 +35,9 @@ import com.swabunga.spell.event.WordFinder;
 
 public abstract class AbstractTextCheck extends AbstractCheck implements
 		FieldCheck {
+	
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(CycleCheck.class);
 
 	public static class TooManyWarningsException extends RuntimeException {
 		protected Collection<CheckWarning> warnings;
@@ -1037,7 +1042,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		    w.write("\n");
 		    w.close();
 		} catch (IOException ex) {
-		    System.out.println("Error writing to dictionary file");
+		    logger.info("Error writing to dictionary file");
 		}
     }
 }

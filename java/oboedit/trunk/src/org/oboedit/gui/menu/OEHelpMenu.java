@@ -19,7 +19,12 @@ import org.bbop.swing.SwingUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.widget.SplashScreen;
 
+import org.apache.log4j.*;
+
 public class OEHelpMenu extends HelpMenu {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OEHelpMenu.class);
 
 	public OEHelpMenu() {
 		super();

@@ -47,7 +47,12 @@ import edu.umd.cs.piccolo.event.PPanEventHandler;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class LinkingButtonBehavior implements ToolbarButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkingButtonBehavior.class);
 
 	protected static final Object ARROW_GHOST_KEY = new Object();
 

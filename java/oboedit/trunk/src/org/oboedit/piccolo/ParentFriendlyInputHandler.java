@@ -14,7 +14,12 @@ import edu.umd.cs.piccolo.util.PBounds;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class ParentFriendlyInputHandler extends PBasicInputEventHandler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParentFriendlyInputHandler.class);
 
 	public PNode attachedNode;
 	protected boolean isInside = false;

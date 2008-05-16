@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.history.HistoryItem;
 import org.obo.history.NameChangeHistoryItem;
 
+import org.apache.log4j.*;
+
 public class TermTextTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermTextTest.class);
 
 	@Override
 	public Collection getTestBundles() {

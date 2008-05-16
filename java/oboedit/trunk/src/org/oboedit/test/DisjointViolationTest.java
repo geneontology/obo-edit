@@ -12,7 +12,12 @@ import org.obo.test.AbstractReasonerTest;
 import org.oboedit.verify.OntologyCheck;
 import org.oboedit.verify.impl.DisjointednessCheck;
 
+import org.apache.log4j.*;
+
 public class DisjointViolationTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DisjointViolationTest.class);
 
 	protected DisjointViolationTest(String name) {
 		super(name);
@@ -30,13 +35,13 @@ public class DisjointViolationTest extends AbstractReasonerTest {
 
 	public void testLinks() throws Exception {
 		OntologyCheck check = new DisjointednessCheck();
-		System.out.println(check);
+		logger.info(check);
 		assertTrue(true); // TODO
 		//testForUnsatisfiable("unsatisfiable");
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

@@ -4,7 +4,12 @@ import java.awt.event.*;
 
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.*;
+
 public class AddParentAction extends CopyAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddParentAction.class);
 
 	public AddParentAction() {
 		copyChild = false;

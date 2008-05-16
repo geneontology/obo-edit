@@ -1,6 +1,11 @@
 package org.oboedit.verify;
 
+import org.apache.log4j.*;
+
 public class CheckConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CheckConfiguration.class);
 
 	protected byte condition;
 

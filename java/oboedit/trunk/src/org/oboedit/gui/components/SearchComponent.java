@@ -38,7 +38,12 @@ import org.oboedit.gui.SearchPanel;
 import org.oboedit.gui.TermFilterEditorFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
 
+import org.apache.log4j.*;
+
 public class SearchComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SearchComponent.class);
 
 	public static enum ResultLabelType {
 		RESULT_COUNT {

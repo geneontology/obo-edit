@@ -5,7 +5,12 @@ import org.obo.history.HistoryItem;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class HistoryAppliedEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryAppliedEvent.class);
 	/**
 	 * 
 	 */

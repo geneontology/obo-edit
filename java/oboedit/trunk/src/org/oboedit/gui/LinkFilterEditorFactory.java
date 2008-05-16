@@ -21,7 +21,12 @@ import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.LinkSpecEditor;
 
+import org.apache.log4j.*;
+
 public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkFilterEditorFactory.class);
 
 	protected static class LinkModel extends
 			AbstractSearchResultsTableModel<Link> {

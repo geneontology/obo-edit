@@ -25,7 +25,12 @@ import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
+import org.apache.log4j.*;
+
 public class CompleteDefPanel extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompleteDefPanel.class);
 	/**
 	 * 
 	 */
@@ -361,7 +366,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 						found = true;
 						break;
 					} else {
-						System.err.println("   " + completeDefLink + " != "
+						logger.error("   " + completeDefLink + " != "
 								+ link);
 					}
 				}
@@ -370,7 +375,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 					historyList.add(new DeleteLinkHistoryItem(link));
 				}
 			}
-			System.err.println("relationshipList = " + getRelationshipList());
+			logger.error("relationshipList = " + getRelationshipList());
 			// Find any intersection links that have been added
 			it = getRelationshipList().iterator();
 			while (it.hasNext()) {
@@ -394,7 +399,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 				completeDefLink.setCompletes(true);
 			}
 		}
-		System.err.println("historyList = " + historyList);
+		logger.error("historyList = " + historyList);
 		return historyList;
 	}
 
@@ -404,7 +409,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		relationshipList.clear();
 		genusTerm = null;
 
-		System.err.println("CompleteDefPanel.setClass: parents of " + oboClass + " = "
+		logger.error("CompleteDefPanel.setClass: parents of " + oboClass + " = "
 				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();

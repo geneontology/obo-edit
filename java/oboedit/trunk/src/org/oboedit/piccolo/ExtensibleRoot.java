@@ -16,7 +16,12 @@ import edu.umd.cs.piccolo.activities.PActivityScheduler;
 import edu.umd.cs.piccolo.util.PDebug;
 import edu.umd.cs.piccolo.util.PNodeFilter;
 
+import org.apache.log4j.*;
+
 public class ExtensibleRoot extends PRoot {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExtensibleRoot.class);
 	private PInputManager defaultInputManager;
 	private transient List inputSources;
 	private transient long globalTime;

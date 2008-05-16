@@ -11,7 +11,12 @@ import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
 
+import org.apache.log4j.*;
+
 public class ConfigurableTextComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ConfigurableTextComponent.class);
 
 	public static class InfoConfig implements ComponentConfiguration {
 		protected String html;

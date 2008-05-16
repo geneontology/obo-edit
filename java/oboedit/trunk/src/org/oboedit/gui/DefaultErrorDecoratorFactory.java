@@ -9,7 +9,12 @@ import javax.swing.JComponent;
 
 import org.obo.datamodel.FieldPathSpec;
 
+import org.apache.log4j.*;
+
 public class DefaultErrorDecoratorFactory implements ErrorDecoratorFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultErrorDecoratorFactory.class);
 
 	protected Collection<ErrorDecoratorFactory> factories = new LinkedList<ErrorDecoratorFactory>();
 

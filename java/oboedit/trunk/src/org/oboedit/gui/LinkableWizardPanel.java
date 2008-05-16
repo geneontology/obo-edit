@@ -11,7 +11,12 @@ import javax.swing.JPanel;
 
 import jwf.WizardPanel;
 
+import org.apache.log4j.*;
+
 public class LinkableWizardPanel extends WizardPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkableWizardPanel.class);
 	
 	protected Component displayMe;
 	protected LinkableWizardPanel nextPanel;

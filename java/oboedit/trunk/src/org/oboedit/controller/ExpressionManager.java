@@ -9,7 +9,12 @@ import org.bbop.expression.context.HashMapContext;
 import org.oboedit.script.ScriptUtil;
 import org.oboedit.script.TermUtilScriptDelegate;
 
+import org.apache.log4j.*;
+
 public class ExpressionManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExpressionManager.class);
 
 	protected JexlContext context;
 

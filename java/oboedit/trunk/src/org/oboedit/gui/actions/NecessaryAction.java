@@ -8,7 +8,12 @@ import org.oboedit.gui.*;
 import javax.swing.tree.TreePath;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class NecessaryAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NecessaryAction.class);
 
 	protected Selection sources;
 

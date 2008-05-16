@@ -7,7 +7,12 @@ import java.awt.event.*;
 
 import org.obo.filters.*;
 
+import org.apache.log4j.*;
+
 public class CompoundFilterEditor extends AbstractFilterEditor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompoundFilterEditor.class);
 
 	/**
 	 * 

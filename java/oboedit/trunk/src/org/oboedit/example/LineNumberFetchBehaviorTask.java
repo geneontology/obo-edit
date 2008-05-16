@@ -29,7 +29,12 @@ import org.oboedit.gui.filter.GeneralRendererSpec;
 import org.oboedit.gui.filter.HTMLSpecField;
 import org.oboedit.gui.filter.HeatmapColor;
 
+import org.apache.log4j.*;
+
 public class LineNumberFetchBehaviorTask extends AbstractFetchTask<Integer> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LineNumberFetchBehaviorTask.class);
 
 	public static class LineNumberFetchTaskConfiguration extends
 			FetchTaskConfiguration {

@@ -28,7 +28,12 @@ import edu.umd.cs.piccolo.util.PPickPath;
 import edu.umd.cs.piccolo.util.PStack;
 import edu.umd.cs.piccolox.nodes.PStyledText;
 
+import org.apache.log4j.*;
+
 public class PiccoloUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PiccoloUtil.class);
 
 	// public static final long ANIMATION_DURATION = 1000;
 
@@ -46,7 +51,7 @@ public class PiccoloUtil {
 		try {
 			doc.remove(0, doc.getLength());
 			htmlEditorKit.read(new StringReader(html), doc, 0);
-			System.err.println("stylesheet = "
+			logger.error("stylesheet = "
 					+ ((HTMLDocument) doc).getStyleSheet());
 			node.setDocument(doc);
 		} catch (IOException e) {

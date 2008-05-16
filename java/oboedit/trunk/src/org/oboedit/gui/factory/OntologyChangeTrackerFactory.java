@@ -3,8 +3,13 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.OntologyChangeTracker;
 
+import org.apache.log4j.*;
+
 public class OntologyChangeTrackerFactory extends
-		AbstractComponentFactory<OntologyChangeTracker> {
+	AbstractComponentFactory<OntologyChangeTracker> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OntologyChangeTrackerFactory.class);
 
 	public OntologyChangeTrackerFactory() {
 	}

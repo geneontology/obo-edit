@@ -11,7 +11,12 @@ import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PUtil;
 
+import org.apache.log4j.*;
+
 public class MorphActivity extends PInterpolatingActivity {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MorphActivity.class);
 
 	
 	

@@ -7,7 +7,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.OBOMergeCanvas;
 
+import org.apache.log4j.*;
+
 public class OBOMergeCanvasFactory extends AbstractComponentFactory<OBOMergeCanvas> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOMergeCanvasFactory.class);
 
 	public OBOMergeCanvasFactory() {
 	}

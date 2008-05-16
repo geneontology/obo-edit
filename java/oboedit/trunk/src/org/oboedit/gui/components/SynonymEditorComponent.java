@@ -24,7 +24,12 @@ import org.oboedit.gui.AbstractTextEditComponent;
 import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.gui.SynonymTableCellEditor;
 
+import org.apache.log4j.*;
+
 public class SynonymEditorComponent extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymEditorComponent.class);
 
 	protected static final Color reallyLightGray = new Color(230, 230, 230);
 

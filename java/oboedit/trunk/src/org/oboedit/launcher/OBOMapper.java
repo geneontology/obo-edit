@@ -30,7 +30,12 @@ import org.obo.util.IDMapper.IDFileMetadata;
 import org.obo.util.IDMapper.SimpleAnnotation;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class OBOMapper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOMapper.class);
 
 	public static void mapIDsInFile(IDMapper mapper,
 			String inputPath, String out, boolean countMode) throws IOException {
@@ -72,7 +77,7 @@ public class OBOMapper {
 					printLine(bw,colVals,fileMetadata.getColumnDelimiter());
 				}
 				if (objs.size() == 0) {
-					System.err.println("cannot map: "+oboID);
+					logger.error("cannot map: "+oboID);
 				}
 			}
 		}
@@ -97,11 +102,11 @@ public class OBOMapper {
 
 
 	public static void main(String[] args) throws Exception {
-		System.err.println("version = "+Preferences.getVersion());
+		logger.error("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		for (int i = 0; i < args.length; i++)
-			System.err.println("args[" + i + "] = |" + args[i] + "|");
+			logger.error("args[" + i + "] = |" + args[i] + "|");
 
 		Collection<String> ontPaths = new LinkedList<String>();
 		Collection<String> inputPaths = new LinkedList<String>();
@@ -117,7 +122,7 @@ public class OBOMapper {
 		IDMapper mapper = new IDMapper();
 
 		for (int i = 0; i < args.length; i++) {
-			System.err.println("processing option: "+args[i]);
+			logger.error("processing option: "+args[i]);
 			if (args[i].equals("-ontology")) {
 				if (i >= args.length - 1)
 					printUsage(1);
@@ -144,8 +149,8 @@ public class OBOMapper {
 					printUsage(1);
 				i++;
 				relationNames.add(args[i]);
-				System.err.println("following links of type: "+relationNames);
-				System.err.println("is_a is always followed. Reasoner will be used");
+				logger.error("following links of type: "+relationNames);
+				logger.error("is_a is always followed. Reasoner will be used");
 				useReasoner=true;
 			} else if (args[i].equals("-reasonerfactory")) {
 				if (i >= args.length - 1)
@@ -164,15 +169,15 @@ public class OBOMapper {
 		OBOSession session = AdapterUtil.parseFiles(ontPaths, allowDangling);
 		mapper.setSession(session);
 		if (useReasoner) {
-			System.err.println("Setting up reasoner...");
+			logger.error("Setting up reasoner...");
 			ReasonedLinkDatabase reasoner = reasonerFactory.createReasoner();
 			mapper.setReasoner(reasoner);
 			reasoner.setLinkDatabase(session.getLinkDatabase());
-			System.err.println("Revving up reasoner...");
+			logger.error("Revving up reasoner...");
 			reasoner.recache();
 		}
 		for (String cat : categoryNames) {
-			System.err.println("filtering on: "+cat);
+			logger.error("filtering on: "+cat);
 			mapper.addCategory(cat);
 		}
 		for (String prop : relationNames) {
@@ -181,13 +186,13 @@ public class OBOMapper {
 		if (followConsiderTags)
 			mapper.setAutoReplaceConsiderTags(followConsiderTags);
 		if (out == null) {
-			System.err.println("You must specify an output file with -o FILE");
+			logger.error("You must specify an output file with -o FILE");
 			printUsage(1);
 		}
 		
 		// now perform the mapping
 		for (String inputPath : inputPaths) {
-			System.err.println("mapping: "+inputPath);
+			logger.error("mapping: "+inputPath);
 			if (allSlims) {
 				mapIDsInFile(mapper,inputPath,out,countMode);
 			}
@@ -201,7 +206,7 @@ public class OBOMapper {
 			}
 		}
 		for (IDWarning warning : mapper.getWarnings()) {
-			System.err.println(warning);
+			logger.error(warning);
 		}
 		
 	}

@@ -34,7 +34,12 @@ import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 
+import org.apache.log4j.*;
+
 public class DeleteAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DeleteAction.class);
 
 	protected boolean isLegal = false;
 
@@ -87,7 +92,7 @@ public class DeleteAction implements ClickMenuAction {
 		// If user has selected one term but is mousing over a different term, that's not a legal scenario for deletion.
 		if (destItem != null && destItem.getTerm() != null &&
 		    !(selection.getAllSelectedObjects().contains(destItem.getTerm()))) {
-//		    System.out.println("Can't delete--" + destItem.getTerm().getName() + " isn't in selection");
+//		    logger.info("Can't delete--" + destItem.getTerm().getName() + " isn't in selection");
 		    isLegal = false;
 		    return;
 		}
@@ -136,11 +141,11 @@ public class DeleteAction implements ClickMenuAction {
 			for (PathCapable pc : selection.getAllSelectedObjects()) {
 				if (pc instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) pc;
-//					System.out.println("Checking linkedobject " + lo.getName()); // DEL
+//					logger.info("Checking linkedobject " + lo.getName()); // DEL
 					// 3/2008: If node has (non-obsolete) children, don't allow user to delete it.
 					if (hasNonObsoleteChildren(lo)) {
 //					    && TermUtil.hasAncestor(lo, lo)) { 
-//					    System.out.println("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
+//					    logger.info("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
 					    wontDelete += lo.getName() + " (" + lo.getID() + ")"
 						+ " will not be deleted because it still has children.\n";
 					}
@@ -171,7 +176,7 @@ public class DeleteAction implements ClickMenuAction {
 					// ! Check whether the link is to null (as for a singleton)?
 					if (!TermUtil.isImplied(link) 
 					    && link.getType() != null) {  // ?
-//					    System.out.println("Adding to delete list: link " + link); // DEL
+//					    logger.info("Adding to delete list: link " + link); // DEL
 					    out.add(pc);
 					}
 				}
@@ -186,10 +191,10 @@ public class DeleteAction implements ClickMenuAction {
 	for (Link childLink : lo.getChildren()) {
 	    LinkedObject child = childLink.getChild();
 	    if (TermUtil.isObsolete(child))
-//		System.out.println("Child " + child.getName() + " is obsolete");
+//		logger.info("Child " + child.getName() + " is obsolete");
 		;
 	    else {
-//		System.out.println("Child " + child.getName() + " is NOT obsolete");
+//		logger.info("Child " + child.getName() + " is NOT obsolete");
 		return true;
 	    }
 	}
@@ -221,24 +226,24 @@ public class DeleteAction implements ClickMenuAction {
 			+ ((lastInstanceCount > 1) ?
 			   "these terms" : "this term")
 			+ " permanently obsolete?";
-		    System.out.println(deleteQuestion);
+		    logger.info(deleteQuestion);
 		    int answer = JOptionPane.showConfirmDialog(GUIManager.getManager().getFrame(),
 							       deleteQuestion, "Delete warning",
 							       JOptionPane.YES_NO_OPTION);
 		    if (answer != JOptionPane.YES_OPTION) {
-			System.out.println("User decided not to delete " + instanceString);
+			logger.info("User decided not to delete " + instanceString);
 			return null;
 		    }
 		}
 	    }
 	    Collections.sort(deleteThese, pcComparator);
-	    System.out.println("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
+	    logger.info("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
 	    TermMacroHistoryItem out = new TermMacroHistoryItem(
 		"No items to delete"); // ??
 	    for (PathCapable pc : deleteThese) {
 		if (pc instanceof Link) {
 		    Link link = (Link) pc;
-//				System.out.println(link + " is a Link--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
+//				logger.info(link + " is a Link--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
 		    if (link.getType() == null)
 			out.addItem(new DeleteLinkHistoryItem((Link) pc));
 		    else if (link.getType().equals(OBOProperty.CONSIDER)) {
@@ -253,7 +258,7 @@ public class DeleteAction implements ClickMenuAction {
 			   && (!legacyMode 
 			       // This test is to allow user to delete singleton terms from OTE
 			       || (legacyMode && deleteTerm))) {
-//			    System.out.println(pc + " is a LinkedObject--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
+//			    logger.info(pc + " is a LinkedObject--adding to " + (shouldDestroy ? "destroy" : "obsolete") + " list"); // DEL
 		    if (shouldDestroy)
 			out
 			    .addItem(new DestroyObjectHistoryItem(
@@ -264,17 +269,17 @@ public class DeleteAction implements ClickMenuAction {
 					 (LinkedObject) pc));
 		}
 	    }
-//		System.out.println("Terms to delete: " + out);
+//		logger.info("Terms to delete: " + out);
 	    if (out.size() == 0) {
-//		System.out.println("DeleteAction.execute: no items to delete"); // DEL
+//		logger.info("DeleteAction.execute: no items to delete"); // DEL
 		return null;
 	    }
 	    else if (out.size() == 1) {
-//		System.out.println("DeleteAction.execute: returning one item to delete: " + out.getItemAt(0)); // DEL
+//		logger.info("DeleteAction.execute: returning one item to delete: " + out.getItemAt(0)); // DEL
 		return out.getItemAt(0);
 	    }
 	    else {
-//		System.out.println("DeleteAction.execute: returning " + out.size() + " items to delete: " + out); // DEL
+//		logger.info("DeleteAction.execute: returning " + out.size() + " items to delete: " + out); // DEL
 		return out;
 	    }
 	}
@@ -289,7 +294,7 @@ public class DeleteAction implements ClickMenuAction {
 		if (deleteTerm)
 		    return "Destroy term";
 		else
-//		    System.out.println("DeleteAction.getName--stack trace:"); // DEL
+//		    logger.info("DeleteAction.getName--stack trace:"); // DEL
 //		    new Throwable().printStackTrace(); // DEL
 		    return "Destroy"; // It will be disabled anyway, but we have to put *something* here
 	    }

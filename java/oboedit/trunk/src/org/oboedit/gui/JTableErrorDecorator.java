@@ -26,7 +26,12 @@ import org.oboedit.gui.JListErrorDecorator.ListRendererWrapper;
 import org.oboedit.util.TextEditUtil;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class JTableErrorDecorator implements ErrorDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JTableErrorDecorator.class);
 
 	protected FieldPathSpec spec;
 

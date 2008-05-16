@@ -7,7 +7,12 @@ import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class IncrementalVerificationEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IncrementalVerificationEvent.class);
 
 	protected MultiMap<FieldPath, CheckWarning> warnings;
 

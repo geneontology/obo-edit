@@ -38,7 +38,12 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class OBO2OBO {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OBO.class);
 
 	protected static class DanglingWrapper {
 		protected String id;
@@ -104,16 +109,16 @@ public class OBO2OBO {
 			semanticParser.index(session);
 			Collection<? extends HistoryItem> items = semanticParser.parseTerms();
 			for (HistoryItem item : items) {
-				//System.out.println(item);
+				//logger.info(item);
 			}
 			semanticParser.apply(items);
 			if (semanticParser.getNamer() != null) {
 				semanticParser.apply(semanticParser.getNamer().generateSynonymChanges(session));
 			}
 				
-			System.out.println("SEMANTIC PARSER REPORT:");
+			logger.info("SEMANTIC PARSER REPORT:");
 			for (String report : semanticParser.getReports()) {
-				System.out.println(report);
+				logger.info(report);
 			}
 		}
 		Iterator it = scripts.iterator();
@@ -121,10 +126,10 @@ public class OBO2OBO {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
-		System.err.println("About to write files... session object count = "
+		logger.error("About to write files... session object count = "
 				+ session.getObjects().size());
-		System.err.println("writePath = " + writeConfig.getWritePath());
-		System.err.println("savePath = " + writeConfig.getSaveRecords());
+		logger.error("writePath = " + writeConfig.getWritePath());
+		logger.error("savePath = " + writeConfig.getSaveRecords());
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 		return session;
 	}
@@ -171,7 +176,7 @@ public class OBO2OBO {
 					}
 					dfo.removeDefDbxref(metacycRef);
 					dfo.removeDefDbxref(brokenRef);
-					System.err.println("* Repairing broken dbxref at "
+					logger.error("* Repairing broken dbxref at "
 							+ dfo.getID() + ", merging dbxrefs " + metacycRef
 							+ " and " + brokenRef);
 					metacycRef.setDatabaseID(metacycRef.getDatabaseID() + ","
@@ -181,13 +186,13 @@ public class OBO2OBO {
 						&& otherRef != null) {
 					dfo.removeDefDbxref(otherRef);
 					dfo.removeDefDbxref(brokenRef);
-					System.err.println("* Repairing broken dbxref at "
+					logger.error("* Repairing broken dbxref at "
 							+ dfo.getID() + ", merging dbxrefs " + otherRef
 							+ " and " + brokenRef);
 					otherRef.setDatabaseID(otherRef.getDatabaseID() + "," + brokenRef.getDatabaseID());
 					dfo.addDefDbxref(otherRef);
 				} else if (brokenRef != null) {
-					System.err.println("*!! Possible broken ref at "
+					logger.error("*!! Possible broken ref at "
 							+ dfo.getID()
 							+ " could not be automatically repaired.");
 				}
@@ -489,12 +494,12 @@ public class OBO2OBO {
 						}
 						io = new DanglingWrapper(token, text.toString());
 					} else if (!(io instanceof ObsoletableObject)) {
-						System.err.println("Warning (" + commented.getID()
+						logger.error("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "a non-obsoletable object");
 						continue;
 					} else if (TermUtil.isObsolete((IdentifiedObject) io)) {
-						System.err.println("Warning (" + commented.getID()
+						logger.error("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "an obsolete object");
 						continue;
@@ -504,7 +509,7 @@ public class OBO2OBO {
 					} else if (readReplaced) {
 						replacedBy.add(io);
 					} else {
-						System.err.println("Warning (" + commented.getID()
+						logger.error("Warning (" + commented.getID()
 								+ "): " + "Found replacement identifier "
 								+ token + " not preceded by 'use' or "
 								+ "'consider'");
@@ -532,7 +537,7 @@ public class OBO2OBO {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.err.println("version = "+Preferences.getVersion());
+		logger.error("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
@@ -546,7 +551,7 @@ public class OBO2OBO {
 		LinkedList scripts = new LinkedList();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
-			System.err.println("args[" + i + "] = |" + args[i] + "|");
+			logger.error("args[" + i + "] = |" + args[i] + "|");
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-formatversion")) {
@@ -560,7 +565,7 @@ public class OBO2OBO {
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
-			    System.out.println("Please note: allowdangling is already set to true by default.");
+			    logger.info("Please note: allowdangling is already set to true by default.");
 				readConfig.setAllowDangling(true);
 			} else if (args[i].equals("-fixdbxrefs")) {
 				fixDbxrefs = true;
@@ -661,7 +666,7 @@ public class OBO2OBO {
 			}
 		}
 		if (readConfig.getReadPaths().size() < 1) {
-			System.err.println("You must specify at least one file to load.");
+			logger.error("You must specify at least one file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {

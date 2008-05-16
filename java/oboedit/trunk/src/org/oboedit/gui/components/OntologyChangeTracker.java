@@ -19,7 +19,12 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.apache.log4j.*;
+
 public class OntologyChangeTracker extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OntologyChangeTracker.class);
 
 	/**
 	 * 
@@ -90,7 +95,7 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 			public Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean sel, boolean expanded, boolean leaf,
 					int row, boolean hasFocus) {
-//				System.err.println("painting "+value);
+//				logger.error("painting "+value);
 				return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
 						row, hasFocus);
 			}

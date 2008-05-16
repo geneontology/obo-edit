@@ -6,7 +6,12 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class TermUtilScriptDelegate {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermUtilScriptDelegate.class);
 	public static boolean isProperty(IdentifiedObject io) {
 		return TermUtil.isProperty(io);
 	}

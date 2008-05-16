@@ -21,7 +21,12 @@ import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PBounds;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class SelectionMouseListener extends PBasicInputEventHandler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectionMouseListener.class);
 	protected static final Object MARQUEE_KEY = new Object();
 
 	protected Point2D startPoint = new Point2D.Double();

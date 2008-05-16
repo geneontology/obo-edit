@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.TextEditor;
 
+import org.apache.log4j.*;
+
 public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextEditorFactory.class);
 
 	public TextEditorFactory() {
 	}

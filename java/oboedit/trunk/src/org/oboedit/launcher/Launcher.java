@@ -7,12 +7,17 @@ import java.util.*;
 import org.bbop.io.ExtensionFilenameFilter;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class Launcher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Launcher.class);
 
 	public static void main(String[] args) throws Exception {
 		String memsetting = Preferences.readMemStringFromDisk();
 
-		System.err.println("Starting OBO-Edit using " + memsetting
+		logger.error("Starting OBO-Edit using " + memsetting
 				+ " of memory");
 
 		List<String> argList = new LinkedList<String>();
@@ -35,7 +40,7 @@ public class Launcher {
 		argList.add("-classpath");
 		argList.add(classpath.toString());
 		argList.add("org.oboedit.launcher.OBOEdit");
-		System.err.println(argList);
+		logger.error(argList);
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
 		String[] newargs = new String[argList.size()];
@@ -77,7 +82,7 @@ public class Launcher {
 				BufferedReader br = new BufferedReader(isr);
 				String line = null;
 				while ((line = br.readLine()) != null)
-					System.out.println(line);
+					logger.info(line);
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}

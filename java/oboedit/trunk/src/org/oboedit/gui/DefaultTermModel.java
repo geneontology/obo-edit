@@ -22,7 +22,12 @@ import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultTermModel implements TermModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultTermModel.class);
 
 	protected Vector listeners = new Vector();
 
@@ -191,7 +196,7 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// System.err.println("discarded map entry "+eldest);
+				// logger.error("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -205,7 +210,7 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// System.err.println("discarded map entry "+eldest);
+				// logger.error("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -241,16 +246,16 @@ public class DefaultTermModel implements TermModel {
 
 		termFilter.addFilter(FilterManager.getManager().getGlobalTermFilter());
 
-//		System.out.println("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
+//		logger.info("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
 		if (userLinkFilter != null)
 			linkFilter.addFilter(userLinkFilter);
 
 		linkFilter.addFilter(FilterManager.getManager().getGlobalLinkFilter());
-//		System.out.println("DefaultTermModel.initializeFilters: adding global link filter " + FilterManager.getManager().getGlobalLinkFilter());
+//		logger.info("DefaultTermModel.initializeFilters: adding global link filter " + FilterManager.getManager().getGlobalLinkFilter());
 	}
 
 	public void setLinkFilter(Filter filter) {
-//		System.out.println("DefaultTermModel.setLinkFilter: linkfilter = " + linkFilter + ", new filter = " + filter); // DEL
+//		logger.info("DefaultTermModel.setLinkFilter: linkfilter = " + linkFilter + ", new filter = " + filter); // DEL
 		// This wasn't letting user remove filters that were present at startup time
 //		if (userLinkFilter != null)
 //			linkFilter.removeFilter(userLinkFilter);
@@ -261,7 +266,7 @@ public class DefaultTermModel implements TermModel {
 			filters.add(userLinkFilter);
 			linkFilter.setFilters(filters);
 		}
-//		System.out.println("DefaultTermModel.setLinkFilter: after adding new filter, now linkfilter = " + linkFilter); // DEL
+//		logger.info("DefaultTermModel.setLinkFilter: after adding new filter, now linkfilter = " + linkFilter); // DEL
 		reload();
 	}
 
@@ -439,7 +444,7 @@ public class DefaultTermModel implements TermModel {
 			TermUtil.detectRoots(temp, linkDatabase, getRootAlgorithm());
 			if (trimmedLinkDB != null)
 				trimmedLinkDB.setEnableTrimming(true);
-//			System.err.println("   detected roots in "
+//			logger.error("   detected roots in "
 //					+ (System.currentTimeMillis() - time));
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -580,11 +585,11 @@ public class DefaultTermModel implements TermModel {
 				leafCache.remove(lo);
 			}
 // 			if (lo.getName().equals("cell activation")) {
-// 				System.err.println("children of " + lo + ":");
+// 				logger.error("children of " + lo + ":");
 // 				for (Object link : out) {
-// 					System.err.println("   " + link);
+// 					logger.error("   " + link);
 // 				}
-// 				System.err.println("done");
+// 				logger.error("done");
 // 			}
 			return out;
 		} else {

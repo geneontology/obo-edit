@@ -37,7 +37,12 @@ import org.bbop.swing.RootView;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.util.PPaintContext;
 
+import org.apache.log4j.*;
+
 public class ViewRenderedStyleText extends PNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ViewRenderedStyleText.class);
 
 	protected EditorKit editorKit;
 
@@ -153,14 +158,14 @@ public class ViewRenderedStyleText extends PNode {
 		rect.height = (int) getHeight();
 		Graphics2D g = paintContext.getGraphics();
 		/*
-		 * try { System.err.println("document " + document.getText(0,
+		 * try { logger.error("document " + document.getText(0,
 		 * document.getLength())); } catch (BadLocationException e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
 		try {
 			view.paint(g, rect);
 		} catch (Throwable t) {
-			System.err.println("!");
+			logger.error("!");
 		}
 		// setPaint(Color.red);
 		// super.paint(paintContext);

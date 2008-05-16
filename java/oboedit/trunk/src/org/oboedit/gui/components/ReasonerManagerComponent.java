@@ -13,7 +13,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.apache.log4j.*;
+
 public class ReasonerManagerComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerManagerComponent.class);
 
     private static SessionManager sessionManager = SessionManager.getManager();
 	/**
@@ -38,13 +43,13 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void reasoningStarted() {
-//		    System.out.println("ReasonerManagerComponent: reasoningStarted"); // DEL
+//		    logger.info("ReasonerManagerComponent: reasoningStarted"); // DEL
 		}
 	};
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-//		    System.out.println("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+//		    logger.info("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
 		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -69,7 +74,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		reasonerChoice.addItem("OFF");
 		// Get reasoner names from registry
 		ReasonerRegistry registry = ReasonerRegistry.getInstance();
-//		System.out.println("Registered reasoners: " + registry.getRegisteredNames()); // DEL
+//		logger.info("Registered reasoners: " + registry.getRegisteredNames()); // DEL
 		for (String registryName : registry.getRegisteredNames()) 
 		    reasonerChoice.addItem(registryName);
 

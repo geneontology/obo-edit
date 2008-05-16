@@ -4,7 +4,12 @@ import org.bbop.swing.SwingUtil;
 import org.obo.util.HTMLUtil;
 import org.oboedit.gui.FilteredRenderable;
 
+import org.apache.log4j.*;
+
 public class BoldSpecField extends AbstractRendererSpecField<Boolean> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BoldSpecField.class);
 
 	public static final BoldSpecField FIELD = new BoldSpecField();
 

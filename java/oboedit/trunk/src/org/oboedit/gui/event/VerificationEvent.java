@@ -7,7 +7,12 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.oboedit.verify.CheckTask;
 
+import org.apache.log4j.*;
+
 public class VerificationEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(VerificationEvent.class);
 
 	/**
 	 * 

@@ -9,7 +9,12 @@ import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
+import org.apache.log4j.*;
+
 public class HistoryTreeModel implements TreeModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryTreeModel.class);
 	protected Vector histories;
 	private Vector listeners;
 	private Object root = "All histories";

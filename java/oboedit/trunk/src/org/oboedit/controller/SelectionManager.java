@@ -36,7 +36,12 @@ import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.util.PathUtil;
 
+import org.apache.log4j.*;
+
 public class SelectionManager implements ObjectSelector {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectionManager.class);
 
 	protected static SelectionManager selectionManager;
 

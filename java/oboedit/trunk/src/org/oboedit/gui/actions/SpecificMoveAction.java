@@ -16,7 +16,12 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class SpecificMoveAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpecificMoveAction.class);
 
 	protected boolean useOriginalType;
 

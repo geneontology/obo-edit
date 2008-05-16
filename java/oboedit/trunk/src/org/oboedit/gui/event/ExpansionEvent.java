@@ -6,7 +6,12 @@ import java.util.EventObject;
 
 import org.obo.datamodel.IdentifiedObject;
 
+import org.apache.log4j.*;
+
 public class ExpansionEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExpansionEvent.class);
 	
 	protected Collection<IdentifiedObject> shown;
 	protected Collection<IdentifiedObject> hidden;	

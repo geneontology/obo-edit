@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.log4j.*;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,7 +36,12 @@ import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.SimpleWizard;
 
+import org.apache.log4j.*;
+
 public class AssertImpliedAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AssertImpliedAction.class);
 
 	protected Selection sources;
 
@@ -96,7 +100,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 		relationChooser.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("action="+relationChooser.getSelectedItem());
+				logger.info("action="+relationChooser.getSelectedItem());
 				selectedRelation=(OBOProperty) relationChooser.getSelectedItem();
 				panel.removeAll();
 				setupPanel(panel);
@@ -146,7 +150,6 @@ public class AssertImpliedAction implements ClickMenuAction {
 		impliedLinks = new LinkedHashSet<Link>();
 		int count = 0;
 
-		Logger logger = Logger.getLogger("org.oboedit.gui");
 		logger.info("iterating through all links");
 		while (it.hasNext()) {
 			final Link link = it.next();
@@ -154,10 +157,10 @@ public class AssertImpliedAction implements ClickMenuAction {
 				logger.info("implied link: "+link);
 				Namespace subjNS = link.getChild().getNamespace();
 				Namespace objNS = link.getParent().getNamespace();
-				//System.err.println("ns: "+subjNS + " " +objNS);
+				//logger.error("ns: "+subjNS + " " +objNS);
 				if (subjNS != null && !subjNS.equals(objNS)) {
 					// TODO: configurable?
-					//System.err.println("ignoring "+link+" as it spans ontologies");
+					//logger.error("ignoring "+link+" as it spans ontologies");
 					continue;
 				}
 				logger.info("checking if this should be trimmed");

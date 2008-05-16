@@ -11,7 +11,12 @@ import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PInterpolatingActivity;
 import edu.umd.cs.piccolo.nodes.PPath;
 
+import org.apache.log4j.*;
+
 public class DefaultMorpher implements Morpher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultMorpher.class);
 
 	protected PNode newNodeOriginNode = null;
 
@@ -71,7 +76,7 @@ public class DefaultMorpher implements Morpher {
 						((PPath) newNode).getPathReference(), extender,
 						duration));
 			} else {
-//				System.err.println("don't known how to morph "+newNode+" to "+oldNode);
+//				logger.error("don't known how to morph "+newNode+" to "+oldNode);
 			}
 			relayoutActivity.addActivity(oldNode
 					.animateToPositionScaleRotation(newNode.getXOffset(),

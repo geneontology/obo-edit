@@ -137,8 +137,13 @@ import edu.umd.cs.piccolo.util.PDebug;
 import edu.umd.cs.piccolo.util.PNodeFilter;
 import edu.umd.cs.piccolo.util.PPickPath;
 
+import org.apache.log4j.*;
+
 public class LinkDatabaseCanvas extends ExtensibleCanvas implements
-		ObjectSelector, RightClickMenuProvider, Filterable, FilteredRenderable {
+	ObjectSelector, RightClickMenuProvider, Filterable, FilteredRenderable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkDatabaseCanvas.class);
 
 	protected static final Object CURRENT_DECORATOR_ANIMATIONS = new Object();
 
@@ -1041,8 +1046,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		addExpansionListener(new ExpandCollapseListener() {
 
 			public void expandStateChanged(ExpansionEvent e) {
-//				System.err.println("showed " + e.getShown());
-//				System.err.println("hid " + e.getHidden());
+//				logger.error("showed " + e.getShown());
+//				logger.error("hid " + e.getHidden());
 			}
 
 		});
@@ -1158,7 +1163,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		linkDatabase.cleanupCache();
 
 		newLayer = layoutEngine.getNewLayer();
-//		System.err.println("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
+//		logger.error("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
 		decorateNode(getRoot(), newLayer, decorators, true, true);
 
 		morpher.setNewNodeOriginNode(getFocusedNode());
@@ -1285,7 +1290,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void select(final Selection selection) {
-//	    System.out.println("LinkDatabaseCanvas.select: " + selection + ", expand = " + isExpandSelectionPaths()); // DEL
+//	    logger.info("LinkDatabaseCanvas.select: " + selection + ", expand = " + isExpandSelectionPaths()); // DEL
 		this.selection = selection;
 		Collection<PathCapable> visible = getVisibleObjects();
 		int lastCount = visible.size();
@@ -1295,7 +1300,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		if (selection.getTermSubSelection() != null
 				&& !selection.getAllSelectedObjects().contains(
 						selection.getTermSubSelection()))
-			System.err.println("weird selection");
+			logger.error("weird selection");
 		if (selection.getTermSubSelection() != null)
 			visible.add(selection.getTermSubSelection());
 		fireSelectionEvent(new SelectionEvent(this, selection));

@@ -3,8 +3,13 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.ExplanationComponent;
 
+import org.apache.log4j.*;
+
 public class ExplanationComponentFactory extends
-		AbstractComponentFactory<ExplanationComponent> {
+	AbstractComponentFactory<ExplanationComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExplanationComponentFactory.class);
 	public ExplanationComponentFactory() {
 	}
 	

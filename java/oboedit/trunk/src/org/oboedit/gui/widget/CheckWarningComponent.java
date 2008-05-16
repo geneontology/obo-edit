@@ -24,7 +24,12 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.verify.*;
 
+import org.apache.log4j.*;
+
 public class CheckWarningComponent extends JEditorPane {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CheckWarningComponent.class);
 
 	/**
 	 * 
@@ -162,9 +167,9 @@ public class CheckWarningComponent extends JEditorPane {
 				Collection newWarnings = VerificationManager.getManager()
 						.runCheck(source, session, currentObject, condition);
 				warnings.addAll(newWarnings);
-				System.err.println("oldWarnings = " + oldWarnings.size());
-				System.err.println("warnings = " + warnings.size());
-				System.err.println("newWarnings = " + newWarnings.size());
+				logger.error("oldWarnings = " + oldWarnings.size());
+				logger.error("warnings = " + warnings.size());
+				logger.error("newWarnings = " + newWarnings.size());
 
 				Runnable r = new Runnable() {
 					public void run() {
@@ -504,7 +509,7 @@ public class CheckWarningComponent extends JEditorPane {
 		int warningCount = 0;
 		int fatalCount = 0;
 		Iterator it = warnings.iterator();
-//		System.err.println("updategui warnings = " + warnings.size());
+//		logger.error("updategui warnings = " + warnings.size());
 		while (it.hasNext()) {
 			CheckWarning warning = (CheckWarning) it.next();
 			if (warning.isFatal() && !showFatal) {

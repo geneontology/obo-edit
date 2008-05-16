@@ -11,9 +11,13 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
+
 import org.apache.log4j.*;
 
 public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OBOBigReasonerTest.class);
 	
 	protected OBOSession session;
 	
@@ -52,17 +56,17 @@ public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 					" -reasonerfactory "
 					+ factoryName + " "
 					+ outFile.getPath();
-				System.err.println(cmd);
+				logger.error(cmd);
 				Process p = Runtime.getRuntime().exec(cmd);
 				int returnVal = p.waitFor();
 				long timeOfEnd = System.nanoTime();
 				long timeDelta = (timeOfEnd-timeOfStart) / 1000000000;
-				System.err.println("t= "+timeDelta+"s");
+				logger.error("t= "+timeDelta+"s");
 				assertTrue("Exit value should be zero", returnVal == 0);
 
-				System.out.println("parsing: "+outFile.toString());
+				logger.info("parsing: "+outFile.toString());
 				session = TestUtil.getSession(outFile.toString());
-				System.err.println("reparsed saved results");
+				logger.error("reparsed saved results");
 			}
 		}	
 	}

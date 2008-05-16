@@ -54,7 +54,12 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
 
+import org.apache.log4j.*;
+
 public class SearchPanel extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SearchPanel.class);
 
 	protected DropBoxPanel contentPanel;
 	protected SearchComponentFactory factory;

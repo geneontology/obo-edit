@@ -11,13 +11,16 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.test.AbstractReasonerTest;
+
 import org.apache.log4j.*;
 
 public class OBO2OWLTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2OWLTest.class);
 	
 	protected OBOSession session;
 	
-	Logger logger = Logger.getLogger("org.oboedit.test");
 
 	
 	public Collection<String> getReasonerFactoryNames() {
@@ -49,7 +52,7 @@ public class OBO2OWLTest extends TestCase {
 				"./launch_scripts/obo2owl " + testFile.getPath() + " "
 				+ "-o "
 				+ outFile.getPath();
-			System.err.println(cmd);
+			logger.error(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int returnVal = p.waitFor();
 			assertTrue("Exit value should be zero", returnVal == 0);

@@ -23,7 +23,12 @@ import edu.umd.cs.piccolo.event.PZoomEventHandler;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.util.PAffineTransform;
 
+import org.apache.log4j.*;
+
 public class ZoomWidget extends PNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ZoomWidget.class);
 
 	public static final int ZOOM_VALUE_PROPERTY_CODE = 1;
 

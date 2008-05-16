@@ -35,7 +35,12 @@ import org.oboedit.gui.TermAutocompleteModel;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
 
+import org.apache.log4j.*;
+
 public class IntersectionPanel extends AbstractTextEditComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionPanel.class);
 	protected class IntersectionPanelFocusPolicy extends
 			LayoutFocusTraversalPolicy {
 		@Override
@@ -387,7 +392,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	public void commit() {
-		System.err.println("called commit");
+		logger.error("called commit");
 		ActionEvent e = new ActionEvent(this, (int) Math.random()
 				* Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
@@ -427,7 +432,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 						found = true;
 						break;
 					} else {
-						System.err.println("   " + completeDefLink + " != "
+						logger.error("   " + completeDefLink + " != "
 								+ link);
 					}
 				}
@@ -635,7 +640,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	 * 
 	 * @Override public void keyPressed(KeyEvent e) { if (e.getKeyCode() ==
 	 * KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
-	 * System.err.println("Got keypress from genus field"); tabToNext(comp); } } }
+	 * logger.error("Got keypress from genus field"); tabToNext(comp); } } }
 	 */
 	protected boolean isTabFocusable(Component c) {
 		return focusPolicy.accept(c);
@@ -682,7 +687,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		genusField.setValue(null);
 		linkListPanel.removeAll();
 
-//		System.err.println("IntersectionPanel.setClass: parents of " + oboClass + " = "
+//		logger.error("IntersectionPanel.setClass: parents of " + oboClass + " = "
 //				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();

@@ -3,7 +3,12 @@ package org.oboedit.gui.factory;
 import org.bbop.framework.AbstractComponentFactory;
 import org.oboedit.gui.components.ReasonerManagerComponent;
 
+import org.apache.log4j.*;
+
 public class ReasonerManagerFactory extends AbstractComponentFactory<ReasonerManagerComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerManagerFactory.class);
 
 	public ReasonerManagerFactory() {
 	}

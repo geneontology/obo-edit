@@ -11,7 +11,12 @@ import org.obo.history.ChangeSynScopeHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.util.HistoryUtil;
 
+import org.apache.log4j.*;
+
 public class TermScopeSynonymTest extends OperationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermScopeSynonymTest.class);
 
 	@Override
 	public Collection getTestBundles() {

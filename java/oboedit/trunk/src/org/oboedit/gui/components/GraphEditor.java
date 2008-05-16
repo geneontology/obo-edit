@@ -57,7 +57,12 @@ import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphEditor.class);
 
 	public static class GraphEditorConfiguration extends
 			OntologyEditorConfiguration {
@@ -147,7 +152,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
-//							System.err.println("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
+//							logger.error("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
 							panToObjects();
 						}
 
@@ -163,7 +168,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 		public void configReloaded(ReconfigEvent e) {
 		    relayout();
-//			System.err.println("GraphEditor: reloaded config");
+//			logger.error("GraphEditor: reloaded config");
 		}
 
 	};
@@ -297,7 +302,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 //		if (linkDatabase.getObjects().size() == 0) {
 //		    Collection<? extends LinkedObject> roots = TermUtil
 //			.getRoots(getRootAlgorithm(), getLinkDatabase());
-//		    System.err.println("init: setVisibleObjects(" + roots); // DEL
+//		    logger.error("init: setVisibleObjects(" + roots); // DEL
 //		    setVisibleObjects(roots);
 //		}
 	}

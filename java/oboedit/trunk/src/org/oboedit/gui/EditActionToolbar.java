@@ -28,7 +28,12 @@ import org.bbop.util.ObjectUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.gui.components.OntologyEditorConfiguration;
 
+import org.apache.log4j.*;
+
 public class EditActionToolbar extends JToolBar {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EditActionToolbar.class);
 
 	protected JComponent masterPanel;
 	protected int showToolbar = OntologyEditorConfiguration.SHOW_TOOLBAR_ON_HOTKEY;

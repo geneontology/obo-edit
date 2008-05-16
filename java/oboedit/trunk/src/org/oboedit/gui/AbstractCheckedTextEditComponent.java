@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.*;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -40,9 +42,13 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.verify.CheckWarning;
 import org.oboedit.verify.ObjectCheck;
 import org.oboedit.verify.TextCheckWarning;
+import org.oboedit.verify.impl.CycleCheck;
 
 public abstract class AbstractCheckedTextEditComponent extends
 		AbstractTextEditComponent implements CheckedTextEditComponent {
+	
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractCheckedTextEditComponent.class);
 
 	public class VerifierDelegate {
 
@@ -168,7 +174,7 @@ public abstract class AbstractCheckedTextEditComponent extends
 					out.append("</ul>");
 				}
 				out.append("</html>");
-				System.err.println(out);
+				logger.error(out);
 				return out.toString();
 			}
 		};

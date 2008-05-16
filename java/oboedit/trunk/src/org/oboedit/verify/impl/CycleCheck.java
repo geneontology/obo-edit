@@ -10,7 +10,12 @@ import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.*;
 import org.oboedit.verify.*;
 
+import org.apache.log4j.*;
+
 public class CycleCheck extends AbstractCheck implements OntologyCheck {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CycleCheck.class);
 
 	@Override
 	protected void initConfiguration() {
@@ -29,7 +34,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 			if (property.isTransitive() && !property.isCyclic())
 				properties.add(property);
 		}
-//		System.err.println("CycleCheck: properties = " + properties);
+//		logger.error("CycleCheck: properties = " + properties);
 		List out = new LinkedList();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
@@ -74,7 +79,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 
 	/*
 	 * protected boolean checkCycle(LinkedObject object, Collection lookedAt) {
-	 * if (lookedAt.contains(object)) { System.err.println("FOUND CYCLE AT
+	 * if (lookedAt.contains(object)) { logger.error("FOUND CYCLE AT
 	 * "+object); return true; } lookedAt.add(object); Iterator it =
 	 * Controller.getController().getCurrentLinkDatabase().
 	 * getParents(object).iterator(); while(it.hasNext()) { Link link = (Link)

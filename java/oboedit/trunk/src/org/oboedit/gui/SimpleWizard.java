@@ -26,7 +26,12 @@ import jwf.Wizard;
 import jwf.WizardListener;
 import jwf.WizardPanel;
 
+import org.apache.log4j.*;
+
 public class SimpleWizard extends Wizard {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleWizard.class);
 
 	protected String currentPath;
 	protected Map<String, LinkableWizardPanel> stepMap =

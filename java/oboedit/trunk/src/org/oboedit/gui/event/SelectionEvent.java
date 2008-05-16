@@ -4,7 +4,12 @@ import java.util.EventObject;
 
 import org.oboedit.gui.Selection;
 
+import org.apache.log4j.*;
+
 public class SelectionEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectionEvent.class);
 	protected Selection selection;
 	
 	public SelectionEvent(Object o, Selection selection) {

@@ -12,7 +12,12 @@ import edu.umd.cs.piccolo.nodes.*;
 import edu.umd.cs.piccolox.PFrame;
 import edu.umd.cs.piccolox.event.*;
 
+import org.apache.log4j.*;
+
 public class FisheyeToyDemo extends PFrame {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FisheyeToyDemo.class);
 
 	public static final boolean DO_PUSH = true;
 	public static final boolean DO_SCALE = true;

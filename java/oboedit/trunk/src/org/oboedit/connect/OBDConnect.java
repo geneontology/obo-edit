@@ -4,7 +4,12 @@ import java.sql.*;
 import org.obo.datamodel.LinkedObject;
 import org.oboedit.graph.OENode;
 
+import org.apache.log4j.*;
+
 public class OBDConnect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDConnect.class);
 
 	// Connector and DB.
 	private static final String DRIVER = "org.postgresql.Driver";
@@ -18,7 +23,7 @@ public class OBDConnect {
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -28,9 +33,9 @@ public class OBDConnect {
 		// Try to connect.
 		try {
 			connector = DriverManager.getConnection(DB,"cjm","");
-			System.out.println("connected: "+connector);
+			logger.info("connected: "+connector);
 		} catch (SQLException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -39,7 +44,7 @@ public class OBDConnect {
 		try {
 			connector.close();
 		} catch (SQLException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 
@@ -49,7 +54,7 @@ public class OBDConnect {
 		int number = -1;
 		ResultSet rs;
 
-		//System.err.println("___SETH___ into getData(" + str + ")");
+		//logger.error("___SETH___ into getData(" + str + ")");
 	
 		try {
 			String front = "SELECT annotation_count FROM annotation_count_by_class INNER JOIN node USING (node_id) WHERE uid = '";
@@ -58,14 +63,14 @@ public class OBDConnect {
 			Statement stmt = connector.createStatement();
 			rs = stmt.executeQuery(sql);
 			
-			//System.err.println("___SETH___ Checking counts...");
-			System.err.println("SQL: " + sql);
+			//logger.error("___SETH___ Checking counts...");
+			logger.error("SQL: " + sql);
 			while( rs.next() ){
 				number = rs.getInt("annotation_count");
-				System.err.println("SQL (RESULT): " + number);
+				logger.error("SQL (RESULT): " + number);
 			}
 		} catch (SQLException e) {
-			System.err.println("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 
 		return number;

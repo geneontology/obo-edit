@@ -38,7 +38,12 @@ import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.gui.filter.SpecEditor;
 
+import org.apache.log4j.*;
+
 public class FilterComponent extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilterComponent.class);
 
 	protected SearchComponentFactory factory;
 	protected SelectionListener listener = new SelectionListener() {

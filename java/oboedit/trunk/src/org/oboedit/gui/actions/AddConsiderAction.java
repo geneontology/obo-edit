@@ -11,7 +11,12 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class AddConsiderAction implements DropMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddConsiderAction.class);
 
 	protected boolean isLegal = false;
 

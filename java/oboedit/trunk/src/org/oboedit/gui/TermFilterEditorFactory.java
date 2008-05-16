@@ -18,8 +18,13 @@ import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.ObjectSpecEditor;
 
+import org.apache.log4j.*;
+
 public class TermFilterEditorFactory implements
-		SearchComponentFactory<IdentifiedObject> {
+	SearchComponentFactory<IdentifiedObject> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermFilterEditorFactory.class);
 
 	protected static class IdentifiedObjectModel extends
 			AbstractSearchResultsTableModel<IdentifiedObject> {

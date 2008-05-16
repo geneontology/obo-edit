@@ -56,7 +56,12 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.*;
+
 public class ParentEditor extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParentEditor.class);
 
 	/**
 	 * 
@@ -239,7 +244,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	}
 
 	public void reload() {
-		System.err.println("RELOADING");
+		logger.error("RELOADING");
 		loadTerm(currentObject);
 	}
 

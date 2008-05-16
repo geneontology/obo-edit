@@ -42,7 +42,12 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.event.GUIUpdateEvent;
 import org.oboedit.gui.event.GUIUpdateListener;
 
+import org.apache.log4j.*;
+
 public class TermFilterEditor extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermFilterEditor.class);
 
 	protected static final String[] values = { "have", "don't have" };
 
@@ -261,7 +266,7 @@ public class TermFilterEditor extends JPanel {
 		mainPanel.setLayout(new TableLayout(sizes));
 		// setLayout(new GridLayout(3, 1));
 		valueField = new AutocompleteBox<String>(model);
-//		System.out.println("TermFilterEditor: valueField = new"); // DEL
+//		logger.info("TermFilterEditor: valueField = new"); // DEL
 //		model.clear();  // Need?
 		valueField.setAllowNonModelValues(true);
 		valueField.setMinLength(1);
@@ -269,7 +274,7 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
-//				System.out.println("actioPerformed: model.clear"); // DEL
+//				logger.info("actioPerformed: model.clear"); // DEL
 				model.addCriterion((SearchCriterion) criterionBox
 						.getSelectedItem());
 			}

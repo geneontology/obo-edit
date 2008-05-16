@@ -23,7 +23,12 @@ import org.oboedit.gui.LinkFilterEditorFactory;
 import org.oboedit.gui.TermFilterEditorFactory;
 import org.oboedit.gui.filter.RenderSpec;
 
+import org.apache.log4j.*;
+
 public class GlobalFilterManagerComponent extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GlobalFilterManagerComponent.class);
 
 	protected JButton saveButton = new JButton("Save Changes");
 	protected JButton revertButton = new JButton("Revert");

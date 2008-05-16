@@ -22,7 +22,12 @@ import edu.umd.cs.piccolo.activities.PActivity.PActivityDelegate;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class PSnapshotLayoutNode extends PLayoutNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PSnapshotLayoutNode.class);
 	protected Map objectToCloneMap;
 	protected Map cloneToObjectMap;
 	protected List stateRestorers = new LinkedList();
@@ -95,7 +100,7 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 				while (it.hasNext()) {
 					PNode child = (PNode) it.next();
 					node.addChild(child);
-					System.err.println("adding child " + child + " to " + node);
+					logger.error("adding child " + child + " to " + node);
 				}
 			}
 

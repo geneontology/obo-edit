@@ -12,7 +12,12 @@ import org.oboedit.util.PathUtil;
 import javax.swing.tree.TreePath;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class SpecificCompletesAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpecificCompletesAction.class);
 
 	protected Selection sources;
 

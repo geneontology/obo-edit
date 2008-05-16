@@ -35,7 +35,12 @@ import org.oboedit.gui.GestureTarget;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.SimpleWizard;
 
+import org.apache.log4j.*;
+
 public class RemoveRedundantAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RemoveRedundantAction.class);
 
 	protected Selection sources;
 
@@ -76,7 +81,7 @@ public class RemoveRedundantAction implements ClickMenuAction {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		while (it.hasNext()) {
 			final Link link = it.next();
-			System.err.println("examining "+link);
+			logger.error("examining "+link);
 			if (!TermUtil.isImplied(link)) {
 				ReasonedLinkDatabase reasoner = SessionManager.getManager()
 						.getReasoner();

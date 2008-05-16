@@ -10,7 +10,12 @@ import org.oboedit.util.PathUtil;
 
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class SpecificNecessaryAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpecificNecessaryAction.class);
 
 	protected Selection sources;
 

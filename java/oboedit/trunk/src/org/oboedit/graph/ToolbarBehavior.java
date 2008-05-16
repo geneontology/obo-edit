@@ -21,7 +21,12 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.GraphEditor;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 
+import org.apache.log4j.*;
+
 public class ToolbarBehavior implements ViewBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ToolbarBehavior.class);
 
 	protected LinkDatabaseCanvas canvas;
 

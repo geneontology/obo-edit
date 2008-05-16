@@ -3,7 +3,12 @@ package org.oboedit.test;
 import junit.framework.*;
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class OBO2FlatTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO2FlatTest.class);
 
 	public void testScript() throws IOException, InterruptedException {
 		File processFile = File.createTempFile("process", ".ontology");

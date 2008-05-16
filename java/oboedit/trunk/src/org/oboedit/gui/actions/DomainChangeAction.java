@@ -13,7 +13,12 @@ import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
 
+import org.apache.log4j.*;
+
 public class DomainChangeAction implements DropMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DomainChangeAction.class);
 
 	protected boolean fromDrop = false;
 

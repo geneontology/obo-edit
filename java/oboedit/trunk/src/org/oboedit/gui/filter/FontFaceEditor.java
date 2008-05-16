@@ -10,8 +10,13 @@ import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+import org.apache.log4j.*;
+
 public class FontFaceEditor extends JPanel implements
-		GeneralRendererSpecFieldEditor<String> {
+	GeneralRendererSpecFieldEditor<String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FontFaceEditor.class);
 	
 	protected static class FontListCellRenderer extends DefaultListCellRenderer {
 		/**

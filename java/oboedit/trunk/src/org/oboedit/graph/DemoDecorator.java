@@ -7,7 +7,12 @@ import org.obo.datamodel.LinkedObject;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.activities.PActivity;
 
+import org.apache.log4j.*;
+
 public class DemoDecorator implements NodeDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DemoDecorator.class);
 
 	public DemoDecorator() {
 	}

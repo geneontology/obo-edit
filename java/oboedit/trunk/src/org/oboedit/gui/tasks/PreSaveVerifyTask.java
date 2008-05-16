@@ -19,7 +19,12 @@ import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.verify.CheckTask;
 import org.oboedit.verify.CheckWarning;
 
+import org.apache.log4j.*;
+
 public class PreSaveVerifyTask implements GUITask {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PreSaveVerifyTask.class);
 
 	protected IOListener listener = new IOListener() {
 

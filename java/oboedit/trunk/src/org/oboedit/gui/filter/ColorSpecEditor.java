@@ -34,8 +34,13 @@ import org.oboedit.controller.FilterManager;
 
 import net.infonode.util.ColorUtil;
 
+import org.apache.log4j.*;
+
 public class ColorSpecEditor extends JPanel implements
-		GeneralRendererSpecFieldEditor<ColorProvider> {
+	GeneralRendererSpecFieldEditor<ColorProvider> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ColorSpecEditor.class);
 
 	protected static final String HEATMAP_KEY = "HEATMAP";
 	protected static final String COLOR_KEY = "COLOR";

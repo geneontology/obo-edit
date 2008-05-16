@@ -25,7 +25,12 @@ import edu.umd.cs.piccolo.event.PBasicInputEventHandler;
 import edu.umd.cs.piccolo.event.PInputEvent;
 import edu.umd.cs.piccolo.event.PInputEventListener;
 
+import org.apache.log4j.*;
+
 public class CloneButtonBehavior extends AbstractClickActionButtonBehavior {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CloneButtonBehavior.class);
 
 	protected CloneAction cloneAction = new CloneAction();
 

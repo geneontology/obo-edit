@@ -3,7 +3,12 @@ package org.oboedit.gui.filter;
 import org.bbop.util.ObjectUtil;
 import org.obo.filters.Filter;
 
+import org.apache.log4j.*;
+
 public class RenderedFilter implements Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RenderedFilter.class);
 	protected Filter filter;
 	protected RenderSpec spec;
 

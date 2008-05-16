@@ -5,7 +5,12 @@ import org.oboedit.gui.LineType;
 
 import net.infonode.gui.icon.button.ArrowIcon;
 
+import org.apache.log4j.*;
+
 public class LineTypeSpecField extends AbstractRendererSpecField<LineType> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LineTypeSpecField.class);
 
 	public static final LineTypeSpecField FIELD = new LineTypeSpecField();
 

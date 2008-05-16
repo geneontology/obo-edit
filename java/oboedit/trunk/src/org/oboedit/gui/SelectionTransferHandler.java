@@ -10,7 +10,12 @@ import javax.swing.TransferHandler;
 
 import org.oboedit.gui.event.SelectorDragHandler;
 
+import org.apache.log4j.*;
+
 public class SelectionTransferHandler extends TransferHandler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelectionTransferHandler.class);
 
 	/**
 	 * 
@@ -67,9 +72,9 @@ public class SelectionTransferHandler extends TransferHandler {
 				droppable.drop(selection);
 				return true;
 			} catch (UnsupportedFlavorException ufe) {
-				System.out.println("importData: unsupported data flavor");
+				logger.info("importData: unsupported data flavor");
 			} catch (IOException ioe) {
-				System.out.println("importData: I/O exception");
+				logger.info("importData: I/O exception");
 			}
 		}
 		return false;

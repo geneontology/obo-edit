@@ -4,7 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import org.oboedit.gui.Preferences;
 
+import org.apache.log4j.*;
+
 public class TextIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextIcon.class);
 	private static JComponent tempComponent = new JPanel();
 	private String text;
 	private Font font;
@@ -23,7 +28,7 @@ public class TextIcon implements Icon {
 		setBackground(Color.black);
 		setForeground(Color.white);
 		recalculateBounds();
-//		System.out.println("Created TextIcon(" + text + "), width = " + iconWidth + ", height = " + iconHeight); // DEL
+//		logger.info("Created TextIcon(" + text + "), width = " + iconWidth + ", height = " + iconHeight); // DEL
 	}
 
 	public void setForeground(Color foreground) {

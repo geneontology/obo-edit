@@ -24,7 +24,12 @@ import jwf.Wizard;
 import jwf.WizardListener;
 import jwf.WizardPanel;
 
+import org.apache.log4j.*;
+
 public class MultiAddAction implements ClickMenuAction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiAddAction.class);
 
 	protected LinkedObject target;
 

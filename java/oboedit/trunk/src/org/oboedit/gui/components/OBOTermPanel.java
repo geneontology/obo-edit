@@ -60,9 +60,14 @@ import org.oboedit.util.PathUtil;
 
 /** Ontology Tree Editor (aka OTE) */
 
+import org.apache.log4j.*;
+
 public class OBOTermPanel extends JTree implements ObjectSelector,
-		FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
-		RightClickMenuProvider, Autoscroll {
+	FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
+	RightClickMenuProvider, Autoscroll {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOTermPanel.class);
 
 	/**
 	 * 
@@ -134,7 +139,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-//			System.out.println("OBOTermPanel.reloadListener.reload " + e); // DEL
+//			logger.info("OBOTermPanel.reloadListener.reload " + e); // DEL
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
@@ -363,7 +368,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		}
 		rendererPane.removeAll();
-//		System.err.println("   CREATING IMAGE W/ TITLE " + dragTitle);
+//		logger.error("   CREATING IMAGE W/ TITLE " + dragTitle);
 		return out;
 	}
 
@@ -755,7 +760,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void setLinkFilter(Filter<?> linkFilter) {
-//		System.out.println("OBOTermPanel.setLinkFilter " + linkFilter + ", getModel = " + getModel() + ((getModel() instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
+//		logger.info("OBOTermPanel.setLinkFilter " + linkFilter + ", getModel = " + getModel() + ((getModel() instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		if (getModel() instanceof TermModel) {
 			((TermModel) getModel()).setLinkFilter(linkFilter);
 			reload();
@@ -779,7 +784,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public Filter<?> getLinkFilter() {
 		if (getModel() instanceof TermModel) {
-//			System.out.println("OBOTermPanel.getLinkFilter: " + ((TermModel) getModel()).getLinkFilter());
+//			logger.info("OBOTermPanel.getLinkFilter: " + ((TermModel) getModel()).getLinkFilter());
 			return ((TermModel) getModel()).getLinkFilter();
 		}
 		else
@@ -1215,11 +1220,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void reload() {
-//		System.err.println("Reloading OBO Term Panel...");
+//		logger.error("Reloading OBO Term Panel...");
 		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			System.err.println("removing selection listener " + selectionListeners[i]);
+//			logger.error("removing selection listener " + selectionListeners[i]);
 			removeTreeSelectionListener(selectionListeners[i]);
 		}
 
@@ -1231,7 +1236,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-//		System.out.println("OBOTermPanel.reload: before reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
+//		logger.info("OBOTermPanel.reload: before reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		if (model instanceof TermModel) {
 			// Get the current filters before reloading
 			FilterManager manager = FilterManager.getManager();
@@ -1239,7 +1244,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			((TermModel) getModel()).setTermFilter(manager.getGlobalTermFilter());
 			((TermModel) model).reload();
 		}
-//		System.out.println("OBOTermPanel.reload: after reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
+//		logger.info("OBOTermPanel.reload: after reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		clearToggledPaths();
 
 //		long time2 = System.currentTimeMillis();
@@ -1248,10 +1253,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			restoreSelectionPaths(selected);
 //		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			System.err.println("adding selection listener " + selectionListeners[i]);
+//			logger.error("adding selection listener " + selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
 		}
-//		System.err.println("reloaded in " + (System.currentTimeMillis() - time)
+//		logger.error("reloaded in " + (System.currentTimeMillis() - time)
 //				+ " (expanding took " + time2 + " ms)");
 
 //		FilterManager.getManager().fireGlobalFilterChange();  // ?

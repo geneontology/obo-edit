@@ -8,7 +8,12 @@ import org.oboedit.piccolo.BoundsUtil;
 import edu.umd.cs.piccolo.PNode;
 import edu.umd.cs.piccolo.util.PBounds;
 
+import org.apache.log4j.*;
+
 public class PanToFocusedGuarantor extends BoundsGuarantorCycleState {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PanToFocusedGuarantor.class);
 
 	public PanToFocusedGuarantor(LinkDatabaseCanvas canvas) {
 		setDesc("Pan to focused node");

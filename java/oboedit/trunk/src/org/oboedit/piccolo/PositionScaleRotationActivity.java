@@ -7,7 +7,12 @@ import edu.umd.cs.piccolo.activities.PTransformActivity;
 import edu.umd.cs.piccolo.util.PAffineTransform;
 import edu.umd.cs.piccolo.util.PUtil;
 
+import org.apache.log4j.*;
+
 public class PositionScaleRotationActivity extends PTransformActivity {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PositionScaleRotationActivity.class);
 
 	protected double xoffset;
 	protected double yoffset;
@@ -45,7 +50,7 @@ public class PositionScaleRotationActivity extends PTransformActivity {
 		t.setRotation(rotation);
 		t.getMatrix(matrix);
 		setDestinationTransform(matrix);
-		System.err.println("animating "+node+" from ("+node.getXOffset()+","+node.getYOffset()+","+node.getScale()+","+node.getRotation()+") to ("+xoffset+","+yoffset+","+scale+","+rotation+")");
+		logger.error("animating "+node+" from ("+node.getXOffset()+","+node.getYOffset()+","+node.getScale()+","+node.getRotation()+") to ("+xoffset+","+yoffset+","+scale+","+rotation+")");
 		super.activityStarted();
 	}
 }

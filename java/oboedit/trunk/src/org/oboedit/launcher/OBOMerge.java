@@ -31,7 +31,12 @@ import org.obo.util.IDUtil;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class OBOMerge {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOMerge.class);
 
 	public static class IDClash {
 		protected String id;
@@ -106,7 +111,7 @@ public class OBOMerge {
 			HistoryItem item = (HistoryItem) it.next();
 			OperationWarning warning = model.apply(item);
 			if (warning != null)
-				System.err.println("* warning: " + warning);
+				logger.error("* warning: " + warning);
 		}
 	}
 
@@ -244,7 +249,7 @@ public class OBOMerge {
 		try {
 			argVals = CommandLineParser.parse(getArgumentSignature(), argList);
 		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
+			logger.error(ex.getMessage());
 			printUsage();
 
 			System.exit(1);
@@ -330,11 +335,11 @@ public class OBOMerge {
 						System.err.print("!!!");
 						foundLikelyClashes = true;
 					}
-					System.err.println(clash.getMessage());
+					logger.error(clash.getMessage());
 				}
 				if ((clashBehavior == FAIL_ON_ANY_CLASH && clashes.size() > 0)
 						|| (clashBehavior == FAIL_ON_LIKELY_CLASH && foundLikelyClashes)) {
-					System.err.println("ID Clashes detected, aborting.");
+					logger.error("ID Clashes detected, aborting.");
 					System.exit(1);
 				}
 				if (idUpdateBehavior == UPDATE_ALL_CLASHES
@@ -376,12 +381,12 @@ public class OBOMerge {
 												(AnnotatedObjectImpl) reassignMe,
 												newID);
 								clash.setReassignedID(newID);
-								System.err.println("updating " + clash.getID()
+								logger.error("updating " + clash.getID()
 										+ " to " + newID);
 								ids.add(newID);
 							} catch (Exception ex) {
 								ex.printStackTrace();
-								System.err.println("Could not reassign id "
+								logger.error("Could not reassign id "
 										+ clash.getID() + " to " + newID
 										+ ". This is " + "probably a bug.");
 								System.exit(1);
@@ -405,7 +410,7 @@ public class OBOMerge {
 					reassignMe.setIDExtension(new NestedValueImpl());
 				reassignMe.getIDExtension().setSuggestedComment(
 						"id reassigned from " + clash.getID() + " by obomerge");
-				System.err.println("set id extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
+				logger.error("set id extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
 			}
 		}
 
@@ -417,7 +422,7 @@ public class OBOMerge {
 			while(it.hasNext()) {
 				String id = it.next().toString();
 				Collection ids = (Collection) mergeIDRemap.get(id);
-				System.err.println("** Warning: Mapping edits that refer to secondary "+id+" in file "+file2+" to the following primary ids "+ids);
+				logger.error("** Warning: Mapping edits that refer to secondary "+id+" in file "+file2+" to the following primary ids "+ids);
 				changesb.forwardID(id, ids);
 			}
 			applyChanges(original, changes);
@@ -434,7 +439,7 @@ public class OBOMerge {
 		config.setSerializer(oboVersion);
 
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, writeMe);
-		System.err.println("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
+		logger.error("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 	}
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
@@ -447,8 +452,7 @@ public class OBOMerge {
 	}
 
 	public static void printUsage() {
-		System.err.println("Usage: obomerge "+getArgumentSignature().getShortDocumentation());
-		System.err.println("For example:  obomerge -fail-on-clash NEVER -original orig.obo -revision file1.obo -revision file2.obo -version OBO_1_2 -o file.merged.obo");
-		System.err.println();
+		logger.error("Usage: obomerge "+getArgumentSignature().getShortDocumentation());
+		logger.error("For example:  obomerge -fail-on-clash NEVER -original orig.obo -revision file1.obo -revision file2.obo -version OBO_1_2 -o file.merged.obo");
 	}
 }
