@@ -29,7 +29,7 @@ public class GraphEditorFactory extends AbstractComponentFactory<GraphEditor> {
 	}
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 
 	@Override

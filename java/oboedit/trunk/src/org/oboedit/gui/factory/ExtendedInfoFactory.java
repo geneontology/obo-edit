@@ -27,7 +27,7 @@ public class ExtendedInfoFactory extends AbstractComponentFactory<ExtendedInfoCo
 	
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.SUMMARY;
 	}
 
 

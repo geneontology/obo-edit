@@ -27,7 +27,7 @@ public class IDResolutionComponentFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.TOOLS;
 	}
 
 }

@@ -27,6 +27,6 @@ public class OntologyChangeTrackerFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.HISTORY;
+		return FactoryCategory.TOOLS;
 	}
 }

@@ -27,7 +27,7 @@ public class AnnotationSummaryComponentFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.SUMMARY;
 	}
 
 }

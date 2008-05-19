@@ -27,7 +27,7 @@ public class TextEditorFactory extends AbstractComponentFactory<TextEditor> {
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 
 	@Override

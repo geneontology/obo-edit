@@ -27,6 +27,6 @@ public class IntersectionEditorFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 }

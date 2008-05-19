@@ -42,7 +42,7 @@ public class TreeViewFactory extends AbstractComponentFactory<TreeView> {
 	}
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.VIEWERS;
 	}
 
 	@Override

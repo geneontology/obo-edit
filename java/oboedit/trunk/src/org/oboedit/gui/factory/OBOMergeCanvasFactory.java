@@ -31,7 +31,7 @@ public class OBOMergeCanvasFactory extends AbstractComponentFactory<OBOMergeCanv
 	
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.TOOLS;
 	}
 
 	@Override

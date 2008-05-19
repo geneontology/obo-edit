@@ -26,7 +26,7 @@ public class HistoryBrowserFactory extends AbstractComponentFactory<HistoryBrows
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.HISTORY;
+		return FactoryCategory.TOOLS;
 	}
 
 }

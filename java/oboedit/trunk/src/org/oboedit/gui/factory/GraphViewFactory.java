@@ -36,7 +36,7 @@ public class GraphViewFactory extends AbstractComponentFactory<GraphViewCanvas> 
 	
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.VIEWERS;
 	}
 
 	@Override
