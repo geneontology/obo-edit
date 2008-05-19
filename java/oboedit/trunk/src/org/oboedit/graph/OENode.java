@@ -52,6 +52,8 @@ public class OENode extends PCNode implements Morphable {
 	protected int x_margin = 0;
 	protected int y_margin = 5;
 
+	protected Color nodeBackgroundColor = new Color(230, 230, 230); // very light gray
+
 	public OENode(LinkedObject lo, LinkDatabaseCanvas canvas, Shape s) {
 		this(lo, canvas, DefaultNamedChildProvider.getInstance(), s);
 	}
@@ -76,7 +78,8 @@ public class OENode extends PCNode implements Morphable {
 							.getGlobalTermRenderers(), canvas
 							.getObjectRenderers(), canvas
 							.getAutomaticObjectRenderers());
-			setPaint(Color.lightGray);
+//			setPaint(Color.lightGray);
+			setPaint(nodeBackgroundColor);
 			if (spec instanceof GeneralRendererSpec) {
 				ColorProvider c = ((GeneralRendererSpec) spec)
 						.getValue(BackgroundColorSpecField.FIELD);
