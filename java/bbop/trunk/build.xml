@@ -70,7 +70,6 @@
 	<target name="jar" depends="classes, checkjar" unless="main_jar_current" description="Generate jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
-			<fileset refid="conf_jar_contents" />
 		</jar>
 	</target>
 	
