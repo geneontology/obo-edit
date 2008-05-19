@@ -80,10 +80,10 @@ public class Database2OBO {
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
 		
-		logger.error("About to write files..., session object count = "
+		logger.info("About to write files..., session object count = "
 				+ session.getObjects().size());
-		logger.error("writePath = " + writeConfig.getWritePath());
-		logger.error("savePath = " + writeConfig.getSaveRecords());
+		logger.info("writePath = " + writeConfig.getWritePath());
+		logger.info("savePath = " + writeConfig.getSaveRecords());
 		
 
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
@@ -130,7 +130,7 @@ public class Database2OBO {
 
 
 	public static void main(String[] args) throws Exception {
-		logger.error("version = "+Preferences.getVersion());
+		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OBDSQLDatabaseAdapterConfiguration readConfig = new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
@@ -143,7 +143,7 @@ public class Database2OBO {
 		
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
-			logger.error("args[" + i + "] = |" + args[i] + "|");
+			logger.info("args[" + i + "] = |" + args[i] + "|");
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-formatversion")) {
@@ -229,7 +229,7 @@ public class Database2OBO {
 			}
 		}
 		if (readConfig.getReadPath() == null) {
-			logger.error("You must specify a file to load.");
+			logger.info("You must specify a file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {

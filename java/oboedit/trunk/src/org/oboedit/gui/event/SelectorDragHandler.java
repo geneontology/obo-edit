@@ -32,7 +32,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 	}
 
 	public void mouseDragged(MouseEvent e) {
-//		logger.error("SelectionDragHandler.mousedragged "+e +",\nfirstMouseEvent = " + firstMouseEvent);
+//		logger.info("SelectionDragHandler.mousedragged "+e +",\nfirstMouseEvent = " + firstMouseEvent);
 		// Don't bother to drag if the component displays no image.
 		if (selector.getSelection().isEmpty())
 			return;
@@ -44,7 +44,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 		if (!inSelection)
 			return;
 			*/
-//		logger.error("SelectionDragHandler.mousedragged: c = " + c + ", selected objects = " + selector.getSelection().getAllSelectedObjects()); // DEL
+//		logger.info("SelectionDragHandler.mousedragged: c = " + c + ", selected objects = " + selector.getSelection().getAllSelectedObjects()); // DEL
 //		if (!selector.getSelection().getAllSelectedObjects().contains(c))
 //		    return;
 
@@ -53,7 +53,7 @@ public class SelectorDragHandler extends MouseInputAdapter {
 			TransferHandler handler = c.getTransferHandler();
 			// Tell the transfer handler to initiate the drag.
 			handler.exportAsDrag(c, firstMouseEvent, TransferHandler.COPY);
-//			logger.error("exporting drag "+e);
+//			logger.info("exporting drag "+e);
 			firstMouseEvent = null;
 		}
 	}

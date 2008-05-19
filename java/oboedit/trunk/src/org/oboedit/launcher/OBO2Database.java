@@ -78,10 +78,10 @@ public class OBO2Database {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
-		logger.error("About to write files..., session object count = "
+		logger.info("About to write files..., session object count = "
 				+ session.getObjects().size());
-		logger.error("writePath = " + writeConfig.getWritePath());
-		logger.error("savePath = " + writeConfig.getSaveRecords());
+		logger.info("writePath = " + writeConfig.getWritePath());
+		logger.info("savePath = " + writeConfig.getSaveRecords());
 		
 		OBDSQLDatabaseAdapter writer = new OBDSQLDatabaseAdapter();
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
@@ -389,12 +389,12 @@ public class OBO2Database {
 						}
 						io = new DanglingWrapper(token, text.toString());
 					} else if (!(io instanceof ObsoletableObject)) {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "a non-obsoletable object");
 						continue;
 					} else if (TermUtil.isObsolete((IdentifiedObject) io)) {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "an obsolete object");
 						continue;
@@ -404,7 +404,7 @@ public class OBO2Database {
 					} else if (readReplaced) {
 						replacedBy.add(io);
 					} else {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Found replacement identifier "
 								+ token + " not preceded by 'use' or "
 								+ "'consider'");
@@ -427,7 +427,7 @@ public class OBO2Database {
 	}
 
 	public static void main(String[] args) throws Exception {
-		logger.error("version = "+Preferences.getVersion());
+		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
@@ -440,7 +440,7 @@ public class OBO2Database {
 		LinkedList scripts = new LinkedList();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
-			logger.error("args[" + i + "] = |" + args[i] + "|");
+			logger.info("args[" + i + "] = |" + args[i] + "|");
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-formatversion")) {
@@ -529,7 +529,7 @@ public class OBO2Database {
 			}
 		}
 		if (readConfig.getReadPaths().size() < 1) {
-			logger.error("You must specify at least one file to load.");
+			logger.info("You must specify at least one file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {

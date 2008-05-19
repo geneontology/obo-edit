@@ -23,7 +23,7 @@ public class OBO2OBOTest extends TestCase {
 			"./launch_scripts/obo2obo " + testFile.getPath() + " "
 			+ "-formatversion OBO_1_2 " + "-o "
 			+ out12File.getPath();
-		logger.error(cmd);
+		logger.info(cmd);
 		Process p = Runtime.getRuntime().exec(cmd);
 		int returnVal = p.waitFor();
 		assertTrue("Exit value should be zero", returnVal == 0);

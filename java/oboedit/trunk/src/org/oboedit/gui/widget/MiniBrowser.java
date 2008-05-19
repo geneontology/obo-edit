@@ -139,7 +139,7 @@ public class MiniBrowser extends JDialog {
 		try {
 			htmlPane.setPage(url);
 		} catch (Exception e) {
-			logger.error("could not load " + url);
+			logger.info("could not load " + url);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class MiniBrowser extends JDialog {
 			setTitle(title);
 			htmlPane.validate();
 		} catch (Exception e) {
-			logger.error("could not load " + url);
+			logger.info("could not load " + url);
 		}
 	}
 

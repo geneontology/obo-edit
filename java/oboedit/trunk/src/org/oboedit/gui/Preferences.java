@@ -231,7 +231,7 @@ public class Preferences {
 				preferences = (Preferences) p;
 				d.close();
 			} catch (Exception e) {
-				logger.error("Could not read preferences file from "
+				logger.info("Could not read preferences file from "
 						+ Preferences.getPrefsXMLFile());
 			}
 			if (preferences == null)
@@ -451,7 +451,7 @@ public class Preferences {
 			if (urlStr.endsWith("svg"))
 				return new SVGIcon(urlStr);
 		} catch (Exception e) {
-		    logger.error("WARNING: Exception getting icon for " + url + ": " + e); // DEL
+		    logger.info("WARNING: Exception getting icon for " + url + ": " + e); // DEL
 		}
 		return new ImageIcon(url);
 	}
@@ -490,7 +490,7 @@ public class Preferences {
 		if (mem == null) {
 		    mem = DEFAULT_MEMORY_SETTING;
 		    String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
-		    logger.error(warning);
+		    logger.info(warning);
 //		    JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		return mem;
@@ -660,13 +660,13 @@ public class Preferences {
 			try {
 				updateInfoPlist();
 			} catch (IOException ex) {
-				logger.error("Could not update Mac application launcher script (Info.plist)");
+				logger.info("Could not update Mac application launcher script (Info.plist)");
 			}
 		}
 		try {
 			updateInstallJLaunchers();
 		} catch (IOException ex) {
-			logger.error("Could not update InstallJ "
+			logger.info("Could not update InstallJ "
 					+ "launcher scripts");
 		}
 	}
@@ -707,7 +707,7 @@ public class Preferences {
 			throws IOException {
 		XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
 				new FileOutputStream(getPrefsXMLFile())));
-		logger.error("Writing preferences to " + getPrefsXMLFile());
+		logger.info("Writing preferences to " + getPrefsXMLFile());
 		encoder.writeObject(preferences);
 		encoder.close();
 		preferences.updateLauncherConfigurations();
@@ -842,7 +842,7 @@ public class Preferences {
 	 * rClass = extensionLoader.loadClass(classname); FilteredRenderer renderer =
 	 * (FilteredRenderer) rClass.newInstance(); //
 	 * renderer.setProperties(subrprops); addGlobalFilteredRenderer(renderer); }
-	 * catch (Exception e) { logger.error("couldn't load "+classname+"
+	 * catch (Exception e) { logger.info("couldn't load "+classname+"
 	 * because of "+e); } } } }
 	 */
 

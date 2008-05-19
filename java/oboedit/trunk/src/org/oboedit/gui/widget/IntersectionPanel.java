@@ -392,7 +392,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	public void commit() {
-		logger.error("called commit");
+		logger.info("called commit");
 		ActionEvent e = new ActionEvent(this, (int) Math.random()
 				* Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
@@ -432,7 +432,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 						found = true;
 						break;
 					} else {
-						logger.error("   " + completeDefLink + " != "
+						logger.info("   " + completeDefLink + " != "
 								+ link);
 					}
 				}
@@ -640,7 +640,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	 * 
 	 * @Override public void keyPressed(KeyEvent e) { if (e.getKeyCode() ==
 	 * KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
-	 * logger.error("Got keypress from genus field"); tabToNext(comp); } } }
+	 * logger.info("Got keypress from genus field"); tabToNext(comp); } } }
 	 */
 	protected boolean isTabFocusable(Component c) {
 		return focusPolicy.accept(c);
@@ -687,7 +687,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		genusField.setValue(null);
 		linkListPanel.removeAll();
 
-//		logger.error("IntersectionPanel.setClass: parents of " + oboClass + " = "
+//		logger.info("IntersectionPanel.setClass: parents of " + oboClass + " = "
 //				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();

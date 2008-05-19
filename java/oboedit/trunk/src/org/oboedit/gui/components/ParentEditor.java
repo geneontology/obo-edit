@@ -244,7 +244,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	}
 
 	public void reload() {
-		logger.error("RELOADING");
+		logger.info("RELOADING");
 		loadTerm(currentObject);
 	}
 

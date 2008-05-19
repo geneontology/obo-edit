@@ -81,7 +81,7 @@ public class RemoveRedundantAction implements ClickMenuAction {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		while (it.hasNext()) {
 			final Link link = it.next();
-			logger.error("examining "+link);
+			logger.info("examining "+link);
 			if (!TermUtil.isImplied(link)) {
 				ReasonedLinkDatabase reasoner = SessionManager.getManager()
 						.getReasoner();

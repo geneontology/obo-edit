@@ -196,7 +196,7 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// logger.error("discarded map entry "+eldest);
+				// logger.info("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -210,7 +210,7 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// logger.error("discarded map entry "+eldest);
+				// logger.info("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -444,7 +444,7 @@ public class DefaultTermModel implements TermModel {
 			TermUtil.detectRoots(temp, linkDatabase, getRootAlgorithm());
 			if (trimmedLinkDB != null)
 				trimmedLinkDB.setEnableTrimming(true);
-//			logger.error("   detected roots in "
+//			logger.info("   detected roots in "
 //					+ (System.currentTimeMillis() - time));
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -585,11 +585,11 @@ public class DefaultTermModel implements TermModel {
 				leafCache.remove(lo);
 			}
 // 			if (lo.getName().equals("cell activation")) {
-// 				logger.error("children of " + lo + ":");
+// 				logger.info("children of " + lo + ":");
 // 				for (Object link : out) {
-// 					logger.error("   " + link);
+// 					logger.info("   " + link);
 // 				}
-// 				logger.error("done");
+// 				logger.info("done");
 // 			}
 			return out;
 		} else {

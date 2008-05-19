@@ -50,7 +50,7 @@ public class PositionScaleRotationActivity extends PTransformActivity {
 		t.setRotation(rotation);
 		t.getMatrix(matrix);
 		setDestinationTransform(matrix);
-		logger.error("animating "+node+" from ("+node.getXOffset()+","+node.getYOffset()+","+node.getScale()+","+node.getRotation()+") to ("+xoffset+","+yoffset+","+scale+","+rotation+")");
+		logger.info("animating "+node+" from ("+node.getXOffset()+","+node.getYOffset()+","+node.getScale()+","+node.getRotation()+") to ("+xoffset+","+yoffset+","+scale+","+rotation+")");
 		super.activityStarted();
 	}
 }

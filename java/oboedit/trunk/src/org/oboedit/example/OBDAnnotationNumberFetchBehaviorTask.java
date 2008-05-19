@@ -117,7 +117,7 @@ public class OBDAnnotationNumberFetchBehaviorTask extends AbstractFetchTask<Inte
 	protected Integer getValue(IdentifiedObject io) {
 		int num = -1; 
 		num = gdbc.getAssociationCount( io.getID() );
-		//logger.error("\t___ SQL_COMPLETE");
+		//logger.info("\t___ SQL_COMPLETE");
 		return num;
 	}
 

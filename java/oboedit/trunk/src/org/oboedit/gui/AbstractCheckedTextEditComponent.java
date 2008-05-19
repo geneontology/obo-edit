@@ -174,7 +174,7 @@ public abstract class AbstractCheckedTextEditComponent extends
 					out.append("</ul>");
 				}
 				out.append("</html>");
-				logger.error(out);
+				logger.info(out);
 				return out.toString();
 			}
 		};

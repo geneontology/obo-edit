@@ -167,9 +167,9 @@ public class CheckWarningComponent extends JEditorPane {
 				Collection newWarnings = VerificationManager.getManager()
 						.runCheck(source, session, currentObject, condition);
 				warnings.addAll(newWarnings);
-				logger.error("oldWarnings = " + oldWarnings.size());
-				logger.error("warnings = " + warnings.size());
-				logger.error("newWarnings = " + newWarnings.size());
+				logger.info("oldWarnings = " + oldWarnings.size());
+				logger.info("warnings = " + warnings.size());
+				logger.info("newWarnings = " + newWarnings.size());
 
 				Runnable r = new Runnable() {
 					public void run() {
@@ -509,7 +509,7 @@ public class CheckWarningComponent extends JEditorPane {
 		int warningCount = 0;
 		int fatalCount = 0;
 		Iterator it = warnings.iterator();
-//		logger.error("updategui warnings = " + warnings.size());
+//		logger.info("updategui warnings = " + warnings.size());
 		while (it.hasNext()) {
 			CheckWarning warning = (CheckWarning) it.next();
 			if (warning.isFatal() && !showFatal) {

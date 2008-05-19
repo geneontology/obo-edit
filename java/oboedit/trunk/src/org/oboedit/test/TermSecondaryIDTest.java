@@ -26,7 +26,7 @@ public class TermSecondaryIDTest extends OperationTest {
 
 		HistoryItem item = new SecondaryIDHistoryItem(oboClass, newText, false);
 
-		logger.error("setting secondary id to = " + newText
+		logger.info("setting secondary id to = " + newText
 				+ ", newids = " + resultClass.getSecondaryIDs());
 
 		ObjectPair pair = new ObjectPair(oboClass, resultClass);

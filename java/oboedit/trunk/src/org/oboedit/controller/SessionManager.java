@@ -249,7 +249,7 @@ public class SessionManager {
 		// reasonerOpModel.apply(item);
 //		long time = System.currentTimeMillis();
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
-//		logger.error("fired history applied in "
+//		logger.info("fired history applied in "
 //				+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
@@ -329,10 +329,10 @@ public class SessionManager {
 		AbstractTaskDelegate<Void> reasoningTask = new AbstractTaskDelegate<Void>() {
 			@Override
 			public void execute() {
-				logger.error("reasoning started...");
+				logger.info("reasoning started...");
 				long time = System.currentTimeMillis();
 				reasoner.recache();
-				logger.error("reasoning finished in "
+				logger.info("reasoning finished in "
 						+ (System.currentTimeMillis() - time) + " milliseconds");
 			}
 
@@ -367,7 +367,7 @@ public class SessionManager {
 	    reasonerFactory = registry.lookupFactory(reasonerName);
 	    if (reasonerFactory == null) {
 		reasonerFactory = registry.getDefaultReasonerFactory();
-		logger.error("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
+		logger.info("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
 		return reasonerFactory.createReasoner();
 	    }
 	    else {
@@ -428,7 +428,7 @@ public class SessionManager {
 				Object[] params = { item, warning };
 				logger.warn("Warning message while trying to apply history item");
 
-				logger.error("*** GOT WARNING = " + warning);
+				logger.info("*** GOT WARNING = " + warning);
 			}
 			fireHistoryApplied(new HistoryAppliedEvent(this, item));
 		}
@@ -443,7 +443,7 @@ public class SessionManager {
 	protected void reverse(HistoryItem item) {
 		OperationWarning warning = getOperationModel().reverse(item);
 		if (warning != null)
-			logger.error("SessionManager.reverse: warning = " + warning);
+			logger.info("SessionManager.reverse: warning = " + warning);
 		if (getUseReasoner()) {
 			reasonerOpModel.reverse(item);
 		}

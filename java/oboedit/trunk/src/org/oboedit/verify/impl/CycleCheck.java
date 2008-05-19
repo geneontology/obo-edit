@@ -34,7 +34,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 			if (property.isTransitive() && !property.isCyclic())
 				properties.add(property);
 		}
-//		logger.error("CycleCheck: properties = " + properties);
+//		logger.info("CycleCheck: properties = " + properties);
 		List out = new LinkedList();
 		if (currentObject != null) {
 			if (currentObject instanceof LinkedObject)
@@ -79,7 +79,7 @@ public class CycleCheck extends AbstractCheck implements OntologyCheck {
 
 	/*
 	 * protected boolean checkCycle(LinkedObject object, Collection lookedAt) {
-	 * if (lookedAt.contains(object)) { logger.error("FOUND CYCLE AT
+	 * if (lookedAt.contains(object)) { logger.info("FOUND CYCLE AT
 	 * "+object); return true; } lookedAt.add(object); Iterator it =
 	 * Controller.getController().getCurrentLinkDatabase().
 	 * getParents(object).iterator(); while(it.hasNext()) { Link link = (Link)

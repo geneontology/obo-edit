@@ -91,7 +91,7 @@ public class PickToolButtonBehavior implements ToolbarButtonBehavior {
 		canvas.setTransferHandler(null);
 		canvas.removeInputEventListener(dragAndDropGestureListener);
 		canvas.removeInputEventListener(selectionMouseListener);
-		logger.error("Uninstalled drag & drop behavior");
+		logger.info("Uninstalled drag & drop behavior");
 		this.canvas = null;
 	}
 

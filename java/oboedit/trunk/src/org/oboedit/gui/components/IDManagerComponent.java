@@ -234,7 +234,7 @@ public class IDManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void selectProfile(IDProfile profile) {
-		logger.error("selecting profile " + profile);
+		logger.info("selecting profile " + profile);
 		if (profile == null)
 			(new Exception("Selected null profile")).printStackTrace();
 		currentProfile = profile;

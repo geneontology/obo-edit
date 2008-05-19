@@ -307,7 +307,7 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 			for (int j = 0; j < data.size(); j++) {
 				CategoryWrapper tw = (CategoryWrapper) data.get(j);
 				if (tw.getCategory() == cat) {
-					logger.error(tw.getCategory() + " == " + cat);
+					logger.info(tw.getCategory() + " == " + cat);
 					newcats.remove(tw);
 					if (tw.isChanged()) {
 						SynonymCategoryHistoryItem catitem = new SynonymCategoryHistoryItem(

@@ -43,29 +43,29 @@ public class Flat2OBO {
 		if (args.length == 0) {
 			System.err
 					.println("Usage: flat2obo [options] flatfile1 flatfile2 -out outputfile");
-			logger.error("IO Switches:");
-			logger.error("  -def\tPath to the definition file");
-			logger.error("  -out, -o\tPath to the ouput file");
-			logger.error("Graph rearrangement:");
-			logger.error("  -del\tThe id of a term to be deleted");
+			logger.info("IO Switches:");
+			logger.info("  -def\tPath to the definition file");
+			logger.info("  -out, -o\tPath to the ouput file");
+			logger.info("Graph rearrangement:");
+			logger.info("  -del\tThe id of a term to be deleted");
 			System.err
 					.println("  -root\tThe id of a term to be made into a root");
 			System.err
 					.println("  -ns\tRenames the namespace of the last node given by the -root switch");
 			System.err
 					.println("  -obs\tThe id of a holder node for obsolete terms");
-			logger.error("  -defaultns\tSets the default namespace");
-			logger.error("Adapter options:");
+			logger.info("  -defaultns\tSets the default namespace");
+			logger.info("Adapter options:");
 			System.err
 					.println("  -dangling\tAllows dangling relationships in the input file");
 			System.err
 					.println("  -notranslate\tDoes not translate type names ");
-			logger.error("  -cycles\tAllows cycles in the input file");
-			logger.error("Presets:");
+			logger.info("  -cycles\tAllows cycles in the input file");
+			logger.info("Presets:");
 			System.err
 					.println("  --gopresets\tSets all options to suit the Gene Ontology flat files");
-			logger.error("Other switches:");
-			logger.error("  -v, -verbose\tVerbose mode");
+			logger.info("Other switches:");
+			logger.info("  -v, -verbose\tVerbose mode");
 			System.exit(1);
 		}
 		ConvertRecord record = new ConvertRecord();
@@ -101,7 +101,7 @@ public class Flat2OBO {
 				i++;
 				String ns = args[i];
 				if (lastroot == null) {
-					logger.error("Assigned namespace " + ns
+					logger.info("Assigned namespace " + ns
 							+ "without specifying root");
 					System.exit(1);
 				}
@@ -124,7 +124,7 @@ public class Flat2OBO {
 				if (record.outFile == null) {
 					record.outFile = outfile;
 				} else {
-					logger.error("Tried to specify "
+					logger.info("Tried to specify "
 							+ "multiple output files");
 					System.exit(1);
 				}
@@ -178,7 +178,7 @@ public class Flat2OBO {
 				indriver.READ_ONTOLOGY, config, null);
 
 		if (verbose) {
-			logger.error("done");
+			logger.info("done");
 		}
 
 		if (verbose) {
@@ -209,7 +209,7 @@ public class Flat2OBO {
 		history.getCurrentHistory().setComment("");
 
 		if (verbose) {
-			logger.error("done");
+			logger.info("done");
 		}
 
 		oldValue = 0;
@@ -218,7 +218,7 @@ public class Flat2OBO {
 		OBOFileAdapter outdriver = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration outconfig = new OBOFileAdapter.OBOAdapterConfiguration();
 
-		logger.error("outfile = " + outfile);
+		logger.info("outfile = " + outfile);
 
 		outconfig.setAllowDangling(allowDangling);
 		/*
@@ -233,7 +233,7 @@ public class Flat2OBO {
 		 * profile.setAllowDangling(allowDangling);
 		 * outdriver.setIOProfile(profile); if (verbose)
 		 * outdriver.addProgressListener(plistener); outdriver.write(history);
-		 * if (verbose) { logger.error("done"); }
+		 * if (verbose) { logger.info("done"); }
 		 */
 	}
 

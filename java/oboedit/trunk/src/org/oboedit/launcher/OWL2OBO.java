@@ -103,10 +103,10 @@ public class OWL2OBO {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
-		logger.error("About to write files..., session object count = "
+		logger.info("About to write files..., session object count = "
 				+ session.getObjects().size());
-		logger.error("writePath = " + writeConfig.getWritePath());
-		logger.error("savePath = " + writeConfig.getSaveRecords());
+		logger.info("writePath = " + writeConfig.getWritePath());
+		logger.info("savePath = " + writeConfig.getSaveRecords());
 		wadapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
@@ -152,7 +152,7 @@ public class OWL2OBO {
 					}
 					dfo.removeDefDbxref(metacycRef);
 					dfo.removeDefDbxref(brokenRef);
-					logger.error("* Repairing broken dbxref at "
+					logger.info("* Repairing broken dbxref at "
 							+ dfo.getID() + ", merging dbxrefs " + metacycRef
 							+ " and " + brokenRef);
 					metacycRef.setDatabaseID(metacycRef.getDatabaseID() + ","
@@ -162,13 +162,13 @@ public class OWL2OBO {
 						&& otherRef != null) {
 					dfo.removeDefDbxref(otherRef);
 					dfo.removeDefDbxref(brokenRef);
-					logger.error("* Repairing broken dbxref at "
+					logger.info("* Repairing broken dbxref at "
 							+ dfo.getID() + ", merging dbxrefs " + otherRef
 							+ " and " + brokenRef);
 					otherRef.setDatabaseID(otherRef.getDatabaseID() + "," + brokenRef.getDatabaseID());
 					dfo.addDefDbxref(otherRef);
 				} else if (brokenRef != null) {
-					logger.error("*!! Possible broken ref at "
+					logger.info("*!! Possible broken ref at "
 							+ dfo.getID()
 							+ " could not be automatically repaired.");
 				}
@@ -470,12 +470,12 @@ public class OWL2OBO {
 						}
 						io = new DanglingWrapper(token, text.toString());
 					} else if (!(io instanceof ObsoletableObject)) {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "a non-obsoletable object");
 						continue;
 					} else if (TermUtil.isObsolete((IdentifiedObject) io)) {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Parsed comment identifier " + token
 								+ " refers to " + "an obsolete object");
 						continue;
@@ -485,7 +485,7 @@ public class OWL2OBO {
 					} else if (readReplaced) {
 						replacedBy.add(io);
 					} else {
-						logger.error("Warning (" + commented.getID()
+						logger.info("Warning (" + commented.getID()
 								+ "): " + "Found replacement identifier "
 								+ token + " not preceded by 'use' or "
 								+ "'consider'");
@@ -508,7 +508,7 @@ public class OWL2OBO {
 	}
 
 	public static void main(String[] args) throws Exception {
-		logger.error("version = "+Preferences.getVersion());
+		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OWLAdapter.OWLAdapterConfiguration readConfig = new OWLAdapter.OWLAdapterConfiguration();
@@ -523,7 +523,7 @@ public class OWL2OBO {
 		Collection<MetadataMapping> mappings = new HashSet<MetadataMapping>();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
-			logger.error("args[" + i + "] = |" + args[i] + "|");
+			logger.info("args[" + i + "] = |" + args[i] + "|");
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-mapping")) {
@@ -653,7 +653,7 @@ public class OWL2OBO {
 			}
 		}
 		if (readConfig.getReadPaths().size() < 1) {
-			logger.error("You must specify at least one file to load.");
+			logger.info("You must specify at least one file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {

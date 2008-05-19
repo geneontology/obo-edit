@@ -335,7 +335,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			} else if (selected) {
 				setOpaque(true);
 				if (ignoreSelection) {
-//				    logger.error("Ignoring selection for link = " + link.getType()); // DEL
+//				    logger.info("Ignoring selection for link = " + link.getType()); // DEL
 					setBackground(ignoreSelectionColor);
 				}
 				else {
@@ -376,7 +376,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 						if (c != null) {
 							setOpaque(true);
 							setBackground(c.getColor(fr, link.getChild()));
-//							logger.error("Set background color to " + getBackground()); // DEL
+//							logger.info("Set background color to " + getBackground()); // DEL
 						}
 					}
 				}
@@ -388,7 +388,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			}
 
 		} catch (Throwable t) {
-		    logger.error("getTreeCellRendererComponent: caught error.  Stack trace:");
+		    logger.info("getTreeCellRendererComponent: caught error.  Stack trace:");
 			t.printStackTrace();
 		}
 		validate();

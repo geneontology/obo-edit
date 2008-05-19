@@ -56,17 +56,17 @@ public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 					" -reasonerfactory "
 					+ factoryName + " "
 					+ outFile.getPath();
-				logger.error(cmd);
+				logger.info(cmd);
 				Process p = Runtime.getRuntime().exec(cmd);
 				int returnVal = p.waitFor();
 				long timeOfEnd = System.nanoTime();
 				long timeDelta = (timeOfEnd-timeOfStart) / 1000000000;
-				logger.error("t= "+timeDelta+"s");
+				logger.info("t= "+timeDelta+"s");
 				assertTrue("Exit value should be zero", returnVal == 0);
 
 				logger.info("parsing: "+outFile.toString());
 				session = TestUtil.getSession(outFile.toString());
-				logger.error("reparsed saved results");
+				logger.info("reparsed saved results");
 			}
 		}	
 	}

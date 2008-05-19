@@ -211,7 +211,7 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		 * referencePane.getVerticalScrollBar(). addAdjustmentListener(new
 		 * AdjustmentListener() { public void
 		 * adjustmentValueChanged(AdjustmentEvent e) {
-		 * logger.error("adjusted "+e); } });
+		 * logger.info("adjusted "+e); } });
 		 * referencePane.getVerticalScrollBar().setVisibleAmount(1);
 		 */
 		add(textPanel, "North");

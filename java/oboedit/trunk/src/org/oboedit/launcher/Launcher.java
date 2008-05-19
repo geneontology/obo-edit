@@ -17,7 +17,7 @@ public class Launcher {
 	public static void main(String[] args) throws Exception {
 		String memsetting = Preferences.readMemStringFromDisk();
 
-		logger.error("Starting OBO-Edit using " + memsetting
+		logger.info("Starting OBO-Edit using " + memsetting
 				+ " of memory");
 
 		List<String> argList = new LinkedList<String>();
@@ -40,7 +40,7 @@ public class Launcher {
 		argList.add("-classpath");
 		argList.add(classpath.toString());
 		argList.add("org.oboedit.launcher.OBOEdit");
-		logger.error(argList);
+		logger.info(argList);
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
 		String[] newargs = new String[argList.size()];

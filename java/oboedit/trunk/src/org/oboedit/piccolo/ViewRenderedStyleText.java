@@ -158,14 +158,14 @@ public class ViewRenderedStyleText extends PNode {
 		rect.height = (int) getHeight();
 		Graphics2D g = paintContext.getGraphics();
 		/*
-		 * try { logger.error("document " + document.getText(0,
+		 * try { logger.info("document " + document.getText(0,
 		 * document.getLength())); } catch (BadLocationException e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
 		try {
 			view.paint(g, rect);
 		} catch (Throwable t) {
-			logger.error("!");
+			logger.info("!");
 		}
 		// setPaint(Color.red);
 		// super.paint(paintContext);

@@ -109,7 +109,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		String text = "<html><body>\n";
 		text += "Reasoning completed.";
 		text += "</body></html>";
-		// logger.error("newLinks = "+reasoner.getNewLinks());
+		// logger.info("newLinks = "+reasoner.getNewLinks());
 		final String summaryText = text;
 
 		Runnable screenUpdate = new Runnable() {

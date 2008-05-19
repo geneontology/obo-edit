@@ -1046,8 +1046,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		addExpansionListener(new ExpandCollapseListener() {
 
 			public void expandStateChanged(ExpansionEvent e) {
-//				logger.error("showed " + e.getShown());
-//				logger.error("hid " + e.getHidden());
+//				logger.info("showed " + e.getShown());
+//				logger.info("hid " + e.getHidden());
 			}
 
 		});
@@ -1163,7 +1163,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		linkDatabase.cleanupCache();
 
 		newLayer = layoutEngine.getNewLayer();
-//		logger.error("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
+//		logger.info("names = "+DefaultNamedChildProvider.getInstance().getChildNames(newLayer));
 		decorateNode(getRoot(), newLayer, decorators, true, true);
 
 		morpher.setNewNodeOriginNode(getFocusedNode());
@@ -1300,7 +1300,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		if (selection.getTermSubSelection() != null
 				&& !selection.getAllSelectedObjects().contains(
 						selection.getTermSubSelection()))
-			logger.error("weird selection");
+			logger.info("weird selection");
 		if (selection.getTermSubSelection() != null)
 			visible.add(selection.getTermSubSelection());
 		fireSelectionEvent(new SelectionEvent(this, selection));

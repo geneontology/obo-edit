@@ -83,6 +83,6 @@ public class OBODiff {
 	}
 
 	public static void printUsage() {
-		logger.error("Usage: obodiff file1 file2");
+		logger.info("Usage: obodiff file1 file2");
 	}
 }

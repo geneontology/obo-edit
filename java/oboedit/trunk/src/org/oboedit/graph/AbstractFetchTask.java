@@ -134,7 +134,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 				IdentifiedObject obj) {
 			try {
 				T val = decoratedObjects.get(obj);
-				// logger.error("val = " + val
+				// logger.info("val = " + val
 				// + ", decoratedObjects.get("+obj+") = "
 				// + decoratedObjects.get(obj) + " decoratedObjects = "
 				// + decoratedObjects);
@@ -189,7 +189,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 					// while (pendingObjects.size() > 0) {
 					// IdentifiedObject io = pendingObjects.removeFirst();
 					// decoratedObjects.put(io, getValue(io));
-					// logger.error("decoratedObjects =
+					// logger.info("decoratedObjects =
 					// "+decoratedObjects);
 					// canvas.relayout();
 					// }
@@ -567,7 +567,7 @@ public abstract class AbstractFetchTask<T> implements GUITask {
 			encoder.writeObject(getConfiguration());
 			encoder.close();
 		} catch (IOException ex) {
-			logger.error("Couldn't flush component config successfully");
+			logger.info("Couldn't flush component config successfully");
 		}
 	}
 

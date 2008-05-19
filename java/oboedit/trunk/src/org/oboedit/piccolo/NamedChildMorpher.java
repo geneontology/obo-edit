@@ -45,7 +45,7 @@ public class NamedChildMorpher extends MorphableMorpher {
 					PNode parent = delNode.getParent();
 					Object name = delMap.get(delNode);
 					if (parent == null) {
-						logger.error("delNode " + delNode
+						logger.info("delNode " + delNode
 								+ " has null parent");
 						continue;
 					}

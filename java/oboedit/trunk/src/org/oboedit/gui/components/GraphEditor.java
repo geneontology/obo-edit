@@ -152,7 +152,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
-//							logger.error("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
+//							logger.info("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
 							panToObjects();
 						}
 
@@ -168,7 +168,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 		public void configReloaded(ReconfigEvent e) {
 		    relayout();
-//			logger.error("GraphEditor: reloaded config");
+//			logger.info("GraphEditor: reloaded config");
 		}
 
 	};
@@ -302,7 +302,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 //		if (linkDatabase.getObjects().size() == 0) {
 //		    Collection<? extends LinkedObject> roots = TermUtil
 //			.getRoots(getRootAlgorithm(), getLinkDatabase());
-//		    logger.error("init: setVisibleObjects(" + roots); // DEL
+//		    logger.info("init: setVisibleObjects(" + roots); // DEL
 //		    setVisibleObjects(roots);
 //		}
 	}

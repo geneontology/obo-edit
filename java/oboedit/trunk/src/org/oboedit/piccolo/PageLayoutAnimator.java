@@ -26,7 +26,7 @@ public class PageLayoutAnimator extends PLayoutNode {
 	
 	public void addChild(PNode node) {
 		PNode clone = cloneAndFile(node);
-		logger.error("node = "+node+", clone = "+clone+", clone == node is "+(clone == node));
+		logger.info("node = "+node+", clone = "+clone+", clone == node is "+(clone == node));
 		super.addChild(clone);
 	}
 	
