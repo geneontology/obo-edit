@@ -6,8 +6,13 @@ import java.util.Map;
 
 import org.bbop.rdbms.FromClause;
 
+import org.apache.log4j.*;
+
 public class SqlFromClauseImpl extends AbstractRelationalTerm implements
-		FromClause {
+	FromClause {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SqlFromClauseImpl.class);
 
 	SqlFromClauseImpl() {
 		super();

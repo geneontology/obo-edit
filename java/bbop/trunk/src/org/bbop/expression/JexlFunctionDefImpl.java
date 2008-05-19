@@ -5,7 +5,12 @@ import java.util.List;
 import org.bbop.expression.parser.BindException;
 import org.bbop.expression.parser.SimpleNode;
 
+import org.apache.log4j.*;
+
 public class JexlFunctionDefImpl implements JexlFunctionDef {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JexlFunctionDefImpl.class);
 	
 	protected String name;
 	protected List varNames;

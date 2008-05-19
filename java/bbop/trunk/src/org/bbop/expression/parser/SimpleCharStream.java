@@ -6,8 +6,13 @@ package org.bbop.expression.parser;
  * contain only ASCII characters (without unicode processing).
  */
 
+import org.apache.log4j.*;
+
 public class SimpleCharStream
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleCharStream.class);
   public static final boolean staticFlag = false;
   int bufsize;
   int available;

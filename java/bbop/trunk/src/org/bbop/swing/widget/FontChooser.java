@@ -8,7 +8,12 @@ import org.bbop.swing.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class FontChooser extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FontChooser.class);
 
     /**
 	 * 

@@ -15,8 +15,13 @@ import javax.swing.plaf.basic.*;
 
 import org.bbop.swing.MultiheightTable;
 
+import org.apache.log4j.*;
+
 public class MultiheightTableUI extends BasicTableUI
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiheightTableUI.class);
     private Dimension createTableSize(long width) {
 	int height = ((MultiheightTable)table).getCellRect(table.getRowCount(), 0, false).y;
 	int totalMarginWidth =  table.getColumnModel().getColumnMargin() * 

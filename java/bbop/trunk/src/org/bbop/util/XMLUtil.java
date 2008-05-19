@@ -26,7 +26,12 @@ import org.bbop.io.IOUtil;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class XMLUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLUtil.class);
 
 	private XMLUtil() {
 	}
@@ -115,7 +120,7 @@ public class XMLUtil {
 	public static void transform(String xslt, File xml, Map params) throws IOException,
 			TransformerException {
 		File out = File.createTempFile("transform_result", "xml");
-//		System.err.println("out = "+out);
+//		logger.info("out = "+out);
 		// out.deleteOnExit();
 		Source xsltSource = new StreamSource(new StringReader(xslt));
 		Source xmlSource = new StreamSource(new FileReader(xml));

@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.lang.reflect.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class MemoryAllocator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MemoryAllocator.class);
 
 	protected Map mallocMap = new HashMap();
 	protected Map constructorCache = new HashMap();
@@ -116,18 +121,18 @@ public class MemoryAllocator {
 			Constructor c = (Constructor) it.next();
 			MallocDataHolder mdh = (MallocDataHolder) mallocMap.get(c);
 			if (mdh.inUse > 0) {
-				System.err.println("Data for " + c);
-				System.err.println("    max = " + mdh.maxAlloc);
-				System.err.println("    inUse = " + mdh.inUse);
-				System.err.println("    cache = " + mdh.freeCount);
+				logger.info("Data for " + c);
+				logger.info("    max = " + mdh.maxAlloc);
+				logger.info("    inUse = " + mdh.inUse);
+				logger.info("    cache = " + mdh.freeCount);
 			}
 		}
 		/*
-		 * if (profile) { System.err.println("standard alloc time =
-		 * "+standardAllocTime); System.err.println("cached alloc time =
+		 * if (profile) { logger.info("standard alloc time =
+		 * "+standardAllocTime); logger.info("cached alloc time =
 		 * "+cachedAllocTime+" (intro "+introspectionTime+")");
-		 * System.err.println("free time = "+freeTime); if (standardAllocTime <
-		 * cachedAllocTime) { System.err.println("!!!!!!!!!!!!!"); } }
+		 * logger.info("free time = "+freeTime); if (standardAllocTime <
+		 * cachedAllocTime) { logger.info("!!!!!!!!!!!!!"); } }
 		 */
 	}
 

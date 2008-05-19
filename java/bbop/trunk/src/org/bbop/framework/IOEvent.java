@@ -4,7 +4,12 @@ import java.util.EventObject;
 
 import org.bbop.dataadapter.IOOperation;
 
+import org.apache.log4j.*;
+
 public class IOEvent<IN> extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IOEvent.class);
 	
 	protected IOOperation<IN, ?> op;
 	protected IN input;

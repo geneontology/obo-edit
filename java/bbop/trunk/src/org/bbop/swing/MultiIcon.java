@@ -4,7 +4,12 @@ import javax.swing.Icon;
 import java.awt.*;
 import java.util.Vector;
 
+import org.apache.log4j.*;
+
 public class MultiIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiIcon.class);
 
 	protected Vector icons = new Vector();
 	protected int iconSpacing = 5;

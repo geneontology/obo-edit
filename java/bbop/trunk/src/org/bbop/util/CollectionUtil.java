@@ -15,7 +15,12 @@ import java.util.Queue;
 
 import org.bbop.framework.GUITask;
 
+import org.apache.log4j.*;
+
 public class CollectionUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CollectionUtil.class);
 
 	public final static EmptyIterator EMPTY_ITERATOR = EmptyIterator.EMPTY_ITERATOR;
 

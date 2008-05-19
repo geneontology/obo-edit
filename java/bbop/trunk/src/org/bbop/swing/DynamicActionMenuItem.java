@@ -8,7 +8,12 @@ import javax.swing.JMenuItem;
 
 import org.bbop.util.CollectionUtil;
 
+import org.apache.log4j.*;
+
 public class DynamicActionMenuItem extends AbstractDynamicMenuItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DynamicActionMenuItem.class);
 
 	protected Action action;
 	

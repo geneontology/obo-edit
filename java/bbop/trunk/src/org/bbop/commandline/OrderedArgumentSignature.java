@@ -2,7 +2,12 @@ package org.bbop.commandline;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class OrderedArgumentSignature implements ArgumentSignature {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OrderedArgumentSignature.class);
 
     protected List signatures = new ArrayList();
     int index = 0;

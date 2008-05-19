@@ -17,7 +17,12 @@ import javax.swing.text.html.ImageView;
 
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PluggableImageHTMLEditorKit.class);
 
 	protected Map<String, IconFactory> iconFactoryMap = new HashMap<String, IconFactory>();
 

@@ -12,10 +12,15 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.apache.log4j.*;
+
 public class ImprovedHashMap<K,V>
-    extends AbstractMap<K,V>
-    implements ImprovedMap<K,V>, Map<K,V>, Cloneable, Serializable
-{
+	extends AbstractMap<K,V>
+	implements ImprovedMap<K,V>, Map<K,V>, Cloneable, Serializable
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ImprovedHashMap.class);
 
     /**
      * The default initial capacity - MUST be a power of two.

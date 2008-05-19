@@ -4,7 +4,12 @@ package org.bbop.expression.parser;
 
 import org.bbop.expression.JexlContext;
 
+import org.apache.log4j.*;
+
 public class ASTReturnStatement extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTReturnStatement.class);
   public ASTReturnStatement(int id) {
     super(id);
   }

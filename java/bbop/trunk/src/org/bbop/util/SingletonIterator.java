@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.*;
+
 public class SingletonIterator<T> implements Iterator<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SingletonIterator.class);
 	
 	protected boolean nexted = false;
 	protected T object;

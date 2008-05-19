@@ -28,7 +28,12 @@ import org.bbop.expression.util.introspection.VelMethod;
 /**
  * Method execution.
  */
+import org.apache.log4j.*;
+
 public class ASTMethod extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTMethod.class);
 	/** dummy velocity info. */
 	private static final Info DUMMY = new Info("", 1, 1);
 

@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class MultiProperties extends Properties {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiProperties.class);
     /**
 	 * 
 	 */

@@ -14,7 +14,12 @@ import org.bbop.util.*;
  *
  */
 
+import org.apache.log4j.*;
+
 public class ListEditor extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ListEditor.class);
 
     /**
 	 * 
@@ -218,7 +223,7 @@ public class ListEditor extends JPanel {
 	    updateGUI();
 	    /*
 	    valueList.updateUI();
-	    System.err.println(data);
+	    logger.info(data);
 	    */
 	}
     }

@@ -10,7 +10,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.*;
+
 public class PathOpList {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PathOpList.class);
 
 	protected float[] scratch = new float[6];
 	protected int[] subpathIndices = null;

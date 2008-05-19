@@ -2,7 +2,12 @@ package org.bbop.dataadapter;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class DataAdapterUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DataAdapterUtil.class);
 
 	/**
 	 * Returns the first {@link DataAdapterUI} for an adapter that is a subclass

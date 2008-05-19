@@ -48,7 +48,12 @@ import org.bbop.expression.parser.TokenMgrError;
  * @since 1.1
  * @version $Id: ScriptFactory.java,v 1.3 2007/09/27 01:02:12 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ScriptFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScriptFactory.class);
 
     /**
      * The singleton ScriptFactory also holds a single instance of 

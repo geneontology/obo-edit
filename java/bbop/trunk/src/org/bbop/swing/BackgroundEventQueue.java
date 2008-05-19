@@ -8,7 +8,12 @@ import java.util.List;
 import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class BackgroundEventQueue {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BackgroundEventQueue.class);
 
 	private static int idgen = 0;
 	private int id = idgen++;

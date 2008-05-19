@@ -7,7 +7,12 @@ package org.bbop.dataadapter;
  * @author jrichter
  *
  */
+import org.apache.log4j.*;
+
 public class DataAdapterUIException extends Exception {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DataAdapterUIException.class);
 
     /**
 	 * 

@@ -5,7 +5,12 @@ package org.bbop.dataadapter;
  * typically wraps a lower level exception thrown by a data adapter
  * implementation.
  */
+import org.apache.log4j.*;
+
 public class CancelledAdapterException extends DataAdapterException {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CancelledAdapterException.class);
 
     /**
 	 * 

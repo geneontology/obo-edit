@@ -6,7 +6,12 @@ import java.util.*;
 import java.lang.ref.*;
 import java.awt.*;
 
+import org.apache.log4j.*;
+
 public class CachedPanel extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CachedPanel.class);
 
     /**
 	 * 

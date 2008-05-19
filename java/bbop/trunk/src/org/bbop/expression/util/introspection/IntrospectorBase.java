@@ -52,7 +52,12 @@ import org.bbop.expression.ExpressionException;
  * @author <a href="mailto:paulo.gaspar@krankikom.de">Paulo Gaspar</a>
  * @version $Id: IntrospectorBase.java,v 1.3 2007/09/27 01:02:13 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class IntrospectorBase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntrospectorBase.class);
     /**
      * Holds the method maps for the classes we know about, keyed by Class
      * object.

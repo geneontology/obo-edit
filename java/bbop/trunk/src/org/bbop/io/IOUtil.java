@@ -4,9 +4,13 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.zip.*;
+import org.apache.log4j.*;
 
 public final class IOUtil {
 	public static void copyFile(File in, File out) throws IOException {
+	
+//		initialize logger
+		final Logger logger = Logger.getLogger(IOUtil.class);
 		FileInputStream fis = new FileInputStream(in);
 		FileOutputStream fos = new FileOutputStream(out);
 		byte[] buf = new byte[1024];
@@ -70,7 +74,7 @@ public final class IOUtil {
 	}
 
 	public static void deltree(File file) throws IOException {
-		System.err.println("file = " + file);
+		//logger.info("file = " + file);
 		if (!file.exists())
 			return;
 		if (file.isDirectory()) {
@@ -83,9 +87,10 @@ public final class IOUtil {
 	}
 
 	public static void main(String[] args) throws Exception {
+
 		ZipFile f = new ZipFile(new File(args[0]));
 		File tempDir = createTempDir("archive", ".dir");
-		System.err.println("created " + tempDir);
+		//logger.info("created " + tempDir);
 		File outFile = new File("/home/jrichter/zip");
 		unzip(outFile, f);
 		deltree(outFile);

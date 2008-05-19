@@ -61,7 +61,12 @@ import org.bbop.swing.autocomplete.StringListAutocompleteModel;
 import org.bbop.util.StringUtil;
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class AutocompleteBox<T> extends JComboBox {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AutocompleteBox.class);
 
 	protected class AutoTextField extends JTextField implements ComboBoxEditor {
 
@@ -424,7 +429,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	@Override
 	public void setSelectedItem(Object anObject) {
 //	    if (anObject != null) {
-//			System.err.println("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
+//			logger.info("AutocompleteBox.setSelectedItem: TRYING to select " + anObject + ", type = "
 //					+ anObject.getClass());
 //	    }
 		if (anObject == null) {

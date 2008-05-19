@@ -5,7 +5,12 @@ import java.lang.ref.ReferenceQueue;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.*;
+
 public class ReferenceQueueCleanupThread<T> extends Thread implements Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReferenceQueueCleanupThread.class);
 	protected boolean halt = false;
 	protected ReferenceQueue<T> queue;
 	protected Collection<ReferenceCleanupListener> listeners;
@@ -46,12 +51,12 @@ public class ReferenceQueueCleanupThread<T> extends Thread implements Cloneable 
 	}
 	
 	public void run() {
-		System.err.println("starting cleanup thread...");
+		logger.info("starting cleanup thread...");
 		halt = false;
 		while(!halt) {
 			try {
 				Reference<? extends T> r = queue.remove();
-				System.err.println("Cleaning up reference "+r);
+				logger.info("Cleaning up reference "+r);
 				fireCleanup(r);
 			} catch (InterruptedException e) {
 			}

@@ -4,7 +4,12 @@ import java.util.EventObject;
 
 import org.bbop.framework.GUIComponent;
 
+import org.apache.log4j.*;
+
 public class GUIComponentEvent extends EventObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GUIComponentEvent.class);
 	
 	protected GUIComponent component;
 	protected boolean show;

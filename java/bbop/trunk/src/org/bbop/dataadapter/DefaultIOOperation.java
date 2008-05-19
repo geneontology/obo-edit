@@ -7,7 +7,12 @@ package org.bbop.dataadapter;
  * @param <IN> The input type for this operation
  * @param <OUT> The output type for this operation
  */
+import org.apache.log4j.*;
+
 public class DefaultIOOperation<IN, OUT> implements IOOperation<IN, OUT> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultIOOperation.class);
 
 	protected String id;
 	protected String name;

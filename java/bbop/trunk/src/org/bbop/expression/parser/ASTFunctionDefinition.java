@@ -7,7 +7,12 @@ import org.bbop.expression.FunctionDef;
 import org.bbop.expression.JexlContext;
 import org.bbop.expression.JexlFunctionDefImpl;
 
+import org.apache.log4j.*;
+
 public class ASTFunctionDefinition extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTFunctionDefinition.class);
 
 	public ASTFunctionDefinition(int i) {
 		super(i);

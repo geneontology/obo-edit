@@ -4,7 +4,12 @@ import javax.swing.JProgressBar;
 
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class ProgressBarUpdateRunnable extends AbstractPeriodicUpdateRunnable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ProgressBarUpdateRunnable.class);
 
 	protected JProgressBar progressBar;
 	
@@ -21,7 +26,7 @@ public class ProgressBarUpdateRunnable extends AbstractPeriodicUpdateRunnable {
 	@Override
 	protected void doUpdate(TaskDelegate<?> task) {
 		Number n = task.getProgressValue();
-//		System.err.println("!!!updating progress bar with "+n);
+//		logger.info("!!!updating progress bar with "+n);
 		if (n != null) {
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(n.intValue());

@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class CommandLineParser {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CommandLineParser.class);
 
     public static Tag parse(TagSpec spec, String [] arguments) throws
 	CommandLineParseException {
@@ -17,7 +22,7 @@ public class CommandLineParser {
 				     boolean tentative)
 	throws CommandLineParseException {
 	if (tentative) {
-	    System.err.println("finalized still-tentative "+tag);
+	    logger.info("finalized still-tentative "+tag);
 	    return null;
 	}
 

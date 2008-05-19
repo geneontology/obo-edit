@@ -33,7 +33,12 @@ import javax.swing.Timer;
  * moves the image to its original location prior to invoking 
  * {@link #dispose}.
  */
+import org.apache.log4j.*;
+
 public class GhostedDragImage extends AbstractComponentDecorator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GhostedDragImage.class);
 
     private Icon icon;
     // drag origin, relative to drag source

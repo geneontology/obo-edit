@@ -12,7 +12,12 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class XMLMenuBar extends JMenuBar {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLMenuBar.class);
 
     /**
 	 * 

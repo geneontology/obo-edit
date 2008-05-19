@@ -8,7 +8,12 @@ import java.util.Map;
 
 import org.bbop.util.StringUtil;
 
+import org.apache.log4j.*;
+
 public class MatchPair<DISPLAY_TYPE> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MatchPair.class);
 	
 	protected DISPLAY_TYPE val;
 	protected Map<String, int[]> match;

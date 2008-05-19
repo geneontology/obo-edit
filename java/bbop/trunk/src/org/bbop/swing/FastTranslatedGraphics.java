@@ -4,7 +4,12 @@ import java.awt.*;
 import java.awt.image.*;
 import java.text.*;
 
+import org.apache.log4j.*;
+
 public class FastTranslatedGraphics extends Graphics {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FastTranslatedGraphics.class);
 
     protected Graphics g;
     int tx;

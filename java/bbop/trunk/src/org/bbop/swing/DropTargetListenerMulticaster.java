@@ -14,7 +14,12 @@ import java.util.LinkedList;
  * @author jrichter
  *
  */
+import org.apache.log4j.*;
+
 public class DropTargetListenerMulticaster implements DropTargetListener {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropTargetListenerMulticaster.class);
 
 	protected Collection<DropTargetListener> listeners = new LinkedList<DropTargetListener>();
 

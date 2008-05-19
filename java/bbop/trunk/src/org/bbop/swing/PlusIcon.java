@@ -2,7 +2,12 @@ package org.bbop.swing;
 
 import java.awt.*;
 
+import org.apache.log4j.*;
+
 public class PlusIcon extends MinusIcon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PlusIcon.class);
 
     public PlusIcon() {
 	this(null, 2, 0, 10, 10);

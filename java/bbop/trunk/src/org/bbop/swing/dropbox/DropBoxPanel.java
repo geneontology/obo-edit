@@ -27,7 +27,12 @@ import javax.swing.SwingUtilities;
 
 import org.bbop.swing.SwingUtil;
 
+import org.apache.log4j.*;
+
 public class DropBoxPanel extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropBoxPanel.class);
 
 	protected Component glue;
 	protected Component dropGhost;
@@ -118,7 +123,7 @@ public class DropBoxPanel extends JPanel {
 			}
 
 			public void drop(DropTargetDropEvent dtde) {
-				System.err.println("dropPos = " + dropPos);
+				logger.info("dropPos = " + dropPos);
 				if (dropPos == -1) {
 					remove(dropGhost);
 					SwingUtil.masterValidate((Component) DropBoxPanel.this);
@@ -140,7 +145,7 @@ public class DropBoxPanel extends JPanel {
 							dtde.rejectDrop();
 						} else {
 							Container p = ((Component) c).getParent();
-							System.err.println("removing " + c + " from " + p);
+							logger.info("removing " + c + " from " + p);
 							SwingUtil.masterValidate((Component) c);
 							add((Component) c, null, dropPos);
 							dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);

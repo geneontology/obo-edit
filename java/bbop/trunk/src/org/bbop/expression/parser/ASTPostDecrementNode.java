@@ -6,7 +6,12 @@ import org.bbop.expression.ExpressionException;
 import org.bbop.expression.JexlContext;
 import org.bbop.expression.util.Coercion;
 
+import org.apache.log4j.*;
+
 public class ASTPostDecrementNode extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTPostDecrementNode.class);
   public ASTPostDecrementNode(int id) {
     super(id);
   }

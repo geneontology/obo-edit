@@ -6,7 +6,12 @@ import java.util.*;
 
 import org.bbop.util.*;
 
+import org.apache.log4j.*;
+
 public class FileSystemTreeModel extends AbstractTreeModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FileSystemTreeModel.class);
 
     public class DummyRoot {
 	protected String name;

@@ -33,7 +33,12 @@ import java.util.Set;
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  * @version $Id: HashMapContext.java,v 1.3 2007/09/27 01:02:16 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class HashMapContext implements JexlContext {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HashMapContext.class);
 	/** serialization version id jdk13 generated. */
 	static final long serialVersionUID = 5715964743204418854L;
 

@@ -10,7 +10,12 @@ import javax.swing.JPanel;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
 
+import org.apache.log4j.*;
+
 public class ComponentConfigCard extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ComponentConfigCard.class);
 	public static final String COMPONENT_KEY = "component";
 	public static final String CONFIG_KEY = "config";
 

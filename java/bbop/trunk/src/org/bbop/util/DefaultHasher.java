@@ -1,6 +1,11 @@
 package org.bbop.util;
 
+import org.apache.log4j.*;
+
 public class DefaultHasher implements Hasher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultHasher.class);
 
 	protected static Hasher instance;
 	

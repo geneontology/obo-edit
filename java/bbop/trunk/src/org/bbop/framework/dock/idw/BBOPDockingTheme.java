@@ -43,7 +43,12 @@ import java.awt.*;
  * @author $Author: jmr39 $
  * @version $Revision: 1.3 $
  */
+import org.apache.log4j.*;
+
 public class BBOPDockingTheme extends DockingWindowsTheme {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BBOPDockingTheme.class);
 	private RootWindowProperties rootWindowProperties = new RootWindowProperties();
 
 	BBOPTabTheme theme;

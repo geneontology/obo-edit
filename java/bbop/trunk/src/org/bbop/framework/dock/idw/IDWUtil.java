@@ -29,7 +29,12 @@ import net.infonode.gui.colorprovider.FixedColorProvider;
 import net.infonode.gui.componentpainter.SolidColorComponentPainter;
 import net.infonode.util.ColorUtil;
 
+import org.apache.log4j.*;
+
 public class IDWUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDWUtil.class);
 	protected static class ButtonHighlighter implements ComponentListener,
 			HierarchyListener {
 		/*

@@ -59,7 +59,7 @@ public abstract class AbstractAutocompleteModel<DISPLAY_TYPE, OUTPUT_TYPE>
 					Map<String, int[]> hits = StringUtil.getMatchMap(s, tokens,
 							true, isIgnoreCase());
 //					if (obj.toString().contains("O"))
-//						System.err.println("hits = "+hits);
+//						logger.info("hits = "+hits);
 					if (cancelled)
 						return;
 					if (hits.size() > 0) {

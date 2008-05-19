@@ -14,7 +14,12 @@ import javax.swing.SwingUtilities;
 
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class TaskPanel extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TaskPanel.class);
 
 	protected static final String CONTENT_KEY = "CONTENT";
 	protected static final String PROGRESS_KEY = "PROGRESS";
@@ -63,7 +68,7 @@ public class TaskPanel extends JPanel {
 			layout.show(TaskPanel.this, CONTENT_KEY);
 		repaint();
 		validate();
-//		System.err.println("done updating");
+//		logger.info("done updating");
 
 	}
 

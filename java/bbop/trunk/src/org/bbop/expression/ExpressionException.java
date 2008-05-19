@@ -2,7 +2,12 @@ package org.bbop.expression;
 
 import org.bbop.expression.parser.SimpleNode;
 
+import org.apache.log4j.*;
+
 public class ExpressionException extends Exception {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExpressionException.class);
 	protected int lineNumber = -1;
 	protected int charNumber = -1;
 

@@ -2,7 +2,12 @@ package org.bbop.io;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class AuditedPrintStream extends PrintStream {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AuditedPrintStream.class);
 
     protected int padding;
     protected PrintStream stream;

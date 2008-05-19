@@ -6,7 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.apache.log4j.*;
+
 public class AutoScrollSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AutoScrollSpec.class);
 
     protected boolean doAutoscroll;
     protected JViewport viewport;

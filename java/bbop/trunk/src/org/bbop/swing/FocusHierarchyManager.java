@@ -13,7 +13,12 @@ import java.util.LinkedList;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 
+import org.apache.log4j.*;
+
 public class FocusHierarchyManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FocusHierarchyManager.class);
 	
 	protected static boolean enabled = false;
 	protected static MultiMap<Component, FocusHierarchyListener> listeners;

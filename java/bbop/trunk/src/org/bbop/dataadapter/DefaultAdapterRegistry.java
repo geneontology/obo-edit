@@ -5,7 +5,12 @@ import java.util.*;
 /*
  * A registry of available data adapters
  */
+import org.apache.log4j.*;
+
 public class DefaultAdapterRegistry implements DataAdapterRegistry {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultAdapterRegistry.class);
 
 	protected DataAdapterUIFactory factory = new DefaultUIFactory();
 	protected Map<String, DataAdapter> adapters =

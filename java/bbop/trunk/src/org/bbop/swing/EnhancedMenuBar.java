@@ -7,7 +7,12 @@ import javax.swing.Box;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
+import org.apache.log4j.*;
+
 public class EnhancedMenuBar extends JMenuBar {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EnhancedMenuBar.class);
 
 	protected JMenu helpMenu;
 

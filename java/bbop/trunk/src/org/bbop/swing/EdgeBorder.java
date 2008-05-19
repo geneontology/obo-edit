@@ -3,7 +3,12 @@ package org.bbop.swing;
 import javax.swing.border.*;
 import java.awt.*;
 
+import org.apache.log4j.*;
+
 public class EdgeBorder extends LineBorder {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EdgeBorder.class);
 
     /**
 	 * 

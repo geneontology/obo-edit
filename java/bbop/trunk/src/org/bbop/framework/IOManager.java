@@ -21,7 +21,15 @@ import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
 
+import org.apache.log4j.*;
+
+import org.apache.log4j.*;
+
 public class IOManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IOManager.class);
+	
 
 	protected static IOManager manager;
 
@@ -38,14 +46,14 @@ public class IOManager {
 	public String getHistoryFilePath() {
 	    if (historyPath == null) {
 		File historyFile = new File(GUIManager.getPrefsDir(), "history.xml");
-//		System.err.println("getHistoryFilePath: no existing history in " + historyFile.getAbsolutePath() + "--creating from resource org/oboedit/resources/history.xml."); // DEL
+//		logger.info("getHistoryFilePath: no existing history in " + historyFile.getAbsolutePath() + "--creating from resource org/oboedit/resources/history.xml."); // DEL
 		// If there's no history yet, use the default one stored as a resource, and copy to .oboedit directory
 		try {
 		    FileUtil.ensureExists(historyFile,
 					  "org/oboedit/resources/history.xml");
 		    historyPath = historyFile.getAbsolutePath();
 		} catch (IOException e) {
-		    System.err.println("ensureExists failed: " + e);
+		    logger.error("ensureExists failed: " + e);
 		}
 	    }
 	    return historyPath;

@@ -3,7 +3,12 @@ package org.bbop.swing;
 import java.util.*;
 import javax.swing.tree.*;
 
+import org.apache.log4j.*;
+
 public class SimpleTreeModel extends AbstractTreeModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleTreeModel.class);
     protected Hashtable parentage = new Hashtable();
     protected Object root = null;
 

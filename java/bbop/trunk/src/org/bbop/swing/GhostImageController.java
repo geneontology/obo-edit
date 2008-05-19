@@ -14,8 +14,13 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+import org.apache.log4j.*;
+
 public class GhostImageController implements DragSourceListener,
-		DragSourceMotionListener {
+	DragSourceMotionListener {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GhostImageController.class);
 	
 	protected GhostedDragImage ghost;
 	protected static GhostImageController instance;

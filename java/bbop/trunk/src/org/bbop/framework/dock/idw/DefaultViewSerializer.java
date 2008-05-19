@@ -18,7 +18,12 @@ import net.infonode.docking.ViewSerializer;
 import net.infonode.docking.util.StringViewMap;
 import net.infonode.docking.util.ViewMap;
 
+import org.apache.log4j.*;
+
 public class DefaultViewSerializer implements ViewSerializer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultViewSerializer.class);
 
 	protected IDWDriver driver;
 

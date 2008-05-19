@@ -27,7 +27,12 @@ import java.util.Enumeration;
  * @author <a href="mailto:geirm@optonline.net">Geir Magnusson Jr.</a>
  * @version $Id: EnumerationIterator.java,v 1.2 2007/09/27 01:02:12 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class EnumerationIterator implements Iterator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EnumerationIterator.class);
     /**
      * The enumeration to iterate over.
      */

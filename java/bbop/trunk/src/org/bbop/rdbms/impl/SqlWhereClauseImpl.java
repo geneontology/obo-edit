@@ -8,8 +8,13 @@ import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.WhereClause;
 
 
+import org.apache.log4j.*;
+
 public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
-		WhereClause {
+	WhereClause {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SqlWhereClauseImpl.class);
 
 	protected ConstraintSet constraintSet = new SqlConstraintSetImpl();
 	protected Collection<Object> placeHolderVals = new LinkedList<Object>();

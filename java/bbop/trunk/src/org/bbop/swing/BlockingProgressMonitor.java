@@ -57,7 +57,12 @@ import javax.swing.text.*;
  * @author Lynn Monsanto (accessibility)
  * @version 1.37 04/12/06
  */
+import org.apache.log4j.*;
+
 public class BlockingProgressMonitor extends Object implements Accessible {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BlockingProgressMonitor.class);
 	private ProgressMonitor root;
 
 	private JDialog dialog;
@@ -250,7 +255,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 							noteLabel = new JLabel(note);
 						pane = new ProgressOptionPane(new Object[] { message,
 								noteLabel, myBar });
-						System.err.println("shutting down windows!");
+						logger.info("shutting down windows!");
 						dialog = pane.createDialog(parentComponent, UIManager
 								.getString("ProgressMonitor.progressText"));
 						dialog.show();

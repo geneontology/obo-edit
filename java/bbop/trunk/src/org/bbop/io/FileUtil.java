@@ -4,7 +4,12 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.URL;
 
+import org.apache.log4j.*;
+
 public class FileUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FileUtil.class);
 
     /**
      * Checks to see if a file exists. If it doesn't, the file is created
@@ -43,11 +48,11 @@ public class FileUtil {
       
       InputStream is = loader.getResourceAsStream(resource);
       if(is == null) {
-        System.err.println("ensureExists couldnt find resource "+resource+" gonna try "
+        logger.info("ensureExists couldnt find resource "+resource+" gonna try "
                            +"class.getResource");
         try { is = findInputStream(resource); }
         catch (FileNotFoundException e) {
-          System.err.println("ensureExists couldnt find resource "+resource+" gonna try "
+          logger.info("ensureExists couldnt find resource "+resource+" gonna try "
                              +"/"+resource);
           is = findInputStream("/"+resource); //let ex fly
         }
@@ -61,7 +66,7 @@ public class FileUtil {
       OutputStream os = new BufferedOutputStream(
         new FileOutputStream(file));
       
-      System.err.println("ensureExists: creating " + file.getAbsolutePath() + " from resource "
+      logger.info("ensureExists: creating " + file.getAbsolutePath() + " from resource "
                          + resource); // DEL
       for(int next = is.read(); next != -1; next = is.read()) {
         os.write(next);

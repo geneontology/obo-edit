@@ -31,8 +31,13 @@ import javax.swing.text.html.HTMLDocument;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 
+import org.apache.log4j.*;
+
 public class LabelMouseHyperlinkBridge implements MouseListener,
-		MouseMotionListener {
+	MouseMotionListener {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LabelMouseHyperlinkBridge.class);
 
 	protected JLabel label;
 

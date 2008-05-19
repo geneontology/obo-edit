@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import org.apache.log4j.*;
+
 public class NBestPriorityQueue<T> extends PriorityQueue<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NBestPriorityQueue.class);
 
 	/**
 	 * 

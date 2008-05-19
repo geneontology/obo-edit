@@ -8,7 +8,12 @@ import javax.swing.plaf.basic.*;
 
 import org.bbop.swing.*;
 
+import org.apache.log4j.*;
+
 public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DragFriendlyTreeUI.class);
 
 	public static class TreeIcon implements Icon {
 

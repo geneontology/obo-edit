@@ -4,7 +4,12 @@ import javax.swing.*;
 
 import org.bbop.swing.plaf.*;
 
+import org.apache.log4j.*;
+
 public class JDragList extends JList {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JDragList.class);
 
     /**
 	 * 

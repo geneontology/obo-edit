@@ -23,7 +23,12 @@ import org.bbop.expression.JexlContext;
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  * @version $Id: ASTIntegerLiteral.java,v 1.3 2007/09/27 01:02:07 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTIntegerLiteral extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTIntegerLiteral.class);
     /** literal value. */
     protected Integer val;
 

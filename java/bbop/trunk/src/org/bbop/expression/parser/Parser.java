@@ -4,7 +4,12 @@ package org.bbop.expression.parser;
 import java.io.Reader;
 import java.io.ByteArrayInputStream;
 
+import org.apache.log4j.*;
+
 public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConstants {/*@bgen(jjtree)*/
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Parser.class);
   protected JJTParserState jjtree = new JJTParserState();public SimpleNode parse(Reader reader)
         throws Exception
     {

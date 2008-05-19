@@ -16,8 +16,13 @@ import javax.swing.table.*;
 
 import org.bbop.swing.multiheighttable.*;
 
+import org.apache.log4j.*;
+
 public class MultiheightTable extends JTable
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiheightTable.class);
     /**
 	 * 
 	 */

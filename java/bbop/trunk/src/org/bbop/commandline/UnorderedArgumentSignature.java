@@ -2,7 +2,12 @@ package org.bbop.commandline;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class UnorderedArgumentSignature implements ArgumentSignature {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(UnorderedArgumentSignature.class);
 	protected class CardinalityConstraint {
 		int minCardinality;
 		int maxCardinality;
@@ -195,7 +200,7 @@ public class UnorderedArgumentSignature implements ArgumentSignature {
 			/*
 			 boolean empty = !p.hasMoreStrings();
 			 if (empty) {
-			 System.err.println("calling uas.accept() with strings "+p.stringList);
+			 logger.info("calling uas.accept() with strings "+p.stringList);
 			 throw new FailException(false);
 			 }
 			 */

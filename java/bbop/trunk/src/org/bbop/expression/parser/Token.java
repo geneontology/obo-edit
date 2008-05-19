@@ -5,7 +5,12 @@ package org.bbop.expression.parser;
  * Describes the input token stream.
  */
 
+import org.apache.log4j.*;
+
 public class Token {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Token.class);
 
   /**
    * An integer that describes the kind of this token.  This numbering

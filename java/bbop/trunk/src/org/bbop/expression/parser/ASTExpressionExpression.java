@@ -24,7 +24,12 @@ import org.bbop.expression.JexlContext;
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  * @version $Id: ASTExpressionExpression.java,v 1.2 2007/09/27 01:02:09 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTExpressionExpression extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTExpressionExpression.class);
 
     /**
      * Create the node given an id.

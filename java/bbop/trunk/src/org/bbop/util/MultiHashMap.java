@@ -6,7 +6,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.*;
+
 public class MultiHashMap<K,V> implements MultiMap<K,V> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiHashMap.class);
 
 	protected ImprovedMap<K,Collection<V>> map = new ImprovedHashMap<K,Collection<V>>();
 

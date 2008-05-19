@@ -11,8 +11,13 @@ import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.StringUtil;
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class StringAlgorithmAutocompleteModel implements
-		AutocompleteModel<StringAlgorithmAutocompleteModel.StringPair, String> {
+	AutocompleteModel<StringAlgorithmAutocompleteModel.StringPair, String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringAlgorithmAutocompleteModel.class);
 
 	public static class StringPair {
 		protected String original;

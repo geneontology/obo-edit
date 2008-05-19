@@ -13,7 +13,12 @@ import java.awt.*;
  * Taken from
  * http://java.sun.com/docs/books/tutorial/uiswing/layout/example-1dot4/SpringUtilities.java
  */
+import org.apache.log4j.*;
+
 public class SpringUtilities {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SpringUtilities.class);
     /**
      * A debugging utility that prints to stdout 
 the component's
@@ -47,7 +52,7 @@ the component's
         try {
             layout = (SpringLayout)parent.getLayout();
         } catch (ClassCastException exc) {
-            System.err.println("The first argument to makeGrid must use SpringLayout.");
+            logger.info("The first argument to makeGrid must use SpringLayout.");
             return;
         }
 
@@ -143,7 +148,7 @@ the component's
 		break;
 	}
 	} catch (Exception ex) {
-	    System.err.println("Failed while trying to fetch ["+row+","+col+"]");
+	    logger.info("Failed while trying to fetch ["+row+","+col+"]");
 	    ex.printStackTrace();
 	}
 	return c;
@@ -181,7 +186,7 @@ the component's
         try {
             layout = (SpringLayout)parent.getLayout();
         } catch (ClassCastException exc) {
-            System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
+            logger.info("The first argument to makeCompactGrid must use SpringLayout.");
             return;
         }
 

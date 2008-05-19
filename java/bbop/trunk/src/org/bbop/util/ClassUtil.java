@@ -18,7 +18,12 @@ import java.util.jar.JarEntry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.*;
+
 public class ClassUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ClassUtil.class);
 
 	/**
 	 * Finds resources that match an ANT-style path. The string ** is replaced
@@ -85,7 +90,7 @@ public class ClassUtil {
 			if (!matches)
 				it.remove();
 //			else
-//				System.err.println("wow!");
+//				logger.info("wow!");
 		}
 		return resources;
 	}

@@ -11,7 +11,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.*;
+
 public class ReferenceMap<K, V> implements Map<K, V> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReferenceMap.class);
 
 	public Map<K, MapSoftReference<K,V>> backingMap;
 	
@@ -51,7 +56,7 @@ public class ReferenceMap<K, V> implements Map<K, V> {
 		fireCleanup(ref);
 		backingMap.remove(ref.getKey());
 		ref.reallyClear();
-		System.err.println("backingMap size = "+backingMap.size());
+		logger.info("backingMap size = "+backingMap.size());
 	}
 
 	public void stopCleanupThread() {

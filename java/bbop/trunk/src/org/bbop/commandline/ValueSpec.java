@@ -3,7 +3,12 @@ package org.bbop.commandline;
 import java.util.*;
 import java.util.regex.*;
 
+import org.apache.log4j.*;
+
 public class ValueSpec implements ArgumentSignature {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ValueSpec.class);
 
 	protected String val;
 	protected boolean lastResort = true;

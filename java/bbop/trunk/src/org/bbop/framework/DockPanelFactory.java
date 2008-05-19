@@ -4,8 +4,13 @@ import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
 import org.bbop.framework.dock.idw.IDWDriver;
 
+import org.apache.log4j.*;
+
 public class DockPanelFactory extends
-		AbstractComponentFactory<GUIComponent> {
+	AbstractComponentFactory<GUIComponent> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DockPanelFactory.class);
 	
 	protected static final DockPanelFactory factory = new DockPanelFactory();
 	

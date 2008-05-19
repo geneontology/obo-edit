@@ -15,7 +15,12 @@ import javax.swing.ImageIcon;
  * image as a template, and then apply new colors to it as you wish.
  */
 
+import org.apache.log4j.*;
+
 public class RecolorableImageIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RecolorableImageIcon.class);
 
 	protected Color color;
 	protected Color replaceColor;

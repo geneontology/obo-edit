@@ -9,7 +9,12 @@ import java.io.*;
 import org.bbop.io.IOUtil;
 import org.bbop.util.*;
 
+import org.apache.log4j.*;
+
 public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FileAdapterUI.class);
 
 	/**
 	 * 

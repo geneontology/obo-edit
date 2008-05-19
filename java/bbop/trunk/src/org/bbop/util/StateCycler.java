@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.*;
+
 public class StateCycler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StateCycler.class);
 	protected List states = new LinkedList();
 
 	protected int currentIndex = 0;

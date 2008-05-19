@@ -16,7 +16,12 @@ import javax.swing.border.EmptyBorder;
 
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScreenLockRunnable.class);
 
 	protected JButton cancelButton = new JButton("Cancel");
 	protected JProgressBar progressBar = new JProgressBar();

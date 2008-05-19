@@ -6,7 +6,12 @@ import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.log4j.*;
+
 public class DragHandler extends MouseInputAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DragHandler.class);
 	protected MouseEvent firstMouseEvent;
 	protected DropBoxContents contents;
 	
@@ -24,7 +29,7 @@ public class DragHandler extends MouseInputAdapter {
 			TransferHandler handler = c.getTransferHandler();
 			// Tell the transfer handler to initiate the drag.
 			handler.exportAsDrag(c, firstMouseEvent, TransferHandler.COPY);
-			System.err.println("exporting drag "+e);
+			logger.info("exporting drag "+e);
 			firstMouseEvent = null;
 		}
 	}

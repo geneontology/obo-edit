@@ -13,8 +13,13 @@ import java.beans.*;
 import javax.swing.plaf.basic.*;
 import java.net.URL;
 
+import org.apache.log4j.*;
+
 public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
-		AdapterWidgetI {
+	AdapterWidgetI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphicalAdapterChooser.class);
 
 	/**
 	 * 
@@ -547,7 +552,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 				}
 
 			} catch (Exception ex) {
-			    System.err.println("GraphicalAdapterChooser.storeCurrentProfile: did not store current config!"); // DEL
+			    logger.info("GraphicalAdapterChooser.storeCurrentProfile: did not store current config!"); // DEL
 			    ex.getMessage(); // DEL
 			}
 		}

@@ -16,7 +16,12 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.InlineView;
 import javax.swing.text.html.HTMLEditorKit.HTMLFactory;
 
+import org.apache.log4j.*;
+
 public class CustomLinebreakHTMLEditorKit extends HTMLEditorKit {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CustomLinebreakHTMLEditorKit.class);
 
 	protected static class SegmentCache {
 		/**

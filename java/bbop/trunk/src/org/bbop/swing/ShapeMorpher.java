@@ -8,7 +8,12 @@ import java.awt.geom.Point2D;
 
 import org.bbop.util.StringUtil;
 
+import org.apache.log4j.*;
+
 public class ShapeMorpher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ShapeMorpher.class);
 	protected Shape source;
 	protected Shape target;
 	protected Shape massagedSource;
@@ -31,9 +36,9 @@ public class ShapeMorpher {
 		int[] sendpointIndices = sourceList.getSubpathIndices(false);
 		int[] tendpointIndices = targetList.getSubpathIndices(false);
 
-		System.err.println(StringUtil.pad(labela, ' ', padAmt) + "| "
+		logger.info(StringUtil.pad(labela, ' ', padAmt) + "| "
 				+ StringUtil.pad(labelb, ' ', padAmt));
-		System.err.println(StringUtil.pad("", '-', padAmt) + "+-"
+		logger.info(StringUtil.pad("", '-', padAmt) + "+-"
 				+ StringUtil.pad("", '-', padAmt));
 		for (int i = 0; i < sourceList.size() || i < targetList.size(); i++) {
 			boolean isSourceEndpoint = false;
@@ -56,7 +61,7 @@ public class ShapeMorpher {
 			String targetString = "";
 			if (targetList.size() > i)
 				targetString = targetList.getSegment(i).toString();
-			System.err.println(i + ")" + (isSourceEndpoint ? '*' : ' ')
+			logger.info(i + ")" + (isSourceEndpoint ? '*' : ' ')
 					+ StringUtil.pad(sourceString, ' ', padAmt) + "|"
 					+ (isTargetEndpoint ? '*' : ' ')
 					+ StringUtil.pad(targetString, ' ', padAmt));
@@ -92,7 +97,7 @@ public class ShapeMorpher {
 				sourceIterator.next();
 				targetIterator.next();
 				if (targetIterator.isDone() != sourceIterator.isDone())
-					System.err.println("Aha!");
+					logger.info("Aha!");
 				pos++;
 			} catch (Throwable t) {
 				t.printStackTrace();

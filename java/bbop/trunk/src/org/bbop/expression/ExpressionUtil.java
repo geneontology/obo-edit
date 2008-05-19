@@ -1,6 +1,11 @@
 package org.bbop.expression;
 
+import org.apache.log4j.*;
+
 public class ExpressionUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExpressionUtil.class);
 	private ExpressionUtil() {
 
 	}

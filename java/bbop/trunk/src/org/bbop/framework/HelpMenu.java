@@ -11,7 +11,12 @@ import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.util.CollectionUtil;
 
+import org.apache.log4j.*;
+
 public class HelpMenu extends DynamicMenu {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HelpMenu.class);
 
 	public HelpMenu() {
 		super("Help");

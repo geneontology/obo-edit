@@ -4,7 +4,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
+import org.apache.log4j.*;
+
 public class DropBoxContentsTransferable implements Transferable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropBoxContentsTransferable.class);
 	private DropBoxContents selection;
 
 	public static DataFlavor DROP_BOX_CONTENTS_FLAVOR = new DataFlavor(

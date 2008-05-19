@@ -77,7 +77,12 @@ import org.bbop.io.IOUtil;
 import org.bbop.swing.SwingUtil;
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class IDWDriver implements LayoutDriver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger("IDWDriver.class");
 
 	protected StringViewMap viewMap;
 
@@ -542,7 +547,7 @@ public class IDWDriver implements LayoutDriver {
 			if (v != null)
 				destroyView(v);
 			else
-				System.err.println("COULD NOT DESTROY VIEW: " + c);
+				logger.info("COULD NOT DESTROY VIEW: " + c);
 		}
 
 		ObjectInputStream stream = getInputStream(path);
@@ -820,7 +825,7 @@ public class IDWDriver implements LayoutDriver {
 			// for (int i = 0; i < panel.getTabCount(); i++) {
 			// Tab t = panel.getTabAt(i);
 			// if (t instanceof TitledTab) {
-			// System.err.println("t = " + t);
+			// logger.info("t = " + t);
 			// TitledTab tt = (TitledTab) t;
 			// if (SwingUtilities.isDescendingFrom(view, t
 			// .getContentComponent())) {
@@ -1065,7 +1070,7 @@ public class IDWDriver implements LayoutDriver {
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
 		if (titleBar == null) {
-		    System.err.println("setComponentTitlebarTooltip: can't get title bar for " + label);
+		    logger.info("setComponentTitlebarTooltip: can't get title bar for " + label);
 		    return;
 		}
 		TabWindow tabWindow = (TabWindow) SwingUtilities.getAncestorOfClass(

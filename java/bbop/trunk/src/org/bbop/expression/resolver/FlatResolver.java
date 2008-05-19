@@ -30,7 +30,12 @@ import org.bbop.expression.JexlExprResolver;
  *  @author <a href="mailto:geirm@adeptra.com">Geir Magnusson Jr.</a>
  *  @version $Id: FlatResolver.java,v 1.2 2007/09/27 01:02:16 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class FlatResolver implements JexlExprResolver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FlatResolver.class);
     /**
      *  Flag to return NO_VALUE on null from context.
      *  this allows jexl to try to evaluate

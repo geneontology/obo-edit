@@ -26,7 +26,12 @@ import org.bbop.expression.util.Coercion;
  * @since 1.1
  */
 
+import org.apache.log4j.*;
+
 public class ASTBitwiseOrNode extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTBitwiseOrNode.class);
     /**
      * Create the node given an id.
      * 

@@ -3,7 +3,12 @@ package org.bbop.swing;
 import java.awt.Point;
 import javax.swing.JViewport;
 
+import org.apache.log4j.*;
+
 public class FreezableViewport extends JViewport {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FreezableViewport.class);
     /**
 	 * 
 	 */

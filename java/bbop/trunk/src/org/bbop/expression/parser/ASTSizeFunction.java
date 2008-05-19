@@ -31,7 +31,12 @@ import org.bbop.expression.util.introspection.VelMethod;
  * @author <a href="hw@kremvax.net">Mark H. Wilkinson</a>
  * @version $Id: ASTSizeFunction.java,v 1.3 2007/09/27 01:02:09 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTSizeFunction extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTSizeFunction.class);
     /**
      * Create the node given an id.
      * 

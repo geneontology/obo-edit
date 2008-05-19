@@ -4,7 +4,12 @@ import java.awt.event.*;
 import java.awt.Component;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.*;
+
 public class DragTreeEvent extends ComponentEvent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DragTreeEvent.class);
     /**
 	 * 
 	 */

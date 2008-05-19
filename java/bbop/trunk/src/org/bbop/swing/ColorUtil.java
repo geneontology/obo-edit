@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.*;
+
 public class ColorUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ColorUtil.class);
 
 	public static final Map<String, Color> FANCY_HTML_COLOR_MAP = new LinkedHashMap<String, Color>();
 	public static final Map<String, Color> HTML_COLOR_MAP = new LinkedHashMap<String, Color>();

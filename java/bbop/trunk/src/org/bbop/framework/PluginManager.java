@@ -24,7 +24,12 @@ import org.bbop.io.IOUtil;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 
+import org.apache.log4j.*;
+
 public class PluginManager {
+
+//	initialize logger
+	final static Logger logger = Logger.getLogger("PluginManager.class");
 
 	protected static PluginManager manager;
 
@@ -46,7 +51,7 @@ public class PluginManager {
 	};
 
 	public static class InstallerConfig {
-
+		
 		protected Collection<String> libs = new LinkedList<String>();
 
 		protected Collection<String> classes = new LinkedList<String>();
@@ -149,7 +154,8 @@ public class PluginManager {
 	}
 
 	public static void main(String[] args) throws Exception {
-
+	
+		
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("edu.berkeley.oboplugins.MoreInfoPlugin");
 		PluginManager.createInstallerConfiguration(list, null, new File(
@@ -159,7 +165,7 @@ public class PluginManager {
 				new File("/Users/jrichter/testjars"));
 		Collection<GUITask> tasks = PluginManager.getManager().instantiateAll(
 				GUITask.class);
-		System.err.println("tasks = " + tasks);
+		logger.info("tasks = " + tasks);
 	}
 
 	protected void init() {
@@ -182,7 +188,7 @@ public class PluginManager {
 						new JarFile(d);
 						sharedLibs.add(d.toURL());
 					} catch (IOException e) {
-						System.err.println("Could not read shared jar " + d);
+						logger.info("Could not read shared jar " + d);
 					}
 				}
 				if (sharedLibs.size() > 0) {

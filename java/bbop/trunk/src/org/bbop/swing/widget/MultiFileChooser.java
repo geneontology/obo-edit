@@ -10,7 +10,12 @@ import java.awt.event.*;
 import org.bbop.io.AllFileFilter;
 import org.bbop.swing.*;
 
+import org.apache.log4j.*;
+
 public class MultiFileChooser extends JPanel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiFileChooser.class);
 
     /**
 	 * 

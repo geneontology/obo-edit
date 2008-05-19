@@ -7,7 +7,12 @@ import java.util.*;
  * boolean expressions.
  * @see org.bbop.util.VectorUtil#filter(VectorFilter, Vector)
  */
+import org.apache.log4j.*;
+
 public class BooleanFilter implements VectorFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BooleanFilter.class);
 
     /**
 	 * 

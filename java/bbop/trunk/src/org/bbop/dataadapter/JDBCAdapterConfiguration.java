@@ -9,7 +9,12 @@ import java.sql.*;
  * one or more files and write a single file
  * 
  */
+import org.apache.log4j.*;
+
 public class JDBCAdapterConfiguration implements AdapterConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JDBCAdapterConfiguration.class);
 
     protected int maxReadHistorySize;
     protected int maxWriteHistorySize;
@@ -57,17 +62,17 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 		if (username==null){
 			String systemUser = System.getenv("USER");
 			if (systemUser==null){
-				System.err.println("WARN: No username specified for database connection. Attempting to connect without a user.");
+				logger.info("WARN: No username specified for database connection. Attempting to connect without a user.");
 				username = "";
 			} else {
-				System.err.println("WARN: No username specified for database connection. Using environmental username " + systemUser);
+				logger.info("WARN: No username specified for database connection. Using environmental username " + systemUser);
 				username = systemUser;
 			}
 		}
 		
 		String password = this.getDbPassword();
 		if (password == null){
-			System.err.println("WARN: No password specified for database connection.");
+			logger.info("WARN: No password specified for database connection.");
 			password ="";
 		}
 		

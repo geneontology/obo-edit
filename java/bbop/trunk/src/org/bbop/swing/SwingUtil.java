@@ -17,7 +17,12 @@ import java.io.*;
 /**
  * A pile of useful methods for Swing applications.
  */
+import org.apache.log4j.*;
+
 public class SwingUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SwingUtil.class);
 
 	protected SwingUtil() {
 		super();

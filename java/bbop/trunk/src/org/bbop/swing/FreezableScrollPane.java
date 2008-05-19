@@ -4,7 +4,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import java.awt.Component;
 
+import org.apache.log4j.*;
+
 public class FreezableScrollPane extends JScrollPane {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FreezableScrollPane.class);
     /**
 	 * 
 	 */

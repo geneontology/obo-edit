@@ -35,7 +35,12 @@ import javax.swing.event.MouseInputAdapter;
 import org.bbop.swing.DragImageGenerator;
 import org.bbop.swing.SwingUtil;
 
+import org.apache.log4j.*;
+
 public class DropBoxWrapper extends JPanel implements DropBoxContents {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropBoxWrapper.class);
 
 	protected Component contents;
 	protected JComponent dragHandle;
@@ -155,7 +160,7 @@ public class DropBoxWrapper extends JPanel implements DropBoxContents {
 				/*
 				 * startIndex = SwingUtil.getIndex(getParent(),
 				 * DropBoxWrapper.this); startParent = getParent();
-				 * System.err.println("removing from "+startParent+"
+				 * logger.info("removing from "+startParent+"
 				 * at index "+startIndex);
 				 * startParent.remove(DropBoxWrapper.this);
 				 * startParent.validate();

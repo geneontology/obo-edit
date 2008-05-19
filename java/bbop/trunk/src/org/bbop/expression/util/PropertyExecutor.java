@@ -23,7 +23,12 @@ import org.bbop.expression.util.introspection.Introspector;
  * Returned the value of object property when executed.
  * @since 1.0
  */
+import org.apache.log4j.*;
+
 public class PropertyExecutor extends AbstractExecutor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PropertyExecutor.class);
 
     /** index of the first character of the property. */
     private static final int PROPERTY_START_INDEX = 3;

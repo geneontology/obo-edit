@@ -4,7 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class KeyRecorder implements KeyEventDispatcher {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(KeyRecorder.class);
 
     public static final int MAX_KEYS = 10;
 
@@ -136,7 +141,7 @@ public class KeyRecorder implements KeyEventDispatcher {
     };
 
     protected synchronized void processKeyEvent(KeyEvent e) {
-//	System.err.println("processed "+e+", smooth = "+smoothOutAutorepeat);
+//	logger.info("processed "+e+", smooth = "+smoothOutAutorepeat);
 	if (e.getID() == KeyEvent.KEY_PRESSED) {
 	    addKey(e.getKeyCode());
 	} else if (e.getID() == KeyEvent.KEY_RELEASED) {

@@ -2,8 +2,13 @@ package org.bbop.util;
 
 import java.io.Serializable;
 
+import org.apache.log4j.*;
+
 public class NonNegativeInteger extends Number
-    implements Comparable, Serializable {
+	implements Comparable, Serializable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NonNegativeInteger.class);
 
     /**
 	 * 

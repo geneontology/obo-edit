@@ -13,8 +13,8 @@ public abstract class AbstractShapeExtender implements ShapeExtender {
 		PathOpList source = new PathOpList(a, false);
 		PathOpList target = new PathOpList(b, false);
 		/*
-		 * System.err.println("original source = "+source.toString());
-		 * System.err.println("original target = "+target.toString());
+		 * logger.info("original source = "+source.toString());
+		 * logger.info("original target = "+target.toString());
 		 */
 		int[] sourceIndices = source.getSubpathIndices(false);
 		int[] targetIndices = target.getSubpathIndices(false);
@@ -86,8 +86,8 @@ public abstract class AbstractShapeExtender implements ShapeExtender {
 					targetIndices.length - sourceIndices.length);
 		}
 		/*
-		 * System.err.println("morphed source = "+source.toString());
-		 * System.err.println("morphed target = "+target.toString());
+		 * logger.info("morphed source = "+source.toString());
+		 * logger.info("morphed target = "+target.toString());
 		 */
 		out[0] = source.getShape();
 		out[1] = target.getShape();

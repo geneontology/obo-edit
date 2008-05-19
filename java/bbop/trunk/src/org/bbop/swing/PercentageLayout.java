@@ -51,7 +51,12 @@ import javax.swing.SwingConstants;
  * @version	$Revision: 1.2 $, $Date: 2007/09/27 01:02:11 $
  * @author Edwin Dankert <edankert@cladonia.com>
  */
+import org.apache.log4j.*;
+
 public class PercentageLayout implements LayoutManager2 {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PercentageLayout.class);
     /** Sets the layout orientation to horizontal. */
     public static final int HORIZONTAL 	= SwingConstants.HORIZONTAL;
     /** Sets the layout orientation to vertical. */

@@ -7,7 +7,12 @@ import java.beans.Expression;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 
+import org.apache.log4j.*;
+
 public class EnumPersistenceDelegate extends DefaultPersistenceDelegate {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EnumPersistenceDelegate.class);
   private static EnumPersistenceDelegate epd = new EnumPersistenceDelegate();
   public static void installFor(Class<? extends Enum> enumClass) {
     try {

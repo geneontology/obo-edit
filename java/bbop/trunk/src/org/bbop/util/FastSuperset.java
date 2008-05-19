@@ -2,8 +2,13 @@ package org.bbop.util;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class FastSuperset<T> extends AbstractCollection<T> implements
-		Superset<T> {
+	Superset<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FastSuperset.class);
 
 	protected List<Collection<? extends T>> subsets = new LinkedList<Collection<? extends T>>();
 

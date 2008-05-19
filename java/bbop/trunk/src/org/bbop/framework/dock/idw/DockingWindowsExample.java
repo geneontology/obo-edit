@@ -26,7 +26,12 @@ import java.util.HashMap;
  * @author $Author: jmr39 $
  * @version $Revision: 1.1 $
  */
+import org.apache.log4j.*;
+
 public class DockingWindowsExample {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DockingWindowsExample.class);
   private static final int ICON_SIZE = 8;
 
   /**

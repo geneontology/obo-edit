@@ -1,6 +1,11 @@
 package org.bbop.util;
 
+import org.apache.log4j.*;
+
 public class ArgumentSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ArgumentSpec.class);
 
     protected int cardinality;
     protected TagSpec tagSpec;

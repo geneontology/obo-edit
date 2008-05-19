@@ -35,7 +35,12 @@ import java.util.Map;
  * @author <a href="mailto:geirm@optonline.net">Geir Magnusson Jr.</a>
  * @version $Id: ClassMap.java,v 1.2 2007/09/27 01:02:16 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ClassMap {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ClassMap.class);
     /** represents a miss on the cached data. */
     private static final class CacheMiss {
     }

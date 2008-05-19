@@ -50,7 +50,12 @@ import org.bbop.swing.HTMLTableRenderer;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.tablelist.ListTableEditor;
 
+import org.apache.log4j.*;
+
 public class TableList<T> extends JComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TableList.class);
 
 	protected boolean completingEdit = false;
 	protected ListTableEditor<T> editor;

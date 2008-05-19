@@ -19,7 +19,12 @@ package org.bbop.swing;
 /**
  * A class containing static math methods useful for image processing.
  */
+import org.apache.log4j.*;
+
 public class ImageMath {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ImageMath.class);
 
     /**
      * The value of pi as a float.

@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class ProcessCommunicator extends Thread {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ProcessCommunicator.class);
 
 	protected Process p;
 

@@ -1,6 +1,11 @@
 package org.bbop.framework.dock;
 
+import org.apache.log4j.*;
+
 public class Perspective {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Perspective.class);
 	protected String id;
 	protected String name;
 	protected boolean builtIn = false;

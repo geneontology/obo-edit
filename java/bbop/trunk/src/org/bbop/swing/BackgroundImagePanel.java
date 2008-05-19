@@ -11,7 +11,12 @@ import java.net.*;
  * fit the panel by calling {@link #setScaleImage(boolean)}. If no background
  * image is set, the panel is transparent.
  */
+import org.apache.log4j.*;
+
 public class BackgroundImagePanel extends JPanel implements ImageObserver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BackgroundImagePanel.class);
 
     /**
 	 * 

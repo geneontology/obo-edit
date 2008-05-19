@@ -8,7 +8,12 @@ import java.util.*;
  * one or more files and write a single file
  * 
  */
+import org.apache.log4j.*;
+
 public class FileAdapterConfiguration implements AdapterConfiguration {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FileAdapterConfiguration.class);
 
     protected int maxReadHistorySize;
     protected int maxWriteHistorySize;
