@@ -26,7 +26,7 @@ public class ParentEditorFactory extends AbstractComponentFactory<ParentEditor> 
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 
 }

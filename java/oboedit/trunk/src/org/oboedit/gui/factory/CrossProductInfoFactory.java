@@ -28,7 +28,7 @@ public class CrossProductInfoFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.SUMMARY;
 	}
 
 }

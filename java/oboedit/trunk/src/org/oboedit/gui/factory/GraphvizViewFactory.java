@@ -27,6 +27,6 @@ public class GraphvizViewFactory extends AbstractComponentFactory<GraphvizCanvas
 	
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.VIEWERS;
 	}
 }

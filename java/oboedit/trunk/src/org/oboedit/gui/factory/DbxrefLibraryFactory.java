@@ -26,7 +26,7 @@ public class DbxrefLibraryFactory extends AbstractComponentFactory<DbxrefLibrary
 	}
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.TOOLS;
+		return FactoryCategory.METADATA;
 	}
 
 }

@@ -27,7 +27,7 @@ public class TermPanelFactory extends AbstractComponentFactory<OBOTermPanel> {
 	}
 	
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 	
 	@Override

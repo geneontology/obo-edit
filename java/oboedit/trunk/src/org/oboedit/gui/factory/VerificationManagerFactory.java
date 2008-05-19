@@ -26,6 +26,6 @@ public class VerificationManagerFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.TOOLS;
 	}
 }

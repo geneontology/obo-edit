@@ -28,7 +28,7 @@ public class CrossProductMatrixEditorFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.ONTOLOGY;
+		return FactoryCategory.EDITORS;
 	}
 
 }

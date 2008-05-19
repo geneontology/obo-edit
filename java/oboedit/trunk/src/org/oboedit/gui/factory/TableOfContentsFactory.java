@@ -28,7 +28,7 @@ public class TableOfContentsFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.SUMMARY;
 	}
 
 	@Override

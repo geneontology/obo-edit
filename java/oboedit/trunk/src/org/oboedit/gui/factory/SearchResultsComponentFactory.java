@@ -114,7 +114,7 @@ public class SearchResultsComponentFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+		return FactoryCategory.SEARCH;
 	}
 
 	@Override
