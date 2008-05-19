@@ -76,7 +76,7 @@ public class DefaultMorpher implements Morpher {
 						((PPath) newNode).getPathReference(), extender,
 						duration));
 			} else {
-//				logger.error("don't known how to morph "+newNode+" to "+oldNode);
+//				logger.info("don't known how to morph "+newNode+" to "+oldNode);
 			}
 			relayoutActivity.addActivity(oldNode
 					.animateToPositionScaleRotation(newNode.getXOffset(),

@@ -95,7 +95,7 @@ public class OntologyChangeTracker extends AbstractGUIComponent {
 			public Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean sel, boolean expanded, boolean leaf,
 					int row, boolean hasFocus) {
-//				logger.error("painting "+value);
+//				logger.info("painting "+value);
 				return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
 						row, hasFocus);
 			}

@@ -130,7 +130,7 @@ public class TestUtil extends TestCase {
 		Namespace ns;
 		do {
 			ns = getRandomNamespace();
-			logger.error("randomns = " + ns + ", notThis = " + notThis);
+			logger.info("randomns = " + ns + ", notThis = " + notThis);
 		} while (notThis != null && ns.equals(notThis));
 
 		return ns;
@@ -146,7 +146,7 @@ public class TestUtil extends TestCase {
 	public Namespace getRandomNamespace() {
 		Iterator it = session.getNamespaces().iterator();
 		int index = (int) (Math.random() * session.getNamespaces().size());
-		logger.error("random_index = " + index);
+		logger.info("random_index = " + index);
 		Namespace o = null;
 		for (int i = 0; it.hasNext() && (i < index || o == null); i++) {
 			o = (Namespace) it.next();

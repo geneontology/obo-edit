@@ -187,7 +187,7 @@ public class IntersectionEditor extends AbstractGUIComponent {
 					if (TermUtil.isDangling(link))
 						return null;
 				}
-				logger.error("setting object to " + value);
+				logger.info("setting object to " + value);
 				editorPanel.setCreateNewObject(io.getID().equals(JUNK_ID));
 				editorPanel.setObject(io);
 				return editorPanel;

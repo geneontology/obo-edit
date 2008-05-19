@@ -119,7 +119,7 @@ public class DefaultInputHandler implements InputHandlerI {
 			JMenuItem item = getMenuItem(selected, dest, editAction,
 					liveSelection, fromDrop, (fromDrop ? index : null),
 					inUseSet);
-//			logger.error("item = " + item);
+//			logger.info("item = " + item);
 			if (item.isEnabled()) {
 				enabledCount++;
 				menu.add(item);
@@ -280,7 +280,7 @@ public class DefaultInputHandler implements InputHandlerI {
 			return true;
 		} /*
 			 * else if (enabledCount == 1) {
-			 * logger.error("DefaultInputHandler: applying "+liveAction);
+			 * logger.info("DefaultInputHandler: applying "+liveAction);
 			 * controller.apply(liveAction.execute()); return true; }
 			 */
 		else

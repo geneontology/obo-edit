@@ -438,9 +438,9 @@ public class VerificationManager {
 				path, condition);
 		task.run();
 		if (task.getException() != null) {
-		    logger.error("runChecks: CheckTask got an exception.  Here's the stack trace.");
+		    logger.info("runChecks: CheckTask got an exception.  Here's the stack trace.");
 			task.getException().printStackTrace();
-		    logger.error("runChecks: re-throwing exception.");
+		    logger.info("runChecks: re-throwing exception.");
 			throw new RuntimeException(task.getException());
 		}
 		return task.getResults();

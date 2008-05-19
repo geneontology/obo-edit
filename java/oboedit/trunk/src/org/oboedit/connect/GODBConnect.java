@@ -39,7 +39,7 @@ public class GODBConnect {
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			logger.error("ERROR___: " + e.getMessage());
+			logger.info("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			logger.error("___ERROR (" + connection + "): " + e.getMessage());
+			logger.info("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class GODBConnect {
 		try {
 			connector.close();
 		} catch (SQLException e) {
-			logger.error("___ERROR: " + e.getMessage());
+			logger.info("___ERROR: " + e.getMessage());
 		}
 
 		// Assemble connection string and SQL string.
@@ -76,7 +76,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			logger.error("___ERROR (" + connection + "): " + e.getMessage());
+			logger.info("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 
@@ -94,17 +94,17 @@ public class GODBConnect {
 			Statement stmt = connector.createStatement();
 			rs = stmt.executeQuery(sql);
 			
-			logger.error("SQL: " + sql);
-			logger.error("\tDB: " + DB);
-			logger.error("\tHOST: " + HOST);
-			logger.error("\tUSER: " + USER);
-			logger.error("\tPASSWORD: " + PASSWORD);
+			logger.info("SQL: " + sql);
+			logger.info("\tDB: " + DB);
+			logger.info("\tHOST: " + HOST);
+			logger.info("\tUSER: " + USER);
+			logger.info("\tPASSWORD: " + PASSWORD);
 			while( rs.next() ){
 				number = rs.getInt("count");
-				logger.error("SQL (RESULT): " + number);
+				logger.info("SQL (RESULT): " + number);
 			}
 		} catch (SQLException e) {
-			logger.error("ERROR___: " + e.getMessage());
+			logger.info("ERROR___: " + e.getMessage());
 		}
 		
 		//this.disconnect();

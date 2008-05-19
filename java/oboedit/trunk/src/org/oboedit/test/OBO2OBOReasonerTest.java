@@ -80,7 +80,7 @@ public class OBO2OBOReasonerTest extends TestCase {
 				" -reasonerfactory "
 				+ factoryName + " "
 				+ outFile.getPath();
-			logger.error(cmd);
+			logger.info(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int returnVal = p.waitFor();
 			assertTrue("Exit value should be zero", returnVal == 0);

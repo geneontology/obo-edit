@@ -51,7 +51,7 @@ public class PiccoloUtil {
 		try {
 			doc.remove(0, doc.getLength());
 			htmlEditorKit.read(new StringReader(html), doc, 0);
-			logger.error("stylesheet = "
+			logger.info("stylesheet = "
 					+ ((HTMLDocument) doc).getStyleSheet());
 			node.setDocument(doc);
 		} catch (IOException e) {

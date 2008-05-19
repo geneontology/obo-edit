@@ -366,7 +366,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 						found = true;
 						break;
 					} else {
-						logger.error("   " + completeDefLink + " != "
+						logger.info("   " + completeDefLink + " != "
 								+ link);
 					}
 				}
@@ -375,7 +375,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 					historyList.add(new DeleteLinkHistoryItem(link));
 				}
 			}
-			logger.error("relationshipList = " + getRelationshipList());
+			logger.info("relationshipList = " + getRelationshipList());
 			// Find any intersection links that have been added
 			it = getRelationshipList().iterator();
 			while (it.hasNext()) {
@@ -399,7 +399,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 				completeDefLink.setCompletes(true);
 			}
 		}
-		logger.error("historyList = " + historyList);
+		logger.info("historyList = " + historyList);
 		return historyList;
 	}
 
@@ -409,7 +409,7 @@ public class CompleteDefPanel extends AbstractTextEditComponent {
 		relationshipList.clear();
 		genusTerm = null;
 
-		logger.error("CompleteDefPanel.setClass: parents of " + oboClass + " = "
+		logger.info("CompleteDefPanel.setClass: parents of " + oboClass + " = "
 				+ oboClass.getParents());
 
 		Iterator it = oboClass.getParents().iterator();

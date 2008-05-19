@@ -218,7 +218,7 @@ public class OELink extends PCNode implements Morphable {
 			OELink linkNode = (OELink) node;
 			Link link = (Link) linkNode.getObject();
 			Link oldLink = (Link) getObject();
-//			logger.error("link = "+link);
+//			logger.info("link = "+link);
 		}
 		return new PActivity(0);
 	}

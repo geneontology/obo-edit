@@ -52,7 +52,7 @@ public class OBO2OWLTest extends TestCase {
 				"./launch_scripts/obo2owl " + testFile.getPath() + " "
 				+ "-o "
 				+ outFile.getPath();
-			logger.error(cmd);
+			logger.info(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int returnVal = p.waitFor();
 			assertTrue("Exit value should be zero", returnVal == 0);

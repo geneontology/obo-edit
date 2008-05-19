@@ -43,7 +43,7 @@ public class OBO2OBOSemanticParserTest extends AbstractOBOTest {
 			"./launch_scripts/obo2obo -allowdangling -semanticparse -addsynonyms " + testFile.getPath() + " "
 			+ "-o -saveimpliedlinks "
 			+ outFile.getPath();
-		logger.error(cmd);
+		logger.info(cmd);
 		Process p = Runtime.getRuntime().exec(cmd);
 		int returnVal = p.waitFor();
 		assertTrue("Exit value should be zero", returnVal == 0);

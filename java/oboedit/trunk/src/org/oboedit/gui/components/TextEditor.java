@@ -104,7 +104,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
-//			logger.error("reloaded config");
+//			logger.info("reloaded config");
 			reload();
 			setObject(getObject());
 		}
@@ -130,7 +130,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
     // Didn't work.
 //        protected ReloadListener reloadListener = new ReloadListener() {
 //		public void reload(ReloadEvent e) {
-//		    logger.error("TextEditor.reload");  // DEL
+//		    logger.info("TextEditor.reload");  // DEL
 //		    warningMap = new MultiHashMap<FieldPath, CheckWarning>();
 //		    setWarningMap(warningMap);
 //		}

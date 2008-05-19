@@ -449,7 +449,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 						}
 						else {
 							if (!checkBoxConcise.isSelected())
-								logger.error("THIS SHOULD NOT HAPPEN!! "+objAnc);
+								logger.info("THIS SHOULD NOT HAPPEN!! "+objAnc);
 						}
 					}
 				}
@@ -555,7 +555,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				//logger.info("cn for "+col+" = "+columnObjs[col-1].getName());
 				LinkedObject co = columnObjs[col-1];
 				if (co == null) {
-					logger.error("nothing in col: "+col);
+					logger.info("nothing in col: "+col);
 					return "";
 				}
 				else

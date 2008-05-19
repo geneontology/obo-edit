@@ -271,7 +271,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 			}
 			setProgressValue(100);
 			setResults(databases);
-//			logger.error("found paths in "
+//			logger.info("found paths in "
 //					+ (System.currentTimeMillis() - time));
 		}
 

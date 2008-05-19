@@ -150,7 +150,7 @@ public class OBOEdit {
 
 						break;
 					} else if (t.getName().equals("--listadapters")) {
-						logger.error("Available load adapters...");
+						logger.info("Available load adapters...");
 						printAdapters();
 
 						System.exit(0);
@@ -169,7 +169,7 @@ public class OBOEdit {
 			OBOSession o = (OBOSession) CommandLineWidget.execute(registry,
 					OBOAdapter.READ_ONTOLOGY, loadTag, null);
 			actions.setLoadMe(o);
-			logger.error("done");
+			logger.info("done");
 		}
 
 		return actions;
@@ -260,7 +260,7 @@ public class OBOEdit {
 	}
 
 	public static void printUsage() {
-		logger.error("OBO-Edit supports the following command-line options:\n -help (or --help or -usage) - Print this usage message and exit\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name\nwith no other arguments, e.g., oboedit test_resources/camphor_catabolism.obo\n(The obo file is assumed to be in the default obo version of OBO_1_2).\n The following adapters are available:");
+		logger.info("OBO-Edit supports the following command-line options:\n -help (or --help or -usage) - Print this usage message and exit\n -verbose - Displays verbose status messages while OBO-Edit is running\n --listadapters - Lists all the available data adapters and exits\n -load <adapter name> <file name> (default) - Loads a file on startup.\nThis parameter is the default parameter, meaning that it is implicit, and does not need to be specified.\nIf no adapter name is provided, -OBO_EDIT:OBO_Adapter is assumed.\nHence, if you want to load an OBO file, all you need to provide is the file name\nwith no other arguments, e.g., oboedit test_resources/camphor_catabolism.obo\n(The obo file is assumed to be in the default obo version of OBO_1_2).\n The following adapters are available:");
 		printAdapters();
 
 	}
@@ -271,7 +271,7 @@ public class OBOEdit {
 		DataAdapter[] adapters = DataAdapterUtil.getAdapters(
 				registry, OBOAdapter.READ_ONTOLOGY, classes);
 		for (int i = 0; i < adapters.length; i++)
-			logger.error("   -" + adapters[i].getID());
+			logger.info("   -" + adapters[i].getID());
 	}
 
 }

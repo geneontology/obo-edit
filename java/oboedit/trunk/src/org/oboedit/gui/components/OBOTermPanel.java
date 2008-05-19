@@ -368,7 +368,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		}
 		rendererPane.removeAll();
-//		logger.error("   CREATING IMAGE W/ TITLE " + dragTitle);
+//		logger.info("   CREATING IMAGE W/ TITLE " + dragTitle);
 		return out;
 	}
 
@@ -1220,11 +1220,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	}
 
 	public void reload() {
-//		logger.error("Reloading OBO Term Panel...");
+//		logger.info("Reloading OBO Term Panel...");
 		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			logger.error("removing selection listener " + selectionListeners[i]);
+//			logger.info("removing selection listener " + selectionListeners[i]);
 			removeTreeSelectionListener(selectionListeners[i]);
 		}
 
@@ -1253,10 +1253,10 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			restoreSelectionPaths(selected);
 //		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			logger.error("adding selection listener " + selectionListeners[i]);
+//			logger.info("adding selection listener " + selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
 		}
-//		logger.error("reloaded in " + (System.currentTimeMillis() - time)
+//		logger.info("reloaded in " + (System.currentTimeMillis() - time)
 //				+ " (expanding took " + time2 + " ms)");
 
 //		FilterManager.getManager().fireGlobalFilterChange();  // ?
@@ -1567,7 +1567,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		this.nodeLabelProvider = nodeLabelProvider;
 	}
 
-	// Ok, weÕve been told to scroll because the mouse cursor is in our
+	// Ok, weï¿½ve been told to scroll because the mouse cursor is in our
 	// scroll zone.
 	public void autoscroll(Point p) {
 		JViewport viewport = SwingUtil

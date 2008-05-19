@@ -158,7 +158,7 @@ public class FileMenu extends DynamicMenu {
 
 		saveItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				logger.error("Not currently implemented");
+				logger.info("Not currently implemented");
 			}
 		});
 

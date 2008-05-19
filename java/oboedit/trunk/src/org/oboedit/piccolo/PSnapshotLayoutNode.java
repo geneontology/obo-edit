@@ -100,7 +100,7 @@ public class PSnapshotLayoutNode extends PLayoutNode {
 				while (it.hasNext()) {
 					PNode child = (PNode) it.next();
 					node.addChild(child);
-					logger.error("adding child " + child + " to " + node);
+					logger.info("adding child " + child + " to " + node);
 				}
 			}
 

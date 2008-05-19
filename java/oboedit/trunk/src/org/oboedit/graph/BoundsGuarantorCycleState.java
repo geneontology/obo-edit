@@ -58,12 +58,12 @@ public abstract class BoundsGuarantorCycleState extends ActivityCycleState {
 	public boolean isActive() {
 		Rectangle2D bounds = getNewBounds();
 		if (bounds == null) {
-			logger.error("Null bounds!");
+			logger.info("Null bounds!");
 			return true;
 		}
 		Rectangle2D camBounds = canvas.getCamera().getViewBounds();
-		logger.error("isActive:  CAM BOUNDS = " + camBounds);
-		logger.error("isActive: NODE BOUNDS = " + bounds);
+		logger.info("isActive:  CAM BOUNDS = " + camBounds);
+		logger.info("isActive: NODE BOUNDS = " + bounds);
 		if (getZoom())
 			return BoundsUtil
 					.snugFit(bounds, camBounds, BoundsUtil.DEFAULT_ERR);

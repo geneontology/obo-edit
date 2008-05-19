@@ -103,12 +103,12 @@ public class AutosaveTask implements GUITask, Runnable {
 			}
 			// Only do the autosave if there are unsaved changes.
 			if (!SessionManager.getManager().needsSave()) {
-//			    logger.error("No changes--no need to autosave.");
+//			    logger.info("No changes--no need to autosave.");
 			    return;
 			}
 			String saveFile = new File(preferences.getAutosavePath(),
 					getFileName(calendar)).toString();
-			logger.error("Autosaving backup file " + saveFile + " at " + (new Date()));
+			logger.info("Autosaving backup file " + saveFile + " at " + (new Date()));
 			final FileAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 			config.setWritePath(saveFile);
 			DataAdapterOperationTask task = new DataAdapterOperationTask(
