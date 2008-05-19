@@ -4,7 +4,12 @@ import java.util.Collection;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class AddSynonymHistoryItem extends HistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddSynonymHistoryItem.class);
 
 	/**
 	 * 

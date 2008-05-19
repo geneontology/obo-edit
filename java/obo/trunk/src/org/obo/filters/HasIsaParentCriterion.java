@@ -7,7 +7,12 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 
+import org.apache.log4j.*;
+
 public class HasIsaParentCriterion extends AbstractBooleanCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HasIsaParentCriterion.class);
 
 	public String getID() {
 		return "has_isa_parent";

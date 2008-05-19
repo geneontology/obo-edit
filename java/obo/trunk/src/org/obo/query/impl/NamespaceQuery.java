@@ -14,7 +14,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.query.Query;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class NamespaceQuery implements Query<OBOClass, OBOClass> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamespaceQuery.class);
 
 	protected Collection<String> namespaceIDs = new HashSet<String>();
 

@@ -56,7 +56,12 @@ import org.obo.util.TermUtil;
  * http://www.geneontology.org/doc/GO.annotation.shtml#file
  * http://www.geneontology.org/GO.format.annotation.shtml
  */
+import org.apache.log4j.*;
+
 public class GOStyleAnnotationFileAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOStyleAnnotationFileAdapter.class);
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -109,7 +114,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 						new LineNumberReader(new FileReader(fp));
 					for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
 
-						System.err.println("line= "+line);
+						logger.info("line= "+line);
 						Pattern p = Pattern.compile("\t");
 						//parse based on tab...will be delimiter in future
 						String[] colvals1 = p.split(line);
@@ -118,14 +123,14 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 							colvals[i]=colvals1[i];
 						}
 						parseAnnotation(colvals);
-						System.out.println("parsed: "+line);
+						logger.info("parsed: "+line);
 
 					}
 					lnr.close();
 				}
 			}
 			catch (Exception e) {
-				System.out.println(e);
+				logger.info(e);
 				throw new DataAdapterException(e, "read error");
 			}
 			return (OUTPUT_TYPE)session;
@@ -137,7 +142,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 				filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 						null, null, ioprofile.getWritePath()));
 			} else {
-				System.err.println("gsr="+ioprofile.getSaveRecords());
+				logger.info("gsr="+ioprofile.getSaveRecords());
 				filteredPaths.addAll(ioprofile.getSaveRecords());
 			}
 			streams.clear();
@@ -146,8 +151,8 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			while (it.hasNext()) {
 				FilteredPath filteredPath = it.next();
 				try {
-					System.err.println("fp="+filteredPath);
-					System.err.println("fpp="+filteredPath.getPath());
+					logger.info("fp="+filteredPath);
+					logger.info("fpp="+filteredPath.getPath());
 					SafeFileOutputStream sfos = new SafeFileOutputStream(
 							filteredPath.getPath());
 					streams.add(sfos);
@@ -189,13 +194,13 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		String assignedBy = colvals[14];
 		
 		session.addObject(ann);
-		System.out.println("new ann:"+ann);
+		logger.info("new ann:"+ann);
 		
 		parseReferenceField(ann, refVal);
 	
-		System.out.println("  parsing ev");
+		logger.info("  parsing ev");
         parseEvidence(ann,evCode,ref);
-        System.out.println("  parsed ev");
+        logger.info("  parsed ev");
         Namespace subjectNS = session.getNamespace(dbspace);
         if (subjectNS == null)
         	subjectNS = session.getObjectFactory().createNamespace(dbspace, "");
@@ -211,7 +216,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			TermUtil.castToProperty(getSessionLinkedObject("OBO_REL:has_role",
 					OBOClass.OBO_PROPERTY));
 		ann.setRelationship(rel);
-		System.out.println("  setting subj to "+subj);
+		logger.info("  setting subj to "+subj);
 		ann.setSubject(subj);
 		if (subjectID != lastSubjectID) {
 			lastSubjectID = subjectID;
@@ -226,7 +231,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			obj =
 				(LinkedObject) session.getObjectFactory().
 				createDanglingObject(objectID, false);
-			//System.out.println("  got obj:"+obj);
+			//logger.info("  got obj:"+obj);
 			session.addObject(obj);
 		}
 
@@ -242,7 +247,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 		parseDateField(ann,date);
 		parseAssignedByField(ann,assignedBy);
 
-		System.out.println("  done ann");
+		logger.info("  done ann");
 		//items.add(item);
 		//session.addObject(ann);
 		return ann;
@@ -254,7 +259,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 				ann.setIsNegated(true);
 			}
 			else {
-				System.err.println("Cannot handle qual:"+q);
+				logger.info("Cannot handle qual:"+q);
 				// TODO
 			}
 		}
@@ -370,7 +375,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	
 	// TODO: move somewhere more generic
 	public LinkedObject getSessionLinkedObject(String id, OBOClass metaclass) {
-		System.out.println(session+" getting/adding obj:"+id);
+		logger.info(session+" getting/adding obj:"+id);
 		LinkedObject obj = (LinkedObject)session.getObject(id);
 		if (obj == null) {
 			obj =
@@ -379,7 +384,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 //				(LinkedObject) session.getObjectFactory().
 //				createDanglingObject(id, metaclass.equals(OBOClass.OBO_PROPERTY));
 		//		createObject(id, metaclass, true);
-			System.out.println("  got obj:"+obj);
+			logger.info("  got obj:"+obj);
 			session.addObject(obj);
 		}
 		return obj;
@@ -443,7 +448,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	public OBOSession write(OBOSession session, PrintStream stream, 
 						FilteredPath filteredPath) throws DataAdapterException {
 		try {
-			System.err.println("writing to" + stream);
+			logger.info("writing to" + stream);
 			
 			//ReusableProgressEvent rpe = new ReusableProgressEvent(this);
 			//rpe.setFastVal(-1);
@@ -451,7 +456,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			//fireProgressEvent(rpe);
 			
 			LinkDatabase ldb = session.getLinkDatabase();
-			System.out.println("ldb= "+ldb);
+			logger.info("ldb= "+ldb);
 			for (IdentifiedObject io : ldb.getObjects()) {
 				if (io instanceof Annotation) {
 					writeAnnotation(stream,(Annotation)io);					
@@ -466,7 +471,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	
 	protected void writeAnnotation(PrintStream stream, Annotation annot) throws Exception {
 		String[] colvals = new String[16];
-		System.out.println("writing annot= "+annot);
+		logger.info("writing annot= "+annot);
 		IdentifiedObject su = annot.getSubject();
 
 		// TODO: split
@@ -547,7 +552,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 			stream.print(colvals[i]);
 		}
 		stream.print("\n");
-		System.out.println(" su+ob "+su+" "+ob);
+		logger.info(" su+ob "+su+" "+ob);
 	}
 	
 	protected String flattenSet(Collection set) {

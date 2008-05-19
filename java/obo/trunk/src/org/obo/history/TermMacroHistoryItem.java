@@ -8,7 +8,12 @@ import java.util.*;
 import javax.naming.OperationNotSupportedException;
 import javax.swing.tree.*;
 
+import org.apache.log4j.*;
+
 public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermMacroHistoryItem.class);
 
 	/**
 	 * 

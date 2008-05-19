@@ -2,7 +2,12 @@ package org.obo.datamodel.impl;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class BooleanDatatype extends SimpleDatatype<Boolean> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BooleanDatatype.class);
 
 	/**
 	 * 

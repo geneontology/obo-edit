@@ -6,7 +6,12 @@ import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class DescendantSearchAspect implements SearchAspect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DescendantSearchAspect.class);
 
 	public DescendantSearchAspect() {
 	}

@@ -43,7 +43,12 @@ import org.obo.identifier.LinkIDWarning;
 import org.obo.identifier.UnresolvedIDsException;
 import org.obo.identifier.IDWarning.WarningType;
 
+import org.apache.log4j.*;
+
 public class IDUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDUtil.class);
 
 	public static class VariableValue {
 		protected IDUtil.Variable v;

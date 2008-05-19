@@ -2,7 +2,12 @@ package org.obo.filters;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class StartsWithComparison extends AbstractComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StartsWithComparison.class);
 
 	protected Class[] types = { String.class };
 

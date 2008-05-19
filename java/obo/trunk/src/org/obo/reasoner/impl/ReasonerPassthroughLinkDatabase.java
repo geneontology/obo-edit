@@ -25,7 +25,12 @@ import org.obo.reasoner.ReasonerListener;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class ReasonerPassthroughLinkDatabase implements ReasonedLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerPassthroughLinkDatabase.class);
 
 	protected ReasonedLinkDatabase reasoner;
 

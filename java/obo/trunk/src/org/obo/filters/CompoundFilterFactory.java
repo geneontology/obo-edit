@@ -5,7 +5,12 @@ package org.obo.filters;
  *
  */
 
+import org.apache.log4j.*;
+
 public class CompoundFilterFactory implements FilterFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompoundFilterFactory.class);
 
 	/*
 	 * Creates a new {@link CompoundFilterImpl}

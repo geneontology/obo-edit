@@ -10,7 +10,12 @@ import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.MgedOntologyOWLMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class MORoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MORoundtripOWLTest.class);
 
 	public MORoundtripOWLTest(String name) {
 		super(name);

@@ -14,7 +14,12 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
+import org.apache.log4j.*;
+
 public class SimpleOWLMetadataMapping extends AbstractOWLMetadataMapping {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleOWLMetadataMapping.class);
 
 	public boolean isOboToOWLLossy() { return true; }
 	

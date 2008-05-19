@@ -15,7 +15,12 @@ import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class GOAnnotationFilePlusOntologyTest extends GOAnnotationFileTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOAnnotationFilePlusOntologyTest.class);
 
 	public GOAnnotationFilePlusOntologyTest(String name) {
 		super(name);
@@ -35,14 +40,14 @@ public class GOAnnotationFilePlusOntologyTest extends GOAnnotationFileTest {
 	String outPath;
 
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		session = getSessionFromResources(getOntologyFilesToLoad());
 		GOStyleAnnotationFileAdapter adapter = new GOStyleAnnotationFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
-			System.err.println(f);
+			logger.info(f);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);
@@ -59,7 +64,7 @@ public class GOAnnotationFilePlusOntologyTest extends GOAnnotationFileTest {
 	public void testAnnotWithGO() {
 		Collection<Annotation> annots = getAnnotationsForSubject("FB:FBgn0024177");
 		for (Annotation annot : annots) {
-			System.out.println(annot.getObject().getName());
+			logger.info(annot.getObject().getName());
 		}
 		
 	}

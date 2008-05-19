@@ -4,7 +4,12 @@ import java.util.Collection;
 
 import org.obo.datamodel.Dbxref;
 
+import org.apache.log4j.*;
+
 public class DbxrefIDSearchCriterion extends AbstractStringCriterion<Dbxref> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DbxrefIDSearchCriterion.class);
 
 	public static final DbxrefIDSearchCriterion CRITERION =
 		new DbxrefIDSearchCriterion();

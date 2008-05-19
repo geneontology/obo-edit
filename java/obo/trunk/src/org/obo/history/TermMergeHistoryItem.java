@@ -9,7 +9,12 @@ import org.obo.datamodel.impl.*;
 import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermMergeHistoryItem.class);
 
 	/**
 	 * 

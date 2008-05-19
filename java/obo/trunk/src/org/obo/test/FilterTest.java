@@ -19,7 +19,12 @@ import org.obo.filters.RegexpComparison;
 import org.obo.util.FilterUtil;
 
 
+import org.apache.log4j.*;
+
 public class FilterTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilterTest.class);
 
 	LinkFilterFactory lff = new LinkFilterFactory();
 	ObjectFilterFactory off = new ObjectFilterFactory();
@@ -40,7 +45,7 @@ public class FilterTest extends AbstractOBOTest {
 			if (filter.satisfies(io))
 				matches.add(io);
 		}
-		System.out.println(filter+" N_matches: "+matches.size());
+		logger.info(filter+" N_matches: "+matches.size());
 		return matches;
 	}
 
@@ -96,7 +101,7 @@ public class FilterTest extends AbstractOBOTest {
 				null);
 		QueryEngine engine = new QueryEngine(session);
 		TaskDelegate<Collection<SearchHit<?>>>  r = engine.query(fq);
-		System.out.println(r.getResults().size());
+		logger.info(r.getResults().size());
 
 
 
@@ -108,7 +113,7 @@ public class FilterTest extends AbstractOBOTest {
 	public void testLinkFilter() throws Exception {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.PARENT);
 		Collection<Link> matches = filterLinks(lfilter);
-		System.out.println(lfilter+" N_matches: "+matches.size());
+		logger.info(lfilter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 10);
 		
@@ -120,7 +125,7 @@ public class FilterTest extends AbstractOBOTest {
 		lfilter.setAspect(LinkFilter.SELF);
 		lfilter.setFilter(ofilter);
 		matches = filterLinks(lfilter);
-		System.out.println(lfilter+" N_matches: "+matches.size());
+		logger.info(lfilter+" N_matches: "+matches.size());
 
 		assertTrue(matches.size() == 2);
 		
@@ -133,7 +138,7 @@ public class FilterTest extends AbstractOBOTest {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.CHILD);
 		
 		Collection<Link> matches = filterLinks(lfilter);
-		System.out.println(lfilter+" N_matches: "+matches.size());
+		logger.info(lfilter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 1);
 
@@ -145,7 +150,7 @@ public class FilterTest extends AbstractOBOTest {
 		 Filter<Link> filter = FilterUtil.mergeFilters(lfilter1, lfilter2);
 		
 		Collection<Link> matches = filterLinks(filter);
-		System.out.println(filter+" N_matches: "+matches.size());
+		logger.info(filter+" N_matches: "+matches.size());
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 1);
 	}

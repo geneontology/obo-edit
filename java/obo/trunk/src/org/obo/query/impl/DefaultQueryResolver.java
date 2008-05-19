@@ -22,7 +22,12 @@ import org.obo.filters.TermParentSearchCriterion;
 import org.obo.query.Query;
 import org.obo.query.QueryResolver;
 
+import org.apache.log4j.*;
+
 public class DefaultQueryResolver implements QueryResolver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultQueryResolver.class);
 
 	public static DefaultQueryResolver resolver;
 

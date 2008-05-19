@@ -7,7 +7,12 @@ import org.obo.history.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class HTMLHistoryDumper implements HistoryDumper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLHistoryDumper.class);
 
 	private static final int SPACEPADDING = 2;
 	protected HistoryList history;

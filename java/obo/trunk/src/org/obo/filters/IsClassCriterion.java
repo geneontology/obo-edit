@@ -3,7 +3,12 @@ package org.obo.filters;
 import org.obo.datamodel.*;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class IsClassCriterion extends AbstractBooleanCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IsClassCriterion.class);
 
 	public String getID() {
 		return "is_class";

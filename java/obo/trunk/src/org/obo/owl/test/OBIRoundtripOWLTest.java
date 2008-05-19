@@ -6,7 +6,12 @@ import java.util.Collection;
 import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.owl.datamodel.impl.OBIMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class OBIRoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBIRoundtripOWLTest.class);
 
 	@Override
 	protected boolean isSourceOWL() {

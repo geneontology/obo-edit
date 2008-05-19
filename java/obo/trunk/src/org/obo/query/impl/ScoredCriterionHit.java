@@ -10,7 +10,12 @@ import java.util.Map;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.filters.SearchCriterion;
 
+import org.apache.log4j.*;
+
 public class ScoredCriterionHit {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredCriterionHit.class);
 
 	protected SearchCriterion<IdentifiedObject, String> criterion;
 

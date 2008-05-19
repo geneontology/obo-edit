@@ -5,7 +5,12 @@ import org.obo.datamodel.*;
 import java.util.*;
 
 //public class DanglingObjectImpl implements DanglingObject {
+import org.apache.log4j.*;
+
 public class DanglingObjectImpl extends OBOClassImpl implements DanglingObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingObjectImpl.class);
 
 	/**
 	 * 

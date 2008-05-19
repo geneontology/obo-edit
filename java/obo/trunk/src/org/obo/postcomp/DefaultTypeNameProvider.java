@@ -18,7 +18,12 @@ import org.obo.datamodel.OBOProperty;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class DefaultTypeNameProvider implements TypeNameProvider {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultTypeNameProvider.class);
 
 	protected boolean fixPartOf = true;
 

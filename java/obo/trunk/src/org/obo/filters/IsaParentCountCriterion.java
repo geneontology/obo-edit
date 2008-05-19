@@ -5,7 +5,12 @@ import java.util.Collection;
 import org.obo.datamodel.*;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class IsaParentCountCriterion extends AbstractNumberCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IsaParentCountCriterion.class);
 
 	public Collection getValues(Collection scratch, Object obj) {
 		IdentifiedObject o = (IdentifiedObject) obj;

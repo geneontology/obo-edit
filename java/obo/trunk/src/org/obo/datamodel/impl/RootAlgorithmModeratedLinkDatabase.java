@@ -9,7 +9,12 @@ import org.obo.datamodel.*;
  * objects and relationships in the database.
  */
 
+import org.apache.log4j.*;
+
 public class RootAlgorithmModeratedLinkDatabase extends MaskedLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RootAlgorithmModeratedLinkDatabase.class);
 
 	/**
 	 * 
@@ -54,7 +59,7 @@ public class RootAlgorithmModeratedLinkDatabase extends MaskedLinkDatabase {
 				}
 			}
 			/*
-			 * System.err.println("caching object "+io); cacheObject(io,
+			 * logger.info("caching object "+io); cacheObject(io,
 			 * rootMap);
 			 */
 		}

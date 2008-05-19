@@ -4,7 +4,12 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class DefaultLinkDatabase implements LinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultLinkDatabase.class);
 
 	/**
 	 * 

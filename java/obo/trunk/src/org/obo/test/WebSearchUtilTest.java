@@ -13,7 +13,12 @@ import org.obo.util.WebSearchUtil;
 import org.obo.util.WebSearchUtil.SearchableDatabase;
 
 
+import org.apache.log4j.*;
+
 public class WebSearchUtilTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(WebSearchUtilTest.class);
 
 	public WebSearchUtilTest(String name) {
 		super(name);
@@ -32,15 +37,15 @@ public class WebSearchUtilTest extends AbstractOBOTest {
 	public void testExpand() throws Exception {
 		Set<String> terms = WebSearchUtil.expandSearchTerm(session, "transcript");
 		for (String term : terms)
-			System.out.println(term);
+			logger.info(term);
 		assertTrue(terms.size() > 0);
 		String qs = WebSearchUtil.createQueryString(SearchableDatabase.NCBI, terms);
-		System.out.println(qs);
+		logger.info(qs);
 		assertTrue(qs.contains("RNA"));
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

@@ -23,8 +23,13 @@ import org.obo.history.HistoryItem;
 import org.obo.postcomp.ParseException;
 import org.obo.postcomp.PostcompUtil;
 
+import org.apache.log4j.*;
+
 public class PostcompParserExtension implements ParserExtension,
-		OBOSerializerExtension {
+	OBOSerializerExtension {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PostcompParserExtension.class);
 
 	protected OBOSession session;
 

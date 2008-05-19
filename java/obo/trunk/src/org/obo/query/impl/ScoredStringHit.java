@@ -1,6 +1,11 @@
 package org.obo.query.impl;
 
+import org.apache.log4j.*;
+
 public class ScoredStringHit {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredStringHit.class);
 
 	protected String userString;
 

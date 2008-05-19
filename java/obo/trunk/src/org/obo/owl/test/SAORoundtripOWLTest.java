@@ -10,7 +10,12 @@ import org.obo.owl.dataadapter.OWLAdapter.OWLAdapterConfiguration;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.SAO_1_2_OWLMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class SAORoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SAORoundtripOWLTest.class);
 
 	public SAORoundtripOWLTest(String name) {
 		super(name);

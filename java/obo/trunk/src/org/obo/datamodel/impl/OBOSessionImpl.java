@@ -16,7 +16,12 @@ import org.obo.query.QueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class OBOSessionImpl implements OBOSession {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOSessionImpl.class);
 
 	/**
 	 * 

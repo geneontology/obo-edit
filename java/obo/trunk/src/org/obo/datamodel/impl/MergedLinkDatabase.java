@@ -5,7 +5,12 @@ import java.util.*;
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class MergedLinkDatabase implements LinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MergedLinkDatabase.class);
 
 	/**
 	 * 

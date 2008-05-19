@@ -9,7 +9,12 @@ import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class GenusDifferentiaRule extends AbstractReasonerRule {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GenusDifferentiaRule.class);
 
 	public GenusDifferentiaRule() {
 		setAllowIntersections(true);

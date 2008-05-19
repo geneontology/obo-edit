@@ -35,25 +35,25 @@ class OBOPostcomp/*@bgen(jjtree)*/implements OBOPostcompTreeConstants/*@egen*/ {
 
 /*@egen*/
   public static void main(String args[]) {
-    System.out.println("Reading from standard input...");
+    logger.info("Reading from standard input...");
     OBOPostcomp t = new OBOPostcomp(System.in);
     try {
       SimpleNode n = t.PostcompExpression();
 
       dump(n, "");
-      System.out.println("Thank you.");
+      logger.info("Thank you.");
     } catch (Exception e) {
-      System.out.println("Oops.");
-      System.out.println(e.getMessage());
+      logger.info("Oops.");
+      logger.info(e.getMessage());
       e.printStackTrace();
     }
   }
 
   public static void dump(SimpleNode node, String prefix) {
     if (node instanceof ASTIdentifier) {
-      System.out.println(prefix+"Identifier("+((ASTIdentifier) node).val+")");
+      logger.info(prefix+"Identifier("+((ASTIdentifier) node).val+")");
     } else  
-      System.out.println(node.toString(prefix)+", class="+node.getClass());
+      logger.info(node.toString(prefix)+", class="+node.getClass());
     if (node.children != null) {
       for (int i = 0; i < node.children.length; ++i) {
 	SimpleNode n = (SimpleNode)node.children[i];

@@ -7,8 +7,13 @@ import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.Type;
 
+import org.apache.log4j.*;
+
 public class DanglingClassImpl extends DanglingAnnotatedObjectImpl implements
-		OBOClass {
+	OBOClass {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingClassImpl.class);
 
 	public DanglingClassImpl(String id) {
 		super(id);

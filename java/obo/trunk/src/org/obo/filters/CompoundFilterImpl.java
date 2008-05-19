@@ -12,7 +12,12 @@ import java.util.*;
 import org.bbop.expression.JexlContext;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class CompoundFilterImpl implements CompoundFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompoundFilterImpl.class);
 
 	/**
 	 * 

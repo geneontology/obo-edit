@@ -10,7 +10,12 @@ package org.obo.postcomp;
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
+import org.apache.log4j.*;
+
 public class ParseException extends Exception {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParseException.class);
 
   /**
    * This constructor is used by the method "generateParseException"

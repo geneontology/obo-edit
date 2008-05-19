@@ -14,7 +14,12 @@ import org.obo.identifier.IDRule;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultOBOParser implements OBOParser {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultOBOParser.class);
 
 	protected ParseEngine engine;
 
@@ -1100,7 +1105,7 @@ public class DefaultOBOParser implements OBOParser {
 					parent = objectFactory.createDanglingObject(rs.getParent(),
 							false);
 					session.addObject(parent);
-					System.err.println("No parent for " + child + "--added dangling object " + parent + " (id = " + parent.getID() + ", name = " + parent.getName() + ")");
+					logger.info("No parent for " + child + "--added dangling object " + parent + " (id = " + parent.getID() + ", name = " + parent.getName() + ")");
 				} else {
 					danglingViolations.add(rs);
 					continue;
@@ -1115,7 +1120,7 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					type = (OBOProperty) objectFactory.createDanglingObject(rs
 							.getType(), true);
-					System.err.println("No type for " + child + "--added dangling type object " + type);
+					logger.info("No type for " + child + "--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Unrecognized type "
 							+ rs.getType(), rs.getPath(), rs.getLine(), rs
@@ -1132,7 +1137,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (nsString != null) {
 
 				ns = (Namespace) namespaceMap.get(nsString);
-				System.err.println("read namespace " + nsString
+				logger.info("read namespace " + nsString
 						+ " for link, fetched namespace " + ns);
 				if (ns == null) {
 					ns = objectFactory.createNamespace(nsString, null);
@@ -1145,7 +1150,7 @@ public class DefaultOBOParser implements OBOParser {
 					(LinkedObject) child, (OBOProperty) type,
 					(LinkedObject) parent, rs.isImplied());
 			if (tr.isImplied())
-				System.err.println("loaded implied rel " + tr);
+				logger.info("loaded implied rel " + tr);
 			tr.setNecessarilyTrue(rs.isNecessary());
 			tr.setInverseNecessarilyTrue(rs.isInverseNecessary());
 			tr.setNestedValue(rs.getNestedValue());
@@ -1172,10 +1177,10 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
 					    .createDanglingObject(rangeID, false);
-					System.err.println("assigned DANGLING " + dangling
+					logger.info("assigned DANGLING " + dangling
 							+ " to property " + t.getID());
 					t.setRange(dangling);
-					System.err.println("      range = " + t.getRange());
+					logger.info("      range = " + t.getRange());
 				} else
 					throw new OBOParseException("Assigned non-existant "
 							+ "range id " + rangeID + " to term " + t.getID(),
@@ -1200,7 +1205,7 @@ public class DefaultOBOParser implements OBOParser {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
 					    .createDanglingObject(domainID, false);
-				    System.out.println("Domain is null for domainID " + domainID + "--added dangling object");
+				    logger.info("Domain is null for domainID " + domainID + "--added dangling object");
 					t.setDomain(dangling);
 				} else
 					throw new OBOParseException("Assigned non-existant domain "
@@ -1235,7 +1240,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (instanceOfObj == null) {
 				if (allowDanglingParents) {
 					instanceOfObj = new DanglingClassImpl(is.instanceOf);
-					System.out.println("instanceOfObj is null-added dangling object");
+					logger.info("instanceOfObj is null-added dangling object");
 				} else {
 					throw new OBOParseException("Unrecognized instance_of id "
 							+ is.instanceOf + " specified for "
@@ -1339,7 +1344,7 @@ public class DefaultOBOParser implements OBOParser {
 					if (allowDanglingParents) {
 						o = objectFactory.createDanglingObject(pvs.val, false);
 						session.addObject(o);
-						System.err.println("Created dangling object " + o);
+						logger.info("Created dangling object " + o);
 					} else {
 						danglingViolations.add(pvs);
 						continue;
@@ -1351,7 +1356,7 @@ public class DefaultOBOParser implements OBOParser {
 							.getPath(), pvs.getLine(), pvs.getLineNum());
 				}
 
-				System.err.println("pvs.val = " + pvs.val + ", o = " + o);
+				logger.info("pvs.val = " + pvs.val + ", o = " + o);
 				if (!(o instanceof Value)) {
 					throw new OBOParseException("Attempted to assign "
 							+ "non value to a " + "propertyValue", pvs
@@ -1422,7 +1427,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (object == null) {
 				if (allowDanglingParents) {
 					object = new DanglingClassImpl(bm.getObject());
-					System.out.println("object is null for " + bm.getObject() + "--added dangling class impl");
+					logger.info("object is null for " + bm.getObject() + "--added dangling class impl");
 				} else
 					throw new OBOParseException("Could not resolve id "
 							+ bm.getObject() + " in replaced_by "
@@ -1494,7 +1499,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (object == null) {
 				if (allowDanglingParents) {
 					object = new DanglingClassImpl(bm.getObject());
-					System.out.println("object is null for " + bm.getObject() + "--added dangling class impl");
+					logger.info("object is null for " + bm.getObject() + "--added dangling class impl");
 				}
 				else
 					throw new OBOParseException("Could not resolve id "

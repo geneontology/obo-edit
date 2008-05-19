@@ -11,7 +11,12 @@ import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.Query;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class FilterQuery<T> implements Query<T, SearchHit<T>> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilterQuery.class);
 
 	protected Filter<T> filter;
 	protected Class<T> inputType;

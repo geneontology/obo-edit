@@ -6,7 +6,12 @@ import java.util.*;
  * Tests either numeric or string equality, whichever is appropriate
  * 
  */
+import org.apache.log4j.*;
+
 public class EqualsComparison extends AbstractComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EqualsComparison.class);
 
 	protected Class[] types = { String.class, Number.class };
 

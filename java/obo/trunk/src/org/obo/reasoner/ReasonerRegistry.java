@@ -16,7 +16,12 @@ import org.obo.reasoner.impl.LinkPileReasonerFactory;
  * @author cjm
  *
  */
+import org.apache.log4j.*;
+
 public class ReasonerRegistry {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerRegistry.class);
 
 	private static ReasonerRegistry instance;
 

@@ -11,7 +11,12 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.DefaultReasonerFactory;
 import org.obo.util.IDMapper;
 
+import org.apache.log4j.*;
+
 public class IDMapperTestWithReasoner extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDMapperTestWithReasoner.class);
 
 	IDMapper mapper;
 	public IDMapperTestWithReasoner(String name) {
@@ -25,7 +30,7 @@ public class IDMapperTestWithReasoner extends AbstractOBOTest {
 
 	private void showObjs(Collection<OBOObject> objs) {
 		for (OBOObject obj : objs) {
-			System.out.println(obj.getID()+" "+obj.getName());
+			logger.info(obj.getID()+" "+obj.getName());
 		}
 	}
 	

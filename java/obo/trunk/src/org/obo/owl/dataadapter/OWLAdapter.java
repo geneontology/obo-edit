@@ -99,7 +99,12 @@ import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 /**
  * @author cjm
  */
+import org.apache.log4j.*;
+
 public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger("OWLAdapter.class");
 
 	protected String path;
 
@@ -114,7 +119,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	protected OWLOntologyManager manager;
 	protected Map<OWLDescription,OBOClass> description2oboclass = 
 		new HashMap<OWLDescription,OBOClass>();
-	Logger logger = Logger.getLogger("org.obo.owl");
+
 
 	public final static String PURL_OBO = "http://purl.org/obo/";
 	public final static String PURL_OBO_OWL = "http://purl.org/obo/owl/";
@@ -365,7 +370,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			AdapterConfiguration configuration, INPUT_TYPE input)
 	throws DataAdapterException {
 		if (!(configuration instanceof OWLAdapterConfiguration)) {
-			System.err.println("conf="+configuration.getClass());
+			logger.info("conf="+configuration.getClass());
 			throw new DataAdapterException(" - Invalid configuration; this "
 					+ "adapter requires an "
 					+ "OWLAdapterConfiguration object.");
@@ -418,7 +423,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		} //
 		catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("Error reading OWL ontology from " + uri + ": "+e);
+			logger.info("Error reading OWL ontology from " + uri + ": "+e);
 			e.printStackTrace();
 			throw new DataAdapterException("error reading OWL ontology from " + uri + ": "+e);
 		}
@@ -473,7 +478,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 						DatatypeValueImpl dv = new DatatypeValueImpl(Datatype.STRING,
 								owlConst.getLiteral());
-						//System.out.println("dv="+dv+" "+oboProp);
+						//logger.info("dv="+dv+" "+oboProp);
 						oboInstance.addPropertyValue(oboProp,dv);
 					}
 				}
@@ -497,7 +502,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		for (OWLClass owlClass : ontology.getReferencedClasses()) {
 
 			String id = getOboID(owlClass.getURI());
-			//System.out.println("read class:"+id+" " +owlClass);
+			//logger.info("read class:"+id+" " +owlClass);
 			OBOClass oboClass = 
 				(OBOClass)oboFactory.createObject(id, OBOClass.OBO_CLASS, false);
 			session.addObject(oboClass);
@@ -611,7 +616,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				if (link == null) {
 					String message = "Cannot convert OWLDescription: "+d+" -- in "+owlDesc;
 					if (ioprofile.allowLossy) {
-						System.err.println(message);
+						logger.info(message);
 						continue;
 					}
 					else
@@ -628,7 +633,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				if (link == null) {
 					String message = "Cannot convert OWLDescription: "+d+" -- in "+owlDesc;
 					if (ioprofile.allowLossy) {
-						System.err.println(message);
+						logger.info(message);
 						continue;
 					}
 					else
@@ -703,7 +708,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			link = (OBORestriction)oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
 			return link;
 
-//			System.err.println("cannot do recursive intersections yet: "+desc);
+//			logger.info("cannot do recursive intersections yet: "+desc);
 //			not yet
 		}
 		else {
@@ -741,7 +746,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 				//oboClass = (OBOClass) session.getObjectFactory().createObject(id, OBOClass.OBO_CLASS, false);
 				session.addObject(oboClass);
-				//System.out.println("dangling="+id+" "+oboClass);
+				//logger.info("dangling="+id+" "+oboClass);
 			}
 			else {
 				if (o instanceof OBOClass)
@@ -764,7 +769,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public String getOboID(URI uri) {
 		IDSpaceRegistry registry = IDSpaceRegistry.getInstance();
 		String uriString = uri.toString();
-		//System.out.println(" converting: "+uriString);
+		//logger.info(" converting: "+uriString);
 		if (uriString.startsWith(PURL_OBO_OWL)) {
 			String[] idParts = 
 				StringUtils.split(StringUtils.removeStart(uriString,PURL_OBO_OWL),
@@ -773,7 +778,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				return getOboID(idParts[0],idParts[1]);
 			}
 			// TODO
-			System.err.println("URI "+uriString+" does not conform to purl.org/obo standard");
+			logger.info("URI "+uriString+" does not conform to purl.org/obo standard");
 		}
 
 		for (URI uriPrefix : registry.getUris()) {
@@ -1209,7 +1214,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 					ValueLink vl = (ValueLink)link;
 					String message = "cannot handle value links (datatype properties) yet";
 					if (ioprofile.allowLossy) {
-						System.err.println(message);
+						logger.info(message);
 						continue;
 					}
 					else
@@ -1259,7 +1264,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 
 
 	public URI getURI(String id) throws UnsupportedEncodingException {
-		//System.out.println("getting uri for "+id);
+		//logger.info("getting uri for "+id);
 		if (id.contains(" ")) {
 			throw new UnsupportedEncodingException();
 		}
@@ -1309,7 +1314,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		}
 
 //		} catch (Exception e) {
-//		System.out.println(db+" : "+safeId + " is not safe!");
+//		logger.info(db+" : "+safeId + " is not safe!");
 //		e.printStackTrace();
 //		uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
 //		}
@@ -1328,7 +1333,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	public OWLIndividual getOWLIndividual(IdentifiedObject io) throws UnsupportedEncodingException {
 		URI uri = getURI(io);
 		if (uri == null) {
-			System.err.println("no URI for "+io);
+			logger.info("no URI for "+io);
 		}
 		return owlFactory.getOWLIndividual(uri);
 	}

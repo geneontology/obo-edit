@@ -28,7 +28,12 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectAnnotation;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
+import org.apache.log4j.*;
+
 public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NCBOOboInOWLMetadataMapping.class);
 
 	public NCBOOboInOWLMetadataMapping() {
 		super();

@@ -25,7 +25,12 @@ import org.obo.datamodel.ValueLink;
 import org.obo.util.AdapterUtil;
 import org.obo.util.AnnotationUtil;
 
+import org.apache.log4j.*;
+
 public class DanglingObjectTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingObjectTest.class);
 
 	public DanglingObjectTest(String name) {
 		super(name);
@@ -42,7 +47,7 @@ public class DanglingObjectTest extends AbstractAnnotationTest {
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io.isBuiltIn())
 				continue;
-			System.out.println(io.getID()+" :: "+io.getName());
+			logger.info(io.getID()+" :: "+io.getName());
 		}
 		
 		OBOClass clsA = (OBOClass) session.getObject("clsA");
@@ -108,7 +113,7 @@ public class DanglingObjectTest extends AbstractAnnotationTest {
 	
 	private void checkObject(OBOObject obj, boolean named, boolean dangling) {
 		assertTrue(obj != null);
-		System.out.println("obj="+obj);
+		logger.info("obj="+obj);
 		assertTrue(obj.getName() == null ? !named : named);
 		assertTrue(obj instanceof DanglingObject ? dangling : !dangling);
 		

@@ -8,7 +8,12 @@ import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.OBOSession;
 
+import org.apache.log4j.*;
+
 public class AdapterUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AdapterUtil.class);
 	public enum AdapterFormat { OBO, OWL }
 	
 	public static OBOSession parseFile(String path) throws DataAdapterException {

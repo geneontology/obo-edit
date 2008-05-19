@@ -2,7 +2,12 @@
 
 package org.obo.postcomp;
 
+import org.apache.log4j.*;
+
 public class ASTPostcompExpression extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTPostcompExpression.class);
   public ASTPostcompExpression(int id) {
     super(id);
   }

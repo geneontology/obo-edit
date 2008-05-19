@@ -9,7 +9,12 @@ import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
 
+import org.apache.log4j.*;
+
 public class IntersectionUsingSubRelationsTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionUsingSubRelationsTest.class);
 
 	protected IntersectionUsingSubRelationsTest(String name) {
 		super(name);
@@ -39,7 +44,7 @@ public class IntersectionUsingSubRelationsTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

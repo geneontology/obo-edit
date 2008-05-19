@@ -8,7 +8,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Collections;
 
+import org.apache.log4j.*;
+
 public class DomainHistoryItem extends HistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DomainHistoryItem.class);
 
 	/**
 	 * 

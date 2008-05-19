@@ -7,7 +7,12 @@ import java.util.Map;
 
 import org.obo.datamodel.Namespace;
 
+import org.apache.log4j.*;
+
 public class OBOMetaData {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOMetaData.class);
 	
 	public static class FileMetaData {
 		

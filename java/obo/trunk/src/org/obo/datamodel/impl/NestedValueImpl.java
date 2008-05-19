@@ -4,7 +4,12 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class NestedValueImpl implements NestedValue {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NestedValueImpl.class);
 
 	/**
 	 * 

@@ -8,7 +8,12 @@ import java.text.*;
 import java.util.*;
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class OBO_1_2_Serializer implements OBOSerializer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO_1_2_Serializer.class);
 
 	protected PrintStream stream;
 

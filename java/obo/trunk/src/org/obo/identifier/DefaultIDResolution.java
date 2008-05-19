@@ -1,6 +1,11 @@
 package org.obo.identifier;
 
+import org.apache.log4j.*;
+
 public class DefaultIDResolution implements IDResolution {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultIDResolution.class);
 	
 	protected String id;
 	protected String newid;

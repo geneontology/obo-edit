@@ -2,7 +2,12 @@ package org.obo.datamodel.impl;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class SynonymCategoryImpl implements SynonymCategory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymCategoryImpl.class);
 
 	protected String id;
 	protected String name;

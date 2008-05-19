@@ -6,7 +6,12 @@ import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.util.IDUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultIDGenerator implements IDGenerator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultIDGenerator.class);
 
 	protected static List matchSequence(String s, List sequence, LinkedObject lo) {
 		List out = new LinkedList();

@@ -2,7 +2,12 @@ package org.obo.identifier;
 
 import java.util.Collection;
 
+import org.apache.log4j.*;
+
 public class DefaultIDWarning implements IDWarning {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultIDWarning.class);
 	
 	protected String id;
 	protected Collection<IDResolution> resolutions;

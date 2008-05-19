@@ -5,7 +5,12 @@ import java.util.*;
 import org.bbop.util.*;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class SynonymImpl implements Synonym {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymImpl.class);
 
 	/**
 	 * 

@@ -28,7 +28,12 @@ import org.obo.history.OperationModel;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class PostcompUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PostcompUtil.class);
 
 	/**
 	 * Used to sort intersection links when building postcomp ids or names

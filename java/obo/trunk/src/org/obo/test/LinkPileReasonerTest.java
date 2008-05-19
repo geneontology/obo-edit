@@ -11,7 +11,12 @@ import org.bbop.io.AuditedPrintStream;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.LinkPileReasoner;
 
+import org.apache.log4j.*;
+
 public class LinkPileReasonerTest extends AbstractReasonerFaceoffTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkPileReasonerTest.class);
 
 	protected LinkPileReasonerTest(String name) {
 		super(name);

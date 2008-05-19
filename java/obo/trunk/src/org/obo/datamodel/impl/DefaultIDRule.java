@@ -4,7 +4,12 @@ import org.obo.datamodel.*;
 import org.obo.filters.*;
 import org.obo.identifier.IDRule;
 
+import org.apache.log4j.*;
+
 public class DefaultIDRule implements IDRule {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultIDRule.class);
 
 	protected String rule;
 	protected Filter filter;

@@ -5,7 +5,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.datamodel.impl.SingleTermSession;
 
+import org.apache.log4j.*;
+
 public class SingleTermOperationModel extends DefaultOperationModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SingleTermOperationModel.class);
 
 	protected IdentifiedObject term;
 

@@ -4,11 +4,16 @@ import java.util.Collection;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class LinkNamespaceSearchCriterion extends AbstractStringCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkNamespaceSearchCriterion.class);
 
 	public Collection getValues(Collection scratch, Object obj) {
 		if (!(obj instanceof Link)) {
-//			System.err.println("Got bad value in LNSC: " + obj + ", class = "
+//			logger.info("Got bad value in LNSC: " + obj + ", class = "
 //					   + obj.getClass());
 			return scratch; // Return the empty Collection that was passed in
 		}

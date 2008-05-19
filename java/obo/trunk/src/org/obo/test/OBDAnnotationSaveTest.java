@@ -24,7 +24,12 @@ import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
 
+import org.apache.log4j.*;
+
 public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDAnnotationSaveTest.class);
 
 	String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 	
@@ -46,7 +51,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
-			System.err.println(f);
+			logger.info(f);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);
@@ -74,17 +79,17 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
 	public void testHasLoaded() throws DataAdapterException, SQLException {
 		// database -> session
-		System.err.println("reading");
+		logger.info("reading");
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
 		wconfig.setReadPath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		
 		testForName("FB:FBgn0061475","18SrRNA");
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
-		System.err.println("N annots:"+annots.size());
+		logger.info("N annots:"+annots.size());
 		testForAnnotation("FB:FBgn0061475","GO:0005843");
 		testForAnnotation("FB:FBgn0024177","GO:0005921");
 		testForNamespace("FB:FBgn0061475","FB");
@@ -95,7 +100,7 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		
 		session = new OBOSessionImpl();
 		annots = wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0005843"));
-		System.err.println("N matching annots:"+annots.size());
+		logger.info("N matching annots:"+annots.size());
 		assertTrue(annots.size() > 0);
 	}
 	
@@ -109,9 +114,9 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 
 		session = new OBOSessionImpl();
 		Collection<Annotation> annots = wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0005843"));
-		System.err.println("N matching annots:"+annots.size());
+		logger.info("N matching annots:"+annots.size());
 		for (Annotation annot : annots)
-			System.out.println("  match:"+annot);
+			logger.info("  match:"+annot);
 		assertTrue(annots.size() > 0);
 	
 	}
@@ -122,16 +127,16 @@ public class OBDAnnotationSaveTest extends AbstractAnnotationTest {
 		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
 		
 		// database -> session
-		System.err.println("reading ns filtered");
+		logger.info("reading ns filtered");
 		
 		config.addNamespace("MGI");
 		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		for (Annotation annot: annots)
-			System.out.println(annot.getSubject() + "-----" + annot.getObject());
-		System.err.println("N annots:"+annots.size());
+			logger.info(annot.getSubject() + "-----" + annot.getObject());
+		logger.info("N annots:"+annots.size());
 		testFileSave("mgi-filtered");
 		
 		testForName("MGI:MGI:95723","Gjb5");

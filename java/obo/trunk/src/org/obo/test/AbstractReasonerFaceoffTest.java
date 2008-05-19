@@ -46,17 +46,17 @@ public abstract class AbstractReasonerFaceoffTest extends AbstractOBOTest {
 			System.out.print("Running test reasoner " + reasoner + " ...");
 			System.out.flush();
 			runReasoner(reasoner);
-			System.out.println("done (" + (System.nanoTime() - time) / 1000000d
+			logger.info("done (" + (System.nanoTime() - time) / 1000000d
 					+ " ms)");
 		}
 		time = System.nanoTime();
 		System.out.print("Running reference reasoner...");
 		System.out.flush();
 		runReasoner(reference);
-		System.out.println("done (" + (System.nanoTime() - time) / 1000000d
+		logger.info("done (" + (System.nanoTime() - time) / 1000000d
 				+ " ms, explainTime = "
 				+ ((ForwardChainingReasoner) reference).explainTime + ")");
-		System.out.println("setup complete.");
+		logger.info("setup complete.");
 	}
 
 	protected static void hasAllLinks(ReasonedLinkDatabase checkme,
@@ -64,7 +64,7 @@ public abstract class AbstractReasonerFaceoffTest extends AbstractOBOTest {
 			boolean checkExplanations) {
 		int i = 0;
 		for (IdentifiedObject io : checkme.getObjects()) {
-			System.out.println("Checking term " + (i++) + " of "
+			logger.info("Checking term " + (i++) + " of "
 					+ checkme.getObjects().size());
 			if (io instanceof LinkedObject) {
 				for (Link link : checkme.getParents((LinkedObject) io)) {
@@ -80,12 +80,12 @@ public abstract class AbstractReasonerFaceoffTest extends AbstractOBOTest {
 					boolean containsExps = !TermUtil.isImplied(link)
 							|| exps.equals(refExps);
 					if (!contains) {
-						System.err.println("Reasoner " + againstme
+						logger.info("Reasoner " + againstme
 								+ " does not contain reference " + link);
-						System.err.println("all parents of " + link.getChild()
+						logger.info("all parents of " + link.getChild()
 								+ ": ");
 						for (Link p : againstme.getParents(link.getChild()))
-							System.err.println("   " + p);
+							logger.info("   " + p);
 					}
 					assertTrue("Reasoner " + againstme
 							+ " does not contain reference " + link, contains);

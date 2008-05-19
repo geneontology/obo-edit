@@ -11,7 +11,12 @@ import org.obo.datamodel.impl.WriteCachedOBOSession;
 import org.obo.identifier.IDProfile;
 import org.obo.nlp.SemanticParser;
 
+import org.apache.log4j.*;
+
 public class OBOFileAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOFileAdapter.class);
 
 	protected OBOAdapterConfiguration ioprofile;
 
@@ -234,7 +239,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				engine = new OBOParseEngine(parser);
 
 				engine.setPaths(ioprofile.getReadPaths());
-				System.err.println("Reading " +	ioprofile.getReadPaths()
+				logger.info("Reading " +	ioprofile.getReadPaths()
 						   + "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
 						   + "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
 				engine.parse();
@@ -282,7 +287,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 							null, null, ioprofile.getWritePath()));
-					System.err.println("Writing " +	ioprofile.getWritePath()
+					logger.info("Writing " +	ioprofile.getWritePath()
 							   + " (serializer = " + ioprofile.getSerializer() + ")");
 				} else {
 				    // This doesn't seem to work--it saves nothing (but doesn't complain)

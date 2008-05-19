@@ -4,7 +4,12 @@ import org.bbop.expression.JexlContext;
 import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class LinkFilterImpl implements LinkFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkFilterImpl.class);
 
 	/**
 	 * 

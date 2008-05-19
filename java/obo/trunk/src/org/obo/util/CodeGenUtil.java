@@ -16,7 +16,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 
 
+import org.apache.log4j.*;
+
 public class CodeGenUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CodeGenUtil.class);
 
 	private static String generateJavaSource(IdentifiedObject io) {
 		StringBuffer sb = new StringBuffer();
@@ -103,19 +108,19 @@ public class CodeGenUtil {
 				for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
 					if (line.contains("AUTO"))
 						break;
-					System.out.println(line);
+					logger.info(line);
 				}
 				continue;
 			}
 			paths.add(args[i]);
 		}
-		System.out.println(
+		logger.info(
 				generateJavaSourceForVocabulary(ns,paths)
 		);
 	}
 
 	public static void printUsage() {
-		System.out.println(
+		logger.info(
 				"obocodegen [-ns <namespace>] [-source <java-source-file-path>] <obo-file>*");
 	}
 

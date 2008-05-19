@@ -6,7 +6,12 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
+import org.apache.log4j.*;
+
 public class DateDatatype extends SimpleDatatype<Date> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DateDatatype.class);
 
 	/**
 	 * 

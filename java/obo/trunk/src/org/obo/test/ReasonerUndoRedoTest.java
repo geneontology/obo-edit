@@ -20,7 +20,12 @@ import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TransitivityExplanation;
 
+import org.apache.log4j.*;
+
 public class ReasonerUndoRedoTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerUndoRedoTest.class);
 
 	public ReasonerUndoRedoTest(String name) {
 		super(name);

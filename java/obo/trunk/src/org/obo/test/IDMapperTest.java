@@ -13,7 +13,12 @@ import org.obo.datamodel.OBOObject;
 import org.obo.util.IDMapper;
 import org.obo.util.IDMapper.SimpleAnnotation;
 
+import org.apache.log4j.*;
+
 public class IDMapperTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDMapperTest.class);
 
 	IDMapper mapper;
 	public IDMapperTest(String name) {
@@ -44,7 +49,7 @@ public class IDMapperTest extends AbstractOBOTest {
 		for (String id : entityCountByOboIDMap.keySet()) {
 			OBOObject obj = (OBOObject)mapper.getSession().getObject(id);
 			// TODO - handler class
-			System.out.println(entityCountByOboIDMap.get(id)+"\t"+id+"\t"+obj.getName());
+			logger.info(entityCountByOboIDMap.get(id)+"\t"+id+"\t"+obj.getName());
 		}
 	}
 

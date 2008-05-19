@@ -19,7 +19,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class NCBOStyleOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NCBOStyleOWLTest.class);
 
 	public NCBOStyleOWLTest(String name) {
 		super(name);
@@ -84,7 +89,7 @@ public class NCBOStyleOWLTest extends AbstractOWLTest {
 		for (Link link : ((LinkedObject)io).getChildren()) {
 			LinkedObject c = link.getChild();
 			OBOProperty t = link.getType();
-			System.out.println(link);
+			logger.info(link);
 			if (c.getName().equals("cell in vivo"))
 				ok = true;
 		}

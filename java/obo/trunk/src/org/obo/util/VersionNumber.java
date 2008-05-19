@@ -6,7 +6,12 @@ import java.util.regex.MatchResult;
 
 import org.bbop.util.StringUtil;
 
+import org.apache.log4j.*;
+
 public class VersionNumber implements Comparable<VersionNumber> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(VersionNumber.class);
 
 	protected int majorVersion;
 
@@ -47,8 +52,8 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.err.println(new VersionNumber("2.001-beta6"));
-		System.err.println(new VersionNumber("3.008"));
+		logger.info(new VersionNumber("2.001-beta6"));
+		logger.info(new VersionNumber("3.008"));
 	}
 
 	public boolean isBeta() {

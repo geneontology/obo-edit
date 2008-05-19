@@ -2,7 +2,12 @@ package org.obo.dataadapter;
 
 import java.util.Vector;
 
+import org.apache.log4j.*;
+
 public class CompoundGOFlatFileParseException extends GOFlatFileParseException {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompoundGOFlatFileParseException.class);
 	/**
 	 * 
 	 */

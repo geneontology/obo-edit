@@ -4,7 +4,12 @@ import org.obo.datamodel.*;
 
 import java.util.Iterator;
 
+import org.apache.log4j.*;
+
 public class IsCompleteCriterion extends AbstractBooleanCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IsCompleteCriterion.class);
 
 	public String getID() {
 		return "is_intersection";

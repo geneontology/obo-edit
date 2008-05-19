@@ -12,7 +12,12 @@ import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 
+import org.apache.log4j.*;
+
 public class PositiveRegulationTermParserTest extends AbstractNLPTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PositiveRegulationTermParserTest.class);
 
 	public PositiveRegulationTermParserTest(String name) {
 		super(name);
@@ -29,12 +34,12 @@ public class PositiveRegulationTermParserTest extends AbstractNLPTest {
 		semanticParser.index(session);
 		Collection<TermMacroHistoryItem> items = semanticParser.parseTerms();
 		for (TermMacroHistoryItem item : items) {
-			System.out.println(item);
+			logger.info(item);
 		}
 		semanticParser.apply(items);
 		int passes = 0;
 		for (String report : semanticParser.getReports()) {
-			System.out.println(report);
+			logger.info(report);
 			if (report.contains("HIERARCHY: GO:0048518"))
 				passes++;
 			if (report.contains("OK: GO:0046887"))

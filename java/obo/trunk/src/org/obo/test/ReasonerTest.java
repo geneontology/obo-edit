@@ -34,7 +34,12 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 
+import org.apache.log4j.*;
+
 public class ReasonerTest extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerTest.class);
 
 	protected OBOSession session;
 
@@ -179,7 +184,7 @@ public class ReasonerTest extends TestCase {
 
 	public void testCompleteLinkChange() throws Exception {
 		Link link = getRandomLink();
-		System.err.println("doing check on " + link);
+		logger.info("doing check on " + link);
 		doLinkTest(link, new CompletesHistoryItem((OBORestriction) link));
 	}
 
@@ -188,7 +193,7 @@ public class ReasonerTest extends TestCase {
 		for (int i = 0; i < 5; i++) {
 			Link link = getRandomLink();
 			Link link2 = getRandomLink();
-			System.err.println("creating link " + link2.getChild() + " -"
+			logger.info("creating link " + link2.getChild() + " -"
 					+ link.getType() + "-> " + link.getParent());
 			items.add(new CreateLinkHistoryItem(link2.getChild(), link.getType(),
 					link.getParent()));
@@ -231,7 +236,7 @@ public class ReasonerTest extends TestCase {
 		it = items.iterator();
 		for (int i = 0; it.hasNext(); i++) {
 			HistoryItem item = (HistoryItem) it.next();
-			System.err.println("applying " + item);
+			logger.info("applying " + item);
 			model.apply(item);
 			time = System.currentTimeMillis();
 			opModel.apply(item);
@@ -252,9 +257,9 @@ public class ReasonerTest extends TestCase {
 		}
 		time = System.currentTimeMillis();
 		reasoner.recache();
-		System.err.println("recache time    : "
+		logger.info("recache time    : "
 				+ (System.currentTimeMillis() - time) + " ms");
-		System.err.println("incremental time: " + incrementalTime + " ms");
+		logger.info("incremental time: " + incrementalTime + " ms");
 
 		String failureMessage = "";
 		it = session.getObjects().iterator();
@@ -304,7 +309,7 @@ public class ReasonerTest extends TestCase {
 					it = items.iterator();
 					while (it.hasNext()) {
 						HistoryItem item = (HistoryItem) it.next();
-						System.err.println("reapplying " + item);
+						logger.info("reapplying " + item);
 						tempModel.apply(item);
 					}
 					DefaultLinkDatabase tempLinkDatabase = new DefaultLinkDatabase(

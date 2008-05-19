@@ -18,7 +18,12 @@ import org.obo.datamodel.Namespace;
 import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOSessionImpl;
 
+import org.apache.log4j.*;
+
 public class OBDQueryTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDQueryTest.class);
 
 	//String jdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_phenotype";
 	String jdbcPath = "jdbc:postgresql://localhost:5432/obd_phenotype_full";
@@ -48,21 +53,21 @@ public class OBDQueryTest extends AbstractAnnotationTest {
 		// ion transport
 		Collection<Annotation> annots = 
 			wadapter.fetchAnnotationsByObject(session, new OBOClassImpl("GO:0006811"));
-		System.err.println("N matching annots:"+annots.size());
+		logger.info("N matching annots:"+annots.size());
 		for (Annotation annot : annots)
-			System.out.println("  match:"+annot);
+			logger.info("  match:"+annot);
 		assertTrue(annots.size() > 0);
 		
 		int numAnnots = 
 			wadapter.fetchAnnotationCountByObject(session, new OBOClassImpl("GO:0006811"));
-		System.err.println("N matching annots (count q):"+numAnnots);
+		logger.info("N matching annots (count q):"+numAnnots);
 		assertTrue(numAnnots > 0);
 
 		assertTrue(numAnnots == annots.size());
 		
 		float ic =
 			wadapter.fetchAnnotationInformationContentByObject(session, new OBOClassImpl("GO:0006811"));
-		System.err.println("IC:"+ic);
+		logger.info("IC:"+ic);
 		assertTrue(ic > 0);
 		
 		writeTempOBOFile();

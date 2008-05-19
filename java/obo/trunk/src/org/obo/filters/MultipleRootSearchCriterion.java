@@ -12,7 +12,12 @@ import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class MultipleRootSearchCriterion extends AbstractBooleanCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultipleRootSearchCriterion.class);
 
 	public static final MultipleRootSearchCriterion CRITERION = new MultipleRootSearchCriterion();
 

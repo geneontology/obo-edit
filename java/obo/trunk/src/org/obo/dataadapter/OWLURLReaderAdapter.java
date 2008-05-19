@@ -9,7 +9,12 @@ import org.obo.datamodel.*;
 import java.io.*;
 import java.net.URLEncoder;
 
+import org.apache.log4j.*;
+
 public class OWLURLReaderAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OWLURLReaderAdapter.class);
 
 	protected static final String RESTFUL_URL = "http://www.berkeleybop.org/obo-conv.cgi";
 

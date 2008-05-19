@@ -4,8 +4,13 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class SynonymDbxrefSearchCriterion extends
-		AbstractDbxrefSearchCriterion<Synonym> {
+	AbstractDbxrefSearchCriterion<Synonym> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymDbxrefSearchCriterion.class);
 
 	public static final SynonymDbxrefSearchCriterion CRITERION = new SynonymDbxrefSearchCriterion();
 

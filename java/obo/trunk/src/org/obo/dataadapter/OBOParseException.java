@@ -1,6 +1,11 @@
 package org.obo.dataadapter;
 
+import org.apache.log4j.*;
+
 public class OBOParseException extends Exception {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOParseException.class);
 
 	/**
 	 * 

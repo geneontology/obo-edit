@@ -15,7 +15,12 @@ import org.obo.util.TermUtil;
 
 import java.awt.Color;
 
+import org.apache.log4j.*;
+
 public class GOFlatFileAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOFlatFileAdapter.class);
 
 	Stack termStack;
 
@@ -1188,7 +1193,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					return true;
 				}
 			} catch (Throwable ex) {
-				System.err.println("got " + ex);
+				logger.info("got " + ex);
 				System.exit(1);
 			}
 		}

@@ -22,8 +22,13 @@ import org.obo.query.Query;
 import org.obo.query.StringQuery;
 import org.obo.query.impl.TextQuery.HitType;
 
+import org.apache.log4j.*;
+
 public class ScoredCriterionQuery implements
-		StringQuery<IdentifiedObject, ScoredQueryHit> {
+	StringQuery<IdentifiedObject, ScoredQueryHit> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredCriterionQuery.class);
 
 	protected List<SearchCriterion<IdentifiedObject, String>> searchCriteria = new LinkedList<SearchCriterion<IdentifiedObject, String>>();
 

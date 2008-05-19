@@ -5,7 +5,12 @@ import java.util.LinkedList;
 
 import org.obo.datamodel.Link;
 
+import org.apache.log4j.*;
+
 public class DefaultLinkIDWarning implements LinkIDWarning {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultLinkIDWarning.class);
 
 	protected Link link;
 	protected IDWarning parentWarning;

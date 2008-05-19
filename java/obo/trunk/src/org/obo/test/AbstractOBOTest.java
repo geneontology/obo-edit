@@ -26,12 +26,15 @@ import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.postcomp.OBOPostcomp;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
+import org.apache.log4j.*;
 
 public abstract class AbstractOBOTest extends TestCase {
 	protected OBOSession session;
 	protected LinkDatabase linkDatabase;
+	protected final static Logger logger = Logger.getLogger(AbstractOBOTest.class); 
 
 	public AbstractOBOTest(String name) {
 		super(name);
@@ -44,7 +47,7 @@ public abstract class AbstractOBOTest extends TestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		session = getSessionFromResources(getFilesToLoad());
 

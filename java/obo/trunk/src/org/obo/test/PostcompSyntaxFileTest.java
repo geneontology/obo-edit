@@ -17,7 +17,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.AnnotationUtil;
 
+import org.apache.log4j.*;
+
 public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PostcompSyntaxFileTest.class);
 
 	public PostcompSyntaxFileTest(String name) {
 		super(name);
@@ -31,7 +36,7 @@ public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
-			System.err.println(f);
+			logger.info(f);
 		}
 		
 		// intended for testing loading of annotation files, in which
@@ -48,9 +53,9 @@ public class PostcompSyntaxFileTest extends AbstractAnnotationTest {
 		testInstanceType("ZFIN:ZDB-GENO-070219-2","SO:0001027");
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		for (Annotation annot : annots) {
-			System.out.println(annot);
+			logger.info(annot);
 			LinkedObject ao = annot.getObject();
-			System.out.println("obj name="+ao.getName());
+			logger.info("obj name="+ao.getName());
 		}
 		writeTempOBOFile();
 	}

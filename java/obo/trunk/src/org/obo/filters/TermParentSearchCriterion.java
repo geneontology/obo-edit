@@ -6,7 +6,12 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 
+import org.apache.log4j.*;
+
 public class TermParentSearchCriterion extends AbstractCriterion<IdentifiedObject, Link> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermParentSearchCriterion.class);
 
 	public String getID() {
 		return "parent_links";

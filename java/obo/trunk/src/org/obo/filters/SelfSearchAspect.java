@@ -5,7 +5,12 @@ import java.util.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
 
+import org.apache.log4j.*;
+
 public class SelfSearchAspect implements SearchAspect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SelfSearchAspect.class);
 
 	public SelfSearchAspect() {
 	}

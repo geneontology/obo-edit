@@ -4,7 +4,12 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class IDSearchCriterion extends AbstractStringCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDSearchCriterion.class);
 
 	public Collection getValues(Collection scratch, Object obj) {
 		scratch.add(((IdentifiedObject) obj).getID());

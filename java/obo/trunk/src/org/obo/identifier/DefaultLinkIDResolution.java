@@ -2,7 +2,12 @@ package org.obo.identifier;
 
 import org.obo.datamodel.Link;
 
+import org.apache.log4j.*;
+
 public class DefaultLinkIDResolution implements LinkIDResolution {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultLinkIDResolution.class);
 
 	protected Link link;
 	protected IDResolution parent;

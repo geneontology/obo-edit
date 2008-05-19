@@ -13,8 +13,13 @@ import org.obo.datamodel.Synonym;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.Type;
 
+import org.apache.log4j.*;
+
 public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
-		DanglingProperty {
+	DanglingProperty {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingPropertyImpl.class);
 
 	public DanglingPropertyImpl(String id) {
 		super(id);

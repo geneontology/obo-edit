@@ -12,7 +12,12 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 
+import org.apache.log4j.*;
+
 public class InverseAlwaysImpliedTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(InverseAlwaysImpliedTest.class);
 
 	protected InverseAlwaysImpliedTest(String name) {
 		super(name);
@@ -31,9 +36,9 @@ public class InverseAlwaysImpliedTest extends AbstractReasonerTest {
 	public void testLinks() throws Exception {
 		for(IdentifiedObject io : reasonedDB.getObjects()) {
 			if (io instanceof LinkedObject) {
-				System.err.println("parents of "+io);
+				logger.info("parents of "+io);
 				for(Link link : reasonedDB.getParents((LinkedObject) io)) {
-					System.err.println("   "+link);
+					logger.info("   "+link);
 				}
 			}
 		}
@@ -43,7 +48,7 @@ public class InverseAlwaysImpliedTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

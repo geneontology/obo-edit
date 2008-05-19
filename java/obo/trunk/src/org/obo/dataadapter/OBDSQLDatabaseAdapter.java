@@ -156,7 +156,12 @@ import org.obo.util.TermUtil;
  * 
  * 
  */
+import org.apache.log4j.*;
+
 public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDSQLDatabaseAdapter.class);
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -339,7 +344,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 						null, null, ioprofile.getWritePath()));
 			} else {
-				System.err.println("gsr="+ioprofile.getSaveRecords());
+				logger.info("gsr="+ioprofile.getSaveRecords());
 				filteredPaths.addAll(ioprofile.getSaveRecords());
 			}
 			streams.clear();
@@ -357,20 +362,20 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						reasoner.recache();
 					}
 					ldb = reasoner;
-					System.err.println("will save implied");
+					logger.info("will save implied");
 				}
-				System.err.println("ldb="+ldb);
+				logger.info("ldb="+ldb);
 
 				try {
-					System.err.println("fp="+filteredPath);
+					logger.info("fp="+filteredPath);
 					ioprofile.setReadPath(filteredPath.getPath());
 					this.connect();
-					System.out.println("conn="+connection);
+					logger.info("conn="+connection);
 					
 					storeAll(session,ldb);
 					return (OUTPUT_TYPE) input;
 				}  catch (Exception ex) {
-					System.err.println(ex);
+					logger.info(ex);
 					ex.printStackTrace();
 					
 					throw new DataAdapterException("Bad configuration", ex);
@@ -393,7 +398,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	 * 
 	public void connect(String readPath) throws SQLException, ClassNotFoundException {
 		connection = ioprofile.getConnection(readPath,"cjm","");
-		System.err.println("connecting "+readPath+" "+connection);
+		logger.info("connecting "+readPath+" "+connection);
 	}
 	*/
 	
@@ -625,10 +630,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			Namespace ns = session.getNamespace(nsId);
 			if (ns == null) {
 				ns = objectFactory.createNamespace(nsId, nsId);
-				//System.err.println(io+" adding ns="+ns+" / "+nsId);
+				//logger.info(io+" adding ns="+ns+" / "+nsId);
 				session.addNamespace(ns);
 			}
-			//System.err.println(io+" setting ns="+ns);
+			//logger.info(io+" setting ns="+ns);
 			io.setNamespace(ns);
 		}
 		//conn2objmap.get(conn).put(iid, io);
@@ -748,12 +753,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			
 			Instance inst = TermUtil.castToInstance((LinkedObject)o);
-			//System.err.println("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
+			//logger.info("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
 			Annotation annot = new AnnotationImpl(inst, link);
 			positsMap.put(inst.getID(), link);
 			session.addObject(annot);
 		}
-		//System.err.println("included link: "+link);
+		//logger.info("included link: "+link);
 		
 		link.setNamespace(source);
 		
@@ -770,7 +775,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		
 		// TODO: use metadata ontology
 		if (pid.equals("oboMetaModel:inSubset")) {
-			System.err.println("subset "+link+"//"+p);
+			logger.info("subset "+link+"//"+p);
 			TermUtil.castToClass(lo);
 			TermCategory category = session.getCategory(p.getID());
 			if (category == null) {
@@ -783,7 +788,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			OBOClass oboClass = 
 			TermUtil.castToClass(lo);
 			if (oboClass == null) {
-				System.err.println("cannot cast "+lo);
+				logger.info("cannot cast "+lo);
 			}
 			else 
 				oboClass.addDbxref(getDbxref(p.getID()));
@@ -854,7 +859,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			for (IdentifiedObject io : savedObjects) {
 				if (io instanceof LinkedObject) {
 					if (io instanceof Annotation) {
-						System.err.println("saving annot links:"+io);
+						logger.info("saving annot links:"+io);
 					}
 					for (Link link : ldb.getParents((LinkedObject) io)) {
 						if (link.getType().equals(AnnotationOntology.POSITS_REL()))
@@ -879,13 +884,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			*/
 		
 		} catch (Exception e) {
-			System.out.println(e);
+			logger.info(e);
 			throw new DataAdapterException(e, "Write error");
 		}
 	}
 
 	protected int saveObject(IdentifiedObject lo) throws SQLException {
-		//System.out.println("saving "+lo);
+		//logger.info("saving "+lo);
 		int iid;
 		String ns = "";
 		if (ioprofile.replaceLinks) {
@@ -906,7 +911,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			LinkedObject obj = annot.getObject();
 			if (obj == null) {
 				// TODO
-				System.err.println("no object for: "+annot);
+				logger.info("no object for: "+annot);
 				return 0;
 			}
 			if (obj.isAnonymous()) {
@@ -1036,15 +1041,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	protected int saveLink(Link link) throws SQLException {
 		LinkedObject child = link.getChild();
-		System.err.println("child="+child);
+		logger.info("child="+child);
 		Integer childDbId = obj2iid.get(child);
-		System.out.println("saving "+link);
+		logger.info("saving "+link);
 		if (link instanceof ValueLink) {
 			ValueLink pv = (ValueLink)link;
 			Value v = pv.getValue();
 			if (v instanceof DatatypeValue) {
 				DatatypeValue dv = (DatatypeValue) v;
-				System.out.println("dv type="+dv.getType());
+				logger.info("dv type="+dv.getType());
 				return callSqlFunc("store_tagval",
 						link.getChild().getID(),
 						link.getType().getID(),
@@ -1090,7 +1095,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (!rs.wasNull()) {
 			String label = rs.getString("label");
 			if (type.equals("definition")) {
-				//System.err.println(io+" def: "+label);
+				//logger.info(io+" def: "+label);
 				if (io instanceof DefinedObject)
 				((DefinedObject)io).setDefinition(label);
 			}
@@ -1131,7 +1136,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (io == null) {
 			io = objectFactory.createDanglingObject(id, false);
 			session.addObject(io);
-			//System.err.println("creating dangling for "+id);
+			//logger.info("creating dangling for "+id);
 		}
 		return io;
 	}
@@ -1167,10 +1172,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		for (Object ob : args) {
 			System.out.print(ob+" ");
 		}
-		System.out.println("");
+		logger.info("");
 		CallableStatement stmt = connection.prepareCall(sql.toString());
 		stmt.registerOutParameter(1, Types.INTEGER);
-		// System.out.println("stmt="+stmt);
+		// logger.info("stmt="+stmt);
 		for (int i=0; i<args.length; i++) {
 			Object arg = args[i];
 			if (arg instanceof Integer) {
@@ -1189,11 +1194,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				stmt.setString(i+2, (String)arg);
 			}
 		}
-		//System.out.println("stmt="+stmt+" :: "+args);
+		//logger.info("stmt="+stmt+" :: "+args);
 		
 		boolean rs = stmt.execute();	
 		
-		System.out.println("rs="+rs);
+		logger.info("rs="+rs);
 		return stmt.getInt(1);
 	}
 	

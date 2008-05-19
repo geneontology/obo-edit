@@ -11,7 +11,12 @@ import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.BIRNLexMetadataMapping;
 
 
+import org.apache.log4j.*;
+
 public class BIRNLexRoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BIRNLexRoundtripOWLTest.class);
 
 	public BIRNLexRoundtripOWLTest(String name) {
 		super(name);

@@ -6,7 +6,12 @@ import org.obo.datamodel.*;
 import org.obo.history.DefaultHistoryList;
 import org.obo.history.HistoryList;
 
+import org.apache.log4j.*;
+
 public class DefaultObjectFactory implements ObjectFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultObjectFactory.class);
 
 	/**
 	 * 

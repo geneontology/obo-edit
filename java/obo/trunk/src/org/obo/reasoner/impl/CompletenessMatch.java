@@ -3,7 +3,12 @@ package org.obo.reasoner.impl;
 import org.obo.datamodel.Link;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class CompletenessMatch {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompletenessMatch.class);
 	protected Link matchLink;
 	protected Link completenessLink;
 

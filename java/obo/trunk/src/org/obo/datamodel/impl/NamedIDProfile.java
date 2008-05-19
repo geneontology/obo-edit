@@ -7,7 +7,12 @@ import org.obo.datamodel.*;
 import org.obo.identifier.IDProfile;
 import org.obo.identifier.IDRule;
 
+import org.apache.log4j.*;
+
 public class NamedIDProfile implements IDProfile {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamedIDProfile.class);
 	/**
 	 * 
 	 */

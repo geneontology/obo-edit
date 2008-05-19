@@ -13,7 +13,12 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 
+import org.apache.log4j.*;
+
 public class TransitivityTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TransitivityTest.class);
 
 	public TransitivityTest(String name) {
 		super(name);
@@ -34,10 +39,10 @@ public class TransitivityTest extends AbstractReasonerTest {
 	public void testLinks() throws Exception {
 		for(IdentifiedObject io : reasonedDB.getObjects()) {
 			if (io instanceof LinkedObject) {
-				System.err.println("parents of "+io);
+				logger.info("parents of "+io);
 				Collection<Link> parents = reasonedDB.getParents((LinkedObject) io); 
 				for(Link link : parents) {
-					System.err.println("   "+link);
+					logger.info("   "+link);
 				}
 			}
 		}
@@ -62,7 +67,7 @@ public class TransitivityTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

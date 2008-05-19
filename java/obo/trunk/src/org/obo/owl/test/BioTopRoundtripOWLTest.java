@@ -12,7 +12,12 @@ import junit.framework.TestSuite;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 
+import org.apache.log4j.*;
+
 public class BioTopRoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BioTopRoundtripOWLTest.class);
 
 	public BioTopRoundtripOWLTest(String name) {
 		super(name);

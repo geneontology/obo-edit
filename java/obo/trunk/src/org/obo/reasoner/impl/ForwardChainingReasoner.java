@@ -20,8 +20,13 @@ import java.awt.event.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class ForwardChainingReasoner extends AbstractLinkDatabase implements
-		ReasonedLinkDatabase, ProgressValued {
+	ReasonedLinkDatabase, ProgressValued {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ForwardChainingReasoner.class);
 
 	/**
 	 * 
@@ -134,7 +139,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		 * (p.getChild().getID().equals(link.getChild().getID()) &&
 		 * p.getParent().getID().equals(link.getParent().getID()) &&
 		 * p.getType().getID().equals(link.getType().getID())) { myContains =
-		 * true; } } if (contains != myContains) { System.err.println("!!!
+		 * true; } } if (contains != myContains) { logger.info("!!!
 		 * contains() method is broken on "+link+", parents = "+parents); }
 		 */
 		existsTime += System.currentTimeMillis() - time;
@@ -159,7 +164,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 
 	protected void internalAddLink(Link link) {
 		if (link.getParent().equals(link.getChild()))
-			System.err.println("Created new cycle!");
+			logger.info("Created new cycle!");
 		long time = System.currentTimeMillis();
 		newLinks++;
 		if (TermUtil.isIntersection(link)) {
@@ -459,7 +464,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			if (cancelled)
 				return System.currentTimeMillis() - time;
 			if (io == null)
-				System.err.println("NULL OBJECT IN DEFAULT OBJECT DATABASE!!!");
+				logger.info("NULL OBJECT IN DEFAULT OBJECT DATABASE!!!");
 			if (io instanceof OBOProperty)
 				properties.add((LinkedObject) io);
 			else if (io instanceof OBOClass)
@@ -577,7 +582,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	}
 
 	protected void doGenusDifferentiaImplications(Link or) {
-		// System.err.println("reasoning genus/diff implications of "+or);
+		// logger.info("reasoning genus/diff implications of "+or);
 		if (isSubPropertyOf(or.getType(), OBOProperty.IS_A)) {
 			Link link = findOrCreateLink(or.getChild(), OBOProperty.IS_A, or
 					.getParent());
@@ -675,12 +680,12 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			}
 			completeLinks.remove(starterLink);
 
-			// System.err.println("checking complete definition for
+			// logger.info("checking complete definition for
 			// "+starterLink.getChild()+", lo = "+lo);
 			checkedThese.add(starterLink.getChild());
 
 			if (starterLink == null) {
-				System.err.println("UNEXPECTED CONDITION: "
+				logger.info("UNEXPECTED CONDITION: "
 						+ "EMPTY COMPLETE DEF!");
 			} else {
 
@@ -902,9 +907,9 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	}
 
 	public void pushLink(Link link, Collection<Link> seenem) {
-		// System.err.println("pushing link : "+link);
+		// logger.info("pushing link : "+link);
 		if (TermUtil.isIntersection(link))
-			System.err.println("shouldn't push an intersection");
+			logger.info("shouldn't push an intersection");
 
 		if (seenem.contains(link)) {
 			return;
@@ -1036,15 +1041,15 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			/*
 			 * time = System.currentTimeMillis(); reasoner.useTinySet = true;
 			 * reasoner.neverFindMode = false; reasoner.useLinkLookupTable =
-			 * false; reasoner.recache(); System.err.println("reasoned in " +
+			 * false; reasoner.recache(); logger.info("reasoned in " +
 			 * (System.currentTimeMillis() - time) + " using TinySet");
-			 * System.err.println(" addlinktime = " + reasoner.addLinkTime);
-			 * System.err.println(" existsTime = " + reasoner.existsTime);
-			 * System.err.println(" explainTime = " + reasoner.explainTime);
-			 * System.err.println(" reasonLinkTime = " +
-			 * reasoner.reasonLinkTime); System.err.println(" findLinkTime = " +
-			 * reasoner.findLinkTime); System.err.println(" findAttempts = " +
-			 * reasoner.findAttempts); System.err.println(" findHits = " +
+			 * logger.info(" addlinktime = " + reasoner.addLinkTime);
+			 * logger.info(" existsTime = " + reasoner.existsTime);
+			 * logger.info(" explainTime = " + reasoner.explainTime);
+			 * logger.info(" reasonLinkTime = " +
+			 * reasoner.reasonLinkTime); logger.info(" findLinkTime = " +
+			 * reasoner.findLinkTime); logger.info(" findAttempts = " +
+			 * reasoner.findAttempts); logger.info(" findHits = " +
 			 * reasoner.findHits);
 			 */
 
@@ -1053,88 +1058,88 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			reasoner.evidenceLinkedListMode = false;
 			time = System.currentTimeMillis();
 			reasoner.recache();
-			System.err.println("reasoned in "
+			logger.info("reasoned in "
 					+ (System.currentTimeMillis() - time) + " using defaults");
-			System.err.println("  addlinktime = " + reasoner.addLinkTime);
-			System.err.println("  existsTime = " + reasoner.existsTime);
-			System.err.println("  explainTime = " + reasoner.explainTime);
-			System.err.println("     depExpMapSetupTime = "
+			logger.info("  addlinktime = " + reasoner.addLinkTime);
+			logger.info("  existsTime = " + reasoner.existsTime);
+			logger.info("  explainTime = " + reasoner.explainTime);
+			logger.info("     depExpMapSetupTime = "
 					+ reasoner.depExpMapSetupTime);
-			System.err.println("     expMapSetupTime = "
+			logger.info("     expMapSetupTime = "
 					+ reasoner.expMapSetupTime);
 			/*
-			 * System.err.println(" reasonLinkTime = " +
-			 * reasoner.reasonLinkTime); System.err.println(" findLinkTime = " +
-			 * reasoner.findLinkTime); System.err.println(" findAttempts = " +
-			 * reasoner.findAttempts); System.err.println(" findHits = " +
+			 * logger.info(" reasonLinkTime = " +
+			 * reasoner.reasonLinkTime); logger.info(" findLinkTime = " +
+			 * reasoner.findLinkTime); logger.info(" findAttempts = " +
+			 * reasoner.findAttempts); logger.info(" findHits = " +
 			 * reasoner.findHits);
 			 * 
 			 * reasoner.useTinySet = false; reasoner.neverFindMode = false;
 			 * reasoner.evidenceLinkedListMode = false; time =
 			 * System.currentTimeMillis(); reasoner.recache();
-			 * System.err.println("reasoned in " + (System.currentTimeMillis() -
-			 * time) + " using HashSet"); System.err.println(" addlinktime = " +
-			 * reasoner.addLinkTime); System.err.println(" existsTime = " +
-			 * reasoner.existsTime); System.err.println(" explainTime = " +
-			 * reasoner.explainTime); System.err.println(" depExpMapSetupTime = " +
-			 * reasoner.depExpMapSetupTime); System.err.println("
+			 * logger.info("reasoned in " + (System.currentTimeMillis() -
+			 * time) + " using HashSet"); logger.info(" addlinktime = " +
+			 * reasoner.addLinkTime); logger.info(" existsTime = " +
+			 * reasoner.existsTime); logger.info(" explainTime = " +
+			 * reasoner.explainTime); logger.info(" depExpMapSetupTime = " +
+			 * reasoner.depExpMapSetupTime); logger.info("
 			 * expMapSetupTime = " + reasoner.expMapSetupTime);
 			 * 
-			 * System.err.println(" reasonLinkTime = " +
-			 * reasoner.reasonLinkTime); System.err.println(" findLinkTime = " +
-			 * reasoner.findLinkTime); System.err.println(" findAttempts = " +
-			 * reasoner.findAttempts); System.err.println(" findHits = " +
+			 * logger.info(" reasonLinkTime = " +
+			 * reasoner.reasonLinkTime); logger.info(" findLinkTime = " +
+			 * reasoner.findLinkTime); logger.info(" findAttempts = " +
+			 * reasoner.findAttempts); logger.info(" findHits = " +
 			 * reasoner.findHits);
 			 * 
 			 * reasoner.useTinySet = false; reasoner.neverFindMode = false;
 			 * reasoner.evidenceLinkedListMode = true; time =
 			 * System.currentTimeMillis(); reasoner.recache();
-			 * System.err.println("reasoned in " + (System.currentTimeMillis() -
-			 * time) + " using linked list mode"); System.err.println("
-			 * addlinktime = " + reasoner.addLinkTime); System.err.println("
-			 * existsTime = " + reasoner.existsTime); System.err.println("
-			 * explainTime = " + reasoner.explainTime); System.err.println("
+			 * logger.info("reasoned in " + (System.currentTimeMillis() -
+			 * time) + " using linked list mode"); logger.info("
+			 * addlinktime = " + reasoner.addLinkTime); logger.info("
+			 * existsTime = " + reasoner.existsTime); logger.info("
+			 * explainTime = " + reasoner.explainTime); logger.info("
 			 * depExpMapSetupTime = " + reasoner.depExpMapSetupTime);
-			 * System.err.println(" expMapSetupTime = " +
+			 * logger.info(" expMapSetupTime = " +
 			 * reasoner.expMapSetupTime);
 			 * 
-			 * System.err.println(" reasonLinkTime = " +
-			 * reasoner.reasonLinkTime); System.err.println(" findLinkTime = " +
-			 * reasoner.findLinkTime); System.err.println(" findAttempts = " +
-			 * reasoner.findAttempts); System.err.println(" findHits = " +
+			 * logger.info(" reasonLinkTime = " +
+			 * reasoner.reasonLinkTime); logger.info(" findLinkTime = " +
+			 * reasoner.findLinkTime); logger.info(" findAttempts = " +
+			 * reasoner.findAttempts); logger.info(" findHits = " +
 			 * reasoner.findHits);
 			 * 
 			 * reasoner.useTinySet = false; reasoner.neverFindMode = true;
 			 * reasoner.evidenceLinkedListMode = false; time =
 			 * System.currentTimeMillis(); reasoner.recache();
-			 * System.err.println("reasoned in " + (System.currentTimeMillis() -
-			 * time) + " using never find mode"); System.err.println("
-			 * addlinktime = " + reasoner.addLinkTime); System.err.println("
-			 * existsTime = " + reasoner.existsTime); System.err.println("
-			 * explainTime = " + reasoner.explainTime); System.err.println("
+			 * logger.info("reasoned in " + (System.currentTimeMillis() -
+			 * time) + " using never find mode"); logger.info("
+			 * addlinktime = " + reasoner.addLinkTime); logger.info("
+			 * existsTime = " + reasoner.existsTime); logger.info("
+			 * explainTime = " + reasoner.explainTime); logger.info("
 			 * reasonLinkTime = " + reasoner.reasonLinkTime);
-			 * System.err.println(" findLinkTime = " + reasoner.findLinkTime);
+			 * logger.info(" findLinkTime = " + reasoner.findLinkTime);
 			 */
 			reasoner.useTinySet = false;
 			reasoner.neverFindMode = true;
 			reasoner.evidenceLinkedListMode = true;
 			time = System.currentTimeMillis();
 			reasoner.recache();
-			System.err.println("reasoned in "
+			logger.info("reasoned in "
 					+ (System.currentTimeMillis() - time)
 					+ " using never find and linked list mode");
-			System.err.println("  addlinktime = " + reasoner.addLinkTime);
-			System.err.println("  existsTime = " + reasoner.existsTime);
-			System.err.println("  explainTime = " + reasoner.explainTime);
-			System.err.println("     depExpMapSetupTime = "
+			logger.info("  addlinktime = " + reasoner.addLinkTime);
+			logger.info("  existsTime = " + reasoner.existsTime);
+			logger.info("  explainTime = " + reasoner.explainTime);
+			logger.info("     depExpMapSetupTime = "
 					+ reasoner.depExpMapSetupTime);
-			System.err.println("     expMapSetupTime = "
+			logger.info("     expMapSetupTime = "
 					+ reasoner.expMapSetupTime);
 
-			System.err.println("  reasonLinkTime = " + reasoner.reasonLinkTime);
-			System.err.println("  findLinkTime = " + reasoner.findLinkTime);
-			System.err.println("  findAttempts = " + reasoner.findAttempts);
-			System.err.println("  findHits = " + reasoner.findHits);
+			logger.info("  reasonLinkTime = " + reasoner.reasonLinkTime);
+			logger.info("  findLinkTime = " + reasoner.findLinkTime);
+			logger.info("  findAttempts = " + reasoner.findAttempts);
+			logger.info("  findHits = " + reasoner.findHits);
 		}
 
 		double objCount = session.getObjects().size();
@@ -1144,7 +1149,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 				linkCount += ((LinkedObject) io).getParents().size();
 			}
 		}
-		System.err.println("original avg. link count " + linkCount / objCount);
+		logger.info("original avg. link count " + linkCount / objCount);
 		linkCount = 0;
 		for (IdentifiedObject io : reasoner.getObjects()) {
 			if (io instanceof LinkedObject) {
@@ -1152,7 +1157,7 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 			}
 		}
 
-		System.err.println("reasoned avg. link count " + linkCount / objCount);
+		logger.info("reasoned avg. link count " + linkCount / objCount);
 
 	}
 

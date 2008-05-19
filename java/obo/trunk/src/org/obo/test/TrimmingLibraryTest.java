@@ -13,7 +13,12 @@ import org.obo.datamodel.Link;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class TrimmingLibraryTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TrimmingLibraryTest.class);
 
 	protected TrimmingLibraryTest(String name) {
 		super(name);
@@ -38,12 +43,11 @@ public class TrimmingLibraryTest extends AbstractReasonerTest {
 		newTime += System.nanoTime() - time;
 		boolean match = firstResult == secondResult;
 		if (!match) {
-			System.err.println("testing link: " + link);
-			System.err.println("    original implementation (" + firstResult
+			logger.info("testing link: " + link);
+			logger.info("    original implementation (" + firstResult
 					+ ") = " + oldTime);
-			System.err.println("    new implementation (" + secondResult
+			logger.info("    new implementation (" + secondResult
 					+ ") = " + newTime);
-			System.err.println();
 		}
 		return match;
 	}
@@ -66,13 +70,13 @@ public class TrimmingLibraryTest extends AbstractReasonerTest {
 			boolean match = testLink(link);
 			assertTrue(match);
 		}
-		System.err.println("original implementation time = "+oldTime);
-		System.err.println("new implementation time = "+newTime);
+		logger.info("original implementation time = "+oldTime);
+		logger.info("new implementation time = "+newTime);
 		// }
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

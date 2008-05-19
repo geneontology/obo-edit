@@ -8,7 +8,12 @@ import junit.framework.TestSuite;
 import org.obo.datamodel.impl.FixedCacheMutableLinkDatabase;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class FixedCacheMutableLinkDatabaseTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FixedCacheMutableLinkDatabaseTest.class);
 
 	protected ReasonedLinkDatabase reasoner;
 	
@@ -22,7 +27,7 @@ public class FixedCacheMutableLinkDatabaseTest extends AbstractReasonerTest {
 	}
 	
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		super.setUp();
 		linkDatabase = new FixedCacheMutableLinkDatabase(session, true);
 		//linkDatabase = new DefaultLinkDatabase(session);

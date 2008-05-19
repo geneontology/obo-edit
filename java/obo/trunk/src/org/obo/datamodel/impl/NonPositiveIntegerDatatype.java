@@ -2,7 +2,12 @@ package org.obo.datamodel.impl;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class NonPositiveIntegerDatatype extends IntegerDatatype {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NonPositiveIntegerDatatype.class);
 
 	/**
 	 * 

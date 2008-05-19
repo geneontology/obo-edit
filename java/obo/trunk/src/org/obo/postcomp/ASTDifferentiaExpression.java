@@ -2,7 +2,12 @@
 
 package org.obo.postcomp;
 
+import org.apache.log4j.*;
+
 public class ASTDifferentiaExpression extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTDifferentiaExpression.class);
   public ASTDifferentiaExpression(int id) {
     super(id);
   }

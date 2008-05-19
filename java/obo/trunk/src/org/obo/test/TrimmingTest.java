@@ -14,7 +14,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class TrimmingTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TrimmingTest.class);
 
 	public TrimmingTest(String name) {
 		super(name);
@@ -56,7 +61,7 @@ public class TrimmingTest extends AbstractReasonerTest {
 			oldTime += System.nanoTime() - time;
 
 		}
-		System.err.println("original implementation time = " + oldTime
+		logger.info("original implementation time = " + oldTime
 				/ 1000000000d);
 		System.err
 				.println("new implementation time = " + newTime / 1000000000d);
@@ -78,7 +83,7 @@ public class TrimmingTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

@@ -5,7 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class KeywordFilterBuilder extends AbstractFilterEditor implements CompoundEditable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(KeywordFilterBuilder.class);
 
 	/**
 	 * 
@@ -51,7 +56,7 @@ public class KeywordFilterBuilder extends AbstractFilterEditor implements Compou
 		else if (filter instanceof ObjectFilter)
 			populateList(c, (ObjectFilter) filter);
 		else
-			System.err.println("what do I do with " + filter.getClass());
+			logger.info("what do I do with " + filter.getClass());
 	}
 
 	protected void populateList(Collection c, CompoundFilter filter) {

@@ -61,7 +61,12 @@ import org.obo.reasoner.ReasonedLinkDatabase;
  * @see ReasonerUtil
  * 
  */
+import org.apache.log4j.*;
+
 public class TermUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermUtil.class);
 
 	public static class AncestorTask extends
 			AbstractTaskDelegate<Collection<LinkedObject>> {

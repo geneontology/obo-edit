@@ -5,7 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.*;
+
 public class IDSpaceRegistry {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDSpaceRegistry.class);
 
 	private static IDSpaceRegistry instance;
 

@@ -5,7 +5,12 @@ import org.bbop.util.StringUtil;
 
 import java.net.URL;
 
+import org.apache.log4j.*;
+
 public class GOFlatFileParseException extends DataAdapterException {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOFlatFileParseException.class);
 
 	/**
 	 * 

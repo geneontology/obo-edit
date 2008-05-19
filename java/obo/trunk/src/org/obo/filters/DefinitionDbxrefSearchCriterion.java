@@ -4,8 +4,13 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class DefinitionDbxrefSearchCriterion extends
-		AbstractDbxrefSearchCriterion<DefinedObject> {
+	AbstractDbxrefSearchCriterion<DefinedObject> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefinitionDbxrefSearchCriterion.class);
 
 	public static final DefinitionDbxrefSearchCriterion CRITERION
 	= new DefinitionDbxrefSearchCriterion();

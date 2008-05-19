@@ -21,7 +21,12 @@ import org.obo.util.TermUtil;
  * Writes out a reasoned link database as CHILD-REL-PARENT-ISIMPLIED tab delimited quads
  * TODO: Reasoner factory?
  */
+import org.apache.log4j.*;
+
 public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleLinkFileAdapter.class);
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -70,7 +75,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 						null, null, ioprofile.getWritePath()));
 			} else {
-				System.err.println("gsr="+ioprofile.getSaveRecords());
+				logger.info("gsr="+ioprofile.getSaveRecords());
 				filteredPaths.addAll(ioprofile.getSaveRecords());
 			}
 			streams.clear();
@@ -79,8 +84,8 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 			while (it.hasNext()) {
 				FilteredPath filteredPath = it.next();
 				try {
-					System.err.println("fp="+filteredPath);
-					System.err.println("fpp="+filteredPath.getPath());
+					logger.info("fp="+filteredPath);
+					logger.info("fpp="+filteredPath.getPath());
 					SafeFileOutputStream sfos = new SafeFileOutputStream(
 							filteredPath.getPath());
 					streams.add(sfos);
@@ -130,7 +135,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 					getReasoner() != null) {
 				fullReasoner = reasoner;
 			} else {
-				System.err.println("new reasoner...");
+				logger.info("new reasoner...");
 				fullReasoner = new ForwardChainingReasoner();
 				fullReasoner.setLinkDatabase(new DefaultLinkDatabase(session));
 				fullReasoner.recache();

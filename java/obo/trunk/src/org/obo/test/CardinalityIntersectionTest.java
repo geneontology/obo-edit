@@ -14,7 +14,12 @@ import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBORestriction;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class CardinalityIntersectionTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CardinalityIntersectionTest.class);
 
 	public CardinalityIntersectionTest(String name) {
 		super(name);
@@ -32,9 +37,9 @@ public class CardinalityIntersectionTest extends AbstractReasonerTest {
 		boolean ok = false;
 		for (Link link : obj.getParents()) {
 			OBORestriction r = (OBORestriction)link;
-			System.out.println(r);
+			logger.info(r);
 			Integer card = r.getCardinality();
-			System.out.println("c="+card);
+			logger.info("c="+card);
 			if (card != null && card==2)
 				ok = true;
 		}

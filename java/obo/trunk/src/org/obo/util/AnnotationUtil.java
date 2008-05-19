@@ -11,7 +11,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 
+import org.apache.log4j.*;
+
 public class AnnotationUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationUtil.class);
 
 	public static Collection<Annotation> getAnnotationsForSubject(OBOSession session, IdentifiedObject su) {
 		Collection<Annotation> annots = new LinkedList<Annotation>();

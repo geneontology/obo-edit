@@ -6,7 +6,12 @@ import org.obo.datamodel.Namespace;
 import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOProperty;
 
+import org.apache.log4j.*;
+
 public class DanglingLinkImpl implements Link {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingLinkImpl.class);
 	
 	protected String childID;
 	protected String parentID;

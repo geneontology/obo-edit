@@ -5,7 +5,12 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBO_1_0_Serializer.class);
 
 	protected Comparator<Synonym> synonymComparator = new Comparator<Synonym>() {
 		public int compare(Synonym sa, Synonym sb) {

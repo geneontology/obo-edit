@@ -13,7 +13,12 @@ import org.obo.datamodel.TermCategory;
 import org.obo.query.Query;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class CategoryQuery implements Query<OBOClass, OBOClass> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CategoryQuery.class);
 
 	protected Collection<String> categoryIDs = new HashSet<String>();
 

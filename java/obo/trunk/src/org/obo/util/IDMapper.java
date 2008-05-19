@@ -29,7 +29,12 @@ import org.obo.identifier.IDResolution;
 import org.obo.identifier.IDWarning;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class IDMapper extends SessionWrapper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDMapper.class);
 
 
 
@@ -390,7 +395,7 @@ public class IDMapper extends SessionWrapper {
 			}
 			else {
 				// dangling objs
-				//System.err.println("don't know what to do with: "+id);
+				//logger.info("don't know what to do with: "+id);
 				return filteredMappedObjs;
 			}
 		}

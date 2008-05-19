@@ -20,7 +20,12 @@ import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
 
+import org.apache.log4j.*;
+
 public class GOAnnotationFileTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOAnnotationFileTest.class);
 
 	public GOAnnotationFileTest(String name) {
 		super(name);
@@ -35,14 +40,14 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 	String outPath;
 
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		GOStyleAnnotationFileAdapter adapter = new GOStyleAnnotationFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
-			System.err.println(f);
+			logger.info(f);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);
@@ -79,8 +84,8 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 	public void testAnnot() {
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		for (Annotation annot : annots)
-			System.out.println(annot);
-		System.err.println("N annots:"+annots.size());
+			logger.info(annot);
+		logger.info("N annots:"+annots.size());
 		
 		testForName("FB:FBgn0061475","18SrRNA");
 		testForAnnotation("FB:FBgn0024177","GO:0005921");

@@ -2,7 +2,12 @@ package org.obo.dataadapter;
 
 import java.net.URL;
 
+import org.apache.log4j.*;
+
 public class GOFlatFileTokenizer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOFlatFileTokenizer.class);
 
 	private static final byte SKIP = 1;
 	private static final byte BOUNDARY = 2;

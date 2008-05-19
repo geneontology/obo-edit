@@ -9,7 +9,12 @@ import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
 
+import org.apache.log4j.*;
+
 public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionCamphorCatabolismExampleTest.class);
 
 	public IntersectionCamphorCatabolismExampleTest(String name) {
 		super(name);
@@ -42,7 +47,7 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

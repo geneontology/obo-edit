@@ -5,8 +5,13 @@ import java.util.*;
 import org.bbop.util.FastSuperset;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
-		MutableLinkDatabase {
+	MutableLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultMutableLinkDatabase.class);
 
 	/**
 	 * 
