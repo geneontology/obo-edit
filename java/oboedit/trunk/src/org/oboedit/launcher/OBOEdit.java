@@ -196,9 +196,11 @@ public class OBOEdit {
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();
 
-					VersionNumber version = Preferences.getVersion();
-					String configDir = OSUtil.getConfigDirectory(
-							getAppName() + (version.isBeta() ? "-beta" : "") + "/");
+//					VersionNumber version = Preferences.getVersion();
+//					String configDir = OSUtil.getConfigDirectory(
+//							getAppName() + (version.isBeta() ? "-beta" : "") + "/");
+					// Use standard getPrefsDir method
+					String configDir = Preferences.getOBOEditPrefsDir().toString();
 
 					Properties props = new Properties();
 					try {
@@ -206,7 +208,7 @@ public class OBOEdit {
 						props.load(configStream);
 						configStream.close();
 					} catch(IOException e) {
-						System.out.println("Error: Cannot laod configuration file ");
+						System.out.println("Error: Cannot load logger configuration file log4j.properties. " + e.getMessage());
 					}
 					setupLog4j(props, configDir);
 					logger.info("Starting " + getAppName() + " "
