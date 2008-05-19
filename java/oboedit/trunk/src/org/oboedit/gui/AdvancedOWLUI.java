@@ -745,8 +745,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 		pathList.setData(out);
 		allowDanglingBox.setSelected(profile.getAllowDangling());
-		System.err
-				.println("setConfiguration called, allowDanglingBox.setSelected("
+		logger.info("setConfiguration called, allowDanglingBox.setSelected("
 						+ profile.getAllowDangling() + ")");
 		allowLossyBox.setSelected(profile.isAllowLossy());
 		serializerBox.setSelectedItem(profile.getSerializer());

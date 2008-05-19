@@ -216,8 +216,7 @@ public class Database2OBO {
 						break;
 					}
 				}
-				System.err
-						.println("Allowdangling = " + path.getAllowDangling());
+				logger.info("Allowdangling = " + path.getAllowDangling());
 				if (path.getPath() == null)
 					printUsage(1);
 				else

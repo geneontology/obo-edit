@@ -67,7 +67,7 @@ public class OBO2Flat {
 			logger.info("  -reducefilesize");
 			logger.info("  -dangling");
 			logger.info("Presets:");
-			System.err.println("  --gopresets <biological_process output file> <cellular_component output file> <molecular_function output file> <defs output file>");
+			logger.info("  --gopresets <biological_process output file> <cellular_component output file> <molecular_function output file> <defs output file>");
 			logger.info("Other switches:");
 			logger.info("  -v\tVerbose mode");
 			System.exit(1);
