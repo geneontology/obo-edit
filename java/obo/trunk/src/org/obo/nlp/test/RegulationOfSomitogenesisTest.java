@@ -15,7 +15,12 @@ import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 
+import org.apache.log4j.*;
+
 public class RegulationOfSomitogenesisTest extends AbstractNLPTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RegulationOfSomitogenesisTest.class);
 
 	public RegulationOfSomitogenesisTest(String name) {
 		super(name);
@@ -31,12 +36,12 @@ public class RegulationOfSomitogenesisTest extends AbstractNLPTest {
 		semanticParser.index(session);
 		Collection<TermMacroHistoryItem> items = semanticParser.parseTerms();
 		for (TermMacroHistoryItem item : items) {
-			System.out.println(item);
+			logger.info(item);
 		}
 		semanticParser.apply(items);
 		int passes = 0;
 		for (String report : semanticParser.getReports()) {
-			System.out.println(report);
+			logger.info(report);
 			if (report.contains("OK: regulation of transcription, DNA-dependent"))
 				passes++;
 			if (report.contains("OK: regulation of transcription, DNA-dependent"))
@@ -49,9 +54,9 @@ public class RegulationOfSomitogenesisTest extends AbstractNLPTest {
 		testForNoIsA(id, "GO:005079"); /* RoDP - asserted, not specific enough */
 		for (Link link : 
 			((LinkedObject)session.getObject("regulates")).getParents()) {
-			System.out.println(link+" "+link.getType().getID());
+			logger.info(link+" "+link.getType().getID());
 		}
-		System.out.println("tOver="+((OBOProperty)session.getObject("regulates")).getTransitiveOver());
+		logger.info("tOver="+((OBOProperty)session.getObject("regulates")).getTransitiveOver());
 		testForNonGenusIsA("GO:0050789","GO:0065007"); /* asserted */
 		
 		//testForLink("negatively_regulates","transitive_over","part_of");

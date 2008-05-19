@@ -15,7 +15,12 @@ import org.obo.datamodel.OBOClass;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class IllegalURIinOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IllegalURIinOWLTest.class);
 
 	public IllegalURIinOWLTest(String name) {
 		super(name);
@@ -42,7 +47,7 @@ public class IllegalURIinOWLTest extends AbstractOWLTest {
 
 		//File outFile = writeTempOWLFile(new NCBOOboInOWLMetadataMapping());
 		File outFile = writeTempOWLFile(new SimpleOWLMetadataMapping());
-		System.out.println("written "+outFile);
+		logger.info("written "+outFile);
 		//outFile = writeTempOWLFile();
 		//outFile = writeTempOWLFile();
 		readOWLFile(outFile);

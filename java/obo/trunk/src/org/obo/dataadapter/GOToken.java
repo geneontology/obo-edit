@@ -1,6 +1,11 @@
 package org.obo.dataadapter;
 
+import org.apache.log4j.*;
+
 public class GOToken {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GOToken.class);
 
 	protected String token;
 	protected String line;

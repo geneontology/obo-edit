@@ -9,7 +9,12 @@ import java.util.*;
 import java.io.*;
 import java.awt.Color;
 
+import org.apache.log4j.*;
+
 public class DefaultHistoryDumper implements OBOAdapter, HistoryDumper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultHistoryDumper.class);
 
 	private static int SPACEPADDING = 2;
 

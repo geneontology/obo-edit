@@ -6,7 +6,12 @@ import org.bbop.util.Subset;
 import org.bbop.util.VectorFilter;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class MaskedLinkDatabase extends AbstractLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MaskedLinkDatabase.class);
 
 	/**
 	 * 

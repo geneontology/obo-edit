@@ -8,7 +8,12 @@ import java.util.Map;
 import org.obo.datamodel.FieldPath;
 import org.obo.filters.SearchCriterion;
 
+import org.apache.log4j.*;
+
 public class ScoredPathHit extends BasicSearchHit<FieldPath> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredPathHit.class);
 
 	protected FieldPath object;
 

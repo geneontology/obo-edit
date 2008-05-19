@@ -4,7 +4,12 @@ import org.obo.datamodel.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class SimpleDatatype<T> extends AnnotatedObjectImpl implements Datatype<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleDatatype.class);
 
 	/**
 	 * 

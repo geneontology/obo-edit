@@ -8,7 +8,12 @@ import java.util.Map;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.filters.SearchCriterion;
 
+import org.apache.log4j.*;
+
 public class ScoredQueryHit extends BasicSearchHit<IdentifiedObject> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredQueryHit.class);
 
 	protected IdentifiedObject object;
 

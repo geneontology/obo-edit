@@ -9,7 +9,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.reasoner.ExplanationType;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class CompletenessExplanation extends AbstractExplanation {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CompletenessExplanation.class);
 	/**
 	 * 
 	 */

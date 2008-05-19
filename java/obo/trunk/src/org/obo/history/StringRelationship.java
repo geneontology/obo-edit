@@ -11,7 +11,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 
+import org.apache.log4j.*;
+
 public class StringRelationship implements Serializable, Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringRelationship.class);
 	/**
 	 * 
 	 */

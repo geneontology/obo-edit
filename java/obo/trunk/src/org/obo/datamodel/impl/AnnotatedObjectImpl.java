@@ -3,12 +3,17 @@ package org.obo.datamodel.impl;
 import org.bbop.util.StringUtil;
 import org.bbop.util.TinySet;
 import org.obo.datamodel.*;
+import org.obo.postcomp.OBOPostcomp;
+import org.apache.log4j.*;
 
 import java.util.*;
 
 public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 		CategorizedObject {
 
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotatedObjectImpl.class);
+	
 	protected static int internal_id_gen = 0;
 
 	public int internal_id = internal_id_gen++;
@@ -166,7 +171,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 		while (it.hasNext()) {
 			Dbxref ref = (Dbxref) it.next();
 			if (ref.equals(xref)) {
-				System.err.println("removing matching dbxref " + ref);
+				logger.info("removing matching dbxref " + ref);
 				it.remove();
 				break;
 			}

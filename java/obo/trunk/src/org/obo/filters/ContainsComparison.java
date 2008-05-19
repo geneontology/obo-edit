@@ -10,7 +10,12 @@ import java.util.*;
 
 import org.bbop.util.StringUtil;
 
+import org.apache.log4j.*;
+
 public class ContainsComparison extends AbstractComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ContainsComparison.class);
 
 	protected Class[] types = { String.class };
 

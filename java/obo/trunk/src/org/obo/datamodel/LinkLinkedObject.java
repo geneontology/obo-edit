@@ -4,7 +4,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.log4j.*;
+
 public class LinkLinkedObject implements LinkedObject {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkLinkedObject.class);
 	
 	protected Link link;
 	

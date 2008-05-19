@@ -9,7 +9,12 @@ import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
 
+import org.apache.log4j.*;
+
 public class DisjointnessTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DisjointnessTest.class);
 
 	public DisjointnessTest(String name) {
 		super(name);
@@ -32,7 +37,7 @@ public class DisjointnessTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

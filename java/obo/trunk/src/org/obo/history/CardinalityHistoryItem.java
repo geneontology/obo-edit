@@ -5,7 +5,12 @@ import org.obo.datamodel.*;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class CardinalityHistoryItem extends LinkHistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CardinalityHistoryItem.class);
 
 	/**
 	 * 

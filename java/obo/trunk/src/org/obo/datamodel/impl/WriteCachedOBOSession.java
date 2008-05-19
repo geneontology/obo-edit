@@ -38,7 +38,12 @@ import org.obo.identifier.IDProfile;
 import org.obo.query.QueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
 
+import org.apache.log4j.*;
+
 public class WriteCachedOBOSession implements OBOSession {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(WriteCachedOBOSession.class);
 
 	protected class CacheWrappedOBOClass implements OBOClass {
 		protected OBOClass oboClass;
@@ -614,7 +619,7 @@ public class WriteCachedOBOSession implements OBOSession {
 	}
 
 	protected IdentifiedObject getCachedObject(String id, boolean cacheLinks) {
-		System.err.println("caching " + id);
+		logger.info("caching " + id);
 		IdentifiedObject out = cachedIDHash.get(id);
 		if (out == null) {
 			IdentifiedObject real = session.getObject(id);

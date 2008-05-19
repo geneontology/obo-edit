@@ -6,7 +6,12 @@ import org.bbop.util.*;
 import org.obo.datamodel.*;
 
 
+import org.apache.log4j.*;
+
 public class NameChangeHistoryItem extends HistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NameChangeHistoryItem.class);
 
 	/**
 	 * 

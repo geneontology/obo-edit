@@ -3,7 +3,12 @@ package org.obo.filters;
 import java.util.*;
 import java.util.regex.*;
 
+import org.apache.log4j.*;
+
 public class WildcardComparison extends AbstractComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(WildcardComparison.class);
 
 	protected Class[] types = { String.class };
 	protected Map patternMap = new HashMap();

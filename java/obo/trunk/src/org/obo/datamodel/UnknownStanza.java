@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.*;
+
 public class UnknownStanza {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(UnknownStanza.class);
 
 	protected String stanza;
 	protected Namespace namespace;

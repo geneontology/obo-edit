@@ -7,7 +7,12 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class ObjectFilterImpl implements ObjectFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ObjectFilterImpl.class);
 
 	/**
 	 * 

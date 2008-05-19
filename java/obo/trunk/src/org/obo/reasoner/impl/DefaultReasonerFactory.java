@@ -8,7 +8,12 @@ import org.obo.reasoner.ReasonerFactory;
  * @author cjm
  *
  */
+import org.apache.log4j.*;
+
 public class DefaultReasonerFactory implements ReasonerFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultReasonerFactory.class);
 
 	public ReasonedLinkDatabase createReasoner() {
 		return new LinkPileReasoner();

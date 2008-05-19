@@ -15,15 +15,18 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.test.AbstractOBOTest;
 
-public abstract class AbstractNLPTest extends AbstractOBOTest {
+import org.apache.log4j.*;
 
+public abstract class AbstractNLPTest extends AbstractOBOTest {
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractNLPTest.class);
 	protected SemanticParser semanticParser;
 	protected AbstractNLPTest(String name) {
 		super(name);
 	}
 		
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		
 		// file -> session
@@ -36,10 +39,10 @@ public abstract class AbstractNLPTest extends AbstractOBOTest {
 	public void testForIsA(ReasonedLinkDatabase ldb, String childID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		System.out.println(ldb+" testing "+child+" - "+parent);
+		logger.info(ldb+" testing "+child+" - "+parent);
 		assertTrue(ldb.hasRelationship(child, OBOProperty.IS_A, parent) != null);
 		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
-		//System.out.println(path+" pathlen="+path.size());
+		//logger.info(path+" pathlen="+path.size());
 	}
 
 

@@ -15,7 +15,12 @@ import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class DisjointnessTest2 extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DisjointnessTest2.class);
 
 	public DisjointnessTest2(String name) {
 		super(name);

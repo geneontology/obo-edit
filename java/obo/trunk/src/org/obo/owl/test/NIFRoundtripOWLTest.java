@@ -8,7 +8,12 @@ import java.util.Collection;
 import org.bbop.dataadapter.DataAdapterException;
 
 
+import org.apache.log4j.*;
+
 public class NIFRoundtripOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NIFRoundtripOWLTest.class);
 
 	public NIFRoundtripOWLTest(String name) {
 		super(name);

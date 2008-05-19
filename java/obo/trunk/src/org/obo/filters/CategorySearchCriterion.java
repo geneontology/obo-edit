@@ -11,7 +11,12 @@ import java.util.*;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class CategorySearchCriterion extends AbstractStringCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CategorySearchCriterion.class);
 
 	public Collection getValues(Collection scratch, Object obj) {
 		if (obj instanceof CategorizedObject) {

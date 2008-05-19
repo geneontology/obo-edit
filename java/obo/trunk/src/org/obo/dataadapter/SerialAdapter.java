@@ -9,7 +9,12 @@ import org.obo.datamodel.*;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class SerialAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SerialAdapter.class);
 
 	protected String path;
 	protected AdapterConfiguration config;

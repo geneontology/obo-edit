@@ -7,7 +7,12 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class AnnotationOntology {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationOntology.class);
 	protected static OBOSession session;
 
 	protected static final String ANNOTATION_TYPE_ID = "oban:Annotation";

@@ -15,7 +15,12 @@ import org.obo.identifier.UnresolvedIDsException;
 import org.obo.util.IDUtil;
 
 
+import org.apache.log4j.*;
+
 public class IDUpdateTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDUpdateTest.class);
 
 	public IDUpdateTest(String name) {
 		super(name);
@@ -49,7 +54,7 @@ public class IDUpdateTest extends AbstractOBOTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

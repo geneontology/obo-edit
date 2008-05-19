@@ -5,7 +5,12 @@ import java.util.Collection;
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class AddDbxrefHistoryItem extends HistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AddDbxrefHistoryItem.class);
 
 	/**
 	 * 

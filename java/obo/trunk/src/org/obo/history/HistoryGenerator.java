@@ -28,7 +28,12 @@ import org.obo.history.*;
 import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class HistoryGenerator implements Serializable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryGenerator.class);
 
 	/**
 	 * 

@@ -3,7 +3,12 @@ package org.obo.filters;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.*;
+
 public class StringCriterionWrapper<T, V> extends AbstractCriterion<T, String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringCriterionWrapper.class);
 	protected SearchCriterion<T, V> criterion;
 
 	protected StringConverter<? super V> converter;

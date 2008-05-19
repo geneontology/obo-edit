@@ -10,7 +10,12 @@ import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class AncestorSearchAspect implements SearchAspect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AncestorSearchAspect.class);
 
 	public AncestorSearchAspect() {
 	}

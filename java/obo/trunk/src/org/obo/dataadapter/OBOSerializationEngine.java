@@ -25,7 +25,12 @@ import org.obo.util.TermUtil;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class OBOSerializationEngine extends AbstractProgressValued {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOSerializationEngine.class);
 
 	protected static int DONT_WRITE_ID_RULES = 0;
 
@@ -680,7 +685,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		    if (isRealObject(obj))
 			serializer.startStanza(obj);
 		    else {
-			System.out.println("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
+			logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
 			return;
 		    }
 		}

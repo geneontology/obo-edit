@@ -21,7 +21,12 @@ import org.obo.history.HistoryList;
 import org.obo.history.StringRelationship;
 import org.obo.history.TermMacroHistoryItem;
 
+import org.apache.log4j.*;
+
 public class HistoryUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryUtil.class);
 
 	/**
 	 * Does a depth-first search of a {@link TermMacroHistoryItem} to find

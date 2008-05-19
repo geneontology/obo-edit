@@ -4,7 +4,12 @@ import java.util.Collection;
 
 import org.obo.datamodel.Synonym;
 
+import org.apache.log4j.*;
+
 public class SynonymTextSearchCriterion extends AbstractCriterion<Synonym, String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SynonymTextSearchCriterion.class);
 
 	public static final SynonymTextSearchCriterion CRITERION = new SynonymTextSearchCriterion();
 	

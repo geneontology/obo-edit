@@ -10,7 +10,12 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class SimpleTransitivityRule extends AbstractReasonerRule {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleTransitivityRule.class);
 
 	protected static Link temp = new OBORestrictionImpl();
 	long implicationTime;

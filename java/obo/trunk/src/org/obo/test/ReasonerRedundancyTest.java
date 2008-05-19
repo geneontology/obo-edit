@@ -10,7 +10,12 @@ import junit.framework.TestSuite;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
+import org.apache.log4j.*;
+
 public class ReasonerRedundancyTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerRedundancyTest.class);
 
 	public ReasonerRedundancyTest(String name) {
 		super(name);
@@ -42,7 +47,7 @@ public class ReasonerRedundancyTest extends AbstractReasonerTest {
 	}
 
 	public static Test suite() {
-		System.out.println("foo");
+		logger.info("foo");
 		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
 		System.setErr(audited);

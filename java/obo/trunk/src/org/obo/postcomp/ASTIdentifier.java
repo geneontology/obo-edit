@@ -1,6 +1,11 @@
 package org.obo.postcomp;
 
+import org.apache.log4j.*;
+
 public class ASTIdentifier extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTIdentifier.class);
   protected String val;
 
   public ASTIdentifier(int id) {

@@ -21,7 +21,12 @@ import org.obo.datamodel.PathCapable;
 import org.obo.reasoner.Explanation;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class LinkPileReasoner extends AbstractReasoner {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LinkPileReasoner.class);
 
 	protected Collection<Link> linkPile;
 	protected List<ReasonerRule> rules = new ArrayList<ReasonerRule>();
@@ -287,17 +292,17 @@ public class LinkPileReasoner extends AbstractReasoner {
 			// setProgressString(linkPile.size() + "");
 		}
 
-		System.err.println("   Add time(true(" + addTrueCount + ")) = "
+		logger.info("   Add time(true(" + addTrueCount + ")) = "
 				+ (addTimeTrue / 1000000d) + " ms");
-		System.err.println("   Add time(false(" + (addCount - addTrueCount)
+		logger.info("   Add time(false(" + (addCount - addTrueCount)
 				+ ")) = " + (addTimeFalse / 1000000d) + " ms");
-		System.err.println("   Pile pull time: " + (pilePullTime / 1000000d)
+		logger.info("   Pile pull time: " + (pilePullTime / 1000000d)
 				+ " ms");
-		System.err.println(" readdedCount = " + readdedCount);
-		System.err.println(" newaddedCount = " + newaddedCount);
+		logger.info(" readdedCount = " + readdedCount);
+		logger.info(" newaddedCount = " + newaddedCount);
 		for (ReasonerRule rule : rules) {
 			if (rule instanceof AbstractReasonerRule)
-				System.err.println("   time in rule (" + rule + ") = "
+				logger.info("   time in rule (" + rule + ") = "
 						+ (((AbstractReasonerRule) rule).ruleTime / 1000000d)
 						+ " ms");
 

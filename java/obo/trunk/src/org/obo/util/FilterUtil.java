@@ -27,7 +27,12 @@ import org.obo.filters.SearchComparison;
 import org.obo.filters.SearchCriterion;
 import org.obo.filters.SelfSearchAspect;
 
+import org.apache.log4j.*;
+
 public class FilterUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilterUtil.class);
 
 	private FilterUtil() {
 	}

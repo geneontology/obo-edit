@@ -2,7 +2,12 @@
 
 package org.obo.postcomp;
 
+import org.apache.log4j.*;
+
 public class SimpleNode implements Node {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SimpleNode.class);
   protected Node parent;
   protected Node[] children;
   protected int id;
@@ -73,7 +78,7 @@ public class SimpleNode implements Node {
      out its children. */
 
   public void dump(String prefix) {
-    System.out.println(toString(prefix));
+    logger.info(toString(prefix));
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
 	SimpleNode n = (SimpleNode)children[i];

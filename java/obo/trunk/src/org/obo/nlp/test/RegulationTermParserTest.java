@@ -15,7 +15,12 @@ import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 
+import org.apache.log4j.*;
+
 public class RegulationTermParserTest extends AbstractNLPTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RegulationTermParserTest.class);
 
 	public RegulationTermParserTest(String name) {
 		super(name);
@@ -31,12 +36,12 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 		semanticParser.index(session);
 		Collection<TermMacroHistoryItem> items = semanticParser.parseTerms();
 		for (TermMacroHistoryItem item : items) {
-			System.out.println(item);
+			logger.info(item);
 		}
 		semanticParser.apply(items);
 		int passes = 0;
 		for (String report : semanticParser.getReports()) {
-			System.out.println(report);
+			logger.info(report);
 			if (report.contains("MISSING_LINK: GO:0019219"))
 				passes++;
 			if (report.contains("NO_TARGET: GO:0021882"))
@@ -71,7 +76,7 @@ public class RegulationTermParserTest extends AbstractNLPTest {
 		id = "GO:0019222";
 		LinkedObject lo = (LinkedObject)session.getObject(id);
 		Collection<String> names = namer.constructNames(lo );
-		System.out.println(names);
+		logger.info(names);
 		assertTrue(names.contains("regulation of metabolism"));
 		assertTrue(names.size() == 1);
 		

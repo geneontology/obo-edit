@@ -11,7 +11,12 @@ import org.obo.query.impl.CachingQueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
 import org.obo.util.QueryUtil;
 
+import org.apache.log4j.*;
+
 public class QueryEngine extends CachingQueryResolver {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(QueryEngine.class);
 
 	protected OBOSession session;
 

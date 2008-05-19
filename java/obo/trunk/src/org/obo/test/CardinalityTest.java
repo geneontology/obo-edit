@@ -14,7 +14,12 @@ import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBORestriction;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class CardinalityTest extends AbstractReasonerTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CardinalityTest.class);
 
 	public CardinalityTest(String name) {
 		super(name);
@@ -31,9 +36,9 @@ public class CardinalityTest extends AbstractReasonerTest {
 		OBOObject obj = (OBOObject) session.getObject("GO:0022614");
 		for (Link link : obj.getParents()) {
 			OBORestriction r = (OBORestriction)link;
-			System.out.println(r);
+			logger.info(r);
 			Integer card = r.getCardinality();
-			System.out.println("c="+card);
+			logger.info("c="+card);
 			assertTrue(card==2);
 		}
 		writeTempOBOFile();

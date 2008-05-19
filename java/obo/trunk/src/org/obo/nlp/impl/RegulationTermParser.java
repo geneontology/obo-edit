@@ -44,13 +44,18 @@ import org.obo.util.TermUtil;
  * TODO: different status if NP but has a parsed parent
  * TODO: realize links
  */
+import org.apache.log4j.*;
+
 public class RegulationTermParser implements SemanticParser {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger("SemanticParser.class");
 
 	protected Map<String,LinkedObject>name2obj = 
 		new HashMap<String,LinkedObject>();
 	protected Collection<String> reports = new LinkedList<String>();
 	protected OBOSession session;
-	Logger logger = Logger.getLogger("org.obo.nlp");
+
 	
 	boolean replacePartOfs = true;
 

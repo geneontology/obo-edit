@@ -21,8 +21,13 @@ import org.obo.query.Query;
 import org.obo.query.StringQuery;
 import org.obo.query.impl.TextQuery.HitType;
 
+import org.apache.log4j.*;
+
 public class ScoredPathQuery implements
-		StringQuery<FieldPath, ScoredPathHit> {
+	StringQuery<FieldPath, ScoredPathHit> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScoredPathQuery.class);
 
 	protected List<FieldPathSpec> specs = new LinkedList<FieldPathSpec>();
 

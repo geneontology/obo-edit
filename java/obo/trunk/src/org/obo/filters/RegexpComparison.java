@@ -1,6 +1,11 @@
 package org.obo.filters;
 
+import org.apache.log4j.*;
+
 public class RegexpComparison extends WildcardComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RegexpComparison.class);
 
 	@Override
 	public String getID() {

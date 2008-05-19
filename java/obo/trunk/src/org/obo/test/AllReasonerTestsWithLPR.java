@@ -6,7 +6,12 @@ import junit.framework.TestSuite;
 
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
+import org.apache.log4j.*;
+
 public class AllReasonerTestsWithLPR extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AllReasonerTestsWithLPR.class);
 
 	public static Test suite() {
 

@@ -4,7 +4,12 @@ import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOClass;
 
+import org.apache.log4j.*;
+
 public class TextSearchHit implements SearchHit<OBOClass> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextSearchHit.class);
 
 	protected OBOClass result;
 

@@ -16,7 +16,12 @@ import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.HistoryUtil;
 
+import org.apache.log4j.*;
+
 public class ReasonerOperationModel implements OperationModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerOperationModel.class);
 
 	protected ReasonedLinkDatabase reasoner;
 

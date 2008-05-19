@@ -9,7 +9,12 @@ import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.identifier.IDWarning;
 import org.obo.util.IDMapper;
 
+import org.apache.log4j.*;
+
 public class IDMapperTestWithIDLifecycle extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IDMapperTestWithIDLifecycle.class);
 
 	IDMapper mapper;
 	public IDMapperTestWithIDLifecycle(String name) {
@@ -23,13 +28,13 @@ public class IDMapperTestWithIDLifecycle extends AbstractOBOTest {
 
 	private void showObjs(Collection<OBOObject> objs) {
 		for (OBOObject obj : objs) {
-			System.out.println(obj.getID()+" "+obj.getName());
+			logger.info(obj.getID()+" "+obj.getName());
 		}
 	}
 	
 	private void showWarnings(Collection<IDWarning> warnings) {
 		for (IDWarning warning: warnings)
-			System.out.println("warning: "+warning);
+			logger.info("warning: "+warning);
 	}
 
 	public void testMapIDs() throws IOException {

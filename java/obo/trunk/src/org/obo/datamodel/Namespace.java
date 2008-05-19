@@ -3,7 +3,12 @@ package org.obo.datamodel;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.apache.log4j.*;
+
 public class Namespace implements Serializable, Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Namespace.class);
 
 	/**
 	 * 

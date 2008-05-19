@@ -18,7 +18,12 @@ import org.obo.filters.SynonymSearchCriterion;
 import org.obo.filters.SynonymTextSearchCriterion;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class FieldPath {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FieldPath.class);
 
 	public static class FieldPathElement {
 		protected SearchCriterion field;
@@ -230,10 +235,10 @@ public class FieldPath {
 				.getLinkDatabase());
 		Collection<FieldPath> c2 = FieldPath.resolve(path2, session
 				.getLinkDatabase());
-		System.err.println("c1.size = " + c1.size());
-		System.err.println("c2.size = " + c2.size());
+		logger.info("c1.size = " + c1.size());
+		logger.info("c2.size = " + c2.size());
 		/*
-		 * for (FieldPath p : c2) { System.err.println(p.toString()); }
+		 * for (FieldPath p : c2) { logger.info(p.toString()); }
 		 */
 	}
 

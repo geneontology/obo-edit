@@ -42,8 +42,13 @@ import org.obo.datamodel.impl.PropertyValueImpl;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class AnnotationParserExtension implements ParserExtension,
-		OBOSerializerExtension {
+	OBOSerializerExtension {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationParserExtension.class);
 
 	protected OBOSession session;
 
@@ -478,7 +483,7 @@ public class AnnotationParserExtension implements ParserExtension,
 							}
 //						}
 //						else {
-//						System.out.println("xx"+l+" "+mapping+" "+l.getClass());
+//						logger.info("xx"+l+" "+mapping+" "+l.getClass());
 //						}
 					}
 				}

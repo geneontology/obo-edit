@@ -19,8 +19,13 @@ import org.obo.datamodel.MutableLinkDatabase;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 
+import org.apache.log4j.*;
+
 public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
-		implements MutableLinkDatabase {
+	implements MutableLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SQLBackedMutableLinkDatabase.class);
 
 	protected String dbName = "ReasonerCache";
 
@@ -131,7 +136,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 			}
 			dbConnection.commit();
 		} catch (SQLException e) {
-			System.err.println("failed insert of multiple links");
+			logger.info("failed insert of multiple links");
 			e.printStackTrace();
 		}
 
@@ -147,7 +152,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 			}
 			dbConnection.commit();
 		} catch (SQLException e) {
-			System.err.println("failed insert of multiple links");
+			logger.info("failed insert of multiple links");
 			e.printStackTrace();
 		}
 	}
@@ -171,7 +176,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 						+ link.getType().getID() + "', '"
 						+ link.getParent().getID() + "')");
 			} catch (SQLException e) {
-				System.err.println("failed insert of " + link);
+				logger.info("failed insert of " + link);
 				e.printStackTrace();
 			}
 		}
@@ -233,7 +238,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		// System.err.println("returning "+out+" for children of "+lo);
+		// logger.info("returning "+out+" for children of "+lo);
 		return out;
 	}
 
@@ -274,7 +279,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 				failed = true;
 			}
 		} while (failed);
-		// System.err.println("returning "+out+" for parents of "+lo);
+		// logger.info("returning "+out+" for parents of "+lo);
 		return out;
 	}
 
@@ -282,7 +287,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 		if (index != null) {
 			IdentifiedObject out = index.getObject(id);
 			if (out == null) {
-				System.err.println("$$$ GOT NULL LOOKUP ON " + id
+				logger.info("$$$ GOT NULL LOOKUP ON " + id
 						+ " FROM INDEX " + index);
 			}
 			return out;
@@ -298,7 +303,7 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 		mldb.addParent(new DanglingLinkImpl("GO:00003", "part_of", "GO:00007"));
 		mldb.addParent(new DanglingLinkImpl("GO:00003", "part_of", "GO:00010"));
 		mldb.addParent(new DanglingLinkImpl("GO:00004", "part_of", "GO:00008"));
-		System.err.println("parents of GO:00003 = "
+		logger.info("parents of GO:00003 = "
 				+ mldb.getParents(new DanglingObjectImpl("GO:00003")));
 
 	}

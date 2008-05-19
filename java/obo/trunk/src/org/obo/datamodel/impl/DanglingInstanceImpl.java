@@ -12,8 +12,13 @@ import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.Type;
 import org.obo.datamodel.Value;
 
+import org.apache.log4j.*;
+
 public class DanglingInstanceImpl extends DanglingAnnotatedObjectImpl implements
-		Instance {
+	Instance {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DanglingInstanceImpl.class);
 
 	protected OBOClass type = OBOClass.OBO_UNKNOWN;
 

@@ -18,7 +18,12 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author jrichter
  *
  */
+import org.apache.log4j.*;
+
 public class OBOXMLParseEngine extends AbstractParseEngine {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOXMLParseEngine.class);
 
 	protected Locator locator;
 

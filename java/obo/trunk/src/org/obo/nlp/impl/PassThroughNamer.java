@@ -6,7 +6,12 @@ import java.util.LinkedList;
 import org.obo.datamodel.LinkedObject;
 import org.obo.nlp.Namer;
 
+import org.apache.log4j.*;
+
 public class PassThroughNamer extends AbstractNamer implements Namer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PassThroughNamer.class);
 
 	private Collection<Namer> namers;
 	

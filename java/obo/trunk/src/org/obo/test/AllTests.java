@@ -7,7 +7,12 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 
+import org.apache.log4j.*;
+
 public class AllTests extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AllTests.class);
 
 	protected AllTests(String name) {
 		super(name);

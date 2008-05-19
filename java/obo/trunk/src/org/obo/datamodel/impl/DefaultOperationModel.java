@@ -6,7 +6,12 @@ import org.obo.datamodel.*;
 import org.obo.history.*;
 import org.obo.util.HistoryUtil;
 
+import org.apache.log4j.*;
+
 public class DefaultOperationModel implements OperationModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultOperationModel.class);
 
 	protected OBOSession session;
 	protected Collection<OperationModel> lockstepModels = new LinkedList<OperationModel>();
@@ -677,7 +682,7 @@ public class DefaultOperationModel implements OperationModel {
 					for (Link link : ((LinkedObject) io).getParents()) {
 						/*
 						 * if (link.getParent() instanceof DanglingObject) {
-						 * System.err.println("*** "+term+" doesn't match
+						 * logger.info("*** "+term+" doesn't match
 						 * "+link.getParent()); }
 						 */
 						if (link.getParent() != null
@@ -1610,7 +1615,7 @@ public class DefaultOperationModel implements OperationModel {
 			try {
 				OperationWarning w = apply(item.getItemAt(i));
 				if (w != null) {
-					System.err.println("got warning " + w + " from "
+					logger.info("got warning " + w + " from "
 							+ item.getItemAt(i));
 					failure = true;
 					warning.addWarning(w);

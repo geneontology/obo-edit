@@ -1,11 +1,15 @@
 package org.obo.util;
 
-import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 import org.obo.datamodel.OBOSession;
 
+import org.apache.log4j.*;
+
 public class SessionWrapper {
-	protected Logger logger = Logger.getLogger("org.obo.util");
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SessionWrapper.class);
 	
 	protected OBOSession session;
 

@@ -19,7 +19,12 @@ import javax.xml.transform.stream.*;
 import org.bbop.io.*;
 import org.bbop.util.*;
 
+import org.apache.log4j.*;
+
 public class OBOParseEngine extends AbstractParseEngine {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOParseEngine.class);
 
 	protected String line;
 
@@ -195,7 +200,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 					startIndex++;
 					break;
 				} else {
-					System.err.println("found character |"
+					logger.info("found character |"
 							+ str.charAt(startIndex) + "|");
 					throw new OBOParseException("Expected comma in trailing"
 							+ "modifier.", getCurrentPath(), line, linenum, 0);
@@ -211,7 +216,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			Character.UnicodeBlock unicodeBlock = Character.UnicodeBlock.of(s
 					.charAt(i));
 			if (unicodeBlock == null)
-				System.err.println("got null unicode block in " + s);
+				logger.info("got null unicode block in " + s);
 			if (unicodeBlock != null
 					&& unicodeBlock.equals(Character.UnicodeBlock.BASIC_LATIN))
 				out.append(s.charAt(i));
@@ -364,7 +369,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 				String value = line.substring(pair.index + 1, valueStopIndex);
 				/*
-				 * if (nv != null) System.err.println("nv = "+nv+", value =
+				 * if (nv != null) logger.info("nv = "+nv+", value =
 				 * |"+value+"|");
 				 */
 				if (value.length() == 0)
@@ -402,7 +407,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 				throw new OBOParseException("import tags may only occur "
 						+ "in the header", getCurrentPath(), line, linenum, 0);
 			}
-			System.err.println("reading import with value " + value);
+			logger.info("reading import with value " + value);
 			int myLineNum = this.linenum;
 			((OBOParser) parser).readImport(value);
 			this.linenum = myLineNum;
@@ -506,7 +511,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 				throw new OBOParseException("Wrong number of arguments to "
 						+ "idspace tag.", getCurrentPath(), line, linenum, 0);
 			//if (tokens.size() > 2)
-			//	System.err.println("ignoring everything after '"+tokens.get(2)+"' in: "+value);
+			//	logger.info("ignoring everything after '"+tokens.get(2)+"' in: "+value);
 			((OBOParser) parser).readIDSpace((String) tokens.get(0),
 					(String) tokens.get(1));
 			return true;
@@ -1149,7 +1154,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 						|| pv.getProperty().equalsIgnoreCase("autoparent")
 						|| pv.getProperty().equalsIgnoreCase("implied")) {
 					implied = pv.getValue().equalsIgnoreCase("true");
-					System.err.println("read implied = " + implied
+					logger.info("read implied = " + implied
 							+ ", value = " + pv.getValue());
 					dumpEm.add(pv);
 				} else if (pv.getProperty().equalsIgnoreCase("completes")) {

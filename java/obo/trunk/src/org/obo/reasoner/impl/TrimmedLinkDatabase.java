@@ -12,7 +12,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.util.ReasonerUtil;
 
+import org.apache.log4j.*;
+
 public class TrimmedLinkDatabase implements LinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TrimmedLinkDatabase.class);
 
 	protected LinkDatabase linkDatabase;
 

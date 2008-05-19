@@ -3,7 +3,12 @@ package org.obo.history;
 import java.util.*;
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class DefaultHistoryList implements SessionHistoryList {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultHistoryList.class);
 
 	/**
 	 * 

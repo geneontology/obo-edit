@@ -6,7 +6,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
 
+import org.apache.log4j.*;
+
 public class SingleTermSession extends OBOSessionImpl {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SingleTermSession.class);
 
 	public SingleTermSession(OBOSession basis, IdentifiedObject term) {
 		if (basis != null) {

@@ -14,9 +14,12 @@ import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.test.AbstractOBOTest;
+import org.apache.log4j.*;
 
 public abstract class AbstractOWLTest extends AbstractOBOTest {
 
+	//	initialize logger
+	protected final static Logger logger = Logger.getLogger(AllOWLTests.class);
 
 	protected boolean isSourceOWL() {
 		return false;
@@ -37,7 +40,7 @@ public abstract class AbstractOWLTest extends AbstractOBOTest {
 
 		
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		
 		// file -> session

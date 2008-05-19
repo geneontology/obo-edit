@@ -6,7 +6,12 @@ import org.obo.util.TermUtil;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.*;
+
 public class OBOConstants {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBOConstants.class);
 
 	private OBOConstants() {
 	}

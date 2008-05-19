@@ -6,7 +6,12 @@ import org.obo.datamodel.*;
 import java.util.*;
 
 
+import org.apache.log4j.*;
+
 public class TermCategoryHistoryItem extends HistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermCategoryHistoryItem.class);
 
 	/**
 	 * 

@@ -14,7 +14,12 @@ import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class IntersectionRule extends AbstractReasonerRule {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IntersectionRule.class);
 
 	protected MultiMap<LinkedObject, Link> intersectionMap;
 	protected MultiMap<LinkedObject, LinkedObject> hintMap;

@@ -6,7 +6,12 @@ import org.bbop.util.*;
 import org.obo.datamodel.*;
 import org.obo.filters.*;
 
+import org.apache.log4j.*;
+
 public class FilteredLinkDatabase extends AbstractLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FilteredLinkDatabase.class);
 
 	/**
 	 * 

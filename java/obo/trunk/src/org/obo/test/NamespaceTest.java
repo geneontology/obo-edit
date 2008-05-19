@@ -11,7 +11,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 
+import org.apache.log4j.*;
+
 public class NamespaceTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NamespaceTest.class);
 
 	public NamespaceTest(String name) {
 		super(name);
@@ -37,7 +42,7 @@ public class NamespaceTest extends AbstractOBOTest {
 		IdentifiedObject io = session.getObject(id);
 		for (Link link : 
 			((LinkedObject)io).getParents()) {
-			System.out.println(link+" "+((OBORestriction)link).completes()+" "+
+			logger.info(link+" "+((OBORestriction)link).completes()+" "+
 					link.getNamespace());
 			if (((OBORestriction)link).completes())
 				if (link.getType().equals(OBOProperty.IS_A))
@@ -51,7 +56,7 @@ public class NamespaceTest extends AbstractOBOTest {
 		io = session.getObject("GO:0005623");
 		for (Link link : 
 			((LinkedObject)io).getParents()) {
-			System.out.println(link+" "+((OBORestriction)link).completes()+" "+
+			logger.info(link+" "+((OBORestriction)link).completes()+" "+
 					link.getNamespace());
 			if (link.getParent().equals("bfo:Object"))
 				assertTrue(link.getNamespace().getID().contains("cc-bfo-mapping"));

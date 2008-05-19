@@ -2,7 +2,12 @@ package org.obo.filters;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class GreaterThanComparison extends AbstractComparison {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GreaterThanComparison.class);
 
 	protected Class[] types = { Number.class };
 

@@ -23,7 +23,12 @@ import org.obo.filters.SearchComparison;
  * @author cjm
  *
  */
+import org.apache.log4j.*;
+
 public class WebSearchUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(WebSearchUtil.class);
 	public enum SearchableDatabase {NCBI,GOOGLE,CLINICAL_TRIALS_GOV};
 	public enum SearchResultFormat {HTML,XML};
 	
@@ -119,7 +124,7 @@ public class WebSearchUtil {
 					continue;
 				if (s1.contains(s2)) {
 					isGeneral = false;
-					//System.out.println("excl:"+s1);
+					//logger.info("excl:"+s1);
 					break;
 				}
 			}
@@ -159,6 +164,6 @@ public class WebSearchUtil {
 			}
 		}
 		String searchTerm = createQueryString(qs,terms);
-		System.out.println(searchTerm);
+		logger.info(searchTerm);
 	}
 }

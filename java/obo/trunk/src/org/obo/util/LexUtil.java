@@ -15,7 +15,12 @@ import org.obo.datamodel.OBOSession;
  * @author cjm
  *
  */
+import org.apache.log4j.*;
+
 public class LexUtil extends SessionWrapper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(LexUtil.class);
 
 	protected TextComparisonAlgorithm algorithm = TextComparisonAlgorithm.EXACT;
 
@@ -59,9 +64,9 @@ public class LexUtil extends SessionWrapper {
 		for (String key : map.keySet()) {
 			Collection<OBOObject> objs = map.get(key);
 			if (objs.size() > 1) {
-				System.out.println("TermSet: "+key);
+				logger.info("TermSet: "+key);
 				for (OBOObject obj : objs) {
-					System.out.println("  Term: "+obj+" "+obj.getDefinition());
+					logger.info("  Term: "+obj+" "+obj.getDefinition());
 				}
 			}
 		}

@@ -7,7 +7,12 @@ import java.util.List;
 
 import org.obo.filters.SearchCriterion;
 
+import org.apache.log4j.*;
+
 public class FieldPathSpec {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FieldPathSpec.class);
 
 	protected List<SearchCriterion> elements = new LinkedList<SearchCriterion>();
 

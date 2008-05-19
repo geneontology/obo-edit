@@ -8,7 +8,12 @@ import org.obo.util.TermUtil;
 
 /** This is a relationship between terms/classes - not instances
     (to relate instances use InstancePropertyValue) */
+import org.apache.log4j.*;
+
 public class OBORestrictionImpl implements OBORestriction {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBORestrictionImpl.class);
 
 	protected static class OBORestrictionMetaData implements Serializable {
 		protected boolean necessarilyTrue = true;
@@ -225,7 +230,7 @@ public class OBORestrictionImpl implements OBORestriction {
 		this.child = child;
 		if (ForwardChainingReasoner.checkRecache) {
 			if (child.equals(ForwardChainingReasoner.weirdLink.getChild()))
-				System.err.println("what the hell");
+				logger.info("what the hell");
 		}
 	}
 

@@ -32,7 +32,12 @@ import org.obo.history.TermMacroHistoryItem;
 import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class AnnotationImpl extends InstanceImpl implements Annotation {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationImpl.class);
 
 	public AnnotationImpl(String id) {
 		super(id, AnnotationOntology.ANNOTATION());
@@ -370,7 +375,7 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		Object o = TermUtil.getPropValue(this,
 				AnnotationOntology.POSITS_REL(), LinkedObject.class, true);
 		if (o != null && !(o instanceof LinkLinkedObject))
-			System.err.println(o);
+			logger.info(o);
 		LinkLinkedObject lo = (LinkLinkedObject) o;
 		Link newLink = null;
 		if (lo != null) {

@@ -17,7 +17,12 @@ import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
+import org.apache.log4j.*;
+
 public class AxiomAnnotationBasedOWLMetadataMapping extends NCBOOboInOWLMetadataMapping {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AxiomAnnotationBasedOWLMetadataMapping.class);
 
 	public boolean isOboToOWLLossy() { return true; } // TODO: can be made non-lossy
 	

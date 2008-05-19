@@ -13,7 +13,12 @@ import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 
+import org.apache.log4j.*;
+
 public class TransitiveOverOWLTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TransitiveOverOWLTest.class);
 
 	public TransitiveOverOWLTest(String name) {
 		super(name);

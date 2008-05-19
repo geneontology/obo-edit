@@ -9,7 +9,12 @@ import org.obo.datamodel.*;
  *  
  *  CJM: is this also used for class metadata links? TODO test
  */
+import org.apache.log4j.*;
+
 public class InstancePropertyValue implements ValueLink {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(InstancePropertyValue.class);
 
 	/**
 	 * 

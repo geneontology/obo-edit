@@ -17,7 +17,12 @@ import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
+import org.apache.log4j.*;
+
 public class BIRNLexMetadataMapping extends AbstractOWLMetadataMapping {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BIRNLexMetadataMapping.class);
 
 	public boolean isOboToOWLLossy() { return true; }
 	

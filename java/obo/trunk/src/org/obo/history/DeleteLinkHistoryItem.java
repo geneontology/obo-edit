@@ -2,7 +2,12 @@ package org.obo.history;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class DeleteLinkHistoryItem extends LinkHistoryItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DeleteLinkHistoryItem.class);
 
 	/**
 	 * 

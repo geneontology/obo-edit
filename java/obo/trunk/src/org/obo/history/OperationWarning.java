@@ -2,7 +2,12 @@ package org.obo.history;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class OperationWarning {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OperationWarning.class);
 
 	protected String message;
 	protected int level;

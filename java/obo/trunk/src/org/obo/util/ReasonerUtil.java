@@ -20,7 +20,12 @@ import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ExplanationType;
 import org.obo.reasoner.ReasonedLinkDatabase;
 
+import org.apache.log4j.*;
+
 public class ReasonerUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReasonerUtil.class);
 
 	public static boolean containsExplanation(ReasonedLinkDatabase reasoner,
 			Explanation e) {
@@ -33,16 +38,16 @@ public class ReasonerUtil {
 			PathCapable link) {
 		int leastHops = 0;
 		Collection<PathCapable> shortestPath = new LinkedList<PathCapable>();
-		System.out.println("Link: "+link);
+		logger.info("Link: "+link);
 		for (Explanation e : reasoner.getExplanations(link)) {
-			System.out.println("  Explanation: "+e);
+			logger.info("  Explanation: "+e);
 			if (e.getExplanationType().equals(ExplanationType.GIVEN))
 				return Collections.singleton(link);
 			
 			// sum over evidence
 			Collection<PathCapable> path = new LinkedList<PathCapable>();
 			for (Link evidence : e.getEvidence()) {
-				System.out.println("    Evidence: "+e);
+				logger.info("    Evidence: "+e);
 				path.addAll(getShortestExplanationPath(reasoner,evidence));
 			}
 			if (leastHops == 0 || path.size() <= leastHops) {
@@ -156,10 +161,10 @@ public class ReasonerUtil {
 			scratch.setChild(link.getParent());
 			scratch.setType(inLink.getType());
 			scratch.setParent(inLink.getParent());
-			// System.err.println("parents = " + parents);
-			// System.err.println("children = " + children);
+			// logger.info("parents = " + parents);
+			// logger.info("children = " + children);
 			if (children.contains(scratch)) {
-				// System.err.println("explanations: "
+				// logger.info("explanations: "
 				// + linkDatabase.getExplanations(inLink));
 				return true;
 			}

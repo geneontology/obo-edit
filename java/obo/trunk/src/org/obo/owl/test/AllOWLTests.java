@@ -13,7 +13,12 @@ import junit.framework.TestSuite;
  * @author cjm
  *
  */
+import org.apache.log4j.*;
+
 public class AllOWLTests extends TestCase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AllOWLTests.class);
 
 	protected AllOWLTests(String name) {
 		super(name);

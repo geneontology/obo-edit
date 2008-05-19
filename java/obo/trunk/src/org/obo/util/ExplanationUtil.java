@@ -15,7 +15,12 @@ import org.obo.reasoner.impl.CompletenessExplanation;
 import org.obo.reasoner.impl.CompletenessMatch;
 import org.obo.reasoner.impl.ExternallyImpliedExplanation;
 
+import org.apache.log4j.*;
+
 public class ExplanationUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExplanationUtil.class);
 	private ExplanationUtil() {
 	}
 
@@ -49,7 +54,7 @@ public class ExplanationUtil {
 			boolean documentation) {
 		StringBuffer out = new StringBuffer();
 		if (reasoner == null) {
-		    System.err.println("Can't get explanation--reasoner is null!");
+		    logger.info("Can't get explanation--reasoner is null!");
 		    return "";
 		}
 

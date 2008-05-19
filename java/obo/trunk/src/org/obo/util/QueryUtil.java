@@ -8,7 +8,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.query.Query;
 import org.obo.query.QueryEngine;
 
+import org.apache.log4j.*;
+
 public class QueryUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(QueryUtil.class);
 	
 	public static <V> Collection<V> getResults(TaskDelegate<Collection<V>> task) {
 		task.run();

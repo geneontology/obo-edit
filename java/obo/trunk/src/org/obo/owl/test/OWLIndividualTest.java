@@ -16,7 +16,12 @@ import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.owl.dataadapter.OWLAdapter;
 
+import org.apache.log4j.*;
+
 public class OWLIndividualTest extends AbstractOWLTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OWLIndividualTest.class);
 
 	public OWLIndividualTest(String name) {
 		super(name);

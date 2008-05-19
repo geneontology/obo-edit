@@ -4,7 +4,12 @@ import java.util.Collection;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class DefinitionSearchCriterion extends AbstractStringCriterion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefinitionSearchCriterion.class);
 
 	public static final DefinitionSearchCriterion CRITERION =
 		new DefinitionSearchCriterion();

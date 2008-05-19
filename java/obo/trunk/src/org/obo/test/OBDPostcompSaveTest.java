@@ -25,7 +25,12 @@ import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.AnnotationUtil;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class OBDPostcompSaveTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDPostcompSaveTest.class);
 
 	String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 	
@@ -39,8 +44,8 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 	}
 	
 	public void setUp() throws Exception {
-		System.out.println("foo");
-		System.out.println("Setting up: " + this);
+		logger.info("foo");
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		
 		// TODO: DRY - GOAnnotationFileTest
@@ -49,7 +54,7 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		for (String f : getFilesToLoad()) {
 			config.getReadPaths().add(
 					getResourcePath()+"/" + f);
-			System.err.println(f);
+			logger.info(f);
 		}
 		config.setAllowDangling(true);
 		config.setBasicSave(false);
@@ -79,28 +84,28 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 	public void testPostCompClasses() {
 		LinkedObject obj = (LinkedObject) session.getObject("PATO:0000462^during(ZFIN:ZDB-STAGE-010723-35)^OBO_REL:inheres_in(ZFA:0000051)");
 		for (Link link : obj.getParents()) {
-			System.out.println("  "+TermUtil.isIntersection(link)+" "+link.getType()+" "+link.getParent());
+			logger.info("  "+TermUtil.isIntersection(link)+" "+link.getType()+" "+link.getParent());
 		}
 		
 	}
 
 	public void testHasLoaded() throws DataAdapterException {
 		// database -> session
-		System.err.println("reading");
+		logger.info("reading");
 		OBDSQLDatabaseAdapterConfiguration wconfig = 
 			new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
 		wconfig.setReadPath(jdbcPath);
 		OBDSQLDatabaseAdapter wadapter = new OBDSQLDatabaseAdapter();
 		session = wadapter.doOperation(OBOAdapter.READ_ONTOLOGY, wconfig, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		
 		testForName("ZFIN:ZDB-GENO-070219-2",
 				"Df(LG03:sox8,sox9b)b971/b971;sox9a<sup>hi1134Tg/hi1134Tg</sup>");
 		testInstanceType("ZFIN:ZDB-GENO-070219-2","SO:0001027");
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
-		System.err.println("N annots:"+annots.size());
+		logger.info("N annots:"+annots.size());
 		for (Annotation annot : annots)
-			System.out.println(annot);
+			logger.info(annot);
 		IdentifiedObject ae = session.getObject("ZFIN:ZDB-GENO-070219-2");
 		Collection<Annotation> annots2 = getAnnotationsForSubject(ae);
 		boolean assignedByOk = false;
@@ -127,7 +132,7 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 				}
 			}
 			if (genusFound & diffFound) {
-				System.out.println("* assby="+annot.getAssignedBy()+" ns="+annot.getNamespace());
+				logger.info("* assby="+annot.getAssignedBy()+" ns="+annot.getNamespace());
 
 				if (annot.getAssignedBy() != null && annot.getAssignedBy().getID().equals("ZFIN")) 
 					assignedByOk = true;
@@ -135,8 +140,8 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 			}
 		}
 		assertTrue(match!=null);
-		System.out.println("assby="+match.getAssignedBy());
-		System.out.println("annotation ns="+match.getNamespace());
+		logger.info("assby="+match.getAssignedBy());
+		logger.info("annotation ns="+match.getNamespace());
 		assertTrue(match.getNamespace().getID().equals("zfin"));
 		assertTrue(match.getAssignedBy().getID().equals("ZFIN"));
 		assertTrue(assignedByOk);
@@ -149,16 +154,16 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
 		
 		// database -> session
-		System.err.println("reading ns filtered");
+		logger.info("reading ns filtered");
 		
 		config.addNamespace("MGI");
 		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
 		for (Annotation annot: annots)
-			System.out.println(annot.getSubject() + "-----" + annot.getObject());
-		System.err.println("N annots:"+annots.size());
+			logger.info(annot.getSubject() + "-----" + annot.getObject());
+		logger.info("N annots:"+annots.size());
 		testFileSave("mgi-filtered");
 		
 		testForName("MGI:MGI:95723","Gjb5");

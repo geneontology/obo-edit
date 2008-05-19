@@ -6,8 +6,13 @@ import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
 
+import org.apache.log4j.*;
+
 public class ParentSearchCriterion extends
-		AbstractCriterion<IdentifiedObject, Link> {
+	AbstractCriterion<IdentifiedObject, Link> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParentSearchCriterion.class);
 
 	public static final ParentSearchCriterion CRITERION = new ParentSearchCriterion();
 

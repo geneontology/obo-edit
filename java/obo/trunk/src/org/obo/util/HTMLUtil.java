@@ -6,7 +6,12 @@ import java.util.regex.Pattern;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 
+import org.apache.log4j.*;
+
 public class HTMLUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLUtil.class);
 
 	public static String getHTMLLink(IdentifiedObject io, boolean hyperlink) {
 		return HTMLUtil.getHTMLLink(null, null, io, hyperlink);

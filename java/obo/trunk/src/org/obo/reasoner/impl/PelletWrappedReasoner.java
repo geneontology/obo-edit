@@ -30,7 +30,12 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermList;
 
+import org.apache.log4j.*;
+
 public class PelletWrappedReasoner extends AbstractReasoner {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PelletWrappedReasoner.class);
 
 	private static final long serialVersionUID = -1L;
 
@@ -67,7 +72,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 			return aterm;
 		}
 		else {
-			System.err.println("adding aterm "+id+" lo="+lo+" type="+lo.getType());
+			logger.info("adding aterm "+id+" lo="+lo+" type="+lo.getType());
 			aterm = ATermUtils.makeTermAppl(id);
 			idToATerm.put(id,aterm);
 			aTermToObject.put(aterm,lo);
@@ -132,28 +137,28 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 					//ecterms = ATermUtils.makeList(el);
 					ecterms = new LinkedList<ATerm>();
 					objectToEquivATermSet.put(child,ecterms);
-					System.out.println("saving EC for later: "+child+" "+ecterms);
+					logger.info("saving EC for later: "+child+" "+ecterms);
 				}
 				if (type.equals(OBOProperty.IS_A)) {
-					System.out.println("  adding genus "+c+" < "+p);
+					logger.info("  adding genus "+c+" < "+p);
 					ecterms.add(p);
 				}
 				else {
 					ATermAppl t = makeATerm(type);
 					ATermAppl restr = ATermUtils.makeSomeValues(t,p);
-					System.out.println("  adding EC restriction "+c+" < "+restr+" /"+p);
+					logger.info("  adding EC restriction "+c+" < "+restr+" /"+p);
 					ecterms.add(restr);
 				}
-				System.out.println("ecterms="+ecterms.toString());
+				logger.info("ecterms="+ecterms.toString());
 			}
 			else {
 				if (type.equals(OBOProperty.IS_A)) {
 					if (link.getChild() instanceof OBOProperty) {
-						System.err.println("adding subprop "+c+" < "+p);
+						logger.info("adding subprop "+c+" < "+p);
 						kb.addSubProperty(c, p);
 					}
 					else {
-						System.err.println("adding subclass "+c+" < "+p);
+						logger.info("adding subclass "+c+" < "+p);
 						kb.addSubClass(c,p);
 					}
 				}
@@ -161,11 +166,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 					ATermAppl t = makeATerm(type);
 					if (link.getChild() instanceof OBOProperty) {
 						// TODO
-						System.err.println("ignoring "+link);
+						logger.info("ignoring "+link);
 					}
 					else {
 						ATermAppl restr = ATermUtils.makeSomeValues(t,p);
-						System.err.println("adding restriction "+c+" < "+restr+" /"+p);
+						logger.info("adding restriction "+c+" < "+restr+" /"+p);
 						kb.addSubClass(c,restr);
 					}
 				}
@@ -177,10 +182,10 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		if (p.equals(OBOProperty.IS_A)) {
 			return;
 		}
-		System.out.println("adding prop "+p);
+		logger.info("adding prop "+p);
 		ATermAppl atermProp = makeATerm(p);
 		if (p.isTransitive()) {
-			System.out.println("setting to transitive:" +atermProp);
+			logger.info("setting to transitive:" +atermProp);
 			ATermUtils.makeTransitive(atermProp);
 		}
 		kb.addProperty(atermProp);
@@ -197,7 +202,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		for (Set<ATermAppl> ecs : equivClassSetSet) {
 			for (ATermAppl xATerm : ecs) {
 				if (ATermUtils.isBottom(xATerm)) {
-					System.out.println("ignoring BOTTOM");
+					logger.info("ignoring BOTTOM");
 				}
 				else {
 					LinkedObject x = (LinkedObject)objectFromATerm(xATerm);
@@ -230,7 +235,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		for (Set<ATermAppl> ecs : equivPropSetSet) {
 			for (ATermAppl parentATerm : ecs) {
 				if (ATermUtils.isTop(parentATerm)) {
-					System.out.println("ignoring TOP");
+					logger.info("ignoring TOP");
 				}
 				else {
 					// casting alert...
@@ -245,16 +250,16 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	public Collection<Link> getParents(LinkedObject lo) {
 		ATermAppl aterm = makeATerm(lo);
 		
-		System.out.println(" getting parents of "+lo.getID()+" "+lo);
+		logger.info(" getting parents of "+lo.getID()+" "+lo);
 		// in OWL, the only class-level relation is subClassOf
 		// non-is_a links are obtained by finding the superclasses that are restrictions
 		Set<Set<ATermAppl>> equivClassSetSet = tax.getSupers(aterm, false);
 		Collection<Link> s = new TinySet<Link>();
 		for (Set<ATermAppl> ecs : equivClassSetSet) {
 			for (ATermAppl parentATerm : ecs) {
-				System.out.println("    p="+parentATerm);
+				logger.info("    p="+parentATerm);
 				if (ATermUtils.isTop(parentATerm)) {
-					System.out.println("ignoring TOP");
+					logger.info("ignoring TOP");
 				}
 //				else if (ATermUtils.isSomeValues(parentATerm)) {
 //				}
@@ -333,20 +338,20 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 			ATermAppl aterm = idToATerm.get(id);
 			Collection<ATerm> ecaterms = objectToEquivATermSet.get(lo);
 			ATermList tl = ATermUtils.makeList(ecaterms);
-			System.out.println("tl="+tl);
+			logger.info("tl="+tl);
 			ATermAppl ec = ATermUtils.makeAnd(tl);
 			kb.addEquivalentClass(aterm, ec);
-			System.out.println("EC "+aterm+","+ec);
+			logger.info("EC "+aterm+","+ec);
 		}
 	}
 
 	public long recache() {
 		
-		System.out.println("recaching. getting OWL reasoner...");
+		logger.info("recaching. getting OWL reasoner...");
 		owlReasoner = new OWLReasoner();
-		System.out.println("set OWL reasoner =   "+owlReasoner);
+		logger.info("set OWL reasoner =   "+owlReasoner);
 		kb = owlReasoner.getKB();
-		System.out.println("kb = "+kb);
+		logger.info("kb = "+kb);
 		
 		idToATerm = 
 			new HashMap<String, ATermAppl>();

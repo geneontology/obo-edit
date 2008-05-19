@@ -15,8 +15,13 @@ import org.obo.datamodel.Synonym;
 import org.obo.query.Query;
 import org.obo.query.StringQuery;
 
+import org.apache.log4j.*;
+
 public class TextQuery implements
-		StringQuery<OBOClass, TextSearchHit> {
+	StringQuery<OBOClass, TextSearchHit> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TextQuery.class);
 
 	public static enum HitType {
 		NAME, SYNONYM, DEFINITION, ID, COMMENT;

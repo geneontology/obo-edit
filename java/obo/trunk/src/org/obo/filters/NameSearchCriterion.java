@@ -4,8 +4,13 @@ import java.util.Collection;
 
 import org.obo.datamodel.*;
 
+import org.apache.log4j.*;
+
 public class NameSearchCriterion extends
-		AbstractStringCriterion<IdentifiedObject> {
+	AbstractStringCriterion<IdentifiedObject> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NameSearchCriterion.class);
 
 	public static final NameSearchCriterion CRITERION = new NameSearchCriterion();
 

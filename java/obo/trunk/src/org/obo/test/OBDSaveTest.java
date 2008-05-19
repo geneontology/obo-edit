@@ -21,7 +21,12 @@ import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
 
+import org.apache.log4j.*;
+
 public class OBDSaveTest extends AbstractOBOTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OBDSaveTest.class);
 
 	protected String jdbcPath = "jdbc:postgresql://localhost:5432/obdtest";
 
@@ -35,7 +40,7 @@ public class OBDSaveTest extends AbstractOBOTest {
 	}
 	
 	public void setUp() throws Exception {
-		System.out.println("Setting up: " + this);
+		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		
 		// file -> session
@@ -57,13 +62,13 @@ public class OBDSaveTest extends AbstractOBOTest {
 		adapter.setReasoner(reasoner);
 		reasoner.recache();
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
-		System.err.println("saved");
+		logger.info("saved");
 		
 		// database -> session
-		System.err.println("reading");
+		logger.info("reading");
 		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		
 	}
 
@@ -85,12 +90,12 @@ public class OBDSaveTest extends AbstractOBOTest {
 		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
 		
 		// database -> session
-		System.err.println("reading ns filtered");
+		logger.info("reading ns filtered");
 		
 		config.addNamespace("caro");
 		config.setReadPath(jdbcPath);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config, null);
-		System.err.println("read: "+session);
+		logger.info("read: "+session);
 		testForIsA("CARO:0000003","CARO:0000006");
 		testNotPresent("GO:0005622");
 		

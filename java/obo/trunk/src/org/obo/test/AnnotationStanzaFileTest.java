@@ -22,7 +22,12 @@ import org.obo.datamodel.Value;
 import org.obo.datamodel.ValueLink;
 import org.obo.util.AnnotationUtil;
 
+import org.apache.log4j.*;
+
 public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AnnotationStanzaFileTest.class);
 
 	public AnnotationStanzaFileTest(String name) {
 		super(name);
@@ -54,7 +59,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		 */
 		
 		Instance fred = (Instance)session.getObject("fred");
-		System.out.println(fred);
+		logger.info(fred);
 		
 		// these must all be satisfied by the end of this part of the test
 		boolean likesBread = false;
@@ -64,7 +69,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		// this holds for both "DataType" links (ie those in obof with an xsd datatype)
 		// and for "ObjectProperty" links (ie links between instances, or I-C links)
 		for (Link link : fred.getParents()) {
-			System.out.println("  link: "+link+" :: "+link.getClass());
+			logger.info("  link: "+link+" :: "+link.getClass());
 			if (link.getType().getID().equals("likes")) {
 				if (link.getParent().getID().equals("bread")) {
 					likesBread = true;
@@ -82,14 +87,14 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
 			if (link.getType().getID().equals("has_ss_no")) { 
 				LinkedObject p = link.getParent();
-				//System.out.println(p+" :: "+p.getClass());
-				System.out.println(link.getClass());
+				//logger.info(p+" :: "+p.getClass());
+				logger.info(link.getClass());
 				if (link instanceof ValueLink) {
 					ValueLink ipv = (ValueLink)link;
 					Value v = ipv.getValue();
 					if (v instanceof DatatypeValue) {
 						DatatypeValue dv = (DatatypeValue)v;
-						System.out.println(dv.getValue()+" :: "+ipv.getType()+ " :: "+
+						logger.info(dv.getValue()+" :: "+ipv.getType()+ " :: "+
 								v.getType());
 						assertTrue(dv.getValue().equals("123-45-6789"));
 						assertTrue(v.getType().getID().equals("xsd:string"));
@@ -113,13 +118,13 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 			// (even if property_value tags are used in obof)
 			assertTrue(false);
 
-			System.out.println("  fred pv:"+pv);
+			logger.info("  fred pv:"+pv);
 
 			// prop and value are strings: NOT what I expect. CJM
 			String prop = pv.getProperty();
-			System.out.println("  prop:"+prop);
+			logger.info("  prop:"+prop);
 			String v = pv.getValue();
-			System.out.println("  val:"+prop);
+			logger.info("  val:"+prop);
 
 			if (prop.equals("has_ss_no")) {
 				assertTrue(false);
@@ -141,18 +146,18 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 		 * annotation stanza checks
 		 */
 		Collection<Annotation> annots = AnnotationUtil.getAnnotations(session);
-		System.err.println("N annots:"+annots.size());
+		logger.info("N annots:"+annots.size());
 		assertTrue(annots.size() > 0);
 		boolean annotCompareTestOk = false;
 		for (Annotation annot : annots) {
-			System.out.println(annot.getNamespace()+" annot: "+annot+":: "+annot.getSubject()+" -"+annot.getRelationship()+"-> "+annot.getObject());  
+			logger.info(annot.getNamespace()+" annot: "+annot+":: "+annot.getSubject()+" -"+annot.getRelationship()+"-> "+annot.getObject());  
 			for (PropertyValue pv : annot.getPropertyValues()) {
-				System.out.println("  pv:"+pv);
+				logger.info("  pv:"+pv);
 			}
 			if (annot.getSubject().getID().equals("biggles")) {
 				if (annot.getObject().getID().equals("dread")) {
 					for (Link link : annot.getParents()) {
-						System.out.println("BIGGLES:"+link);
+						logger.info("BIGGLES:"+link);
 						if (link.getType().getID().equals("holds_more_strongly_than")) {
 							if (link.getParent().getID().equals("_:annot1"))
 								annotCompareTestOk = true;
@@ -174,7 +179,7 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 
 		for(IdentifiedObject io : session.getObjects()) {
 			if (!io.isBuiltIn() && !(io instanceof Annotation)) {
-				System.out.println(" regular object "+io);
+				logger.info(" regular object "+io);
 			}
 		}
 
@@ -202,8 +207,8 @@ public class AnnotationStanzaFileTest extends AbstractAnnotationTest {
 			 * (contrast with property_value, which in a Term stanza means a property
 			 * at the level of the class unit, ie class metadata)
 			 */
-			System.out.println("  property:"+pv.getProperty()); // String
-			System.out.println("     value:"+pv.getValue()+"\n"); // String
+			logger.info("  property:"+pv.getProperty()); // String
+			logger.info("     value:"+pv.getValue()+"\n"); // String
 			// TODO - property_value tags
 		}
 		// check newlines written out OK

@@ -14,7 +14,12 @@ import java.awt.Color;
 import org.xml.sax.*;
 import javax.xml.parsers.*;
 
+import org.apache.log4j.*;
+
 public class XMLHistoryAdapter implements OBOAdapter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLHistoryAdapter.class);
 
 	protected String path;
 
@@ -124,7 +129,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 
 		public void startElement(String namespaceURI, String localName,
 				String qName, Attributes atts) {
-			// System.err.println("startElement: "+qName);
+			// logger.info("startElement: "+qName);
 			buffer.delete(0, buffer.length());
 			tagStack.push(qName);
 			if (qName.equalsIgnoreCase("list")) {
@@ -250,7 +255,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 				String tagName = (String) tagStack.pop();
 
 				if (!tagName.equalsIgnoreCase(qName))
-					System.err.println("Something is very wrong, " + tagName
+					logger.info("Something is very wrong, " + tagName
 							+ " does not match tag " + qName);
 
 				if (tagName.equalsIgnoreCase("user")) {
@@ -274,12 +279,12 @@ public class XMLHistoryAdapter implements OBOAdapter {
 						(new Exception("Unexpected condition"))
 								.printStackTrace();
 					}
-					System.err.println("HISTORIES = " + histories);
+					logger.info("HISTORIES = " + histories);
 					parentList.add(hl);
 				} else if (tagName.equalsIgnoreCase("head")) {
 					Object oldObj = objectStack.pop();
 
-					System.err.println("peeked at object of type "
+					logger.info("peeked at object of type "
 							+ objectStack.peek().getClass());
 					BasicLinkedList listNode = (BasicLinkedList) objectStack
 							.peek();
@@ -289,7 +294,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					Object oldObj = objectStack.pop();
 					Object peekObj = objectStack.peek();
 
-					System.err.println("peekObj = "
+					logger.info("peekObj = "
 							+ peekObj
 							+ ", type = "
 							+ peekObj.getClass()
@@ -306,7 +311,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					HistoryList parentList = (HistoryList) parentObj;
 					BasicLinkedList list = (BasicLinkedList) oldObj;
 					while (list != null) {
-						System.err.println("head = "
+						logger.info("head = "
 								+ list.getHead().getClass());
 						parentList.addItem((HistoryItem) list.getHead());
 						list = list.getTail();
@@ -350,7 +355,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 						int scope = Integer.parseInt(getString());
 						cat.setScope(scope);
 					} catch (NumberFormatException ex) {
-						System.err.println("couldn't parse scope "
+						logger.info("couldn't parse scope "
 								+ getString());
 					}
 				} else if (tagName.equalsIgnoreCase("oldSynCategory")) {
@@ -368,7 +373,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 						int scope = Integer.parseInt(getString());
 						item.setOldScope(scope);
 					} catch (Exception ex) {
-						System.err.println("bad scope " + getString());
+						logger.info("bad scope " + getString());
 					}
 				} else if (tagName.equalsIgnoreCase("newScope")) {
 					ChangeSynScopeHistoryItem item = (ChangeSynScopeHistoryItem) objectStack
@@ -377,7 +382,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 						int scope = Integer.parseInt(getString());
 						item.setNewScope(scope);
 					} catch (Exception ex) {
-						System.err.println("bad scope " + getString());
+						logger.info("bad scope " + getString());
 					}
 				} else if (tagName.equalsIgnoreCase("oldcomment")) {
 					Object oldObj = objectStack.peek();
@@ -611,7 +616,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					SymmetricHistoryItem item = (SymmetricHistoryItem) objectStack
 							.peek();
 					item.setOldSymmetric(getString().equalsIgnoreCase("true"));
-					System.err.println("got set old symmetric = "
+					logger.info("got set old symmetric = "
 							+ item.getOldSymmetric());
 				} else if (tagName.equalsIgnoreCase("isDef")) {
 					boolean isDef = getString().equalsIgnoreCase("true");
@@ -861,7 +866,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 				return handler.getHistories();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.err.println(e.getMessage());
+				logger.info(e.getMessage());
 				return null;
 			}
 		} else
