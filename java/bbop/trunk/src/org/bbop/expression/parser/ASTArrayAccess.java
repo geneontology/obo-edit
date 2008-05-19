@@ -34,7 +34,12 @@ import java.lang.reflect.Array;
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  * @version $Id: ASTArrayAccess.java,v 1.3 2007/09/27 01:02:10 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTArrayAccess extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTArrayAccess.class);
     /** dummy velocity info. */
     private static final Info DUMMY = new Info("", 1, 1);
 

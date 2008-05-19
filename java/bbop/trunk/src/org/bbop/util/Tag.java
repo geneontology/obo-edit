@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class Tag {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Tag.class);
 
     protected String name;
     protected List arguments;

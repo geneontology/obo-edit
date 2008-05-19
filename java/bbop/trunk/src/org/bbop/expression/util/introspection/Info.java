@@ -25,7 +25,12 @@ package org.bbop.expression.util.introspection;
  * @author <a href="mailto:geirm@optonline.net">Geir Magnusson Jr.</a>
  * @version $Id: Info.java,v 1.2 2007/09/27 01:02:13 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class Info {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Info.class);
     /** line number. */
     private int line;
     /** column number. */

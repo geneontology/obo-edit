@@ -2,7 +2,12 @@ package org.bbop.swing;
 
 import java.awt.geom.PathIterator;
 
+import org.apache.log4j.*;
+
 public class PathOp {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PathOp.class);
 	public int op;
 	public float [] coords;
 	public int pendingIndex = -1;

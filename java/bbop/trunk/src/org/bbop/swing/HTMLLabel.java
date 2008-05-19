@@ -16,7 +16,12 @@ import javax.swing.text.html.HTMLDocument;
 import org.bbop.swing.ExtensibleLabelUI.BasicEditorKit;
 import org.bbop.swing.ExtensibleLabelUI.Renderer;
 
+import org.apache.log4j.*;
+
 public class HTMLLabel extends JLabel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLLabel.class);
 
 	protected ExtensibleLabelUI labelui;
 	protected boolean htmlEnabled = true;

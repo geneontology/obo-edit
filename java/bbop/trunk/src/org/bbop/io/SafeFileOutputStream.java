@@ -2,7 +2,12 @@ package org.bbop.io;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class SafeFileOutputStream extends OutputStream {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SafeFileOutputStream.class);
 
     protected File tempFile;
     protected File file;

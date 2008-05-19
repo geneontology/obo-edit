@@ -1,6 +1,11 @@
 package org.bbop.util;
 
+import org.apache.log4j.*;
+
 public class CommandLineParseException extends Exception {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CommandLineParseException.class);
     /**
 	 * 
 	 */

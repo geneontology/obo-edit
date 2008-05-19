@@ -6,7 +6,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
+import org.apache.log4j.*;
+
 public class SuperIterator<IN, OUT> implements Iterator<OUT> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SuperIterator.class);
 
 	protected Stack<Iterator> iteratorStack;
 	

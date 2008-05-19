@@ -8,8 +8,13 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.AttributeSet;
 
+import org.apache.log4j.*;
+
 public class NumericField extends JTextField 
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(NumericField.class);
 
   /**
 	 * 

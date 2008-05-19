@@ -6,7 +6,12 @@ import javax.swing.JComponent;
 
 import org.bbop.util.CollectionUtil;
 
+import org.apache.log4j.*;
+
 public class GUIComponentWrapper implements GUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GUIComponentWrapper.class);
 
 	protected String id;
 	protected JComponent comp;

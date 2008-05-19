@@ -9,7 +9,12 @@ import java.util.Map;
 
 import org.bbop.expression.context.HashMapContext;
 
+import org.apache.log4j.*;
+
 public class Jexl {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Jexl.class);
 	
 	public static class Temp {
 		public int myVal = 99;
@@ -64,7 +69,7 @@ public class Jexl {
 				f.close();
 				String s = new String(arr);
 				Script e = ScriptFactory.createScript(s);
-				System.err.println("Progam finished with return val "+e.execute(context.createNewFrame()));
+				logger.info("Progam finished with return val "+e.execute(context.createNewFrame()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

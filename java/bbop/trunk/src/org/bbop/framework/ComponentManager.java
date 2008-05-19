@@ -22,7 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -41,9 +40,13 @@ import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class ComponentManager {
 
-  private static final Logger LOG =  Logger.getLogger("org.bbop.framework");
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ComponentManager.class);
+
 	protected static ComponentManager manager;
 
 	protected static File prefsPath;
@@ -178,7 +181,7 @@ public class ComponentManager {
 	        for (GUIComponent component : this.getActiveComponents()) {
             if (getFactory(component) == null) {
               String m = "Cant find factory for "+component;
-              LOG.severe(m); System.out.println(m);
+              logger.fatal(m); System.out.println(m);
               return null; // ?
             }
 	            if (this.getFactory(component).equals(factory)) {
@@ -387,7 +390,7 @@ public class ComponentManager {
 			encoder.writeObject(comp.getConfiguration());
 			encoder.close();
 		} catch (IOException ex) {
-			System.err.println("Couldn't flush component config successfully");
+			logger.info("Couldn't flush component config successfully");
 		}
 		comp.cleanup();
 	}

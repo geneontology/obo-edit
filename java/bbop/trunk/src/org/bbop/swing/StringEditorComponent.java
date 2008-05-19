@@ -5,7 +5,12 @@ import java.awt.*;
 
 import org.bbop.util.*;
 
+import org.apache.log4j.*;
+
 public class StringEditorComponent extends JTextArea implements GenericEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringEditorComponent.class);
 
     /**
 	 * 

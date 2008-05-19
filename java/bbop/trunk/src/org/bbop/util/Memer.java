@@ -8,7 +8,12 @@ package org.bbop.util;
 /**
  * A little utility class to help monitor memory usage.
  */
+import org.apache.log4j.*;
+
 public class Memer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Memer.class);
 
   Runtime rt;
   long prevCheck, currCheck;

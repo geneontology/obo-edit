@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import java.lang.reflect.*;
 
+import org.apache.log4j.*;
+
 public class ObjectUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ObjectUtil.class);
 
     public static boolean equals(Object a, Object b) {
 	// if they're both null, they're equal

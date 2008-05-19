@@ -7,7 +7,12 @@ import java.lang.reflect.Proxy;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.*;
+
 public class EventUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EventUtil.class);
 
 	private EventUtil() {
 	}

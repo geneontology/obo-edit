@@ -10,7 +10,12 @@ import javax.help.HelpSet;
 import javax.help.Popup;
 import javax.help.SecondaryWindow;
 
+import org.apache.log4j.*;
+
 public class HelpManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HelpManager.class);
 
 	protected static HelpManager manager;
 	protected HelpBroker helpBroker;
@@ -57,7 +62,7 @@ public class HelpManager {
 //			popup.setInvoker(invoker);
 			popup.setDisplayed(true);
 		} catch (Exception ee) {
-			System.err.println("trouble with visiting id; " + ee);
+			logger.info("trouble with visiting id; " + ee);
 		}
 	}
 

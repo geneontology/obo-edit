@@ -19,7 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.*;
+
 public class ScalingComponent extends JComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScalingComponent.class);
 	protected JComponent scaleMe;
 	protected boolean preserveAspect = true;
 

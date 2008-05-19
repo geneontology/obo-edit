@@ -3,7 +3,12 @@ package org.bbop.swing;
 import javax.swing.*;
 import java.awt.*;
 
+import org.apache.log4j.*;
+
 public class JDragPanel extends JPanel implements DragContainer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JDragPanel.class);
 
     /**
 	 * 

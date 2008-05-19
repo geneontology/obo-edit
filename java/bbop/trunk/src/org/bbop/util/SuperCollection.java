@@ -5,7 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.*;
+
 public class SuperCollection<IN, OUT> extends AbstractCollection<OUT> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SuperCollection.class);
 	protected IN root;
 	protected List<IteratorFactory> factories;
 	

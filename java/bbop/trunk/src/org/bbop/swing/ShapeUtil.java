@@ -18,7 +18,12 @@ import java.util.List;
  * @author jrichter
  * 
  */
+import org.apache.log4j.*;
+
 public class ShapeUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ShapeUtil.class);
 
 	protected static final float[] scratch = new float[6];
 

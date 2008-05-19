@@ -8,7 +8,12 @@ import javax.swing.border.*;
 
 import org.bbop.expression.ExpressionException;
 
+import org.apache.log4j.*;
+
 public class XMLLayoutPanel extends JPanel implements XMLLayoutRoot {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLLayoutPanel.class);
 
 	/**
 	 * 

@@ -24,7 +24,12 @@ import org.bbop.expression.JexlContext;
  * @author Dion Gillard
  * 
  */
+import org.apache.log4j.*;
+
 public class ASTBlock extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTBlock.class);
     /**
      * Create the node given an id.
      * 

@@ -7,7 +7,12 @@ import org.bbop.rdbms.RelationalTerm;
 import org.bbop.rdbms.WhereClause;
 import org.bbop.rdbms.WhereClause.BooleanOperator;
 
+import org.apache.log4j.*;
+
 public class SqlConstraintSetImpl extends AbstractRelationalTerm implements ConstraintSet {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SqlConstraintSetImpl.class);
 
 	//protected LinkedList<String> constraints = new LinkedList<String>();
 	protected LinkedList<RelationalTerm> constraints = new LinkedList<RelationalTerm>();

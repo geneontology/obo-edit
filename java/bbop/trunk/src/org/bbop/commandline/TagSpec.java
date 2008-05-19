@@ -2,7 +2,12 @@ package org.bbop.commandline;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class TagSpec extends OrderedArgumentSignature {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TagSpec.class);
 
 	protected EnumArgumentSignature nameSig = new EnumArgumentSignature();
 	protected ArgumentSignature signature;

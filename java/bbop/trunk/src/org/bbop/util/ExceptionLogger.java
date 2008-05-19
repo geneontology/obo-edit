@@ -1,11 +1,14 @@
 package org.bbop.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.*;
 
 public class ExceptionLogger {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExceptionLogger.class);
 	public void handle(Throwable t) {
 		Logger global = Logger.getLogger("");
-		global.log(Level.SEVERE, "Uncaught event dispatch exception", t);
+		global.log(Level.FATAL, "Uncaught event dispatch exception", t);
 	}
 }

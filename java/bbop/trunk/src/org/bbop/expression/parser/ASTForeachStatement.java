@@ -33,7 +33,12 @@ import org.bbop.expression.util.introspection.Info;
  * @author Dion Gillard
  * @since 1.1
  */
+import org.apache.log4j.*;
+
 public class ASTForeachStatement extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTForeachStatement.class);
     /** dummy velocity info. */
     private static final Info DUMMY = new Info("", 1, 1);
     /** index of the loop variable. */

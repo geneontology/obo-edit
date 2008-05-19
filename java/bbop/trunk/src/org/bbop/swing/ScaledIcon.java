@@ -8,7 +8,12 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Icon;
 
+import org.apache.log4j.*;
+
 public class ScaledIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScaledIcon.class);
 
 	protected int width = -1;
 	protected int height = -1;

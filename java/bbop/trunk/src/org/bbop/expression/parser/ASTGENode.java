@@ -27,7 +27,12 @@ import org.bbop.expression.util.Coercion;
  * @author <a href="mailto:proyal@apache.org">Peter Royal</a>
  * @version $Id: ASTGENode.java,v 1.3 2007/09/27 01:02:07 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTGENode extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTGENode.class);
     /**
      * Create the node given an id.
      * 

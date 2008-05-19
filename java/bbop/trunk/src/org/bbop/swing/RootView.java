@@ -23,7 +23,12 @@ import javax.swing.text.Position.Bias;
  * Root view that acts as a gateway between the component
  * and the View hierarchy.
  */
+import org.apache.log4j.*;
+
 public class RootView extends View {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(RootView.class);
 	
 	protected EditorKit editorKit;
 	protected JComponent container;

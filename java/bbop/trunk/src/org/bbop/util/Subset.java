@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class Subset<T> extends AbstractSet<T> implements Serializable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Subset.class);
 	/**
 	 * 
 	 */

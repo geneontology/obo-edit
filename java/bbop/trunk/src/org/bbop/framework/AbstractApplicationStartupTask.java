@@ -5,9 +5,13 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Properties;
+
 import org.apache.log4j.*;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -26,6 +30,7 @@ import org.bbop.io.MultiOutputStream;
 import org.bbop.swing.SwingUtil;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.ExceptionLogger;
+import org.bbop.util.OSUtil;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -332,13 +337,14 @@ AbstractSingleActionTask {
 	}
 
 	protected void configureLogging() {
-		final Logger global = Logger.getLogger("");
+		
+		final Logger logger = Logger.getLogger("");
 		PropertyConfigurator.configure("log4j.properties");
-
-		global.info("Configured logging output destinations");
-		global.info("Reset standard error stream");
-		global.info("Testing raw log stream");
-		global.info("Testing standard error stream");
+		
+		logger.info("Configured logging output destinations");
+		logger.info("Reset standard error stream");
+		logger.info("Testing raw log stream");
+		logger.info("Testing standard error stream");
 
 		Thread
 		.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -351,7 +357,7 @@ AbstractSingleActionTask {
 		});
 		System.setProperty("sun.awt.exception.handler", ExceptionLogger.class
 				.getName());
-		global.info("Configured final exception handlers");
+		logger.info("Configured final exception handlers");
 	}
 
 }

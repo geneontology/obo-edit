@@ -12,7 +12,12 @@ import org.bbop.expression.ExpressionException;
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
+import org.apache.log4j.*;
+
 public class ParseException extends ExpressionException {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParseException.class);
 
   /**
    * This constructor is used by the method "generateParseException"

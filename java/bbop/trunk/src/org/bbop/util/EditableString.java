@@ -6,7 +6,12 @@ import java.util.*;
 /**
  * A simple mutable String implementation that implements StateEditable
  */
+import org.apache.log4j.*;
+
 public class EditableString implements StateEditable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EditableString.class);
 
     String value;
 

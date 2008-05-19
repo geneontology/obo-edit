@@ -3,7 +3,12 @@ package org.bbop.io;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class MultiOutputStream extends OutputStream {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiOutputStream.class);
 
     Vector streamList;
 

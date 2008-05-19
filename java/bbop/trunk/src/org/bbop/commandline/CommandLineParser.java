@@ -2,7 +2,12 @@ package org.bbop.commandline;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class CommandLineParser implements Cloneable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CommandLineParser.class);
 
 	protected List parseStack = new ArrayList();
 	protected List stringList = new ArrayList();

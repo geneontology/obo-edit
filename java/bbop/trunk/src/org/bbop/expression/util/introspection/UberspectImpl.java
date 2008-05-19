@@ -39,7 +39,12 @@ import java.util.ArrayList;
  * @author <a href="mailto:geirm@optonline.net">Geir Magnusson Jr.</a>
  * @version $Id: UberspectImpl.java,v 1.3 2007/09/27 01:02:15 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class UberspectImpl implements Uberspect {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(UberspectImpl.class);
     /** index of the first character of the property. */
     private static final int PROPERTY_START_INDEX = 3;
 

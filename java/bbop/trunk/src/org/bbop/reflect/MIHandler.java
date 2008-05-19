@@ -5,7 +5,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.*;
+
 public class MIHandler implements InvocationHandler, MultipleInheritanceProxy {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MIHandler.class);
 
 	protected Map<Class, Object> map = new HashMap<Class, Object>();
 	protected MultipleInheritanceProxy proxyObject;

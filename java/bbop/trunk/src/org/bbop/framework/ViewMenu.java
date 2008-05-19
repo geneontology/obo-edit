@@ -23,7 +23,12 @@ import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class ViewMenu extends AbstractDynamicMenuItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ViewMenu.class);
 
 	public ViewMenu() {
 		super("View");

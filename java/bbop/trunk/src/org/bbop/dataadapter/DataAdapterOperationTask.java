@@ -14,8 +14,13 @@ import org.bbop.util.TaskDelegate;
  * @param <IN> The input type of the expected io operation
  * @param <OUT> The output type of the expected io operation
  */
+import org.apache.log4j.*;
+
 public class DataAdapterOperationTask<IN, OUT> extends
-		AbstractTaskDelegate<OUT> {
+	AbstractTaskDelegate<OUT> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DataAdapterOperationTask.class);
 
 	protected DataAdapter adapter;
 	protected IOOperation<IN, OUT> op;

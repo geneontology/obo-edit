@@ -15,7 +15,12 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
+import org.apache.log4j.*;
+
 public class DynamicMenu extends AbstractDynamicMenuItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DynamicMenu.class);
 
 	protected List<Component> items = new LinkedList<Component>();
 

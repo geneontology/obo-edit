@@ -3,7 +3,12 @@ package org.bbop.swing;
 import javax.swing.*;
 import java.awt.*;
 
+import org.apache.log4j.*;
+
 public class DefaultEditorComponent extends JLabel implements GenericEditorComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultEditorComponent.class);
     /**
 	 * 
 	 */

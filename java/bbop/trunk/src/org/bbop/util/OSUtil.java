@@ -8,8 +8,13 @@ import java.io.File;
  *  @author elee
  */
 
+import org.apache.log4j.*;
+
 public class OSUtil
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(OSUtil.class);
 
   /** Enum representing values for supported operating systems
    */

@@ -58,7 +58,12 @@ import javax.swing.text.*;
  * @author Lynn Monsanto (accessibility)
  * @version 1.37 04/12/06
  */
+import org.apache.log4j.*;
+
 public class ModalProgressMonitor extends Object implements Accessible {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ModalProgressMonitor.class);
 	private ProgressMonitor root;
 
 	private JDialog dialog;

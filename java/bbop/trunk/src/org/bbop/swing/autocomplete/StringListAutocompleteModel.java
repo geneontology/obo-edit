@@ -3,8 +3,13 @@ package org.bbop.swing.autocomplete;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.log4j.*;
+
 public class StringListAutocompleteModel extends
-		AbstractListAutocompleteModel<String> {
+	AbstractListAutocompleteModel<String> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringListAutocompleteModel.class);
 
 	public StringListAutocompleteModel() {
 		this(new LinkedList<String>());

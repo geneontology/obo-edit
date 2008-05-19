@@ -20,7 +20,12 @@ import org.bbop.expression.JexlContext;
 /**
  * variable; A reference by itself.
  */
+import org.apache.log4j.*;
+
 public class ASTReferenceExpression extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTReferenceExpression.class);
     /**
      * Create the node given an id.
      * 

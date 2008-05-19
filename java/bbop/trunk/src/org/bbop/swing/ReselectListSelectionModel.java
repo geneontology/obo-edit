@@ -20,8 +20,13 @@ import javax.swing.event.*;
  * already selected items
  */
 
+import org.apache.log4j.*;
+
 public class ReselectListSelectionModel extends DefaultListSelectionModel implements 
-		Cloneable, Serializable {
+	Cloneable, Serializable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReselectListSelectionModel.class);
 	private static final int MIN = -1;
 	private static final int MAX = Integer.MAX_VALUE;
 	private int selectionMode = MULTIPLE_INTERVAL_SELECTION;

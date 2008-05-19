@@ -23,7 +23,12 @@ import org.bbop.expression.ExpressionException;
  *  @since 1.0
  *  @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  */
+import org.apache.log4j.*;
+
 public class Coercion {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Coercion.class);
 
     /**
      * Coerce to a Boolean.

@@ -50,7 +50,12 @@ import java.awt.*;
  * @version $Revision: 1.2 $
  * @since ITP 1.2.0
  */
+import org.apache.log4j.*;
+
 public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BBOPTabTheme.class);
 
 	// private ColorProvider darkColor;
 

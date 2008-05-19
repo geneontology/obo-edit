@@ -5,7 +5,12 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.log4j.*;
+
 public class HTMLTableRenderer extends DefaultTableCellRenderer {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HTMLTableRenderer.class);
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {

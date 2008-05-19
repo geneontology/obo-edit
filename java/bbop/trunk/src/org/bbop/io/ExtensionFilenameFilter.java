@@ -2,7 +2,12 @@ package org.bbop.io;
 
 import java.io.*;
 
+import org.apache.log4j.*;
+
 public class ExtensionFilenameFilter implements FilenameFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExtensionFilenameFilter.class);
 
     protected String [] extensions;
     protected String desc;

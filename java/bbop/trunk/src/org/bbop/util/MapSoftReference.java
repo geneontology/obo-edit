@@ -3,7 +3,12 @@ package org.bbop.util;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 
+import org.apache.log4j.*;
+
 public class MapSoftReference<K,V> extends SoftReference<MapSoftReference.SoftPointer<V>> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MapSoftReference.class);
 	
 	public static class SoftPointer<T> {
 		protected T object;

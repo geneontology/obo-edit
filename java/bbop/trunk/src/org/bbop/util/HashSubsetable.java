@@ -3,8 +3,13 @@ package org.bbop.util;
 import java.util.*;
 import java.io.Serializable;
 
+import org.apache.log4j.*;
+
 public class HashSubsetable extends LinkedHashSet implements Subsetable,
-Serializable {
+	Serializable {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HashSubsetable.class);
 
     /**
 	 * 

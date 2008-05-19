@@ -21,7 +21,12 @@ import java.awt.image.*;
  * A filter which replaces one color by another in an image. This is frankly, not often useful, but has its occasional
  * uses when dealing with GIF transparency and the like.
  */
+import org.apache.log4j.*;
+
 public class MapColorsFilter extends PointFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MapColorsFilter.class);
 
 	private int oldColor;
 	private int newColor;

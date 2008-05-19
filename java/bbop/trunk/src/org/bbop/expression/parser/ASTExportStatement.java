@@ -8,7 +8,12 @@ import org.bbop.expression.ExpressionException;
 import org.bbop.expression.JexlContext;
 import org.bbop.expression.util.Introspector;
 
+import org.apache.log4j.*;
+
 public class ASTExportStatement extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTExportStatement.class);
   public ASTExportStatement(int id) {
     super(id);
   }

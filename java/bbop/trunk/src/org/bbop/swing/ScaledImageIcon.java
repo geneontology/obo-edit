@@ -3,7 +3,12 @@ package org.bbop.swing;
 import java.awt.*;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class ScaledImageIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ScaledImageIcon.class);
 
     protected Image image;
     protected int width;

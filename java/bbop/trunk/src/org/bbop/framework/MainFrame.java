@@ -14,7 +14,12 @@ import javax.swing.JPanel;
 
 import org.bbop.swing.EnhancedMenuBar;
 
+import org.apache.log4j.*;
+
 public class MainFrame extends JFrame {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MainFrame.class);
 	private EnhancedMenuBar menubar;
 
 	protected JPanel mainPanel;

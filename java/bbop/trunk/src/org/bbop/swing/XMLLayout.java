@@ -16,7 +16,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import org.apache.log4j.*;
+
 public class XMLLayout {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLLayout.class);
 
 	protected static final Map<String, Color> namedColors = new HashMap<String, Color>();
 	static {
@@ -718,9 +723,9 @@ public class XMLLayout {
 			try {
 				return ExpressionUtil.execBoolean(expression, getContext());
 			} catch (Exception ex) {
-				System.err.println("trying to resolve expression '"
+				logger.info("trying to resolve expression '"
 						+ expression + "' with context: " + getContext());
-				System.err.println(getContext().getVariableValue("TextEditor"));
+				logger.info(getContext().getVariableValue("TextEditor"));
 				ex.printStackTrace();
 				return false;
 			}
@@ -1354,10 +1359,10 @@ public class XMLLayout {
 		}
 		/*
 		 * try { InputSource doc = getDocument(xml); Reader reader =
-		 * doc.getCharacterStream(); System.err.println("<<<---------Creating
+		 * doc.getCharacterStream(); logger.info("<<<---------Creating
 		 * layout from XML--------->>>"); int r; while((r = reader.read()) !=
 		 * -1) { System.err.print((char) r); } reader.close();
-		 * System.err.println("<<<---------Finishing layout from
+		 * logger.info("<<<---------Finishing layout from
 		 * XML--------->>>"); } catch (IOException ex) { ex.printStackTrace(); }
 		 */
 		this.xml = xml;

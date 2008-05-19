@@ -8,7 +8,12 @@ import java.util.Map;
 
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class IconFactoryRegistry {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IconFactoryRegistry.class);
 
 	public static interface IconRegistryListener extends EventListener {
 		public void factoryInstalled(String suffix, IconFactory factory);

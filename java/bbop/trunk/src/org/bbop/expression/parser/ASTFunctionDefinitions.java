@@ -2,7 +2,12 @@
 
 package org.bbop.expression.parser;
 
+import org.apache.log4j.*;
+
 public class ASTFunctionDefinitions extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTFunctionDefinitions.class);
   public ASTFunctionDefinitions(int id) {
     super(id);
   }

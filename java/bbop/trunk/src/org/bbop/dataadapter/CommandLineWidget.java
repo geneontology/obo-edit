@@ -4,7 +4,12 @@ import java.util.*;
 
 import org.bbop.util.*;
 
+import org.apache.log4j.*;
+
 public class CommandLineWidget implements AdapterWidgetI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CommandLineWidget.class);
 
 	protected static CommandLineWidget self = new CommandLineWidget();
 
@@ -89,7 +94,7 @@ public class CommandLineWidget implements AdapterWidgetI {
 					+ " does " + "not support command line " + "arguments.");
 		}
 
-		System.err.println("adapter = " + adapter + ", adapterOptions = "
+		logger.info("adapter = " + adapter + ", adapterOptions = "
 				+ adapterOptions);
 		ui.init(self, op, adapter, input);
 		((ParameterUI) ui).setParameters(adapterOptions);

@@ -12,7 +12,12 @@ import org.bbop.util.MultiMap;
  * @author jrichter
  *
  */
+import org.apache.log4j.*;
+
 public class DefaultUIFactory implements DataAdapterUIFactory {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultUIFactory.class);
 
 	protected MultiMap<DataAdapter, DataAdapterUI> uiMap =
 		new MultiHashMap<DataAdapter, DataAdapterUI>();

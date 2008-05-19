@@ -4,7 +4,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.log4j.*;
+
 public class DefaultSizedContainsIterator implements SizedContainsIterator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DefaultSizedContainsIterator.class);
 	
 	protected Iterator iterator;
 	protected Collection cacheCollection;

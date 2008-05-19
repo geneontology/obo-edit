@@ -2,8 +2,13 @@ package org.bbop.rdbms.impl;
 
 import org.bbop.rdbms.GroupByClause;
 
+import org.apache.log4j.*;
+
 public class SqlGroupByClauseImpl extends SqlColumnListClause implements
-		GroupByClause {
+	GroupByClause {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SqlGroupByClauseImpl.class);
 
 	public SqlGroupByClauseImpl() {
 		super();

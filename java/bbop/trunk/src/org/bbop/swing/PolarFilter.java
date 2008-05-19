@@ -22,7 +22,12 @@ import java.awt.image.*;
 /**
  * A filter which distorts and image by performing coordinate conversions between rectangular and polar coordinates.
  */
+import org.apache.log4j.*;
+
 public class PolarFilter extends TransformFilter {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PolarFilter.class);
 	
 	/**
      * Convert from rectangular to polar coordinates.

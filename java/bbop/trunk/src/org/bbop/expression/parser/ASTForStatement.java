@@ -5,7 +5,12 @@ package org.bbop.expression.parser;
 import org.bbop.expression.JexlContext;
 import org.bbop.expression.util.Coercion;
 
+import org.apache.log4j.*;
+
 public class ASTForStatement extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTForStatement.class);
   public ASTForStatement(int id) {
     super(id);
   }

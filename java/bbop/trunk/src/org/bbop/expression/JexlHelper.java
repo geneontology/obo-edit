@@ -28,7 +28,12 @@ import org.bbop.expression.context.HashMapContext;
  *  @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  *  @version $Id: JexlHelper.java,v 1.2 2007/09/27 01:02:12 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class JexlHelper {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(JexlHelper.class);
     /** singleton instance. */
     protected static JexlHelper helper = new JexlHelper();
 

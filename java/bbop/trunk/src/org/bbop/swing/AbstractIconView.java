@@ -31,9 +31,13 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.ImageView;
 import javax.swing.text.html.StyleSheet;
+import org.apache.log4j.*;
 
 public abstract class AbstractIconView extends View {
 
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractIconView.class);
+	
 	/**
 	 * Icon used if the image could not be found.
 	 */
@@ -269,7 +273,7 @@ public abstract class AbstractIconView extends View {
 			if (sMissingImageIcon == null)
 				sMissingImageIcon = makeIcon(MISSING_IMAGE_SRC);
 		} catch (Exception x) {
-			System.err.println("ImageView: Couldn't load image icons");
+			logger.info("ImageView: Couldn't load image icons");
 		}
 	}
 
@@ -283,7 +287,7 @@ public abstract class AbstractIconView extends View {
 		InputStream resource = getClass().getResourceAsStream(gifFile);
 
 		if (resource == null) {
-			System.err.println(ImageView.class.getName() + "/" + gifFile
+			logger.info(ImageView.class.getName() + "/" + gifFile
 					+ " not found.");
 			return null;
 		}
@@ -299,7 +303,7 @@ public abstract class AbstractIconView extends View {
 
 		buffer = out.toByteArray();
 		if (buffer.length == 0) {
-			System.err.println("warning: " + gifFile + " is zero-length");
+			logger.info("warning: " + gifFile + " is zero-length");
 			return null;
 		}
 		return new ImageIcon(buffer);

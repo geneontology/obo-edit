@@ -1,8 +1,15 @@
 package org.bbop.framework;
 
 import javax.swing.JOptionPane;
+import org.apache.log4j.*;
+
+import org.apache.log4j.*;
 
 public class CheckMemoryThread extends Thread {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(CheckMemoryThread.class);
+	
 
   // -----------------------------------------------------------------------
   // Instance variables
@@ -18,7 +25,7 @@ public class CheckMemoryThread extends Thread {
     // Complain if free memory goes below 5% of max memory
     minMemory = maxMemory/(long)20;
     setDaemon(true);
-    System.err.println("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
+    logger.error("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
   }
 
   public void checkFreeMemory() {
@@ -30,7 +37,7 @@ public class CheckMemoryThread extends Thread {
     long freeMemory = maxMemory - memoryUsed;
     // Note: you might want to comment out this println; however, it can be helpful when trying to figure out
     // why your application is running out of memory.
-//    System.err.println("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
+//    logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
 
     if (freeMemory < minMemory) {
       // Try garbage collecting first and see if that helps.
@@ -44,12 +51,12 @@ public class CheckMemoryThread extends Thread {
 
       memoryUsed = Runtime.getRuntime().totalMemory();
       freeMemory = maxMemory - memoryUsed;
-      System.err.println("checkFreeMemory: After garbage collecting, free memory = " + freeMemory);
+      logger.info("checkFreeMemory: After garbage collecting, free memory = " + freeMemory);
       if (freeMemory < minMemory) {
 	String m = "WARNING: you are almost out of memory (" + freeMemory + " bytes left).\nIf you run out of memory, this application could crash and you could lose your work.\nWe recommend saving now, then exiting the application and restarting.";
-	System.err.println(m);
+	logger.info(m);
 	JOptionPane.showMessageDialog(null,m);
-	System.err.println("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
+	logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
 	// We've warned once--don't warn again
 	this.halt();
       }

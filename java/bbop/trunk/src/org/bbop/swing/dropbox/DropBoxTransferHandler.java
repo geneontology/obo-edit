@@ -9,7 +9,12 @@ import java.io.IOException;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.*;
+
 public class DropBoxTransferHandler extends TransferHandler {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DropBoxTransferHandler.class);
 
 	/**
 	 * 

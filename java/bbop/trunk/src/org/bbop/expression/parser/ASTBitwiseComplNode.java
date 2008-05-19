@@ -25,7 +25,12 @@ import org.bbop.expression.util.Coercion;
  * @author Dion Gillard
  * @since 1.1
  */
+import org.apache.log4j.*;
+
 public class ASTBitwiseComplNode extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTBitwiseComplNode.class);
     /**
      * Create the node given an id.
      * 

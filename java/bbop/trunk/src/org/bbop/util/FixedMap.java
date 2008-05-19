@@ -13,7 +13,12 @@ import java.util.*;
  * the maxSize of the Map, the keys at the back of the access list are
  * discarded until the map is back within the maxSize.
  */
+import org.apache.log4j.*;
+
 public class FixedMap implements Map {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FixedMap.class);
 
     /**
      * The backing store for the current map

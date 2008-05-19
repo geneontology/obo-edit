@@ -7,7 +7,12 @@ import javax.swing.JComponent;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
 
+import org.apache.log4j.*;
+
 public class DockPanel extends AbstractGUIComponent {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DockPanel.class);
 
 	protected IDWDriver driver;
 

@@ -12,7 +12,12 @@ import java.util.Set;
  * is requested, the factory creates the value, and then the value is cached. Future
  * calls to fetch the key will return the cached version.
  */
+import org.apache.log4j.*;
+
 public class FactoryBackedMap<K, V> implements Map<K, V> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(FactoryBackedMap.class);
 
 	protected Map<K, V> cacheMap;
 
@@ -73,14 +78,14 @@ public class FactoryBackedMap<K, V> implements Map<K, V> {
 
 	public V get(Object key) {
 		if (cacheMap.containsKey(key)) {
-			System.err.println("CACHE: returned "+cacheMap.get(key)+" from "+key);
+			logger.info("CACHE: returned "+cacheMap.get(key)+" from "+key);
 			return cacheMap.get(key);
 		} else {
 			V val =  factory.createObject((K) key);
 			cacheMap.put((K) key, val);
 			if (!keySet.contains(key))
 				keySet.add((K) key);
-			System.err.println("FACTORY: returned "+val+" from "+key);
+			logger.info("FACTORY: returned "+val+" from "+key);
 			return val;
 		}
 	}

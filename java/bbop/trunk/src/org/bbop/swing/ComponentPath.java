@@ -11,7 +11,12 @@ import javax.swing.JMenu;
 
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class ComponentPath {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ComponentPath.class);
 
 	protected List<ComponentPathElement> components;
 
@@ -52,7 +57,7 @@ public class ComponentPath {
 			parent.repaint();
 			return true;
 		} else {
-			System.err.println("failed");
+			logger.info("failed");
 			return false;
 		}
 	}

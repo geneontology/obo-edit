@@ -2,7 +2,12 @@ package org.bbop.util;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.*;
+
 public class SwingUpdateTask<T> implements TaskDelegate<T> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SwingUpdateTask.class);
 
 	protected TaskDelegate<T> task;
 	protected Runnable swingUpdate;

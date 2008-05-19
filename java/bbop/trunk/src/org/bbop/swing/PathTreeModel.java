@@ -3,7 +3,12 @@ package org.bbop.swing;
 import javax.swing.tree.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class PathTreeModel extends SimpleTreeModel {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(PathTreeModel.class);
 
     protected Vector paths = new Vector();
 

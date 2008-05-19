@@ -7,7 +7,12 @@ import java.util.*;
  * 
  * @see java.util.Vector
  */
+import org.apache.log4j.*;
+
 public class VectorUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(VectorUtil.class);
 
 	private final static ComparableComparator comparableComparator = new ComparableComparator();
 	private final static EqualsEqualityComparator equalityComparator = new EqualsEqualityComparator();

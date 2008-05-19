@@ -2,7 +2,12 @@
 
 package org.bbop.expression.parser;
 
+import org.apache.log4j.*;
+
 public class ASTGlobalTag extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTGlobalTag.class);
   public ASTGlobalTag(int id) {
     super(id);
   }

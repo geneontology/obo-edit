@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.log4j.*;
+
 public class MultipleInheritanceUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultipleInheritanceUtil.class);
 	
 	private static Class<?>[] emptyClassArr = new Class<?>[0];
 

@@ -2,7 +2,12 @@ package org.bbop.swing;
 
 import java.util.StringTokenizer;
 
+import org.apache.log4j.*;
+
 public class ComponentPathElement {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ComponentPathElement.class);
 	
 	protected String id;
 	protected String constraint;

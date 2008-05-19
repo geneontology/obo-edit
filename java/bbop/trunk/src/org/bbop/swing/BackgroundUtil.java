@@ -8,7 +8,12 @@ import javax.swing.JLabel;
 import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class BackgroundUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(BackgroundUtil.class);
 
 	private BackgroundUtil() {
 	}

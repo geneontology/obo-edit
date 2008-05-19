@@ -23,7 +23,12 @@ import org.bbop.expression.JexlContext;
  * 
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  */
+import org.apache.log4j.*;
+
 public class ASTNullLiteral extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTNullLiteral.class);
     /**
      * Create the node given an id.
      * 

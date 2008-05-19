@@ -37,7 +37,7 @@
 
 	<!-- classes that should appear in the main jar file -->
 	<fileset id="main_jar_contents" dir="${outputdir}" includes="**/*.class,**/resources/**" excludes="**/CVS/*" />
-
+	
 	<target name="all" depends="clean, classes, jar, apidocs" description="Cleans and rebuilds from scratch">
 	</target>
 
@@ -70,6 +70,7 @@
 	<target name="jar" depends="classes, checkjar" unless="main_jar_current" description="Generate jar file">
 		<jar destfile="${jarfile}" manifest="${main_jar_manifest}">
 			<fileset refid="main_jar_contents" />
+			<fileset refid="conf_jar_contents" />
 		</jar>
 	</target>
 	

@@ -34,7 +34,12 @@ import java.util.Map;
  * @since 1.0
  * @version $Id: MethodMap.java,v 1.2 2007/09/27 01:02:15 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class MethodMap {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MethodMap.class);
     /** whether a method is more specific than a previously compared one. */
     private static final int MORE_SPECIFIC = 0;
     /** whether a method is less specific than a previously compared one. */

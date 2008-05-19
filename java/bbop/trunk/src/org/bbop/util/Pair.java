@@ -1,6 +1,11 @@
 package org.bbop.util;
 
+import org.apache.log4j.*;
+
 public class Pair {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(Pair.class);
     public Object a;
     public Object b;
 

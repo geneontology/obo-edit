@@ -3,8 +3,13 @@ package org.bbop.expression.parser;
 import java.io.Reader;
 import java.io.ByteArrayInputStream;
 
+import org.apache.log4j.*;
+
 public class ParserTokenManager implements ParserConstants
-{
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ParserTokenManager.class);
   public  java.io.PrintStream debugStream = System.out;
   public  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
 private final int jjStopStringLiteralDfa_0(int pos, long active0, long active1)

@@ -29,7 +29,12 @@ import java.lang.reflect.InvocationTargetException;
  * @author <a href="mailto:jvanzyl@apache.org">Jason van Zyl</a>
  * @version $Id: GetExecutor.java,v 1.2 2007/09/27 01:02:12 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class GetExecutor extends AbstractExecutor {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GetExecutor.class);
     /**
      * Container to hold the 'key' part of 
      * get(key).

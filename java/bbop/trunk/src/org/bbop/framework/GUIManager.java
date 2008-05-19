@@ -20,7 +20,12 @@ import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 import org.bbop.util.TaskDelegate;
 
+import org.apache.log4j.*;
+
 public class GUIManager {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(GUIManager.class);
 
 	protected static GUIManager manager;
 

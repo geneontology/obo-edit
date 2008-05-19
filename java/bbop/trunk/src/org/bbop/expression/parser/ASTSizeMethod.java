@@ -23,7 +23,12 @@ import org.bbop.expression.JexlContext;
  * @author <a href="mailto:mhw@kremvax.net">Mark H. Wilkinson</a>
  * @version $Id: ASTSizeMethod.java,v 1.3 2007/09/27 01:02:07 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTSizeMethod extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTSizeMethod.class);
     /**
      * Create the node given an id.
      * 

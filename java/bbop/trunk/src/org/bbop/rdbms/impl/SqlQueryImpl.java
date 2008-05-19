@@ -18,7 +18,12 @@ import org.bbop.rdbms.WhereClause;
 import org.bbop.rdbms.RelationalTerm;
 
 
+import org.apache.log4j.*;
+
 public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQuery {
+
+	//initialize logger
+	//protected final static Logger logger = Logger.getLogger(SqlQueryImpl.class);
 
 	protected SelectClause selectClause = new SqlSelectClauseImpl();
 	protected FromClause fromClause = new SqlFromClauseImpl();

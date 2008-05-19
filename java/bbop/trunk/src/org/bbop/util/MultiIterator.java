@@ -5,7 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.*;
+
 public class MultiIterator implements Iterator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(MultiIterator.class);
 
 	protected List iterators = new LinkedList();
 	

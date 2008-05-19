@@ -67,9 +67,14 @@ import java.awt.geom.IllegalPathStateException;
  *  @author <a href="mailto:rammi@caff.de">Rammi</a>
  *  @version $Revision: 1.2 $
  */
+import org.apache.log4j.*;
+
 public class ReversePathIterator
-        implements PathIterator
-{
+	implements PathIterator
+	{
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ReversePathIterator.class);
   /** The winding rule. */
   private final int windingRule;
   /** The reversed coordinates. */

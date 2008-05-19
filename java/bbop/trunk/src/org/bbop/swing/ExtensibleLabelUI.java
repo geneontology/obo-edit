@@ -28,7 +28,12 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.ImageView;
 import javax.swing.text.html.StyleSheet;
 
+import org.apache.log4j.*;
+
 public class ExtensibleLabelUI extends BasicLabelUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ExtensibleLabelUI.class);
 	/**
 	 * Overrides to the default stylesheet. Should consider just creating a
 	 * completely fresh stylesheet.

@@ -42,7 +42,12 @@ import java.lang.reflect.Array;
  * @author <a href="mailto:geirm@apache.org">Geir Magnusson Jr.</a>
  * @version $Id: ArrayIterator.java,v 1.2 2007/09/27 01:02:12 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ArrayIterator implements Iterator {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ArrayIterator.class);
     /**
      * The objects to iterate over.
      */

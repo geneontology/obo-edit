@@ -11,7 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.*;
+
 public class StringUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(StringUtil.class);
 
 	public static boolean equals(String a, String b) {
 		if (a.length() != b.length())

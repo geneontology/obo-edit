@@ -2,7 +2,12 @@ package org.bbop.commandline;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class EnumArgumentSignature implements ArgumentSignature {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(EnumArgumentSignature.class);
 
     protected List signatures = new ArrayList();
     protected ArgumentSignature current;

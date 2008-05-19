@@ -26,7 +26,12 @@ import org.bbop.expression.util.Coercion;
  * @author <a href="mailto:mhw@kremvax.net">Mark H. Wilkinson</a>
  * @version $Id: ASTSubtractNode.java,v 1.2 2007/09/27 01:02:09 jmr39 Exp $
  */
+import org.apache.log4j.*;
+
 public class ASTSubtractNode extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTSubtractNode.class);
     /**
      * Create the node given an id.
      * 

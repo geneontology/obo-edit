@@ -12,7 +12,12 @@ import javax.swing.JFrame;
 
 import org.bbop.expression.ExpressionException;
 
+import org.apache.log4j.*;
+
 public class XMLLayoutUtil {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(XMLLayoutUtil.class);
 	private XMLLayoutUtil() {
 
 	}

@@ -28,7 +28,12 @@ import org.bbop.expression.JexlContext;
  * 
  * @since 1.1
  */
+import org.apache.log4j.*;
+
 public class ASTJexlScript extends SimpleNode {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(ASTJexlScript.class);
 	
 	protected Map localFunctions = new HashMap();
 	

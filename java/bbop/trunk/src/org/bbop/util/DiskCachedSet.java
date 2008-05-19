@@ -22,7 +22,12 @@ import java.util.TreeSet;
 
 import org.bbop.io.IOUtil;
 
+import org.apache.log4j.*;
+
 public class DiskCachedSet<E> extends AbstractSet<E> implements Set<E> {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DiskCachedSet.class);
 
 	protected int cacheSize = 0;
 
@@ -122,7 +127,7 @@ public class DiskCachedSet<E> extends AbstractSet<E> implements Set<E> {
 			file.delete();
 		} else {
 			if (clashPile.size() > 1) {
-				System.err.println("clashes found on keyfile " + file);
+				logger.info("clashes found on keyfile " + file);
 			}
 			OutputStream stream = new BufferedOutputStream(
 					new FileOutputStream(file));
@@ -301,12 +306,12 @@ public class DiskCachedSet<E> extends AbstractSet<E> implements Set<E> {
 	}
 	
 	private static void dumpResults(String name, Collection<SetTest> c) {
-		System.err.println(name+":");
+		logger.info(name+":");
 		for(SetTest st: c) {
-			System.err.println("   "+st.name+" = "+st.time);
+			logger.info("   "+st.name+" = "+st.time);
 			st.time = 0;
 		}
-		System.err.println();
+		
 	}
 
 	public static void main(String[] args) {

@@ -2,7 +2,12 @@ package org.bbop.rdbms.impl;
 
 import org.bbop.rdbms.SelectClause;
 
+import org.apache.log4j.*;
+
 public class SqlSelectClauseImpl extends SqlColumnListClause implements SelectClause {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(SqlSelectClauseImpl.class);
 
 	SqlSelectClauseImpl(String s) {
 		super(s);

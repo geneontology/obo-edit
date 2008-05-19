@@ -3,7 +3,12 @@ package org.bbop.swing;
 import java.awt.*;
 import javax.swing.*;
 
+import org.apache.log4j.*;
+
 public class HotkeyedMenuItem extends JMenuItem {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HotkeyedMenuItem.class);
 
     /**
 	 * 

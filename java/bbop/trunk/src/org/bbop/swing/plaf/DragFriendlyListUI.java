@@ -6,8 +6,13 @@ import javax.swing.*;
 
 import org.bbop.swing.*;
 
+import org.apache.log4j.*;
+
 public class DragFriendlyListUI extends javax.swing.plaf.basic.BasicListUI
-    implements DragFriendlyUI {
+	implements DragFriendlyUI {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(DragFriendlyListUI.class);
 
     protected boolean dragging = false;
 

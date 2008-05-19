@@ -5,7 +5,12 @@ import java.awt.Graphics;
 
 import javax.swing.Icon;
 
+import org.apache.log4j.*;
+
 public class IconHolderIcon implements Icon {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(IconHolderIcon.class);
 
 	protected Icon icon;
 
