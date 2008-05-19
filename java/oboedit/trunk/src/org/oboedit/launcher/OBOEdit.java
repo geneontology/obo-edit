@@ -188,19 +188,9 @@ public class OBOEdit {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					// GUIManager.getManager().addStartupTask(
-					// new BasicInitStartupTask());
-					// GUIManager.getManager().addStartupTask(
-					// new PluginInitStartupTask());
 					GUIManager.getManager().addStartupTask(
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();
-
-//					VersionNumber version = Preferences.getVersion();
-//					String configDir = OSUtil.getConfigDirectory(
-//							getAppName() + (version.isBeta() ? "-beta" : "") + "/");
-					// Use standard getPrefsDir method
-					String configDir = Preferences.getOBOEditPrefsDir().toString();
 
 					Properties props = new Properties();
 					try {
@@ -208,13 +198,15 @@ public class OBOEdit {
 						props.load(configStream);
 						configStream.close();
 					} catch(IOException e) {
-						System.out.println("Error: Cannot load logger configuration file log4j.properties. " + e.getMessage());
+						System.err.println("Error: Cannot load logger configuration file log4j.properties from jar. " + e.getMessage());
 					}
-					setupLog4j(props, configDir);
+					String configDir = Preferences.getOBOEditPrefsDir().toString();
+					String logFile = configDir + "/log/oboedit_log4j.log";
+					setupLog4j(props, logFile);
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
 
-					logger.info("Saving logfile to OBO-Edit config directory: " + configDir);
+					logger.info("Saving logfile to OBO-Edit config directory: " + logFile);
 
 					DataAdapterRegistry registry = IOManager.getManager()
 					.getAdapterRegistry();
@@ -242,7 +234,7 @@ public class OBOEdit {
 		SwingUtilities.invokeAndWait(r);
 	}
 
-	private static void setupLog4j(Properties props, String configDir){
+	private static void setupLog4j(Properties props, String logFile){
 
 		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
 
@@ -251,7 +243,7 @@ public class OBOEdit {
 		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
 
 		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
-		props.setProperty("log4j.appender.A2.file",configDir + "log/oboedit_log4j.log");
+		props.setProperty("log4j.appender.A2.file",logFile);
 		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
 		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.append","true");
