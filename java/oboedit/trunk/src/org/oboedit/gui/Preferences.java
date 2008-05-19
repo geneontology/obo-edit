@@ -199,7 +199,7 @@ public class Preferences {
 			+ "    </xsl:copy>\n"
 			+ "  </xsl:template>\n" + "</xsl:stylesheet>";
 
-	protected static final File filterFile = new File(GUIManager.getPrefsDir(),
+	protected static final File filterFile = new File(getOBOEditPrefsDir(),
 			"filters/");
 
 	protected static Preferences preferences;
@@ -252,8 +252,28 @@ public class Preferences {
 		return preferences;
 	}
 
+	public static File getOBOEditPrefsDir() {
+		VersionNumber version = Preferences.getVersion();
+		// Old: ~/.oboeditbeta
+		File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
+					    + (version.isBeta() ? "beta" : "") + "/");
+		// New: OS-appropriate directory
+ 		File prefsDir = new File(OSUtil.getConfigDirectory(
+						 getAppName() +
+						 version.getMajorVersion() + 
+						 (version.isBeta() ? "-beta" : "") + 
+						 "/"));
+
+		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
+		// for (temporary) backwards compatibility.
+		if (!prefsDir.exists())
+			GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
+
+		return prefsDir;
+	}
+
 	public static File getDictionaryFile() {
-		return new File(GUIManager.getPrefsDir(), "dictionary.dict");
+		return new File(getOBOEditPrefsDir(), "dictionary.dict");
 	}
 
 	public boolean getAutoCommitTextEdits() {
@@ -363,7 +383,7 @@ public class Preferences {
 
 	public File getAutosavePath() {
 		if (autosavePath == null)
-			autosavePath = new File(GUIManager.getPrefsDir(), "autosave");
+			autosavePath = new File(getOBOEditPrefsDir(), "autosave");
 		return autosavePath;
 	}
 
@@ -428,7 +448,7 @@ public class Preferences {
 
 	public static File[] getExtensionPaths() {
 		File[] out = { new File(getInstallationDirectory(), "extensions"),
-				new File(GUIManager.getPrefsDir(), "extensions") };
+				new File(getOBOEditPrefsDir(), "extensions") };
 		return out;
 	}
 
@@ -776,15 +796,15 @@ public class Preferences {
 	}
 
 	public static File getStderrFile() {
-		return new File(GUIManager.getPrefsDir(), "stderr");
+		return new File(getOBOEditPrefsDir(), "stderr");
 	}
 
 	public static File getPrefsXMLFile() {
-		return new File(GUIManager.getPrefsDir(), "config.xml");
+		return new File(getOBOEditPrefsDir(), "config.xml");
 	}
 
 	public static File getPrefsFile() {
-		return new File(GUIManager.getPrefsDir(), "config");
+		return new File(getOBOEditPrefsDir(), "config");
 	}
 
 	public static File getFiltersDir() {
