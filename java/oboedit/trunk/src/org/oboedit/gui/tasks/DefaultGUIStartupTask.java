@@ -41,6 +41,8 @@ import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.VetoableShutdownListener;
 import org.bbop.framework.ViewMenu;
+import org.bbop.framework.ViewMenus;
+import org.bbop.framework.LayoutMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
 import org.bbop.framework.dock.idw.IDWDriver;
@@ -544,8 +546,18 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
-		return CollectionUtil.list(new FileMenu(), new EditMenu(),
-				new ViewMenu(), new OEHelpMenu());
+//		return CollectionUtil.list(new FileMenu(), new EditMenu(),
+//					   new ViewMenu(), new LayoutMenu(), new OEHelpMenu());
+		// New menu organization
+		List<JMenuItem> menus = new ArrayList<JMenuItem>();
+		menus.add(new FileMenu());
+		menus.add(new EditMenu());
+		menus.add(new LayoutMenu());
+		List<JMenu> viewMenus = new ViewMenus().getMenus();
+		for (JMenu m : viewMenus)
+			menus.add(m);
+		menus.add(new OEHelpMenu());
+		return menus;
 	}
 
 	@Override
@@ -566,31 +578,15 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected String getAppID() {
-		// TODO Auto-generated method stub
-//		return "oboedit";
+	    // TODO Auto-generated method stub
+	    //		return "oboedit";
 	    return Preferences.getAppName();
 	}
 
-	// Why is this here rather than in Preferences?
+	// Moved to Preferences
 	@Override
-	protected File getPrefsDir() {
-		VersionNumber version = Preferences.getVersion();
-		// Old: ~/.oboeditbeta
-		File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
-					    + (version.isBeta() ? "beta" : "") + "/");
-		// New: OS-appropriate directory
- 		File prefsDir = new File(OSUtil.getConfigDirectory(
-						 getAppID() +
-						 version.getMajorVersion() + 
-						 (version.isBeta() ? "-beta" : "") + 
-						 "/"));
-
-		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
-		// for (temporary) backwards compatibility.
-		if (!prefsDir.exists())
-			GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
-
-		return prefsDir;
+	public File getPrefsDir() {
+	        return Preferences.getOBOEditPrefsDir();
 	}
 
 	@Override
