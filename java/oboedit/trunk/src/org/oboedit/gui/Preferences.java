@@ -242,8 +242,7 @@ public class Preferences {
 					try {
 						writePreferences(getPreferences());
 					} catch (IOException ex) {
-						System.err
-								.println("Could not write verification settings!");
+						logger.info("Could not write verification settings!");
 						ex.printStackTrace();
 					}
 				}

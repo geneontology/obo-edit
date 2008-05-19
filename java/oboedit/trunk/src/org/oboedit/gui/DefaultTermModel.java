@@ -593,8 +593,7 @@ public class DefaultTermModel implements TermModel {
 // 			}
 			return out;
 		} else {
-			System.err
-					.println("requested children of unknown object " + parent);
+			logger.info("requested children of unknown object " + parent);
 			return null;
 		}
 	}
