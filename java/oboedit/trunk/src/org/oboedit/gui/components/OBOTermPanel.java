@@ -1135,13 +1135,13 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		unlockItem.setEnabled(lockedPath != null);
 		menu.add(unlockItem);
 
-		menu.addSeparator();
-
-		Vector v = getFilterMenuItems();
-		for (int i = 0; i < v.size(); i++) {
-			JMenuItem item = (JMenuItem) v.get(i);
-			menu.add(item);
-		}
+		// These menu items don't currently work, so leaving them off menu for now.
+//		menu.addSeparator();
+//		Vector v = getFilterMenuItems();
+//		for (int i = 0; i < v.size(); i++) {
+//			JMenuItem item = (JMenuItem) v.get(i);
+//			menu.add(item);
+//		}
 
 	}
 
@@ -1306,6 +1306,12 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		reload();
 	}
 
+	/* These menu items to remove renderers and filters from the OTE don't work,
+	   because reload gets the global filters from the FilterManager.  We need it
+	   to do that because the user might have changed the global filters in the
+	   Global Filters panel.  If we need these menu items, I will have to rethink
+	   how to make it so that you can change the filters in the OTE in the Global
+	   Filters panel but also remove them from this OTE menu. */
 	protected Vector getFilterMenuItems() {
 		Vector<JMenuItem> v = new Vector<JMenuItem>();
 
