@@ -43,7 +43,7 @@ public class Preferences {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(Preferences.class);
 
-    protected static String DEFAULT_MEMORY_SETTING = "1024M";  // Was 512M
+	protected static String DEFAULT_MEMORY_SETTING = "1024M";  // Was 512M
 
 	protected Font font;
 
@@ -137,20 +137,9 @@ public class Preferences {
 
 	protected static File installationDir;
 
-	// protected static final File stderrFile = new File(
-	// GUIManager.getPrefsDir(), "stderr");
-	//
-	// protected static final File prefsXMLFile = new File(GUIManager
-	// .getPrefsDir(), "config.xml");
-	//
-	// protected static final File prefsFile = new
-	// File(GUIManager.getPrefsDir(),
-	// "config");
-	//
-	// protected File historyFilePath = new File(GUIManager.getPrefsDir(),
-	// "history.xml");
-	//
 	protected File autosavePath;
+
+	protected String logFile = "";
 
 	protected Map<String, Icon> iconIndex = new HashMap<String, Icon>();
 
@@ -794,20 +783,30 @@ public class Preferences {
 		return installationDir;
 	}
 
-	public static File getStderrFile() {
-		return new File(getOBOEditPrefsDir(), "stderr");
-	}
+	// No longer used--replaced by log4j logging
+//	public static File getStderrFile() {
+//		return new File(getOBOEditPrefsDir(), "stderr");
+//	}
 
 	public static File getPrefsXMLFile() {
 		return new File(getOBOEditPrefsDir(), "config.xml");
 	}
 
-	public static File getPrefsFile() {
-		return new File(getOBOEditPrefsDir(), "config");
-	}
-
 	public static File getFiltersDir() {
 		return filterFile;
+	}
+
+	// So that Configuration Manager can get name of logfile
+	public void setLogfile(String lf) {
+		getPreferences().logFile = lf;
+	}
+	public String getLogfile() {
+		return getPreferences().logFile;
+	}
+
+	public static List<String> getPrefsFilenames() {
+		return CollectionUtil.list("config.xml", "filter_prefs.xml", "verify.xml",
+					   "component_prefs", "perspectives");
 	}
 
 	public static Icon loadLibraryIcon(String name) {

@@ -6,6 +6,7 @@ import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
+import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
 import org.oboedit.gui.*;
@@ -102,35 +103,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JCheckBox personalDefCheckbox = new JCheckBox("Use personal definition");
 
-	/*
-	 * protected GrayUndefinedRenderer grayUndefinedRenderer = new
-	 * GrayUndefinedRenderer();
-	 */
-	private Vector icons;
+	JTextField logFilePath = new JTextField(Preferences.getPreferences().getLogfile());
 
-	/*
-	 * private class TimeUnitSelector extends JPanel { protected JLabel label;
-	 * protected JTextField textField; protected JComboBox unitSelector;
-	 * protected String [] units = {"minutes", "hours", "days"}; protected
-	 * String oldUnits = "minutes";
-	 * 
-	 * public TimeUnitSelector(String labelStr, String fieldVal) { label = new
-	 * JLabel(labelStr); textField = new JTextField(fieldVal); unitSelector =
-	 * new JComboBox(units); setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	 * add(Box.createHorizontalStrut(20)); add(label);
-	 * add(Box.createHorizontalStrut(20)); add(textField);
-	 * add(Box.createHorizontalStrut(5)); add(unitSelector);
-	 * 
-	 * label.setFont(Preferences.getPreferences().getFont());
-	 * textField.setFont(Preferences.getPreferences().getFont());
-	 * unitSelector.setFont(Preferences.getPreferences().getFont());
-	 * 
-	 * unitSelector.addActionListener(new ActionListener() { public void
-	 * actionPerformed(ActionEvent e) { unitChange(); oldUnits = (String)
-	 * unitSelector.getSelectedItem(); } }); }
-	 * 
-	 * protected void unitChange() { } }
-	 */
+	private Vector icons;
 
 	private class IconWrapper {
 		private String type;
@@ -176,10 +151,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	}
 
 	private class IconEditor extends JPanel implements GenericEditorComponent {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 4386550408050571020L;
 
 		JLabel typeLabel = new JLabel("Relationship type");
@@ -317,12 +288,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			add(colorPanel);
 			add(Box.createVerticalGlue());
 		}
-
-		/*
-		 * public Insets getInsets() { return new Insets(5, 5, 5, 5); }
-		 * 
-		 * public Insets getInsets(Insets in) { return getInsets(); }
-		 */
 
 		private void update() {
 			Icon icon = null;
@@ -542,6 +507,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		defDbxrefList = new ListEditor(defDbxrefListEditor, noDbxLabel,
 				new Vector(0), true, true, true, true, true);
 		allowExtendedCheckbox = new JCheckBox("Allow extended characters");
+		dbxrefEditor.setBorder(new TitledBorder("Personal Dbxref"));
 
 		formatField(userLabel, userField);
 		formatField(fullnameLabel, fullnameField);
@@ -718,24 +684,35 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autosaveExpirationBox.add(daysLabel);
 		autosaveExpirationBox.add(Box.createHorizontalStrut(5));
 
-		JPanel userPanel = new JPanel();
-		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-		dbxrefEditor.setBorder(new TitledBorder("Personal Dbxref"));
-
 		Box configFileLabelBox = new Box(BoxLayout.X_AXIS);
-		JLabel configFileLabel = new JLabel("Directory for user configuration");
+		JLabel configFileLabel = new JLabel("User configuration directory");
 //		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
-		JTextField configFilePath = new JTextField(GUIManager.getPrefsDir().getPath()); // so it can be copied
-		configFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
+		JTextField configFilePath = new JTextField(GUIManager.getPrefsDir().getPath()); // TextField rather than label so it can be copied
 		configFilePath.setBackground(getBackground()); // so that it looks non-editable
+		configFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
+		JButton removeConfigFiles = new JButton("Reset all configuration files (requires restart)");
+		removeConfigFiles.setAlignmentX((float) .6);
+		removeConfigFiles.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					removeConfigFiles();
+				}
+			});
 		configFileLabelBox.add(configFileLabel);
 		configFileLabelBox.add(Box.createHorizontalStrut(5));
 		configFileLabelBox.add(Box.createHorizontalGlue());
 		configFileLabelBox.add(configFilePath);
 		configFileLabelBox.add(Box.createHorizontalStrut(5));
 
-		// userPanel.add(dbxrefEditor);
-		userPanel.add(Box.createVerticalGlue());
+		Box logFileBox = new Box(BoxLayout.X_AXIS);
+		logFileBox.setOpaque(false);
+		JLabel logFileLabel = new JLabel("Log file");
+		logFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
+		logFilePath.setBackground(getBackground()); // so that it looks non-editable
+		logFileBox.add(logFileLabel);
+		logFileBox.add(Box.createHorizontalStrut(5));
+		logFileBox.add(Box.createHorizontalGlue());
+		logFileBox.add(logFilePath);
+		logFileBox.add(Box.createHorizontalStrut(5));
 
 //		JPanel fieldsPanel = new JPanel(new SpringLayout());
 		Box fieldsPanel = new Box(BoxLayout.X_AXIS);
@@ -745,25 +722,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		fieldsPanel.add(Box.createHorizontalGlue());
 		fieldsPanel.add(userField);
 		fieldsPanel.add(Box.createHorizontalStrut(5));
-//		fieldsPanel.add(fullnameLabel);
-//		fieldsPanel.add(fullnameField);
-//		fieldsPanel.add(emailLabel);
-//		fieldsPanel.add(emailField);
-
-//		SwingUtil.makeCompactGrid(fieldsPanel, 3, 2, 5, 5, 5, 5);
-//		SwingUtil.makeCompactGrid(fieldsPanel, 1, 2, 5, 5, 5, 5);
-
-// 		JPanel pathPanel = new JPanel();
-// 		pathPanel.setLayout(new BorderLayout());
-
-// 		Box pathBox = new Box(BoxLayout.Y_AXIS);
-// 		pathBox.add(configFileLabelBox);
-// 		pathBox.add(Box.createVerticalStrut(5));
-// 		pathBox.add(autosavePanel);
-
-// 		pathPanel.add(pathBox, "North");
-// 		pathPanel.add(Box.createVerticalGlue());
-// 		pathPanel.setBorder(new TitledBorder("Config file paths"));
 
 		memoryField = new JTextField();
 		memoryField.setText(Preferences.getPreferences().getMemString());
@@ -775,9 +733,19 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		memoryBox.add(memoryField);
 		memoryBox.add(Box.createHorizontalStrut(5));
 
+		JPanel userPanel = new JPanel();
+		userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
+//		userPanel.add(Box.createVerticalGlue());
+		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(configFileLabelBox);
+		userPanel.add(removeConfigFiles);
+		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(logFileBox);
+		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(memoryBox);
+		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(fieldsPanel);
+		userPanel.add(Box.createVerticalStrut(40));
 
 		String[] sizes = { "6", "8", "10", "12", "14", "16", "18", "20", "24",
 				"30", "36", "42", "48", "56", "64", "72", "80", "90", "100" };
@@ -894,26 +862,17 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		showConfirmOnExitPanel.add(confirmOnExitBox);
 		showConfirmOnExitPanel.add(Box.createHorizontalGlue());
 
-// 		runtimeDisplayPanel.add(caseSensitiveSortPanel);
-// 		runtimeDisplayPanel.add(showToolTipsPanel);
-// 		runtimeDisplayPanel.add(showConfirmOnExitPanel);
-// 		runtimeDisplayPanel.setMaximumSize(runtimeDisplayPanel
-// 				.getPreferredSize());
-
 		JPanel iconPanel = new JPanel();
 		iconPanel.setOpaque(false);
 		iconPanel.setLayout(new GridLayout(1, 1));
 		iconPanel.add(iconList);
 		iconPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-		// guiPanel.add(iconPanel);
-//		guiPanel.add(runtimeDisplayPanel, "North");
 		guiPanel.add(moreOptionsPanel, "Center");
 
 		JPanel behaviorPanel = new JPanel();
 
 		behaviorPanel.setLayout(new BoxLayout(behaviorPanel, BoxLayout.Y_AXIS));
 
-//		behaviorPanel.add(runtimeDisplayPanel, "North");
  		behaviorPanel.add(caseSensitiveSortPanel);
  		behaviorPanel.add(showToolTipsPanel);
 		behaviorPanel.add(allowBox);
@@ -923,24 +882,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		behaviorPanel.add(warnDefinitionBox);
  		behaviorPanel.add(showConfirmOnExitPanel);
 		behaviorPanel.add(Box.createVerticalGlue());
-
-		/*
-		 * JPanel valuesPanel = new JPanel(new SpringLayout());
-		 * valuesPanel.setOpaque(false); // 6
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 7
-		 * valuesPanel.add(selectionBatchLabel);
-		 * valuesPanel.add(selectionBatchField); // 8
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 9
-		 * valuesPanel.add(useDefaultBrowserBox);
-		 * valuesPanel.add(Box.createRigidArea(new Dimension(1, 10))); // 10
-		 * valuesPanel.add(browserLabel); valuesPanel.add(browserCommandField); //
-		 * 11 valuesPanel.add(Box.createVerticalGlue());
-		 * valuesPanel.add(Box.createVerticalGlue());
-		 * 
-		 * SwingUtil.makeCompactGrid(valuesPanel, 6, 2, 5, 5, 5, 5);
-		 */
 
 		JScrollPane scroller = new JScrollPane(defTextArea,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -988,7 +929,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
  		mainPanel.addTab("Font", null, guiPanel, "Set default font");
  		mainPanel.addTab("Icons & Colors", null, iconPanel,
  				 "Set up default colors and icons for relationship types");
-// 		mainPanel.addTab("Autosave", null, pathPanel, "Set paths");
  		mainPanel.addTab("Autosave", null, autosavePanel, "Set autosave behavior");
 		mainPanel.addTab("Behavior", null, behaviorPanel, "Set behavior options");
 		mainPanel.addTab("Text Editing", null, textEditPanel,
@@ -1039,14 +979,43 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		return out;
 	}
 
-	protected boolean validateConfiguration() {
-		return true;
+//	protected boolean validateConfiguration() {
+//		return true;
+//	}
+
+	/** Remove all of the user config files that control the look of OBO-Edit */
+	protected void removeConfigFiles() {
+		List<String>configFiles = Preferences.getPrefsFilenames();
+		String confDir = Preferences.getOBOEditPrefsDir().toString();
+		String files = "";
+		for (String f : configFiles) {
+			String configFile = confDir + "/" + f;
+			files += "\n" + configFile;
+		}
+		if (JOptionPane.showConfirmDialog(this, "The following files and subdirectories will be deleted from " + confDir + ":" +
+						  files + "\n\nProceed?", "Delete your config files?",
+						  JOptionPane.YES_NO_OPTION)
+		    != JOptionPane.YES_OPTION)
+			return;
+
+		int errors = 0;
+		for (String f : configFiles) {
+			File configFile = new File(confDir + "/" + f);
+			try {
+				IOUtil.deltreeOnExit(configFile);
+			} catch (Exception e) {
+				errors++;
+				logger.info("Error--couldn't delete " + configFile);
+			}
+		}
+		if (errors == 0)
+			JOptionPane.showMessageDialog(this, "Configuration files removed.  You will need to quit and restart OBO-Edit\nto see the changes.");
+		else
+			JOptionPane.showMessageDialog(this, "Failed to delete some of the configuration files or directories.");
 	}
 
+	/** Save Configuration button event */
 	public void save() {
-		/*
-		 * if (!validateConfiguration()) return;
-		 */
 		iconList.commit();
 		defDbxrefList.commit();
 
