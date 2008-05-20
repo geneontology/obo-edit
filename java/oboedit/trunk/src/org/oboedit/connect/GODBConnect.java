@@ -39,7 +39,7 @@ public class GODBConnect {
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			logger.info("___ERROR (" + connection + "): " + e.getMessage());
+			logger.error("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class GODBConnect {
 		try {
 			connector.close();
 		} catch (SQLException e) {
-			logger.info("___ERROR: " + e.getMessage());
+			logger.error("___ERROR: " + e.getMessage());
 		}
 
 		// Assemble connection string and SQL string.
@@ -76,7 +76,7 @@ public class GODBConnect {
 		try {
 			connector = DriverManager.getConnection(connection);
 		} catch (SQLException e) {
-			logger.info("___ERROR (" + connection + "): " + e.getMessage());
+			logger.error("___ERROR (" + connection + "): " + e.getMessage());
 		}
 	}
 
@@ -104,7 +104,7 @@ public class GODBConnect {
 				logger.info("SQL (RESULT): " + number);
 			}
 		} catch (SQLException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 		
 		//this.disconnect();
