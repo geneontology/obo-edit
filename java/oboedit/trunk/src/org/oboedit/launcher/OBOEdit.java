@@ -188,10 +188,18 @@ public class OBOEdit {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
+					// Figure out where logfile will go before starting GUI (so Configuration Manager can
+					// show the logfile path)
+					String configDir = Preferences.getOBOEditPrefsDir().toString();
+					String logFile = configDir + "/log/oboedit_log4j.log";
+					Preferences.getPreferences().setLogfile(logFile);
+
+					// Start GUI
 					GUIManager.getManager().addStartupTask(
 							new DefaultGUIStartupTask());
 					GUIManager.getManager().start();
 
+					// Configure logging
 					Properties props = new Properties();
 					try {
 						InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
@@ -199,22 +207,20 @@ public class OBOEdit {
 						configStream.close();
 					} catch(IOException e) {
 						System.err.println("Error: Cannot load logger configuration file log4j.properties from jar. " + e.getMessage());
+						Preferences.getPreferences().setLogfile("(Could not configure logging--log4j.properties not found)");  // there won't be a log file
 					}
-					String configDir = Preferences.getOBOEditPrefsDir().toString();
-					String logFile = configDir + "/log/oboedit_log4j.log";
 					setupLog4j(props, logFile);
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
 
 					logger.info("Saving logfile to OBO-Edit config directory: " + logFile);
 
+					// Set up Data Adapter registry
 					DataAdapterRegistry registry = IOManager.getManager()
-					.getAdapterRegistry();
+					    .getAdapterRegistry();
 
 					TagSpec spec = getCommandLineSpec(registry);
-
 					Tag topLevel = CommandLineParser.parse(spec, args);
-
 					CommandLineActions actions = getActions(registry, topLevel, args);  // save args for manual parsing
 
 					if (actions.getLoadMe() != null)
