@@ -473,7 +473,7 @@ public class FilterManager {
 			encoder.writeObject(config);
 			encoder.close();
 		} catch (IOException ex) {
-			logger.info("Couldn't flush component config successfully");
+			logger.error("Couldn't flush component config successfully");
 		}
 	}
 

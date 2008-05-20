@@ -23,7 +23,7 @@ public class OBDConnect {
 		try {
 			Class.forName(DRIVER);
 		} catch (ClassNotFoundException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -33,9 +33,9 @@ public class OBDConnect {
 		// Try to connect.
 		try {
 			connector = DriverManager.getConnection(DB,"cjm","");
-			logger.info("connected: "+connector);
+			logger.error("connected: "+connector);
 		} catch (SQLException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class OBDConnect {
 		try {
 			connector.close();
 		} catch (SQLException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 	}
 
@@ -64,13 +64,13 @@ public class OBDConnect {
 			rs = stmt.executeQuery(sql);
 			
 			//logger.info("___SETH___ Checking counts...");
-			logger.info("SQL: " + sql);
+			logger.error("SQL: " + sql);
 			while( rs.next() ){
 				number = rs.getInt("annotation_count");
-				logger.info("SQL (RESULT): " + number);
+				logger.error("SQL (RESULT): " + number);
 			}
 		} catch (SQLException e) {
-			logger.info("ERROR___: " + e.getMessage());
+			logger.error("ERROR___: " + e.getMessage());
 		}
 
 		return number;
