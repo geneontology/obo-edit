@@ -41,3 +41,50 @@ filter, which turned out to be the same bug as 1934745 ("Value" in filter in
 OTE config panel goes away).
 - Term renderer color change buttons are now visible (were invisible, at least
 on Mac).
+- Amina made OBO-Edit use log4j logging.  Messages are printed on the console
+unadorned, and saved in a logfile with more details (time, calling method).
+Logfile name can be see in the Configuration Manager.
+- Added button to Configuration Manager to allow user to remove their config
+files and let them reset to the defaults.
+- New menus!  View menu is now separated into top-level menus:
+Layout  Editors	 Viewers  Search  Tools  Metadata  Reasoner  Summary  Config  Layout
+The menu items are as follows:
+Editors
+   Ontology Tree Editor
+   Text Editor
+   Cross-Product Matrix Editor
+   Intersection Editor
+   Graph Editor
+   Parent Editor
+Viewers
+   Tree Viewer
+   Graph Viewer
+   Graphviz Viewer
+Search
+   Link search panel
+   Search panel
+Tools
+   Verification manager
+   ID fixer   
+   History Browser
+   Ontology Change Tracker
+   Configurable message
+   OBO Merge
+Metadata
+   category manager
+   ID manager
+   Namespace manager
+   Synonym category manager
+   DBXref library
+Reasoner
+   Reasoner manager
+   Explanations
+   Semantic parser manager
+Summary
+   Extended Info
+   Table of Contents
+   Annotation summary
+   Cross product info
+Config
+   Configuration Manager
+   Global Filters
