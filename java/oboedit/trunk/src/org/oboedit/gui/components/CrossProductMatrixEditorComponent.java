@@ -256,7 +256,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		
 		ActionListener al = new MakeButtonActionListener();
 		addButton("Make",al,buttonPanel);
-		buttonPanel.add(new JLabel("xp relation:"));
+		buttonPanel.add(new JLabel("xp relation "));
 		buttonPanel.add(relationChooser);
 		buttonPanel.add(new JLabel("assert:"));
 		checkBoxForIsA = new JCheckBox("is_a");

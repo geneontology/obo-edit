@@ -88,7 +88,7 @@ public class TermFilterEditor extends JPanel {
 
 	protected Box valuePanel = new Box(BoxLayout.X_AXIS);
 
-	protected JLabel reachedViaLabel = new JLabel("that can be reached via ");
+	protected JLabel reachedViaLabel = new JLabel(" that can be reached via ");
 
 	protected class BasicActionListener implements ActionListener {
 
