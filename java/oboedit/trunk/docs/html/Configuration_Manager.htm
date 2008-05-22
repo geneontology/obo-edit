@@ -20,20 +20,27 @@ GUI".</p>
 
 <h2>User Settings</h2>
 <ul>
-  <li><strong>User name</strong> - The user name OBO-Edit should use. This 
-  information is used in the "saved-by" header field when using the <A 
-  href="The_OBO_Adapter.htm">OBO adapter</a>. 
   <li><strong>Configuration directory</strong> - 
-  Displays the path to the directory that contains your personal OBO-Edit 
+  Displays the path to the OS-appropriate directory that contains your personal OBO-Edit 
   configuration info. This field is not editable; it is for
   informational purposes only.
+  Note for Mac users:  your configuration directory will be in ~/Library/Application Support/.
+  Because that directory name has a space in it, if you are trying to use it in a shell
+  command (e.g., "cd ~/Library/Application Support"), you will need to put a backslash
+  before the space (~/Library/Application\ Support).</li>
+  <li><strong>Log file</strong> - The text output from OBO-Edit is saved in
+  this file in your configuration directory.  It can be useful for debugging.
+  This field is not editable, but can be copied and pasted elsewhere.</li>
   <li><strong>OBO-Edit memory allocation</strong> - The text box specifies the amount of memory that should 
   be allocated to OBO-Edit. The value is given as an integer followed by the 
   letter M, indicating the number of megabytes of memory that should be 
   allocated. A high value will prevent OBO-Edit from running out of memory and 
   crashing, but higher values will lessen the amount of memory available to 
   other programs and may cause OBO-Edit to run slower on some platforms. 
-  (Requires restart.)
+  (Requires restart.)</li>
+  <li><strong>User name</strong> - The user name OBO-Edit should use. This 
+  information is used in the "saved-by" header field when using the <A 
+  href="The_OBO_Adapter.htm">OBO adapter</a>.</li>
 </ul>
 
 <h3>Font</h3>
@@ -50,7 +57,7 @@ GUI".</p>
 <p>These controls allow a custom icon to be specified for a relationship type. 
 <em>This does not create new relationship types!</em> It just associates an icon 
 with an existing relationship type.</p>
-<p>Note that relationship types don't need a custom icon. If no icon is specified, OBO-Edit will display the default icon, consisting of a black rectangle containing the relationship type id in black text.</p>
+<p>Note that relationship types don't need a custom icon. If no icon is specified, OBO-Edit will display the default icon, consisting of a black rectangle containing the relationship type id in white text.</p>
 <p>To edit an existing relationship type icon association, select a
 relationship type from the list. The icon association editor will appear:</p>
 </p><p><IMG hspace=0 src="../images/config_icons_and_colors.png" border=0></p>
