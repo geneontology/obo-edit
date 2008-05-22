@@ -25,7 +25,7 @@ public class CheckMemoryThread extends Thread {
     // Complain if free memory goes below 5% of max memory
     minMemory = maxMemory/(long)20;
     setDaemon(true);
-    logger.error("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
+    logger.info("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
   }
 
   public void checkFreeMemory() {
