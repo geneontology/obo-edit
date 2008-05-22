@@ -1,6 +1,7 @@
 package org.bbop.swing;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.awt.font.*;
 import java.awt.image.*;
@@ -647,4 +648,18 @@ public class SwingUtil {
 		out.getGraphics().drawImage(image, 0, 0, null);
 		return toolkit.createCustomCursor(out, new Point(x, y), name);
 	}
+
+	/** If you use command-click (on a one-button mouse) to simulate right-click,
+	    java.swing.SwingUtilities.isLeftMouseButton returns true (and so does
+	    java.swing.SwingUtilities.isRightMouseButton), which results in the
+	    wrong behavior. */
+	public static boolean isLeftMouseButton(MouseEvent e) {
+		if (SwingUtilities.isRightMouseButton(e))
+			return false;
+		else if (SwingUtilities.isLeftMouseButton(e))
+			return true;
+		else
+			return false;
+	}
 }
+
