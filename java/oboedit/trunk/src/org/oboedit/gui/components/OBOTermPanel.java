@@ -523,7 +523,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				indicateClickTarget(-1);
-				if (e.isConsumed() || !SwingUtilities.isLeftMouseButton(e)) {
+				if (e.isConsumed() || !org.bbop.swing.SwingUtil.isLeftMouseButton(e)) {
 					return;
 				}
 
@@ -539,7 +539,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 							return;
 						}
 
-						if (SwingUtilities.isLeftMouseButton(e))
+						if (org.bbop.swing.SwingUtil.isLeftMouseButton(e))
 							checkForClickInExpandControl(path, e.getX(), e
 									.getY());
 
