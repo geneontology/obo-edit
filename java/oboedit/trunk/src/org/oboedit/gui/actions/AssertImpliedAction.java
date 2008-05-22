@@ -115,13 +115,13 @@ public class AssertImpliedAction implements ClickMenuAction {
 		outerPanel
 				.add(
 						new JLabel(
-								"<html>The links below are implied and should be"
+								"<html>The links below are implied and should be "
 										+ "asserted (unless implied links are to be asserted at the time of ontology publishing). "
 										+ "Only selected links will be asserted.</html>"),
 						"North");
 		JPanel chooserPanel = new JPanel();
 		chooserPanel.setLayout(new BoxLayout(chooserPanel,BoxLayout.Y_AXIS));
-		chooserPanel.add(new JLabel("<html>show relations of type:<br></html>"));
+		chooserPanel.add(new JLabel("<html><br>Show relations of type:<br></html>"));
 		chooserPanel.add(relationChooser);
 		chooserPanel.add(Box.createVerticalGlue());
 		outerPanel.add(chooserPanel,"West");
