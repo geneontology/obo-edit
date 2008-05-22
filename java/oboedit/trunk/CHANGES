@@ -1,90 +1,11 @@
-Changes in 2.000-b39:
-- Fixed cloning (broke in b38).
-- If user changes font size in Configuration Manager, change it in Ontology
-Tree Editor right away.
-- Fixed OWL reader (it was expecting a URI--enabled it to accept either a URI
-or a filename (which it will convert to a URI)).
-- Directory where preferences is saved (which used to be ~/.oboeditbeta, which
-was hidden in many file browsers) is now an OS-appropriate visible location
-(e.g., on Mac, it's /Users/yourusername/Library/Application Support/OBO-Edit2-beta/).
-If user had prefs files in ~/.oboeditbeta, and the new OS-appropriate config
-directory doesn't exist yet, OE offers to copy the files from ~/.oboeditbeta
-to the new directory.
-- New date stamp syntax was choking OE1.  Reverted the date stamp in the
-header to use the old format, so it won't choke OE1.  OE1 should ignore the
-creation_date fields, so those are still using the new date format (which
-*will* choke older OE2 betas, but you shouldn't be using those anyway).
-- Graph Editor will no longer run in the background if you don't have it in
-your current layout.  This is a win because the Graph Editor consumes a lot of
-memory and CPU, and it was annoying to have it doing so even if it wasn't
-actually visible.  The small downside of this fix is that if you switch
-between different layouts (Verify and Edit) during a session, the Graph Editor
-will forget what it was showing.
-- Eliminated some of the the unwanted degenerate popup menus (the ones with
-just two items) that you sometimes got if you left-clicked several terms in
-quick succession by not offering "Add consider term" or "Add replacement term"
-menu items if you drag from a term to itself.
-However, you may still get the drag popup menu (with six items) when you
-clicked on two terms but didn't think you were dragging.  Swing is kind of
-sensitive to sloppy clicking and tends to consider it a drag if you haven't
-fully released the mouse button before moving to the next term.  I haven't
-come up with a good way to differentiate between these unintentional "drags"
-and intentional drags.
-- Fixed bug #1882559: Global filters present at loading time can't be removed.
-(This means, for example, that now if you have an old oboedit configuration
-that has the "is transitive" filter set, you can turn this filter off and see
-the effect immediately (regulates links show up) rather than having to quit
-and restart OE.)
-Note: this is fixed in the Ontology Term Editor, but not in the Graph Editor.
-- Fixed bug #1944911: Values in filter not filled in when you load a saved
-filter, which turned out to be the same bug as 1934745 ("Value" in filter in
-OTE config panel goes away).
-- Term renderer color change buttons are now visible (were invisible, at least
-on Mac).
-- Amina made OBO-Edit use log4j logging.  Messages are printed on the console
-unadorned, and saved in a logfile with more details (time, calling method).
-Logfile name can be see in the Configuration Manager.
-- Added button to Configuration Manager to allow user to remove their config
-files and let them reset to the defaults.
-- New menus!  View menu is now separated into top-level menus:
-Layout  Editors	 Viewers  Search  Tools  Metadata  Reasoner  Summary  Config  Layout
-The menu items are as follows:
-Editors
-   Ontology Tree Editor
-   Text Editor
-   Cross-Product Matrix Editor
-   Intersection Editor
-   Graph Editor
-   Parent Editor
-Viewers
-   Tree Viewer
-   Graph Viewer
-   Graphviz Viewer
-Search
-   Link search panel
-   Search panel
-Tools
-   Verification manager
-   ID fixer   
-   History Browser
-   Ontology Change Tracker
-   Configurable message
-   OBO Merge
-Metadata
-   category manager
-   ID manager
-   Namespace manager
-   Synonym category manager
-   DBXref library
-Reasoner
-   Reasoner manager
-   Explanations
-   Semantic parser manager
-Summary
-   Extended Info
-   Table of Contents
-   Annotation summary
-   Cross product info
-Config
-   Configuration Manager
-   Global Filters
+Changes in 2.000-b40:
+- Fixed bug 1887110:
+The option to add relationships, move, etc. by right-clicking the target
+just doesn't work. I select one term, and when I select a second term to be
+the target, I get the same menu as when I right-click a single term -- no
+options to add parent, add child, move or merge. It also looks as though
+the first (source) term is spontaneously deselected.
+The problem was that if you use command-click (on a one-button mouse) to
+simulate right-click, java.swing.SwingUtilities.isLeftMouseButton returns true
+(and so does java.swing.SwingUtilities.isRightMouseButton), which resulted in
+the wrong behavior.
