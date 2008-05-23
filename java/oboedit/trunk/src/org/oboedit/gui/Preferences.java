@@ -520,7 +520,7 @@ public class Preferences {
 	}
 
 	public void setUseReasoner(boolean useReasoner) {
-//	    logger.info("Prefs.setUseReasoner " + useReasoner); // DEL
+	    logger.debug("Prefs.setUseReasoner " + useReasoner);
 		this.useReasoner = useReasoner;
 	}
 
@@ -529,7 +529,7 @@ public class Preferences {
 	}
 
 	public void setReasonerName(String name) {
-//	    logger.info("Prefs.setReasonerName " + name); // DEL
+	    logger.debug("Prefs.setReasonerName " + name); 
 	        this.reasonerName = name;
 	}
 

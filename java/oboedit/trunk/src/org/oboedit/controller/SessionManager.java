@@ -181,7 +181,7 @@ public class SessionManager {
 	}
 
 	public void setUseReasoner(final boolean useReasoner) {
-//	    logger.info("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
+	    logger.info("setUseReasoner: old = " + getUseReasoner() + ", new = " + useReasoner); // DEL
 		if (getUseReasoner() != useReasoner) {
 			Preferences.getPreferences().setUseReasoner(useReasoner);
 			fireReasonerStatusChange(new ReasonerStatusEvent(this, useReasoner));
@@ -196,7 +196,7 @@ public class SessionManager {
 	return Preferences.getPreferences().getReasonerName();
     }
     public void setReasonerName(String newReasonerName) {
-//	logger.info("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
+	logger.debug("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
 	if (!(newReasonerName.equals(getReasonerName()))) {
 	    Preferences.getPreferences().setReasonerName(newReasonerName);
 	    setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
@@ -318,7 +318,7 @@ public class SessionManager {
 			session.getOperationModel().removeLockstepModel(reasonerOpModel);
 		}
 		String reasonerName = getReasonerName();
-//	    logger.info("initializeReasonerDatabase(" + reasonerName + ")"); // DEL
+	    logger.debug("initializeReasonerDatabase(" + reasonerName + ")"); // DEL
 		reasoner = createReasoner(reasonerName);
 		reasoner.setLinkDatabase(session.getLinkDatabase());
 		reasonerOpModel = new ReasonerOperationModel(reasoner);
@@ -371,7 +371,7 @@ public class SessionManager {
 		return reasonerFactory.createReasoner();
 	    }
 	    else {
-//		logger.info("Got factory for reasoner " + reasonerName);  // DEL
+	    	logger.debug("Got factory for reasoner " + reasonerName);  // DEL
 		return reasonerFactory.createReasoner();
 	    }
 	}

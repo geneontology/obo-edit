@@ -43,13 +43,13 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void reasoningStarted() {
-//		    logger.info("ReasonerManagerComponent: reasoningStarted"); // DEL
+		    logger.debug("ReasonerManagerComponent: reasoningStarted"); // DEL
 		}
 	};
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-//		    logger.info("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+		    logger.debug("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
 		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -61,29 +61,31 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	 * SwingUtilities.invokeLater(barUpdater); } } };
 	 */
 
-	public ReasonerManagerComponent(String id) {
+	public ReasonerManagerComponent(String id) {		
 		super(id);
-		setPreferredSize(new Dimension(450,150));
-		setLayout(new BorderLayout());
-		summaryField.setPreferredSize(new Dimension(200, 50));
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());	
+		setPreferredSize(new Dimension(450,100));
+		summaryField.setPreferredSize(new Dimension(400, 25));
 		summaryField.setContentType("text/html");
 		summaryField.setEditable(false);
 
-		setLayout(new BorderLayout());
-		add(new JLabel("Reasoner "), "West");
+		add(new JLabel("Reasoner"),BorderLayout.WEST);
+		add(reasonerChoice,BorderLayout.EAST);
+		add(summaryField,BorderLayout.SOUTH);
+		
 		reasonerChoice.addItem("OFF");
 		// Get reasoner names from registry
 		ReasonerRegistry registry = ReasonerRegistry.getInstance();
-//		logger.info("Registered reasoners: " + registry.getRegisteredNames()); // DEL
+		logger.debug("Registered reasoners: " + registry.getRegisteredNames()); // DEL
 		for (String registryName : registry.getRegisteredNames()) 
 		    reasonerChoice.addItem(registryName);
 
-		// Why is this not constraining the height of the combobox (on Windows)?
 		reasonerChoice.setMaximumSize(
 		    new Dimension(Integer.MAX_VALUE, reasonerChoice.getPreferredSize().height));
 
 		reasonerChoice.setSelectedItem(sessionManager.getReasonerName());
-		add(reasonerChoice, "East");
+		
 	}
 
 	protected void enableReasoner(String reasonerChoice) {
