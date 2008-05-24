@@ -11,11 +11,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.obd.model.CompositionalDescription;
 import org.obd.model.Graph;
 import org.obd.model.LinkStatement;
 import org.obd.model.LiteralStatement;
 import org.obd.model.Node;
 import org.obd.model.Statement;
+import org.obd.model.CompositionalDescription.Predicate;
 import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
@@ -77,8 +80,7 @@ public class NodeResource extends OBDResource {
         }
         this.format = (String) request.getAttributes().get("format");
         this.dataSource = (String) request.getAttributes().get("dataSource");
-        
-        uriString = (String) request.getResourceRef().toString();
+        this.uriString = (String) request.getResourceRef().toString();
   
         getVariants().add(new Variant(MediaType.TEXT_HTML));
         
@@ -167,6 +169,10 @@ public class NodeResource extends OBDResource {
 	    			resourceMap.put("nodeLabel", StringEscapeUtils.escapeHtml(this.node.getLabel()));
 	    		}
     		}
+    		if (this.nodeString.contains("^")){
+				resourceMap.put("nodeIdIsComposed", true);
+				resourceMap.put("composedClassName", this.decomposeNode(this.getShard(dataSource).getCompositionalDescription(this.node.getId(), true)));
+			}
     		
 
     		// Annotation Statements 
@@ -222,9 +228,7 @@ public class NodeResource extends OBDResource {
     	List<SimpleHash> statements = new ArrayList<SimpleHash>();
     	if (aspect.equals("annotation")){
     		for (Statement s : this.getGraph("annotations").getStatements()){
-    			
-        		SimpleHash annotationStatement = new SimpleHash();
-    			annotationStatement.put("statement", this.hashifyStatement(s));
+    			SimpleHash annotationStatement = this.hashifyStatement(s);
         		Set<String> assignmentSources = new HashSet<String>();
     			Set<String> provenanceSources = new HashSet<String>();
     			for (Statement subStatement : s.getSubStatements()){
@@ -241,21 +245,17 @@ public class NodeResource extends OBDResource {
     		} 
     	} else if (aspect.equals("about")){
     		for (Statement s : this.getGraph("about").getStatements()){
-    			SimpleHash m = new SimpleHash();
-    			m.put("statement",this.hashifyStatement(s));
+    			SimpleHash m = this.hashifyStatement(s);
     			if (s.isInferred()){
     				m.put("entailment","I");
     			} else {
     				m.put("entailment","A");
     			}
     			statements.add(m);
-    			
-    			
     		}
 		} else if (aspect.equals("to")){
 			for (Statement s : this.getGraph("to").getStatements()){
-    			SimpleHash m = new SimpleHash();
-    			m.put("statement",this.hashifyStatement(s));
+    			SimpleHash m = this.hashifyStatement(s);
     			if (s.isInferred()){
     				m.put("entailment","I");
     			} else {
@@ -347,72 +347,131 @@ public class NodeResource extends OBDResource {
 		return graph;
 	}
 	
-	protected SimpleHash hashifyStatement(Statement s) {
-				
+	protected SimpleHash hashifyStatement(Statement s){
 		SimpleHash statementHash = new SimpleHash();
-		Node sourceNode = this.getOBDRestApplication().getShard(dataSource).getNode(s.getNodeId());
-		//if (sourceNode.getCompositionalDescription() != null && sourceNode.getCompositionalDescription().getPredicate().equals(Predicate.INTERSECTION)){
-		//	System.out.println("Source Node " + s.getNodeId() + " is complex.");
-		//} else {
-		//	System.out.println("Source Node " + s.getNodeId() + " is not complex.");
-		//}
 		
-		String sourceLabel = null;
-		if (sourceNode != null && sourceNode.getLabel() != null){
-			sourceLabel = sourceNode.getLabel();
-		} else {
-			sourceLabel = s.getNodeId();
-		}
-		if (sourceNode != null && (sourceNode.getSourceId() != null) && !sourceNode.getSourceId().equals("ZFIN")){
-			sourceLabel = StringEscapeUtils.escapeHtml(sourceLabel);
-		} 
-		statementHash.put("sourceLabel", sourceLabel);
-		statementHash.put("sourceHref", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getNodeId()));
+		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/html/node/";
 		
-		Node rn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getRelationId());
-		String relationLabel = null;
-		if (rn != null && rn.getLabel() != null){
-			relationLabel = this.prettifyRelationshipTerm(rn.getLabel());
-		} else {
-			relationLabel = this.prettifyRelationshipTerm(s.getRelationId());
-		}
-		if ((rn!= null) && (rn.getSourceId() != null) && !rn.getSourceId().equals("ZFIN")){
-			relationLabel = StringEscapeUtils.escapeHtml(relationLabel);
-		}
-		statementHash.put("relationLabel", relationLabel);
-		statementHash.put("relationHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getRelationId()));
-			
+		statementHash.put("subject", this.hashifyNode(s.getNodeId(), (hrefBase+Reference.encode(s.getNodeId()))));
+		SimpleHash relationshipHash = this.hashifyNode(s.getRelationId(), (hrefBase+Reference.encode(s.getRelationId())));
+		relationshipHash.put("nodeLabel", this.prettifyRelationshipTerm(s.getRelationId()));
+		statementHash.put("predicate", relationshipHash);
+		
 		if (s instanceof LinkStatement) {
-			
-			Node tn = this.getOBDRestApplication().getShard(dataSource).getNode(s.getTargetId());
-			String targetLabel = null;
-			if (tn != null && tn.getLabel() != null){
-				targetLabel = tn.getLabel();
-			} else {
-				targetLabel = s.getTargetId();
+			SimpleHash objectHash =this.hashifyNode(s.getTargetId(), (hrefBase+Reference.encode(s.getTargetId())));
+			if (s.isIntersectionSemantics()) {
+				objectHash.put("nscondition", true);    			
 			}
-			if (tn != null && (tn.getSourceId() != null) && !tn.getSourceId().equals("ZFIN")){
-				targetLabel = StringEscapeUtils.escapeHtml(targetLabel);
-			}
-			statementHash.put("targetLabel",targetLabel);
-			statementHash.put("targetHref","/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(s.getTargetId()));
-			
-			LinkStatement ls = (LinkStatement)s;
-			if (ls.isIntersectionSemantics()) {
-				statementHash.put("nscondition", true);    			
-			}
+			statementHash.put("object", objectHash);
 		} else if (s instanceof LiteralStatement) {
-			statementHash.put("targetLabel",((LiteralStatement)s).getSValue());
+			statementHash.put("object", this.hashifyNode(((LiteralStatement)s).getSValue(), null));
 		}
-		
 		return statementHash;
 	}
 	
-	protected String prettifyRelationshipTerm(String term){
-		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
-			return  term.substring(term.indexOf(":")+1).replace("_", " ");
+	protected SimpleHash decomposeNode(CompositionalDescription cd){
+		SimpleHash nodeHash = new SimpleHash();
+		
+		if (cd.isGenusDifferentia()){
+			Node subjectNode = this.getShard(dataSource).getNode(cd.getGenus().getNodeId());
+			if (subjectNode != null && subjectNode.getLabel() != null){
+				nodeHash.put("subjectLabel", subjectNode.getLabel());
+			} else {
+				nodeHash.put("subjectLabel", cd.getGenus().getNodeId());
+			}
+			nodeHash.put("args",this.decomposeArguments(cd.getDifferentiaArguments()));
+		}  else if (cd.isAtomic()){
+			nodeHash.put("subjectLabel", cd.toString());
 		} else {
-			return term.replace("_", " ");
+			nodeHash.put("relationLabel", this.prettifyRelationshipTerm(cd.getRelationId()));
+			nodeHash.put("args", this.decomposeArguments(cd.getArguments()));
 		}
+		return nodeHash;
+	}
+	
+	protected List<SimpleHash> decomposeArguments(Collection<CompositionalDescription> args){
+		List<SimpleHash> decomposedArgs = new ArrayList<SimpleHash>();
+		for (CompositionalDescription arg : args){
+			SimpleHash target = new SimpleHash();
+			if (this.hasSingularAtomicArgument(arg)){
+				target.put("relationLabel", this.prettifyRelationshipTerm(arg.getRelationId()));
+				String targetLabel = "";
+				if (arg.getPredicate().equals(Predicate.RESTRICTION)){
+					if (arg.getRestriction().isExistential()){
+						targetLabel += " some "; 
+					} else if (arg.getRestriction().isUniversal()){
+						targetLabel += " all ";
+					}
+				}
+				
+				Node targetNode = this.getShard(dataSource).getNode(arg.getFirstArgument().getNodeId());
+				if (targetNode != null && targetNode.getLabel() != null){
+					targetLabel += targetNode.getLabel();
+				} else {
+					targetLabel += arg.getFirstArgument().getNodeId();
+				}
+				target.put("targetLabel", targetLabel);
+			} else {
+				target.put("targetIsComplex", true);
+				target.put("composedClass", decomposeNode(arg));
+			}
+			decomposedArgs.add(target);
+		}
+		return decomposedArgs;
+	}
+	
+	
+	protected boolean hasSingularAtomicArgument(CompositionalDescription cd){
+		if (cd.getArguments().size()==1){
+			CompositionalDescription arg = cd.getFirstArgument();
+			if (arg.isAtomic()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected String prettifyRelationshipTerm(String term){
+		String formatted;
+		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
+			formatted = term.substring(term.indexOf(":")+1).replace("_", " ");
+		} else {
+			formatted  = term.replace("_", " ");
+		}
+		
+		if (term.equals("part of")){
+			formatted = "that is part of";
+		}
+		
+		if (term.equals("inheres in")){
+			formatted = "that inheres in";
+		}
+		return formatted;
+	}
+	
+	protected SimpleHash hashifyNode(String nodeId,String href){
+		SimpleHash nodeHash = new SimpleHash();
+		Node n = this.getShard(dataSource).getNode(nodeId);
+		String label = "";
+		if (n != null && n.getLabel() != null){
+			label = n.getLabel();
+		} else {
+			label = nodeId;
+		}
+		if (n != null && n.getSourceId()!=null && !n.getSourceId().equals("ZFIN")){
+			label = StringEscapeUtils.escapeHtml(label);
+		}
+		nodeHash.put("nodeLabel", label);
+		if (href != null){
+			nodeHash.put("nodeHref", href);
+		}
+		if (nodeId.contains("^")){
+			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
+			if (cd != null){
+				nodeHash.put("nodeIsComposed", true);
+				nodeHash.put("composedNode", this.decomposeNode(cd));
+			}
+		}
+		return nodeHash;
 	}
 }

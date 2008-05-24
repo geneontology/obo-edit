@@ -15,6 +15,8 @@ import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.LinkQueryTerm;
+import org.obd.query.Shard;
+import org.obd.query.impl.MultiShard;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -32,7 +34,7 @@ public class StatementsResource extends NodeResource {
 
 	protected String relationId;
 	protected String aspect;
-	protected String dataSource;
+
 
 	/**
 	 * Constructor.
@@ -48,11 +50,9 @@ public class StatementsResource extends NodeResource {
 		super(context, request, response);
 		relationId = (String) request.getAttributes().get("relation");
 		aspect = (String) request.getAttributes().get("aspect");
-		this.dataSource = (String) request.getAttributes().get("dataSource");
 		getVariants().clear();
-		//if (getNode() != null) {
-			getVariants().add(new Variant(MediaType.TEXT_HTML));
-		//}
+		getVariants().add(new Variant(MediaType.TEXT_HTML));
+
 	}
 
 
@@ -62,10 +62,18 @@ public class StatementsResource extends NodeResource {
 		
 		Collection<Statement> stmts = new HashSet<Statement>();
 		
+		LinkQueryTerm lq1 = new LinkQueryTerm();
+		lq1.setTarget("ZFIN:ZDB-GENE-980526-166");
+		for (Statement s : getShard(this.dataSource).getStatementsByQuery(lq1)){
+			System.out.println("S1: " + s.toString());
+		}
+		System.out.println("SIZE: " + getShard(this.dataSource).getStatementsByQuery(lq1).size());
+		
+		
 		if (aspect == null || aspect.equals("")){
 			aspect = "about";
 		}
-
+		
 		if (aspect.equals("immediate")){
 			LinkQueryTerm lq = new LinkQueryTerm();
 			if (relationId != null){
@@ -81,25 +89,29 @@ public class StatementsResource extends NodeResource {
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
 			
 		} else {
+		
 			LinkQueryTerm lq = new LinkQueryTerm();
-	
-			if (relationId != null)
+			
+			if (relationId != null){
 				lq.setRelation(relationId);
+			}
+			
 			if (aspect.equals("annotations")) {
 				lq = new AnnotationLinkQueryTerm(getNodeId());
 			} else {
 				if (aspect.equals("about") || aspect.equals("all")){
 					lq.setNode(getNodeId());
-				}else if (aspect.equals("to")){
+				} else if (aspect.equals("to")) {
 					lq.setTarget(getNodeId());
-				} else if (aspect.equals("source"))
+				} else if (aspect.equals("source")) {
 					lq.setSource(getNodeId());
-				else
+				} else {
 					lq.setNode(getNodeId());
+				}
 			}
 			
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-	
+			
 			if (aspect.equals("all")) {
 				lq = new LinkQueryTerm();
 				lq.setRelation(relationId);

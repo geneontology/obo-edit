@@ -31,7 +31,7 @@
 						<#list aboutStatements as statement>
 						<tr>
 							<th>
-								<#if statement.statement.nscondition?exists>
+								<#if statement.nscondition?exists>
 									<span style="font-weight:normal;">&otimes;</span>&nbsp;<span class="fixed_width">[${statement.entailment}]</span>
 								<#else>
 									&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>
@@ -39,9 +39,9 @@
 							</th>
 							
 					 		<td>
-					 			<@labelhref target=statement.statement.sourceHref label=statement.statement.sourceLabel/> 
-					 			<@labelhref target=statement.statement.relationHref label=statement.statement.relationLabel/> 
-					 			<@labelhref target=statement.statement.targetHref label=statement.statement.targetLabel/>
+					 			<@nodeHashHref nodeHash=statement.subject/>
+					 			<@nodeHashHref nodeHash=statement.predicate/>
+					 			<@nodeHashHref nodeHash=statement.object/>
 					 		</td>
 					 	</tr>
 					 	</#list>
@@ -88,9 +88,9 @@
 									&bull;&nbsp;<span class="fixed_width">[${statement.entailment}]</span>		
 								</th>
 						 		<td>
-						 			<@labelhref target=statement.statement.sourceHref label=statement.statement.sourceLabel/> 
-						 			<@labelhref target=statement.statement.relationHref label=statement.statement.relationLabel/> 
-						 			<@labelhref target=statement.statement.targetHref label=statement.statement.targetLabel/>
+									<@nodeHashHref nodeHash=statement.subject/>
+					 				<@nodeHashHref nodeHash=statement.predicate/>
+					 				<@nodeHashHref nodeHash=statement.object/>					 			
 						 		</td>
 						 	</tr>
 						</#list>
@@ -123,13 +123,15 @@
 						</tr>
 					</table>
 						<table class="annotationStatementTable">
-							<#list annotationStatements as statementMap>
+							<#list annotationStatements as statement>
 							<tr>
 								<th rowspan="3">
 									&bull;
 								</th>
 								<td>
-									<@labelhref target=statementMap.statement.sourceHref label=statementMap.statement.sourceLabel/> <@labelhref target=statementMap.statement.relationHref label=statementMap.statement.relationLabel/> <@labelhref target=statementMap.statement.targetHref label=statementMap.statement.targetLabel/>
+									<@nodeHashHref nodeHash=statement.subject/>
+					 				<@nodeHashHref nodeHash=statement.predicate/>
+					 				<@nodeHashHref nodeHash=statement.object/>
 								</td>
 							</tr>
 							<tr>
@@ -140,16 +142,16 @@
 							<tr>
 								<td>
 									Provenance:
-									<#if statementMap.provenance?has_content>
-										<#list statementMap.provenance as p>
+									<#if statement.provenance?has_content>
+										<#list statement.provenance as p>
 											${p},  
 										</#list>
 									<#else>
 										None.
 									</#if>&nbsp;&nbsp;
 									Source:
-									<#if statementMap.assigned_by?has_content>
-										<#list statementMap.assigned_by as c>
+									<#if statement.assigned_by?has_content>
+										<#list statement.assigned_by as c>
 											${c} 
 										</#list>
 									<#else>
@@ -195,3 +197,4 @@
 		</span>
 	</#if>
 </#macro>
+

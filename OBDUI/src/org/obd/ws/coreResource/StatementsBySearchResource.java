@@ -99,8 +99,13 @@ public class StatementsBySearchResource extends NodesBySearchResource {
     		if (aspect.equals("all")) {
     			lq = new LinkQueryTerm();
     			lq.setInferred(false);
-    			lq.setRelation(relationId);
+    			if (relationId != null){
+    				lq.setRelation(relationId);
+    			}
     			lq.setTarget(nodeId);
+    			resultStatements.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+    			lq = new AnnotationLinkQueryTerm(nodeId);
+    			lq.setInferred(false);
     			resultStatements.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
     		}
     	}
@@ -140,6 +145,7 @@ public class StatementsBySearchResource extends NodesBySearchResource {
     				resultStatementsList.add(this.hashifyStatement(s));
     			}
     		}
+    		
     		if (resultStatementsList.size()>0){
     			Collections.sort(resultStatementsList,new StatementHashSubjectComparator());
     			resourceMap.put("resultStatements", resultStatementsList);
