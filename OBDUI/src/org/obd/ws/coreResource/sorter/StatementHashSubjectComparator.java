@@ -12,7 +12,7 @@ public class StatementHashSubjectComparator implements Comparator<SimpleHash> {
 		try {
 			String subject1 = ((SimpleHash)o1).get("sourceLabel").toString();
 			String subject2 = ((SimpleHash)o2).get("sourceLabel").toString();
-			return subject1.compareTo(subject2);
+			return subject1.compareToIgnoreCase(subject2);
 		} catch (TemplateModelException e) {
 			e.printStackTrace();
 		}

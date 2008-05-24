@@ -1,3 +1,11 @@
+<#macro nodeHashHref nodeHash>
+	<#if nodeHash.nodeIsComposed?exists>
+		<@labelDecompose node=nodeHash.composedNode target=nodeHash.nodeHref/>
+	<#else>
+		<@labelhref target=nodeHash.nodeHref label=nodeHash.nodeLabel/>
+	</#if>
+</#macro>
+
 <#macro labelhref target='blank' label='blank'>
 	<#if target=='blank'>
 		${label}
@@ -33,6 +41,31 @@
         <input type="hidden" name="dataSource" id="dataSource" value="obdPhenotypeAll"/>
      </form>
  </div>
+</#macro>
+
+<#macro labelDecompose node target="none">
+	(<#if target != "none">
+		<a href="${target}">
+	</#if>
+	<#if node.subjectLabel?exists>
+		${node.subjectLabel}
+	</#if>
+	<#if node.relationLabel?exists>
+		<span style="color:#ff0000;">${node.relationLabel}</span>
+	</#if>
+	<#list node.args as arg>
+		<#if arg.relationLabel?exists>
+			<span style="color:#ff0000;">${arg.relationLabel}</span>
+		</#if>
+		<#if arg.targetIsComplex?exists>
+			<@labelDecompose node=arg.composedClass/>
+		<#else>
+			${arg.targetLabel}
+		</#if>
+	</#list>
+	<#if target != "none">
+		</a>
+	</#if>)
 </#macro>
 
 <#macro mappedPathsList>

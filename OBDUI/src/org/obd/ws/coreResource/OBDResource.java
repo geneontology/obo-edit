@@ -74,7 +74,7 @@ public abstract class OBDResource extends Resource {
 	//}
 	
 	public Shard getShard(String resourceName){
-		return ((OBDRestApplication)this.getApplication()).getShard(resourceName);
+		return this.getOBDRestApplication().getShard(resourceName);
 	}
 
 

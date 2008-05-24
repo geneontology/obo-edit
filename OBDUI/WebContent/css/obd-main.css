@@ -284,3 +284,14 @@ table.scoredNodeResults td{
     padding-left:2px;
     background-color:#fdfdfd;
 }
+
+table.mdInfo {
+    background:none;
+    font-size:12px;
+}
+
+table.mdInfo th {
+    font-weight:bold;
+    font-color:#000055;
+    text-align:left;
+}
