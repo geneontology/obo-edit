@@ -33,25 +33,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-apibinding.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-change.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-debugging.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-dig1_1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-functionalparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-functionalrenderer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-impl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-krssparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-mansyntaxparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-mansyntaxrenderer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-metrics.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-oboparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-owlxmlparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-owlxmlrenderer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfapi.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlrenderer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-util.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/BBOP"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OBO"/>
 	<classpathentry kind="output" path="classes"/>
