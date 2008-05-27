@@ -557,7 +557,9 @@ public class IDWDriver implements LayoutDriver {
 		for (int i = 0; i < viewMap.getViewCount(); i++) {
 			View v = viewMap.getViewAtIndex(i);
 			if (v instanceof DefaultViewSerializer.GarbageView) {
+			        logger.info("View #" + i + ", "  + v + ", is a garbage view--destroying"); 
 				destroyView(v);
+				i--;  // there's now one fewer thing in viewMap--don't miss the next one.
 				deadViews.add(getComponent(v).getID());
 			}
 		}
