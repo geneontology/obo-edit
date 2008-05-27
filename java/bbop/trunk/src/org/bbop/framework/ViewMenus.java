@@ -44,7 +44,6 @@ public class ViewMenus {
 	                if (factories == null) {
 				factories = new ArrayList<GUIComponentFactory>();
 				factoryMap.put(factory.getCategory(), factories);
-				factoryMap.put(factory.getCategory(), factories);
 	                }
 	                factories.add(factory);
 		}
@@ -70,6 +69,7 @@ public class ViewMenus {
 									.showComponent(factory, null);
 							}
 						});
+//					System.out.println(category.toString() + " menu: " + item.getText().toString()); // DEL
 					subMenu.add(item);
 				}
 				out.add(subMenu);
