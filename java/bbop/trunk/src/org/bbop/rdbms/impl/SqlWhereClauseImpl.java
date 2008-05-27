@@ -1,6 +1,7 @@
 package org.bbop.rdbms.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.bbop.rdbms.ConstraintSet;
@@ -46,7 +47,22 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 	
 	
 	public void addInConstraint(String s, Collection<?> in) {
-		this.constraintSet.addConstraint(s + " IN (" + concatValues(",",in) + ")");
+		/*
+		Collection<String> vals = new HashSet<String>();
+		for (Object o : in) {
+			if (o instanceof String) {
+				String v = ((String)o).replaceAll("'", "''");
+				vals.add();
+			}
+			else {
+				vals.add(o.toString());
+			}
+		}
+		*/
+		if (in.size() == 0)
+			constraintSet.addConstraint("1=0");
+		else
+			constraintSet.addConstraint(s + " IN (" + concatValues(",",in) + ")");
 	}
 	
 	public void addContainsAllConstraint(String colName,String in){
