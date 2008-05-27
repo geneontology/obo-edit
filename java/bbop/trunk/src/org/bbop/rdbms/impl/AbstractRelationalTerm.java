@@ -43,7 +43,7 @@ public abstract class AbstractRelationalTerm implements RelationalTerm {
 		if (o instanceof Integer)
 			return o.toString();
 		else
-			return "'"+o.toString()+"'"; // TODO: make safe
+			return "'"+o.toString().replaceAll("'", "''")+"'"; 
 	}
 
 }
