@@ -28,7 +28,6 @@ import javax.swing.tree.TreePath;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.DataAdapterRegistry;
 import org.bbop.dataadapter.GraphicalAdapterChooser;
-import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
 import org.bbop.swing.AbstractDynamicMenuItem;
@@ -40,19 +39,12 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.HistoryList;
 import org.obo.history.SessionHistoryList;
-import org.obo.identifier.DefaultIDGenerator;
-import org.obo.identifier.IDGenerator;
-import org.obo.identifier.IDResolution;
-import org.obo.identifier.IDWarning;
-import org.obo.identifier.LinkIDResolution;
-import org.obo.identifier.LinkIDWarning;
-import org.obo.identifier.UnresolvedIDsException;
-import org.obo.util.IDUtil;
 import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.factory.IDResolutionComponentFactory;
+import org.obo.identifier.DefaultIDGenerator;
+import org.obo.identifier.IDGenerator;
 
 import org.apache.log4j.*;
 
@@ -74,12 +66,13 @@ public class FileMenu extends DynamicMenu {
 			}
 		};
 		JMenuItem importItem = new JMenuItem("Import Terms...");
-		JMenuItem resolveItem = new JMenuItem("Fix IDs...");
 		saveItem = new JMenuItem("Save");
 		JMenuItem saveAsItem = new JMenuItem("Save As...");
 
 		JMenuItem saveHistoryItem = new JMenuItem("Save History...");
 		JMenuItem applyHistoryItem = new JMenuItem("Load History...");
+		// Moved to EditMenu
+//		JMenuItem resolveItem = new JMenuItem("Fix IDs...");
 		JMenuItem exitItem = new JMenuItem("Quit");  // Was Exit
 
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit
@@ -94,7 +87,7 @@ public class FileMenu extends DynamicMenu {
 		add(newItem);
 		add(loadItem);
 		add(importItem);
-		add(resolveItem);
+//		add(resolveItem);
 		// removed until the correct behavior is figured out
 		// fileMenu.add(saveItem);
 
@@ -119,13 +112,13 @@ public class FileMenu extends DynamicMenu {
 
 		});
 
-		resolveItem.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				resolveIDs();
-			}
-
-		});
+// 		resolveItem.addActionListener(new ActionListener() {
+// 
+// 			public void actionPerformed(ActionEvent e) {
+// 				resolveIDs();
+// 			}
+// 
+// 		});
 
 		loadItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -221,100 +214,18 @@ public class FileMenu extends DynamicMenu {
 		}
 	}
 
-	protected boolean resolveIDs() {
-		try {
-			IDUtil.updateIDs(SessionManager.getManager().getSession(),
-					new ArrayList<LinkIDResolution>(), true);
-			return true;
-		} catch (UnresolvedIDsException e) {
-			ComponentManager.getManager().showComponent(
-					new IDResolutionComponentFactory(), true);
-			return false;
-		}
-		// boolean failed;
-		// final Collection<LinkIDResolution> resolutions = new
-		// ArrayList<LinkIDResolution>();
-		// do {
-		// failed = false;
-		// try {
-		// IDUtil.updateIDs(SessionManager.getManager().getSession(),
-		// resolutions, true);
-		// } catch (UnresolvedIDsException e) {
-		// failed = true;
-		// JPanel panel = new JPanel();
-		// panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		// Collection<IDWarning> idWarnings = new ArrayList<IDWarning>();
-		// boolean interventions = false;
-		// for (LinkIDWarning warning : e.getWarnings()) {
-		// JPanel linePanel = new JPanel();
-		// linePanel.setLayout(new BorderLayout());
-		// linePanel.add(new JLabel(warning.toString()),
-		// BorderLayout.NORTH);
-		// linePanel.add(Box.createHorizontalStrut(20),
-		// BorderLayout.WEST);
-		// JPanel optionsPanel = new JPanel();
-		// optionsPanel.setLayout(new BoxLayout(optionsPanel,
-		// BoxLayout.Y_AXIS));
-		// linePanel.add(optionsPanel, BorderLayout.CENTER);
-		// final JCheckBox ignoreCheckbox = new JCheckBox(
-		// "Ignore this");
-		// final Collection<JCheckBox> otherOptions = new
-		// ArrayList<JCheckBox>();
-		// boolean localInterventions = false;
-		// for (final LinkIDResolution res : warning.getResolutions()) {
-		// if (res.requiresUserIntervention()) {
-		// localInterventions = true;
-		// final JCheckBox resolutionBox = new JCheckBox(res
-		// .toString());
-		// resolutionBox
-		// .addActionListener(new ActionListener() {
-		//
-		// public void actionPerformed(
-		// ActionEvent e) {
-		// if (resolutionBox.isSelected()) {
-		// ignoreCheckbox
-		// .setSelected(false);
-		// resolutions.remove(res);
-		// } else
-		// resolutions.add(res);
-		// }
-		//
-		// });
-		// optionsPanel.add(resolutionBox);
-		// } else
-		// resolutions.add(res);
-		// }
-		// if (!localInterventions)
-		// continue;
-		// else
-		// interventions = true;
-		// ignoreCheckbox.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// if (ignoreCheckbox.isSelected())
-		// for (JCheckBox box : otherOptions)
-		// box.setSelected(false);
-		// }
-		// });
-		// optionsPanel.add(ignoreCheckbox);
-		// panel.add(linePanel);
-		// }
-		// if (interventions) {
-		// final JDialog dialog = new JDialog((Frame) null, true);
-		// JButton closeButton = new JButton("Ok");
-		// closeButton.addActionListener(new ActionListener() {
-		//
-		// public void actionPerformed(ActionEvent e) {
-		// dialog.dispose();
-		// }
-		// });
-		// panel.add(closeButton, BorderLayout.SOUTH);
-		// dialog.setContentPane(panel);
-		// dialog.pack();
-		// dialog.show();
-		// }
-		// }
-		// } while (failed);
-	}
+	// Moved to EditMenu
+// 	protected boolean resolveIDs() {
+// 		try {
+// 			IDUtil.updateIDs(SessionManager.getManager().getSession(),
+// 					new ArrayList<LinkIDResolution>(), true);
+// 			return true;
+// 		} catch (UnresolvedIDsException e) {
+// 			ComponentManager.getManager().showComponent(
+// 					new IDResolutionComponentFactory(), true);
+// 			return false;
+// 		}
+// 	}
 
 	public static void newOntology() {
 		if (SessionManager.getManager().needsSave()) {
