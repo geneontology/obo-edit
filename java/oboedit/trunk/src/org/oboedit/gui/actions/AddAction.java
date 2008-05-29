@@ -65,11 +65,11 @@ public class AddAction implements ClickMenuAction {
 		} else {
 			if (SessionManager.getManager().getSession().getObject(id) != null) {
 				JOptionPane.showMessageDialog(GUIManager.getManager()
-						.getFrame(), "Id " + id + " already in use!");
+						.getFrame(), "ID " + id + " already in use!");
 				return null;
 			} else if (!IDUtil.isLegalID(id)) {
 				JOptionPane.showMessageDialog(GUIManager.getManager()
-						.getFrame(), "Id " + id
+						.getFrame(), "ID " + id
 						+ " contains illegal characters");
 				return null;
 			}

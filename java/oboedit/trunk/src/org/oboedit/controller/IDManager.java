@@ -58,7 +58,7 @@ public class IDManager {
 
 				if (!IDUtil.equals(currentProfile, profile)) {
 					int result = JOptionPane.showConfirmDialog(null,
-							"The id generation profile in " + "this file\n"
+							"The ID generation profile in " + "this file\n"
 									+ "does not match the current "
 									+ "id generation profile.\n\n"
 									+ "Use the profile loaded from "

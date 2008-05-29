@@ -241,9 +241,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 					.addItem(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
 			impliedTypeBox.addItem(OBOSerializationEngine.SAVE_ALL);
 
-			idRuleSelector.addItem("Don't write id rules");
-			idRuleSelector.addItem("Write current id rules");
-			idRuleSelector.addItem("Write originally loaded id rules");
+			idRuleSelector.addItem("Don't write ID rules");
+			idRuleSelector.addItem("Write current ID rules");
+			idRuleSelector.addItem("Write originally loaded ID rules");
 
 			rootAlgorithmChooser.addItem("GREEDY");
 			rootAlgorithmChooser.addItem("STRICT");

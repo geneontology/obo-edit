@@ -86,12 +86,12 @@ public class IDManagerComponent extends AbstractGUIComponent {
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				(new Exception("Add button pressed")).printStackTrace();
-				IDProfile profile = new NamedIDProfile("<new id profile>");
+				IDProfile profile = new NamedIDProfile("<new ID profile>");
 				if (profiles.contains(profile)) {
 					int counter = 0;
 					do {
 						counter++;
-						profile.setName("<new id profile " + counter + ">");
+						profile.setName("<new ID profile " + counter + ">");
 					} while (profiles.contains(profile));
 				}
 				profiles.add(profile);
