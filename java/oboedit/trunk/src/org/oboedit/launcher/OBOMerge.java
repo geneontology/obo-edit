@@ -163,7 +163,7 @@ public class OBOMerge {
 				} else {
 					clash
 							.setMessage("LIKELY ID CLASH FOUND: Both versions of the "
-									+ "ontology created a term with id "
+									+ "ontology created a term with ID "
 									+ item.getObjectID()
 									+ " but "
 									+ "the term is named "
@@ -172,8 +172,8 @@ public class OBOMerge {
 									+ objb.getName()
 									+ "in the other.");
 					clash
-							.setPossibleReasons("This is probably a harmful id clash. This "
-									+ "can happen when 2 users have specified overlapping id spaces"
+							.setPossibleReasons("This is probably a harmful ID clash. This "
+									+ "can happen when 2 users have specified overlapping ID spaces"
 									+ " and both create a new term. Two semantically distinct terms"
 									+ " are then assigned the same id. There's a slight chance that "
 									+ "this is a harmless error caused when an old "
@@ -386,7 +386,7 @@ public class OBOMerge {
 								ids.add(newID);
 							} catch (Exception ex) {
 								ex.printStackTrace();
-								logger.info("Could not reassign id "
+								logger.info("Could not reassign ID "
 										+ clash.getID() + " to " + newID
 										+ ". This is " + "probably a bug.");
 								System.exit(1);
@@ -410,7 +410,7 @@ public class OBOMerge {
 					reassignMe.setIDExtension(new NestedValueImpl());
 				reassignMe.getIDExtension().setSuggestedComment(
 						"id reassigned from " + clash.getID() + " by obomerge");
-				logger.info("set id extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
+				logger.info("set ID extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
 			}
 		}
 

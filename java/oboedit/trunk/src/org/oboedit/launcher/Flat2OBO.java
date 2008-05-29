@@ -47,13 +47,13 @@ public class Flat2OBO {
 			logger.info("  -def\tPath to the definition file");
 			logger.info("  -out, -o\tPath to the ouput file");
 			logger.info("Graph rearrangement:");
-			logger.info("  -del\tThe id of a term to be deleted");
+			logger.info("  -del\tThe ID of a term to be deleted");
 			System.err
-					.println("  -root\tThe id of a term to be made into a root");
+					.println("  -root\tThe ID of a term to be made into a root");
 			System.err
 					.println("  -ns\tRenames the namespace of the last node given by the -root switch");
 			System.err
-					.println("  -obs\tThe id of a holder node for obsolete terms");
+					.println("  -obs\tThe ID of a holder node for obsolete terms");
 			logger.info("  -defaultns\tSets the default namespace");
 			logger.info("Adapter options:");
 			System.err

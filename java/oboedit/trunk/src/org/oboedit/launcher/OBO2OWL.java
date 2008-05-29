@@ -702,7 +702,7 @@ public class OBO2OWL {
 						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
 						+ "        filter file or a link filter file to apply to the output file before writing. If the \n"
 						+ "        -allowdangling flag is specified, dangling links will not be written.\n"
-						+ "        The optional -p flag specifies the id of a property to use for \n"
+						+ "        The optional -p flag specifies the ID of a property to use for \n"
 						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
 						+ "        applies filters using strict root detection.");
 		System.exit(exitCode);

@@ -117,7 +117,7 @@ public class IDResolutionComponent extends AbstractGUIComponent {
 		try {
 			IDUtil.updateIDs(SessionManager.getManager().getSession(),
 					resolutions, true);
-			resultsPanel.add(new JLabel("<html><i>No id issues</i></html>"));
+			resultsPanel.add(new JLabel("<html><i>No ID issues</i></html>"));
 		} catch (UnresolvedIDsException e) {
 
 			for (LinkIDWarning warning : e.getWarnings()) {
@@ -216,7 +216,7 @@ public class IDResolutionComponent extends AbstractGUIComponent {
 				IdentifiedObject original = SessionManager.getManager()
 						.getSession().getObject(p.getOriginalID());
 				if (original == null) {
-					buffer.append("Replace dangling id " + p.getOriginalID());
+					buffer.append("Replace dangling ID " + p.getOriginalID());
 				} else
 					buffer.append("Replace obsolete term "
 							+ HTMLUtil.getHTMLLink(original, false));
@@ -235,7 +235,7 @@ public class IDResolutionComponent extends AbstractGUIComponent {
 				IdentifiedObject original = SessionManager.getManager()
 						.getSession().getObject(p.getOriginalID());
 				if (original == null) {
-					buffer.append("dangling id " + p.getOriginalID());
+					buffer.append("dangling ID " + p.getOriginalID());
 				} else
 					buffer.append("obsolete type "
 							+ HTMLUtil.getHTMLLink(original, false));
