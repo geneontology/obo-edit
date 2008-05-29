@@ -11,16 +11,22 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.bbop.framework.ComponentManager;
 import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.swing.DynamicMenuItem;
 import org.bbop.util.CollectionUtil;
 import org.obo.datamodel.Namespace;
+import org.obo.identifier.LinkIDResolution;
+import org.obo.identifier.UnresolvedIDsException;
+import org.obo.util.IDUtil;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.DefaultInputHandler;
+import org.oboedit.gui.factory.IDResolutionComponentFactory;
 
 import org.apache.log4j.*;
 
@@ -32,9 +38,16 @@ public class EditMenu extends DynamicMenu {
 	public EditMenu() {
 		super("Edit");
 		add(createUndoSubmenu());
+		add(createNamespaceSubmenu());
+		JMenuItem resolveItem = new JMenuItem("Fix IDs...");
+		resolveItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resolveIDs();
+			}
+		});
+		add(resolveItem);
 		add(DefaultInputHandler.getMenu(EditActionManager.getManager()
 				.getEditActions(), false));
-		add(createNamespaceSubmenu());
 
 	}
 
@@ -96,4 +109,18 @@ public class EditMenu extends DynamicMenu {
 		};
 		return menu;
 	}
+
+	protected boolean resolveIDs() {
+		try {
+			IDUtil.updateIDs(SessionManager.getManager().getSession(),
+					 new ArrayList<LinkIDResolution>(), true);
+			JOptionPane.showMessageDialog(null, "IDs all look ok!");
+			return true;
+		} catch (UnresolvedIDsException e) {
+			ComponentManager.getManager().showComponent(
+					new IDResolutionComponentFactory(), true);
+			return false;
+		}
+	}
+
 }
