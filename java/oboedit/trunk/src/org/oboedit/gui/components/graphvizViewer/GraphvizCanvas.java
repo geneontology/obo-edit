@@ -57,6 +57,8 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
+import org.oboedit.gui.components.ConfigurableTextComponent.CTConfigPanel;
+import org.oboedit.gui.components.ConfigurableTextComponent.InfoConfig;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 
@@ -67,35 +69,19 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphvizCanvas.class);
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
 	protected static final String BACKGROUND_COLOR = "Background color";
 	protected static final String TERM_BACKGROUND_COLOR = "Term background color";
 	protected static final String TERM_TEXT_COLOR = "Term text color";
 	protected static final String TERM_STROKE_COLOR = "Term stroke color";
-
-
-
-
-
-
 	protected static final String TYPE_STROKE_COLOR = "Type stroke color";
-
 	protected static final String TYPE_BACKGROUND_COLOR = "Type background color";
-
 	protected static final String TYPE_TEXT_COLOR = "Type text color";
-
 	protected static final String OBSOLETE_STROKE_COLOR = "Obsolete stroke color";
-
 	protected static final String OBSOLETE_BACKGROUND_COLOR = "Obsolete background color";
 	protected static final String OBSOLETE_TEXT_COLOR = "Obsolete text color";
 	protected static final String SELECTED_ONLY = "selected only";
 	protected static final String SELECTED_TO_ROOT = "selected to root";
-
 	protected static final String MINIMAL_SELECTION_GRAPH = "minimal "
 		+ "connected graph";
 	protected static final int MAX_LINE_LENGTH = 25;
@@ -110,35 +96,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
 	protected GraphvizViewConfiguration config = new GraphvizViewConfiguration();
-
-	protected JCheckBox succinctCheckbox = new JCheckBox("Succinct", true);
-	protected JCheckBox showBreakdownBox = new JCheckBox(
-			"Show per-type panels", true);
-
-	protected JCheckBox allTypesBox = new JCheckBox("Show all types panel",
-			true);
-
-	protected JCheckBox nonTransitiveBox = new JCheckBox(
-			"Show non-transitive types", false);
-	protected ConfigurationPanel configPanel = new ConfigurationPanel() {
-
-		@Override
-		public void commit() {
-			commitConfig();
-		}
-
-
-
-		@Override
-		public void init() {
-			initConfig();
-		}
-
-
-	};
-	//added this because dagview has one:
-	protected SessionManager sessionManager = SessionManager.getManager();
-
 	protected GraphvizConfiguration configuration = new GraphvizConfiguration();
 	protected float ranksep = .1f;
 
@@ -252,42 +209,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	}
 
-	public ComponentConfiguration getConfiguration() {
-		return configuration;
-	}
 
-
-
-
-//	public GraphvizCanvas(String id) {
-//	super(id);
-//	// TODO Auto-generated constructor stub
-//	configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.Y_AXIS));
-//	configPanel.add(createPanel(allTypesBox));
-//	configPanel.add(createPanel(showAnimations));
-//	configPanel.add(createPanel(nonTransitiveBox));
-//	configPanel.add(createPanel(showBreakdownBox));
-//	configPanel.add(createPanel(succinctCheckbox));
-//	Box orientationPanel = Box.createHorizontalBox();
-//	orientationPanel.add(new JLabel("Panel orientation"));
-//	orientationPanel.add(Box.createHorizontalStrut(10));
-//	orientationPanel.add(orientationChooser);
-//	orientationPanel.add(Box.createHorizontalGlue());
-//	configPanel.add(orientationPanel);
-//	configPanel.add(Box.createVerticalGlue());
-//	}
-
-//	public GraphPlugin() {
-
-	@Override
-	public ConfigurationPanel getConfigurationPanel() {
-		ConfigurationPanel configPanel = null;
-		return configPanel;
-	}
-
-	public String getName() {
-		return "GraphViz Viewer";  // was "Graph Viewer"
-	}
 
 	public void init() {
 		linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
@@ -308,21 +230,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 
-
-
-
-
-
-	public void setConfiguration(ComponentConfiguration configuration) {
-
-		if (configuration instanceof GraphvizConfiguration
-				&& configuration != null) {
-			this.configuration = (GraphvizConfiguration) configuration;
-		}
-		setDoFiltering(this.configuration.getDoFiltering());
-		reloadImage();
-	}
-
 	public void update() {
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			validate();
@@ -335,14 +242,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		}
 	}
 
-	protected void commitConfig() {
-		config.setAllTypes(allTypesBox.isSelected());
-		config.setNonTransitive(nonTransitiveBox.isSelected());
-		config.setShowPerType(showBreakdownBox.isSelected());
-		config.setSuccinctDisplay(succinctCheckbox.isSelected());
-		validate();
-		repaint();
-	}
+
 
 	protected String convertID(String id) {
 		return id.replace(':', '_');
@@ -444,13 +344,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			return configuration.getNodeShape();
 	}
 
-	protected void initConfig() {
-		allTypesBox.setAlignmentX(0);
-		allTypesBox.setSelected(config.isAllTypes());
-		nonTransitiveBox.setSelected(config.isNonTransitive());
-		showBreakdownBox.setSelected(config.isShowPerType());
-		succinctCheckbox.setSelected(config.isSuccinctDisplay());
-	}
+
 
 	protected void outputFile(File textFile) throws IOException {
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
@@ -1009,4 +903,22 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			set.removeAll(trash);
 		} while (trash.size() > 0);
 	}
+	
+	@Override
+	public ConfigurationPanel getConfigurationPanel() {		
+		return new GraphvizConfigurationPanel(this);
+
+	}
+	
+	@Override
+	public ComponentConfiguration getConfiguration() {
+		return new GraphvizViewerComponentConfiguration();
+	}
+
+	public void setConfiguration(ComponentConfiguration config) {
+		
+	}
+
+	
+	
 }
