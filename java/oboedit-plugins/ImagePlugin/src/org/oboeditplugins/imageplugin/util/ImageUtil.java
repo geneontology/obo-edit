@@ -1,4 +1,4 @@
-package org.oboeditplugins.imageplugin.util;
+package org.oboedit.gui.components.imageplugin.util;
 
 import java.io.File;
 import java.net.MalformedURLException;

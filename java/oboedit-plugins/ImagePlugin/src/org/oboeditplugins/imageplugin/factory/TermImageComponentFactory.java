@@ -1,7 +1,7 @@
-package org.oboeditplugins.imageplugin.factory;
+package org.oboedit.gui.components.imageplugin.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.oboeditplugins.imageplugin.component.TermImageDisplayComponent;
+import org.oboedit.gui.components.imageplugin.component.TermImageDisplayComponent;
 
 public class TermImageComponentFactory extends
 		AbstractComponentFactory<TermImageDisplayComponent> {
@@ -10,7 +10,7 @@ public class TermImageComponentFactory extends
 	}
 
 	public String getID() {
-		return "term_image_display";
+		return "TERM_IMAGE_DISPLAY";
 	}
 
 	@Override
@@ -19,11 +19,17 @@ public class TermImageComponentFactory extends
 	}
 
 	public FactoryCategory getCategory() {
-		return FactoryCategory.INFO;
+//		return FactoryCategory.INFO;
+		return FactoryCategory.VIEWERS;
 	}
 
 	public String getName() {
 		return "Term Image Display Panel";
+	}
+
+	@Override
+	public String getHelpTopicID() {
+		return "Term_Image_Display_Panel";
 	}
 
 }

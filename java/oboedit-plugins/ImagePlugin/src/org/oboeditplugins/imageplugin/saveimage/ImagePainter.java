@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.oboeditplugins.imageplugin.saveimage;
+package org.oboedit.gui.components.imageplugin.saveimage;
 
 import java.awt.Graphics2D;
 

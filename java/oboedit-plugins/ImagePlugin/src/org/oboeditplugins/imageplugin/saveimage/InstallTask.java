@@ -1,4 +1,4 @@
-package org.oboeditplugins.imageplugin.saveimage;
+package org.oboedit.gui.components.imageplugin.saveimage;
 
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -29,6 +29,7 @@ import org.bbop.framework.event.GUIComponentListener;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
+import org.oboedit.gui.Preferences;
 
 public class InstallTask implements GUITask {
 
@@ -52,31 +53,34 @@ public class InstallTask implements GUITask {
 
 	};
 
-	protected Icon cameraIcon = new BitmapIcon(
-			Toolkit
-					.getDefaultToolkit()
-					.createImage(
-							getClass()
-									.getResource(
-											"/org/oboeditplugins/imageplugin/" +
-											"resources/tiny_camera_icon.gif")));
+	// Now done in DefaultGUIStartupTask
+// 	protected Icon cameraIcon = new BitmapIcon(
+//  			Toolkit
+//  					.getDefaultToolkit()
+//  					.createImage(
+//  							getClass()
+// 									.getResource(
+// //											"/org.oboedit.gui.components.imageplugin/resources/" +
+// 										"org/oboedit/gui/components/imageplugin/resources/" +
+// 										"tiny_camera_icon.gif")));
 
-	protected ViewListener viewListener = new ViewListener() {
+// 	protected ViewListener viewListener = new ViewListener() {
 
-		public void viewCreated(View v, final GUIComponent c) {
-			installViewButtons(v, c);
-		}
+// 		public void viewCreated(View v, final GUIComponent c) {
+// 			System.out.println("InstallTask.viewCreated " + v); // DEL
+// 			installViewButtons(v, c);
+// 		}
 
-		public void viewDestroyed(View v, GUIComponent c) {
-			uninstallViewButtons(v, c);
-		}
-	};
+// 		public void viewDestroyed(View v, GUIComponent c) {
+// 			uninstallViewButtons(v, c);
+// 		}
+// 	};
 
 	protected SaveScreenMenuFactory menuFactory = new SaveScreenMenuFactory();
 	protected MultiMap<GUIComponent, JButton> buttonMap =
 		new MultiHashMap<GUIComponent, JButton>();
 
-	protected static void saveImage(final GUIComponent c) {
+	public static void saveImage(final GUIComponent c) {
 		ImagePainter painter = new ImagePainter() {
 			public void paint(Graphics2D g) {
 				((Component) c).paint(g);
@@ -93,21 +97,23 @@ public class InstallTask implements GUITask {
 		SaveImageUtil.savePainter(painter);
 	}
 
-	protected void installViewButtons(View v, final GUIComponent c) {
-		final JButton cameraButton = IDWUtil.createFlatHighlightButton(
-				// final JButton custom =
-				// ButtonFactory.createFlatHighlightButton(
-				cameraIcon, "Click to save an image file of this component", 0,
-				null);
-		buttonMap.add(c, cameraButton);
-		cameraButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				saveImage(c);
-			}
-		});
+	// Now done in DefaultGUIStartupTask
+// 	protected void installViewButtons(View v, final GUIComponent c) {
+// 		final JButton cameraButton = IDWUtil.createFlatHighlightButton(
+// 				// final JButton custom =
+// 				// ButtonFactory.createFlatHighlightButton(
+// 				cameraIcon, "Click to save an image file of this component", 0,
+// 				null);
+// 		System.out.println("installViewButtons: view = " + v + ", component = " + c + ", cameraIcon = " + cameraIcon); // DEL
+// 		buttonMap.add(c, cameraButton);
+// 		cameraButton.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent e) {
+// 				saveImage(c);
+// 			}
+// 		});
 
-		v.getCustomTitleBarComponents().add(cameraButton);
-	}
+// 		v.getCustomTitleBarComponents().add(cameraButton);
+// 	}
 	
 	protected void uninstallViewButtons(View v, GUIComponent c) {
 		for(JButton button : buttonMap.get(c)) {
@@ -135,20 +141,21 @@ public class InstallTask implements GUITask {
 		if (ComponentManager.getManager().getDriver() instanceof IDWDriver) {
 			IDWDriver driver = (IDWDriver) ComponentManager.getManager()
 					.getDriver();
-			driver.addViewListener(viewListener);
-			installViewButtons();
+//			driver.addViewListener(viewListener);
+//			installViewButtons();
 		}
 	}
 
-	protected void installViewButtons() {
-		if (ComponentManager.getManager().getDriver() instanceof IDWDriver) {
-			IDWDriver driver = (IDWDriver) ComponentManager.getManager()
-					.getDriver();
-			for (View v : driver.getAllViews()) {
-				installViewButtons(v, IDWDriver.getComponent(v));
-			}
-		}
-	}
+	// Now done in DefaultGUIStartupTask
+// 	protected void installViewButtons() {
+// 		if (ComponentManager.getManager().getDriver() instanceof IDWDriver) {
+// 			IDWDriver driver = (IDWDriver) ComponentManager.getManager()
+// 					.getDriver();
+// 			for (View v : driver.getAllViews()) {
+// 				installViewButtons(v, IDWDriver.getComponent(v));
+// 			}
+// 		}
+// 	}
 
 	protected void installMenuFactories() {
 		for (GUIComponent c : ComponentManager.getManager()
@@ -173,11 +180,11 @@ public class InstallTask implements GUITask {
 	public void shutdown() {
 		ComponentManager.getManager()
 				.removeComponentListener(componentListener);
-		if (ComponentManager.getManager().getDriver() instanceof IDWDriver) {
-			IDWDriver driver = (IDWDriver) ComponentManager.getManager()
-					.getDriver();
-			driver.removeViewListener(viewListener);
-		}
+//		if (ComponentManager.getManager().getDriver() instanceof IDWDriver) {
+//			IDWDriver driver = (IDWDriver) ComponentManager.getManager()
+//					.getDriver();
+//			driver.removeViewListener(viewListener);
+//		}
 		uninstallMenuFactories();
 	}
 

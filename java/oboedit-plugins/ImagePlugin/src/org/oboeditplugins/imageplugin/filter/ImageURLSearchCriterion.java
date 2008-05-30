@@ -1,4 +1,4 @@
-package org.oboeditplugins.imageplugin.filter;
+package org.oboedit.gui.components.imageplugin.filter;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -8,7 +8,7 @@ import org.bbop.framework.GUIManager;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.filters.AbstractStringCriterion;
-import org.oboeditplugins.imageplugin.util.ImageUtil;
+import org.oboedit.gui.components.imageplugin.util.ImageUtil;
 
 public class ImageURLSearchCriterion extends
 		AbstractStringCriterion<IdentifiedObject> {
