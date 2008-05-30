@@ -6,6 +6,7 @@ import java.util.List;
 
 
 
+
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.data.DataCallback;
 import net.mygwt.ui.client.data.DataList;
@@ -16,14 +17,13 @@ import net.mygwt.ui.client.viewer.IAsyncContentCallback;
 import net.mygwt.ui.client.viewer.ModelCellLabelProvider;
 import net.mygwt.ui.client.viewer.RemoteContentProvider;
 import net.mygwt.ui.client.viewer.TableViewer;
-import net.mygwt.ui.client.viewer.ViewerCell;
 import net.mygwt.ui.client.widget.table.Table;
 import net.mygwt.ui.client.widget.table.TableColumn;
 import net.mygwt.ui.client.widget.table.TableColumnModel;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 public class OrthologTableView extends GenericNodeListTableView {
 	
@@ -60,6 +60,7 @@ public class OrthologTableView extends GenericNodeListTableView {
 	public void createView() {
 		orthoCols = new TableColumn[getNumberOfColumnHeadings()];
 		List cols = getColumnHeadings();
+		//System.err.println("Column size createview: " + cols.size());
 
 		for (int i = 0; i < cols.size(); i++) {
 
@@ -67,7 +68,7 @@ public class OrthologTableView extends GenericNodeListTableView {
 			String colLabel = (String) (getColumnHeadingMap().containsKey(col) ? getColumnHeadingMap().get(col) : col);
 			orthoCols[i] = new TableColumn(colLabel,.15f);
 			orthoCols[i].setMinWidth(20);
-			orthoCols[i].setMaxWidth(100);
+			orthoCols[i].setMaxWidth(90);
 			//System.err.println("set up col: "+i);
 		}
 		
@@ -80,13 +81,8 @@ public class OrthologTableView extends GenericNodeListTableView {
 			
 			public void getData(LoadConfig config, DataCallback callback) {
 				// TODO Auto-generated method stub
-			    LoadResult result = getTestData();
-				System.err.println("From getData");
-				//System.err.println(list.toString());
-				
-				System.err.println(result.totalLength);
-				//System.err.println(result.data.toString());
-				//callback.setResult((LoadResult)result);
+			    LoadResult result = getTestData(config);
+				//System.err.println("From getData: " + result.totalLength);
 				callback.setResult(result);
 			}
 
@@ -94,7 +90,12 @@ public class OrthologTableView extends GenericNodeListTableView {
 				// TODO Auto-generated method stub
 				if (input instanceof List) {
 					 List list = (List)input;
-					System.err.println(list.toArray());
+					 //System.err.println("From getElements: " + list.size());
+					// for(int i = 0 ; i < list.size(); i++)  {
+						// Model m = (Model) list.get(i);
+						 //System.err.println("Print getElements: " + m.getAsString("target"));
+					// }
+					//System.err.println(list.toArray());
 					callback.setElements(list.toArray());
 				}
 				else {
@@ -124,28 +125,38 @@ public class OrthologTableView extends GenericNodeListTableView {
 		return orthoTbl;
 	}
 	
-    private LoadResult getTestData() {
+    private LoadResult getTestData(LoadConfig config) {
     	DataList sublist = new DataList();
-    	for (int i = 0 ; i <30 ; i++) {
+    	int start = config.start;
+    	int limit =100;
+        int step = 25;
+        
+        //System.err.println("Starting cursor: " + start);
+        
+    	for (int i = start ; i < step + start ; i++) {
     		OrthoData orthoData = getTestOrthoData();
     		Model m = new Model();
-    		m.set("target", orthoData.target);
-    		m.set("r.norvegicus",orthoData.rat);
-    		m.set("c.elegans", orthoData.worm);
-    		m.set("d.discoideum", orthoData.dicty);
-    		m.set("a.thaliana", orthoData.tair);
-    		m.set("s.cerevisiae", orthoData.sgd);
-    		m.set("s.pombe",orthoData.pombe);
-    		m.set("m.musculus", orthoData.mouse);
-    		m.set("d.melanogaster", orthoData.fly);
-    		m.set("e.coli", orthoData.ecoli);
-    		m.set("d.rio",orthoData.zfin);
+    		m.set("Target", orthoData.target + start);
+    		m.set("R.norvegicus",orthoData.rat);
+    		m.set("C.elegans", orthoData.worm);
+    		m.set("D.discoideum", orthoData.dicty);
+    		m.set("A.thaliana", orthoData.tair);
+    		m.set("S.cerevisiae", orthoData.sgd);
+    		m.set("S.pombe",orthoData.pombe);
+    		m.set("M.musculus", orthoData.mouse);
+    		m.set("D.melanogaster", orthoData.fly);
+    		m.set("E.coli", orthoData.ecoli);
+    		m.set("D.rio",orthoData.zfin);
     		sublist.add(m);
     	}
-    	System.err.println("From getTestdata");
-    	System.err.println(sublist.size());
+    	
+    	//System.err.println("From getTestdata data size: " + sublist.size());
+    	
     	LoadResult result = new LoadResult(sublist);
-    	System.err.println(result.totalLength);
+    	result.cursor = start;
+    	result.totalLength = limit;
+    	
+    	//System.err.println("From getTestdata: after Loadresult: " + result.totalLength);
     	return result;
     	
     }
@@ -155,7 +166,7 @@ public class OrthologTableView extends GenericNodeListTableView {
     	
     }
     
-    private OrthoData getTestOrthoData() {
+    private OrthoData getTestOrthoData () {
     	OrthoData data = new OrthoData();
     	data.target = "ADHIA|PO7327";
     	data.rat = "RGD:2044";
@@ -173,7 +184,7 @@ public class OrthologTableView extends GenericNodeListTableView {
     	
     }
     
-    private class OrthoData implements Serializable {
+    private class OrthoData  {
     	String target;
     	String rat,worm,dicty,tair,sgd,pombe,mouse,fly,ecoli,zfin;
     }

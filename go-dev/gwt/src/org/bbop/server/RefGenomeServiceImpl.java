@@ -72,13 +72,13 @@ public class RefGenomeServiceImpl extends RemoteServiceServlet implements RefGen
 
 	private Map<String,NodeDTO> nodeCache = new HashMap<String,NodeDTO>();
 
-	//static String userName = "sjcarbon";
-	//static String password = "";
 	static String userName = "remote_user";
 	static String password = "glurp";
+	//static String userName = "cjm";
+	//static String password = "";
 
-	//static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
-	static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
+	static String defaultJdbcPath = "jdbc:postgresql://spitz.lbl.gov:5432/obd_refg";
+	//static String defaultJdbcPath = "jdbc:postgresql://localhost:5432/obd_refg";
 
 	private String jdbcPath = null;
 	
