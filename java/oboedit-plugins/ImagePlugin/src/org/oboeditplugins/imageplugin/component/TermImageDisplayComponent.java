@@ -1,21 +1,15 @@
-package org.oboeditplugins.imageplugin.component;
+package org.oboedit.gui.components.imageplugin.component;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.HierarchyBoundsAdapter;
-import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,17 +17,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.JOptionPane;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.GUIManager;
+import org.bbop.io.FileUtil;
 import org.bbop.swing.ScalingComponent;
 import org.bbop.swing.SwingUtil;
+import org.bbop.util.ClassUtil;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
@@ -44,55 +36,54 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
-import org.oboeditplugins.imageplugin.util.ImageUtil;
+import org.oboedit.gui.components.imageplugin.util.ImageUtil;
+import org.apache.log4j.*;
 
 public class TermImageDisplayComponent extends AbstractGUIComponent {
 
-	protected Image image;
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(TermImageDisplayComponent.class);
 
-	protected String imageLoc;
-
-	protected JLabel label = new JLabel();
+	protected JLabel explanation = new JLabel();
 
 	protected JLabel imageLabel = new JLabel();
 
 	protected SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
-			image = null;
 			LinkedObject lo = e.getSelection().getTermSubSelection();
 			if (lo == null) {
-				imageLabel.setText("");
-				return;
+			    imageLabel.setText("<html></html>");
+			    return;
 			}
 			String s = ImageUtil.getImmediateFile(lo.getID());
-			if (s == null) {
+			if (s == null) {  // No image file for this term
+				// See if it has a parent term to try getting the image for
 				OBOProperty partof = (OBOProperty) SessionManager.getManager()
 						.getSession().getObject("part_of");
-				if (partof == null)
+				if (partof == null) {  // No parent term to try
+					imageLabel.setText("<html></html>");
+					repaint();
 					return;
+				}
 				ReasonedLinkDatabase reasoner = SessionManager.getManager()
-						.getReasoner();
+					.getReasoner();
 				LinkedObject settleForMe = ImageUtil.getBestObject(reasoner,
-						partof, e.getSelection().getTermSubSelection());
+										   partof, e.getSelection().getTermSubSelection());
 				if (settleForMe != null)
 					s = ImageUtil.getImmediateFile(settleForMe.getID());
-				else {
 
-				}
-				if (s == null) {
-					label.setText("No image found");
-				} else
-					label.setText("No image found for " + lo.getName()
+				if (s != null)
+					explanation.setText("No image found for " + lo.getName()
 							+ ", showing image for " + settleForMe.getName());
-				add(label, "South");
+				add(explanation, "South");
 			} else {
-				remove(label);
+				remove(explanation);
 			}
 			if (s != null) {
-				imageLoc = s;
 				imageLabel.setText("<html><img src='" + s + "'></html>");
-			} else
-				imageLabel.setText("");
+			} else {
+				imageLabel.setText("<html></html>");
+			}
 			validate();
 			repaint();
 		}
@@ -104,13 +95,42 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 		super(id);
 		setLayout(new BorderLayout());
 		add(new ScalingComponent(imageLabel), "Center");
+		createTermImagesFromResource();
+	}
+
+	private void createTermImagesFromResource() {
 		directory = new File(GUIManager.getManager().getPrefsDir(), "images");
+		logger.info("Directory for term images: " + directory);
+		// See if user's directory for term images exists yet--if not, create it
+		// and install the term images we have in the jar.
+		if (!directory.exists()) {
+			logger.info(directory + " not found--getting term image files from jar.");
+			directory.mkdirs();
+			// Copy all term images from resources to this directory
+			List<URL> builtInImages = ClassUtil.getResources(Preferences.class.getClassLoader(),
+									 "/org/oboedit/gui/resources/term-images/**", "gif",
+									 "jpg", "svg");
+			String available = "";
+			for (final URL url : builtInImages) {
+				String path = url.getPath().substring(url.getPath().indexOf("!") + 1);
+				String imageFile = path.substring(path.lastIndexOf("/")+1);
+				String goTerm = imageFile.substring(0, imageFile.indexOf(".")-1);
+				available += " " + goTerm + "\n";
+//				System.out.println("url = " + url.getFile() + ", path = " + path); // DEL
+				try {
+					FileUtil.ensureExists(new File(directory.toString() + "/" + imageFile), path);
+				} catch (Exception e) {
+					logger.warn("Couldn't create " + directory.toString() + "/" + imageFile + " from resource " + path);
+				}
+			}
+			JOptionPane.showMessageDialog(null, "Terms for which image files were found:\n" + available);
+		}
 	}
 
 	protected void buildMap() {
 		if (!directory.exists())
 			directory.mkdirs();
-		System.err.println("directory = " + directory);
+//		System.err.println("directory = " + directory);
 		File[] files = directory.listFiles();
 		for (File file : directory.listFiles()) {
 			String name = file.getName();

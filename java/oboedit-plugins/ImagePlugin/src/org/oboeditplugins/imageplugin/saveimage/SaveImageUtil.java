@@ -1,4 +1,4 @@
-package org.oboeditplugins.imageplugin.saveimage;
+package org.oboedit.gui.components.imageplugin.saveimage;
 
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.framework.IOManager;
