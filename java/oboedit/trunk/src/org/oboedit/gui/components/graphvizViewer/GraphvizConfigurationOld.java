@@ -14,10 +14,10 @@ import org.oboedit.controller.SessionManager;
 
 import org.apache.log4j.*;
 
-public class GraphvizConfiguration implements ComponentConfiguration {
+public class GraphvizConfigurationOld implements ComponentConfiguration {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(GraphvizConfiguration.class);
+	protected final static Logger logger = Logger.getLogger(GraphvizConfigurationOld.class);
 	protected Map colorMap = new HashMap();
 	protected Color bgcolor = Color.black;
 
@@ -48,7 +48,7 @@ public class GraphvizConfiguration implements ComponentConfiguration {
 
 	protected boolean doFiltering = false;
 
-	public GraphvizConfiguration() {
+	public GraphvizConfigurationOld() {
 	}
 
 	public Color getBGColor() {

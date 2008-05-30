@@ -95,8 +95,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	static int idgen = 0;
 
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected GraphvizViewConfiguration config = new GraphvizViewConfiguration();
-	protected GraphvizConfiguration configuration = new GraphvizConfiguration();
+	protected GraphvizConfigurationOld configuration = new GraphvizConfigurationOld();
 	protected float ranksep = .1f;
 
 	protected float nodesep = .1f;
@@ -906,13 +905,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {		
-		return new GraphvizConfigurationPanel(this);
+		return new GraphvizConfigurationPanelNew(this);
 
 	}
 	
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		return new GraphvizViewerComponentConfiguration();
+		return new GraphvizViewerComponentConfigurationNew();
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
