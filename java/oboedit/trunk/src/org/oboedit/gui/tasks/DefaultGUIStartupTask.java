@@ -104,6 +104,7 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
+import org.oboedit.gui.components.imageplugin.factory.TermImageComponentFactory;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
@@ -145,7 +146,7 @@ import org.oboedit.gui.menu.FileMenu;
 import org.oboedit.gui.menu.OEHelpMenu;
 import org.oboedit.script.GUIScriptDelegate;
 import org.oboedit.util.GUIUtil;
-
+import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
 
 import org.apache.log4j.*;
 
@@ -161,8 +162,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				.getFrame(), Preferences.getPreferences()
 				.getUseModalProgressMonitors());
 		return CollectionUtil.list(new AutosaveTask(),
-				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
-				new FrameNameUpdateTask(), screenLockTask
+					   new PostLoadVerifyTask(), new PreSaveVerifyTask(),
+					   new FrameNameUpdateTask(), screenLockTask,
+					   new InstallTask()
 		// , new AnnotationNumberFetchBehaviorTask()
 				// , new LineNumberFetchBehaviorTask()
 				);
@@ -209,6 +211,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	@Override
 	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
 		return (Collection) CollectionUtil.list(new TermPanelFactory(),
+				new TermImageComponentFactory(),
 				new GraphEditorFactory(), new TextEditorFactory(),
 				new TableOfContentsFactory(),
 				new IDResolutionComponentFactory(), new TreeViewFactory(),
@@ -233,8 +236,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
 				new ConfigurableMessageComponentFactory(),
-				new SearchResultsComponentFactory());
-
+				new SearchResultsComponentFactory()
+			);
 	}
 
 	@Override
@@ -311,6 +314,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 			protected Icon filterInvIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
+
+			protected Icon cameraIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("tiny_camera_icon.gif"));
 
 			protected MultiMap<GUIComponent, JComponent> compMap = new MultiArrayListMap<GUIComponent, JComponent>();
 
@@ -391,7 +397,6 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 					compMap.add(c, filterButton);
 				}
 				if (c instanceof ObjectSelector) {
-
 					final JToggleButton liveButton = IDWUtil
 							.createFlatHighlightToggleButton(
 									// final JButton custom =
@@ -425,6 +430,20 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 					});
 					compMap.add(c, liveButton);
 				}
+
+				// Add camera icon to list of icons to add to titlebars
+				final JButton cameraButton = IDWUtil.createFlatHighlightButton(
+					cameraIcon, "Click to save an image file of this component", 0,
+					null);
+				compMap.add(c, cameraButton);
+				cameraButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							InstallTask.saveImage(c);
+						}
+					});
+				cameraButton.setToolTipText("Save an image file of this component");
+
+				// Add icons to titlebars
 				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().add(bc);
 					// Also add to tab in case theme is not using titlebar style
