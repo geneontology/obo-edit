@@ -50,7 +50,8 @@ public class ViewMenus {
 		Comparator<GUIComponentFactory> factoryComparator = new Comparator<GUIComponentFactory>() {
 	                public int compare(GUIComponentFactory o1,
 					   GUIComponentFactory o2) {
-				return o1.toString().compareTo(o2.toString());
+//				return o1.toString().compareTo(o2.toString());
+				return o1.getName().compareTo(o2.getName());
 	                }
 		};
 
@@ -69,7 +70,7 @@ public class ViewMenus {
 									.showComponent(factory, null);
 							}
 						});
-//					System.out.println(category.toString() + " menu: " + item.getText().toString()); // DEL
+//					System.out.println(category.toString() + " menu: " + item.getText().toString() + " (factory = " + factory.toString() + ")"); // DEL
 					subMenu.add(item);
 				}
 				out.add(subMenu);
