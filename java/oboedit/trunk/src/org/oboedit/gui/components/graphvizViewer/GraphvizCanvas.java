@@ -3,7 +3,6 @@ package org.oboedit.gui.components.graphvizViewer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,12 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -40,9 +35,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
+import org.apache.log4j.Logger;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
@@ -52,24 +46,20 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
-import org.obo.datamodel.OBOProperty;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.components.ConfigurableTextComponent.CTConfigPanel;
 import org.oboedit.gui.components.ConfigurableTextComponent.InfoConfig;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 
-import org.apache.log4j.*;
-
 public class GraphvizCanvas extends AbstractGUIComponent {
 
-	//initialize logger
-	protected final static Logger logger = Logger.getLogger(GraphvizCanvas.class);
-
 	private static final long serialVersionUID = 1L;
+
+	// initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphvizCanvas.class);
 	protected static final String BACKGROUND_COLOR = "Background color";
 	protected static final String TERM_BACKGROUND_COLOR = "Term background color";
 	protected static final String TERM_TEXT_COLOR = "Term text color";
@@ -82,71 +72,43 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected static final String OBSOLETE_TEXT_COLOR = "Obsolete text color";
 	protected static final String SELECTED_ONLY = "selected only";
 	protected static final String SELECTED_TO_ROOT = "selected to root";
-	protected static final String MINIMAL_SELECTION_GRAPH = "minimal "
-		+ "connected graph";
+	protected static final String MINIMAL_SELECTION_GRAPH = "minimal connected graph";
 	protected static final int MAX_LINE_LENGTH = 25;
-	protected static final ColorPair defaultLabelColors = new ColorPair(
-			Color.blue, Color.blue);
-
-	protected static final ColorPair defaultRedundantColors = new ColorPair(
-			Color.red, Color.red);
+	protected static final ColorPair defaultLabelColors = new ColorPair(Color.blue, Color.blue);
+	protected static final ColorPair defaultRedundantColors = new ColorPair(Color.red, Color.red);
 	protected static final String[] formatList = { "jpg", "gif" };
-
 	static int idgen = 0;
-
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
 	protected GraphvizConfigurationOld configuration = new GraphvizConfigurationOld();
 	protected float ranksep = .1f;
-
 	protected float nodesep = .1f;
-	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,
-			MINIMAL_SELECTION_GRAPH };
-
+	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,MINIMAL_SELECTION_GRAPH };
 	protected JComboBox modeList = new JComboBox(modes);
-
 	protected Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
 			"diamond", "parallelogram", "house", "pentagon", "hexagon",
 			"septagon", "octagon", "invtriangle" };
-
 	protected JComboBox nodeShapeList = new JComboBox(shapeArr);
-
 	protected JComboBox typeShapeList = new JComboBox(shapeArr);
-
-
 	protected JComboBox obsoleteShapeList = new JComboBox(shapeArr);
-
-	protected JCheckBox flipoverBox = new JCheckBox(
-	"Draw graph with root on top");
-
+	protected JCheckBox flipoverBox = new JCheckBox("Draw graph with root on top");
 	protected JCheckBox showIDsBox = new JCheckBox("Show ids");
-
-
-
-
 	protected JTabbedPane optionsPane = new JTabbedPane();
-
 	protected LinkDatabase linkDatabase;
-
 	protected SelectionListener selectionListener = new SelectionListener() {
 
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();
-			//logger.info("now updating selection.");
+			// logger.info("now updating selection.");
 		}
 	};
 
 	protected String mode = SELECTED_TO_ROOT;
-
 	JComboBox formatBox = new JComboBox(formatList);
-
 	LinkListener linkListener = new LinkListener(this);
-
 	JPanel imagePanel = new JPanel();
 	JLabel imageLabel = new JLabel();
-
 	JEditorPane htmlPane = new JEditorPane();
-
 	JScrollPane pane = new JScrollPane(htmlPane,
 			ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -163,22 +125,19 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		htmlPane.setContentType("text/html");
 		htmlPane.setEditable(false);
 		htmlPane.addHyperlinkListener(linkListener);
-
 		optionButton.setBackground(Preferences.defaultButtonColor());
 		saveButton.setBackground(Preferences.defaultButtonColor());
-
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.add(Box.createHorizontalGlue());
 		buttonBox.add(optionButton);
 		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(modeList);
 		buttonBox.add(Box.createHorizontalStrut(10));
-		buttonBox.add(primaryFiltersCheckbox );
+		buttonBox.add(primaryFiltersCheckbox);
 		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(saveButton);
 		buttonBox.add(Box.createHorizontalGlue());
 		add(buttonBox, "South");
-
 		add(pane, "Center");
 
 		primaryFiltersCheckbox.addActionListener(new ActionListener() {
@@ -203,16 +162,24 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			}
 		});
 	}
-	public void cleanup() {
-		SelectionManager.getManager().removeSelectionListener(selectionListener);
 
+	public void cleanup() {
+		SelectionManager.getManager()
+				.removeSelectionListener(selectionListener);
 	}
 
+	@Override
+	public ComponentConfiguration getConfiguration() {
+		return new GraphvizViewerComponentConfigurationNew();
+	}
 
+	@Override
+	public ConfigurationPanel getConfigurationPanel() {
+		return new GraphvizConfigurationPanelNew(this);
+	}
 
 	public void init() {
 		linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
-
 		setPreferredSize(new Dimension(200, 200));
 		formatBox.setFont(getFont());
 		modeList.setFont(getFont());
@@ -228,20 +195,24 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		reloadImage();
 	}
 
+	public void setConfiguration(ComponentConfiguration config) {
+//		if (config instanceof InfoConfig) {
+//			InfoConfig ic = (InfoConfig) config;
+//			setHTML(ic.getHtml());
+//		}
+	
+	}
 
 	public void update() {
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			validate();
 			repaint();
-
 		} else {
 			validate();
 			repaint();
-			//doUpdate();
+			// doUpdate();
 		}
 	}
-
-
 
 	protected String convertID(String id) {
 		return id.replace(':', '_');
@@ -250,7 +221,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String formatLabel(String name) {
 		StringBuffer out = new StringBuffer();
 		String spacerTokens = "-_, \t";
-		StringTokenizer tokenizer = new StringTokenizer(name, spacerTokens, true);
+		StringTokenizer tokenizer = new StringTokenizer(name, spacerTokens,
+				true);
 		int linelength = 0;
 		boolean first = true;
 		while (tokenizer.hasMoreElements()) {
@@ -273,9 +245,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				tr.getType().getID());
 		if (c == null)
 			c = defaultLabelColors;
-//		if (TermUtil.isRedundant(tr)) {
-//		c = defaultRedundantColors;
-//		}
+		// if (TermUtil.isRedundant(tr)) {
+		// c = defaultRedundantColors;
+		// }
 		return c;
 	}
 
@@ -297,14 +269,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(Link tr) {
 		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
-		+ "dir="
-		+ (configuration.getFlipOver() ? "back" : "forward")
-		+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
-		+ "fontsize=" + configuration.getLabelFont().getSize()
-		+ ", fontname=\""
-		+ configuration.getLabelFont().getFontName() + "\", "
-		+ "color=\"" + getColorString(getColor(tr).edge) + "\", "
-		+ "fontcolor=\"" + getColorString(getColor(tr).label) + "\"";
+				+ "dir=" + (configuration.getFlipOver() ? "back" : "forward")
+				+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
+				+ "fontsize=" + configuration.getLabelFont().getSize()
+				+ ", fontname=\"" + configuration.getLabelFont().getFontName()
+				+ "\", " + "color=\"" + getColorString(getColor(tr).edge)
+				+ "\", " + "fontcolor=\"" + getColorString(getColor(tr).label)
+				+ "\"";
 	}
 
 	protected String getOptions(OBOClass t) {
@@ -313,24 +284,21 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			fontColor = configuration.getObsoleteFontColor();
 		else if (TermUtil.isProperty(t))
 			fontColor = configuration.getTypeFontColor();
-
 		Color strokeColor = configuration.getTermStrokeColor();
 		if (t.isObsolete())
 			strokeColor = configuration.getObsoleteStrokeColor();
 		else if (TermUtil.isProperty(t))
 			strokeColor = configuration.getTypeStrokeColor();
-
 		String s = "label=\"" + formatLabel(t.getName())
-		+ (configuration.getShowIDs() ? "\\n\\n" + t.getID() : "")
-		+ "\", " + "shape=" + getShape(t) + ", fontsize="
-		+ configuration.getNodeFont().getSize() + ", "
-		+ "fontname=\""
-		+ configuration.getNodeFont().getFontName() + "\", "
-		+ "fillcolor=\""
-		+ getColorString(configuration.getTermBoxColor()) + "\""
-		+ ", color=\"" + getColorString(strokeColor) + "\""
-		+ ", fontcolor=\"" + getColorString(fontColor) + "\", "
-		+ "style=filled, URL=\"file:" + t.getID() + "\"";
+				+ (configuration.getShowIDs() ? "\\n\\n" + t.getID() : "")
+				+ "\", " + "shape=" + getShape(t) + ", fontsize="
+				+ configuration.getNodeFont().getSize() + ", " + "fontname=\""
+				+ configuration.getNodeFont().getFontName() + "\", "
+				+ "fillcolor=\""
+				+ getColorString(configuration.getTermBoxColor()) + "\""
+				+ ", color=\"" + getColorString(strokeColor) + "\""
+				+ ", fontcolor=\"" + getColorString(fontColor) + "\", "
+				+ "style=filled, URL=\"file:" + t.getID() + "\"";
 		return s;
 	}
 
@@ -343,22 +311,17 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			return configuration.getNodeShape();
 	}
 
-
-
 	protected void outputFile(File textFile) throws IOException {
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
 		writer.println("digraph G {");
-
 		writer.println("bgcolor=\""
 				+ getColorString(configuration.getBGColor()) + "\";");
 		writer.println("ranksep=\"" + ranksep + "\";");
 		writer.println("nodesep=\"" + nodesep + "\";");
-
 		HashSet relationshipSet = new HashSet();
 		populateSet(relationshipSet);
-
-		//logger.info("DEBUG : GraphPlugin : outputFile : relationSet size = " + relationshipSet.size());
-
+		// logger.info("DEBUG : GraphPlugin : outputFile : relationSet size = "
+		// + relationshipSet.size());
 		Iterator it = relationshipSet.iterator();
 		Set termSet = new HashSet();
 		while (it.hasNext()) {
@@ -394,15 +357,17 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedOnly(Set set) {
 		set.addAll(SelectionManager.getManager().getSelection().getTerms());
-//		This is not working because the getTerms class was changed in the 
-		//move to oboedit 2 and this needs to accommodate this
-		//in the same way that populateSelectedToRoot below accomodates it. 
-		//getTerms returns a set of terms of type linked object but set.addAll wants links.
+		// This is not working because the getTerms class was changed in the
+		// move to oboedit 2 and this needs to accommodate this
+		// in the same way that populateSelectedToRoot below accomodates it.
+		// getTerms returns a set of terms of type linked object but set.addAll
+		// wants links.
 
 	}
 
 	protected void populateSelectedToRoot(Set set) {
-		Iterator it = SelectionManager.getManager().getSelection().getTerms().iterator();
+		Iterator it = SelectionManager.getManager().getSelection().getTerms()
+				.iterator();
 		HashSet lookedAt = new HashSet();
 		while (it.hasNext()) {
 			Object o = it.next();
@@ -413,8 +378,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				LinkedObject t = tr.getChild();
 				populateSelectedToRoot(set, t, lookedAt);
 
-				//the two lines below were added to make oboedit 2 work. 
-				//they change it to expect terms instead of links. 
+				// the two lines below were added to make oboedit 2 work.
+				// they change it to expect terms instead of links.
 			} else if (o instanceof LinkedObject) {
 				populateSelectedToRoot(set, (LinkedObject) o, lookedAt);
 			}
@@ -445,7 +410,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected void reloadImage() {
-		if (1==1 || SelectionManager.getGlobalSelection().isEmpty())
+		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {
 				File imageFile = File.createTempFile("graphimage", "."
 						+ configuration.getViewerFormat());
@@ -454,23 +419,24 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				outputFile(textFile);
 				Process p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -T"
-						+ configuration.getViewerFormat() + " -o "
-						+ imageFile.getPath() + " " + textFile.getPath());
-				//logger.info(configuration.getDotPath() + " -T"
-				//	+ configuration.getViewerFormat() + " -o "
-				//+ imageFile.getPath() + " " + textFile.getPath());
+								+ configuration.getViewerFormat() + " -o "
+								+ imageFile.getPath() + " "
+								+ textFile.getPath());
+				// logger.info(configuration.getDotPath() + " -T"
+				// + configuration.getViewerFormat() + " -o "
+				// + imageFile.getPath() + " " + textFile.getPath());
 				p.waitFor();
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
-						+ textFile.getPath());
-				//logger.info(configuration.getDotPath() + " -Tcmapx "
-				//	+ textFile.getPath());
+								+ textFile.getPath());
+				// logger.info(configuration.getDotPath() + " -Tcmapx "
+				// + textFile.getPath());
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
 				buffer.append("<head>\n");
 
-				BufferedReader reader = new BufferedReader(new InputStreamReader(p
-						.getInputStream()));
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(p.getInputStream()));
 				String line;
 				while ((line = reader.readLine()) != null) {
 					if (line.endsWith(" />"))
@@ -481,23 +447,24 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				htmlPane.setBackground(configuration.getBGColor());
 				buffer.append("</head>\n");
 				buffer.append("<body>\n");
-				buffer.append("<img src='file:" + imageFile + "' usemap='#G'>\n");
+				buffer.append("<img src='file:" + imageFile
+						+ "' usemap='#G'>\n");
 				buffer.append("</body>\n");
 				buffer.append("</html>\n");
 				imageLabel.setText(null);
 				imageLabel.setIcon(new ImageIcon(imageFile.getPath()));
-//				imagePanel.setBackground(bgcolor);
-//				htmlPane.setBackground(bgcolor);
+				// imagePanel.setBackground(bgcolor);
+				// htmlPane.setBackground(bgcolor);
 				htmlPane.setText(buffer.toString());
 
 				imageFile.deleteOnExit();
 				textFile.deleteOnExit();
 			} catch (Exception ex) {
 				String failureHTML = "<html><center>Could not load GraphViz package.<br>"
-					+ "Make sure your properly obtained and installed GraphViz from<br>"
-					+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
-					+ "and be sure that the correct path to the executable file<br>"
-					+ "is specified in the options window.</center></html>";
+						+ "Make sure your properly obtained and installed GraphViz from<br>"
+						+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
+						+ "and be sure that the correct path to the executable file<br>"
+						+ "is specified in the options window.</center></html>";
 				imageLabel.setIcon(null);
 				imageLabel.setText(failureHTML);
 				ex.printStackTrace();
@@ -508,83 +475,46 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		configuration.setDoFiltering(doFiltering);
 		primaryFiltersCheckbox.setSelected(doFiltering);
 		if (!doFiltering)
-			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
+			linkDatabase = SessionManager.getManager().getSession()
+					.getLinkDatabase();
 		else
-			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();;
-			reloadImage();
+			linkDatabase = SessionManager.getManager().getSession()
+					.getLinkDatabase();
+		;
+		reloadImage();
 	}
 
+	
+	//This is the part that adds all the panels to the options window.
 	protected void showOptions() {
 		JPanel panel = new JPanel();
 		panel.setBackground(Preferences.defaultBackgroundColor());
 		panel.setLayout(new BorderLayout());
-
 		final FontChooser linkFontChooser = new FontChooser();
 		final FontChooser nodeFontChooser = new FontChooser();
-
 		final JButton commitButton = new JButton("Save Options");
-		final JTextField appPathField = new JTextField(configuration
-				.getDotPath());
-
+		final JTextField appPathField = new JTextField(configuration.getDotPath());
 		commitButton.setBackground(Preferences.defaultButtonColor());
 		commitButton.setFont(getFont());
-
 		linkFontChooser.setFont(getFont());
 		nodeFontChooser.setFont(getFont());
-
 		linkFontChooser.setChosenFont(configuration.getLabelFont());
 		nodeFontChooser.setChosenFont(configuration.getNodeFont());
-
 		nodeShapeList.setSelectedItem(configuration.getNodeShape());
 		typeShapeList.setSelectedItem(configuration.getTypeShape());
-		obsoleteShapeList
-		.setSelectedItem(configuration.getObsoleteShape());
-
+		obsoleteShapeList.setSelectedItem(configuration.getObsoleteShape());
 		flipoverBox.setSelected(configuration.getFlipOver());
 		showIDsBox.setSelected(configuration.getShowIDs());
-
 		formatBox.setSelectedItem(configuration.getViewerFormat());
-		/*
-		 * JPanel nodeShapePanel = new JPanel(); nodeShapePanel.add(nodeShape);
-		 */
 		TitledBorder linkFontBorder = new TitledBorder("Relationship type font");
 		TitledBorder nodeFontBorder = new TitledBorder("Term name font");
-
 		linkFontChooser.setBorder(linkFontBorder);
 		nodeFontChooser.setBorder(nodeFontBorder);
 		linkFontChooser.setOpaque(false);
 		nodeFontChooser.setOpaque(false);
-
 		JLabel noTypeLabel = new JLabel("no type selected");
-
 		Vector data = configuration.getNamedColorList();
-		/*
-		 * Vector data = new Vector(); data.add(new NamedColor(BACKGROUND_COLOR,
-		 * bgcolor));
-		 * 
-		 * data.add(new NamedColor(TERM_BACKGROUND_COLOR, termBoxColor));
-		 * data.add(new NamedColor(TERM_TEXT_COLOR, termFontColor));
-		 * data.add(new NamedColor(TERM_STROKE_COLOR, termStrokeColor));
-		 * 
-		 * data.add(new NamedColor(TYPE_BACKGROUND_COLOR, typeBoxColor));
-		 * data.add(new NamedColor(TYPE_STROKE_COLOR, typeStrokeColor));
-		 * data.add(new NamedColor(TYPE_TEXT_COLOR, typeFontColor));
-		 * 
-		 * data.add(new NamedColor(OBSOLETE_BACKGROUND_COLOR,
-		 * obsoleteBoxColor)); data.add(new NamedColor(OBSOLETE_STROKE_COLOR,
-		 * obsoleteStrokeColor)); data.add(new NamedColor(OBSOLETE_TEXT_COLOR,
-		 * obsoleteFontColor));
-		 * 
-		 * Iterator it = controller.getHistory().getRelationshipTypes().
-		 * iterator(); while(it.hasNext()) { OBOProperty type = (OBOProperty)
-		 * it.next(); ColorPair pair; if (colorMap.containsKey(type)) pair =
-		 * (ColorPair) colorMap.get(type); else pair = (ColorPair)
-		 * defaultLabelColors.clone();
-		 * 
-		 * TypeColorPair tcp = new TypeColorPair(pair, type);
-		 * 
-		 * data.add(tcp); }
-		 */
+
 		final ListEditor typeColorList = new ListEditor(new ColorEditor(),
 				noTypeLabel, new Vector(), true, true, false, true, false);
 		typeColorList.setData(data);
@@ -600,17 +530,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		outerFontPanel.setBackground(Preferences.defaultBackgroundColor());
 		outerFontPanel.setLayout(new BorderLayout());
 		outerFontPanel.add(fontPanel, "North");
-
-		// panel.add(typeColorList);
-
+	
 		JPanel shapePanel = new JPanel();
 		shapePanel.setBackground(Preferences.defaultBackgroundColor());
 		shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
-
 		TitledBorder nodeBorder = new TitledBorder("Term shape");
 		TitledBorder obsoleteBorder = new TitledBorder("Obsolete shape");
 		TitledBorder typeBorder = new TitledBorder("Type shape");
-
 		nodeBorder.setTitleFont(getFont());
 		obsoleteBorder.setTitleFont(getFont());
 		typeBorder.setTitleFont(getFont());
@@ -650,10 +576,10 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 		JTextArea messageArea = new JTextArea(
 				"This should contain the path to the \"dot\" or "
-				+ "\"dot.exe\" file included with the GraphViz "
-				+ "software package. The package can be obtained "
-				+ "from " + "http://www.research.att.com/sw/"
-				+ "tools/graphviz/download.html", 3, 20);
+						+ "\"dot.exe\" file included with the GraphViz "
+						+ "software package. The package can be obtained "
+						+ "from " + "http://www.research.att.com/sw/"
+						+ "tools/graphviz/download.html", 3, 20);
 		messageArea.setEditable(false);
 		messageArea.setBorder(null);
 		messageArea.setOpaque(false);
@@ -748,8 +674,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			public void actionPerformed(ActionEvent e) {
 				pane.setVisible(false);
 				configuration.setDotPath(appPathField.getText());
-				configuration
-				.setLabelFont(linkFontChooser.getChosenFont());
+				configuration.setLabelFont(linkFontChooser.getChosenFont());
 				configuration.setNodeFont(nodeFontChooser.getChosenFont());
 
 				configuration.setTypeShape((String) typeShapeList
@@ -770,8 +695,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 								tc.getPair());
 					} else if (o instanceof NamedColor) {
 						NamedColor nc = (NamedColor) o;
-						configuration.setNamedColor(nc.getName(), nc
-								.getColor());
+						configuration
+								.setNamedColor(nc.getName(), nc.getColor());
 					}
 				}
 
@@ -791,25 +716,26 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		try {
 			JFileChooser chooser = new JFileChooser();
 			chooser.addChoosableFileFilter(new ExtensionFilter(".jpg",
-			".jpg - JPEG Format"));
+					".jpg - JPEG Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".png",
-			".png - PNG Format"));
+					".png - PNG Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".ps", ".ps - "
 					+ "Postscript Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".dot",
-			".dot - GraphViz DOT Format"));
+					".dot - GraphViz DOT Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".xdot",
-			".xdot - GraphViz extended DOT format"));
+					".xdot - GraphViz extended DOT format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".gif",
-			".gif - GIF Format"));
+					".gif - GIF Format"));
 
 			// Shows the dialog to the user and wait for is answer
 			int userChoice = chooser.showSaveDialog(this);
 
-			// check the user answer, is  he press  "ok" continue in the if  block
+			// check the user answer, is he press "ok" continue in the if block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				//logger.info("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
+				// logger.info("DEBUG : GraphPlugin : storeImage : temp file
+				// name = " + textFile.getAbsolutePath());
 
 				// Creating the .dot file for graphviz
 				outputFile(textFile);
@@ -820,26 +746,27 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				// Getting the file name (with the full path)
 				String outputFile = chooser.getSelectedFile().getPath();
 
-
-
-				// Adding the file extension if missing 
+				// Adding the file extension if missing
 				if (!outputFile.endsWith(ef.getExt())) {
 					outputFile += ef.getExt();
 				}
 
-				//logger.info(configuration.getDotPath() + " -T"
-				//		+ ef.getExtNoDot() + " -o " + outputFile + " -v "
-				//		+ textFile.getPath());
+				// logger.info(configuration.getDotPath() + " -T"
+				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
+				// + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T"
-						+ ef.getExtNoDot() + " -o  " + outputFile + "  -v "
-						+ textFile.getPath());
-				//The bug has been fixed by putting escaped quotes round the output file
-				//string because the 'Documents and Settings' path in 
-				// the save instructions was being confused by the spaces and 
-				//was saving to path/Documents which doesn't exist.
-				//C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
-				//This only matters because the command is run on the cmd line.
+						configuration.getDotPath() + " -T" + ef.getExtNoDot()
+								+ " -o  " + outputFile + "  -v "
+								+ textFile.getPath());
+				// The bug has been fixed by putting escaped quotes round the
+				// output file
+				// string because the 'Documents and Settings' path in
+				// the save instructions was being confused by the spaces and
+				// was saving to path/Documents which doesn't exist.
+				// C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o
+				// C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v
+				// C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
+				// This only matters because the command is run on the cmd line.
 
 				p.waitFor();
 
@@ -849,11 +776,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			ex.printStackTrace();
 		}
 	}
-
-
-
-
-
 
 	protected void trimSet(Set set) {
 		HashSet roots = new HashSet();
@@ -891,7 +813,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					if (tr2.getParent() == null)
 						continue;
 					if (tr2.getParent().equals(root)
-							&& !SelectionManager.getManager().getSelection().getTerms().contains(tr2)) {
+							&& !SelectionManager.getManager().getSelection()
+									.getTerms().contains(tr2)) {
 						inUse.add(tr2);
 					}
 				}
@@ -902,22 +825,5 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			set.removeAll(trash);
 		} while (trash.size() > 0);
 	}
-	
-	@Override
-	public ConfigurationPanel getConfigurationPanel() {		
-		return new GraphvizConfigurationPanelNew(this);
 
-	}
-	
-	@Override
-	public ComponentConfiguration getConfiguration() {
-		return new GraphvizViewerComponentConfigurationNew();
-	}
-
-	public void setConfiguration(ComponentConfiguration config) {
-		
-	}
-
-	
-	
 }
