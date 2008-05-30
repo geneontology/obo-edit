@@ -993,25 +993,26 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			files += "\n" + configFile;
 		}
 		if (JOptionPane.showConfirmDialog(this, "The following files and subdirectories will be deleted from " + confDir + ":" +
-						  files + "\n\nProceed?", "Delete your config files?",
+						  files + "\n\nYou will then need to quit and restart OBO-Edit to reset your configuration.\nProceed?", "Delete your config files?",
 						  JOptionPane.YES_NO_OPTION)
 		    != JOptionPane.YES_OPTION)
 			return;
 
-		int errors = 0;
+		String errors = "";
 		for (String f : configFiles) {
 			File configFile = new File(confDir + "/" + f);
 			try {
 				IOUtil.deltreeOnExit(configFile);
 			} catch (Exception e) {
-				errors++;
-				logger.info("Error--couldn't delete " + configFile);
+				errors = errors + ("Couldn't delete " + configFile + "\n");
 			}
 		}
-		if (errors == 0)
-			JOptionPane.showMessageDialog(this, "Configuration files removed.  You will need to quit and restart OBO-Edit\nto see the changes.");
-		else
-			JOptionPane.showMessageDialog(this, "Failed to delete some of the configuration files or directories.");
+		if (errors.equals(""))
+			JOptionPane.showMessageDialog(this, "Configuration files removed.  You will need to quit and restart OBO-Edit\nto reset your configuration to the default settings.");
+		else {
+			JOptionPane.showMessageDialog(this, "Failed to delete some of the configuration files or directories:\n" + errors);
+			logger.warn(errors);
+		}
 	}
 
 	/** Save Configuration button event */
