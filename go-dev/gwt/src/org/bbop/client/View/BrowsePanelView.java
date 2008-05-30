@@ -26,6 +26,8 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	private Button orthologBtn;	
 	private ResultPanelView resultView;
 	private MessageBox info;
+	
+	private int items ;
 
 
 	public BrowsePanelView (RefGenomeViewListenerI listener, RefGenomeView parent){
@@ -37,7 +39,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		targetBtn2 = new Button("List Target (from db)");
 		orthologBtn = new Button("List Ortholog");
 
-
+		setItems(25);
 		setAttr();
 		addObservers();
 	}
@@ -57,6 +59,10 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		orthologBtn.setIconStyle("icon-list");
 
 
+	}
+	
+	public void setItems(int  num) {
+		items = num;
 	}
 
 	public VerticalPanel getView() { return browseBar; }
@@ -114,7 +120,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	private class OrthologListListener implements SelectionListener {
 
 		public void widgetSelected(BaseEvent be) {
-			// TODO Auto-generated method stub
+			// TODO Auto-generated method stub 
 			OrthologTableView orthoView = new OrthologTableView(refglistener,mainview);
 			List colHeadings = new ArrayList();
 			String[] colNames = new String[] {"Target","R.norvegicus","C.elegans","D.discoideum","A.thaliana","S.cerevisiae","S.pombe","M.musculus","D.melanogaster","E.coli","D.rio"};
@@ -127,9 +133,9 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 			
 			resultView = mainview.getResultPanel();
 			resultView.removeChildViews();
-			resultView.addOrthologListView(orthoView.getView(), orthoView.getDataProvider(), "Ortholog List");
+			resultView.addOrthologListView(orthoView.getView(), orthoView.getDataProvider(), items, "Ortholog List");
 			resultView.resetView();
-			orthoView.getDataProvider().load(0,10);
+			orthoView.getDataProvider().load(0,items);
 		}
 		
 	}

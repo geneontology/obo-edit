@@ -155,7 +155,7 @@ public class ResultPanelView {
 		
 	}
 	
-	public void addOrthologListView(Table tbl, RemoteContentProvider cp, String title) {
+	public void addOrthologListView(Table tbl, RemoteContentProvider cp, int items, String title) {
 		tblHolder = new WidgetContainer();
 		TabFolder tblFolder = new TabFolder(Style.TOP);
 		tblFolder.setTabWidth(80);
@@ -166,7 +166,7 @@ public class ResultPanelView {
 		WidgetContainer itemContainer = tblItem.getContainer();
 		itemContainer.setLayout(new RowLayout(Style.VERTICAL));
 		
-		PagingToolBar pbar = new PagingToolBar(10);
+		PagingToolBar pbar = new PagingToolBar(items);
 		pbar.bind(cp);
 		
 		itemContainer.add(tbl,new RowData(RowData.FILL_BOTH));
@@ -179,7 +179,7 @@ public class ResultPanelView {
 		tblHolder.add(tblFolder);
 		
 	
-		//cp.load();
+		//cp.load(0,10);
 		
 	}
 	
