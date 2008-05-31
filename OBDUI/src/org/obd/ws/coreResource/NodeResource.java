@@ -48,6 +48,9 @@ public class NodeResource extends OBDResource {
 	protected String format;
 	protected String dataSource;
 	protected String uriString;
+	
+	protected List<Statement> toAnnotationStatements;
+	protected List<Statement> aboutAnnotationStatements;	
 
     public String getFormat() {
 		return format;
@@ -83,7 +86,6 @@ public class NodeResource extends OBDResource {
         this.uriString = (String) request.getResourceRef().toString();
   
         getVariants().add(new Variant(MediaType.TEXT_HTML));
-        
     }
 
  
@@ -174,28 +176,29 @@ public class NodeResource extends OBDResource {
 				resourceMap.put("composedClassName", this.decomposeNode(this.getShard(dataSource).getCompositionalDescription(this.node.getId(), true)));
 			}
     		
-
-    		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = this.getStatements("annotation");
-    		if (annotationStatements.size()>0){
-    			Collections.sort(annotationStatements,new StatementHashComparator());
-    			resourceMap.put("annotationStatements", annotationStatements);
-    		}
-    		
-    		
     		// Statements to Node
-    		List<SimpleHash> toStatements = this.getStatements("to");
+    		List<SimpleHash> toStatements = this.getHashifiedStatements("to");
     		if (toStatements.size()>0){
     			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
-    		List<SimpleHash> aboutStatements = this.getStatements("about");
+    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about");
     		if (aboutStatements.size()>0){
     			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
+    		
+    		// Annotation Statements 
+    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotations");
+    		if (annotationStatements.size()>0){
+    			Collections.sort(annotationStatements,new StatementHashComparator());
+    			resourceMap.put("annotationStatements", annotationStatements);
+    		}
+    		
+    		
+
     		
     		if (format.equals("html")){
     			return getTemplateRepresentation("NodeDetails",resourceMap);
@@ -223,50 +226,17 @@ public class NodeResource extends OBDResource {
     	return result;
     }
     
-    protected List<SimpleHash> getStatements(String aspect){
+    protected List<SimpleHash> getHashifiedStatements(String aspect){
+    	return getHashifiedStatements(aspect,getNodeId());
+    }
+    
+    protected List<SimpleHash> getHashifiedStatements(String aspect,String nodeId){
     	
     	List<SimpleHash> statements = new ArrayList<SimpleHash>();
-    	if (aspect.equals("annotation")){
-    		for (Statement s : this.getGraph("annotations").getStatements()){
-    			SimpleHash annotationStatement = this.hashifyStatement(s);
-        		Set<String> assignmentSources = new HashSet<String>();
-    			Set<String> provenanceSources = new HashSet<String>();
-    			for (Statement subStatement : s.getSubStatements()){
-    				if (subStatement.getRelationId().equals("oban:assigned_by")){
-    					assignmentSources.add(this.href(subStatement.getTargetId(),dataSource));
-    				}
-    				if (subStatement.getRelationId().equals("oban:has_data_source")){
-    					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
-    				}
-        			annotationStatement.put("assigned_by",assignmentSources);
-        			annotationStatement.put("provenance",provenanceSources);
-    			}
-    			statements.add(annotationStatement);
-    		} 
-    	} else if (aspect.equals("about")){
-    		for (Statement s : this.getGraph("about").getStatements()){
-    			SimpleHash m = this.hashifyStatement(s);
-    			if (s.isInferred()){
-    				m.put("entailment","I");
-    			} else {
-    				m.put("entailment","A");
-    			}
-    			statements.add(m);
-    		}
-		} else if (aspect.equals("to")){
-			for (Statement s : this.getGraph("to").getStatements()){
-    			SimpleHash m = this.hashifyStatement(s);
-    			if (s.isInferred()){
-    				m.put("entailment","I");
-    			} else {
-    				m.put("entailment","A");
-    			}
-    			statements.add(m);
-    		}
-		}  else {
-			System.err.println("What Aspect? ");
-			Exception e = new Exception();
-			e.printStackTrace();
+    	if (aspect.equals("annotations")){
+    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(), true));
+    	} else {
+    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements()));
 		}
     	return statements;
     }
@@ -301,8 +271,52 @@ public class NodeResource extends OBDResource {
 		this.nodeString = nodeId;
 	}
     
+	protected Graph getGraph(String aspect){
+		return getGraph(aspect,getNodeId());
+	}
 	
-	protected Graph getGraph(String aspect) {
+	protected Graph getGraph(String aspect,String nodeId){
+
+		Graph graph;
+		if (aspect == null || aspect.equals("")){
+			aspect = "about";
+		}
+		
+		Collection<Statement> statements = new ArrayList<Statement>();
+		if (aspect.equals("about")){
+			for (Statement s : this.getShard(dataSource).getStatementsForNode(nodeId,false)){
+				if (!s.isAnnotation()){
+					statements.add(s);
+				}
+			}
+			
+		} else if (aspect.equals("to")){
+			for (Statement s : this.getShard(dataSource).getStatementsForTarget(nodeId,false)){
+				if (!s.isAnnotation()){
+					statements.add(s);
+				}
+			}
+		} else if (aspect.equals("annotations")){
+			statements = this.getShard(dataSource).getAnnotationStatementsForNode(nodeId, null, null);
+			statements.addAll(this.getShard(dataSource).getAnnotationStatementsForAnnotatedEntity(nodeId, null, null));
+		} else {
+			Exception e = new Exception();
+			System.err.println("What Aspect? " + aspect);
+			e.printStackTrace();
+		}
+		graph = new Graph(statements);
+		if (true) {
+			String[] nids = graph.getReferencedNodeIds();
+			for (String nid : nids) {
+				Node n = getShard(this.dataSource).getNode(nid);
+				graph.addNode(n);
+			}
+		}
+		return graph;
+	}
+	
+	
+	protected Graph OLD_getGraph(String aspect) {
 		Graph graph;
 		if (aspect == null || aspect.equals("")){
 			aspect = "about";
@@ -314,7 +328,6 @@ public class NodeResource extends OBDResource {
 		} else {
 			if (aspect.equals("about")){
 				lq.setNode(getNodeId());
-				lq.setInferred(false);
 			} else if (aspect.equals("all")){
 				lq.setNode(getNodeId());
 			} else if (aspect.equals("to")){ 
@@ -330,12 +343,11 @@ public class NodeResource extends OBDResource {
 		
 		if (aspect.equals("all")) {
 			lq = new LinkQueryTerm();
-			//lq.setRelation(relationId);
 			lq.setTarget(getNodeId());
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
 		}
 		
-		
+		System.out.println(aspect + " statements: " + stmts.size());
 		graph = new Graph(stmts);
 		if (true) {
 			String[] nids = graph.getReferencedNodeIds();
@@ -348,10 +360,28 @@ public class NodeResource extends OBDResource {
 	}
 	
 	protected SimpleHash hashifyStatement(Statement s){
+		return this.hashifyStatement(s,false); 
+	}
+	
+	protected Collection<SimpleHash> hashifyStatements(Statement[] statements){
+		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
+		for (Statement s : statements){
+			hashifiedStatements.add(this.hashifyStatement(s));
+		}
+		return hashifiedStatements;
+	}
+	
+	protected Collection<SimpleHash> hashifyStatements(Statement[] statements,boolean populateProvenance){
+		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
+		for (Statement s : statements){
+			hashifiedStatements.add(this.hashifyStatement(s,populateProvenance));
+		}
+		return hashifiedStatements;
+	}
+	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance){
 		SimpleHash statementHash = new SimpleHash();
 		
 		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/html/node/";
-		
 		statementHash.put("subject", this.hashifyNode(s.getNodeId(), (hrefBase+Reference.encode(s.getNodeId()))));
 		SimpleHash relationshipHash = this.hashifyNode(s.getRelationId(), (hrefBase+Reference.encode(s.getRelationId())));
 		relationshipHash.put("nodeLabel", this.prettifyRelationshipTerm(s.getRelationId()));
@@ -366,6 +396,28 @@ public class NodeResource extends OBDResource {
 		} else if (s instanceof LiteralStatement) {
 			statementHash.put("object", this.hashifyNode(((LiteralStatement)s).getSValue(), null));
 		}
+		
+		if (s.isInferred()){
+			statementHash.put("entailment","I");
+		} else {
+			statementHash.put("entailment","A");
+		}
+		
+		if (populateProvenance){
+			Set<String> assignmentSources = new HashSet<String>();
+			Set<String> provenanceSources = new HashSet<String>();
+			for (Statement subStatement : s.getSubStatements()){
+				if (subStatement.getRelationId().equals("oban:assigned_by")){
+					assignmentSources.add(this.href(subStatement.getTargetId(),dataSource));
+				}
+				if (subStatement.getRelationId().equals("oban:has_data_source")){
+					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
+				}
+    			statementHash.put("assigned_by",assignmentSources);
+    			statementHash.put("provenance",provenanceSources);
+			}
+		}
+		
 		return statementHash;
 	}
 	

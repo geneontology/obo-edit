@@ -100,21 +100,21 @@ public class NodesResource extends NodeResource {
     		}
     		
     		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = this.getStatements("annotation");
+    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation");
     		if (annotationStatements.size()>0){
     			Collections.sort(annotationStatements,new StatementHashComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
     		// Statements to Node
-    		List<SimpleHash> toStatements = this.getStatements("to");
+    		List<SimpleHash> toStatements = this.getHashifiedStatements("to");
     		if (toStatements.size()>0){
     			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
-    		List<SimpleHash> aboutStatements = this.getStatements("about");
+    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about");
     		if (aboutStatements.size()>0){
     			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
