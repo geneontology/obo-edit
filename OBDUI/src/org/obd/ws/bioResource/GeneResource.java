@@ -2,8 +2,14 @@ package org.obd.ws.bioResource;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.TreeMap;
-
+import org.obd.model.stats.SimilarityPair;
+import org.obd.model.Statement;
+import org.obd.query.LinkQueryTerm;
+import org.obd.query.QueryTerm;
 import org.obd.ws.coreResource.NodeResource;
 import org.obd.ws.coreResource.utility.NodeTyper;
 import org.restlet.Context;
@@ -12,6 +18,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import freemarker.template.SimpleHash;
 
 public class GeneResource extends NodeResource{
 
@@ -24,16 +32,6 @@ public class GeneResource extends NodeResource{
 		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
 		resourceMap.put("contextName", this.getContextName());
 		resourceMap.put("dataSource", this.dataSource);
-		
-		if (this.getNode() != null && this.getNode().getLabel() != null){
-			resourceMap.put("geneLabel", this.getNode().getLabel());
-		}
-		resourceMap.put("geneId", this.getNodeId());
-		
-		for (String genotypeId : NodeTyper.getGeneGenotypeIDs(this.getNodeId(),this.getShard(dataSource))){
-			
-		}
-		
 		try {
 			InetAddress addr = InetAddress.getLocalHost();
 			resourceMap.put("hostname",addr.getCanonicalHostName());
@@ -41,7 +39,49 @@ public class GeneResource extends NodeResource{
 			System.err.println("Hostname fetching error: " + e.getMessage());
 		}
 		
+		if (this.getNode() != null && this.getNode().getLabel() != null){
+			resourceMap.put("geneLabel", this.getNode().getLabel());
+		}
+		resourceMap.put("geneId",this.getNodeId());
+		
+		List<SimpleHash> genotypesHash = new ArrayList<SimpleHash>();
+		List<String> genotypeIds = NodeTyper.getGeneGenotypeIDs(this.getNodeId(),this.getShard(dataSource));
+		
+		
+		for (String genotypeId : genotypeIds){
+			SimpleHash genotype = this.hashifyNode(genotypeId, "/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(genotypeId));
+			SimpleHash genotypeHash = new SimpleHash();
+			genotypeHash.put("genotype", genotype);
+			Collection<SimpleHash> as = this.getHashifiedStatements("annotations",genotypeId);
+			if (as.size()>0){
+				genotypeHash.put("annotationStatements", as);
+			}
+			genotypesHash.add(genotypeHash);
+		}
+		resourceMap.put("genotypes", genotypesHash);
+		
+		double[][] genotypeScores = new double[genotypeIds.size()][genotypeIds.size()];
+		
+		for (int i=0;i<genotypeIds.size();i++){
+			for (int j=i;j<genotypeIds.size();j++){
+				if (i!=j){
+					SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(genotypeIds.get(j), genotypeIds.get(i));
+					double basicSimilarityScore = sp.getBasicSimilarityScore();
+					this.getShard(dataSource).calculateInformationContentMetrics(sp);
+					double informationContentRatio = sp.getSimilarityByInformationContentRatio();
+					genotypeScores[i][j] = informationContentRatio;
+					genotypeScores[j][i] = basicSimilarityScore;
+				} else {
+					genotypeScores[i][j] = -1;
+				}
+			}
+		}
+		
+		resourceMap.put("genotypeComparaScores", genotypeScores);
+		
 		return getTemplateRepresentation("GeneNodeDetails",resourceMap);
+	
 	}
+	
 	
 }

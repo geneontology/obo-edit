@@ -6,12 +6,38 @@
 	</#if>
 </#macro>
 
+<#macro nodeHashHrefLimit nodeHash limit>
+	<#if nodeHash.nodeIsComposed?exists>
+		<@labelDecomposelimit node=nodeHash.composedNode target=nodeHash.nodeHref limit=limit/>
+	<#else>
+		<@labelhreflimit target=nodeHash.nodeHref label=nodeHash.nodeLabel limit=limit/>
+	</#if>
+</#macro>
+
 <#macro labelhref target='blank' label='blank'>
 	<#if target=='blank'>
 		${label}
 	<#else>
 		<a href="${target}" style="text-decoration:none;">${label}</a>
 	</#if>
+</#macro>
+
+<#macro labelhreflimit limit target='blank' label='blank' >
+	<#if ((label?length) > limit)>
+		<#if target=='blank'>
+			${label?substring(0,limit)}...
+		<#else>
+			<a href="${target}" title="${label}" style="text-decoration:none;">${label?substring(0,limit)}...</a>
+		</#if>
+	<#else>
+		<#if target=='blank'>
+			${label}
+		<#else>
+			<a href="${target}" style="text-decoration:none;">${label}</a>
+		</#if>
+	
+	</#if>
+	
 </#macro>
 
 <#macro labelabsolutehref target='blank' label='blank'>
@@ -27,7 +53,7 @@
  	 <script type="text/javascript" src="/${contextName}/js/search.js">
   	</script>
   	
-	<form id="search_form" action="" method="get" onsubmit="return nodeSearch('${contextName}')">
+	<form id="search_form" action="" method="get">
 		Search <select id="search_target_data" style="font-size:10px;">
 					<option value="nodes">nodes</option>
 					<option value="statements">statements</option>
@@ -35,16 +61,16 @@
 		<#if dataSource?exists>
        		<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}','${dataSource}')" value="Go" />
        	<#else>
-       		<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}','obdPhenotypeAll')" value="Go" />
+       		<input id="search_term" name="search_term" size="15"/>&nbsp;&bull;&nbsp;<input name="button" type="button"  onclick="nodeSearch('${contextName}','obdPhenotypeAll2008')" value="Go" />
        	</#if>
        	<!-- This is a hardcode of multiple datasources until the ui better handles multiple data sources -->
-        <input type="hidden" name="dataSource" id="dataSource" value="obdPhenotypeAll"/>
+        <input type="hidden" name="dataSource" id="dataSource" value="obdPhenotypeAll2008"/>
      </form>
  </div>
 </#macro>
 
 <#macro labelDecompose node target="none">
-	(<#if target != "none">
+	<#if target != "none">
 		<a href="${target}">
 	</#if>
 	<#if node.subjectLabel?exists>
@@ -58,15 +84,41 @@
 			<span style="color:#ff0000;">${arg.relationLabel}</span>
 		</#if>
 		<#if arg.targetIsComplex?exists>
-			<@labelDecompose node=arg.composedClass/>
+			(<@labelDecompose node=arg.composedClass/>)
 		<#else>
 			${arg.targetLabel}
 		</#if>
 	</#list>
 	<#if target != "none">
 		</a>
-	</#if>)
+	</#if>
 </#macro>
+
+<#macro labelDecomposeLimit limit node target="none" >
+	<#if target != "none">
+		<a href="${target}">
+	</#if>
+	<#if node.subjectLabel?exists>
+		${node.subjectLabel}
+	</#if>
+	<#if node.relationLabel?exists>
+		<span style="color:#ff0000;">${node.relationLabel?substring(0,limit)}</span>
+	</#if>
+	<#list node.args as arg>
+		<#if arg.relationLabel?exists>
+			<span style="color:#ff0000;">${arg.relationLabel?substring(0,limit)}</span>
+		</#if>
+		<#if arg.targetIsComplex?exists>
+			(<@labelDecompose node=arg.composedClass limit=limit/>)
+		<#else>
+			${arg.targetLabel?substring(0,limit)}
+		</#if>
+	</#list>
+	<#if target != "none">
+		</a>
+	</#if>
+</#macro>
+
 
 <#macro mappedPathsList>
 	Mapped Paths:

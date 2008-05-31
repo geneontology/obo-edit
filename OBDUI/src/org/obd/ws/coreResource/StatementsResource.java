@@ -15,8 +15,6 @@ import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.LinkQueryTerm;
-import org.obd.query.Shard;
-import org.obd.query.impl.MultiShard;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -62,15 +60,7 @@ public class StatementsResource extends NodeResource {
 		
 		Collection<Statement> stmts = new HashSet<Statement>();
 		
-		LinkQueryTerm lq1 = new LinkQueryTerm();
-		lq1.setTarget("ZFIN:ZDB-GENE-980526-166");
-		for (Statement s : getShard(this.dataSource).getStatementsByQuery(lq1)){
-			System.out.println("S1: " + s.toString());
-		}
-		System.out.println("SIZE: " + getShard(this.dataSource).getStatementsByQuery(lq1).size());
-		
-		
-		if (aspect == null || aspect.equals("")){
+			if (aspect == null || aspect.equals("")){
 			aspect = "about";
 		}
 		
