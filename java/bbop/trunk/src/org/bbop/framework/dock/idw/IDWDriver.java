@@ -476,41 +476,22 @@ public class IDWDriver implements LayoutDriver {
       if not found at all return defaultPerspective which hopefully works
       but obviously is probably a different perspective than whats passed in */
 	protected String getResource(Perspective perspective) {
-
 		String out = perspectiveResourceDir + "/" + perspective.getID()
-				+ ".idw";
-    boolean classLoaderCanFind =
-      ClassLoader.getSystemClassLoader().getResource(out) != null;
-    if (!classLoaderCanFind) {
-      // IDWDriver.class is a different class loader than ClassLoader.getSysCL
-      // and even different than IDWD.class.getClassLoader()????
-      classLoaderCanFind = IDWDriver.class.getResource(out) != null;
-      if (!classLoaderCanFind) // this is what works in webstart (???)
-        classLoaderCanFind = IDWDriver.class.getClassLoader().getResource(out) != null;
-      //if (!classLoadCanFind) // not sure if this is needed
-      //classLoaderCanFind = IDWDriver.class.getResource("/"+out) != null;
-    }
-//   System.out.println("bbop IDWDriver trying to get resource "+out+" can get from"+
-//                        "class loader? "+classLoaderCanFind);
-                       
-//     try{    
-//     LOG.info("IDWDriver trying to get resource "+out+" can get from "+
-//              "class loader? "+classLoaderCanFind+" gonna use default resource "
-//              +defaultPerspectiveResourcePath+"\n"
-// +ClassLoader.getSystemClassLoader().getResource(out)
-// +"\n"+ClassLoader.getSystemClassLoader()
-// +"\n"+IDWDriver.class.getClassLoader()
-// +"\n"+IDWDriver.class.getClassLoader().getResource(out)
-// +"\n"+IDWDriver.class.getResource(out));
-//  } catch (Exception e) { System.out.println("err "+e); }
-    
-		//if (ClassLoader.getSystemClassLoader().getResource(out) == null)
-  if (!classLoaderCanFind) {
-    LOG.info("Cant find resource "+out+" using default "
-             +defaultPerspectiveResourcePath);
-    out = defaultPerspectiveResourcePath;
-  }
-    //System.exit(1);
+			+ ".idw";
+		boolean classLoaderCanFind =
+			ClassLoader.getSystemClassLoader().getResource(out) != null;
+		if (!classLoaderCanFind) {
+			// IDWDriver.class is a different class loader than ClassLoader.getSysCL
+			// and even different than IDWD.class.getClassLoader()????
+			classLoaderCanFind = IDWDriver.class.getResource(out) != null;
+			if (!classLoaderCanFind) // this is what works in webstart (???)
+				classLoaderCanFind = IDWDriver.class.getClassLoader().getResource(out) != null;
+		}
+		if (!classLoaderCanFind) {
+//			LOG.info("IDWDriver.getResource: can't find resource "+out+" using default perspective resource path "
+//				 +defaultPerspectiveResourcePath + " and resource dir " + perspectiveResourceDir);
+			out = defaultPerspectiveResourcePath;
+		}
 		return out;
 	}
 
@@ -543,11 +524,12 @@ public class IDWDriver implements LayoutDriver {
 				ComponentManager.getManager().getActiveComponents());
 		for (GUIComponent c : comps) {
 			View v = viewMap.getView(c.getID());
-			v.removeListener(masterDockingListener);
+			if (v != null)
+				v.removeListener(masterDockingListener);
 			if (v != null)
 				destroyView(v);
-			else
-				logger.info("COULD NOT DESTROY VIEW: " + c);
+//			else
+//				logger.info("COULD NOT DESTROY VIEW: " + c);
 		}
 
 		ObjectInputStream stream = getInputStream(path);
@@ -813,30 +795,9 @@ public class IDWDriver implements LayoutDriver {
 		}
 
 		public void commit() {
-			setComponentLabel(IDWDriver.getComponent(view), getText());
-			// view.getViewProperties().getViewTitleBarProperties()
-			// .getNormalProperties().setTitle(getText());
-			// view.getViewProperties().getViewTitleBarProperties()
-			// .getNormalProperties().setTitleVisible(true);
+			if (IDWDriver.getComponent(view) != null)
+				setComponentLabel(IDWDriver.getComponent(view), getText());
 			bar.setLeftTitleComponents(new JComponent[0]);
-			// view.getViewProperties().setTitle(getText());
-			// TabWindow tabWindow = (TabWindow) SwingUtilities
-			// .getAncestorOfClass(TabWindow.class, view);
-			// TabbedPanel panel = SwingUtil.getDescendantOfType(tabWindow,
-			// TabbedPanel.class);
-			// for (int i = 0; i < panel.getTabCount(); i++) {
-			// Tab t = panel.getTabAt(i);
-			// if (t instanceof TitledTab) {
-			// logger.info("t = " + t);
-			// TitledTab tt = (TitledTab) t;
-			// if (SwingUtilities.isDescendingFrom(view, t
-			// .getContentComponent())) {
-			// tt.getProperties().getNormalProperties().setText(
-			// getText());
-			// tt.setText(getText());
-			// }
-			// }
-			// }
 		}
 	}
 
@@ -998,11 +959,6 @@ public class IDWDriver implements LayoutDriver {
 			v.getViewProperties().setTitle(card.getComponent().getTitle());
 			card.getConfigScreen().commit();
 		}
-		/*
-		 * v.getViewProperties().setTitle( "Configuring: " +
-		 * v.getViewProperties().getTitle()); v.setComponent(new
-		 * JLabel("Bye!")); v.repaint();
-		 */
 		card.toggle();
 		card.repaint();
 	}
@@ -1046,6 +1002,7 @@ public class IDWDriver implements LayoutDriver {
 	}
 
 	public void setPerspectiveResourceDir(String perspectiveResourceDir) {
+//		System.out.println("IDWDriver.setPerspectiveResourceDir " + perspectiveResourceDir); // DEL
 		this.perspectiveResourceDir = perspectiveResourceDir;
 	}
 
@@ -1069,6 +1026,8 @@ public class IDWDriver implements LayoutDriver {
 
 	public void setComponentTitlebarTooltip(GUIComponent target, String label) {
 		View v = getView(target);
+		if (v == null)
+			return;
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
 		if (titleBar == null) {
@@ -1083,6 +1042,8 @@ public class IDWDriver implements LayoutDriver {
 
 	public void setComponentTitlebarColor(GUIComponent target, Color color) {
 		View v = getView(target);
+		if (v == null)
+			return;
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
 		TabWindow tabWindow = (TabWindow) SwingUtilities.getAncestorOfClass(
@@ -1113,6 +1074,10 @@ public class IDWDriver implements LayoutDriver {
 
 	public void setComponentLabel(GUIComponent target, String label) {
 		View v = getView(target);
+		if (v == null) {
+//			logger.info("setComponentLabel: view is null for target " + target + ", label " + label);
+			return;
+		}
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
 		v.getViewProperties().getViewTitleBarProperties().getNormalProperties()
