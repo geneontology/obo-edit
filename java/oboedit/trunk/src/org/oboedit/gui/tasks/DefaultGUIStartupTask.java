@@ -302,7 +302,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	protected LayoutDriver createLayoutDriver() {
 		IDWDriver driver = (IDWDriver) super.createLayoutDriver();
+
 		driver.addViewListener(new ViewListener() {
+			// Note: if any of these icons is missing, it causes a weird exception later.
 			protected Icon globeIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_globe_icon.gif"));
 
