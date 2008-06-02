@@ -1,0 +1,26 @@
+[Term]
+id: organ
+
+[Term]
+id: heart
+is_a: organ
+
+[Term]
+id: ventricle
+relationship: OBO_REL:part_of heart
+
+[Term]
+id: morphology_of_ventricle
+relationship: OBO_REL:inheres_in ventricle
+
+[Typedef]
+id: OBO_REL:part_of
+is_transitive: true
+
+[Typedef]
+id: OBO_REL:inheres_in
+
+[Typedef]
+id: OBO_REL:inheres_in_part_of
+equivalent_to: OBO_REL:inheres_in -> OBO_REL:part_of
+
