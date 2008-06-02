@@ -19,3 +19,14 @@ function toggleTable(div_id,hostname){
 		}			
 	}
 }
+
+function openTable(div_id,hostname){
+	var detailsDiv = document.getElementById(div_id);
+	if (detailsDiv){
+		if (detailsDiv.style.display == "none"){
+			toggleTable(div_id,hostname);
+		}
+	}
+	
+	
+}
