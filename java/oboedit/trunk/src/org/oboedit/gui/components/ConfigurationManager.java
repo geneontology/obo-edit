@@ -688,6 +688,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JLabel configFileLabel = new JLabel("User configuration directory");
 //		JLabel configFilePath = new JLabel(GUIManager.getPrefsDir().getPath());
 		JTextField configFilePath = new JTextField(GUIManager.getPrefsDir().getPath()); // TextField rather than label so it can be copied
+		configFilePath.setEditable(false);
 		configFilePath.setBackground(getBackground()); // so that it looks non-editable
 		configFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
 		JButton removeConfigFiles = new JButton("Reset all configuration files (requires restart)");
@@ -707,6 +708,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		logFileBox.setOpaque(false);
 		JLabel logFileLabel = new JLabel("Log file");
 		logFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
+		logFilePath.setEditable(false);
 		logFilePath.setBackground(getBackground()); // so that it looks non-editable
 		logFileBox.add(logFileLabel);
 		logFileBox.add(Box.createHorizontalStrut(5));
