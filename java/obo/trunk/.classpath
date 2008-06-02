@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="lib/owlapi-owlxmlparser.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-metrics.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-mansyntaxrenderer.jar"/>
-	<classpathentry kind="lib" path="lib/owlapi-mansyntaxparser.jar" sourcepath="/owl1_1/mansyntaxparser/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/owlapi-mansyntaxparser.jar" sourcepath="/owl1_1/mansyntaxparser/src"/>
 	<classpathentry kind="lib" path="lib/owlapi-krssparser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/owlapi-impl.jar" sourcepath="/owl1_1/impl"/>
 	<classpathentry kind="lib" path="lib/owlapi-functionalrenderer.jar"/>
@@ -32,6 +32,6 @@
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BBOP"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
