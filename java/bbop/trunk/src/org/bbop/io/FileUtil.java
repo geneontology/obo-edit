@@ -34,8 +34,6 @@ public class FileUtil {
       if (file.exists())
         return;
 
-      //if(!file.exists()) {
-
       // Get InputStream from resource
       if (loader == null) {
         throw new IOException("ClassLoader is null,"+
@@ -47,13 +45,13 @@ public class FileUtil {
       }
       
       InputStream is = loader.getResourceAsStream(resource);
-      if(is == null) {
-        logger.info("ensureExists couldnt find resource "+resource+" gonna try "
-                           +"class.getResource");
+      if (is == null) {
+//        logger.debug("ensureExists: couldn't find resource "+resource+" gonna try "
+//                           +"class.getResource");
         try { is = findInputStream(resource); }
         catch (FileNotFoundException e) {
-          logger.info("ensureExists couldnt find resource "+resource+" gonna try "
-                             +"/"+resource);
+//          logger.debug("ensureExists: couldn't find resource "+resource+" gonna try "
+//                             +"/"+resource);
           is = findInputStream("/"+resource); //let ex fly
         }
 
