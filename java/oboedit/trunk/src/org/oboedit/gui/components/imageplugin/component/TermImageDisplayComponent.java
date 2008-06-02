@@ -123,7 +123,9 @@ public class TermImageDisplayComponent extends AbstractGUIComponent {
 					logger.warn("Couldn't create " + directory.toString() + "/" + imageFile + " from resource " + path);
 				}
 			}
-			JOptionPane.showMessageDialog(null, "Terms for which image files were found:\n" + available);
+			String message = "Terms for which image files were found:\n" + available;
+			logger.info(message);
+			JOptionPane.showMessageDialog(null, message);
 		}
 	}
 
