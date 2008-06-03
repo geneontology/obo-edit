@@ -22,15 +22,15 @@
 				</td>
 				<td id="content_container">
 					<#if node?exists>
-						<h2>${nodeId}
-							<#if nodeIdIsComposed?exists>:<@labelDecompose node=composedClassName/></h2>
+						<h2>${node.id}
+							<#if node.isComposed?exists>:<@labelDecompose node=node.composedNode/></h2>
 							<#else>
-								<#if nodeLabel?has_content>: ${nodeLabel}</#if></h2>
+								<#if node.label?has_content>: ${node.label}</#if></h2>
 							</#if>
 						<br/>
 						<@nodeDetailsTable/>
 					<#else>
-						<h2>Node ${nodeId} Not Found</h2>
+						<h2>Node ${node.id} Not Found</h2>
 					</#if>
 				</td>
 			</tr>

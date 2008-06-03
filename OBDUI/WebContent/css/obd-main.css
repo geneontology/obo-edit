@@ -366,3 +366,47 @@ table.genotypeScores td.secondaryHighlight{
     background-color:#9999FF;
     font-weight:bold;
 }
+
+table.intersectionPairTable {
+    font-size:11px;
+    border-style:none;
+    border-spacing:1px;
+    border-collapse:separate;
+    background-color:#acacac;
+    padding:0px;
+}
+
+table.intersectionPairTable th.set1{
+    padding:2px;
+    width:40px;
+    background-color:#FFEEEE;
+    width:50%;
+    font-size:12px;
+}
+
+table.intersectionPairTable th.set2{
+    padding:2px;
+    width:40px;
+    background-color:#EEEEFF;
+    width:50%;
+    font-size:12px;
+}
+
+table.intersectionPairTable td.common{
+    padding:2px;
+    width:40px;
+    background-color:#FFEEFF;
+    width:50%;
+}
+
+table.intersectionPairTable td.set1unique{
+    padding:2px;
+    background-color:#FFDDDD;
+    vertical-align:top;
+}
+
+table.intersectionPairTable td.set2unique{
+    padding:2px;
+    background-color:#DDDDFF;
+    vertical-align:top;
+}

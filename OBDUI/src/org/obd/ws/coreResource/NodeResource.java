@@ -23,8 +23,6 @@ import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
-import org.obd.query.AnnotationLinkQueryTerm;
-import org.obd.query.LinkQueryTerm;
 import org.obd.ws.coreResource.sorter.StatementHashComparator;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -160,21 +158,9 @@ public class NodeResource extends OBDResource {
     			System.err.println("Hostname fetching error: " + e.getMessage());
     		}
     		
-    		if ((node != null) && (node.getSourceId()!=null) && (node.getSourceId().equals("ZFIN"))){
-    			resourceMap.put("nodeId",this.nodeString);
-    			if (this.node.getLabel() != null){
-    				resourceMap.put("nodeLabel", this.node.getLabel());
-    			}
-    		} else {
-    			resourceMap.put("nodeId",StringEscapeUtils.escapeHtml(this.nodeString));
-	    		if ((node != null) && (this.node.getLabel() != null)){
-	    			resourceMap.put("nodeLabel", StringEscapeUtils.escapeHtml(this.node.getLabel()));
-	    		}
+    		if (this.node != null){
+    			resourceMap.put("node", this.hashifyNode(this.node.getId(), "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.node.getId()) ));
     		}
-    		if (this.nodeString.contains("^")){
-				resourceMap.put("nodeIdIsComposed", true);
-				resourceMap.put("composedClassName", this.decomposeNode(this.getShard(dataSource).getCompositionalDescription(this.node.getId(), true)));
-			}
     		
     		// Statements to Node
     		List<SimpleHash> toStatements = this.getHashifiedStatements("to");
@@ -285,6 +271,7 @@ public class NodeResource extends OBDResource {
 		Collection<Statement> statements = new ArrayList<Statement>();
 		if (aspect.equals("about")){
 			for (Statement s : this.getShard(dataSource).getStatementsForNode(nodeId,false)){
+				System.out.println("S: " + s.isAnnotation() + "\t" + s.toString());
 				if (!s.isAnnotation()){
 					statements.add(s);
 				}
@@ -316,48 +303,6 @@ public class NodeResource extends OBDResource {
 	}
 	
 	
-	protected Graph OLD_getGraph(String aspect) {
-		Graph graph;
-		if (aspect == null || aspect.equals("")){
-			aspect = "about";
-		}
-
-		LinkQueryTerm lq = new LinkQueryTerm();
-		if (aspect.equals("annotations")) {
-			lq = new AnnotationLinkQueryTerm(getNodeId());
-		} else {
-			if (aspect.equals("about")){
-				lq.setNode(getNodeId());
-			} else if (aspect.equals("all")){
-				lq.setNode(getNodeId());
-			} else if (aspect.equals("to")){ 
-				lq.setTarget(getNodeId());
-			} else if (aspect.equals("source")){
-				lq.setSource(getNodeId());
-			} else {
-				lq.setNode(getNodeId());
-			}
-		}
-
-		Collection<Statement> stmts = getShard(this.dataSource).getStatementsByQuery(lq);
-		
-		if (aspect.equals("all")) {
-			lq = new LinkQueryTerm();
-			lq.setTarget(getNodeId());
-			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-		}
-		
-		System.out.println(aspect + " statements: " + stmts.size());
-		graph = new Graph(stmts);
-		if (true) {
-			String[] nids = graph.getReferencedNodeIds();
-			for (String nid : nids) {
-				Node n = getShard(this.dataSource).getNode(nid);
-				graph.addNode(n);
-			}
-		}
-		return graph;
-	}
 	
 	protected SimpleHash hashifyStatement(Statement s){
 		return this.hashifyStatement(s,false); 
@@ -384,7 +329,7 @@ public class NodeResource extends OBDResource {
 		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/html/node/";
 		statementHash.put("subject", this.hashifyNode(s.getNodeId(), (hrefBase+Reference.encode(s.getNodeId()))));
 		SimpleHash relationshipHash = this.hashifyNode(s.getRelationId(), (hrefBase+Reference.encode(s.getRelationId())));
-		relationshipHash.put("nodeLabel", this.prettifyRelationshipTerm(s.getRelationId()));
+		relationshipHash.put("label", this.prettifyRelationshipTerm(s.getRelationId()));
 		statementHash.put("predicate", relationshipHash);
 		
 		if (s instanceof LinkStatement) {
@@ -501,6 +446,14 @@ public class NodeResource extends OBDResource {
 		return formatted;
 	}
 	
+	protected List<SimpleHash> hashifyNodes(Collection<String> nodeIds,String hrefPrefix){
+		List<SimpleHash> hashifiedNodes = new ArrayList<SimpleHash>();
+		for (String nodeId : nodeIds){
+			hashifiedNodes.add(this.hashifyNode(nodeId, hrefPrefix + Reference.encode(nodeId)));
+		}
+		return hashifiedNodes;
+	}
+	
 	protected SimpleHash hashifyNode(String nodeId,String href){
 		SimpleHash nodeHash = new SimpleHash();
 		Node n = this.getShard(dataSource).getNode(nodeId);
@@ -513,14 +466,16 @@ public class NodeResource extends OBDResource {
 		if (n != null && n.getSourceId()!=null && !n.getSourceId().equals("ZFIN")){
 			label = StringEscapeUtils.escapeHtml(label);
 		}
-		nodeHash.put("nodeLabel", label);
+		nodeHash.put("id", nodeId);
+		nodeHash.put("encodedId", Reference.encode(nodeId));
+		nodeHash.put("label", label);
 		if (href != null){
-			nodeHash.put("nodeHref", href);
+			nodeHash.put("href", href);
 		}
 		if (nodeId.contains("^")){
 			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
 			if (cd != null){
-				nodeHash.put("nodeIsComposed", true);
+				nodeHash.put("isComposed", true);
 				nodeHash.put("composedNode", this.decomposeNode(cd));
 			}
 		}

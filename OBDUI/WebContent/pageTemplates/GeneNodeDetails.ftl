@@ -62,17 +62,19 @@
 											<tr>
 												<th id="th_${rowCount}" class="std">
 													<b>${rowCount+1}:</b> 
-													<a href="#genotype_${rowCount}" onclick="openTable('genotypeAnnotations','${hostname}');" name="${genotypes[rowCount].genotype.nodeLabel}">
-														<#if (genotypes[rowCount].genotype.nodeLabel?length>22)>
-															${genotypes[rowCount].genotype.nodeLabel?substring(0,22)}...
+													<a href="#genotype_${rowCount}" onclick="openTable('genotypeAnnotations','${hostname}');" name="${genotypes[rowCount].genotype.label}">
+														<#if (genotypes[rowCount].genotype.label?length>20)>
+															${genotypes[rowCount].genotype.label?substring(0,20)}...
 														<#else>
-															${genotypes[rowCount].genotype.nodeLabel}
+															${genotypes[rowCount].genotype.label}
 														</#if>
 													</a>
 												</th>
 												<#list 0..genotypeComparaScores[rowCount]?size-1 as colCount>
 													<#if (genotypeComparaScores[rowCount][colCount] != -1)>
-														<td id="td_${rowCount}_${colCount}" onmouseover="toggleColors('on',${rowCount},${colCount},<#if (colCount<rowCount)>'basicScore','contentRatioScore'<#else>'contentRatioScore','basicScore'</#if>);" onmouseout="toggleColors('off',${rowCount},${colCount},<#if (colCount<rowCount)>'basicScore','contentRatioScore'<#else>'contentRatioScore','basicScore'</#if>);" class="<#if (colCount < rowCount)>basicScore<#else>contentRatioScore</#if>">${genotypeComparaScores[rowCount][colCount]}</td>
+														<td id="td_${rowCount}_${colCount}" onmouseover="toggleColors('on',${rowCount},${colCount},<#if (colCount<rowCount)>'basicScore','contentRatioScore'<#else>'contentRatioScore','basicScore'</#if>);" onmouseout="toggleColors('off',${rowCount},${colCount},<#if (colCount<rowCount)>'basicScore','contentRatioScore'<#else>'contentRatioScore','basicScore'</#if>);" class="<#if (colCount < rowCount)>basicScore<#else>contentRatioScore</#if>">
+															<a style="color:#000088;" href="/${contextName}/${dataSource}/html/similarityPair/${genotypes[rowCount].genotype.encodedId}+${genotypes[colCount].genotype.encodedId}">${genotypeComparaScores[rowCount][colCount]}</a>
+														</td>
 													<#else>
 														<td class="blank"></td>
 													</#if>

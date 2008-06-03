@@ -7,9 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 import org.obd.model.stats.SimilarityPair;
-import org.obd.model.Statement;
-import org.obd.query.LinkQueryTerm;
-import org.obd.query.QueryTerm;
 import org.obd.ws.coreResource.NodeResource;
 import org.obd.ws.coreResource.utility.NodeTyper;
 import org.restlet.Context;
@@ -67,7 +64,9 @@ public class GeneResource extends NodeResource{
 				if (i!=j){
 					SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(genotypeIds.get(j), genotypeIds.get(i));
 					double basicSimilarityScore = sp.getBasicSimilarityScore();
+					
 					this.getShard(dataSource).calculateInformationContentMetrics(sp);
+					
 					double informationContentRatio = sp.getSimilarityByInformationContentRatio();
 					genotypeScores[i][j] = informationContentRatio;
 					genotypeScores[j][i] = basicSimilarityScore;

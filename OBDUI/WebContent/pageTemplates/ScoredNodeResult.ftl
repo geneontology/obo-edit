@@ -18,7 +18,7 @@
 				</td>
 				<td id="content_container">
 					<#if node?exists>
-						<h2>Similar to ${nodeId}<#if node.getLabel()?has_content>: ${node.getLabel()}</#if></h2>
+						<h2>Similar to ${node.id}: ${node.label}</#if></h2>
 						<br/>
 						<#if results?exists>
 							<table class="scoredNodeResults">
@@ -38,7 +38,7 @@
 							No Results
 						</#if>
 					<#else>
-						Node ${nodeId} not found. 
+						Node ${id} not found. 
 					</#if>
 				</td>
 			</tr>
