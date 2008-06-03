@@ -1,31 +1,31 @@
 <#macro nodeHashHref nodeHash target='blank'>
-	<#if nodeHash.nodeIsComposed?exists>
+	<#if nodeHash.isComposed?exists>
 		<#if target != 'blank'>
 			<@labelDecompose node=nodeHash.composedNode target=target/>
 		<#else>
-			<@labelDecompose node=nodeHash.composedNode target=nodeHash.nodeHref/>
+			<@labelDecompose node=nodeHash.composedNode target=nodeHash.href/>
 		</#if>
 	<#else>
 		<#if target != 'blank'>
-			<@labelhref target=target label=nodeHash.nodeLabel/>
+			<@labelhref target=target label=nodeHash.label/>
 		<#else>
-			<@labelhref target=nodeHash.nodeHref label=nodeHash.nodeLabel/>
+			<@labelhref target=nodeHash.href label=nodeHash.label/>
 		</#if>
 	</#if>
 </#macro>
 
 <#macro nodeHashHrefLimit nodeHash limit target='blank'>
-	<#if nodeHash.nodeIsComposed?exists>
+	<#if nodeHash.isComposed?exists>
 		<#if target != 'blank'>
 			<@labelDecomposelimit node=nodeHash.composedNode target=target limit=limit/>
 		<#else>
-			<@labelDecomposelimit node=nodeHash.composedNode target=nodeHash.nodeHref limit=limit/>
+			<@labelDecomposelimit node=nodeHash.composedNode target=nodeHash.href limit=limit/>
 		</#if>
 	<#else>
 		<#if target != 'blank'>
-			<@labelhreflimit target=target label=nodeHash.nodeLabel limit=limit/>
+			<@labelhreflimit target=target label=nodeHash.label limit=limit/>
 		<#else>
-			<@labelhreflimit target=nodeHash.nodeHref label=nodeHash.nodeLabel limit=limit/>
+			<@labelhreflimit target=nodeHash.href label=nodeHash.label limit=limit/>
 		</#if>
 	</#if>
 </#macro>

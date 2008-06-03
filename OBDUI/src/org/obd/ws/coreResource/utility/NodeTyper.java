@@ -2,7 +2,6 @@ package org.obd.ws.coreResource.utility;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.obd.model.Node;
@@ -21,7 +20,7 @@ public class NodeTyper{
 		lqt.setInferred(false);
 		Collection<Statement> typeStatements = s.getStatementsByQuery(lqt);
 		if (typeStatements.size() != 1){
-			System.err.println("ERR: Too many is_a statements for " + nodeId + ".");
+			System.err.println("ERR: Wrong number of is_a statements for " + nodeId + ".\t" + typeStatements.size());
 			return Type.UNDEFINED;
 		} else {
 			Node n = s.getNode(typeStatements.toArray(new Statement[0])[0].getTargetId());
@@ -43,7 +42,7 @@ public class NodeTyper{
 		lqt.setRelation("OBO_REL:variant_of");
 		Collection<Statement> statements = s.getStatementsByQuery(lqt);
 		if (statements.size()!= 1){
-			System.err.println("ERR: Too many instance_of statements.");
+			System.err.println("ERR: Wrong number of variant_of statements.\t" + statements.size() );
 		} else {
 			return statements.toArray(new Statement[0])[0].getTargetId();
 		}
@@ -62,18 +61,5 @@ public class NodeTyper{
 			}
 		}
 		return genotypeIds;
-	}
-	
-	public static String getOrganismId(String nodeId,Shard s){
-		Type nodeType = NodeTyper.getNodeType(nodeId, s);
-		if (nodeType != null && (nodeType.equals(Type.GENOTYPE)||nodeType.equals(Type.GENE))){
-			if (nodeType.equals(Type.GENOTYPE)){
-				nodeId = NodeTyper.getGenotypeGeneId(nodeId, s);
-				if (nodeId != null){
-					LinkQueryTerm lqt = new LinkQueryTerm();
-				}
-			}
-		}
-		return null;
 	}
 }

@@ -61,6 +61,10 @@
 		<resourceClass>org.obd.ws.bioResource.GeneResource</resourceClass>
 		<path>/{dataSource}/{format}/gene/{id}</path>
 	</resourcePathMap>
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.SimilarityPairResource</resourceClass>
+		<path>/{dataSource}/{format}/similarityPair/{nodeList}</path>
+	</resourcePathMap>
 	
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.NodesResource</resourceClass>

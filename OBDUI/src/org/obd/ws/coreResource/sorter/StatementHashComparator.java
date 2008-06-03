@@ -10,8 +10,8 @@ public class StatementHashComparator implements Comparator<SimpleHash> {
 	public int compare(SimpleHash o1, SimpleHash o2) {
 		
 		try {
-			String relation1 = ((SimpleHash)((SimpleHash)o1).get("predicate")).get("nodeLabel").toString();
-			String relation2 = ((SimpleHash)((SimpleHash)o2).get("predicate")).get("nodeLabel").toString();
+			String relation1 = ((SimpleHash)((SimpleHash)o1).get("predicate")).get("label").toString();
+			String relation2 = ((SimpleHash)((SimpleHash)o2).get("predicate")).get("label").toString();
 			
 			//System.out.println("Comparing " + relation1 + " to " + relation2 + ":\t" + relation1.compareToIgnoreCase(relation2));
 			
@@ -20,8 +20,8 @@ public class StatementHashComparator implements Comparator<SimpleHash> {
 			} else if (relation1.compareToIgnoreCase(relation2) == 0) {
 				
 				
-				String subject1 = ((SimpleHash)o1.get("subject")).get("nodeLabel").toString();
-				String subject2 = ((SimpleHash)o2.get("subject")).get("nodeLabel").toString();
+				String subject1 = ((SimpleHash)o1.get("subject")).get("label").toString();
+				String subject2 = ((SimpleHash)o2.get("subject")).get("label").toString();
 				
 				return subject1.compareTo(subject2);
 				

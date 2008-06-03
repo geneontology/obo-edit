@@ -6,11 +6,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
-
-import org.apache.commons.lang.StringEscapeUtils;
 import org.obd.model.Graph;
 import org.obd.model.Node;
 import org.obd.model.Statement;
@@ -38,7 +35,7 @@ import freemarker.template.SimpleHash;
  */
 public class NodesResource extends NodeResource {
 
-    private Collection<Node> nodes;
+    protected List<Node> nodes;
 	
 	/**
      * Constructor.
@@ -53,11 +50,14 @@ public class NodesResource extends NodeResource {
     public NodesResource(Context context, Request request, Response response) {
         
     	super(context, request, response);
-        this.nodes = new HashSet<Node>();
+        this.nodes = new ArrayList<Node>();
         this.nodeString = (String) request.getAttributes().get("nodeList");
         if (this.nodeString != null){
         	//getVariants().add(new Variant(MediaType.TEXT_HTML));
+        	
         	for (String uid : this.nodeString.split("\\+")){
+        		uid = Reference.decode(uid);
+        		System.out.println("Nodes List Contains: " + uid);
         		Node n = this.getShard(this.dataSource).getNode(uid);
         		if (n != null){
         			this.nodes.add(n);
@@ -122,28 +122,9 @@ public class NodesResource extends NodeResource {
     		
     		List<SimpleHash> nodes = new ArrayList<SimpleHash>();
     		for (Node n : this.nodes){
-    			SimpleHash nodeHash = new SimpleHash();
-    			if (n.getSourceId() != null && n.getSourceId().equals("ZFIN")){
-    				if (n.getLabel() != null){
-    					nodeHash.put("label", n.getLabel());
-	    			} else {
-	    				nodeHash.put("label", n.getId());
-	    			}
-    			} else {
-    				if (n.getLabel() != null){
-    					nodeHash.put("label", StringEscapeUtils.escapeHtml(n.getLabel()));
-	    			} else {
-	    				nodeHash.put("label", StringEscapeUtils.escapeHtml(n.getId()));
-	    			}
-	    			
-    			}
-    			nodeHash.put("id", n.getId());
-    			nodeHash.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()));
-    			nodes.add(nodeHash);
+    			nodes.add(this.hashifyNode(n.getId(), ("/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(n.getId()))));
     		}
-    		
     		resourceMap.put("nodes", nodes);
-    		
     		return getTemplateRepresentation("NodesDetails",resourceMap);
     		
     	} else {

@@ -187,14 +187,6 @@
 </#macro>
 
 <#macro nodeMetaData>
-	<#if node?exists>
-		<span style="font-size:12px;">Node MetaData</span>
-		<br/>
-		<span style="font-size:11px;">
-		<#if node.getSourceId()?exists>
-			&nbsp;&bull;&nbsp;<b>Source:</b> ${node.getSourceId()}
-		</#if>
-		</span>
-	</#if>
+	To Do
 </#macro>
 
