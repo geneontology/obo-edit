@@ -94,9 +94,11 @@ import org.oboedit.gui.actions.CopyAction;
 import org.oboedit.gui.actions.DeleteAction;
 import org.oboedit.gui.actions.DomainChangeAction;
 import org.oboedit.gui.actions.InvNecessaryAction;
+import org.oboedit.gui.actions.MakeSubclassesMutuallyDisjointAction;
 import org.oboedit.gui.actions.MergeAction;
 import org.oboedit.gui.actions.MoveAction;
 import org.oboedit.gui.actions.MultiAddAction;
+import org.oboedit.gui.actions.NameUnnamedTermsAction;
 import org.oboedit.gui.actions.NecessaryAction;
 import org.oboedit.gui.actions.RangeChangeAction;
 import org.oboedit.gui.actions.RemoveConsiderAction;
@@ -552,10 +554,12 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(
 				new RemoveRedundantAction());
 		EditActionManager.getManager().addEditAction(new AssertImpliedAction());
+		EditActionManager.getManager().addEditAction(new NameUnnamedTermsAction());
 
 		EditActionManager.getManager().addEditAction(new CloneAction());
 		EditActionManager.getManager().addEditAction(new AddRootAction());
 		EditActionManager.getManager().addEditAction(new RerootAction());
+		EditActionManager.getManager().addEditAction(new MakeSubclassesMutuallyDisjointAction());
 		EditActionManager.getManager().addEditAction(new NecessaryAction());
 		EditActionManager.getManager().addEditAction(new InvNecessaryAction());
 		EditActionManager.getManager().addEditAction(new CompletesAction());

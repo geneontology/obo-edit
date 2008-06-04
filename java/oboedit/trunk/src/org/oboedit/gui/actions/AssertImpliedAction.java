@@ -150,7 +150,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 		impliedLinks = new LinkedHashSet<Link>();
 		int count = 0;
 
-		logger.info("iterating through all links");
+		logger.debug("iterating through all links");
 		while (it.hasNext()) {
 			final Link link = it.next();
 			if (TermUtil.isImplied(link)) {
@@ -163,12 +163,12 @@ public class AssertImpliedAction implements ClickMenuAction {
 					//logger.info("ignoring "+link+" as it spans ontologies");
 					continue;
 				}
-				logger.info("checking if this should be trimmed");
+				logger.debug("checking if this should be trimmed");
 				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
 					!impliedLinks.contains(link) &&
 					(selectedRelation == null ||
 							link.getType().equals(selectedRelation))) {
-					logger.info("checking explanations");
+					logger.debug("checking explanations");
 					Collection<Explanation> explanations = reasoner.getExplanations(link);
 					
 					Explanation chosenExplanation = null;

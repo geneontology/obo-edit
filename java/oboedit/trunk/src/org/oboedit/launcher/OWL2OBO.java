@@ -30,6 +30,7 @@ import org.obo.filters.Filter;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.owl.datamodel.MetadataMapping;
 import org.obo.owl.datamodel.impl.AxiomAnnotationBasedOWLMetadataMapping;
+import org.obo.owl.datamodel.impl.BIRNLexMetadataMapping;
 import org.obo.owl.datamodel.impl.NCBOOboInOWLMetadataMapping;
 import org.obo.owl.datamodel.impl.OBIMetadataMapping;
 import org.obo.owl.datamodel.impl.SimpleOWLMetadataMapping;
@@ -538,6 +539,8 @@ public class OWL2OBO {
 					mapping = new NCBOOboInOWLMetadataMapping();
 				else if (name.equals("obi"))
 					mapping = new OBIMetadataMapping();
+				else if (name.equals("birnlex"))
+					mapping = new BIRNLexMetadataMapping();
 				else if (name.equals("axiom"))
 					mapping = new AxiomAnnotationBasedOWLMetadataMapping();
 				else

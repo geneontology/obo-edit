@@ -211,8 +211,8 @@ public class ParentEditor extends AbstractGUIComponent {
 		public int compare(Link a, Link b) {
 			Link tr = a;
 			Link tr2 = b;
-			int compVal = tr.getParent().getName().compareTo(
-					tr2.getParent().getName());
+			int compVal = TermUtil.getNameSafe(tr.getParent()).compareTo(
+					TermUtil.getNameSafe(tr2.getParent()));
 			if (compVal < 0)
 				return -1;
 			else if (compVal > 0)
