@@ -19,41 +19,43 @@
 				</td>
 				<td id="content_container">
 					<h2>${node1.label} <span style="font-weight:normal;">vs</span> ${node2.label}</h2><br/>
+					
 					<table class="intersectionPairTable">
 						<tr>
-							<th class="set1"><@nodeHashHref nodeHash=node1/> Statements</th>
-							<th class="set2"><@nodeHashHref nodeHash=node2/> statements</th>
+							<th class="scoringSummary" colspan="2">
+								<b>Scoring Summary:</b>
+								Basic Similarity Score: <i>${basicSimilarityScore}</i>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								Information Content Ratio: <i>${contentRatioScore}</i>
+							</th>
 						</tr>
 						<tr>
-							<td class="common">
-								<ul>
-									<#list intersectionNodes as node>
-										<li><@nodeHashHref nodeHash=node/></li>
-									</#list>
-								</ul>
-							</td>
-							<td class="common">
-								<ul>
-									<#list intersectionNodes as node>
-										<li><@nodeHashHref nodeHash=node/></li>
-									</#list>
-								</ul>
+							<th class="set1"><@nodeHashHref nodeHash=node1/> Statements (${intersectionNodes?size + set1unique?size})</th>
+							<th class="set2"><@nodeHashHref nodeHash=node2/> statements (${intersectionNodes?size + set2unique?size})</th>
+						</tr>
+						<tr>
+							<td class="common" colspan="2">
+								<table class="center">
+									<tr>
+										<td>
+											<span style="width:100%;font-size:10px;color:#888888;">Statements in Common</span><br/>
+											<#if (intersectionNodes?size>0)>
+												<@listNodes nodeList=intersectionNodes highlight=maxContentNode/>
+											<#else>
+												None
+											</#if>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>
+						
 							<td class="set1unique">
-								<ul>
-								<#list set1unique as node>
-									<li><@nodeHashHref nodeHash=node/>
-								</#list>
-								</ul>	
+								<@listNodes nodeList=set1unique/>	
 							</td>
 							<td class="set2unique">
-								<ul>
-								<#list set2unique as node>
-									<li><@nodeHashHref nodeHash=node/></li>
-								</#list>
-								</ul>
+								<@listNodes nodeList=set2unique/>
 							</td>
 							
 						</tr>
@@ -65,3 +67,18 @@
 		<@footer/>
 	</body>
 </html>
+
+<#macro listNodes nodeList highlight='blank'>
+	<table class="nodeList">
+	<#list nodeList as node>
+		<tr>
+			<td class="<#if ((highlight != 'blank') && (highlight == node.id))>max<#else>std</#if>">
+				&bull;
+			</td>
+			<td class="<#if ((highlight != 'blank') && (highlight == node.id))>max<#else>std</#if>">
+				<@nodeHashHref nodeHash=node/>
+			</td>
+		</tr>
+	</#list>
+	</table>
+</#macro>

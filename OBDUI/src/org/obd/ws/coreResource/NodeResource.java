@@ -271,7 +271,6 @@ public class NodeResource extends OBDResource {
 		Collection<Statement> statements = new ArrayList<Statement>();
 		if (aspect.equals("about")){
 			for (Statement s : this.getShard(dataSource).getStatementsForNode(nodeId,false)){
-				System.out.println("S: " + s.isAnnotation() + "\t" + s.toString());
 				if (!s.isAnnotation()){
 					statements.add(s);
 				}

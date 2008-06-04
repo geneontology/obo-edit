@@ -62,14 +62,14 @@ public class GeneResource extends NodeResource{
 		for (int i=0;i<genotypeIds.size();i++){
 			for (int j=i;j<genotypeIds.size();j++){
 				if (i!=j){
+					System.out.println("Trying for similarity pair " + genotypeIds.get(j) + "\t" + genotypeIds.get(i));
 					SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(genotypeIds.get(j), genotypeIds.get(i));
-					double basicSimilarityScore = sp.getBasicSimilarityScore();
-					
 					this.getShard(dataSource).calculateInformationContentMetrics(sp);
 					
-					double informationContentRatio = sp.getSimilarityByInformationContentRatio();
-					genotypeScores[i][j] = informationContentRatio;
-					genotypeScores[j][i] = basicSimilarityScore;
+					genotypeScores[j][i] = sp.getBasicSimilarityScore();
+					genotypeScores[i][j] = sp.getSimilarityByInformationContentRatio();
+					
+					
 				} else {
 					genotypeScores[i][j] = -1;
 				}

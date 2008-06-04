@@ -370,43 +370,75 @@ table.genotypeScores td.secondaryHighlight{
 table.intersectionPairTable {
     font-size:11px;
     border-style:none;
-    border-spacing:1px;
+    border-spacing:0px;
     border-collapse:separate;
-    background-color:#acacac;
+    background-color:#ffffff;
     padding:0px;
 }
 
 table.intersectionPairTable th.set1{
-    padding:2px;
+    padding:10px;
     width:40px;
-    background-color:#FFEEEE;
+    background-color:#FFF6F6;
     width:50%;
     font-size:12px;
 }
 
 table.intersectionPairTable th.set2{
-    padding:2px;
+    padding:10px;
     width:40px;
-    background-color:#EEEEFF;
+    background-color:#F6F6FF;
     width:50%;
     font-size:12px;
+    border-left:1px dotted #AAAAAA;
+}
+
+table.intersectionPairTable th.scoringSummary{
+    padding:10px;
+    font-weight:normal;
+    font-size:12px;
+    border: 1px dashed #AAAAAA;
 }
 
 table.intersectionPairTable td.common{
     padding:2px;
-    width:40px;
     background-color:#FFEEFF;
-    width:50%;
+    border: 1px dotted #AAAAAA;
+    border-bottom:none;
 }
+
+table.center {
+    margin-left:auto; 
+    margin-right:auto;
+    text-align:center;
+}
+
 
 table.intersectionPairTable td.set1unique{
     padding:2px;
     background-color:#FFDDDD;
     vertical-align:top;
+    border:1px dotted #AAAAAA;
+    border-right:none;
 }
 
 table.intersectionPairTable td.set2unique{
     padding:2px;
     background-color:#DDDDFF;
     vertical-align:top;
+    border:1px dotted #AAAAAA;
+}
+
+table.nodeList {
+    font-size:11px;
+}
+
+table.nodeList td.max{
+    vertical-align:top;
+    font-size:16px;
+}
+
+table.nodeList td.std{
+    vertical-align:top;
+    font-size:11px;
 }
