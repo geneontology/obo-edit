@@ -869,6 +869,24 @@ public class DefaultOBOParser implements OBOParser {
 				false, implied, null, null, null, ns, nv));
 	}
 
+	public void readUnion(String id, String ns, boolean implied,
+			NestedValue nv) throws OBOParseException {
+		if (!(currentObject instanceof LinkedObject))
+			throw new OBOParseException("Tried to specify union_of "
+					+ "for object " + currentObject + " which "
+					+ "does not support relationships.", getCurrentPath(),
+					engine.getCurrentLine(), engine.getLineNum());
+
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
+		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+				OBOProperty.UNION_OF.getID(), getCurrentPath(), engine
+				.getLineNum(), engine.getCurrentLine(), true, false,
+				false, implied, null, null, null, ns, nv));
+	}
+
 	public void readInverseOf(String id, String ns, boolean implied,
 			NestedValue nv) throws OBOParseException {
 		if (!(currentObject instanceof LinkedObject))

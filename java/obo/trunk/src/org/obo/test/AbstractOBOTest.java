@@ -61,7 +61,7 @@ public abstract class AbstractOBOTest extends TestCase {
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		for (String f : names) {
 			String path;
-			if (f.startsWith("/"))
+			if (f.startsWith("/") || f.startsWith("http:"))
 				path = f;
 			else
 				path = getResourcePath() + "/" +f;

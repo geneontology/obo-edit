@@ -121,6 +121,8 @@ public interface OBOParser extends OBOSimpleParser {
 
 	public void readDisjoint(String id, String ns, boolean implied,
 			NestedValue val) throws OBOParseException;
+	public void readUnion(String id, String ns, boolean implied,
+			NestedValue val) throws OBOParseException;
 
 	public void readInverseOf(String id, String ns, boolean implied,
 			NestedValue val) throws OBOParseException;
