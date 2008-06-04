@@ -1,0 +1,1297 @@
+format-version: 1.2
+date: 26:05:2008 17:28
+auto-generated-by: OBO-Edit 2.000-beta39
+subsetdef: biosapiens "biosapiens protein feature ontology"
+subsetdef: SOFA "SO feature annotation"
+default-namespace: sequence
+remark: This subset of SO demonstrates the problem where reasoner + Graph Editor -> OBO-Edit freezes
+
+[Term]
+id: ID:0000000
+name: gene segment
+def: "A gene component region which acts as a recombinational unit of a gene whose functional form is generated through somatic recombination." [GOC:add]
+is_a: SO:0000842 ! gene_component_region
+
+[Term]
+id: ID:0000001
+name: variable region V gene segment
+is_a: ID:0000067 ! variable region gene segment
+
+[Term]
+id: ID:0000002
+name: variable region D gene segment
+is_a: ID:0000067 ! variable region gene segment
+
+[Term]
+id: ID:0000003
+name: immunoglobulin variable region J gene segment
+is_a: ID:0000077 ! variable region J gene segment
+
+[Term]
+id: ID:0000004
+name: immunoglobulin variable region V gene segment
+is_a: ID:0000001 ! variable region V gene segment
+
+[Term]
+id: ID:0000005
+name: Ig heavy chain V gene segment
+is_a: ID:0000004 ! immunoglobulin variable region V gene segment
+
+[Term]
+id: ID:0000006
+name: Ig kappa chain V gene segment
+is_a: ID:0000004 ! immunoglobulin variable region V gene segment
+
+[Term]
+id: ID:0000007
+name: Ig lambda chain V gene segment
+is_a: ID:0000004 ! immunoglobulin variable region V gene segment
+
+[Term]
+id: ID:0000008
+name: T cell receptor variable region V gene segment
+is_a: ID:0000001 ! variable region V gene segment
+
+[Term]
+id: ID:0000009
+name: TCR beta chain V gene segment
+is_a: ID:0000008 ! T cell receptor variable region V gene segment
+
+[Term]
+id: ID:0000010
+name: TCR alpha chain V gene segment
+is_a: ID:0000008 ! T cell receptor variable region V gene segment
+
+[Term]
+id: ID:0000011
+name: TCR delta chain V gene segment
+is_a: ID:0000008 ! T cell receptor variable region V gene segment
+
+[Term]
+id: ID:0000012
+name: TCR gamma chain V gene segment
+is_a: ID:0000008 ! T cell receptor variable region V gene segment
+
+[Term]
+id: ID:0000013
+name: Cluster
+
+[Term]
+id: ID:0000015
+name: constant region gene segment
+is_a: ID:0000000 ! gene segment
+
+[Term]
+id: ID:0000017
+name: immunoglobulin constant region gene segment
+is_a: ID:0000015 ! constant region gene segment
+
+[Term]
+id: ID:0000018
+name: IgM constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000020
+name: immunoglobulin constant region exon
+is_a: ID:0000054 ! constant region exon
+
+[Term]
+id: ID:0000021
+name: IgM constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000018 ! IgM constant region gene segment
+
+[Term]
+id: ID:0000022
+name: Ig mu constant region exon 1
+is_a: ID:0000021 ! IgM constant region exon
+
+[Term]
+id: ID:0000023
+name: Ig mu constant region exon 2
+is_a: ID:0000021 ! IgM constant region exon
+
+[Term]
+id: ID:0000024
+name: Ig mu constant region exon 3
+is_a: ID:0000021 ! IgM constant region exon
+
+[Term]
+id: ID:0000025
+name: SO term for regulatory sequence
+
+[Term]
+id: ID:0000026
+name: RAG-dependent recombination signal
+is_a: ID:0000025 ! SO term for regulatory sequence
+
+[Term]
+id: ID:0000027
+name: switch recombination region
+is_a: ID:0000025 ! SO term for regulatory sequence
+
+[Term]
+id: ID:0000029
+name: SO term for regulatory sequence part
+
+[Term]
+id: ID:0000030
+name: RAG-dependent recombination signal heptamer
+is_a: ID:0000029 ! SO term for regulatory sequence part
+
+[Term]
+id: ID:0000031
+name: RAG-dependent recombination signal spacer
+is_a: ID:0000029 ! SO term for regulatory sequence part
+
+[Term]
+id: ID:0000032
+name: RAG-dependent recombination signal nonamer
+is_a: ID:0000029 ! SO term for regulatory sequence part
+
+[Term]
+id: ID:0000033
+name: V gene segment RAG-dependent recombination signal
+is_a: ID:0000086 ! variable region gene segment-associated RAG-dependent recombination signal
+relationship: part_of ID:0000001 ! variable region V gene segment
+
+[Term]
+id: ID:0000034
+name: D gene segment RAG-dependent recombination signal
+is_a: ID:0000086 ! variable region gene segment-associated RAG-dependent recombination signal
+relationship: part_of ID:0000002 ! variable region D gene segment
+
+[Term]
+id: ID:0000035
+name: J gene segment RAG-dependent recombination signal
+is_a: ID:0000086 ! variable region gene segment-associated RAG-dependent recombination signal
+relationship: part_of ID:0000077 ! variable region J gene segment
+
+[Term]
+id: ID:0000036
+name: T cell receptor constant region exon
+is_a: ID:0000054 ! constant region exon
+
+[Term]
+id: ID:0000037
+name: IgD constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000046 ! IgD constant region gene segment
+
+[Term]
+id: ID:0000038
+name: IgG constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000045 ! IgG constant region gene segment
+
+[Term]
+id: ID:0000039
+name: IgA constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000047 ! IgA constant region gene segment
+
+[Term]
+id: ID:0000040
+name: IgE constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000048 ! IgE constant region gene segment
+
+[Term]
+id: ID:0000041
+name: TCR beta constant region exon
+is_a: ID:0000036 ! T cell receptor constant region exon
+relationship: part_of ID:0000059 ! TCR beta constant region gene segment
+
+[Term]
+id: ID:0000042
+name: TCR gamma constant region exon
+is_a: ID:0000036 ! T cell receptor constant region exon
+relationship: part_of ID:0000062 ! TCR gamma constant region gene segment
+
+[Term]
+id: ID:0000043
+name: TCR alpha constant region exon
+is_a: ID:0000036 ! T cell receptor constant region exon
+relationship: part_of ID:0000060 ! TCR alpha constant region gene segment
+
+[Term]
+id: ID:0000044
+name: TCR delta constant region exon
+is_a: ID:0000036 ! T cell receptor constant region exon
+relationship: part_of ID:0000061 ! TCR delta constant region gene segment
+
+[Term]
+id: ID:0000045
+name: IgG constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000046
+name: IgD constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000047
+name: IgA constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000048
+name: IgE constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000049
+name: IgT constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000050 ! IgT constant region gene segment
+
+[Term]
+id: ID:0000050
+name: IgT constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000051
+name: IgZ constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000052 ! IgZ constant region gene segment
+
+[Term]
+id: ID:0000052
+name: IgZ constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000053
+name: IgW constant region exon
+synonym: "<new synonym>" RELATED []
+synonym: "IgNARC" EXACT []
+synonym: "IgX" EXACT []
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000055 ! IgW constant region gene segment
+
+[Term]
+id: ID:0000054
+name: constant region exon
+is_a: SO:0000147 ! exon
+
+[Term]
+id: ID:0000055
+name: IgW constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000056
+name: IgNAR constant region exon
+is_a: ID:0000020 ! immunoglobulin constant region exon
+relationship: part_of ID:0000057 ! IgNAR constant region gene segment
+
+[Term]
+id: ID:0000057
+name: IgNAR constant region gene segment
+is_a: ID:0000017 ! immunoglobulin constant region gene segment
+
+[Term]
+id: ID:0000058
+name: T cell receptor constant region gene segment
+is_a: ID:0000015 ! constant region gene segment
+
+[Term]
+id: ID:0000059
+name: TCR beta constant region gene segment
+is_a: ID:0000058 ! T cell receptor constant region gene segment
+
+[Term]
+id: ID:0000060
+name: TCR alpha constant region gene segment
+is_a: ID:0000058 ! T cell receptor constant region gene segment
+
+[Term]
+id: ID:0000061
+name: TCR delta constant region gene segment
+is_a: ID:0000058 ! T cell receptor constant region gene segment
+
+[Term]
+id: ID:0000062
+name: TCR gamma constant region gene segment
+is_a: ID:0000058 ! T cell receptor constant region gene segment
+
+[Term]
+id: ID:0000063
+name: IgA switch recombination region
+is_a: ID:0000027 ! switch recombination region
+relationship: part_of ID:0000047 ! IgA constant region gene segment
+
+[Term]
+id: ID:0000064
+name: IgE switch recombination region
+is_a: ID:0000027 ! switch recombination region
+relationship: part_of ID:0000048 ! IgE constant region gene segment
+
+[Term]
+id: ID:0000065
+name: IgG switch recombination region
+is_a: ID:0000027 ! switch recombination region
+relationship: part_of ID:0000045 ! IgG constant region gene segment
+
+[Term]
+id: ID:0000066
+name: IgM switch recombination region
+is_a: ID:0000027 ! switch recombination region
+relationship: part_of ID:0000018 ! IgM constant region gene segment
+
+[Term]
+id: ID:0000067
+name: variable region gene segment
+is_a: ID:0000000 ! gene segment
+
+[Term]
+id: ID:0000068
+name: Ig heavy chain D gene segment
+is_a: ID:0000069 ! immunoglobulin variable region D gene segment
+
+[Term]
+id: ID:0000069
+name: immunoglobulin variable region D gene segment
+is_a: ID:0000002 ! variable region D gene segment
+
+[Term]
+id: ID:0000070
+name: T cell receptor variable region D gene segment
+is_a: ID:0000002 ! variable region D gene segment
+
+[Term]
+id: ID:0000071
+name: Ig kappa chain D gene segment
+is_a: ID:0000069 ! immunoglobulin variable region D gene segment
+
+[Term]
+id: ID:0000072
+name: Ig lambda chain D gene segment
+is_a: ID:0000069 ! immunoglobulin variable region D gene segment
+
+[Term]
+id: ID:0000073
+name: TCR alpha chain D gene segment
+is_a: ID:0000070 ! T cell receptor variable region D gene segment
+
+[Term]
+id: ID:0000074
+name: TCR beta chain D gene segment
+is_a: ID:0000070 ! T cell receptor variable region D gene segment
+
+[Term]
+id: ID:0000075
+name: TCR delta chain D gene segment
+is_a: ID:0000070 ! T cell receptor variable region D gene segment
+
+[Term]
+id: ID:0000076
+name: TCR gamma chain D gene segment
+is_a: ID:0000070 ! T cell receptor variable region D gene segment
+
+[Term]
+id: ID:0000077
+name: variable region J gene segment
+is_a: ID:0000067 ! variable region gene segment
+
+[Term]
+id: ID:0000078
+name: T cell receptor variable region J gene segment
+is_a: ID:0000077 ! variable region J gene segment
+
+[Term]
+id: ID:0000079
+name: Ig heavy chain J gene segment
+is_a: ID:0000003 ! immunoglobulin variable region J gene segment
+
+[Term]
+id: ID:0000080
+name: Ig kappa chain J gene segment
+is_a: ID:0000003 ! immunoglobulin variable region J gene segment
+
+[Term]
+id: ID:0000081
+name: Ig lambda chain J gene segment
+is_a: ID:0000003 ! immunoglobulin variable region J gene segment
+
+[Term]
+id: ID:0000082
+name: TCR alpha chain J gene segment
+is_a: ID:0000078 ! T cell receptor variable region J gene segment
+
+[Term]
+id: ID:0000083
+name: TCR beta chain J gene segment
+is_a: ID:0000078 ! T cell receptor variable region J gene segment
+
+[Term]
+id: ID:0000084
+name: TCR delta chain J gene segment
+is_a: ID:0000078 ! T cell receptor variable region J gene segment
+
+[Term]
+id: ID:0000085
+name: TCR gamma chain J gene segment
+is_a: ID:0000078 ! T cell receptor variable region J gene segment
+
+[Term]
+id: ID:0000086
+name: variable region gene segment-associated RAG-dependent recombination signal
+is_a: ID:0000026 ! RAG-dependent recombination signal
+
+[Term]
+id: ID:0000087
+name: V gene segment embedded RAG-dependent recombination signal
+is_a: ID:0000086 ! variable region gene segment-associated RAG-dependent recombination signal
+relationship: part_of ID:0000004 ! immunoglobulin variable region V gene segment
+
+[Term]
+id: SO:0000000
+name: Sequence_Ontology
+subset: SOFA
+
+[Term]
+id: SO:0000001
+name: region
+def: "A sequence_feature with an extent greater than zero. A nucleotide region is composed of bases and a polypeptide region is composed of amino acids." [SO:ke]
+subset: SOFA
+synonym: "sequence" EXACT []
+is_a: SO:0000110 ! sequence_feature
+
+[Term]
+id: SO:0000041
+name: operation
+def: "An operation that can be applied to a sequence, that results in a change." [SO:ke]
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000240 ! chromosome_variation
+disjoint_from: SO:0000400 ! sequence_attribute
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001026 ! genome
+disjoint_from: SO:0001060 ! sequence_variant
+disjoint_from: SO:1000132 ! mutation
+
+[Term]
+id: SO:0000110
+name: sequence_feature
+def: "An extent of biological sequence." [SO:ke]
+subset: SOFA
+synonym: "located sequence feature" RELATED []
+synonym: "located_sequence_feature" EXACT []
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000041 ! operation
+disjoint_from: SO:0000240 ! chromosome_variation
+disjoint_from: SO:0000400 ! sequence_attribute
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001026 ! genome
+disjoint_from: SO:0001060 ! sequence_variant
+disjoint_from: SO:1000132 ! mutation
+
+[Term]
+id: SO:0000147
+name: exon
+def: "A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA splicing." [SO:ke]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+subset: SOFA
+is_a: SO:0000833 ! transcript_region
+
+[Term]
+id: SO:0000240
+name: chromosome_variation
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000041 ! operation
+disjoint_from: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000400 ! sequence_attribute
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001026 ! genome
+disjoint_from: SO:0001060 ! sequence_variant
+disjoint_from: SO:1000132 ! mutation
+
+[Term]
+id: SO:0000298
+name: recombination_feature
+is_a: SO:0000001 ! region
+
+[Term]
+id: SO:0000299
+name: specific_recombination_site
+is_a: SO:0000669 ! sequence_rearrangement_feature
+
+[Term]
+id: SO:0000300
+name: recombination_feature_of_rearranged_gene
+is_a: SO:0000299 ! specific_recombination_site
+
+[Term]
+id: SO:0000301
+name: vertebrate_immune_system_gene_recombination_feature
+is_a: SO:0000300 ! recombination_feature_of_rearranged_gene
+
+[Term]
+id: SO:0000302
+name: J_gene_recombination_feature
+def: "Recombination signal including J-heptamer, J-spacer and J-nonamer in 5' of J-region of a J-gene or J-sequence." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-RS" EXACT []
+is_a: SO:0000939 ! vertebrate_immune_system_gene_recombination_signal_feature
+
+[Term]
+id: SO:0000400
+name: sequence_attribute
+def: "An attribute describes a quality of sequence." [SO:ke]
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000041 ! operation
+disjoint_from: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000240 ! chromosome_variation
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001026 ! genome
+disjoint_from: SO:0001060 ! sequence_variant
+disjoint_from: SO:1000132 ! mutation
+
+[Term]
+id: SO:0000456
+name: recombinationally_rearranged_gene
+def: "A gene that is recombinationally rearranged." [SO:ke]
+is_a: SO:0000704 ! gene
+intersection_of: SO:0000704 ! gene
+intersection_of: has_quality SO:0000940 ! recombinationally_rearranged
+relationship: has_quality SO:0000940 ! recombinationally_rearranged
+
+[Term]
+id: SO:0000458
+name: D_gene
+def: "Germline genomic DNA including D-region with 5' UTR and 3' UTR, also designated as D-segment." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-GENE" EXACT []
+is_a: SO:0000460 ! vertebrate_immunoglobulin_T_cell_receptor_segment
+
+[Term]
+id: SO:0000460
+name: vertebrate_immunoglobulin_T_cell_receptor_segment
+comment: I am using the term segment instead of gene here to avoid confusion with the region 'gene'.
+synonym: "vertebrate_immunoglobulin/T-cell receptor gene" EXACT []
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000466
+name: V_gene
+def: "Germline genomic DNA including L-part1, V-intron and V-exon, with the 5' UTR and 3' UTR." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-GENE" EXACT []
+synonym: "variable_gene" EXACT []
+is_a: SO:0000460 ! vertebrate_immunoglobulin_T_cell_receptor_segment
+
+[Term]
+id: SO:0000470
+name: J_gene
+def: "Germline genomic DNA of an immunoglobulin/T-cell receptor gene including J-region with 5' UTR (SO:0000204) and 3' UTR (SO:0000205), also designated as J-segment." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-GENE" EXACT []
+is_a: SO:0000460 ! vertebrate_immunoglobulin_T_cell_receptor_segment
+
+[Term]
+id: SO:0000478
+name: C_gene
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene including C-region (and introns if present) with 5' UTR (SO:0000204) and 3' UTR (SO:0000205)." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "C_GENE" EXACT []
+synonym: "constant gene" EXACT []
+is_a: SO:0000460 ! vertebrate_immunoglobulin_T_cell_receptor_segment
+
+[Term]
+id: SO:0000482
+name: vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+synonym: "vertebrate_immunoglobulin/T-cell receptor gene cluster" EXACT []
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000487
+name: VDJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VDJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VDJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000488
+name: VDJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VDJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VDJ)-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000489
+name: VJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VJ)-C-CLUSTER" RELATED []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000490
+name: VJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000491
+name: VJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VJ)-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000492
+name: D_gene_recombination_feature
+is_a: SO:0000939 ! vertebrate_immune_system_gene_recombination_signal_feature
+
+[Term]
+id: SO:0000493
+name: three_prime_D_heptamer
+def: "7 nucleotide recombination site like CACAGTG, part of a 3' D-recombination signal sequence of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "3'D-HEPTAMER" EXACT []
+is_a: SO:0000561 ! heptamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000570 ! three_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000494
+name: three_prime_D_nonamer
+def: "A 9 nucleotide recombination site (e.g. ACAAAAACC), part of a 3' D-recombination signal sequence of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "3'D-NOMAMER" EXACT []
+is_a: SO:0000562 ! nonamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000570 ! three_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000495
+name: three_prime_D_spacer
+def: "A 12 or 23 nucleotide spacer between the 3'D-HEPTAMER and 3'D-NONAMER of a 3'D-RS." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "3'D-SPACER" EXACT []
+is_a: SO:0000563 ! vertebrate_immune_system_gene_recombination_spacer
+relationship: part_of SO:0000570 ! three_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000496
+name: five_prime_D_heptamer
+def: "7 nucleotide recombination site (e.g. CACTGTG), part of a 5' D-recombination signal sequence (SO:0000556) of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "5'D-HEPTAMER" EXACT []
+is_a: SO:0000561 ! heptamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000556 ! five_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000497
+name: five_prime_D_nonamer
+def: "9 nucleotide recombination site (e.g. GGTTTTTGT), part of a five_prime_D-recombination signal sequence (SO:0000556) of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "5'D-NONAMER" EXACT []
+is_a: SO:0000562 ! nonamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000556 ! five_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000498
+name: five_prime_D_spacer
+def: "12 or 23 nucleotide spacer between the 5' D-heptamer (SO:0000496) and 5' D-nonamer (SO:0000497) of a 5' D-recombination signal sequence (SO:0000556) of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "5'-SPACER" EXACT []
+synonym: "five prime D-spacer" EXACT []
+is_a: SO:0000563 ! vertebrate_immune_system_gene_recombination_spacer
+relationship: part_of SO:0000556 ! five_prime_D_recombination_signal_sequence
+
+[Term]
+id: SO:0000504
+name: D_DJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one D-gene, one DJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-(DJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000505
+name: D_DJ_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one D-gene and one DJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-(DJ)-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000506
+name: D_DJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one D-gene, one DJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-(DJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000508
+name: D_DJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one D-gene, one DJ-gene, and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-(DJ)-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000509
+name: D_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one D-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-J-C-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000510
+name: VD_gene
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in partially rearranged genomic DNA including L-part1, V-intron and V-D-exon, with the 5' UTR (SO:0000204) and 3' UTR (SO:0000205)." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V_D_GENE" EXACT []
+is_a: SO:0000936 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_segment
+
+[Term]
+id: SO:0000511
+name: J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-C-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000513
+name: J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including more than one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000514
+name: J_nonamer
+def: "9 nucleotide recombination site (e.g. GGTTTTTGT), part of a J-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-NONAMER" EXACT []
+is_a: SO:0000562 ! nonamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000302 ! J_gene_recombination_feature
+
+[Term]
+id: SO:0000515
+name: J_heptamer
+def: "7 nucleotide recombination site (e.g. CACAGTG), part of a J-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-HEPTAMER" EXACT []
+is_a: SO:0000561 ! heptamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000302 ! J_gene_recombination_feature
+
+[Term]
+id: SO:0000517
+name: J_spacer
+def: "12 or 23 nucleotide spacer between the J-nonamer and the J-heptamer of a J-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "J-SPACER" EXACT []
+is_a: SO:0000563 ! vertebrate_immune_system_gene_recombination_spacer
+relationship: part_of SO:0000302 ! J_gene_recombination_feature
+
+[Term]
+id: SO:0000518
+name: V_DJ_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene and one DJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(DJ)-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000519
+name: V_DJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one DJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(DJ)-J-CLUSTER" RELATED []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000520
+name: V_VDJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VDJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VDJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000521
+name: V_VDJ_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene and one VDJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VDJ)-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000522
+name: V_VDJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VDJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VDJ)-J-CLUSTER" RELATED []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000523
+name: V_VJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000524
+name: V_VJ_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene and one VJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VJ)-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000525
+name: V_VJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VJ)-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000526
+name: V_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including more than one V-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000527
+name: V_D_DJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one D-gene, one DJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-(DJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000528
+name: V_D_DJ_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one D-gene, one DJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-(DJ)-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000529
+name: V_D_DJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one D-gene, one DJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-(DJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000530
+name: V_D_DJ_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one D-gene, one DJ-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-(DJ)-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000531
+name: V_D_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one V-gene, one D-gene and one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000532
+name: V_D_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one V-gene, one D-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-J-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000533
+name: V_heptamer
+def: "7 nucleotide recombination site (e.g. CACAGTG), part of V-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-HEPTAMER" EXACT []
+is_a: SO:0000561 ! heptamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000538 ! V_gene_recombination_feature
+
+[Term]
+id: SO:0000534
+name: V_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one V-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-J-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000535
+name: V_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one V-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-J-C-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000536
+name: V_nonamer
+def: "9 nucleotide recombination site (e.g. ACAAAAACC), part of V-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-NONAMER" EXACT []
+is_a: SO:0000562 ! nonamer_of_recombination_feature_of_vertebrate_immune_system_gene
+relationship: part_of SO:0000538 ! V_gene_recombination_feature
+
+[Term]
+id: SO:0000537
+name: V_spacer
+def: "12 or 23 nucleotide spacer between the V-heptamer and the V-nonamer of a V-gene recombination feature of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-SPACER" EXACT []
+is_a: SO:0000563 ! vertebrate_immune_system_gene_recombination_spacer
+relationship: part_of SO:0000538 ! V_gene_recombination_feature
+
+[Term]
+id: SO:0000538
+name: V_gene_recombination_feature
+def: "Recombination signal including V-heptamer, V-spacer and V-nonamer in 3' of V-region of a V-gene or V-sequence of an immunoglobulin/T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-RS" EXACT []
+is_a: SO:0000939 ! vertebrate_immune_system_gene_recombination_signal_feature
+
+[Term]
+id: SO:0000539
+name: DJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one DJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(DJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000540
+name: DJ_J_C_cluster
+def: "Genomic DNA in rearranged configuration including at least one D-J-GENE, one J-GENE and one C-GENE." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(DJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000541
+name: VDJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one VDJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "(VDJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000542
+name: V_DJ_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one DJ-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(DJ)-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000556
+name: five_prime_D_recombination_signal_sequence
+def: "Recombination signal of an immunoglobulin/T-cell receptor gene, including the 5' D-nonamer (SO:0000497), 5' D-spacer (SO:0000498), and 5' D-heptamer (SO:0000396) in 5' of the D-region of a D-gene, or in 5' of the D-region of DJ-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "5'RS" EXACT []
+synonym: "five prime D-recombination signal sequence" EXACT []
+is_a: SO:0000492 ! D_gene_recombination_feature
+
+[Term]
+id: SO:0000558
+name: C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene including more than one C-gene." [http://imgt.cines.fr/ligmb/LIGMlect?query=7]
+synonym: "C-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000559
+name: D_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including more than one D-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000560
+name: D_J_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in germline configuration including at least one D-gene and one J-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-J-CLUSTER" EXACT []
+is_a: SO:0000482 ! vertebrate_immunoglobulin_T_cell_receptor_gene_cluster
+
+[Term]
+id: SO:0000561
+name: heptamer_of_recombination_feature_of_vertebrate_immune_system_gene
+def: "Seven nucleotide recombination site (e.g. CACAGTG), part of V-gene, D-gene or\nJ-gene recombination feature of an immunoglobulin or T-cell receptor gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "HEPTAMER" RELATED []
+is_a: SO:0000939 ! vertebrate_immune_system_gene_recombination_signal_feature
+
+[Term]
+id: SO:0000562
+name: nonamer_of_recombination_feature_of_vertebrate_immune_system_gene
+is_a: SO:0000939 ! vertebrate_immune_system_gene_recombination_signal_feature
+
+[Term]
+id: SO:0000563
+name: vertebrate_immune_system_gene_recombination_spacer
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000564
+name: V_DJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one DJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(DJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000565
+name: V_VDJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VDJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VDJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000566
+name: V_VJ_J_C_cluster
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in rearranged configuration including at least one V-gene, one VJ-gene, one J-gene and one C-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-(VJ)-J-C-CLUSTER" EXACT []
+is_a: SO:0000938 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+
+[Term]
+id: SO:0000570
+name: three_prime_D_recombination_signal_sequence
+def: "Recombination signal of an immunoglobulin/T-cell receptor gene, including the 3' D-heptamer (SO:0000493), 3' D-spacer, and 3' D-nonamer (SO:0000494) in 3' of the D-region of a D-gene." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "3'D-RS" EXACT []
+synonym: "three_prime_D-recombination_signal_sequence" EXACT []
+is_a: SO:0000492 ! D_gene_recombination_feature
+
+[Term]
+id: SO:0000572
+name: DJ_gene
+def: "Genomic DNA of immunoglobulin/T-cell receptor gene in partially rearranged genomic DNA including D-J-region with 5' UTR and 3' UTR, also designated as D-J-segment." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "D-J-GENE" EXACT []
+is_a: SO:0000936 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_segment
+
+[Term]
+id: SO:0000574
+name: VDJ_gene
+def: "Rearranged genomic DNA of immunoglobulin/T-cell receptor gene including L-part1, V-intron and V-D-J-exon, with the 5'UTR (SO:0000204) and 3'UTR (SO:0000205)." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-D-J-GENE" EXACT []
+is_a: SO:0000936 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_segment
+
+[Term]
+id: SO:0000576
+name: VJ_gene
+def: "Rearranged genomic DNA of immunoglobulin/T-cell receptor gene including L-part1, V-intron and V-J-exon, with the 5'UTR (SO:0000204) and 3'UTR (SO:0000205)." [http://imgt.cines.fr/ligmdb/LIGMlect?query=7]
+synonym: "V-J-GENE" EXACT []
+is_a: SO:0000936 ! vertebrate_immunoglobulin_T_cell_receptor_rearranged_segment
+
+[Term]
+id: SO:0000669
+name: sequence_rearrangement_feature
+is_a: SO:0000298 ! recombination_feature
+
+[Term]
+id: SO:0000673
+name: transcript
+def: "An RNA synthesized on a DNA or RNA template by an RNA polymerase." [SO:ma]
+subset: SOFA
+is_a: SO:0000831 ! gene_member_region
+
+[Term]
+id: SO:0000704
+name: gene
+def: "A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene may include regulatory regions, transcribed regions and/or other functional sequence regions." [SO:immuno_workshop]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.\nA gene may be considered as a unit of inheritance.
+subset: SOFA
+is_a: SO:0000001 ! region
+relationship: member_of SO:0005855 ! gene_group
+
+[Term]
+id: SO:0000733
+name: feature_attribute
+def: "An attribute describing a located_sequence_feature." [SO:ke]
+is_a: SO:0000400 ! sequence_attribute
+
+[Term]
+id: SO:0000831
+name: gene_member_region
+def: "A region of a gene." [SO:ke]
+comment: A manufactured term used to allow the parts of a gene to have an is_a path to the root.
+subset: SOFA
+is_a: SO:0000001 ! region
+relationship: member_of SO:0000704 ! gene
+
+[Term]
+id: SO:0000833
+name: transcript_region
+def: "A region of a transcript." [SO:ke]
+comment: This term was added to provide a grouping term for the region parts of transcript, thus giving them an is_a path back to the root.
+subset: SOFA
+is_a: SO:0000001 ! region
+relationship: part_of SO:0000673 ! transcript
+
+[Term]
+id: SO:0000842
+name: gene_component_region
+subset: SOFA
+is_a: SO:0000001 ! region
+relationship: part_of SO:0000704 ! gene
+
+[Term]
+id: SO:0000936
+name: vertebrate_immunoglobulin_T_cell_receptor_rearranged_segment
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000938
+name: vertebrate_immunoglobulin_T_cell_receptor_rearranged_gene_cluster
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000939
+name: vertebrate_immune_system_gene_recombination_signal_feature
+is_a: SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000940
+name: recombinationally_rearranged
+is_a: SO:0000733 ! feature_attribute
+
+[Term]
+id: SO:0000941
+name: recombinationally_rearranged_vertebrate_immune_system_gene
+def: "A recombinationally rearranged gene of the vertebrate immune system." [SO:xp]
+is_a: SO:0000456 ! recombinationally_rearranged_gene
+intersection_of: SO:0000456 ! recombinationally_rearranged_gene
+intersection_of: associated_with SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+relationship: associated_with SO:0000301 ! vertebrate_immune_system_gene_recombination_feature
+
+[Term]
+id: SO:0000968
+name: replication_mode
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0001060 ! sequence_variant
+
+[Term]
+id: SO:0001026
+name: genome
+def: "A genome is the sum of genetic material within a cell or virion." [SO:immuno_workshop]
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000240 ! chromosome_variation
+disjoint_from: SO:0000400 ! sequence_attribute
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001060 ! sequence_variant
+disjoint_from: SO:1000132 ! mutation
+
+[Term]
+id: SO:0001060
+name: sequence_variant
+def: "A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration." [SO:ke]
+is_a: SO:0000000 ! Sequence_Ontology
+
+[Term]
+id: SO:0005855
+name: gene_group
+def: "A collection of related genes." [SO:ma]
+subset: SOFA
+is_a: SO:0000001 ! region
+
+[Term]
+id: SO:1000132
+name: mutation
+def: "An event that changes nucleotide sequence." [SO:ke]
+is_a: SO:0000000 ! Sequence_Ontology
+disjoint_from: SO:0000041 ! operation
+disjoint_from: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000240 ! chromosome_variation
+disjoint_from: SO:0000400 ! sequence_attribute
+disjoint_from: SO:0000968 ! replication_mode
+disjoint_from: SO:0001060 ! sequence_variant
+
+[Typedef]
+id: adjacent_to
+name: adjacent_to
+def: "A geometric operator, specified in Egenhofer 1989. Two features meet if they share a junction on the sequence." [SO:ke]
+subset: SOFA
+
+[Typedef]
+id: associated_with
+name: associated_with
+comment: This relationship is vague and up for discussion.
+is_symmetric: true
+
+[Typedef]
+id: complete_evidence_for_feature
+name: complete_evidence_for_feature
+def: "B is complete_evidence_for_feature A if the extent (5' and 3' boundaries) and internal boundaries of B fully support the extent and internal boundaries of A." [SO:ke]
+comment: If A is a feature with multiple regions such as a multi exon transcript, the supporting EST evidence is complete if each of the regions is supported by an equivalent region in B. Also there must be no extra regions in B that are not represented in A. This relationship was requested by jeltje on the SO term tracker. The thread for the discussion is available here: http://sourceforge.net/tracker/index.php?func=detail&aid=1917222&group_id=72703&atid=810408.
+is_transitive: true
+is_a: evidence_for_feature ! evidence_for_feature
+
+[Typedef]
+id: derives_from
+name: derives_from
+subset: SOFA
+is_transitive: true
+
+[Typedef]
+id: evidence_for_feature
+name: evidence_for_feature
+def: "B is evidence_for_feature A, if an instance of B supports the existence of A." [SO:ke]
+comment: This relationship was requested by nlw on the SO term tracker. The thread for the discussion is available here: http://sourceforge.net/tracker/index.php?func=detail&aid=1911481&group_id=72703&atid=810408.
+is_transitive: true
+
+[Typedef]
+id: genome_of
+name: genome_of
+
+[Typedef]
+id: has_genome_location
+name: has_genome_location
+is_obsolete: true
+
+[Typedef]
+id: has_origin
+name: has_origin
+
+[Typedef]
+id: has_part
+name: has_part
+
+[Typedef]
+id: has_quality
+name: has_quality
+comment: The relationship between a feature and an atrribute.
+
+[Typedef]
+id: homologous_to
+name: homologous_to
+subset: SOFA
+is_symmetric: true
+is_a: similar_to ! similar_to
+
+[Typedef]
+id: member_of
+name: member_of
+comment: A subtype of part_of. Inverse is collection_of. Winston, M, Chaffin, R, Herrmann: A taxonomy of part-whole relations. Cognitive Science 1987, 11:417-444.
+subset: SOFA
+is_transitive: true
+
+[Typedef]
+id: non_functional_homolog_of
+name: non_functional_homolog_of
+def: "A relationship between a pseudogenic feature and its functional ancestor." [SO:ke]
+subset: SOFA
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: orthologous_to
+name: orthologous_to
+subset: SOFA
+is_symmetric: true
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: paralogous_to
+name: paralogous_to
+subset: SOFA
+is_symmetric: true
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: part_of
+name: part_of
+subset: SOFA
+is_transitive: true
+
+[Typedef]
+id: partial_evidence_for_feature
+name: partial_evidence_for_feature
+def: "B is partial_evidence_for_feature A if the extent of B supports part_of but not all of A." [SO:ke]
+is_a: evidence_for_feature ! evidence_for_feature
+
+[Typedef]
+id: position_of
+name: position_of
+
+[Typedef]
+id: regulated_by
+name: regulated_by
+is_obsolete: true
+
+[Typedef]
+id: sequence_of
+name: sequence_of
+
+[Typedef]
+id: similar_to
+name: similar_to
+subset: SOFA
+is_symmetric: true
+
+[Typedef]
+id: variant_of
+name: variant_of
+def: "A' is a variant (mutation) of A = definition every instance of A' is either an immediate mutation of some instance of A, or there is a chain of immediate mutation processes linking A' to some instance of A." [SO:immuno_workshop]
+comment: Added to SO during the immunology workshop, June 2007.  This relationship was approved by Barry Smith.
