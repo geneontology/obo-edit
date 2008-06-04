@@ -47,6 +47,8 @@ public class PCNode extends PPath {
 		ShapeUtil.normalize(s, newShape);
 		pathNode.setPathTo(newShape);
 		setPathTo(newShape);
+		//System.out.println(this+" "+newShape+" offset="+getXOffset() + s.getBounds2D().getX()+" , "+ getYOffset()
+		//		+ s.getBounds2D().getY());
 		setOffset(getXOffset() + s.getBounds2D().getX(), getYOffset()
 				+ s.getBounds2D().getY());
 		// setBounds(getPathDelegate().getBounds());
