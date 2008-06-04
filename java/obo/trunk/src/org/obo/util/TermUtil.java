@@ -1041,6 +1041,28 @@ public class TermUtil {
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns whether the given link is a union link. That is, whether
+	 * this link provides part of a union definition.
+	 */
+	public static boolean isUnion(Link link) {
+		if (link instanceof OBORestriction)
+			return link.getType().equals(OBOProperty.UNION_OF);
+		else
+			return false;
+	}	/**
+	 * Returns whether the given object has union definition
+	 */
+	public static boolean isUnion(LinkedObject lo) {
+		Iterator it = lo.getParents().iterator();
+		while (it.hasNext()) {
+			Link link = (Link) it.next();
+			if (isUnion(link))
+				return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Highly incomplete check to see if a relationship is legal. Currently,
@@ -1424,6 +1446,13 @@ public class TermUtil {
 			}
 		}
 		return item;
+	}
+	
+	public static String getNameSafe(LinkedObject lo) {
+		String name = lo.getName();
+		if (name != null)
+			return name;
+		return lo.getID();
 	}
 
 }

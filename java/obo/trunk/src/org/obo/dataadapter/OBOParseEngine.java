@@ -812,6 +812,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 				relStruct.setType("is_a");
 			doReadRelationship(relStruct, (OBOParser) parser);
 			return true;
+		} else if (name.equals("union_of")) {
+			RelStruct relStruct = parseRelationship(value, nv, "union_of");
+			doReadRelationship(relStruct, (OBOParser) parser);
+			return true;
 		} else if (name.equals("is_a")) {
 			RelStruct relStruct = parseRelationship(value, nv, "is_a");
 			doReadRelationship(relStruct, (OBOParser) parser);
@@ -1084,6 +1088,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 					.completes(), relStruct.isImplied(), relStruct.getNV());
 		} else if (relStruct.getType().equals("disjoint_from")) {
 			parser.readDisjoint(relStruct.getID(), relStruct.getNS(), relStruct
+					.isImplied(), relStruct.getNV());
+		} else if (relStruct.getType().equals("union_of")) {
+			parser.readUnion(relStruct.getID(), relStruct.getNS(), relStruct
 					.isImplied(), relStruct.getNV());
 		} else if (relStruct.getType().equals("inverse_of")) {
 			parser.readInverseOf(relStruct.getID(), relStruct.getNS(),
