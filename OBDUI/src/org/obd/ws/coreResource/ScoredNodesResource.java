@@ -12,6 +12,7 @@ import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.stats.ScoredNode;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -82,22 +83,17 @@ public class ScoredNodesResource extends NodeResource {
         	TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("node",this.getNode());
+    		resourceMap.put("node",this.hashifyNode(this.getNode().getId(),"/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(this.getNode().getId())));
     		resourceMap.put("nodeId", StringEscapeUtils.escapeHtml(this.getNodeId()));
     		
         	
     		List<SimpleHash> scores = new ArrayList<SimpleHash>();
         	for (ScoredNode sn : scoredNodes) {
-        		Node n = this.getShard(dataSource).getNode(sn.getNodeId());
-        		SimpleHash scoreMap = new SimpleHash();
-        		String label = this.href(this.getNode(), dataSource);
-        		if (n != null && (n.getLabel() != null)){
-        			label = this.hrefLabel(n.getLabel(), n.getId(), dataSource);
-        		}
+        		
+        		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/similarityPair/" + Reference.encode(sn.getNodeId()) + "+" + Reference.encode(this.getNode().getId())));
         		Double score = new Double(sn.getScore());
-        		scoreMap.put("node", label);
-        		scoreMap.put("score", score.toString());
-        		scores.add(scoreMap);
+        		scoredNodeHash.put("score", score.toString());
+        		scores.add(scoredNodeHash);
             }
         	if (scores.size()>0){
         		resourceMap.put("results", scores);

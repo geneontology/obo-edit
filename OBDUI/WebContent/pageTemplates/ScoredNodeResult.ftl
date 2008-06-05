@@ -18,18 +18,18 @@
 				</td>
 				<td id="content_container">
 					<#if node?exists>
-						<h2>Similar to ${node.id}: ${node.label}</#if></h2>
+						<h2>Similar to ${node.id}: ${node.label}</h2>
 						<br/>
 						<#if results?exists>
 							<table class="scoredNodeResults">
 							 	<tr><th style="width:190px;background-color:#fafafa;">Score</th><td style="background-color:#fafafa;">Node</td></tr>
-								<#list results as hit>
+								<#list results as scoredNodeHit>
 									<tr>
 										<th>
-											${hit.score}
+											${scoredNodeHit.score}
 										</th>
 										<td>
-											${hit.node}
+											<@nodeHashHref nodeHash=scoredNodeHit/>
 										</td>
 									</tr>
 								</#list>
@@ -38,7 +38,7 @@
 							No Results
 						</#if>
 					<#else>
-						Node ${id} not found. 
+						Node ${node.id} not found. 
 					</#if>
 				</td>
 			</tr>
