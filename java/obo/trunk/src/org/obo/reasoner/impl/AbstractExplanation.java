@@ -61,6 +61,10 @@ public abstract class AbstractExplanation implements Explanation {
 		}
 		return collapsed;
 	}
+	
+	public String toString() {
+		return getExplanationType() + " explained:" + explainedLink + " supported_by_n: " + getEvidence().size();
+	}
 
 	public int hashCode() {
 		return getExplanationType().hashCode() + getEvidence().hashCode();

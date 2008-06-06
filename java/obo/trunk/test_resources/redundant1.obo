@@ -1,0 +1,12 @@
+[Term]
+id: A
+
+[Term]
+id: B
+is_a: A
+
+[Term]
+id: C
+is_a: B
+is_a: A
+

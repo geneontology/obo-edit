@@ -377,26 +377,54 @@ public class LinkPileReasoner extends AbstractReasoner {
 	}
 
 	@Override
-	public Collection<Explanation> getExplanations(PathCapable link) {
+	public Collection<Explanation> getExplanations(PathCapable pc) {
+		// This version written by CJM
+		Collection<Explanation> expls = new HashSet<Explanation>();
+		if (pc instanceof Link) {
+			Link link = (Link) pc;
+			if (!(link instanceof ReasonerLink)) {
+				// help! this is guesswork
+				expls.add(new GivenExplanation(
+						(Link) link));
+			}
+			Link rl = findRealLink((Link)link);
+			
+			if (rl instanceof ReasonerLink) {
+				expls.addAll( ((ReasonerLink) rl).getExplanations() );
+			}
+		} 
+		return expls;
+	}
+	
+	//@Override
+	public Collection<Explanation> johns_version_of_getExplanations_which_I_dont_understand(PathCapable link) {
 		if (link instanceof ReasonerLink) {
 			ReasonerLink rl = (ReasonerLink) link;
 			if (!rl.isLookedAt())
 				rl = (ReasonerLink) findRealLink(rl);
 			return (Collection) rl.getExplanations();
 		} else if (link instanceof Link && !TermUtil.isImplied(link)) {
-			return (Collection) Collections.singleton(new GenusExplanation(
+			return (Collection) Collections.singleton(new GivenExplanation(
 					(Link) link));
 		} else
 			return Collections.emptySet();
 	}
 
-	protected Link findRealLink(Link link) {
+	/**
+	 * 
+	 * @param link
+	 * @return
+	 */
+	// TODO - THIS NEEDS EXPLAINED!! -- CJM
+	// I made this public for testing purposes
+	public Link findRealLink(Link link) {
 		if (lowMemoryMode) {
 			return TermUtil.getLink(impliedLinkDatabase, link);
 		} else {
 			if (linkMap == null)
 				linkMap = new HashMap<Link, Link>();
 			Link candidate = linkMap.get(link);
+			// empirical nodes: candidate seems to be the one with explanations attached
 			if (candidate == null)
 				linkMap.put(link, link);
 			else
@@ -405,7 +433,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 		}
 	}
 
-	@Override
+	@Override // BUT WHY OVERRIDE??? --- CJM
 	protected void internalAddExplanation(Link link, Explanation explanation) {
 		if (link instanceof ReasonerLink
 				&& explanation instanceof AbstractExplanation) {

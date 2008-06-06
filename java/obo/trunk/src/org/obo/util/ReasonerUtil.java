@@ -318,8 +318,11 @@ public class ReasonerUtil {
 		if (TermUtil.isIntersection(link))
 			return false;
 		Collection<Explanation> exps = reasoner.getExplanations(link);
-		if (exps.size() == 1)
-			return false;
+		
+		// why was this here? --CJM
+		//if (exps.size() == 1)
+		//	return false;
+		
 		Iterator<Explanation> it2 = exps.iterator();
 		boolean hasGiven = false;
 		boolean nonGenus = false;
