@@ -178,7 +178,7 @@ public class AnnotationParserExtension implements ParserExtension,
 						if (parser.getAllowDanglingParents()) {
 							subject = new DanglingObjectImpl(pv.getValue());
 						} else
-							throw new OBOParseException("Unknown subject id "
+							throw new OBOParseException("Unknown subject ID "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());
@@ -197,7 +197,7 @@ public class AnnotationParserExtension implements ParserExtension,
 						if (parser.getAllowDanglingParents()) {
 							object = new DanglingObjectImpl(pv.getValue());
 						} else
-							throw new OBOParseException("Unknown object id "
+							throw new OBOParseException("Unknown object ID "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());
@@ -215,7 +215,7 @@ public class AnnotationParserExtension implements ParserExtension,
 						if (parser.getAllowDanglingParents())
 							object = new DanglingPropertyImpl(pv.getValue());
 						else
-							throw new OBOParseException("Unknown object id "
+							throw new OBOParseException("Unknown object ID "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());
@@ -233,7 +233,7 @@ public class AnnotationParserExtension implements ParserExtension,
 						if (parser.getAllowDanglingParents())
 							object = new DanglingPropertyImpl(pv.getValue());
 						else
-							throw new OBOParseException("Unknown object id "
+							throw new OBOParseException("Unknown object ID "
 									+ pv.getValue() + " in annotation "
 									+ annotation.getID(), currentPath, engine
 									.getCurrentLine(), engine.getLineNum());

@@ -448,7 +448,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 		@Override
 		public String toString() {
-			return "id = " + id + ", path = " + filename;
+			return "ID = " + id + ", path = " + filename;
 		}
 	}
 
@@ -483,13 +483,13 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	protected void addTypeMapping(CharTypeMapping mapping) {
-		String propID = mapping.getPropertyID();
-		if (config.getTranslateTypes() && IDMAPPINGS.get(propID) != null)
-			propID = (String) IDMAPPINGS.get(propID);
+		String propid = mapping.getPropertyID();
+		if (config.getTranslateTypes() && IDMAPPINGS.get(propid) != null)
+			propid = (String) IDMAPPINGS.get(propid);
 
-		OBOProperty prop = (OBOProperty) history.getObject(propID);
+		OBOProperty prop = (OBOProperty) history.getObject(propid);
 		if (prop == null) {
-			prop = new OBOPropertyImpl(propID, mapping.getPropertyName());
+			prop = new OBOPropertyImpl(propid, mapping.getPropertyName());
 			history.addObject(prop);
 		}
 
@@ -555,7 +555,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	 */
 
 	private class ParentageHolder {
-		public String parentID;
+		public String parentid;
 
 		public String childID;
 
@@ -695,7 +695,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			lostDefs = true;
 			if (strictDefinition) {
 				defExceptions.addException(new GOFlatFileParseException(
-						"Reference to non-existant GO id " + id.toString(),
+						"Reference to non-existant GO ID " + id.toString(),
 						filename, startline, startlineNumber, 0));
 			}
 		}
@@ -826,7 +826,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 						} else
 							defExceptions
 									.addException(new GOFlatFileParseException(
-											"Multiple id fields for one entry.",
+											"Multiple ID fields for one entry.",
 											filename, line, lineNumber, 0));
 					} else if (key.equals("term")) {
 						inDefinition = false;
@@ -1114,7 +1114,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			ParentageHolder ph = (ParentageHolder) parentageList.get(i);
 
 			OBOClass term = (OBOClass) allterms.get(ph.childID);
-			OBOClass parent = (OBOClass) allterms.get(ph.parentID);
+			OBOClass parent = (OBOClass) allterms.get(ph.parentid);
 
 			OBOProperty type;
 			type = convertCharToType(ph.type);
@@ -1128,21 +1128,21 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 			if (parent == null) {
 				parentageErrors.addException(new GOFlatFileParseException(
-						"No term exists with id " + ph.parentID, filename,
+						"No term exists with ID " + ph.parentid, filename,
 						ph.line, ph.lineNumber, ph.colNumber));
 			} else {
-				Vector trs = getTRsForParentWithID(term, ph.parentID);
+				Vector trs = getTRsForParentWithID(term, ph.parentid);
 				if (trs.size() != 0) {
 					if (strictParentage) {
 						parentageErrors
 								.addException(new GOFlatFileParseException(
-										ph.parentID
+										ph.parentid
 												+ " is listed as parent of "
 												+ ph.childID + ", " + "but "
 												+ ph.childID
 												+ " does not appear in "
 												+ "the file as a child of "
-												+ ph.parentID, filename,
+												+ ph.parentid, filename,
 										ph.line, ph.lineNumber, ph.colNumber));
 					} else {
 						Link tr = new OBORestrictionImpl(term, parent, type);
@@ -1371,7 +1371,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					if (!found.getName().equals(term.getName())) {
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Misspelled term name or illegal reuse of a"
-										+ " GO id. This term was previously defined with "
+										+ " GO ID. This term was previously defined with "
 										+ "the name \"" + found.getName()
 										+ "\", but new name is \""
 										+ term.getName() + "\".", filename,
@@ -1693,7 +1693,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			// get id and record it
 			String parentid = pullOffID(tokens, exceptionHolder).toString();
 			ParentageHolder ph = new ParentageHolder();
-			ph.parentID = parentid;
+			ph.parentid = parentid;
 			ph.childID = id;
 			ph.name = name;
 			ph.line = typeToken.getLine();
@@ -1797,14 +1797,14 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		token = (GOToken) tokens.dequeue();
 		if (!token.getToken().equals(":")) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
-					"Unexpected GO id seperator " + token.getToken()
+					"Unexpected GO ID seperator " + token.getToken()
 							+ " found. Expected :", token.getFilename(), token
 							.getLine(), token.getLineNumber(), token
 							.getColNumber());
 			exList.addException(ex);
 		}
 
-		// make sure GO id is the correct length
+		// make sure GO ID is the correct length
 		token = (GOToken) tokens.dequeue();
 
 		return new IDWrapper(prefix, token.getToken());
@@ -2177,9 +2177,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			throws DataAdapterException {
 		if (trt.isBuiltIn() && !TermUtil.isUsed(history, trt))
 			return;
-		String propID = trt.getID();
+		String propid = trt.getID();
 		if (config.getTranslateTypes() && IDMAPPINGS.get(trt.getID()) != null)
-			propID = (String) IDMAPPINGS.get(trt.getID());
+			propid = (String) IDMAPPINGS.get(trt.getID());
 		if (useLegacyTypes()) {
 			String typeStr = convertTypeToChar(trt);
 			if (typeStr == null) {
@@ -2187,13 +2187,13 @@ public class GOFlatFileAdapter implements OBOAdapter {
 						+ "relationship character " + "for relationship type "
 						+ trt);
 			} else {
-				println(stream, "!type: " + typeStr + " " + propID + " "
+				println(stream, "!type: " + typeStr + " " + propid + " "
 						+ trt.getName());
 			}
 		} else {
-			println(stream, "!type: @" + propID + "@ " + propID + " "
+			println(stream, "!type: @" + propid + "@ " + propid + " "
 					+ trt.getName());
-			addTypeMapping("@" + propID + "@", trt);
+			addTypeMapping("@" + propid + "@", trt);
 		}
 	}
 
@@ -2220,7 +2220,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 				return;
 			else
 				throw new DataAdapterException(
-						"File contains a cycle! OBOClass " + term + " (id = "
+						"File contains a cycle! OBOClass " + term + " (ID = "
 								+ term.getID() + ") is its own parent!");
 		} else if (!treatAsRoot) {
 			setProgressValue(100 * lookedAt.size() / termCount);
@@ -2228,7 +2228,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		}
 		/*
 		 * if (!allowDangling && term.getDanglingParents().size() > 0) { throw
-		 * new DataAdapterException("OBOClass "+ term+" (id = "+term.getID()+ ")
+		 * new DataAdapterException("OBOClass "+ term+" (ID = "+term.getID()+ ")
 		 * contains dangling parents!"); }
 		 */
 		writeLineForTerm(stream, spaceDepth, leaderChar, term, currentParent,

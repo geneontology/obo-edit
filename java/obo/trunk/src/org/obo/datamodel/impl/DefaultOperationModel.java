@@ -733,9 +733,9 @@ public class DefaultOperationModel implements OperationModel {
 			return new OperationWarning(item.getObjectType() + " is not a "
 					+ "type.");
 		if (session.getObject(item.getObjectID()) != null)
-			return new OperationWarning("Could not create object with id "
+			return new OperationWarning("Could not create object with ID "
 					+ item.getObjectID()
-					+ " because an object with that id already exists.");
+					+ " because an object with that ID already exists.");
 		IdentifiedObject io = session.getObjectFactory().createObject(
 				item.getObjectID(), (OBOClass) type, item.isAnonymous());
 		if (io instanceof ModificationMetadataObject) {
@@ -758,30 +758,30 @@ public class DefaultOperationModel implements OperationModel {
 		LinkedObject t = getRealObject(item.getTarget());
 
 		if (t == null)
-			return new OperationWarning("Could not assign secondary id to "
+			return new OperationWarning("Could not assign secondary ID to "
 					+ "unknown target " + item.getTarget());
 		if (!(t instanceof MultiIDObject))
-			return new OperationWarning("Could not assign secondary id to "
+			return new OperationWarning("Could not assign secondary ID to "
 					+ item.getTarget() + " because it does "
-					+ "not allow secondary ids");
+					+ "not allow secondary IDs");
 		MultiIDObject target = (MultiIDObject) t;
 
 		boolean hasSecondary = target.getSecondaryIDs().contains(
 				item.getSecondaryID());
 		if (item.isDelete()) {
 			if (!hasSecondary)
-				return new OperationWarning("Could not remove secondary id "
+				return new OperationWarning("Could not remove secondary ID "
 						+ item.getSecondaryID() + " from target "
 						+ item.getTarget() + ", because the "
-						+ "term does not have that id.");
+						+ "term does not have that ID.");
 			else
 				target.removeSecondaryID(item.getSecondaryID());
 		} else {
 			if (hasSecondary)
-				return new OperationWarning("Could not add secondary id "
+				return new OperationWarning("Could not add secondary ID "
 						+ item.getSecondaryID() + " to target "
 						+ item.getTarget() + ", because the "
-						+ "term already has that id.");
+						+ "term already has that ID.");
 			else
 				target.addSecondaryID(item.getSecondaryID());
 		}
@@ -794,11 +794,11 @@ public class DefaultOperationModel implements OperationModel {
 
 		if (t == null)
 			return new OperationWarning("Could not reverse assignment of "
-					+ "secondary id to " + "unknown target " + item.getTarget());
+					+ "secondary ID to " + "unknown target " + item.getTarget());
 		if (!(t instanceof MultiIDObject))
 			return new OperationWarning("Could not reverse assignment of "
-					+ "secondary id to " + item.getTarget()
-					+ " because it does " + "not allow secondary ids");
+					+ "secondary ID to " + item.getTarget()
+					+ " because it does " + "not allow secondary IDs");
 
 		MultiIDObject target = (MultiIDObject) t;
 
@@ -808,17 +808,17 @@ public class DefaultOperationModel implements OperationModel {
 		if (item.isDelete()) {
 			if (hasSecondary)
 				return new OperationWarning("Could not reverse deletion "
-						+ "of secondary id " + item.getSecondaryID()
+						+ "of secondary ID " + item.getSecondaryID()
 						+ " to target " + item.getTarget() + ", because the "
-						+ "term already has that id.");
+						+ "term already has that ID.");
 			else
 				target.addSecondaryID(item.getSecondaryID());
 		} else {
 			if (!hasSecondary)
 				return new OperationWarning("Could not reverse addition of "
-						+ "secondary id " + item.getSecondaryID()
+						+ "secondary ID " + item.getSecondaryID()
 						+ " from target " + item.getTarget() + ", because the "
-						+ "term does not have that id.");
+						+ "term does not have that ID.");
 			else
 				target.removeSecondaryID(item.getSecondaryID());
 		}
@@ -1739,7 +1739,7 @@ public class DefaultOperationModel implements OperationModel {
 	public OperationWarning apply(NameChangeHistoryItem item) {
 		LinkedObject target = getRealObject(item.getTarget());
 		if (target == null) {
-			return new OperationWarning("no term for id " + item.getTarget());
+			return new OperationWarning("no term for ID " + item.getTarget());
 		}
 		target.setName(item.getNewText());
 		return null;

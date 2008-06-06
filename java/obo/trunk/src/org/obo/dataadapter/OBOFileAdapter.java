@@ -287,12 +287,12 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 							null, null, ioprofile.getWritePath()));
-					logger.info("Writing " +	ioprofile.getWritePath()
-							   + " (serializer = " + ioprofile.getSerializer() + ")");
 				} else {
 				    // This doesn't seem to work--it saves nothing (but doesn't complain)
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
+				logger.info("Writing " +	filteredPaths
+					    + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
 
 				Iterator it = progressListeners.iterator();
 
