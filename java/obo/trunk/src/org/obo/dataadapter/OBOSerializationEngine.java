@@ -408,6 +408,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		while (it.hasNext()) {
 			FilteredPath filteredPath = it.next();
 			try {
+				// First make sure we can actually write to this path
+				// (SafeFileOutputStream won't tell us, because it first writes to a temp file)
+				try {
+					FileOutputStream fos = new FileOutputStream(filteredPath.getPath());
+					fos.close();
+				}
+				catch (Exception e) {
+					logger.warn("Can't write to output file " + filteredPath.getPath());
+					throw new DataAdapterException("Can't write to output file " + filteredPath.getPath());
+				}
 				SafeFileOutputStream sfos = new SafeFileOutputStream(
 						filteredPath.getPath());
 				streams.add(sfos);
