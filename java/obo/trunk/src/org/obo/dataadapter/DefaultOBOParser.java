@@ -430,7 +430,7 @@ public class DefaultOBOParser implements OBOParser {
 
 	public void readNamespaceIDRule(String ns, String rule) {
 		if (currentProfile == null)
-			currentProfile = new NamedIDProfile("<default id profile>");
+			currentProfile = new NamedIDProfile("<default ID profile>");
 
 		if (ns == null) {
 			currentProfile.setDefaultRule(rule);
@@ -653,9 +653,9 @@ public class DefaultOBOParser implements OBOParser {
 
 	public void readAltID(String id, NestedValue nv) throws OBOParseException {
 		if (!(currentObject instanceof MultiIDObject))
-			throw new OBOParseException("Attempted to add secondary id to "
+			throw new OBOParseException("Attempted to add secondary ID to "
 					+ "object " + currentObject
-					+ " which does not support secondary " + "ids.",
+					+ " which does not support secondary " + "IDs.",
 					getCurrentPath(), engine.getCurrentLine(), engine
 					.getLineNum());
 		((MultiIDObject) currentObject).addSecondaryID(id);
@@ -716,7 +716,7 @@ public class DefaultOBOParser implements OBOParser {
 		if (catID != null) {
 			SynonymCategory synCat = session.getSynonymCategory(catID);
 			if (synCat == null)
-				throw new OBOParseException("Unrecognized category id " + catID
+				throw new OBOParseException("Unrecognized category ID " + catID
 						+ " found", getCurrentPath(), engine.getCurrentLine(),
 						engine.getLineNum());
 			s.setSynonymCategory(synCat);
@@ -1201,7 +1201,7 @@ public class DefaultOBOParser implements OBOParser {
 					logger.info("      range = " + t.getRange());
 				} else
 					throw new OBOParseException("Assigned non-existant "
-							+ "range id " + rangeID + " to term " + t.getID(),
+							+ "range ID " + rangeID + " to term " + t.getID(),
 							null, null, -1);
 			} else if (!(o instanceof Type))
 				throw new OBOParseException("Assigned non-type to range of "
@@ -1260,7 +1260,7 @@ public class DefaultOBOParser implements OBOParser {
 					instanceOfObj = new DanglingClassImpl(is.instanceOf);
 					logger.info("instanceOfObj is null-added dangling object");
 				} else {
-					throw new OBOParseException("Unrecognized instance_of id "
+					throw new OBOParseException("Unrecognized instance_of ID "
 							+ is.instanceOf + " specified for "
 							+ "instance id " + id, is.getPath(), is.getLine(),
 							is.getLineNum());
@@ -1447,7 +1447,7 @@ public class DefaultOBOParser implements OBOParser {
 					object = new DanglingClassImpl(bm.getObject());
 					logger.info("object is null for " + bm.getObject() + "--added dangling class impl");
 				} else
-					throw new OBOParseException("Could not resolve id "
+					throw new OBOParseException("Could not resolve ID "
 							+ bm.getObject() + " in replaced_by "
 							+ "statement.", bm.getPath(), bm.getLine(), bm
 							.getLineNum());
@@ -1520,7 +1520,7 @@ public class DefaultOBOParser implements OBOParser {
 					logger.info("object is null for " + bm.getObject() + "--added dangling class impl");
 				}
 				else
-					throw new OBOParseException("Could not resolve id "
+					throw new OBOParseException("Could not resolve ID "
 							+ bm.getObject() + " in consider " + "tag.", bm
 							.getPath(), bm.getLine(), bm.getLineNum());
 			}

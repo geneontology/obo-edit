@@ -436,7 +436,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			for (int i = 0; i < value.length(); i++) {
 				if (Character.isWhitespace(value.charAt(i))) {
 					throw new OBOParseException("No whitespace is allowed "
-							+ "in an id prefix", getCurrentPath(), line,
+							+ "in an ID prefix", getCurrentPath(), line,
 							linenum, 0);
 				}
 			}
@@ -1116,7 +1116,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			typeIndex = findUnescaped(value, ' ', 0, value.length()) + 1;
 			type = value.substring(0, typeIndex).trim();
 			if ((typeIndex == -1 || type.length() == 0) && !intersection)
-				throw new OBOParseException("No id specified for"
+				throw new OBOParseException("No ID specified for"
 						+ " relationship.", getCurrentPath(), line, linenum, 0);
 		}
 
@@ -1130,7 +1130,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 		}
 
 		if (id.length() == 0)
-			throw new OBOParseException("Empty id specified for"
+			throw new OBOParseException("Empty ID specified for"
 					+ " relationship.", getCurrentPath(), line, linenum, 0);
 		boolean necessary = true;
 		boolean inverseNecessary = false;
