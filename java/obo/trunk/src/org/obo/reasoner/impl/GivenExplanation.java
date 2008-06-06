@@ -17,5 +17,9 @@ public class GivenExplanation extends AbstractExplanation {
 	public ExplanationType getExplanationType() {
 		return ExplanationType.GIVEN;
 	}
+	
+	public String toString() {
+		return "GIVEN: "+getExplainedLink();
+	}
 
 }

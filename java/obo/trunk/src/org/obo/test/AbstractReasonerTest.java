@@ -39,6 +39,15 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 		
 	}
 	
+	public void reReason(ReasonerFactory fac) {
+		setReasonerFactory(fac);
+		reasonedDB = createReasoner();
+		reasonedDB.setLinkDatabase(linkDatabase);
+		reasonedDB.recache();
+		trimmedDB = new TrimmedLinkDatabase(reasonedDB);
+	
+	}
+	
 	protected ReasonedLinkDatabase createReasoner() {
 		return reasonerFactory.createReasoner();
 	}

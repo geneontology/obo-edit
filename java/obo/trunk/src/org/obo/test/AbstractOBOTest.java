@@ -3,6 +3,7 @@ package org.obo.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
@@ -26,6 +27,7 @@ import org.obo.datamodel.SynonymedObject;
 import org.obo.datamodel.TermCategory;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.filters.Filter;
 import org.obo.postcomp.OBOPostcomp;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
 import org.obo.util.TermUtil;
@@ -232,4 +234,21 @@ public abstract class AbstractOBOTest extends TestCase {
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, session);
 		return outFile;
 	}
+	
+	public Collection<Link> filterLinks(Filter filter) {
+		Collection<Link> matches = 
+			new LinkedList<Link>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io instanceof LinkedObject) {
+				LinkedObject lo = (LinkedObject)io;
+				for (Link link : lo.getParents()) {
+					if (filter.satisfies(link))
+						matches.add(link);
+				}
+			}
+		}
+		return matches;
+	}
+
+
 }
