@@ -63,6 +63,7 @@
           <entry location="obomerge" launcher="true" />
           <entry location="obo2flat" launcher="true" />
           <entry location="oe-command-line" launcher="true" />
+          <entry location="log4j.properties" launcher="false" />
         </include>
         <dependencies />
       </component>
