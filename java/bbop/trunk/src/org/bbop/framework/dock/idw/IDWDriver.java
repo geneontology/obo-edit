@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -304,8 +303,8 @@ public class IDWDriver implements LayoutDriver {
 			savePerspectiveAs(currentPerspective, currentPerspective.getName());
 			//savePerspectives(); // need to keep as it tracks which perspective is current
 		}
-    if (currentPerspective != null)
-      savePerspectives(); // need to keep as it tracks which perspective is current
+		if (currentPerspective != null)
+			savePerspectives(); // need to keep as it tracks which perspective is current
 	}
 
   /** Whether to save layout on exit - default true */
@@ -326,6 +325,7 @@ public class IDWDriver implements LayoutDriver {
 			encoder.writeObject(currentPerspective);
 			encoder.close();
 		} catch (IOException e) {
+			logger.warn("savePerspectives: exception trying to write perspectives file " + file);
 			e.printStackTrace();
 		}
 	}
@@ -386,24 +386,24 @@ public class IDWDriver implements LayoutDriver {
 		return new File(getPerspectivesDir(), "perspectives.xml");
 	}
 
-  /** load perspectives from jar/classes to user prefs perspective dir */
-	@SuppressWarnings("unchecked")
+    /** load perspectives from jar/classes to user prefs perspective dir */
+    @SuppressWarnings("unchecked")
 	protected void loadPerspectives() {
-    // this is the file to copy to
-		File toFile = getPerspectivesFile();
-		if (getPerspectiveListResourcePath() != null) {
-      // if toFile doesnt exist then copy resource to it, throws file not found
+	// this is the file to copy to
+	File toFile = getPerspectivesFile();
+	if (getPerspectiveListResourcePath() != null) {
+	    // if toFile doesnt exist then copy resource to it, throws file not found
 			try {
 				FileUtil.ensureExists(toFile, getPerspectiveListResourcePath());
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
+				logger.warn("loadPerspectives: exception trying to create perspectives file " + toFile + " from resource" + getPerspectiveListResourcePath());
 				e1.printStackTrace();
 			}
 		}
 
-    // get perspectives from toFile perspective.xml (listed in there)
+	// get perspectives from toFile perspective.xml (listed in there)
 		if (toFile.exists()) {
-
 			XMLDecoder d;
 			perspectives = null;
 			Perspective currentPerspective = null;
@@ -414,7 +414,10 @@ public class IDWDriver implements LayoutDriver {
 				currentPerspective = (Perspective) d.readObject();
 				d.close();
 			}
-      catch (Exception e) {}
+			catch (Exception e) {
+				logger.warn("loadPerspectives: exception trying to read perspectives file " + toFile);
+				e.printStackTrace();
+			}
 
 			if (perspectives == null)
 				perspectives = new LinkedList<Perspective>();
@@ -439,9 +442,9 @@ public class IDWDriver implements LayoutDriver {
 					}
 				}
 			}
-      // reads in perspecteves from perpspectives file
+			// reads in perspecteves from perpspectives file
 			createDefaultPerspectives();
-      // set perspective to 1st perspective
+			// set perspective to 1st perspective
 			if (currentPerspective == null && perspectives.size() > 0)
 				currentPerspective = perspectives.get(0);
 			if (currentPerspective != null)
@@ -463,6 +466,7 @@ public class IDWDriver implements LayoutDriver {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			logger.warn("createDefaultPerspectives: exception trying to create default perspectives file " + getPerspectivesFile() + " from resource" + getPerspectiveListResourcePath());
 			e.printStackTrace();
 		}
 	}
@@ -509,6 +513,7 @@ public class IDWDriver implements LayoutDriver {
 			}
 			currentPerspective = perspective;
 		} catch (Exception e) {
+			logger.warn("setPerspective: exception trying to restore perspective from " + getFile(perspective));
 			e.printStackTrace();
 			if (currentPerspective == null && perspectives.size() > 0) {
 				currentPerspective = perspectives.get(0);
@@ -1002,7 +1007,6 @@ public class IDWDriver implements LayoutDriver {
 	}
 
 	public void setPerspectiveResourceDir(String perspectiveResourceDir) {
-//		System.out.println("IDWDriver.setPerspectiveResourceDir " + perspectiveResourceDir); // DEL
 		this.perspectiveResourceDir = perspectiveResourceDir;
 	}
 
