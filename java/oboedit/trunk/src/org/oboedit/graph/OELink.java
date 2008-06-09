@@ -186,8 +186,12 @@ public class OELink extends PCNode implements Morphable {
 		}
 		if (type == LineType.ZIGZAG_LINE) {
 			stroke = new ZigZagStroke(new BasicStroke(lineWeight,
-					BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-					dashArr, 0f), ICON_PANEL_HEIGHT / 2, ICON_PANEL_HEIGHT / 2);
+								  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
+								  dashArr, 0f), 
+//						  ICON_PANEL_HEIGHT / 2, 
+						  ICON_PANEL_HEIGHT / 6,
+//						  ICON_PANEL_HEIGHT / 2);
+						  ICON_PANEL_HEIGHT / 4);
 			getPathDelegate().setPathTo(
 					stroke.createStrokedShape(getPathReference()));
 			getPathDelegate().setStroke(null);
