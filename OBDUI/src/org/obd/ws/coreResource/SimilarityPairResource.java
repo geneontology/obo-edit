@@ -56,9 +56,9 @@ public class SimilarityPairResource extends NodesResource{
 			
 			List<String> commonNodes = new ArrayList<String>(sp.getNonRedundantNodesInCommon());
 			//commonNodes.remove(sp.getNodeWithMaximumInformationContent());
-			if (sp.getNodeWithMaximumInformationContent()!=null){
+			//if (sp.getNodeWithMaximumInformationContent()!=null){
 				//commonNodes.add(0,sp.getNodeWithMaximumInformationContent());
-			}
+			//}
 			
 			resourceMap.put("intersectionNodes", this.hashifyNodes(commonNodes,("/" + this.getContextName() + "/" + this.dataSource + "/html/node/")));
 			Set<String> set1unique = new HashSet<String>(sp.getNonRedundantNodesInSet1());

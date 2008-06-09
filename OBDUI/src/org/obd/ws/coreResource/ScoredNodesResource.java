@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.obd.model.Node;
 import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.stats.ScoredNode;
 import org.restlet.Context;
@@ -90,10 +89,15 @@ public class ScoredNodesResource extends NodeResource {
     		List<SimpleHash> scores = new ArrayList<SimpleHash>();
         	for (ScoredNode sn : scoredNodes) {
         		
-        		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/similarityPair/" + Reference.encode(sn.getNodeId()) + "+" + Reference.encode(this.getNode().getId())));
+        		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(this.getNode().getId())));
         		Double score = new Double(sn.getScore());
         		scoredNodeHash.put("score", score.toString());
+        		scoredNodeHash.put("spHref", ("/" + this.getContextName() + "/" + dataSource + "/html/similarityPair/" + Reference.encode(sn.getNodeId()) + "+" + Reference.encode(this.getNode().getId())));
+        		
         		scores.add(scoredNodeHash);
+        		
+        		
+        		
             }
         	if (scores.size()>0){
         		resourceMap.put("results", scores);
