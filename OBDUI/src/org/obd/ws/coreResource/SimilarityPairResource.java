@@ -49,21 +49,21 @@ public class SimilarityPairResource extends NodesResource{
 			
 			resourceMap.put("contentRatioScore",sp.getSimilarityByInformationContentRatio());
 			resourceMap.put("basicSimilarityScore", sp.getBasicSimilarityScore());
-			resourceMap.put("maxContentNode", sp.getNodeWithMaximumInformationContent());
+			//resourceMap.put("maxContentNode", sp.getNodeWithMaximumInformationContent());
 			
 			resourceMap.put("node1", this.hashifyNode(nodes.get(0).getId(), ("/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(nodes.get(0).getId()))));
 			resourceMap.put("node2", this.hashifyNode(nodes.get(1).getId(), ("/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(nodes.get(1).getId()))));
 			
-			List<String> commonNodes = new ArrayList<String>(sp.getNodesInCommon());
-			commonNodes.remove(sp.getNodeWithMaximumInformationContent());
+			List<String> commonNodes = new ArrayList<String>(sp.getNonRedundantNodesInCommon());
+			//commonNodes.remove(sp.getNodeWithMaximumInformationContent());
 			if (sp.getNodeWithMaximumInformationContent()!=null){
-				commonNodes.add(0,sp.getNodeWithMaximumInformationContent());
+				//commonNodes.add(0,sp.getNodeWithMaximumInformationContent());
 			}
 			
 			resourceMap.put("intersectionNodes", this.hashifyNodes(commonNodes,("/" + this.getContextName() + "/" + this.dataSource + "/html/node/")));
-			Set<String> set1unique = new HashSet<String>(sp.getNodesInSet1());
+			Set<String> set1unique = new HashSet<String>(sp.getNonRedundantNodesInSet1());
 			set1unique.removeAll(sp.getNodesInCommon());
-			Set<String> set2unique = new HashSet<String>(sp.getNodesInSet2());
+			Set<String> set2unique = new HashSet<String>(sp.getNonRedundantNodesInSet2());
 			set2unique.removeAll(sp.getNodesInCommon());
 			
 			resourceMap.put("set1unique", this.hashifyNodes(set1unique,("/" + this.getContextName() + "/" + this.dataSource + "/html/node/")));
