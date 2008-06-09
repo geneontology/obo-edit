@@ -7,9 +7,9 @@
 </HEAD>
 <BODY BGCOLOR=#ffffff>
 <H1>Loading &amp; Saving</H1>
-<P>To load or save an ontology, click the "File" menu:</P>
+<P>To load or save an ontology, use the "File" menu:</P>
 <p><IMG hspace=0 src="../images/load_save_menu.png" border=0></p>
-<P>Choose "Load ontologiess..." or "Save As..." (Command-s). A window like this will appear:</P>
+<P>Choose "Load ontologies..." or "Save As..." (Command-s). A window like this will appear:</P>
 <p><IMG hspace=0 src="../images/load_save_dialog.png" border=0></p>
 <P>The top line is the same regardless of whether you are loading,
 saving, or doing some other operation. The drop down box contains a list of data adapters that support the current
@@ -18,7 +18,7 @@ adapters may appear for all operations). To choose a different data adapter,
 select it from the dropdown list.  Use the "Browse" button to select a file to
 load or save to.</P>
 <div class="sidebar">
-<h2>Tip: browsing a particular directory</h2>
+<h1>Tip: browsing a particular directory</h1>
 <hr>
 <p class="sidebar">
 You can point the file browser to a particular directory by typing the
@@ -49,6 +49,30 @@ ontology files are very big and OBO-Edit might get really slow.</p>
 <p>You can also create a "&lt;new profile&gt;" (e.g., go-chebi).</p>
 Then the window that you see looks like this:</p>
 <p><img src="../images/chebi-go.png" width="888" height="492" border="0" alt=""></p>
-<p>&nbsp;</p>
+<h2><a name="filter">Filtered save</a></h2>
+<p>
+You can save just the ontology terms that match a particular search.  The
+way to do this is with a <a href="Loading___Saving.htm#filter">filtered save</a>.
+</p>
+<p>In the File menu, choose Save As. When the 'Write ontology' window appears, click the "Advanced" button.
+You will see a window like this:  
+<p><img src="../images/write-ontology-advanced.png" border="0" alt=""></p>
+<p>Click the Add button to create a new save profile.
+<p><img src="../images/write-ontology-add-save-profile.png" border="0" alt=""></p>
+<p>Set the save path by typing or pasting into the text box that says "<new save path>"
+or choose a file path by clicking the "Browse" button.
+Tick the 'Filter terms' box; a set of filter controls
+will appear. 
+(You may need to make the window bigger so you can see all the fields.)
+These filter controls work just like the
+searching/filtering system in the main OBO-Edit window. At this point,
+you can create a filter manually (use the + button to add a new filter
+expression) or load a filter that you have already saved by clicking
+the "open folder" icon to locate your filter file.
+Click the "OK" button at the bottom of the window to save the
+the filtered terms into your chosen file.
+(Note that saving will be slower than usual because of the filtering
+step.)
+</p>
 </BODY>
 </HTML>
