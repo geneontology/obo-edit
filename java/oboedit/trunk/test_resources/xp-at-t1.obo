@@ -1,0 +1,44 @@
+format-version: 1.2
+default-namespace: GO
+
+[Term]
+id: A
+name: A-cell
+namespace: cell
+
+[Term]
+id: B
+name: B-cell
+namespace: cell
+is_a: A
+
+[Term]
+id: C
+name: C-cell
+namespace: cell
+is_a: B
+
+[Term]
+id: d
+namespace: GO
+name: differentiation
+
+[Term]
+id: Ad
+name: A-differentiation
+namespace: GO
+intersection_of: d
+intersection_of: results_in_acquisition_of_features_of A
+is_a: d
+
+[Term]
+id: Cd
+name: C-differentiation
+namespace: GO
+intersection_of: d
+intersection_of: results_in_acquisition_of_features_of C
+is_a: Ad
+
+[Typedef]
+id: results_in_acquisition_of_features_of
+name: results_in_acquisition_of_features_of
