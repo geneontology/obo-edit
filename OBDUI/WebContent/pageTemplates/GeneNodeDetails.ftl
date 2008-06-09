@@ -62,7 +62,7 @@
 											<tr>
 												<th id="th_${rowCount}" class="std">
 													<b>${rowCount+1}:</b> 
-													<a href="#genotype_${rowCount}" onclick="openTable('genotypeAnnotations','${hostname}');" name="${genotypes[rowCount].genotype.label}">
+													<a href="#genotype_${rowCount}" onclick="openTable('genotypeAnnotations','${hostname}');" title="${genotypes[rowCount].genotype.label}">
 														<#if (genotypes[rowCount].genotype.label?length>20)>
 															${genotypes[rowCount].genotype.label?substring(0,20)}...
 														<#else>
@@ -100,7 +100,7 @@
 												<fieldset style="font-size:12px;border:1px dotted grey;">
 													
 													<legend style="font-size:14px;">
-														<@nodeHashHref nodeHash=genotypes[genotypeNum].genotype/>influences:
+														${genotypeNum+1}: <@nodeHashHref nodeHash=genotypes[genotypeNum].genotype/>influences:
 													</legend>
 													<#list genotypes[genotypeNum].annotationStatements as statement>
 														&bull;<@nodeHashHref nodeHash=statement.object/><br/>

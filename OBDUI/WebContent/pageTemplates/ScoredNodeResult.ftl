@@ -22,15 +22,16 @@
 						<br/>
 						<#if results?exists>
 							<table class="scoredNodeResults">
-							 	<tr><th style="width:190px;background-color:#fafafa;">Score</th><td style="background-color:#fafafa;">Node</td></tr>
+							 	<tr><th style="width:190px;background-color:#fafafa;">Node</th><td style="background-color:#fafafa;">Score</td></tr>
 								<#list results as scoredNodeHit>
 									<tr>
-										<th>
-											${scoredNodeHit.score}
-										</th>
 										<td>
 											<@nodeHashHref nodeHash=scoredNodeHit/>
 										</td>
+										<th>
+											<a href="${scoredNodeHit.spHref}"/>${scoredNodeHit.score}</a>
+										</th>
+										
 									</tr>
 								</#list>
 							</table>
