@@ -433,6 +433,7 @@ public class OBO2Database {
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		readConfig.setBasicSave(false);
 		OBDSQLDatabaseAdapterConfiguration writeConfig = new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		
 		writeConfig.setBasicSave(false);
 		boolean parseObsoleteComments = false;
 		boolean writeObsoleteComments = false;
@@ -524,6 +525,16 @@ public class OBO2Database {
 					writeConfig.getSaveRecords().add(path);
 			} else if (args[i].equals("-?")) {
 				printUsage(0);
+			} else if (args[i].equals("-u")){
+				if (i >= args.length - 1)
+					printUsage(1);
+				i++;
+				writeConfig.setDbUsername(args[i]);
+			} else if (args[i].equals("-p")){
+				if (i >= args.length - 1)
+					printUsage(1);
+				i++;
+				writeConfig.setDbPassword(args[i]);
 			} else {
 				readConfig.getReadPaths().add(args[i]);
 			}
