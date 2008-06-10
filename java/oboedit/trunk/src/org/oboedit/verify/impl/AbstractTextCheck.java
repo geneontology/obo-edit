@@ -776,7 +776,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 					if (!allowNewlines && c == '\n' && !foundNewlines) {
 						addWarning(out, new TextCheckWarning(getWarningLabel(
 								path, condition)
-								+ " cannot contain newlines.", true, this, i,
+								+ " contains newlines.", false, this, i,
 								i + 1, path, "text:no_newlines"));
 						foundNewlines = true;
 					}
@@ -864,7 +864,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 						CheckWarning warning = new TextCheckWarning(
 								getWarningLabel(path, condition)
-										+ " contains sentences that are "
+										+ " contains sentences that are"
 										+ " not separated by whitespace.",
 								false, this, i - 1, i + 2, path, fixes,
 								"text:joined_sentences");
@@ -1011,7 +1011,6 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			 * wordStr; wordIndex++; }
 			 */
 		} catch (TooManyWarningsException ex) {
-
 			throw ex;
 		}
 		return out;

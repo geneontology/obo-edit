@@ -37,7 +37,8 @@ public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
 	}
 
 	public DefinitionCheck() {
-		setAllowNewlines(true);
+//		setAllowNewlines(true);
+		setAllowNewlines(false);  // 6/2008: warn about newlines in definitions, as per user request
 		setAllowBlank(true);
 		setSentenceStructureChecks(true);
 		setAllowExtended(Preferences.getPreferences()
@@ -45,29 +46,6 @@ public class DefinitionCheck extends AbstractTextCheck implements FieldCheck {
 
 	}
 
-	/*
-	 * @Override protected void appendAdditionalWarnings(Collection out,
-	 * OBOSession session, IdentifiedObject currentObject, byte condition) { if
-	 * (currentObject instanceof DefinedObject) { DefinedObject dfo =
-	 * (DefinedObject) currentObject; FieldPath defPath = new
-	 * FieldPath(currentObject, DefinitionSearchCriterion.CRITERION,
-	 * dfo.getDefinition()); if (dfo.getDefinition() == null ||
-	 * dfo.getDefinition().length() == 0) { if (dfo.getDefDbxrefs().size() > 0) {
-	 * out.add(new CheckWarning(getWarningLabel(currentObject, condition, 0) + "
-	 * has definition references, " + "but no definition.", true, this, new
-	 * FieldPath(currentObject, DefinitionDbxrefSearchCriterion.CRITERION,
-	 * FieldPath.EMPTY))); } } if
-	 * (Preferences.getPreferences().getUsePersonalDefinition()) { if
-	 * (dfo.getDefinition().equals(
-	 * Preferences.getPreferences().getPersonalDefinition())) out .add(new
-	 * TextCheckWarning(getWarningLabel( currentObject, condition, 0) + " seems
-	 * to have an " + "auto-generated definition " + "that was never edited.",
-	 * false, this, 0, dfo.getDefinition().length(), defPath, "def:auto_text")); }
-	 * if (dfo.getDefDbxrefs().size() == 0) { if (dfo.getDefinition() != null &&
-	 * dfo.getDefinition().length() > 0) out.add(new
-	 * CheckWarning(getWarningLabel(currentObject, condition, 0) + " has a
-	 * definition with " + "no references.", true, this, defPath)); } } }
-	 */
 	public String getID() {
 		return "DEFINITION_CHECK";
 	}
