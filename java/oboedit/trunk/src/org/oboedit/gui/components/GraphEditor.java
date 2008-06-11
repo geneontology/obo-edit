@@ -1,6 +1,7 @@
 package org.oboedit.gui.components;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,10 +65,12 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphEditor.class);
 
+	protected static final Color lockGray = new Color(200, 200, 200);
+
 	public static class GraphEditorConfiguration extends
 			OntologyEditorConfiguration {
 		protected boolean disableAnimations;
-	        protected long layoutDuration = 700;  // milliseconds (user-configurable)
+	        protected long layoutDuration = 500;  // milliseconds (user-configurable)
 		protected boolean expandPaths = true;
 
 		public GraphEditorConfiguration() {
@@ -144,6 +147,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
+//		    logger.info("GraphEditor.reload: e = " + e); // DEL
 			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()) {
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
@@ -152,7 +156,6 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 					addPostLayoutAction(new Runnable() {
 
 						public void run() {
-//							logger.info("GraphEditor.reloadListener.run.isLayingOut = " + isLayingOut);
 							panToObjects();
 						}
 
@@ -167,8 +170,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
-		    relayout();
-//			logger.info("GraphEditor: reloaded config");
+		    relayout();  // Need?  Is this already called elsewhere?
 		}
 
 	};
@@ -383,7 +385,8 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			}
 			setRevertToDefaultAction(gec.isRevertToDefaultAction());
 			toolbar.setShowToolbar(gec.getShowToolbar());
-			relayout();
+			System.out.println("GraphEditor.setConfig: NOT calling relayout"); // DEL
+//			relayout();    // !Need?  Or does the caller always end up calling relayout() sooner or later anyway?
 		}
 	}
 	
@@ -415,5 +418,14 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	protected void setRevertToDefaultAction(boolean revertToDefaultAction) {
 		this.revertToDefaultAction = revertToDefaultAction;
+	}
+
+	@Override
+	public Color getBackground() {
+		// Using background color to indicate global vs. local selection mode.
+		if (isLive())
+			return Color.white;
+		else
+			return lockGray;
 	}
 }
