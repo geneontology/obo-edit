@@ -18,8 +18,7 @@ import org.obo.util.TermUtil;
 import org.apache.log4j.*;
 
 /**
- * @author cjm
- *
+  *
  * Writes out a reasoned link database as CHILD-REL-PARENT-ISIMPLIED tab delimited quads.
  * 
  * <ul>
@@ -46,7 +45,13 @@ import org.apache.log4j.*;
  * </li>
  * </ul>
  * 
- * TODO: Reasoner factory?
+ * You can control the reasoner by setting the reasoner factory; for example
+ * <code>
+ * 				OBOSerializationEngine.FilteredPath path = new OBOSerializationEngine.FilteredPath();
+				path.setUseSessionReasoner(false);
+				path.setReasonerFactory(new PelletWrappedReasonerFactory());
+ * </code>
+ * @author cjm
  */
 
 public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBOAdapter {
@@ -165,7 +170,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				fullReasoner = reasoner;
 			} else {
 				logger.info("new reasoner...");
-				fullReasoner = new ForwardChainingReasoner();
+				fullReasoner =  filteredPath.getReasonerFactory().createReasoner();
 				fullReasoner.setLinkDatabase(new DefaultLinkDatabase(session));
 				fullReasoner.recache();
 			}
