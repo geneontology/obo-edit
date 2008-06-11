@@ -1133,6 +1133,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void relayout() {
+		logger.debug("LinkDatabaseCanvas.relayout");  // DEL
+//		(new Exception()).printStackTrace(); // DEL
 		if (linkDatabase == null)
 			return;
 		isLayingOut = true;
@@ -1185,6 +1187,10 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				fireRelayoutCompleteEvent();
 				decorateNode(getRoot(), getLayer(), decorators, true, true);
 				undim();
+//				if (!getDisableAnimations())
+				// If we don't repaint with animations disabled, it doesn't redraw properly.
+				// However (Jen will hate this) repainting may be making it blink.
+					repaint(); // Seems to help with the redrawing issues
 			}
 
 			public void activityStarted(PActivity activity) {
@@ -1419,6 +1425,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			SelectionManager.setGlobalSelection(getSelection());
 		}
 		this.isLive = isLive;
+		repaint(); // in order to change background color
 	}
 
 	public void setMorpher(NamedChildMorpher morpher) {
@@ -1477,7 +1484,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 					.getLinkDatabase();
 		setLinkDatabase(newLinkDB);
 		setLinkProviderDatabase(new TrimmedLinkDatabase(filteredLinkDatabase));
-		relayout();
+		relayout();  // !Need?  Or does the caller always end up calling relayout() sooner or later anyway?
 		setFocusedObject(focusedObject);
 	}
 
