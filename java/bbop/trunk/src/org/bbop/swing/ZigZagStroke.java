@@ -25,7 +25,8 @@ public class ZigZagStroke implements Stroke {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ZigZagStroke.class);
-	private float amplitude = 10.0f;
+//	private float amplitude = 10.0f;
+	private float amplitude = 5.0f;
 	private float wavelength = 10.0f;
     private Stroke stroke;
 	private static final float FLATNESS = 1;
