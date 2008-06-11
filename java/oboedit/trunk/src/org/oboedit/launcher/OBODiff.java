@@ -1,17 +1,21 @@
 package org.oboedit.launcher;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Vector;
 
-import org.bbop.dataadapter.*;
+import org.apache.log4j.Logger;
+import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.dataadapter.FileAdapterConfiguration;
 import org.bbop.io.IOUtil;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
+import org.obo.dataadapter.DefaultHistoryDumper;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.dataadapter.XMLHistoryAdapter;
+import org.obo.datamodel.OBOSession;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryList;
-
-import java.io.*;
-
-import org.apache.log4j.*;
 
 public class OBODiff {
 

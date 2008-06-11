@@ -7,12 +7,11 @@ import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.log4j.Logger;
 import org.bbop.io.AuditedPrintStream;
 import org.obo.test.AbstractReasonerTest;
 import org.oboedit.verify.OntologyCheck;
 import org.oboedit.verify.impl.DisjointednessCheck;
-
-import org.apache.log4j.*;
 
 public class DisjointViolationTest extends AbstractReasonerTest {
 

@@ -1,9 +1,11 @@
 package org.oboedit.test;
 
-import junit.framework.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-import org.apache.log4j.*;
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 
 public class OBO2FlatTest extends TestCase {
 

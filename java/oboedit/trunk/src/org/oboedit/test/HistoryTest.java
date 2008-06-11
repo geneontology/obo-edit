@@ -1,9 +1,12 @@
 package org.oboedit.test;
 
-import junit.framework.*;
+import java.util.Iterator;
 
-import java.util.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
+import org.apache.log4j.Logger;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.IdentifiedObject;
@@ -58,8 +61,6 @@ import org.obo.history.TermSplitHistoryItem;
 import org.obo.history.TransitiveHistoryItem;
 import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
-
-import org.apache.log4j.*;
 
 public class HistoryTest extends TestCase {
 

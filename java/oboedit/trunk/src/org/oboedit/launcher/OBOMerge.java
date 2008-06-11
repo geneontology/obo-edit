@@ -1,9 +1,18 @@
 package org.oboedit.launcher;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.bbop.commandline.ArgumentSignature;
 import org.bbop.commandline.CommandLineParser;
 import org.bbop.commandline.EnumArgumentSignature;
@@ -13,11 +22,16 @@ import org.bbop.commandline.Tag;
 import org.bbop.commandline.TagSpec;
 import org.bbop.commandline.UnorderedArgumentSignature;
 import org.bbop.commandline.ValueSpec;
-import org.bbop.dataadapter.*;
+import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.util.VectorFilter;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.*;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.impl.AnnotatedObjectImpl;
+import org.obo.datamodel.impl.DefaultOperationModel;
+import org.obo.datamodel.impl.NestedValueImpl;
+import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.CreateObjectHistoryItem;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryItem;
@@ -28,10 +42,6 @@ import org.obo.history.SessionHistoryList;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.util.HistoryUtil;
 import org.obo.util.IDUtil;
-
-import java.io.*;
-
-import org.apache.log4j.*;
 
 public class OBOMerge {
 

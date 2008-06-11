@@ -1,17 +1,17 @@
 package org.oboedit.test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.FileAdapterConfiguration;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.SerialAdapter;
 import org.obo.datamodel.OBOSession;
-
-import junit.framework.*;
-
-import org.apache.log4j.*;
 
 public class SimpleSerialRoundtripTest extends TestCase {
 

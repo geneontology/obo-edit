@@ -1,13 +1,17 @@
 package org.oboedit.launcher;
 
-import java.beans.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.bbop.io.ExtensionFilenameFilter;
 import org.oboedit.gui.Preferences;
-
-import org.apache.log4j.*;
 
 public class Launcher {
 

@@ -1,24 +1,29 @@
 package org.oboedit.test;
 
-import junit.framework.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
-import org.oboedit.controller.IDManager;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.controller.SessionManager;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.*;
-import org.oboedit.gui.*;
-import org.oboedit.gui.actions.*;
-import org.obo.history.HistoryItem;
-import org.obo.identifier.DefaultIDGenerator;
-import org.obo.identifier.IDProfile;
-import org.obo.util.TermUtil;
-import org.bbop.util.*;
-import java.util.*;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.*;
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
+import org.bbop.util.ObjectUtil;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.RootAlgorithm;
+import org.obo.history.HistoryItem;
+import org.obo.util.TermUtil;
+import org.oboedit.controller.SelectionManager;
+import org.oboedit.controller.SessionManager;
+import org.oboedit.gui.actions.CloneAction;
 
 public class CloneTest extends TestCase {
 
