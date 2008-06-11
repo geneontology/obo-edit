@@ -13,20 +13,49 @@ import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
+import org.apache.log4j.*;
 
 /**
  * @author cjm
  *
- * Writes out a reasoned link database as CHILD-REL-PARENT-ISIMPLIED tab delimited quads
+ * Writes out a reasoned link database as CHILD-REL-PARENT-ISIMPLIED tab delimited quads.
+ * 
+ * <ul>
+ * <li>
+ * Subject - aka child - what the link is about
+ * </li>
+* <li>
+* Relation - e.g. part_of. Note that IS_A is written as OBO_REL:is_a
+ * </li>
+* <li>
+* Object - aka parent
+ * </li>
+* <li>
+* Provenance of link - either asserted (directly stated by human) or implied (logically entailed by reasoner)
+ * </li>
+* <li>
+* XP - if this is a necessary and sufficient condition link the value will be 'intersection'
+ * </li>
+* <li>
+* Redundancy - if this link is asserted and redundant this column will have 'redundant' as value
+ * </li>
+* <li>
+* Reserved
+ * </li>
+ * </ul>
+ * 
  * TODO: Reasoner factory?
  */
-import org.apache.log4j.*;
 
 public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBOAdapter {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SimpleLinkFileAdapter.class);
+	
+	String[] cols = {"subject","relation","object","provenance","xp","redundancy"};
+
 
 	protected String path;
 	protected AdapterConfiguration config;
@@ -140,7 +169,16 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				fullReasoner.setLinkDatabase(new DefaultLinkDatabase(session));
 				fullReasoner.recache();
 			}
-
+					
+			
+			for (int i=0; i<cols.length; i++) {
+				String col = cols[i];
+				if (i>0) {
+					stream.print("\t");
+				}
+				stream.print(col);
+			}
+			stream.print("\n");
 			for (IdentifiedObject io : fullReasoner.getObjects()) {
 				if (io instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) io;
@@ -151,7 +189,11 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 						stream.print("\t");
 						stream.print(link.getParent().getID());
 						stream.print("\t");
-						stream.print(TermUtil.isImplied(link));
+						stream.print(TermUtil.isImplied(link) ? "implied" : "asserted");
+						stream.print("\t");
+						stream.print(TermUtil.isIntersection(link) ? "intersection" : "link");
+						stream.print("\t");
+						stream.print(ReasonerUtil.isRedundant(fullReasoner, link) ? "redundant" : "");
 						stream.print("\n");
 					}
 				}
