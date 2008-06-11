@@ -1,14 +1,20 @@
 package org.oboedit.test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.dataadapter.FileAdapterConfiguration;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
-import java.io.*;
-import java.util.*;
-import junit.framework.*;
-
-import org.apache.log4j.*;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.SerialAdapter;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOSession;
 
 public class DatamodelTest extends TestCase {
 

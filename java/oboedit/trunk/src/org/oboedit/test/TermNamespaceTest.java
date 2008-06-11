@@ -1,13 +1,13 @@
 package org.oboedit.test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOClass;
 import org.obo.history.HistoryItem;
 import org.obo.history.NamespaceHistoryItem;
-
-import org.apache.log4j.*;
 
 public class TermNamespaceTest extends OperationTest {
 

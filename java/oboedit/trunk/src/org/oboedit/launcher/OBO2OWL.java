@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
@@ -38,9 +39,6 @@ import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
-
-
-import org.apache.log4j.*;
 
 public class OBO2OWL {
 

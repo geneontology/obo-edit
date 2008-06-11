@@ -9,42 +9,21 @@ import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
 import org.bbop.io.IOUtil;
-import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
-import org.obo.dataadapter.OBDSQLDatabaseAdapter;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
-import org.obo.dataadapter.OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration;
-import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
+import org.obo.dataadapter.SimpleLinkFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.filters.Filter;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
 
-public class Database2OBO {
+public class OBO2Linkfile {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(Database2OBO.class);
+	protected final static Logger logger = Logger.getLogger(OBO2Linkfile.class);
 
-	protected static class DanglingWrapper {
-		protected String id;
-
-		protected String text;
-
-		public DanglingWrapper(String id, String text) {
-			this.id = id;
-			this.text = text;
-		}
-
-		public String getID() {
-			return id;
-		}
-
-		public String getName() {
-			return text;
-		}
-	}
 
 	protected static class ScriptWrapper {
 		protected String script;
@@ -70,11 +49,11 @@ public class Database2OBO {
 	}
 
 	public static void convertFiles(
-			OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration readConfig,
-			OBOFileAdapter.OBOAdapterConfiguration writeConfig, List scripts, OBOAdapter writer) throws Exception {
-		OBDSQLDatabaseAdapter adapter = new OBDSQLDatabaseAdapter();
-		
-		/// TODO: some way of passing in a query
+			OBOFileAdapter.OBOAdapterConfiguration readConfig,
+			OBOFileAdapter.OBOAdapterConfiguration writeConfig,
+			boolean parseObsoleteComments, boolean writeObsoleteComments,
+			boolean fixDbxrefs, List scripts) throws Exception {
+		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
 		Iterator it = scripts.iterator();
@@ -82,13 +61,12 @@ public class Database2OBO {
 			ScriptWrapper wrapper = (ScriptWrapper) it.next();
 			runScript(session, wrapper.getScript(), wrapper.getArgs());
 		}
-		
 		logger.info("About to write files..., session object count = "
 				+ session.getObjects().size());
 		logger.info("writePath = " + writeConfig.getWritePath());
 		logger.info("savePath = " + writeConfig.getSaveRecords());
 		
-
+		SimpleLinkFileAdapter writer = new SimpleLinkFileAdapter();
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
@@ -101,18 +79,20 @@ public class Database2OBO {
 	}
 
 
+
 	public static void main(String[] args) throws Exception {
 		logger.info("version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
-		OBDSQLDatabaseAdapterConfiguration readConfig = new OBDSQLDatabaseAdapter.OBDSQLDatabaseAdapterConfiguration();
+		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		readConfig.setBasicSave(false);
-		OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
+		OBOFileAdapter.OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
+		
 		writeConfig.setBasicSave(false);
+		boolean parseObsoleteComments = false;
+		boolean writeObsoleteComments = false;
+		boolean fixDbxrefs = false;
 		LinkedList scripts = new LinkedList();
-		
-		OBOAdapter writer = new OBOFileAdapter();
-		
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
 			logger.info("args[" + i + "] = |" + args[i] + "|");
@@ -126,8 +106,6 @@ public class Database2OBO {
 				if (!(formatVersion.equals("OBO_1_2") || formatVersion
 						.equals("OBO_1_0")))
 					printUsage(1);
-			} else if (args[i].equals("-assoc")) {
-				writer = new GOStyleAnnotationFileAdapter();
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
 			} else if (args[i].equals("-runscript")) {
@@ -163,7 +141,6 @@ public class Database2OBO {
 
 						path.setDoFilter(filter != null);
 						path.setObjectFilter(filter);
-
 					} else if (args[i].equals("-allowdangling")) {
 						path.setAllowDangling(true);
 					} else if (args[i].equals("-strictrootdetection")) {
@@ -188,7 +165,8 @@ public class Database2OBO {
 						break;
 					}
 				}
-				logger.info("Allowdangling = " + path.getAllowDangling());
+				System.err
+						.println("Allowdangling = " + path.getAllowDangling());
 				if (path.getPath() == null)
 					printUsage(1);
 				else
@@ -196,11 +174,11 @@ public class Database2OBO {
 			} else if (args[i].equals("-?")) {
 				printUsage(0);
 			} else {
-				readConfig.setReadPath(args[i]);
+				readConfig.getReadPaths().add(args[i]);
 			}
 		}
-		if (readConfig.getReadPath() == null) {
-			logger.info("You must specify a file to load.");
+		if (readConfig.getReadPaths().size() < 1) {
+			logger.info("You must specify at least one file to load.");
 			printUsage(1);
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {
@@ -211,17 +189,17 @@ public class Database2OBO {
 			}
 		}
 		writeConfig.setSerializer(formatVersion);
-		
-		convertFiles(readConfig, writeConfig, scripts, writer);
+		convertFiles(readConfig, writeConfig, parseObsoleteComments,
+				writeObsoleteComments, fixDbxrefs, scripts);
 	}
 
 	protected static void printUsage(int exitCode) {
 		System.err
-				.println("database2obo [-?]  <jdbcpath 1> ... <jdbcpath N> \\\n"
+				.println("obo2database [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
 						+ "    [-parsecomments] [-writecomments] \\\n"
 						+ "     [-script <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-						+ "   [-o [-f <filterfile1.xml>] <file1>] ... \\\n"
-						+ "   [-o [-f <filterfileN.xml>] <fileN>]");
+						+ "   [-o [-f <filterfile1.xml>] <jdbcPath>] ... \\\n"
+						+ "   [-o [-f <filterfileN.xml>] <jdbcPathN>]");
 		System.err
 				.println("  -?                         - Writes this page to stderr and exits.");
 		System.err
@@ -238,11 +216,11 @@ public class Database2OBO {
 				.println("  <filenameN>                - An obo file to load. Any number of OBO files may\n"
 						+ "                               be loaded");
 		System.err
-				.println("  -o [-f <filterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] obofilepath - \n"
+				.println("  -o [-f <filterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo> - \n"
 						+ "        An output file to write. The optional -f flag may be used to specify a\n"
 						+ "        filter file to apply to the output file before writing. If the \n"
 						+ "        -allowdangling flag is specified, dangling links will not be written.\n"
-						+ "        The optional -p flag specifies the ID of a property to use for \n"
+						+ "        The optional -p flag specifies the id of a property to use for \n"
 						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
 						+ "        applies filters using strict root detection.");
 		System.exit(exitCode);

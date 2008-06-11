@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.ExpressionUtil;
 import org.bbop.expression.JexlContext;
@@ -18,7 +19,6 @@ import org.bbop.io.IOUtil;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.dataadapter.OBOSerializationEngine;
-import org.obo.dataadapter.OBOFileAdapter.OBOAdapterConfiguration;
 import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DefinedObject;
@@ -28,7 +28,6 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.filters.Filter;
 import org.obo.history.HistoryItem;
-import org.obo.history.TermMacroHistoryItem;
 import org.obo.nlp.SemanticParser;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonerFactory;
@@ -37,8 +36,6 @@ import org.obo.util.LexUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
-
-import org.apache.log4j.*;
 
 public class OBO2OBO {
 

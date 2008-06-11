@@ -1,15 +1,21 @@
 package org.oboedit.launcher;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.bbop.dataadapter.*;
-import org.bbop.util.*;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
+import org.apache.log4j.Logger;
+import org.obo.dataadapter.GOFlatFileAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.Namespace;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.DefaultOperationModel;
-import org.obo.history.*;
-
-import org.apache.log4j.*;
+import org.obo.history.DeleteLinkHistoryItem;
+import org.obo.history.ObsoleteObjectHistoryItem;
+import org.obo.history.TermMacroHistoryItem;
 
 public class Flat2OBO {
 

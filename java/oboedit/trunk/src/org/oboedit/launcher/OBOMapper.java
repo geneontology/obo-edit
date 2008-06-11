@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermCategory;
@@ -29,8 +29,6 @@ import org.obo.util.IDMapper;
 import org.obo.util.IDMapper.IDFileMetadata;
 import org.obo.util.IDMapper.SimpleAnnotation;
 import org.oboedit.gui.Preferences;
-
-import org.apache.log4j.*;
 
 public class OBOMapper {
 

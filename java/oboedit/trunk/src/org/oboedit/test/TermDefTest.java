@@ -1,12 +1,12 @@
 package org.oboedit.test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOClass;
 import org.obo.history.DefinitionChangeHistoryItem;
 import org.obo.history.HistoryItem;
-
-import org.apache.log4j.*;
 
 public class TermDefTest extends OperationTest {
 

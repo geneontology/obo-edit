@@ -1,33 +1,36 @@
 package org.oboedit.launcher;
 
-import org.bbop.dataadapter.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.swing.SwingUtilities;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.bbop.dataadapter.CommandLineWidget;
+import org.bbop.dataadapter.DataAdapter;
+import org.bbop.dataadapter.DataAdapterException;
+import org.bbop.dataadapter.DataAdapterRegistry;
+import org.bbop.dataadapter.DataAdapterUIException;
+import org.bbop.dataadapter.DataAdapterUtil;
+import org.bbop.dataadapter.ParameterUI;
 import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
-import org.bbop.io.AuditedPrintStream;
-import org.bbop.io.MultiPrintStream;
-import org.bbop.swing.*;
-import org.bbop.util.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.SwingUtilities;
-
+import org.bbop.util.CommandLineParser;
+import org.bbop.util.Tag;
+import org.bbop.util.TagSpec;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
-import org.obo.datamodel.*;
-import org.obo.util.VersionNumber;
+import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
-import org.oboedit.gui.menu.OEHelpMenu;
-import org.oboedit.gui.menu.FileMenu;
-
-import org.apache.log4j.*;
 
 public class OBOEdit {
 

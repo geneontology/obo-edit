@@ -1,18 +1,11 @@
 package org.oboedit.test;
 
-import junit.framework.*;
-import java.io.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.obo.datamodel.LinkedObject;
-import org.obo.datamodel.Link;
-import org.obo.datamodel.OBOProperty;
+import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.impl.OBORestrictionImpl;
-import org.obo.test.AbstractReasonerTest;
-
-import org.apache.log4j.*;
 
 public class OBO2OBOBigReasonerTest extends OBO2OBOReasonerTest {
 

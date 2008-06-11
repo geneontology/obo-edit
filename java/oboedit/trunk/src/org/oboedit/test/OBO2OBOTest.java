@@ -1,11 +1,11 @@
 package org.oboedit.test;
 
-import junit.framework.*;
-import java.io.*;
+import java.io.File;
 
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOSession;
-
-import org.apache.log4j.*;
 
 public class OBO2OBOTest extends TestCase {
 

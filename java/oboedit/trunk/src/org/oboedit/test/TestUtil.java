@@ -1,9 +1,29 @@
 package org.oboedit.test;
 
-import org.bbop.dataadapter.*;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.*;
-import org.obo.dataadapter.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+
+import javax.swing.tree.TreePath;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.apache.log4j.Logger;
+import org.bbop.dataadapter.DataAdapterException;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.Namespace;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryItem;
 import org.obo.history.HistoryList;
@@ -11,13 +31,6 @@ import org.obo.history.OperationModel;
 import org.obo.history.OperationWarning;
 import org.obo.util.TermUtil;
 import org.oboedit.util.PathUtil;
-
-import junit.framework.*;
-import java.io.*;
-import java.util.Iterator;
-import javax.swing.tree.TreePath;
-
-import org.apache.log4j.*;
 
 public class TestUtil extends TestCase {
 

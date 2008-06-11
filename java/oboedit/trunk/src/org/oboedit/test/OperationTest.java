@@ -1,8 +1,12 @@
 package org.oboedit.test;
 
-import junit.framework.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import java.util.*;
+import junit.framework.TestCase;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;

@@ -1,17 +1,17 @@
 package org.oboedit.test;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
+import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryList;
-
-import junit.framework.*;
-
-import org.apache.log4j.*;
 
 public class SimpleOBORoundtripTest extends TestCase {
 

@@ -1,16 +1,40 @@
 package org.oboedit.launcher;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.bbop.dataadapter.*;
-import org.bbop.util.*;
-import org.obo.dataadapter.*;
-import org.obo.datamodel.*;
-import org.obo.datamodel.impl.*;
-import org.obo.history.*;
+import org.apache.log4j.Logger;
+import org.obo.dataadapter.GOFlatFileAdapter;
+import org.obo.dataadapter.OBOAdapter;
+import org.obo.dataadapter.OBOFileAdapter;
+import org.obo.datamodel.Dbxref;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.Link;
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.OBOObject;
+import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBOSession;
+import org.obo.datamodel.ObsoletableObject;
+import org.obo.datamodel.impl.DbxrefImpl;
+import org.obo.datamodel.impl.DefaultOperationModel;
+import org.obo.history.AddDbxrefHistoryItem;
+import org.obo.history.CreateLinkHistoryItem;
+import org.obo.history.CreateObjectHistoryItem;
+import org.obo.history.DefinitionChangeHistoryItem;
+import org.obo.history.DeleteLinkHistoryItem;
+import org.obo.history.DestroyObjectHistoryItem;
+import org.obo.history.HistoryItem;
+import org.obo.history.NameChangeHistoryItem;
+import org.obo.history.ObsoleteObjectHistoryItem;
+import org.obo.history.OperationWarning;
+import org.obo.history.StringRelationship;
+import org.obo.history.TermMacroHistoryItem;
 import org.obo.util.TermUtil;
-
-import org.apache.log4j.*;
 
 public class OBO2Flat {
 
