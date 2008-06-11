@@ -684,7 +684,7 @@ public class IDWDriver implements LayoutDriver {
 		if (c.getConfigurationPanel() != null) {
 			v.getCustomTitleBarComponents().add(configButton);
 			// Also add to tab in case theme is not using titlebar style
-		    v.getCustomTabComponents().add(configButton);
+			v.getCustomTabComponents().add(configButton);
 		}
 		if (factory.getHelpTopicID() != null) {
 			try {
@@ -1035,7 +1035,7 @@ public class IDWDriver implements LayoutDriver {
 		ViewTitleBar titleBar = SwingUtil.getDescendantOfType(v,
 				ViewTitleBar.class);
 		if (titleBar == null) {
-		    logger.info("setComponentTitlebarTooltip: can't get title bar for " + label);
+//		    logger.info("setComponentTitlebarTooltip: can't get title bar for " + label);
 		    return;
 		}
 		TabWindow tabWindow = (TabWindow) SwingUtilities.getAncestorOfClass(
