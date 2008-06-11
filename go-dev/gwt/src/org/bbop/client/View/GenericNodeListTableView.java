@@ -38,7 +38,7 @@ public class GenericNodeListTableView {
 	private Map columnLabelMap = new HashMap();
 
 	/**
-	 * @gwt.typeArgs <java.langString>
+	 * @gwt.typeArgs <java.lang.String>
 	 */
 	private List columnHeadings = new ArrayList();
 
