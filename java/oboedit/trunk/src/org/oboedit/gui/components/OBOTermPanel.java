@@ -399,6 +399,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(
 				getRootAlgorithm(), getLinkDatabase());
 		setSelectionPaths(paths);
+		repaint(); // in order to change background color
 	}
 
 	@Override
@@ -732,10 +733,16 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	@Override
 	public Color getBackground() {
-		if (lockedPath != null)
-			return lockGray;
-		else
+		// Locking is not currently working.
+		// Using background color to indicate global vs. local selection mode.
+//		if (lockedPath != null)
+//			return lockGray;
+//		else
+//			return Color.white;
+		if (isLive())
 			return Color.white;
+		else
+			return lockGray;
 	}
 
 	@Override
