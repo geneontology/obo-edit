@@ -1,6 +1,6 @@
 Changes in 2.000-b40:
-- Fixed bug 1887110:
-The option to add relationships, move, etc. by right-clicking the target
+- Fixed command-click bug (1887110):
+The option to add relationships, move, etc. by [command]-clicking the target
 just doesn't work. I select one term, and when I select a second term to be
 the target, I get the same menu as when I right-click a single term -- no
 options to add parent, add child, move or merge. It also looks as though
@@ -9,3 +9,13 @@ The problem was that if you use command-click (on a one-button mouse) to
 simulate right-click, java.swing.SwingUtilities.isLeftMouseButton returns true
 (and so does java.swing.SwingUtilities.isRightMouseButton), which resulted in
 the wrong behavior.
+- Got rid of the "Garbage" tabs that were showing up if you had search results
+in your layout when you last quit.
+- Made Term Image Display Panel a real OBO-Edit component rather than a
+plug-in.  The user doesn't have to do anything to install it.
+    - Term Image Display Panel now clears if you select a term that doesn't have
+    an image associated with it.
+    - Included some sample term images in jar.  These are installed in the images
+    directory in your oboedit configuration directory, if you don't yet have one.
+    - Ask people for other term images.  Eventually, should have a stable URL
+    from which term images can be loaded.
