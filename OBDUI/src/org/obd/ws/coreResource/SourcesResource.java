@@ -5,8 +5,10 @@ package org.obd.ws.coreResource;
 
 import java.util.Collection;
 
+import org.obd.model.Graph;
 import org.obd.model.Node;
 import org.obd.model.bridge.OBDJSONBridge;
+import org.obd.model.bridge.OBDXMLBridge;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -70,7 +72,12 @@ public class SourcesResource extends OBDResource {
     
         if (format.equals("json")) {
             result = new StringRepresentation(OBDJSONBridge.nodesToJSON(sources).toString());
+        } else if (format.equals("obdxml")){
+        	Graph g = new Graph();
+        	g.setNodes(sources);
+        	result = new StringRepresentation(OBDXMLBridge.toXML(g).toString());
         }
+        
         else {
           	// Creates a text representation
         	StringBuilder sb = new StringBuilder();
