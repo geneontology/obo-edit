@@ -75,7 +75,7 @@ public class SourcesResource extends OBDResource {
         } else if (format.equals("obdxml")){
         	Graph g = new Graph();
         	g.setNodes(sources);
-        	result = new StringRepresentation(OBDXMLBridge.toXML(g).toString());
+        	result = new StringRepresentation(OBDXMLBridge.toXML(g), MediaType.TEXT_XML);
         }
         
         else {
