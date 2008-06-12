@@ -16,7 +16,7 @@ public class IntersectionUsingSubRelationsTest extends AbstractReasonerTest {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(IntersectionUsingSubRelationsTest.class);
 
-	protected IntersectionUsingSubRelationsTest(String name) {
+	public IntersectionUsingSubRelationsTest(String name) {
 		super(name);
 	}
 

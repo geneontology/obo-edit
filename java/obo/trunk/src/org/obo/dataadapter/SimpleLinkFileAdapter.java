@@ -199,6 +199,12 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 						stream.print(TermUtil.isIntersection(link) ? "intersection" : "link");
 						stream.print("\t");
 						stream.print(ReasonerUtil.isRedundant(fullReasoner, link) ? "redundant" : "");
+						if (ioprofile.isIncludeExplanations()) {
+							stream.print("\t");
+							stream.print(fullReasoner.getExplanations(link));
+							stream.print(ReasonerUtil.isRedundant(fullReasoner, link) ? "redundant" : "");
+							
+						}
 						stream.print("\n");
 					}
 				}
