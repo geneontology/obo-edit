@@ -306,7 +306,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		IDWDriver driver = (IDWDriver) super.createLayoutDriver();
 
 		driver.addViewListener(new ViewListener() {
-			// Note: if any of these icons is missing, it causes a weird exception later.
+			// Note: if any of these icons is missing from the jar, it causes a weird exception later.
+			// Should handle that better (but non-trivial, because the image loading happens in a
+			// separate thread).
 			protected Icon globeIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_globe_icon.gif"));
 
@@ -458,8 +460,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			public void viewDestroyed(View v, GUIComponent c) {
 				for (JComponent bc : compMap.get(c)) {
 					v.getCustomTitleBarComponents().remove(bc);
-					// Also remove from tab in case theme is not using titlebar style
-					v.getCustomTabComponents().add(bc);
+					// Also remove from tab
+					v.getCustomTabComponents().remove(bc);
 				}
 				compMap.remove(c);
 			}
