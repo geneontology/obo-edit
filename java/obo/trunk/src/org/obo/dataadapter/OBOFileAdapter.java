@@ -68,6 +68,9 @@ public class OBOFileAdapter implements OBOAdapter {
 		protected String impliedType = "Save for presentation";
 		
 		protected SemanticParser semanticParser;
+		
+		protected boolean includeExplanations = false;
+
 
 		public OBOAdapterConfiguration() {
 		}
@@ -131,6 +134,22 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setSemanticParser(SemanticParser semanticParser) {
 			this.semanticParser = semanticParser;
 		}
+
+		/**
+		 * @return  - true if the adapter is requested to report reasoner explanations for implied links
+		 */
+		public boolean isIncludeExplanations() {
+			return includeExplanations;
+		}
+
+		/**
+		 * @param includeExplanations - true if the adapter is requested to report reasoner explanations for implied links
+		 */
+		public void setIncludeExplanations(boolean includeExplanations) {
+			this.includeExplanations = includeExplanations;
+		}
+		
+		
 		
 	}
 

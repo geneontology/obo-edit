@@ -1,5 +1,6 @@
 package org.obo.test;
 
+import org.apache.log4j.Logger;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
@@ -15,6 +16,11 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 
 	protected ReasonedLinkDatabase reasonedDB;
 	protected LinkDatabase trimmedDB;
+	
+	
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractReasonerTest.class);
+
 	
 	protected LinkDatabase getLinkDatabase() {
 		return reasonedDB;
