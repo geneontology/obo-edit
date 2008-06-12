@@ -658,43 +658,48 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			final String text = path.getLastValue().toString();
 			IdentifiedObject currentObject = path.getObject();
 
-			StringWordTokenizer tokenizer = new StringWordTokenizer(text,
-					wordFinder);
-			String last = null;
-			int lastPos = -1;
-			while (tokenizer.hasMoreWords()) {
-				final String word = tokenizer.nextWord();
-				int start = tokenizer.getCurrentWordPosition();
-				if (last != null) {
-					if (doRepeatedWordCheck(condition)
-							&& word.equalsIgnoreCase(last)
-							&& !isRepeatAllowed(word)) {
-						QuickFix fixAction = new AbstractImmediateQuickFix(
+			if (doRepeatedWordCheck(condition)) {
+				StringWordTokenizer tokenizer = new StringWordTokenizer(text,
+											wordFinder);
+				String last = null;
+				int lastPos = -1;
+				while (tokenizer.hasMoreWords()) {
+					final String word = tokenizer.nextWord();
+					int start = tokenizer.getCurrentWordPosition();
+					if (last != null) {
+						if (word.equalsIgnoreCase(last)
+						    && !isRepeatAllowed(word)) {
+							// ! Should also check whether there is punctuation between the repeated words, e.g.
+							// "development. Development".
+							QuickFix fixAction = new AbstractImmediateQuickFix(
 								"Add \"" + word
-										+ "\" to legally repeatable words") {
-							public void run() {
-								getAllowedRepeats().add(word);
-								flushWordSets();
-							}
-						};
-						Collection<QuickFix> fixes = new LinkedList<QuickFix>();
-						fixes.add(fixAction);
-						addWarning(out, new TextCheckWarning(getWarningLabel(
-								path, condition)
-								+ " contains the repeated "
-								+ "word \""
-								+ word
-								+ "\".", false, this, lastPos, start
-								+ word.length(), path, fixes,
-								"text:repeated_word"));
+								+ "\" to legally repeatable words") {
+									public void run() {
+										getAllowedRepeats().add(word);
+										flushWordSets();
+									}
+								};
+							Collection<QuickFix> fixes = new LinkedList<QuickFix>();
+							fixes.add(fixAction);
+							addWarning(out, new TextCheckWarning(getWarningLabel(
+												     path, condition)
+											     + " contains the repeated "
+											     + "word \""
+											     + word
+											     + "\".",
+//												     + " start = " + start + ", lastPos = " + lastPos, // DEL
+											     false, this, lastPos, start
+											     + word.length(), path, fixes,
+											     "text:repeated_word"));
+						}
 					}
-
+					last = word;
+					lastPos = start;
 				}
-				last = word;
-				lastPos = start;
 			}
+			// Why not do this check while looking for repeated words?
 			if (doSpellCheck(condition)) {
-				tokenizer = new StringWordTokenizer(text, wordFinder);
+				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
 				SpellCheckListener listener = new SpellCheckListener() {
 
 					public void spellingError(final SpellCheckEvent arg0) {
