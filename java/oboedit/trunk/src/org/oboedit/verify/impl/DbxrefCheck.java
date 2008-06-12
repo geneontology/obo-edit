@@ -553,17 +553,17 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 							.getDatabase())) {
 				Collection<QuickFix> fixes = new ArrayList<QuickFix>();
 				fixes.add(new DefaultHistoryQuickFix(
-						"Remove non-uri characters", getNonURIReplaceItem(
+						"Remove non-URI characters", getNonURIReplaceItem(
 								field, ref, '\0')));
 				fixes.add(new DefaultHistoryQuickFix(
-						"Replace non-uri characters with underscores",
+						"Replace non-URI characters with underscores",
 						getNonURIReplaceItem(field, ref, '_')));
 				fixes.add(new DefaultHistoryQuickFix(
-						"Replace non-uri characters with dashes",
+						"Replace non-URI characters with dashes",
 						getNonURIReplaceItem(field, ref, '-')));
 				CheckWarning warning = new CheckWarning(getWarningHeader(title,
 						index, field.getObject())
-						+ " contains non-URI characters.", false, this, field,
+						+ " contains non-URI characters (such as >).", false, this, field,
 						fixes);
 				out.add(warning);
 			}
