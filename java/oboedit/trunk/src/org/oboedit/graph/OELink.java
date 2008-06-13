@@ -71,7 +71,8 @@ public class OELink extends PCNode implements Morphable {
 
 	protected TypeColorManager colorManager;
 
-	protected float arrowheadHeight = 24f;
+//	protected float arrowheadHeight = 24f;
+	protected float arrowheadHeight = 14f;
 
 	protected float arrowheadWidth = 12f;
 
@@ -111,7 +112,8 @@ public class OELink extends PCNode implements Morphable {
 
 		}
 
-		setLineWeight(3 * weight, type, typeColor);
+//		setLineWeight(3 * weight, type, typeColor);
+		setLineWeight(2 * weight, type, typeColor);
 
 		PNode iconPanel = createIconPanel();
 		PNode arrowhead = createArrowhead();
@@ -159,8 +161,8 @@ public class OELink extends PCNode implements Morphable {
 				.getIconForRelationshipType(getLink().getType()));
 		provider.setNamedChild(KEY_ICON, iconPanel, icon);
 //		iconPanel.addChild(icon);
-		icon.centerFullBoundsOnPoint(iconPanel.getWidth() / 2, iconPanel
-				.getHeight() / 2);
+		icon.centerFullBoundsOnPoint(iconPanel.getWidth() / 2, 
+					     iconPanel.getHeight() / 2);
 
 		double zoom = Math.min(ICON_PANEL_WIDTH - ICON_PANEL_MARGIN / 2,
 				ICON_PANEL_HEIGHT - ICON_PANEL_MARGIN / 2)
@@ -181,8 +183,12 @@ public class OELink extends PCNode implements Morphable {
 		float[] dashArr = null;
 		if (type == LineType.DASHED_LINE) {
 			dashArr = new float[2];
-			dashArr[0] = 1;
-			dashArr[1] = 10;
+//			dashArr[0] = 1;
+//			dashArr[1] = 10;
+			dashArr[0] = 2;
+			dashArr[1] = 4;
+			// Interesting note:  if you try to assign values to dashArr[2] and [3],
+			// the Graph Editor spins forever when trying to draw!
 		}
 		if (type == LineType.ZIGZAG_LINE) {
 			stroke = new ZigZagStroke(new BasicStroke(lineWeight,
