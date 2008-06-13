@@ -35,12 +35,15 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 	/**
 	 * Number of passes up and down the levels to attempt to optimise node
-	 * positions
+	 * positions.
+	 * 6/2008: I tried changing this and it didn't seem to make a big difference
+	 * in layout or in running time.  Need to experiment more.
 	 */
 	public final int reorderIterations = 10;
 
 	/** Minimum gap between levels */
-	public final int minLevelGap = 20; // originally 10
+//	public final int minLevelGap = 20;
+	public final int minLevelGap = 30; // originally 20
 
 	/** Levels may be split if they have more than this number of nodes */
 	public final int maxLevelSize = 100;
@@ -375,7 +378,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	public Collection<NodeObj> getParents(NodeObj child) {
 		Collection<NodeObj> out = new LinkedList<NodeObj>();
 		for (DummyEdge edge : dummyEdges) {
-			if (edge.getLayoutChild().equals(child)) {
+			if (edge.getLayoutChild()!= null && edge.getLayoutChild().equals(child)) {
 				out.add(edge.getLayoutParent());
 			}
 		}
@@ -479,8 +482,13 @@ public class HierarchicalGraphLayout implements GraphLayout {
 				offset.setLocation(multiplier * n.getLevel().location, n
 						.getLocation());
 
-			offset.setLocation(offset.getX() - n.getWidth() / 2, offset.getY()
-					- n.getHeight() / 2);
+			offset.setLocation(offset.getX() - n.getWidth() / 2, 
+//					   offset.getY() - n.getHeight() / 2);
+					   // Put the icon box a bit lower on its link.
+					   // Problem:  what if subtracting 5 results in a number below 0??
+					   // I don't want to put a min or an if here because that could increase
+					   // the running time.
+					   offset.getY() - n.getHeight() / 2 - 5);
 			Rectangle r = new Rectangle((int) offset.getX(), (int) offset
 					.getY(), n.getWidth(), n.getHeight());
 
@@ -496,6 +504,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 				NodeObj parent = edge.getLayoutParent();
 				NodeObj child = edge.getLayoutChild();
+				if (child == null)
+				    continue;
 
 				int parentLocation = parent.getLocation();
 				int childLocation = child.getLocation();
@@ -594,7 +604,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 	private void rationalise(DummyEdge e) {
 		int parentLevel = e.getLayoutParent().getLevel().levelNumber;
-		int childLevel = e.getLayoutChild().getLevel().levelNumber;
+		int childLevel = (e.getLayoutChild() == null) ? 0 : e.getLayoutChild().getLevel().levelNumber;
 
 		if (parentLevel < childLevel - 1) {
 			// logger.info("Rationalise "+parentLevel+" "+childLevel);
@@ -800,6 +810,13 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		}
 
 		public int hashCode() {
+//		    if (layoutChild == null && layoutParent == null)
+//			return 0; // ?
+//		    else if (layoutChild == null)
+//			return 31 * layoutParent.hashCode();
+//		    else if (layoutParent == null) 
+//			return 31 * layoutChild.hashCode();
+//		    else
 			return 31 * layoutChild.hashCode() + layoutParent.hashCode();
 		}
 
