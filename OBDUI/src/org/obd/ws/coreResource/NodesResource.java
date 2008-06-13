@@ -12,6 +12,7 @@ import org.obd.model.Graph;
 import org.obd.model.Node;
 import org.obd.model.Statement;
 import org.obd.model.bridge.OBDJSONBridge;
+import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
@@ -76,6 +77,8 @@ public class NodesResource extends NodeResource {
     	}
 
     	Graph g = new Graph();
+    	
+    	
     	g.setNodes(this.nodes);
     	if (format.equals("json")) {
     		result = new StringRepresentation(OBDJSONBridge.nodesToJSON(this.nodes).toString());
@@ -85,6 +88,9 @@ public class NodesResource extends NodeResource {
     	}  	else if (format.equals("owl")) {
     		result = new StringRepresentation(OWLBridge.toOWLString(g));
     		return result;
+    	}	else if (format.equals("obdxml")){
+    	    result = new StringRepresentation(OBDXMLBridge.toXML(g),MediaType.TEXT_XML);    
+    	    return result;
     	} else if (format.equals("html")){
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());

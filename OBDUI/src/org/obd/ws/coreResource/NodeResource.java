@@ -138,13 +138,13 @@ public class NodeResource extends OBDResource {
     	}
     	else if (format.equals("owl")) {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
+    		
     		return result;
     	} else if (format.equals("obdxml")){
     		if (node==null){
-    			Graph g = new Graph();
-    			result = new StringRepresentation(OBDXMLBridge.toXML(g));
+    			return null;
     		} else {
-    			result = new StringRepresentation(OBDXMLBridge.toXML(node));
+    			result = new StringRepresentation(OBDXMLBridge.toXML(node),MediaType.TEXT_XML);
     		}
     		return result;
     	}
