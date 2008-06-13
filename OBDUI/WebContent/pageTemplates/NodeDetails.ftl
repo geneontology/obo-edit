@@ -30,7 +30,7 @@
 						<br/>
 						<@nodeDetailsTable/>
 					<#else>
-						<h2>Node ${node.id} Not Found</h2>
+						<h2>Node ${id} Not Found</h2>
 					</#if>
 				</td>
 			</tr>

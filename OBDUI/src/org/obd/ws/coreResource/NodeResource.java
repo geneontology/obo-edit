@@ -140,7 +140,12 @@ public class NodeResource extends OBDResource {
     		result = new StringRepresentation(OWLBridge.toOWLString(node));
     		return result;
     	} else if (format.equals("obdxml")){
-    		result = new StringRepresentation(OBDXMLBridge.toXML(node));
+    		if (node==null){
+    			Graph g = new Graph();
+    			result = new StringRepresentation(OBDXMLBridge.toXML(g));
+    		} else {
+    			result = new StringRepresentation(OBDXMLBridge.toXML(node));
+    		}
     		return result;
     	}
     	else if (format.equals("html")||(format.equals("bioPortal"))){
@@ -149,6 +154,7 @@ public class NodeResource extends OBDResource {
     		resourceMap.put("contextName", this.getContextName());
     		resourceMap.put("dataSource", this.dataSource);
     		resourceMap.put("node",this.node);
+    		resourceMap.put("id", this.nodeString);
     		resourceMap.put("encodedId", Reference.encode(this.nodeString));
     		
     		try {
