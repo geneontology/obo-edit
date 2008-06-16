@@ -7,8 +7,11 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -50,6 +53,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
+import org.oboedit.gui.components.OntologyEditorConfigEditor;
 import org.oboedit.gui.components.ConfigurableTextComponent.InfoConfig;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
@@ -60,9 +64,10 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphvizCanvas.class);
+
+	protected static final String TERM_TEXT_COLOR = "Term text color";
 	protected static final String BACKGROUND_COLOR = "Background color";
 	protected static final String TERM_BACKGROUND_COLOR = "Term background color";
-	protected static final String TERM_TEXT_COLOR = "Term text color";
 	protected static final String TERM_STROKE_COLOR = "Term stroke color";
 	protected static final String TYPE_STROKE_COLOR = "Type stroke color";
 	protected static final String TYPE_BACKGROUND_COLOR = "Type background color";
@@ -172,11 +177,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	public ComponentConfiguration getConfiguration() {
 		return new GraphvizViewerComponentConfigurationNew();
 	}
-
+	
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
 		return new GraphvizConfigurationPanelNew(this);
 	}
+	
+	
 
 	public void init() {
 		linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
@@ -416,19 +423,33 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ configuration.getViewerFormat());
 				File textFile = File.createTempFile("graphtext", ".txt");
 
+				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
 				outputFile(textFile);
-				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T"
-								+ configuration.getViewerFormat() + " -o "
-								+ imageFile.getPath() + " "
-								+ textFile.getPath());
+				
+				
+				//This is the section to remove disjoints from the text file.
+				//It would be better as a separate method but I cannot get
+				//this method to access the newly generated text file if
+				// it is made in the other method. The method skeleton and method call are 
+				//left intact.
+				removeDisjoints(textFile, noDisjointTextFile);
+				
+				
+							Process p = Runtime.getRuntime().exec(
+				configuration.getDotPath() + " -T"
+				+ configuration.getViewerFormat() + " -o "
+				+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
+	
 				// logger.info(configuration.getDotPath() + " -T"
 				// + configuration.getViewerFormat() + " -o "
 				// + imageFile.getPath() + " " + textFile.getPath());
+
 				p.waitFor();
+				
 				p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -Tcmapx "
-								+ textFile.getPath());
+				configuration.getDotPath() + " -Tcmapx "
+				+ noDisjointTextFile.getPath());
+
 				// logger.info(configuration.getDotPath() + " -Tcmapx "
 				// + textFile.getPath());
 				StringBuffer buffer = new StringBuffer();
@@ -469,6 +490,39 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				imageLabel.setText(failureHTML);
 				ex.printStackTrace();
 			}
+	}
+
+	/*
+	 * Method to remove lines including the string 'disjoint' from
+	 * the text file created by graphviz, before the file is converted to an
+	 * image file. 
+	 */
+	public void removeDisjoints(File textFile, File noDisjointTextFile) {
+		try
+		{
+			BufferedReader textFileBufferedReader = new BufferedReader(new FileReader(textFile));
+			String graphvizTextFileLine = new String();
+			String text_to_be_deleted="isjoint";
+			
+			PrintWriter noDisjointPrintWriter = new PrintWriter(new FileOutputStream(noDisjointTextFile));
+
+			while( (graphvizTextFileLine=textFileBufferedReader.readLine())!=null )
+			{
+				//System.out.println(graphvizTextFileLine);
+				if(graphvizTextFileLine.contains(text_to_be_deleted))
+				{//This is working. Only disjoint lines print. 
+					System.out.println(graphvizTextFileLine); }
+				else
+				{
+					//The file is created but empty so this must be the problem.
+					//print statements do not print to the file either, though the file is made.
+					noDisjointPrintWriter.println(graphvizTextFileLine);
+			
+				}
+			}
+			noDisjointPrintWriter.close();
+		}
+		catch(Exception e){e.printStackTrace();}
 	}
 
 	protected void setDoFiltering(boolean doFiltering) {

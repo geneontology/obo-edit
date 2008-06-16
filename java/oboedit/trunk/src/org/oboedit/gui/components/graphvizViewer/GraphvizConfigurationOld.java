@@ -44,8 +44,9 @@ public class GraphvizConfigurationOld implements ComponentConfiguration {
 	protected Font labelFont = new Font("Arial", 0, 18);
 
 	protected String viewerFormat = "jpg";
+	
 	protected String dotPath = "/" + "dot";
-
+	
 	protected boolean doFiltering = false;
 
 	public GraphvizConfigurationOld() {
@@ -66,7 +67,8 @@ public class GraphvizConfigurationOld implements ComponentConfiguration {
 
 
 	public String getDotPath() {
-		return dotPath;
+	return dotPath;
+	
 	}
 
 	public boolean getFlipOver() {
