@@ -33,7 +33,8 @@ public class GOAnnotationFileTest extends AbstractAnnotationTest {
 	
 	@Override
 	public Collection<String> getFilesToLoad() {
-		String[] files={"gene_assoc.test"};
+		//String[] files={"gene_assoc.test"};
+		String[] files={"gene_association.fb"};
 		return Arrays.asList(files);
 	}
 

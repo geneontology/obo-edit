@@ -113,11 +113,12 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 					LineNumberReader lnr = 
 						new LineNumberReader(new FileReader(fp));
 					for (String line=lnr.readLine(); line != null; line = lnr.readLine()) {
+						if (line.startsWith("!"))
+							continue;
 
 						logger.info("line= "+line);
-						Pattern p = Pattern.compile("\t");
 						//parse based on tab...will be delimiter in future
-						String[] colvals1 = p.split(line);
+						String[] colvals1 = line.split("\t");
 						String[] colvals = new String[16];
 						for (int i=0; i<colvals1.length; i++) {
 							colvals[i]=colvals1[i];
@@ -300,7 +301,7 @@ public class GOStyleAnnotationFileAdapter implements OBOAdapter {
 	}
 
 	protected void parseReferenceField(Annotation ann, String refField) {
-		for(String s : splitOn(refField,"\\|")) {
+		for(String s : refField.split("\\|")) {
 			ann.addSource(s);
 		}
 	}

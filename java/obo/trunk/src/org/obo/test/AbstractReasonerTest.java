@@ -75,6 +75,15 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 		//logger.info(path+" pathlen="+path.size());
 	}
 	
+	public void testForNoIsA(String childID, String parentID)  {
+		LinkedObject child = (LinkedObject) session.getObject(childID);
+		LinkedObject parent = (LinkedObject) session.getObject(parentID);
+		logger.info(reasonedDB+" testing "+child+" - "+parent);
+		assertTrue(reasonedDB.hasRelationship(child, OBOProperty.IS_A, parent) == null);
+		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
+		//logger.info(path+" pathlen="+path.size());
+	}
+	
 	public void testForIsAInTrimmed(String childID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);

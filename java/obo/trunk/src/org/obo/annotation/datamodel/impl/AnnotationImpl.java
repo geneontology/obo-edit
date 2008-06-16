@@ -298,9 +298,14 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	}
 	public void setAssignedBy(LinkedObject assignedBy) {
 		for (Link link : getParents()) {
-			if (link.getType().equals(AnnotationOntology.ASSIGNED_BY_REL())) {
-				removeParent(link);
-				break;
+			if (link.getType() == null) {
+				
+			}
+			else {
+				if (link.getType().equals(AnnotationOntology.ASSIGNED_BY_REL())) {
+					removeParent(link);
+					break;
+				}
 			}
 		}
 		if (assignedBy != null) {
