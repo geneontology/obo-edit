@@ -75,8 +75,9 @@
 		<resourceClass>org.obd.ws.coreResource.StatementsResource</resourceClass>
 		<path>/{dataSource}/{format}/node/{id}/statements</path>
 		<path>/{dataSource}/{format}/node/{id}/statements/</path>
-		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}</path>
-		<path>/{dataSource}/{format}/node/{id}/statements/{aspect}/{relation}</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/{statementType}</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/{statementType}/{aspect}</path>
+		<path>/{dataSource}/{format}/node/{id}/statements/{statementType}/{aspect}/{relation}</path>
 	</resourcePathMap>
 	
 	<resourcePathMap>
@@ -106,12 +107,16 @@
 	</resourcePathMap>
 	
 	
-	
+	<resourcePathMap>
+		<resourceClass>org.geneontology.web.NodeSearchResource</resourceClass>
+		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}</path>
+	</resourcePathMap>
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.StatementsBySearchResource</resourceClass>
-		<path>/{dataSource}/{format}/search/{operator}/{term}/statements</path>
-		<path>/{dataSource}/{format}/search/{operator}/{term}/statements/{aspect}</path>
+		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}/statements</path>
+		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}/statements/{aspect}</path>
 	</resourcePathMap>
+	
 	
 	<!-- AMIGO Resources -->
     
@@ -121,10 +126,7 @@
 		<path></path>
 	</resourcePathMap>
 	
-	<resourcePathMap>
-		<resourceClass>org.geneontology.web.NodeSearchResource</resourceClass>
-		<path>/{dataSource}/{format}/search/{operator}/{term}</path>
-	</resourcePathMap>
+	
 	
 	<resourcePathMap>
 		<resourceClass>org.geneontology.web.NodeDetailResource</resourceClass>

@@ -15,6 +15,7 @@ import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.LinkQueryTerm;
+import org.obd.query.LiteralQueryTerm;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -32,7 +33,8 @@ public class StatementsResource extends NodeResource {
 
 	protected String relationId;
 	protected String aspect;
-
+	protected String statementType;
+	
 
 	/**
 	 * Constructor.
@@ -48,6 +50,10 @@ public class StatementsResource extends NodeResource {
 		super(context, request, response);
 		relationId = (String) request.getAttributes().get("relation");
 		aspect = (String) request.getAttributes().get("aspect");
+		this.statementType = (String) request.getAttributes().get("statementType");
+		if (this.statementType == null || this.statementType.equals("")){
+			this.statementType = "all";
+		}
 		getVariants().clear();
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 
@@ -60,55 +66,78 @@ public class StatementsResource extends NodeResource {
 		
 		Collection<Statement> stmts = new HashSet<Statement>();
 		
-			if (aspect == null || aspect.equals("")){
+		if (aspect == null || aspect.equals("")){
 			aspect = "about";
 		}
 		
-		if (aspect.equals("immediate")){
-			LinkQueryTerm lq = new LinkQueryTerm();
-			if (relationId != null){
-				lq.setRelation(relationId);
-			}
-			lq.setTarget(getNodeId());
-			lq.setInferred(false);
-			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+		if (this.statementType.equals("all") || this.statementType.equals("literal")){
 			
-			lq = new LinkQueryTerm();
-			lq.setNode(getNodeId());
-			lq.setInferred(false);
-			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-			
-		} else {
-		
-			LinkQueryTerm lq = new LinkQueryTerm();
-			
-			if (relationId != null){
-				lq.setRelation(relationId);
-			}
-			
-			if (aspect.equals("annotations")) {
-				lq = new AnnotationLinkQueryTerm(getNodeId());
+			LiteralQueryTerm lqt = new LiteralQueryTerm();	
+			if (aspect.equals("to")){
+				lqt = new LiteralQueryTerm(getNodeId());
 			} else {
-				if (aspect.equals("about") || aspect.equals("all")){
-					lq.setNode(getNodeId());
-				} else if (aspect.equals("to")) {
-					lq.setTarget(getNodeId());
-				} else if (aspect.equals("source")) {
-					lq.setSource(getNodeId());
+				lqt.setNode(getNodeId());
+			}
+			
+			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lqt));
+			if (this.aspect.equals("all")){
+				lqt = new LiteralQueryTerm(getNodeId());
+				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lqt));
+				
+			}
+			
+		}
+		
+		if (this.statementType.equals("all") || this.statementType.equals("link")){
+			if (aspect.equals("immediate")){
+				
+				LinkQueryTerm lq = new LinkQueryTerm();
+				if (relationId != null){
+					lq.setRelation(relationId);
+				}
+				
+				lq.setTarget(getNodeId());
+				lq.setInferred(false);
+				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));				
+				
+				lq = new LinkQueryTerm();
+				lq.setNode(getNodeId());
+				lq.setInferred(false);
+				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+				
+			} else {
+			
+				LinkQueryTerm lq = new LinkQueryTerm();
+				
+				if (relationId != null){
+					lq.setRelation(relationId);
+				}
+				
+				if (aspect.equals("annotations")) {
+					lq = new AnnotationLinkQueryTerm(getNodeId());
 				} else {
-					lq.setNode(getNodeId());
+					if (aspect.equals("about") || aspect.equals("all")){
+						lq.setNode(getNodeId());
+					} else if (aspect.equals("to")) {
+						lq.setTarget(getNodeId());
+					} else if (aspect.equals("source")) {
+						lq.setSource(getNodeId());
+					} else {
+						lq.setNode(getNodeId());
+					}
+				}
+				
+				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
+				
+				if (aspect.equals("all")) {
+					lq = new LinkQueryTerm();
+					lq.setRelation(relationId);
+					lq.setTarget(getNodeId());
+					stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
 				}
 			}
-			
-			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-			
-			if (aspect.equals("all")) {
-				lq = new LinkQueryTerm();
-				lq.setRelation(relationId);
-				lq.setTarget(getNodeId());
-				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-			}
 		}
+		
 		graph = new Graph(stmts);
 		if (true) {
 			String[] nids = graph.getReferencedNodeIds();

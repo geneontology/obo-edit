@@ -45,6 +45,8 @@ public class NodeSearchResource extends NodeResource {
 	protected String searchTerm;
 	protected String operatorString;
 	protected String dataSource;
+	protected String target;
+	protected String source;
 	
 	
 
@@ -75,6 +77,9 @@ public class NodeSearchResource extends NodeResource {
         this.searchTerm = Reference.decode(searchTerm);
         this.operatorString = (String) request.getAttributes().get("operator");
         this.dataSource = (String) request.getAttributes().get("dataSource");
+        this.target = (String) request.getAttributes().get("target");
+        this.source = (String) request.getAttributes().get("source");
+        
         format = (String) request.getAttributes().get("format");
         this.nodes = findNodes();
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));

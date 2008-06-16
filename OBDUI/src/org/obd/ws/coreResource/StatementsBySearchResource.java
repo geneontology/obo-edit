@@ -53,8 +53,7 @@ public class StatementsBySearchResource extends NodesBySearchResource {
     public StatementsBySearchResource(Context context, Request request, Response response) throws Exception {
         super(context, request, response);
         aspect = (String) request.getAttributes().get("aspect");
-        this.dataSource = (String) request.getAttributes().get("dataSource");
-        
+        this.dataSource = (String) request.getAttributes().get("dataSource");        
     }
 
     @Override
@@ -95,7 +94,7 @@ public class StatementsBySearchResource extends NodesBySearchResource {
     		}
 
     		resultStatements.addAll(getShard(this.dataSource).getStatementsByQuery(lq));
-
+    		
     		if (aspect.equals("all")) {
     			lq = new LinkQueryTerm();
     			lq.setInferred(false);
