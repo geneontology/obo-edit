@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -49,10 +50,20 @@ public abstract class AbstractOBOTest extends TestCase {
 
 	@Override
 	public void setUp() throws Exception {
+		//Logger logger = Logger.getLogger(AbstractOBOTest.class); 
+		Properties props = new Properties();
+		props.setProperty("log4j.rootLogger","DEBUG, A1");
+
+		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+
+		PropertyConfigurator.configure(props);
 		logger.info("Setting up: " + this);
 		ForwardChainingReasoner.checkRecache = false;
 		session = getSessionFromResources(getFilesToLoad());
 
+		
 		// SessionManager.getManager().setSession(session);
 		linkDatabase = new DefaultLinkDatabase(session);
 	}

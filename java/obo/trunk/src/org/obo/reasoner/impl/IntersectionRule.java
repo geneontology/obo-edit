@@ -16,12 +16,57 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
+/**
+ * 
+ * [xp2] For any class X & Y, if Y has a cross-product definition consisting of
+ * link elements E1, E2, ... En
+ * <p>
+ * <code>
+ * forall Ei in E :
+ *  IF (Ei is a class and X is_a Ei)
+ *     Or (Ei=<R,Z> and X R Z)
+ *  THEN X is_a Y
+ * </code>
+ * 
+ * Example:
+ * <code>
+ *  T-cell differentiation = cell differentiation THAT
+ * results_in_acquisition_of_features_of T-cell
+ * 
+ * lymphocyte differentiation =
+ * cell differentiation THAT results_in_acquisition_of_features_of lymphocyte
+ * 
+ * T-cell is_a lymphocyte 
+ * 
+ * =>
+ * 
+ * T-cell differentiation
+ * results_in_acquisition_of_features_of T-cell [xp1] lymphocyte differentiation
+ * results_in_acquisition_of_features_of lymphocyte [xp1] T-cell differentiation
+ * results_in_acquisition_of_features_of lymphocyte [propagation over is_a]
+ * T-cell differentiation is_a cell differentiation [xp1] => T-cell
+ * differentiation is_a lymphocyte differentiation [xp2]
+ * </code>
+ * 
+ * @author cjm
+ * 
+ */
 public class IntersectionRule extends AbstractReasonerRule {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(IntersectionRule.class);
 
+	/**
+	 * maps from the OBOClass which is defined to the links comprising the intersection definition.
+	 * For example:
+	 * T cell differentiation -> [ is_a differentiation, results_in_acquisition_of_features_of T-cell]
+	 */
 	protected MultiMap<LinkedObject, Link> intersectionMap;
+	
+	/**
+	 * maps from an OBOClass used in an intersection definition to the defined class. For example
+	 * T-cell -> [T-cell differentiation, T-cell proliferation]
+	 */
 	protected MultiMap<LinkedObject, LinkedObject> hintMap;
 
 	@Override
