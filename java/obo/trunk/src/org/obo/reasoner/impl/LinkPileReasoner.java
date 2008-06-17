@@ -338,6 +338,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 	}
 
 	protected void reasonRemoval(Link link, Collection<Link> seenem) {
+		logger.info("Removing link: "+link);
 		if (seenem.contains(link))
 			return;
 		else
