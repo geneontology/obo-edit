@@ -43,7 +43,7 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	@Override
 	public void commit() {
 		// TODO Auto-generated method stub
-		System.out.println("GraphvizConfigurationPanelNew: init() run.");
+		System.out.println("GraphvizConfigurationPanelNew: commit() run.");
 		
 	}
 
