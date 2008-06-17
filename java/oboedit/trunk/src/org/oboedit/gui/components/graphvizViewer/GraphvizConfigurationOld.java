@@ -65,7 +65,6 @@ public class GraphvizConfigurationOld implements ComponentConfiguration {
 	}
 
 
-
 	public String getDotPath() {
 	return dotPath;
 	
