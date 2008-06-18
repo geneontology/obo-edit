@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -138,7 +139,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			if (c instanceof ListEditor)
 				editor = (ListEditor) c;
 		}
-		
+
 
 
 		public void store(Object o) {
@@ -224,9 +225,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			return ext.substring(1, ext.length());
 		}
 	}
-	
 
-	
+
+
 	public static class GraphvizConfiguration implements ComponentConfiguration {
 		protected Map colorMap = new HashMap();
 		protected Color bgcolor = Color.black;
@@ -813,7 +814,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	public String getName() {
-	    return "GraphViz Viewer";  // was "Graph Viewer"
+		return "GraphViz Viewer";  // was "Graph Viewer"
 	}
 
 	protected String getOptions(Link tr) {
@@ -931,11 +932,11 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedOnly(Set set) {
 		set.addAll(SelectionManager.getManager().getSelection().getTerms());
-//This is not working because the getTerms class was changed in the 
+//		This is not working because the getTerms class was changed in the 
 		//move to oboedit 2 and this needs to accommodate this
 		//in the same way that populateSelectedToRoot below accomodates it. 
 		//getTerms returns a set of terms of type linked object but set.addAll wants links.
-	
+
 	}
 
 	protected void populateSelectedToRoot(Set set) {
@@ -950,7 +951,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				LinkedObject t = tr.getChild();
 				populateSelectedToRoot(set, t, lookedAt);
 
-			//the two lines below were added to make oboedit 2 work. 
+				//the two lines below were added to make oboedit 2 work. 
 				//they change it to expect terms instead of links. 
 			} else if (o instanceof LinkedObject) {
 				populateSelectedToRoot(set, (LinkedObject) o, lookedAt);
@@ -988,20 +989,31 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ configuration.getViewerFormat());
 				File textFile = File.createTempFile("graphtext", ".txt");
 
+				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
 				outputFile(textFile);
+
+
+				//This is the section to remove disjoints from the text file.
+				//It would be better as a separate method but I cannot get
+				//this method to access the newly generated text file if
+				// it is made in the other method. The method skeleton and method call are 
+				//left intact.
+				removeDisjoints(textFile, noDisjointTextFile);
+
+
 				Process p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -T"
 						+ configuration.getViewerFormat() + " -o "
-						+ imageFile.getPath() + " " + textFile.getPath());
+						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 				//logger.info(configuration.getDotPath() + " -T"
-					//	+ configuration.getViewerFormat() + " -o "
-						//+ imageFile.getPath() + " " + textFile.getPath());
+				//	+ configuration.getViewerFormat() + " -o "
+				//+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 				p.waitFor();
 				p = Runtime.getRuntime().exec(
 						configuration.getDotPath() + " -Tcmapx "
-						+ textFile.getPath());
+						+ noDisjointTextFile.getPath());
 				//logger.info(configuration.getDotPath() + " -Tcmapx "
-					//	+ textFile.getPath());
+				//	+ noDisjointTextFile.getPath());
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
 				buffer.append("<head>\n");
@@ -1026,7 +1038,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 //				imagePanel.setBackground(bgcolor);
 //				htmlPane.setBackground(bgcolor);
 				htmlPane.setText(buffer.toString());
-				
+
 				imageFile.deleteOnExit();
 				textFile.deleteOnExit();
 			} catch (Exception ex) {
@@ -1051,410 +1063,446 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		reloadImage();
 	}
 
-	protected void setDoFiltering(boolean doFiltering) {
-		configuration.setDoFiltering(doFiltering);
-		primaryFiltersCheckbox.setSelected(doFiltering);
-		if (!doFiltering)
-			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
-		else
-			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();;
-			reloadImage();
-	}
+	/**
+	 * Removes lines including the string 'isjoint' from
+	 * the text file that graphviz parses when it comes to generate the 
+	 * image file. 
+	 * 
+	 * @param textFile the textfile that is generated containing the list of relationships
+	 * that can then be parsed by graphviz to make the graph image. 
+	 * @param noDisjointTextFile a text file identical to <code>textfile</code>
+	 *  except for the removal of the lines containing the text 'isjoint'. 
+	 *  This has the effect of removing all disjoint relationships. 
+	 *  
+	 */
+	public void removeDisjoints(File textFile, File noDisjointTextFile) {
+		try
+		{
+			BufferedReader textFileBufferedReader = new BufferedReader(new FileReader(textFile));
+			String graphvizTextFileLine = new String();
+			String text_to_be_deleted="isjoint";
 
-	protected void showOptions() {
-		JPanel panel = new JPanel();
-		panel.setBackground(Preferences.defaultBackgroundColor());
-		panel.setLayout(new BorderLayout());
+			PrintWriter noDisjointPrintWriter = new PrintWriter(new FileOutputStream(noDisjointTextFile));
 
-		final FontChooser linkFontChooser = new FontChooser();
-		final FontChooser nodeFontChooser = new FontChooser();
-
-		final JButton commitButton = new JButton("Save Options");
-		final JTextField appPathField = new JTextField(configuration
-				.getDotPath());
-
-		commitButton.setBackground(Preferences.defaultButtonColor());
-		commitButton.setFont(getFont());
-
-		linkFontChooser.setFont(getFont());
-		nodeFontChooser.setFont(getFont());
-
-		linkFontChooser.setChosenFont(configuration.getLabelFont());
-		nodeFontChooser.setChosenFont(configuration.getNodeFont());
-
-		nodeShapeList.setSelectedItem(configuration.getNodeShape());
-		typeShapeList.setSelectedItem(configuration.getTypeShape());
-		obsoleteShapeList
-		.setSelectedItem(configuration.getObsoleteShape());
-
-		flipoverBox.setSelected(configuration.getFlipOver());
-		showIDsBox.setSelected(configuration.getShowIDs());
-
-		formatBox.setSelectedItem(configuration.getViewerFormat());
-		/*
-		 * JPanel nodeShapePanel = new JPanel(); nodeShapePanel.add(nodeShape);
-		 */
-		TitledBorder linkFontBorder = new TitledBorder("Relationship type font");
-		TitledBorder nodeFontBorder = new TitledBorder("Term name font");
-
-		linkFontChooser.setBorder(linkFontBorder);
-		nodeFontChooser.setBorder(nodeFontBorder);
-		linkFontChooser.setOpaque(false);
-		nodeFontChooser.setOpaque(false);
-
-		JLabel noTypeLabel = new JLabel("no type selected");
-
-		Vector data = configuration.getNamedColorList();
-		/*
-		 * Vector data = new Vector(); data.add(new NamedColor(BACKGROUND_COLOR,
-		 * bgcolor));
-		 * 
-		 * data.add(new NamedColor(TERM_BACKGROUND_COLOR, termBoxColor));
-		 * data.add(new NamedColor(TERM_TEXT_COLOR, termFontColor));
-		 * data.add(new NamedColor(TERM_STROKE_COLOR, termStrokeColor));
-		 * 
-		 * data.add(new NamedColor(TYPE_BACKGROUND_COLOR, typeBoxColor));
-		 * data.add(new NamedColor(TYPE_STROKE_COLOR, typeStrokeColor));
-		 * data.add(new NamedColor(TYPE_TEXT_COLOR, typeFontColor));
-		 * 
-		 * data.add(new NamedColor(OBSOLETE_BACKGROUND_COLOR,
-		 * obsoleteBoxColor)); data.add(new NamedColor(OBSOLETE_STROKE_COLOR,
-		 * obsoleteStrokeColor)); data.add(new NamedColor(OBSOLETE_TEXT_COLOR,
-		 * obsoleteFontColor));
-		 * 
-		 * Iterator it = controller.getHistory().getRelationshipTypes().
-		 * iterator(); while(it.hasNext()) { OBOProperty type = (OBOProperty)
-		 * it.next(); ColorPair pair; if (colorMap.containsKey(type)) pair =
-		 * (ColorPair) colorMap.get(type); else pair = (ColorPair)
-		 * defaultLabelColors.clone();
-		 * 
-		 * TypeColorPair tcp = new TypeColorPair(pair, type);
-		 * 
-		 * data.add(tcp); }
-		 */
-		final ListEditor typeColorList = new ListEditor(new ColorEditor(),
-				noTypeLabel, new Vector(), true, true, false, true, false);
-		typeColorList.setData(data);
-		typeColorList.setVectorEditable(false);
-
-		JPanel fontPanel = new JPanel();
-		fontPanel.setOpaque(false);
-		fontPanel.setLayout(new BoxLayout(fontPanel, BoxLayout.Y_AXIS));
-		fontPanel.add(linkFontChooser);
-		fontPanel.add(nodeFontChooser);
-
-		JPanel outerFontPanel = new JPanel();
-		outerFontPanel.setBackground(Preferences.defaultBackgroundColor());
-		outerFontPanel.setLayout(new BorderLayout());
-		outerFontPanel.add(fontPanel, "North");
-
-		// panel.add(typeColorList);
-
-		JPanel shapePanel = new JPanel();
-		shapePanel.setBackground(Preferences.defaultBackgroundColor());
-		shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
-
-		TitledBorder nodeBorder = new TitledBorder("Term shape");
-		TitledBorder obsoleteBorder = new TitledBorder("Obsolete shape");
-		TitledBorder typeBorder = new TitledBorder("Type shape");
-
-		nodeBorder.setTitleFont(getFont());
-		obsoleteBorder.setTitleFont(getFont());
-		typeBorder.setTitleFont(getFont());
-
-		JPanel nodeShapePanel = new JPanel();
-		nodeShapePanel.setOpaque(false);
-		nodeShapePanel.setLayout(new BorderLayout());
-		nodeShapePanel.add(nodeShapeList, "Center");
-		nodeShapeList.setBackground(Preferences.defaultButtonColor());
-		nodeShapePanel.setBorder(nodeBorder);
-
-		JPanel obsoleteShapePanel = new JPanel();
-		obsoleteShapePanel.setOpaque(false);
-		obsoleteShapePanel.setLayout(new BorderLayout());
-		obsoleteShapePanel.add(obsoleteShapeList, "Center");
-		obsoleteShapeList.setBackground(Preferences.defaultButtonColor());
-		obsoleteShapePanel.setBorder(obsoleteBorder);
-		// obsoleteShapeList.setBorder(obsoleteBorder);
-
-		JPanel typeShapePanel = new JPanel();
-		typeShapePanel.setOpaque(false);
-		typeShapePanel.setLayout(new BorderLayout());
-		typeShapePanel.add(typeShapeList, "Center");
-		typeShapeList.setBackground(Preferences.defaultButtonColor());
-		typeShapePanel.setBorder(typeBorder);
-		// typeShapeList.setBorder(typeBorder);
-
-		nodeShapeList.setFont(getFont());
-		typeShapeList.setFont(getFont());
-		obsoleteShapeList.setFont(getFont());
-
-		shapePanel.add(nodeShapePanel);
-		shapePanel.add(Box.createVerticalStrut(5));
-		shapePanel.add(obsoleteShapePanel);
-		shapePanel.add(Box.createVerticalStrut(5));
-		shapePanel.add(typeShapePanel);
-
-		JTextArea messageArea = new JTextArea(
-				"This should contain the path to the \"dot\" or "
-				+ "\"dot.exe\" file included with the GraphViz "
-				+ "software package. The package can be obtained "
-				+ "from " + "http://www.research.att.com/sw/"
-				+ "tools/graphviz/download.html", 3, 20);
-		messageArea.setEditable(false);
-		messageArea.setBorder(null);
-		messageArea.setOpaque(false);
-		messageArea.setLineWrap(true);
-		messageArea.setWrapStyleWord(true);
-
-		JButton browseButton = new JButton("Browse...");
-		browseButton.setFont(Preferences.getPreferences().getFont());
-		browseButton.setBackground(Preferences.defaultButtonColor());
-		browseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				if (chooser.showOpenDialog(GraphvizCanvas.this) == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					File macPath = new File(file, "Contents/MacOS/dot");
-					if (!file.getName().equals("dot") && file.isDirectory()
-							&& macPath.exists()) {
-						appPathField.setText(macPath.toString());
-					} else
-						appPathField.setText(file.toString());
-				}
-			}
-		});
-
-		JPanel outerShapePanel = new JPanel();
-		outerShapePanel.setBackground(Preferences.defaultBackgroundColor());
-		outerShapePanel.setLayout(new BorderLayout());
-		outerShapePanel.add(shapePanel, "North");
-
-		JLabel appLabel = new JLabel("Application path");
-		appLabel.setFont(getFont());
-
-		Box horzBox = new Box(BoxLayout.X_AXIS);
-		horzBox.add(Box.createHorizontalStrut(5));
-		horzBox.add(appPathField);
-		horzBox.add(Box.createHorizontalStrut(5));
-
-		JPanel appLine = new JPanel();
-		appLine.setLayout(new BorderLayout());
-		appLine.add(appLabel, "West");
-		appLine.add(horzBox, "Center");
-		appLine.add(browseButton, "East");
-		appLine.setOpaque(false);
-
-		flipoverBox.setOpaque(false);
-		showIDsBox.setOpaque(false);
-
-		JLabel formatLabel = new JLabel("Default display format");
-		formatLabel.setFont(getFont());
-
-		JPanel viewerFormatLine = new JPanel();
-		viewerFormatLine.setOpaque(false);
-		viewerFormatLine.setLayout(new BorderLayout());
-		viewerFormatLine.add(formatLabel, "West");
-		viewerFormatLine.add(Box.createHorizontalStrut(5));
-		viewerFormatLine.add(formatBox);
-
-		JPanel appPanel = new JPanel();
-		appPanel.setBackground(Preferences.defaultBackgroundColor());
-		appPanel.setLayout(new BoxLayout(appPanel, BoxLayout.Y_AXIS));
-		// appPanel.add(appLabel);
-		// appPanel.add(appPathField);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(viewerFormatLine);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(flipoverBox);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(showIDsBox);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(appLine);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(messageArea);
-
-		JPanel outerAppPanel = new JPanel();
-		outerAppPanel.setBackground(Preferences.defaultBackgroundColor());
-		outerAppPanel.setLayout(new BorderLayout());
-		outerAppPanel.add(appPanel, "North");
-
-		optionsPane.removeAll();
-		optionsPane.addTab("Fonts", outerFontPanel);
-		optionsPane.addTab("Colors", typeColorList);
-		optionsPane.addTab("Shapes", outerShapePanel);
-		optionsPane.addTab("Behavior", outerAppPanel);
-
-		panel.add(optionsPane, "Center");
-
-		panel.add(commitButton, "South");
-
-		final JDialog pane = new JDialog((Frame) null, true);
-		pane.setContentPane(panel);
-		commitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pane.setVisible(false);
-				configuration.setDotPath(appPathField.getText());
-				configuration
-				.setLabelFont(linkFontChooser.getChosenFont());
-				configuration.setNodeFont(nodeFontChooser.getChosenFont());
-
-				configuration.setTypeShape((String) typeShapeList
-						.getSelectedItem());
-				configuration.setNodeShape((String) nodeShapeList
-						.getSelectedItem());
-				configuration.setObsoleteShape((String) obsoleteShapeList
-						.getSelectedItem());
-
-				configuration.setFlipOver(flipoverBox.isSelected());
-				configuration.setShowIDs(showIDsBox.isSelected());
-
-				for (int i = 0; i < typeColorList.getData().size(); i++) {
-					Object o = typeColorList.getData().get(i);
-					if (o instanceof TypeColorPair) {
-						TypeColorPair tc = (TypeColorPair) o;
-						configuration.getColorMap().put(tc.getTypeID(),
-								tc.getPair());
-					} else if (o instanceof NamedColor) {
-						NamedColor nc = (NamedColor) o;
-						configuration.setNamedColor(nc.getName(), nc
-								.getColor());
+			while( (graphvizTextFileLine=textFileBufferedReader.readLine())!=null )
+			{
+				if(graphvizTextFileLine.contains(text_to_be_deleted))
+				{ }
+					else
+					{
+						noDisjointPrintWriter.println(graphvizTextFileLine);
 					}
 				}
-
-				configuration.setViewerFormat((String) formatBox
-						.getSelectedItem());
-
-				pane.dispose();
-				reloadImage();
+				noDisjointPrintWriter.close();
 			}
-		});
-		pane.pack();
-		pane.setSize(600, 400);
-		pane.show();
-	}
-
-	protected void storeImage() {
-		try {
-			JFileChooser chooser = new JFileChooser();
-			chooser.addChoosableFileFilter(new ExtensionFilter(".jpg",
-			".jpg - JPEG Format"));
-			chooser.addChoosableFileFilter(new ExtensionFilter(".png",
-			".png - PNG Format"));
-			chooser.addChoosableFileFilter(new ExtensionFilter(".ps", ".ps - "
-					+ "Postscript Format"));
-			chooser.addChoosableFileFilter(new ExtensionFilter(".dot",
-			".dot - GraphViz DOT Format"));
-			chooser.addChoosableFileFilter(new ExtensionFilter(".xdot",
-			".xdot - GraphViz extended DOT format"));
-			chooser.addChoosableFileFilter(new ExtensionFilter(".gif",
-			".gif - GIF Format"));
-
-			// Shows the dialog to the user and wait for is answer
-			int userChoice = chooser.showSaveDialog(this);
-
-			// check the user answer, is  he press  "ok" continue in the if  block
-			if (userChoice == JFileChooser.APPROVE_OPTION) {
-				File textFile = File.createTempFile("graphtext", ".txt");
-				//logger.info("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
-
-				// Creating the .dot file for graphviz
-				outputFile(textFile);
-
-				// Getting the selected file extension
-				ExtensionFilter ef = (ExtensionFilter) chooser.getFileFilter();
-
-				// Getting the file name (with the full path)
-				String outputFile = chooser.getSelectedFile().getPath();
-
-
-
-				// Adding the file extension if missing 
-				if (!outputFile.endsWith(ef.getExt())) {
-					outputFile += ef.getExt();
-				}
-
-				//logger.info(configuration.getDotPath() + " -T"
-				//		+ ef.getExtNoDot() + " -o " + outputFile + " -v "
-				//		+ textFile.getPath());
-				Process p = Runtime.getRuntime().exec(
-						configuration.getDotPath() + " -T"
-						+ ef.getExtNoDot() + " -o  " + outputFile + "  -v "
-						+ textFile.getPath());
-				//The bug has been fixed by putting escaped quotes round the output file
-				//string because the 'Documents and Settings' path in 
-				// the save instructions was being confused by the spaces and 
-				//was saving to path/Documents which doesn't exist.
-				//C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
-				//This only matters because the command is run on the cmd line.
-
-				p.waitFor();
-
-				textFile.delete();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			catch(Exception e){e.printStackTrace();}
 		}
-	}
 
-	protected void trimSet(Set set) {
-		HashSet roots = new HashSet();
-		HashSet trash = new HashSet();
-		HashSet inUse = new HashSet();
-		do {
-			Iterator it = set.iterator();
-			roots.clear();
-			trash.clear();
-			while (it.hasNext()) {
-				Link tr = (Link) it.next();
-				Iterator it2 = set.iterator();
-				boolean found = false;
-				while (it2.hasNext()) {
-					Link tr2 = (Link) it2.next();
-					if (tr.getParent() == null)
-						continue;
-					if (tr.getParent().equals(tr2.getChild())) {
-						found = true;
-						break;
+
+		protected void setDoFiltering(boolean doFiltering) {
+			configuration.setDoFiltering(doFiltering);
+			primaryFiltersCheckbox.setSelected(doFiltering);
+			if (!doFiltering)
+				linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
+			else
+				linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();;
+				reloadImage();
+		}
+
+		protected void showOptions() {
+			JPanel panel = new JPanel();
+			panel.setBackground(Preferences.defaultBackgroundColor());
+			panel.setLayout(new BorderLayout());
+
+			final FontChooser linkFontChooser = new FontChooser();
+			final FontChooser nodeFontChooser = new FontChooser();
+
+			final JButton commitButton = new JButton("Save Options");
+			final JTextField appPathField = new JTextField(configuration
+					.getDotPath());
+
+			commitButton.setBackground(Preferences.defaultButtonColor());
+			commitButton.setFont(getFont());
+
+			linkFontChooser.setFont(getFont());
+			nodeFontChooser.setFont(getFont());
+
+			linkFontChooser.setChosenFont(configuration.getLabelFont());
+			nodeFontChooser.setChosenFont(configuration.getNodeFont());
+
+			nodeShapeList.setSelectedItem(configuration.getNodeShape());
+			typeShapeList.setSelectedItem(configuration.getTypeShape());
+			obsoleteShapeList
+			.setSelectedItem(configuration.getObsoleteShape());
+
+			flipoverBox.setSelected(configuration.getFlipOver());
+			showIDsBox.setSelected(configuration.getShowIDs());
+
+			formatBox.setSelectedItem(configuration.getViewerFormat());
+			/*
+			 * JPanel nodeShapePanel = new JPanel(); nodeShapePanel.add(nodeShape);
+			 */
+			TitledBorder linkFontBorder = new TitledBorder("Relationship type font");
+			TitledBorder nodeFontBorder = new TitledBorder("Term name font");
+
+			linkFontChooser.setBorder(linkFontBorder);
+			nodeFontChooser.setBorder(nodeFontBorder);
+			linkFontChooser.setOpaque(false);
+			nodeFontChooser.setOpaque(false);
+
+			JLabel noTypeLabel = new JLabel("no type selected");
+
+			Vector data = configuration.getNamedColorList();
+			/*
+			 * Vector data = new Vector(); data.add(new NamedColor(BACKGROUND_COLOR,
+			 * bgcolor));
+			 * 
+			 * data.add(new NamedColor(TERM_BACKGROUND_COLOR, termBoxColor));
+			 * data.add(new NamedColor(TERM_TEXT_COLOR, termFontColor));
+			 * data.add(new NamedColor(TERM_STROKE_COLOR, termStrokeColor));
+			 * 
+			 * data.add(new NamedColor(TYPE_BACKGROUND_COLOR, typeBoxColor));
+			 * data.add(new NamedColor(TYPE_STROKE_COLOR, typeStrokeColor));
+			 * data.add(new NamedColor(TYPE_TEXT_COLOR, typeFontColor));
+			 * 
+			 * data.add(new NamedColor(OBSOLETE_BACKGROUND_COLOR,
+			 * obsoleteBoxColor)); data.add(new NamedColor(OBSOLETE_STROKE_COLOR,
+			 * obsoleteStrokeColor)); data.add(new NamedColor(OBSOLETE_TEXT_COLOR,
+			 * obsoleteFontColor));
+			 * 
+			 * Iterator it = controller.getHistory().getRelationshipTypes().
+			 * iterator(); while(it.hasNext()) { OBOProperty type = (OBOProperty)
+			 * it.next(); ColorPair pair; if (colorMap.containsKey(type)) pair =
+			 * (ColorPair) colorMap.get(type); else pair = (ColorPair)
+			 * defaultLabelColors.clone();
+			 * 
+			 * TypeColorPair tcp = new TypeColorPair(pair, type);
+			 * 
+			 * data.add(tcp); }
+			 */
+			final ListEditor typeColorList = new ListEditor(new ColorEditor(),
+					noTypeLabel, new Vector(), true, true, false, true, false);
+			typeColorList.setData(data);
+			typeColorList.setVectorEditable(false);
+
+			JPanel fontPanel = new JPanel();
+			fontPanel.setOpaque(false);
+			fontPanel.setLayout(new BoxLayout(fontPanel, BoxLayout.Y_AXIS));
+			fontPanel.add(linkFontChooser);
+			fontPanel.add(nodeFontChooser);
+
+			JPanel outerFontPanel = new JPanel();
+			outerFontPanel.setBackground(Preferences.defaultBackgroundColor());
+			outerFontPanel.setLayout(new BorderLayout());
+			outerFontPanel.add(fontPanel, "North");
+
+			// panel.add(typeColorList);
+
+			JPanel shapePanel = new JPanel();
+			shapePanel.setBackground(Preferences.defaultBackgroundColor());
+			shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
+
+			TitledBorder nodeBorder = new TitledBorder("Term shape");
+			TitledBorder obsoleteBorder = new TitledBorder("Obsolete shape");
+			TitledBorder typeBorder = new TitledBorder("Type shape");
+
+			nodeBorder.setTitleFont(getFont());
+			obsoleteBorder.setTitleFont(getFont());
+			typeBorder.setTitleFont(getFont());
+
+			JPanel nodeShapePanel = new JPanel();
+			nodeShapePanel.setOpaque(false);
+			nodeShapePanel.setLayout(new BorderLayout());
+			nodeShapePanel.add(nodeShapeList, "Center");
+			nodeShapeList.setBackground(Preferences.defaultButtonColor());
+			nodeShapePanel.setBorder(nodeBorder);
+
+			JPanel obsoleteShapePanel = new JPanel();
+			obsoleteShapePanel.setOpaque(false);
+			obsoleteShapePanel.setLayout(new BorderLayout());
+			obsoleteShapePanel.add(obsoleteShapeList, "Center");
+			obsoleteShapeList.setBackground(Preferences.defaultButtonColor());
+			obsoleteShapePanel.setBorder(obsoleteBorder);
+			// obsoleteShapeList.setBorder(obsoleteBorder);
+
+			JPanel typeShapePanel = new JPanel();
+			typeShapePanel.setOpaque(false);
+			typeShapePanel.setLayout(new BorderLayout());
+			typeShapePanel.add(typeShapeList, "Center");
+			typeShapeList.setBackground(Preferences.defaultButtonColor());
+			typeShapePanel.setBorder(typeBorder);
+			// typeShapeList.setBorder(typeBorder);
+
+			nodeShapeList.setFont(getFont());
+			typeShapeList.setFont(getFont());
+			obsoleteShapeList.setFont(getFont());
+
+			shapePanel.add(nodeShapePanel);
+			shapePanel.add(Box.createVerticalStrut(5));
+			shapePanel.add(obsoleteShapePanel);
+			shapePanel.add(Box.createVerticalStrut(5));
+			shapePanel.add(typeShapePanel);
+
+			JTextArea messageArea = new JTextArea(
+					"This should contain the path to the \"dot\" or "
+					+ "\"dot.exe\" file included with the GraphViz "
+					+ "software package. The package can be obtained "
+					+ "from " + "http://www.research.att.com/sw/"
+					+ "tools/graphviz/download.html", 3, 20);
+			messageArea.setEditable(false);
+			messageArea.setBorder(null);
+			messageArea.setOpaque(false);
+			messageArea.setLineWrap(true);
+			messageArea.setWrapStyleWord(true);
+
+			JButton browseButton = new JButton("Browse...");
+			browseButton.setFont(Preferences.getPreferences().getFont());
+			browseButton.setBackground(Preferences.defaultButtonColor());
+			browseButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JFileChooser chooser = new JFileChooser();
+					if (chooser.showOpenDialog(GraphvizCanvas.this) == JFileChooser.APPROVE_OPTION) {
+						File file = chooser.getSelectedFile();
+						File macPath = new File(file, "Contents/MacOS/dot");
+						if (!file.getName().equals("dot") && file.isDirectory()
+								&& macPath.exists()) {
+							appPathField.setText(macPath.toString());
+						} else
+							appPathField.setText(file.toString());
 					}
 				}
-				if (!found && tr.getParent() != null) {
-					roots.add(tr.getParent());
-				}
-			}
-			it = roots.iterator();
-			while (it.hasNext()) {
-				OBOClass root = (OBOClass) it.next();
+			});
 
-				Iterator it2 = set.iterator();
-				inUse.clear();
-				while (it2.hasNext()) {
-					Link tr2 = (Link) it2.next();
-					if (tr2.getParent() == null)
-						continue;
-					if (tr2.getParent().equals(root)
-							&& !SelectionManager.getManager().getSelection().getTerms().contains(tr2)) {
-						inUse.add(tr2);
+			JPanel outerShapePanel = new JPanel();
+			outerShapePanel.setBackground(Preferences.defaultBackgroundColor());
+			outerShapePanel.setLayout(new BorderLayout());
+			outerShapePanel.add(shapePanel, "North");
+
+			JLabel appLabel = new JLabel("Application path");
+			appLabel.setFont(getFont());
+
+			Box horzBox = new Box(BoxLayout.X_AXIS);
+			horzBox.add(Box.createHorizontalStrut(5));
+			horzBox.add(appPathField);
+			horzBox.add(Box.createHorizontalStrut(5));
+
+			JPanel appLine = new JPanel();
+			appLine.setLayout(new BorderLayout());
+			appLine.add(appLabel, "West");
+			appLine.add(horzBox, "Center");
+			appLine.add(browseButton, "East");
+			appLine.setOpaque(false);
+
+			flipoverBox.setOpaque(false);
+			showIDsBox.setOpaque(false);
+
+			JLabel formatLabel = new JLabel("Default display format");
+			formatLabel.setFont(getFont());
+
+			JPanel viewerFormatLine = new JPanel();
+			viewerFormatLine.setOpaque(false);
+			viewerFormatLine.setLayout(new BorderLayout());
+			viewerFormatLine.add(formatLabel, "West");
+			viewerFormatLine.add(Box.createHorizontalStrut(5));
+			viewerFormatLine.add(formatBox);
+
+			JPanel appPanel = new JPanel();
+			appPanel.setBackground(Preferences.defaultBackgroundColor());
+			appPanel.setLayout(new BoxLayout(appPanel, BoxLayout.Y_AXIS));
+			// appPanel.add(appLabel);
+			// appPanel.add(appPathField);
+			appPanel.add(Box.createVerticalStrut(10));
+			appPanel.add(viewerFormatLine);
+			appPanel.add(Box.createVerticalStrut(10));
+			appPanel.add(flipoverBox);
+			appPanel.add(Box.createVerticalStrut(10));
+			appPanel.add(showIDsBox);
+			appPanel.add(Box.createVerticalStrut(10));
+			appPanel.add(appLine);
+			appPanel.add(Box.createVerticalStrut(10));
+			appPanel.add(messageArea);
+
+			JPanel outerAppPanel = new JPanel();
+			outerAppPanel.setBackground(Preferences.defaultBackgroundColor());
+			outerAppPanel.setLayout(new BorderLayout());
+			outerAppPanel.add(appPanel, "North");
+
+			optionsPane.removeAll();
+			optionsPane.addTab("Fonts", outerFontPanel);
+			optionsPane.addTab("Colors", typeColorList);
+			optionsPane.addTab("Shapes", outerShapePanel);
+			optionsPane.addTab("Behavior", outerAppPanel);
+
+			panel.add(optionsPane, "Center");
+
+			panel.add(commitButton, "South");
+
+			final JDialog pane = new JDialog((Frame) null, true);
+			pane.setContentPane(panel);
+			commitButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					pane.setVisible(false);
+					configuration.setDotPath(appPathField.getText());
+					configuration
+					.setLabelFont(linkFontChooser.getChosenFont());
+					configuration.setNodeFont(nodeFontChooser.getChosenFont());
+
+					configuration.setTypeShape((String) typeShapeList
+							.getSelectedItem());
+					configuration.setNodeShape((String) nodeShapeList
+							.getSelectedItem());
+					configuration.setObsoleteShape((String) obsoleteShapeList
+							.getSelectedItem());
+
+					configuration.setFlipOver(flipoverBox.isSelected());
+					configuration.setShowIDs(showIDsBox.isSelected());
+
+					for (int i = 0; i < typeColorList.getData().size(); i++) {
+						Object o = typeColorList.getData().get(i);
+						if (o instanceof TypeColorPair) {
+							TypeColorPair tc = (TypeColorPair) o;
+							configuration.getColorMap().put(tc.getTypeID(),
+									tc.getPair());
+						} else if (o instanceof NamedColor) {
+							NamedColor nc = (NamedColor) o;
+							configuration.setNamedColor(nc.getName(), nc
+									.getColor());
+						}
+					}
+
+					configuration.setViewerFormat((String) formatBox
+							.getSelectedItem());
+
+					pane.dispose();
+					reloadImage();
+				}
+			});
+			pane.pack();
+			pane.setSize(600, 400);
+			pane.show();
+		}
+
+		protected void storeImage() {
+			try {
+				JFileChooser chooser = new JFileChooser();
+				chooser.addChoosableFileFilter(new ExtensionFilter(".jpg",
+				".jpg - JPEG Format"));
+				chooser.addChoosableFileFilter(new ExtensionFilter(".png",
+				".png - PNG Format"));
+				chooser.addChoosableFileFilter(new ExtensionFilter(".ps", ".ps - "
+						+ "Postscript Format"));
+				chooser.addChoosableFileFilter(new ExtensionFilter(".dot",
+				".dot - GraphViz DOT Format"));
+				chooser.addChoosableFileFilter(new ExtensionFilter(".xdot",
+				".xdot - GraphViz extended DOT format"));
+				chooser.addChoosableFileFilter(new ExtensionFilter(".gif",
+				".gif - GIF Format"));
+
+				// Shows the dialog to the user and wait for is answer
+				int userChoice = chooser.showSaveDialog(this);
+
+				// check the user answer, is  he press  "ok" continue in the if  block
+				if (userChoice == JFileChooser.APPROVE_OPTION) {
+					File textFile = File.createTempFile("graphtext", ".txt");
+					//logger.info("DEBUG : GraphPlugin : storeImage : temp file name = " + textFile.getAbsolutePath());
+
+					// Creating the .dot file for graphviz
+					outputFile(textFile);
+
+					// Getting the selected file extension
+					ExtensionFilter ef = (ExtensionFilter) chooser.getFileFilter();
+
+					// Getting the file name (with the full path)
+					String outputFile = chooser.getSelectedFile().getPath();
+
+
+
+					// Adding the file extension if missing 
+					if (!outputFile.endsWith(ef.getExt())) {
+						outputFile += ef.getExt();
+					}
+
+					//logger.info(configuration.getDotPath() + " -T"
+					//		+ ef.getExtNoDot() + " -o " + outputFile + " -v "
+					//		+ textFile.getPath());
+					Process p = Runtime.getRuntime().exec(
+							configuration.getDotPath() + " -T"
+							+ ef.getExtNoDot() + " -o  " + outputFile + "  -v "
+							+ textFile.getPath());
+					//The bug has been fixed by putting escaped quotes round the output file
+					//string because the 'Documents and Settings' path in 
+					// the save instructions was being confused by the spaces and 
+					//was saving to path/Documents which doesn't exist.
+					//C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
+					//This only matters because the command is run on the cmd line.
+
+					p.waitFor();
+
+					textFile.delete();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		protected void trimSet(Set set) {
+			HashSet roots = new HashSet();
+			HashSet trash = new HashSet();
+			HashSet inUse = new HashSet();
+			do {
+				Iterator it = set.iterator();
+				roots.clear();
+				trash.clear();
+				while (it.hasNext()) {
+					Link tr = (Link) it.next();
+					Iterator it2 = set.iterator();
+					boolean found = false;
+					while (it2.hasNext()) {
+						Link tr2 = (Link) it2.next();
+						if (tr.getParent() == null)
+							continue;
+						if (tr.getParent().equals(tr2.getChild())) {
+							found = true;
+							break;
+						}
+					}
+					if (!found && tr.getParent() != null) {
+						roots.add(tr.getParent());
 					}
 				}
-				if (inUse.size() < 2) {
-					trash.addAll(inUse);
+				it = roots.iterator();
+				while (it.hasNext()) {
+					OBOClass root = (OBOClass) it.next();
+
+					Iterator it2 = set.iterator();
+					inUse.clear();
+					while (it2.hasNext()) {
+						Link tr2 = (Link) it2.next();
+						if (tr2.getParent() == null)
+							continue;
+						if (tr2.getParent().equals(root)
+								&& !SelectionManager.getManager().getSelection().getTerms().contains(tr2)) {
+							inUse.add(tr2);
+						}
+					}
+					if (inUse.size() < 2) {
+						trash.addAll(inUse);
+					}
 				}
-			}
-			set.removeAll(trash);
-		} while (trash.size() > 0);
-	}
+				set.removeAll(trash);
+			} while (trash.size() > 0);
+		}
 
 
-	public void update() {
-		if (SelectionManager.getGlobalSelection().isEmpty()) {
+		public void update() {
+			if (SelectionManager.getGlobalSelection().isEmpty()) {
 				validate();
 				repaint();
-		
-		} else {
-			validate();
-			repaint();
-			//doUpdate();
+
+			} else {
+				validate();
+				repaint();
+				//doUpdate();
+			}
 		}
 	}
-}
