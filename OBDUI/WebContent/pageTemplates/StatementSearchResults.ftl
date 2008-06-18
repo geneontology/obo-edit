@@ -23,9 +23,9 @@
 						<table>
 						<#list resultStatements as statement>
 							<tr><td style="font-size:10px;background-color:#fafafa;">&bull;</td><td style="background-color:#fafafa;font-size:12px;">
-							<@labelhref target=statement.sourceHref label=statement.sourceLabel/> 
-					 		<@labelhref target=statement.relationHref label=statement.relationLabel/> 
-					 		<@labelhref target=statement.targetHref label=statement.targetLabel/><br/>
+							<@nodeHashHref nodeHash=statement.subject/> 
+					 		<@nodeHashHref nodeHash=statement.predicate/>
+					 		<@nodeHashHref nodeHash=statement.object/>
 					 		</td></tr>
 						</#list>
 						</table>

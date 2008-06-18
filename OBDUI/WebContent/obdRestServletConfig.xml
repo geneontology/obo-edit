@@ -37,6 +37,17 @@
 		</OBDSQLAdaptor>
 	</dataSource>
 	
+	<dataSource>
+		<resourcePath>obdPhenoscape</resourcePath>
+		<OBDSQLAdaptor>
+			<hostname>spade</hostname>
+			<port>5432</port>
+			<username>cjm</username>
+			<password></password>
+			<databaseName>obd_phenoscape</databaseName>
+		</OBDSQLAdaptor>
+	</dataSource>
+	
 	
 	<!-- Core Mappings -->
 	
@@ -112,9 +123,10 @@
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}</path>
 	</resourcePathMap>
 	<resourcePathMap>
-		<resourceClass>org.obd.ws.coreResource.StatementsBySearchResource</resourceClass>
+		<resourceClass>org.obd.ws.coreResource.StatementSearchResource</resourceClass>
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements</path>
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements/{aspect}</path>
+		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements/{aspect}/{relation}</path>
 	</resourcePathMap>
 	
 	

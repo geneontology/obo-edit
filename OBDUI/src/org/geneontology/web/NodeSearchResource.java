@@ -80,9 +80,7 @@ public class NodeSearchResource extends NodeResource {
         this.dataSource = (String) request.getAttributes().get("dataSource");
         this.target = (String) request.getAttributes().get("target");
         this.source = (String) request.getAttributes().get("source");
-        
-        format = (String) request.getAttributes().get("format");
-        this.nodes = findNodes();
+        this.format = (String) request.getAttributes().get("format");
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
                 
     }
@@ -118,15 +116,12 @@ public class NodeSearchResource extends NodeResource {
         			}
         		}
         	}
-        	if (this.source.equals("")||(this.source.equals("all"))){
+        	
+        	if (this.source.equals("all")||this.source.equals("")){
         		this.source = null;
         	}
-        	
-        	
-        	
+        	        	
         	nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm,op,source,at));
-        	
-        	
         }
 
         return nodes;
@@ -135,6 +130,14 @@ public class NodeSearchResource extends NodeResource {
  
     @Override
     public Representation getRepresentation(Variant variant) {
+    	
+    	try {
+			this.nodes = findNodes();
+		} catch (Exception e1) {
+			System.err.println("Can't  Find Nodes.");
+			e1.printStackTrace();
+		}
+    	
     	Representation result = null;
     	
     	if (format == null) {
