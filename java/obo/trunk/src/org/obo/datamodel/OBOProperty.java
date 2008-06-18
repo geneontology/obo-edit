@@ -1,5 +1,9 @@
 package org.obo.datamodel;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 import org.obo.datamodel.impl.OBOPropertyImpl;
 
 public interface OBOProperty extends OBOObject {
@@ -113,6 +117,32 @@ public interface OBOProperty extends OBOObject {
 
 		{
 			this.name = "transitive_over";
+		}
+
+		@Override
+		public boolean isSymmetric() {
+			return false;
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return true;
+		}
+		
+		public boolean isNonInheritable() {
+			return true;
+		}
+	};
+	
+	public static final OBOProperty HOLDS_OVER_CHAIN = new OBOPropertyImpl(
+			"holds_over_chain", null) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 3635477793098376143L;
+
+		{
+			this.name = "holds_over_chain";
 		}
 
 		@Override
@@ -321,8 +351,24 @@ public interface OBOProperty extends OBOObject {
 	public boolean isUniversallyQuantified();
 	public void setUniversallyQuantified(boolean isUniversallyQuantified);
 	
+	/**
+	 * R transitive_over R2 & X R Y & Y R2 Z => X R Z
+	 * @return
+	 */
 	public OBOProperty getTransitiveOver();
-
 	public void setTransitiveOver(OBOProperty transitiveOver);
+	
+	/**
+	 * for each chain:
+	 * 
+	 * R holds_over_chain R1, R2, ... Rn
+	 * A1 R1 A2, A2 R2 A3, ... An Rn An+1 => A1 R An+1
+	 * 
+	 * each relation can be associated with multiple chains
+	 * @return
+	 */
+	public Collection<List<OBOProperty>> getHoldsOverChains();
+	public void setHoldsOverChains(Collection<List<OBOProperty>> holdsOverChains);
+	public void addHoldsOverChain(List<OBOProperty> holdsOverChain);
 	
 }

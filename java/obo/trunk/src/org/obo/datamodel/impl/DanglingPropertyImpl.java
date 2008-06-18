@@ -1,5 +1,7 @@
 package org.obo.datamodel.impl;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.obo.datamodel.DanglingProperty;
@@ -159,6 +161,8 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 
 	public void setTransitiveOver(OBOProperty transitiveOver) {
 	}
+	
+	
 
 	public boolean isUniversallyQuantifier() {
 		// TODO Auto-generated method stub
@@ -171,6 +175,21 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 	}
 
 	public void setUniversallyQuantified(boolean isUniversallyQuantified) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addHoldsOverChain(List<OBOProperty> holdsOverChain) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Collection<List<OBOProperty>> getHoldsOverChains() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setHoldsOverChains(Collection<List<OBOProperty>> holdsOverChains) {
 		// TODO Auto-generated method stub
 		
 	}

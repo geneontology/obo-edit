@@ -577,6 +577,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 		} else if (name.equals("range")) {
 			((OBOParser) parser).readRange(value, nv);
 			return true;
+		} else if (name.equals("holds_over_chain")) {
+			String[] ids = value.split("\\s");
+			((OBOParser) parser).readHoldsOverChain(ids, null, false, nv);
+			return true;
 		} else if (name.equals("def")) {
 			int startIndex = findUnescaped(value, '"', 0, value.length());
 			if (startIndex == -1)
