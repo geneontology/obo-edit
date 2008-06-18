@@ -10,9 +10,11 @@ public class StatementHashSubjectComparator implements Comparator<SimpleHash> {
 
 		
 		try {
-			String subject1 = ((SimpleHash)o1).get("sourceLabel").toString();
-			String subject2 = ((SimpleHash)o2).get("sourceLabel").toString();
+			
+			String subject1 = ((SimpleHash)((SimpleHash)o1).get("subject")).get("label").toString();
+			String subject2 = ((SimpleHash)((SimpleHash)o2).get("subject")).get("label").toString();
 			return subject1.compareToIgnoreCase(subject2);
+			
 		} catch (TemplateModelException e) {
 			e.printStackTrace();
 		}

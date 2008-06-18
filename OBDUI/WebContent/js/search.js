@@ -6,9 +6,9 @@ function nodeSearch(contextName,dataSource){
     if ((searchTerm != null)&&(dataSource != null)&&(target != null)){
     	var url = "";
     	if (target.value == 'statements'){
-    		url = "/" + contextName + "/" + dataSource + "/html/search/contains_all/" + searchTerm.value + "/statements/all";
+    		url = "/" + contextName + "/" + dataSource + "/html/search/all/any/contains_all/" + searchTerm.value + "/statements/all";
     	} else {
-    		url = "/" + contextName + "/" + dataSource + "/html/search/contains_all/" + searchTerm.value;
+    		url = "/" + contextName + "/" + dataSource + "/html/search/all/any/contains_all/" + searchTerm.value;
     	}    	
     	window.location = url;
     }

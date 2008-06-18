@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.geneontology.web.NodeSearchResource;
 import org.obd.model.Node;
 import org.obd.model.Statement;
 import org.obd.model.bridge.OBDJSONBridge;
@@ -33,12 +34,11 @@ import freemarker.template.SimpleHash;
  * 
  * @author cjm
  */
-public class StatementsBySearchResource extends NodesBySearchResource {
+public class StatementSearchResource extends NodeSearchResource {
 	
 	protected String relationId;
 	protected String aspect;
-	protected String dataSource;
-
+	
     /**
      * Constructor.
      * 
@@ -50,20 +50,20 @@ public class StatementsBySearchResource extends NodesBySearchResource {
      *            The response to return.
      * @throws Exception 
      */
-    public StatementsBySearchResource(Context context, Request request, Response response) throws Exception {
+    public StatementSearchResource(Context context, Request request, Response response) throws Exception {
         super(context, request, response);
-        aspect = (String) request.getAttributes().get("aspect");
-        this.dataSource = (String) request.getAttributes().get("dataSource");        
+        this.aspect = (String) request.getAttributes().get("aspect");
+        this.relationId = (String) request.getAttributes().get("relation");
     }
 
     @Override
     public Representation getRepresentation(Variant variant) {
+    	
     	Representation result = null;
 
     	try {
 			nodes = findNodes();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -150,7 +150,7 @@ public class StatementsBySearchResource extends NodesBySearchResource {
     			resourceMap.put("resultStatements", resultStatementsList);
     		}
     		
-    		return getTemplateRepresentation("searchStatementsResults",resourceMap);
+    		return getTemplateRepresentation("StatementSearchResults",resourceMap);
         	
         } else {
     		//if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {

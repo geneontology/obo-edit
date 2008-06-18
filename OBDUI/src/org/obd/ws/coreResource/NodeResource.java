@@ -329,6 +329,7 @@ public class NodeResource extends OBDResource {
 		return hashifiedStatements;
 	}
 	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance){
+		
 		SimpleHash statementHash = new SimpleHash();
 		
 		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/html/node/";
