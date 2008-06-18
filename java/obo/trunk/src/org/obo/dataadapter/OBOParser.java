@@ -1,5 +1,6 @@
 package org.obo.dataadapter;
 
+import java.util.Collection;
 import java.util.Date;
 import java.io.IOException;
 
@@ -79,6 +80,8 @@ public interface OBOParser extends OBOSimpleParser {
 	throws OBOParseException;
 	
 	public void readTransitiveOver(String id, String ns, boolean implied,
+			NestedValue nv) throws OBOParseException;
+	public void readHoldsOverChain(String[] ids, String ns, boolean implied,
 			NestedValue nv) throws OBOParseException;
 
 

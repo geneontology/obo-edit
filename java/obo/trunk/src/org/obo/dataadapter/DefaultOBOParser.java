@@ -5,6 +5,8 @@ import java.net.*;
 import java.io.*;
 
 import org.bbop.io.*;
+import org.bbop.util.MultiHashMap;
+import org.bbop.util.MultiMap;
 import org.obo.annotation.dataadapter.AnnotationParserExtension;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
@@ -36,6 +38,8 @@ public class DefaultOBOParser implements OBOParser {
 	protected Map<IdentifiedObject, String> rangeMap;
 
 	protected Map<IdentifiedObject, String> domainMap;
+
+	protected MultiMap<IdentifiedObject, List<String>> holdsOverChainMap = new MultiHashMap<IdentifiedObject, List<String>>();
 
 	protected Map<String, Namespace> namespaceMap;
 
@@ -365,6 +369,7 @@ public class DefaultOBOParser implements OBOParser {
 		namespaceMap = new HashMap<String, Namespace>();
 		rangeMap = new HashMap<IdentifiedObject, String>();
 		domainMap = new HashMap<IdentifiedObject, String>();
+		//holdsOverChainMap = new MultiMap<IdentifiedObject,List<String>>();
 		considerSet = new HashSet<BasicMapping>();
 		useSet = new HashSet<BasicMapping>();
 		addParserExtension(new AnnotationParserExtension());
@@ -650,6 +655,27 @@ public class DefaultOBOParser implements OBOParser {
 					engine.getCurrentLine(), engine.getLineNum());
 		domainMap.put(currentObject, domain);
 	}
+	
+	public void readHoldsOverChain(String[] ids, String ns, boolean implied,
+			NestedValue nv) throws OBOParseException {
+		if (!(currentObject instanceof OBOProperty))
+			throw new OBOParseException("Tried to specify holds_over_chain "
+					+ "for object " + currentObject + " which "
+					+ "does not support this tag.", getCurrentPath(),
+					engine.getCurrentLine(), engine.getLineNum());
+
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
+		List<String> mappedIds = new ArrayList<String>();
+		//StringBuilder idExpr = new StringBuilder();
+		for (String id : ids) {
+			mappedIds.add(mapID(id));
+		}
+		
+		holdsOverChainMap.add(currentObject, mappedIds);
+	}
 
 	public void readAltID(String id, NestedValue nv) throws OBOParseException {
 		if (!(currentObject instanceof MultiIDObject))
@@ -922,6 +948,7 @@ public class DefaultOBOParser implements OBOParser {
 				.getLineNum(), engine.getCurrentLine(), true, false,
 				false, implied, null, null, null, ns, nv));
 	}
+
 
 	public void readIsCyclic(boolean isCyclic, NestedValue nv)
 	throws OBOParseException {
@@ -1236,6 +1263,40 @@ public class DefaultOBOParser implements OBOParser {
 							+ " as domain value.", null, null, -1);
 
 				t.setDomain((OBOClass) domain);
+			}
+		}
+		
+		for (IdentifiedObject io : holdsOverChainMap.keySet()) {
+			if (halted)
+				throw new OBOParseException("Operation cancelled " + "by user",
+						null, null, -1);
+			
+			OBOProperty t = (OBOProperty) io;
+			for (List<String> chain : holdsOverChainMap.get(io)) {
+				List<OBOProperty> pChain = new ArrayList<OBOProperty>();
+				for (String pid : chain) {
+					IdentifiableObject p = getObject(pid);
+					if (p == null) {
+						if (allowDanglingParents) {
+							DanglingObject dangling = objectFactory
+							    .createDanglingObject(pid, false);
+						    logger.info("null property " + pid + "--added dangling object");
+							p = dangling;
+						} else
+							throw new OBOParseException("Assigned non-existant property in chain "
+									+ "id " + pid + " in term " + t.getID(), null,
+									null, -1);
+
+					} else {
+						if (!(p instanceof OBOProperty))
+							throw new OBOParseException("Cannot use non-relation " + p
+									+ " in chain.", null, null, -1);
+
+						pChain.add((OBOProperty) p);
+					}
+				
+				}
+				t.addHoldsOverChain(pChain);
 			}
 		}
 

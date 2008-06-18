@@ -162,4 +162,6 @@ public interface OBOSerializer {
 
 	public void writeModificationDateTag(Date date,
 			NestedValue createdByExtension) throws IOException;
+
+	public void writeHoldsOverChainTag(List<OBOProperty> chain) throws IOException;
 }

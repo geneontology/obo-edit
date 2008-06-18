@@ -35,6 +35,7 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	protected boolean universallyQuantified;
 	
 	protected OBOProperty transitiveOver;
+	protected Collection<List<OBOProperty>> holdsOverChains;
 
 	protected Set categories;
 	protected HashMap categoryExtensionHash;
@@ -230,6 +231,23 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 		link.setType(OBOProperty.TRANSITIVE_OVER);
 		link.setParent(transitiveOver);
 		addParent(link);
+	}
+	
+	
+
+	public Collection<List<OBOProperty>> getHoldsOverChains() {
+		return holdsOverChains;
+	}
+
+	public void setHoldsOverChains(Collection<List<OBOProperty>> holdsOverChains) {
+		this.holdsOverChains = holdsOverChains;
+	}
+	
+	public void addHoldsOverChain(List<OBOProperty> holdsOverChain) {
+		if (holdsOverChains == null) {
+			holdsOverChains = new HashSet<List<OBOProperty>>();
+		}
+		holdsOverChains.add(holdsOverChain);
 	}
 
 	public boolean isUniversallyQuantified() {

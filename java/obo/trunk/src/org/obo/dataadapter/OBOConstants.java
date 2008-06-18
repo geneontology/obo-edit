@@ -265,7 +265,9 @@ public class OBOConstants {
 	public static final TagMapping IS_SYMMETRIC_TAG = new TagMapping(
 			"is_symmetric", OBOProperty.class);	
 	public static final TagMapping TRANSITIVE_OVER_TAG = new TagMapping(
-					"transitive_over", OBOProperty.class);
+			"transitive_over", OBOProperty.class);
+	public static final TagMapping HOLDS_OVER_CHAIN_TAG = new TagMapping(
+			"holds_over_chain", OBOProperty.class);
 
 	public static final TagMapping IS_TRANSITIVE_TAG = new TagMapping(
 			"is_transitive", OBOProperty.class);
@@ -338,6 +340,8 @@ public class OBOConstants {
 		_defaultTagOrder.add(IS_REFLEXIVE_TAG);
 		_defaultTagOrder.add(IS_SYMMETRIC_TAG);
 		_defaultTagOrder.add(IS_TRANSITIVE_TAG);
+		_defaultTagOrder.add(TRANSITIVE_OVER_TAG);
+		_defaultTagOrder.add(HOLDS_OVER_CHAIN_TAG);
 		_defaultTagOrder.add(LINK_TAG);
 		_defaultTagOrder.add(VALUE_LINK_TAG);
 		_defaultTagOrder.add(IS_OBSOLETE_TAG);

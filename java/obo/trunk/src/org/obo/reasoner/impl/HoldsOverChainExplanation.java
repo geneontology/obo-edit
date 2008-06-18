@@ -5,10 +5,10 @@ import org.obo.reasoner.ExplanationType;
 
 import org.apache.log4j.*;
 
-public class TransitiveOverExplanation extends AbstractExplanation {
+public class HoldsOverChainExplanation extends AbstractExplanation {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(TransitiveOverExplanation.class);
+	protected final static Logger logger = Logger.getLogger(HoldsOverChainExplanation.class);
 	/**
 	 * 
 	 */
@@ -16,17 +16,17 @@ public class TransitiveOverExplanation extends AbstractExplanation {
 
 	protected Link link;
 
-	public TransitiveOverExplanation(Link link) {
+	public HoldsOverChainExplanation(Link link) {
 		this.link = link;
 		addEvidence(link);
 	}
 
 	public ExplanationType getExplanationType() {
-		return ExplanationType.TRANSITIVE_OVER;
+		return ExplanationType.HOLDS_OVER_CHAIN;
 	}
 
 	@Override
 	public String toString() {
-		return "TRANSITIVE_OVER: from link " + link;
+		return "HOLDS_OVER_CHAIN: from link " + link;
 	}
 }

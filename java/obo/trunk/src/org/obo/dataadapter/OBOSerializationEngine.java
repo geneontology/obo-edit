@@ -765,7 +765,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			while (it2.hasNext()) {
 				String id = (String) it2.next();
 				NestedValue nv = ((MultiIDObject) obj)
-						.getSecondaryIDExtension(id);
+				.getSecondaryIDExtension(id);
 				serializer.writeAltIDTag(id, nv);
 			}
 		} else if (obj instanceof DefinedObject
@@ -774,9 +774,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			scratchList.addAll(((DefinedObject) obj).getDefDbxrefs());
 			Collections.sort(scratchList, getDbxrefComparator(serializer));
 			serializer
-					.writeDefTag(((DefinedObject) obj).getDefinition(),
-							scratchList, ((DefinedObject) obj)
-									.getDefinitionExtension());
+			.writeDefTag(((DefinedObject) obj).getDefinition(),
+					scratchList, ((DefinedObject) obj)
+					.getDefinitionExtension());
 		} else if (obj instanceof CommentedObject
 				&& tagMapping.equals(OBOConstants.COMMENT_TAG)) {
 			CommentedObject cobj = (CommentedObject) obj;
@@ -819,7 +819,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			while (it2.hasNext()) {
 				TermCategory category = (TermCategory) it2.next();
 				NestedValue nv = ((CategorizedObject) obj)
-						.getCategoryExtension(category);
+				.getCategoryExtension(category);
 				serializer.writeSubsetTag(category, nv);
 			}
 		} else if (obj instanceof SynonymedObject
@@ -894,9 +894,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				&& tagMapping.equals(OBOConstants.ALWAYS_IMPLIES_INVERSE_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
 			serializer
-					.writeAlwaysImpliesInverseTag(property
-							.isAlwaysImpliesInverse(), property
-							.getReflexiveExtension());
+			.writeAlwaysImpliesInverseTag(property
+					.isAlwaysImpliesInverse(), property
+					.getReflexiveExtension());
 		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.IS_SYMMETRIC_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
@@ -907,6 +907,22 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			OBOProperty property = (OBOProperty) obj;
 			serializer.writeIsTransitiveTag(property.isTransitive(), property
 					.getTransitiveExtension());
+		} else if (obj instanceof OBOProperty
+				&& tagMapping.equals(OBOConstants.TRANSITIVE_OVER_TAG)) {
+			OBOProperty property = (OBOProperty) obj;
+			for (Link link : property.getParents()) {
+				if (link.getType().equals(OBOProperty.TRANSITIVE_OVER)) {
+					serializer.writeLinkTag(link, null);
+				}
+			}
+		} else if (obj instanceof OBOProperty
+				&& tagMapping.equals(OBOConstants.HOLDS_OVER_CHAIN_TAG)) {
+			OBOProperty property = (OBOProperty) obj;
+			if (property.getHoldsOverChains() != null) {
+				for (List<OBOProperty> chain : property.getHoldsOverChains()) {
+					serializer.writeHoldsOverChainTag(chain);
+				}
+			}
 		} else if (obj instanceof LinkedObject
 				&& tagMapping.equals(OBOConstants.LINK_TAG)) {
 			if (obj instanceof LinkedObject) {
