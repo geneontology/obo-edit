@@ -22,6 +22,7 @@ import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.ComparisonQueryTerm.Operator;
+import org.obd.query.LabelQueryTerm.AliasType;
 import org.obd.ws.coreResource.NodeResource;
 import org.obd.ws.coreResource.sorter.NodeLabelComparator;
 import org.restlet.Context;
@@ -100,18 +101,31 @@ public class NodeSearchResource extends NodeResource {
         	Operator op = null;
         	if (operatorString != null) {
         		for (Operator currOp : Operator.values()) {
-        			System.out.println(currOp.toString());
+        			//System.out.println(currOp.toString());
         			if (currOp.toString().equals(operatorString)){
         				op = currOp;
         			}
         		}
         	}
 
-        	if (op == null) {
-        		nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm));
-        	} else {
-        		nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm, op));
+        	AliasType at = AliasType.ANY_LABEL;
+        	if (this.target != null){
+        		if (!this.target.equals("any")){
+        			for (AliasType cat : AliasType.values()){
+        				if (cat.toString().equals(this.target)){
+        					at = cat;
+        				}
+        			}
+        		}
         	}
+        	if (this.source.equals("")||(this.source.equals("all"))){
+        		this.source = null;
+        	}
+        	
+        	
+        	
+        	nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm,op,source,at));
+        	
         	
         }
 

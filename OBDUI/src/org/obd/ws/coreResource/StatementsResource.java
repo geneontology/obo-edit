@@ -73,6 +73,9 @@ public class StatementsResource extends NodeResource {
 		if (this.statementType.equals("all") || this.statementType.equals("literal")){
 			
 			LiteralQueryTerm lqt = new LiteralQueryTerm();	
+			if ((this.relationId != null) && (!this.relationId.equals(""))){
+				lqt.setRelation(this.relationId);
+			}
 			if (aspect.equals("to")){
 				lqt = new LiteralQueryTerm(getNodeId());
 			} else {
@@ -80,8 +83,12 @@ public class StatementsResource extends NodeResource {
 			}
 			
 			stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lqt));
+			
 			if (this.aspect.equals("all")){
 				lqt = new LiteralQueryTerm(getNodeId());
+				if ((this.relationId != null) && (!this.relationId.equals(""))){
+					lqt.setRelation(this.relationId);
+				}
 				stmts.addAll(getShard(this.dataSource).getStatementsByQuery(lqt));
 				
 			}

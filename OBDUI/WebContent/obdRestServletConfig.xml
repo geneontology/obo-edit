@@ -109,12 +109,12 @@
 	
 	<resourcePathMap>
 		<resourceClass>org.geneontology.web.NodeSearchResource</resourceClass>
-		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}</path>
+		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}</path>
 	</resourcePathMap>
 	<resourcePathMap>
 		<resourceClass>org.obd.ws.coreResource.StatementsBySearchResource</resourceClass>
-		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}/statements</path>
-		<path>/{dataSource}/{format}/{source}/search/{target}/{operator}/{term}/statements/{aspect}</path>
+		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements</path>
+		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements/{aspect}</path>
 	</resourcePathMap>
 	
 	
