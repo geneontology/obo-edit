@@ -111,9 +111,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 //	protected static final Color lockGray = new Color(200, 200, 200);
-	protected static final Color localSelectionBackgroundColor = new Color(250, 250, 205); // lemon chiffon (pale yellow)
-
-	protected static final Color secondaryGray = new Color(240, 240, 240);
+	protected static final Color secondaryGray = new Color(240, 240, 240);  // For background color for local selection
 
 	final static int HEADER_HEIGHT = 20;
 
@@ -735,16 +733,17 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	@Override
 	public Color getBackground() {
 		// Locking is not currently working.
-		// Using background color to indicate global vs. local selection mode.
 //		if (lockedPath != null)
 //			return lockGray;
 //		else
 //			return Color.white;
+
+		// Use background color to indicate global vs. local selection mode
 		if (isLive())
 			return Color.white;
 		else
 //			return lockGray;
-			return localSelectionBackgroundColor;
+			return secondaryGray;
 	}
 
 	@Override
