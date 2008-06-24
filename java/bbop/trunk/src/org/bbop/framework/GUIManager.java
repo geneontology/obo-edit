@@ -271,6 +271,7 @@ public class GUIManager {
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				logger.info("Exiting.\n");
 				System.exit(status);
 			}
 		});
