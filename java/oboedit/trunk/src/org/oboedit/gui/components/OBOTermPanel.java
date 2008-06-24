@@ -110,7 +110,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	protected SessionManager sessionManager = SessionManager.getManager();
 
-	protected static final Color lockGray = new Color(200, 200, 200);
+//	protected static final Color lockGray = new Color(200, 200, 200);
+	protected static final Color localSelectionBackgroundColor = new Color(250, 250, 205); // lemon chiffon (pale yellow)
 
 	protected static final Color secondaryGray = new Color(240, 240, 240);
 
@@ -742,7 +743,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		if (isLive())
 			return Color.white;
 		else
-			return lockGray;
+//			return lockGray;
+			return localSelectionBackgroundColor;
 	}
 
 	@Override
