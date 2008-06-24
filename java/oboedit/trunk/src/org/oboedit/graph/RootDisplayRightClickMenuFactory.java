@@ -352,6 +352,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			@Override
 			public Collection<? extends LinkedObject> getShown(
 					Selection selection) {
+				logger.info("Showing everything in Graph Editor...");
 				return TermUtil.getTerms(canvas.getLinkDatabase());
 			}
 		});
