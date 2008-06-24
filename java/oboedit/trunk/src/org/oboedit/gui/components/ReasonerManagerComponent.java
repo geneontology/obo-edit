@@ -94,9 +94,12 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
-		String text = "<html><body>\n";
-		text += "Reasoning completed.";
-		text += "</body></html>";
+		String text = "";
+		if (enableReasoner) {
+			text += "<html><body>\n";
+			text += "Reasoning completed.";
+			text += "</body></html>";
+		}
 		final String summaryText = text;
 
 		Runnable screenUpdate = new Runnable() {
