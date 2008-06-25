@@ -1,0 +1,254 @@
+<html>
+	<head>
+
+		<link rel="stylesheet" type="text/css" href="/OBDUI/css/jquery.autocomplete.css" />
+
+		<style type="text/css">
+			input.predicateElement {
+				color:#999999;
+			}
+			
+			span.logicSwitch{
+				font-family:courier,courier new;
+			}
+			
+			
+		</style>
+
+		<script type="text/javascript" src="/OBDUI/js/jquery/jquery-1.2.6.min.js"></script>
+		<script type="text/javascript" src="/OBDUI/js/jquery/jquery.autocomplete.js"></script>
+		<script type="text/javascript" src="/OBDUI/js/jquery/jquery.bigframe.min.js"></script>
+		<script type="text/javascript" src="/OBDUI/js/jquery/jquery.dimensions.js"></script>
+		<script type="text/javascript" src="/OBDUI/js/jquery/thickbox-compressed.js"></script>
+				
+		<script type="text/javascript">
+			$(document).ready(
+				function(){
+					appendAddQueryElement($("#query"));
+				}
+			);
+			
+			function genInputElement(name,url){
+			
+				var oie = document.createElement("input");
+				$(oie).addClass((name + "Element"));
+				$(oie).val(name);
+				$(oie).css("color","#999999");
+				$(oie).attr("type","text");
+				
+				var oiev = document.createElement("input");
+				$(oiev).attr("type","hidden");
+				$(oiev).addClass((name + "Value"));
+				$(oiev).val("undef");
+				
+				// Autocomplete ajax call invoke
+				$(oie).autocomplete(url,{ 
+					minChars: 4,
+					delay: 500, 
+					width:400, 
+					max:100,
+					matchContains: true,
+					formatItem:	function(row,i,max){
+									var parts = String(row).split(",");
+									return parts[0] + ": " + parts[1];
+								},
+					formatResult: function(row) {
+									var parts = String(row).split(",");
+									return parts[1];
+								  }
+					}
+				);
+				
+				// Autocomplete result handler sets the hidden input value
+				$(oie).result(
+					function findValueCallback(event, data, formatted) {
+						var parts = String(data).split(",");
+						$(oiev).val(parts[0]);
+					}
+				);
+				
+				// Blur handler sets the hidden input value to the text field if nothing was found by the autocomplete entry
+				$(oie).blur(
+					function(){
+						if ($(oie).val() == ''){
+							$(oie).val(name);
+							$(oie).css("color","#999999");
+							$(oiev).val('undef');
+						} else {
+							if ($(oiev).val() == 'undef'){
+								$(oiev).val($(oie).val());
+							}
+						}
+					}
+				)
+					
+				$(oie).click(
+					function(){
+						if ($(oie).val() == name){
+							$(oie).val('');
+							$(oie).css("color","#000000");
+						}
+					}
+				);
+				
+				return new Array(oie, oiev);
+			}
+			
+			function getLogicElement(element){
+				var ile = document.createElement("span");
+				$(ile).addClass("logicSwitch");
+				$(ile).html($(element).children("input.logic")[0].value);
+				$(ile).click(
+					function(){
+						var otherLogic;
+						if ($(element).children("input.logic")[0].value == '&cap;'){
+							var otherLogic = '&cup;';
+						} else {
+							var otherLogic = '&cap;';
+						}
+						$(element).children("input.logic")[0].setAttribute("value",otherLogic);
+						$(element).children("span.logicSwitch").html(otherLogic);
+					}
+				);
+				return ile;
+			}
+			
+			function setLogic(element,logic){
+				$(element).children("input.logic").val(logic);
+			}
+			
+			
+			function genBasicQueryTermLink(parentElement){
+				var bae = document.createElement("a");
+				$(bae).html("+");
+				$(bae).click( 
+					function(){
+						if ($(parentElement).children(".queryElement").size()==1){
+							var hie = document.createElement("input");
+							hie.setAttribute("type","hidden");
+							$(hie).addClass("logic");
+							$(parentElement).append(hie);
+							setLogic(parentElement,"&cap;");
+							
+						}
+						addBasicQueryTerm($(parentElement));
+					} 
+				);
+				return bae;
+			}
+
+			function addBooleanQueryTerm(element){
+				$(element).children("li.addElement").remove();
+				var ulqe = document.createElement("ul");
+				$(ulqe).addClass("queryElement");
+				addBasicQueryTerm(ulqe);
+				if ($(element).children("li.queryElement").size()>0){
+					$(element).append(getLogicElement(element));
+				}
+				$(element).append(ulqe);
+				appendAddQueryElement(element);
+				
+			}
+			
+
+			function genBooleanQueryTermLink(parentElement){
+				var bqte = document.createElement("a");
+				$(bqte).html("&loz;");
+				$(bqte).click(
+					function(){
+						if ($(parentElement).children(".queryElement").size()==1){
+							var hie = document.createElement("input");
+							hie.setAttribute("type","hidden");
+							$(hie).addClass("logic");
+							$(parentElement).append(hie);
+							setLogic(parentElement,"&cap;");
+						}
+						addBooleanQueryTerm($(parentElement));
+					}
+				);
+				return bqte;
+			}
+			
+			
+			function addSubQuery(element){
+				$(element).children("input.objectElement").remove();
+				$(element).children("a.logicSwitch").remove();
+				$(element).children("input.objectValue").val('subQuery');
+				$(element).append(getLogicSwitch(element,'on'));
+				var ule = document.createElement("ul");
+				$(ule).addClass("subQuery");
+				addBasicQueryTerm(ule);
+				$(element).append(ule);
+			}
+			
+			function removeSubQuery(element){
+				$(element).children("ul.subQuery").remove();
+				$(element).children("a.logicSwitch").remove();
+				$(element).children("input.objectValue").remove();
+				$(element).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
+				$(element).append(getLogicSwitch(element,'off'));
+			}
+			
+			function getLogicSwitch(element,position){
+				var lse = document.createElement("a");
+				$(lse).addClass("logicSwitch");
+				if (position == 'off'){
+					$(lse).html("&rfloor;");
+					$(lse).click(
+						function(){
+							addSubQuery(element);
+						}
+					);
+				} else {
+					$(lse).html("&rceil;");
+					$(lse).click(
+						function(){
+							removeSubQuery(element);
+						}
+					);
+				}
+				return lse;
+				
+			}
+			
+			function addBasicQueryTerm(element){
+				var liElement = document.createElement("li");
+				$(liElement).addClass("queryElement");
+				$(liElement).append(genInputElement("predicate","/OBDUI/obdPhenotypeAll2008/autocomplete/search/relations/"));
+				$(liElement).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
+				$(liElement).append(getLogicSwitch(liElement,'off'));
+				if ($(element).children("li.queryElement").size()>0){
+					$(element).prepend(getLogicElement(element));
+				}
+				$(element).prepend(liElement);
+				appendAddQueryElement(element);
+			}
+			
+			
+			function appendAddQueryElement(element){
+				
+				if ($(element).children("li.addElement").size()==0){
+					//$(element).append("<li class=\"addElement\"></li>");
+					var lie = document.createElement("li");
+					$(lie).addClass("addElement");
+					$(element).append(lie);
+				} 
+
+				if ($(element).children("li.queryElement").size() == 0){
+					$(element).children("li.addElement").append(genBasicQueryTermLink(element));
+				} else {
+					$(element)
+					.children("li.addElement").html("").append(genBasicQueryTermLink(element)).append(" / ").append(genBooleanQueryTermLink(element));
+				}
+				
+			}
+
+		</script>
+
+	</head>
+	<body>
+		<ul id="query">
+
+		</ul>
+	</body>
+</html>
