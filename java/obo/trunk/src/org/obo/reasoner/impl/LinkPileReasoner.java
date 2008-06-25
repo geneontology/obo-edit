@@ -41,7 +41,8 @@ public class LinkPileReasoner extends AbstractReasoner {
 		protected LinkedObject parent;
 		protected OBOProperty type;
 		protected boolean lookedAt;
-		protected ArrayList<AbstractExplanation> explanations;
+		// el - changed to HashSet to prevent duplicates
+		protected HashSet<AbstractExplanation> explanations;
 		protected String id;
 		protected int hash;
 
@@ -68,7 +69,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 		public void addExplanation(AbstractExplanation exp) {
 			exp.setExplainedLink(this);
 			if (explanations == null) {
-				explanations = new ArrayList<AbstractExplanation>(5);
+				explanations = new HashSet<AbstractExplanation>(5);
 			}
 			explanations.add(exp);
 		}
@@ -346,13 +347,29 @@ public class LinkPileReasoner extends AbstractReasoner {
 			seenem.add(link);
 		// actually remove the dead link from the various caches
 		impliedLinkDatabase.removeParent(link);
+		// el - gotta make sure to remove the link from linkMap as well (otherwise incremental
+		// insertion can break
+		linkMap.remove(link);
 		// re-generate all the implications of the now-removed link
 		Collection<Explanation> deps = new ArrayList<Explanation>();
 		for (ReasonerRule rule : rules) {
 			Collection<Explanation> temp = rule.getImplications(this, link);
 			if (temp != null)
 				deps.addAll(temp);
+			// el - issues with intersection rule if there is a cycle in the explanation graph.
+			// this is a bit of a hack, but gets around it by looking at intersection 
+			// implications for all the children of the child of the current link
+			if (rule instanceof IntersectionRule) {
+				for (Link childLink : getChildren(link.getChild())) {
+					Link newLink = new ReasonerLink(childLink.getChild(), childLink.getType(), link.getParent());
+					temp = rule.getImplications(this, newLink);
+					if (temp != null) {
+						deps.addAll(temp);
+					}
+				}
+			}
 		}
+
 		for (Explanation exp : deps) {
 			// get all the other explanations for the explained object
 			Collection<Explanation> exps = getExplanations(exp
@@ -370,16 +387,20 @@ public class LinkPileReasoner extends AbstractReasoner {
 			boolean dead = exp.removeEvidence(link);
 			// if dead == true, it means that removing the defunct link
 			// invalidated the explanation
-			if (dead) {
-				if (exps.isEmpty())
+			// el - can't do the "dead" check anymore because of the trick we're using for
+			// dealing with cyclic explanations
+			//if (dead) {
+				if (exps.isEmpty()) {
 					reasonRemoval(exp.getExplainedObject(), seenem);
-			} else
-				exps.add(exp);
+				}
+			//} else
+				//exps.add(exp);
 		}
 	}
 
 	@Override
 	public Collection<Explanation> getExplanations(PathCapable pc) {
+		//return johns_version_of_getExplanations_which_I_dont_understand(pc);
 		// This version written by CJM
 		Collection<Explanation> expls = new HashSet<Explanation>();
 		if (pc instanceof Link) {
@@ -392,7 +413,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 			Link rl = findRealLink((Link)link);
 			
 			if (rl instanceof ReasonerLink) {
-				expls.addAll( ((ReasonerLink) rl).getExplanations() );
+				//expls.addAll( ((ReasonerLink) rl).getExplanations() );
+				// el - need to return a reference to the existing container, can't return
+				// a new one
+				return (Collection)((ReasonerLink)rl).getExplanations();
 			}
 		} 
 		return expls;
