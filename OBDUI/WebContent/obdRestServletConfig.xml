@@ -119,6 +119,11 @@
 	
 	
 	<resourcePathMap>
+		<resourceClass>org.geneontology.web.AutoCompleteSearchResource</resourceClass>
+		<path>/{dataSource}/autocomplete/search/{target}/{term}/</path>
+	</resourcePathMap>
+
+	<resourcePathMap>
 		<resourceClass>org.geneontology.web.NodeSearchResource</resourceClass>
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}</path>
 	</resourcePathMap>
@@ -169,6 +174,15 @@
 	<resourcePathMap>
 		<directoryPath>/js/</directoryPath>
 		<path>/js/</path>
+	</resourcePathMap>
+	<resourcePathMap>
+		<directoryPath>/js/jquery/</directoryPath>
+		<path>/js/jquery/</path>
+	</resourcePathMap>
+	
+	<resourcePathMap>
+		<directoryPath>/html/</directoryPath>
+		<path>/html/</path>
 	</resourcePathMap>
 
 	<ftlTemplateDirectory>/pageTemplates</ftlTemplateDirectory>
