@@ -15,6 +15,7 @@ import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
+import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
@@ -44,6 +45,10 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		String XENOBIOTIC_CATABOLISM = "GO:0042178";
 		String RCAMPHOR = "CHEBI:15396";
 		String CAMPHOR = "CHEBI:36773";
+		String CAMPHORS = "CHEBI:22996";
+		String XENOBIOTIC = "CHEBI:35703";
+
+		testForIsA(RCAMPHOR, CAMPHOR);
 		testForIsA("CHEBI:24974","CHEBI:23367"); /* is_a transitivity */
 		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
 		testForIsA(CAMPHOR_CATABOLISM,"GO:0009056"); /* genus */
@@ -58,21 +63,17 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		// test incremental reasoning
 		if (true) {
 			Link link = reasonedDB.hasRelationship((LinkedObject)session.getObject(RCAMPHOR), OBOProperty.IS_A, (LinkedObject)session.getObject(CAMPHOR));
-			
 			// remove a link that is crucial for inferencing
-			//HistoryItem item = new DeleteLinkHistoryItem("CHEBI:15396", OBOProperty.IS_A.getID(), "CHEBI:36773");
 			HistoryItem item = new DeleteLinkHistoryItem(link);
 			session.getOperationModel().apply(item);
 			reasonedDB.removeLink(link);
 			testForNoIsA(CAMPHOR_CATABOLISM,XENOBIOTIC_CATABOLISM); /* completeness : c-catab is_a xeno catab*/
 			// put the link back
-			item = new CreateLinkHistoryItem("CHEBI:15396", OBOProperty.IS_A.getID(), "CHEBI:36773");
+			item = new CreateLinkHistoryItem(link);
 			session.getOperationModel().apply(item);
+			reasonedDB.addLink(link);
 			testForIsA(CAMPHOR_CATABOLISM,XENOBIOTIC_CATABOLISM); /* completeness : c-catab is_a xeno catab*/
-
 		}
 	}
-
-
 }
 
