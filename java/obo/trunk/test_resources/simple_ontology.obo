@@ -1,0 +1,29 @@
+[Term]
+id: A
+name: A
+namespace: test
+
+[Term]
+id: B
+name: B
+namespace: test
+is_a: A
+
+[Term]
+id: C
+name: C
+namespace: test
+is_a: A
+
+[Term]
+id: D
+name: D
+namespace: test
+is_a: B
+is_a: C
+
+[Term]
+id: E
+name: E
+namespace: test
+is_a: D
