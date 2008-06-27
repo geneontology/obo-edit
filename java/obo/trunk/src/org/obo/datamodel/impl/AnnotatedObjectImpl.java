@@ -43,7 +43,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 
 	protected Set propertyValues = new TinySet();
 
-	protected HashMap categoryExtensionHash = new HashMap();
+	protected HashMap categoryExtensionHash; // = new HashMap();
 
 	protected NestedValue definitionExtension;
 
