@@ -420,11 +420,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				outputFile(textFile);
 
 
-				//This is the section to remove disjoints from the text file.
-				//It would be better as a separate method but I cannot get
-				//this method to access the newly generated text file if
-				// it is made in the other method. The method skeleton and method call are 
-				//left intact.
 				removeDisjoints(textFile, noDisjointTextFile);
 
 
