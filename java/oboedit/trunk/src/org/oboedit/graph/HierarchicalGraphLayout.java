@@ -36,10 +36,12 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	/**
 	 * Number of passes up and down the levels to attempt to optimise node
 	 * positions.
-	 * 6/2008: I tried changing this and it didn't seem to make a big difference
-	 * in layout or in running time.  Need to experiment more.
 	 */
-	public final int reorderIterations = 10;
+//	public final int reorderIterations = 10;
+	// 6/2008: 1 seems to work almost as well as 10 (and of course it's much quicker).
+	// Simple graphs come out almost exactly the same.  Huge hairy ones are huge and hairy
+	// whether you do 1 iteration or 20.
+	public final int reorderIterations = 1;
 
 	/** Minimum gap between levels */
 //	public final int minLevelGap = 20;
@@ -214,7 +216,6 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		}
 
 		void reorder(Level above, Level below) {
-
 			for (int j = 0; j < nodes.size(); j++) {
 
 				NodeObj nj = (NodeObj) nodes.get(j);
@@ -253,7 +254,6 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			}
 
 			while (true) {
-
 				Collections.sort(nodes, nodeLayoutComparator);
 
 				boolean foundOverlap = false;
@@ -357,7 +357,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	};
 
 	public boolean isConnected(NodeObj a, NodeObj b) {
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		scratchEdge.setChildParent(a, b);
 		if (dummyEdges.contains(scratchEdge)) {
 			return true;
@@ -427,7 +427,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	protected int nodeCount = 0;
 
 	public void doLayout() {
-		long time = System.currentTimeMillis();
+//		logger.debug("HGL.doLayout: levels = " + levels.size() + ", time = " + System.currentTimeMillis()/1000);
+			     
 		levels.clear();
 
 		ArrayList<NodeObj> nodeList = new ArrayList<NodeObj>(nodes.values());
@@ -633,7 +634,6 @@ public class HierarchicalGraphLayout implements GraphLayout {
 
 		} else {
 			e.getComponentEdges().add(e);
-			// dummyEdges.add(e)
 		}
 		dummyEdges.add(e);
 	}
@@ -649,9 +649,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	}
 
 	private void orderNodesInLevels() {
+		int s = levels.size();
 		for (int j = 0; j < reorderIterations; j++) {
-
-			int s = levels.size();
 
 			for (int i = 0; i < s; i++) {
 				Level p = (i == 0) ? null : (Level) levels.get(i - 1);
