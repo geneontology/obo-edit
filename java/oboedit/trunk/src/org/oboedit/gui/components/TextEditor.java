@@ -574,6 +574,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			} else if (Preferences.getPreferences()
 					.getWarnBeforeDiscardingEdits()
 					&& hasChanges()) {
+				// Change to "Commit these edits?"  (yes=keep, no=discard)
 				int val = JOptionPane.showConfirmDialog(GUIManager.getManager()
 						.getFrame(), "There are uncommitted text edits.\n"
 						+ "Discard these edits?", "Pending edits",
@@ -581,6 +582,9 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 				return val == JOptionPane.YES_OPTION;
 			}
 		}
+		logger.info("Committed text edit(s) to " + currentObject.getName() + ".  There " +
+			    (fatal ? "were" : "were no") +
+			    " fatal errors.");
 		return !fatal;
 	}
 
