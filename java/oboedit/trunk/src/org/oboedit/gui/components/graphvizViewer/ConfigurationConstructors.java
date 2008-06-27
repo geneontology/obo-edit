@@ -65,7 +65,7 @@ public class ConfigurationConstructors implements ComponentConfiguration {
 	}
 
 
-	public static String getDotPath() {
+	public String getDotPath() {
 	return dotPath;
 	
 	}
@@ -246,5 +246,39 @@ public class ConfigurationConstructors implements ComponentConfiguration {
 		this.viewerFormat = viewerFormat;
 	}
 	
+	public Vector getNamedColorList() {
+		Vector data = new Vector();
+		data.add(new NamedColor(GraphvizCanvas.BACKGROUND_COLOR, bgcolor));
+
+		data.add(new NamedColor(GraphvizCanvas.TERM_BACKGROUND_COLOR, termBoxColor));
+		data.add(new NamedColor(GraphvizCanvas.TERM_TEXT_COLOR, termFontColor));
+		data.add(new NamedColor(GraphvizCanvas.TERM_STROKE_COLOR, termStrokeColor));
+
+		data.add(new NamedColor(GraphvizCanvas.TYPE_BACKGROUND_COLOR, typeBoxColor));
+		data.add(new NamedColor(GraphvizCanvas.TYPE_STROKE_COLOR, typeStrokeColor));
+		data.add(new NamedColor(GraphvizCanvas.TYPE_TEXT_COLOR, typeFontColor));
+
+		data.add(new NamedColor(GraphvizCanvas.OBSOLETE_BACKGROUND_COLOR,
+				obsoleteBoxColor));
+		data.add(new NamedColor(GraphvizCanvas.OBSOLETE_STROKE_COLOR,
+				obsoleteStrokeColor));
+		data.add(new NamedColor(GraphvizCanvas.OBSOLETE_TEXT_COLOR, obsoleteFontColor));
+
+		Iterator it = TermUtil.getRelationshipTypes(SessionManager.getManager().getSession()).iterator();
+		while (it.hasNext()) {
+			OBOProperty type = (OBOProperty) it.next();
+			ColorPair pair;
+			// something wrong?
+			pair = (ColorPair) colorMap.get(type.getID());
+			if (pair == null)
+				pair = (ColorPair) GraphvizCanvas.defaultLabelColors.clone();
+
+			TypeColorPair tcp = new TypeColorPair(pair, type.getID());
+
+			data.add(tcp);
+		}
+		return data;
+	}
+
 	
 }

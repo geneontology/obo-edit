@@ -2,6 +2,7 @@ package org.oboedit.gui.components.graphvizViewer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,7 +12,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,13 +27,11 @@ import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
 import org.bbop.swing.ListEditor;
 import org.bbop.swing.widget.FontChooser;
+import org.obo.datamodel.Link;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.graphvizViewer.*;
 
-//public class GraphvizConfigurationPanelNew  extends ConfigurationPanel {
 
-//protected JPanel backgroundColorPanel = new JPanel();
-//protected JColorChooser backgroundColorChooser = new JColorChooser();
 
 public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 
@@ -40,7 +41,6 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 
 	private JPanel panel = new JPanel();
 	private JTabbedPane optionsPane = new JTabbedPane();
-	private JButton commitButton = new JButton("Save Options");
 	protected Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
 			"diamond", "parallelogram", "house", "pentagon", "hexagon",
 			"septagon", "octagon", "invtriangle" };
@@ -77,6 +77,18 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	JButton browseButton = new JButton("Browse...");
 	JPanel appLine = new JPanel();
 	JLabel formatLabel = new JLabel("Default display format");
+	JLabel noTypeLabel = new JLabel("no type selected");
+	final FontChooser linkFontChooser = new FontChooser();
+	final FontChooser nodeFontChooser = new FontChooser();
+	protected ConfigurationConstructors configurationConstructorsInstance = new ConfigurationConstructors();
+	final JTextField appPathField = new JTextField(configurationConstructorsInstance.getDotPath());
+	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
+			noTypeLabel, new Vector(), true, true, false, true, false);
+	final JDialog pane = new JDialog((Frame) null, true);
+	protected JPanel backgroundColorPanel = new JPanel();
+	protected JColorChooser backgroundColorChooser = new JColorChooser();
+	Vector data = configurationConstructorsInstance.getNamedColorList();
+
 
 
 	/**
@@ -84,29 +96,22 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	 */
 	public GraphvizConfigurationPanelNew(GraphvizCanvas graphvizCanvasInstance) {
 		setLayout(new BorderLayout());
-		JLabel noTypeLabel = new JLabel("no type selected");
-		final FontChooser linkFontChooser = new FontChooser();
-		final FontChooser nodeFontChooser = new FontChooser();
-		final JButton commitButton = new JButton("Save Options");
-		final JTextField appPathField = new JTextField(ConfigurationConstructors.getDotPath());
-		final ListEditor typeColorList = new ListEditor(new ColorEditor(),
-				noTypeLabel, new Vector(), true, true, false, true, false);
-		//	typeColorList.setData(data);
-		typeColorList.setVectorEditable(false);
+
+		//not sure what this line does.
+		pane.setContentPane(panel);
 
 //		Adds the main panel to the configuration window.
-		
+
 		add(panel);
 		panel.setBackground(Preferences.defaultBackgroundColor());
 		panel.setLayout(new BorderLayout());
 
-//		Adds JTabbedpane optionsPane and commit button to main panel. 
-		
+//		Adds JTabbedpane optionsPane to main panel. 
+
 		panel.add(optionsPane, "Center");
-		panel.add(commitButton, "South");
 
 //		Adds the tabs to the JTabbedpane.
-		
+
 		optionsPane.removeAll();
 		optionsPane.addTab("Fonts", outerFontPanel);
 		optionsPane.addTab("Colors", typeColorList);
@@ -114,17 +119,17 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		optionsPane.addTab("Behavior", outerAppPanel);
 
 //		Set tab panel characteristics characteristics.	
-		
+
 		outerShapePanel.setBackground(Preferences.defaultBackgroundColor());
 		outerShapePanel.setLayout(new BorderLayout());	
-		
+
 		outerAppPanel.setBackground(Preferences.defaultBackgroundColor());
 		outerAppPanel.setLayout(new BorderLayout());
 
-		
-		
+
+
 //		Add constituent parts of outerFontPanel.
-		
+
 		outerFontPanel.setBackground(Preferences.defaultBackgroundColor());
 		outerFontPanel.setLayout(new BorderLayout());
 
@@ -135,23 +140,25 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		fontPanel.setLayout(new BoxLayout(fontPanel, BoxLayout.Y_AXIS));
 
 //		Adds linkFontChoose to fontPanel.
-		
+
 		fontPanel.add(linkFontChooser);
 		linkFontChooser.setBorder(linkFontBorder);
 		linkFontChooser.setOpaque(false);
 
 //		Adds nodeFontChooser to fontPanel.
-		
+
 		fontPanel.add(nodeFontChooser);
 		nodeFontChooser.setBorder(nodeFontBorder);
 		nodeFontChooser.setOpaque(false);
 
-		
-// 		Add constituent parts of typeColorList.
+
+//		Configure typeColorList.
+		typeColorList.setData(data);
+		typeColorList.setVectorEditable(false);
 
 
 //		Add constituent parts of outerShapePanel (which is a tab).
-		
+
 //		Add shapePanel to outerShapePanel.
 
 		outerShapePanel.add(shapePanel, "North");
@@ -159,30 +166,30 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
 
 //		Add nodeShapePanel to shapePanel.		
-		
+
 		shapePanel.add(nodeShapePanel);
 		shapePanel.add(Box.createVerticalStrut(5));
 		nodeShapePanel.setOpaque(false);
 		nodeShapePanel.setLayout(new BorderLayout());
 		nodeShapePanel.setBorder(nodeBorder);
 		nodeBorder.setTitleFont(getFont());
-		
+
 //		Add nodeShapeList to nodeShapePanel.		
-		
+
 		nodeShapePanel.add(nodeShapeList, "Center");
 		nodeShapeList.setBackground(Preferences.defaultButtonColor());
 		nodeShapeList.setFont(getFont());
 
-		
+
 //		Add obdoleteShapePanel to shapePanel.
-		
+
 		shapePanel.add(obsoleteShapePanel);
 		shapePanel.add(Box.createVerticalStrut(5));
 		obsoleteShapePanel.setOpaque(false);
 		obsoleteShapePanel.setLayout(new BorderLayout());
-		
+
 //		Add obsoleteShapeList to obsoleteShapePanel.	
-		
+
 		obsoleteShapePanel.add(obsoleteShapeList, "Center");
 		obsoleteShapeList.setBackground(Preferences.defaultButtonColor());
 		obsoleteShapeList.setFont(getFont());
@@ -190,15 +197,15 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		obsoleteBorder.setTitleFont(getFont());
 
 //		Add typeShapePanel to shapePanel.		
-		
+
 		shapePanel.add(typeShapePanel);
 		typeShapePanel.setOpaque(false);
 		typeShapePanel.setLayout(new BorderLayout());
 		typeShapePanel.setBorder(typeBorder);
 		typeBorder.setTitleFont(getFont());
-		
+
 //		Add typeShapeList to typeShapePanel.
-		
+
 		typeShapePanel.add(typeShapeList, "Center");
 		typeShapeList.setBackground(Preferences.defaultButtonColor());
 		typeShapeList.setFont(getFont());
@@ -206,118 +213,152 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 //		Add constituent parts of outerAppPanel (a tab).
 
 //		Add appPanel to outerAppPanel.		
-		
+
 		outerAppPanel.add(appPanel, "North");
 		appPanel.setBackground(Preferences.defaultBackgroundColor());
 		appPanel.setLayout(new BoxLayout(appPanel, BoxLayout.Y_AXIS));
 		appPanel.add(Box.createVerticalStrut(10));
-		
+
 //		Add viewerFormatLine to appPanel.	
-		
+
 		appPanel.add(viewerFormatLine);
 		appPanel.add(Box.createVerticalStrut(10));
 		viewerFormatLine.setOpaque(false);
 		viewerFormatLine.setLayout(new BorderLayout());
-		
+
 //		Add formatLabel to viewerFormatLine.		
-		
+
 		viewerFormatLine.add(formatLabel, "West");
 		viewerFormatLine.add(Box.createHorizontalStrut(5));
 		formatLabel.setFont(getFont());
-		
+
 //		Add formatBox to viewerFormatLine.		
-		
+
 		viewerFormatLine.add(formatBox);
 
-		
-		
+
+
 //		Add flipoverBox to appPanel.	
-		
+
 		appPanel.add(flipoverBox);
 		appPanel.add(Box.createVerticalStrut(10));
-		
+
 //		Add showIDBox to appPanel.		
-		
+
 		appPanel.add(showIDsBox);
 		appPanel.add(Box.createVerticalStrut(10));
-		
+
 //		Add appLine to appPanel.	
-		
+
 		appPanel.add(appLine);
 		appPanel.add(Box.createVerticalStrut(10));
 		appLine.setLayout(new BorderLayout());
 
-// 		Add appLabel to appLine. 		
-		
+//		Add appLabel to appLine. 		
+
 		appLine.add(appLabel, "West");
 		appLabel.setFont(getFont());
-		
+
 //		Add horzBox to appLine.		
-		
+
 		appLine.add(horzBox, "Center");
 		horzBox.add(Box.createHorizontalStrut(5));
-		
+
 //		Add appPathField to horzBox.
-		
+
 		horzBox.add(appPathField);
 		horzBox.add(Box.createHorizontalStrut(5));
-		
+
 //		Add BrowseButton to appLine.		
-		
+
 		appLine.add(browseButton, "East");
 		appLine.setOpaque(false);
 		browseButton.setFont(Preferences.getPreferences().getFont());
 		browseButton.setBackground(Preferences.defaultButtonColor());
-		
+
 //		Add messageArea to appPanel.	
-		
+
 		appPanel.add(messageArea);
 		messageArea.setEditable(false);
 		messageArea.setBorder(null);
 		messageArea.setOpaque(false);
 		messageArea.setLineWrap(true);
 		messageArea.setWrapStyleWord(true);
-	
+
 //		Code to add actionListeners.		
-		
+
 		browseButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseButtonActionPerformed(evt);
 			}
 		});
 
-		this.graphvizCanvasInstance = graphvizCanvasInstance;
 
+		this.graphvizCanvasInstance = graphvizCanvasInstance;
 	}
 
-	
-
+	/**
+	 * @param evt
+	 */
 	protected void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {
-//		JFileChooser chooser = new JFileChooser();
-//		if (chooser.showOpenDialog(graphvizCanvas.this) == JFileChooser.APPROVE_OPTION) {
-//			File file = chooser.getSelectedFile();
-//			File macPath = new File(file, "Contents/MacOS/dot");
-//			if (!file.getName().equals("dot") && file.isDirectory()
-//					&& macPath.exists()) {
-//				appPathField.setText(macPath.toString());
-//			} else
-//				appPathField.setText(file.toString());
-//		}
+		JFileChooser chooser = new JFileChooser();
+		if (chooser.showOpenDialog(graphvizCanvasInstance) == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			File macPath = new File(file, "Contents/MacOS/dot");
+			if (!file.getName().equals("dot") && file.isDirectory()
+					&& macPath.exists()) {
+				appPathField.setText(macPath.toString());
+			} else
+				appPathField.setText(file.toString());
+		}
 	};
-	
+
+
+
 	@Override
 	public void commit() {
-		// TODO Auto-generated method stub
 		System.out.println("GraphvizConfigurationPanelNew: commit() run.");
+		configurationConstructorsInstance.setDotPath(appPathField.getText());
+		configurationConstructorsInstance.setLabelFont(linkFontChooser.getChosenFont());
+		configurationConstructorsInstance.setNodeFont(nodeFontChooser.getChosenFont());
+		configurationConstructorsInstance.setTypeShape((String) typeShapeList.getSelectedItem());
+		configurationConstructorsInstance.setNodeShape((String) nodeShapeList.getSelectedItem());
+		configurationConstructorsInstance.setObsoleteShape((String) obsoleteShapeList.getSelectedItem());
+		configurationConstructorsInstance.setFlipOver(flipoverBox.isSelected());
+		configurationConstructorsInstance.setShowIDs(showIDsBox.isSelected());
 
+		for (int i = 0; i < typeColorList.getData().size(); i++) {
+			Object o = typeColorList.getData().get(i);
+			if (o instanceof TypeColorPair) {
+				TypeColorPair tc = (TypeColorPair) o;
+				configurationConstructorsInstance.getColorMap().put(tc.getTypeID(), tc.getPair());
+			} else if (o instanceof NamedColor) {
+				NamedColor nc = (NamedColor) o;
+				configurationConstructorsInstance.setNamedColor(nc.getName(), nc.getColor());
+			}
+		}
+
+		configurationConstructorsInstance.setViewerFormat((String) formatBox.getSelectedItem());
+
+		graphvizCanvasInstance.reloadImage();
+
+
+	}
+	
+	protected ColorPair getColor(Link tr) {
+		ColorPair c = (ColorPair) configurationConstructorsInstance.getColorMap().get(
+				tr.getType().getID());
+		if (c == null)
+			c = GraphvizCanvas.defaultLabelColors;
+		// if (TermUtil.isRedundant(tr)) {
+		// c = defaultRedundantColors;
+		// }
+		return c;
 	}
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		System.out.println("GraphvizConfigurationPanelNew: init() run.");
-		//	htmlArea.setLineWrap(false);
-//		backgroundColorChooser.setColor(graphvizCanvasInstance.getBackground());	
 
 	}
 
