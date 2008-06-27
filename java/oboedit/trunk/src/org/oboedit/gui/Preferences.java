@@ -119,6 +119,10 @@ public class Preferences {
 
 	protected Collection<ReconfigListener> reconfigListeners = new LinkedList<ReconfigListener>();
 
+	protected static String appName = "OBO-Edit";
+
+	protected static boolean batchMode = true;  // true for applications like obo2obo that don't have a gui, false for OBO-Edit itself
+
 	public void addReconfigListener(ReconfigListener e) {
 		reconfigListeners.add(e);
 	}
@@ -188,13 +192,13 @@ public class Preferences {
 			+ "    </xsl:copy>\n"
 			+ "  </xsl:template>\n" + "</xsl:stylesheet>";
 
-	protected static final File filterFile = new File(getOBOEditPrefsDir(),
-			"filters/");
+	protected static File filterFile;
 
 	protected static Preferences preferences;
 
 	public Preferences() {
 		setFont(new Font("Arial", 0, 12));
+		filterFile = new File(getOBOEditPrefsDir(), "filters/");
 		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:is_a.svg");
 		iconURLIndex.put("part_of", "resource:part_of.svg");
 		iconURLIndex.put("develops_from", "resource:develops_from.svg");
@@ -207,7 +211,6 @@ public class Preferences {
 		colorIndex.put("regulates", purple);
 		colorIndex.put("positively_regulates", purple);
 		colorIndex.put("negatively_regulates", purple);
-		
 	}
 
 	public static Preferences getPreferences() {
@@ -251,10 +254,17 @@ public class Preferences {
 						 version.getMajorVersion() + 
 						 (version.isBeta() ? "-beta" : "") + 
 						 "/"));
+		logger.info("prefsDir = " + prefsDir);
+
+//		// FOR DEBUGGING
+//		if (!isBatchMode()) { // DEL
+//			GUIUtil.popupMessageDialog("This message shouldn't pop up if you're running in batch mode (no GUI)."); // DEL
+//			(new Exception()).printStackTrace();
+//		}
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
-		// for (temporary) backwards compatibility.
-		if (!prefsDir.exists())
+		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
+		if (!isBatchMode() && !prefsDir.exists())
 			GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
 
 		return prefsDir;
@@ -685,7 +695,20 @@ public class Preferences {
 	}
 
 	public static String getAppName() {
-	    return "OBO-Edit";
+		return appName;
+	}
+
+	public static void setAppName(String app) {
+		appName = app;
+	}
+
+	public static boolean isBatchMode() {
+		logger.debug(appName + ": isBatchMode = " + batchMode);
+		return batchMode;
+	}
+	public static void setBatchMode(boolean batch) {
+		logger.debug(appName + ": set batchMode to " + batchMode);
+		batchMode = batch;
 	}
 
 	public static List<URL> getIconLibrary() {
