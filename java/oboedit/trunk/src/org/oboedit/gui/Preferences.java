@@ -245,27 +245,23 @@ public class Preferences {
 
 	public static File getOBOEditPrefsDir() {
 		VersionNumber version = Preferences.getVersion();
-		// Old: ~/.oboeditbeta
-		File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
-					    + (version.isBeta() ? "beta" : "") + "/");
 		// New: OS-appropriate directory
  		File prefsDir = new File(OSUtil.getConfigDirectory(
 						 getAppName() +
 						 version.getMajorVersion() + 
 						 (version.isBeta() ? "-beta" : "") + 
 						 "/"));
-		logger.info("prefsDir = " + prefsDir);
-
-//		// FOR DEBUGGING
-//		if (!isBatchMode()) { // DEL
-//			GUIUtil.popupMessageDialog("This message shouldn't pop up if you're running in batch mode (no GUI)."); // DEL
-//			(new Exception()).printStackTrace();
-//		}
+//		logger.info("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
-		if (!isBatchMode() && !prefsDir.exists())
-			GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
+		if (!prefsDir.exists() && !isBatchMode()) {
+			// Old: ~/.oboeditbeta
+			File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
+						    + (version.isBeta() ? "beta" : "") + "/");
+			if (oldPrefsDir.exists())
+				GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
+		}
 
 		return prefsDir;
 	}
@@ -703,7 +699,6 @@ public class Preferences {
 	}
 
 	public static boolean isBatchMode() {
-		logger.debug(appName + ": isBatchMode = " + batchMode);
 		return batchMode;
 	}
 	public static void setBatchMode(boolean batch) {
