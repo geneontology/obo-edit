@@ -360,6 +360,37 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	public void init() {
 		System.out.println("GraphvizConfigurationPanelNew: init() run.");
 
+		//I'm not sure if any of the lines below are needed. 
+		//The graphviz path works without them and they
+		//don't make the background color work. 
+		configurationConstructorsInstance.getDotPath();
+		configurationConstructorsInstance.getLabelFont();
+		configurationConstructorsInstance.getNodeFont();
+		configurationConstructorsInstance.getTypeShape();
+		configurationConstructorsInstance.getNodeShape();
+		configurationConstructorsInstance.getObsoleteShape();
+		configurationConstructorsInstance.getFlipOver();
+		configurationConstructorsInstance.getShowIDs();
+
+		//what does this bit do?
+		//I think this bit may be why I cannot change the black background. 
+		for (int i = 0; i < typeColorList.getData().size(); i++) {
+			Object o = typeColorList.getData().get(i);
+			if (o instanceof TypeColorPair) {
+				TypeColorPair tc = (TypeColorPair) o;
+				configurationConstructorsInstance.getColorMap().put(tc.getTypeID(), tc.getPair());
+			} else if (o instanceof NamedColor) {
+				NamedColor nc = (NamedColor) o;
+				configurationConstructorsInstance.setNamedColor(nc.getName(), nc.getColor());
+			}
+		}
+		
+		configurationConstructorsInstance.getViewerFormat();
+
+		//confusion ends here. 
+		
+		
+
 	}
 
 
