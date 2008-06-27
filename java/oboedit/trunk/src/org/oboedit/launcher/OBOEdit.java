@@ -218,7 +218,8 @@ public class OBOEdit {
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
 
-					logger.info("Saving logfile to OBO-Edit config directory: " + logFile);
+					logger.info("Config directory: " + Preferences.getOBOEditPrefsDir());
+					logger.info("Saving logfile to " + logFile);
 
 					// Set up Data Adapter registry
 					DataAdapterRegistry registry = IOManager.getManager()
