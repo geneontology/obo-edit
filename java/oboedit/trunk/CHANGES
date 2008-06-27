@@ -9,7 +9,7 @@ selection mode (like in OE1).
 goes through while calculating the layout.  It originally did 10 double
 passes.  1 seems to work almost as well as 10 (and of course it's much
 quicker).  Simple graphs come out almost exactly the same.  Huge hairy ones
-are huge and hairy whether you do 1 iteration of 20.
+are huge and hairy whether you do 1 iteration or 20.
 - If you're running a script in batch mode (e.g. OBO2OBO0) and you have config
 files in the old config directory (~/.oboeditbeta), you were getting a popup
 dialog asking if you wanted your config files copied to the new config
