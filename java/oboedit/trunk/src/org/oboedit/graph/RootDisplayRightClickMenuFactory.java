@@ -84,6 +84,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 								.getSelection();
 					if (selection == null)
 						selection = SelectionManager.createEmptySelection(null);
+//					logger.debug("Showing " + provider.getLabel() + " in Graph Editor"); // DEL
 					final Collection<? extends LinkedObject> shown = provider
 							.getShown(selection);
 					if (shown != null)
@@ -352,7 +353,6 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			@Override
 			public Collection<? extends LinkedObject> getShown(
 					Selection selection) {
-				logger.info("Showing everything in Graph Editor...");
 				return TermUtil.getTerms(canvas.getLinkDatabase());
 			}
 		});
