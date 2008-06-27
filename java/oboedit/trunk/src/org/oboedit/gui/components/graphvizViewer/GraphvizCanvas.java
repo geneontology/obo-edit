@@ -55,7 +55,7 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.OntologyEditorConfigEditor;
 import org.oboedit.gui.components.ConfigurableTextComponent.InfoConfig;
-import org.oboedit.gui.components.GraphvizCanvas.GraphvizConfiguration;
+import org.oboedit.gui.components.graphvizViewer.*;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 
@@ -86,7 +86,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String mode = SELECTED_TO_ROOT;
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected GraphvizConfigurationOld graphvizConfigurationOldInstance = new GraphvizConfigurationOld();
+	protected ConfigurationConstructors configurationConstructorsInstance = new ConfigurationConstructors();
 	protected float ranksep = .1f;
 	protected float nodesep = .1f;
 	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,MINIMAL_SELECTION_GRAPH };
@@ -117,7 +117,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	JScrollPane pane = new JScrollPane(htmlPane,
 			ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	JButton optionButton = new JButton("Options");
 	JButton saveButton = new JButton("Save");
 
 	public GraphvizCanvas(String id) {
@@ -130,12 +129,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		htmlPane.setContentType("text/html");
 		htmlPane.setEditable(false);
 		htmlPane.addHyperlinkListener(linkListener);
-		optionButton.setBackground(Preferences.defaultButtonColor());
 		saveButton.setBackground(Preferences.defaultButtonColor());
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.add(Box.createHorizontalGlue());
-		buttonBox.add(optionButton);
-		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(modeList);
 		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(primaryFiltersCheckbox);
@@ -156,11 +152,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				reloadImage();
 			}
 		});
-		optionButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showOptions();
-			}
-		});
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				storeImage();
@@ -170,20 +161,20 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	public void cleanup() {
 		SelectionManager.getManager()
-				.removeSelectionListener(selectionListener);
+		.removeSelectionListener(selectionListener);
 	}
 
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		return new GraphvizViewerComponentConfigurationNew();
 	}
-	
+
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
 		return new GraphvizConfigurationPanelNew(this);
 	}
-	
-	
+
+
 
 	public void init() {
 		linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
@@ -191,7 +182,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		formatBox.setFont(getFont());
 		modeList.setFont(getFont());
 		imageLabel.setFont(getFont());
-		optionButton.setFont(getFont());
 		saveButton.setFont(getFont());
 		flipoverBox.setFont(getFont());
 		showIDsBox.setFont(getFont());
@@ -202,16 +192,16 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		reloadImage();
 	}
 
-	public void setConfiguration(ComponentConfiguration config) {
-	
-		if (graphvizConfigurationOldInstance instanceof GraphvizConfigurationOld
-				&& graphvizConfigurationOldInstance != null) {
-			this.graphvizConfigurationOldInstance = (GraphvizConfigurationOld) graphvizConfigurationOldInstance;
-		}
-		setDoFiltering(this.graphvizConfigurationOldInstance.getDoFiltering());
-		reloadImage();
-
-	}
+//	public void setConfiguration(ComponentConfiguration config) {
+//
+//		if (configurationConstructorsInstance instanceof GraphvizConfigurationOld
+//				&& configurationConstructorsInstance != null) {
+//			this.configurationConstructorsInstance = (GraphvizConfigurationOld) configurationConstructorsInstance;
+//		}
+//		setDoFiltering(this.configurationConstructorsInstance.getDoFiltering());
+//		reloadImage();
+//
+//	}
 
 	public void update() {
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
@@ -251,7 +241,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected ColorPair getColor(Link tr) {
-		ColorPair c = (ColorPair) graphvizConfigurationOldInstance.getColorMap().get(
+		ColorPair c = (ColorPair) configurationConstructorsInstance.getColorMap().get(
 				tr.getType().getID());
 		if (c == null)
 			c = defaultLabelColors;
@@ -279,53 +269,53 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(Link tr) {
 		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
-				+ "dir=" + (graphvizConfigurationOldInstance.getFlipOver() ? "back" : "forward")
-				+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
-				+ "fontsize=" + graphvizConfigurationOldInstance.getLabelFont().getSize()
-				+ ", fontname=\"" + graphvizConfigurationOldInstance.getLabelFont().getFontName()
-				+ "\", " + "color=\"" + getColorString(getColor(tr).edge)
-				+ "\", " + "fontcolor=\"" + getColorString(getColor(tr).label)
-				+ "\"";
+		+ "dir=" + (configurationConstructorsInstance.getFlipOver() ? "back" : "forward")
+		+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
+		+ "fontsize=" + configurationConstructorsInstance.getLabelFont().getSize()
+		+ ", fontname=\"" + configurationConstructorsInstance.getLabelFont().getFontName()
+		+ "\", " + "color=\"" + getColorString(getColor(tr).edge)
+		+ "\", " + "fontcolor=\"" + getColorString(getColor(tr).label)
+		+ "\"";
 	}
 
 	protected String getOptions(OBOClass t) {
-		Color fontColor = graphvizConfigurationOldInstance.getTermFontColor();
+		Color fontColor = configurationConstructorsInstance.getTermFontColor();
 		if (t.isObsolete())
-			fontColor = graphvizConfigurationOldInstance.getObsoleteFontColor();
+			fontColor = configurationConstructorsInstance.getObsoleteFontColor();
 		else if (TermUtil.isProperty(t))
-			fontColor = graphvizConfigurationOldInstance.getTypeFontColor();
-		Color strokeColor = graphvizConfigurationOldInstance.getTermStrokeColor();
+			fontColor = configurationConstructorsInstance.getTypeFontColor();
+		Color strokeColor = configurationConstructorsInstance.getTermStrokeColor();
 		if (t.isObsolete())
-			strokeColor = graphvizConfigurationOldInstance.getObsoleteStrokeColor();
+			strokeColor = configurationConstructorsInstance.getObsoleteStrokeColor();
 		else if (TermUtil.isProperty(t))
-			strokeColor = graphvizConfigurationOldInstance.getTypeStrokeColor();
+			strokeColor = configurationConstructorsInstance.getTypeStrokeColor();
 		String s = "label=\"" + formatLabel(t.getName())
-				+ (graphvizConfigurationOldInstance.getShowIDs() ? "\\n\\n" + t.getID() : "")
-				+ "\", " + "shape=" + getShape(t) + ", fontsize="
-				+ graphvizConfigurationOldInstance.getNodeFont().getSize() + ", " + "fontname=\""
-				+ graphvizConfigurationOldInstance.getNodeFont().getFontName() + "\", "
-				+ "fillcolor=\""
-				+ getColorString(graphvizConfigurationOldInstance.getTermBoxColor()) + "\""
-				+ ", color=\"" + getColorString(strokeColor) + "\""
-				+ ", fontcolor=\"" + getColorString(fontColor) + "\", "
-				+ "style=filled, URL=\"file:" + t.getID() + "\"";
+		+ (configurationConstructorsInstance.getShowIDs() ? "\\n\\n" + t.getID() : "")
+		+ "\", " + "shape=" + getShape(t) + ", fontsize="
+		+ configurationConstructorsInstance.getNodeFont().getSize() + ", " + "fontname=\""
+		+ configurationConstructorsInstance.getNodeFont().getFontName() + "\", "
+		+ "fillcolor=\""
+		+ getColorString(configurationConstructorsInstance.getTermBoxColor()) + "\""
+		+ ", color=\"" + getColorString(strokeColor) + "\""
+		+ ", fontcolor=\"" + getColorString(fontColor) + "\", "
+		+ "style=filled, URL=\"file:" + t.getID() + "\"";
 		return s;
 	}
 
 	protected String getShape(OBOClass t) {
 		if (t.isObsolete())
-			return graphvizConfigurationOldInstance.getObsoleteShape();
+			return configurationConstructorsInstance.getObsoleteShape();
 		else if (TermUtil.isProperty(t))
-			return graphvizConfigurationOldInstance.getTypeShape();
+			return configurationConstructorsInstance.getTypeShape();
 		else
-			return graphvizConfigurationOldInstance.getNodeShape();
+			return configurationConstructorsInstance.getNodeShape();
 	}
 
 	protected void outputFile(File textFile) throws IOException {
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
 		writer.println("digraph G {");
 		writer.println("bgcolor=\""
-				+ getColorString(graphvizConfigurationOldInstance.getBGColor()) + "\";");
+				+ getColorString(configurationConstructorsInstance.getBGColor()) + "\";");
 		writer.println("ranksep=\"" + ranksep + "\";");
 		writer.println("nodesep=\"" + nodesep + "\";");
 		HashSet relationshipSet = new HashSet();
@@ -337,7 +327,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		while (it.hasNext()) {
 			Link tr = (Link) it.next();
 			if (tr.getParent() != null) {
-				if (graphvizConfigurationOldInstance.getFlipOver()) {
+				if (configurationConstructorsInstance.getFlipOver()) {
 					writer.println(convertID(tr.getParent().getID()) + " -> "
 							+ convertID(tr.getChild().getID()) + " ["
 							+ getOptions(tr) + "];");
@@ -377,7 +367,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedToRoot(Set set) {
 		Iterator it = SelectionManager.getManager().getSelection().getTerms()
-				.iterator();
+		.iterator();
 		HashSet lookedAt = new HashSet();
 		while (it.hasNext()) {
 			Object o = it.next();
@@ -423,35 +413,35 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {
 				File imageFile = File.createTempFile("graphimage", "."
-						+ graphvizConfigurationOldInstance.getViewerFormat());
+						+ configurationConstructorsInstance.getViewerFormat());
 				File textFile = File.createTempFile("graphtext", ".txt");
 
 				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
 				outputFile(textFile);
-				
-				
+
+
 				//This is the section to remove disjoints from the text file.
 				//It would be better as a separate method but I cannot get
 				//this method to access the newly generated text file if
 				// it is made in the other method. The method skeleton and method call are 
 				//left intact.
 				removeDisjoints(textFile, noDisjointTextFile);
-				
-				
-							Process p = Runtime.getRuntime().exec(
-				graphvizConfigurationOldInstance.getDotPath() + " -T"
-				+ graphvizConfigurationOldInstance.getViewerFormat() + " -o "
-				+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
-	
+
+
+				Process p = Runtime.getRuntime().exec(
+						configurationConstructorsInstance.getDotPath() + " -T"
+						+ configurationConstructorsInstance.getViewerFormat() + " -o "
+						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
+
 				// logger.info(configuration.getDotPath() + " -T"
 				// + configuration.getViewerFormat() + " -o "
 				// + imageFile.getPath() + " " + textFile.getPath());
 
 				p.waitFor();
-				
+
 				p = Runtime.getRuntime().exec(
-				graphvizConfigurationOldInstance.getDotPath() + " -Tcmapx "
-				+ noDisjointTextFile.getPath());
+						configurationConstructorsInstance.getDotPath() + " -Tcmapx "
+						+ noDisjointTextFile.getPath());
 
 				// logger.info(configuration.getDotPath() + " -Tcmapx "
 				// + textFile.getPath());
@@ -468,7 +458,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					buffer.append(line + "\n");
 				}
 				p.waitFor();
-				htmlPane.setBackground(graphvizConfigurationOldInstance.getBGColor());
+				htmlPane.setBackground(configurationConstructorsInstance.getBGColor());
 				buffer.append("</head>\n");
 				buffer.append("<body>\n");
 				buffer.append("<img src='file:" + imageFile
@@ -485,10 +475,10 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				textFile.deleteOnExit();
 			} catch (Exception ex) {
 				String failureHTML = "<html><center>Could not load GraphViz package.<br>"
-						+ "Make sure your properly obtained and installed GraphViz from<br>"
-						+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
-						+ "and be sure that the correct path to the executable file<br>"
-						+ "is specified in the options window.</center></html>";
+					+ "Make sure your properly obtained and installed GraphViz from<br>"
+					+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
+					+ "and be sure that the correct path to the executable file<br>"
+					+ "is specified in the options window.</center></html>";
 				imageLabel.setIcon(null);
 				imageLabel.setText(failureHTML);
 				ex.printStackTrace();
@@ -506,7 +496,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			BufferedReader textFileBufferedReader = new BufferedReader(new FileReader(textFile));
 			String graphvizTextFileLine = new String();
 			String text_to_be_deleted="isjoint";
-			
+
 			PrintWriter noDisjointPrintWriter = new PrintWriter(new FileOutputStream(noDisjointTextFile));
 
 			while( (graphvizTextFileLine=textFileBufferedReader.readLine())!=null )
@@ -520,7 +510,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					//The file is created but empty so this must be the problem.
 					//print statements do not print to the file either, though the file is made.
 					noDisjointPrintWriter.println(graphvizTextFileLine);
-			
+
 				}
 			}
 			noDisjointPrintWriter.close();
@@ -529,261 +519,36 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected void setDoFiltering(boolean doFiltering) {
-		graphvizConfigurationOldInstance.setDoFiltering(doFiltering);
+		configurationConstructorsInstance.setDoFiltering(doFiltering);
 		primaryFiltersCheckbox.setSelected(doFiltering);
 		if (!doFiltering)
 			linkDatabase = SessionManager.getManager().getSession()
-					.getLinkDatabase();
+			.getLinkDatabase();
 		else
 			linkDatabase = SessionManager.getManager().getSession()
-					.getLinkDatabase();
+			.getLinkDatabase();
 		;
 		reloadImage();
 	}
 
-	
+
 	//This is the part that adds all the panels to the options window.
-	protected void showOptions() {
-		JPanel panel = new JPanel();
-		panel.setBackground(Preferences.defaultBackgroundColor());
-		panel.setLayout(new BorderLayout());
-		final FontChooser linkFontChooser = new FontChooser();
-		final FontChooser nodeFontChooser = new FontChooser();
-		final JButton commitButton = new JButton("Save Options");
-		final JTextField appPathField = new JTextField(graphvizConfigurationOldInstance.getDotPath());
-		commitButton.setBackground(Preferences.defaultButtonColor());
-		commitButton.setFont(getFont());
-		linkFontChooser.setFont(getFont());
-		nodeFontChooser.setFont(getFont());
-		linkFontChooser.setChosenFont(graphvizConfigurationOldInstance.getLabelFont());
-		nodeFontChooser.setChosenFont(graphvizConfigurationOldInstance.getNodeFont());
-		nodeShapeList.setSelectedItem(graphvizConfigurationOldInstance.getNodeShape());
-		typeShapeList.setSelectedItem(graphvizConfigurationOldInstance.getTypeShape());
-		obsoleteShapeList.setSelectedItem(graphvizConfigurationOldInstance.getObsoleteShape());
-		flipoverBox.setSelected(graphvizConfigurationOldInstance.getFlipOver());
-		showIDsBox.setSelected(graphvizConfigurationOldInstance.getShowIDs());
-		formatBox.setSelectedItem(graphvizConfigurationOldInstance.getViewerFormat());
-		TitledBorder linkFontBorder = new TitledBorder("Relationship type font");
-		TitledBorder nodeFontBorder = new TitledBorder("Term name font");
-		linkFontChooser.setBorder(linkFontBorder);
-		nodeFontChooser.setBorder(nodeFontBorder);
-		linkFontChooser.setOpaque(false);
-		nodeFontChooser.setOpaque(false);
-		JLabel noTypeLabel = new JLabel("no type selected");
-		Vector data = graphvizConfigurationOldInstance.getNamedColorList();
-
-		final ListEditor typeColorList = new ListEditor(new ColorEditor(),
-				noTypeLabel, new Vector(), true, true, false, true, false);
-		typeColorList.setData(data);
-		typeColorList.setVectorEditable(false);
-
-		JPanel fontPanel = new JPanel();
-		fontPanel.setOpaque(false);
-		fontPanel.setLayout(new BoxLayout(fontPanel, BoxLayout.Y_AXIS));
-		fontPanel.add(linkFontChooser);
-		fontPanel.add(nodeFontChooser);
-
-		JPanel outerFontPanel = new JPanel();
-		outerFontPanel.setBackground(Preferences.defaultBackgroundColor());
-		outerFontPanel.setLayout(new BorderLayout());
-		outerFontPanel.add(fontPanel, "North");
-	
-		JPanel shapePanel = new JPanel();
-		shapePanel.setBackground(Preferences.defaultBackgroundColor());
-		shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
-		TitledBorder nodeBorder = new TitledBorder("Term shape");
-		TitledBorder obsoleteBorder = new TitledBorder("Obsolete shape");
-		TitledBorder typeBorder = new TitledBorder("Type shape");
-		nodeBorder.setTitleFont(getFont());
-		obsoleteBorder.setTitleFont(getFont());
-		typeBorder.setTitleFont(getFont());
-
-		JPanel nodeShapePanel = new JPanel();
-		nodeShapePanel.setOpaque(false);
-		nodeShapePanel.setLayout(new BorderLayout());
-		nodeShapePanel.add(nodeShapeList, "Center");
-		nodeShapeList.setBackground(Preferences.defaultButtonColor());
-		nodeShapePanel.setBorder(nodeBorder);
-
-		JPanel obsoleteShapePanel = new JPanel();
-		obsoleteShapePanel.setOpaque(false);
-		obsoleteShapePanel.setLayout(new BorderLayout());
-		obsoleteShapePanel.add(obsoleteShapeList, "Center");
-		obsoleteShapeList.setBackground(Preferences.defaultButtonColor());
-		obsoleteShapePanel.setBorder(obsoleteBorder);
-		// obsoleteShapeList.setBorder(obsoleteBorder);
-
-		JPanel typeShapePanel = new JPanel();
-		typeShapePanel.setOpaque(false);
-		typeShapePanel.setLayout(new BorderLayout());
-		typeShapePanel.add(typeShapeList, "Center");
-		typeShapeList.setBackground(Preferences.defaultButtonColor());
-		typeShapePanel.setBorder(typeBorder);
-		// typeShapeList.setBorder(typeBorder);
-
-		nodeShapeList.setFont(getFont());
-		typeShapeList.setFont(getFont());
-		obsoleteShapeList.setFont(getFont());
-
-		shapePanel.add(nodeShapePanel);
-		shapePanel.add(Box.createVerticalStrut(5));
-		shapePanel.add(obsoleteShapePanel);
-		shapePanel.add(Box.createVerticalStrut(5));
-		shapePanel.add(typeShapePanel);
-
-		JTextArea messageArea = new JTextArea(
-				"This should contain the path to the \"dot\" or "
-						+ "\"dot.exe\" file included with the GraphViz "
-						+ "software package. The package can be obtained "
-						+ "from " + "http://www.research.att.com/sw/"
-						+ "tools/graphviz/download.html", 3, 20);
-		messageArea.setEditable(false);
-		messageArea.setBorder(null);
-		messageArea.setOpaque(false);
-		messageArea.setLineWrap(true);
-		messageArea.setWrapStyleWord(true);
-
-		JButton browseButton = new JButton("Browse...");
-		browseButton.setFont(Preferences.getPreferences().getFont());
-		browseButton.setBackground(Preferences.defaultButtonColor());
-		browseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				if (chooser.showOpenDialog(GraphvizCanvas.this) == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					File macPath = new File(file, "Contents/MacOS/dot");
-					if (!file.getName().equals("dot") && file.isDirectory()
-							&& macPath.exists()) {
-						appPathField.setText(macPath.toString());
-					} else
-						appPathField.setText(file.toString());
-				}
-			}
-		});
-
-		JPanel outerShapePanel = new JPanel();
-		outerShapePanel.setBackground(Preferences.defaultBackgroundColor());
-		outerShapePanel.setLayout(new BorderLayout());
-		outerShapePanel.add(shapePanel, "North");
-
-		JLabel appLabel = new JLabel("Application path");
-		appLabel.setFont(getFont());
-
-		Box horzBox = new Box(BoxLayout.X_AXIS);
-		horzBox.add(Box.createHorizontalStrut(5));
-		horzBox.add(appPathField);
-		horzBox.add(Box.createHorizontalStrut(5));
-
-		JPanel appLine = new JPanel();
-		appLine.setLayout(new BorderLayout());
-		appLine.add(appLabel, "West");
-		appLine.add(horzBox, "Center");
-		appLine.add(browseButton, "East");
-		appLine.setOpaque(false);
-
-		flipoverBox.setOpaque(false);
-		showIDsBox.setOpaque(false);
-
-		JLabel formatLabel = new JLabel("Default display format");
-		formatLabel.setFont(getFont());
-
-		JPanel viewerFormatLine = new JPanel();
-		viewerFormatLine.setOpaque(false);
-		viewerFormatLine.setLayout(new BorderLayout());
-		viewerFormatLine.add(formatLabel, "West");
-		viewerFormatLine.add(Box.createHorizontalStrut(5));
-		viewerFormatLine.add(formatBox);
-
-		JPanel appPanel = new JPanel();
-		appPanel.setBackground(Preferences.defaultBackgroundColor());
-		appPanel.setLayout(new BoxLayout(appPanel, BoxLayout.Y_AXIS));
-		// appPanel.add(appLabel);
-		// appPanel.add(appPathField);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(viewerFormatLine);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(flipoverBox);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(showIDsBox);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(appLine);
-		appPanel.add(Box.createVerticalStrut(10));
-		appPanel.add(messageArea);
-
-		JPanel outerAppPanel = new JPanel();
-		outerAppPanel.setBackground(Preferences.defaultBackgroundColor());
-		outerAppPanel.setLayout(new BorderLayout());
-		outerAppPanel.add(appPanel, "North");
-
-		optionsPane.removeAll();
-		optionsPane.addTab("Fonts", outerFontPanel);
-		optionsPane.addTab("Colors", typeColorList);
-		optionsPane.addTab("Shapes", outerShapePanel);
-		optionsPane.addTab("Behavior", outerAppPanel);
-
-		panel.add(optionsPane, "Center");
-
-		panel.add(commitButton, "South");
-
-		final JDialog pane = new JDialog((Frame) null, true);
-		pane.setContentPane(panel);
-		commitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pane.setVisible(false);
-				graphvizConfigurationOldInstance.setDotPath(appPathField.getText());
-				graphvizConfigurationOldInstance.setLabelFont(linkFontChooser.getChosenFont());
-				graphvizConfigurationOldInstance.setNodeFont(nodeFontChooser.getChosenFont());
-
-				graphvizConfigurationOldInstance.setTypeShape((String) typeShapeList
-						.getSelectedItem());
-				graphvizConfigurationOldInstance.setNodeShape((String) nodeShapeList
-						.getSelectedItem());
-				graphvizConfigurationOldInstance.setObsoleteShape((String) obsoleteShapeList
-						.getSelectedItem());
-
-				graphvizConfigurationOldInstance.setFlipOver(flipoverBox.isSelected());
-				graphvizConfigurationOldInstance.setShowIDs(showIDsBox.isSelected());
-
-				for (int i = 0; i < typeColorList.getData().size(); i++) {
-					Object o = typeColorList.getData().get(i);
-					if (o instanceof TypeColorPair) {
-						TypeColorPair tc = (TypeColorPair) o;
-						graphvizConfigurationOldInstance.getColorMap().put(tc.getTypeID(),
-								tc.getPair());
-					} else if (o instanceof NamedColor) {
-						NamedColor nc = (NamedColor) o;
-						graphvizConfigurationOldInstance
-								.setNamedColor(nc.getName(), nc.getColor());
-					}
-				}
-
-				graphvizConfigurationOldInstance.setViewerFormat((String) formatBox
-						.getSelectedItem());
-
-				pane.dispose();
-				reloadImage();
-			}
-		});
-		pane.pack();
-		pane.setSize(600, 400);
-		pane.show();
-	}
 
 	protected void storeImage() {
 		try {
 			JFileChooser chooser = new JFileChooser();
 			chooser.addChoosableFileFilter(new ExtensionFilter(".jpg",
-					".jpg - JPEG Format"));
+			".jpg - JPEG Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".png",
-					".png - PNG Format"));
+			".png - PNG Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".ps", ".ps - "
 					+ "Postscript Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".dot",
-					".dot - GraphViz DOT Format"));
+			".dot - GraphViz DOT Format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".xdot",
-					".xdot - GraphViz extended DOT format"));
+			".xdot - GraphViz extended DOT format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".gif",
-					".gif - GIF Format"));
+			".gif - GIF Format"));
 
 			// Shows the dialog to the user and wait for is answer
 			int userChoice = chooser.showSaveDialog(this);
@@ -812,9 +577,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
 				// + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
-						graphvizConfigurationOldInstance.getDotPath() + " -T" + ef.getExtNoDot()
-								+ " -o  " + outputFile + "  -v "
-								+ textFile.getPath());
+						configurationConstructorsInstance.getDotPath() + " -T" + ef.getExtNoDot()
+						+ " -o  " + outputFile + "  -v "
+						+ textFile.getPath());
 				/*
 				 * 		 The bug has been fixed by putting escaped quotes round the
 				 *	 output file
@@ -873,7 +638,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						continue;
 					if (tr2.getParent().equals(root)
 							&& !SelectionManager.getManager().getSelection()
-									.getTerms().contains(tr2)) {
+							.getTerms().contains(tr2)) {
 						inUse.add(tr2);
 					}
 				}
