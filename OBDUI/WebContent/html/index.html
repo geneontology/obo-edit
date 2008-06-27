@@ -25,9 +25,59 @@
 			$(document).ready(
 				function(){
 					appendAddQueryElement($("#query"));
+					//$("#query").addClass("subQuery");
+					$("#submit").click(
+						function(){
+							alert(deconstruct("#query"));
+						}
+					);
 				}
+				
 			);
 			
+			function deconstruct(element){
+			
+				var open = '[';
+				var close = ']';
+				var queryString = '';
+				
+				if ($(element).hasClass("booleanQuery")){
+					queryString += (getLogic(element) + open);
+					var children = $(element).children(".queryElement");
+					for (var i=0;i<children.size();i++){
+						queryString += deconstruct(children[i]);
+						if (i != (children.size()-1)){
+							queryString += '+';
+						}
+					}	
+					
+					queryString += close;
+				} else if ($(element).hasClass("linkQuery")){
+					queryString += ('link' + open);
+					if ($(element).children("input.predicateValue").val() != 'undef'){
+						queryString += ('?rel="' + $(element).children("input.predicateValue").val() + '"');
+					}
+					if ($(element).children("input.objectValue").val() == 'subQuery'){
+						queryString += ('?target=' + deconstruct($(element).children(".subQuery")[0]));
+					} else if ($(element).children("input.objectValue").val() != 'undef'){
+						queryString += ('?target="' + $(element).children("input.objectValue").val() + '"');
+					}
+					queryString += close;
+				} else if ($(element).hasClass("subQuery")) {
+					queryString += deconstruct($(element).children(".queryElement")[0]);
+				} else {
+					alert("What kind of query? " + $(element).val());
+				}
+				
+				
+				return queryString;
+			}
+			
+			function linkQueryDeconstruct(element){
+				var queryString = 'link';
+				
+			}
+						
 			function genInputElement(name,url){
 			
 				var oie = document.createElement("input");
@@ -43,7 +93,7 @@
 				
 				// Autocomplete ajax call invoke
 				$(oie).autocomplete(url,{ 
-					minChars: 4,
+					minChars: 3,
 					delay: 500, 
 					width:400, 
 					max:100,
@@ -82,7 +132,7 @@
 					}
 				)
 					
-				$(oie).click(
+				$(oie).focus(
 					function(){
 						if ($(oie).val() == name){
 							$(oie).val('');
@@ -101,10 +151,10 @@
 				$(ile).click(
 					function(){
 						var otherLogic;
-						if ($(element).children("input.logic")[0].value == '&cap;'){
-							var otherLogic = '&cup;';
+						if ($(element).children("input.logic")[0].value == 'and'){
+							var otherLogic = 'or';
 						} else {
-							var otherLogic = '&cap;';
+							var otherLogic = 'and';
 						}
 						$(element).children("input.logic")[0].setAttribute("value",otherLogic);
 						$(element).children("span.logicSwitch").html(otherLogic);
@@ -117,6 +167,9 @@
 				$(element).children("input.logic").val(logic);
 			}
 			
+			function getLogic(element){
+				return $(element).children("input.logic").val();
+			}
 			
 			function genBasicQueryTermLink(parentElement){
 				var bae = document.createElement("a");
@@ -128,7 +181,7 @@
 							hie.setAttribute("type","hidden");
 							$(hie).addClass("logic");
 							$(parentElement).append(hie);
-							setLogic(parentElement,"&cap;");
+							setLogic(parentElement,"and");
 							
 						}
 						addBasicQueryTerm($(parentElement));
@@ -137,15 +190,12 @@
 				return bae;
 			}
 
-			function addBooleanQueryTerm(element){
+			function addSubQuery(element){
 				$(element).children("li.addElement").remove();
-				var ulqe = document.createElement("ul");
-				$(ulqe).addClass("queryElement");
-				addBasicQueryTerm(ulqe);
 				if ($(element).children("li.queryElement").size()>0){
 					$(element).append(getLogicElement(element));
 				}
-				$(element).append(ulqe);
+				$(element).append($(genSubQuery()).addClass("queryElement"));
 				appendAddQueryElement(element);
 				
 			}
@@ -161,32 +211,27 @@
 							hie.setAttribute("type","hidden");
 							$(hie).addClass("logic");
 							$(parentElement).append(hie);
-							setLogic(parentElement,"&cap;");
+							setLogic(parentElement,"and");
 						}
-						addBooleanQueryTerm($(parentElement));
+						addSubQuery($(parentElement));
 					}
 				);
 				return bqte;
 			}
 			
 			
-			function addSubQuery(element){
-				$(element).children("input.objectElement").remove();
-				$(element).children("a.logicSwitch").remove();
-				$(element).children("input.objectValue").val('subQuery');
-				$(element).append(getLogicSwitch(element,'on'));
+			function genSubQuery(){
 				var ule = document.createElement("ul");
 				$(ule).addClass("subQuery");
 				addBasicQueryTerm(ule);
-				$(element).append(ule);
+				return ule;
 			}
 			
 			function removeSubQuery(element){
 				$(element).children("ul.subQuery").remove();
 				$(element).children("a.logicSwitch").remove();
 				$(element).children("input.objectValue").remove();
-				$(element).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
-				$(element).append(getLogicSwitch(element,'off'));
+				
 			}
 			
 			function getLogicSwitch(element,position){
@@ -196,7 +241,11 @@
 					$(lse).html("&rfloor;");
 					$(lse).click(
 						function(){
-							addSubQuery(element);
+							$(element).children("input.objectElement").remove();
+							$(element).children("a.logicSwitch").remove();
+							$(element).children("input.objectValue").val('subQuery');
+							$(element).append(getLogicSwitch(element,'on'));
+							$(element).append(genSubQuery());
 						}
 					);
 				} else {
@@ -204,6 +253,8 @@
 					$(lse).click(
 						function(){
 							removeSubQuery(element);
+							$(element).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
+							$(element).append(getLogicSwitch(element,'off'));
 						}
 					);
 				}
@@ -214,6 +265,7 @@
 			function addBasicQueryTerm(element){
 				var liElement = document.createElement("li");
 				$(liElement).addClass("queryElement");
+				$(liElement).addClass("linkQuery");
 				$(liElement).append(genInputElement("predicate","/OBDUI/obdPhenotypeAll2008/autocomplete/search/relations/"));
 				$(liElement).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
 				$(liElement).append(getLogicSwitch(liElement,'off'));
@@ -221,14 +273,15 @@
 					$(element).prepend(getLogicElement(element));
 				}
 				$(element).prepend(liElement);
+				
 				appendAddQueryElement(element);
+				if ($(element).children(".queryElement").size()>1){
+					$(element).addClass("booleanQuery");
+				}
 			}
 			
-			
 			function appendAddQueryElement(element){
-				
 				if ($(element).children("li.addElement").size()==0){
-					//$(element).append("<li class=\"addElement\"></li>");
 					var lie = document.createElement("li");
 					$(lie).addClass("addElement");
 					$(element).append(lie);
@@ -240,15 +293,15 @@
 					$(element)
 					.children("li.addElement").html("").append(genBasicQueryTermLink(element)).append(" / ").append(genBooleanQueryTermLink(element));
 				}
-				
 			}
-
+			
 		</script>
 
 	</head>
 	<body>
-		<ul id="query">
+		<ul id="query" class="subQuery">
 
 		</ul>
+		<input type="submit" id="submit" value="Submit Query"/>
 	</body>
 </html>
