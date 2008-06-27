@@ -83,6 +83,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected static final ColorPair defaultLabelColors = new ColorPair(Color.blue, Color.blue);
 	protected static final ColorPair defaultRedundantColors = new ColorPair(Color.red, Color.red);
 	protected static final String[] formatList = { "jpg", "gif" };
+	protected String mode = SELECTED_TO_ROOT;
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
 	protected GraphvizConfigurationOld graphvizConfigurationOldInstance = new GraphvizConfigurationOld();
@@ -108,10 +109,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// logger.info("now updating selection.");
 		}
 	};
-
-	
-	
-	protected String mode = SELECTED_TO_ROOT;
 	JComboBox formatBox = new JComboBox(formatList);
 	LinkListener linkListener = new LinkListener(this);
 	JPanel imagePanel = new JPanel();
@@ -818,16 +815,18 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						graphvizConfigurationOldInstance.getDotPath() + " -T" + ef.getExtNoDot()
 								+ " -o  " + outputFile + "  -v "
 								+ textFile.getPath());
-				// The bug has been fixed by putting escaped quotes round the
-				// output file
-				// string because the 'Documents and Settings' path in
-				// the save instructions was being confused by the spaces and
-				// was saving to path/Documents which doesn't exist.
-				// C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o
-				// C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v
-				// C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
-				// This only matters because the command is run on the cmd line.
-
+				/*
+				 * 		 The bug has been fixed by putting escaped quotes round the
+				 *	 output file
+				 *	 string because the 'Documents and Settings' path in
+				 *	 the save instructions was being confused by the spaces and
+				 *	 was saving to path/Documents which doesn't exist.
+				 *	 C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o
+				 *	 C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v
+				 *	 C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
+				 *	 This only matters because the command is run on the cmd line.
+				 *
+				 */
 				p.waitFor();
 
 				textFile.delete();
