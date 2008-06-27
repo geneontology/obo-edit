@@ -19,6 +19,7 @@ public class Launcher {
 	protected final static Logger logger = Logger.getLogger(Launcher.class);
 
 	public static void main(String[] args) throws Exception {
+		Preferences.setBatchMode(false);
 		String memsetting = Preferences.readMemStringFromDisk();
 
 		logger.info("Starting OBO-Edit using " + memsetting

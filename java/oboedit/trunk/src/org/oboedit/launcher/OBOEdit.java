@@ -197,6 +197,8 @@ public class OBOEdit {
 					String logFile = configDir + "/log/oboedit_log4j.log";
 					Preferences.getPreferences().setLogfile(logFile);
 
+					Preferences.setBatchMode(false);  // we're running with a GUI, not in batch mode
+
 					// Start GUI
 					GUIManager.getManager().addStartupTask(
 							new DefaultGUIStartupTask());
