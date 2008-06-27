@@ -534,7 +534,9 @@ public class OBO2OBO {
 	}
 
 	public static void main(String[] args) throws Exception {
-		logger.info("version = "+Preferences.getVersion());
+		Preferences.setAppName("OBO2OBO");
+		logger.info("Starting OBO2OBO");
+		logger.info("OBO-Edit version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();
