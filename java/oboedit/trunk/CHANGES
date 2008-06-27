@@ -3,3 +3,21 @@ Changes in 2.000-b41:
 less dotty and the arrows on the links are easier to see (particularly
 the vertical and near-vertical ones).  It's not perfect yet, but I
 think it's somewhat better.
+- Background of Ontology Tree Editor turns pale gray when you're in local
+selection mode (like in OE1).
+- Improved Graph Editor rendering time by decreasing number of iterations it
+goes through while calculating the layout.  It originally did 10 double
+passes.  1 seems to work almost as well as 10 (and of course it's much
+quicker).  Simple graphs come out almost exactly the same.  Huge hairy ones
+are huge and hairy whether you do 1 iteration of 20.
+- If you're running a script in batch mode (e.g. OBO2OBO0) and you have config
+files in the old config directory (~/.oboeditbeta), you were getting a popup
+dialog asking if you wanted your config files copied to the new config
+directory, which you don't want in batch mode.  Now it checks to see if you're
+in batch mode before popping up that dialog (and the default is that all
+applications ARE batch mode unless, like OBO-Edit, they specify otherwise
+using Preferences.setBatchMode(false)).
+- Jen modified the Graphviz Viewer so that it no longer displays disjoint
+relationships. This is a good thing because they were getting in the way of
+having a clearly displayed graph. Display of disjoint relationships is not yet
+optional but it could be fairly easily if people wanted that.
