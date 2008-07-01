@@ -139,31 +139,24 @@ that should be automatically installed when the plugin is loaded. Any classes th
 <p>
 For example, imagine that we want to install a single class called 'MyTask' and a single library located in 'mylibs/log4j.jar'. The 
 following code will generate the 'installer.xml' file that should be placed in the plugin jar.
-</p>
-
-<p><IMG hspace=0 src="../images/plugin_code.png" border=0></p>
-
-The code above in text form is below in case you would like to cut and paste it:
-<p>
+<pre>
 PluginManager.InstallerConfig config = new PluginManager.InstallerConfig();
- Collection<String> classes = new ArrayList<String>();
- Collection<String> libs = new ArrayList<String>();
- classes.add(MyTask.class.getName());
- libs.add("mylibs/log4j.jar");
- config.setClasses(classes);
- config.setLibs(libs);
- try {
-   XMLEncoder encoder = new XMLEncoder("installer.xml");
-   encoder.writeObject(config);
-   encoder.close();
- } catch (Exception ex) {
-  // do something with exception
- }
+Collection<String> classes = new ArrayList<String>();
+Collection<String> libs = new ArrayList<String>();
+classes.add(MyTask.class.getName());
+libs.add("mylibs/log4j.jar");
+config.setClasses(classes);
+config.setLibs(libs);
+try {
+    XMLEncoder encoder = new XMLEncoder("installer.xml");
+    encoder.writeObject(config);
+    encoder.close();
+} catch (Exception ex) {
+    // do something with exception
+}
+</pre>
 </p>
-<p>
  <h3>Shared Libraries </h3>
-</p>
-
 <p>
 If many plugins end up using the same libraries, you may wish to save space by sharing the library amongst all the plugins, rather than 
 packaging the library inside each plugin jar.
@@ -171,7 +164,7 @@ packaging the library inside each plugin jar.
 
 <p>
 Shared libraries may be placed within the 'shared/' subdirectory of any directory from which plugins are loaded (for example, in OBO-Edit
- a shared library may be placed in '~/.oboedit/extensions/shared' or '<i>installationdir</i>/extensions/shared'.
+ a shared library may be placed in '~/.oboedit/extensions/shared' or '<i>installationdir</i>/extensions/shared').
 </p>
 
 
