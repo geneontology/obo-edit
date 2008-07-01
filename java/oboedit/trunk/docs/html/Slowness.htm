@@ -15,33 +15,25 @@ Several of the components in OBO-Edit2 can cause slow performance.  The
 easiest solution is to turn off components that you are not using.  The
 biggest culprits are:
 <ul>
+<li> The Reasoner</li>
 <li> The Graph Editor </li>
 <li> The Parent Editor </li>
-<li> The reasoner</li>
 <li> The Verification Manager </li>
 </ul>
 <p>To turn off the Graph Editor or the Parent Editor, simply remove them from
   your layout.</p>
 <p>You can tell if the Reasoner is on because the OBO-Edit titlebar will say
   "REASONER ON".  To turn the Reasoner off, bring up the Reasoner Manager ([Reasoner] -> [Reasoner Manager]) and select "OFF" from the pulldown list.</p>
-<p>
 <h2>The Verification Manager</h2>
-<br>
 When is the application running slowly? Is it when you are loading the
 file, commiting a term edit, or making the edit itself?
 If the slowness occurs at specific times then it may be because you are
 running verification checks that you are not aware of. To find this
 out, open the <a href="The_Verification_Plugin.htm">Verification Manager</a>
 component ([Tools] -> [Verification Manager]).
-<br>
-Figure 1<br>
-<br>
-<img alt="ver manager" src="../images/ver_manager.png"
- style="width: 369px; height: 241px;"><br>
-<br>
 The verification manager controls look like this:<br>
 <br>
-Figure 2<br>
+Figure 1<br>
 <br>
 <img alt="whole_panel" src="../images/verificationmanager.png"
  style="width: 911px; height: 476px;"><br>
@@ -53,7 +45,7 @@ just run them manually on demand. The different points when checks can
 be run are all listed here, and for discussion I have labelled them A
 to G. (Below)<br>
 <br>
-Figure 3<br>
+Figure 2<br>
 <br>
 <img alt="slow" src="../images/ver_manager_config.png"
  style="width: 953px; height: 342px;"><br>
@@ -66,7 +58,7 @@ This may be because you are running a lot of checks on loading your
 ontology file. To solve this problem uncheck the boxes above label 'E'.
 You may want to run the verification checks manually at a more
 appropriate time by checking the relevant boxes labelled 'F' and
-clicking the 'Run Manual Check' box in Figure 2.<br>
+clicking the 'Run Manual Check' button (see Figure 1).<br>
 <br>
 2) Application slow to select a new term in the ontology editor panel
 after a text change has been made in the Text Editor Panel. <br>
@@ -75,7 +67,7 @@ It is likely that you have several checks enabled 'On text commit'. To
 solve this problem uncheck the boxes above label 'A'. You may want
 to run the verification checks manually at a more appropriate time
 by checking the relevant boxes labelled 'F' and clicking the 'Run
-Manual Check' box in Figure 2.<br>
+Manual Check' button.<br>
 <br>
 3) Application slow to apply text edits. <br>
 <br>
@@ -83,7 +75,7 @@ It is likely that you have several checks enabled 'On text edit'. To
 solve this problem uncheck the boxes above label 'B'. You may want
 to run the verification checks manually at a more appropriate time
 by checking the relevant boxes labelled 'F' and clicking the 'Run
-Manual Check' box in Figure 2.<br>
+Manual Check' button.<br>
 <br>
 You may wish to keep the 'Definition check' enabled so that the
 application will underline spelling errors and typos as you work. <br>
@@ -94,15 +86,18 @@ It is likely that you have several checks enabled 'On save'. To
 solve this problem uncheck the boxes above label 'D'. You may want
 to run the verification checks manually at a more appropriate time
 by checking the relevant boxes labelled 'F' and clicking the 'Run
-Manual Check' box in Figure 2.<br>
+Manual Check' button.<br>
 <br>
 5) Application is slow to run the reasoner. <br>
 <br>
+The reasoner is slow on any large or complex ontology--we are working on
+improving this.  However, it is also possible that verification checks
+are making the reasoner slower.
 It is likely that you have several checks enabled 'On reasoner'. To
 solve this problem uncheck the boxes above label 'C'. You may want
 to run the verification checks manually at a more appropriate time
 by checking the relevant boxes labelled 'F' and clicking the 'Run
-Manual Check' box in Figure 2.<br>
+Manual Check' button.<br>
 <br>
 </body>
 </html>
