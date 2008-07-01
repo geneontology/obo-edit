@@ -93,7 +93,7 @@
 				target="OBOMerge_User_Interface" />
 		</tocitem>
 		<tocitem text="The Graph Editor" target="Graph_Editor" />
-		<tocitem text="The Parent Plugin" target="Parent_Editor" />
+		<tocitem text="The Parent Editor" target="Parent_Editor" />
 		<tocitem text="Organizing Your Ontology: Editing Metadata"
 			target="Metadata">
 			<tocitem text="Working with Categories"
