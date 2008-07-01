@@ -10,54 +10,171 @@
 <P><STRONG>Plugins</STRONG> are extensions to OBO-Edit that 
 aren't part of the standard OBO-Edit package. Plugins add new functionality to 
 the standard OBO-Edit capabilities.</P>
-<P>There are two kinds of plugins: <STRONG>standard plugins</STRONG> and 
-<STRONG>pluggable data adapters</STRONG>.</P>
-<P><STRONG>Standard plugins</STRONG> are new user-interface-based components 
-that add new controls and user-accessible capabilities to OBO-Edit. Standard 
-plugins are accessible from the main <STRONG>Plugins</STRONG> menu, and can be 
-integrated into the main OBO-Edit panel (see <A 
-href="Customizing_the_Interface.htm">Customizing the Interface</A> for 
-details).</P>
-<P><STRONG>Pluggable data adapters</STRONG> are additional data adapters that 
-give OBO-Edit access to new data formats.</P>
-<H2>Using Plugins</H2>
-<P>Standard plugins are always accessible from the "Plugins" menu. If a plugin 
-is grayed out, that plugin has been integrated into the main display, and can be 
-accessed there. When a plugin is selected, it appears in a new window.</P>
-<P>Pluggable data adapters are automatically available when a load or save is 
-attempted.</P>
-<H2>Built-In Standard Plugins</H2>
-<P> There are several standard plugins that are packaged with every release of 
-OBO-Edit. They are:</P>
-<UL>
-  <LI><A href="Tree_Viewer.htm">The Tree Viewer</A>
-  <LI><A href="The_Extended_Info_Plugin.htm">The Extended Info Plugin</A>
-  <LI><A href="The_GraphViz_Plugin.htm">The GraphViz Plugin</A>
-  <LI><A href="The_Dbxref_Library_Plugin.htm">The Dbxref Library Plugin</A>
-  <LI><A href="The_Complex_Class_Plugin.htm">The Complex Class Plugin</A>
-  <LI><A href="The_Reasoner_Plugin.htm">The Reasoner Plugin</A>
-  <LI><A href="The_Explanation_Plugin.htm">The Explanation Plugin</A>
-  <LI><A href="The_ID_Manager_Plugin.htm">The ID Manager Plugin</A>
-  <LI><A href="The_History_Plugin.htm">The History Plugin</A>
-  <LI><A href="The_Change_Tracker_Plugin.htm">The Change Tracker Plugin</A>
-  <LI><A href="Working_with_Namespaces.htm">The Namespace 
-  Manager Plugin</A>
-  <LI><A href="Working_with_Categories.htm">The&nbsp;Category Manager Plugin</A>
-  <LI><A href="Working_with_Synonym_Categories.htm">The Synonym Category Manager 
-  Plugin</A>
-  <LI><A href="The_Configuration_Plugin.htm">The 
-  Configuration Manager Plugin</A>
-  <LI><A href="Parent_Editor.htm">The Parent_Editor</A>
-  <LI><A href="The_Verification_Plugin.htm">The Verification Plugin</A></LI></UL>
-<H2>Third-Party Plugins</H2>
-<P>At present, there are no known third-party plugins for OBO-Edit. But someday 
-there will be, so here is how they work.</P>
-<P>Third-party plugins are packaged inside a .jar file (for example, 
-"goplugins.jar"). This .jar file may contain any number of standard plugins 
-and/or pluggable data adapters. These .jar files are called <STRONG>Plugin 
-Bundles</STRONG>.</P>
-<P>To install a <STRONG>plugin bundle</STRONG>, move the plugin bundle to the 
-extensions/ sub-directory of the OBO-Edit installation directory and restart 
-OBO-Edit. The plugins will be installed automatically.s</P>
+
+<h3>Writing Plugins</h3>
+<p>
+It's very simple to write plugins for OBO-Edit 2.0. In OBO-Edit, a plugin can be anything. Tasks, gui components, data adapters, menu items, 
+button icons, it doesn't matter.
+</p>
+
+<h3> When Plugins are Loaded </h3>
+<p>Plugin loading is almost the very first step of the OBO-Edit startup process. Plugins are loaded after the preferences directories are 
+initialized and logging is configured, but before any other step in the process, including the initialization of default data adapters, 
+gui components, or tasks.
+</p>
+
+<p>
+Some plugins may need to execute later in the startup process. For example, a plugin that needs to disable some default gui component may 
+need to execute after the default gui components have been created. Plugins like this should install a <code>GUITask</code> using 
+the method <code>GUIManager.installStartupTask</code>. Startup tasks are executed after the default startup routine has completed,
+but before the application gui appears on the screen.
+</p>
+
+
+ <h3>Where OBO-Edit Looks for Plugins </h3>
+<p>OBO-Edit plugins must be archived in a jar file whose name ends with the ".jar" suffix. OBO-Edit looks for jars in two places:
+</p>
+
+<p>
+<ul>
+<li> The path <code>[OBO-Edit Installation Directory]/extensions</code></li>
+<li> The path <a href="../html/Configuration_Manager.htm"><code>[User Configuration Directory]</code></a><code>/extensions</code></li>
+</ul>
+</p>
+
+<p>
+Note that other BBOP framework applications (like Phenote 2) use a similar plugin system, but may look for their plugins in different locations. 
+For example, Phenote 2 looks for plugins in the '~/.phenote/extensions' directory.
+</p>
+
+<p>
+ <h3>The Easy Way to Write 99% of Plugins </h3>
+</p>
+
+<p>
+Most plugins will do one of the following:
+</p>
+
+<p>
+<ul>
+<li> Create a task that does something at startup</li>
+<li> Create a task that listens for some kind of event as the program runs</li>
+<li> Add a new gui component</li>
+<li> Add a new data adapter</li>
+<li> Add a new search criterion</li>
+<li> Add a new renderer field</li>
+</ul>
+</p>
+
+<p>
+If your plugin does one of these things, all you have to do is include the plugin classes in a jar file, and you're done. OBO-Edit will 
+analyze the contents of the jar and automatically install all the classes it recognizes.
+</p>
+
+<p>
+There's only one rule your plugin has to follow: it must have a public, zero-argument constructor.
+</p>
+
+<p>
+If your plugin requires additional libraries, put those libraries in a directory called "lib" and zip them right into the jar file with the 
+rest of the classes.
+</p>
+
+<p>
+For example, let's say your plugin contains one class called org.bbop.plugin.DatabasePlugin which relies on mysql.jar. Your jar file will 
+contain the following files:
+</p>
+
+<p>
+<ul>
+<li> <code>org/bbop/plugin/DatabasePlugin.class</code></li>
+<li> <code>lib/mysql.jar</code></li>
+</ul>
+</p>
+
+<p>
+OBO-Edit will handle the rest automagically.
+</p>
+
+<p>
+<h3> What OBO-Edit Does with Plugins </h3>
+</p>
+
+<p>
+When OBO-Edit finds a plugin jar, it creates a special classloader for that jar and attaches it to the larger OBO-Edit classloader tree. 
+(Each jar gets its own classloader to prevent name clashes between plugins). If the jar contains library jars in the lib/ directory, they 
+are unzipped to a temporary directory and also added to the classpath.
+</p>
+
+<p>
+OBO-Edit then examines the .class files in the jar, and creates a catalog of the classes included in each jar.
+</p>
+
+<p>
+When <code>PluginManager.instantiateAll(Class)</code> is called (usually by OBO-Edit's startup routine), all the plugin classes 
+of a given type are instantiated and returned to the calling method. The calling method then typically does whatever is required to install 
+those classes.
+</p>
+
+<p>
+ <h3>Getting More Specific About What to Load </h3>
+</p>
+
+<p>
+Sometimes, you may not want OBO-Edit to load every class in your plugin that it recognizes. For example, if your plugin only installs a 
+new <code>GUIComponent</code> under certain circumstances, you won't want that component to be loaded automatically - instead, 
+you'll probably want to install a single <code>GUITask</code> that can recognizes the circumstances where the new component 
+should be installed, and have that task do the installation when appropriate.
+</p>
+
+<p>
+If you only want certain classes to be loaded, place a file called 'install.xml' in the root directory of your jar file. 'install.xml' 
+should contain an XML encoded Java bean that instantiates the 
+class <code>PluginManager.InstallerConfig</code>. <code>InstallerConfig</code> returns a list of classes and libraries 
+that should be automatically installed when the plugin is loaded. Any classes that are not explicitly mentioned will be loaded by the classloader
+ (and will thus be available to any plugin classes that depend on them), but will not be automatically installed. Any libraries that are not 
+ explicitly mentioned will be ignored.
+</p>
+
+<p>
+For example, imagine that we want to install a single class called 'MyTask' and a single library located in 'mylibs/log4j.jar'. The 
+following code will generate the 'installer.xml' file that should be placed in the plugin jar.
+</p>
+
+<p><IMG hspace=0 src="../images/plugin_code.png" border=0></p>
+
+The code above in text form is below in case you would like to cut and paste it:
+<p>
+PluginManager.InstallerConfig config = new PluginManager.InstallerConfig();
+ Collection<String> classes = new ArrayList<String>();
+ Collection<String> libs = new ArrayList<String>();
+ classes.add(MyTask.class.getName());
+ libs.add("mylibs/log4j.jar");
+ config.setClasses(classes);
+ config.setLibs(libs);
+ try {
+   XMLEncoder encoder = new XMLEncoder("installer.xml");
+   encoder.writeObject(config);
+   encoder.close();
+ } catch (Exception ex) {
+  // do something with exception
+ }
+</p>
+<p>
+ <h3>Shared Libraries </h3>
+</p>
+
+<p>
+If many plugins end up using the same libraries, you may wish to save space by sharing the library amongst all the plugins, rather than 
+packaging the library inside each plugin jar.
+</p>
+
+<p>
+Shared libraries may be placed within the 'shared/' subdirectory of any directory from which plugins are loaded (for example, in OBO-Edit
+ a shared library may be placed in '~/.oboedit/extensions/shared' or '<i>installationdir</i>/extensions/shared'.
+</p>
+
+
+
 </BODY>
 </html>
