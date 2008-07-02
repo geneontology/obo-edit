@@ -821,6 +821,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	public void flushEdits() {
+		logger.info("TextEditor: commiting changes to " + getObject().getName());
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Text edit");
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
