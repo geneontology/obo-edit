@@ -26,7 +26,6 @@
    <mapID target="Basic_Concepts_and_Vocabulary" url="html/Basic_Concepts_and_Vocabulary.htm"/>
    <mapID target="Bugs_and_Troubleshooting" url="html/Bugs_and_Troubleshooting.htm"/>
    <mapID target="Building_a_Filter" url="html/Building_a_Filter.htm"/>
-   <mapID target="Building_Filters" url="html/Building_Filters.htm"/>
    <mapID target="Changing_Link_Attributes" url="html/Changing_Link_Attributes.htm"/>
    <mapID target="Changing_Relationship_Types" url="html/Changing_Relationship_Types.htm"/>
    <mapID target="Classes" url="html/Classes.htm"/>
@@ -99,7 +98,6 @@
    <mapID target="Reusing_Filters" url="html/Reusing_Filters.htm"/>
    <mapID target="Saving_a_History_File" url="html/Saving_a_History_File.htm"/>
    <mapID target="Searching" url="html/Searching.htm"/>
-   <mapID target="Setting_the_Filter_Mode" url="html/Setting_the_Filter_Mode.htm"/>
    <mapID target="Slowness" url="html/Slowness.htm"/>
    <mapID target="Some_terminology" url="html/Some_terminology.htm"/>
    <mapID target="Structural_Editing" url="html/Structural_Editing.htm"/>
@@ -107,9 +105,7 @@
    <mapID target="Text_Checks" url="html/Text_Checks.htm"/>
    <mapID target="Text_Editing" url="html/Text_Editing.htm"/>
    <mapID target="The_Basic_Flat_File_Interface" url="html/The_Basic_Flat_File_Interface.htm"/>
-   <mapID target="The_Category_Manager_Plugin" url="html/The_Category_Manager_Plugin.htm"/>
    <mapID target="The_Change_Tracker_Plugin" url="html/The_Change_Tracker_Plugin.htm"/>
-   <mapID target="The_Complex_Class_Plugin" url="html/The_Complex_Class_Plugin.htm"/>
    <mapID target="Configuration_Manager" url="html/Configuration_Manager.htm"/>
    <mapID target="Tree_Viewer" url="html/Tree_Viewer.htm"/>
    <mapID target="The_Dbxref_Library_Plugin" url="html/The_Dbxref_Library_Plugin.htm"/>
@@ -127,7 +123,6 @@
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
    <mapID target="The_Reasoner_Plugin" url="html/The_Reasoner_Plugin.htm"/>
    <mapID target="The_Serial_Adapter" url="html/The_Serial_Adapter.htm"/>
-   <mapID target="The_Synonym_Category_Manager_Plugin" url="html/The_Synonym_Category_Manager_Plugin.htm"/>
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
    <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
    <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
