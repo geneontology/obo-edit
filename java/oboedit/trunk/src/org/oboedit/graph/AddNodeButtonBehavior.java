@@ -101,7 +101,7 @@ public class AddNodeButtonBehavior extends AbstractClickActionButtonBehavior {
 
 	public String getTooltip() {
 		return "<html><b>Node creation tool</b><br><hr>\n"
-				+ "<table width=300><tr><td>Click an existing term to add a new is_a child. Click on empty space"
-				+ "to create a new root term." + "</td></table></html>";
+			+ "<table width=300><tr><td>Click an existing term to add a new is_a child. Click on empty space"
+			+ " to create a new root term." + "</td></table></html>";
 	}
 }
