@@ -31,15 +31,18 @@ $term$ &lt;i&gt;(obsolete)&lt;/i&gt;
 </pre>
 <h2>HTML Expression Format</h2>
 <p>The Ontology Editor Panel, Graph Editor, and Global Filter Manager allow users to specify an "HTML Expression" - the basic html expression used as the starting value for all other renderers. This expression uses the exact same syntax as the renderer expressions described above, except that the <b>$term$</b> variable is not available, because there are no previous renderer values to access.
-</p><p>
+
 <h3>Global Filters</h3>
-The Global Filters feature (Config -> Global Filters) allows us to prepend or append a piece of text to
+<p>The Global Filters feature (Config -> Global Filters) allows us to prepend or append a piece of text to
 the names of a set of terms that are found by a given query.
-</p><p>
+</p>
 To use this feature, we set up the query in the Term Renderers tab of the
 Global Filter panel (Figure 1). We use the filter menus in the usual way. In
 this example we are searchng for any terms with the dbxref "GOC:mtg_cardio".
-</p><p><img border=0 src="../images/SetupHTMLRender.PNG">
+
+<p><font color="#FF0000"><strong>The image below needs to be remade after the search menu for ancestor/descendent has been added.</strong></font></p>
+
+<p><img border=0 src="../images/SetupHTMLRender.PNG">
 </p><p>
 To prepend the text "cardio term:" to the names of all terms with this dbxref
 we must check the 'HTML Code' checkbox and then enter in the box the text
@@ -52,7 +55,7 @@ box instead.
 </p><p>
 Once the render is set up correctly we click 'Save Changes' and then go on to
 search for the terms (Figure 2). 
-</p><p><img border=0 src="../images/HTMLRenderSearch.PNG">
+</p><p><img border=0 src="../images/HTMLRenderSearch.PNG"></p>
 We can see that the term name change is
 visible in the search results tab. Once we click on the name of one of the
 found terms, the term will be visible in the Ontology Editor Panel with the
