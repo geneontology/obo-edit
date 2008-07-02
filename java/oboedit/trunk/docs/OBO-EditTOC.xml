@@ -25,12 +25,14 @@
 			target="Working_with_Selections" />
 		<tocitem text="Perspectives" target="Perspectives" />
 		<tocitem text="Components" target="Components">
-			<tocitem text="Configuration Manager"
-				target="Configuration_Manager" />
 			<tocitem text="The Ontology Tree Editor"
 				target="The_Term_Editor_Panel" />
+			<tocitem text="Configuration Manager"
+				target="Configuration_Manager" />
 			<tocitem text="The Tree Viewer" target="Tree_Viewer" />
 			<tocitem text="The Graph Viewer" target="Graph_Viewer" />
+			<tocitem text="Term Image Display Panel"
+				target="Term_Image_Display_Panel" />
 			<tocitem text="Table of Contents Component"
 				target="Table_of_Contents" />
 			<tocitem text="The Extended Info Component"
@@ -43,9 +45,7 @@
 		<tocitem text="Filters" target="Filters" />
 		<tocitem text="Link Filters vs Term Filters"
 			target="Link_Filters_vs_Term_Filters" />
-		<tocitem text="Building Filters" target="Building_Filters">
-			<tocitem text="Setting the Filter Mode"
-				target="Setting_the_Filter_Mode" />
+		<tocitem text="Building a_Filter" target="Building_a_Filter">
 			<tocitem text="Term Filters" target="Term_Filters" />
 			<tocitem text="Link Filters" target="Link_Filters" />
 			<tocitem text="Compound Filtering"
@@ -66,13 +66,13 @@
 		<tocitem text="Advanced Searching"
 			target="Advanced_Searching">
 			<tocitem text="HTML Rendering" target="HTML_Rendering" />
-			<tocitem text="Term Image Display Panel"
-				target="Term_Image_Display_Panel" />
 		</tocitem>
 	</tocitem>
 	<tocitem text="Editing">
 		<tocitem text="Undo/Redo" target="Undo_Redo" />
 		<tocitem text="Text Editing" target="Text_Editing" />
+		<tocitem text="The Ontology Tree Editor"
+			 target="The_Term_Editor_Panel" />
 		<tocitem text="Structural Editing"
 			target="Structural_Editing">
 			<tocitem text="The Interface" target="The_Interface" />
@@ -119,12 +119,12 @@
 	<tocitem text="History">
 		<tocitem text="How OBO-Edit Understands Histories"
 			target="How_OBO_Edit_Understands_Histories" />
-		<tocitem text="The History Plugin" target="The_History_Plugin" />
+		<tocitem text="The History Manager" target="The_History_Plugin" />
 		<tocitem text="Saving a History File"
 			target="Saving_a_History_File" />
 		<tocitem text="Loading a History File"
 			target="Loading_a_History_File" />
-		<tocitem text="The Change Tracker Plugin"
+		<tocitem text="The Ontology Change Tracker"
 			target="The_Change_Tracker_Plugin" />
 	</tocitem>
 	<tocitem text="Working with Data Adapters">
@@ -145,9 +145,9 @@
 			target="The_OBO_Edit_Reasoner" />
 		<tocitem text="The Reasoner and the Interface"
 			target="The_Reasoner_and_the_Interface" />
-		<tocitem text="The Reasoner Plugin"
+		<tocitem text="The Reasoner Manager"
 			target="The_Reasoner_Plugin" />
-		<tocitem text="The Explanation Plugin"
+		<tocitem text="Showing Explanations"
 			target="The_Explanation_Plugin" />
 		<tocitem text="Reasoner Prefilters"
 			target="Reasoner_Prefilters" />
@@ -155,7 +155,7 @@
 	<tocitem text="Ontology Verification">
 		<tocitem text="Introduction to Verification"
 			target="Introduction_to_Verification" />
-		<tocitem text="The Verification Plugin"
+		<tocitem text="The Verification Manager"
 			target="The_Verification_Plugin" />
 		<tocitem text="Text Checks" target="Text_Checks" />
 		<tocitem text="Definition Check" target="Definition_Check" />
