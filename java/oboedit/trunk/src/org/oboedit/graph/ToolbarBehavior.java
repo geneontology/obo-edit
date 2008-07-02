@@ -78,7 +78,8 @@ public class ToolbarBehavior implements ViewBehavior {
 		addButtonBehavior(new LinkingButtonBehavior());
 		addButtonBehavior(addNodeBehavior);
 		addButtonBehavior(new EraseButtonBehavior());
-		addButtonBehavior(textEditBehavior);
+		// Not working, and not needed--if you select a node while in generic "arrow" mode, the Text Editor will update to show it anyway.
+//		addButtonBehavior(textEditBehavior);
 		addButtonBehavior(new CloneButtonBehavior());
 		ToolbarButtonBehavior defaultBehavior = buttonBehaviors.get(0);
 		JToggleButton defaultButton = behaviorMap.get(defaultBehavior);
