@@ -28,7 +28,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
 
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.LayoutListener;
