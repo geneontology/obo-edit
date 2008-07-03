@@ -31,6 +31,8 @@
 				target="Configuration_Manager" />
 			<tocitem text="The Tree Viewer" target="Tree_Viewer" />
 			<tocitem text="The Graph Viewer" target="Graph_Viewer" />
+			<tocitem text="The GraphViz Viewer"
+				 target="The_GraphViz_Viewer" />
 			<tocitem text="Term Image Display Panel"
 				target="Term_Image_Display_Panel" />
 			<tocitem text="Table of Contents Component"
@@ -198,8 +200,6 @@
 	<tocitem text="Plugins">
 		<tocitem text="Introduction to Plugins"
 			target="Introduction_to_Plugins" />
-		<tocitem text="The GraphViz Plugin"
-			target="The_GraphViz_Plugin" />
 		<tocitem text="The Dbxref Library Plugin"
 			target="The_Dbxref_Library_Plugin" />
 	</tocitem>
