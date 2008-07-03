@@ -80,14 +80,14 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	JLabel noTypeLabel = new JLabel("no type selected");
 	final FontChooser linkFontChooser = new FontChooser();
 	final FontChooser nodeFontChooser = new FontChooser();
-	protected GraphvizConfigurableAttributes configurationConstructorsInstance = new GraphvizConfigurableAttributes();
-	final JTextField appPathField = new JTextField(configurationConstructorsInstance.getDotPath());
+	protected GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNew = new GraphvizViewerComponentConfigurationNew();
+	final JTextField appPathField = new JTextField(graphvizViewerComponentConfigurationNew.getDotPath());
 	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
 			noTypeLabel, new Vector(), true, true, false, true, false);
 	final JDialog pane = new JDialog((Frame) null, true);
 	protected JPanel backgroundColorPanel = new JPanel();
 	protected JColorChooser backgroundColorChooser = new JColorChooser();
-	Vector data = configurationConstructorsInstance.getNamedColorList();
+	Vector data = graphvizViewerComponentConfigurationNew.getNamedColorList();
 
 
 
@@ -318,27 +318,27 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	@Override
 	public void commit() {
 		System.out.println("GraphvizConfigurationPanelNew: commit() run.");
-		configurationConstructorsInstance.setDotPath(appPathField.getText());
-		configurationConstructorsInstance.setLabelFont(linkFontChooser.getChosenFont());
-		configurationConstructorsInstance.setNodeFont(nodeFontChooser.getChosenFont());
-		configurationConstructorsInstance.setTypeShape((String) typeShapeList.getSelectedItem());
-		configurationConstructorsInstance.setNodeShape((String) nodeShapeList.getSelectedItem());
-		configurationConstructorsInstance.setObsoleteShape((String) obsoleteShapeList.getSelectedItem());
-		configurationConstructorsInstance.setFlipOver(flipoverBox.isSelected());
-		configurationConstructorsInstance.setShowIDs(showIDsBox.isSelected());
+		graphvizViewerComponentConfigurationNew.setDotPath(appPathField.getText());
+		graphvizViewerComponentConfigurationNew.setLabelFont(linkFontChooser.getChosenFont());
+		graphvizViewerComponentConfigurationNew.setNodeFont(nodeFontChooser.getChosenFont());
+		graphvizViewerComponentConfigurationNew.setTypeShape((String) typeShapeList.getSelectedItem());
+		graphvizViewerComponentConfigurationNew.setNodeShape((String) nodeShapeList.getSelectedItem());
+		graphvizViewerComponentConfigurationNew.setObsoleteShape((String) obsoleteShapeList.getSelectedItem());
+		graphvizViewerComponentConfigurationNew.setFlipOver(flipoverBox.isSelected());
+		graphvizViewerComponentConfigurationNew.setShowIDs(showIDsBox.isSelected());
 
 		for (int i = 0; i < typeColorList.getData().size(); i++) {
 			Object o = typeColorList.getData().get(i);
 			if (o instanceof TypeColorPair) {
 				TypeColorPair tc = (TypeColorPair) o;
-				configurationConstructorsInstance.getColorMap().put(tc.getTypeID(), tc.getPair());
+				graphvizViewerComponentConfigurationNew.getColorMap().put(tc.getTypeID(), tc.getPair());
 			} else if (o instanceof NamedColor) {
 				NamedColor nc = (NamedColor) o;
-				configurationConstructorsInstance.setNamedColor(nc.getName(), nc.getColor());
+				graphvizViewerComponentConfigurationNew.setNamedColor(nc.getName(), nc.getColor());
 			}
 		}
 
-		configurationConstructorsInstance.setViewerFormat((String) formatBox.getSelectedItem());
+		graphvizViewerComponentConfigurationNew.setViewerFormat((String) formatBox.getSelectedItem());
 
 		graphvizCanvasInstance.reloadImage();
 
@@ -346,7 +346,7 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	}
 	
 	protected ColorPair getColor(Link tr) {
-		ColorPair c = (ColorPair) configurationConstructorsInstance.getColorMap().get(
+		ColorPair c = (ColorPair) graphvizViewerComponentConfigurationNew.getColorMap().get(
 				tr.getType().getID());
 		if (c == null)
 			c = GraphvizCanvas.defaultLabelColors;
@@ -363,14 +363,14 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		//I'm not sure if any of the lines below are needed. 
 		//The graphviz path works without them and they
 		//don't make the background color work. 
-		configurationConstructorsInstance.getDotPath();
-		configurationConstructorsInstance.getLabelFont();
-		configurationConstructorsInstance.getNodeFont();
-		configurationConstructorsInstance.getTypeShape();
-		configurationConstructorsInstance.getNodeShape();
-		configurationConstructorsInstance.getObsoleteShape();
-		configurationConstructorsInstance.getFlipOver();
-		configurationConstructorsInstance.getShowIDs();
+		graphvizViewerComponentConfigurationNew.getDotPath();
+		graphvizViewerComponentConfigurationNew.getLabelFont();
+		graphvizViewerComponentConfigurationNew.getNodeFont();
+		graphvizViewerComponentConfigurationNew.getTypeShape();
+		graphvizViewerComponentConfigurationNew.getNodeShape();
+		graphvizViewerComponentConfigurationNew.getObsoleteShape();
+		graphvizViewerComponentConfigurationNew.getFlipOver();
+		graphvizViewerComponentConfigurationNew.getShowIDs();
 
 		//what does this bit do?
 		//I think this bit may be why I cannot change the black background. 
@@ -378,14 +378,14 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 			Object o = typeColorList.getData().get(i);
 			if (o instanceof TypeColorPair) {
 				TypeColorPair tc = (TypeColorPair) o;
-				configurationConstructorsInstance.getColorMap().put(tc.getTypeID(), tc.getPair());
+				graphvizViewerComponentConfigurationNew.getColorMap().put(tc.getTypeID(), tc.getPair());
 			} else if (o instanceof NamedColor) {
 				NamedColor nc = (NamedColor) o;
-				configurationConstructorsInstance.setNamedColor(nc.getName(), nc.getColor());
+				graphvizViewerComponentConfigurationNew.setNamedColor(nc.getName(), nc.getColor());
 			}
 		}
 		
-		configurationConstructorsInstance.getViewerFormat();
+		graphvizViewerComponentConfigurationNew.getViewerFormat();
 
 		//confusion ends here. 
 		
