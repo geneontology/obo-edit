@@ -86,7 +86,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String mode = SELECTED_TO_ROOT;
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected GraphvizConfigurableAttributes configurationConstructorsInstance = new GraphvizConfigurableAttributes();
+	protected GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNew = new GraphvizViewerComponentConfigurationNew();
+
 	protected float ranksep = .1f;
 	protected float nodesep = .1f;
 	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,MINIMAL_SELECTION_GRAPH };
@@ -106,7 +107,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();
-			// logger.info("now updating selection.");
+			 logger.info("now updating selection.");
 		}
 	};
 	JComboBox formatBox = new JComboBox(formatList);
@@ -192,16 +193,16 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		reloadImage();
 	}
 
-//	public void setConfiguration(ComponentConfiguration config) {
-//
-//		if (configurationConstructorsInstance instanceof GraphvizConfigurationOld
-//				&& configurationConstructorsInstance != null) {
-//			this.configurationConstructorsInstance = (GraphvizConfigurationOld) configurationConstructorsInstance;
-//		}
-//		setDoFiltering(this.configurationConstructorsInstance.getDoFiltering());
-//		reloadImage();
-//
-//	}
+	public void setConfiguration(ComponentConfiguration config) {
+
+		if (graphvizViewerComponentConfigurationNew instanceof GraphvizViewerComponentConfigurationNew
+				&& graphvizViewerComponentConfigurationNew != null) {
+			this.graphvizViewerComponentConfigurationNew = (GraphvizViewerComponentConfigurationNew) graphvizViewerComponentConfigurationNew;
+		}
+		setDoFiltering(this.graphvizViewerComponentConfigurationNew.getDoFiltering());
+		reloadImage();
+
+	}
 
 	public void update() {
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
@@ -241,7 +242,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected ColorPair getColor(Link tr) {
-		ColorPair c = (ColorPair) configurationConstructorsInstance.getColorMap().get(
+		ColorPair c = (ColorPair) graphvizViewerComponentConfigurationNew.getColorMap().get(
 				tr.getType().getID());
 		if (c == null)
 			c = defaultLabelColors;
@@ -269,33 +270,33 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(Link tr) {
 		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
-		+ "dir=" + (configurationConstructorsInstance.getFlipOver() ? "back" : "forward")
+		+ "dir=" + (graphvizViewerComponentConfigurationNew.getFlipOver() ? "back" : "forward")
 		+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
-		+ "fontsize=" + configurationConstructorsInstance.getLabelFont().getSize()
-		+ ", fontname=\"" + configurationConstructorsInstance.getLabelFont().getFontName()
+		+ "fontsize=" + graphvizViewerComponentConfigurationNew.getLabelFont().getSize()
+		+ ", fontname=\"" + graphvizViewerComponentConfigurationNew.getLabelFont().getFontName()
 		+ "\", " + "color=\"" + getColorString(getColor(tr).edge)
 		+ "\", " + "fontcolor=\"" + getColorString(getColor(tr).label)
 		+ "\"";
 	}
 
 	protected String getOptions(OBOClass t) {
-		Color fontColor = configurationConstructorsInstance.getTermFontColor();
+		Color fontColor = graphvizViewerComponentConfigurationNew.getTermFontColor();
 		if (t.isObsolete())
-			fontColor = configurationConstructorsInstance.getObsoleteFontColor();
+			fontColor = graphvizViewerComponentConfigurationNew.getObsoleteFontColor();
 		else if (TermUtil.isProperty(t))
-			fontColor = configurationConstructorsInstance.getTypeFontColor();
-		Color strokeColor = configurationConstructorsInstance.getTermStrokeColor();
+			fontColor = graphvizViewerComponentConfigurationNew.getTypeFontColor();
+		Color strokeColor = graphvizViewerComponentConfigurationNew.getTermStrokeColor();
 		if (t.isObsolete())
-			strokeColor = configurationConstructorsInstance.getObsoleteStrokeColor();
+			strokeColor = graphvizViewerComponentConfigurationNew.getObsoleteStrokeColor();
 		else if (TermUtil.isProperty(t))
-			strokeColor = configurationConstructorsInstance.getTypeStrokeColor();
+			strokeColor = graphvizViewerComponentConfigurationNew.getTypeStrokeColor();
 		String s = "label=\"" + formatLabel(t.getName())
-		+ (configurationConstructorsInstance.getShowIDs() ? "\\n\\n" + t.getID() : "")
+		+ (graphvizViewerComponentConfigurationNew.getShowIDs() ? "\\n\\n" + t.getID() : "")
 		+ "\", " + "shape=" + getShape(t) + ", fontsize="
-		+ configurationConstructorsInstance.getNodeFont().getSize() + ", " + "fontname=\""
-		+ configurationConstructorsInstance.getNodeFont().getFontName() + "\", "
+		+ graphvizViewerComponentConfigurationNew.getNodeFont().getSize() + ", " + "fontname=\""
+		+ graphvizViewerComponentConfigurationNew.getNodeFont().getFontName() + "\", "
 		+ "fillcolor=\""
-		+ getColorString(configurationConstructorsInstance.getTermBoxColor()) + "\""
+		+ getColorString(graphvizViewerComponentConfigurationNew.getTermBoxColor()) + "\""
 		+ ", color=\"" + getColorString(strokeColor) + "\""
 		+ ", fontcolor=\"" + getColorString(fontColor) + "\", "
 		+ "style=filled, URL=\"file:" + t.getID() + "\"";
@@ -304,18 +305,18 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getShape(OBOClass t) {
 		if (t.isObsolete())
-			return configurationConstructorsInstance.getObsoleteShape();
+			return graphvizViewerComponentConfigurationNew.getObsoleteShape();
 		else if (TermUtil.isProperty(t))
-			return configurationConstructorsInstance.getTypeShape();
+			return graphvizViewerComponentConfigurationNew.getTypeShape();
 		else
-			return configurationConstructorsInstance.getNodeShape();
+			return graphvizViewerComponentConfigurationNew.getNodeShape();
 	}
 
 	protected void outputFile(File textFile) throws IOException {
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
 		writer.println("digraph G {");
 		writer.println("bgcolor=\""
-				+ getColorString(configurationConstructorsInstance.getBGColor()) + "\";");
+				+ getColorString(graphvizViewerComponentConfigurationNew.getBGColor()) + "\";");
 		writer.println("ranksep=\"" + ranksep + "\";");
 		writer.println("nodesep=\"" + nodesep + "\";");
 		HashSet relationshipSet = new HashSet();
@@ -327,7 +328,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		while (it.hasNext()) {
 			Link tr = (Link) it.next();
 			if (tr.getParent() != null) {
-				if (configurationConstructorsInstance.getFlipOver()) {
+				if (graphvizViewerComponentConfigurationNew.getFlipOver()) {
 					writer.println(convertID(tr.getParent().getID()) + " -> "
 							+ convertID(tr.getChild().getID()) + " ["
 							+ getOptions(tr) + "];");
@@ -413,7 +414,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {
 				File imageFile = File.createTempFile("graphimage", "."
-						+ configurationConstructorsInstance.getViewerFormat());
+						+ graphvizViewerComponentConfigurationNew.getViewerFormat());
 				File textFile = File.createTempFile("graphtext", ".txt");
 
 				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
@@ -424,8 +425,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 
 				Process p = Runtime.getRuntime().exec(
-						configurationConstructorsInstance.getDotPath() + " -T"
-						+ configurationConstructorsInstance.getViewerFormat() + " -o "
+						graphvizViewerComponentConfigurationNew.getDotPath() + " -T"
+						+ graphvizViewerComponentConfigurationNew.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 
 				// logger.info(configuration.getDotPath() + " -T"
@@ -435,7 +436,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				p.waitFor();
 
 				p = Runtime.getRuntime().exec(
-						configurationConstructorsInstance.getDotPath() + " -Tcmapx "
+						graphvizViewerComponentConfigurationNew.getDotPath() + " -Tcmapx "
 						+ noDisjointTextFile.getPath());
 
 				// logger.info(configuration.getDotPath() + " -Tcmapx "
@@ -453,7 +454,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					buffer.append(line + "\n");
 				}
 				p.waitFor();
-				htmlPane.setBackground(configurationConstructorsInstance.getBGColor());
+				htmlPane.setBackground(graphvizViewerComponentConfigurationNew.getBGColor());
 				buffer.append("</head>\n");
 				buffer.append("<body>\n");
 				buffer.append("<img src='file:" + imageFile
@@ -514,7 +515,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected void setDoFiltering(boolean doFiltering) {
-		configurationConstructorsInstance.setDoFiltering(doFiltering);
+		graphvizViewerComponentConfigurationNew.setDoFiltering(doFiltering);
 		primaryFiltersCheckbox.setSelected(doFiltering);
 		if (!doFiltering)
 			linkDatabase = SessionManager.getManager().getSession()
@@ -572,7 +573,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
 				// + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
-						configurationConstructorsInstance.getDotPath() + " -T" + ef.getExtNoDot()
+						graphvizViewerComponentConfigurationNew.getDotPath() + " -T" + ef.getExtNoDot()
 						+ " -o  " + outputFile + "  -v "
 						+ textFile.getPath());
 				/*
