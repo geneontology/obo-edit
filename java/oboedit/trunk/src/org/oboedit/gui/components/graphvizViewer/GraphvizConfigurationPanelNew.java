@@ -80,7 +80,7 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	JLabel noTypeLabel = new JLabel("no type selected");
 	final FontChooser linkFontChooser = new FontChooser();
 	final FontChooser nodeFontChooser = new FontChooser();
-	protected ConfigurationConstructors configurationConstructorsInstance = new ConfigurationConstructors();
+	protected GraphvizConfigurableAttributes configurationConstructorsInstance = new GraphvizConfigurableAttributes();
 	final JTextField appPathField = new JTextField(configurationConstructorsInstance.getDotPath());
 	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
 			noTypeLabel, new Vector(), true, true, false, true, false);

@@ -86,7 +86,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String mode = SELECTED_TO_ROOT;
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected ConfigurationConstructors configurationConstructorsInstance = new ConfigurationConstructors();
+	protected GraphvizConfigurableAttributes configurationConstructorsInstance = new GraphvizConfigurableAttributes();
 	protected float ranksep = .1f;
 	protected float nodesep = .1f;
 	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,MINIMAL_SELECTION_GRAPH };
