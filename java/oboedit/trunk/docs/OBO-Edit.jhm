@@ -61,6 +61,7 @@
    <mapID target="How_Do_I_Spell_Check_" url="html/How_Do_I_Spell_Check_.htm"/>
    <mapID target="How_ID_Generation_Works" url="html/How_ID_Generation_Works.htm"/>
    <mapID target="How_OBO_Edit_Understands_Histories" url="html/How_OBO_Edit_Understands_Histories.htm"/>
+   <mapID target="Importing_Terms" url="html/Importing_Terms.htm"/>
    <mapID target="Instances" url="html/Instances.htm"/>
    <mapID target="Intersections" url="html/Intersections.htm"/>
    <mapID target="Introduction_to_Adapters" url="html/Introduction_to_Adapters.htm"/>
@@ -98,6 +99,7 @@
    <mapID target="Reusing_Filters" url="html/Reusing_Filters.htm"/>
    <mapID target="Saving_a_History_File" url="html/Saving_a_History_File.htm"/>
    <mapID target="Searching" url="html/Searching.htm"/>
+   <mapID target="Semantic_Parser_Manager" url="html/Semantic_Parser_Manager.htm"/>
    <mapID target="Slowness" url="html/Slowness.htm"/>
    <mapID target="Some_terminology" url="html/Some_terminology.htm"/>
    <mapID target="Structural_Editing" url="html/Structural_Editing.htm"/>
@@ -115,6 +117,7 @@
    <mapID target="The_GraphViz_Plugin" url="html/The_GraphViz_Plugin.htm"/>
    <mapID target="The_History_Plugin" url="html/The_History_Plugin.htm"/>
    <mapID target="The_ID_Manager_Plugin" url="html/The_ID_Manager_Plugin.htm"/>
+   <mapID target="The_ID_Fixer" url="html/The_ID_Manager_Plugin.htm"/>
    <mapID target="The_Interface" url="html/The_Interface.htm"/>
    <mapID target="The_OBO_Adapter" url="html/The_OBO_Adapter.htm"/>
    <mapID target="The_OBO_Edit_Reasoner" url="html/The_OBO_Edit_Reasoner.htm"/>

@@ -19,15 +19,39 @@ update the display. There are several different configuration tabs. The first ta
 GUI".</p>
 
 <h2>User Settings</h2>
+<p>
 <ul>
+<a name="config_dir"></a>
   <li><strong>Configuration directory</strong> - 
   Displays the path to the OS-appropriate directory that contains your personal OBO-Edit 
   configuration info. This field is not editable; it is for
-  informational purposes only.
-  Note for Mac users:  your configuration directory will be in ~/Library/Application Support/.
+  informational purposes only.  You can mouse-select it and copy it to your
+  clipboard to copy elsewhere, if you want.
+<ul><li>
+  <b>Note for Mac users</b>:  your configuration directory will be in
+  ~/Library/Application Support/, e.g., /users/nomi/Library/Application Support/.
   Because that directory name has a space in it, if you are trying to use it in a shell
-  command (e.g., "cd ~/Library/Application Support"), you will need to put a backslash
-  before the space (~/Library/Application\ Support).</li>
+  command (e.g., cd), you will need
+  to put quotes around that path:
+  <code>cd "/users/nomi/Library/Application Support"</code>.
+</li>
+<li><b>Note for Windows XP users</b>:  your configuration directory will be in
+Application Data\OBO-Edit-beta in your home directory.  By default, Windows
+      hides this directory from you.  If you are looking at your Windows
+      directories in Explorer (the usual Windows directory browser), you can
+      get it to show the hidden directories by choosing "Folder Options" from
+      the Tools menu, and selecting the "View" tab.  Under "Advanced
+      settings", select the "Show hidden files and folders" radio button.<br>You
+      can also get to your configuration directory via the Windows command
+      interface by copying and pasting it from the Configuration Manager, and
+      putting quotes around the path because of the spaces in it.
+</li>
+<li><b>Note for Unix users</b>: your configuration directory will be in
+  ~/.oboeditbeta.  If you do "ls ~", you won't see it because file or
+  directory names that start with "."  are
+  hidden by default.  Use "ls -a" if you want to see it in the directory listing.
+</li>
+</ul>    
   <li><strong>Log file</strong> - The text output from OBO-Edit is saved in
   this file in your configuration directory.  It can be useful for debugging.
   This field is not editable, but can be copied and pasted elsewhere.</li>
@@ -52,6 +76,7 @@ GUI".</p>
   The "Font preview" shows the alphabet in the selected 
   font.</li></ul>
 
+<a name="icons"></a>
 <h2>Icons and Colors</h2>
 <h3>Changing relationship type icons</h3>
 <p>These controls allow a custom icon to be specified for a relationship type. 
