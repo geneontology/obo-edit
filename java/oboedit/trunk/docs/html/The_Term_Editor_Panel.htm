@@ -31,12 +31,12 @@ one time. The expand/collapse controls look like boxes containing a plus or
 minus sign:</p>
 <p><IMG height=400 width=476 hspace=0 src="../images/term_editor_panel_collapse.png" 
  border=0></p>
-<p>If expand/collapse control is marked with a plus, that means that there are 
+<p>If the expand/collapse control is marked with a plus, that means that there are 
 other branches of the tree below, and clicking on the control will cause those 
 branches to become visible. If the control is marked with a minus, it means that 
 child branches are already visible, and clicking on the control will cause them 
 to be collapsed. If a line in the display has no expand/collapse control (like 
-"cellular component unknown" in the image above), it means that there are no 
+"podosome" in the image above), it means that there are no 
 branches beneath that node.</p>
 
 <h2>Representing Relationships</h2>
@@ -63,9 +63,9 @@ children:</p>
   organelle</font>
   <li><font face="Courier">intracellular organelle <strong>is_a</strong> 
   organelle</font>
-  <li><font face="Courier">membrane-bound organelle <strong>is_a</strong> 
+  <li><font face="Courier">membrane-bounded organelle <strong>is_a</strong> 
   organelle</font>
-  <li><font face="Courier">non-membrane-bound organelle <strong>is_a</strong> 
+  <li><font face="Courier">non-membrane-bounded organelle <strong>is_a</strong> 
   organelle</font>
   <li><font face="Courier">organelle part <strong>part_of</strong> 
   organelle</font>
@@ -80,15 +80,17 @@ children:</p>
 child term:</p>
 <p><IMG height=400 width=476 hspace=0 src="../images/term_editor_panel_types.png" 
  border=0></p>
-<p>A few icons for common relationship types are provided by 
-OBO-Edit by default. (See <A href="Configuration.htm">The 
-Configuration Manager</A> for information on customizing these icons.)</p>
+
+<p>A few icons for common relationship types are provided by OBO-Edit
+by default. (See the <A href="Configuration_Manager.htm">Configuration
+Manager</A> for information on customizing these icons.)</p>
 <p>Note that root classes, root relations, and obsolete terms do not have a 
 relationship type where they connect to the root display nodes. For example, 
 there is no relationship type icon between "biological process" and "Classes" in 
 the above example. That is because relationship types only exist between 
 entities in the ontology. Since the top level nodes are simply to organize the 
 display, entities in the ontology have no named relationship to them.</p>
+
 <h2>Viewing Obsoletes</h2>
 <p>Obsolete terms appear under the "Obsolete" node. 
 Although obsolete terms cannot have parents or children,&nbsp;if an obsolete 
@@ -97,31 +99,37 @@ obsolete term:</p>
 <p><IMG height=79 hspace=0 
 src="../images/obsolete_replacement_view.gif" width=332 border=0>            
  </p>
-<p>In this case, the view means that the obsolete term 
-"2-nitropropane biosynthesis" has been replaced by "2-nitropropane metabolism". 
-The obsolete "26S proteasome" does not have an exact replacement, but the term "proteasome complex" might be a 
-valid replacement.</p>
-<p>Note that "replaced by" and "consider" <em>are not real 
-relationship types.</em> There is no relation named "replaced by" or "consider". 
-These lines appear in the ontology tree editor panel as a viewing convenience, but they 
-do not represent real relationships in the ontology. They merely represent assignments to the OBO&nbsp;tags named&nbsp;"consider" 
-and "replaced_by".</p>
+
+<p>In this case, the view means that the obsolete term "2-nitropropane
+biosynthesis" has been replaced by "2-nitropropane metabolism".  The
+obsolete "26S proteasome" does not have an exact replacement, but the
+term "proteasome complex" might be a valid replacement.</p>
+
+<p>Note that "replaced by" and "consider" <em>are not real
+relationship types.</em> There is no relation named "replaced by" or
+"consider".  These lines appear in the ontology tree editor panel as a
+viewing convenience, but they do not represent real relationships in
+the ontology. They merely represent assignments to the OBO&nbsp;tags
+named&nbsp;"consider" and "replaced_by".</p>
+
 <p>See <A href="Assigning_Replacement_Terms.htm">Assigning Replacement Terms</A> 
 for more information about "consider" and "replaced_by".</p>
 <h2>Working with Multiple Ontology Tree Editors</h2>
-<p>There can be several ontology tree editor panels on screen at once (to learn how to 
-add more ontology tree editor panels to your interface, see the <A href="Components.htm">Components</A> and <a href="Perspectives.htm">Perspectives</a> sections).</p>
 
-<p>If there is more than one ontology tree editor panel, each panel can be
-independently set to global or local selection mode by using the globe/house
-icon button in the titlebar. When you're in local selection mode, you'll see
-  the house icon instead of the globe, and the background of the Ontology Tree
-  Editor 
-will turn gray.  Any panel in
-local selection mode may display a different section of the ontology,
-and may have a different collection of terms selected. Whether in
-global or local selection mode, panels may be filtered differently or
-may have different rendering settings. See <A
+<p>There can be several ontology tree editor panels on screen at once
+(to learn how to add more ontology tree editor panels to your
+interface, see the <A href="Components.htm">Components</A> and <a
+href="Perspectives.htm">Perspectives</a> sections).</p>
+
+<p>If there is more than one ontology tree editor panel, each panel
+can be independently set to global or local selection mode by using
+the globe/house icon button in the titlebar. When you're in local
+selection mode, you'll see the house icon instead of the globe, and
+the background of the Ontology Tree Editor will turn gray.  Any panel
+in local selection mode may display a different section of the
+ontology, and may have a different collection of terms
+selected. Whether in global or local selection mode, panels may be
+filtered differently or may have different rendering settings. See <A
 href="Working_with_Selections.htm">Working with Selections</A> for
 more information.</p>
 
@@ -141,12 +149,14 @@ the top of each ontology tree editor panel.
   Manager</a>.
 
 <h2>Other Views of the Ontology</h2>
-<p>The ontology tree editor panel isn't the only way to view an 
-ontology. See <A href="Tree_Viewer.htm">The Tree Viewer</A>, <A 
-href="The_GraphViz_Plugin.htm">The GraphViz Plugin</A> and <A 
-href="Parent_Editor.htm">The Parent_Editor</A>              
-         to 
-learn more about other ways to look at your ontology.</p>
+
+<p>The ontology tree editor panel isn't the only way to view an
+ontology. See <A href="Tree_Viewer.htm">The Tree Viewer</A>, <a
+href="Graph_Viewer.htm">The Graph Viewer</a>, <A
+href="The_GraphViz_Plugin.htm">The GraphViz Plugin</A> and <A
+href="Parent_Editor.htm">The Parent_Editor</A> to learn more about
+other ways to look at your ontology.</p>
+
 <p>&nbsp;</p>
 </body>
 </html>
