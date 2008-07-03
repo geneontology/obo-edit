@@ -89,6 +89,8 @@
 				target="Changing_Relationship_Types" />
 			<tocitem text="Changing Link Attributes"
 				target="Changing_Link_Attributes" />
+			<tocitem text="Importing Terms"
+				 target="Importing_Terms" />
 			<tocitem text="Merging Ontology Files"
 				target="OBOMerge_User_Interface" />
 		</tocitem>
@@ -103,6 +105,8 @@
 					target="How_ID_Generation_Works" />
 				<tocitem text="The ID Manager"
 					target="The_ID_Manager_Plugin" />
+				<tocitem text="The ID Fixer"
+					target="The_ID_Fixer" />
 			</tocitem>
 			<tocitem text="Working with Namespaces"
 				target="Working_with_Namespaces" />
@@ -151,6 +155,8 @@
 			target="The_Explanation_Plugin" />
 		<tocitem text="Reasoner Prefilters"
 			target="Reasoner_Prefilters" />
+		<tocitem text="The Semantic Parser Manager"
+			target="Semantic_Parser_Manager" />
 	</tocitem>
 	<tocitem text="Ontology Verification">
 		<tocitem text="Introduction to Verification"
