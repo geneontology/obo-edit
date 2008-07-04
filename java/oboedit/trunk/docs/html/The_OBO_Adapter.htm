@@ -12,7 +12,7 @@
 and writes files in the <A href="An_Introduction_to_OBO_Ontologies.htm">OBO flat 
 file format</A>. All versions of the OBO format are supported. Files 
 can be read from disk or a URL, but files must be written to disk.</p>
-<p><strong>Supported features:</strong>The OBO Adapter can save two different version of the flat file 
+<p><strong>Supported features:</strong> The OBO Adapter can save two different version of the flat file 
 specification, OBO 1.0 and OBO 1.2. The two versions support slightly different 
 ontology features.</p>
 <p><em>OBO 1.2</em> - This format can save the entire contents of an OBO-Edit 
@@ -64,7 +64,7 @@ allow you to edit the references).</p>
 lists) contain a resizable divider. Some platforms (&lt;cough&gt; 
 &lt;Macintosh!&gt;) have odd ideas about how to initially place these dividers. 
 Sometimes this means that a divider starts so far over to the left that a button 
-is initially hidden. This most often effects the "Del" button of an editable 
+is initially hidden. This most often affects the "Del" button of an editable 
 list.</p>
 <p class="sidebar">We're actively seeking a cure for this problem. Until then, try 
 resizing a divider if some controls are hidden.</p>
@@ -73,11 +73,10 @@ resizing a divider if some controls are hidden.</p>
 <h4>Saving</h4>
 <p>When the "Advanced" button is pressed, the save dialog changes to look like 
 this:</p>
-<p><IMG height=265 hspace=0 src="../images/save_obo_advanced.gif" width=390 
+<p><IMG hspace=0 src="../images/save_obo_advanced.png" 
 border=0></p>
-<p>The dropdown box at the bottom of the dialog selects which version of the OBO 
-format to use. The default is OBO version 1.0, but OBO 1.2 should be used for 
-maximum expressivity.</p>
+<p>The dropdown box at the top of the dialog selects which version of the OBO 
+format to use. The default in OBO-Edit 2 is OBO version 1.2.</p>
 <p>The OBO Adapter can save an ontology to several different files. The contents 
 of the save files may overlap, or may be entirely disjoint. The save can be 
 configured so that some terms or links don't get saved at all.</p>
@@ -92,6 +91,9 @@ the right of the file list that looks like this:</p>
 <p>The line at the top contains the path of the save file. To change the save 
 path, type a new path into the text box or click the Browse button to select a 
 file from the disk as a save location.</p>
+  <p>Next is is a dropdown labeled "Output 
+type". This dropdown allows the user to select 
+  whether to save in OBO 1.0 or OBO 1.2 format.</p> 
 <p>The middle rows of controls contains filtering settings. These are very 
 important, and are addressed in their own section below.</p>
 <p><A name=implied_links></A>Below the filtering controls is a checkbox labeled "Save implied links". If 
@@ -109,7 +111,7 @@ possible settings are:</p>
   <li><strong>Save all links</strong> - Saves every link inferred by the 
   reasoner. This will be a very, <strong>very</strong> large number of links, 
   most of which will not be useful to users. This mode should only be used for 
-  populating database or other tasks where every bit of data is needed.</li></ul> 
+  populating a database or other tasks where every bit of data is needed.</li></ul> 
   <p>If the "Realize implied links" checkbox, implied links will 
   be stripped of the label that identifies them as reasoner-generated links. These implied links will be 
   saved as if they were regular links created by a human user.</p>
@@ -124,9 +126,6 @@ settings:</p>
   Plugin</A>) 
   <li><strong>Write originally loaded id rules</strong> - Writes the rules that 
   were originally loaded with this ontology (if there were any)</li></ul> 
-  <p>At the bottom of the panel is a dropdown labeled "Output 
-type". This dropdown allows the user to select 
-  whether to save in OBO 1.0 or OBO 1.2 format.</p> 
   <p>To the right of all these controls is the OBO File Remark 
 text field. This field will be converted into a comment in the OBO file header. 
 Note that even though text wraps in this field, 
@@ -190,8 +189,8 @@ interface to design the filter and test it on the currently loaded
 ontology.&nbsp;When the filter is working correctly, save it (see <A 
 href="Reusing_Filters.htm">Reusing Filters</A> for information on how to save 
 and load filters), bring up the advanced OBO adapter save dialog, and load the 
-saved filter using the <IMG height=20 hspace=0 
-src="../images/filter_load_save_buttons.gif" width=83 border=0> &nbsp;buttons. 
+saved filter using the <IMG  hspace=0 
+src="../images/filter_load_save_buttons.png"  border=0> &nbsp;buttons. 
 </p></div>
 </body>
 </html>
