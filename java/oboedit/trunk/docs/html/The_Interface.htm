@@ -1,9 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
-
 <html>
-
 <head>
-
 <meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
 
 <title>The Interface</title>
@@ -34,12 +31,19 @@ Type</strong>  drag and drop operation only works when there is a single
 source relationship, a target relationship has been defined, AND the child of 
 the source relationship is a Property.</p>
 <p> Some structural changes may be applied to several sources at once. 
-For example, the <strong>Delete</strong> operation allows several relationships 
-to be deleted at once. Note that any given editing operation will only be 
+For example, the <strong>Add child</strong> operation allows several relationships 
+to be added at once.
+
+<!-- not sure whether to keep this: Note that any given editing operation will only be 
 available if it can be applied to ALL the currently selected sources. That means 
-that if&nbsp;a user selects 30 terms to delete, but one of the terms cannot be 
-deleted because it still has children, the <strong>Delete</strong> operation 
-will not be available until that undeletable term is no longer selected.</p>
+that if a user selects 30 terms to add as children to a new parent, but one of the terms cannot be 
+copied (e.g. because it would create a cycle), the <strong>Delete</strong> operation 
+will not be available until that term is no longer selected.</p> -->
+
+<p> The <strong>Delete</strong> operation behaves slightly differently
+with multiple sources: if any of the selected terms has children, it
+will not be deleted, and a message will pop up warning the user that
+the term(s) with children will not be deleted.
 
 <h2>Three Ways to Edit</h2>
 <h3>1) Drag and Drop</h3>
@@ -80,7 +84,7 @@ additional popup menus when you drop your selection. The hotkeys are:</p>
 <P>
 Command+X Move<br>
 Command+C Copy<br>
-Command+M Merge<br>
+Command+Shift+M Merge<br>
 Command+D Default mode<br>
 </p>
 <p>When you press a hotkey, a dropdown box appears showing the current 
@@ -111,7 +115,7 @@ for the editing operation. If you right-click a certain term, that term is used
 as the <strong>target</strong> for the editing operation.</p>
 <p> The right-click menu will display all the 
 currently available editing operations. If an operation cannot be performed on the 
-current target or sources, the operation will be grayed-out. The right-click menu contains more than just 
+current target or sources, the operation will be grayed out. The right-click menu contains more than just 
 editing operations; the right-click menu also allows you to configure display options 
 for the current ontology tree editor panel.</p>
 
