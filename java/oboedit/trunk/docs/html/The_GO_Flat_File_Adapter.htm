@@ -10,7 +10,7 @@
 <h2>Overview</h2>
 <p><strong>What it does:</strong> Reads 
 and writes files in the&nbsp;GO Flat File Format (<a 
-href="http://www.geneontology.org/GO.format.shtml#goflat">http://www.geneontology.org/GO.format.shtml#goflat</a>). 
+href="http://www.geneontology.org/GO.format.go.shtml">http://www.geneontology.org/GO.format.go.shtml</a>). 
 This is the format originally used by the Gene Ontology Consortium to develop 
 the first versions of the GO. <strong><em>Use of this file format is NOT 
 recommended!</em></strong> This file format has been officially deprecated 
@@ -21,8 +21,17 @@ in OBO 1.2 format and use a tool like <A href="obo2flat.htm">obo2flat</A> to
 automatically generate the GO flat files.</p>
 <p><strong>Supported features:</strong> 
 This file format supports a very limited subset of OBO-Edit ontology data:            
-            
+<ul>
+  <li>Term ID
+  <li>Term names
+  <li>Synonyms
+  <li>Relations
+  <li>Dbxrefs
+  <li>Definitions (in a separate file; see below)
+</ul>
  </p>
+<p><strong>Unsupported features:</strong> 
+OBO-Edit ontology data <em>not</em> supported by this file format include: </p>
 <ul>
   <li>Instances 
   <li>Sub-relations - All relations become root level 
@@ -197,11 +206,7 @@ left blank, but all your definitions will be lost.</p>
   relationship types to be represented by a single character. If "Use legacy 
   compatible types" is selected, the GO Flat File Adapter uses the 
   single-character encoding. See <A href="#property_symbols">Specifying Relation 
-  Symbols</A>       
-               
-               
-              
-             for 
+  Symbols</A> for
   information on configuring this single-character encoding. </li></UL>
 <P>The final component is the "Comment" text field. This is a freetext comment 
 that will appear at the top of the saved file.</P>
