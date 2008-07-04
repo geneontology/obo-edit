@@ -17,24 +17,24 @@ file is loaded.</p>
 
 <h2>Creating a GO slim category</h2>
 <p>Select the term 'biological process' and click the 'Categories' tab. Categories are explained in more detail in the <A href="Text_Editing.htm">text editing</a> and <A href="An_Introduction_to_OBO_Ontologies.htm">An Introduction to OBO Ontologies</a> sections. You'll see a list of GO slims that currently exist in the GO file; notice that biological process is in all of the existing categories. Terms are removed from a GO slim category in the same way as from other <A href="Working_with_Categories.htm">categories</a>, by ticking the box next to the category name and clicking 'Commit'.</p>
-<p>To add your own GO slim category, use the <A href="Working_with_Categories.htm">Category Manager<a> from the Metadata menu. Give your new category a name, for example, 'my_own_slim', and description for example, 'My Favourite GO Slim' and save it.</p>
+<p>To add your own GO slim category, use the <A href="Working_with_Categories.htm">Category Manager<a> from the Metadata menu. Give your new category a name (e.g. 'my_own_slim') and description (e.g. 'My Favourite GO Slim'), and save it.</p>
 
 <p>Now select 'biological process' again, and click the 'Categories' tab. You should now see your GO slim category listed with the others. If you tick the box next to your category and press 'Commit', the term 'biological process' will be added to that category.</p>
 
 <h2>Choosing and viewing GO slim terms</h2>
 <p>The next step is to go through the ontology and add terms to your GO slim. The easiest way to do this is to use a 
-<A href="Rendering.htm">term render</a>, so you can keep track of which terms you've added already. For information about how to use renders, see the <A href="Rendering.htm">Rendering section</a>. For the GO slim example described above, the pull-down menus should be set to, from left to right, [Self] [Category] [equals], and in the text box 'my_own_slim'. It would be useful to save your filter at this stage, so that you can reload it when you want to save your file, see the <A href="Reusing_Filters.htm">Reusing filters</a> section.</p>
+<A href="Rendering.htm">term renderer</a>, so you can keep track of which terms you've added already. For information about how to use renderers, see the <A href="Rendering.htm">Rendering</a> section. For the GO slim example described above, the pull-down menus should be set to, from left to right, [Self] [Category] [equals], and the text box should contain 'my_own_slim' (without quotes). It would be useful to save your filter at this stage, so that you can reload it when you want to save your file; see the <A href="Reusing_Filters.htm">Reusing filters</a> section.</p>
 
 <p>Try adding a new term to your category; after you press 'Commit', the term name should also become rendered.</p>
 
-<p>You may also want to see just the terms in your GO slim, so to do this you can use a <A href="Term_Filters.htm">Term Filter</a>, using the same pull-down meun settings as for the render. For more information about filters, see the <A href="Filtering.htm">Filtering section</a>.</p>
+<p>You may also want to see just the terms in your GO slim, so to do this you can use a <A href="Term_Filters.htm">Term Filter</a>, using the same pull-down menu settings as for the renderer. For more information about filters, see the <A href="Filtering.htm">Filtering section</a>.</p>
 
-<p>Note: GO contains both part_of and is_a relationships. The is_a relationship is built in to OBO-Edit and is included in the exported file automatically, but part_of is not, so you will need to add this relationship to your category manually. To do this, open the 'Relations' node, which is adjacent to the 'Classes' node and appears as blue text. Select 'part of', and add to the category as you would an ordinary term. For a more detailed discussion of relationships, see the<A href="An_Introduction_to_OBO_Ontologies.htm"> Introduction to OBO Ontologies</a> section.</p>
+<p>Note: GO contains part_of, regulates, negatively_regulates, positively_regulates, and is_a relationships. The is_a relationship is built in to OBO-Edit and is included in the exported file automatically, but the others are not, so you will need to add this relationship to your category manually. To do this, open the 'Relations' node, which is adjacent to the 'Classes' node and appears as blue text. Select 'part of', and add to the category as you would an ordinary term; repeat for the regulates relationships. For a more detailed discussion of relationships, see the<A href="An_Introduction_to_OBO_Ontologies.htm"> Introduction to OBO Ontologies</a> section.</p>
 
 <h2>Exporting your GO slim</h2>
 <p>To save your GO slim in a separate file, select 'Save As' from the 'File' menu. Make sure the data adapter is still set to <A href="The_OBO_Adapter.htm">'OBO Flat File Adapter'</a>.</p>
 
-<p>Enter or browse for a path to <A href="Loading___Saving.htm">save</a> your file, and click the 'Advanced' button at the top of the box to switch to the advanced save options. Now tick the 'Filter terms' tick box in the middle of the window, and you should see a filtering interface similar to the one you used to apply a filter to your terms. See the end of the section <A href="The_OBO_Adapter.htm">The OBO Adapter</a> for 
+<p>Enter or browse for a path to <A href="Loading___Saving.htm">save</a> your file, and click the 'Advanced' button at the top of the box to switch to the advanced save options. Now tick the 'Filter terms' tick box in the middle of the window, and you should see a filtering interface similar to the one you used to apply a filter to your terms. See the end of the section on the  <A href="The_OBO_Adapter.htm">OBO Adapter</a> for 
 more information on saving with filters. Set the filters in the same way as 
 above, or <a href="Reusing_Filters.htm">reload your saved filter</A>.</p>
 <p>Click 'Ok' to save the file.</p>
