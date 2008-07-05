@@ -163,8 +163,9 @@ public class LinkPileReasoner extends AbstractReasoner {
 	}
 
 	protected void addDefaultRules() {
+            // SymmetryRule is weakly deprecated - we rarely have type-level symmetric relations
+            // addRule(new SymmetryRule());
 		addRule(new SimpleTransitivityRule());
-		addRule(new SymmetryRule());
 		addRule(new GenusDifferentiaRule());
 		addRule(new IntersectionRule());
 		addRule(new TransitiveOverRule());
