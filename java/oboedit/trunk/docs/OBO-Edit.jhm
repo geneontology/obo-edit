@@ -31,7 +31,7 @@
    <mapID target="Cloning" url="html/Cloning.htm"/>
    <mapID target="Compound_Filtering" url="html/Compound_Filtering.htm"/>
    <mapID target="Creating_Your_Own_GO_Slim_in_OBO_Edit" url="html/Creating_Your_Own_GO_Slim_in_OBO_Edit.htm"/>
-   <mapID target="Cross_Product_Info_tab" url="html/Cross_Product_Info_tab.htm"/>
+   <mapID target="Cross_Product_Info" url="html/Cross_Product_Info.htm"/>
    <mapID target="Cross_Product_Matrix_Editor" url="html/Cross_Product_Matrix_Editor.htm"/>
    <mapID target="Cross_Products" url="html/Cross_Products.htm"/>
    <mapID target="Cross_Products_By_Hand" url="html/Cross_Products_By_Hand.htm"/>
