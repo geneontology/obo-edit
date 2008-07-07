@@ -17,20 +17,16 @@ Products&nbsp;tab&nbsp;does not create any new terms. To create cross-product
 relationships for an existing term, load a term into the text editor panel by <A 
 href="Working_with_Selections.htm">selecting</A> it. To create a brand 
 new term with a cross product definition, first <A 
-href="Adding_New_Terms.htm">create the new term</A>                                                                       and then specify the cross product definition as described below. 
+href="Adding_New_Terms.htm">create the new term</A>                                                                       and then specify the cross product definition as described below.</p>
 
-<p><strong>Note</strong>: In order to edit using the Cross Products Tab, you will need to have two, or more, Ontology Editor Panels open. See <A href="The_Term_Editor_Panel.htm">The Ontology Editor Panel help</a> for more information on using multiple ontology editor panels.
+<p><strong>Note</strong>: In order to edit using the Cross Products Tab, you will need to have two, or more, Ontology Editor Panels open. See <A href="The_Term_Editor_Panel.htm">The Ontology Editor Panel help</a> for more information on using multiple ontology editor panels.</p>
 
 <h2>The Cross Products Tab in the Text Editor</h2>
 <p> The <A href="Text_Editing.htm">text 
-editor</A> contains a tab called "Cross Products":</p>
+editor</A> has a tab called "Cross Products":</p>
 <p><IMG height=179 hspace=0 
-src="../images/cross_product_tab.gif" width=490 border=0></p>
-<p>This tab assumes that your cross products conform to the 
-genus/differentia method of designating cross products. If you are using 
-another, unrecommended method (ie creating random <A 
-href="Cross_Products_By_Hand.htm">cross products by hand</A>),&nbsp;this panel 
-may behave in unexpected ways.</p>
+src="../images/cross_product_tab.png" width=490 border=0></p>
+<p>This tab assumes that your cross products conform to the genus/differentia method of designating cross products.</p>
 <p>The genus term is listed at the top. Differentia terms are listed in the 
 "Discriminating Relations" section. Each line of this section represents a 
 relationship to a term. The drop down box contains the relationship type, and 
@@ -46,7 +42,7 @@ the cross product definition if one of these buttons is clicked.</p>
 <h2>Assigning a Genus Term</h2>
 <p>In an ontology editor panel that is NOT the primary selection panel, select the term that you wish to use as the genus term. Note that you cannot use the primary selection panel to select the term you wish to use as the genus term because selecting another term will unselect the term of interest for which you are trying to make the cross product relationships.</p>
  
-<p>Drag the new genus term onto the button labeled "&lt;drop a genus term&gt;". The text on the button will change to the name of the new genus term. </p>
+<p>Drag the new genus term onto the button labeled &quot;&lt;drop a genus term&gt;&quot;. The text on the button will change to the name of the new genus term. The genus can also be created by starting to type into the box and allowing the autocomplete to make suggestions, one of which can be selected. </p>
 
 <p>To assign NO genus term, click the genus term button. The current genus term 
 will be removed.</p>
@@ -55,23 +51,10 @@ OBO-Edit. It is <STRONG>not recommended</STRONG>.</P>
 <h2>Assigning Differentia Terms</h2>
 <p>In an ontology editor panel that is NOT the primary selection panel, select a term that you wish to use as a differentia term.
 
-<p>Drop the new differentia term onto the button&nbsp;labelled "drag new terms 
-here". A popup menu will appear&nbsp;containing&nbsp;a list of 
-all&nbsp;available relationship types in the current ontology. Choose an option 
-from the menu to assign a type to your new relationship.</p>
+<p>Drop the new differentia term onto the button&nbsp;labelled &quot;Click (or drop) here to add a new differentia&quot;. A popup menu will appear&nbsp;containing&nbsp;a list of all&nbsp;available relationship types in the current ontology. Choose an option from the menu to assign a type to your new relationship.  Alternately, a new differentia may be created by simply clicking on the &quot;Click (or drop) here to add a new differentia&quot; button. This will be empty until you specify the relationship from the given list, and start to type the name of the term into the box. Again the autocompleter will provide you with possible options. The drop down arrow allows you to quickly change your mind to a similar term.</p>
 <p>To entirely remove a differentia term, click the garbage can button next to 
 the term.</p>
-<H2>Committing Changes</H2>
-<p> The cross product tab is located inside the <A href="Text_Editing.htm">text 
-editor</A>.&nbsp;Therefore, you must click 
-the "Commit" button to make your changes permanent. Otherwise, they will be lost 
-when you click a new term.</p>
-<P>Once changes are committed, OBO-Edit will create the hidden links that record 
-your new cross product. If <A href="The_OBO_Edit_Reasoner.htm">the reasoner</A> 
-is running, OBO-Edit will try to create inferred <STRONG>is_a</STRONG> links 
-based on your new cross-product definition.</P>
-
-
-
-</body>
+		<H2>Saving and reasoning</H2>
+		<P>Changes are automatically saved when you move on to another term. OBO-Edit will create the hidden links that record your new cross product. If <a href="The_OBO_Edit_Reasoner.htm">the reasoner</a> is running, OBO-Edit will try to create inferred <strong>is_a</strong> links based on your new cross-product definition.</P>
+	</body>
 </html>
