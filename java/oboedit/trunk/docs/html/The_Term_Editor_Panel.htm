@@ -91,6 +91,28 @@ the above example. That is because relationship types only exist between
 entities in the ontology. Since the top level nodes are simply to organize the 
 display, entities in the ontology have no named relationship to them.</p>
 
+<div class="sidebar">
+<h1>Why does my ontology tree look flat?</h1>
+<hr>
+<p>Some ontologies, such as ChEBI, have relationship types that are not
+transitive.
+OBO-Edit can display any relationships that are specified in an OBO
+file.  However, older versions of OBO-Edit were configured with a default global filter
+that hid all non-transitive relationships.
+If you have that filter in your OBO-Edit configuration directory from an earlier version of OBO-Edit,
+the ChEBI ontology would be displayed in an unhelpful "flat" form like this:</p>
+
+<p><img src="../images/chebi.png" width="623" height="411" border="0" alt=""></p>
+
+<p>To solve the problem, you need to bring up the Global Filters component
+  ([Config] -> [Global Filters]). Then select 
+"Link filters" and delete the second filter: <em>Select links where Type that have a Is Transitive.</em></p>
+
+<p><img src="../images/is_transitive.png" width="842" height="244" border="0" alt=""></p>
+<p>The ChEBI ontology should then display correctly:</p>
+<p><img src="../images/chebi_fixed.png" width="430" height="328" border="0" alt=""></p>
+</div>
+
 <h2>Viewing Obsoletes</h2>
 <p>Obsolete terms appear under the "Obsolete" node. 
 Although obsolete terms cannot have parents or children,&nbsp;if an obsolete 

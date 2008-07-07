@@ -181,8 +181,8 @@
 			target="Introduction_to_Cross_Products" />
 		<tocitem text="Cross Products in the Text Editor"
 			target="Cross_Products_in_the_Text_Editor" />
-		<tocitem text="Cross Product Info Tab"
-			target="Cross_Product_Info_tab" />
+		<tocitem text="Cross Product Info Panel"
+			target="Cross_Product_Info" />
 		<tocitem text="Cross Product Matrix Editor"
 			target="Cross_Product_Matrix_Editor" />
 		<tocitem text="Intersection Editor"

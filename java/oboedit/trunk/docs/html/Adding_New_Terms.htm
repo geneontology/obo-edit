@@ -59,23 +59,27 @@ created.</p>
 <hr>
 <p>
 OBO-Edit can display any relationships that are specified in an OBO
-file, but by default it only shows transitive relationships. If you
-are not seeing your new relationships, then it's likely that they are
-not marked as transitive in your file. To see these relationship
-types, you have two options:
+file.  However, older versions of OBO-Edit were configured with a default global filter
+that hid all non-transitive relationships.
+If you
+are not seeing your new relationship type, then it is probably not marked as a
+transitive relationship, and furthermore, you have old configuration files
+left over from an earlier OBO-Edit version.
+Here's what you should do:
 <ul>
 <li> If the relationship is transitive, make sure that it is marked
 transitive. Select the relationship in the Ontology Editor Panel, and
 tick the "Is transitive?" box in the Text Editor. When you save the
 file, the tag "is_transitive: true" will be included in the OBO file.
-<li> If the relationship is not transitive, you will have to remove
-one of the default global filters. The filter that must be removed
-specifies "Link type has Is Transitive". See <a
-href="Global_Filters___Renderers.htm">Global Filters</a> for further
-details.  
+<li> Bring up the Global Filters component
+  ([Config] -> [Global Filters]). Then select 
+"Link filters" and see if there is a filter that says <em>Select links where Type that have a Is_Transitive.</em></p>
+<p><img src="../images/is_transitive.png" width="842" height="244" border="0" alt=""></p>
+<p>See <a
+href="Global_Filters___Renderers.htm">Global Filters</a> for more
+details.
+</p>
 </ul>
 </div>
-
-
 </body>
 </html>
