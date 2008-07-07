@@ -187,6 +187,8 @@
 			target="Cross_Product_Info_tab" />
 		<tocitem text="Cross Product Matrix Editor"
 			target="Cross_Product_Matrix_Editor" />
+		<tocitem text="Intersection Editor"
+			target="Intersection_Editor" />
 	</tocitem>
 	<tocitem text="Expressions">
 		<tocitem text="Introduction to Expressions"
