@@ -1,3 +1,5 @@
+// Prints a list of all the terms in an ontology
+
 foreach (term in session.getObjects()) {
     println(term.getName());
 }
