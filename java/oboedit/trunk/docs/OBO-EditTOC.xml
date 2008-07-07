@@ -54,7 +54,7 @@
 				target="Compound_Filtering" />
 			<tocitem text="Reusing Filters" target="Reusing_Filters" />
 		</tocitem>
-		<tocitem text="Using Filters" target="Using_Filters">
+		<tocitem text="Using Filters">
 			<tocitem text="Searching" target="Searching" />
 			<tocitem text="Filtering" target="Filtering" />
 			<tocitem text="Rendering" target="Rendering" />
@@ -62,8 +62,6 @@
 				target="Global_Filters___Renderers" />
 			<tocitem text="Other Uses of Filters"
 				target="Other_Uses_of_Filters" />
-			<tocitem text="Custom Search Buttons"
-				target="Custom_Search_Buttons" />
 		</tocitem>
 		<tocitem text="Advanced Searching"
 			target="Advanced_Searching">
@@ -217,8 +215,7 @@
 		<tocitem text="Java Options on the Command-line"
 			target="Java_Options_on_the_Command_line" />
 	</tocitem>
-	<tocitem text="Frequently Asked Questions"
-		target="Frequently_Asked_Questions">
+	<tocitem text="Frequently Asked Questions">
 		<tocitem text="How Do I Make a 'Slim' Ontology?"
 			target="How_Do_I_Make_a__Slim__Ontology_">
 			<tocitem text="Creating Your Own GO Slim in OBO-Edit"
