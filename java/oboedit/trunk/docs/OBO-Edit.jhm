@@ -62,6 +62,7 @@
    <mapID target="How_ID_Generation_Works" url="html/How_ID_Generation_Works.htm"/>
    <mapID target="How_OBO_Edit_Understands_Histories" url="html/How_OBO_Edit_Understands_Histories.htm"/>
    <mapID target="Importing_Terms" url="html/Importing_Terms.htm"/>
+   <mapID target="Intersection_Editor" url="html/Intersection_Editor.htm"/>
    <mapID target="Introduction_to_Adapters" url="html/Introduction_to_Adapters.htm"/>
    <mapID target="Introduction_to_Cross_Products" url="html/Introduction_to_Cross_Products.htm"/>
    <mapID target="Introduction_to_Expressions" url="html/Introduction_to_Expressions.htm"/>
