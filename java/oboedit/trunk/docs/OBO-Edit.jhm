@@ -37,7 +37,6 @@
    <mapID target="Cross_Products_By_Hand" url="html/Cross_Products_By_Hand.htm"/>
    <mapID target="Cross_Products_in_the_Text_Editor" url="html/Cross_Products_in_the_Text_Editor.htm"/>
    <mapID target="Custom_Data_Adapters" url="html/Custom_Data_Adapters.htm"/>
-   <mapID target="Custom_Search_Buttons" url="html/Custom_Search_Buttons.htm"/>
    <mapID target="Dangling_Intersection_Check" url="html/Dangling_Intersection_Check.htm"/>
    <mapID target="Dbxref_Check" url="html/Dbxref_Check.htm"/>
    <mapID target="Definition_Check" url="html/Definition_Check.htm"/>
@@ -50,7 +49,6 @@
    <mapID target="Expression_Syntax" url="html/Expression_Syntax.htm"/>
    <mapID target="Filtering" url="html/Filtering.htm"/>
    <mapID target="Filters" url="html/Filters.htm"/>
-   <mapID target="Frequently_Asked_Questions" url="html/Frequently_Asked_Questions.htm"/>
    <mapID target="Getting_Started" url="html/Getting_Started.htm"/>
    <mapID target="Global_Filters___Renderers" url="html/Global_Filters___Renderers.htm"/>
    <mapID target="Graph_Editor" url="html/Graph_Editor.htm"/>
@@ -122,7 +120,6 @@
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
    <mapID target="Undo_Redo" url="html/Undo_Redo.htm"/>
    <mapID target="User_Defined_Checks" url="html/User_Defined_Checks.htm"/>
-   <mapID target="Using_Filters" url="html/Using_Filters.htm"/>
    <mapID target="What_is_an_ontology_" url="html/What_is_an_ontology_.htm"/>
    <mapID target="What_is_OBO_Edit_" url="html/What_is_OBO_Edit_.htm"/>
    <mapID target="Working_with_Categories" url="html/Working_with_Categories.htm"/>
