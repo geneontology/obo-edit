@@ -1,4 +1,4 @@
-// Erases all term replacement info from a file
+// Removes all the replaced_by and consider tags in a file.
 foreach (term in session.getObjects()) {
   if (TermUtil.isObsolete(term)) {
     term.getReplacedBy().clear();

@@ -1,3 +1,5 @@
+// Replaces all the spaces in term names with another character (underscore by default)
+
 // unescapes backslash escape characters in a string
 function unescape(str) {
   out = "";
@@ -13,6 +15,7 @@ function unescape(str) {
 }
 
 // optionally reads a spacing character from the command-line
+// (if one isn't specified, uses "_")
 if (args.size() > 0)
    replaceChar = unescape(args.get(0));
 else

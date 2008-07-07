@@ -1,3 +1,7 @@
+// Updates a gene association file by updating all references to secondary ids to
+// primary ids, and using replaced_by and consider information to update
+// references to obsolete terms.
+
 /**
  * Parses a tabbed delimited line into a list where each field becomes an item in the list
  */
