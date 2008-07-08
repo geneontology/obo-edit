@@ -1,3 +1,5 @@
+<#include "PageMacros.ftl">
+<#include "NodeDetailsMacro.ftl"> 
 <html>
 	<head>
 
@@ -294,11 +296,29 @@
 			
 		</script>
 
+
+		<@genTitle pageName="Query Results"/>
+		<@stylize/>
 	</head>
 	<body>
-		<ul id="query" class="subQuery">
-
-		</ul>
-		<input type="submit" id="submit" value="Submit Query"/>
+        <@header/>
+		<table class="threecol">
+			<tr>
+				<td id="left_bar">
+					<@searchForm/>
+					<hr class="divider"/>
+				</td>
+				<td id="vertical_divider">
+				</td>
+				<td id="content_container">
+					<h2><span style="font-weight:normal;">OBD Query Builder</span> </h2><br/>
+					<br/>
+					<ul id="query" class="subQuery">
+					</ul>
+					<input type="submit" id="submit" value="Submit Query"/>
+				</td>
+			</tr>
+		</table>
+		<@footer/>
 	</body>
 </html>

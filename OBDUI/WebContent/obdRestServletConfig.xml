@@ -133,6 +133,13 @@
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements/{aspect}</path>
 		<path>/{dataSource}/{format}/search/{source}/{target}/{operator}/{term}/statements/{aspect}/{relation}</path>
 	</resourcePathMap>
+	<resourcePathMap>
+		<resourceClass>org.obd.ws.coreResource.QueryResource</resourceClass>
+		<path>/{dataSource}/{format}/query</path>
+		<path>/{dataSource}/{format}/query/</path>
+		<path>/{dataSource}/{format}/query/{queryString}</path>
+		<path>/{dataSource}/{format}/query/{queryString}/</path>
+	</resourcePathMap>
 	
 	
 	<!-- AMIGO Resources -->

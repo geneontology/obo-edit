@@ -15,7 +15,6 @@ import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.query.AnnotationLinkQueryTerm;
 import org.obd.query.LinkQueryTerm;
-import org.obd.query.LiteralQueryTerm;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
