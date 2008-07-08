@@ -17,17 +17,12 @@ between terms.</P>
 development" and "development", that link would be written as</P>
 <P>"heart development" -<STRONG>is_a</STRONG>-&gt; "development"</P>
 <H2>The Link Filter Interface</H2>
-<P>To enable link filtering in a user configurable filter 
-designer, click the "Advanced" tab and make sure that "Link filtering" is 
-enabled and "Keyword filtering" is disabled. (The "Link filtering" box cannot be clicked until "Keyword filtering" is turned off).</P>
-<P>It is possible to have term filtering and link filtering 
-enabled at the same time. If both are enabled at once, tabs will appear at the 
-top of the interface so you can switch between the term filter and link filter 
-controls. </P>
+<P>To add or change link filters in a user configurable filter 
+designer (such as the Global Filters component), click the "Link filters" tab
 <P>The link filter interface looks like this:</P>
-<P><IMG height=85 hspace=0 src="../images/filter_link.gif" width=384 
-border=0></P>
-<P>Notice the field labeled "link facet". Besides this new field, the link 
+<P><IMG hspace=0 src="../images/filter_link.png" border=0></P>
+<P>Notice the field that says "Self". This is called the "link facet".
+Other than this new field, the link 
 filter interface looks exactly like the term filter interface.</P>
 <P>The link facet determines what characteristics of the link will be considered 
 when filtering. There are 4 possible link facets:</P>
@@ -96,5 +91,27 @@ specifies an alternate collection of related <EM>links</EM>.</P>
 <P>For example, when the <STRONG>Self</STRONG> aspect is selected, the 
 ancestor aspect searches all the ancestor <EM>links</EM> (NOT ancestor terms) to 
 find a match.</P>
+
+<div class="sidebar">
+<h1>A global link filter that seems like a good idea but slows everything down</h1>
+<hr>
+<p>
+If your ontology has a lot of "disjoint_from" links, the graph display can
+become rather tangled, so it might occur to you to add a link filter to hide
+those links:  "Select links where Type that don't have a ID that equals the value
+disjoint_from"
+or, in the syntax at the bottom of the link search panel, <code>link.type(id NOT equals "disjoint_from")</code>.
+</p>
+<P><IMG hspace=0 src="../images/disjoint-from-link-filter.png" border=0></P>
+<p>The problem with this link filter is that any time you perform an ontology
+edit (for example, using the Text Editor to change the wording of a definition
+or add a dbxref), OBO-Edit runs all the link filters, and this "disjoint_from"
+filter is very expensive to perform.  You will thus see very slow
+performance--for example, with this filter in place, a text edit of the GO
+ontology takes 13 seconds to commit.  We suggest that you use this filter only
+when necessary, and don't save it as a global link filter that will be applied
+every time you open OBO-Edit.
+</p>
+</div>
 </BODY>
 </html>
