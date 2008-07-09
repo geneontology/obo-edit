@@ -68,7 +68,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 
 	protected JCheckBox checkBoxUseTransitive = new JCheckBox("Include ancestors");
-	protected JCheckBox checkBoxConcise = new JCheckBox("use concise");
+	protected JCheckBox checkBoxConcise = new JCheckBox("Use concise");
 
 	protected JTable asTable;
 	protected JComboBox relationChooser = new JComboBox();
