@@ -67,6 +67,8 @@ public class Preferences {
 
 	protected boolean useBasicRootDetection = true;
 
+	protected boolean onlyOneGlobalOTE = true;
+
 //	protected boolean autosaveEnabled = false;
 	protected boolean autosaveEnabled = true;  // Make this true by default.  --NH, 1/4/2008
 
@@ -251,7 +253,7 @@ public class Preferences {
 						 version.getMajorVersion() + 
 						 (version.isBeta() ? "-beta" : "") + 
 						 "/"));
-//		logger.info("prefsDir = " + prefsDir);
+//		logger.debug("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
@@ -436,6 +438,16 @@ public class Preferences {
 		return useBasicRootDetection;
 	}
 
+	public void setOnlyOneGlobalOTE(boolean onlyOneGlobalOTE) {
+		this.onlyOneGlobalOTE = onlyOneGlobalOTE;
+		// If this was changed from false to true AND there is more than one OTE set to global mode,
+		// we should somehow turn off global mode in all but one (which one??)
+	}
+
+	public boolean getOnlyOneGlobalOTE() {
+		return onlyOneGlobalOTE;
+	}
+
 	protected static ClassLoader getExtensionLoader() {
 		return Preferences.class.getClassLoader();
 	}
@@ -451,7 +463,7 @@ public class Preferences {
 				"org/oboedit/gui/resources/icons/" + name);
 		if (url == null) {
 			url = getExtensionLoader().getResource(
-					"org/oboedit/gui/resources/icons/typeicons/" + name);
+				"org/oboedit/gui/resources/icons/typeicons/" + name);
 		}
 		return getIconForURL(url);
 	}
