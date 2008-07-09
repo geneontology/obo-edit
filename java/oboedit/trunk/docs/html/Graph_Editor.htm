@@ -26,8 +26,33 @@ Use the "-" button to remove that filter and click "Save Changes".  You will the
 Once you remove that "is transitive" filter and restart, you should see the regulates links:
 </p><p>
 <img src="../images/regulates-links.png" border=0>
-</p><p>
+</p>
+<p>
 If you don't like the regulates icons or colors, you can change them in the "Icons & Colors" tab of the <a href="Configuration_Manager.htm#icons">Configuration Manager</a>.
 </p>
+
+<div class="sidebar">
+<h1>Detangling the Graph Editor display by hiding disjoint_from links</h1>
+<hr>
+<p>
+If your ontology has a lot of "disjoint_from" links, the graph display can
+become rather tangled.  You can detangle it somewhat by adding a link filter
+to hide
+those links:  "Select links where Type that don't have a ID that equals the value
+disjoint_from"
+or, in the syntax at the bottom of the link search panel, <code>link.type(id NOT equals "disjoint_from")</code>.
+</p>
+<P><IMG hspace=0 src="../images/disjoint-from-link-filter.png" border=0></P>
+<p>The drawback of adding this link filter is that any time you perform an ontology
+edit (for example, using the Text Editor to change the wording of a definition
+or add a dbxref), OBO-Edit runs all the link filters, and this "disjoint_from"
+filter is very expensive to perform.  You will thus see very slow editing
+performance--for example, with this filter in place, a text edit of the GO
+ontology takes 13 seconds to commit.  We suggest that you use this filter only
+when necessary, and don't save it as a global link filter that will be applied
+every time you open OBO-Edit.
+</p>
+</div>
+
 </body>
 </html>

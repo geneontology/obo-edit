@@ -50,8 +50,6 @@
 		<tocitem text="Building a_Filter" target="Building_a_Filter">
 			<tocitem text="Term Filters" target="Term_Filters" />
 			<tocitem text="Link Filters" target="Link_Filters" />
-			<tocitem text="Compound Filtering"
-				target="Compound_Filtering" />
 			<tocitem text="Reusing Filters" target="Reusing_Filters" />
 		</tocitem>
 		<tocitem text="Using Filters">

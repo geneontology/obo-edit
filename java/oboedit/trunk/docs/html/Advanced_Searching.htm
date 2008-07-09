@@ -58,6 +58,28 @@ To move any individual criterion in the search into or out of a given
 level of nesting the&nbsp; <img src="search/Picture%2023.png" alt=""> and <img
  src="search/Picture%2019.png" alt=""> buttons are used.</p><p>
 
+<H2>How Compound Filters Are Matched -- Speeding Up Your Searches</H2>
+<P>Compound filters are matched by evaluating whether their constituent filters 
+match.</P>
+<P>Constituent filters are matched in the order they were specified. The 
+evaluation stops if the value of the compound filter can be determined, even if 
+all the constituent filters have not been checked. For example, if the boolean 
+operation is AND and one of the constituent filters doesn't match, the 
+evaluation stops and the entire compound filter announces that it doesn't match 
+(because if even one term of an AND expression is false, the whole expression is 
+false). Similarly, if the boolean operation is OR and a constituent filter 
+matches, the evaluation stops and the entire compound filter announces that it 
+matches (if even one term of an OR expression is true, the whole expression is 
+true).</P>
+<P>Therefore: <STRONG>When constructing a compound filter, put 
+filters that can be evaluated quickly FIRST. </STRONG>For example, it takes a long time to do any search with 
+an "Ancestor" or "Descendant" search aspect, because all the descendants or 
+ancestors of every term in the ontology have to be calculated. So add any 
+filters that use an ancestor or descendant last, and add quickly evaluated filters 
+first. That way slow filters don't have to be evaluated unless absolutely 
+necessary, and the whole filtering operation will work more 
+quickly.</P>
+
 <h2>Debugging Queries</h2>
 Selecting <img src="search/Picture%2026.png" alt=""> causes a <img
  src="search/Picture%2021.png" alt=""> icon to appear. </p><p>
@@ -89,6 +111,6 @@ differences as follows:</p><p>
 <img src="search/Picture%2038.png" alt=""></p><p>
 Is redundant - Allows you to search for redundant links in the
 ontology, which can then be deleted. </p>
-<br>
+
 </body>
 </html>
