@@ -45,8 +45,6 @@
 	</tocitem>
 	<tocitem text="Filtering, Rendering &amp; Searching">
 		<tocitem text="Filters" target="Filters" />
-		<tocitem text="Link Filters vs Term Filters"
-			target="Link_Filters_vs_Term_Filters" />
 		<tocitem text="Building a_Filter" target="Building_a_Filter">
 			<tocitem text="Term Filters" target="Term_Filters" />
 			<tocitem text="Link Filters" target="Link_Filters" />
