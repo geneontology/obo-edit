@@ -21,6 +21,7 @@ import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.*;
 
 import org.bbop.framework.ComponentConfiguration;
+import org.bbop.framework.ComponentManager;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUIComponent;
@@ -47,6 +48,7 @@ import org.oboedit.gui.InputHandlerI;
 import org.oboedit.gui.NodeLabelProvider;
 import org.oboedit.gui.OBOCellRenderer;
 import org.oboedit.gui.ObjectSelector;
+import org.oboedit.gui.OntologyEditor;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RightClickMenuProvider;
 import org.oboedit.gui.Selection;
@@ -62,7 +64,7 @@ import org.oboedit.util.PathUtil;
 
 import org.apache.log4j.*;
 
-public class OBOTermPanel extends JTree implements ObjectSelector,
+public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelector,
 	FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
 	RightClickMenuProvider, Autoscroll {
 
@@ -163,7 +165,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 				}
 			}
 			// TODO Auto-generated method stub
-
 		}
 	};
 
@@ -174,6 +175,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive()) {
+//				logger.info("selectionChanged and isLive()");
 				OBOTermPanel.this.select(e.getSelection());
 			}
 		}
@@ -270,7 +272,9 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	ExpansionBridge expansionBridge = new ExpansionBridge();
 
-	protected boolean isLive = true;
+	protected boolean isLive = true;  // Global selection mode
+
+	protected JToggleButton liveButton;
 
 	public Icon getImage(DragSourceDragEvent e) {
 		return new ImageIcon(getDragImage(getSelectionRows()));
@@ -389,17 +393,53 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 	}
 
+	// Whether we're in global selection mode
 	public boolean isLive() {
 		return isLive;
 	}
 
+	public void setLiveButton(JToggleButton button) {
+		this.liveButton = button;
+	}
+	public JToggleButton getLiveButton() {
+		return liveButton;
+	}
+
 	public void setLive(boolean isLive) {
+//		logger.info(getID() + ".setLive(" + isLive + ")");
 		this.isLive = isLive;
+		if (isLive == true && Preferences.getPreferences().getOnlyOneGlobalOTE())
+			makeOtherOTEsNotLive();
 		TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(
 				getRootAlgorithm(), getLinkDatabase());
 		setSelectionPaths(paths);
 		repaint(); // in order to change background color
 	}
+
+	/** If user specified that only one OTE can be live at any given time, make any other OTEs *not* live */
+	private void makeOtherOTEsNotLive() {
+		Map<String, GUIComponent> activeComponents = ComponentManager.getManager().getActiveComponentMap();
+		Collection<String> it = new LinkedList<String>(activeComponents.keySet());
+		String globalID = getID();
+		for (String id : it) {
+			if (id.equals(globalID)) {
+				continue;
+			}
+			GUIComponent c = activeComponents.get(id);
+			if (c instanceof OBOTermPanel) {
+//				logger.debug("Found OBOTermPanel " + id);
+				((OBOTermPanel)c).setLive(false);
+				// Set liveButton (globe/house icon) to the right state
+				JToggleButton liveButton = ((OntologyEditor)c).getLiveButton();
+				liveButton.setSelected(false);
+				// Tell the liveButton that something's happened
+				ActionListener[] liveButtonListeners = liveButton.getActionListeners();
+				for (ActionListener l : liveButtonListeners)
+					l.actionPerformed(new ActionEvent(this, 0, "update"));
+			}
+		}
+	}
+
 
 	@Override
 	public void collapsePath(TreePath path) {
@@ -414,7 +454,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
         // This is how it remembers what it's showing when the user switches
         // between layouts (e.g. Edit and Verify).
 	public boolean teardownWhenHidden() {
-		return false;
+//		return false;
+		return true;
 	}
 
 	@Override
@@ -456,11 +497,11 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		}
 
 		public void install() {
-			SessionManager.getManager().addHistoryListener(historyListener);
+			sessionManager.addHistoryListener(historyListener);
 		}
 
 		public void uninstall() {
-			SessionManager.getManager().removeHistoryListener(historyListener);
+			sessionManager.removeHistoryListener(historyListener);
 		}
 
 		protected void updateFromHistory() {
@@ -622,6 +663,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 					getSelection())) {
 				setSelectionPaths(selected);
 			} else {
+//				logger.debug(getID() + ".selectPathForEvent: isLive = " + isLive()); // DEL
 				fireSelectionEvent();
 				if (isLive())
 					SelectionManager.setGlobalSelection(getSelection());
@@ -710,12 +752,22 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	public void setLockedPath(TreePath lockedPath) {
 		this.lockedPath = lockedPath;
 		// buttonPanel.setLockedPath(lockedPath);
-		FreezableScrollPane scrollPane = (FreezableScrollPane) SwingUtilities
-				.getAncestorOfClass(FreezableScrollPane.class, this);
+		logger.debug("setLockedPath " + lockedPath);  // DEL
+		// For some reason, this is not finding the appropriate ancestor.
+//		FreezableScrollPane scrollPane = (FreezableScrollPane) SwingUtil
+//			.getAncestorOfClass(FreezableScrollPane.class, this);
+//		logger.debug("Grandparent of " + this.getClass().getName() + " is " + this.getParent().getParent().getClass().getName()); // DEL
+//		FreezableScrollPane scrollPane = (FreezableScrollPane)
+////			SwingUtilities.getAncestorNamed("javax.swing.JComponent", this);
+//			this.getParent().getParent();
+		FreezableScrollPane scrollPane = new FreezableScrollPane();
 		if (scrollPane != null) {
+			logger.debug("scrollPane = " + scrollPane);  // DEL
 			scrollPane.setFrozen(lockedPath != null);
+
 			if (lockedPath != null) {
 				Rectangle r = getPathBounds(lockedPath);
+				logger.debug("rectangle = " + r);  // DEL
 				if (!scrollPane.getViewport().getViewRect().contains(r)) {
 					JOptionPane
 							.showMessageDialog(
@@ -733,8 +785,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	@Override
 	public Color getBackground() {
 		// Locking is not currently working.
-//		if (lockedPath != null)
-//			return lockGray;
+		if (lockedPath != null)
+			return Color.red;
 //		else
 //			return Color.white;
 
@@ -792,7 +844,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public Filter<?> getLinkFilter() {
 		if (getModel() instanceof TermModel) {
-//			logger.info("OBOTermPanel.getLinkFilter: " + ((TermModel) getModel()).getLinkFilter());
 			return ((TermModel) getModel()).getLinkFilter();
 		}
 		else
@@ -984,6 +1035,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	}
 
+	// Hey, this doesn't get called if you X out the OBO Term Panel--shouldn't it?
+	// It only gets called when you quit OE.
 	public void cleanup() {
 		ToolTipManager.sharedInstance().unregisterComponent(this);
 		// controller.removeListener(termSelectListener);
@@ -1007,17 +1060,12 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	protected boolean bridgeEnabled = false;
 
 	public OBOTermPanel(String id) {
+//		logger.debug("New OBOTermPanel(" + id + ")");
 		this.id = id;
 		setShowsRootHandles(true);
 		setRootVisible(false);
 		setNodeLabelProvider(new HTMLNodeLabelProvider(this, CollectionUtil
 				.list(BackgroundColorSpecField.FIELD), null, null));
-		/*
-		 * addFocusListener(new FocusAdapter() { @Override public void
-		 * focusGained(FocusEvent e) {
-		 * Controller.getController().setPrimarySelector(OBOTermPanel.this); }
-		 * });
-		 */
 //		setFont(Preferences.getPreferences().getFont()); // doesn't do anything--need to set font in OBOCellRenderer
 		scrollPane = new JScrollPane(this);
 		panel = new JPanel();
@@ -1033,8 +1081,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		model.init();
 		setActionMap(new ActionMap());
 	}
-
-	// protected boolean showToolbar = false;
 
 	@Override
 	public void setUI(TreeUI ui) {
@@ -1055,7 +1101,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return createSelectionFromPaths(lead, paths);
 	}
 
-    // NOT static.
+	// NOT static.
 	protected Selection createSelectionFromPaths(TreePath lead,
 			TreePath[] paths) {
 		if (paths == null || paths.length == 0)
@@ -1082,8 +1128,8 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		// why it was done that way.
 //		return SelectionManager.createSelectionFromPaths(null, paths, leadLink,
 		return SelectionManager.createSelectionFromPaths(this, paths, leadLink,
-				SessionManager.getManager().getCurrentLinkDatabase(),
-				RootAlgorithm.GREEDY, true);
+								 sessionManager.getCurrentLinkDatabase(),
+								 RootAlgorithm.GREEDY, true);
 	}
 
 	public void select(Selection selection) {
@@ -1124,6 +1170,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		collapseItem.setEnabled(collapsePaths.size() > 0);
 		menu.add(collapseItem);
 
+		// Locking/unlocking view not currently working
 		JMenuItem lockItem = new JMenuItem("Lock view");
 		lockItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1132,7 +1179,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		});
 		lockItem.setEnabled(selectedPaths.length == 1
 				&& !selectedPaths[0].equals(lockedPath));
-		menu.add(lockItem);
+//		menu.add(lockItem);
 
 		JMenuItem unlockItem = new JMenuItem("Unlock view");
 		unlockItem.addActionListener(new ActionListener() {
@@ -1141,7 +1188,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			}
 		});
 		unlockItem.setEnabled(lockedPath != null);
-		menu.add(unlockItem);
+//		menu.add(unlockItem);
 
 		// These menu items don't currently work, so leaving them off menu for now.
 //		menu.addSeparator();
@@ -1175,16 +1222,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 
 	public boolean pathIsValid(TreePath current) {
 		return PathUtil.pathIsValid(current, getModel());
-		/*
-		 * Object [] objects = current.getPath(); // only expand paths that are
-		 * actually in the model // otherwise some JTree implementations will
-		 * become corrupted boolean allowExpand = true; for(int j=0; j <
-		 * objects.length; j++) { if (!(objects[j] instanceof Link)) continue;
-		 * Link old = (Link) objects[j];
-		 * 
-		 * if (TermUtil.findChildRel(old, old.getParent()) == null) {
-		 * allowExpand = false; break; } } return allowExpand;
-		 */
 	}
 
 	public void synchronize(OBOTermPanel panel) {
@@ -1227,12 +1264,13 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		return out;
 	}
 
+	// This method gets called excessively.
 	public void reload() {
-//		logger.info("Reloading OBO Term Panel...");
+		logger.info("Reloading OBO Term Panel...");
+//		(new Exception()).printStackTrace(); // DEL
 		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			logger.info("removing selection listener " + selectionListeners[i]);
 			removeTreeSelectionListener(selectionListeners[i]);
 		}
 
@@ -1244,7 +1282,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-//		logger.info("OBOTermPanel.reload: before reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		if (model instanceof TermModel) {
 			// Get the current filters before reloading
 			FilterManager manager = FilterManager.getManager();
@@ -1252,7 +1289,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			((TermModel) getModel()).setTermFilter(manager.getGlobalTermFilter());
 			((TermModel) model).reload();
 		}
-//		logger.info("OBOTermPanel.reload: after reloading, getModel = " + model + ((model instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
 		clearToggledPaths();
 
 //		long time2 = System.currentTimeMillis();
@@ -1261,7 +1297,6 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 			restoreSelectionPaths(selected);
 //		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
-//			logger.info("adding selection listener " + selectionListeners[i]);
 			addTreeSelectionListener(selectionListeners[i]);
 		}
 //		logger.info("reloaded in " + (System.currentTimeMillis() - time)
@@ -1311,7 +1346,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	@Override
 	public void setModel(TreeModel model) {
 		super.setModel(model);
-		reload();
+//		reload(); // Need?  Every time?
 	}
 
 	/* These menu items to remove renderers and filters from the OTE don't work,
@@ -1492,7 +1527,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 	public void setRootAlgorithm(RootAlgorithm algorithm) {
 		if (getModel() instanceof DefaultTermModel) {
 			((DefaultTermModel) getModel()).setRootAlgorithm(algorithm);
-			reload();
+//			reload();  // Need?
 		}
 	}
 
@@ -1581,7 +1616,7 @@ public class OBOTermPanel extends JTree implements ObjectSelector,
 		this.nodeLabelProvider = nodeLabelProvider;
 	}
 
-	// Ok, we�ve been told to scroll because the mouse cursor is in our
+	// Ok, we've been told to scroll because the mouse cursor is in our
 	// scroll zone.
 	public void autoscroll(Point p) {
 		JViewport viewport = SwingUtil
