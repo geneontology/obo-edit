@@ -81,6 +81,7 @@ import org.oboedit.gui.DefaultInputHandler;
 import org.oboedit.gui.Filterable;
 import org.oboedit.gui.GOFlatFileGUI;
 import org.oboedit.gui.ObjectSelector;
+import org.oboedit.gui.OntologyEditor;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.actions.AddAction;
 import org.oboedit.gui.actions.AddConsiderAction;
@@ -403,21 +404,19 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 					compMap.add(c, filterButton);
 				}
 				if (c instanceof ObjectSelector) {
-					final JToggleButton liveButton = IDWUtil
-							.createFlatHighlightToggleButton(
-									// final JButton custom =
-									// ButtonFactory.createFlatHighlightButton(
-									globeIcon,
-									"Switch to local selection mode",
-									0, null);
+					final JToggleButton liveButton = IDWUtil.createFlatHighlightToggleButton(
+						globeIcon,
+						"Switch to local selection mode",
+						0, null);
+					if (c instanceof OntologyEditor)
+						((OntologyEditor) c).setLiveButton(liveButton);
 					liveButton.setSelected(((ObjectSelector) c).isLive());
 					if (!((ObjectSelector) c).isLive()) {
 						liveButton.setIcon(houseIcon);
 					}
 					liveButton.addActionListener(new AbstractAction() {
 						public void actionPerformed(ActionEvent e) {
-							((ObjectSelector) c).setLive(liveButton
-									.isSelected());
+							((ObjectSelector) c).setLive(liveButton.isSelected());
 						}
 					});
 					liveButton.addActionListener(new ActionListener() {
@@ -425,12 +424,10 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 						public void actionPerformed(ActionEvent e) {
 							if (liveButton.isSelected()) {
 								liveButton.setIcon(globeIcon);
-								liveButton
-										.setToolTipText("Switch to local selection mode");
+								liveButton.setToolTipText("Switch to local selection mode");
 							} else {
 								liveButton.setIcon(houseIcon);
-								liveButton
-										.setToolTipText("Switch to global selection mode");
+								liveButton.setToolTipText("Switch to global selection mode");
 							}
 						}
 					});
