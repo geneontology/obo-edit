@@ -1,9 +1,8 @@
 package org.oboedit.gui;
 
-import org.bbop.framework.GUIComponent;
-import org.bbop.swing.DragImageGenerator;
+import javax.swing.JToggleButton;
 
-public interface OntologyEditor extends ObjectSelector, FilteredRenderable,
-		Filterable, GUIComponent, DragImageGenerator, RightClickMenuProvider {
-
+public interface OntologyEditor extends ObjectSelector {
+	public void setLiveButton(JToggleButton button);
+	public JToggleButton getLiveButton();
 }
