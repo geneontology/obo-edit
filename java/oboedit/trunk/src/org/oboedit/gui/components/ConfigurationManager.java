@@ -57,6 +57,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JCheckBox advancedRootDetectionBox;
 
+	JCheckBox onlyOneGlobalOTECheckbox;
+
 	JCheckBox autoCommitCheckBox;
 
 	JCheckBox warnBeforeDiscardingEditsBox;
@@ -467,6 +469,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		Box warnDeleteBox = new Box(BoxLayout.X_AXIS);
 		Box warnDefinitionBox = new Box(BoxLayout.X_AXIS);
 		Box advancedRootBox = new Box(BoxLayout.X_AXIS);
+		Box onlyOneGlobalOTEBox = new Box(BoxLayout.X_AXIS);
 		Box autoCommitPanel = new Box(BoxLayout.X_AXIS);
 
 		JLabel userLabel = new JLabel("User name", JLabel.TRAILING);
@@ -540,9 +543,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				"Warn before discarding text edits");
 		advancedRootDetectionBox = new JCheckBox("Use advanced root "
 				+ "detection");
+		onlyOneGlobalOTECheckbox = new JCheckBox("Only one Ontology Tree Editor at a time can be in global mode");
 		showUndefinedTermsBox = new JCheckBox("Gray out undefined terms");
 		caseSensitiveSortBox = new JCheckBox("Case-sensitive term sorting");
-		showToolTipsBox = new JCheckBox("Show terms IDs as tool tips in "
+		showToolTipsBox = new JCheckBox("Show term IDs as tool tips in "
 				+ "term panels");
 		confirmOnExitBox = new JCheckBox("Confirm on exit");
 
@@ -559,6 +563,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autoCommitCheckBox.setOpaque(false);
 		warnBeforeDiscardingEditsBox.setOpaque(false);
 		advancedRootDetectionBox.setOpaque(false);
+		onlyOneGlobalOTECheckbox.setOpaque(false);
 		showUndefinedTermsBox.setOpaque(false);
 		caseSensitiveSortBox.setOpaque(false);
 		showToolTipsBox.setOpaque(false);
@@ -622,6 +627,8 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getWarnBeforeDefinitionLoss());
 		advancedRootDetectionBox.setSelected(!Preferences.getPreferences()
 				.getUseBasicRootDetection());
+		onlyOneGlobalOTECheckbox.setSelected(Preferences.getPreferences()
+						     .getOnlyOneGlobalOTE());
 		// showUndefinedTermsBox.setSelected(controller.getGlobalFilteredRenderers().contains(grayUndefinedRenderer));
 		caseSensitiveSortBox.setSelected(Preferences.getPreferences()
 				.getCaseSensitiveSort());
@@ -639,6 +646,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		warnDefinitionBox.add(Box.createHorizontalGlue());
 		advancedRootBox.add(advancedRootDetectionBox);
 		advancedRootBox.add(Box.createHorizontalGlue());
+		onlyOneGlobalOTEBox.add(onlyOneGlobalOTECheckbox);
+		onlyOneGlobalOTEBox.add(Box.createHorizontalGlue());
+
 		autoCommitPanel.add(autoCommitCheckBox);
 		autoCommitPanel.add(Box.createHorizontalStrut(10));
 		autoCommitPanel.add(warnBeforeDiscardingEditsBox);
@@ -879,6 +889,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
  		behaviorPanel.add(showToolTipsPanel);
 		behaviorPanel.add(allowBox);
 		behaviorPanel.add(advancedRootBox);
+		behaviorPanel.add(onlyOneGlobalOTEBox);
  		behaviorPanel.add(Box.createVerticalStrut(10));
 		behaviorPanel.add(warnDeleteBox);
 		behaviorPanel.add(warnDefinitionBox);
@@ -1049,6 +1060,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.isSelected());
 		preferences.setUseBasicRootDetection(!advancedRootDetectionBox
 				.isSelected());
+		preferences.setOnlyOneGlobalOTE(onlyOneGlobalOTECheckbox.isSelected());
 		preferences.setAllowExtendedCharacters(allowExtendedCheckbox
 				.isSelected());
 
