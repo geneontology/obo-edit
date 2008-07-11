@@ -84,5 +84,36 @@ entirely new term was being generated.</p>
 </div>
 <p>&nbsp;</p>
 
+<h2>Adding New Relationship Types</h2>
+<p>Adding a new relationship type is a special case of <a href="Adding_New_Terms.htm">adding a new term</a>.</p>
+
+<div class="sidebar">
+<h1>Why is my new relationship type not showing up in OBO-Edit?</h1>
+<hr>
+<p>
+OBO-Edit can display any relationships that are specified in an OBO
+file.  However, older versions of OBO-Edit were configured with a default global filter
+that hid all non-transitive relationships.
+If you
+are not seeing your new relationship type, then it is probably not marked as a
+transitive relationship, and furthermore, you have old configuration files
+left over from an earlier OBO-Edit version.
+Here's what you should do:
+<ul>
+<li> If the relationship is transitive, make sure that it is marked
+transitive. Select the relationship in the Ontology Editor Panel, and
+tick the "Is transitive?" box in the Text Editor. When you save the
+file, the tag "is_transitive: true" will be included in the OBO file.
+<li> Bring up the Global Filters component
+  ([Config] -> [Global Filters]). Then select 
+"Link filters" and see if there is a filter that says <em>Select links where Type that have a Is_Transitive.</em></p>
+<p><img src="../images/is_transitive.png" width="842" height="244" border="0" alt=""></p>
+<p>See <a
+href="Global_Filters___Renderers.htm">Global Filters</a> for more
+details.
+</p>
+</ul>
+</div>
+
 </body>
 </html>
