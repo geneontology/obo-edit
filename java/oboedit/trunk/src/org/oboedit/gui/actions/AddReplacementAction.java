@@ -54,14 +54,15 @@ public class AddReplacementAction implements DropMenuAction {
 			return;
 		}
 		
-		// If the selection is the same as the gesture target, isLegal should be false
+		// If ANY TERM in the selection is the same as the gesture target, isLegal should be false
 		isLegal = false;
 		for (LinkedObject term : selection.getTerms()) {
 			if (term instanceof ObsoletableObject) {
-				if (!(term.getName().equals(lo.getName()))) {
-//					logger.info("term.getName() = " + term.getName() + ", destItem.getName() = " + lo.getName()); // DEL
-					isLegal = true;
+				if (term.getName().equals(lo.getName())) {
+					isLegal = false;
+					return;
 				}
+				isLegal = true;  // found one that's different from the gesture target
 				ObsoletableObject consider = (ObsoletableObject) term;
 				if (!target.getConsiderReplacements().contains(consider))
 					replacementTerms.add(consider);
