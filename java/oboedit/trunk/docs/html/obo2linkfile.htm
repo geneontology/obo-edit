@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+  <head>
+    <title>obo2flat</title>
+    <link rel="stylesheet" type="text/css" href="../javahelp.css">
+  </head>
+  <body bgcolor="#ffffff">
+
+    <h1>obo2linkfile</h1>
+
+    <p>The obo2linkfile utility takes an OBO file and produces a
+      tab-delimited text file that contains the transitive closure for
+      the ontology in the OBO file.</p>
+
+    <p><strong><code>
+	  obo2linkfile&nbsp;&lt;obo_file&gt;&nbsp;-o&nbsp;&lt;output_file&gt;
+    </code></strong></p>
+
+    <h3>Parameters:</h3>
+    <ul>
+      <li>
+	<strong>&lt;obo_file&gt;</strong>&nbsp;- Input file.
+      </li>
+      <li>
+	<strong>-o&nbsp;&lt;output_file&gt;</strong>&nbsp;- Output file.
+      </li>
+    </ul>
+
+    <h3>Example:</h3>
+    <p>Make the transitive closure text file for "foo.obo". A proper CLASSPATH has been added.</p>
+    <p>
+      <code>
+CLASSPATH=/home/sjcarbon/tmp/obo.jar:/home/sjcarbon/local/src/svn/geneontology/java/oboedit/trunk/classes:/home/sjcarbon/local/src/svn/geneontology/go-dev/gwt/external/bbop.jar:/usr/share/java/log4j-1.2.jar /home/sjcarbon/local/src/svn/geneontology/java/oboedit/trunk/launch_scripts/obo2linkfile foo.obo -o link.txt
+      </code>
+    </p>
+  </body>
+</html>
