@@ -4,16 +4,21 @@ package org.bbop.client.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.mygwt.ui.client.Events;
 import net.mygwt.ui.client.Style;
 import net.mygwt.ui.client.event.BaseEvent;
+import net.mygwt.ui.client.event.Listener;
 import net.mygwt.ui.client.event.SelectionListener;
 import net.mygwt.ui.client.widget.Button;
+import net.mygwt.ui.client.widget.Dialog;
+import net.mygwt.ui.client.widget.Info;
 import net.mygwt.ui.client.widget.MessageBox;
 import net.mygwt.ui.client.widget.ToolBar;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.Manager.BrowsePanelManagerI;
 import org.bbop.client.model.NodeDTO;
+
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -109,10 +114,26 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 
 			System.err.println("fetching targets..");
 			refglistener.fetchTargets();
-			info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
-			info.setText("Searching ........");  
-			info.setMessage("Please wait");
-			info.open();
+			//info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
+			//info.setText("Searching ........");  
+			//info.setMessage("Please wait");
+			//info.open();
+			final Dialog dialog = new Dialog(Style.MODAL|Style.CLOSE);
+			dialog.setCloseOnButtonClick(true);
+			dialog.setText("Searching......");
+			dialog.getContent().addText("Close window to abort search");
+			dialog.open();
+			
+			dialog.addListener(Events.Close, new Listener() {
+
+				public void handleEvent(BaseEvent be) {
+					Info.show("Abortes search","dialog closed","");
+					// TODO Auto-generated method stub
+					
+					
+				}
+				
+			});
 
 		}
 	}
@@ -141,7 +162,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	}
 
 	public void displayTargets(NodeDTO[] targetNodes) {
-		info.close();
+		//info.close();
 		System.err.println("making table view");
 		GenericNodeListTableView tableView = new GenericNodeListTableView(refglistener, mainview);
 		tableView.addColumnHeading("OBO_REL:in_organism","species");
