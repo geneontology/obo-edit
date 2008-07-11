@@ -13,13 +13,18 @@ required, but it's a good idea.</P>
 <P>This check displays a warning if:</P>
 <UL>
   <LI>Two terms have the same primary name</LI>
-  <LI>A term name is the same a synonym of some ontology term</LI>
-  <LI>A term synonym matches the name of some ontology term</LI></UL>
+  <LI>A term name is the same as an exact synonym of some ontology term</LI>
+  <LI>An exact term synonym matches the name of some ontology term</LI>
+  <li>Two terms have the same exact synonym</li>
+</ul>
 <P>Note that a redundant name will always cause at least 2 warnings to be 
 generated, because a warning will appear for each term that shares the name or 
 synonym.</P>
-<P>If two terms have the same synonym, a warning is <EM>not</EM> generated. This 
-is a perfectly legal condition that can arise from a term split or community 
-usage conventions.</P>
+
+<P>If two terms have the same synonym, but the synonym scope is not
+"exact" for both terms, a warning is <EM>not</EM> generated. This is a
+perfectly legal condition that can arise from a term split or
+community usage conventions.</P>
+
 </BODY>
 </HTML>

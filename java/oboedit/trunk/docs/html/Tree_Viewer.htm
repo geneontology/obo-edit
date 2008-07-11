@@ -1,37 +1,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD html 3.2//EN">
 <html>
 <head>
-
   <meta name="GENERATOR" content="Solutionsoft HelpBreeze JavaHelp Edition">
-
 
   <title>The Tree Viewer</title>
   <link rel="stylesheet" type="text/css" href="../javahelp.css">
 </head>
 
-
 <body bgcolor="#ffffff">
-
 <h1>The Tree Viewer</h1>
-
 <p>You can show the Tree Viewer (which is not in the default layouts) with 
 [Viewers] -> [Tree Viewer].  (Note that this component used to be called the
   DAG View.)
 The Tree Viewer displays all the possible paths to the 
 currently selected term or terms:</p>
-
 <p><IMG hspace=0 src="../images/tree_view_single.png" border=0></p>
 <p>This display shows a view of the ontology where every link that does not end 
 in the selected term has been removed. Hence, every leaf in this tree is the 
 currently selected term. </p>
-
 <p>At the bottom left of the screen is a summary of the number of 
 <strong>paths</strong> in the trimmed view. A <strong>path</strong> is a unique 
 collection of links that leads from the selected term to the ontology root. In 
 the example above, there are 7 paths to the root from "virion transport vesicle". Note that even if a term 
 only has one parent, it may have multiple paths to the root if one of its ancestors has multiple parents. The 
 sub-selection location is displayed in dark blue and all other locations of the term are shown in light blue. 
-Right-clicking one of these light blue locations in the ontology will cause the sub-selection in the 
+Right-clicking (alt-clicking on Mac) one of these light blue locations in the ontology will cause the sub-selection in the 
 <a href="The_Term_Editor_Panel.htm">Ontology Tree Editor</a> to be changed to the new location. </p>
 
 <p>    
@@ -39,13 +32,11 @@ Right-clicking one of these light blue locations in the ontology will cause the 
              
              To configure 
 the Tree Viewer, press the "Config" button. A configuration window will appear:</p>
-
 <p><IMG src="../images/dagview_config.png" border=0>    
            </p>
 <p>
 Configuration options:
 <ul>
-
   <li><strong>Show paths to multiple 
   selected terms</strong>- If this checkbox is unchecked, the Tree Viewer only 
   displays paths to a single term (the current sub-selection). If this box is 
