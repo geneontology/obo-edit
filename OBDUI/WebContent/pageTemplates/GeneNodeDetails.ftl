@@ -41,7 +41,7 @@
 				</td>
 				<td id="content_container">
 					<h2>Gene ${geneId}<#if geneLabel?exists>: ${geneLabel}</#if></h2><br/>
-					<#if genotypes?exists>
+					<#if (genotypes?size > 0)>
 						<a href="#" onclick="toggleTable('genotypes','${hostname}');return false;">
 							<div class="nodeDetailBox"><img id="genotypes_image" src="/OBDUI/images/plus-box.gif" class="expandoImage"/>
 								Genotype Comparisons				
@@ -94,25 +94,31 @@
 							<tr>
 								<td id="genotypeAnnotations" style="display:none;">
 									<table class="annotationStatementTable">
+										${annotationStatementCount} total annotation statements.<br/><br/>
 										<#list 0..genotypes?size-1 as genotypeNum>
 											<a id="genotype_${genotypeNum}"/>
-											<#if genotypes[genotypeNum].annotationStatements?exists>
+											
 												<fieldset style="font-size:12px;border:1px dotted grey;">
 													
 													<legend style="font-size:14px;">
 														${genotypeNum+1}: <@nodeHashHref nodeHash=genotypes[genotypeNum].genotype/>influences:
 													</legend>
-													<#list genotypes[genotypeNum].annotationStatements as statement>
-														&bull;<@nodeHashHref nodeHash=statement.object/><br/>
-													</#list>
+													<#if genotypes[genotypeNum].annotationStatements?exists>
+														<#list genotypes[genotypeNum].annotationStatements as statement>
+															&bull;<@nodeHashHref nodeHash=statement.object/><br/>
+														</#list>
+													<#else>
+														No Genotype Annotations.
+													</#if>
 												</fieldset>
 												<br/>
-											</#if>
 										</#list>
 									</table>
 								</td>
 							</tr>
 						</table>
+					<#else>
+						No Genotypes found.
 					</#if>
 				</td>
 			</tr>
