@@ -114,25 +114,16 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 
 			System.err.println("fetching targets..");
 			refglistener.fetchTargets();
-			//info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
-			//info.setText("Searching ........");  
-			//info.setMessage("Please wait");
-			//info.open();
-			final Dialog dialog = new Dialog(Style.MODAL|Style.CLOSE);
-			dialog.setCloseOnButtonClick(true);
-			dialog.setText("Searching......");
-			dialog.getContent().addText("Close window to abort search");
-			dialog.open();
-			
-			dialog.addListener(Events.Close, new Listener() {
-
+			info = new MessageBox(Style.ICON_INFO, Style.MODAL|Style.CLOSE); 
+			info.setCloseOnButtonClick(true);
+			info.setText("Click to abort search");  
+			info.setMessage("Searching please wait.....");
+			info.open();
+			info.addListener(Events.Close, new Listener() {
 				public void handleEvent(BaseEvent be) {
-					Info.show("Abortes search","dialog closed","");
-					// TODO Auto-generated method stub
-					
-					
+					info.setMessage("Aborting search wait ......");
+					refglistener.cancelFetch();
 				}
-				
 			});
 
 		}
@@ -188,6 +179,12 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		System.err.println("adding table view");
 		resultView.addTableView(tableView.getView(), "Target List");
 		resultView.resetView();
+	}
+	
+	public void displayCancelMsg() {
+		info.close();
+		Info.show("Aborted search","dialog closed","");
+		
 	}
 
 

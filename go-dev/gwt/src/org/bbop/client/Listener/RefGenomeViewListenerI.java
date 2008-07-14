@@ -14,5 +14,6 @@ public interface RefGenomeViewListenerI {
 	public void fetchTargets();
 	public void assignEntityTargetStatus(String userId, String id, DateDTO date);
 	public void retractEntityTargetStatus(String userId, String id);
+	public void cancelFetch();
 	
 }

@@ -1,5 +1,7 @@
 package org.bbop.client;
 
+import java.util.List;
+
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.View.RefGenomeView;
 import org.bbop.client.model.DateDTO;
@@ -13,6 +15,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	
 	private RefGenomeView refgview ;
 	private RefGenomeServiceAsync refgservice;
+	private List callStack;
 	
 	public RefGenomeServiceClientImpl (String url){
 		refgview = new RefGenomeView(this);
@@ -23,6 +26,8 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		endpoint.setServiceEntryPoint(url);
 		
 	}
+	
+
 
 	public RefGenomeView getView(){
 		return refgview;
@@ -54,7 +59,9 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	}
 
 	public void fetchTargets() {
-		refgservice.fetchReferenceTargetNodes(new FetchTargetNodesCallback());
+		FetchTargetNodesCallback callBack = new FetchTargetNodesCallback();
+		callStack.add(callBack);
+		refgservice.fetchReferenceTargetNodes(callBack);
 		
 	}
 
@@ -76,6 +83,15 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		System.err.println("retracting");
 		refgservice.retractEntityTargetStatus(userId, id, new ChangeEntityTargetStatusCallback());
 	}
+	
+	public void cancelFetch() {
+		callStack.remove(0);
+		callStack = null;
+		refgview.getNavPanel().getBrowseView().displayCancelMsg();
+		
+	}
+	
+	
 
 	
 	private class SearchByNameCallback implements AsyncCallback {
@@ -93,15 +109,21 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	}
 	
 	private class FetchTargetNodesCallback implements AsyncCallback {
+				
+		
 
 		public void onFailure(Throwable caught) {
 			// TODO Auto-generated method stub
+			callStack.remove(this);
+			callStack = null;
 			GWT.log("error in search",caught);
 		}
 
 		public void onSuccess(Object result) {
 			// TODO Auto-generated method stub
 			System.err.println("showing results...");
+			callStack.remove(this);
+			callStack = null;
 			refgview.getNavPanel().getBrowseView().displayTargets((NodeDTO[])result);
 		}
 		
