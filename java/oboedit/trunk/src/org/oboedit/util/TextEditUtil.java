@@ -7,6 +7,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.SingleTermOperationModel;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.OBOTextEditComponent;
+import org.oboedit.gui.RootTextEditComponent;
 import org.oboedit.verify.HistoryQuickFix;
 import org.oboedit.verify.ImmediateQuickFix;
 import org.oboedit.verify.QuickFix;
@@ -17,14 +18,15 @@ import org.apache.log4j.*;
 public class TextEditUtil {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(TextEditUtil.class);
+//	protected final static Logger logger = Logger.getLogger(TextEditUtil.class);
 
 	private TextEditUtil() {}
 	
 	public static void addDirtyPaths(OBOTextEditComponent c, Collection<FieldPath> dirty) {
-		if (c.getRoot() != null) {
+		RootTextEditComponent root = c.getRoot();
+		if (root != null) {
 			for(FieldPath p : dirty) {
-				c.getRoot().addDirtyPath(p);
+				root.addDirtyPath(p);
 			}
 		}
 	}
