@@ -264,7 +264,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		buttonPanel.add(checkBoxForIsA);
 		buttonPanel.add(checkBoxForAll);
 		
-		logger.info("Creating xpTable");
+//		logger.info("Creating xpTable");
 		// create a JTable with per-cell tooltips
 		xpTable = new JTable(xpTableModel) {
 			public String getToolTipText(MouseEvent e) {
@@ -387,7 +387,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 		 * differentium terms
 		 */
 		CrossProductTableModel(Collection<LinkedObject> rowObjsIn, Collection<LinkedObject> columnObjsIn) {
-			logger.info("creating xpTableModel");
+//			logger.info("creating xpTableModel");
 			rowObjs = rowObjsIn.toArray(new LinkedObject[0]);
 			//rowObjs = (LinkedObject[])rowObjsIn.toArray();
 			//columnObjs = (LinkedObject[])columnObjsIn.toArray();
@@ -396,7 +396,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 			rowCount = rowObjsIn.size();
 			columnCount = columnObjsIn.size();
 			
-			logger.info(rowCount + "/" + columnCount);
+//			logger.info(rowCount + "/" + columnCount);
 			
 			// initialize arrays. 
 			// cols = genus cols+1 -- left col shows diff term
