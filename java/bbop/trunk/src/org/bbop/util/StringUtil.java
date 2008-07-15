@@ -90,6 +90,15 @@ public class StringUtil {
 			.getProperty("line.separator");
 
 	public static int compareToIgnoreCase(String a, String b) {
+		if (a == null) {
+			if (b == null)
+				return 0;
+			else
+				return 1;
+		}
+		if (b == null)
+			return -1;
+
 		int length = a.length();
 		if (b.length() < length)
 			length = b.length();
@@ -497,6 +506,7 @@ public class StringUtil {
 		return score;
 	}
 
+	// In OE1, % was not on the "valid" list.  Now it is.  Why?
 	protected static Pattern p = Pattern
 			.compile("[A-Za-z0-9%_\\-!.~\\\\'\\(\\)\\*,;#:\\$&\\+=\\?/\\[\\]@]*");
 
