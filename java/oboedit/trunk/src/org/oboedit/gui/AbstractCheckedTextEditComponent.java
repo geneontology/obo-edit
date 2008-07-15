@@ -81,7 +81,7 @@ public abstract class AbstractCheckedTextEditComponent extends
 		}
 	};
 
-	public static final int TIMER_DELAY = 500;
+	public static final int TIMER_DELAY = 800;
 
 	protected Timer checkTimer = new Timer(TIMER_DELAY, updateAction);
 
