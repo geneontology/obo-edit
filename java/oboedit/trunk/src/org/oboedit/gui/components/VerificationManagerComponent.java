@@ -71,6 +71,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void verificationStarting(VerificationEvent e) {
+//			logger.info("VerificationManagerComponent: verificationStarting"); // DEL
 		}
 	};
 
@@ -223,7 +224,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 			else if (col == 1)
 				return "On text commit?";
 			else if (col == 2)
-				return "On text edit?";
+				return "During text edit?";
 			else if (col == 3)
 				return "On reasoner?";
 			else if (col == 4)
@@ -406,9 +407,6 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 		packColumns(table, 0);
 		packRows(table, 0);
 
-//		System.err
-//				.println("table preferred size = " + table.getPreferredSize());
-
 		configPanel.setLayout(new BorderLayout());
 		configPanel.add(new JScrollPane(table,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -548,6 +546,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void runChecks() {
+		System.out.println("Running manually-invoked verification checks...");
 		CheckTask task = VerificationManager.getManager().getCheckTask(
 						SessionManager.getManager().getSession(),
 						(IdentifiedObject) null, VerificationManager.MANUAL);
