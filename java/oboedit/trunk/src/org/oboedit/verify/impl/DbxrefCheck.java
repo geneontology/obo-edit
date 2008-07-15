@@ -170,9 +170,10 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 
 	@Override
 	protected void initConfiguration() {
-		configuration.setCondition((byte) (VerificationManager.TEXT_EDIT_THREAD
-				| VerificationManager.TEXT_EDIT_COMMIT
-				| VerificationManager.SAVE | VerificationManager.MANUAL));
+		configuration.setCondition((byte) (
+						   // VerificationManager.TEXT_EDIT_THREAD |
+						   VerificationManager.TEXT_EDIT_COMMIT
+						   | VerificationManager.SAVE | VerificationManager.MANUAL));
 	}
 
 	@Override
@@ -561,6 +562,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 				fixes.add(new DefaultHistoryQuickFix(
 						"Replace non-URI characters with dashes",
 						getNonURIReplaceItem(field, ref, '-')));
+				// Wouldn't it be useful to say what the bad characters are??
 				CheckWarning warning = new CheckWarning(getWarningHeader(title,
 						index, field.getObject())
 						+ " contains non-URI characters (such as >).", false, this, field,
