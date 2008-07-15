@@ -64,9 +64,6 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		for (FieldPathSpec spec : specs) {
 			Collection<FieldPath> qpaths = spec.createQueryPath(io).resolve();
 			paths.addAll(qpaths);
-			/*
-			 * for (FieldPath qpath : qpaths) { paths.addAll(qpaths); }
-			 */
 		}
 		FieldPath.coalesce(paths);
 		for (FieldPath qpath : paths) {
@@ -78,8 +75,11 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	public Collection doRunCheck(FieldPath path, byte condition) {
 		oindex = 0;
 		Collection<CheckWarning> out = new LinkedList<CheckWarning>();
-		if (currentCheck.needsReasoner())
+		// What if it needs the reasoner, but the reasoner is not currently on?  --NH
+		if (currentCheck.needsReasoner()) {
+			logger.info("Check " + currentCheck + " needs reasoner--reasoner state is currently " + SessionManager.getManager().getReasoner());
 			currentCheck.setReasoner(SessionManager.getManager().getReasoner());
+		}
 		IdentifiedObject currentObject = path.getObject();
 
 		if (currentCheck instanceof FieldCheck) {
@@ -157,6 +157,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		fireVerificationStartingEvent(new VerificationEvent(this, this, null,
 				session, path, condition));
 		Collection out = new LinkedList();
+//		logger.debug("CheckTask.runChecks: running " + liveChecks.size() + " checks on " + path.getObject() + "...");
 		if (liveChecks.size() == 0) {
 			fireVerificationCompleteEvent(new VerificationEvent(this, this,
 					out, session, path, condition));
@@ -265,5 +266,4 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	public void execute() {
 		setResults(runChecks());
 	}
-
 }
