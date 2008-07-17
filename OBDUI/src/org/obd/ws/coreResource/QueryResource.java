@@ -95,7 +95,7 @@ public class QueryResource extends NodeResource {
 	    		for (Node n : nodes){
 	    			nodeIds.add(n.getId());
 	    		}
-	    		resourceMap.put("resultNodes", this.hashifyNodes(nodeIds, "/" + this.getContextName() + "/" + this.dataSource + "html/node/"));
+	    		resourceMap.put("resultNodes", this.hashifyNodes(nodeIds, "/" + this.getContextName() + "/" + this.dataSource + "/html/node/"));
 	    		
 	    		return getTemplateRepresentation("QueryResults",resourceMap);
 			}

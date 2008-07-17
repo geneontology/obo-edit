@@ -106,21 +106,21 @@ public class NodesResource extends NodeResource {
     		}
     		
     		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation");
+    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation","html");
     		if (annotationStatements.size()>0){
     			Collections.sort(annotationStatements,new StatementHashComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
     		
     		// Statements to Node
-    		List<SimpleHash> toStatements = this.getHashifiedStatements("to");
+    		List<SimpleHash> toStatements = this.getHashifiedStatements("to","html");
     		if (toStatements.size()>0){
     			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
-    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about");
+    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about","html");
     		if (aboutStatements.size()>0){
     			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
@@ -173,7 +173,7 @@ public class NodesResource extends NodeResource {
 		
 		for (Node n : this.nodes){
 			LinkQueryTerm lq = new LinkQueryTerm();
-			if (aspect.equals("annotations")) {
+			if (aspect.equals("annotation")) {
 				lq = new AnnotationLinkQueryTerm(n.getId());
 			} else {
 				if (aspect.equals("about")){

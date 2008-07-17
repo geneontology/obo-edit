@@ -44,18 +44,20 @@ public class GeneResource extends NodeResource{
 		List<SimpleHash> genotypesHash = new ArrayList<SimpleHash>();
 		List<String> genotypeIds = NodeTyper.getGeneGenotypeIDs(this.getNodeId(),this.getShard(dataSource));
 		
-		
+		int annotationStatementsCount = 0;
 		for (String genotypeId : genotypeIds){
 			SimpleHash genotype = this.hashifyNode(genotypeId, "/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(genotypeId));
 			SimpleHash genotypeHash = new SimpleHash();
 			genotypeHash.put("genotype", genotype);
-			Collection<SimpleHash> as = this.getHashifiedStatements("annotations",genotypeId);
+			Collection<SimpleHash> as = this.getHashifiedStatements("annotation",genotypeId);
+			annotationStatementsCount += as.size();
 			if (as.size()>0){
 				genotypeHash.put("annotationStatements", as);
 			}
 			genotypesHash.add(genotypeHash);
 		}
 		resourceMap.put("genotypes", genotypesHash);
+		resourceMap.put("annotationStatementCount", annotationStatementsCount);
 		
 		double[][] genotypeScores = new double[genotypeIds.size()][genotypeIds.size()];
 		

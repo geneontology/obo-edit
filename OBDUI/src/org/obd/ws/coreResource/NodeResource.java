@@ -128,8 +128,29 @@ public class NodeResource extends OBDResource {
     	if (format == null) {
     		format = "";
     	}
-
-    	if (format.equals("json")) {
+    	if (format.equals("exhibitData")){
+    		
+    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+    		
+    		List<SimpleHash> statements = new ArrayList<SimpleHash>();
+    		
+    		String[] aspects = new String[]{"to","about","annotation"};
+    		
+    		for (String aspect : aspects){
+    			List<SimpleHash> aspectStatements = this.getHashifiedStatements(aspect,"exhibit");
+    			for (SimpleHash sh : aspectStatements ){
+    				sh.put("aspect",aspect);
+    			}
+    			statements.addAll(aspectStatements);
+    			
+    		}
+    		
+    		resourceMap.put("statements", statements);
+    		
+    		return getTemplateRepresentation("ExhibitNodeData",resourceMap);
+    		
+    		
+    	} else if (format.equals("json")) {
     		result = new StringRepresentation(OBDJSONBridge.toJSON(this.node).toString());
     	}
     	else if (format.equals("obo")) {
@@ -147,8 +168,17 @@ public class NodeResource extends OBDResource {
     			result = new StringRepresentation(OBDXMLBridge.toXML(node),MediaType.TEXT_XML);
     		}
     		return result;
-    	}
-    	else if (format.equals("html")||(format.equals("bioPortal"))){
+    	} else if (format.equals("exhibit")){
+    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+    		resourceMap.put("contextName", this.getContextName());
+    		resourceMap.put("dataSource", this.dataSource);
+    		resourceMap.put("node",this.node);
+    		resourceMap.put("id", this.nodeString);
+    		resourceMap.put("encodedId", Reference.encode(this.nodeString));
+    		
+    		return getTemplateRepresentation("ExhibitNode",resourceMap);
+    		
+    	} else if (format.equals("html")||(format.equals("bioPortal"))){
     		
     		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		resourceMap.put("contextName", this.getContextName());
@@ -169,34 +199,34 @@ public class NodeResource extends OBDResource {
     		}
     		
     		// Statements to Node
-    		List<SimpleHash> toStatements = this.getHashifiedStatements("to");
+    		List<SimpleHash> toStatements = this.getHashifiedStatements("to","html");
     		if (toStatements.size()>0){
     			Collections.sort(toStatements,new StatementHashComparator());
     			resourceMap.put("toStatements", toStatements);
     		}
     		
     		// Statements about node
-    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about");
+    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about","html");
     		if (aboutStatements.size()>0){
     			Collections.sort(aboutStatements,new StatementHashComparator());
     			resourceMap.put("aboutStatements", aboutStatements);
     		}
     		
     		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotations");
+    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation","html");
     		if (annotationStatements.size()>0){
     			Collections.sort(annotationStatements,new StatementHashComparator());
     			resourceMap.put("annotationStatements", annotationStatements);
     		}
-    		
-    		
-
     		
     		if (format.equals("html")){
     			return getTemplateRepresentation("NodeDetails",resourceMap);
     		} else {
     			return getTemplateRepresentation("BPNodeDetails",resourceMap);
     		}
+    		
+    		
+    		
     	} else {
     		//Creates a text representation
     		StringBuilder sb = new StringBuilder();
@@ -218,17 +248,16 @@ public class NodeResource extends OBDResource {
     	return result;
     }
     
-    protected List<SimpleHash> getHashifiedStatements(String aspect){
-    	return getHashifiedStatements(aspect,getNodeId());
+    protected List<SimpleHash> getHashifiedStatements(String aspect,String format){
+    	return getHashifiedStatements(aspect,getNodeId(),format);
     }
     
-    protected List<SimpleHash> getHashifiedStatements(String aspect,String nodeId){
-    	
+    protected List<SimpleHash> getHashifiedStatements(String aspect,String nodeId,String format){
     	List<SimpleHash> statements = new ArrayList<SimpleHash>();
-    	if (aspect.equals("annotations")){
-    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(), true));
+    	if (aspect.equals("annotation")){
+    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(), true,format));
     	} else {
-    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements()));
+    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(),false,format));
 		}
     	return statements;
     }
@@ -288,7 +317,7 @@ public class NodeResource extends OBDResource {
 					statements.add(s);
 				}
 			}
-		} else if (aspect.equals("annotations")){
+		} else if (aspect.equals("annotation")){
 			statements = this.getShard(dataSource).getAnnotationStatementsForNode(nodeId, null, null);
 			statements.addAll(this.getShard(dataSource).getAnnotationStatementsForAnnotatedEntity(nodeId, null, null));
 		} else {
@@ -310,9 +339,10 @@ public class NodeResource extends OBDResource {
 	
 	
 	protected SimpleHash hashifyStatement(Statement s){
-		return this.hashifyStatement(s,false); 
+		return this.hashifyStatement(s,false,"html"); 
 	}
 	
+
 	protected Collection<SimpleHash> hashifyStatements(Statement[] statements){
 		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
 		for (Statement s : statements){
@@ -321,18 +351,21 @@ public class NodeResource extends OBDResource {
 		return hashifiedStatements;
 	}
 	
-	protected Collection<SimpleHash> hashifyStatements(Statement[] statements,boolean populateProvenance){
+	protected Collection<SimpleHash> hashifyStatements(Statement[] statements,boolean populateProvenance,String format){
 		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
 		for (Statement s : statements){
-			hashifiedStatements.add(this.hashifyStatement(s,populateProvenance));
+			hashifiedStatements.add(this.hashifyStatement(s,populateProvenance,format));
 		}
 		return hashifiedStatements;
 	}
-	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance){
+	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance, String format){
 		
 		SimpleHash statementHash = new SimpleHash();
-		
-		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/html/node/";
+	 	
+		if (format==null){
+			format="html";
+		}
+		String hrefBase = "/" + this.getContextName() + "/" + this.dataSource + "/" + format + "/node/";
 		statementHash.put("subject", this.hashifyNode(s.getNodeId(), (hrefBase+Reference.encode(s.getNodeId()))));
 		SimpleHash relationshipHash = this.hashifyNode(s.getRelationId(), (hrefBase+Reference.encode(s.getRelationId())));
 		relationshipHash.put("label", this.prettifyRelationshipTerm(s.getRelationId()));
@@ -374,8 +407,9 @@ public class NodeResource extends OBDResource {
 	
 	protected SimpleHash decomposeNode(CompositionalDescription cd){
 		SimpleHash nodeHash = new SimpleHash();
-		
+		//System.out.print("Trying to decompose: " + cd.toString() + ".....");
 		if (cd.isGenusDifferentia()){
+			//System.out.println("Is GD.");
 			Node subjectNode = this.getShard(dataSource).getNode(cd.getGenus().getNodeId());
 			if (subjectNode != null && subjectNode.getLabel() != null){
 				nodeHash.put("subjectLabel", subjectNode.getLabel());
@@ -384,8 +418,10 @@ public class NodeResource extends OBDResource {
 			}
 			nodeHash.put("args",this.decomposeArguments(cd.getDifferentiaArguments()));
 		}  else if (cd.isAtomic()){
+			//System.out.println("Is Atomic.");
 			nodeHash.put("subjectLabel", cd.toString());
 		} else {
+			//System.out.println("Has Many Args.");
 			nodeHash.put("relationLabel", this.prettifyRelationshipTerm(cd.getRelationId()));
 			nodeHash.put("args", this.decomposeArguments(cd.getArguments()));
 		}
@@ -475,16 +511,18 @@ public class NodeResource extends OBDResource {
 		nodeHash.put("id", nodeId);
 		nodeHash.put("encodedId", Reference.encode(nodeId));
 		nodeHash.put("label", label);
+		nodeHash.put("source",n.getSourceId());
 		if (href != null){
 			nodeHash.put("href", href);
 		}
 		if (nodeId.contains("^")){
 			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
-			if (cd != null){
+			if ((cd != null) && (cd.getArguments() != null)){
 				nodeHash.put("isComposed", true);
 				nodeHash.put("composedNode", this.decomposeNode(cd));
 			}
 		}
 		return nodeHash;
 	}
+	
 }
