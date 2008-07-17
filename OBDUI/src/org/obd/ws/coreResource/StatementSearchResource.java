@@ -78,7 +78,7 @@ public class StatementSearchResource extends NodeSearchResource {
     		lq.setInferred(false);
     		if (relationId != null)
     			lq.setRelation(relationId);
-    		if (aspect.equals("annotations")) {
+    		if (aspect.equals("annotation")) {
     			lq = new AnnotationLinkQueryTerm(nodeId);
     			lq.setInferred(false);
     		}

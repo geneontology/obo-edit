@@ -106,7 +106,7 @@ public abstract class OBDResource extends Resource {
 
 		return "[ <a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/about\">about</a> | " +
 		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/to\">to</a> | " +
-		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/annotations\">annotations</a> | " +
+		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/annotation\">annotation</a> | " +
 		"<a href=\"/" + this.getContextName() + "/" + dataSource + "/html/node/"+eid+"/statements/all\">all</a> ]";
 	}
 

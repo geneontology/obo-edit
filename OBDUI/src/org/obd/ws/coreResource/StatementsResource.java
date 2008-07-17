@@ -104,7 +104,7 @@ public class StatementsResource extends NodeResource {
 					lq.setRelation(relationId);
 				}
 				
-				if (aspect.equals("annotations")) {
+				if (aspect.equals("annotation")) {
 					lq = new AnnotationLinkQueryTerm(getNodeId());
 				} else {
 					if (aspect.equals("about") || aspect.equals("all")){

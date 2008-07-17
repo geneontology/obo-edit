@@ -101,17 +101,17 @@ public class HelpResource extends OBDResource {
 		sb.append("     Aspect = about OR to OR all\n");
 		sb.append("     Example: "+example("/html/node/CL:0000148/statements/about")+"\n");
 		sb.append("     Example: "+example("/html/node/CL:0000148/statements/to")+"\n");
-		sb.append("     Example: "+example("/html/node/CL:0000148/statements/annotations")+"\n");
+		sb.append("     Example: "+example("/html/node/CL:0000148/statements/annotation")+"\n");
 		sb.append("     Example: "+example("/html/node/PATO:0000963^OBO_REL:inheres_in(FMA:58238)/statements/to")+"\n");
 		sb.append("     Example: "+example("/html/node/CL:0000148/statements/to/inheres_in")+"\n");
 		sb.append("     Example: "+example("/html/node/CL:0000148/statements/about/OBO_REL:is_a")+"\n");
 		sb.append("     Example: "+example("/html/node/CL:0000148/statements/all")+"\n");
 		sb.append("     Example: "+example("/json/node/entrezgene:2138/statements/all")+"\n");
 		sb.append("     Example: "+example("/json/node/MP:0005099/statements/all")+"\n");
-		sb.append("     Example: "+example("/json/node/MP:0002877/statements/annotations")+"\n");
+		sb.append("     Example: "+example("/json/node/MP:0002877/statements/annotation")+"\n");
 		sb.append("     Example: "+example("/obo/node/PATO:0000963^OBO_REL:inheres_in(FMA:58238)/statements/to")+"\n");
 		sb.append("     Example: "+example("/html/node/omim_phenotype_fb/statements/source/")+"\n");
-		sb.append("     Example: "+example("/obo/node/CL:0000100/statements/annotations")+"\n");
+		sb.append("     Example: "+example("/obo/node/CL:0000100/statements/annotation")+"\n");
 
 		sb.append("\n");
 
@@ -125,7 +125,7 @@ public class HelpResource extends OBDResource {
 		sb.append("     Example: "+example("/html/node/ZFIN:ZDB-GENO-980202-1557/graph")+"\n");
 		sb.append("     Example: "+example("/html/node/MP:0001306/graph")+"\n");
 		sb.append("     Example: "+example("/html/node/Sox10%3Ctm3%28Sox8%29Weg%3E%2FSox10%3Ctm3%28Sox8%29Weg%3E/graph")+"\n");
-		sb.append("     Example: "+example("/html/node/CL:0000100/graph/annotations")+"\n");
+		sb.append("     Example: "+example("/html/node/CL:0000100/graph/annotation")+"\n");
 		sb.append("\n");
 		sb.append("  /{dataSource}/{format}/node/{id}/description\n");
 		sb.append("     Composite description (class expression, post-composition)\n");
@@ -139,7 +139,7 @@ public class HelpResource extends OBDResource {
 		sb.append("\n");
 
 		sb.append("  /{dataSource}/{format}/node/{id}/blast\n");
-		sb.append("     Find similar annotated entity nodes, based on annotations\n");
+		sb.append("     Find similar annotated entity nodes, based on annotation\n");
 		sb.append("     Example: "+example("/json/node/OMIM:601653.0008/blast")+"\n");
 		sb.append("     Example: "+example("/json/node/ZFIN:ZDB-GENO-980410-322/blast")+"\n");
 		sb.append("     Example: "+example("/json/node/ZFIN:ZDB-GENO-980202-1557/blast")+" -- what is similar to eya1?\n");
@@ -148,7 +148,7 @@ public class HelpResource extends OBDResource {
 		sb.append("\n");
 
 		sb.append("  /{dataSource}/{format}/node/{id}/annotation-graph\n");
-		sb.append("     Graph around annotations to node\n");             
+		sb.append("     Graph around annotation to node\n");             
 		sb.append("     TODO\n");
 		sb.append("     Example: "+example("/json/node/MP:0001306/annotation-graph")+"\n");
 		sb.append("\n");
@@ -196,10 +196,10 @@ public class HelpResource extends OBDResource {
 		sb.append("  /{dataSource}/{format}/nodes/{id1^id2^...^idN}/graph -- TODO\n");
 		sb.append("     Graph involving the union of above IDs\n");
 		sb.append("\n");
-		sb.append("  /{dataSource}/{format}/nodes/{id1+id2+...+idN}/annotations -- TODO\n");
+		sb.append("  /{dataSource}/{format}/nodes/{id1+id2+...+idN}/annotation -- TODO\n");
 		sb.append("     Annotations to the union of above IDs\n");
 		sb.append("\n");
-		sb.append("  /{dataSource}/{format}/nodes/{id1^id2^...^idN}/annotations -- TODO\n");
+		sb.append("  /{dataSource}/{format}/nodes/{id1^id2^...^idN}/annotation -- TODO\n");
 		sb.append("     Annotations to (entities with one of all of?) intersection of above IDs\n");
 		sb.append("\n");
 

@@ -18,7 +18,7 @@
 	<dataSource>
 		<resourcePath>obdPhenotypeAll2008</resourcePath>
 		<OBDSQLAdaptor>
-			<hostname>131.243.192.78</hostname>
+			<hostname>spade</hostname>
 			<port>5432</port>
 			<username>cjm</username>
 			<password></password>
