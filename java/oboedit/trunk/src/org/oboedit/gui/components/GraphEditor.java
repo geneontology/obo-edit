@@ -65,7 +65,8 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphEditor.class);
 
-	protected static final Color lockGray = new Color(200, 200, 200);
+//	protected static final Color lockGray = new Color(200, 200, 200);
+	protected static final Color lockGray = new Color(240, 240, 240);  // when panel is in local selection mode
 
 	public static class GraphEditorConfiguration extends
 			OntologyEditorConfiguration {
