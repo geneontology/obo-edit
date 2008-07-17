@@ -16,7 +16,7 @@ Only one ID profile is in use at any given time. This profile is called the
 <strong>active profile</strong>.</p>
 <p>ID generation profiles may contain zero or more <strong>conditional 
 rules</strong>. Each of these rules is associated with a <A 
-href="Filters.htm">filter</A>&nbsp;that specifies when a given conditional rule 
+href="Filters.htm">filter</a>&nbsp;that specifies when a given conditional rule 
 should be used.</p>
 <p>When a new term is created, OBO-Edit looks at the parent term under which the 
 new term was created. That parent term is checked against the rule filters in 
@@ -120,8 +120,8 @@ ontology later; either the encoding scheme must be broken, or large parts of the
 ontology must be obsoleted and recreated.</p>
 <p>This variable is only included here because some ontologies require it for 
 historical reasons. If you are creating a new ontology, do not use it!</p>
-<h2>Using the ID Manager<A 
-name=editing_profiles></A>    </h2>
+<h2>Using the ID Manager<a 
+name="editing_profiles"></a>    </h2>
 <p>The ID Manager is used to edit id profiles, and to select 
 the&nbsp;active id profile:</p>
 <p><IMG hspace=0 src="../images/id_manager.png" border=0></p>
@@ -130,7 +130,7 @@ Generation Profiles. When an id generation profile is selected, it becomes the a
 profile, and its rules are used to generate ids for new terms.</p>
 <p>The next control to the right is the configuration button. Press this button 
 to edit the currently selected profile. See <A href="#editing_profiles">Editing 
-ID Profiles</A> for details.</p>
+ID Profiles</a> for details.</p>
 <p>The + button creates a new ID profile named "&lt;new id profile&gt;". The new 
 profile can be modified using the configuration button.</p>
 <p>The&nbsp;- button deletes the currently selected profile. There must be at 
@@ -152,9 +152,53 @@ rule will be generated with the rule "&lt;your rule&gt;".</p>
 conditional rule editor will appear to the right:</p>
 <p><IMG hspace=0 src="../images/conditional_rule_editor.png" border=0></p>
 <p>At the top of the editor is a <A href="Term_Filters.htm">term filter 
-editor</A>. This defines the filter that is used to determine whether this 
+editor</a>. This defines the filter that is used to determine whether this 
 conditional rule should be used.</p>
 <p>At the bottom is a text box that contains the actual id generation rule to be 
 used when this conditional rule applies.</p>
+<p>                
+     &nbsp;</p>
+<h2>                
+    Worked example:</h2>
+<h2>         How to set up multiple profiles for 
+use in a single editing session</h2>
+<P>This example shows how two profiles can be set up so that if a term is added 
+as a descendant of the term JD:1 then one set of IDs will be used, whilst if a 
+GO term from any of the three GO ontologies is added then another ID rule will 
+be followed. </P>
+<P>In the ID Manager interface two new profiles are made. 'GO terms' will hold 
+the rule for adding GO terms, and ''union terms' will hold the rule for adding 
+terms that are descendants of JD:1.</P>
+<P><IMG hspace=0 src="../images/multiple_id_profiles.png" border=0></P>
+<P>In the GO terms profile (below)&nbsp;a filter is set up that will find only 
+terms that are descendants of terms that have the namespace 'molecular 
+function', biological process' or cellular component'. In the 'ID Rule' box at 
+the bottom of the window a rule is added to show the kind of IDs that will be 
+creates when one of these terms is made. Note that the 'Default rule' box at the 
+top of the window is left blank.</P>
+
+<p><IMG hspace=0 src="../images/id_for_go_terms.png" border=0></p>
+<P>In the 'union terms' profile (below)&nbsp;a filter is set up so that when a 
+new term is created as descendant of JD:1 the term's ID will follow the rule 
+shown in the 'ID Rule' box at the bottom of the window. Note that, again, the 
+'Default rule' box is left blank. </P>
+<P><IMG hspace=0 src="../images/id_for_non_go_terms.png" border=0></P>
+<P>Now that these two profiles have been set up, new terms can be created, and 
+the rules will be applied. A GO term will have an ID as below:</P>
+<p><IMG hspace=0 src="../images/new_go_term.png" border=0></p>
+<P>A term that is a descendant of JD:1 will have an ID as below. </P>
+<p><IMG hspace=0 src="../images/new_non_go_term.png" border=0></p>
+<p>&nbsp;</p>
+
+<p>                
+     &nbsp;</p>
+<p>                
+     &nbsp;</p>
+<p>                
+     &nbsp;</p>
+<p>                
+     &nbsp;</p>
+<p>                
+     &nbsp;</p>
 </body>
 </html>
