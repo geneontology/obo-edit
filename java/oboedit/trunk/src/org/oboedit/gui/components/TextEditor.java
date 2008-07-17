@@ -69,6 +69,7 @@ import org.oboedit.gui.factory.VerificationManagerFactory;
 import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.script.TextEditorScriptDelegate;
 import org.oboedit.util.GUIUtil;
+import org.oboedit.verify.CheckTask;
 import org.oboedit.verify.CheckWarning;
 
 import org.apache.log4j.*;
@@ -104,7 +105,6 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected ReconfigListener reconfigListener = new ReconfigListener() {
 
 		public void configReloaded(ReconfigEvent e) {
-//			logger.info("reloaded config");
 			reload();
 			setObject(getObject());
 		}
@@ -117,25 +117,13 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected Timer checkTimer;
 
-	public static final int TIMER_DELAY = 1000;
+	public static final int TIMER_DELAY = 1500;  // was 1000
 
 	protected ActionListener checkTask = new ActionListener() {
-
 		public void actionPerformed(ActionEvent e) {
-			doTimedTextChecks(true);
+			doTimedTextChecks(true, false);
 		}
-
 	};
-
-    // Didn't work.
-//        protected ReloadListener reloadListener = new ReloadListener() {
-//		public void reload(ReloadEvent e) {
-//		    logger.info("TextEditor.reload");  // DEL
-//		    warningMap = new MultiHashMap<FieldPath, CheckWarning>();
-//		    setWarningMap(warningMap);
-//		}
-//	    };
-
 
 	public void setObjectSelector(ObjectSelector selector) {
 		if (this.selector != null)
@@ -152,16 +140,17 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
         // Note: if this method returns false, then this component continues
         // to run in the background even when it's not in the current layout.
-        // This is probably not a major issue for this component (though it is
-        // for Graph Editor).  The downside of returning true is that if the
-        // user switches between layouts (e.g. Edit and Verify), the component
-        // forgets what it was showing.
+	// This is the desired behavior for TextEditor because otherwise if
+	// there are warning messages from the Verification Manager and you
+	// click on the term name in the warning report, it brings up a fresh
+	// TextEditor and loses your current edits.
 	public boolean teardownWhenHidden() {
 		return false;
 	}
 
 	protected void startTimer() {
-		checkTimer = new Timer(TIMER_DELAY, checkTask);
+		if (checkTimer == null)
+			checkTimer = new Timer(TIMER_DELAY, checkTask);
 		checkTimer.start();
 	}
 
@@ -175,31 +164,14 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		checkTimer = null;
 	}
 
-	// protected void doLoadTextChecks() {
-	// if (currentObject == null)
-	// return;
-	// final Collection<CheckWarning> warnings = VerificationManager
-	// .getManager().runChecks(
-	// SessionManager.getManager().getSession(),
-	// new FieldPath(currentObject),
-	// VerificationManager.TEXT_EDIT_THREAD);
-	// final MultiMap<FieldPath, CheckWarning> allWarnings = new
-	// MultiHashMap<FieldPath, CheckWarning>();
-	// for (CheckWarning w : warnings) {
-	// allWarnings.add(w.getPath(), w);
-	// }
-	// for (FieldPath path : allWarnings.keySet()) {
-	// displayWarnings(path, allWarnings.get(path));
-	// }
-	// setWarningMap(allWarnings);
-	// repaint();
-	// }
-
-	protected void doTimedTextChecks(boolean requireDirtyPaths) {
-		if (requireDirtyPaths && this.dirtyPaths.size() == 0)
+	protected void doTimedTextChecks(boolean requireDirtyPaths, boolean onCommit) {
+		if (requireDirtyPaths && 
+		    (this.dirtyPaths.size() == 0 || !hasChanges()))
 			return;
 		if (currentObject == null)
 			return;
+//		logger.debug("TextEditor.doTimedTextChecks: object = " + currentObject + ", requiredirty = " + requireDirtyPaths + ", onCommit = " + onCommit + ", " + dirtyPaths.size() + " dirtyPaths"); // DEL
+
 		dirtyPaths = new LinkedList<FieldPath>();
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
@@ -210,6 +182,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 				.getManager().runChecks(
 						SessionManager.getManager().getSession(),
 						new FieldPath(clone),
+						onCommit ?
+						VerificationManager.TEXT_EDIT_COMMIT :
 						VerificationManager.TEXT_EDIT_THREAD);
 		final MultiMap<FieldPath, CheckWarning> allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
 		for (CheckWarning w : warnings) {
@@ -220,24 +194,6 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		}
 		setWarningMap(allWarnings);
 		repaint();
-		/*
-		 * List<FieldPath> dirtyPaths = this.dirtyPaths; this.dirtyPaths = new
-		 * LinkedList<FieldPath>(); FieldPath.coalesce(dirtyPaths); MultiMap<FieldPath,
-		 * CheckWarning> allWarnings = null; Iterator<FieldPath> it =
-		 * dirtyPaths.iterator(); try { while (it.hasNext()) { FieldPath path =
-		 * it.next(); it.remove();
-		 * 
-		 * if (fieldToComponentMap.containsKey(path.getSpec())) { final
-		 * Collection<CheckWarning> warnings = VerificationManager
-		 * .getManager().runChecks( SessionManager.getManager().getSession(),
-		 * path, VerificationManager.TEXT_EDIT_THREAD); if (allWarnings == null)
-		 * allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
-		 * allWarnings.put(path, warnings); displayWarnings(path, warnings); } }
-		 * final MultiMap<FieldPath, CheckWarning> aw = allWarnings;
-		 * SwingUtilities.invokeLater(new Runnable() { public void run() {
-		 * fireIncrementalVerificationEvent(new IncrementalVerificationEvent(
-		 * this, aw)); } }); } catch (ConcurrentModificationException ex) { }
-		 */
 	}
 
 	protected void displayWarnings(final FieldPath path,
@@ -323,7 +279,6 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected IncrementalVerificationListener listener = new IncrementalVerificationListener() {
 
 		public void cycleComplete(IncrementalVerificationEvent e) {
-
 			if (e.getWarnings() != null) {
 				for (FieldPath path : e.getWarnings().keySet()) {
 					warningMap.put(path, e.getWarnings().get(path));
@@ -333,19 +288,6 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		}
 	};
 
-	/*
-	 * protected PropertyChangeListener focusChangeListener = new
-	 * PropertyChangeListener() { protected Component lastFocusedTextRoot;
-	 * 
-	 * public void propertyChange(PropertyChangeEvent evt) { Component
-	 * currentFocusedComponent = KeyboardFocusManager
-	 * .getCurrentKeyboardFocusManager().getPermanentFocusOwner(); if
-	 * (currentFocusedComponent == null) return; Component currentTextRoot =
-	 * SwingUtilities.getAncestorOfClass( RootTextEditComponent.class,
-	 * currentFocusedComponent); if (lastFocusedTextRoot != null &&
-	 * !ObjectUtil.equals(lastFocusedTextRoot, currentTextRoot)) { autocommit(); }
-	 * this.lastFocusedTextRoot = currentTextRoot; } };
-	 */
 	protected SelectionListener selectionListener = new SelectionListener() {
 
 		public void selectionChanged(SelectionEvent e) {
@@ -368,7 +310,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		if (unchanged) {
 			return;
 		}
-		if (warningMap.isEmpty())
+		if (warningMap.isEmpty()) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					ComponentManager.getManager().setLabel(TextEditor.this,
@@ -382,6 +324,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 					repaint();
 				}
 			});
+		}
 		else {
 			int warningCount = 0;
 			int errorCount = 0;
@@ -536,6 +479,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	};
 
 	protected boolean runChecksAndCommit() {
+//		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
@@ -548,6 +492,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		for (CheckWarning warning : warnings) {
 			if (warning.isFatal()) {
 				fatal = true;
+				logger.info("Fatal warning on " + currentObject.getName() + ": " + warning);
 				break;
 			}
 		}
@@ -572,13 +517,14 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			if (Preferences.getPreferences().getAutoCommitTextEdits()) {
 				autocommit();
 			} else if (Preferences.getPreferences()
-					.getWarnBeforeDiscardingEdits()
-					&& hasChanges()) {
-				// Change to "Commit these edits?"  (yes=keep, no=discard)
+				   .getWarnBeforeDiscardingEdits()
+				   && hasChanges()) {
+				// Should we change this to "Commit these edits?"  (yes=keep, no=discard)
+				// I'm worried that would confuse the experienced OBO-Editors.
 				int val = JOptionPane.showConfirmDialog(GUIManager.getManager()
-						.getFrame(), "There are uncommitted text edits.\n"
-						+ "Discard these edits?", "Pending edits",
-						JOptionPane.YES_NO_OPTION);
+									.getFrame(), "There are uncommitted text edits.\n"
+									+ "Discard these edits?", "Pending edits",
+									JOptionPane.YES_NO_OPTION);
 				return val == JOptionPane.YES_OPTION;
 			}
 		}
@@ -589,12 +535,19 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	protected void activateVerifyPerspective() {
-		ComponentManager.getManager().setPerspective("verify");
+//		ComponentManager.getManager().setPerspective("verify");
 		GUIComponent c = ComponentManager.getManager().getActiveComponent(
 				"VERIFICATION_MANAGER:main");
 		if (c == null || !((JComponent) c).isVisible()) {
 			ComponentManager.getManager().showComponent(
-					new VerificationManagerFactory(), null);
+				new VerificationManagerFactory(), null);
+		}
+		else {
+			// This doesn't seem to bring it to the front if it's an undocked component
+			ComponentManager.getManager().focusComponent(c);
+			// A bit brutal, but seems to be the only way to make it visible if
+			// it's undocked and hiding behind the main panel
+			ComponentManager.getManager().setFloating(c, false);
 		}
 	}
 
@@ -602,22 +555,12 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		SelectionManager.getManager().removePreSelectionListener(
 				preSelectListener);
 		IOManager.getManager().removeIOListener(ioListener);
-
-		/*
-		 * KeyboardFocusManager.getCurrentKeyboardFocusManager()
-		 * .removePropertyChangeListener(focusChangeListener);
-		 */
 	}
 
 	protected void installAutocommitListener() {
 		SelectionManager.getManager()
 				.addPreSelectionListener(preSelectListener);
 		IOManager.getManager().addIOListener(ioListener);
-		/*
-		 * KeyboardFocusManager.getCurrentKeyboardFocusManager()
-		 * .addPropertyChangeListener(focusChangeListener);
-		 */
-
 	}
 
 	public TextComponentNameResolver getMyResolver() {
@@ -795,7 +738,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 		dirtyPaths = new LinkedList<FieldPath>();
 		warningMap.clear();
-		doTimedTextChecks(false);
+		setWarningMap(warningMap);
+		doTimedTextChecks(false, false);
 		fireLoadEvent(new TermLoadEvent(this, io));
 	}
 
@@ -821,7 +765,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	public void flushEdits() {
-		logger.info("TextEditor: commiting changes to " + getObject().getName());
+		// Trigger verification checks that should happen on text commit
+		doTimedTextChecks(false, true);
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Text edit");
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
