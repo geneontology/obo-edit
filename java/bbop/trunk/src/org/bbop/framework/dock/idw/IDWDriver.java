@@ -1151,6 +1151,8 @@ public class IDWDriver implements LayoutDriver {
 
     public void focusComponent(GUIComponent c) {
         // both calls are required to focus component and last child, especially if it's floating
+	    // 7/2008: This method doesn't seem to bring a floating component to the front if it's hiding
+	    // behind the main window.
         getView(c).requestFocus();
         getView(c).restoreFocus();
     }
