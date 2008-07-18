@@ -1,10 +1,26 @@
 Changes in 2.000-b42:
 - Updated a lot of help pages.
-- Chris made it not add SymmetryRule by default.  It was causing the reasoner
-to generate zillions of links when it encountered relationships with
+- Chris made the LinkPileReasoner not add SymmetryRule.  It was causing the
+reasoner to generate zillions of links when it encountered relationships with
 "is_symmetric = true" (e.g., "associated_with" in SO), which made reasoning
-over these ontologies (SO, fly anatomy, etc.) really slow.
+over these ontologies (SO, fly anatomy, etc.) really slow.  The reasoning is
+much faster now!
+- Identified what was making text edit commits so slow for midori and Jen:
+the disjoint_from link filter they have in place.  Documented this on relevant
+help pages.
 - By default, only one Ontology Tree Editor at a time can be in global
 selection mode (i.e., it responds to external selection events).  All others
 are in local selection mode (little house icon).
 This behavior is configurable in the Configuration Manager.
+- Fixed "rogue Consider menu appearance" bug:
+Midori wrote: "If I selected and dragged two or more terms, and dropped onto
+one of them, the consider/replacement menu popped up. It wouldn't make any
+sense to assign a term as its own consider or replacement term, so it doesn't
+make sense for the menu to pop up."
+- Verification checks configured to happen "On text commit" didn't happen (SF
+bug 2008127)--now they do.  This may now be a better choice than "During text
+edit" for some checks.
+- If the Text Editor has warnings, and you load a new ontology, the warnings
+now get cleared (SF bug 1894632).
+- The option to bring up the verification manager to show the errors now
+actually brings it forward if it was not visible.
