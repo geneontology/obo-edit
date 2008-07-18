@@ -64,8 +64,8 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 						if (i > 0 && c.size() > 2)
 							termList.append(", ");
 						if (i == c.size() - 1)
-							termList.append("and ");
-						termList.append("<a href='file:" + io.getID() + "'>"
+							termList.append(" and ");
+						termList.append(" <a href='file:" + io.getID() + "'>"
 								+ io.getName() + " (" + io.getID() + ")</a>");
 					}
 					it2 = c.iterator();
@@ -75,7 +75,7 @@ public class NameRedundancyCheck extends AbstractCheck implements OntologyCheck 
 							continue;
 						CheckWarning warning = new CheckWarning(
 								"The terms " + termList.toString()
-										+ "share the name or synonym \"" + name
+										+ " share the name or synonym \"" + name
 										+ "\".", false, this, io);
 						out.add(warning);
 						if (isCancelled()
