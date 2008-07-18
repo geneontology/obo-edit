@@ -389,7 +389,10 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 	public boolean equals(Object o) {
 		if (o instanceof IdentifiableObject) {
 			IdentifiableObject io = (IdentifiableObject) o;
-			return StringUtil.requals(io.getID(), getID());
+			// This reverse-equals method might have made sense once upon a time, but
+			// it doesn't save us anything now.
+//			return StringUtil.requals(io.getID(), getID());
+			return io.getID().equals(getID());
 		} else
 			return false;
 	}
