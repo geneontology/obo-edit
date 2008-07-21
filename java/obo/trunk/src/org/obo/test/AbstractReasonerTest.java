@@ -1,11 +1,16 @@
 package org.obo.test;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.log4j.Logger;
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.impl.OBORestrictionImpl;
+import org.obo.filters.Filter;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
@@ -130,6 +135,23 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 				new OBORestrictionImpl(child, rel, parent)));
 
 	}
+	
+	public Collection<Link> filterReasonedLinks(Filter filter) {
+		Collection<Link> matches = 
+			new LinkedList<Link>();
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io instanceof LinkedObject) {
+				LinkedObject lo = (LinkedObject)io;
+				for (Link link : reasonedDB.getParents(lo)) {
+					if (filter.satisfies(link)) {
+						matches.add(link);
+					}
+				}
+			}
+		}
+		return matches;
+	}
+
 
 
 }

@@ -16,6 +16,12 @@ import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.datamodel.*;
+import org.obo.filters.IsCompleteLinkCriterion;
+import org.obo.filters.IsImpliedLinkCriterion;
+import org.obo.filters.LinkFilter;
+import org.obo.filters.LinkFilterFactory;
+import org.obo.filters.ObjectFilter;
+import org.obo.filters.ObjectFilterFactory;
 
 import org.apache.log4j.*;
 
@@ -32,8 +38,8 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		String[] files={"camphor_catabolism.obo"};
 		return Arrays.asList(files);
 	}
-	
-	
+
+
 
 	public static Collection<String> getTests() {
 		String[] tests={};
@@ -59,7 +65,7 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 
 		testForIsAInTrimmed("GO:0019383","GO:0042178"); 
 		testForLinkInTrimmed("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
-		
+
 		// test incremental reasoning
 		if (true) {
 			Link link = reasonedDB.hasRelationship((LinkedObject)session.getObject(RCAMPHOR), OBOProperty.IS_A, (LinkedObject)session.getObject(CAMPHOR));
@@ -74,6 +80,26 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 			reasonedDB.addLink(link);
 			testForIsA(CAMPHOR_CATABOLISM,XENOBIOTIC_CATABOLISM); /* completeness : c-catab is_a xeno catab*/
 		}
+
+		// test link filter
+		if (true) {
+			LinkFilterFactory lff = new LinkFilterFactory();
+			ObjectFilterFactory off = new ObjectFilterFactory();
+
+			LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
+			// intersection_of tags
+			ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
+			ofilter = (ObjectFilter)off.createNewFilter();
+			ofilter.setCriterion(new IsImpliedLinkCriterion());
+			lfilter = (LinkFilter)lff.createNewFilter();
+			lfilter.setAspect(LinkFilter.SELF);
+			lfilter.setFilter(ofilter);
+			Collection<Link> matches = filterReasonedLinks(lfilter);
+			logger.info(lfilter+" N_matches: "+matches.size());
+
+			assertTrue(matches.size() > 0);
+		}
+
 	}
 }
 
