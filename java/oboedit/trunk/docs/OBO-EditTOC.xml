@@ -57,8 +57,8 @@
 			 target="The_GraphViz_Viewer" />
 	</tocitem>
 	<tocitem text="Filtering, Rendering &amp; Searching">
-		<tocitem text="Filters" target="Filters" />
-		<tocitem text="Building a_Filter" target="Building_a_Filter" >
+		<tocitem text="Introduction to Filters" target="Filters" />
+		<tocitem text="Building Filters" target="Building_a_Filter" >
 			<tocitem text="Term Filters" target="Term_Filters" />
 			<tocitem text="Link Filters" target="Link_Filters" />
 			<tocitem text="Reusing Filters" target="Reusing_Filters" />
@@ -66,15 +66,13 @@
 		<tocitem text="Using Filters">
 			<tocitem text="Searching" target="Searching" />
 			<tocitem text="Filtering" target="Filtering" />
-			<tocitem text="Rendering" target="Rendering" />
+			<tocitem text="Rendering" target="Rendering" >
+			<tocitem text="HTML Rendering" target="HTML_Rendering" />
+		</tocitem>
 			<tocitem text="Global Filters &amp; Renderers"
 				target="Global_Filters___Renderers" />
 			<tocitem text="Other Uses of Filters"
 				target="Other_Uses_of_Filters" />
-		</tocitem>
-		<tocitem text="Advanced Searching"
-			target="Advanced_Searching" >
-			<tocitem text="HTML Rendering" target="HTML_Rendering" />
 		</tocitem>
 	</tocitem>
 	<tocitem text="Editing">
@@ -177,7 +175,7 @@
 		<tocitem text="Cycle Check" target="ISA_Cycle_Check" />
 		<tocitem text="Name Redundancy Check"
 			target="Name_Redundancy_Check" />
-		<tocitem text="User Defined Checks"
+		<tocitem text="User-Defined Checks"
 			target="User_Defined_Checks" />
 	</tocitem>
 	<tocitem text="Cross Products">
@@ -204,7 +202,7 @@
 		<tocitem text="Example Scripts" target="Example_Scripts" />
 	</tocitem>
 	<tocitem text="Tools and Plugins">
-		<tocitem text="Table of Contents Component"
+		<tocitem text="Table of Contents"
 			target="Table_of_Contents" />
 		<tocitem text="Extended Info"
 			target="The_Extended_Info_Plugin" />
