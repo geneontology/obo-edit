@@ -73,7 +73,7 @@ public class FilterTest extends AbstractOBOTest {
 		assertTrue(matches.size() == 2);
 
 	}
-
+	
 	public void testSearch() throws Exception {
 		ObjectFilter filter = (ObjectFilter)off.createNewFilter();
 		RegexpComparison c;
@@ -117,6 +117,14 @@ public class FilterTest extends AbstractOBOTest {
 		// note: if caro.obo changes, this may need changing
 		assertTrue(matches.size() == 10);
 		
+		
+		// set both child and parent tags
+
+
+	}
+
+	public void testIsIntersectionFilter() {
+		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
 		// intersection_of tags
 		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
 		ofilter = (ObjectFilter)off.createNewFilter();
@@ -124,16 +132,15 @@ public class FilterTest extends AbstractOBOTest {
 		lfilter = (LinkFilter)lff.createNewFilter();
 		lfilter.setAspect(LinkFilter.SELF);
 		lfilter.setFilter(ofilter);
-		matches = filterLinks(lfilter);
+		Collection<Link> matches = filterLinks(lfilter);
 		logger.info(lfilter+" N_matches: "+matches.size());
 
 		assertTrue(matches.size() == 2);
-		
-		// set both child and parent tags
-
 
 	}
 
+
+	
 	public void testLinkFilterFindParents() throws Exception {
 		LinkFilter lfilter = getLinkFilter("CARO:0000003", LinkFilter.CHILD);
 		
