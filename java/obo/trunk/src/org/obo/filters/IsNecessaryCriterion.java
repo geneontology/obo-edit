@@ -28,6 +28,6 @@ public class IsNecessaryCriterion extends AbstractBooleanLinkCriterion {
 
 	@Override
 	public String toString() {
-		return "Is Necessary";
+		return "Is necessary";
 	}
 }
