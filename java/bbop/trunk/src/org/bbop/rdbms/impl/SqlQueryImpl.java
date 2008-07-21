@@ -162,6 +162,11 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 	public void setOrderByClause(OrderByClause orderByClause) {
 		this.orderByClause = orderByClause;
 	}
+	
+	public void setOrderByClause(String orderByClause) {
+		this.orderByClause = new SqlOrderByClauseImpl(orderByClause);
+	}
+
 
 	public WhereClause getWhereClause() {
 		return whereClause;

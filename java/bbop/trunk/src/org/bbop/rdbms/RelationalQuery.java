@@ -32,6 +32,7 @@ public interface RelationalQuery extends RelationalTerm {
 
 	public OrderByClause getOrderByClause();
 	public void setOrderByClause(OrderByClause orderByClause);
+	public void setOrderByClause(String string);
 
 	public WhereClause getWhereClause();
 	public void setWhereClause(WhereClause whereClause);
