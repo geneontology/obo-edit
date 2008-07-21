@@ -10,6 +10,13 @@ public class SqlOrderByClauseImpl extends SqlColumnListClause implements
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SqlOrderByClauseImpl.class);
 
+	public SqlOrderByClauseImpl() {
+		super();
+	}
+	public SqlOrderByClauseImpl(String s) {
+		super(s);
+	}
+
 	public String toSQL() {
 		// TODO Auto-generated method stub
 		if (getColumns().size() == 0) {
