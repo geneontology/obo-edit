@@ -40,7 +40,7 @@
 										<td>
 											<span style="width:100%;font-size:10px;color:#888888;">Statements in Common</span><br/>
 											<#if (intersectionNodes?size>0)>
-												<@listNodes nodeList=intersectionNodes highlight=maxContentNode/>
+												<@listNodes nodeList=intersectionNodes showScore='true'/>
 											<#else>
 												None
 											</#if>
@@ -68,16 +68,15 @@
 	</body>
 </html>
 
-<#macro listNodes nodeList highlight='blank'>
+<#macro listNodes nodeList showScore='false'>
 	<table class="nodeList">
 	<#list nodeList as node>
 		<tr>
-			<td class="<#if ((highlight != 'blank') && (highlight == node.id))>max<#else>std</#if>">
-				&bull;
-			</td>
-			<td class="<#if ((highlight != 'blank') && (highlight == node.id))>max<#else>std</#if>">
-				<@nodeHashHref nodeHash=node/>
-			</td>
+			<td style="vertical-align:top;">&bull;</td>
+			<#if (showScore != 'false')>
+				<td style="width:50px;vertical-align:top;">${node.contentScore}</td>
+			</#if>
+			<td><@nodeHashHref nodeHash=node/></td>
 		</tr>
 	</#list>
 	</table>

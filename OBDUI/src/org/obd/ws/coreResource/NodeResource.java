@@ -417,7 +417,7 @@ public class NodeResource extends OBDResource {
 				nodeHash.put("subjectLabel", cd.getGenus().getNodeId());
 			}
 			nodeHash.put("args",this.decomposeArguments(cd.getDifferentiaArguments()));
-		}  else if (cd.isAtomic()){
+		} else if (cd.isAtomic()){
 			//System.out.println("Is Atomic.");
 			nodeHash.put("subjectLabel", cd.toString());
 		} else {
@@ -515,7 +515,9 @@ public class NodeResource extends OBDResource {
 		if (href != null){
 			nodeHash.put("href", href);
 		}
+		
 		if (nodeId.contains("^")){
+			System.out.println("Trying to decompose " +nodeId);
 			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
 			if ((cd != null) && (cd.getArguments() != null)){
 				nodeHash.put("isComposed", true);
