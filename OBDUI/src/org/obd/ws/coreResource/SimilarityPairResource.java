@@ -3,18 +3,22 @@ package org.obd.ws.coreResource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.obd.model.stats.SimilarityPair;
+import org.obd.ws.coreResource.sorter.NodeScoreComparator;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+
+import freemarker.template.SimpleHash;
 
 
 public class SimilarityPairResource extends NodesResource{
@@ -55,12 +59,22 @@ public class SimilarityPairResource extends NodesResource{
 			resourceMap.put("node2", this.hashifyNode(nodes.get(1).getId(), ("/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(nodes.get(1).getId()))));
 			
 			List<String> commonNodes = new ArrayList<String>(sp.getNonRedundantNodesInCommon());
+			
 			//commonNodes.remove(sp.getNodeWithMaximumInformationContent());
 			//if (sp.getNodeWithMaximumInformationContent()!=null){
 				//commonNodes.add(0,sp.getNodeWithMaximumInformationContent());
 			//}
+			List<SimpleHash> hashifiedCommonNodes = new ArrayList<SimpleHash>();
 			
-			resourceMap.put("intersectionNodes", this.hashifyNodes(commonNodes,("/" + this.getContextName() + "/" + this.dataSource + "/html/node/")));
+			for (String nodeId : commonNodes){
+				SimpleHash nodeHash = this.hashifyNode(nodeId, "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(nodeId));
+				nodeHash.put("contentScore", sp.getInformationContent(nodeId));
+				hashifiedCommonNodes.add(nodeHash);
+			}
+			Collections.sort(hashifiedCommonNodes, new NodeScoreComparator());
+			Collections.reverse(hashifiedCommonNodes);
+			resourceMap.put("intersectionNodes", hashifiedCommonNodes);
+			
 			Set<String> set1unique = new HashSet<String>(sp.getNonRedundantNodesInSet1());
 			set1unique.removeAll(sp.getNodesInCommon());
 			Set<String> set2unique = new HashSet<String>(sp.getNonRedundantNodesInSet2());
