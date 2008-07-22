@@ -6,222 +6,153 @@
 <link rel="stylesheet" type="text/css" href="../javahelp.css">
 </head>
 <body bgcolor="#ffffff">
-<h2>Standard Filtering</h2>
-<p>The filtering control looks like this:</p>
+<h1>Term Filters</h1>
+<p>Term filters are used to select specific classes, relations, or
+instances from an ontology. As described in <a
+href="Building_a_Filter.htm">Building Filters</a>, the attribute,
+value, comparison, and aspect for a filter are specified in the Term
+Filtering panel (aka Search Panel):
+</p>
 <p><IMG hspace=0 src="../images/filter_term_standard.png" alt="filtering image" border=0></p>
+<p>You can open the main filtering control with [Search] -> [Search
+Panel]. In some components, such as the Ontology Tree Editor and the
+Graph Editor, you can apply a filter in the component configuration
+panel (see <a href="Components.htm">Components</a> for more
+information).</p>
+<p>The search interface supports simple and compound queries. A simple
+search with only one criterion looks like this:</p><p> <img
+src="../images/simple_search.png" alt=""></p>
+<p>
+This search finds only terms where the name exactly matches 'development'. </p>
+<p>
+The text field, where you type the value, provides an autocompletion feature:</p>
+<p>
+<img src="../images/search_autocomplete.png" alt=""></p>
+<p>Clicking on any of the suggested terms will automatically fill it
+into the text box.</p>
+<p>Use the dropdown menus to choose whether to find terms that do
+(have) or do not (don't have) match the filter criteria, and to select
+the attribute and comparison. Click the <img
+src="../images/show_aspect_button.png" alt=""> button to show the aspect
+selector (when the aspect dropdown is showing, click <img
+src="../images/hide_aspect_button.png" alt=""> to hide it). See <a
+href="Building_a_Filter.htm">Building Filters</a> for explanations of
+the aspect, attribute, and comparison options.
+</p>
+<h2>Compound Filters</h2>
+<p>Simple queries such as the above example can be combined to perform
+complex searches using multiple criteria, subqueries, etc. To add a
+new criterion to a search, click the <img
+src="../images/plus.png" alt=""> button in the lower left
+corner. A new set of dropdown menus and a new text box will appear:
+</p>
+<p><img src="../images/two_search_criteria.png" alt=""></p>
+<p>Click <img src="../images/minus.png" alt=""> to delete a line
+from the query.</p>
+<p>When you have more than one search row, two more buttons appear,
+allowing you to perform AND or OR queries:</p>
+<img src="../images/matches.png" alt=""></p>
+<p>In the example above, "Matches all" is selected, so the query will
+find terms that match both criteria (equivalent to Boolean AND). If
+"Matches any" were selected, the query would find any terms that match
+either criterion (Boolean OR).
+</p>
+<h3>Subqueries</h3>
 
-<font color="#FF0000"><strong>Pics above and below have not been updated fully because the menu with 'ancestor' and 'descendent'
-has not yet been put back. We can do this bit later when the tool is complete.</strong></font>
-<p>The controls in this component have the following names:</p>
-<p><IMG height=152 hspace=0 src="../images/filter_term_standard_labeled.gif" alt="labelled filtering image" 
-width=408 border=0></p>
-<p>The meaning of some of these components is not immediately obvious. The 
-detailed discussion of these components will occur out of order, with the more 
-commonly used features described first.</p>
-<h3>Overview of How Standard Filtering is Done</h3>
-<p>For each term in the ontology, the <em>aspect</em> control determine which 
-terms should be examined to establish a match. (Normally, the search aspect is 
-<em>self</em>, so only the term itself is examined.) The <em>attribute</em> 
-values are then fetched for each term to be examined. Sometimes there will be a 
-single&nbsp;<em>attribute</em> value (if the attribute is "name", for example) 
-or sometimes there will be several (if the attribute is "synonym" or "dbxref", 
-for example). Each <em>attribute</em> value is compared against the 
-user-provided <em>value</em> using the given <em>comparison</em>. If ANY of the 
-<em>attributes</em> match the <em>value</em>, the term matches the filter. 
-Finally, if the <em>NOT</em> box is selected, the result of the match is 
-inverted.</p>
-<h3>Attribute</h3>
-<p>The search attribute describes which part of the term should be comparied 
-against the contents of the <em>value</em> box. </p>
-<p>Different attributes contain different types of values. Some attributes 
-contain text values, some contain numeric values, and others contain boolean 
-(true/false) values. The type of an attribute determines the possible 
-<em>comparisons</em> that can be done on that attribute.</p>
-<p>Some attributes contain a single value (like "name" or "comment" or any 
-boolean attribute). Some attributes contain many values (like "id", "synonym", 
-and "dbxref"). Note that if an attribute contains many values, each attribute 
-value is compared against the user-provided <em>value</em>. Only one attribute 
-value needs to match for the whole filter to be considered a match.</p>
-<p>There are a number of built in attributes that can be searched:</p>
-<ul>
-  <li><strong>All Text Fields</strong> <em>(multiple text values) </em>- 
-  Searches the term name, id, synonyms, definition and comments 
-  <li><strong>Name or Synonym</strong> <em>(multiple text values)</em> - 
-  Searches the term name and synonyms 
-  <li><strong>ID</strong> <em>(multiple text values)</em> - Searches the term's 
-  primary id and secondary ids 
-  <li><strong>Category</strong> <em>(multiple text values)</em> - Searches the 
-  <em>ids</em> of the categories to which a term belongs. For example, if a term 
-  belongs to a category called "Plant GO Slim" with the id "goslim_plant" and a 
-  category called "Generic GO Slim" with the id "goslim_generic", the 
-  <em>category</em> attribute will contain "goslim_plant" and "goslim_generic". 
-  <li><strong>Name</strong> <em>(single text value)</em> - Searches the term 
-  name 
-  <li><strong>Synonym</strong><em> (multiple text values)</em> - Searches the 
-  term synonyms 
-  <li><strong>Comment</strong> <em>(single text value)</em> - Searches the term 
-  comment 
-  <li><strong>Definition</strong> <em>(single text value)</em> - Searches the 
-  term definition 
-  <li><strong>Namespace</strong>&nbsp;<em>(single text value)</em> - Searches 
-  the term namespace ID. So if a term belongs to a namespace called "Molecular 
-  function" with the id "molecular_function", this attribute will contain 
-  "molecular_function" 
-  <li><strong>Dbxref</strong> <em>(multiple text values)</em> - Searches all the 
-  term dbxrefs, including general dbxrefs, synonym dbxrefs, and definition 
-  dbxrefs. Dbxref searches only look at the dbxref itself, not the optional 
-  dbxref description text. 
-  <li><strong>General dbxref</strong> <em>(multiple text values)</em> - Searches 
-  all general term dbxrefs, but not synonym dbxrefs or definition dbxrefs. 
-  <li><strong>Definition dbxref</strong> <em>(multiple text values)</em> - 
-  Searches all definition dbxrefs, but not synonym dbxrefs or general dbxrefs. 
-  <li><strong>Synonym dbxref</strong> <em>(multiple text values)</em> - Searches 
-  all synonym dbxrefs, but not definition dbxrefs or general dbxrefs. 
-  <li><strong>Is intersection</strong> <em>(boolean value)</em> - Whether 
-  or not this term is an intersection (aka cross product) 
-  <li><STRONG>Is is_a complete</STRONG> <EM>(boolean 
-  value)</EM> - Whether or not there is an unbroken 
-  chain of is_a links from this term to a root. 
-  <li><STRONG>Has is_a parent</STRONG>&nbsp;<EM>(boolean 
-  value)</EM> - Whether or not this term 
-  has at least one is_a link to&nbsp;a parent&nbsp; 
-  <li><strong>Is anonymous</strong> <em>(boolean value)</em> - Whether or not 
-  this term is anonymous. Currently, there is no way to create an anonymous term 
-  in OBO-Edit, so this will only find anonymous terms loaded from a file. 
-  <li><strong>Is class</strong> <em>(boolean value)</em> - Whether this term is 
-  a class. Instances and Relations will return false for this attribute. 
-  <li><strong>Is obsolete</strong> <em>(boolean value)</em> - Whether this term 
-  is obsolete. 
-  <li><strong>Is Property</strong> <em>(boolean value)</em> - Whether this term 
-  is a property. Classes and instances will return false for this attribute. 
-  <li><strong>Parent count</strong> <em>(single numeric value)</em> - The number 
-  of parents a term has. Note that this is a numeric value, so the possible 
-  comparisons for this attribute will be different than for other attributes. 
-  <li><strong>Is implied</strong> <em>(boolean value)</em> - Whether this term 
-  was created by a reasoner. OBO-Edit's reasoner will never create new terms, so 
-  implied terms can only be loaded from a file that was created by an external 
-  reasoner, like OBOL. 
-  <li><strong>Is transitive</strong> <em>(boolean value)</em> - Whether a 
-  relation is marked transitive. This attribute will return false for all 
-  non-relations. 
-  <li><strong>Is built in</strong><em> (boolean value)</em> - Whether a term is 
-  one of the built-in OBO objects, like the <strong>is_a</strong>   relation. 
-  Note that there are some built-in classes that are hidden by 
-  default. 
-  <li><STRONG>Keyword</STRONG> <EM>(multiple text 
-  values)</EM> - Searches all 
-  the keywords for this term, as described in "Keyword Filtering" above</li></ul>
-<h3>Comparison</h3>
-<p>The search comparison chooses the method that will be used to determine 
-whether the user-provided <em>value</em> matches the current <em>attribute</em>. 
-The possible comparisons change depending on the attribute type. If a boolean 
-attribute is selected, the comparison box (and the value box) are not shown at 
-all, because boolean attributes return true or false values, and no further 
-comparison needs to be done.</p>
-<p><strong>Text Attribute Comparisons</strong></p>
-<p>Text attribute comparisons are not case-sensitive.</p>
-<ul>
-  <li><strong>equals</strong> - Matches if an attribute value and the user value 
-  are exactly the same. 
-  <li><strong>contains</strong> - Matches if an attribute contains the user 
-  value. 
-  <li><strong>starts with</strong> - Matches if an attribute starts with the 
-  user value. 
-  <li><strong>ends with</strong> - Matches if an attribute ends with the 
-  user value. 
-  <li><STRONG>matches wildcard</STRONG> - Performs a 
-  wildcard match where * is the wildcard character. For example, the wildcard 
-  string "*e*ple" would match the strings "people", "example" and "temple" (and probably 
-  many others) 
-  <li><STRONG>matches regexp</STRONG> - Performs a regular 
-  expression match. See <A 
-  href="http://www.regular-expressions.info/quickstart.html">http://www.regular-expressions.info/quickstart.html</A>, 
-  <A 
-  href="http://www.newbie.org/gazette/xxaxx/xprmnt02.html">http://www.newbie.org/gazette/xxaxx/xprmnt02.html</A>, 
-  and <A 
-  href="http://search.cpan.org/dist/perl/pod/perlre.pod">http://search.cpan.org/dist/perl/pod/perlre.pod</A>    &nbsp;for information on how regular expressions 
-  work.</li></ul>
-<p><strong>Numeric Attribute Comparisons</strong></p>
-<ul>
-  <li><strong>equals</strong> - Matches if the attribute value and the user 
-  value are exactly the same. 
-  <li><strong>&lt;</strong> - Matches if the attribute value is less than the 
-  user value 
-  <li><strong>&lt;=</strong> - Matches if the attribute value is less than or 
-  equal to the user value 
-  <li><strong>&gt;</strong> - Matches if the attribute value is greater than the 
-  user value. 
-  <li><strong>&gt;=</strong>&nbsp;- Matches if that attribute value is greater 
-  than or equals to the user value.</li></ul>
-<h3>Value</h3>
-<p>The <em>value</em> will be matched against the&nbsp;<em>attribute</em> value 
-using the <em>comparison</em>. If the <em>attribute</em> is a numeric attribute, 
-the <em>value</em> must be an integer, otherwise nothing will match.</p>
-<h3>NOT</h3>
-<p>This checkbox inverts the search. If a search would normally return all terms 
-with the word "kinase" in the name, but the <em>NOT</em> box was checked, the 
-search would find every term that does not have "kinase" in the name.</p>
-<h3>Aspect</h3>
-<p>Without a doubt, this is the most misunderstood aspect of OBO-Edit filtering, 
-but it is essential for doing powerful, complex searches.</p>
-<p>Normally when searching, every term in the ontology is checked to see if it 
-matches the current search criteria. But if a search aspect is specified, each 
-term is checked to see if <strong>other related terms</strong> match the search 
-criteria. If one of the related terms matches, the original search term is 
-considered a match.</p>
-<p>There are three possible values for the search aspect:</p>
-<ul>
-  <li>
-  <div><strong>Self</strong> - The default behavior. Only the current term is 
-  examined.</div>
-  <li>
-  <div><strong>Ancestor</strong> - Instead of the current term itself, examine 
-  the ancestors of the current term.</div>
-  <li>
-  <div><strong>Descendant</strong> - Instead of the current term itself, examine 
-  the descendants of the current term.</div>
-  <LI>
-  <DIV><STRONG>Root</STRONG> - Instead of the current term itself, examine the 
-  root (or roots) of the current term.</DIV></LI></ul>
-<p>To demonstrate how aspects work, let's consider a really simple 
-ontology...</p>
-<p><IMG height=117 hspace=0 src="../images/toy_ontology.jpg" width=158 
-border=0></p>
-<p>(Note that D has two parents, B &amp; C.)</p>
-<p>If we search for <strong>[Self] [Name] [equals] "B"</strong> (shorthand for 
-"use the aspect "Self", the attribute "Name", the comparison "equals" and the 
-search value "B"), we get a single result: <strong>B</strong>. Just as we'd 
-expect.</p>
-<p>But if we change the aspect to <strong>Descendant</strong>, we get a 
-different result: <strong>A</strong>. This is because term <strong>A</strong> 
-has a descendant whose name equals "B". No other term matches, because no other 
-term has a descendant with the name "B". <strong>B</strong> itself doesn't 
-match, because <strong>B</strong> is not a descendant of itself.</p>
-<p>If we change the search to <strong>[Descendant] [Name] [equals] "D"</strong>, 
-we get 3 results: <strong>A, B,</strong> and <strong>C.</strong> This is because 
-these terms are the only terms with a descendant named "D".</p>
-<p>The ancestor aspect works in a similar way. If we search for 
-<strong>[Ancestor] [Name] [equals] "B"</strong>, we get&nbsp;2 results: 
-<strong>D </strong>and <strong>F</strong>. These are the two terms that have an 
-ancestor with the name "B". <strong>E</strong> does not match, because none of 
-its ancestors (<strong>C</strong> and <strong>A</strong>) have a name that 
-equals "B".</p>
-<div class="sidebar">
-<h1>Why would I ever use this?</h1>
-<hr>
+<p>To create a subquery, add a search criterion as above, then click
+the <img src="../images/indent.png" alt=""> button to indent the
+line for that criterion. Any additional criteria you add using the
+<img src="../images/plus.png" alt=""> button will appear at the
+same level of indentation; to move a criterion out a level, use the
+<img src="../images/outdent.png" alt=""> button.</p>
 
-<p>People have been so confused by search aspects that you may ask why we bother 
-to include it at all. In fact, this feature was removed from a few beta-test 
-versions of OBO-Edit. </p>
-<p>It was then almost immediately reinstated, because it's the only way to do 
-really interesting searches.</p>
-<p>Search aspects are particularly useful for two things: <A 
-href="Filtering.htm">filtering</A> and compound searches. When filtering, search 
-aspects can help pick out subsections of an ontology graph (you may, for 
-example, decide you only want to see descendants of the "molecular_function" 
-term). When doing compound searches, search aspects can help you narrow the 
-search to a particular branch of the ontology.</p></div>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p>For example, if you want to query for terms that have 'development'
+in the name, and either 'R6' in the name or 'R8', set up this query:
+</p>
+
+<p><img src="../images/compound_query_example1.png" alt=""></p>
+<p>Step-by-step instructions to construct this query:
+<ul>
+ <li>Set up a simple search for terms that [have] a [Name] that
+ [contains] 'development'.
+ <li>Click <img src="../images/Picture%2017.png" alt=""> to add the
+ second set of criteria: [have] a [Name] that [contains] 'R6'.
+ <li>Click <img src="../images/Picture%2019.png" alt=""> to indent the
+ second line, then click <img src="../images/Picture%2017.png" alt=""> to
+ add the third line ([have] a [Name] that [contains] 'R8').
+ <li>Select the "Matches any" radio button in the subquery.
+</ul>
+
+<p>You can also move existing query elements by dragging and dropping
+using the vertical blue bar at the left-hand edge of each criterion
+line.</p>
+<p>Very complex queries with multiple levels of nesting can be created:
+</p>
+<p><img width=800 src="../images/compound_query_example2.png" alt=""></p>
+
+
+<h2>How Compound Filters Are Matched: Speeding Up Your Searches</h2>
+
+<p>Compound filters are matched by evaluating whether their
+constituent filters match.</p>
+<p>Constituent filters are matched in the order they were
+specified. The evaluation stops if the value of the compound filter
+can be determined, even if all the constituent filters have not been
+checked. For example, if the boolean operation is AND and one of the
+constituent filters doesn't match, the evaluation stops and the entire
+compound filter announces that it doesn't match (because if even one
+term of an AND expression is false, the whole expression is
+false). Similarly, if the boolean operation is OR and a constituent
+filter matches, the evaluation stops and the entire compound filter
+announces that it matches (if even one term of an OR expression is
+true, the whole expression is true).</p>
+<p>Therefore: <strong>When constructing a compound filter, put filters
+that can be evaluated quickly FIRST. </strong>For example, it takes a
+long time to do any search with an "Ancestor" or "Descendant" search
+aspect, because all the descendants or ancestors of every term in the
+ontology have to be calculated. So add any filters that use an
+ancestor or descendant last, and add quickly evaluated filters
+first. That way slow filters don't have to be evaluated unless
+absolutely necessary, and the whole filtering operation will work more
+quickly.</p>
+
+<h2>Debugging Queries</h2>
+
+<p>The query debugging system can be useful for constructing queries
+ that find the desired set of terms, and for tracking down why a
+ particular filter does or doesn't match a given term. Selecting <img
+ src="../images/query_debug.png" alt=""> causes a <img
+ src="../images/dim_lightbulb.png" alt=""> icon to appear. </p>
+
+<p>
+If the term(s) selected in the ontology editor panel fit(s) the
+criterion next to the lightbulb icon, the icon turns yellow <img
+src="../images/lit_lightbulb.png" alt="">; if the term does not match, the
+lightbulb stays grey:</p>
+
+<p>
+<p><img src="../images/query_debug_example.png" alt=""></p>
+
+
+<h2>Results</h2>
+
+<p>The results of a query are displayed in a list; if any obsolete
+terms match, they are shown in red strikethrough:</p>
+
+<p><img src="../images/search_results.png" alt=""></p>
+
+<p>To select a term of interest an Ontology Tree Editor (in global
+selection mode) you can just click on the term in the search results
+list. </p>
+
+<p>If you have performed multiple searches, you can scroll through the
+various search result tabs using the left and right arrow icons, or
+click the down arrow to see a vertical list:</p>
+
+<p><img src="../images/arrows.png" alt=""></p>
+
+<p>Each search result panel is a component, and can be manipulated
+independently like any other component panel.</p>
+
 </body>
 </html>
