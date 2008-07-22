@@ -43,7 +43,9 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 
 			Selection paths = (Selection) o;
 
-			if (paths.getTerms().size() != 1
+			// Want to allow multiple links to be selected
+//			if (paths.getTerms().size() != 1
+			if (paths.getTerms().size() < 1
 					|| !TermUtil.isProperty(paths.getTermSubSelection())
 					|| TermUtil.isObsolete(paths.getTermSubSelection()))
 				return InputHandlerI.REJECT_DROP;
@@ -141,11 +143,14 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 		fromDrop = false;
 		this.dest = destItem;
 
-		if (paths.getLinks().size() != 1) {
+		// Want to allow multiple links to be selected
+//		if (paths.getLinks().size() != 1) {
+		if (paths.getLinks().size() < 1) {
 			isLegal = false;
 			return;
 		}
 		for (Link tr : paths.getLinks()) {
+			// Really, one "fake" path dooms the whole selection?
 			if (PathUtil.isFake(tr)) {
 				isLegal = false;
 				return;
@@ -159,7 +164,9 @@ public class TypeChangeAction implements ClickMenuAction, DropMenuAction,
 		this.dest = destItem;
 
 		isLegal = false;
-		if (paths.getLinks().size() != 1) {
+		// Want to allow multiple links to be selected
+//		if (paths.getLinks().size() != 1) {
+		if (paths.getLinks().size() < 1) {
 			return;
 		}
 
