@@ -2,13 +2,16 @@
 package org.geneontology.web;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.obd.model.Node;
 import org.obd.query.ComparisonQueryTerm.Operator;
 import org.obd.query.LabelQueryTerm.AliasType;
 import org.obd.ws.coreResource.NodeResource;
+import org.obd.ws.coreResource.sorter.AutocompleteNodeSorter;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -64,8 +67,11 @@ public class AutoCompleteSearchResource extends NodeResource {
      * @throws Exception 
      */
     public Collection<Node> findNodes() throws Exception {
-        nodes = new LinkedList<Node>();
-        nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm,Operator.CONTAINS,null,AliasType.PRIMARY_NAME));
+        this.nodes = new ArrayList<Node>();
+        this.nodes.addAll(getShard(this.dataSource).getNodesBySearch(searchTerm,Operator.CONTAINS,null,AliasType.PRIMARY_NAME));
+        AutocompleteNodeSorter sorter = new AutocompleteNodeSorter();
+        sorter.setPattern(this.searchTerm);
+        Collections.sort(nodes,sorter);
         return nodes;
     }
 
