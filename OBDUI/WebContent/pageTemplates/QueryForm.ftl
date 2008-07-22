@@ -96,7 +96,6 @@
 					delay: 500, 
 					width:400, 
 					max:100,
-					matchContains: true,
 					formatItem:	function(row,i,max){
 									var parts = String(row).split(",");
 									return parts[0] + ": " + parts[1];
