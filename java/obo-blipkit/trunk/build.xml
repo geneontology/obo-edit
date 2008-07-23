@@ -29,7 +29,7 @@
 	<!-- dependency information -->
 	<property name="bbop_dest" location="../BBOP" />
 	<property name="obo_dest" location="../OBO" />
-	<property name="oboedit_dest" location="../OBO-Edit2" />
+	<property name="oboedit_dest" location="../OBO-Edit" />
 
 	<!-- utility program paths -->
 	<property name="svnpath" value="/usr/local/bin/svn" />
