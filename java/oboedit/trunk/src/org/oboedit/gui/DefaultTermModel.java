@@ -20,6 +20,7 @@ import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
+import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
 import org.apache.log4j.*;
@@ -75,6 +76,8 @@ public class DefaultTermModel implements TermModel {
 
 	protected TermSorter comparator = new TermSorter(true);
 
+	protected FilterManager manager = FilterManager.getManager();
+
 	// JTree does some unnecessary checks when expanding paths to make sure that
 	// you are only expanding a valid path. We don't have time for this,
 	// especially
@@ -100,12 +103,16 @@ public class DefaultTermModel implements TermModel {
 			setSortMode(true);
 		}
 	};
+	// Why was this commented out??  We need it in order to respond to global filter changes.
+ 	protected ReloadListener reloadListener = new ReloadListener() {
+ 	        public void reload(ReloadEvent e) {
+// 			logger.debug("DefaulTermModel.reloadListener.reload " + e); // DEL
+ 			linkFilter.clear();
+ 			termFilter.clear();
+ 			initializeFilters();
+			DefaultTermModel.this.reload();
+ 		} };
 
-	/*
-	 * protected ReloadListener reloadListener = new ReloadListener() {
-	 * 
-	 * public void reload() { DefaultTermModel.this.reload(null); } };
-	 */
 	protected static class TermSorter implements Comparator {
 		protected boolean ignoreCase = true;
 
@@ -244,42 +251,45 @@ public class DefaultTermModel implements TermModel {
 		if (userTermFilter != null)
 			termFilter.addFilter(userTermFilter);
 
-		termFilter.addFilter(FilterManager.getManager().getGlobalTermFilter());
+		termFilter.addFilter(manager.getGlobalTermFilter());
 
-//		logger.info("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
-		if (userLinkFilter != null)
+		if (userLinkFilter != null) {
+//			logger.debug("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
 			linkFilter.addFilter(userLinkFilter);
+		}
 
-		linkFilter.addFilter(FilterManager.getManager().getGlobalLinkFilter());
-//		logger.info("DefaultTermModel.initializeFilters: adding global link filter " + FilterManager.getManager().getGlobalLinkFilter());
+		linkFilter.addFilter(manager.getGlobalLinkFilter());
+//		logger.debug("DefaultTermModel.initializeFilters: added global link filter " + manager.getGlobalLinkFilter() + ", now linkfilter = " + linkFilter); // DEL
 	}
 
 	public void setLinkFilter(Filter filter) {
-//		logger.info("DefaultTermModel.setLinkFilter: linkfilter = " + linkFilter + ", new filter = " + filter); // DEL
-		// This wasn't letting user remove filters that were present at startup time
-//		if (userLinkFilter != null)
-//			linkFilter.removeFilter(userLinkFilter);
-		this.userLinkFilter = filter;
-		if (userLinkFilter != null) {
-//			linkFilter.addFilter(userLinkFilter);
-			LinkedList filters = new LinkedList<Filter>();
-			filters.add(userLinkFilter);
-			linkFilter.setFilters(filters);
+//		logger.debug("DefaultTermModel.setLinkFilter: initially linkfilter = " + linkFilter + ", userLinkFilter = " + userLinkFilter + ", new filter = " + filter); // DEL
+		if ((filter == null && userLinkFilter == null) ||
+		    filter.equals(userLinkFilter)) {
+			logger.debug("DefaultTermModel.setLinkFilter: userLinkFilter = " + userLinkFilter + ", new filter = " + filter + "--same"); // DEL
+			// Avoid unnecessary reload
+			return;
 		}
+
+		if (userLinkFilter != null)
+			linkFilter.removeFilter(userLinkFilter);
+		this.userLinkFilter = filter;
+		if (userLinkFilter != null)
+			linkFilter.addFilter(userLinkFilter);
 //		logger.info("DefaultTermModel.setLinkFilter: after adding new filter, now linkfilter = " + linkFilter); // DEL
 		reload();
 	}
 
 	public void setTermFilter(Filter filter) {
-		// This wasn't letting user remove filters that were present at startup time
-//		if (userTermFilter != null)
-//			termFilter.removeFilter(userTermFilter);
+		if ((filter == null && userTermFilter == null) ||
+		    filter.equals(userTermFilter))
+			// Avoid unnecessary reload
+			return;
+		if (userTermFilter != null)
+			termFilter.removeFilter(userTermFilter);
 		this.userTermFilter = filter;
-		if (userTermFilter != null) {
-			LinkedList filters = new LinkedList<Filter>();
-			filters.add(userTermFilter);
-			termFilter.setFilters(filters);
-		}
+		if (userTermFilter != null)
+			termFilter.addFilter(userTermFilter);
 		reload();
 	}
 
@@ -321,11 +331,13 @@ public class DefaultTermModel implements TermModel {
 
 	public void init() {
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
+		GUIUtil.addReloadListener(reloadListener);
 		setSortMode(!Preferences.getPreferences().getCaseSensitiveSort());
 	}
 
 	public void cleanup() {
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
+		GUIUtil.removeReloadListener(reloadListener);
 	}
 
 	protected void setSortMode(boolean sortMode) {
@@ -385,6 +397,8 @@ public class DefaultTermModel implements TermModel {
 		if (SessionManager.getManager().getUseReasoner()) {
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
 					.getManager().getReasoner());
+			filteredLinkDatabase.setFilters(getMergedTermFilter(),
+							getMergedLinkFilter());
 			trimmedLinkDB = new TrimmedLinkDatabase(filteredLinkDatabase);
 			linkDatabase = trimmedLinkDB;
 			// if (filterProperty == null)
@@ -410,24 +424,24 @@ public class DefaultTermModel implements TermModel {
 			trimmedLinkDB = null;
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
 					.getManager().getSession().getLinkDatabase());
+			filteredLinkDatabase.setFilters(getMergedTermFilter(),
+							getMergedLinkFilter());
 			linkDatabase = filteredLinkDatabase;
 		}
-
-		filteredLinkDatabase.setFilters(getMergedTermFilter(),
-				getMergedLinkFilter());
 	}
 
 	protected Filter getMergedTermFilter() {
-		return FilterUtil.mergeFilters(FilterManager.getManager()
+		return FilterUtil.mergeFilters(manager
 				.getGlobalTermFilter(), termFilter);
 	}
 
 	protected Filter getMergedLinkFilter() {
-		return FilterUtil.mergeFilters(FilterManager.getManager()
+		return FilterUtil.mergeFilters(manager
 				.getGlobalLinkFilter(), linkFilter);
 	}
 
 	public void reload() {
+		logger.debug("DefaultTermModel.reload"); // DEL
 		initCaches();
 		buildTopLevel();
 		buildFilteredDatabase();
@@ -470,12 +484,16 @@ public class DefaultTermModel implements TermModel {
 					VectorUtil.insertSorted(typeRoots, comparator, rootLink);
 			}
 		}
-
+		
+                // It might not really have changed, though!
 		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(
 				PathUtil.ROOT)));
+
+//		logger.debug("DefaultTermModel.reload: now linkFilter = " + linkFilter); // DEL
 	}
 
 	protected void fireTreeStructureChanged(TreeModelEvent e) {
+		logger.debug("DefaultTermModel.fireTreeStructureChanged: now linkFilter = " + linkFilter); // DEL
 		for (int i = 0; i < listeners.size(); i++) {
 			TreeModelListener tml = (TreeModelListener) listeners.elementAt(i);
 			tml.treeStructureChanged(e);
@@ -584,13 +602,6 @@ public class DefaultTermModel implements TermModel {
 				childCache.put(lo, out);
 				leafCache.remove(lo);
 			}
-// 			if (lo.getName().equals("cell activation")) {
-// 				logger.info("children of " + lo + ":");
-// 				for (Object link : out) {
-// 					logger.info("   " + link);
-// 				}
-// 				logger.info("done");
-// 			}
 			return out;
 		} else {
 			logger.info("requested children of unknown object " + parent);
