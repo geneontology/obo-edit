@@ -13,12 +13,12 @@ import org.bbop.swing.RecolorableImageIcon;
 
 import net.infonode.gui.icon.button.AbstractButtonIcon;
 
-import org.apache.log4j.*;
+// import org.apache.log4j.*;
 
 public class BitmapIcon extends AbstractButtonIcon {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(BitmapIcon.class);
+//	protected final static Logger logger = Logger.getLogger(BitmapIcon.class);
 
 	Map<Color, Icon> iconMap = new HashMap<Color, Icon>();
 	
