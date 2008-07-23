@@ -17,9 +17,6 @@ import org.bbop.rdbms.SelectClause;
 import org.bbop.rdbms.WhereClause;
 import org.bbop.rdbms.RelationalTerm;
 
-
-import org.apache.log4j.*;
-
 public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQuery {
 
 	//initialize logger
@@ -186,7 +183,6 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 		Logger.getLogger("org.bbop.rdbms").fine(toSQL());
 	
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		
 		// TODO: there must be a more generic way to do this!!
 		int i=1;
 		for (Object v : getPlaceHolderVals()) {
