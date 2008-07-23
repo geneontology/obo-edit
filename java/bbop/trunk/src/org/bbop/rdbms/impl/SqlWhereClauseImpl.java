@@ -1,9 +1,7 @@
 package org.bbop.rdbms.impl;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
-
 import org.bbop.rdbms.ConstraintSet;
 import org.bbop.rdbms.RelationalQuery;
 import org.bbop.rdbms.WhereClause;
