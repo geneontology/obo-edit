@@ -149,7 +149,8 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 //		    logger.info("GraphEditor.reload: e = " + e); // DEL
-			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()) {
+			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()
+			    || e.isFilter()) {
 				updateDatasources();
 				if (linkDatabase.getObjects().size() == 0) {
 					Collection<? extends LinkedObject> roots = TermUtil
@@ -368,8 +369,9 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	public void setConfiguration(ComponentConfiguration config) {
 		if (config instanceof GraphEditorConfiguration) {
 			GraphEditorConfiguration gec = (GraphEditorConfiguration) config;
-			setLinkFilter(gec.getLinkFilter());
-			setTermFilter(gec.getTermFilter());
+//			setLinkFilter(gec.getLinkFilter());
+//			setTermFilter(gec.getTermFilter());
+			setFilters(gec.getTermFilter(), gec.getLinkFilter());  // avoids an unneeded reload
 			setLinkRenderers(gec.getLinkRenderers());
 			setObjectRenderers(gec.getObjectRenderers());
 			setDisableAnimations(gec.getDisableAnimations());
