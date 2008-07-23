@@ -7,8 +7,8 @@ public class DatalogQueryComponentFactory extends
 		AbstractComponentFactory<DatalogQueryComponent> {
 
 	public DatalogQueryComponentFactory() {
-		addID("DATALOG_COMPONENT");
-		addID("plugin:org.blipkit.plugin.DatalogQueryPlugin");
+//		addID("DATALOG_COMPONENT");
+//		addID("plugin:org.blipkit.plugin.DatalogQueryPlugin");
 	}
 
 	public DatalogQueryComponent doCreateComponent(String id) {
@@ -21,6 +21,10 @@ public class DatalogQueryComponentFactory extends
 
 	public FactoryCategory getCategory() {
 		return FactoryCategory.ONTOLOGY;
+	}
+
+	public String getID() {
+		return "plugin:org.blipkit.plugin.DatalogQueryPlugin";
 	}
 
 }
