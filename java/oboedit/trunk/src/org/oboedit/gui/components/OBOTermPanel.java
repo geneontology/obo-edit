@@ -140,7 +140,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-//			logger.info("OBOTermPanel.reloadListener.reload " + e); // DEL
+//			logger.debug("OBOTermPanel.reloadListener.reload " + e); // DEL
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
@@ -820,8 +820,10 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	}
 
 	public void setLinkFilter(Filter<?> linkFilter) {
-//		logger.info("OBOTermPanel.setLinkFilter " + linkFilter + ", getModel = " + getModel() + ((getModel() instanceof TermModel) ? " (is a TermModel)" : "")); // DEL
+//		logger.debug("OBOTermPanel.setLinkFilter (" + linkFilter + "), getModel = " + getModel()); // DEL
 		if (getModel() instanceof TermModel) {
+			// This makes the tree collapse all of its nodes because DefaultTermModel
+			// fires a treeStructureChanged event.
 			((TermModel) getModel()).setLinkFilter(linkFilter);
 			reload();
 		}
@@ -1191,12 +1193,12 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 //		menu.add(unlockItem);
 
 		// These menu items don't currently work, so leaving them off menu for now.
-//		menu.addSeparator();
-//		Vector v = getFilterMenuItems();
-//		for (int i = 0; i < v.size(); i++) {
-//			JMenuItem item = (JMenuItem) v.get(i);
-//			menu.add(item);
-//		}
+		menu.addSeparator();
+		Vector v = getFilterMenuItems();
+		for (int i = 0; i < v.size(); i++) {
+			JMenuItem item = (JMenuItem) v.get(i);
+			menu.add(item);
+		}
 
 	}
 
@@ -1266,9 +1268,9 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 
 	// This method gets called excessively.
 	public void reload() {
-		logger.info("Reloading OBO Term Panel...");
-//		(new Exception()).printStackTrace(); // DEL
-		long time = System.currentTimeMillis();
+		logger.debug("Reloading OBO Term Panel...");
+
+//		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
 			removeTreeSelectionListener(selectionListeners[i]);
@@ -1278,17 +1280,11 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		TreePath[] selected = getSelectionPaths();
 
 		expanded = getExpandedPaths();
+
 		if (lockedPath != null && !pathIsValid(lockedPath))
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-		if (model instanceof TermModel) {
-			// Get the current filters before reloading
-			FilterManager manager = FilterManager.getManager();
-			((TermModel) getModel()).setLinkFilter(manager.getGlobalLinkFilter());
-			((TermModel) getModel()).setTermFilter(manager.getGlobalTermFilter());
-			((TermModel) model).reload();
-		}
 		clearToggledPaths();
 
 //		long time2 = System.currentTimeMillis();
@@ -1301,10 +1297,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		}
 //		logger.info("reloaded in " + (System.currentTimeMillis() - time)
 //				+ " (expanding took " + time2 + " ms)");
-
-//		FilterManager.getManager().fireGlobalFilterChange();  // ?
-//		if (reloadListener != null)
-//			reloadListener.reload(new ReloadEvent(this, null, false, true, false, false, false)); // ?
 	}
 
 	public void restorePaths(TreePath[] expanded) {
@@ -1349,12 +1341,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 //		reload(); // Need?  Every time?
 	}
 
-	/* These menu items to remove renderers and filters from the OTE don't work,
-	   because reload gets the global filters from the FilterManager.  We need it
-	   to do that because the user might have changed the global filters in the
-	   Global Filters panel.  If we need these menu items, I will have to rethink
-	   how to make it so that you can change the filters in the OTE in the Global
-	   Filters panel but also remove them from this OTE menu. */
 	protected Vector getFilterMenuItems() {
 		Vector<JMenuItem> v = new Vector<JMenuItem>();
 
@@ -1366,9 +1352,10 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 			public void actionPerformed(ActionEvent e) {
 				objectRenderers.clear();
 				if (getLinkFilter() != null || getTermFilter() != null) {
-					setLinkFilter(null);
-					setTermFilter(null);
-					reload();
+//					setLinkFilter(null);
+//					setTermFilter(null);
+					setFilters(null, null);
+//					reload();  // Not needed--setFilters calls reload()
 				}
 				repaint();
 			}
@@ -1501,8 +1488,9 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		if (c instanceof OntologyEditorConfiguration) {
 			OntologyEditorConfiguration config = (OntologyEditorConfiguration) c;
 			setLive(config.isLive());
-			setLinkFilter(config.getLinkFilter());
-			setTermFilter(config.getTermFilter());
+//			setLinkFilter(config.getLinkFilter());
+//			setTermFilter(config.getTermFilter());
+			setFilters(config.getTermFilter(), config.getLinkFilter()); // calls reload()
 			setObjectRenderers(config.getObjectRenderers());
 			setLinkRenderers(config.getLinkRenderers());
 			if (getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
