@@ -83,12 +83,11 @@ public class SessionManager {
 	protected boolean unflushedChanges = false;
 
 	protected boolean recacheInBackground = true;
-	
-	
+
 
 	public SessionManager() {
-		
-		setSession(new OBOSessionImpl());
+//		logger.info("Session Manager: generating new session");
+		setSession(new OBOSessionImpl());  // I'm suspicious that these are then left around as dangling refs, causing a memory leak.
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
 		setReasonerName(Preferences.getPreferences().getReasonerName());
 	}
