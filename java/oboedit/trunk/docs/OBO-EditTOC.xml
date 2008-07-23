@@ -40,7 +40,7 @@
 		<tocitem text="The OBO OWL Adapter"
 			target="The_OBO_OWL_Adapter" />
 		<tocitem text="The OWL URL Reader"
-			target="The_OWL URL_Reader" />
+			target="The_OWL_URL_Reader" />
 		<tocitem text="The GO Association File Adapter"
 			target="The_GO_Association_File_Adapter" />
 		<tocitem text="Custom Data Adapters"
