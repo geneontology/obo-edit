@@ -1049,7 +1049,6 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 //				logger.info("showed " + e.getShown());
 //				logger.info("hid " + e.getHidden());
 			}
-
 		});
 	}
 
@@ -1133,10 +1132,10 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void relayout() {
-		logger.debug("LinkDatabaseCanvas.relayout");  // DEL
-//		(new Exception()).printStackTrace(); // DEL
 		if (linkDatabase == null)
 			return;
+		logger.debug("LinkDatabaseCanvas.relayout"); // DEL
+//		(new Exception()).printStackTrace(); // DEL
 		isLayingOut = true;
 		dim();
 		if (getDisableAnimations()) {
@@ -1363,6 +1362,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	public void setFilters(Filter<?> termFilter, Filter<?> linkFilter) {
 		this.termFilter = termFilter;
+//		logger.debug("LinkDatabaseCanvas.setFilters: linkFilter was " + this.linkFilter + "; setting to " + linkFilter); // DEL
 		this.linkFilter = linkFilter;
 		updateDatasources();
 	}
@@ -1408,6 +1408,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void setLinkFilter(Filter<?> linkFilter) {
+//		logger.debug("LinkDatabaseCanvas.setLinkFilter " + linkFilter); // DEL
 		this.linkFilter = linkFilter;
 		updateDatasources();
 	}
@@ -1484,7 +1485,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 					.getLinkDatabase();
 		setLinkDatabase(newLinkDB);
 		setLinkProviderDatabase(new TrimmedLinkDatabase(filteredLinkDatabase));
-		relayout();  // !Need?  Or does the caller always end up calling relayout() sooner or later anyway?
+		relayout();
 		setFocusedObject(focusedObject);
 	}
 
