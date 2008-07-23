@@ -258,6 +258,7 @@ public class FilterManager {
 
 	@SuppressWarnings("unchecked")
 	public Filter<?> getAugmentedLinkFilter(Filter linkFilter) {
+//		logger.debug("FilterManager.getAugmentedLinkFilter: merging supplied linkFilter " + linkFilter + " with global filter " + getGlobalLinkFilter()); // DEL
 		return FilterUtil.mergeFilters(linkFilter, getGlobalLinkFilter());
 	}
 
@@ -318,12 +319,12 @@ public class FilterManager {
 	}
 
 	protected void buildDefaultGlobalLinkFilter() {
-		// globalLinkFilter = new CompoundFilterImpl(CompoundFilter.AND);
+		// Default filter:  is_intersection NOT
 		ObjectFilter iclfilter = new ObjectFilterImpl();
 		iclfilter.setNegate(true);
 		iclfilter.setCriterion(new IsCompleteLinkCriterion());
 
-		// 3/24/08: Don't filter out links that aren't transitive.  That excludes the regulates links.
+		// 3/24/08: Don't (by default) filter out links that aren't transitive.  That excludes the regulates links.
 //		ObjectFilter istransitiveobjectfilter = new ObjectFilterImpl();
 //		istransitiveobjectfilter.setCriterion(new IsTransitiveCriterion());
 
@@ -436,6 +437,7 @@ public class FilterManager {
 	}
 
 	protected void setGlobalLinkFilter(Filter linkFilter) {
+//		logger.debug("FilterManager.setGlobalLinkFilter(" + linkFilter + ")"); // DEL
 		this.globalLinkFilter = linkFilter;
 	}
 
