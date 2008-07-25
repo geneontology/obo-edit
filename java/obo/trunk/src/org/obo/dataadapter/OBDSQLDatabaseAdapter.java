@@ -900,7 +900,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (lo instanceof NamespacedObject && lo.getNamespace() != null) {
 			ns = lo.getNamespace().getID();
 		}
-		if (lo instanceof DanglingObject) {
+		if (lo instanceof DanglingObject || lo.getName() == null) {
 			iid =
 				callSqlFunc("store_node",
 						lo.getID());
@@ -1168,11 +1168,11 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			sql.append("?");
 		}
 		sql.append(")}");
+		logger.debug("sql="+sql);
 		System.out.print("sql="+sql+" :: ");
 		for (Object ob : args) {
-			System.out.print(ob+" ");
+			logger.debug("  arg:"+ob);
 		}
-		logger.info("");
 		CallableStatement stmt = connection.prepareCall(sql.toString());
 		stmt.registerOutParameter(1, Types.INTEGER);
 		// logger.info("stmt="+stmt);
