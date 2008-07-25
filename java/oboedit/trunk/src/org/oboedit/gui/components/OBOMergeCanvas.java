@@ -77,6 +77,15 @@ public class OBOMergeCanvas extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBOMergeCanvas.class);
 
+	  // Note, %n is newline
+	SimpleLayout loggerLayout = new SimpleLayout();
+    String pattern =  "%r %n";
+    
+    PatternLayout layout = new PatternLayout(pattern);
+	
+	ConsoleAppender console = new ConsoleAppender(layout);
+
+	
 	public static final int HIDE_ON_CLOSE = 1;
 	private static void addAComponentXAlignment(JComponent componentName, Container container) {
 		container.add(componentName);
@@ -852,6 +861,10 @@ private void advancedButtonActionPerformed(ActionEvent evt) {
 
 		PrintStream toTextArea = new PrintStream( new TextAreaOutputStream( feedbackTextArea ) );
 
+		logger.addAppender(new WriterAppender(loggerLayout, toTextArea));
+		 //logger.setLevel((Level) Level.INFO);
+
+		
 		System.setOut( toTextArea );
 		System.setErr( toTextArea );
 
