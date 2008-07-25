@@ -121,7 +121,9 @@ public class OBOMerge {
 			HistoryItem item = (HistoryItem) it.next();
 			OperationWarning warning = model.apply(item);
 			if (warning != null)
+				System.out.println("* warning: " + warning);
 				logger.info("* warning: " + warning);
+
 		}
 	}
 
@@ -158,37 +160,37 @@ public class OBOMerge {
 				if (obja.getName().equals(objb.getName())) {
 					clash.setSeverity(POSSIBLE);
 					clash
-							.setMessage("Possible ID clash found: Both versions of "
-									+ "ontology created a the new term "
-									+ obja.getName()
-									+ " ("
-									+ obja.getID()
-									+ ").");
+					.setMessage("Possible ID clash found: Both versions of "
+							+ "ontology created a the new term "
+							+ obja.getName()
+							+ " ("
+							+ obja.getID()
+							+ ").");
 					clash
-							.setPossibleReasons("This may be harmless. Usually it means "
-									+ "that the \"original\" file specified is not the true "
-									+ "point of divergence for these two terms, but is actually "
-									+ "an older file (in this case, the merge will still work "
-									+ "correctly).");
+					.setPossibleReasons("This may be harmless. Usually it means "
+							+ "that the \"original\" file specified is not the true "
+							+ "point of divergence for these two terms, but is actually "
+							+ "an older file (in this case, the merge will still work "
+							+ "correctly).");
 				} else {
 					clash
-							.setMessage("LIKELY ID CLASH FOUND: Both versions of the "
-									+ "ontology created a term with ID "
-									+ item.getObjectID()
-									+ " but "
-									+ "the term is named "
-									+ obja.getName()
-									+ " in one ontology and "
-									+ objb.getName()
-									+ "in the other.");
+					.setMessage("LIKELY ID CLASH FOUND: Both versions of the "
+							+ "ontology created a term with ID "
+							+ item.getObjectID()
+							+ " but "
+							+ "the term is named "
+							+ obja.getName()
+							+ " in one ontology and "
+							+ objb.getName()
+							+ "in the other.");
 					clash
-							.setPossibleReasons("This is probably a harmful ID clash. This "
-									+ "can happen when 2 users have specified overlapping ID spaces"
-									+ " and both create a new term. Two semantically distinct terms"
-									+ " are then assigned the same id. There's a slight chance that "
-									+ "this is a harmless error caused when an old "
-									+ "original file is used AND the name of the term was changed "
-									+ "in one revision but not the other.");
+					.setPossibleReasons("This is probably a harmful ID clash. This "
+							+ "can happen when 2 users have specified overlapping ID spaces"
+							+ " and both create a new term. Two semantically distinct terms"
+							+ " are then assigned the same id. There's a slight chance that "
+							+ "this is a harmless error caused when an old "
+							+ "original file is used AND the name of the term was changed "
+							+ "in one revision but not the other.");
 					clash.setSeverity(LIKELY);
 				}
 				clashes.add(clash);
@@ -250,8 +252,8 @@ public class OBOMerge {
 	}
 
 	public static void main(String[] args) throws IOException,
-			DataAdapterException {
-		
+	DataAdapterException {
+
 		List argList = new ArrayList();
 		for (int i = 0; i < args.length; i++)
 			argList.add(args[i]);
@@ -259,10 +261,13 @@ public class OBOMerge {
 		try {
 			argVals = CommandLineParser.parse(getArgumentSignature(), argList);
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			logger.info(ex.getMessage());
 			printUsage();
 
-			System.exit(1);
+			System.out.println("Operation finished.");
+			logger.info("Operation finished.");
+
 			return;
 		}
 
@@ -284,9 +289,9 @@ public class OBOMerge {
 		while (it.hasNext()) {
 			Tag val = (Tag) it.next();
 			if (val.getName().equals("-version")) {
-			    Tag t = (Tag) val.getValues().get(0);
-			    // User was forced to specify a version of OBO_1_0 or OBO_1_2 by the command line argument enforcer
-			    oboVersion = t.getName();
+				Tag t = (Tag) val.getValues().get(0);
+				// User was forced to specify a version of OBO_1_0 or OBO_1_2 by the command line argument enforcer
+				oboVersion = t.getName();
 			}
 			if (val.getName().equals("-ignore-clash-on-id"))
 				clashesToIgnore.add(val.getStringValue());
@@ -328,84 +333,100 @@ public class OBOMerge {
 				null);
 
 		Map mergeIDRemap = IDUtil.createIDRemapping(changes);
-				
+
 		OBOSession changeb = getSession(file2, adapter);
 		boolean unresolvedClashes = false;
 		Collection clashes = null;
-	//	do {
-			if (!forceMode) {
-				clashes = findClashes(original, changea, changeb, changes,
-						clashesToIgnore);
+		//	do {
+		if (!forceMode) {
+			clashes = findClashes(original, changea, changeb, changes,
+					clashesToIgnore);
 
-				boolean foundLikelyClashes = false;
-				it = clashes.iterator();
-				while (it.hasNext()) {
-					IDClash clash = (IDClash) it.next();
-					if (clash.getSeverity() == LIKELY) {
-						System.err.print("!!!");
-						foundLikelyClashes = true;
-					}
-					logger.info(clash.getMessage());
+			boolean foundLikelyClashes = false;
+			it = clashes.iterator();
+			while (it.hasNext()) {
+				IDClash clash = (IDClash) it.next();
+				if (clash.getSeverity() == LIKELY) {
+					System.err.print("!!!");
+					logger.info("!!!");
+
+					foundLikelyClashes = true;
 				}
-				if ((clashBehavior == FAIL_ON_ANY_CLASH && clashes.size() > 0)
-						|| (clashBehavior == FAIL_ON_LIKELY_CLASH && foundLikelyClashes)) {
-					logger.info("ID Clashes detected, aborting.");
-					System.exit(1);
-				}
-				if (idUpdateBehavior == UPDATE_ALL_CLASHES
-						|| (idUpdateBehavior == UPDATE_LIKELY_CLASHES && foundLikelyClashes))
-					unresolvedClashes = true;
-				if (unresolvedClashes) {
-					if (autoUpdate) {
-						Collection ids = DefaultIDGenerator.getIDs(changea);
-						ids.addAll(DefaultIDGenerator.getIDs(changeb));
-						DefaultIDGenerator generator = new DefaultIDGenerator();
+				System.out.println(clash.getMessage());
+				logger.info(clash.getMessage());
 
-						it = clashes.iterator();
-						while (it.hasNext()) {
-							IDClash clash = (IDClash) it.next();
-							if (!(idUpdateBehavior == UPDATE_ALL_CLASHES || (clash
-									.getSeverity() == LIKELY && idUpdateBehavior == UPDATE_LIKELY_CLASHES)))
-								continue;
-							String currentRule = null;
+			}
+			if ((clashBehavior == FAIL_ON_ANY_CLASH && clashes.size() > 0)
+					|| (clashBehavior == FAIL_ON_LIKELY_CLASH && foundLikelyClashes)) {
+				System.out.println("ID Clashes detected, aborting.");
+				logger.info("ID Clashes detected, aborting.");
+				System.out.println("Operation finished.");
+				logger.info("Operation finished.");
 
-							Pattern p = Pattern.compile("(\\w+):(\\d+)");
-							Matcher m = p.matcher(clash.getID());
-							if (m.matches()) {
-								String prefix = m.group(1);
-								String suffix = m.group(2);
-								currentRule = prefix + ":$sequence("
-										+ suffix.length() + ","
-										+ Integer.parseInt(suffix) + ")$";
-							} else {
-								currentRule = clash.getID() + "_$sequence(10)$";
-							}
-							String newID = null;
-							try {
-								IdentifiedObject reassignMe = changeb
-										.getObject(clash.getID());
-								newID = generator.generateID(currentRule, null,
-										ids, false);
-								((OBOSessionImpl) changeb)
-										.changeID(
-												(AnnotatedObjectImpl) reassignMe,
-												newID);
-								clash.setReassignedID(newID);
-								logger.info("updating " + clash.getID()
-										+ " to " + newID);
-								ids.add(newID);
-							} catch (Exception ex) {
-								ex.printStackTrace();
-								logger.info("Could not reassign ID "
-										+ clash.getID() + " to " + newID
-										+ ". This is " + "probably a bug.");
-								System.exit(1);
-							}
+			}
+			if (idUpdateBehavior == UPDATE_ALL_CLASHES
+					|| (idUpdateBehavior == UPDATE_LIKELY_CLASHES && foundLikelyClashes))
+				unresolvedClashes = true;
+			if (unresolvedClashes) {
+				if (autoUpdate) {
+					Collection ids = DefaultIDGenerator.getIDs(changea);
+					ids.addAll(DefaultIDGenerator.getIDs(changeb));
+					DefaultIDGenerator generator = new DefaultIDGenerator();
+
+					it = clashes.iterator();
+					while (it.hasNext()) {
+						IDClash clash = (IDClash) it.next();
+						if (!(idUpdateBehavior == UPDATE_ALL_CLASHES || (clash
+								.getSeverity() == LIKELY && idUpdateBehavior == UPDATE_LIKELY_CLASHES)))
+							continue;
+						String currentRule = null;
+
+						Pattern p = Pattern.compile("(\\w+):(\\d+)");
+						Matcher m = p.matcher(clash.getID());
+						if (m.matches()) {
+							String prefix = m.group(1);
+							String suffix = m.group(2);
+							currentRule = prefix + ":$sequence("
+							+ suffix.length() + ","
+							+ Integer.parseInt(suffix) + ")$";
+						} else {
+							currentRule = clash.getID() + "_$sequence(10)$";
+						}
+						String newID = null;
+						try {
+							IdentifiedObject reassignMe = changeb
+							.getObject(clash.getID());
+							newID = generator.generateID(currentRule, null,
+									ids, false);
+							((OBOSessionImpl) changeb)
+							.changeID(
+									(AnnotatedObjectImpl) reassignMe,
+									newID);
+							clash.setReassignedID(newID);
+							System.out.println("updating " + clash.getID()
+									+ " to " + newID);
+							logger.info("updating " + clash.getID()
+									+ " to " + newID);
+
+							ids.add(newID);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							System.out.println("Could not reassign ID "
+									+ clash.getID() + " to " + newID
+									+ ". This is " + "probably a bug.");
+							logger.info("Could not reassign ID "
+									+ clash.getID() + " to " + newID
+									+ ". This is " + "probably a bug.");
+
+							System.out.println("Operation finished.");
+							logger.info("Operation finished.");
 
 						}
+
 					}
 				}
 			}
+		}
 //		} while (!unresolvedClashes);
 
 		if (clashes != null) {
@@ -420,7 +441,9 @@ public class OBOMerge {
 					reassignMe.setIDExtension(new NestedValueImpl());
 				reassignMe.getIDExtension().setSuggestedComment(
 						"id reassigned from " + clash.getID() + " by obomerge");
+				System.out.println("set ID extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
 				logger.info("set ID extension for "+reassignMe.getID()+", ext = "+reassignMe.getIDExtension());
+
 			}
 		}
 
@@ -432,7 +455,9 @@ public class OBOMerge {
 			while(it.hasNext()) {
 				String id = it.next().toString();
 				Collection ids = (Collection) mergeIDRemap.get(id);
+				System.out.println("** Warning: Mapping edits that refer to secondary "+id+" in file "+file2+" to the following primary ids "+ids);
 				logger.info("** Warning: Mapping edits that refer to secondary "+id+" in file "+file2+" to the following primary ids "+ids);
+
 				changesb.forwardID(id, ids);
 			}
 			applyChanges(original, changes);
@@ -449,11 +474,13 @@ public class OBOMerge {
 		config.setSerializer(oboVersion);
 
 		adapter.doOperation(OBOAdapter.WRITE_ONTOLOGY, config, writeMe);
+		System.out.println("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 		logger.info("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
+
 	}
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		// OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
@@ -462,7 +489,9 @@ public class OBOMerge {
 	}
 
 	public static void printUsage() {
+		System.out.println("Usage: obomerge "+getArgumentSignature().getShortDocumentation());
 		logger.info("Usage: obomerge "+getArgumentSignature().getShortDocumentation());
+		System.out.println("For example:  obomerge -fail-on-clash NEVER -original orig.obo -revision file1.obo -revision file2.obo -version OBO_1_2 -o file.merged.obo");
 		logger.info("For example:  obomerge -fail-on-clash NEVER -original orig.obo -revision file1.obo -revision file2.obo -version OBO_1_2 -o file.merged.obo");
 	}
 }
