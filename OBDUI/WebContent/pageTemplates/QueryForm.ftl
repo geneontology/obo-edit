@@ -262,8 +262,10 @@
 			
 			function addBasicQueryTerm(element){
 				var liElement = document.createElement("li");
+				
 				$(liElement).addClass("queryElement");
 				$(liElement).addClass("linkQuery");
+				
 				$(liElement).append(genInputElement("predicate","/OBDUI/obdPhenotypeAll2008/autocomplete/search/relations/"));
 				$(liElement).append(genInputElement("object","/OBDUI/obdPhenotypeAll2008/autocomplete/search/nodes/"));
 				$(liElement).append(getLogicSwitch(liElement,'off'));

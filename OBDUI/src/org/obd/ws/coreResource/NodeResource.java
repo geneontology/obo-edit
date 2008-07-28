@@ -24,6 +24,8 @@ import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
 import org.obd.ws.coreResource.sorter.StatementHashComparator;
+import org.obd.ws.coreResource.utility.NodeTyper;
+import org.obd.ws.coreResource.utility.NodeTyper.Type;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -121,8 +123,45 @@ public class NodeResource extends OBDResource {
     @Override
     public Representation getRepresentation(Variant variant) {
     	   	
+    	
     	this.node = findNode();
     	
+    	List<SimpleHash> altViews = new ArrayList<SimpleHash>();
+    	TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+		
+    	resourceMap.put("contextName", this.getContextName());
+		resourceMap.put("dataSource", this.dataSource);
+		resourceMap.put("node",this.node);
+		resourceMap.put("id", this.nodeString);
+		resourceMap.put("encodedId", Reference.encode(this.nodeString));
+		
+		try {
+			InetAddress addr = InetAddress.getLocalHost();
+			resourceMap.put("hostname",addr.getCanonicalHostName());
+		} catch (UnknownHostException e) {
+			System.err.println("Hostname fetching error: " + e.getMessage());
+		}
+		
+		Type nodeType = NodeTyper.getNodeType(this.nodeString, this.getShard(this.dataSource));
+		resourceMap.put("nodeType", nodeType.toString());
+		if (nodeType.equals(Type.GENE)){
+			SimpleHash view = new SimpleHash();
+			view.put("view", "Gene");
+			view.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/gene/" + Reference.encode(this.nodeString));
+			altViews.add(view);
+		}
+		
+		String otherFormat = "exhibit";
+		if (this.format.equals("exhibit")){
+			otherFormat = "html";
+		}
+		SimpleHash view = new SimpleHash();
+		view.put("view", otherFormat);
+		view.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/" + otherFormat + "/node/" + Reference.encode(this.nodeString));
+		altViews.add(view);
+		
+		resourceMap.put("nodeViews", altViews);
+		
     	Representation result = null;
 
     	if (format == null) {
@@ -130,7 +169,6 @@ public class NodeResource extends OBDResource {
     	}
     	if (format.equals("exhibitData")){
     		
-    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
     		
     		List<SimpleHash> statements = new ArrayList<SimpleHash>();
     		
@@ -169,30 +207,13 @@ public class NodeResource extends OBDResource {
     		}
     		return result;
     	} else if (format.equals("exhibit")){
-    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
-    		resourceMap.put("contextName", this.getContextName());
-    		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("node",this.node);
-    		resourceMap.put("id", this.nodeString);
-    		resourceMap.put("encodedId", Reference.encode(this.nodeString));
     		
     		return getTemplateRepresentation("ExhibitNode",resourceMap);
     		
     	} else if (format.equals("html")||(format.equals("bioPortal"))){
     		
-    		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
-    		resourceMap.put("contextName", this.getContextName());
-    		resourceMap.put("dataSource", this.dataSource);
-    		resourceMap.put("node",this.node);
-    		resourceMap.put("id", this.nodeString);
-    		resourceMap.put("encodedId", Reference.encode(this.nodeString));
+
     		
-    		try {
-    			InetAddress addr = InetAddress.getLocalHost();
-    			resourceMap.put("hostname",addr.getCanonicalHostName());
-    		} catch (UnknownHostException e) {
-    			System.err.println("Hostname fetching error: " + e.getMessage());
-    		}
     		
     		if (this.node != null){
     			resourceMap.put("node", this.hashifyNode(this.node.getId(), "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.node.getId()) ));
@@ -517,7 +538,6 @@ public class NodeResource extends OBDResource {
 		}
 		
 		if (nodeId.contains("^")){
-			System.out.println("Trying to decompose " +nodeId);
 			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
 			if ((cd != null) && (cd.getArguments() != null)){
 				nodeHash.put("isComposed", true);

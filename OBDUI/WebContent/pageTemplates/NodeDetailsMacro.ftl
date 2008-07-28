@@ -186,6 +186,18 @@
 	<a style="font-size:12px;" href="/${contextName}/${dataSource}/html/node/${id}/blast">Find similar nodes&nbsp;&raquo;</a>
 </#macro>
 
+<#macro altViews nodeViews>
+	<#if nodeViews?exists>
+		Alternate Views:<br/>
+		<#list nodeViews as view>
+			<span style="font-size:13px;">
+				&nbsp;&bull;&nbsp;<a href="${view.href}">${view.view} view&nbsp;&raquo;</a><br/>
+			</span>
+		</#list>
+		<hr class="divider"/>
+	</#if>
+</#macro>
+
 <#macro nodeMetaData>
 	To Do
 </#macro>

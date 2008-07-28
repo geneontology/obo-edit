@@ -46,6 +46,7 @@
 						<hr class="divider"/>
 						<@phat id=encodedId/>
 						<hr class="divider"/>
+						<@altViews nodeViews=nodeViews/>
 						Results Filter:
 						<div style="font-size:11px;" ex:role="facet" ex:expression=".type" ex:facetLabel="Statement Type"></div>
 						<div style="font-size:11px;" ex:role="facet" ex:expression=".predicate" ex:facetLabel="Relationship Type"></div>

@@ -35,7 +35,7 @@
 				<td id="left_bar">
 					<@searchForm/>
 					<hr class="divider"/>
-					Node Metadata goes here.
+					<@altViews nodeViews=nodeViews/>
 				</td>
 				<td id="vertical_divider">
 				</td>

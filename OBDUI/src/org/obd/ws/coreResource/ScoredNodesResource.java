@@ -91,6 +91,7 @@ public class ScoredNodesResource extends NodeResource {
         		
         		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(this.getNode().getId())));
         		Double score = new Double(sn.getScore());
+        		score = -score;
         		scoredNodeHash.put("score", score.toString());
         		scoredNodeHash.put("spHref", ("/" + this.getContextName() + "/" + dataSource + "/html/similarityPair/" + Reference.encode(sn.getNodeId()) + "+" + Reference.encode(this.getNode().getId())));
         		

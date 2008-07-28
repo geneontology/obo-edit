@@ -5,7 +5,6 @@ package org.geneontology.web;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import org.obd.model.Node;
 import org.obd.query.ComparisonQueryTerm.Operator;

@@ -8,7 +8,7 @@
 					type:"${statements[statementCount].aspect}",
 					subject:"${statements[statementCount].subject.label?replace("\"","\\\"")}",
 					<#if ((statements[statementCount].subject.source?exists)&&(statements[statementCount].subject.source != ""))>
-					subjectSource: "${statements[statementCount].subject.source}",
+						subjectSource: "${statements[statementCount].subject.source}",
 					</#if>
 					subjectHref: "${statements[statementCount].subject.href}",
 					predicate:"${statements[statementCount].predicate.label?replace("\"","\\\"")}",
