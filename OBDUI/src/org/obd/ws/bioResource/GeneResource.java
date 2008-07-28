@@ -27,6 +27,8 @@ public class GeneResource extends NodeResource{
 	public Representation getRepresentation(Variant variant){
 		
 		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+		
+		
 		resourceMap.put("contextName", this.getContextName());
 		resourceMap.put("dataSource", this.dataSource);
 		try {
@@ -40,6 +42,20 @@ public class GeneResource extends NodeResource{
 			resourceMap.put("geneLabel", this.getNode().getLabel());
 		}
 		resourceMap.put("geneId",this.getNodeId());
+		
+		List<SimpleHash> altViews = new ArrayList<SimpleHash>();
+		
+		SimpleHash view = new SimpleHash();
+		view.put("view", "node");
+		view.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.nodeString));
+		altViews.add(view);
+		
+		SimpleHash nodeView = new SimpleHash();
+		nodeView.put("view", "exhibit");
+		nodeView.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/exhibit/node/" + Reference.encode(this.nodeString));
+		altViews.add(nodeView);
+		
+		resourceMap.put("nodeViews", altViews);
 		
 		List<SimpleHash> genotypesHash = new ArrayList<SimpleHash>();
 		List<String> genotypeIds = NodeTyper.getGeneGenotypeIDs(this.getNodeId(),this.getShard(dataSource));

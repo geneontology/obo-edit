@@ -13,9 +13,12 @@
 					<@searchForm/>
 					<#if node?exists>
 						<hr class="divider"/>
+						<#--
 						<@phat id=encodedId/>
 						<hr class="divider"/>
 						<@nodeMetaData/>
+						-->
+						<@altViews nodeViews=nodeViews/>
 					</#if>
 				</td>
 				<td id="vertical_divider">
