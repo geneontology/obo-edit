@@ -9,8 +9,8 @@
 <h1>The Verification Manager</h1>
 <p>The Verification Manager allows users control over all 
 aspects of the verification system:</p>
-<p><IMG height=379 hspace=0 
-src="../images/verification_plugin.gif" width=712 border=0></p>
+<p><IMG hspace=0 
+src="../images/verification_manager.png"  border=0></p>
 <p>The Verification Manager has two tabs, the 
 <strong>Configuration</strong> tab and the <strong>Verification Results</strong> tab.</p>
 <h2>The Configuration Tab</h2>
@@ -39,24 +39,27 @@ marked "On manual?" will be run.</p>
 <p>      The 
 following checks are built-in to OBO-Edit:</p>
 <ul>
-  <li><A href="Text_Checks.htm">Comment Check</A> 
-  <li><A href="Definition_Check.htm">Definition Check</A> 
-  <li><A href="Text_Checks.htm">Name Check</A> 
-  <li><A href="Text_Checks.htm">Synonym Check</A> 
-  <li><A href="Dangling_Intersection_Check.htm">Dangling Intersection Check</A> 
-  <li><A href="Dbxref_Check.htm">Dbxref Check</A> 
-  <li><A href="Disjointedness_Check.htm">Disjointedness Check</A> 
-  <li><A href="ISA_Cycle_Check.htm"> Cycle Check</A> 
-  <li><A href="Name_Redundancy_Check.htm">Name Redundancy Check</A> 
-  <li><A href="User_Defined_Checks.htm">User Defined Checks</A> </li></ul>
+  <li><a href="Text_Checks.htm">Comment Check</a>
+  <li><a href="ISA_Cycle_Check.htm"> Cycle Check</a>
+  <li><a href="Dangling_Intersection_Check.htm">Dangling Intersection Check</a>
+  <li><a href="Dbxref_Check.htm">Dbxref Check</a>
+  <li><a href="Definition_Check.htm">Definition Check</a>
+  <li><a href="Disjointedness_Check.htm">Disjointedness Check</a>
+  <li><a href="ID_Check.htm">ID Check</a>
+  <li><a href="Name_Redundancy_Check.htm">Name Redundancy Check</a>
+  <li><a href="Text_Checks.htm">Name Check</a>
+  <li><a href="Text_Checks.htm">Synonym Check</a>
+</ul>
 <h3>User Defined Checks</h3>
-<p><A name=userdefined></A>Each user-defined check is associated with a term filter. 
-If the filter matches any term in the ontology, the check fails and an error is 
-reported to the verification system.</p>
+<p><a name=userdefined></a>Each <a
+href="User_Defined_Checks.htm">user-defined check</a> is associated
+with a term filter.  If the filter matches any term in the ontology,
+the check fails and an error is reported to the verification
+system.</p>
 <p>To create a user-defined filter, click the "Add check" 
 button. When the "Add Check" button is clicked, the User Check Editor 
 appears:</p>
-<p><IMG height=257 hspace=0 
+<p><IMG  hspace=0 
 src="../images/verification_plugin_user_filter.png" border=0></p>
 <p>The "Check name" field contains the name of the 
 user-defined check.</p>
@@ -103,7 +106,7 @@ but the window can be closed and the results plugin opened. The verification
 results will be visible in the results tab, and the hyperlinks will be clickable 
 there.</p>
 <H3>Quick Fix</H3>
-<p><A name=quickfix></A>Sometimes, a warning or error will be followed by a <IMG height=16 hspace=0 
+<p><a name=quickfix></a>Sometimes, a warning or error will be followed by a <IMG height=16 hspace=0 
 src="../images/quickfix.gif" width=16 border=0>&nbsp;icon. When this icon 
 appears, it means one or more "quick fixes" are available for the problem. When 
 the icon is clicked, a popup menu will appear detailing the various quick fix 
