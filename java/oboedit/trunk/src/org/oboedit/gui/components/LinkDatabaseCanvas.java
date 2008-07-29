@@ -1335,10 +1335,13 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			}
 			Collection<PathCapable> pathc = new LinkedList<PathCapable>();
 			for (TreePath path : paths) {
-				Object[] os = path.getPath();
-				for (Object o : os) {
-					if (o instanceof PathCapable) {
-						pathc.add((PathCapable) o);
+				// path was sometimes null, for some reason.
+				if (path != null) {
+					Object[] os = path.getPath();
+					for (Object o : os) {
+						if (o instanceof PathCapable) {
+							pathc.add((PathCapable) o);
+						}
 					}
 				}
 			}
