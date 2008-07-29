@@ -95,7 +95,7 @@ public class HistoryBrowser extends AbstractGUIComponent {
 
 	@Override
 	public String getName() {
-		return "History plugin";
+		return "History browser";
 	}
 
 	@Override
