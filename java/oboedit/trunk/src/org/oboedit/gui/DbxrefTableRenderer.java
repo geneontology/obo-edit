@@ -41,7 +41,9 @@ public class DbxrefTableRenderer extends DefaultTableCellRenderer {
 	protected void configureLabel(JTable table, JLabel out, Dbxref dbxref,
 			int index, boolean isSelected) {
 		out.setOpaque(true);
-		out.setBorder(new EmptyBorder(10, 10, 10, 10));
+		// For some reason, this setBorder call causes problems:  you can add 2 dbxrefs, but not a third!
+		// Commenting it out makes dbxref adding work.  The only effect is that the dbxrefs are close together.
+//		out.setBorder(new EmptyBorder(10, 10, 10, 10));
 		out.setMinimumSize(new Dimension(table.getWidth(), 0));
 		if (!isSelected) {
 			if (index % 2 == 0)
