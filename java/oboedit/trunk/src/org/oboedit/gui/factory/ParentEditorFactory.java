@@ -29,4 +29,8 @@ public class ParentEditorFactory extends AbstractComponentFactory<ParentEditor> 
 		return FactoryCategory.EDITORS;
 	}
 
+	@Override
+	public String getHelpTopicID() {
+		return "Parent_Editor";
+	}
 }
