@@ -192,6 +192,10 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 
 	protected JComboBox orientationChooser = new JComboBox(orientations);
 
+	protected boolean isLive = true;
+
+	protected static final Color lockGray = new Color(240, 240, 240);  // when panel is in local selection mode
+
 	protected ConfigurationPanel configPanel = new ConfigurationPanel() {
 
 		@Override
@@ -563,7 +567,9 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 
 	protected SelectionListener selectListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
-			select(e.getSelection());
+			if (isLive) {
+				select(e.getSelection());
+			}
 		}
 	};
 
@@ -687,7 +693,13 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 	}
 
 	public boolean isLive() {
-		return false;
+//		return false;
+		return isLive;
+	}
+
+	public void setLive(boolean isLive) {
+		this.isLive = isLive;
+		repaint(); // in order to change background color
 	}
 
 	public void removeExpansionListener(ExpandCollapseListener listener) {
@@ -705,10 +717,8 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 	}
 
 	public void select(Selection selection) {
-		setTerms(selection.getTerms());
-	}
-
-	public void setLive(boolean isLive) {
+		if (isLive())
+			setTerms(selection.getTerms());
 	}
 
 	public void addAutomaticObjectRenderer(RenderedFilter pair) {
@@ -795,5 +805,14 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 		for (LinkDatabaseCanvas canvas : canvasList) {
 			canvas.setObjectRenderers(renderers);
 		}
+	}
+
+	@Override
+	public Color getBackground() {
+		// Using background color to indicate global vs. local selection mode.
+		if (isLive())
+			return Color.white;
+		else
+			return lockGray;
 	}
 }
