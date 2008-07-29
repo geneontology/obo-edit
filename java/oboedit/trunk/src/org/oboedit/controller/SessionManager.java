@@ -249,8 +249,8 @@ public class SessionManager {
 		OperationWarning warning = getOperationModel().apply(item);
 		if (warning != null) {
 			Object[] params = { item, warning };
-			
 		}
+		logger.info(item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
 
 		// if (getUseReasoner())
 		// reasonerOpModel.apply(item);
