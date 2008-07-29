@@ -6,24 +6,30 @@
 <LINK REL="stylesheet" TYPE="text/css" HREF=../javahelp.css>
 </HEAD>
 <BODY bgColor=#ffffff>
+<h1>NOTE: update incomplete!!</h1>
 <H1>Rendering</H1>
 <P>Rendering allows a user to specify special colors, fonts, 
 and other visual effects to terms in a ontology editor panel that match a particular 
 filter.</P>
-<P>To enable rendering, click "Rendering controls" in the 
-"Advanced" tab of the search panel. When rendering is enabled, the search panel looks like this:</P>
-<P><IMG height=150 hspace=0 src="../images/render_term.gif" 
-width=478 border=0>        
-               </P>
-<P>        
-   There are two new controls, the "Render options" pane and the "Render" button.</P>
-<P>To create a new renderer, first design a filter in the 
-filter designer to the left. Then, specify one or more visual effects to apply to matching 
-terms. To apply the new renderer to the primary ontology editor panel, press the "Render" button.</P>
+
+<p>Renderers can be applied in any Ontology Tree Editor or Graph
+Editor panel, and each panel can have different renderers.</p>
+
+<p> To create a new renderer, click the wrench icon on the panel where
+you want the rendering effects to appear. Choose the "Term Renderers"
+or "Link Renderers" tab. Click the <img src="../images/plus.png"
+alt="" border=0> button to bring up a filter panel, then specify the
+filter criteria or load a saved filter (see <a
+href="Building_a_filter.htm">Building Filters</a> for how to do
+this). </p>
+<P>Next, specify one or more visual effects to apply to matching
+terms. To apply the new renderer to the primary ontology editor panel,
+click the check mark to complete panel configuration.</P>
+
 <P>  With the settings shown in the 
 screenshot above, the ontology editor panel will draw any term whose name contains "activity" in red:</P>
-<P><IMG height=229 hspace=0 
-src="../images/render_editor_panel.gif" width=297 border=0></P>
+<P><IMG height=400 hspace=0 
+src="../images/render_editor_panel.png" border=0></P>
 <P>A ontology editor panel can have any number of renderers at 
 the same time.</P>
 <H2>Specifying Renderer Options</H2>
@@ -35,67 +41,85 @@ next to it. If a visual effect is configurable, a configuration control will
 appear next to the checkbox once it is selected. A renderer may apply several 
 visual effects to a matching term.</P>
 <H3>Term Renderer Effects</H3>
-<P>Term renderer effects change the way a term name is 
-displayed in the ontology editor panel. The following renderer effects are available 
-for term filters:</P>
-<UL>
-  <LI>
-<DIV><STRONG>Change Color</STRONG> - The "Change Color" 
+
+<P>Term renderer effects change the way a term name is displayed in
+the ontology editor panel. The following renderer effects are
+available for term filters:</P>
+
+<ul>
+  <li><strong>Change Color</strong> - The "Change Color" 
   effect changes the color of terms that match the filter. If the "Change Color" 
   checkbox is checked, a button will appear next to the checkbox showing the 
   color that will be applied to matching terms. To choose a different color, 
   click the button. A color selection window will appear where you can choose a 
-  different color for matching terms.</DIV>
-  <LI>
-<DIV><STRONG>Change Font</STRONG> - The "Change Font" 
-  effect changes the typeface of terms that match the filter. If the "Change 
-  Font" checkbox is checked, a dropdown list of available fonts will appear next 
-  to the checkbox. Select the font you would like to apply to matching 
-  terms.</DIV>
-  <LI>
-<DIV><STRONG>Change Size</STRONG> - The "Change Size" 
-  effect changes the type size of terms that match the filter. If the "Change 
-  Size" checkbox is checked, a text field appears next to the checkbox. Type the 
-  desired text size into the text field.</DIV>
-  <LI>
-<DIV><STRONG>Make Bold</STRONG> - The "Make Bold" effect 
-  makes matching terms appear in a bold typeface. There are no special 
-  configuration controls for this effect.</DIV>
-  <LI>
-<DIV><STRONG>Make Italic</STRONG> - The "Make Italic" 
-  effect makes matching terms appear in a italic typeface. There are no special 
-  configuration controls for this effect.</DIV></LI></UL>
+  different color for matching terms.
+
+  <li><strong>Font Face</strong> - The "Font Face" effect changes the
+  typeface of terms that match the filter. If the "Font Face" checkbox
+  is checked, a dropdown list of available fonts will appear next to
+  the checkbox. Select the font you would like to apply to matching
+  terms.
+
+  <li><strong>Font Size</strong> - The "Font Size" effect changes the
+  type size of terms that match the filter. If the "Font Size"
+  checkbox is checked, a text field with arrows appears next to the
+  checkbox. Type the desired text size into the text field or use the
+  arrows to increment the size up or down.
+
+  <li><strong>Bold</strong> - The "Bold" effect makes matching terms
+  appear in a bold typeface. There are no special configuration
+  controls for this effect.
+
+  <li><strong>Italic</strong> - The "Italic" effect makes matching
+  terms appear in a italic typeface. There are no special
+  configuration controls for this effect.
+
+  <li><strong>Underline</strong> - The "Underline" effect makes
+  matching terms appear undelined. There are no special configuration
+  controls for this effect.
+  <li><strong>Strikeout</strong> - The "Strikeout" effect makes
+  matching terms appear struck out, i.e. with a horizontal line
+  through the type. There are no special configuration controls for
+  this effect.
+
+  <li><strong>HTML Code</strong> - This checkbox allows you to specify
+  OBO-Edit renderers in HTML code. See <a
+  href="HTML_Rendering.htm">HTML Rendering</a> for details.
+
+</ul>
+
+You may have noticed that some OBO-Edit search criteria are numeric, not text based.
+11/29/2007    18:25:56 PM    from John Day-Richter to All Participants:
+        You can use the configurable heat maps to create a graduated coloring based on numeric
+search criteria.
+
+
+
 <H3>Link Renderer Effects</H3>
 <P>Link renderer effects change the way the arrow between a 
 term and its parent (<IMG height=14 hspace=0 src="../images/link_arrow.gif" 
 width=80 border=0>) is displayed in the ontology editor panel. The following 
 renderer effects are available:</P>
+
 <UL>
-  <LI>
-<DIV><STRONG>Change Color</STRONG> - The "Change Color" 
-  effect changes the color of the link arrow for links that match the filter. If 
-  the "Change Color" checkbox is checked, a button will appear next to the 
-  checkbox showing the color that will be applied to matching links. To choose a 
-  different color, click the button. A color selection window will appear where 
-  you can choose a different color for matching terms.</DIV>
-  <LI>
-<DIV><STRONG>Change Line Type</STRONG> - The "Change Line 
-  Type" effect changes the way the link arrow line is drawn. If the "Change Line 
-  Type" checkbox is checked, a dropdown box will appear next to the checkbox 
-  showing the available line types. The available options are "SOLID", "WAVY" 
-  and "DASHED".</DIV>
-  <LI>
-<DIV><STRONG>Change Line Width</STRONG> - The "Change Line 
-  Width" effect changes the thickness of the link arrow line. If the "Change 
-  Line Width" checkbox is checked, a text field will appear next to the 
-  checkbox. Type the desired line width (in pixels) into the text 
-  field.</DIV></LI></UL>
-<H2>Choosing which ontology editor panel to Render</H2>
-<P>When the "Render" button is pressed, the renderer is 
-applied to the primary ontology editor panel. To apply a renderer to a ontology editor 
-panel other than the primary ontology editor panel, drag and drop the&nbsp;render 
-button onto the desired ontology editor panel. The&nbsp;renderer 
-will be applied to the target panel.</P>
+  <LI><STRONG>Foreground Color</STRONG> - The "Foreground Color"
+  effect changes the color of the link arrow for links that match the
+  filter. If the "Foreground Color" checkbox is checked, color
+  selection controls will appear next to the checkbox. See Term
+  Renderer Effects above for a description of the color selection
+  controls.
+  <LI><STRONG>Line Width</STRONG> - The "Line Width" effect changes
+  the thickness of the link arrow line. If the "Line Width" checkbox
+  is checked, a text field with arrows will appear next to the
+  checkbox. Type the desired line width (in pixels) into the text
+  field or use the arrows to increment the size up or down.
+  <LI><STRONG>Line Type</STRONG> - The "Line Type" effect changes the
+  way the link arrow line is drawn. If the "Line Type" checkbox is
+  checked, a dropdown box will appear next to the checkbox showing the
+  available line types. The available options are "SOLID-LINE",
+  "DASHED_LINE", and "ZIGZAG_LINE".
+</UL>
+
 <H2>Multiple Renderers at Once</H2>
 <P>Any number of renderers may be applied to a ontology editor panel at once. If a 
 term matches multiple renderers, OBO-Edit will try to merge the renderer effects 
@@ -111,6 +135,8 @@ chooses the value from the most recently added renderer.</P>
 idea to use a different type of renderer effect for each renderer. That way it 
 is easy to tell if a term matches multiple renderers.</P>
 <H2>Removing Renderers</H2>
+
+
 <P>To remove a filter, click the <EM>filter menu button </EM><IMG height=20 
 hspace=0 src="../images/term_editor_panel_filter_button.gif" width=20 border=0> 
 &nbsp;beneath the ontology editor panel from which you would like to remove the 
