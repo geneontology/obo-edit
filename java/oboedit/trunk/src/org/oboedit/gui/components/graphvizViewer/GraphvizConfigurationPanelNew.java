@@ -31,6 +31,8 @@ import org.obo.datamodel.Link;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.graphvizViewer.*;
 
+import sun.awt.image.PixelConverter.Bgrx;
+
 
 
 public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
@@ -95,6 +97,10 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	 * @param graphvizCanvasInstance
 	 */
 	public GraphvizConfigurationPanelNew(GraphvizCanvas graphvizCanvasInstance) {
+
+		System.out.println("GraphvizConfigurationPanelNew: Setting up GUI.");
+		System.out.println("GraphvizConfigurationPanelNew: graphvizCanvasInstance set to " + graphvizCanvasInstance);
+		
 		setLayout(new BorderLayout());
 
 		//not sure what this line does.
@@ -295,12 +301,19 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 
 
 		this.graphvizCanvasInstance = graphvizCanvasInstance;
+		System.out.println("GraphvizConfigurationPanelNew: graphvizCanvasInstance set to " + graphvizCanvasInstance);
+
+		
 	}
 
 	/**
 	 * @param evt
 	 */
 	protected void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		
+		System.out.println("GraphvizConfigurationPanelNew: browseButtonActionPerformed() method");
+
+		
 		JFileChooser chooser = new JFileChooser();
 		if (chooser.showOpenDialog(graphvizCanvasInstance) == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
@@ -317,6 +330,7 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 
 	@Override
 	public void commit() {
+		
 		System.out.println("GraphvizConfigurationPanelNew: commit() run.");
 		graphvizViewerComponentConfigurationNew.setDotPath(appPathField.getText());
 		graphvizViewerComponentConfigurationNew.setLabelFont(linkFontChooser.getChosenFont());
@@ -326,14 +340,20 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		graphvizViewerComponentConfigurationNew.setObsoleteShape((String) obsoleteShapeList.getSelectedItem());
 		graphvizViewerComponentConfigurationNew.setFlipOver(flipoverBox.isSelected());
 		graphvizViewerComponentConfigurationNew.setShowIDs(showIDsBox.isSelected());
-
+		
 		for (int i = 0; i < typeColorList.getData().size(); i++) {
 			Object o = typeColorList.getData().get(i);
 			if (o instanceof TypeColorPair) {
 				TypeColorPair tc = (TypeColorPair) o;
+				System.out.println("GraphvizConfigurationPanelNew: o is instance of TypeColorPair and o = " + o);
 				graphvizViewerComponentConfigurationNew.getColorMap().put(tc.getTypeID(), tc.getPair());
+
+			
 			} else if (o instanceof NamedColor) {
+				System.out.println("GraphvizConfigurationPanelNew: o is instance of NamedColor and o = " + o);
 				NamedColor nc = (NamedColor) o;
+				System.out.println("GraphvizConfigurationPanelNew: NamedColor nc = " + nc);
+				
 				graphvizViewerComponentConfigurationNew.setNamedColor(nc.getName(), nc.getColor());
 			}
 		}
@@ -346,6 +366,10 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	}
 	
 	protected ColorPair getColor(Link tr) {
+		
+		System.out.println("GraphvizConfigurationPanelNew: ColorPair getColor() method");
+
+		
 		ColorPair c = (ColorPair) graphvizViewerComponentConfigurationNew.getColorMap().get(
 				tr.getType().getID());
 		if (c == null)
@@ -358,8 +382,9 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 
 	@Override
 	public void init() {
+			
 		System.out.println("GraphvizConfigurationPanelNew: init() run.");
-
+		System.out.println("GraphvizConfigurationPanelNew, init method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
 		//I'm not sure if any of the lines below are needed. 
 		//The graphviz path works without them and they
 		//don't make the background color work. 
@@ -404,6 +429,7 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	public void setComponent(GUIComponent comp) {
 		if (comp instanceof GraphvizCanvas) {
 			graphvizCanvasInstance = (GraphvizCanvas)comp;
+			System.out.println("GraphvizConfigurationPanelNew, setComponent Method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
 			System.out.println("Config panel New : setComponent.");
 		}
 	}
