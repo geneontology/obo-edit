@@ -45,7 +45,7 @@ public class GraphvizViewerComponentConfigurationNew
 
 		protected String viewerFormat = "jpg";
 		
-		protected static String dotPath = "/" + "dot";
+		protected static String dotPath = "C:\\Program Files\\Graphviz2.16\\bin\\dot.exe";
 		
 		protected boolean doFiltering = false;
 
