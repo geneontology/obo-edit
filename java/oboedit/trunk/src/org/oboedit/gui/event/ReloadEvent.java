@@ -56,7 +56,7 @@ public class ReloadEvent extends EventObject {
 	}
 
 	public String toString() {
-		return "ReloadEvent: isHistory = " + isHistory + ", isFilter = " + isFilter + 
+		return "ReloadEvent: source = " + source + ", parentEvent = " + parentEvent + ", isHistory = " + isHistory + ", isFilter = " + isFilter + 
 			", isReasoner = " + isReasoner + ", isRoot = " + isRoot +
 			", isOntologyReload = " + isOntologyReload;
 	}
