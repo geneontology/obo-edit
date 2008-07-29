@@ -103,15 +103,22 @@ public class DefaultTermModel implements TermModel {
 			setSortMode(true);
 		}
 	};
-	// Why was this commented out??  We need it in order to respond to global filter changes.
- 	protected ReloadListener reloadListener = new ReloadListener() {
- 	        public void reload(ReloadEvent e) {
-// 			logger.debug("DefaulTermModel.reloadListener.reload " + e); // DEL
- 			linkFilter.clear();
- 			termFilter.clear();
- 			initializeFilters();
-			DefaultTermModel.this.reload();
- 		} };
+
+	// The problem with this listener is that history events were triggering fireTreeStructureChanged
+	// which was making the OTE close its open nodes in response to, say, a text edit--very
+	// annoying.  But for other history events we *do* need the OTE to reset--for example,
+	// on initial load.  So I've gotten rid of this reloadListener and gone back to having
+	// OBOTermPanel call upon this class to reload when appropriate.  There's a new method
+	// reloadFilters for that.
+//  	protected ReloadListener reloadListener = new ReloadListener() {
+//  	        public void reload(ReloadEvent e) {
+// //			if (e.isHistory()) // Don't need to reload for history events
+// //				return;
+//  			linkFilter.clear();
+//  			termFilter.clear();
+//  			initializeFilters();
+// 			DefaultTermModel.this.reload();
+//  		} };
 
 	protected static class TermSorter implements Comparator {
 		protected boolean ignoreCase = true;
@@ -193,6 +200,13 @@ public class DefaultTermModel implements TermModel {
 		}
 	}
 
+	public void reloadFilters() {
+		linkFilter.clear();
+		termFilter.clear();
+		initializeFilters();
+		DefaultTermModel.this.reload();
+	}
+
 	protected void initCaches() {
 		childCache = new LinkedHashMap() {
 			/**
@@ -203,7 +217,6 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// logger.info("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -217,7 +230,6 @@ public class DefaultTermModel implements TermModel {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				boolean doRemove = size() >= getViewCacheSize();
-				// logger.info("discarded map entry "+eldest);
 				return doRemove;
 			}
 		};
@@ -254,19 +266,15 @@ public class DefaultTermModel implements TermModel {
 		termFilter.addFilter(manager.getGlobalTermFilter());
 
 		if (userLinkFilter != null) {
-//			logger.debug("DefaultTermModel.initializeFilters: adding user link filter " + userLinkFilter); // DEL
 			linkFilter.addFilter(userLinkFilter);
 		}
 
 		linkFilter.addFilter(manager.getGlobalLinkFilter());
-//		logger.debug("DefaultTermModel.initializeFilters: added global link filter " + manager.getGlobalLinkFilter() + ", now linkfilter = " + linkFilter); // DEL
 	}
 
 	public void setLinkFilter(Filter filter) {
-//		logger.debug("DefaultTermModel.setLinkFilter: initially linkfilter = " + linkFilter + ", userLinkFilter = " + userLinkFilter + ", new filter = " + filter); // DEL
 		if ((filter == null && userLinkFilter == null) ||
 		    filter.equals(userLinkFilter)) {
-			logger.debug("DefaultTermModel.setLinkFilter: userLinkFilter = " + userLinkFilter + ", new filter = " + filter + "--same"); // DEL
 			// Avoid unnecessary reload
 			return;
 		}
@@ -331,13 +339,13 @@ public class DefaultTermModel implements TermModel {
 
 	public void init() {
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
-		GUIUtil.addReloadListener(reloadListener);
+//		GUIUtil.addReloadListener(reloadListener);
 		setSortMode(!Preferences.getPreferences().getCaseSensitiveSort());
 	}
 
 	public void cleanup() {
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
-		GUIUtil.removeReloadListener(reloadListener);
+//		GUIUtil.removeReloadListener(reloadListener);
 	}
 
 	protected void setSortMode(boolean sortMode) {
@@ -441,7 +449,6 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	public void reload() {
-		logger.debug("DefaultTermModel.reload"); // DEL
 		initCaches();
 		buildTopLevel();
 		buildFilteredDatabase();
@@ -467,7 +474,6 @@ public class DefaultTermModel implements TermModel {
 		while (it.hasNext()) {
 			IdentifiedObject identified = (IdentifiedObject) it.next();
 			if (identified instanceof Instance) {
-
 				Instance instance = (Instance) identified;
 				Link link = new TrivialLink(instance);
 				VectorUtil.insertSorted(instanceRoots, comparator, link);
@@ -484,16 +490,12 @@ public class DefaultTermModel implements TermModel {
 					VectorUtil.insertSorted(typeRoots, comparator, rootLink);
 			}
 		}
-		
-                // It might not really have changed, though!
-		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(
-				PathUtil.ROOT)));
+		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(PathUtil.ROOT)));
 
 //		logger.debug("DefaultTermModel.reload: now linkFilter = " + linkFilter); // DEL
 	}
 
 	protected void fireTreeStructureChanged(TreeModelEvent e) {
-		logger.debug("DefaultTermModel.fireTreeStructureChanged: now linkFilter = " + linkFilter); // DEL
 		for (int i = 0; i < listeners.size(); i++) {
 			TreeModelListener tml = (TreeModelListener) listeners.elementAt(i);
 			tml.treeStructureChanged(e);

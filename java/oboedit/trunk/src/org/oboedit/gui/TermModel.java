@@ -35,4 +35,6 @@ public interface TermModel extends TreeModel {
 	public boolean getShowTypes();
 
 	public boolean getShowObsoletes();
+
+	public void reloadFilters();
 }
