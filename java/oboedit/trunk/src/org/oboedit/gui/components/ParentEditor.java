@@ -114,7 +114,8 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected LinkedObject currentObject;
 
-	protected JLabel label = new JLabel("<no selection>");
+	protected String emptyText = "<no selection>";
+	protected JLabel selectedTermLabel = new JLabel(emptyText);
 
 	protected JPanel outerPanel = new RowScrollPanel();
 
@@ -153,9 +154,19 @@ public class ParentEditor extends AbstractGUIComponent {
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 	protected DropTargetListener dropListener = new DropTargetListener() {
+ 		// Isn't this wrong?  Doesn't it allow you to drop a term onto itself?
 		public boolean allowDrop(DropTargetDragEvent e) {
 			Selection s = DropUtil.getSelection(e);
 			return s != null && s.getTerms().size() > 0;
+// 			if (s == null || s.getTerms().size() == 0)
+// 				return false;
+// 			LinkedObject target = SelectionManager.getManager().getSelection()
+// 				.getTermSubSelection();
+// 			if (target.equals(currentObject)) {
+// 				logger.debug("Dragged object " + target + " is same as current object"); // DEL
+// 				return false;
+// 			}
+// 			return true;
 		}
 
 		public void dragEnter(DropTargetDragEvent e) {
@@ -227,7 +238,8 @@ public class ParentEditor extends AbstractGUIComponent {
 
 		// cardinalityPanel.setPreferredSize(new Dimension(200, 30));
 		buttonPanel.setLayout(new BorderLayout());
-		buttonPanel.add(dropButton, "Center");
+//		buttonPanel.add(dropButton, "Center");
+		buttonPanel.add(dropButton, "West");
 		buttonPanel.add(showImpliedCheckbox, "East");
 		showImpliedCheckbox.setOpaque(false);
 
@@ -240,11 +252,11 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	@Override
 	public String getName() {
-		return "Parent Plugin";
+		return "Parent Editor";
 	}
 
 	public void reload() {
-		logger.info("RELOADING");
+//		logger.info("RELOADING");
 		loadTerm(currentObject);
 	}
 
@@ -264,9 +276,21 @@ public class ParentEditor extends AbstractGUIComponent {
 	public void loadTerm(LinkedObject t) {
 		currentObject = t;
 		outerPanel.removeAll();
-		// panel = new JPanel();
+		if (t == null)
+			selectedTermLabel.setText(emptyText);
+		else {
+			// Put name and ID of currently selected term at top of Parent Editor
+			selectedTermLabel.setText(
+				(t.getName() == null) ? t.getID() : t.getName() + " (" + t.getID() + ")");
+//			selectedTermLabel.setBackground(Color.white);  // doesn't do anything
+		}
+		if (SessionManager.getManager().getUseReasoner())
+			showImpliedCheckbox.setEnabled(true);
+		else
+			showImpliedCheckbox.setEnabled(false);
+
+		outerPanel.add(selectedTermLabel);
 		if (t == null) {
-			outerPanel.add(label);
 			remove(buttonPanel);
 		} else {
 			add(buttonPanel, "South");
@@ -369,14 +393,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				field.setFont(font);
 				field.setMinimumSize(new Dimension(0, (int) field
 						.getMinimumSize().getHeight()));
-				// JTextField field = new JTextField();
-				// field.setOpaque(false);
-				// field.setBorder(null);
-				// field.setText(tr.getParent().getName());
-				// field.setCaretPosition(0);
-				// field.setToolTipText(tr.getParent().getName());
-				// field.setEditable(false);
-				// field.setFont(font);
+				panel.add(field, "Center");
 
 				final JButton trashButton = new JButton(Preferences
 						.loadLibraryIcon("trashcan.gif"));
@@ -417,7 +434,6 @@ public class ParentEditor extends AbstractGUIComponent {
 				Box bottomBox = Box.createHorizontalBox();
 
 				controlsPanel.add(topBox);
-				panel.add(field, "Center");
 				if (!TermUtil.isProperty(tr.getParent())) {
 
 					JButton cardinalityButton = new JButton();
