@@ -10,26 +10,42 @@
 <P>The Parent Editor displays the immediate parents of the 
 current <A href="Working_with_Selections.htm">sub-selection</A>&nbsp;term:</P>
 <p><IMG hspace=0 src="../images/parent_editor.png" border=0></p>
-<P>Each line in the display represents a parent link from the currently selected 
-term to another term. From left to right, the fields in each line are:</P>
+<P>Each line in the display represents a parent link from the
+currently selected term to another term. The fields in each line
+are:</P>
 <UL>
-  <LI><STRONG>Delete button</STRONG> - Press this button (with trashcan icon) to delete this parent 
-  link.</LI>
-  <LI><STRONG>Relationship type</STRONG> - This is a dropdown list of all the relationship types in the 
-  ontology. The current relationship type for this link is selected. To change 
-  the relationship type of this link, choose a new item from the dropdown list. 
-  <LI><STRONG>Parent term - </STRONG>This is the id and name of the parent term of this link. Click the id 
-  to select the parent term. 
-  <LI><STRONG>Cardinality control</STRONG> - Pops up a separate window to let
-  you set the cardinality of this link. 
-  This information is not currently used.
-  <LI><STRONG>Namespace control</STRONG> - This is a list of all the namespaces 
-  in the ontology. This current namespace for this link is selected. To change 
-  the namespace of this link, select a new namespace from the dropdown.
-  <LI><STRONG>Show implied</STRONG> - Checking this checkbox ??
+  <LI><STRONG>Delete button</STRONG> - Press this button (with
+  trashcan icon) to delete this parent link.</LI>
+  <LI><STRONG>Relationship type</STRONG> - This is a dropdown list of
+  all the relationship types in the ontology. The current relationship
+  type for this link is selected. To change the relationship type of
+  this link, choose a new item from the dropdown list.
+  <LI><STRONG>Parent term - </STRONG>This is the id and name of the
+  parent term of this link. Click the id to select the parent term.
+  <LI><STRONG>Cardinality control</STRONG> - Pops up a separate window
+  to let you set the cardinality of this link.  This information is
+  not currently used.
+  <LI><STRONG>Namespace control</STRONG> - This is a list of all the
+  namespaces in the ontology. This current namespace for this link is
+  selected. To change the namespace of this link, select a new
+  namespace from the dropdown.
+  <LI><STRONG>Show implied</STRONG> - Checking this checkbox will make
+  implied parents appear in the editor; if the box is not checked,
+  only asserted parents appear. Note that the reasoner must be running
+  for this option to work.
 </UL>
-<P>To add a new parent link to the selected term, drag the parent term onto the "Drop terms here to 
-add new parents" button. A new link will be added with the dropped term as the 
-parent, and <STRONG>is_a</STRONG> as the relationship type.</P>
+<P>To add a new parent link to the selected term, drag the parent term
+onto the "Drop terms here to add new parents" button. A new link will
+be added with the dropped term as the parent, and
+<STRONG>is_a</STRONG> as the relationship type.</P>
+<p>Note that you have to drag the desired parent from an Ontology Tree
+Editor that is in local selection mode. The most convenient way to do
+this is to have two Ontology Tree Editor panels open, with one in
+global and the other in local mode. Select the child in the global
+tree editor panel, then drag the parent from the local tree editor
+panel. To add a parent using a single Ontology Tree Editor panel,
+select the child with the OTE in global mode, then change to local
+mode before dragging the parent.</p>
+
 </BODY>
 </html>
