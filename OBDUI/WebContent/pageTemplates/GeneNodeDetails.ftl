@@ -35,6 +35,8 @@
 				<td id="left_bar">
 					<@searchForm/>
 					<hr class="divider"/>
+					<@phat id=encodedId/>
+					<hr class="divider"/>
 					<@altViews nodeViews=nodeViews/>
 				</td>
 				<td id="vertical_divider">

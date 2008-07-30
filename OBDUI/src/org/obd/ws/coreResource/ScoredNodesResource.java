@@ -89,7 +89,7 @@ public class ScoredNodesResource extends NodeResource {
     		List<SimpleHash> scores = new ArrayList<SimpleHash>();
         	for (ScoredNode sn : scoredNodes) {
         		
-        		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(this.getNode().getId())));
+        		SimpleHash scoredNodeHash = this.hashifyNode(sn.getNodeId(), ("/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(sn.getNodeId())));
         		Double score = new Double(sn.getScore());
         		score = -score;
         		scoredNodeHash.put("score", score.toString());
