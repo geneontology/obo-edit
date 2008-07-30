@@ -840,8 +840,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 						fixes.add(fixAction);
 						String newText = text.substring(0, i + 1) + " "
 								+ text.substring(i + 1, text.length());
+						// Why would we not do this on TEXT_EDIT_COMMIT?
 						if (condition != VerificationManager.TEXT_EDIT_COMMIT) {
-
 							int firstWordIndex = i - 1;
 							for (; firstWordIndex >= 0; firstWordIndex--)
 								if (Character.isWhitespace(text
