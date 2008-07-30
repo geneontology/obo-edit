@@ -64,6 +64,14 @@ public class NamespaceObjQuery implements Query<OBOObject, OBOObject> {
 	public boolean getAllowNonObsoletes() {
 		return allowNonObsoletes;
 	}
+	
+	public void setJustTerms(boolean justTerms) {
+	    this.justTerms = justTerms;
+	}
+	
+	public boolean getJustTerms() {
+	    return this.justTerms;
+	}
 
 	public NamespaceObjQuery(String... namespaceIDs) {
 		for (String ns : namespaceIDs)
