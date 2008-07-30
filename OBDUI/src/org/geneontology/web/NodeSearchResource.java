@@ -198,6 +198,9 @@ public class NodeSearchResource extends NodeResource {
 	    			
 	    			nodeProperties.put("source",source);
 	    			String category = this.getGroup(source);
+	    			if (category.equals("Other")){
+	    				category = this.hackyGetGroup(n.getId());
+	    			}
 	    			nodeProperties.put("category",category);
 	    			if (!categoryCount.containsKey(category)){
 	    				categoryCount.put(category, 0);
@@ -262,6 +265,20 @@ public class NodeSearchResource extends NodeResource {
         } else {
         	return "Other";
         }
+    }
+    
+    private String hackyGetGroup(String nodeId){
+    	Map<String,String> groups = new HashMap<String,String>();
+    	
+    	groups.put("MA", "Anatomical Part");
+    	groups.put("FMA", "Anatomical Part");
+    	
+    	String[] parts = nodeId.split(":");
+    	if (groups.containsKey(parts[0])){
+    		return groups.get(parts[0]);
+    	} else {
+    		return "Other";
+    	}
     }
     
 

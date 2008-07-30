@@ -4,9 +4,14 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
+
+import org.obd.model.Statement;
 import org.obd.model.stats.SimilarityPair;
+import org.obd.query.LinkQueryTerm;
 import org.obd.ws.coreResource.NodeResource;
 import org.obd.ws.coreResource.utility.NodeTyper;
 import org.restlet.Context;
@@ -96,9 +101,22 @@ public class GeneResource extends NodeResource{
 		}
 		
 		resourceMap.put("genotypeComparaScores", genotypeScores);
+		resourceMap.put("dbxrefs", this.getDBXrefs());
 		
 		return getTemplateRepresentation("GeneNodeDetails",resourceMap);
 	
+	}
+	
+	private Collection<SimpleHash> getDBXrefs(){
+		Set<String> dbxrefIDs = new HashSet<String>();
+		
+		LinkQueryTerm lq = new LinkQueryTerm();
+		lq.setNode(this.nodeString);
+		lq.setRelation("oboInOwl:hasDbXref");
+		for (Statement s : this.getShard(this.dataSource).getStatementsByQuery(lq)){
+			dbxrefIDs.add(s.getTargetId());
+		}
+		return this.hashifyNodes(dbxrefIDs, "/" + this.getContextName() + "/" + this.dataSource + "/html/node/");
 	}
 	
 	

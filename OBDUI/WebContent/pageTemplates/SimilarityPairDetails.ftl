@@ -38,7 +38,7 @@
 								<table class="center">
 									<tr>
 										<td>
-											<span style="width:100%;font-size:10px;color:#888888;">Statements in Common</span><br/>
+											<span style="width:100%;font-size:10px;color:#888888;">${intersectionNodes?size} Statements in Common</span><br/>
 											<#if (intersectionNodes?size>0)>
 												<@listNodes nodeList=intersectionNodes showScore='true'/>
 											<#else>
