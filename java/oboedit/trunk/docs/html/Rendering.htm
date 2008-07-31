@@ -47,12 +47,62 @@ the ontology editor panel. The following renderer effects are
 available for term filters:</P>
 
 <ul>
-  <li><strong>Change Color</strong> - The "Change Color" 
-  effect changes the color of terms that match the filter. If the "Change Color" 
-  checkbox is checked, a button will appear next to the checkbox showing the 
-  color that will be applied to matching terms. To choose a different color, 
-  click the button. A color selection window will appear where you can choose a 
-  different color for matching terms.
+  <li><strong>Foreground Color</strong> - The "Foreground Color" 
+  effect changes the color of the text displaying terms that match the filter. If the "Foreground Color" 
+  checkbox is checked, a set of controls will appear next to the checkbox, allowing you to configure the 
+  color that will be applied to matching terms. 
+
+  <ul>
+
+    <!-- if blending is fixed for release, include this and change the 'multiple renderers' section      <li><strong>Do blending</strong> - If this box is checked, colors will be blended if a term matches more than one color renderer. -->
+
+    <li><strong>Simple coloring</strong> - This is the most commonly
+    used color renderer. If the "Simple coloring" box is checked,
+    matching terms will appear in the selected color. To choose a
+    different color, click the "CHANGE" button. A color selection
+    window will appear where you can choose a different color for
+    matching terms.
+
+    <li><strong>Heat map coloring</strong> - Some OBO-Edit search
+    criteria are numeric rather than text based (e.g. Parent
+    Count). You can use the configurable "Heat map coloring" to create
+    a graduated coloring based on numeric search criteria. If the
+    "Heat map coloring" box is checked, additional controls appear
+    that allow you to configure the color gradient.
+
+    <ul>
+
+      <li><strong>Min color, Max color, and Blank color</strong> - The
+      "Min color" and "Max color" buttons allow you to select the
+      colors for the minimum and maximum ends of the gradient,
+      respectively; the "Blank color" button lets you specify the
+      color to use for missing values. Each button makes the color
+      selection panel appear.
+
+      <li><strong>Criterion</strong> - This selector lets you choose
+      which numeric criterion to use to generate the heat map. In
+      OBO-Edit 2.0, the available options are Parent Count and ISA
+      Parent Count (more may be added in future versions of OBO-Edit).
+
+      <li><strong>Minimum Value and Maximum Value</strong> - These
+      selectors let you specify the minimum and maximum values for the
+      gradient. The "&lt;auto-calculate&gt;" option automatically
+      determines the color depending on which matching terms are
+      selected; "&lt;enter constant&gt;" lets you enter your own
+      maximum and minimum values; "Max parent count" and "Min parent
+      count" use the maximum and minimum values in the ontology.
+
+    </ul>
+
+  </ul>
+
+  <li><strong>Background Color</strong> - The "Background Color"
+  effect changes the background color of terms that match the
+  filter. If the "Background Color" checkbox is checked, a set of
+  controls will appear next to the checkbox to configure the
+  background color that will be applied to matching terms. The color
+  controls work the same way as for "Foreground Color", described
+  above.
 
   <li><strong>Font Face</strong> - The "Font Face" effect changes the
   typeface of terms that match the filter. If the "Font Face" checkbox
@@ -88,10 +138,6 @@ available for term filters:</P>
 
 </ul>
 
-You may have noticed that some OBO-Edit search criteria are numeric, not text based.
-11/29/2007    18:25:56 PM    from John Day-Richter to All Participants:
-        You can use the configurable heat maps to create a graduated coloring based on numeric
-search criteria.
 
 
 
@@ -120,6 +166,7 @@ renderer effects are available:</P>
   "DASHED_LINE", and "ZIGZAG_LINE".
 </UL>
 
+<!-- old version; use if blending won't be fixed for release -->
 <H2>Multiple Renderers at Once</H2>
 <P>Any number of renderers may be applied to a ontology editor panel at once. If a 
 term matches multiple renderers, OBO-Edit will try to merge the renderer effects 
@@ -134,8 +181,8 @@ chooses the value from the most recently added renderer.</P>
 <P>Therefore, if you plan to use several renderers at once, it is usually a good 
 idea to use a different type of renderer effect for each renderer. That way it 
 is easy to tell if a term matches multiple renderers.</P>
-<H2>Removing Renderers</H2>
 
+<H2>Removing Renderers</H2>
 
 <P>To remove a filter, click the <EM>filter menu button </EM><IMG height=20 
 hspace=0 src="../images/term_editor_panel_filter_button.gif" width=20 border=0> 
