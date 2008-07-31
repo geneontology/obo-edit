@@ -410,9 +410,11 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		this.isLive = isLive;
 		if (isLive == true && Preferences.getPreferences().getOnlyOneGlobalOTE())
 			makeOtherOTEsNotLive();
-		TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(
+		if (getLinkDatabase() != null) {  // Fix for bug 2030578
+			TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(
 				getRootAlgorithm(), getLinkDatabase());
-		setSelectionPaths(paths);
+			setSelectionPaths(paths);
+		}
 		repaint(); // in order to change background color
 	}
 
@@ -1266,8 +1268,9 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		return out;
 	}
 
-	// This method gets called excessively.
 	public void reload() {
+		// This is sometimes called because of a TreeStructureChanged event, which makes the whole OTE collapse.
+		// Maybe it shouldn't do that if we're in local mode?
 		logger.debug("Reloading OBO Term Panel...");
 
 //		long time = System.currentTimeMillis();
@@ -1285,9 +1288,12 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-		clearToggledPaths();
+		// I want to avoid doing unnecessary reloads, but this one seems necessary.
+ 		if (model instanceof TermModel)
+			((TermModel) model).reloadFilters();
 
-//		long time2 = System.currentTimeMillis();
+		clearToggledPaths();
+//		        long time2 = System.currentTimeMillis();
 		restorePaths(expanded);
 		if (selected != null)
 			restoreSelectionPaths(selected);
