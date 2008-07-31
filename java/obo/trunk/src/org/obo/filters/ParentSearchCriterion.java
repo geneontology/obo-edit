@@ -29,7 +29,7 @@ public class ParentSearchCriterion extends
 
 	@Override
 	public String toString() {
-		return "parent";
+		return "ParentSearchCriterion";
 	}
 
 	public Class<Link> getReturnType() {
@@ -41,12 +41,15 @@ public class ParentSearchCriterion extends
 		if (obj instanceof LinkedObject) {
 			if (reasoner == null) {
 				for (Link link : ((LinkedObject) obj).getParents())
-					if (!TermUtil.isIntersection(link))
+					// ! Why refuse to include intersection links?  
+					// This clause prevents some link searches from working.
+//					if (!TermUtil.isIntersection(link))
 						scratch.add(link);
 			} else {
 				for (Link link : trimmedReasoner
 						.getParents(((LinkedObject) obj))) {
-					if (!TermUtil.isIntersection(link))
+					// ! Why refuse to include intersection links?
+//					if (!TermUtil.isIntersection(link))
 						scratch.add(link);
 				}
 			}
