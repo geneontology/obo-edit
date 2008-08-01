@@ -148,3 +148,25 @@ name: nucleolus organization and biogenesis
 namespace: biological_process
 def: "A process that is carried out at the cellular level which results in the formation, arrangement of constituent parts, or disassembly the nucleolus." [GOC:jic]
 synonym: "nucleolus organisation and biogenesis" EXACT []
+
+[Typedef]
+id: negatively_regulates
+name: negatively_regulates
+is_a: regulates ! regulates
+transitive_over: part_of
+
+[Typedef]
+id: part_of
+name: part of
+is_transitive: true
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+is_a: regulates ! regulates
+transitive_over: part_of
+
+[Typedef]
+id: regulates
+name: regulates
+transitive_over: part_of
