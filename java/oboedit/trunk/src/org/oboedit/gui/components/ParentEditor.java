@@ -121,8 +121,7 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected JPanel buttonPanel = new JPanel();
 
-	protected JButton dropButton = new JButton("Drop terms here to add new "
-			+ "parents");
+	protected JButton dropButton = new JButton("Local-select other terms and drop here to add as parents");
 
 	protected EmptyBorder emptyBorder = new EmptyBorder(2, 2, 2, 2);
 
@@ -149,24 +148,24 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected JButton cardinalityCommitButton = new JButton("Commit");
 
-	protected JCheckBox showImpliedCheckbox = new JCheckBox("Show implied");
+	protected JCheckBox showImpliedCheckbox = new JCheckBox("Show implied links");
 
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 	protected DropTargetListener dropListener = new DropTargetListener() {
- 		// Isn't this wrong?  Doesn't it allow you to drop a term onto itself?
 		public boolean allowDrop(DropTargetDragEvent e) {
 			Selection s = DropUtil.getSelection(e);
-			return s != null && s.getTerms().size() > 0;
-// 			if (s == null || s.getTerms().size() == 0)
-// 				return false;
-// 			LinkedObject target = SelectionManager.getManager().getSelection()
-// 				.getTermSubSelection();
-// 			if (target.equals(currentObject)) {
-// 				logger.debug("Dragged object " + target + " is same as current object"); // DEL
-// 				return false;
-// 			}
-// 			return true;
+			// This would let you drop a term onto itself, making it its own parent!
+//			return s != null && s.getTerms().size() > 0;
+ 			if (s == null || s.getTerms().size() == 0)
+ 				return false;
+			// Make sure at least one of the dragged terms is not the same as the current object
+			for (LinkedObject parent : s.getTerms()) {
+				if (!parent.equals(currentObject)) {
+					return true;
+				}
+ 			}
+ 			return false; // user only dragged term itself--not valid
 		}
 
 		public void dragEnter(DropTargetDragEvent e) {
@@ -197,16 +196,19 @@ public class ParentEditor extends AbstractGUIComponent {
 					"Added parents");
 			Collection<Link> newLinks = new ArrayList<Link>();
 			for (LinkedObject parent : s.getTerms()) {
-				CreateLinkHistoryItem citem = new CreateLinkHistoryItem(target,
-						OBOProperty.IS_A, parent);
-				OBORestriction link = new OBORestrictionImpl(target,
-						OBOProperty.IS_A, parent);
-				newLinks.add(link);
-				item.addItem(citem);
+				if (!parent.equals(currentObject)) {  // Don't add a parent that's the same as the term itself
+					CreateLinkHistoryItem citem = new CreateLinkHistoryItem(target,
+												OBOProperty.IS_A, parent);
+					OBORestriction link = new OBORestrictionImpl(target,
+										     OBOProperty.IS_A, parent);
+					newLinks.add(link);
+					item.addItem(citem);
+				}
 			}
 			GUIUtil.setSelections(item, SelectionManager.getManager()
 					.getSelection(), SelectionManager.createSelectionFromLinks(
-					ParentEditor.this, newLinks, null, false));
+//					ParentEditor.this, newLinks, null, false));
+					ParentEditor.this, newLinks, null, true));
 			e.dropComplete(true);
 			SessionManager.getManager().apply(item);
 		}
@@ -240,7 +242,7 @@ public class ParentEditor extends AbstractGUIComponent {
 		buttonPanel.setLayout(new BorderLayout());
 //		buttonPanel.add(dropButton, "Center");
 		buttonPanel.add(dropButton, "West");
-		buttonPanel.add(showImpliedCheckbox, "East");
+		buttonPanel.add(showImpliedCheckbox, "South");
 		showImpliedCheckbox.setOpaque(false);
 
 		showImpliedCheckbox.addActionListener(new ActionListener() {
@@ -307,7 +309,7 @@ public class ParentEditor extends AbstractGUIComponent {
 			boolean first = true;
 			for (int i = 0; i < v.size(); i++) {
 				final OBORestriction tr = (OBORestriction) v.get(i);
-				// final TreePath [] oldpaths = tr.getPaths();
+				final LinkedObject parent = tr.getParent();
 
 				Font font = getFont();
 				boolean enabled = true;
@@ -353,7 +355,7 @@ public class ParentEditor extends AbstractGUIComponent {
 							OBORestriction tr2 = SessionManager.getManager()
 									.getSession().getObjectFactory()
 									.createOBORestriction(tr.getChild(), type,
-											tr.getParent(), false);
+											parent, false);
 
 							outpaths[i] = paths[i].getParentPath()
 									.pathByAddingChild(tr2);
@@ -369,9 +371,13 @@ public class ParentEditor extends AbstractGUIComponent {
 				});
 				typeBox.setRenderer(typeRenderer);
 
-				JButton idButton = new JButton(tr.getParent().getID());
+				String nameAndID = parent.getID();
+				if (parent.getName() != null)
+					nameAndID = parent.getName() + " (" + nameAndID + ")";
+
+				JButton idButton = new JButton(nameAndID);
 				idButton.setBorder(null);
-				if (TermUtil.isDangling(tr.getParent()))
+				if (TermUtil.isDangling(parent))
 					idButton.setForeground(Color.red);
 				else {
 					idButton.setForeground(Color.blue);
@@ -388,8 +394,8 @@ public class ParentEditor extends AbstractGUIComponent {
 				JButton field = new JButton();
 				field.setOpaque(false);
 				field.setBorderPainted(false);
-				field.setText("<html>" + tr.getParent().getName() + "</html>");
-				field.setToolTipText(tr.getParent().getName());
+				field.setText("<html>" + parent.getName() + "</html>");
+				field.setToolTipText(parent.getName());
 				field.setFont(font);
 				field.setMinimumSize(new Dimension(0, (int) field
 						.getMinimumSize().getHeight()));
@@ -434,8 +440,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				Box bottomBox = Box.createHorizontalBox();
 
 				controlsPanel.add(topBox);
-				if (!TermUtil.isProperty(tr.getParent())) {
-
+				if (!TermUtil.isProperty(parent)) {
 					JButton cardinalityButton = new JButton();
 					cardinalityButton.setFont(font);
 					cardinalityButton.addActionListener(new ActionListener() {
