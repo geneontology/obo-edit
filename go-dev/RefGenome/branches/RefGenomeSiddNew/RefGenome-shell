@@ -1,3 +1,0 @@
-#!/bin/sh
-APPDIR=`dirname $0`;
-java -XstartOnFirstThread -cp "$APPDIR/src:$APPDIR/bin:/Users/sid/Documents/Projects/Reference_Genome_DB/Software/Libraries/GWT/gwt-user.jar:/Users/sid/Documents/Projects/Reference_Genome_DB/Software/Libraries/GWT/gwt-dev-mac.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.bbop.RefGenome/RefGenome.html;
