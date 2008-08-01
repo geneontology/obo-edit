@@ -94,30 +94,20 @@ public class SplashScreen extends JWindow {
 			year = 2006;
 
 		textArea.setLineWrap(true);
-		textArea.setBounds(23, 275, 337, 100);
-		textArea.setFont(new Font("Courier", Font.BOLD, 16));
+		// This is limited by the area in the splashscreen gif
+		textArea.setBounds(23, 275, 337, 110);
+//		textArea.setFont(new Font("Courier", Font.BOLD, 16));
+		textArea.setFont(new Font("Helvetica", Font.PLAIN, 14));
 		textArea.setForeground(Color.black);
 		textArea.setOpaque(false);
-		textArea.setText("! An open source ontology editor\n"
-				+ "! Distributed under the terms of\n"
-				+ "! the Artistic License\n" + "written-by: John Day-Richter\n"
-				+ "copyright:  2001-" + year + "\n" + "version:    "
-				+ Preferences.getVersion());
-
-		/*
-		 * JLabel versionLabel = new JLabel("Version "+ OBOEdit.getVersion());
-		 * versionLabel.setFont(new Font("Dialog", 0, 12));
-		 * versionLabel.setForeground(Color.black);
-		 * 
-		 * bip.setLayout(new BoxLayout(bip, BoxLayout.Y_AXIS));
-		 * 
-		 * Box hBox = new Box(BoxLayout.X_AXIS);
-		 * hBox.add(Box.createHorizontalGlue()); hBox.add(versionLabel);
-		 * hBox.add(Box.createHorizontalGlue());
-		 * bip.add(Box.createVerticalGlue()); bip.add(hBox);
-		 * bip.add(Box.createVerticalStrut(15));
-		 */
-
+		textArea.setText("An open source ontology editor distributed "
+				 + "under\nthe terms of the Artistic License.\n"
+				 + "Version " + Preferences.getVersion() + ", "
+				 + "copyright 2001-" + year + "\n"
+				 + "Originally written by John Day-Richter, with\n"
+				 + "contributions by Nomi Harris, Chris Mungall,\n"
+				 + "Jennifer Deegan, Amina Abdulla, and.\n"
+				 + "Nicolas Rodriguez.");
 		bip.setBorder(null);
 		return bip;
 	}
