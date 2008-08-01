@@ -490,9 +490,9 @@ public class DefaultTermModel implements TermModel {
 					VectorUtil.insertSorted(typeRoots, comparator, rootLink);
 			}
 		}
+		// There are times when we don't want this to fire, because it collapses the tree.
+//		logger.debug("DefaultTermModel.reload: fireTreeStructureChanged"); // DEL
 		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(PathUtil.ROOT)));
-
-//		logger.debug("DefaultTermModel.reload: now linkFilter = " + linkFilter); // DEL
 	}
 
 	protected void fireTreeStructureChanged(TreeModelEvent e) {
