@@ -1,9 +1,9 @@
-Changes in 2.000-b43:
+Changes in 2.000-b43 (released 8/1/2008):
 - Implemented local/global selection modes for Graph Viewer.
 - "Change relationships" now works for multiple selections.
-- Fixed the ability to remove filters that are present at startup.  (I had fixed this
-previously in a less-good way that broke some filter-changing functionality in the
-graph editor.)
+- Fixed the ability to remove filters that are present at startup.  (I had
+fixed this previously in a less-good way that broke some filter-changing
+functionality in the graph editor.)
 - Fixed quick filtering ("f" button) for OTE and Graph Editor (lets you filter
 by relationship).
 - Got "remove filters and renderers" menu items working for OTE.
@@ -17,7 +17,15 @@ line).  I don't understand why this fixes the bug.
 The only effect of commenting out that call (other than fixing the bug) is
 that the dbxrefs appear close together rather than spaced out.  That seems
 tolerable to me.
-- Put name and ID of currently selected term at top of Parent Editor.
-- Don't allow user to drop currently selected term into Parent Editor (which
-would make the term a parent of itself).
-- Fixed link searching--was excluding intersection links.
+- Fixed bug #2023468 : if you had two OTEs in local mode, and you changed one
+of them to global, BOTH of them would show the current selection (the one
+that's still local mode shouldn't change).
+- Fixed link searching--was excluding intersection links.  (This appeared to
+be a deliberate choice--we're not sure why it was done that way.)
+- Fixes to Parent Editor:
+  - Put name and ID of currently selected term at top of Parent Editor.
+  - Don't allow user to drop currently selected term into Parent Editor (which
+  would make the term a parent of itself).
+  - "Show implied links" checkbox is grayed out if the reasoner is off
+  - Current term stays selected in (global) OTE after you add parents (fix for
+  bug #2010708)
