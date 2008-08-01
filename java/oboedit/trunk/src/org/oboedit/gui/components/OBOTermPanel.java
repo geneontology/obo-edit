@@ -113,7 +113,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 //	protected static final Color lockGray = new Color(200, 200, 200);
-	protected static final Color secondaryGray = new Color(240, 240, 240);  // For background color for local selection
+	protected static final Color secondaryGray = new Color(250, 245, 248);  // Background color for local selection
 
 	final static int HEADER_HEIGHT = 20;
 
@@ -175,7 +175,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive()) {
-//				logger.info("selectionChanged and isLive()");
+//				logger.debug("selectionChanged and isLive()"); // DEL
 				OBOTermPanel.this.select(e.getSelection());
 			}
 		}
@@ -430,14 +430,16 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 			GUIComponent c = activeComponents.get(id);
 			if (c instanceof OBOTermPanel) {
 //				logger.debug("Found OBOTermPanel " + id);
-				((OBOTermPanel)c).setLive(false);
-				// Set liveButton (globe/house icon) to the right state
-				JToggleButton liveButton = ((OntologyEditor)c).getLiveButton();
-				liveButton.setSelected(false);
-				// Tell the liveButton that something's happened
-				ActionListener[] liveButtonListeners = liveButton.getActionListeners();
-				for (ActionListener l : liveButtonListeners)
-					l.actionPerformed(new ActionEvent(this, 0, "update"));
+				if (((OBOTermPanel)c).isLive()) { // Found another live (global) one--make it local
+					((OBOTermPanel)c).setLive(false);
+					// Set liveButton (globe/house icon) to the right state
+					JToggleButton liveButton = ((OntologyEditor)c).getLiveButton();
+					liveButton.setSelected(false);
+					// Tell the liveButton that something's happened
+					ActionListener[] liveButtonListeners = liveButton.getActionListeners();
+					for (ActionListener l : liveButtonListeners)
+						l.actionPerformed(new ActionEvent(this, 0, "update"));
+				}
 			}
 		}
 	}
