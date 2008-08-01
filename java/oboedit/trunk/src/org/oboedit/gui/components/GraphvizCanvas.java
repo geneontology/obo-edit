@@ -255,7 +255,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		protected Font labelFont = new Font("Arial", 0, 18);
 
 		protected String viewerFormat = "jpg";
-		protected String dotPath = "/" + "dot";
+		protected String dotPath = "/" + "dot";  // Will need to be set later by user
 
 		protected boolean doFiltering = false;
 
@@ -1043,9 +1043,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				textFile.deleteOnExit();
 			} catch (Exception ex) {
 				String failureHTML = "<html><center>Could not load GraphViz package.<br>"
-					+ "Make sure your properly obtained and installed GraphViz from<br>"
+					+ "Make sure you have properly obtained and installed GraphViz from<br>"
 					+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
-					+ "and be sure that the correct path to the executable file<br>"
+					+ "and be sure that the correct path to the GraphViz executable file<br>"
 					+ "is specified in the options window.</center></html>";
 				imageLabel.setIcon(null);
 				imageLabel.setText(failureHTML);
@@ -1244,8 +1244,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			shapePanel.add(typeShapePanel);
 
 			JTextArea messageArea = new JTextArea(
-					"This should contain the path to the \"dot\" or "
-					+ "\"dot.exe\" file included with the GraphViz "
+					"This should contain the path to the Graphviz executable included with the Graphviz "
 					+ "software package. The package can be obtained "
 					+ "from " + "http://www.research.att.com/sw/"
 					+ "tools/graphviz/download.html", 3, 20);
