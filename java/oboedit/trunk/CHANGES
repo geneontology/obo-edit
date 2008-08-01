@@ -1,9 +1,23 @@
 Changes in 2.000-b43:
+- Implemented local/global selection modes for Graph Viewer.
 - "Change relationships" now works for multiple selections.
 - Fixed the ability to remove filters that are present at startup.  (I had fixed this
 previously in a less-good way that broke some filter-changing functionality in the
 graph editor.)
-- Fixed quick filtering ("f" button) for OTE and Graph Editor.
+- Fixed quick filtering ("f" button) for OTE and Graph Editor (lets you filter
+by relationship).
 - Got "remove filters and renderers" menu items working for OTE.
 - Reduced number of gratuitous reloads in OTE and Graph Editor--might speed
 things up a bit.
+- Fixed bug #2025804: can't add more than two definition dbxrefs from the
+Dbxref Library tool.  
+I fixed this by getting rid of the call to setBorder in
+DbxrefTableRenderer.configureLabel (which makes some space around each dbxref
+line).  I don't understand why this fixes the bug.
+The only effect of commenting out that call (other than fixing the bug) is
+that the dbxrefs appear close together rather than spaced out.  That seems
+tolerable to me.
+- Put name and ID of currently selected term at top of Parent Editor.
+- Don't allow user to drop currently selected term into Parent Editor (which
+would make the term a parent of itself).
+- Fixed link searching--was excluding intersection links.
