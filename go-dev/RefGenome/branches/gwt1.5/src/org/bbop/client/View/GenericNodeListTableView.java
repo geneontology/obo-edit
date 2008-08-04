@@ -7,13 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.mygwt.ui.client.Style;
-import net.mygwt.ui.client.widget.Button;
-import net.mygwt.ui.client.widget.table.DateTimeCellRenderer;
-import net.mygwt.ui.client.widget.table.Table;
-import net.mygwt.ui.client.widget.table.TableColumn;
-import net.mygwt.ui.client.widget.table.TableColumnModel;
-import net.mygwt.ui.client.widget.table.TableItem;
+import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.table.DateTimeCellRenderer;
+import com.extjs.gxt.ui.client.widget.table.Table;
+import com.extjs.gxt.ui.client.widget.table.TableColumn;
+import com.extjs.gxt.ui.client.widget.table.TableColumnModel;
+import com.extjs.gxt.ui.client.widget.table.TableItem;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 import org.bbop.client.model.NodeDTO;
@@ -93,7 +93,7 @@ public class GenericNodeListTableView {
 
 
 		colModel = new TableColumnModel(tableCols);
-		targetTbl = new Table(Style.MULTI,colModel);
+		targetTbl = new Table(colModel);
 		targetTbl.setBorders(true);
 
 		for(int i = 0; i < nodes.length; i++) {

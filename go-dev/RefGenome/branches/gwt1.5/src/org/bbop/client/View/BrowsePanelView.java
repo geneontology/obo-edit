@@ -10,6 +10,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -135,9 +136,9 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		}
 	}
 	
-	private class OrthologListListener implements SelectionListener {
+	private class OrthologListListener extends SelectionListener<ButtonEvent> {
 
-		public void widgetSelected(BaseEvent be) {
+		public void componentSelected(ButtonEvent be) {
 			// TODO Auto-generated method stub 
 			OrthologTableView orthoView = new OrthologTableView(refglistener,mainview);
 			List colHeadings = new ArrayList();
@@ -188,10 +189,14 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	}
 	
 	public void displayCancelMsg() {
-		info.close();
-		Info.show("Aborted search","dialog closed","");
-		
+		info.hide();
+//		Info.open("Aborted search","dialog closed","");
+		MessageBox.alert("Aborted search", "dialog closed",				
+				new Listener<WindowEvent>() {
+			public void handleEvent(WindowEvent be) {
+				// TODO Auto-generated method stub	
+			}
+		  }	
+		);	
 	}
-
-
 }

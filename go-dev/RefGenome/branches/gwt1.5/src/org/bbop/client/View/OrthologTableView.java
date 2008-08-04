@@ -7,19 +7,19 @@ import java.util.List;
 
 
 
-import net.mygwt.ui.client.Style;
-import net.mygwt.ui.client.data.DataCallback;
-import net.mygwt.ui.client.data.DataList;
-import net.mygwt.ui.client.data.LoadConfig;
-import net.mygwt.ui.client.data.LoadResult;
-import net.mygwt.ui.client.data.Model;
-import net.mygwt.ui.client.viewer.IAsyncContentCallback;
-import net.mygwt.ui.client.viewer.ModelCellLabelProvider;
-import net.mygwt.ui.client.viewer.RemoteContentProvider;
-import net.mygwt.ui.client.viewer.TableViewer;
-import net.mygwt.ui.client.widget.table.Table;
-import net.mygwt.ui.client.widget.table.TableColumn;
-import net.mygwt.ui.client.widget.table.TableColumnModel;
+import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.data.DataCallback;
+import com.extjs.gxt.ui.client.data.DataList;
+import com.extjs.gxt.ui.client.data.LoadConfig;
+import com.extjs.gxt.ui.client.data.LoadResult;
+import com.extjs.gxt.ui.client.data.Model;
+import com.extjs.gxt.ui.client.viewer.IAsyncContentCallback;
+import com.extjs.gxt.ui.client.viewer.ModelCellLabelProvider;
+import com.extjs.gxt.ui.client.viewer.RemoteContentProvider;
+import com.extjs.gxt.ui.client.viewer.TableViewer;
+import com.extjs.gxt.ui.client.widget.table.Table;
+import com.extjs.gxt.ui.client.widget.table.TableColumn;
+import com.extjs.gxt.ui.client.widget.table.TableColumnModel;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
 
