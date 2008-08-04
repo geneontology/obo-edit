@@ -1,12 +1,15 @@
 package org.bbop.client.View;
 
 
-import net.mygwt.ui.client.Style;
-import net.mygwt.ui.client.event.BaseEvent;
-import net.mygwt.ui.client.event.SelectionListener;
-import net.mygwt.ui.client.widget.Button;
-import net.mygwt.ui.client.widget.MessageBox;
-import net.mygwt.ui.client.widget.ToolBar;
+import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
@@ -168,10 +171,18 @@ public class SearchPanelView implements SearchPanelManagerI {
 			if (txnList.getItemCount() <= 2 ) {
 				txnList.insertItem("Wait.....",0);
 				refgListener.fetchTaxonNodes();
-				listInfo = new MessageBox(Style.ICON_INFO,Style.MODAL);
-				listInfo.setText("Fetching taxon ids.........");
-				listInfo.setMessage("Please wait");
-				listInfo.open();
+				MessageBox info = new MessageBox();
+	    		info.setButtons(MessageBox.OK);
+	    		info.setIcon(MessageBox.INFO);
+	    		info.setTitle("Fetching taxon ids");
+	    		info.addCallback(new Listener<BaseEvent>() {
+	    			public void handleEvent(BaseEvent be) {
+	    				// TODO Auto-generated method stub
+	    			}
+	    		});
+	    		info.setMessage("Please wait");
+	    		info.show();
+			
 			}
 			
 		}
@@ -190,84 +201,124 @@ public class SearchPanelView implements SearchPanelManagerI {
 			if (txnList.getItemCount() <= 2 ) {
 				txnList.clear();
 				txnList.addItem("Wait.....");
-				refgListener.fetchTaxonNodes();
-				listInfo = new MessageBox(Style.ICON_INFO,Style.MODAL);
-				listInfo.setText("Fetching taxon ids.........");
-				listInfo.setMessage("Please wait");
-				listInfo.open();
+				MessageBox info = new MessageBox();
+	    		info.setButtons(MessageBox.OK);
+	    		info.setIcon(MessageBox.INFO);
+	    		info.setTitle("Search in progress");
+	    		info.addCallback(new Listener<BaseEvent>() {
+	    			public void handleEvent(BaseEvent be) {
+	    				// TODO Auto-generated method stub
+	    			}
+	    		});
+	    		info.setMessage("Please wait");
+	    		info.show();
 			}
 		}
 		
 	}
 	
-	private class NameSearchListener implements SelectionListener {
+	private class NameSearchListener extends SelectionListener<ButtonEvent> {
 
-		public void widgetSelected(BaseEvent be) {
+		public void componentSelected(ButtonEvent ce)  {
 			// TODO Auto-generated method stub
 			final String userInput = nameSearchTerm.getText();
 			if (!validateInput(userInput)) {
-				final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
-				alert.setText("Invalid input");
-				alert.setMessage("Please try again");
-				alert.open();
+				MessageBox.alert("Alert", "No input given", 
+						new Listener<WindowEvent>() {
+					public void handleEvent(WindowEvent be) {
+						// TODO Auto-generated method stub
+						
+					}
+				  }		
+			  );
 			}
 			else {
 				
 	    		refgListener.fetchByName(userInput);
-				info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
-				info.setText("Searching ........");  
-				info.setMessage("Please wait");
-				info.open();
-				
+	    		MessageBox info = new MessageBox();
+	    		info.setButtons(MessageBox.OK);
+	    		info.setIcon(MessageBox.INFO);
+	    		info.setTitle("Search in progress");
+	    		info.addCallback(new Listener<BaseEvent>() {
+	    			public void handleEvent(BaseEvent be) {
+	    				// TODO Auto-generated method stub
+	    			}
+	    		});
+	    		info.setMessage("Please wait");
+	    		info.show();
 			}
 		}
+
+		
+		
 		
 	}
 	
-	private class NameSearchByTaxonListener implements SelectionListener {
+	private class NameSearchByTaxonListener extends SelectionListener<ButtonEvent> {
 
-		public void widgetSelected(BaseEvent be) {
+		public void componentSelected(ButtonEvent be) {
 			// TODO Auto-generated method stub
 			final String userInput = txnSearchTerm.getText();
 			if (!validateInput(userInput)) {
-				final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
-				alert.setText("Invalid input");
-				alert.setMessage("Please try again");
-				alert.open();
+				MessageBox.alert("Invalid input", "Please try again",				
+						new Listener<WindowEvent>() {
+					public void handleEvent(WindowEvent be) {
+						// TODO Auto-generated method stub	
+					}
+				  }	
+				);
+				
 			}
 			else {
 				int selectedIdx = txnList.getSelectedIndex();
 				String txnLabel = txnList.getItemText(selectedIdx);
 				String[] tokens = txnLabel.split(" ",2); // TODO - is there a less hacky way?
 	    		refgListener.fetchByNameAndTaxon(userInput, tokens[0]);
-				info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
-				info.setText("Searching ........");  
-				info.setMessage("Please wait");
-				info.open();
+	    		MessageBox info = new MessageBox();
+	    		info.setButtons(MessageBox.OK);
+	    		info.setIcon(MessageBox.INFO);
+	    		info.setTitle("Search in progress");
+	    		info.addCallback(new Listener<BaseEvent>() {
+	    			public void handleEvent(BaseEvent be) {
+	    				// TODO Auto-generated method stub
+	    			}
+	    		});
+	    		info.setMessage("Please wait");
+	    		info.show();
 				
 			}
 		}
 		
 	}
 	
-	private class TargetSearchListener implements SelectionListener {
+	private class TargetSearchListener extends SelectionListener<ButtonEvent> {
 
-		public void widgetSelected(BaseEvent be) {
+		public void componentSelected(ButtonEvent be) {
 			// TODO Auto-generated method stub
 			final String userInput = targetSearchTerm.getText();
 			if (!validateInput(userInput)) {
-				final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
-				alert.setText("Invalid input");
-				alert.setMessage("Please try again");
-				alert.open();
+				MessageBox.alert("Invalid input", "Please try again",				
+						new Listener<WindowEvent>() {
+					public void handleEvent(WindowEvent be) {
+						// TODO Auto-generated method stub	
+					}
+				  }	
+				);
 			}
 			else {
 				
-	    		refgListener.fetchTargetNodesByName(userInput);
-				info = new MessageBox(Style.ICON_INFO, Style.MODAL);  
-				info.setText("Searching ........");  
-				info.setMessage("Please wait");
-				info.open();
+	    		refgListener.fetchTargetNodesByName(userInput);  
+				MessageBox info = new MessageBox();
+	    		info.setButtons(MessageBox.OK);
+	    		info.setIcon(MessageBox.INFO);
+	    		info.setTitle("Search in progress");
+	    		info.addCallback(new Listener<BaseEvent>() {
+	    			public void handleEvent(BaseEvent be) {
+	    				// TODO Auto-generated method stub
+	    			}
+	    		});
+	    		info.setMessage("Please wait");
+	    		info.show();
 				
 			}
 		}
@@ -283,13 +334,16 @@ public class SearchPanelView implements SearchPanelManagerI {
 
 		//Get the DTO object
 		NodeDTO[] result = (NodeDTO[]) obj;
-		info.close();
+		info.hide();
 
 		if (result.length < 1) {
-			final MessageBox alert = new MessageBox(Style.ICON_ERROR, Style.OK);
-			alert.setText("Search result");
-			alert.setMessage("No result");
-			alert.open();
+			MessageBox.alert("Search result", "No result",				
+					new Listener<WindowEvent>() {
+				public void handleEvent(WindowEvent be) {
+					// TODO Auto-generated method stub	
+				}
+			  }	
+			);
 		}
 		else {
 			tableView.createView(result);
@@ -308,7 +362,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 	// sorry to be so hacky - CJM.
 	// need to sort out what goes where...
 	public void displaySearchTargets(NodeDTO[] targetNodes) {
-		info.close();
+		info.hide();
 		System.err.println("making table view");
 		GenericNodeListTableView tableView = new GenericNodeListTableView(refgListener, mainView);
 		tableView.addColumnHeading("OBO_REL:in_organism","species");
@@ -339,7 +393,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 
 	public void fillTaxonNodes(Object obj) {
 		// TODO Auto-generated method stub
-		listInfo.close();
+		listInfo.hide();
 		txnList.clear();
 		System.err.println("got taxon list: "+obj);
 		NodeDTO[] list = (NodeDTO[]) obj;

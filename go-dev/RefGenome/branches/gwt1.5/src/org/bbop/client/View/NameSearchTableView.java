@@ -5,18 +5,18 @@ package org.bbop.client.View;
 import java.util.Iterator;
 import java.util.List;
 
-import net.mygwt.ui.client.Style;
-import net.mygwt.ui.client.widget.ContentPanel;
-import net.mygwt.ui.client.widget.MessageBox;
-import net.mygwt.ui.client.widget.TabFolder;
-import net.mygwt.ui.client.widget.TabItem;
-import net.mygwt.ui.client.widget.WidgetContainer;
-import net.mygwt.ui.client.widget.layout.FillLayout;
-import net.mygwt.ui.client.widget.table.CellRenderer;
-import net.mygwt.ui.client.widget.table.Table;
-import net.mygwt.ui.client.widget.table.TableColumn;
-import net.mygwt.ui.client.widget.table.TableColumnModel;
-import net.mygwt.ui.client.widget.table.TableItem;
+import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.TabPanel;
+import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.layout.FillLayout;
+import com.extjs.gxt.ui.client.widget.table.CellRenderer;
+import com.extjs.gxt.ui.client.widget.table.Table;
+import com.extjs.gxt.ui.client.widget.table.TableColumn;
+import com.extjs.gxt.ui.client.widget.table.TableColumnModel;
+import com.extjs.gxt.ui.client.widget.table.TableItem;
 
 import org.bbop.client.RefGenomeService;
 import org.bbop.client.Listener.RefGenomeViewListenerI;
@@ -91,7 +91,7 @@ public class NameSearchTableView extends GenericNodeListTableView {
 		nameCols[5].setMaxWidth(300);
 
 		nameColModel = new TableColumnModel(nameCols);
-		nameTbl = new Table(Style.MULTI, nameColModel);
+		nameTbl = new Table(nameColModel);
 		nameTbl.setBorders(true);
 		
 		
@@ -150,10 +150,10 @@ public class NameSearchTableView extends GenericNodeListTableView {
 	
 	public Table getView() { return nameTbl; }
 	
-	public TabFolder getTblContainer() {
+	public TabPanel getTblContainer() {
 		ContentPanel resultPanel = mainView.getResultPanel().getView();
-		WidgetContainer container = (WidgetContainer) resultPanel.getWidget(0);
-		TabFolder tblContainer = (TabFolder) container.getWidget(0);
+		LayoutContainer container = (LayoutContainer) resultPanel.getWidget(0);
+		TabPanel tblContainer = (TabPanel) container.getWidget(0);
 		return tblContainer;
 	}
 	
@@ -173,12 +173,12 @@ public class NameSearchTableView extends GenericNodeListTableView {
 		    	url = URL.encode(entrezUrl + token[1]);
 		    }
 				
-			TabItem tblItem = new TabItem(Style.CLOSE);
+			TabItem tblItem = new TabItem();
 			tblItem.setText(value);
 			tblItem.setIconStyle("icon-tabs");
-			tblItem.setURL(url);
+			tblItem.setUrl(url);
 			
-			TabFolder tblContainer = getTblContainer();
+			TabPanel tblContainer = getTblContainer();
 			tblContainer.add(tblItem);
 			tblContainer.setSelection(tblItem);
 		}
