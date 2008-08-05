@@ -1,0 +1,30 @@
+[Typedef]
+id: ends_before_end_of
+name: ends_before_end_of
+
+[Typedef]
+id: starts_after_start_of
+name: starts_after_start_of
+holds_over_chain: preceded_by * starts_after_start_of
+
+[Typedef]
+id: during
+name: during
+intersection_of: ends_before_end_of
+intersection_of: starts_after_start_of
+
+[Typedef]
+id: preceded_by
+name: preceded_by
+
+[Term]
+id: embryogenesis
+relationship: starts_after_start_of lifecycle
+
+[Term]
+id: adult_stage
+relationship: ends_before_end_of lifecycle
+relationship: preceded_by embryogenesis
+
+[Term]
+id: lifecycle

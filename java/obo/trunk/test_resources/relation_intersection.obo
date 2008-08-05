@@ -1,0 +1,21 @@
+[Typedef]
+id: ends_before_end_of
+name: ends_before_end_of
+
+[Typedef]
+id: starts_after_start_of
+name: starts_after_start_of
+
+[Typedef]
+id: during
+name: during
+intersection_of: ends_before_end_of
+intersection_of: starts_after_start_of
+
+[Term]
+id: gastrulation
+relationship: starts_after_start_of lifecycle
+relationship: ends_before_end_of lifecycle
+
+[Term]
+id: lifecycle
