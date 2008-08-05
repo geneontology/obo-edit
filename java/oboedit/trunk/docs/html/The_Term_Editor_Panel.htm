@@ -122,8 +122,7 @@ the ChEBI ontology would be displayed in an unhelpful "flat" form like this:</p>
 Although obsolete terms cannot have parents or children,&nbsp;if an obsolete 
 term has replacement or "consider" terms specified, they will appear underneath the 
 obsolete term:</p>
-<p><IMG hspace=0 
-src="../images/obsolete-replacement-view.png" border=0>
+<p><IMG hspace=0 src="../images/obsolete-replacement-view.png" border=0>
 </p>
 
 <p>In this case, the view means that the obsolete term "2-nitropropane
@@ -140,6 +139,15 @@ named&nbsp;"consider" and "replaced_by".</p>
 
 <p>See <A href="Assigning_Replacement_Terms.htm">Assigning Replacement Terms</A> 
 for more information about "consider" and "replaced_by".</p>
+
+<h2>"Circular" relations</h2>
+<p>Sometimes a relation creates a pseudo-cycle (this usually involves the
+  disjoint_from relation).  In the Ontology Tree Editor, these are indicated
+  with gray text:</p>
+<p><IMG hspace=0 src="../images/so-gray-circular-paths.png" border=0></p>
+<p>You can expand the gray nodes, but the contents aren't very interesting
+  because of the cycle--you'll just see repeats of nodes you've already seen.</p>
+
 <a name="global"></a>
 <h2>Working with Multiple Ontology Tree Editors: Global vs. Local Selection mode</h2>
 
