@@ -61,9 +61,9 @@ public class TextIcon implements Icon {
 	}
 
 	protected void recalculateBounds() {
-//		iconWidth = 2 + metrics.stringWidth(text);
 		iconWidth = 1 + metrics.stringWidth(text);
-		iconHeight = 1 + metrics.getHeight();
+//		iconHeight = 1 + metrics.getHeight();
+		iconHeight = metrics.getHeight()-2;  // Leave a little vertical space between text icons
 	}
 
 	public int getIconWidth() {
@@ -83,8 +83,8 @@ public class TextIcon implements Icon {
 			g.fillRect(x, y, getIconWidth(), getIconHeight());
 		}
 		g.setColor(foreground);
-//		g.drawString(text, x + 1, y + iconHeight - 2);
-		g.drawString(text, x, y + iconHeight - 4);
+//		g.drawString(text, x, y + iconHeight - 4);
+		g.drawString(text, x, y + iconHeight - 2);
 		g.setFont(oldFont);
 		g.setColor(oldColor);
 	}
