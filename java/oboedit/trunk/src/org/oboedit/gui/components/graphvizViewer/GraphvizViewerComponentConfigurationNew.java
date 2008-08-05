@@ -53,13 +53,12 @@ public class GraphvizViewerComponentConfigurationNew
 		public GraphvizViewerComponentConfigurationNew() {
 		}
 
-
-
 		public Color getBGColor() {
 			return bgcolor;
 		}
 
 		public Map getColorMap() {
+			System.out.println("GraphvizViewerComponentConfigurationNew: colorMap = " + colorMap);
 			return colorMap;
 		}
 
