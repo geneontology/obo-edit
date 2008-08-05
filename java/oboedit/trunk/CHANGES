@@ -1,31 +1,9 @@
-Changes in 2.000-b43 (released 8/1/2008):
-- Implemented local/global selection modes for Graph Viewer.
-- "Change relationships" now works for multiple selections.
-- Fixed the ability to remove filters that are present at startup.  (I had
-fixed this previously in a less-good way that broke some filter-changing
-functionality in the graph editor.)
-- Fixed quick filtering ("f" button) for OTE and Graph Editor (lets you filter
-by relationship).
-- Got "remove filters and renderers" menu items working for OTE.
-- Reduced number of gratuitous reloads in OTE and Graph Editor--might speed
-things up a bit.
-- Fixed bug #2025804: can't add more than two definition dbxrefs from the
-Dbxref Library tool.  
-I fixed this by getting rid of the call to setBorder in
-DbxrefTableRenderer.configureLabel (which makes some space around each dbxref
-line).  I don't understand why this fixes the bug.
-The only effect of commenting out that call (other than fixing the bug) is
-that the dbxrefs appear close together rather than spaced out.  That seems
-tolerable to me.
-- Fixed bug #2023468 : if you had two OTEs in local mode, and you changed one
-of them to global, BOTH of them would show the current selection (the one
-that's still local mode shouldn't change).
-- Fixed link searching--was excluding intersection links.  (This appeared to
-be a deliberate choice--we're not sure why it was done that way.)
-- Fixes to Parent Editor:
-  - Put name and ID of currently selected term at top of Parent Editor.
-  - Don't allow user to drop currently selected term into Parent Editor (which
-  would make the term a parent of itself).
-  - "Show implied links" checkbox is grayed out if the reasoner is off
-  - Current term stays selected in (global) OTE after you add parents (fix for
-  bug #2010708)
+Changes in b44:
+- If user selects (in another component) too many things at once, Graph Editor
+will ignore the selection event rather than try to show all of the new
+selected terms (too slow).
+- Fixed bug 2026858, "OTE loses little arrows when there's a pseudo-cycle".
+Now instead of losing their arrows and relation labels, the "circular"
+relations are shown in gray text rather than black.
+- Spaced out text icons (e.g. disjoint_from) in OTE a bit for easier
+readability.
