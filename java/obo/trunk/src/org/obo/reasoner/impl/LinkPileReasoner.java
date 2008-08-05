@@ -170,6 +170,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 		addRule(new IntersectionRule());
 		addRule(new TransitiveOverRule());
 		addRule(new HoldsOverChainRule());
+		addRule(new PropertyIntersectionRule());
 	}
 
 	@Override

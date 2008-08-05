@@ -34,6 +34,12 @@ public class ReasonerUtil {
 		return explanations != null && explanations.contains(e);
 	}
 	
+	/**
+	 * @param reasoner
+	 * @param link
+	 * @return
+	 */
+	@Deprecated
 	public static Collection<PathCapable> getShortestExplanationPath(ReasonedLinkDatabase reasoner,
 			PathCapable link) {
 		int leastHops = 0;

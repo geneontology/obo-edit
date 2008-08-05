@@ -11,6 +11,12 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
+/**
+ * An Explanation for a link inferred via an IntersectionRule
+ * 
+ * @author cjm
+ *
+ */
 public class CompletenessExplanation extends AbstractExplanation {
 
 	//initialize logger

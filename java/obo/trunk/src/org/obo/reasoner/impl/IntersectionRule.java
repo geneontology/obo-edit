@@ -59,13 +59,13 @@ public class IntersectionRule extends AbstractReasonerRule {
 	/**
 	 * maps from the OBOClass which is defined to the links comprising the intersection definition.
 	 * For example:
-	 * T cell differentiation -> [ is_a differentiation, results_in_acquisition_of_features_of T-cell]
+	 * T cell differentiation -> [ <is_a differentiation>, <results_in_acquisition_of_features_of T-cell>]
 	 */
 	protected MultiMap<LinkedObject, Link> intersectionMap;
 	
 	/**
 	 * maps from an OBOClass used in an intersection definition to the defined class. For example
-	 * T-cell -> [T-cell differentiation, T-cell proliferation]
+	 * T-cell -> [T-cell differentiation, T-cell proliferation, T-cell anergy, ...]
 	 */
 	protected MultiMap<LinkedObject, LinkedObject> hintMap;
 
@@ -94,19 +94,45 @@ public class IntersectionRule extends AbstractReasonerRule {
 	@Override
 	protected Collection<Explanation> doGetImplications(
 			ReasonedLinkDatabase reasoner, Link newLink) {
+		
+		/*
+		 * this rule infers is_a (subsumption) links to some candidate parent(s).
+		 * It is triggered by the addition of a link that satisfies *one* of the N+S conditions of the xp
+		 * def of the parent. If *all* if the N+S conditions are satisfied then a new link is added
+		 * 
+		 * example:
+		 *   newLink =  <T-cell-prolif results_in_proliferation_of lymphocyte>
+		 *     (in this case newLink has already been inferred via transitivity over is_a)
+		 *   candidates = [lymphocyte-prolif, ...]
+		 *   inferred link = <T-cell-prolif is_a lymphocyte-prolif>
+		 */
 		Collection<LinkedObject> candidates = hintMap.get(newLink.getParent());
-		Collection<Explanation> out = new ArrayList<Explanation>(candidates
-				.size());
+		Collection<Explanation> out = new ArrayList<Explanation>(candidates.size());
+		
+		/*
+		 * potential new links to add
+		 * example:
+		 *   T-cell-prolif is_a lymphocyte prolif
+		 */
 		Collection<CompletenessMatch> matchList =
 			new LinkedList<CompletenessMatch>();
+		
+		/*
+		 * Example: T-cell-prolif
+		 */
+		LinkedObject newLinkChild = newLink.getChild();
+		
+		/*
+		 * each candidate parent must have its necessary and sufficient conditions (xp def) satisfied
+		 */
 		for (LinkedObject lo : candidates) {
-			if (lo.equals(newLink.getChild()))
+			if (lo.equals(newLinkChild))
 				continue;
 			boolean failed = false;
 			matchList.clear();
 			Collection<Link> intersectionLinks = intersectionMap.get(lo);
 			for (Link link : intersectionLinks) {
-				Link matchLink = reasoner.hasRelationship(newLink.getChild(),
+				Link matchLink = reasoner.hasRelationship(newLinkChild,
 						link.getType(), link.getParent());				
 				if (matchLink == null) {
 					failed = true;
@@ -116,8 +142,20 @@ public class IntersectionRule extends AbstractReasonerRule {
 				}
 			}
 			if (!failed) {
-				Link genLink = createLink(newLink
-						.getChild(), OBOProperty.IS_A, lo);
+				/*
+				 * the necessary and sufficient conditions have been satisfied.
+				 * 
+				 * we create a new is_a link (genLink) between the child of the original triggering
+				 * link and the candidate object
+				 * 
+				 * Example:
+				 *   T-cell-prolif is_a lymphocyte-prolif
+				 */
+				Link genLink = createLink(newLinkChild, OBOProperty.IS_A, lo);
+				
+				/*
+				 * explain this link
+				 */
 				CompletenessExplanation exp = new CompletenessExplanation();
 				exp.setExplainedLink(genLink);
 				for(CompletenessMatch match : matchList) {

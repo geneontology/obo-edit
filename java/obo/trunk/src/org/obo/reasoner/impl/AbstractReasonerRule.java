@@ -34,6 +34,12 @@ public abstract class AbstractReasonerRule implements ReasonerRule {
 
 	}
 
+	/**
+	 * on adding a new link, check for entailments
+	 * @param reasoner
+	 * @param newLink
+	 * @return
+	 */
 	protected abstract Collection<Explanation> doGetImplications(
 			ReasonedLinkDatabase reasoner, Link newLink);
 
