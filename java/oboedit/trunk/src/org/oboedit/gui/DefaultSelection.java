@@ -94,29 +94,40 @@ public class DefaultSelection implements Selection {
 
 	public TreePath[] getPaths(RootAlgorithm rootAlgorithm,
 			LinkDatabase linkDatabase) {
+//		logger.debug("DefaultSelection.getPaths: mode = " + mode + ", " + terms.size() + " terms, " + links.size() + " links"); // DEL
 		if (mode.equals(PathCalcMode.DONT_CALCULATE)) {
 			return paths;
 		} else if (mode.equals(PathCalcMode.CALCULATE_FROM_LINKS))
 			paths = PathUtil.getPaths(links, rootAlgorithm, linkDatabase,
-					selectBestOnly());
+						  // selectBestOnly() is hardcoded to return true, so why bother calling it?
+//					selectBestOnly());
+						  true);
 		else if (mode.equals(PathCalcMode.CALCULATE_FROM_TERMS))
 			paths = PathUtil.getPaths(terms, rootAlgorithm, linkDatabase,
-					selectBestOnly());
+//					selectBestOnly());
+						  true);
 		else if (mode.equals(PathCalcMode.CALCULATE_FROM_TERMS_AND_LINKS)) {
 			Set<TreePath> temp = new HashSet<TreePath>();
-			for(TreePath path : PathUtil.getPaths(links, rootAlgorithm, linkDatabase,
-					selectBestOnly())) {
-				temp.add(path);
-			}
-			for(TreePath path : PathUtil.getPaths(terms, rootAlgorithm, linkDatabase,
-					selectBestOnly())) {
-				temp.add(path);
-			}
+			if (links.size() > 0)
+				for(TreePath path : PathUtil.getPaths(links, rootAlgorithm, linkDatabase,
+//					selectBestOnly())) {
+								      true)) {
+					temp.add(path);
+				}
+			if (terms.size() > 0)
+				for(TreePath path : PathUtil.getPaths(terms, rootAlgorithm, linkDatabase,
+//					selectBestOnly())) {
+								      true)) {
+					temp.add(path);
+				}
+			// Could we just add the paths to the paths array right away rather than having to go through
+			// this extra step?
 			paths = new TreePath[temp.size()];
 			int i = 0;
 			for(TreePath path : temp) {
 				paths[i++] = path;
 			}
+			temp = null;  // need?
 		}
 		return paths;
 	}
