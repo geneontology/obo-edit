@@ -51,6 +51,8 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 	protected final static Color highlightColor = Color.yellow;
 
+	protected final static Color circularLinkColor = Color.gray;
+
 	protected final static Color clickBorderColor = Color.black;
 
 	protected final static Color tabBorderColor = Color.blue;
@@ -77,18 +79,14 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 	protected JComponent renderComponent = this;
 
+	protected boolean DONT_SHOW_DISJOINT_FROM = true;
+
 	protected void createDefaultSpecs() {
-		/*
-		 * defaultSpecs.add(createPropertyRenderer());
-		 * defaultSpecs.add(createRedundantRenderer());
-		 * defaultSpecs.add(createObsoleteRenderer());
-		 * defaultSpecs.add(createImpliedRenderer());
-		 */
 	}
 
 	public OBOCellRenderer() {
 		super();
-		createDefaultSpecs();
+//		createDefaultSpecs();
 		nec_inv_icon = Preferences.loadLibraryIcon("inv_and_nec_icon.gif");
 		inv_icon = Preferences.loadLibraryIcon("inv_icon.gif");
 		nec_icon = Preferences.loadLibraryIcon("nec_icon.gif");
@@ -191,7 +189,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			boolean highlighted, boolean clickTarget, boolean tabRow,
 			boolean ignoreSelection, int row, boolean hasFocus) {
 		try {
-			setOpaque(false);
+//			setOpaque(false);
 			multiIcon.clearIcons();
 			if (value.equals(PathUtil.OBSOLETE)) {
 				setText("Obsolete");
@@ -237,10 +235,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			Relationship link = (Relationship) value;
 
 			if (link.getType() != null) {
-				// if (link.getType().equals(OBOProperty.IS_A))
-				// icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
-				// Preferences.getPreferences().getFont().getSize());
-				// else
 				Color c = Preferences.getPreferences()
 						.getColorForRelationshipType(link.getType());
 				if (c != null)
@@ -291,21 +285,19 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				// Preferences.getPreferences().getFont().getSize());
 				// else
 				icon = Preferences.getPreferences().getIconForRelationshipType(
-						link.getType());
+					link.getType());
 			}
 			scaledIcon.setIcon(icon);
 			Icon origIcon = icon;
 			setIcon(null);
 			// Don't scale TextIcons
 			if (origIcon instanceof TextIcon) {
-			    setIcon(multiIcon);
-//			    scaledIcon.setDimension((int)getPreferredSize().getWidth(), newHeight);
-//			    logger.info("Scaling text icon to width = " + getPreferredSize().getWidth() + ", height = " + newHeight); // DEL
+				setIcon(multiIcon);
 			}
 			else {
-			    int newHeight = (int) getPreferredSize().getHeight() - 2;
-			    setIcon(multiIcon);
-			    scaledIcon.setDimension(newHeight);
+				int newHeight = (int) getPreferredSize().getHeight() - 2;
+				setIcon(multiIcon);
+				scaledIcon.setDimension(newHeight);
 			}
 
 			if (link instanceof OBORestriction) {
@@ -323,11 +315,16 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				}
 			}
 
-			TreePath path = tree.getPathForRow(row);
-			if (path != null && PathUtil.pathIsCircular(path))
-				setEnabled(false);
-			else
-				setEnabled(true);
+			// This attempt to disable "circular" relation nodes* was making them show up without their arrows.
+			// *For example, in SO, genome is a child of disjoint_from chromosome_variation, which is a child of genome.
+			// Instead, color the "circular" nodes gray to discourage users from clicking on them.
+ 			TreePath path = tree.getPathForRow(row);
+  			if (path != null && PathUtil.pathIsCircular(path)) {
+// // 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
+ 				setForeground(circularLinkColor);
+  			}
+// 			else  // don't need--default is enabled anyway
+// 				setEnabled(true);
 
 			if (highlighted) {
 				setOpaque(true);
