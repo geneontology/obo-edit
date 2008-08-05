@@ -36,8 +36,9 @@ public class ArrowIcon implements Icon {
 
 	protected final int triangleOffset = 2;
 
-	protected final boolean arrowheadLeft = true;
+//	protected final boolean arrowheadLeft = true;  // Not currently used
 
+	protected int height = 10;
 	protected int width = 20;
 	protected int no_arrow_width = 1;
 
@@ -53,7 +54,7 @@ public class ArrowIcon implements Icon {
 
 	public int getIconHeight() {
 		// TODO Auto-generated method stub
-		return 10;
+		return height;
 	}
 
 	public int getIconWidth() {
