@@ -626,7 +626,10 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	public void setValueIsAdjusting(boolean isAdjusting) {
 		if (isAdjusting != this.isAdjusting) {
 			this.isAdjusting = isAdjusting;
-			this.fireValueChanged(isAdjusting);
+			// What if we don't do this yet?  Or do it only if isAdjusting is false?
+			// It doesn't seem to hurt anything if we don't call fireValueChanged.
+//			logger.debug("setValueIsAdjusting(" + isAdjusting + "): not firing value changed"); // DEL
+//			this.fireValueChanged(isAdjusting);
 		}
 	}
 
