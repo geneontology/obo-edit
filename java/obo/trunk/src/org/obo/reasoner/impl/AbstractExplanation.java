@@ -10,6 +10,9 @@ public abstract class AbstractExplanation implements Explanation {
 
 	protected Collection<Link> supportingLinks;
 
+	/**
+	 * Each explanation explains a single link which has been inferred by a particular rule
+	 */
 	protected Link explainedLink;
 
 	public PathCapable getExplainedObject() {

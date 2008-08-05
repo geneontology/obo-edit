@@ -9,8 +9,10 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.filters.Filter;
+import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.impl.LinkPileReasonerFactory;
@@ -72,12 +74,7 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 	}
 
 	public void testForIsA(String childID, String parentID)  {
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		logger.info(reasonedDB+" testing "+child+" - "+parent);
-		assertTrue(reasonedDB.hasRelationship(child, OBOProperty.IS_A, parent) != null);
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
-		//logger.info(path+" pathlen="+path.size());
+		testForLink(childID, OBOProperty.IS_A.getID(), parentID);
 	}
 	
 	public void testForNoIsA(String childID, String parentID)  {
@@ -121,7 +118,12 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 		OBOProperty rel = (OBOProperty) session.getObject(relID);
 		logger.info(reasonedDB+" testing "+child+" "+rel+" "+parent);
 		assertTrue(reasonedDB.hasRelationship(child, rel, parent) != null);
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
+		Link link = new OBORestrictionImpl(child,rel,parent);
+		logger.info("inferred="+link);
+		for (Explanation exp : reasonedDB.getExplanations(link)) {
+			logger.info("  exp="+exp);
+		}
+		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, rel, parent); // TODO - Cycle
 		//logger.info(path+" pathlen="+path.size());
 
 	}
