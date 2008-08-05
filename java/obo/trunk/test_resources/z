@@ -1,0 +1,29 @@
+format-version: 1.2
+date: 04:08:2008 14:54
+default-namespace: file:/Users/cjm/Eclipse/workspace/OBO/test_resources/relation_intersection.obo
+
+[Term]
+id: gastrulation
+relationship: during lifecycle ! implied link automatically realized ! null
+relationship: ends_before_end_of lifecycle ! null
+relationship: starts_after_start_of lifecycle ! null
+
+[Term]
+id: lifecycle
+
+[Typedef]
+id: during
+name: during
+is_a: ends_before_end_of ! implied link automatically realized ! ends_before_end_of
+is_a: starts_after_start_of ! implied link automatically realized ! starts_after_start_of
+intersection_of: ends_before_end_of ! ends_before_end_of
+intersection_of: starts_after_start_of ! starts_after_start_of
+
+[Typedef]
+id: ends_before_end_of
+name: ends_before_end_of
+
+[Typedef]
+id: starts_after_start_of
+name: starts_after_start_of
+
