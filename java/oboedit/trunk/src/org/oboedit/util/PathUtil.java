@@ -396,7 +396,8 @@ public class PathUtil {
 			return best;
 		}
 
-		rootAlgorithm.setLinkDatabase(linkDatabase);
+		// I can't believe we'd need to do this AGAIN.
+//		rootAlgorithm.setLinkDatabase(linkDatabase);
 		TreePath shortestPath = null;
 
 		Iterator it = linkDatabase.getParents(link.getParent()).iterator();
@@ -412,6 +413,7 @@ public class PathUtil {
 							.getPathCount())
 				continue;
 
+			// else, this is the new shortest path
 			shortestPath = parentPath.pathByAddingChild(link);
 			// no path can ever be shorter than 4
 			if (shortestPath.getPathCount() <= 4)
@@ -447,6 +449,7 @@ public class PathUtil {
 		Vector<TreePath> out = new Vector<TreePath>();
 
 		// make the change here!
+		// Make WHAT change here??? --NH
 		if (lookedAt.containsKey(link)) {
 			out = (Vector) lookedAt.get(link);
 			return (Vector) out.clone();
