@@ -86,7 +86,12 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String mode = SELECTED_TO_ROOT;
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
-	protected GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNewInstance = new GraphvizViewerComponentConfigurationNew();
+	/**
+	 * Holds all the configuration options to call graphviz.
+	 * 
+	 * There should be only one instance of it !! 
+	 */
+	GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNewInstance = new GraphvizViewerComponentConfigurationNew();
 
 	protected float ranksep = .1f;
 	protected float nodesep = .1f;
@@ -166,9 +171,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		System.out.println("GraphvizCanvas: getConfiguration() method: returned " +
-		"GraphvizViewerComponentConfigurationNew()");
-		return new GraphvizViewerComponentConfigurationNew();
+		System.out.println("GraphvizCanvas: getConfiguration() method : config = " + graphvizViewerComponentConfigurationNewInstance);
+		return graphvizViewerComponentConfigurationNewInstance;
 		
 	}
 
@@ -212,14 +216,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	public void setConfiguration(ComponentConfiguration config) {
 
-		if (graphvizViewerComponentConfigurationNewInstance instanceof GraphvizViewerComponentConfigurationNew
-				&& graphvizViewerComponentConfigurationNewInstance != null) {
-			this.graphvizViewerComponentConfigurationNewInstance = (GraphvizViewerComponentConfigurationNew) graphvizViewerComponentConfigurationNewInstance;
+		if (config != null && config instanceof GraphvizViewerComponentConfigurationNew) {
+			this.graphvizViewerComponentConfigurationNewInstance = (GraphvizViewerComponentConfigurationNew) config;
 		}
 		setDoFiltering(this.graphvizViewerComponentConfigurationNewInstance.getDoFiltering());
 		reloadImage();
 		
 		System.out.println("GraphvizCanvas: setConfiguration() method.");
+		System.out.println("GraphvizCanvas : setConfiguration() : config = " + graphvizViewerComponentConfigurationNewInstance);
 
 	}
 
@@ -268,7 +272,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected ColorPair getColor(Link tr) {
-		System.out.println("GraphvizCanvas: ColorPair getColor() method.");
+		// System.out.println("GraphvizCanvas: ColorPair getColor() method.");
 
 		ColorPair c = (ColorPair) graphvizViewerComponentConfigurationNewInstance.getColorMap().get(
 				tr.getType().getID());
@@ -282,7 +286,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected Color getColor(String s) {
 		
-		System.out.println("GraphvizCanvas: Color getColor() method.");
+		// System.out.println("GraphvizCanvas: Color getColor() method.");
 
 		if (s == null)
 			return null;
@@ -479,6 +483,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		
 		System.out.println("GraphvizCanvas: reloadImage() method.");
 
+		System.out.println("GraphvizCanvas: reloadImage() : " + graphvizViewerComponentConfigurationNewInstance.getLabelFont());
 		
 		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {

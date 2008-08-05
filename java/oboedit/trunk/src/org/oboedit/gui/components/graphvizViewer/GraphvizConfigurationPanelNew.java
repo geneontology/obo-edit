@@ -82,14 +82,14 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	JLabel noTypeLabel = new JLabel("no type selected");
 	final FontChooser linkFontChooser = new FontChooser();
 	final FontChooser nodeFontChooser = new FontChooser();
-	protected GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNew = new GraphvizViewerComponentConfigurationNew();
-	final JTextField appPathField = new JTextField(graphvizViewerComponentConfigurationNew.getDotPath());
+	GraphvizViewerComponentConfigurationNew graphvizViewerComponentConfigurationNew;
+	final JTextField appPathField;
 	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
 			noTypeLabel, new Vector(), true, true, false, true, false);
 	final JDialog pane = new JDialog((Frame) null, true);
 	protected JPanel backgroundColorPanel = new JPanel();
 	protected JColorChooser backgroundColorChooser = new JColorChooser();
-	Vector data = graphvizViewerComponentConfigurationNew.getNamedColorList();
+	Vector data;
 
 
 
@@ -98,6 +98,17 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	 */
 	public GraphvizConfigurationPanelNew(GraphvizCanvas graphvizCanvasInstance) {
 
+		
+		this.graphvizCanvasInstance = graphvizCanvasInstance;
+
+		this.graphvizViewerComponentConfigurationNew = graphvizCanvasInstance.graphvizViewerComponentConfigurationNewInstance;
+		appPathField = new JTextField(graphvizViewerComponentConfigurationNew.getDotPath());		
+		 data = graphvizViewerComponentConfigurationNew.getNamedColorList();
+		//This section where the panels are set up is only run when the component is first 
+		//opened or when OBO-Edit is started with the component already open. 
+		//It is not run every time you click the tick icon to open the 
+		//config window. 
+		
 		System.out.println("GraphvizConfigurationPanelNew: Setting up GUI.");
 		System.out.println("GraphvizConfigurationPanelNew: graphvizCanvasInstance set to " + graphvizCanvasInstance);
 		
@@ -300,8 +311,9 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		});
 
 
-		this.graphvizCanvasInstance = graphvizCanvasInstance;
+		System.out.println("GraphvizConfigurationPanelNew: config GUI now set up.");
 		System.out.println("GraphvizConfigurationPanelNew: graphvizCanvasInstance set to " + graphvizCanvasInstance);
+		System.out.println("GraphvizConfigurationPanelNew: graphvizViewerComponentConfigurationNew = " + graphvizViewerComponentConfigurationNew);
 
 		
 	}
@@ -332,6 +344,8 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	public void commit() {
 		
 		System.out.println("GraphvizConfigurationPanelNew: commit() run.");
+		System.out.println("GraphvizConfigurationPanelNew: graphvizViewerComponentConfigurationNew = " + graphvizViewerComponentConfigurationNew);
+
 		graphvizViewerComponentConfigurationNew.setDotPath(appPathField.getText());
 		graphvizViewerComponentConfigurationNew.setLabelFont(linkFontChooser.getChosenFont());
 		graphvizViewerComponentConfigurationNew.setNodeFont(nodeFontChooser.getChosenFont());
@@ -341,27 +355,30 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 		graphvizViewerComponentConfigurationNew.setFlipOver(flipoverBox.isSelected());
 		graphvizViewerComponentConfigurationNew.setShowIDs(showIDsBox.isSelected());
 		
+		System.out.println("GraphvizConfigurationPanelNew: commit() : " + graphvizViewerComponentConfigurationNew.getLabelFont());
+		
 		for (int i = 0; i < typeColorList.getData().size(); i++) {
 			Object o = typeColorList.getData().get(i);
 			if (o instanceof TypeColorPair) {
 				TypeColorPair tc = (TypeColorPair) o;
-				System.out.println("GraphvizConfigurationPanelNew: o is instance of TypeColorPair and o = " + o);
+				// System.out.println("GraphvizConfigurationPanelNew: o is instance of TypeColorPair and o = " + o);
 				graphvizViewerComponentConfigurationNew.getColorMap().put(tc.getTypeID(), tc.getPair());
 
 			
 			} else if (o instanceof NamedColor) {
-				System.out.println("GraphvizConfigurationPanelNew: o is instance of NamedColor and o = " + o);
+				//System.out.println("GraphvizConfigurationPanelNew: o is instance of NamedColor and o = " + o);
 				NamedColor nc = (NamedColor) o;
-				System.out.println("GraphvizConfigurationPanelNew: NamedColor nc = " + nc);
+				//System.out.println("GraphvizConfigurationPanelNew: NamedColor nc = " + nc);
 				
 				graphvizViewerComponentConfigurationNew.setNamedColor(nc.getName(), nc.getColor());
 			}
 		}
 
 		graphvizViewerComponentConfigurationNew.setViewerFormat((String) formatBox.getSelectedItem());
-
+		
+		graphvizCanvasInstance.graphvizViewerComponentConfigurationNewInstance = graphvizViewerComponentConfigurationNew;
+		
 		graphvizCanvasInstance.reloadImage();
-
 
 	}
 	
@@ -383,6 +400,8 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	@Override
 	public void init() {
 			
+		this.graphvizViewerComponentConfigurationNew = graphvizCanvasInstance.graphvizViewerComponentConfigurationNewInstance;
+		
 		System.out.println("GraphvizConfigurationPanelNew: init() run.");
 		System.out.println("GraphvizConfigurationPanelNew, init method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
 		//I'm not sure if any of the lines below are needed. 
@@ -429,7 +448,8 @@ public class GraphvizConfigurationPanelNew extends ConfigurationPanel {
 	public void setComponent(GUIComponent comp) {
 		if (comp instanceof GraphvizCanvas) {
 			graphvizCanvasInstance = (GraphvizCanvas)comp;
-			System.out.println("GraphvizConfigurationPanelNew, setComponent Method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
+			System.out.println("GraphvizConfigurationPanelNew, setComponent method:  variable graphvizCanvasInstance = " + graphvizCanvasInstance);
+			System.out.println("GraphvizConfigurationPanelNew: graphvizViewerComponentConfigurationNew = " + graphvizViewerComponentConfigurationNew);
 			System.out.println("Config panel New : setComponent.");
 		}
 	}
