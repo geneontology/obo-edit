@@ -88,6 +88,7 @@ public class RemoveRedundantAction implements ClickMenuAction {
 				Collection<Explanation> explanations = reasoner
 						.getExplanations(link);
 				for (Explanation explantion : explanations) {
+					// TODO - make this configurable
 					if (explantion.getExplanationType().equals(
 							ExplanationType.TRANSITIVITY)) {
 						redundantLinks.add(link);
