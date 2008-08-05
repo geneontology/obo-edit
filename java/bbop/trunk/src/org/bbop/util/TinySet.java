@@ -10,7 +10,7 @@ import org.apache.log4j.*;
 public class TinySet<T> implements Set<T> {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(TinySet.class);
+//	protected final static Logger logger = Logger.getLogger(TinySet.class);
 
 	protected Collection<T> list;
 
