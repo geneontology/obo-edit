@@ -30,6 +30,8 @@ public class DefaultTermModel implements TermModel {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultTermModel.class);
 
+        protected boolean SHOW_DISJOINTS_AS_LEAVES = true;  // ! Make this settable
+
 	protected Vector listeners = new Vector();
 
 	protected boolean showTerms = true;
@@ -371,6 +373,11 @@ public class DefaultTermModel implements TermModel {
 	public boolean isLeaf(Object parent) {
 		if (answerLeafHonestly) {
 			if (parent instanceof Relationship) {
+				OBOProperty relationshipType = ((Relationship)parent).getType();
+				if (SHOW_DISJOINTS_AS_LEAVES && relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+					return true;
+				}
+
 				LinkedObject lo = ((Relationship) parent).getChild();
 				if (TermUtil.isObsolete(lo)) {
 					return getReplacements((ObsoletableObject) lo).isEmpty();
@@ -491,7 +498,7 @@ public class DefaultTermModel implements TermModel {
 			}
 		}
 		// There are times when we don't want this to fire, because it collapses the tree.
-//		logger.debug("DefaultTermModel.reload: fireTreeStructureChanged"); // DEL
+		logger.debug("DefaultTermModel.reload: fireTreeStructureChanged"); // DEL
 		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(PathUtil.ROOT)));
 	}
 
@@ -535,6 +542,7 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	public List wrapSet(Iterator it) {
+		boolean HIDE_DISJOINT = true;
 		List out = new ArrayList();
 		while (it.hasNext()) {
 			Object o = it.next();
@@ -543,9 +551,15 @@ public class DefaultTermModel implements TermModel {
 				LinkedObject io = (LinkedObject) o;
 				link = new OBORestrictionImpl(io);
 			} else if (o instanceof Link) {
+				// We can keep the disjoint relations out of the OBOTermPanel this way...
+//				if (HIDE_DISJOINT && ((Link)o).getType() != null && ((Link)o).getType().equals(OBOProperty.DISJOINT_FROM)) {
+//					logger.debug("wrapSet: not adding " + o); // DEL
+//					continue;
+//				}
 				link = (Link) o;
 			}
 
+//			logger.debug("wrapSet: link = " + link); // DEL
 			VectorUtil.insertSorted(out, comparator, link);
 		}
 		return out;
@@ -589,7 +603,6 @@ public class DefaultTermModel implements TermModel {
 		else if (parent instanceof Relationship) {
 			LinkedObject lo = (LinkedObject) SessionManager.getManager().getSession()
 					.getObject(((Relationship) parent).getChild().getID());
-
 			List out = (List) childCache.get(lo);
 
 			if (out == null) {
@@ -597,8 +610,9 @@ public class DefaultTermModel implements TermModel {
 					out = wrapSet(getReplacements((ObsoletableObject) lo));
 				} else {
 					Collection<Link> children = linkDatabase.getChildren(lo);
-					Collection<Link> realChildren = SessionManager.getManager()
-							.getSession().getLinkDatabase().getChildren(lo);
+					// Not used?!
+//					Collection<Link> realChildren = SessionManager.getManager()
+//							.getSession().getLinkDatabase().getChildren(lo);
 					out = wrapSet(children);
 				}
 				childCache.put(lo, out);
