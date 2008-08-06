@@ -259,8 +259,8 @@ public class HistoryGenerator implements Serializable {
 			Iterator it2 = lio.getParents().iterator();
 			while (it2.hasNext()) {
 				Link link = (Link) it2.next();
-				Link foundLink = HistoryUtil.findParentRelNoIntersection(link,
-						lnewio);
+				//Link foundLink = HistoryUtil.findParentRelNoIntersection(link,lnewio);
+				Link foundLink = HistoryUtil.findParentRel(link,lnewio);
 				if (foundLink == null) {
 					history.addItem(new DeleteLinkHistoryItem(link));
 				} else {

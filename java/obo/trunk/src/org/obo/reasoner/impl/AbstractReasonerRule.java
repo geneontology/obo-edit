@@ -45,6 +45,14 @@ public abstract class AbstractReasonerRule implements ReasonerRule {
 
 	public Collection<Explanation> getImplications(
 			ReasonedLinkDatabase reasoner, Link newLink) {
+		/*
+		 * normally we ignore intersection (N+S) links as they are trivially redundant with
+		 * the equivalent normal (N) link, which is always inferred by GenusDifferentiaRule.
+		 * The exception is GenusDifferentiaRule itself, which infers the normal link.
+		 * 
+		 * This appears to be the sole point of having getImplications delegate to doGetImplications...
+		 * [CJM]
+		 */
 		if (!allowIntersections && TermUtil.isIntersection(newLink))
 			return null;
 		long time = System.nanoTime();

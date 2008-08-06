@@ -1,10 +1,12 @@
 package org.obo.util;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class ReasonerUtil {
 				.getExplainedObject());
 		return explanations != null && explanations.contains(e);
 	}
-	
+
 	/**
 	 * @param reasoner
 	 * @param link
@@ -49,7 +51,7 @@ public class ReasonerUtil {
 			logger.info("  Explanation: "+e);
 			if (e.getExplanationType().equals(ExplanationType.GIVEN))
 				return Collections.singleton(link);
-			
+
 			// sum over evidence
 			Collection<PathCapable> path = new LinkedList<PathCapable>();
 			for (Link evidence : e.getEvidence()) {
@@ -67,7 +69,7 @@ public class ReasonerUtil {
 		newPath.addAll(shortestPath);
 		return newPath;
 	}
-	
+
 	public static Collection<PathCapable> getShortestExplanationPath(ReasonedLinkDatabase reasoner,
 			LinkedObject child, OBOProperty prop, LinkedObject parent) {
 		Link link = new OBORestrictionImpl(child,prop,parent);
@@ -137,7 +139,7 @@ public class ReasonerUtil {
 		if (!(linkDatabase instanceof ReasonedLinkDatabase))
 			return false;
 		Collection<Explanation> exps = ((ReasonedLinkDatabase) linkDatabase)
-				.getExplanations(link);
+		.getExplanations(link);
 		boolean foundGenusDiff = false;
 		for (Explanation e : exps) {
 			if (!e.getExplanationType().equals(ExplanationType.GENUS)
@@ -159,7 +161,7 @@ public class ReasonerUtil {
 		Collection<Link> parents = new LinkedList<Link>(linkDatabase
 				.getParents(inLink.getChild()));
 		Collection<Link> children = linkDatabase
-				.getChildren(inLink.getParent());
+		.getChildren(inLink.getParent());
 		OBORestriction scratch = new OBORestrictionImpl();
 		for (Link link : parents) {
 			if (TermUtil.isIntersection(link))
@@ -212,7 +214,7 @@ public class ReasonerUtil {
 			boolean sawType = parentLink.getType().equals(link.getType());
 
 			Iterator it2 = linkDatabase.getParents(parentLink.getParent())
-					.iterator();
+			.iterator();
 
 			// for each grandparent link accessible via the current
 			// parent link...
@@ -228,7 +230,7 @@ public class ReasonerUtil {
 				if (link.getParent().equals(gpLink.getParent())
 						&& (((!sawType || link.getType().isTransitive()) && link
 								.getType().equals(gpLink.getType())) || (sawType && gpLink
-								.getType().equals(OBOProperty.IS_A)))) {
+										.getType().equals(OBOProperty.IS_A)))) {
 					return true;
 				}
 			}
@@ -262,7 +264,7 @@ public class ReasonerUtil {
 		}
 		return out;
 	}
-	
+
 	public static List<LinkedObject> getMostSpecific(
 			ReasonedLinkDatabase reasoner, Collection<LinkedObject> objects,
 			OBOProperty property) {
@@ -301,9 +303,9 @@ public class ReasonerUtil {
 			// aren't sub or superclasses of each other, they
 			// are disjoint
 			Collection<LinkedObject> a_superClasses = linkDatabase
-					.getParentsOfType(a, OBOProperty.IS_A);
+			.getParentsOfType(a, OBOProperty.IS_A);
 			Collection<LinkedObject> b_superClasses = linkDatabase
-					.getParentsOfType(b, OBOProperty.IS_A);
+			.getParentsOfType(b, OBOProperty.IS_A);
 			a_superClasses.retainAll(b_superClasses);
 			return a_superClasses.size() > 0;
 		} else {
@@ -320,15 +322,42 @@ public class ReasonerUtil {
 		}
 	}
 
-	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link) {
+	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
 		if (TermUtil.isIntersection(link))
-			return false;
+			return false; // N+S conditions are never false
+		if (TermUtil.isImplied(link))
+			return false; // only asserted links can be redundant
+		for (Explanation exp : reasoner.getExplanations(link)) {
+			if (exp.getExplanationType().equals(ExplanationType.GIVEN)) {
+				continue;
+			}
+			if (isRepairMode) {
+				if (exp.getExplanationType().equals(ExplanationType.GENUS))
+					continue;
+				if (exp.getExplanationType().equals(ExplanationType.DIFFERENTIA))
+					continue;
+				if (exp.getExplanationType().equals(ExplanationType.INTERSECTION))
+					continue;
+			}
+			return true;			
+		}
+		return false;
+	}
+
+	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link) {
+		return isRedundant(reasoner,link,false);
+	}
+	
+	@Deprecated
+	public static boolean isRedundantDEPRECATED(ReasonedLinkDatabase reasoner, Link link) {
+		if (TermUtil.isIntersection(link))
+			return false; // N+S conditions are never false
 		Collection<Explanation> exps = reasoner.getExplanations(link);
-		
+
 		// why was this here? --CJM
 		//if (exps.size() == 1)
 		//	return false;
-		
+
 		Iterator<Explanation> it2 = exps.iterator();
 		boolean hasGiven = false;
 		boolean nonGenus = false;
@@ -344,6 +373,20 @@ public class ReasonerUtil {
 		}
 		return hasGiven && nonGenus;
 	}
+
+	public static Collection<Link> getAllRedundantLinks(ReasonedLinkDatabase reasoner, LinkDatabase ldb) {
+		Collection<Link> redundantLinks = new LinkedHashSet<Link>();
+		Iterator<Link> it = TermUtil.getAllLinks(ldb);
+
+		while (it.hasNext()) {
+			Link link = it.next();
+			if (isRedundant(reasoner,link,false)) {
+				redundantLinks.add(link);
+			}
+		}
+		return redundantLinks;
+	}
+
 
 	public static boolean isSubclass(LinkDatabase linkDatabase, OBOProperty a,
 			OBOProperty b) {
@@ -464,8 +507,8 @@ public class ReasonerUtil {
 		Collection<OBOClass> out = new LinkedList<OBOClass>();
 		for (Link parentLink : oboClass.getParents()) {
 			if (parentLink.getType().getName() != null
-			    && parentLink.getType().getName().equals(propName)
-			    && TermUtil.isIntersection(parentLink))
+					&& parentLink.getType().getName().equals(propName)
+					&& TermUtil.isIntersection(parentLink))
 				out.add(TermUtil.castToClass(parentLink.getParent()));
 		}
 		return out;
