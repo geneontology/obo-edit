@@ -189,34 +189,30 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			boolean highlighted, boolean clickTarget, boolean tabRow,
 			boolean ignoreSelection, int row, boolean hasFocus) {
 		try {
-//			setOpaque(false);
+			setOpaque(false); // Need in order to make dragged images transparent
 			multiIcon.clearIcons();
 			if (value.equals(PathUtil.OBSOLETE)) {
 				setText("Obsolete");
 				setForeground(Color.red);
 				setBorder(null);
-				setOpaque(false);
 				setBackground(null);
 				return this;
 			} else if (value.equals(PathUtil.TYPES)) {
 				setText("Relations");
 				setForeground(Color.blue);
 				setBorder(null);
-				setOpaque(false);
 				setBackground(null);
 				return this;
 			} else if (value.equals(PathUtil.INSTANCES)) {
 				setText("Instances");
 				setForeground(Color.green);
 				setBorder(null);
-				setOpaque(false);
 				setBackground(null);
 				return this;
 			} else if (value.equals(PathUtil.CLASSES)) {
 				setText("Classes");
 				setForeground(Color.black);
 				setBorder(null);
-				setOpaque(false);
 				setBackground(null);
 				return this;
 			} else
@@ -225,8 +221,8 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			multiIcon.addIcon(linkIcon);
 			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
-			linkIcon.setLineWidth(1);
-			linkIcon.setLineType(LineType.SOLID_LINE);
+//			linkIcon.setLineWidth(1);  // Already the default
+// 			linkIcon.setLineType(LineType.SOLID_LINE);  // Already the default
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
@@ -280,10 +276,6 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			Icon icon = null;
 
 			if (link.getType() != null) {
-				// if (link.getType().equals(OBOProperty.IS_A))
-				// icon = new SVGIcon("file:/Users/jrichter/drawing.svg",
-				// Preferences.getPreferences().getFont().getSize());
-				// else
 				icon = Preferences.getPreferences().getIconForRelationshipType(
 					link.getType());
 			}
@@ -322,6 +314,8 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
   			if (path != null && PathUtil.pathIsCircular(path)) {
 // // 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
  				setForeground(circularLinkColor);
+//				linkIcon.setLineType(LineType.ZIGZAG_LINE);
+				linkIcon.setColor(circularLinkColor);
   			}
 // 			else  // don't need--default is enabled anyway
 // 				setEnabled(true);
@@ -388,7 +382,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 		    logger.info("getTreeCellRendererComponent: caught error.  Stack trace:");
 			t.printStackTrace();
 		}
-		validate();
+		validate();  // Need?
 		return this;
 	}
 }
