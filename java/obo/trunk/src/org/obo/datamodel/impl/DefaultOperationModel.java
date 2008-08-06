@@ -1545,7 +1545,11 @@ public class DefaultOperationModel implements OperationModel {
 		StringRelationship sr = item.getRel();
 
 		Link tr = getRealRel(sr);
-		tr = HistoryUtil.findChildRelNoIntersection(tr, tr.getParent());
+		
+		// use the intersection status when finding the link; otherwise we can accidentally delete
+		// the wrong link in the cases where we have two links, one with intersection status set
+		// tr = HistoryUtil.findChildRelNoIntersection(tr, tr.getParent());
+		tr = HistoryUtil.findChildRel(tr, tr.getParent());
 
 		if (tr == null) {
 			return new OperationWarning("Couldn't find link " + sr
@@ -1675,7 +1679,8 @@ public class DefaultOperationModel implements OperationModel {
 					+ "relationship type " + "change with missing "
 					+ "relationship type " + sr.getType());
 		}
-		tr = HistoryUtil.findChildRelNoIntersection(tr, tr.getParent());
+		//tr = HistoryUtil.findChildRelNoIntersection(tr, tr.getParent());
+		tr = HistoryUtil.findChildRel(tr, tr.getParent());
 
 		if (tr == null) {
 			OperationWarning cwarning = new OperationWarning(

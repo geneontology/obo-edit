@@ -90,7 +90,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 		return config;
 	}
 	
-	
+
 	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
 			Object o) throws DataAdapterException {
 		if (!(configuration instanceof OBOAdapterConfiguration)) {
@@ -189,21 +189,25 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 					LinkedObject lo = (LinkedObject) io;
 					for (Link link : fullReasoner.getParents(lo)) {
 						stream.print(link.getChild().getID());
+						if (ioprofile.isIncludeNames())
+							stream.print(" "+link.getChild().getName());
+							
 						stream.print("\t");
 						stream.print(link.getType().getID());
 						stream.print("\t");
 						stream.print(link.getParent().getID());
+						if (ioprofile.isIncludeNames())
+							stream.print(" "+link.getParent().getName());
+
 						stream.print("\t");
 						stream.print(TermUtil.isImplied(link) ? "implied" : "asserted");
 						stream.print("\t");
 						stream.print(TermUtil.isIntersection(link) ? "intersection" : "link");
 						stream.print("\t");
-						stream.print(ReasonerUtil.isRedundant(fullReasoner, link) ? "redundant" : "");
+						stream.print(ReasonerUtil.isRedundant(fullReasoner, link, false) ? "redundant" : "");
 						if (ioprofile.isIncludeExplanations()) {
 							stream.print("\t");
 							stream.print(fullReasoner.getExplanations(link));
-							stream.print(ReasonerUtil.isRedundant(fullReasoner, link) ? "redundant" : "");
-							
 						}
 						stream.print("\n");
 					}

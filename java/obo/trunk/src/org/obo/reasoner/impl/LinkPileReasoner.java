@@ -23,11 +23,28 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
+/**
+ * Algorithm:
+ * 
+ * <ul>
+ *  <li>initialize the linkPile with all asserted links
+ *  <li>LOOP until linkPile is empty:
+ *  <ul>
+ *   <li>get the first link in the pile
+ *   <li>foreach rule, trigger rule using link, add inferred links to the pile
+ *  </ul>
+ *  <li>trigger all end rules
+ * </ul>
+ */
 public class LinkPileReasoner extends AbstractReasoner {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(LinkPileReasoner.class);
 
+	/**
+	 * the LPR works by maintaining a linkPile. initialized on the doReasoning() step,
+	 * 
+	 */
 	protected Collection<Link> linkPile;
 	protected List<ReasonerRule> rules = new ArrayList<ReasonerRule>();
 	protected int maxLinkPileSize = 0;
@@ -35,6 +52,11 @@ public class LinkPileReasoner extends AbstractReasoner {
 	protected HashMap<Link, Link> linkMap;
 	protected boolean lowMemoryMode = false;
 
+	/**
+	 * a Link that has been inferred by the LinkPileReasoner.
+	 *
+	 * A triple child-type-parent; immutable, for faster hashing
+	 */
 	public static class ReasonerLink implements Link {
 
 		protected LinkedObject child;
@@ -163,8 +185,8 @@ public class LinkPileReasoner extends AbstractReasoner {
 	}
 
 	protected void addDefaultRules() {
-            // SymmetryRule is weakly deprecated - we rarely have type-level symmetric relations
-            // addRule(new SymmetryRule());
+		// SymmetryRule is weakly deprecated - we rarely have type-level symmetric relations
+		// addRule(new SymmetryRule());
 		addRule(new SimpleTransitivityRule());
 		addRule(new GenusDifferentiaRule());
 		addRule(new IntersectionRule());
@@ -239,6 +261,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 		return linkPile;
 	}
 
+	/**
+	 * remove and return the next link on the linkPile
+	 * @return
+	 */
 	protected Link popLink() {
 		if (linkPile instanceof Queue)
 			return ((Queue<Link>) linkPile).poll();
@@ -250,6 +276,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 		}
 	}
 
+	/**
+	 * iterates until the linkPile is empty,
+	 *   take first link, fire all rules from that link
+	 */
 	protected void siftPile() {
 		long time;
 		long addTimeFalse = 0;
@@ -272,8 +302,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 			if (isLookedAt(link))
 				continue;
 			else
-				setLookedAt(link);
+				setLookedAt(link); // TODO - investigate this [CJM]
+			
 			for (ReasonerRule rule : rules) {
+				// what inferences are entailed by triggering the rule with this link?
 				Collection<Explanation> exps = rule.getImplications(this, link);
 				if (exps == null)
 					continue;
@@ -315,6 +347,8 @@ public class LinkPileReasoner extends AbstractReasoner {
 
 	protected boolean addExplanation(Explanation explanation) {
 		Link link = (Link) explanation.getExplainedObject();
+		
+		// add link to impliedLinkDatabase, and attach explanation to link
 		explain(link, explanation);
 		return true;
 	}
@@ -439,11 +473,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 	}
 
 	/**
-	 * 
+	 * this method appears to uniqueify links
 	 * @param link
 	 * @return
 	 */
-	// TODO - THIS NEEDS EXPLAINED!! -- CJM
 	// I made this public for testing purposes
 	public Link findRealLink(Link link) {
 		if (lowMemoryMode) {
@@ -452,7 +485,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 			if (linkMap == null)
 				linkMap = new HashMap<Link, Link>();
 			Link candidate = linkMap.get(link);
-			// empirical nodes: candidate seems to be the one with explanations attached
+			// empirical notes: candidate seems to be the one with explanations attached
 			if (candidate == null)
 				linkMap.put(link, link);
 			else
@@ -461,7 +494,11 @@ public class LinkPileReasoner extends AbstractReasoner {
 		}
 	}
 
-	@Override // BUT WHY OVERRIDE??? --- CJM
+	/* 
+	 * I believe that this overrides the AbstractReasoner method so that the ReasonerLink can
+	 * maintain its own explanations, rather than relying on the reasoner to track these -- CJM
+	 */
+	@Override
 	protected void internalAddExplanation(Link link, Explanation explanation) {
 		if (link instanceof ReasonerLink
 				&& explanation instanceof AbstractExplanation) {
@@ -469,5 +506,6 @@ public class LinkPileReasoner extends AbstractReasoner {
 			((ReasonerLink) link)
 					.addExplanation((AbstractExplanation) explanation);
 		}
+		// if not a ReasonerLink then it is presumably a given (asserted) link
 	}
 }

@@ -58,12 +58,16 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		this.storeGivenLinks = storeGivenLinks;
 	}
 
+	/**
+	 * populate impliedLinkDatabase from  linkDatabase
+	 */
 	protected abstract void doReasoning();
 
 	protected abstract void doAddLink(Link link);
 
 	protected MutableLinkDatabase createImpliedLinkDatabase(
 			LinkDatabase linkDatabase) {
+		// linkDatabase argument ignored? not overridden in LPR... [cjm]
 		return new DefaultMutableLinkDatabase(true);
 	}
 
@@ -205,9 +209,15 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		return ReasonerUtil.isRedundant(this, link);
 	}
 
+	/**
+	 *  called before doReasoner() on recache() --
+	 *   resets impliedLinkDatabase, explanationMap, explanationDeps
+	 */
 	protected void initReasoner() {
 		running = true;
 		fireStart();
+		
+		// argument appears to be ignored -- CJM
 		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
 		explanationMap =
 			new MultiHashSetMap<Link, Explanation>();
@@ -299,6 +309,12 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		return exp.getExplanationType().equals(ExplanationType.GIVEN);
 	}
 
+	/**
+	 * Add a link to the impliedLinkDatabase, and also cache the
+	 * dependency between the link and its explanation (if not given)
+	 * @param link
+	 * @param explanation
+	 */
 	protected void explain(Link link, Explanation explanation) {
 		if (storeGivenLinks || !isGiven(explanation)) {
 			internalAddLink(link);
@@ -320,6 +336,9 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		impliedLinkDatabase.addParent(link);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.obo.reasoner.ReasonedLinkDatabase#recache()
+	 */
 	public long recache() {
 		long time = System.currentTimeMillis();
 

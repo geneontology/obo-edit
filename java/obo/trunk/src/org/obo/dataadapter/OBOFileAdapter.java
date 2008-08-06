@@ -70,6 +70,8 @@ public class OBOFileAdapter implements OBOAdapter {
 		protected SemanticParser semanticParser;
 		
 		protected boolean includeExplanations = false;
+		
+		protected boolean includeNames = false;
 
 
 		public OBOAdapterConfiguration() {
@@ -149,7 +151,14 @@ public class OBOFileAdapter implements OBOAdapter {
 			this.includeExplanations = includeExplanations;
 		}
 		
-		
+		public boolean isIncludeNames() {
+			return includeNames;
+		}
+
+		public void setIncludeNames(boolean includeNames) {
+			this.includeNames = includeNames;
+		}
+
 		
 	}
 

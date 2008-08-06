@@ -119,21 +119,6 @@ public class HistoryUtil {
 		return null;
 	}
 
-	public static Link findChildRel(Link tr, LinkedObject t) {
-		if (t == null)
-			if (tr.getParent() == null)
-				return tr;
-			else {
-				return null;
-			}
-		Iterator it = t.getChildren().iterator();
-		while (it.hasNext()) {
-			Link ptr = (Link) it.next();
-			if (TermUtil.equals(ptr, tr))
-				return ptr;
-		}
-		return null;
-	}
 
 	/**
 	 * Returns the {@link TermCategory} with the given name in the given
@@ -158,6 +143,41 @@ public class HistoryUtil {
 		return findCategory(cat.getName(), session);
 	}
 
+	/**
+	 * given a link tr, and an object t, find the child link of t that matches tr
+	 * 
+	 * if t is null return tr
+	 * 
+	 * This presumably is here to prevent the duplication of link objects..? [CJM]
+	 * @param tr
+	 * @param t
+	 * @return
+	 */
+	public static Link findChildRel(Link tr, LinkedObject t) {
+		if (t == null)
+			if (tr.getParent() == null)
+				return tr;
+			else {
+				return null;
+			}
+		Iterator it = t.getChildren().iterator();
+		while (it.hasNext()) {
+			Link ptr = (Link) it.next();
+			if (TermUtil.equals(ptr, tr))
+				return ptr;
+		}
+		return null;
+	}
+
+	/**
+	 * As for findChildRel, but ignore the intersection status of the link
+	 * 
+	 * Why do this? Consider deprecating -- CJM
+	 * @param tr
+	 * @param t
+	 * @return
+	 */
+	@Deprecated
 	public static Link findChildRelNoIntersection(Link tr, LinkedObject t) {
 		if (t == null)
 			if (tr.getParent() == null)
@@ -173,6 +193,17 @@ public class HistoryUtil {
 		return null;
 	}
 
+	public static Link findParentRel(Link tr, LinkedObject t) {
+		Iterator it = t.getParents().iterator();
+		while (it.hasNext()) {
+			Link ctr = (Link) it.next();
+			if (TermUtil.equals(ctr, tr))
+				return ctr;
+		}
+		return null;
+	}
+
+	@Deprecated
 	public static Link findParentRelNoIntersection(Link tr, LinkedObject t) {
 		Iterator it = t.getParents().iterator();
 		while (it.hasNext()) {
@@ -183,15 +214,6 @@ public class HistoryUtil {
 		return null;
 	}
 
-	public static Link findParentRel(Link tr, LinkedObject t) {
-		Iterator it = t.getParents().iterator();
-		while (it.hasNext()) {
-			Link ctr = (Link) it.next();
-			if (TermUtil.equals(ctr, tr))
-				return ctr;
-		}
-		return null;
-	}
 
 	public static Namespace findNamespace(Namespace ns, OBOSession session) {
 		return HistoryUtil.findNamespace(ns.getID(), session);
