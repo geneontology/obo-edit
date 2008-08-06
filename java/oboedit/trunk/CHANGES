@@ -1,9 +1,16 @@
 Changes in b44:
 - If user selects (in another component) too many things at once, Graph Editor
 will ignore the selection event rather than try to show all of the new
-selected terms (too slow).
+selected terms (too slow).  Also, if there are too many (>500) objects, the
+"Show->Everything" menu item in the GE is disabled.
+- I made disjoint_from relations show up as leaves in the OTE and Graph
+Editor, so you can't traverse them down an infinite path ("cat is
+disjoint_from dog is disjoint_from cat is..").
 - Fixed bug 2026858, "OTE loses little arrows when there's a pseudo-cycle".
 Now instead of losing their arrows and relation labels, the "circular"
-relations are shown in gray text rather than black.
+relations are shown in gray text rather than black.  (You won't see this with
+disjoint_from, since it now makes those leaves and you can't traverse them
+down to the repetitive point anyway.)
 - Spaced out text icons (e.g. disjoint_from) in OTE a bit for easier
 readability.
+
