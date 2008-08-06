@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -63,6 +62,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
@@ -139,6 +139,8 @@ import edu.umd.cs.piccolo.util.PPickPath;
 
 import org.apache.log4j.*;
 
+/*** This class does most of the work for the Graph Editor component */
+
 public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	ObjectSelector, RightClickMenuProvider, Filterable, FilteredRenderable {
 
@@ -147,7 +149,11 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected static final Object CURRENT_DECORATOR_ANIMATIONS = new Object();
 
-	public static final long DEFAULT_LAYOUT_DURATION = 1000;
+//	public static final long DEFAULT_LAYOUT_DURATION = 1000;
+	public static final long DEFAULT_LAYOUT_DURATION = 750;
+	
+	// If user selects (in another component) too many things at once, Graph Editor will ignore the selection event.
+	public static final short TOO_MANY_SELECTED = 10;
 
 	public static final Comparator LAYOUT_ORDERING_COMPARATOR = new Comparator() {
 
@@ -208,12 +214,29 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			Collection<?> pcs) {
 		Collection<IdentifiedObject> out = new HashSet<IdentifiedObject>();
 		for (Object pc : pcs) {
-			if (pc instanceof LinkedObject)
+			if (pc instanceof LinkedObject) {
 				out.add((LinkedObject) pc);
+//				logger.debug("GE.getLinkedObjectCollection: adding linkedobject " + pc); // DEL
+			}
 			else if (pc instanceof Link) {
-				out.add(((Link) pc).getChild());
-				if (((Link) pc).getParent() != null)
-					out.add(((Link) pc).getParent());
+				Link link = (Link) pc;
+				// Show disjoint relationships as leaves, so they can't be expanded further
+				if (SHOW_DISJOINTS_AS_LEAVES) {
+					OBOProperty relationshipType =  link.getType();
+					if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+//						logger.debug("GE.getLinkedObjectCollection: not including link " + pc); // 
+					}
+					else {
+						out.add(link.getChild());
+						if (link.getParent() != null)
+							out.add(link.getParent());
+					}
+				}
+				else {
+				    out.add(link.getChild());
+				    if (link.getParent() != null)
+					    out.add(link.getParent());
+				}
 			}
 		}
 		return out;
@@ -229,6 +252,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		}
 	};
 
+	// Is this really needed?
 	protected SelectionListener globalSelectionNotifier = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive()) {
@@ -275,6 +299,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		}
 
 		public void focusLost(FocusEvent e) {
+			logger.info("focusLost");  // DEL
 			destroyPopupFrame();
 		}
 
@@ -345,6 +370,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	protected Filter<?> termFilter;
 
 	protected List<ViewBehavior> viewBehaviors = new LinkedList<ViewBehavior>();
+
+        protected static boolean SHOW_DISJOINTS_AS_LEAVES = true;  // ! Make this settable
 
 	public LinkDatabaseCanvas(GraphLayout graphLayout) {
 		super();
@@ -441,8 +468,10 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void addVisibleObjects(Collection<? extends PathCapable> visible) {
 		Collection<IdentifiedObject> current = new HashSet<IdentifiedObject>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
-			if (io instanceof LinkedObject)
+			if (io instanceof LinkedObject) {
+//				logger.debug("GE: adding visible object " + io); // DEL
 				current.add((LinkedObject) io);
+			}
 		}
 		Collection<IdentifiedObject> loCol = getLinkedObjectCollection(visible);
 		current.addAll(loCol);
@@ -472,7 +501,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			remove(internalFrame);
 			internalFrame.dispose();
 			internalFrame = null;
-			repaint();
+//			repaint();  // ! Need?
 		}
 	}
 
@@ -759,13 +788,24 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public Collection<PathCapable> getVisibleObjects() {
+//		logger.debug("getVisibleObjects was called.  Considering " + linkDatabase.getObjects().szie() + " objects");
+//		(new Exception()).printStackTrace();
 		Collection<PathCapable> out = new HashSet<PathCapable>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
 				out.add(lo);
 				for (Link link : linkDatabase.getParents(lo)) {
-					out.add(link);
+					if (SHOW_DISJOINTS_AS_LEAVES && link.getParent() != null) {
+						OBOProperty relationshipType =  link.getType();
+						if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+//							logger.debug("GE.getVisibleObjects: not including link " + link); // 
+						}
+						else
+							out.add(link);
+					}
+					else
+						out.add(link);
 				}
 			}
 		}
@@ -1284,6 +1324,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	public void removeVisibleObjects(Collection<? extends PathCapable> visible) {
 		Collection<IdentifiedObject> current = new HashSet<IdentifiedObject>();
+		// ! Why do we have to rebuild current?  Couldn't we cache it?
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io instanceof LinkedObject)
 				current.add((LinkedObject) io);
@@ -1291,25 +1332,31 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		current.removeAll(getLinkedObjectCollection(visible));
 		// linkDatabase.setVisibleObjects(current, true);
 		linkDatabase.setVisibleObjects(current, false);
-
 	}
 
+	// This method gets called multiple times (2 or 3) when a selection is made.
 	public void select(final Selection selection) {
-//	    logger.info("LinkDatabaseCanvas.select: " + selection + ", expand = " + isExpandSelectionPaths()); // DEL
+		if (selection.getAllSelectedObjects().size() > TOO_MANY_SELECTED) {
+//			logger.debug("Too many selected objects for Graph Editor--ignoring selection.");
+			return;
+		}
 		this.selection = selection;
 		Collection<PathCapable> visible = getVisibleObjects();
 		int lastCount = visible.size();
 		for (PathCapable pc : selection.getAllSelectedObjects()) {
 			visible.add(pc);
 		}
+//		logger.debug("LinkDatabaseCanvas.select: " + selection + ", expand = " + isExpandSelectionPaths() + ", visible.size = " + visible.size()); // DEL
 		if (selection.getTermSubSelection() != null
 				&& !selection.getAllSelectedObjects().contains(
 						selection.getTermSubSelection()))
-			logger.info("weird selection");
+			logger.info("LinkDatabaseCanvas.select: weird selection: " + selection);
 		if (selection.getTermSubSelection() != null)
 			visible.add(selection.getTermSubSelection());
+		// Do we really need to do this here?
 		fireSelectionEvent(new SelectionEvent(this, selection));
 		if (visible.size() != lastCount) {
+			// Can we optimize this by not re-setting the ones that were already set?
 			setVisibleObjects(visible);
 		}
 		if (selection.getTermSubSelection() != null) {
