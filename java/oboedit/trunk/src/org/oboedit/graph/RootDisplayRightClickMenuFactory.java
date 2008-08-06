@@ -15,6 +15,8 @@ import javax.swing.JMenuItem;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.PathCapable;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.TermUtil;
@@ -30,6 +32,8 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(RootDisplayRightClickMenuFactory.class);
+
+	protected final static short TOO_MANY_TO_SHOW_ALL = 500;
 
 	protected static interface EnabledStatusUpdatable {
 		public void updateEnabledStatus();
@@ -353,7 +357,14 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			@Override
 			public Collection<? extends LinkedObject> getShown(
 					Selection selection) {
-				return TermUtil.getTerms(canvas.getLinkDatabase());
+				Collection<IdentifiedObject> objects = canvas.getLinkDatabase().getObjects();
+				if (objects.size() > TOO_MANY_TO_SHOW_ALL) {
+					// This grays out the menu item
+					logger.info("GraphEditor Show Everything: too many objects to show (" + objects.size() + ")");
+					return new LinkedList<OBOClass>();
+				}
+				else
+					return TermUtil.getTerms(canvas.getLinkDatabase());
 			}
 		});
 		JMenuItem showAllParentsItem = createItemFromDisplayables(new ParentVisiblesProvider(
