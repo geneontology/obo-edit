@@ -295,6 +295,8 @@ public class LinkButtonBehavior implements ViewBehavior {
 
 		@Override
 		public void execute() throws Exception {
+			// This method is always called 5 times in a row for the 5 different button types.
+//		    logger.debug("LinkButtonBehavior.execute was called; loc = " + loc); // DEL
 			int buttonSize = 12;
 			int width = buttonSize;
 			int height = buttonSize;
@@ -323,7 +325,7 @@ public class LinkButtonBehavior implements ViewBehavior {
 			button.setPaint(Color.blue);
 			button.setTransparency(.5f);
 			if (!loc.isClose()) {
-				boolean grayedOut = true;
+//				boolean grayedOut = true;  // not used
 				Collection<LinkedObject> expandThese = new LinkedList<LinkedObject>();
 				Collection<Link> links = null;
 
@@ -362,8 +364,11 @@ public class LinkButtonBehavior implements ViewBehavior {
 						}
 					}
 				}
-				Collection<PathCapable> visible = canvas.getVisibleObjects();
-				if (loc.isExpand()) {
+				// This next block decides whether there are in fact any children that could be expanded
+				// or collapsed, so that we can then decide whether to gray out the expand or collapse arrow button.
+ 				if (loc.isExpand()) {
+					Collection<PathCapable> visible = canvas.getVisibleObjects();
+					// Remove already visible objects from expandThese; see later if there are any left.
 					Iterator<LinkedObject> it = expandThese.iterator();
 					while (it.hasNext()) {
 						LinkedObject lo = it.next();
@@ -372,7 +377,9 @@ public class LinkButtonBehavior implements ViewBehavior {
 						if (visible.contains(lo))
 							it.remove();
 					}
-				} else {
+				} else if (loc.isClose()) { // ?
+					// Here we are doing it again--could we cache visible?
+					Collection<PathCapable> visible = canvas.getVisibleObjects();
 					Iterator<LinkedObject> it = expandThese.iterator();
 					while (it.hasNext()) {
 						LinkedObject lo = it.next();
@@ -415,7 +422,6 @@ public class LinkButtonBehavior implements ViewBehavior {
 										: (expandThese.size() == 1 ? "parent"
 												: "parents"));
 					button.addAttribute(TooltipFactory.TEXT_KEY, tooltip);
-
 				}
 			}
 
