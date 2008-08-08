@@ -121,6 +121,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected ActionListener checkTask = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
+			// Could we maybe be more restrictive about doing timed text checks--only for certain events?
 			doTimedTextChecks(true, false);
 		}
 	};
@@ -165,19 +166,22 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	protected void doTimedTextChecks(boolean requireDirtyPaths, boolean onCommit) {
+		if (currentObject == null)
+			return;
 		if (requireDirtyPaths && 
 		    (this.dirtyPaths.size() == 0 || !hasChanges()))
 			return;
-		if (currentObject == null)
-			return;
 //		logger.debug("TextEditor.doTimedTextChecks: object = " + currentObject + ", requiredirty = " + requireDirtyPaths + ", onCommit = " + onCommit + ", " + dirtyPaths.size() + " dirtyPaths"); // DEL
 
+		// Why can't we just clear dirtyPaths rather than making a new one?  (Not yet tested)
+//		dirtyPaths.clear();
 		dirtyPaths = new LinkedList<FieldPath>();
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
 		for (ErrorDecorator decorator : decoratorMap.values()) {
 			decorator.clearWarnings();
 		}
+		// Why are these final?
 		final Collection<CheckWarning> warnings = VerificationManager
 				.getManager().runChecks(
 						SessionManager.getManager().getSession(),
@@ -291,6 +295,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected SelectionListener selectionListener = new SelectionListener() {
 
 		public void selectionChanged(SelectionEvent e) {
+//			logger.debug("TextEditor.selectionChanged: setObject " + e.getSelection().getTermSubSelection()); // DEL
 			setObject(e.getSelection().getTermSubSelection());
 		}
 	};
@@ -482,6 +487,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 //		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
+		// Why do we have to clone it?  I guess in case the user decides not to commit?
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
 		Collection<CheckWarning> warnings = VerificationManager.getManager()
@@ -531,6 +537,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		logger.info("Committed text edit(s) to " + currentObject.getName() + ".  There " +
 			    (fatal ? "were" : "were no") +
 			    " fatal errors.");
+		// Now can we release the clone?
+		clone = null;
 		return !fatal;
 	}
 
@@ -736,6 +744,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			c.setObject(io);
 		}
 
+		// Why can't we just clear dirtyPaths?  (Not yet tested)
+//		dirtyPaths.clear();
 		dirtyPaths = new LinkedList<FieldPath>();
 		warningMap.clear();
 		setWarningMap(warningMap);
