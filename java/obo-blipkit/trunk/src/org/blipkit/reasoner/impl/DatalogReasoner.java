@@ -213,7 +213,7 @@ public class DatalogReasoner extends AbstractReasoner {
 			Link link;
 			OBOProperty prop = (OBOProperty)getObject(((Atom)h.get("R")).name());
 			LinkedObject parent = (LinkedObject) getObject(((Atom)h.get("Y")).name());
-			System.out.println("sc: restr"+prop+" "+parent);
+			//System.out.println("sc: restr"+prop+" "+parent);
 			link = objectFactory.createOBORestriction(lo, prop, parent, false);
 			out.add(link);
 		}
@@ -231,7 +231,7 @@ public class DatalogReasoner extends AbstractReasoner {
 		for (Hashtable h : q.allSolutions()) {
 			Atom pidt = (Atom)h.get("Y");
 			String parentId = pidt.name();
-			System.out.println("sc:"+parentId);
+			//System.out.println("sc:"+parentId);
 			Link link;
 			//System.err.println("n-objs: "+linkDatabase.getObjects().size());
 			LinkedObject parent = (LinkedObject) getObject(parentId);
@@ -263,12 +263,12 @@ public class DatalogReasoner extends AbstractReasoner {
 	}
 	
 	protected int assertFact(String mod, String pred, Object... args) {
-		System.err.println("asserting "+pred);
+		//System.err.println("asserting "+pred);
 		Atom[] atomA = new Atom[args.length];
 		int i=0;
 		for (Object a: args) {
-			System.err.println("  ::"+a);
-			atomA[i] = new Atom((String)a);
+			//System.err.println("  ::"+a);
+			atomA[i] = new Atom(a.toString());
 			i++;
 		}
 		Compound iterm = new Compound(pred,atomA);
@@ -276,7 +276,7 @@ public class DatalogReasoner extends AbstractReasoner {
 		Compound term = new Compound(":",new Term[]{new Atom(mod),iterm});
 		Compound assertTerm = new Compound("assert",new Term[]{term});
 		new Query(assertTerm).allSolutions();
-		System.err.println("asserted "+assertTerm);
+		//System.err.println("asserted "+assertTerm);
 		return 0;
 	}
 	
@@ -295,7 +295,7 @@ public class DatalogReasoner extends AbstractReasoner {
 
 	@Override
 	protected void doReasoning() {
-		System.out.println("recaching. adding to datalog database");
+		//System.out.println("recaching. adding to datalog database");
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (io.isBuiltIn())
 				continue;
