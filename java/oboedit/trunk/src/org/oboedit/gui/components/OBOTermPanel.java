@@ -113,7 +113,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 //	protected static final Color lockGray = new Color(200, 200, 200);
-	protected static final Color secondaryGray = new Color(249, 249, 249);  // Background color for local selection
+	protected static final Color secondaryGray = new Color(247, 249, 249);  // Background color for local selection
 
 	final static int HEADER_HEIGHT = 20;
 
