@@ -13,7 +13,8 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 
 //	initialize logger
 	protected final static Logger logger = Logger.getLogger(AnnotatedObjectImpl.class);
-	
+
+	// Are there any unused variables here that we could get rid of?  We generate a lot of these objects.
 	protected static int internal_id_gen = 0;
 
 	public int internal_id = internal_id_gen++;
@@ -26,7 +27,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 
 	protected boolean isObsolete = false;
 
-	// protected ObsoletableObject replacedBy;
+	// Should we maybe init these only when needed?
 	protected Set considerReplacements = new TinySet();
 
 	protected Set replacements = new TinySet();
