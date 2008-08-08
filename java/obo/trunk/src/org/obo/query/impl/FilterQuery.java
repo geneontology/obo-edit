@@ -57,7 +57,7 @@ public class FilterQuery<T> implements Query<T, SearchHit<T>> {
 	}
 
 	public SearchHit<T> matches(T a) {
-		filter.setReasoner(reasoner);
+		filter.setReasoner(reasoner);  // !! Does this really need to be called here, in this inner loop??
 		if (filter.satisfies(a))
 			return new BasicSearchHit<T>(a);
 		else
