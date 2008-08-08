@@ -9,8 +9,10 @@ disjoint_from dog is disjoint_from cat is..").
 - Fixed bug 2026858, "OTE loses little arrows when there's a pseudo-cycle".
 Now instead of losing their arrows and relation labels, the "circular"
 relations are shown in gray text rather than black.  (You won't see this with
-disjoint_from, since it now makes those leaves and you can't traverse them
+disjoint_from, since those are now shown as leaves so you can't traverse them
 down to the repetitive point anyway.)
-- Spaced out text icons (e.g. disjoint_from) in OTE a bit for easier
-readability.
-
+- Made text icons (e.g. disjoint_from) in OTE slightly shorter (in the
+vertical dimension) so they don't glom together with their neighbors.
+- When you close the Configuration Manager, it doesn't save (user should use
+the Save button to save).  This also fixes bug #2043228 (closing Configuration
+Manager is slow).
