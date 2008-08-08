@@ -157,6 +157,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 						removeTreeExpansionListener(expansionBridge);
 						removeTreeWillExpandListener(expansionBridge);
 					}
+					// How can we be sure the path wasn't already expanded?
 					expandPath(path);
 					if (expansionBridge != null) {
 						addTreeExpansionListener(expansionBridge);
@@ -242,6 +243,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		protected void fireEvent() {
 			if (expansionListeners.size() < 1)
 				return;
+			// !! Is this expensive?
 			Collection<PathCapable> visible = getVisibleObjects();
 			Iterator<PathCapable> it = oldVisibles.iterator();
 			while (it.hasNext()) {
@@ -406,6 +408,8 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	}
 
 	public void setLive(boolean isLive) {
+		if (this.isLive == isLive)
+			return;  // no change
 //		logger.info(getID() + ".setLive(" + isLive + ")");
 		this.isLive = isLive;
 		if (isLive == true && Preferences.getPreferences().getOnlyOneGlobalOTE())
@@ -1107,11 +1111,13 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		return createSelectionFromPaths(lead, paths);
 	}
 
-	// NOT static.
+	// Does this get called more than necessary?
+	// Can we check whether we already created this selection?
 	protected Selection createSelectionFromPaths(TreePath lead,
 			TreePath[] paths) {
 		if (paths == null || paths.length == 0)
 			return SelectionManager.createEmptySelection();
+//		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
 		Link leadLink = null;
 		if (lead != null) {
 			leadLink = (Link) lead.getLastPathComponent();
@@ -1139,11 +1145,20 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	}
 
 	public void select(Selection selection) {
+		// Does this ever happen?  Is this test expensive?
+//		if (currentSelection != null && currentSelection.getAllSelectedObjects() == selection.getAllSelectedObjects()) {
+//			logger.debug("OBOTermPanel.select: selection of size " + selection.getAllSelectedObjects().size() + " is same as current selection");
+//			return;
+//		}
+//		currentSelection = selection;
 
 		TreePath[] paths = selection.getPaths(getRootAlgorithm(),
 				getLinkDatabase());
-		setSelectionPaths(paths);
-		setSelectionPaths(paths);
+		// setSelectionPaths was called twice!!  Eliminating one of those calls should help a bit...
+		long time = System.currentTimeMillis(); // DEL
+		setSelectionPaths(paths);  // This is a Swing operation that is quite expensive.
+		if (paths.length > 1) // DEL
+		    logger.debug("OBOTermPanel.select: selection of size " + selection.getAllSelectedObjects().size() + ", calling setSelectionPaths on " + paths.length + " paths took " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
 		if (paths.length > 0) {
 			makeVisible(paths[0]);
 			scrollPathToVisible(paths[0]);
@@ -1164,7 +1179,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		}
 		collapseItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				for (int i = 0; i < collapsePaths.size(); i++)
 					SwingUtil.collapseTree(OBOTermPanel.this, collapsePaths
 							.get(i));
@@ -1176,34 +1190,32 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		collapseItem.setEnabled(collapsePaths.size() > 0);
 		menu.add(collapseItem);
 
-		// Locking/unlocking view not currently working
-		JMenuItem lockItem = new JMenuItem("Lock view");
-		lockItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setLockedPath(selectedPaths[0]);
-			}
-		});
-		lockItem.setEnabled(selectedPaths.length == 1
-				&& !selectedPaths[0].equals(lockedPath));
-//		menu.add(lockItem);
+		// Locking/unlocking view not currently working--commenting out for now
+// 		JMenuItem lockItem = new JMenuItem("Lock view");
+// 		lockItem.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent e) {
+// 				setLockedPath(selectedPaths[0]);
+// 			}
+// 		});
+// 		lockItem.setEnabled(selectedPaths.length == 1
+// 				&& !selectedPaths[0].equals(lockedPath));
+// //		menu.add(lockItem);
 
-		JMenuItem unlockItem = new JMenuItem("Unlock view");
-		unlockItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setLockedPath(null);
-			}
-		});
-		unlockItem.setEnabled(lockedPath != null);
-//		menu.add(unlockItem);
+// 		JMenuItem unlockItem = new JMenuItem("Unlock view");
+// 		unlockItem.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent e) {
+// 				setLockedPath(null);
+// 			}
+// 		});
+// 		unlockItem.setEnabled(lockedPath != null);
+// //		menu.add(unlockItem);
 
-		// These menu items don't currently work, so leaving them off menu for now.
 		menu.addSeparator();
 		Vector v = getFilterMenuItems();
 		for (int i = 0; i < v.size(); i++) {
 			JMenuItem item = (JMenuItem) v.get(i);
 			menu.add(item);
 		}
-
 	}
 
 	protected DragFriendlyTreeUI getDefaultUI() {
@@ -1232,6 +1244,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 
 	public void synchronize(OBOTermPanel panel) {
 		TreePath rootPath = new TreePath(PathUtil.ROOT);
+		logger.debug("OBOTermPanel.synchronize"); // DEL
 		Enumeration e = panel.getExpandedDescendants(rootPath);
 		while (e.hasMoreElements()) {
 			expandPath((TreePath) e.nextElement());
@@ -1273,9 +1286,10 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	public void reload() {
 		// This is sometimes called because of a TreeStructureChanged event, which makes the whole OTE collapse.
 		// Maybe it shouldn't do that if we're in local mode?
-		logger.debug("Reloading OBO Term Panel...");
+//		logger.debug("Reloading OBO Term Panel...");
+//		(new Exception()).printStackTrace();  // DEL
 
-//		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
 		TreeSelectionListener[] selectionListeners = getTreeSelectionListeners();
 		for (int i = 0; i < selectionListeners.length; i++) {
 			removeTreeSelectionListener(selectionListeners[i]);
@@ -1295,16 +1309,16 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 			((TermModel) model).reloadFilters();
 
 		clearToggledPaths();
-//		        long time2 = System.currentTimeMillis();
+		long time2 = System.currentTimeMillis();
 		restorePaths(expanded);
 		if (selected != null)
 			restoreSelectionPaths(selected);
-//		time2 = System.currentTimeMillis() - time2;
+		time2 = System.currentTimeMillis() - time2;
 		for (int i = 0; i < selectionListeners.length; i++) {
 			addTreeSelectionListener(selectionListeners[i]);
 		}
-//		logger.info("reloaded in " + (System.currentTimeMillis() - time)
-//				+ " (expanding took " + time2 + " ms)");
+		logger.info("Reloaded OTE in " + (System.currentTimeMillis() - time)
+				+ " ms (expanding took " + time2 + " ms)");
 	}
 
 	public void restorePaths(TreePath[] expanded) {
