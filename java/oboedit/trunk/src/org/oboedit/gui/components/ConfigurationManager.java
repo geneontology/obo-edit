@@ -430,9 +430,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	protected LayoutListener layoutListener = new LayoutAdapter() {
 
 		public boolean closing(GUIComponent c) {
-			if (c.equals(ConfigurationManager.this)) {
-				save();
-			}
+			// Don't save unless asked!  Maybe user wanted to close it w/o saving.
+//			if (c.equals(ConfigurationManager.this)) {
+				// save();
+//			}
 			return true;
 		}
 		
