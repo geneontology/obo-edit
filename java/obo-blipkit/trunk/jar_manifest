@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: bbop.jar obo.jar oboedit.jar
+Main-Class: org.oboedit.launcher.OBOEdit
+Specification-Title: OBO-Edit
+Sealed: true
+Specification-Version: 2.000-beta18
+Specification-Vendor: Gene Ontology Consortium
+Implementation-Title: OBO-Blipkit
+Implementation-Version: build2_08082008_115830
+Implementation-Vendor: Berkeley Bioinformatics and Ontologies Project
