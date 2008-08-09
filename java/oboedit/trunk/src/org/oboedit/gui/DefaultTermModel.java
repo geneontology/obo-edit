@@ -542,7 +542,6 @@ public class DefaultTermModel implements TermModel {
 	}
 
 	public List wrapSet(Iterator it) {
-		boolean HIDE_DISJOINT = true;
 		List out = new ArrayList();
 		while (it.hasNext()) {
 			Object o = it.next();
@@ -610,7 +609,7 @@ public class DefaultTermModel implements TermModel {
 					out = wrapSet(getReplacements((ObsoletableObject) lo));
 				} else {
 					Collection<Link> children = linkDatabase.getChildren(lo);
-					// Not used?!
+					// Not used
 //					Collection<Link> realChildren = SessionManager.getManager()
 //							.getSession().getLinkDatabase().getChildren(lo);
 					out = wrapSet(children);
