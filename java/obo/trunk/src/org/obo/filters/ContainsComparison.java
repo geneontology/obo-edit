@@ -31,10 +31,15 @@ public class ContainsComparison extends AbstractComparison {
 		if (value == null || value.length() == 0)
 			return false;
 
+		value = value.toLowerCase();
 		Iterator it = testVals.iterator();
 		while (it.hasNext()) {
-			String s = (String) it.next();
-			boolean returnVal = StringUtil.unicodeIndexOf(s, value) >= 0;
+			String s = ((String) it.next()).toLowerCase();
+			// I guess this was done to make the search case-insensitive, but it's really slow!
+			// It's much (~8x) faster to lowercase it and use indexOf.
+//			boolean returnVal = StringUtil.unicodeIndexOf(s, value) >= 0;
+			// This is fast, but case-sensitive
+			boolean returnVal = s.indexOf(value) >= 0;
 			if (returnVal)
 				return true;
 		}
