@@ -8,6 +8,7 @@ import org.bbop.client.View.WebViewI;
 
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -15,21 +16,16 @@ import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
-
-
-
-
-
-
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
  * @author  sid
  */
-public class RefGenomeView   extends  Viewport implements WebViewI {
+public class RefGenomeView  implements WebViewI {
 	
-	private LayoutContainer refgviewer ;
+	private Viewport refgViewer ;
 	private LayoutContainer northpanel ;
-	private ContentPanel westpanel;
+	private LayoutContainer westpanel;
 	private RefGenomeViewListenerI refglistener;
 	
 	
@@ -49,25 +45,40 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 
 	
 	public RefGenomeView (RefGenomeViewListenerI listener) {
-		super();
 		refglistener = listener;
-		refgviewer = new LayoutContainer();
-		northpanel = new LayoutContainer();
-		westpanel = new ContentPanel();
 		
+		refgViewer = new Viewport();
+		refgViewer.setLayout(new BorderLayout());
+		
+		northpanel = new LayoutContainer();
+		northpanel.setLayout(new FillLayout(Style.Orientation.VERTICAL));
+		
+		westpanel = new LayoutContainer();
+		westpanel.setLayout(new FitLayout());
 		
 		northData = new BorderLayoutData(LayoutRegion.NORTH,68);
-		westData = new BorderLayoutData(LayoutRegion.WEST,380,220,420);
-		centerData = new BorderLayoutData(LayoutRegion.CENTER);
+		northData.setCollapsible(true);  
+        northData.setFloatable(true);  
+		northData.setSplit(true);  
+		northData.setMargins(new Margins(5, 5, 0, 5));
 		
-		//layout setup for title and login panel
-		FillLayout northfill = new FillLayout(Style.Orientation.VERTICAL);
-		northpanel.setLayout(northfill);
+		
+		westData = new BorderLayoutData(LayoutRegion.WEST,380);
+		westData.setSplit(true);  
+		westData.setCollapsible(true);  
+		westData.setMargins(new Margins(5));  
+		
+		
+		centerData = new BorderLayoutData(LayoutRegion.CENTER);
+		centerData.setMargins(new Margins(5, 0, 5, 0)); 
+		
+		
+		
+	
 		
 		//layout setup for navigation panel
-		westpanel.setLayout(new FillLayout());
-		westpanel.setHeading("Navigation bar");
-		westpanel.setStyleName("title");
+		//westpanel.setTitle("Navigation bar");
+		//westpanel.setStyleName("title");
 		
 		
 	}
@@ -90,12 +101,14 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 		loginview = new LoginPanelView(refglistener,this);
 		loginview.createView();	
 		northpanel.add(loginview.getView());	
+		
 	}
 	
 	public void setNavPanel() {
 		navpanelview = new  NavPanelView(refglistener,this);
 		navpanelview.createView();
 		westpanel.add(navpanelview.getView());
+		
 		
 	}
 	
@@ -106,23 +119,28 @@ public class RefGenomeView   extends  Viewport implements WebViewI {
 	}
 	
 	public void initView() {
-		refgviewer.setStyleName("my-border-layout");
-		refgviewer.setLayout(new BorderLayout());
+		//refgviewer.setStyleName("my-border-layout");
+		//refgviewer.setLayout(new BorderLayout());
+		//northpanel.setLayout(new FitLayout());
+		//westpanel.setLayout(new FitLayout());
+		//setLayout(new BorderLayout());
 		setTitlePanel();
 		setLoginPanel();
 		setNavPanel();
 		setResultPanel();
-		refgviewer.add(northpanel,northData);
-		refgviewer.add(westpanel,westData);
-		refgviewer.add(resultview.getView(),centerData);
+		refgViewer.add(northpanel,northData);
+		refgViewer.add(westpanel,westData);
+		refgViewer.add(resultview.getView(),centerData);
 		
-		this.add(refgviewer);
-		this.setLayout(new FillLayout());
-		this.layout();
+		//this.add(refgviewer);
+		
+		//refgViewer.setLayout(new FitLayout());
+		//refgViewer.add(this);
+		//this.layout();
 	}
 	
 	public Viewport getViewPort(){
-		return this;
+		return refgViewer;
 	}
 
 

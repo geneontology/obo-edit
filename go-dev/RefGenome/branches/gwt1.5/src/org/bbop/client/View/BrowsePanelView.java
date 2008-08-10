@@ -12,6 +12,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -27,7 +28,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class BrowsePanelView implements BrowsePanelManagerI {
 	private RefGenomeViewListenerI refglistener;
 	private RefGenomeView mainview;
-	private VerticalPanel browseBar;
+	private ContentPanel browseBar;
 	private Button targetBtn;
 	private Button targetBtn2;
 	private Button orthologBtn;	
@@ -41,7 +42,9 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		refglistener = listener;
 		mainview = parent;
 
-		browseBar = new VerticalPanel();
+		browseBar = new ContentPanel();
+		browseBar.setHeading("Browse Lists");
+		browseBar.setIconStyle("icon-list");
 		targetBtn = new Button("List Target");
 		targetBtn2 = new Button("List Target (from db)");
 		orthologBtn = new Button("List Ortholog");
@@ -60,7 +63,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 	}
 
 	public void setAttr() {
-		browseBar.setSpacing(8);
+		//browseBar.setSpacing(8);
 		targetBtn.setIconStyle("icon-list");
 		targetBtn2.setIconStyle("icon-list");
 		orthologBtn.setIconStyle("icon-list");
@@ -72,7 +75,7 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 		items = num;
 	}
 
-	public VerticalPanel getView() { return browseBar; }
+	public ContentPanel getView() { return browseBar; }
 
 	private void addObservers() {
 		targetBtn.addSelectionListener(new TargetListListener());
@@ -152,9 +155,9 @@ public class BrowsePanelView implements BrowsePanelManagerI {
 			
 			resultView = mainview.getResultPanel();
 			resultView.removeChildViews();
-			resultView.addOrthologListView(orthoView.getView(), orthoView.getDataProvider(), items, "Ortholog List");
+			resultView.addOrthologListView(orthoView.getPagingView(), "Ortholog List");
 			resultView.resetView();
-			orthoView.getDataProvider().load(0,items);
+			
 		}
 		
 	}

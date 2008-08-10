@@ -1,5 +1,6 @@
 package org.bbop.client.View;
 
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 
 import org.bbop.client.Listener.RefGenomeViewListenerI;
@@ -10,7 +11,7 @@ public class ReportPanelView {
 
 	private RefGenomeViewListenerI refgListener;
 	private RefGenomeView mainView;
-	private VerticalPanel reportPanel;
+	private ContentPanel reportPanel;
 
 	private Button reportBtnOne;
 	private Button reportBtnTwo;
@@ -19,7 +20,9 @@ public class ReportPanelView {
 	public ReportPanelView(RefGenomeViewListenerI listner, RefGenomeView parent) {
 		refgListener = listner;
 		mainView = parent;
-		reportPanel = new VerticalPanel();
+		reportPanel = new ContentPanel();
+		reportPanel.setHeading("Report");
+		reportPanel.setIconStyle("icon-report");
 
 		reportBtnOne = new Button("First report");
 		reportBtnTwo = new Button("Second report");
@@ -34,14 +37,14 @@ public class ReportPanelView {
 	}
 
 	public void setAttr() {
-		reportPanel.setSpacing(8);
+		//reportPanel.setSpacing(8);
 
 		reportBtnOne.setIconStyle("icon-list");
 		reportBtnTwo.setIconStyle("icon-list");
 		reportBtnThree.setIconStyle("icon-list");
 	}
 
-	public VerticalPanel getView() {
+	public ContentPanel getView() {
 		return reportPanel;
 	}
 

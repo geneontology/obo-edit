@@ -22,7 +22,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 		mainview = parent;
 		navPanel = new ContentPanel();
 		navPanel.setLayout(new AccordionLayout());
-		navPanel.setIconStyle("icon-accordion");
+		
 		
 		browseView = new BrowsePanelView(refglistener,mainview);
 		browseView.creatView();
@@ -54,7 +54,7 @@ public  class NavPanelView  implements NavPanelManagerI {
 	
 	public void addCurationBar(){
 		navPanel.add(curationView.getView());
-		mainview.layout();
+		mainview.getViewPort().layout();
 		
 	}
 	

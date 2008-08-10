@@ -1,9 +1,6 @@
 <module>
-	<stylesheet src='mygwt-all.css'/>
-	<stylesheet src='mygwt-all-gray.css'/>
-	<stylesheet src='RefGenomeGWT.css'/>
 	<inherits name="com.extjs.gxt.ui.GXT" />
+	<stylesheet src="RefGenomeGWT.css"/>
 	<entry-point class='org.bbop.client.RefGenome'/>
-  	<servlet path="/GOService" class="org.bbop.server.GOServiceImpl"/>
  	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl"/>
 </module>

@@ -4,7 +4,6 @@ import org.bbop.client.Listener.RefGenomeViewListenerI;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.viewer.RemoteContentProvider;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.PagingToolBar;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -12,6 +11,7 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.table.Table;
@@ -34,7 +34,7 @@ public class ResultPanelView {
 		refgListener = listener;
 		mainView = parent;
 		centerPanel = new ContentPanel();
-		centerPanel.setLayout(new FillLayout());
+		centerPanel.setLayout(new FitLayout());
 		
 	}
 
@@ -152,7 +152,7 @@ public class ResultPanelView {
 		
 	}
 	
-	public void addOrthologListView(Table tbl, RemoteContentProvider cp, int items, String title) {
+	public void addOrthologListView(ContentPanel orthoPanel, String title) {
 		tblHolder = new LayoutContainer();
 		TabPanel tblFolder = new TabPanel();
 		tblFolder.setTabWidth(80);
@@ -162,20 +162,15 @@ public class ResultPanelView {
 		tblItem.setIconStyle("icon-tabs");
 		tblItem.setLayout(new RowLayout(Orientation.VERTICAL));
 		
-		PagingToolBar pbar = new PagingToolBar(items);
-		pbar.bind(cp);
+	
 		
-		tblItem.add(tbl,new RowData(1,1));
-		tblItem.add(pbar, new RowData(1,-1));
+		tblItem.add(orthoPanel,new RowData(1,1));
 		tblFolder.add(tblItem);
 		tblFolder.setSelection(tblItem);
 		
 		//tblHolder.setScrollEnabled(false);
 		tblHolder.setLayout(new FillLayout());
 		tblHolder.add(tblFolder);
-		
-	
-		//cp.load(0,10);
 		
 	}
 	

@@ -1,22 +1,27 @@
 package org.bbop.client.View;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
+import com.google.gwt.user.client.rpc.AsyncCallback; 
 
 
-import com.extjs.gxt.ui.client.Style;
-import com.extjs.gxt.ui.client.data.DataCallback;
-import com.extjs.gxt.ui.client.data.DataList;
-import com.extjs.gxt.ui.client.data.LoadConfig;
-import com.extjs.gxt.ui.client.data.LoadResult;
-import com.extjs.gxt.ui.client.data.Model;
-import com.extjs.gxt.ui.client.viewer.IAsyncContentCallback;
-import com.extjs.gxt.ui.client.viewer.ModelCellLabelProvider;
-import com.extjs.gxt.ui.client.viewer.RemoteContentProvider;
-import com.extjs.gxt.ui.client.viewer.TableViewer;
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.binder.TableBinder;
+import com.extjs.gxt.ui.client.data.BaseModel;
+
+import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
+import com.extjs.gxt.ui.client.data.BasePagingLoader;
+import com.extjs.gxt.ui.client.data.PagingLoadConfig;
+import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.extjs.gxt.ui.client.data.RpcProxy;
+
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.PagingToolBar;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.table.Table;
 import com.extjs.gxt.ui.client.widget.table.TableColumn;
 import com.extjs.gxt.ui.client.widget.table.TableColumnModel;
@@ -32,22 +37,18 @@ public class OrthologTableView extends GenericNodeListTableView {
 	private TableColumn[] orthoCols;
 	private Table orthoTbl;
 	private TableColumnModel colModel;
-	private RemoteContentProvider cp;
+	private RpcProxy rpc;
+	private ContentPanel orthoPanel;
 	
 	public OrthologTableView(RefGenomeViewListenerI listener,
 			RefGenomeView parent) {
 		super(listener,parent);
 		refgListener = listener;
 		mainView = parent;
+		orthoPanel = new ContentPanel();
 		
 		// TODO Auto-generated constructor stub
 	}
-
-	
-	
-	
-	
-	
 	
 	public void setAttr() {
 		
@@ -73,69 +74,66 @@ public class OrthologTableView extends GenericNodeListTableView {
 		}
 		
 		colModel = new TableColumnModel(orthoCols);
-		orthoTbl = new Table(Style.SINGLE|Style.HORIZONTAL, colModel);
+		orthoTbl = new Table(colModel);
 		orthoTbl.setBorders(false);
 		
-		cp = new RemoteContentProvider() {
-
-			
-			public void getData(LoadConfig config, DataCallback callback) {
-				// TODO Auto-generated method stub
-			    LoadResult result = getTestData(config);
-				//System.err.println("From getData: " + result.totalLength);
-				callback.setResult(result);
-			}
-
-			public void getElements(Object input, IAsyncContentCallback callback) {
-				// TODO Auto-generated method stub
-				if (input instanceof List) {
-					 List list = (List)input;
-					 //System.err.println("From getElements: " + list.size());
-					// for(int i = 0 ; i < list.size(); i++)  {
-						// Model m = (Model) list.get(i);
-						 //System.err.println("Print getElements: " + m.getAsString("target"));
-					// }
-					//System.err.println(list.toArray());
-					callback.setElements(list.toArray());
-				}
-				else {
-					System.err.println("Error in input" + input.toString());
-				}
-				
-				
-				
-			}
-			
+		rpc = new RpcProxy() {
+				protected void load(Object loadConfig, AsyncCallback callback) {
+					getTestData((PagingLoadConfig) loadConfig);
+					
+				}	
 		};
 		
-		cp.setRemoteSort(false);
-		final TableViewer viewer = new TableViewer(orthoTbl);
-		viewer.setContentProvider(cp);
+		// loader
+		final BasePagingLoader loader = new BasePagingLoader(rpc);
 		
-		ModelCellLabelProvider lp = new ModelCellLabelProvider();
-			
-		
-		for (int i = 0; i < cols.size(); i++) {
-			viewer.getViewerColumn(i).setLabelProvider(lp);
-		}
+		// store  
+		ListStore<BaseModel> store = new ListStore<BaseModel>(loader);  
+		 
+	    // binder  
+		 new TableBinder<BaseModel>(orthoTbl, store);  
+		 
+		 //Toolbar for paging
+		 final PagingToolBar toolBar = new PagingToolBar(20);  
+		 toolBar.bind(loader);  
+		 
+		 //panel setup
+		 orthoPanel.setFrame(true);  
+		 orthoPanel.setCollapsible(true);  
+		 orthoPanel.setAnimCollapse(false);  
+		 orthoPanel.setButtonAlign(HorizontalAlignment.CENTER);  
+		 orthoPanel.setIconStyle("icon-table");  
+		 orthoPanel.setHeading("List of ortholog");  
+		 orthoPanel.setLayout(new FitLayout());  
+		 orthoPanel.add(orthoTbl);  
+		 orthoPanel.setSize(600, 450);  
+		 orthoPanel.setBottomComponent(toolBar); 
+		 
+		 loader.load(0,20);
 		
 	}
 	
-	public Table getView() {
-		return orthoTbl;
+	public ContentPanel getPagingView() {
+		return orthoPanel;
 	}
 	
-    private LoadResult getTestData(LoadConfig config) {
-    	DataList sublist = new DataList();
-    	int start = config.start;
-    	int limit =100;
-        int step = 25;
+    private PagingLoadResult<BaseModel> getTestData(PagingLoadConfig config) {
+    	List<BaseModel> models = new ArrayList<BaseModel>();
+    	int start = config.getOffset();
+    	int step = config.getLimit();
+        int records = 100;
+        int end = start + step;
+        
+        if (start + step > end) {
+        	end = records;
+        }
+        
         
         //System.err.println("Starting cursor: " + start);
         
-    	for (int i = start ; i < step + start ; i++) {
+    	for (int i = start ; i < end ; i++) {
     		OrthoData orthoData = getTestOrthoData();
-    		Model m = new Model();
+    		BaseModel m = new BaseModel();
     		m.set("Target", orthoData.target + start);
     		m.set("R.norvegicus",orthoData.rat);
     		m.set("C.elegans", orthoData.worm);
@@ -147,24 +145,18 @@ public class OrthologTableView extends GenericNodeListTableView {
     		m.set("D.melanogaster", orthoData.fly);
     		m.set("E.coli", orthoData.ecoli);
     		m.set("D.rio",orthoData.zfin);
-    		sublist.add(m);
+    		models.add(m);
     	}
     	
     	//System.err.println("From getTestdata data size: " + sublist.size());
     	
-    	LoadResult result = new LoadResult(sublist);
-    	result.cursor = start;
-    	result.totalLength = limit;
+    	
     	
     	//System.err.println("From getTestdata: after Loadresult: " + result.totalLength);
-    	return result;
+    	return new BasePagingLoadResult(models,step,records);
     	
     }
     
-    public RemoteContentProvider getDataProvider() {
-    	return cp;
-    	
-    }
     
     private OrthoData getTestOrthoData () {
     	OrthoData data = new OrthoData();
