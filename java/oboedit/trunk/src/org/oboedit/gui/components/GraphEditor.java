@@ -192,7 +192,8 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			@Override
 			protected JComponent createGUIConfigPanel() {
 				animationDurationSpinner = new JSpinner(new SpinnerNumberModel(
-						1000, 1, null, 100));
+//										1000, 1, null, 100));
+										500, 1, null, 100));
 				animationsBox = new JCheckBox("Enable animations");
 				JComponent out = super.createGUIConfigPanel();
 				int durationHeight = (int) animationDurationSpinner
@@ -230,6 +231,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			public void commitConfig(OntologyEditorConfiguration c) {
 				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
 				config.setDisableAnimations(!animationsBox.isSelected());
+				// For some reason, this doesn't seem to work.  Keeps getting reset to 1000!
 				config.setLayoutDuration(((Number) animationDurationSpinner
 						.getValue()).longValue());
 				config.setExpandPaths(expandSelectionPathsBox.isSelected());
@@ -240,6 +242,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			protected void initConfig(OntologyEditorConfiguration c) {
 				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
 				animationsBox.setSelected(!config.getDisableAnimations());
+//				logger.debug("initConfig: setting value of spinner to " + config.getLayoutDuration());
 				animationDurationSpinner.setValue(config.getLayoutDuration());
 				expandSelectionPathsBox.setSelected(config.isExpandPaths());
 				super.initConfig(config);
