@@ -1,13 +1,14 @@
 package org.bbop.client.View;
 
 
-import com.extjs.gxt.ui.client.Style;
+
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
@@ -29,7 +30,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 	private RefGenomeView mainView;
 	private ResultPanelView resultView;
 	
-	private VerticalPanel searchBar;
+	private ContentPanel searchBar;
 	private VerticalPanel txnSearchBar;
 	private HorizontalPanel idSearchBar;
 	private HorizontalPanel nameSearchBar;
@@ -53,7 +54,10 @@ public class SearchPanelView implements SearchPanelManagerI {
 	public SearchPanelView (RefGenomeViewListenerI listener,RefGenomeView parent){
 		refgListener = listener;
 		mainView = parent;
-		searchBar = new VerticalPanel();
+		searchBar = new ContentPanel();
+		searchBar.setHeading("Search");
+		searchBar.setIconStyle("icon-search-panel");
+		
 		txnSearchBar = new VerticalPanel();
 		idSearchBar = new HorizontalPanel();
 		nameSearchBar = new HorizontalPanel();
@@ -104,7 +108,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 		
 	}
 	
-	public VerticalPanel getView () { return searchBar; }
+	public ContentPanel getView () { return searchBar; }
 	
 	private void addObservers(){
 		idSearchTerm.addFocusListener(new UserFocusListener());
@@ -118,7 +122,7 @@ public class SearchPanelView implements SearchPanelManagerI {
 	}
 	
 	private void setAttr () {
-		searchBar.setSpacing(8);
+		//searchBar.setSpacing(8);
 		txnSearchBar.setSpacing(0);
 		
 		idSearchBar.setSpacing(10);

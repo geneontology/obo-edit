@@ -10,6 +10,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GOTerm extends GOBase implements IsSerializable {
 
+	/**
+	   * This field is a Set that must always contain Strings.
+	   * 
+	   * @gwt.typeArgs <java.lang.String>
+   */
+
+	
 	String url;
 
 	// 
@@ -19,6 +26,10 @@ public class GOTerm extends GOBase implements IsSerializable {
 
 		 url = "http://amigo.geneontology.org/cgi-bin/amigo/term-details.cgi?term=";
 		 
+	}
+	
+	public GOTerm () {
+		
 	}
 
 	// Wrap with id.

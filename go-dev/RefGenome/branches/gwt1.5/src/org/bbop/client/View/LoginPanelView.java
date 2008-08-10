@@ -118,7 +118,7 @@ public class LoginPanelView implements LoginPanelManagerI {
 		createView();
 		pass.setText("");
 		mainview.getNavPanel().removeCurationBar();
-		mainview.layout();
+		mainview.getViewPort().layout();
 
 	}
 
@@ -136,7 +136,7 @@ public class LoginPanelView implements LoginPanelManagerI {
 
 		tbar.add(loggeduseritem);
 		tbar.add(logoutitem);
-		mainview.layout();
+		mainview.getViewPort().layout();
 
 	}
 

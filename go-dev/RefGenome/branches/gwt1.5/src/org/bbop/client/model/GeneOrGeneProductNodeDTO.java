@@ -7,6 +7,10 @@ public class GeneOrGeneProductNodeDTO extends NodeDTO {
 
 	private NodeDTO inOrganism;
 	
+	
+	public GeneOrGeneProductNodeDTO () {
+		
+	}
 	public GeneOrGeneProductNodeDTO(NodeDTO n) {
 		super(n.getId(),n.getLabel(),n.getSourceId());
 		//initializeInOrganism();

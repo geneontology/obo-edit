@@ -19,6 +19,10 @@ public class Term extends Base implements IsSerializable {
 		 url = "http://amigo.geneontology.org/cgi-bin/amigo/term-details.cgi?term=";
 		 
 	}
+	
+	public Term() {
+		
+	}
 
 	// Wrap with id.
 	public String getAcc(){ return this.getId(); }

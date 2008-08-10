@@ -4,6 +4,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
@@ -16,7 +17,7 @@ public class CurationPanelView {
 	private RefGenomeViewListenerI refgListener;
 	private RefGenomeView mainView;
 	
-	private VerticalPanel curationBar;
+	private ContentPanel curationBar;
 	
 	private Button targetBtn;
 	private Button importBtn;
@@ -25,7 +26,9 @@ public class CurationPanelView {
 		refgListener = listener;
 		mainView = parent;
 		
-		curationBar = new VerticalPanel();
+		curationBar = new ContentPanel();
+		curationBar.setHeading("Curation");
+		curationBar.setIconStyle("icon-curation");
 		
 		targetBtn = new Button("Add Target");
 		importBtn = new Button("Import Spreadsheet");
@@ -43,7 +46,7 @@ public class CurationPanelView {
 	public void setAttr() {
 		targetBtn.setIconStyle("icon-database-add");
 		importBtn.setIconStyle("icon-database-add");
-		curationBar.setSpacing(8);
+		//curationBar.setSpacing(8);
 		
 	}
 	
@@ -51,7 +54,7 @@ public class CurationPanelView {
 		importBtn.addSelectionListener(new ImportButtonListener());
 	}
 	
-	public VerticalPanel getView() {
+	public ContentPanel getView() {
 		return curationBar;
 	}
 	

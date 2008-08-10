@@ -14,6 +14,7 @@ public class GOBase implements IsSerializable {
 	protected String sourceId;
 	protected boolean isAnonymous;
 
+	
 	//
 	public GOBase() {
 		id = "null_base";
