@@ -61,6 +61,8 @@ public class DefaultQueryResolver implements QueryResolver {
 			@Override
 			public void execute() {
 				try {
+					long time = System.currentTimeMillis(); // DEL					
+					logger.debug("Starting search: " + q);
 					progressString = "Querying...";
 					Collection<V> out = getResultHolder(q);
 					results = out;
@@ -77,7 +79,10 @@ public class DefaultQueryResolver implements QueryResolver {
 						Collection<FieldPath> values = FieldPath.resolve(qpath,
 								linkDatabase);
 						for (FieldPath p : values) {
-							if (queryAccepts(q, p.getLastValue().getClass())) {
+							if (queryAccepts(q, p.getLastValue().getClass())
+							    // Don't include built-ins like "xsd:date" or "obo:TERM"
+							    && !(p.getObject()).isBuiltIn()) {
+//							    logger.debug("DefaultQueryResolver.execute adding FieldPath " + p); // DEL
 								paths.add(p);
 							}
 						}
@@ -101,6 +106,7 @@ public class DefaultQueryResolver implements QueryResolver {
 					if (out instanceof List && q.getComparator() != null) {
 						Collections.sort((List<V>) out, q.getComparator());
 					}
+					logger.debug("Finished search, found " + out.size() + " results in " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
 					results = out;
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -118,6 +124,7 @@ public class DefaultQueryResolver implements QueryResolver {
 
 			@Override
 			public void execute() {
+				long time = System.currentTimeMillis(); // DEL
 				progressString = "Querying...";
 				Collection<V> out = getResultHolder(q);
 				int i = 0;
@@ -134,6 +141,7 @@ public class DefaultQueryResolver implements QueryResolver {
 				if (out instanceof List && q.getComparator() != null) {
 					Collections.sort((List<V>) out, q.getComparator());
 				}
+				logger.debug("Search " + q + " found " + out.size() + " results in " + (System.currentTimeMillis() - time) + " ms"); // DEL
 				results = out;
 			}
 
@@ -170,5 +178,4 @@ public class DefaultQueryResolver implements QueryResolver {
 			out = new ArrayList<V>();
 		return out;
 	}
-
 }
