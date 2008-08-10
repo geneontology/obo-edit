@@ -191,6 +191,7 @@ public class OBOEdit {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
+					long time = System.currentTimeMillis(); // DEL
 					// Figure out where logfile will go before starting GUI (so Configuration Manager can
 					// show the logfile path)
 					String configDir = Preferences.getOBOEditPrefsDir().toString();
@@ -236,6 +237,7 @@ public class OBOEdit {
 					// Also start thread to check free memory
 					CheckMemoryThread cmt = new CheckMemoryThread();
 					cmt.start();
+					logger.debug("Loading took " + (System.currentTimeMillis() - time) + " ms"); // DEL
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
