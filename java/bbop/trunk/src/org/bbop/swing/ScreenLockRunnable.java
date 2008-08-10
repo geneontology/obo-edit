@@ -30,7 +30,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 	protected Frame frame;
 	protected boolean modal;
 	protected boolean cancelled;
-	protected Dimension lastSize;
+//	protected Dimension lastSize;
 
 	public ScreenLockRunnable(BackgroundEventQueue queue, Frame frame,
 			boolean modal) {
@@ -90,11 +90,9 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		return cancelled;
 	}
 
-    // For some reason, this method seems to take more time than you'd think.
+	// For some reason, this method seems to take more time than you'd think.
 	@Override
 	protected void doUpdate(TaskDelegate<?> currentTask) {
-		if (lastSize == null)
-			lastSize = dialog.getContentPane().getSize();
 		Number n = currentTask.getProgressValue();
 		if (n != null) {
 			int val = n.intValue();
@@ -111,32 +109,5 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 		String s = currentTask.getProgressString();
 		if (s != null)
 			messageLabel.setText(s);
-		if (!dialog.isVisible()) {
-//		    System.out.println("doUpdate: dialog was not visible");  // DEL
-		    // Not needed
-//  			dialog.setVisible(true);
-//  			dialog
-//  					.setSize(
-//  							(int) (lastSize.getWidth()
-//  									+ dialog.getInsets().left + dialog
-//  									.getInsets().right), (int) (lastSize
-//  									.getHeight()
-//  									+ dialog.getInsets().bottom + dialog
-//								.getInsets().top));
-		} else {
-			Dimension newSize = dialog.getContentPane().getPreferredSize();
-			if (newSize.width > lastSize.width
-					|| newSize.height > lastSize.height)
-				dialog
-						.setSize(
-								(int) (newSize.getWidth()
-										+ dialog.getInsets().left + dialog
-										.getInsets().right), (int) (newSize
-										.getHeight()
-										+ dialog.getInsets().bottom + dialog
-										.getInsets().top));
-		}
-		lastSize = dialog.getContentPane().getSize();
-//		SwingUtil.center(frame, dialog);
 	}
 }
