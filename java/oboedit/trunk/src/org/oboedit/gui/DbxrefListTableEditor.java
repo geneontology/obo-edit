@@ -81,8 +81,10 @@ public class DbxrefListTableEditor extends AbstractListTableEditor<Dbxref> {
 
 		});
 		setFocusCycleRoot(true);
+//		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+//				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
+			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "commit");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tabForward");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
@@ -93,16 +95,22 @@ public class DbxrefListTableEditor extends AbstractListTableEditor<Dbxref> {
 				tabToNext();
 			}
 		});
+		getActionMap().put("commit", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}
+		});
 	}
 
+	/** Don't ever commit on tab--just rotate to next field.  To commit, hit return. */
 	protected void tabToNext() {
-		Component lastComponent = getFocusTraversalPolicy().getLastComponent(
-				this);
+//		Component lastComponent = getFocusTraversalPolicy().getLastComponent(
+//				this);
 		Component focused = FocusManager.getCurrentKeyboardFocusManager()
 				.getFocusOwner();
-		if (SwingUtilities.isDescendingFrom(focused, lastComponent)) {
-			commit();
-		} else
+//		if (SwingUtilities.isDescendingFrom(focused, lastComponent)) {
+//			commit();
+//		} else
 			focused.transferFocus();
 
 	}
