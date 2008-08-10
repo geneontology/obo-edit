@@ -287,6 +287,7 @@ public class TextErrorDecorator implements ErrorDecorator {
 	public Collection<FieldPath> getPaths() {
 		if (parent.getObject() == null)
 			return Collections.emptySet();
+		// ! Is it really necessary to clone this every time?  I think this is creating a lot of duplicate objects.
 		IdentifiedObject object = (IdentifiedObject) parent.getObject().clone();
 		parent.populateFields(object);
 		FieldPath queryPath = FieldPathSpec.createQueryPath(spec, object);
