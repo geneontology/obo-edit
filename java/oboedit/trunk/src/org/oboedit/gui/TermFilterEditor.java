@@ -32,10 +32,12 @@ import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterImpl;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
+import org.obo.filters.PathCapableFilter;
 import org.obo.filters.SearchAspect;
 import org.obo.filters.SearchComparison;
 import org.obo.filters.SearchCriterion;
 import org.obo.filters.SelfSearchAspect;
+import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.FilterManager;
 import org.oboedit.controller.SessionManager;
@@ -353,6 +355,7 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public Filter<IdentifiedObject> getFilter() {
+//		logger.debug(">>> SessionManager.getManager().getReasonerName(): " + SessionManager.getManager().getReasonerName());
 		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());
@@ -362,14 +365,26 @@ public class TermFilterEditor extends JPanel {
 		out.setNegate(notBox.getSelectedIndex() == 1);
 		out.setComparison((SearchComparison) comparisonBox.getSelectedItem());
 		if (aspectVisible) {
-			out.setAspect((SearchAspect) aspectBox.getSelectedItem());
+				out.setAspect((SearchAspect) aspectBox.getSelectedItem());
+	
 			if (typeBox.getSelectedIndex() > 0) {
 				OBOProperty p = (OBOProperty) typeBox.getSelectedItem();
 				LinkFilter linkFilter = new LinkFilterImpl(p);
 				out.setTraversalFilter(linkFilter);
 			}
 		}
+
+		if (out instanceof PathCapableFilter) {
+			if (SessionManager.getManager().getUseReasoner())
+				((PathCapableFilter) out).setReasoner(SessionManager
+						.getManager().getReasoner());
+			else
+				((PathCapableFilter) out).setReasoner(new OnTheFlyReasoner(
+						SessionManager.getManager().getCurrentLinkDatabase()));
+		}
+
 		return out;
+
 	}
 
 	public SearchPanel getSearchPanel() {
