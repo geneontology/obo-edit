@@ -27,6 +27,12 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.filters.Filter;
+import org.obo.filters.IsCompleteLinkCriterion;
+import org.obo.filters.IsRedundantLinkCriterion;
+import org.obo.filters.LinkFilter;
+import org.obo.filters.LinkFilterFactory;
+import org.obo.filters.ObjectFilter;
+import org.obo.filters.ObjectFilterFactory;
 import org.obo.history.HistoryItem;
 import org.obo.nlp.SemanticParser;
 import org.obo.nlp.impl.RegulationTermParser;
@@ -115,7 +121,8 @@ public class OBO2OBO {
 				
 			logger.info("SEMANTIC PARSER REPORT:");
 			for (String report : semanticParser.getReports()) {
-				logger.info(report);
+				//logger.info(report);
+				System.out.println(report); // bypasses logger, direct reporting
 			}
 		}
 		Iterator it = scripts.iterator();
@@ -639,6 +646,16 @@ public class OBO2OBO {
 					} else if (args[i].equals("-saveallimpliedlinks")) {
 						path.setSaveImplied(true);
 						path.setImpliedType(OBOSerializationEngine.SAVE_ALL);
+					} else if (args[i].equals("-filterredundantlinks")) {
+						LinkFilterFactory lff = new LinkFilterFactory();
+						ObjectFilterFactory off = new ObjectFilterFactory();
+						LinkFilter lf = (LinkFilter) lff.createNewFilter();
+						ObjectFilter filter = (ObjectFilter)off.createNewFilter();
+						filter.setCriterion(new IsRedundantLinkCriterion());
+						lf.setFilter(filter);
+						path.setLinkFilter(lf);
+						path.setDoLinkFilter(true);
+						//path.setFilterRedundant(true);
 					} else if (args[i].equals("-realizeimpliedlinks")) {
 						path.setRealizeImpliedLinks(true);
 					} else if (args[i].equals("-p")) {
