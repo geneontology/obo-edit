@@ -22,7 +22,7 @@
           target: clean              
          ================================= -->
   <target name="clean" description="delete the bin directory">
-  	   <delete>
+  	   <delete failonerror="false">
 					<fileset dir="bin"/>
   	   </delete>
   </target>
