@@ -1162,7 +1162,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		else  // Find best path to first term (which is not the same as paths[0]--those paths are in a seemingly random order)
 			path1 = PathUtil.getBestPath(terms.iterator().next(), getRootAlgorithm(),
 						     getLinkDatabase());
-		}
 
 		makeVisible(path1);
 		scrollPathToVisible(path1);
