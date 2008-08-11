@@ -90,8 +90,6 @@ public class TermFilterEditor extends JPanel {
 
 	protected JLabel reachedViaLabel = new JLabel(" that can be reached via ");
 
-	protected ObjectFilter out = new ObjectFilterImpl();
-
 	protected class BasicActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -112,22 +110,20 @@ public class TermFilterEditor extends JPanel {
 
 	protected ActionListener valueFieldListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-//			fireUpdateEvent();
-			fireUpdateEventImmediately();  // ? Trying
+			fireUpdateEvent();
 		}
 	};
 
-	// Is this really needed??
-// 	protected Timer timer = new Timer(500, new ActionListener() {
+	protected Timer timer = new Timer(500, new ActionListener() {
 
-// 		public void actionPerformed(ActionEvent e) {
-// 			if (updateEventPending) {
-// 				fireUpdateEventImmediately();
-// 				updateEventPending = false;
-// 			}
-// 		}
+		public void actionPerformed(ActionEvent e) {
+			if (updateEventPending) {
+				fireUpdateEventImmediately();
+				updateEventPending = false;
+			}
+		}
 
-// 	});
+	});
 
 	protected Class getInputClass() {
 		return IdentifiedObject.class;
@@ -147,7 +143,6 @@ public class TermFilterEditor extends JPanel {
 	protected boolean aspectVisible = false;
 
 	protected void updateFields() {
-//		logger.debug("updateFields");
 		aspectBox.removeActionListener(aspectBoxListener);
 		comparisonBox.removeActionListener(comparisonBoxListener);
 		criterionBox.removeActionListener(criterionBoxListener);
@@ -233,7 +228,6 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(criterionBoxListener);
 		notBox.addActionListener(notBoxListener);
 		typeBox.addActionListener(typeBoxListener);
-
 		fireUpdateEvent();
 	}
 
@@ -334,7 +328,7 @@ public class TermFilterEditor extends JPanel {
 		criterionBox.addActionListener(criterionBoxListener);
 		typeBox.addActionListener(typeBoxListener);
 		valueField.addUpdateListener(valueFieldListener);
-//		timer.start();
+		timer.start();
 		layoutGUI();
 		updateFields();
 	}
@@ -358,11 +352,10 @@ public class TermFilterEditor extends JPanel {
 			p.topmostValidate();
 	}
 
-	// This is being called a LOT, and it seems fairly expensive...
 	public Filter<IdentifiedObject> getFilter() {
-//		long time = System.currentTimeMillis(); // DEL
-		// Can we reuse the same one?
+		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
+		// out.setValue(valueField.getValue());
 		// Trim whitespace at beginning/end of search string before doing search,
 		// so that "term " returns the same results as "term".
 		out.setValue(valueField.getEditorText().trim());
@@ -376,8 +369,6 @@ public class TermFilterEditor extends JPanel {
 				out.setTraversalFilter(linkFilter);
 			}
 		}
-//		logger.debug("TermFilterEditor.getFilter() took " + (System.currentTimeMillis() - time) + " ms"); // DEL
-//		(new Exception()).printStackTrace(); // DEL
 		return out;
 	}
 
