@@ -196,6 +196,7 @@ public class FilterComponent extends JPanel {
 
 	public void load() {
 		JFileChooser chooser = new JFileChooser();
+		GUIManager.getManager().getFrame().setFocusable(true);
 		int returnVal = chooser.showOpenDialog(GUIManager.getManager()
 				.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
