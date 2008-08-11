@@ -355,7 +355,6 @@ public class TermFilterEditor extends JPanel {
 	}
 
 	public Filter<IdentifiedObject> getFilter() {
-//		logger.debug(">>> SessionManager.getManager().getReasonerName(): " + SessionManager.getManager().getReasonerName());
 		ObjectFilter out = new ObjectFilterImpl();
 		out.setCriterion((SearchCriterion) criterionBox.getSelectedItem());
 		// out.setValue(valueField.getValue());
@@ -373,18 +372,12 @@ public class TermFilterEditor extends JPanel {
 				out.setTraversalFilter(linkFilter);
 			}
 		}
-
 		if (out instanceof PathCapableFilter) {
 			if (SessionManager.getManager().getUseReasoner())
 				((PathCapableFilter) out).setReasoner(SessionManager
 						.getManager().getReasoner());
-			else
-				((PathCapableFilter) out).setReasoner(new OnTheFlyReasoner(
-						SessionManager.getManager().getCurrentLinkDatabase()));
 		}
-
 		return out;
-
 	}
 
 	public SearchPanel getSearchPanel() {
@@ -422,23 +415,25 @@ public class TermFilterEditor extends JPanel {
 			else
 				notBox.setSelectedIndex(0);
 			comparisonBox.setSelectedItem(of.getComparison());
-			if (!(of.getAspect() instanceof SelfSearchAspect)) {
-				setAspectControlsVisible(true);
-				aspectBox.setSelectedItem(of.getAspect());
-				if (of.getTraversalFilter() != null) {
-					if (FilterUtil
-							.isTypeOnlyLinkFilter(of.getTraversalFilter())) {
-						String propID = FilterUtil.getTypeOnlyPropertyID(of
-								.getTraversalFilter());
-						if (propID != null) {
-							OBOProperty prop = (OBOProperty) SessionManager
-									.getManager().getSession()
-									.getObject(propID);
-							typeBox.setSelectedItem(prop);
+
+				if (!(of.getAspect() instanceof SelfSearchAspect)) {
+					setAspectControlsVisible(true);
+					aspectBox.setSelectedItem(of.getAspect());
+
+					if (of.getTraversalFilter() != null) {
+						if (FilterUtil
+								.isTypeOnlyLinkFilter(of.getTraversalFilter())) {
+							String propID = FilterUtil.getTypeOnlyPropertyID(of
+									.getTraversalFilter());
+							if (propID != null) {
+								OBOProperty prop = (OBOProperty) SessionManager
+								.getManager().getSession()
+								.getObject(propID);
+								typeBox.setSelectedItem(prop);
+							}
 						}
 					}
 				}
-			}
 		} else
 			throw new IllegalArgumentException("Cannot load non-object filter");
 	}
