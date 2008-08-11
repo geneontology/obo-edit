@@ -81,9 +81,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	protected static final int AUTOSCROLL_MARGIN = 12;
 	public static Border EMPTY_BORDER = new EmptyBorder(1, 1, 1, 1);
 
-	// protected OBO_1_2_FileSerializer oboAdapter =
-	// new OBO_1_2_FileSerializer();
-
 	protected boolean ignoreSelection = false;
 
 	protected boolean scrollOnSelection = true;
@@ -1042,7 +1039,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		GUIUtil.addReloadListener(reloadListener);
 		// controller.addListener(rendererListener);
 		SelectionManager.getManager().addSelectionListener(selectionListener);
-
 	}
 
 	// Hey, this doesn't get called if you X out the OBO Term Panel--shouldn't it?
@@ -1120,18 +1116,20 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 //		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
 		Link leadLink = null;
 		if (lead != null) {
-			leadLink = (Link) lead.getLastPathComponent();
-			int leadIndex = -1;
-			for (int i = 0; i < paths.length; i++) {
-				if (paths[i] == lead) {
-					leadIndex = i;
-					break;
+			if (lead.getLastPathComponent() instanceof Link) {
+				leadLink = (Link) lead.getLastPathComponent();
+				int leadIndex = -1;
+				for (int i = 0; i < paths.length; i++) {
+					if (paths[i] == lead) {
+						leadIndex = i;
+						break;
+					}
 				}
-			}
-			if (leadIndex > 0) {
-				TreePath temp = paths[0];
-				paths[0] = lead;
-				paths[leadIndex] = temp;
+				if (leadIndex > 0) {
+					TreePath temp = paths[0];
+					paths[0] = lead;
+					paths[leadIndex] = temp;
+				}
 			}
 		}
 		// createSelectionFromPaths was being called with null as the
@@ -1145,24 +1143,35 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	}
 
 	public void select(Selection selection) {
-		// Does this ever happen?  Is this test expensive?
-//		if (currentSelection != null && currentSelection.getAllSelectedObjects() == selection.getAllSelectedObjects()) {
-//			logger.debug("OBOTermPanel.select: selection of size " + selection.getAllSelectedObjects().size() + " is same as current selection");
-//			return;
-//		}
-//		currentSelection = selection;
-
-		TreePath[] paths = selection.getPaths(getRootAlgorithm(),
-				getLinkDatabase());
-		// setSelectionPaths was called twice!!  Eliminating one of those calls should help a bit...
 		long time = System.currentTimeMillis(); // DEL
-		setSelectionPaths(paths);  // This is a Swing operation that is quite expensive.
-		if (paths.length > 1) // DEL
-		    logger.debug("OBOTermPanel.select: selection of size " + selection.getAllSelectedObjects().size() + ", calling setSelectionPaths on " + paths.length + " paths took " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
-		if (paths.length > 0) {
-			makeVisible(paths[0]);
-			scrollPathToVisible(paths[0]);
+		Collection<LinkedObject> terms = selection.getTerms();
+		TreePath path1;
+		if (terms.size() < 200) {  // What's a good cutoff?
+			TreePath[] paths = selection.getPaths(getRootAlgorithm(),
+							      getLinkDatabase());
+			setSelectionPaths(paths);  // This is a Swing operation that is quite expensive.
+
+			if (paths.length == 0)
+				return;
+
+			if (paths.length == 1)
+				path1 = paths[0];
+			else  // Find best path to first term (which is not the same as paths[0]--those paths are in a seemingly random order)
+				path1 = PathUtil.getBestPath(terms.iterator().next(), getRootAlgorithm(),
+							     getLinkDatabase());
 		}
+
+		else {  // >200 terms--too slow to setSelectionPaths for all paths.
+			// Just find best path to first term
+			path1 = PathUtil.getBestPath(terms.iterator().next(), getRootAlgorithm(),
+						     getLinkDatabase());
+		}
+//		logger.debug("OBOTermPanel.select: " + terms.size() + " terms; first path is " + path1); // DEL
+		setSelectionPath(path1);
+		makeVisible(path1);
+		scrollPathToVisible(path1);
+		if (terms.size() > 1) // DEL
+			logger.debug("OBOTermPanel.select: selecting " + terms.size() + " terms took " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
 	}
 
 	public void fillInMenu(MouseEvent e, JPopupMenu menu) {
