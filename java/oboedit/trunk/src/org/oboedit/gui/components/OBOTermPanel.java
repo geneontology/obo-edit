@@ -1142,35 +1142,31 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 								 RootAlgorithm.GREEDY, true);
 	}
 
+	// Note:  setSelectionPaths (a Swing operation) is very expensive on big selects, so I tried
+        // an optimization where it wouldn't do that if >200 terms were selected, but that didn't work
+	// well because it put you in this hybrid state where they were sort of all selected but didn't
+	// look selected in the tree.
 	public void select(Selection selection) {
 		long time = System.currentTimeMillis(); // DEL
 		Collection<LinkedObject> terms = selection.getTerms();
 		TreePath path1;
-		if (terms.size() < 200) {  // What's a good cutoff?
-			TreePath[] paths = selection.getPaths(getRootAlgorithm(),
-							      getLinkDatabase());
-			setSelectionPaths(paths);  // This is a Swing operation that is quite expensive.
+		TreePath[] paths = selection.getPaths(getRootAlgorithm(),
+						      getLinkDatabase());
+		setSelectionPaths(paths);  // This is a Swing operation that is quite expensive if there are a lot of paths
 
-			if (paths.length == 0)
-				return;
+		if (paths.length == 0)
+			return;
 
-			if (paths.length == 1)
-				path1 = paths[0];
-			else  // Find best path to first term (which is not the same as paths[0]--those paths are in a seemingly random order)
-				path1 = PathUtil.getBestPath(terms.iterator().next(), getRootAlgorithm(),
-							     getLinkDatabase());
-		}
-
-		else {  // >200 terms--too slow to setSelectionPaths for all paths.
-			// Just find best path to first term
+		if (paths.length == 1)
+			path1 = paths[0];
+		else  // Find best path to first term (which is not the same as paths[0]--those paths are in a seemingly random order)
 			path1 = PathUtil.getBestPath(terms.iterator().next(), getRootAlgorithm(),
 						     getLinkDatabase());
-			setSelectionPath(path1);
 		}
-//		logger.debug("OBOTermPanel.select: " + terms.size() + " terms; first path is " + path1); // DEL
+
 		makeVisible(path1);
 		scrollPathToVisible(path1);
-		if (terms.size() > 1) // DEL
+		if (terms.size() > 200) // DEL
 			logger.debug("OBOTermPanel.select: selecting " + terms.size() + " terms took " + (System.currentTimeMillis() - time)+"" + " ms"); // DEL
 	}
 
