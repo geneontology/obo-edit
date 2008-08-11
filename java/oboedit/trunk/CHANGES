@@ -1,18 +1,12 @@
-Changes in b44:
-- If user selects (in another component) too many things at once, Graph Editor
-will ignore the selection event rather than try to show all of the new
-selected terms (too slow).  Also, if there are too many (>500) objects, the
-"Show->Everything" menu item in the GE is disabled.
-- I made disjoint_from relations show up as leaves in the OTE and Graph
-Editor, so you can't traverse them down an infinite path ("cat is
-disjoint_from dog is disjoint_from cat is..").
-- Fixed bug 2026858, "OTE loses little arrows when there's a pseudo-cycle".
-Now instead of losing their arrows and relation labels, the "circular"
-relations are shown in gray text rather than black.  (You won't see this with
-disjoint_from, since those are now shown as leaves so you can't traverse them
-down to the repetitive point anyway.)
-- Made text icons (e.g. disjoint_from) in OTE slightly shorter (in the
-vertical dimension) so they don't glom together with their neighbors.
-- When you close the Configuration Manager, it doesn't save (user should use
-the Save button to save).  This also fixes bug #2043228 (closing Configuration
-Manager is slow).
+Changes in b45:
+- Searching is now MUCH faster!
+- Built-ins (e.g. "xsd:date") are not included in search.
+- If you select >200 search results, the OTE doesn't try to select and
+show all of them (it just shows the first one).
+- Pre-loads relationship icons (when ontology is loaded) for quicker
+response the first time you show something in the OTE.  (The slowness
+was partly due to having to load the relationship icons.)
+- Fixed SF 1944177.  Now when you add a new dbxref, tab moves
+circularly between fields, and return commits the current dbxref (and
+does not create a new empty dbxref).  [Still need to fix this in
+Synonym editor.]
