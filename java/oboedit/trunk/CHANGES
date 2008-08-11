@@ -1,12 +1,9 @@
-Changes in b45:
-- Searching is now MUCH faster!
-- Built-ins (e.g. "xsd:date") are not included in search.
-- If you select >200 search results, the OTE doesn't try to select and
-show all of them (it just shows the first one).
-- Pre-loads relationship icons (when ontology is loaded) for quicker
-response the first time you show something in the OTE.  (The slowness
-was partly due to having to load the relationship icons.)
-- Fixed SF 1944177.  Now when you add a new dbxref, tab moves
-circularly between fields, and return commits the current dbxref (and
-does not create a new empty dbxref).  [Still need to fix this in
-Synonym editor.]
+Changes in b46:
+- Fixed multi-select in OTE (broken in b45).
+- Restored TermFilterEditor to previous version (broke filtering in b45).
+- Multi-select in search results now selects all in OTE again.  In b45, it
+didn't select all the terms in the tree if you selected >200 objects (because
+that is slow).  That didn't work well because it put you in this hybrid state
+where they were sort of all selected but didn't look selected in the tree.
+- Amina fixed bug #1959537: Save using filter broken for filters which require
+reasoner.
