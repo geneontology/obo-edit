@@ -1,0 +1,50 @@
+<project name="RefProjectBuilder" default="gwt-server-compile" basedir=".">
+	 <description>
+	 		This build file compiles the server side java source files which are required to run
+			in hosted mode
+	</description>
+	<property environment="env"/>
+	
+	
+	<path id="project.class.path" >
+		<pathelement location="src" />
+		<pathelement location="external/bbop.jar"/>
+		<pathelement location="external/obdapi.jar"/>
+		<pathelement location="external/pgsql.jar"/>
+		<pathelement location="external/gxt.jar"/>
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar" />
+		<pathelement path="${java.class.path}" />
+	
+	</path>
+	
+	
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+  <target name="clean" description="delete the bin directory">
+  	   <delete>
+					<fileset dir="bin"/>
+  	   </delete>
+  </target>
+
+
+
+	<!-- ================================= 
+          target: gwt-server-compile              
+         ================================= -->
+    <target name="gwt-server-compile" depends="clean" description="Compiles the gwt server side code">
+			 <mkdir dir="bin"/>
+        <javac fork="true"
+        	failonerror="true"
+        	debug="on"
+        	source="1.5"
+					destdir="bin"
+					includes="**"
+					debuglevel="lines,vars,source"
+					srcdir="src"
+        	memorymaximumsize="256m">
+        	<classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+</project>
