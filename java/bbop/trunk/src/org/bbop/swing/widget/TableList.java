@@ -207,8 +207,13 @@ public class TableList<T> extends JComponent {
 				data.add((T) o);
 				count++;
 			}
-			if (count > 0)
-				fireTableRowsInserted(start, count);
+			if (count > 0) {
+//				fireTableRowsInserted(start, count);
+				// args are supposed to be firstrow, lastrow.
+				// How did this ever work?  For some reason, it was only problematic when you changed the font size
+				// (via the config manager)!
+				fireTableRowsInserted(start, start+count-1);
+			}
 		}
 
 		public void deleteSelectedRows() {
@@ -241,7 +246,7 @@ public class TableList<T> extends JComponent {
 		public Component prepareEditor(TableCellEditor editor, int row,
 				int column) {
 			Component out = super.prepareEditor(editor, row, column);
-			int requiredHeight = out.getPreferredSize().height * 2 + 5;  // +5 didn't help
+			int requiredHeight = out.getPreferredSize().height * 2;  // + 5;   +5 didn't help
 			if (requiredHeight != getRowHeight(row)) {
 				setRowHeight(row, requiredHeight);
 			}
