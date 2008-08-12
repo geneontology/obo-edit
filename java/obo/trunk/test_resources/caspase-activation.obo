@@ -1,0 +1,351 @@
+format-version: 1.2
+date: 12:08:2008 11:03
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_generic "Generic GO slim"
+subsetdef: goslim_goa "GOA and proteome slim"
+subsetdef: goslim_pir "PIR GO slim"
+subsetdef: goslim_plant "Plant GO slim"
+subsetdef: goslim_yeast "Yeast GO slim"
+subsetdef: gosubset_prok "Prokaryotic GO subset"
+default-namespace: file:/Users/cjm/tmp/caspase-activation.obo
+
+[Term]
+id: GO:0006915
+name: apoptosis
+namespace: biological_process
+def: "A form of programmed cell death induced by external or internal signals that trigger the activity of proteolytic caspases, whose actions dismantle the cell and result in cell death. Apoptosis begins internally with condensation and subsequent fragmentation of the cell nucleus (blebbing) while the plasma membrane remains intact. Other characteristics of apoptosis include DNA fragmentation and the exposure of phosphatidyl serine on the cell surface." [GOC:go_curators, ISBN:0198506732]
+synonym: "apoptotic programmed cell death" EXACT []
+synonym: "programmed cell death by apoptosis" EXACT []
+synonym: "signaling (initiator) caspase activity" RELATED []
+synonym: "type I programmed cell death" NARROW []
+xref: Reactome:109581
+xref: Reactome:212025
+xref: Reactome:221788
+xref: Reactome:230365
+xref: Reactome:238478
+xref: Reactome:245020
+xref: Reactome:249908
+xref: Reactome:252627
+xref: Reactome:255810
+xref: Reactome:259206
+xref: Reactome:262565
+xref: Reactome:265386
+xref: Reactome:268517
+xref: Reactome:274243
+xref: Reactome:280709
+xref: Reactome:286733
+xref: Reactome:288390
+is_a: GO:0012501 ! programmed cell death
+
+[Term]
+id: GO:0006919
+name: caspase activation
+namespace: biological_process
+def: "Upregulation of the activity of a caspase, any of a group of cysteine proteases involved in apoptosis." [GOC:jl, http://en.wikipedia.org/wiki/]
+xref: Reactome:211794
+xref: Reactome:221558
+xref: Reactome:230166
+xref: Reactome:69416
+is_a: GO:0043280 ! positive regulation of caspase activity
+relationship: part_of GO:0008632 ! apoptotic program
+
+[Term]
+id: GO:0007154
+name: cell communication
+namespace: biological_process
+def: "Any process that mediates interactions between a cell and its surroundings. Encompasses interactions such as signaling or attachment between one cell and another cell, between a cell and an extracellular matrix, or between a cell and any other aspect of its environment." [GOC:mah]
+subset: goslim_generic
+subset: goslim_goa
+subset: goslim_pir
+subset: goslim_plant
+subset: gosubset_prok
+is_a: GO:0009987 ! cellular process
+
+[Term]
+id: GO:0007165
+name: signal transduction
+namespace: biological_process
+def: "The cascade of processes by which a signal interacts with a receptor, causing a change in the level or activity of a second messenger or other downstream target, and ultimately effecting a change in the functioning of the cell." [GOC:go_curators]
+subset: goslim_candida
+subset: goslim_generic
+subset: goslim_plant
+subset: goslim_yeast
+subset: gosubset_prok
+synonym: "signaling" EXACT []
+synonym: "signaling cascade" EXACT []
+synonym: "signalling" EXACT []
+synonym: "signalling cascade" EXACT []
+is_a: GO:0007154 ! cell communication
+is_a: GO:0050794 ! regulation of cellular process
+
+[Term]
+id: GO:0007242
+name: intracellular signaling cascade
+namespace: biological_process
+def: "A series of reactions within the cell that occur as a result of a single trigger reaction or compound." [GOC:jl, http://cancerweb.ncl.ac.uk/]
+subset: gosubset_prok
+synonym: "intracellular signalling cascade" EXACT []
+is_a: GO:0007165 ! signal transduction
+
+[Term]
+id: GO:0008150
+name: biological_process
+namespace: biological_process
+def: "Any process specifically pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms. A process is a collection of molecular events with a defined beginning and end." [GOC:go_curators, GOC:isa_complete]
+comment: Note that, in addition to forming the root of the biological process ontology, this term is recommended for use for the annotation of gene products whose biological process is unknown. Note that when this term is used for annotation, it indicates that no information was available about the biological process of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.
+subset: goslim_candida
+subset: goslim_generic
+subset: goslim_goa
+subset: goslim_pir
+subset: goslim_plant
+subset: goslim_yeast
+subset: gosubset_prok
+synonym: "biological process unknown" NARROW []
+synonym: "physiological process" EXACT []
+
+[Term]
+id: GO:0008219
+name: cell death
+namespace: biological_process
+def: "The specific activation or halting of processes within a cell so that its vital functions markedly cease, rather than simply deteriorating gradually over time, which culminates in cell death." [GOC:ems]
+subset: goslim_generic
+subset: goslim_goa
+subset: goslim_plant
+subset: gosubset_prok
+synonym: "necrosis" RELATED []
+is_a: GO:0009987 ! cellular process
+is_a: GO:0016265 ! death
+
+[Term]
+id: GO:0008632
+name: apoptotic program
+namespace: biological_process
+def: "The intracellular signaling cascade that results when a cell is triggered to undergo apoptosis." [GOC:go_curators]
+is_a: GO:0007242 ! intracellular signaling cascade
+relationship: part_of GO:0006915 ! apoptosis
+
+[Term]
+id: GO:0009987
+name: cellular process
+namespace: biological_process
+def: "Any process that is carried out at the cellular level, but not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level." [GOC:go_curators, GOC:isa_complete]
+subset: goslim_goa
+subset: goslim_pir
+subset: goslim_plant
+subset: gosubset_prok
+synonym: "cell growth and/or maintenance" NARROW []
+synonym: "cell physiology" EXACT []
+synonym: "cellular physiological process" EXACT []
+is_a: GO:0008150 ! biological_process
+disjoint_from: GO:0032501 ! null
+disjoint_from: GO:0051704 ! null
+
+[Term]
+id: GO:0012501
+name: programmed cell death
+namespace: biological_process
+def: "Cell death resulting from activation of endogenous cellular processes." [GOC:lr]
+comment: Note that this term should be used to annotate gene products in the organism undergoing the programmed cell death. To annotate genes in another organism whose products modulate programmed cell death in a host organism, consider the term 'modulation by symbiont of host programmed cell death ; GO:0052040'.
+synonym: "necrosis" RELATED []
+is_a: GO:0008219 ! cell death
+
+[Term]
+id: GO:0016265
+name: death
+namespace: biological_process
+def: "A permanent cessation of all vital functions: the end of life; can be applied to a whole organism or to a part of an organism." [GOC:mah, ISBN:0877797099]
+comment: See also the biological process term 'apoptosis ; GO:0006915'.
+subset: goslim_generic
+subset: goslim_plant
+subset: gosubset_prok
+is_a: GO:0032502 ! developmental process
+
+[Term]
+id: GO:0032502
+name: developmental process
+namespace: biological_process
+def: "A biological process whose specific outcome is the progression of an integrated living unit: an anatomical structure (which may be a subcellular structure, cell, tissue, or organ), or organism over time from an initial condition to a later condition." [GOC:isa_complete]
+subset: goslim_pir
+subset: gosubset_prok
+synonym: "development" NARROW []
+is_a: GO:0008150 ! biological_process
+
+[Term]
+id: GO:0042981
+name: regulation of apoptosis
+namespace: biological_process
+def: "Any process that modulates the occurrence or rate of cell death by apoptosis." [GOC:jl]
+synonym: "apoptosis regulator activity" RELATED []
+is_a: GO:0043067 ! regulation of programmed cell death
+relationship: regulates GO:0006915 ! apoptosis
+
+[Term]
+id: GO:0043067
+name: regulation of programmed cell death
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of programmed cell death, cell death resulting from activation of endogenous cellular processes." [GOC:jl]
+is_a: GO:0050793 ! regulation of developmental process
+is_a: GO:0050794 ! regulation of cellular process
+relationship: regulates GO:0012501 ! programmed cell death
+
+[Term]
+id: GO:0043085
+name: positive regulation of catalytic activity
+namespace: biological_process
+def: "Any process that activates or increases the activity of an enzyme." [GOC:jl, GOC:tb]
+subset: gosubset_prok
+synonym: "activation of enzyme activity" NARROW []
+synonym: "positive regulation of enzyme activity" EXACT []
+synonym: "stimulation of enzyme activity" NARROW []
+synonym: "up regulation of enzyme activity" EXACT []
+synonym: "up-regulation of enzyme activity" EXACT []
+synonym: "upregulation of enzyme activity" EXACT []
+is_a: GO:0050790 ! regulation of catalytic activity
+
+[Term]
+id: GO:0043280
+name: positive regulation of caspase activity
+namespace: biological_process
+def: "Any process that activates or increases the activity of a caspase, any of a group of cysteine proteases involved in apoptosis." [GOC:jl]
+synonym: "activation of caspase activity" NARROW []
+synonym: "stimulation of caspase activity" NARROW []
+synonym: "up regulation of caspase activity" EXACT []
+synonym: "up-regulation of caspase activity" EXACT []
+synonym: "upregulation of caspase activity" EXACT []
+is_a: GO:0043281 ! regulation of caspase activity
+is_a: GO:0051345 ! positive regulation of hydrolase activity
+
+[Term]
+id: GO:0043281
+name: regulation of caspase activity
+namespace: biological_process
+def: "Any process that modulates the activity of a caspase, any of a group of cysteine proteases involved in apoptosis." [GOC:jl]
+synonym: "regulation of caspase activation" NARROW []
+is_a: GO:0042981 ! regulation of apoptosis
+is_a: GO:0052548 ! regulation of endopeptidase activity
+
+[Term]
+id: GO:0050789
+name: regulation of biological process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule." [GOC:ai, GOC:go_curators]
+subset: goslim_generic
+subset: goslim_goa
+subset: gosubset_prok
+synonym: "regulation of physiological process" EXACT []
+is_a: GO:0065007 ! biological regulation
+relationship: regulates GO:0008150 ! biological_process
+
+[Term]
+id: GO:0050790
+name: regulation of catalytic activity
+namespace: biological_process
+def: "Any process that modulates the activity of an enzyme." [GOC:ai]
+subset: gosubset_prok
+synonym: "regulation of enzyme activity" EXACT []
+is_a: GO:0065009 ! regulation of molecular function
+
+[Term]
+id: GO:0050793
+name: regulation of developmental process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of development, the biological process whose specific outcome is the progression of a multicellular organism over time from an initial condition (e.g. a zygote, or a young adult) to a later condition (e.g. a multicellular animal or an aged adult)." [GOC:go_curators]
+subset: gosubset_prok
+is_a: GO:0050789 ! regulation of biological process
+relationship: regulates GO:0032502 ! developmental process
+
+[Term]
+id: GO:0050794
+name: regulation of cellular process
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of a cellular process, any of those that are carried out at the cellular level, but are not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level." [GOC:go_curators]
+subset: gosubset_prok
+synonym: "regulation of cellular physiological process" EXACT []
+is_a: GO:0050789 ! regulation of biological process
+relationship: regulates GO:0009987 ! cellular process
+
+[Term]
+id: GO:0051336
+name: regulation of hydrolase activity
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of hydrolase activity, the catalysis of the hydrolysis of various bonds, e.g. C-O, C-N, C-C, phosphoric anhydride bonds, etc. Hydrolase is the systematic name for any enzyme of EC class 3." [EC:3.-.-.-, GOC:ai]
+subset: gosubset_prok
+synonym: "hydrolase regulator" EXACT []
+is_a: GO:0050790 ! regulation of catalytic activity
+
+[Term]
+id: GO:0051345
+name: positive regulation of hydrolase activity
+namespace: biological_process
+def: "Any process that activates or increases the frequency, rate or extent of hydrolase activity, the catalysis of the hydrolysis of various bonds." [GOC:ai]
+subset: gosubset_prok
+synonym: "activation of hydrolase activity" NARROW []
+synonym: "hydrolase activator" EXACT []
+synonym: "stimulation of hydrolase activity" NARROW []
+synonym: "up regulation of hydrolase activity" EXACT []
+synonym: "up-regulation of hydrolase activity" EXACT []
+synonym: "upregulation of hydrolase activity" EXACT []
+is_a: GO:0043085 ! positive regulation of catalytic activity
+is_a: GO:0051336 ! regulation of hydrolase activity
+
+[Term]
+id: GO:0052547
+name: regulation of peptidase activity
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of peptidase activity, the hydrolysis of peptide linkages within proteins." [EC:3.4, GOC:ai]
+synonym: "peptidase regulator activity" RELATED []
+is_a: GO:0051336 ! regulation of hydrolase activity
+
+[Term]
+id: GO:0052548
+name: regulation of endopeptidase activity
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of endopeptidase activity, the endohydrolysis of peptide linkages within proteins." [GOC:ai, GOC:hjd]
+synonym: "protease regulator activity" RELATED []
+is_a: GO:0052547 ! regulation of peptidase activity
+
+[Term]
+id: GO:0065007
+name: biological regulation
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of any biological process, quality or function." [GOC:isa_complete]
+subset: goslim_pir
+subset: gosubset_prok
+synonym: "regulation" BROAD []
+is_a: GO:0008150 ! biological_process
+
+[Term]
+id: GO:0065009
+name: regulation of molecular function
+namespace: biological_process
+def: "Any process that modulates the frequency, rate or extent of molecular functions. Molecular functions are elemental biological activities occurring at the molecular level, such as catalysis or binding." [GOC:isa_complete]
+subset: gosubset_prok
+synonym: "regulation of a molecular function" EXACT []
+is_a: GO:0065007 ! biological regulation
+
+[Typedef]
+id: negatively_regulates
+name: negatively_regulates
+transitive_over: part_of ! part_of
+is_a: regulates ! regulates
+transitive_over: part_of ! part_of
+
+[Typedef]
+id: part_of
+name: part_of
+xref: OBO_REL:part_of
+is_transitive: true
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+transitive_over: part_of ! part_of
+is_a: regulates ! regulates
+transitive_over: part_of ! part_of
+
+[Typedef]
+id: regulates
+name: regulates
+transitive_over: part_of ! part_of
+transitive_over: part_of ! part_of
+
