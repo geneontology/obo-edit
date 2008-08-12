@@ -71,7 +71,7 @@ false). Similarly, if the boolean operation is OR and a constituent filter
 matches, the evaluation stops and the entire compound filter announces that it 
 matches (if even one term of an OR expression is true, the whole expression is 
 true).</P>
-<P>Therefore: <STRONG>When constructing a compound filter, put 
+<P>To improve search speed, therefore, <STRONG>when constructing a compound filter, put 
 filters that can be evaluated quickly FIRST. </STRONG>For example, it takes a long time to do any search with 
 an "Ancestor" or "Descendant" search aspect, because all the descendants or 
 ancestors of every term in the ontology have to be calculated. So add any 
@@ -86,8 +86,7 @@ Selecting <img src="search/Picture%2026.png" alt=""> causes a <img
 If the term selected in
 the ontology editor panel fits the criterion next to the lightbulb icon</p><p>
 &nbsp;then the icon turns yellow: <img src="search/Picture%2022.png" alt=""></p><p>
-If the term does not match then the lightbulb stays white as shown
-below:</p><p>
+If the term does not match then the lightbulb stays gray:</p><p>
 <img src="search/Picture%2016.png" alt=""></p><p>
 
 <h2>Results</h2>
@@ -102,7 +101,7 @@ using the button on the right of the arrows:</p><p>
 <img src="search/Picture%2033.png" alt=""></p><p>
 <h1>Link Search</h1>
 The link search panel ([Search] -> [Link Search]) allows you to search on relationship criteria rather
-text fields. </p><p>
+than text fields in the terms. </p><p>
 <img src="search/Picture%2039.png" alt=""></p><p>
 The interface looks very similar to the term search but has some
 differences as follows:</p><p>
