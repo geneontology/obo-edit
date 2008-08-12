@@ -67,7 +67,7 @@ public class TableList<T> extends JComponent {
 			ListTableCellEditor tce = (ListTableCellEditor) table
 					.getDefaultEditor(Object.class);
 			tce.stopCellEditing();
-			editNext();
+//			editNext();  // NO--this creates a new blank dbxref, which we don't want to do.
 		}
 	};
 
@@ -241,7 +241,7 @@ public class TableList<T> extends JComponent {
 		public Component prepareEditor(TableCellEditor editor, int row,
 				int column) {
 			Component out = super.prepareEditor(editor, row, column);
-			int requiredHeight = out.getPreferredSize().height * 2;
+			int requiredHeight = out.getPreferredSize().height * 2 + 5;  // +5 didn't help
 			if (requiredHeight != getRowHeight(row)) {
 				setRowHeight(row, requiredHeight);
 			}
