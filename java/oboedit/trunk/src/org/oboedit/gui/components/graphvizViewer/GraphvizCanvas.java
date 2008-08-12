@@ -92,17 +92,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	 * There should be only one instance of it !! 
 	 */
 	GraphvizSettings graphvizSettingsInstance = new GraphvizSettings();
-
+	private GraphvizConfigPanel graphvizConfigPanelInstance;
+	
 	protected float ranksep = .1f;
 	protected float nodesep = .1f;
 	protected Object[] modes = { SELECTED_ONLY, SELECTED_TO_ROOT,MINIMAL_SELECTION_GRAPH };
 	protected JComboBox modeList = new JComboBox(modes);
-	 Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
-			"diamond", "parallelogram", "house", "pentagon", "hexagon",
-			"septagon", "octagon", "invtriangle" };
-	 JComboBox nodeShapeList = new JComboBox(shapeArr);
-	 JComboBox typeShapeList = new JComboBox(shapeArr);
-	 JComboBox obsoleteShapeList = new JComboBox(shapeArr);
+
 	protected JCheckBox flipoverBox = new JCheckBox("Draw graph with root on top");
 	protected JCheckBox showIDsBox = new JCheckBox("Show ids");
 	protected JTabbedPane optionsPane = new JTabbedPane();
@@ -178,9 +174,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
-		System.out.println("GraphvizCanvas: getConfigurationPanel() method: returned " +
-		"GraphvizConfigPanel()");
-		return new GraphvizConfigPanel(this);
+		System.out.println("GraphvizCanvas: getConfigurationPanel()");
+		
+		if (graphvizConfigPanelInstance == null) {
+			graphvizConfigPanelInstance = new GraphvizConfigPanel(this);
+		}
+		
+		return graphvizConfigPanelInstance;
 	}
 
 
