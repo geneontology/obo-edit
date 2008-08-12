@@ -15,7 +15,7 @@ import org.apache.log4j.*;
 public class LoadRelationIconsTask extends AbstractReloadTask {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(FrameNameUpdateTask.class);
+	protected final static Logger logger = Logger.getLogger(LoadRelationIconsTask.class);
 
 	@Override
 	public void reload() {
@@ -27,7 +27,6 @@ public class LoadRelationIconsTask extends AbstractReloadTask {
 	protected void loadRelationIcons() {
 		for (IdentifiedObject obj : SessionManager.getManager().getSession().getLinkDatabase().getObjects()) {
 			if (obj instanceof OBOProperty) {  // that's how relationships show up
-//				logger.debug("loadRelationIcons: getIconForRelationshipType " + ((OBOProperty) obj).getName()); // DEL
 				// We don't care about the icon now--we just want it to be cached so that
 				// later when the user opens something in the Ontology Tree Editor, the
 				// icon's ready.

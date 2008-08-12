@@ -12,8 +12,14 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(FrameNameUpdateTask.class);
 
+	public FrameNameUpdateTask() {
+		// Set initial title
+		reload();
+	}
+
 	@Override
 	public void reload() {
+		logger.debug("FrameNameUpdateTask: setting title to " + getFrameTitle());
 	        GUIManager.getManager().getFrame().setTitle(getFrameTitle());
 	}
 
