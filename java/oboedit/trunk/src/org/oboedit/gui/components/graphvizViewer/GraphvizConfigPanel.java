@@ -43,7 +43,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 
 	private JPanel panel = new JPanel();
 	private JTabbedPane optionsPane = new JTabbedPane();
-	protected Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
+	 Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
 			"diamond", "parallelogram", "house", "pentagon", "hexagon",
 			"septagon", "octagon", "invtriangle" };
 	protected JComboBox nodeShapeList = new JComboBox(shapeArr);
@@ -102,6 +102,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		this.graphvizCanvasInstance = graphvizCanvasInstance;
 
 		this.graphvizSettings = graphvizCanvasInstance.graphvizSettingsInstance;
+		
 		appPathField = new JTextField(graphvizSettings.getDotPath());		
 		 data = graphvizSettings.getNamedColorList();
 		//This section where the panels are set up is only run when the component is first 
@@ -407,33 +408,21 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		//I'm not sure if any of the lines below are needed. 
 		//The graphviz path works without them and they
 		//don't make the background color work. 
-		graphvizSettings.getDotPath();
-		graphvizSettings.getLabelFont();
-		graphvizSettings.getNodeFont();
-		graphvizSettings.getTypeShape();
-		graphvizSettings.getNodeShape();
-		graphvizSettings.getObsoleteShape();
-		graphvizSettings.getFlipOver();
-		graphvizSettings.getShowIDs();
+		
+		appPathField.setText(graphvizSettings.getDotPath());
+		linkFontChooser.setChosenFont(graphvizSettings.getLabelFont());
+		nodeFontChooser.setChosenFont(graphvizSettings.getNodeFont());
+		typeShapeList.setSelectedItem(graphvizSettings.getTypeShape());
+		nodeShapeList.setSelectedItem(graphvizSettings.getNodeShape());
+		obsoleteShapeList.setSelectedItem(graphvizSettings.getObsoleteShape());
+		flipoverBox.setSelected(graphvizSettings.getFlipOver());
+		showIDsBox.setSelected(graphvizSettings.getShowIDs());
 
-		//what does this bit do?
-		//I think this bit may be why I cannot change the black background. 
-		for (int i = 0; i < typeColorList.getData().size(); i++) {
-			Object o = typeColorList.getData().get(i);
-			if (o instanceof TypeColorPair) {
-				TypeColorPair tc = (TypeColorPair) o;
-				graphvizSettings.getColorMap().put(tc.getTypeID(), tc.getPair());
-			} else if (o instanceof NamedColor) {
-				NamedColor nc = (NamedColor) o;
-				graphvizSettings.setNamedColor(nc.getName(), nc.getColor());
-			}
-		}
-		
-		graphvizSettings.getViewerFormat();
-
-		//confusion ends here. 
+		data = graphvizSettings.getNamedColorList();
+		typeColorList.setData(data);
 		
 		
+		formatBox.setSelectedItem(graphvizSettings.getViewerFormat());
 
 	}
 
@@ -448,6 +437,10 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	public void setComponent(GUIComponent comp) {
 		if (comp instanceof GraphvizCanvas) {
 			graphvizCanvasInstance = (GraphvizCanvas)comp;
+			this.graphvizSettings = graphvizCanvasInstance.graphvizSettingsInstance;
+			
+			
+			
 			System.out.println("GraphvizConfigPanel, setComponent method:  variable graphvizCanvasInstance = " + graphvizCanvasInstance);
 			System.out.println("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
 			System.out.println("Config panel New : setComponent.");
