@@ -58,6 +58,7 @@
    <mapID target="How_Do_I_Spell_Check_" url="html/How_Do_I_Spell_Check_.htm"/>
    <mapID target="How_ID_Generation_Works" url="html/How_ID_Generation_Works.htm"/>
    <mapID target="How_OBO_Edit_Understands_Histories" url="html/How_OBO_Edit_Understands_Histories.htm"/>
+   <mapID target="ID_check" url="html/ID_check.htm"/>
    <mapID target="Importing_Terms" url="html/Importing_Terms.htm"/>
    <mapID target="Intersection_Editor" url="html/Intersection_Editor.htm"/>
    <mapID target="Introduction_to_Adapters" url="html/Introduction_to_Adapters.htm"/>
