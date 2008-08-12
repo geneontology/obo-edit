@@ -1,9 +1,3 @@
-Changes in b46:
-- Fixed multi-select in OTE (broken in b45).
-- Restored TermFilterEditor to previous version (broke filtering in b45).
-- Multi-select in search results now selects all in OTE again.  In b45, it
-didn't select all the terms in the tree if you selected >200 objects (because
-that is slow).  That didn't work well because it put you in this hybrid state
-where they were sort of all selected but didn't look selected in the tree.
-- Amina fixed bug #1959537: Save using filter broken for filters which require
-reasoner.
+Changes in b47:
+Don't automatically start a new dbxref record when user commits the previous
+one--let them do that if they want to.
