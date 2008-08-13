@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.gmod.db.GO.simpleObject.GOSequence" table="seq" discriminator-value="not null" dynamic-insert="true" dynamic-update="true">
+		<id name="feature_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+	
+		<discriminator type="string" insert="false">
+			<formula>
+				(select cvt.name from cvterm cvt where cvt.cvterm_id=type_id)
+			</formula>
+		</discriminator>
+	
+		
+		<property name="name" column="display_id"/>
+		
+		<property name="residues" column="seq" lazy="true"/>
+		
+		<property name="seqlen" column="seq_len" not-null="false"/>
+		
+		<property name="md5checksum"/>
+
+		<property name="moltype"/>
+
+		<property name="timelastmodified" column="timestamp" generated="insert"/>
+
+		<many-to-one name="type" class="org.gmod.db.GO.simpleObject.GOTerm" column="type_id"  cascade="save-update"/>
+		<many-to-one name="dbxref" class="org.gmod.db.GO.simpleObject.GOXref" column="dbxref_id" cascade="all"/>
+												
+		<!-- Feature Properties 
+		<set name="featureProps" inverse="true" cascade="save-update">
+			<key column="feature_id"/>
+			<one-to-many class="org.gmod.db.chadoAPI.simpleObject.FeatureProp"/>
+		</set>
+		-->
+	</class>
+</hibernate-mapping>

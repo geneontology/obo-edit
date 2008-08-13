@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.gmod.db.GO.simpleObject.GOTerm" table="term">
+	
+		<id name="cvterm_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="name" not-null="true" type="java.lang.String"/>
+		<property name="cv" column="term_type" not-null="true" type="java.lang.String"/>
+		<property name="acc" not-null="true" type="java.lang.String"/>
+		<property name="is_obsolete"/>
+		<property name="is_root"/>
+		
+   		<one-to-one name="term_definition" class="org.gmod.db.GO.simpleObject.TermDefinition" foreign-key="term_id" />
+
+	</class>
+</hibernate-mapping>
