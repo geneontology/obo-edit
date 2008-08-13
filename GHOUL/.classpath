@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/CHAPI"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="/CHAPI/hibernateLib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="/CHAPI/hibernateLib/log4j-1.2.11.jar"/>
+	<classpathentry kind="lib" path="jars/mysql-connector-java-5.1.6/mysql-connector-java-5.1.6-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
