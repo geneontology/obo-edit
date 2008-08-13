@@ -59,6 +59,16 @@ import org.oboedit.gui.components.graphvizViewer.*;
 import org.oboedit.gui.event.SelectionEvent;
 import org.oboedit.gui.event.SelectionListener;
 
+
+/*
+ * The org.oboedit.gui.components.graphvizViewer package has been developed from John Day-Richter's original Graphviz Component file. 
+ * The package now has several classes in separate files, and the configuration settings
+ * are now accessed via the wrench icon instead of via the options button. 
+ * The modifications were made by Jennifer Deegan and Nicolas Rodriguez at the EBI
+ * in Summer 2008.
+ */
+
+
 public class GraphvizCanvas extends AbstractGUIComponent {
 
 	private static final long serialVersionUID = 1L;
