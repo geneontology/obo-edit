@@ -83,7 +83,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	final FontChooser linkFontChooser = new FontChooser();
 	final FontChooser nodeFontChooser = new FontChooser();
 	GraphvizSettings graphvizSettings;
-	final JTextField appPathField;
+	JTextField appPathField;
 	final ListEditor typeColorList = new ListEditor(new ColorEditor(),
 			noTypeLabel, new Vector(), true, true, false, true, false);
 	final JDialog pane = new JDialog((Frame) null, true);
