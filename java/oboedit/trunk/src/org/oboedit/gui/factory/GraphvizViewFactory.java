@@ -1,7 +1,7 @@
 package org.oboedit.gui.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
-import org.oboedit.gui.components.GraphvizCanvas;
+import org.oboedit.gui.components.graphvizViewer.GraphvizCanvas;
 
 import org.apache.log4j.*;
 
@@ -18,6 +18,7 @@ public class GraphvizViewFactory extends AbstractComponentFactory<GraphvizCanvas
 	}
 	
 	public GraphvizCanvas doCreateComponent(String id) {
+		System.out.println("doCreateComponent: Calling new Graphviz component.");
 		return new GraphvizCanvas(id);
 	}
 
