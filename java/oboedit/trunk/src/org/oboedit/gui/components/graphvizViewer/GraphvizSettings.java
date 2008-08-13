@@ -58,7 +58,7 @@ public class GraphvizSettings
 		}
 
 		public Map getColorMap() {
-			System.out.println("GraphvizSettings: colorMap = " + colorMap);
+			logger.info("GraphvizSettings: colorMap = " + colorMap);
 			return colorMap;
 		}
 

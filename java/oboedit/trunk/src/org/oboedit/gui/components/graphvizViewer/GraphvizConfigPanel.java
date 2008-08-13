@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
 import org.bbop.swing.ListEditor;
@@ -41,6 +42,10 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	// initialize logger
+	protected final static Logger logger = Logger.getLogger(GraphvizConfigPanel.class);
+
+	
 	private JPanel panel = new JPanel();
 	private JTabbedPane optionsPane = new JTabbedPane();
 	 Object[] shapeArr = { "box", "ellipse", "egg", "triangle",
@@ -110,8 +115,8 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		//It is not run every time you click the tick icon to open the 
 		//config window. 
 		
-		System.out.println("GraphvizConfigPanel: Setting up GUI.");
-		System.out.println("GraphvizConfigPanel: graphvizCanvasInstance set to " + graphvizCanvasInstance);
+		logger.info("GraphvizConfigPanel: Setting up GUI.");
+		logger.info("GraphvizConfigPanel: graphvizCanvasInstance set to " + graphvizCanvasInstance);
 		
 		setLayout(new BorderLayout());
 
@@ -312,9 +317,9 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		});
 
 
-		System.out.println("GraphvizConfigPanel: config GUI now set up.");
-		System.out.println("GraphvizConfigPanel: graphvizCanvasInstance set to " + graphvizCanvasInstance);
-		System.out.println("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
+		logger.info("GraphvizConfigPanel: config GUI now set up.");
+		logger.info("GraphvizConfigPanel: graphvizCanvasInstance set to " + graphvizCanvasInstance);
+		logger.info("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
 
 		
 	}
@@ -324,7 +329,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	 */
 	protected void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		
-		System.out.println("GraphvizConfigPanel: browseButtonActionPerformed() method");
+		logger.info("GraphvizConfigPanel: browseButtonActionPerformed() method");
 
 		
 		JFileChooser chooser = new JFileChooser();
@@ -344,8 +349,8 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	@Override
 	public void commit() {
 		
-		System.out.println("GraphvizConfigPanel: commit() run.");
-		System.out.println("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
+		logger.info("GraphvizConfigPanel: commit() run.");
+		logger.info("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
 
 		graphvizSettings.setDotPath(appPathField.getText());
 		graphvizSettings.setLabelFont(linkFontChooser.getChosenFont());
@@ -356,20 +361,20 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		graphvizSettings.setFlipOver(flipoverBox.isSelected());
 		graphvizSettings.setShowIDs(showIDsBox.isSelected());
 		
-		System.out.println("GraphvizConfigPanel: commit() : " + graphvizSettings.getLabelFont());
+		logger.info("GraphvizConfigPanel: commit() : " + graphvizSettings.getLabelFont());
 		
 		for (int i = 0; i < typeColorList.getData().size(); i++) {
 			Object o = typeColorList.getData().get(i);
 			if (o instanceof TypeColorPair) {
 				TypeColorPair tc = (TypeColorPair) o;
-				// System.out.println("GraphvizConfigPanel: o is instance of TypeColorPair and o = " + o);
+				// logger.info("GraphvizConfigPanel: o is instance of TypeColorPair and o = " + o);
 				graphvizSettings.getColorMap().put(tc.getTypeID(), tc.getPair());
 
 			
 			} else if (o instanceof NamedColor) {
-				//System.out.println("GraphvizConfigPanel: o is instance of NamedColor and o = " + o);
+				//logger.info("GraphvizConfigPanel: o is instance of NamedColor and o = " + o);
 				NamedColor nc = (NamedColor) o;
-				//System.out.println("GraphvizConfigPanel: NamedColor nc = " + nc);
+				//logger.info("GraphvizConfigPanel: NamedColor nc = " + nc);
 				
 				graphvizSettings.setNamedColor(nc.getName(), nc.getColor());
 			}
@@ -385,7 +390,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	
 	protected ColorPair getColor(Link tr) {
 		
-		System.out.println("GraphvizConfigPanel: ColorPair getColor() method");
+		logger.info("GraphvizConfigPanel: ColorPair getColor() method");
 
 		
 		ColorPair c = (ColorPair) graphvizSettings.getColorMap().get(
@@ -403,8 +408,8 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 			
 		this.graphvizSettings = graphvizCanvasInstance.graphvizSettingsInstance;
 		
-		System.out.println("GraphvizConfigPanel: init() run.");
-		System.out.println("GraphvizConfigPanel, init method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
+		logger.info("GraphvizConfigPanel: init() run.");
+		logger.info("GraphvizConfigPanel, init method: variable graphvizCanvasInstance = " + graphvizCanvasInstance);
 		//I'm not sure if any of the lines below are needed. 
 		//The graphviz path works without them and they
 		//don't make the background color work. 
@@ -429,7 +434,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 
 	@Override
 	public GUIComponent getComponent() {
-		System.out.println("Config panel New : getComponent.");
+		logger.info("Config panel New : getComponent.");
 		return graphvizCanvasInstance;
 	}	
 
@@ -441,9 +446,9 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 			
 			
 			
-			System.out.println("GraphvizConfigPanel, setComponent method:  variable graphvizCanvasInstance = " + graphvizCanvasInstance);
-			System.out.println("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
-			System.out.println("Config panel New : setComponent.");
+			logger.info("GraphvizConfigPanel, setComponent method:  variable graphvizCanvasInstance = " + graphvizCanvasInstance);
+			logger.info("GraphvizConfigPanel: graphvizSettings = " + graphvizSettings);
+			logger.info("Config panel New : setComponent.");
 		}
 	}
 }
