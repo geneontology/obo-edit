@@ -177,14 +177,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		System.out.println("GraphvizCanvas: getConfiguration() method : config = " + graphvizSettingsInstance);
+		logger.info("GraphvizCanvas: getConfiguration() method : config = " + graphvizSettingsInstance);
 		return graphvizSettingsInstance;
 		
 	}
 
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
-		System.out.println("GraphvizCanvas: getConfigurationPanel()");
+		logger.info("GraphvizCanvas: getConfigurationPanel()");
 		
 		if (graphvizConfigPanelInstance == null) {
 			graphvizConfigPanelInstance = new GraphvizConfigPanel(this);
@@ -199,7 +199,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		SelectionManager.getManager()
 		.removeSelectionListener(selectionListener);
 
-		System.out.println("GraphvizCanvas: cleanup() method: " +
+		logger.info("GraphvizCanvas: cleanup() method: " +
 		"SelectionManager.getManager()" + 
 		".removeSelectionListener run on selectionListener");
 
@@ -221,7 +221,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		modeList.setSelectedItem(mode);
 		reloadImage();
-		System.out.println("GraphvizCanvas: init() method.");
+		logger.info("GraphvizCanvas: init() method.");
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
@@ -232,13 +232,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		setDoFiltering(this.graphvizSettingsInstance.getDoFiltering());
 		reloadImage();
 		
-		System.out.println("GraphvizCanvas: setConfiguration() method.");
-		System.out.println("GraphvizCanvas : setConfiguration() : config = " + graphvizSettingsInstance);
+		logger.info("GraphvizCanvas: setConfiguration() method.");
+		logger.info("GraphvizCanvas : setConfiguration() : config = " + graphvizSettingsInstance);
 
 	}
 
 	public void update() {
-		System.out.println("GraphvizCanvas: update() method.");
+		logger.info("GraphvizCanvas: update() method.");
 
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			validate();
@@ -251,14 +251,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected String convertID(String id) {
-		System.out.println("GraphvizCanvas: convertID() method.");
+		logger.info("GraphvizCanvas: convertID() method.");
 
 		return id.replace(':', '_');
 	
 	}
 
 	protected String formatLabel(String name) {
-		System.out.println("GraphvizCanvas: formatLabel() method.");
+		logger.info("GraphvizCanvas: formatLabel() method.");
 
 		StringBuffer out = new StringBuffer();
 		String spacerTokens = "-_, \t";
@@ -282,7 +282,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected ColorPair getColor(Link tr) {
-		// System.out.println("GraphvizCanvas: ColorPair getColor() method.");
+		// logger.info("GraphvizCanvas: ColorPair getColor() method.");
 
 		ColorPair c = (ColorPair) graphvizSettingsInstance.getColorMap().get(
 				tr.getType().getID());
@@ -296,7 +296,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected Color getColor(String s) {
 		
-		// System.out.println("GraphvizCanvas: Color getColor() method.");
+		// logger.info("GraphvizCanvas: Color getColor() method.");
 
 		if (s == null)
 			return null;
@@ -309,7 +309,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getColorString(Color color) {
 		
-		System.out.println("GraphvizCanvas: getColorString() method.");
+		logger.info("GraphvizCanvas: getColorString() method.");
 
 		float[] floats = Color.RGBtoHSB(color.getRed(), color.getGreen(), color
 				.getBlue(), null);
@@ -318,7 +318,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(Link tr) {
 		
-		System.out.println("GraphvizCanvas: Link getOptions() method.");
+		logger.info("GraphvizCanvas: Link getOptions() method.");
 		
 		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
 		+ "dir=" + (graphvizSettingsInstance.getFlipOver() ? "back" : "forward")
@@ -332,7 +332,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(OBOClass t) {
 		
-		System.out.println("GraphvizCanvas: OBOClass getOptions() method.");
+		logger.info("GraphvizCanvas: OBOClass getOptions() method.");
 
 		
 		Color fontColor = graphvizSettingsInstance.getTermFontColor();
@@ -360,7 +360,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getShape(OBOClass t) {
 		
-		System.out.println("GraphvizCanvas: OBOClass getShape() method.");
+		logger.info("GraphvizCanvas: OBOClass getShape() method.");
 		
 		if (t.isObsolete())
 			return graphvizSettingsInstance.getObsoleteShape();
@@ -372,7 +372,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void outputFile(File textFile) throws IOException {
 		
-		System.out.println("GraphvizCanvas: outputFile() method.");
+		logger.info("GraphvizCanvas: outputFile() method.");
 		
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
 		writer.println("digraph G {");
@@ -414,7 +414,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateMinimalSelectionGraph(Set set) {
 		
-		System.out.println("GraphvizCanvas: populateMinimalSelectionGraph() method.");
+		logger.info("GraphvizCanvas: populateMinimalSelectionGraph() method.");
 
 		
 		populateSelectedToRoot(set);
@@ -423,7 +423,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedOnly(Set set) {
 		
-		System.out.println("GraphvizCanvas: populateSelectedOnly() method.");
+		logger.info("GraphvizCanvas: populateSelectedOnly() method.");
 		
 		set.addAll(SelectionManager.getManager().getSelection().getTerms());
 		// This is not working because the getTerms class was changed in the
@@ -436,7 +436,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedToRoot(Set set) {
 		
-		System.out.println("GraphvizCanvas: populateSelectedToRoot() method.");
+		logger.info("GraphvizCanvas: populateSelectedToRoot() method.");
 		
 		Iterator it = SelectionManager.getManager().getSelection().getTerms()
 		.iterator();
@@ -461,7 +461,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected void populateSelectedToRoot(Set set, LinkedObject term,
 			HashSet lookedAt) {
 		
-		System.out.println("GraphvizCanvas: populateSelectedToRoot() method.");
+		logger.info("GraphvizCanvas: populateSelectedToRoot() method.");
 
 		
 		if (lookedAt.contains(term))
@@ -477,7 +477,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSet(Set relationshipSet) {
 		
-		System.out.println("GraphvizCanvas: populateSet() method.");
+		logger.info("GraphvizCanvas: populateSet() method.");
 
 		
 		if (mode.equals(SELECTED_ONLY)) {
@@ -491,9 +491,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void reloadImage() {
 		
-		System.out.println("GraphvizCanvas: reloadImage() method.");
+		logger.info("GraphvizCanvas: reloadImage() method.");
 
-		System.out.println("GraphvizCanvas: reloadImage() : " + graphvizSettingsInstance.getLabelFont());
+		logger.info("GraphvizCanvas: reloadImage() : " + graphvizSettingsInstance.getLabelFont());
 		
 		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {
@@ -572,7 +572,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	 */
 	public void removeDisjoints(File textFile, File noDisjointTextFile) {
 	
-		System.out.println("GraphvizCanvas: removeDisjoints() method.");
+		logger.info("GraphvizCanvas: removeDisjoints() method.");
 
 		try
 		{
@@ -584,10 +584,10 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 			while( (graphvizTextFileLine=textFileBufferedReader.readLine())!=null )
 			{
-				//System.out.println(graphvizTextFileLine);
+				//logger.info(graphvizTextFileLine);
 				if(graphvizTextFileLine.contains(text_to_be_deleted))
 				{//This is working. Only disjoint lines print. 
-					System.out.println(graphvizTextFileLine); }
+					logger.info(graphvizTextFileLine); }
 				else
 				{
 					//The file is created but empty so this must be the problem.
@@ -603,7 +603,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void setDoFiltering(boolean doFiltering) {
 		
-		System.out.println("GraphvizCanvas: setDoFiltering() method.");
+		logger.info("GraphvizCanvas: setDoFiltering() method.");
 
 		
 		graphvizSettingsInstance.setDoFiltering(doFiltering);
@@ -623,7 +623,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void storeImage() {
 		
-		System.out.println("GraphvizCanvas: storeImage() method.");
+		logger.info("GraphvizCanvas: storeImage() method.");
 
 		
 		try {
@@ -694,7 +694,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void trimSet(Set set) {
 		
-		System.out.println("GraphvizCanvas: trimSet() method.");
+		logger.info("GraphvizCanvas: trimSet() method.");
 
 		
 		HashSet roots = new HashSet();
