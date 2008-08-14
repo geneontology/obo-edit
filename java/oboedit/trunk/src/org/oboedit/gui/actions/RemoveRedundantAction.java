@@ -7,6 +7,7 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,12 +22,15 @@ import javax.swing.KeyStroke;
 
 import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
+import org.obo.datamodel.OBORestriction;
 import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ExplanationType;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.ClickMenuAction;
@@ -74,40 +78,34 @@ public class RemoveRedundantAction implements ClickMenuAction {
 	}
 
 	public HistoryItem execute() {
-		Iterator<Link> it = TermUtil.getAllLinks(SessionManager.getManager()
-				.getSession().getLinkDatabase());
-		final Collection<Link> redundantLinks = new LinkedHashSet<Link>();
+		LinkDatabase ldb = SessionManager.getManager().getSession().getLinkDatabase();
+		ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
+		final Collection<Link> redundantLinks = new HashSet<Link>();
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		Iterator<Link> it = TermUtil.getAllLinks(ldb);
+			redundantLinks.iterator();
 		while (it.hasNext()) {
 			final Link link = it.next();
-			logger.info("examining "+link);
-			if (!TermUtil.isImplied(link)) {
-				ReasonedLinkDatabase reasoner = SessionManager.getManager()
-						.getReasoner();
-				Collection<Explanation> explanations = reasoner
-						.getExplanations(link);
-				for (Explanation explantion : explanations) {
-					// TODO - make this configurable
-					if (explantion.getExplanationType().equals(
-							ExplanationType.TRANSITIVITY)) {
-						redundantLinks.add(link);
-						final JCheckBox checkBox = new JCheckBox("Delete "
-								+ link, true);
-						checkBox.addActionListener(new ActionListener() {
+			// TODO: make configurable, allow repair mode, in which links implied via xps are not considered redundant
+			Explanation explanation = ReasonerUtil.getRedundancyExplanation(reasoner,link,false);
+			if (explanation == null)
+				continue;
+			redundantLinks.add(link);
+			final JCheckBox checkBox = new JCheckBox("Delete "
+					+ link + " Explanation: "+explanation.getExplanationType(), true);
+			checkBox.addActionListener(new ActionListener() {
 
-							public void actionPerformed(ActionEvent e) {
-								if (checkBox.isSelected())
-									redundantLinks.add(link);
-								else
-									redundantLinks.remove(link);
-							}
-						});
-						panel.add(checkBox);
-					}
+				public void actionPerformed(ActionEvent e) {
+					if (checkBox.isSelected())
+						redundantLinks.add(link);
+					else
+						redundantLinks.remove(link);
 				}
-			}
+			});
+			panel.add(checkBox);
 		}
+		
 		if (redundantLinks.size() == 0) {
 			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
 					"There are no redundant links in the current ontology.");
@@ -120,7 +118,7 @@ public class RemoveRedundantAction implements ClickMenuAction {
 		outerPanel
 				.add(
 						new JLabel(
-								"<html>The links below are redundant and should be"
+								"<html>The "+redundantLinks.size()+" links below are redundant and should be"
 										+ "removed. However, you may decide it is necessary to keep some redundant "
 										+ "links in your ontology. Only selected links will be deleted.</html>"),
 						"North");
