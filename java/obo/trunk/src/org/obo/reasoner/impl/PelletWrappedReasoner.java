@@ -305,11 +305,6 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		return false;
 	}
 
-	public boolean isRedundant(Link link) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public boolean isSubPropertyOf(OBOProperty a, OBOProperty b) {
 		if (a.equals(b)) {
 			return true;
@@ -347,6 +342,8 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 
 	public long recache() {
 		
+		long initTime = System.nanoTime();
+
 		logger.info("recaching. getting OWL reasoner...");
 		owlReasoner = new OWLReasoner();
 		logger.info("set OWL reasoner =   "+owlReasoner);
@@ -405,6 +402,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		owlReasoner.classify();
 		owlReasoner.realize();
 		tax = kb.getTaxonomy();
+		
+		long totalTime = System.nanoTime() - initTime;
+		logger.info("   Total reasoner time = "
+				+ (totalTime / 1000000d) + " ms");
+
 		//copyToImpledLinkDatabase();
 		return 0;
 	}

@@ -57,6 +57,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	    protected boolean allowDangling = true;  // Default is now true!
 
 		protected boolean saveImplied = false;
+		
+		protected boolean filterRedundant = true;
 
 		// FCR does not appear to work with regulation examples...
 		protected ReasonerFactory reasonerFactory = new
@@ -146,6 +148,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		public boolean getSaveImplied() {
 			return saveImplied;
+		}
+		
+		
+
+		public boolean isFilterRedundant() {
+			return filterRedundant;
+		}
+
+		public void setFilterRedundant(boolean filterRedundant) {
+			this.filterRedundant = filterRedundant;
 		}
 
 		public void setPath(String path) {
@@ -1072,7 +1084,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		boolean saveAll = impliedType.equals(SAVE_ALL);
 
 		LinkDatabase database = new DefaultLinkDatabase(session);
-		if (saveImplied || prefilterProperty != null) {
+		if (saveImplied || filteredPath.isFilterRedundant() || prefilterProperty != null) {
 			ReasonedLinkDatabase fullReasoner;
 			if (filteredPath.getUseSessionReasoner() && getReasoner() != null) {
 				fullReasoner = getReasoner();

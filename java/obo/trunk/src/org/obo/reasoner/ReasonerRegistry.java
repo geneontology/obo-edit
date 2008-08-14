@@ -38,6 +38,19 @@ public class ReasonerRegistry {
 		defaultReasonerName = "ForwardChainingReasoner (old, faster)";  // For now
 		registerReasoner("ForwardChainingReasoner (old, faster)", defaultReasonerFactory);
 		registerReasoner("LinkPileReasoner (new, slower)", new LinkPileReasonerFactory());
+		/*
+		for (Class cls : ReasonerFactory.class.getClasses()) {
+			try {
+				registerReasoner(cls.getCanonicalName(), (ReasonerFactory) cls.newInstance());
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		*/
 	}
 
 

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
@@ -322,16 +323,76 @@ public class ReasonerUtil {
 		}
 	}
 
-	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
+	//@Deprecated
+	public static boolean isExplanationForLinkCyclic(ReasonedLinkDatabase reasoner, Explanation exp, Link link) {
+		return isExplanationForLinkCyclic(reasoner, exp, link, new HashSet<Link>());
+	}
+	
+	/**
+	 * explanations are recursive. Some explanation chains m ay be cyclic. For example, an asserted link can end up supporting itself in an intersection rule.
+	 * 
+	 * this method is currently deprecated: to correctly check for this we may have to either
+	 * (1) remove the link, then check if the link can still be inferred after the cascading delete
+	 * or (2) build all possible explanation chains and make sure  
+	 * @param reasoner
+	 * @param exp
+	 * @param link
+	 * @param checkedLinks
+	 * @return true if the chain of explanations includes link as evidence
+	 */
+	//@Deprecated
+	public static boolean isExplanationForLinkCyclic(ReasonedLinkDatabase reasoner, Explanation exp, Link link, Set<Link> checkedLinks) {
+		//Set<Link> checkedLinks = new HashSet<Link>(oldCheckedLinks.size());
+		//for (Link cl : oldCheckedLinks)
+		//	checkedLinks.add(cl);
+		//System.out.println(checkedLinks);
+		//System.out.println("checking: "+link);
+		for (Link evidenceLink : exp.getEvidence()) {
+			if (checkedLinks.contains(evidenceLink)) {
+				//continue;
+				return true;
+			}
+			checkedLinks.add(evidenceLink);
+			
+			if (evidenceLink.equals(link)) {
+				return true;
+			}
+			boolean hasNonCyclicExplanation = false;
+			// any one explanation is sufficient
+			for (Explanation evidenceExp : reasoner.getExplanations(evidenceLink)) {
+				if (isExplanationForLinkCyclic(reasoner, evidenceExp, link, checkedLinks)) {
+					//System.out.println("circular evidence for: "+link+" evLink="+evidenceLink+" exp="+evidenceExp+" IN: "+exp);
+					//return true;
+				}
+				else {
+					hasNonCyclicExplanation = true;
+				}
+			}
+			if (!hasNonCyclicExplanation) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param reasoner
+	 * @param link
+	 * @param isRepairMode
+	 * @return explanation for why link is redundant. Returns null if link non-redundant. If multiple explanations, return first
+	 */
+	public static Explanation getRedundancyExplanation(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
 		if (TermUtil.isIntersection(link))
-			return false; // N+S conditions are never false
+			return null; // N+S conditions are never false
 		if (TermUtil.isImplied(link))
-			return false; // only asserted links can be redundant
+			return null; // only asserted links can be redundant
 		for (Explanation exp : reasoner.getExplanations(link)) {
 			if (exp.getExplanationType().equals(ExplanationType.GIVEN)) {
 				continue;
 			}
 			if (isRepairMode) {
+				// repair mode: we have redundant is_a links that can be inferred by a reasoner. in repair mode we do not treat these as redundant
 				if (exp.getExplanationType().equals(ExplanationType.GENUS))
 					continue;
 				if (exp.getExplanationType().equals(ExplanationType.DIFFERENTIA))
@@ -339,15 +400,29 @@ public class ReasonerUtil {
 				if (exp.getExplanationType().equals(ExplanationType.INTERSECTION))
 					continue;
 			}
-			return true;			
+			// from here on we are not in repair mode; i.e. if a link can be inferred by an xp rule then it is considered redundant
+			
+			if (exp.getExplanationType().equals(ExplanationType.INTERSECTION)) {
+				continue;
+				// test: negative regulation of programmed cell death --OBO_REL:is_a--> negative regulation of developmental process
+				// sometimes intersection links can explain themselves; we want to make sure these are not treated as redundant
+				//if (isExplanationForLinkCyclic(reasoner, exp,link)) { 
+				//	continue;
+				//}
+			}
+			return exp;			
 		}
-		return false;
+		return null;
+	}
+
+	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
+		return getRedundancyExplanation(reasoner, link, isRepairMode) != null;
 	}
 
 	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link) {
 		return isRedundant(reasoner,link,false);
 	}
-	
+
 	@Deprecated
 	public static boolean isRedundantDEPRECATED(ReasonedLinkDatabase reasoner, Link link) {
 		if (TermUtil.isIntersection(link))

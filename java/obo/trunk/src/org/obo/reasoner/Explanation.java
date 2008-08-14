@@ -10,6 +10,9 @@ public interface Explanation extends Cloneable, Serializable {
 
 	public ExplanationType getExplanationType();
 
+	/**
+	 * @return
+	 */
 	public Collection<Link> getEvidence();
 	
 	public void addEvidence(Link link);
