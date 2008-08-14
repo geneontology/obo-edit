@@ -1,6 +1,6 @@
 package org.geneontology.db.test;
 
-import org.gmod.db.chAPI.util.HibernateUtil;
+import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
 import junit.framework.TestCase;

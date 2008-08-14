@@ -24,7 +24,7 @@ public class GOobjectFactory {
 	 */
 	public Term getTermByName(String name){
 		Session session = sf.getCurrentSession();
-		return (Term)session.createQuery("from GOTerm where name = ?").setString(0, name).uniqueResult();
+		return (Term)session.createQuery("from Term where name = ?").setString(0, name).uniqueResult();
 	}
 }
 
