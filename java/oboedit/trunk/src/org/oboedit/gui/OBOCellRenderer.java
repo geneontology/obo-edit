@@ -314,11 +314,11 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
   			if (path != null && PathUtil.pathIsCircular(path)) {
 // // 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
  				setForeground(circularLinkColor);
-//				linkIcon.setLineType(LineType.ZIGZAG_LINE);
+				linkIcon.setDoubleHeaded(true);
 				linkIcon.setColor(circularLinkColor);
   			}
-// 			else  // don't need--default is enabled anyway
-// 				setEnabled(true);
+			else
+				linkIcon.setDoubleHeaded(false);
 
 			if (highlighted) {
 				setOpaque(true);
