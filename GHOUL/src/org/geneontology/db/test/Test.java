@@ -1,7 +1,8 @@
 package org.geneontology.db.test;
 
+import geneontology.db.util.HibernateUtil;
+
 import org.apache.log4j.PropertyConfigurator;
-import org.gmod.db.chAPI.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
 
