@@ -1,13 +1,11 @@
 package org.geneontology.db.model;
 
-import org.gmod.db.chAPI.simpleObject.SimpleChadoObject;
-
 /**
  * The TermDefinition class corresponds to the GO term_definition table.  
  * @author Suzanna Lewis
  *
  */
-public class TermDefinition extends SimpleChadoObject {
+public class TermDefinition extends GOModel {
 		
 	/** root of graph flag */
 	protected int term_id;
@@ -20,7 +18,7 @@ public class TermDefinition extends SimpleChadoObject {
 	
 	protected String reference;
 	
-	protected GOTerm term;
+	protected Term term;
 	
 	public TermDefinition(){
 	}
@@ -65,11 +63,11 @@ public class TermDefinition extends SimpleChadoObject {
 		this.reference = reference;
 	}
 
-	public GOTerm getTerm() {
+	public Term getTerm() {
 		return term;
 	}
 
-	public void setTerm(GOTerm term) {
+	public void setTerm(Term term) {
 		this.term = term;
 	}
 

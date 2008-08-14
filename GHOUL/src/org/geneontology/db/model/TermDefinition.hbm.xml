@@ -3,7 +3,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.gmod.db.GO.simpleObject.TermDefinition" table="term_definition">
+	<class name="org.geneontology.db.model.TermDefinition" table="term_definition">
 	
      	<id name="term_id" column="term_id">
         	<generator class="foreign">
@@ -11,10 +11,8 @@
         	</generator>
     	</id>
 		<property name="term_definition" not-null="true" type="java.lang.String"/>
-		<many-to-many name="dbxref_id" class="org.gmod.db.GO.simpleObject.GOXrefDB"
 		<property name="term_comment" type="java.lang.String"/>
 		<property name="reference" type="java.lang.String"/>
-		<property name="is_root"/>
 	
 	</class>
 </hibernate-mapping>

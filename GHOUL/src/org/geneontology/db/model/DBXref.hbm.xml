@@ -3,14 +3,14 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.gmod.db.GO.simpleObject.GOXref" table="dbxref">
+	<class name="org.geneontology.db.model.DBXref" table="dbxref">
 		<id name="dbxref_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
 		
-		<many-to-one name="db" class="org.gmod.db.GO.simpleObject.GOXrefDB" column="xref_dbname" not-null="true" cascade="save-update"/>
+		<many-to-one name="db" class="org.geneontology.db.model.DB" column="xref_dbname" not-null="true" cascade="save-update"/>
 		<property name="accession" column="xref_key" not-null="true"/>
-		<property name="keytype" column="xref_keytype"/ >
+		<property name="keytype" column="xref_keytype"/>
 		<property name="description" column="xref_desc"/>
 	</class>
 </hibernate-mapping>

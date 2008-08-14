@@ -2,56 +2,49 @@ package org.geneontology.db.model;
 
 import java.util.Vector;
 
-import org.gmod.db.chAPI.simpleObject.CV;
-import org.gmod.db.chAPI.simpleObject.CVTerm;
-import org.gmod.db.chAPI.simpleObject.DBXref;
-
 /**
  * The CVTerm class corresponds to the Chado cvterm table.  
  * @author Robert Bruggner
  *
  */
-public class GOTerm extends CVTerm {
+public class Term extends GOModel {
 		
-	/** root of graph flag */
-	protected Integer is_root;
-	
-	protected TermDefinition term_definition;
+	/** The cvterm cterm_id */
+	protected int go_term_id;
 	
 	protected String acc;
 
-	/** The {@link DBXref} of the cvterm */
-	protected Vector dbxrefs;
+	/** The name of the cvterm */
+	protected String name;
 
-	public GOTerm(){
+	/** The CV that the cvterm is part of */
+	protected String cv;
+
+	/** root of graph flag */
+	protected Integer is_root;
+	
+	/** obsolete flag */
+	protected Integer is_obsolete;
+	
+	protected TermDefinition term_definition;
+	
+	/** The {@link DBXref} of the cvterm */
+	protected Vector<DBXref> dbxref;
+
+	public Term(){
 		String[] uniqueConstraintFields = {"acc"};
-		this.initUniqueConstraintFields(GOTerm.class,uniqueConstraintFields);
+		this.initUniqueConstraintFields(Term.class,uniqueConstraintFields);
 	}
 
 	/**
 	 * Setter of CVTerm {@link CV}
-	 * @param cv the {@link CV} that this CVTerm is part of.
 	 */
 	public void setCv(String cv) {
-		this.cv = new CV();
-		this.cv.setName(cv);
+		this.cv = cv;
 	}
-	
-	/**
-	 * Getter of CVTerm name.
-	 * @return the cvterm name.
-	 */
-	public String getTerm_type() {
-		return cv != null ? cv.getName() : null;
-	}
-	
-	/**
-	 * Setter of CVTerm name.
-	 * @param name the cvterm name.
-	 */
-	public void setTerm_type(String name) {
-		cv = new CV();
-		cv.setName(name);
+
+	public String getCv() {
+		return cv;
 	}
 	
 	/**
@@ -102,9 +95,8 @@ public class GOTerm extends CVTerm {
 		if (this.term_definition == null) {
 			this.term_definition = new TermDefinition();
 		}
-		this.term_definition.setTerm_id(cvterm_id);
+		this.term_definition.setTerm_id(go_term_id);
 		this.term_definition.setTerm_definition(definition);
-		}
 	}
 
 	/**
@@ -112,7 +104,7 @@ public class GOTerm extends CVTerm {
 	 * @return cvterm {@link DBXref} object.
 	 */
 	public DBXref getDbxref() {
-		return dbxrefs != null ? (DBXref) dbxrefs.get(0) : null;
+		return this.dbxref != null ? (DBXref) this.dbxref.get(0) : null;
 }
 
 	/**
@@ -120,9 +112,33 @@ public class GOTerm extends CVTerm {
 	 * @param dbxref the {@link DBXref} object of the cvterm.
 	 */
 	public void setDbxref(DBXref dbxref) {
-		if (dbxrefs == null)
-			dbxrefs = new Vector (2);
-		this.dbxrefs.add(dbxref);
+		if (this.dbxref == null)
+			this.dbxref = new Vector<DBXref> (2);
+		this.dbxref.add(dbxref);
+	}
+
+	public int getGo_term_id() {
+		return go_term_id;
+	}
+
+	public void setGo_term_id(int go_term_id) {
+		this.go_term_id = go_term_id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getIs_obsolete() {
+		return is_obsolete;
+	}
+
+	public void setIs_obsolete(Integer is_obsolete) {
+		this.is_obsolete = is_obsolete;
 	}
 
 }

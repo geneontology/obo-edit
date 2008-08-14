@@ -3,9 +3,9 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.gmod.db.GO.simpleObject.GOTerm" table="term">
+	<class name="org.geneontology.db.model.Term" table="term">
 	
-		<id name="cvterm_id" column="id" unsaved-value="undefined">
+		<id name="go_term_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
 		
@@ -15,7 +15,7 @@
 		<property name="is_obsolete"/>
 		<property name="is_root"/>
 		
-   		<one-to-one name="term_definition" class="org.gmod.db.GO.simpleObject.TermDefinition" foreign-key="term_id" />
+   		<one-to-one name="term_definition" class="org.geneontology.db.model.TermDefinition" foreign-key="term_id" />
 
 	</class>
 </hibernate-mapping>
