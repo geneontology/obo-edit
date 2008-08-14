@@ -51,8 +51,7 @@ public class OBO2Linkfile {
 	public static void convertFiles(
 			OBOFileAdapter.OBOAdapterConfiguration readConfig,
 			OBOFileAdapter.OBOAdapterConfiguration writeConfig,
-			boolean parseObsoleteComments, boolean writeObsoleteComments,
-			boolean fixDbxrefs, List scripts) throws Exception {
+			List scripts) throws Exception {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOSession session = (OBOSession) adapter.doOperation(OBOAdapter.READ_ONTOLOGY,
 				readConfig, null);
@@ -67,6 +66,7 @@ public class OBO2Linkfile {
 		logger.info("savePath = " + writeConfig.getSaveRecords());
 		
 		SimpleLinkFileAdapter writer = new SimpleLinkFileAdapter();
+		
 		writer.doOperation(OBOAdapter.WRITE_ONTOLOGY, writeConfig, session);
 	}
 
@@ -89,9 +89,6 @@ public class OBO2Linkfile {
 		OBOFileAdapter.OBOAdapterConfiguration writeConfig = new OBOFileAdapter.OBOAdapterConfiguration();
 		
 		writeConfig.setBasicSave(false);
-		boolean parseObsoleteComments = false;
-		boolean writeObsoleteComments = false;
-		boolean fixDbxrefs = false;
 		LinkedList scripts = new LinkedList();
 		String formatVersion = "OBO_1_2";
 		for (int i = 0; i < args.length; i++)
@@ -108,6 +105,10 @@ public class OBO2Linkfile {
 					printUsage(1);
 			} else if (args[i].equals("-allowdangling")) {
 				readConfig.setAllowDangling(true);
+			} else if (args[i].equals("-includeexplanations")) {
+				writeConfig.setIncludeExplanations(true);
+			} else if (args[i].equals("-includenames")) {
+				writeConfig.setIncludeNames(true);
 			} else if (args[i].equals("-runscript")) {
 				if (i >= args.length - 1)
 					printUsage(1);
@@ -189,8 +190,7 @@ public class OBO2Linkfile {
 			}
 		}
 		writeConfig.setSerializer(formatVersion);
-		convertFiles(readConfig, writeConfig, parseObsoleteComments,
-				writeObsoleteComments, fixDbxrefs, scripts);
+		convertFiles(readConfig, writeConfig, scripts);
 	}
 
 	protected static void printUsage(int exitCode) {
