@@ -250,7 +250,8 @@ public class SearchPanel extends JPanel {
 		statusPanel.setOpaque(false);
 		statusPanel.setLayout(new GridLayout(1, 1));
 
-		lightbulbButton = new JCheckBox("Show debugging hints   ", true);
+//		lightbulbButton = new JCheckBox("Show debugging hints   ", true);
+		lightbulbButton = new JCheckBox("Show lightbulb   ", true);
 		lightbulbButton.addActionListener(lightbulbActionListener);
 
 		buttonPanel = new JPanel();
