@@ -141,5 +141,9 @@ public class Term extends GOModel {
 		this.is_obsolete = is_obsolete;
 	}
 	
+	public String toString() {
+		return acc + " " + (name != null ? name : "");
+	}
+
 
 }

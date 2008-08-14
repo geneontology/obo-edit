@@ -19,6 +19,8 @@ public class GOHibernateAPITest extends AbstractGOHibernateAPITest{
 		GOobjectFactory sof = new GOobjectFactory(this.getSessionFactory());
 		
 		Term a_term = sof.getTermByName(test_name);
+		logger.info(a_term);
+
 		Assert.assertTrue((a_term != null));
 		Assert.assertTrue(a_term.getName().equals(this.test_name));
 	}
