@@ -19,9 +19,7 @@ public class LoadRelationIconsTask extends AbstractReloadTask {
 
 	@Override
 	public void reload() {
-		long time = System.currentTimeMillis(); // DEL
 		loadRelationIcons();
-		logger.debug("Loaded relation icons in " + (System.currentTimeMillis() - time) + " ms"); // DEL
 	}
 
 	protected void loadRelationIcons() {
