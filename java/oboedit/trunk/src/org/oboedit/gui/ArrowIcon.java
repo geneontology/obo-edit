@@ -48,6 +48,8 @@ public class ArrowIcon implements Icon {
 	protected LineType lineType = LineType.SOLID_LINE;
 	protected int lineWidth = 1;
 
+	protected boolean doubleHeaded = false;
+
 	protected static HashMap strokeHash = new HashMap();
 
 	// protected int right = 20;
@@ -104,8 +106,8 @@ public class ArrowIcon implements Icon {
 
 			g.setColor(getColor());
 			Shape line = new Line2D.Float(modifiedLeft,
-					y + getIconHeight() / 2, getIconWidth(), y
-							+ getIconHeight() / 2);
+						      y + getIconHeight() / 2, getIconWidth(), 
+						      y	+ getIconHeight() / 2);
 			if (stroke instanceof BasicStroke) {
 				((Graphics2D) g).setStroke(stroke);
 				((Graphics2D) g).draw(line);
@@ -114,13 +116,6 @@ public class ArrowIcon implements Icon {
 			}
 			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-			// Stroke oldStroke = ((Graphics2D) g).getStroke();
-			// ((Graphics2D) g).setStroke(stroke);
-			// g.drawLine(modifiedLeft, y + getIconHeight() / 2, getIconWidth(),
-			// y
-			// + getIconHeight() / 2);
-			//
-			// ((Graphics2D) g).setStroke(oldStroke);
 			if (shouldDrawArrow()) {
 				int centerY = y + getIconHeight() / 2;
 				triangleYBuffer[0] = centerY - triangleYSize;
@@ -132,6 +127,14 @@ public class ArrowIcon implements Icon {
 				triangleXBuffer[2] = x + xoffset;
 
 				g.fillPolygon(triangleXBuffer, triangleYBuffer, 3);
+
+				if (doubleHeaded()) {
+					triangleXBuffer[0] = x + getIconWidth() + xoffset - triangleXSize;
+					triangleXBuffer[1] = x + getIconWidth() + xoffset - triangleXSize;
+					triangleXBuffer[2] = x + getIconWidth() + xoffset;
+
+					g.fillPolygon(triangleXBuffer, triangleYBuffer, 3);
+				}
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -177,6 +180,13 @@ public class ArrowIcon implements Icon {
 
 	protected void setLineWidth(int lineWidth) {
 		this.lineWidth = lineWidth;
+	}
+
+	protected boolean doubleHeaded() {
+		return doubleHeaded;
+	}
+	protected void setDoubleHeaded(Boolean dh) {
+		this.doubleHeaded = dh;
 	}
 
 }
