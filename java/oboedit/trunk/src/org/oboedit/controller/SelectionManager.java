@@ -190,17 +190,19 @@ public class SelectionManager implements ObjectSelector {
 			RootAlgorithm rootAlgorithm, boolean fillInTerms) {
 //		Collection<Link> links = new HashSet<Link>();
 //		Collection<LinkedObject> terms = new HashSet<LinkedObject>();
-	    // Want terms to be kept in order (which HashSet doesn't do).
-	    // However, keep in mind that LinkedHashSets are slower.
+		// Want terms to be kept in order (which HashSet doesn't do).
+		// However, keep in mind that LinkedHashSets are slower.
 		Collection<Link> links = new LinkedHashSet<Link>();
 		Collection<LinkedObject> terms = new LinkedHashSet<LinkedObject>();
 
 		LinkedObject subSelection = null;
 		for (TreePath path : paths) {
-			Link link = (Link) path.getLastPathComponent();
-			links.add(link);
-			if (fillInTerms)
-				terms.add(link.getChild());
+			if (path.getLastPathComponent() instanceof Link) {
+				Link link = (Link) path.getLastPathComponent();
+				links.add(link);
+				if (fillInTerms)
+					terms.add(link.getChild());
+			}
 		}
 		if (fillInTerms)
 			if (terms.size() > 0)
