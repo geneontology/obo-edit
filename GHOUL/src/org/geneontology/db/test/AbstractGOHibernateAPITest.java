@@ -1,9 +1,9 @@
 package org.geneontology.db.test;
 
-import org.geneontology.db.util.HibernateUtil;
-import org.hibernate.SessionFactory;
-
+import geneontology.db.util.HibernateUtil;
 import junit.framework.TestCase;
+
+import org.hibernate.SessionFactory;
 
 
 public class AbstractGOHibernateAPITest extends TestCase{
