@@ -37,6 +37,7 @@ import org.obo.history.HistoryItem;
 import org.obo.nlp.SemanticParser;
 import org.obo.nlp.impl.RegulationTermParser;
 import org.obo.reasoner.ReasonerFactory;
+import org.obo.reasoner.ReasonerRegistry;
 import org.obo.util.FilterUtil;
 import org.obo.util.LexUtil;
 import org.obo.util.TermUtil;
@@ -47,6 +48,9 @@ public class OBO2OBO {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBO2OBO.class);
+	
+    protected final static ReasonerRegistry reasonerRegistry = ReasonerRegistry.getInstance();
+
 
 	protected static class DanglingWrapper {
 		protected String id;
@@ -717,6 +721,9 @@ public class OBO2OBO {
 		System.err
 		.println("  -reasonerfactory            - When saving implied links, calls a non-default reasoner\n"
 				+ "                               Options: ");
+		for ( ReasonerFactory rFac : ReasonerRegistry.getInstance().getRegisteredFactories()) {
+			System.err.println("                                    "+rFac.getClass().getCanonicalName());
+		}
 		System.err
 		.println("  -parsecomments             - Parses comments in obsolete terms looking for\n"
 				+ "                               GO-style formatted comments containing parseable\n"
