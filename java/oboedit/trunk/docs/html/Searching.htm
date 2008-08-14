@@ -7,71 +7,53 @@
 </HEAD>
 <BODY bgColor=#ffffff>
 <H1>Searching</H1>
-<P>The main use of filters is for searching. An OBO-Edit 
-search checks every term in the ontology to see if it matches the given filter. 
-When the search is complete, a list of matching terms 
-is displayed to the user.</P>
+
+<P>The main use of filters is for searching. An OBO-Edit search checks
+every term or link in the ontology to see if it matches the given filter.
+When the search is complete, a list of matching terms is displayed to
+the user.</P>
+
+<h2>Term Searches</h2>
 <P>The OBO-Edit term search panel looks like this:</P>
 <P><IMG src="../images/filter_term_standard.png" border=0></P>
 <P>To do a search, first use the filter designer to create 
 the filter you want to use. Then click the "Search" button.</P>
-<P>When the search is complete, a list of results will appear and a new tab will 
-be added to the search interface:</P>
+<P>When the search is complete, a list of results will appear and a
+new tab will be added to the search interface. Term search results
+consist of a list of matching terms. Each term's name and id is
+listed:</P>
+
 <P><IMG hspace=0 src="../images/search_results_term.png" border=0></P>
-<P>The search results appear at the top of the tab. To sort the search results
-by a particular field (e.g., ID), click the appropriate header at the top of
-  the search column.  Clicking again will reverse-sort by the same column.</P>
-<P>Click a search result to select it. If "Autoselect" is clicked, the search 
-result will automatically be selected in the primary ontology editor panel (it is 
-possible to specify a different ontology editor panel where search results will be 
-selected; see below). </P>
-<P>There are a number of controls at the bottom of the results panel:</P>
-<UL>
-  <LI><IMG height=23 hspace=0 src="../images/search_results_autoselect.gif" 
-  width=75 border=0>&nbsp;- If 
-  this&nbsp;box is&nbsp;checked, terms will automatically be selected in the 
-  ontology editor panel when they are selected in the search results panel 
-  <LI><IMG height=23 hspace=0 src="../images/search_results_selectbutton.gif" 
-  width=94 border=0>&nbsp;- When this button 
-  is pressed, the currently selected search results are selected in the ontology 
-  editor panel. This button is only useful if the autoselect box 
-  is&nbsp;disabled. 
-  <LI><IMG height=26 hspace=0 src="../images/search_results_label.gif" width=152 
-  border=0>&nbsp;- If you've 
-  done&nbsp;several searches, you may want to label your search results with a 
-  more descriptive title. To change the label, enter a new value in the text 
-  box, and then press enter. 
-  <LI><IMG height=26 hspace=0 src="../images/search_results_detachbutton.gif" 
-  width=50 border=0>&nbsp;-&nbsp;When 
-  this button is pressed, the search results will be&nbsp;detached from the 
-  main&nbsp;tab panel and placed in a free floating window. Press the button 
-  again to reattach the results to the tab&nbsp;pane. 
-  <LI><IMG height=26 hspace=0 src="../images/search_results_closebutton.gif" 
-  width=50 border=0>&nbsp;- This button closes the results panel and removes the 
-  search results.</LI></UL>
-<H2>Term Search Results vs. Link Search Results</H2>
-<P>Term search results consist of a list of matching terms. Each term's name and 
-id is listed:</P>
-<P><IMG hspace=0 src="../images/search_results_term.png" border=0></P>
-<P>
-You can do a link search by choosing "Link Search Panel" from the "Search" menu.
+
+<P>The search results appear at the top of the tab. To sort the search
+results by a particular field (e.g., ID), click the appropriate header
+at the top of the search column. Clicking again will reverse-sort by
+the same column.</P>
+
+<P>Click a search result to select it. The search result will
+automatically be selected in any panel set to global selection
+mode.</P>
+
+<p>Each search result panel behaves as a <a
+href="Components.htm">component</a> and can be handled separately; by
+default, new search results panels appear docked behind the search
+panel.</p>
+
+<H2>Link Searches</H2>
+<P>You can do a link search by choosing "Link Search Panel" from the "Search" menu.
 Link search results consist of a list of matching links. For each link, the 
 child id, child name, type id, parent id, and parent name are listed:</P>
 <P><IMG hspace=0 src="../images/search_results_link.png" border=0></P>
 
-<H2>Selecting Search Results</H2>
-<P>As noted earlier, if a search result is clicked and the autoselect box is 
-checked, or the "Select terms" button is pressed, the search result is selected 
-in the ontology editor panel.  The shortest path to the search result is shown.</P>
-<P>Normally, search results are selected in the primary ontology editor panel (see 
-<A href="The_Term_Editor_Panel.htm">The ontology editor panel</A> for information 
-about designating the primary ontology editor panel). Search results can be selected 
-in a different ontology editor panel by dragging the search button onto the desired 
-ontology editor panel instead of clicking the buttons.</P>
+<p>As with term search results, link search results appear in tabs
+that behave as components, and the results can be sorted by clicking
+the headers. Clicking on a link in the list selects it in panels in
+global selection mode; note that because each result is a link, no
+selection will appear in the Text Editor.</p>
 
 <h2>Saving Search Results to a File</h2>
 <p>
-You can save just the ontology terms that matched a particular search.  The
+You can save just the ontology terms that matched a particular search. The
 way to do this is with a <a href="Loading___Saving.htm#filter">filtered save</a>.
 </p>
 </BODY>
