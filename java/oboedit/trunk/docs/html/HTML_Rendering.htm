@@ -6,64 +6,147 @@
 </head>
 <body bgcolor="#ffffff">
 <h1>HTML Rendering</h1>
-<p>It's possible to specify OBO-Edit renderers in HTML code. Most renderers are implemented in this way behind the scenes, but users can specify their own html code directly (using the "HTML Code" checkbox on any renderer configuration screen). This HTML code is standard HTML, with the addition of some special purpose expressions. These expressions are always enclosed between <b>$</b> characters (e.g. <b>$name$</b>), and are of two types:
-</p>
+<p>It's possible to specify OBO-Edit renderers in HTML code. Most
+renderers are implemented in this way behind the scenes, but users can
+also specify their own HTML code directly. HTML can be used in any
+renderer (e.g. in a global renderer or a component such as an Ontology
+Tree Editor or Graph Editor panel), and some components allow you to
+specify an HTML expression to display terms.</p>
+
+<h3>Search criteria</h3>
+<p>HTML rendering uses <em>search criterion IDs</em> to refer to terms
+or to specific pieces of information about a term. Commonly used
+search criterion IDs include <b>$name$</b> and <b>$id$</b>, referring
+to the term name and ID respectively, and <b>$term$</b>, which refers
+to any term that matches a renderer's search criteria. See "Technical
+Aspects of HTML Rendering" below for more information on search
+criteria (note: some of the information on criteria is aimed at
+programmers more than end users).</p>
+
+<h2>HTML Expressions</h2>
+
+<p>HTML expressions allow you to specify what information is shown for
+each term in a panel. In the Ontology Tree Editor or Graph Editor,
+click the configuration wrench icon, then click the "HTML Expression"
+tab to bring up a box in which you can type or paste an expression; in
+the Graph Viewer, the box is visible immediately when you click the
+configuration icon.</p>
+
+<p>This example is included in the HTML Expression configuration
+screens; it places the ID on the line below the term name, in
+italics:</p>
+<p><img src="../images/html_expression_gv_config.png" alt=""></p>
+<p>The resulting Graph Viewer display:</p>
+<p><img src="../images/html_expression_gv_display.png" alt=""></p>
+
+<h2>HTML Code in Renderers</h2>
+
+<p>You can use the "HTML Code" checkbox on any term renderer
+configuration screen to add HTML to specify a rendering
+effect. Usually, you will use <b>$term$</b> along with some HTML
+markup to change the appearance of terms that match the filter
+criteria (also see "Technical Aspects of HTML Rendering" below).</p>
+
+<p>In addition to specifying text effects (such as thtose available
+using checkboxes), an HTML renderer can be used to prepend or append
+text to a selected set of terms. For example, this search finds all
+terms with the dbxref "GOC:mtg_cardio":</p>
+
+<p><img src="../images/cardio_dbxref_search.png" alt=""></p>
+
+<p>These renderer settings make the text blue and boldface, and prepend
+the text "cardio term:" to the names of all terms with this
+dbxref:</p>
+
+<p><img border=0 src="../images/html_render_setup.png"></p>
+
+
+<p>Note that the 'HTML Code' checkbox is checked, and the text "cardio
+term: $term$" is entered in the box. The text "$term$" shows where the
+name of the term will be, relative to the text we are adding.</p>
+
+<p>To append text, insert "$term$: cardio term" in the box instead.</p>
+
+<p>Once the renderer is set up correctly, click 'Save Changes' and
+then search for the terms as shown above. </p>
+
+<p>When you click on any of the search results, the term name will
+appear in the rendered panel with the text prepended. If the renderer
+is set up in the Global Filters component, the prepended text will
+also be visible in the search results tab:</p>
+
+<p><img border=0 src="../images/HTMLRenderOntologyPanel.PNG"></p>
+
+<p> The text is not prepended in the Text Editor Panel, even if a
+global renderer is used:</p>
+
+<p><img border=0 src="../images/text_editor_global_renderer.png"></p>
+
+
+<h2>Technical Aspects of HTML Rendering</h2>
+
+<p>The HTML code used by the rendering system is standard HTML, with
+the addition of some special purpose expressions. These expressions
+are always enclosed between <b>$</b> characters (e.g. <b>$name$</b>),
+and are of two types:</p>
+
 <h3>Search Criterion IDs</h3>
-<p>Any renderer specification can include a search criterion identifier, enclosed in <b>$</b> characters. The available search criteria ids in any OBO-Edit session can be discovered with the code:
+<p>Any renderer specification can include a search criterion
+identifier, enclosed in <b>$</b> characters. The available search
+criteria ids in any OBO-Edit session can be discovered with the code:
 </p>
+
 <pre>
 for(SearchCriterion&lt;?&gt; crit&nbsp;: FilterManager.getManager().getCriteria()) {
     System.out.println(crit.getID());
 }
 </pre>
-<p>The search criterion id may be provided on its own (e.g. <b>$name$</b>), or it may include parameters in parentheses (e.g. <b>$synonym(&lt;li>&lt;i>no_synonyms&lt;/i>, *, &lt;li>$item$)$</b>). Search criteria may have up to three parameters, explained below. If any parameter is omitted, its default value is automatically used.
+
+<p>The search criterion id may be provided on its own
+(e.g. <b>$name$</b>), or it may include parameters in parentheses
+(e.g. <b>$synonym(&lt;li>&lt;i>no_synonyms&lt;/i>, *,
+&lt;li>$item$)$</b>). Search criteria may have up to three parameters,
+explained below. If any parameter is omitted, its default value is
+automatically used.</p>
+
 <b>Parameters</b>
-</p>
-<ol><li> <i>Default value</i> - The text to display if there are no values for this search criterion, or if an out-of-range index is given for the second parameter. The default value for this parameter is an empty string.
-</li><li> <i>Value index</i>- The index of the value to use if this search criterion returns multiple values. If the value of this parameter is <b>*</b>, all the values are used and displayed according to the formatting specified in the third parameter. The default value for this parameter is 0.
-</li><li> <i>Repeated value expression</i> - Another html expression used to format multi-valued search criteria. This expression will be repeated for each value of the given search criterion. In this expression, the variable <b>$item$</b> will be replaced with the current search criterion value.
-</li></ol>
+<ol>
+<li> <i>Default value</i> - The text to display if there are no values
+for this search criterion, or if an out-of-range index is given for
+the second parameter. The default value for this parameter is an empty
+string.  </li>
+<li> <i>Value index</i>- The index of the value to use if this search
+criterion returns multiple values. If the value of this parameter is
+<b>*</b>, all the values are used and displayed according to the
+formatting specified in the third parameter. The default value for
+this parameter is 0.  </li>
+<li> <i>Repeated value expression</i> - Another html expression used
+to format multi-valued search criteria. This expression will be
+repeated for each value of the given search criterion. In this
+expression, the variable <b>$item$</b> will be replaced with the
+current search criterion value.  </li>
+</ol>
+
 <h3>Results from other renderers</h3>
-<p>A term may match several HTML renderers, so most HTML renderers will be written to wrap HTML data generated by some <i>other</i> renderer with additional HTML. The output from any nested renderers is wrapped in the <b>$term$</b> variable. So, for example, the following renderer expression would take the result of any previous renderers and append the word "obsolete" in italics after it:
-</p>
+<p>A term may match several HTML renderers, so most HTML renderers
+will be written to wrap HTML data generated by some <i>other</i>
+renderer with additional HTML. The output from any nested renderers is
+wrapped in the <b>$term$</b> variable. So, for example, the following
+renderer expression would take the result of any previous renderers
+and append the word "obsolete" in italics after it:</p>
 <pre>
 $term$ &lt;i&gt;(obsolete)&lt;/i&gt;
 </pre>
-<h2>HTML Expression Format</h2>
-<p>The Ontology Editor Panel, Graph Editor, and Global Filter Manager allow users to specify an "HTML Expression" - the basic html expression used as the starting value for all other renderers. This expression uses the exact same syntax as the renderer expressions described above, except that the <b>$term$</b> variable is not available, because there are no previous renderer values to access.
 
-<h3>Global Filters</h3>
-<p>The Global Filters feature (Config -> Global Filters) allows us to prepend or append a piece of text to
-the names of a set of terms that are found by a given query.
-</p>
-To use this feature, we set up the query in the Term Renderers tab of the
-Global Filter panel (Figure 1). We use the filter menus in the usual way. In
-this example we are searching for any terms with the dbxref "GOC:mtg_cardio".
+<h3>HTML Expression Format</h3>
 
-<p><font color="#FF0000"><strong>The image below needs to be remade after the search menu for ancestor/descendent has been added.</strong></font></p>
+<p>As noted above, the Ontology Editor Panel, Graph Editor, and Global
+Filter Manager allow users to specify an "HTML Expression" - the basic
+html expression used as the starting value for all other
+renderers. This expression uses the exact same syntax as the renderer
+expressions described above, except that the <b>$term$</b> variable is
+not available, because there are no previous renderer values to
+access.</p>
 
-<p><img border=0 src="../images/SetupHTMLRender.PNG">
-</p><p>
-To prepend the text "cardio term:" to the names of all terms with this dbxref
-we must check the 'HTML Code' checkbox and then enter in the box the text
-"cardio term: $term$". The text "$term$" shows where the name of the term will
-be, relative to the text we are adding. We may also wish to change the colour
-of the term names (see colour changing section).
-</p><p>
-If we wished to append some text we would insert "$term$: cardio term" in the
-box instead.
-</p><p>
-Once the render is set up correctly we click 'Save Changes' and then go on to
-search for the terms (Figure 2). 
-</p><p><img border=0 src="../images/HTMLRenderSearch.PNG"></p>
-We can see that the term name change is
-visible in the search results tab. Once we click on the name of one of the
-found terms, the term will be visible in the Ontology Editor Panel with the
-text prepended (Figure 3).
-</p><p><img border=0 src="../images/HTMLRenderOntologyPanel.PNG">
- The text is not prepended in the Text Editor Panel
-(Figure 4).
-</p><p><img border=0 src="../images/HTMLRenderTextEditor.PNG">
-</p>
 </body>
 </html>
