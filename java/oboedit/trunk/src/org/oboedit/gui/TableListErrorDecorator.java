@@ -70,25 +70,32 @@ public class TableListErrorDecorator extends
 					Object warningVal = w.getPath().getValueAt(spec);
 					if (warningVal != null && warningVal.equals(value)) {
 						error = true;
-						tooltip.append("<li>" + w.getMessage());
+						tooltip.append("<li>" + w.getMessage() + "</li>");
 						fixes.addAll(w.getFixes());
 					}
 				}
 			}
 			tooltip.append("</ul></html>");
-			if (error && r instanceof DefaultTableCellRenderer) {
-				((DefaultTableCellRenderer) r).setForeground(Color.red);
-				if (fixes.size() > 0)
-					((DefaultTableCellRenderer) r).setIcon(Preferences
-							.loadLibraryIcon("quickfix.gif"));
-				table.setSelectionForeground(Color.red);
-			} else {
+//			logger.info("TableListErrorDectorator.getTableCellRendererComponent: warnings = " + warnings + ", tooltip = " + tooltip); // DEL
+ 			if (error && r instanceof DefaultTableCellRenderer) {
+ 				((DefaultTableCellRenderer) r).setForeground(Color.red);
+ 				if (fixes.size() > 0)
+ 					((DefaultTableCellRenderer) r).setIcon(Preferences
+									       .loadLibraryIcon("quickfix.gif"));
+				// This "if" keeps it from trying to setSelectionForeground while this cell is still rendering
+				// (which caused a huge loop of calls to getTableCellRendererComponent because of the call
+				// below).
+				// hasFocus is false while this is still rendering.
+				if (isSelected && hasFocus)
+					table.setSelectionForeground(Color.red);
+ 			} else {
 				table.setSelectionForeground(Color.black);
 				((DefaultTableCellRenderer) r).setForeground(Color.black);
 				((DefaultTableCellRenderer) r).setFont(Preferences
 						.getPreferences().getFont());
 				((DefaultTableCellRenderer) r).setIcon(null);
 			}
+
 			Component out = r.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
 			if (error && out instanceof JComponent)
