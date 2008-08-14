@@ -2,10 +2,45 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="/CHAPI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="jars/mysql-connector-java-5.1.6/mysql-connector-java-5.1.6-bin.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/log4j-1.2.11.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ant-1.6.5.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ant-antlr-1.6.5.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ant-junit-1.6.5.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ant-launcher-1.6.5.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ant-swing-1.6.5.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/asm.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/asm-attrs.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/checkstyle-all.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/cleanimports.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/commons-collections-2.1.1.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/concurrent-1.3.2.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/ehcache-1.2.3.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jaas.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jacc-1_0-fr.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/javassist.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jaxen-1.1-beta-7.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jboss-cache.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jboss-common.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jboss-jmx.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jboss-system.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jgroups-2.2.8.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/jta.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/oscache-2.1.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/postgresql-8.2-504.jdbc3.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/proxool-0.8.3.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/swarmcache-1.0rc2.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/syndiag2.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/versioncheck.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/xerces-2.6.2.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/xml-apis.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
