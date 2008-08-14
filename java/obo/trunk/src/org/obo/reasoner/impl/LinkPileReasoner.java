@@ -284,6 +284,8 @@ public class LinkPileReasoner extends AbstractReasoner {
 		long time;
 		long addTimeFalse = 0;
 		long addTimeTrue = 0;
+		long initTime = System.nanoTime();
+
 		int addCount = 0;
 		int addTrueCount = 0;
 		int readdedCount = 0;
@@ -327,6 +329,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 			}
 			// setProgressString(linkPile.size() + "");
 		}
+
+		long totalTime = System.nanoTime() - initTime;
+		logger.info("   Total reasoner time = "
+				+ (totalTime / 1000000d) + " ms");
 
 		logger.info("   Add time(true(" + addTrueCount + ")) = "
 				+ (addTimeTrue / 1000000d) + " ms");
