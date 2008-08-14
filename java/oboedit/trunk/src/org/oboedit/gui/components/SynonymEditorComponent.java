@@ -48,9 +48,10 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 					value, isSelected, hasFocus, row, column);
 			if (value instanceof Synonym)
 				configureLabel(table, out, (Synonym) value, row, isSelected);
-			if (out.getPreferredSize().height != table.getRowHeight(row)) {
-				table.setRowHeight(row, out.getPreferredSize().height);
-			}
+			// Need?
+// 			if (out.getPreferredSize().height != table.getRowHeight(row)) {
+// 				table.setRowHeight(row, out.getPreferredSize().height);
+// 			}
 			return out;
 		}
 	}
