@@ -7,6 +7,7 @@ import javax.swing.KeyStroke;
 
 import org.obo.datamodel.*;
 import org.obo.history.*;
+import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.util.GUIUtil;
@@ -47,8 +48,15 @@ public class AddConsiderAction implements DropMenuAction {
 		}
 		this.destItem = destItem;
 		LinkedObject lo = destItem.getTerm();
-		if (lo != null && lo instanceof ObsoletableObject)
+		if (lo != null && lo instanceof ObsoletableObject) {
+			// The target must be obsolete to show this menu item
+			if (!TermUtil.isObsolete(lo)) {
+				isLegal = false;
+				return;
+			}
+
 			target = (ObsoletableObject) lo;
+		}
 		else {
 			isLegal = false;
 			return;
