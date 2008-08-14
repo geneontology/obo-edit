@@ -413,6 +413,8 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 				out.addSynonym((Synonym) s.clone());
 			}
 
+			// SF 1802940 requests that general dbxrefs not be cloned--but I'm afraid to comment it out here,
+			// because there might be situations where they should be.
 			out.dbxrefs = new TinySet();
 			it = getDbxrefs().iterator();
 			while (it.hasNext()) {
