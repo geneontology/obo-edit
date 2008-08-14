@@ -38,12 +38,12 @@
 
 		<!-- Load up the basic GO Object Hibernate Mapping Files -->
         
-        <mapping resource="org/gmod/db/GO/simpleObject/GOSequence.hbm.xml"/>
-        <mapping resource="org/gmod/db/GO/simpleObject/GOTerm.hbm.xml"/>
-        <mapping resource="org/gmod/db/GO/simpleObject/TermDefinition.hbm.xml"/>
-        <mapping resource="org/gmod/db/GO/simpleObject/GOTermRelationship.hbm.xml"/>
-        <mapping resource="org/gmod/db/GO/simpleObject/GOXref.hbm.xml"/>
-        <mapping resource="org/gmod/db/GO/simpleObject/GOXrefDB.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/Term.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/TermDefinition.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/TermRelationship.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/DBXref.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/DB.hbm.xml"/>
         
         <!-- Load up the extended Chado Object Hibernate Mapping Files --> 
         

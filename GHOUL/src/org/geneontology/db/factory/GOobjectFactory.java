@@ -1,7 +1,6 @@
 package org.geneontology.db.factory;
 
-import org.geneontology.db.model.GOTerm;
-import org.gmod.db.chAPI.bioObject.Transcript;
+import org.geneontology.db.model.Term;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -23,9 +22,9 @@ public class GOobjectFactory {
 	 * @param feature_id the feature_id of the {@link Transcript} object to be retrieved from the database.
 	 * @return a {@link Transcript} object with the specified feature_id, if it exists. 
 	 */
-	public GOTerm getTermByName(String name){
+	public Term getTermByName(String name){
 		Session session = sf.getCurrentSession();
-		return (GOTerm)session.createQuery("from GOTerm where name = ?").setString(0, name).uniqueResult();
+		return (Term)session.createQuery("from GOTerm where name = ?").setString(0, name).uniqueResult();
 	}
 }
 
