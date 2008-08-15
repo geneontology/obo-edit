@@ -62,14 +62,14 @@ public class DbxrefListEditor extends JPanel implements GenericEditorComponent {
 		viewable.setLayout(new BoxLayout(viewable, BoxLayout.Y_AXIS));
 		setMinimumSize(new Dimension(0, 0));
 		JLabel dbnameLabel = new JLabel("Database name");
-		JLabel idLabel = new JLabel("Database id");
-		JLabel descLabel = new JLabel("Database desc");
-		JLabel typeLabel = new JLabel("Dbxref type");
+		JLabel idLabel = new JLabel("ID");
+		JLabel descLabel = new JLabel("Description");
+//		JLabel typeLabel = new JLabel("Dbxref type");  // Not used
 
 		idLabel.setAlignmentX(0);
 		dbnameLabel.setAlignmentX(0);
 		descLabel.setAlignmentX(0);
-		typeLabel.setAlignmentX(0);
+//		typeLabel.setAlignmentX(0);
 		dbnameField.setAlignmentX(0);
 		descField.setAlignmentX(0);
 		idField.setAlignmentX(0);
