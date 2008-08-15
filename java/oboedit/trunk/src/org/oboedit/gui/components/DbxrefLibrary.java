@@ -6,7 +6,9 @@ import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
+import org.oboedit.gui.components.GeneralDbxrefEditorComponent;
 import org.oboedit.gui.event.*;
 import org.oboedit.gui.widget.DbxrefListEditor;
 
@@ -34,48 +36,18 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	JList refList;
 
 	JButton useButton;
-
+//	JButton useForAllButton;
 	JButton useAsDefButton;
-
+//	JButton useAsDefForAllButton;
+	JCheckBox useForAll;
 	JButton saveButton;
-
 	JButton configureButton;
-
 	JButton importButton;
-
 	JButton exportButton;
 
 	Vector dbxrefs = new Vector();
 
 	JDialog dialog;
-
-	/*
-	 * protected DropTarget dropTarget;
-	 * 
-	 * protected class DropDbxrefsListener implements DropListener { public
-	 * boolean allowDrop(DragEvent e) { if (e.getData() instanceof Vector) {
-	 * Vector v = (Vector) e.getData(); return v.size() > 0 && v.get(0)
-	 * instanceof Dbxref; } if (e.getData() instanceof Object[]) { Object[] v =
-	 * (Object[]) e.getData(); return v.length > 0 && v[0] instanceof Dbxref; }
-	 * return false; }
-	 * 
-	 * public void dragEnter(DragEvent e) { refList.setBorder(new
-	 * LineBorder(Color.black)); }
-	 * 
-	 * public void dragExit(DragEvent e) { refList.setBorder(null); }
-	 * 
-	 * public void drop(DragEvent e) { refList.setBorder(null);
-	 * 
-	 * if (e.getData() instanceof Vector) { Vector newRefs = (Vector)
-	 * e.getData(); for (int i = 0; i < newRefs.size(); i++) { Dbxref ref =
-	 * (Dbxref) newRefs.get(i); if (!dbxrefs.contains(ref)) dbxrefs.add(ref); } }
-	 * else if (e.getData() instanceof Object[]) { Object[] os = (Object[])
-	 * e.getData(); for (int i = 0; i < os.length; i++) { Dbxref ref = (Dbxref)
-	 * os[i]; if (!dbxrefs.contains(ref)) dbxrefs.add(ref); } } updateList(); //
-	 * refList.setListData(dbxrefs); }
-	 * 
-	 * public void draggedOver(DragEvent e) { } }
-	 */
 
 	public static String getVersion() {
 		return "1.000";
@@ -89,8 +61,11 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	public DbxrefLibrary(String id) {
 		super(id);
 		setLayout(new BorderLayout());
-		useButton = new JButton("Use dbxref");
-		useAsDefButton = new JButton("Use as def dbxref");
+		useButton = new JButton("Add dbxref");
+		useAsDefButton = new JButton("Add as def dbxref");
+		useForAll = new JCheckBox("Apply to all selected terms");
+//		useForAllButton = new JButton("Add dbxref to ALL selected terms");
+//		useAsDefForAllButton = new JButton("Add as def dbxref to ALL selected terms");
 		importButton = new JButton("Import dbxrefs");
 		exportButton = new JButton("Export dbxrefs");
 		saveButton = new JButton("Save configuration");
@@ -124,6 +99,10 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		if (config instanceof DbxrefLibraryConfiguration) {
 			dbxrefs = ((DbxrefLibraryConfiguration) config).getLibrary();
 			updateList();
+//			if (dbxrefs.size() > 0) {
+//			    useButton.setEnabled(true);
+//			    useAsDefButton.setEnabled(true);
+//			}
 		}
 	}
 
@@ -136,30 +115,18 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		return dbxrefs;
 	}
 
-	/*
-	 * protected void buildDbxrefList(Properties props) { dbxrefs = new
-	 * Vector(); int length = 0; try { String lengthStr =
-	 * props.getProperty("refCount"); length = Integer.parseInt(lengthStr); }
-	 * catch (NumberFormatException e) { } for(int i=0; i < length; i++) {
-	 * String database = props.getProperty("database"+i); String id =
-	 * props.getProperty("id"+i); String desc = props.getProperty("desc"+i);
-	 * String typeStr = props.getProperty("type"+i);
-	 * dbxrefs.add(controller.getHistory().getObjectFactory().
-	 * createDbxref(database, id, desc, Dbxref.ANALOG, null)); }
-	 * Collections.sort(dbxrefs); }
-	 */
 	protected void configure() {
 		JLabel noSelection = new JLabel("Nothing selected");
 
 		JPanel panel = new JPanel();
 		panel.add(noSelection);
 		DbxrefListEditor component = new DbxrefListEditor();
-		panel.setPreferredSize(new Dimension(250, 200));
-		component.setPreferredSize(new Dimension(250, 200));
+		panel.setPreferredSize(new Dimension(350, 300));
+		component.setPreferredSize(new Dimension(350, 300));
 
 		editor = new ListEditor(component, panel, getDbxrefList(), true, true,
 				true, true, false);
-		editor.setPreferredSize(new Dimension(350, 200));
+		editor.setPreferredSize(new Dimension(450, 300));
 
 		dialog = new JDialog();
 
@@ -169,14 +136,14 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		dialogPanel.add(saveButton, "South");
 		dialog.setContentPane(dialogPanel);
 
-		dialog.setSize(350, 230);
+		dialog.setSize(450, 330);
 
 		dialog.show();
 		Collections.sort(dbxrefs);
 		refList.setListData(dbxrefs);
 	}
 
-	protected void sendUpdates(boolean isDef) {
+	protected void sendUpdates(boolean isDef, boolean allSelected) {
 		java.util.List<Dbxref> refs = new LinkedList<Dbxref>();
 		Object[] selection = refList.getSelectedValues();
 		for (int i = 0; i < selection.length; i++) {
@@ -187,11 +154,32 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 				ref.setType(Dbxref.ANALOG);
 			refs.add(ref);
 		}
-		GUIManager.getManager().fireUserEvent(
+		if (allSelected) {
+			Selection selected = SelectionManager.getManager().getSelection();
+			GeneralDbxrefEditorComponent dbxrefEditor = new GeneralDbxrefEditorComponent();
+			LinkedObject current = (LinkedObject) dbxrefEditor.getObject();
+//			logger.debug("DbxrefLibrary: selection = " + selected + ", dbxrefEditor.getObject = " + current); // DEL
+			// Do for each selected term
+			for (LinkedObject lo : selected.getTerms()) {
+				Selection newSelection = SelectionManager.changeSubSelection(
+					SelectionManager.getGlobalSelection(), lo);
+				SelectionManager.setGlobalSelection(newSelection);
+				GUIManager.getManager().fireUserEvent(
+					new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
+										    (isDef ? "gui.dbxref.def.add"
+										     : "gui.dbxref.general.add"), 
+										    refs.toArray(new Dbxref[0])));
+			}
+			// Put selection back the way it was originally
+			SelectionManager.setGlobalSelection(
+				SelectionManager.changeSubSelection(SelectionManager.getGlobalSelection(), current));
+		}
+		else
+			GUIManager.getManager().fireUserEvent(
 				new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
-						(isDef ? "gui.dbxref.def.add"
-								: "gui.dbxref.general.add"), refs
-								.toArray(new Dbxref[0])));
+										    (isDef ? "gui.dbxref.def.add"
+										     : "gui.dbxref.general.add"), 
+										    refs.toArray(new Dbxref[0])));
 	}
 
 	protected void saveConfiguration() {
@@ -206,14 +194,24 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	protected void attachListeners() {
 		useButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sendUpdates(false);
+				sendUpdates(false, useForAll.isSelected());
 			}
 		});
 		useAsDefButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sendUpdates(true);
+				sendUpdates(true, useForAll.isSelected());
 			}
 		});
+// 		useForAllButton.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent e) {
+// 				sendUpdates(false, true);
+// 			}
+// 		});
+// 		useAsDefForAllButton.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent e) {
+// 				sendUpdates(true, true);
+// 			}
+// 		});
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveConfiguration();
@@ -319,18 +317,35 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 		ioPanel.setLayout(new GridLayout(1, 2));
 		ioPanel.add(importButton);
 		ioPanel.add(exportButton);
-
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(3, 1));
+		ioPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, importButton.getPreferredSize().height + 5)); // ?
 
 		JPanel usePanel = new JPanel();
 		usePanel.setLayout(new GridLayout(1, 2));
 		usePanel.add(useButton);
 		usePanel.add(useAsDefButton);
+		// I tried disabling them until we're sure a term was selected, but didn't get
+		// that working yet.
+//		useButton.setEnabled(false);
+//		useAsDefButton.setEnabled(false);
+		JPanel usePanel2 = new JPanel();
+		usePanel2.setLayout(new BorderLayout());
+		usePanel2.add(useForAll, "Center");
+//		usePanel2.add(useForAllButton);
+//		usePanel2.add(useAsDefForAllButton);
 
-		buttonPanel.add(usePanel);
-		buttonPanel.add(ioPanel);
-		buttonPanel.add(configureButton);
+		JPanel usePanels = new JPanel();
+		usePanels.setLayout(new GridLayout(2, 1));
+		usePanels.setBorder(new TitledBorder("Add selected dbxref"));
+		usePanels.add(usePanel);
+		usePanels.add(usePanel2);
+
+		JPanel buttonPanel = new JPanel();
+//		buttonPanel.setLayout(new GridLayout(3, 2));
+		buttonPanel.setLayout(new BorderLayout());
+
+		buttonPanel.add(usePanels, "North");
+		buttonPanel.add(ioPanel, "Center");
+		buttonPanel.add(configureButton, "South");
 
 		add(scroller, "Center");
 		add(buttonPanel, "South");
