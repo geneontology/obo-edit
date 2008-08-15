@@ -146,14 +146,15 @@ public class DefaultInputHandler implements InputHandlerI {
 			((ClickMenuAction) editAction).clickInit(selection, dest);
 
 		JMenuItem item;
-		boolean hasChildren = editAction.getSubActions() != null
-				&& editAction.getSubActions().size() > 0;
+		List subActions = editAction.getSubActions();
+		boolean hasChildren = subActions != null
+			&& subActions.size() > 0;
 
 		if (hasChildren) {
 			item = new JMenu(editAction.getName());
 			if (editAction.isLegal()) {
 				boolean foundEnabled = false;
-				Iterator it = editAction.getSubActions().iterator();
+				Iterator it = subActions.iterator();
 				while (it.hasNext()) {
 					ClickMenuAction ea = (ClickMenuAction) it.next();
 					JMenuItem subItem = getMenuItem(selection, dest, ea,
