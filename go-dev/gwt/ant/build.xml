@@ -48,7 +48,6 @@
         	classname="com.google.gwt.dev.GWTCompiler"
         	taskname="java1.4"
         	maxmemory="256m">
-        	
         	<classpath refid="classpath.gwt.client.compile"/>
         	<arg value="-out"/>
         	<arg value="${tmp.compile.dir}"/>
@@ -69,7 +68,7 @@
         	source="1.5"
 					destdir="${build.dir}/WEB-INF/classes"
         	srcdir="${src.dir}"
-        	includes="${gwt.server.src1},${gwt.server.src2}"	
+					includes="${server.src.dir}/**"
         	memorymaximumsize="256m">
         	<classpath refid="classpath.gwt.server.compile"/>
         </javac>
