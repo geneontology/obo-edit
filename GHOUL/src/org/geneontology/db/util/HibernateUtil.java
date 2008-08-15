@@ -1,4 +1,4 @@
-package geneontology.db.util;
+package org.geneontology.db.util;
 
 import org.hibernate.*;
 import org.hibernate.cfg.*;

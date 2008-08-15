@@ -22,15 +22,15 @@ public class DB extends GOModel {
 	/** The URL of the DB */
 	protected String url;
 	
-	/** The URL Prefix of the DB */
-	protected String urlprefix;
-	
-	/** An example URL of the DB */
-	protected String url_example;
-
 	/** The URL syntax for the DB */
 	protected String url_syntax;
 
+	/** An example URL of the DB */
+	protected String url_example;
+
+	/** The URL Prefix of the DB */
+	protected String uri_prefix;
+	
 	public DB(){
 		String[] uniqueConstraintFields = {"name"};
 		this.initUniqueConstraintFields(DB.class,uniqueConstraintFields);
@@ -120,16 +120,16 @@ public class DB extends GOModel {
 	 * Getter of DB URL Prefix 
 	 * @return URL Prefix of DB.
 	 */
-	public String getUrlprefix() {
-		return urlprefix;
+	public String getUri_prefix() {
+		return uri_prefix;
 	}
 
 	/**
 	 * Setter of DB URL Prefix 
 	 * @param urlprefix DB URL Prefix
 	 */
-	public void setUrlprefix(String urlprefix) {
-		this.urlprefix = urlprefix;
+	public void setUri_prefix(String uri_prefix) {
+		this.uri_prefix = uri_prefix;
 	}
 
 	/**

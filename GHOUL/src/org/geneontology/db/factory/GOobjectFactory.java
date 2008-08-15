@@ -1,6 +1,7 @@
 package org.geneontology.db.factory;
 
 import org.geneontology.db.model.Term;
+import org.geneontology.db.model.DBXref;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -25,6 +26,11 @@ public class GOobjectFactory {
 	public Term getTermByName(String name){
 		Session session = sf.getCurrentSession();
 		return (Term)session.createQuery("from Term where name = ?").setString(0, name).uniqueResult();
+	}
+	
+	public DBXref getDBXrefByID (int id) {
+		Session session = sf.getCurrentSession();
+		return (DBXref)session.createQuery("from DBXref where id = ?").setInteger(0, id).uniqueResult();
 	}
 }
 

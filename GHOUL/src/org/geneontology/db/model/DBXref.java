@@ -16,13 +16,16 @@ public class DBXref extends GOModel {
 	/** the accession of this DBXRef object */
 	protected String accession;
 	
-	/** a description of this DBXref object */
-	protected String description;
-
 	protected String keytype;
 			
+	/** a description of this DBXref object */
+	protected String description;
+	
+	/** whether dbxref is for a term definition */
+	boolean for_definition;
+
 	public DBXref(){
-		String[] uniqueConstraintFields = {"db","accession"};
+		String[] uniqueConstraintFields = {};
 		this.initUniqueConstraintFields(DBXref.class, uniqueConstraintFields);
 	}
 	
@@ -96,6 +99,14 @@ public class DBXref extends GOModel {
 
 	public void setKeytype(String keytype) {
 		this.keytype = keytype;
+	}
+
+	public boolean isFor_definition() {
+		return for_definition;
+	}
+
+	public void setFor_definition(boolean for_definition) {
+		this.for_definition = for_definition;
 	}
 
 }

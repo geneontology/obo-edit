@@ -8,9 +8,9 @@
 			<generator class="increment"/>
 		</id>
 		
-		<many-to-one name="db" class="org.geneontology.db.model.DB" column="xref_dbname" not-null="true" cascade="save-update"/>
-		<property name="accession" column="xref_key" not-null="true"/>
-		<property name="keytype" column="xref_keytype"/>
-		<property name="description" column="xref_desc"/>
+		<many-to-one name="db" class="org.geneontology.db.model.DB" column="xref_dbname" property-ref="name" />
+		<property name="accession" column="xref_key" type="java.lang.String" not-null="true"/>
+		<property name="keytype" column="xref_keytype" type="java.lang.String" />
+		<property name="description" column="xref_desc" type="java.lang.String" />
 	</class>
 </hibernate-mapping>

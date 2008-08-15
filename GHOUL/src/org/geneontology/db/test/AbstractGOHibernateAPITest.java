@@ -1,9 +1,12 @@
 package org.geneontology.db.test;
 
-import geneontology.db.util.HibernateUtil;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+import org.geneontology.db.factory.GOobjectFactory;
+import org.geneontology.db.model.GOModel;
+import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
 
@@ -29,4 +32,17 @@ public class AbstractGOHibernateAPITest extends TestCase{
 		this.sessionFactory = sf;
 	}
 	
+	public GOobjectFactory initSessionFactory() {
+		this.getSessionFactory().getCurrentSession().beginTransaction();
+		return (new GOobjectFactory(this.getSessionFactory()));
+	}
+	
+	public void logResult(GOModel model) {
+		prettyPrint(model);
+		Assert.assertTrue((model != null));
+	}
+	
+	public void prettyPrint(GOModel model) {
+		logger.info(model);
+	}
 }
