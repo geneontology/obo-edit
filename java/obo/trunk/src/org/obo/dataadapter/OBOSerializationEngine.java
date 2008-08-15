@@ -58,7 +58,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean saveImplied = false;
 		
-		protected boolean filterRedundant = true;
+		protected boolean filterRedundant = false; // TODO: not yet implemented. If set, removes redundant links
 
 		// FCR does not appear to work with regulation examples...
 		protected ReasonerFactory reasonerFactory = new
@@ -152,6 +152,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		
 		
 
+		/**
+		 * @return true if the path should filter out redundant links
+		 * TODO: not yet implemented
+		 */
 		public boolean isFilterRedundant() {
 			return filterRedundant;
 		}
