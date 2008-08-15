@@ -14,9 +14,15 @@ import org.obo.datamodel.*;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
+import org.oboedit.gui.components.graphvizViewer.GraphvizConfigPanel;
+import org.oboedit.gui.components.graphvizViewer.GraphvizSettings;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
+import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.ComponentConfiguration;
+import org.bbop.framework.ConfigurationPanel;
+
 
 import java.util.*;
 import java.awt.*;
@@ -32,6 +38,7 @@ public class TreeView extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeView.class);
 
+	TreeViewSettings treeViewSettingsInstance = new TreeViewSettings();
 	/**
 	 * 
 	 */
@@ -48,7 +55,7 @@ public class TreeView extends AbstractGUIComponent {
 			"Show non-transitive paths");
 	protected JButton configButton = new JButton("Config");
 	protected JProgressBar progressBar = new JProgressBar();
-	protected TreeViewConfig configuration = new TreeViewConfig();
+	protected TreeViewSettings configuration = new TreeViewSettings();
 
 	protected boolean multiTerm() {
 		System.out.println("TreeView: multiTerm method.");
@@ -100,6 +107,21 @@ public class TreeView extends AbstractGUIComponent {
 		return "Tree Viewer";
 	}
 
+	TreeViewConfigPanel treeViewConfigPanelInstance;
+
+	@Override
+	public ConfigurationPanel getConfigurationPanel() {
+		logger.info("TreeView: getConfigurationPanel()");
+		
+		if (treeViewConfigPanelInstance == null) {
+			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
+		}
+		
+		return treeViewConfigPanelInstance;
+	}
+	
+	
+
 	public ComponentConfiguration getConfiguration() {
 		System.out.println("TreeView: getConfiguration method.");
 		configuration.setMultiSelect(multiTermCheckbox.isSelected());
@@ -111,8 +133,8 @@ public class TreeView extends AbstractGUIComponent {
 	public void setConfiguration(ComponentConfiguration configuration) {
 		System.out.println("TreeView: setConfiguration method.");
 
-		if (configuration instanceof TreeViewConfig)
-			this.configuration = (TreeViewConfig) configuration;
+		if (configuration instanceof TreeViewSettings)
+			this.configuration = (TreeViewSettings) configuration;
 
 		multiTermCheckbox.setSelected(this.configuration.getMultiSelect());
 		trimPathsCheckbox.setSelected(this.configuration.getTrimPaths());
