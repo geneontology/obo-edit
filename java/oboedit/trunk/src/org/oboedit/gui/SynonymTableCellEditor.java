@@ -127,13 +127,15 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 	}
 
 	protected static String replaceNewlines(String str) {
-		StringBuffer b = new StringBuffer();
-		for (int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
-			if (c != '\n')
-				b.append(c);
-		}
-		return b.toString();
+		// Why do it this painstaking way?
+// 		StringBuffer b = new StringBuffer();
+// 		for (int i = 0; i < str.length(); i++) {
+// 			char c = str.charAt(i);
+// 			if (c != '\n')
+// 				b.append(c);
+// 		}
+// 		return b.toString();
+		return(str.replace('\n', ' '));
 	}
 
 	protected void tabToNext() {
