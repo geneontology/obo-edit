@@ -1,20 +1,21 @@
 Changes in b47 (15 Aug 2008):
-- Don't automatically start a new dbxref record when user commits the previous
-one--let them do that if they want to.
-- Fixed dbxref library bug (SF 2025804):  adding 3 or more dbxrefs to a term
-caused havoc.  (For some reason, you only saw this bug if you changed your
+- Fixed dbxref library bug (SF 2025804): adding 3 or more dbxrefs to a term
+caused CPU spikes and drawing problems as the Text Editor tried unsuccessfully
+to render them.  (For some reason, you only saw this bug if you changed your
 default font size!)
-- Fixed: If you start up OE with the reasoner on (from the previous session),
-it doesn't show that in the titlebar until you load an ontology (SF 2048191).
-- Jen has improved the Graphviz component.  Config settings are now
-accessed via the wrench icon instead of the archaic options button.
-- When dragging term(s) in the OTE, the drag target must be obsolete
-to show the menu items "Add/Consider replacement".
+- Enabled mass addition of dbxrefs (regular or definition) to all selected
+terms (feature request 2032637) from Dbxref Library component.
 - Fixed problem that wasted a huge amount of CPU rendering synonyms
 that have errors.  I suspect that this was a major cause of the CPU
 spikes that midori was seeing, because she said she was adding/editing
 synonyms.
+- Jen has improved the Graphviz component.  Config settings are now
+accessed via the wrench icon instead of the archaic options button.
+- When dragging term(s) in the OTE, the drag target must be obsolete
+to show the menu items "Add/Consider replacement".
+- Don't automatically start a new dbxref record when user commits the previous
+one--let them do that if they want to.
 - "Cyclical" relationships shown in OTE with double-headed arrow
 icons.
-- Enabled mass addition of dbxrefs (regular or definition) to all selected
-terms (feature request 2032637) from Dbxref Library component.
+- Fixed: If you start up OE with the reasoner on (from the previous session),
+it doesn't show that in the titlebar until you load an ontology (SF 2048191).
