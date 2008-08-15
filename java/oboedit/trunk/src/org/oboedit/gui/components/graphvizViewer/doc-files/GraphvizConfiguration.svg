@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="297mm"
+   height="210mm"
+   id="svg2160"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="/Users/jdeegan/Desktop"
+   sodipodi:docname="GraphvizConfiguration.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/Users/jdeegan/Desktop/GraphvizConfiguration.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs2162" />
+  <sodipodi:namedview
+     inkscape:document-units="mm"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.2279853"
+     inkscape:cx="536.52565"
+     inkscape:cy="384.05328"
+     inkscape:current-layer="layer1"
+     id="namedview2164"
+     inkscape:window-width="1707"
+     inkscape:window-height="999"
+     inkscape:window-x="15"
+     inkscape:window-y="38" />
+  <metadata
+     id="metadata2166">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="background"
+     style="opacity:1;display:inline" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="96.9067"
+       y="161.83995"
+       id="text2273"><tspan
+         sodipodi:role="line"
+         id="tspan2275"
+         x="96.9067"
+         y="161.83995">getConfiguration()</tspan><tspan
+         sodipodi:role="line"
+         x="96.9067"
+         y="176.83995"
+         id="tspan2283" /><tspan
+         sodipodi:role="line"
+         x="96.9067"
+         y="191.83995"
+         id="tspan2285">GraphvizCanvas</tspan><tspan
+         sodipodi:role="line"
+         x="96.9067"
+         y="206.83995"
+         id="tspan2277" /><tspan
+         sodipodi:role="line"
+         x="96.9067"
+         y="221.83995"
+         id="tspan2279">getConfigurationPanel()</tspan><tspan
+         sodipodi:role="line"
+         x="96.9067"
+         y="236.83995"
+         id="tspan2281" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="408.79968"
+       y="186.2702"
+       id="text2287"><tspan
+         sodipodi:role="line"
+         id="tspan2289"
+         x="408.79968"
+         y="186.2702">GraphvizConfigPanel</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="201.2702"
+         id="tspan2291" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="216.2702"
+         id="tspan2297">Constructor includes steps to </tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="231.2702"
+         id="tspan5454">generate configuration GUI.</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="246.2702"
+         id="tspan5436">Constructor run only on </tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="261.2702"
+         id="tspan5438">component startup.</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="276.2702"
+         id="tspan5440" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="291.2702"
+         id="tspan5442" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="306.2702"
+         id="tspan2299" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="321.2702"
+         id="tspan2303">Also present:</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="336.2702"
+         id="tspan5364" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="351.2702"
+         id="tspan5366" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="366.2702"
+         id="tspan5368">commit()</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="381.2702"
+         id="tspan2307" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="396.2702"
+         id="tspan2309">init()</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="411.2702"
+         id="tspan2311" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="426.2702"
+         id="tspan2313">getComponent() - never used</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="441.2702"
+         id="tspan2315">(returns graphvizCanvasInstance)</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="456.2702"
+         id="tspan2319" /><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="471.2702"
+         id="tspan2321">setComponent()</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="486.2702"
+         id="tspan2323">(sets graphvizCanvasInstance)</tspan><tspan
+         sodipodi:role="line"
+         x="408.79968"
+         y="501.2702"
+         id="tspan2295" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="787.46875"
+       y="186.2702"
+       id="text2327"><tspan
+         sodipodi:role="line"
+         id="tspan2329"
+         x="787.46875"
+         y="186.2702">GraphvizSettings</tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="201.2702"
+         id="tspan2331" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="216.2702"
+         id="tspan2333">(Defines the object that holds all the </tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="231.2702"
+         id="tspan2353">configuration settings for the </tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="246.2702"
+         id="tspan2355">Graphviz Component.)</tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="261.2702"
+         id="tspan2337" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="276.2702"
+         id="tspan2339" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="291.2702"
+         id="tspan2341">setter methods</tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="306.2702"
+         id="tspan2347" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="321.2702"
+         id="tspan2349" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="336.2702"
+         id="tspan2351">getter methods</tspan><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="351.2702"
+         id="tspan2343" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="366.2702"
+         id="tspan2345" /><tspan
+         sodipodi:role="line"
+         x="787.46875"
+         y="381.2702"
+         id="tspan2335" /></text>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2357"
+       width="171.01183"
+       height="26.058945"
+       x="87.134598"
+       y="174.86942" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-opacity:1"
+       id="rect3328"
+       width="170.19746"
+       height="93.64933"
+       x="87.13459"
+       y="144.73877" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-width:2.77086616;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4299"
+       width="171.01183"
+       height="29.316313"
+       x="86.320267"
+       y="172.42641" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-width:3.31535959;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5270"
+       width="249.45851"
+       height="28.77182"
+       x="392.7851"
+       y="167.81259" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-width:2.31592536;stroke-opacity:1"
+       id="rect5272"
+       width="250.31573"
+       height="341.52206"
+       x="391.13495"
+       y="167.79112" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-width:3.31027031;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5274"
+       width="248.64925"
+       height="28.776909"
+       x="773.89459"
+       y="166.18135" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.01503757;stroke:#000000;stroke-width:1.82175148;stroke-opacity:1"
+       id="rect5276"
+       width="250.80991"
+       height="210.90718"
+       x="772.81427"
+       y="165.91537" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.91203815px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 853.4744,155.36919 L 852.79795,90.948211 L 286.6044,95.025488 L 286.6044,132.53643 L 213.35761,157.76824"
+       id="path5304" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="288.27707"
+       y="82.84877"
+       id="text5306"><tspan
+         sodipodi:role="line"
+         id="tspan5308"
+         x="288.27707"
+         y="82.84877">Calls GraphvizSettings, which returns graphvizSettingsInstance</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="301.30655"
+       y="192.78494"
+       id="text5316"><tspan
+         sodipodi:role="line"
+         id="tspan5318"
+         x="301.30655"
+         y="192.78494">Calls</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="207.78494"
+         id="tspan5320">Graphviz</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="222.78494"
+         id="tspan5322">ConfigPanel</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="237.78494"
+         id="tspan5326">which returns</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="252.78494"
+         id="tspan5330">new</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="267.78494"
+         id="tspan5332">Graphviz</tspan><tspan
+         sodipodi:role="line"
+         x="301.30655"
+         y="282.78494"
+         id="tspan5334">ConfigPanel</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 243.48826,216.40086 L 279.31931,216.40086 L 279.31931,169.16902 L 360.75351,169.16902 L 360.75351,182.1985 L 401.47061,181.38415"
+       id="path5338" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 475.57573,86.920482 L 475.57573,93.435218"
+       id="path5340" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 315.9647,169.98337 C 315.9647,169.71192 315.9647,169.44047 315.9647,169.98337 z "
+       id="path5342" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 316.77904,178.94113 L 316.77904,169.16902"
+       id="path5344" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 333.88022,157.76824 L 346.9097,169.16902 L 333.06588,178.12679"
+       id="path5346" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 736.97952,80.405746 C 736.70807,80.405746 736.43662,80.405746 736.97952,80.405746 z "
+       id="path5348" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 737.79386,104.02166 L 752.45202,91.806534 L 736.16518,79.591404"
+       id="path5350" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 306.1926,349.95295 L 316.77904,361.35374 L 305.37825,371.94018"
+       id="path5372" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="197.88512"
+       y="349.95294"
+       id="text5374"><tspan
+         sodipodi:role="line"
+         id="tspan5376"
+         x="197.88512"
+         y="349.95294">Calls commit()</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.05065238px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 166.96544,362.95709 L 397.37358,360.56473"
+       id="path5380" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 161.23972,468.84688 C 161.51117,468.84688 161.78261,468.84688 161.23972,468.84688 z "
+       id="path5382" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 160.42538,469.66123 L 402.28495,467.2182"
+       id="path5384" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 416.12877,459.07478 L 416.12877,452.56004 L 363.19654,452.56004 L 362.38219,392.29873 L 400.65627,391.48439"
+       id="path5386" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 353.42443,422.42939 L 362.38219,410.21426 L 372.96864,423.24373"
+       id="path5388" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 280.13365,455.00307 C 280.13365,454.73162 280.13365,454.46017 280.13365,455.00307 z "
+       id="path5390" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 275.2476,481.06201 L 289.09141,468.03254 L 276.06194,454.18873"
+       id="path5392" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="171.82616"
+       y="483.50504"
+       id="text5398"><tspan
+         sodipodi:role="line"
+         id="tspan5400"
+         x="171.82616"
+         y="483.50504">Calls</tspan><tspan
+         sodipodi:role="line"
+         x="171.82616"
+         y="498.50504"
+         id="tspan5402">setComponent()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="326.55115"
+       y="396.37045"
+       id="text5404"><tspan
+         sodipodi:role="line"
+         id="tspan5406"
+         x="326.55115"
+         y="396.37045">Calls </tspan><tspan
+         sodipodi:role="line"
+         x="326.55115"
+         y="411.37045"
+         id="tspan5408">init()</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 181.59827,469.66123 L 182.41261,472.91859"
+       id="path5410" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 236.97352,353.21032 L 237.78787,361.35374"
+       id="path5412" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 355.05312,399.62781 L 361.56785,399.62781"
+       id="path5414" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 468.24665,361.35374 L 686.49031,362.16808 L 685.67597,288.8773 L 778.51096,288.8773"
+       id="path5418" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 442.18771,392.29873 L 714.17794,393.11308 L 714.17794,333.66611 L 778.51096,333.66611"
+       id="path5420" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 676.71821,383.34097 L 687.30466,392.29873 L 677.53255,401.2565"
+       id="path5422" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 659.61703,349.95295 L 670.20347,362.16808 L 660.43137,371.94018"
+       id="path5424" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="514.66412"
+       y="355.65335"
+       id="text5426"><tspan
+         sodipodi:role="line"
+         id="tspan5428"
+         x="514.66412"
+         y="355.65335">Calls setters</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="494.3056"
+       y="387.41269"
+       id="text5430"><tspan
+         sodipodi:role="line"
+         id="tspan5432"
+         x="494.3056"
+         y="387.41269">Calls getters</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 853.43042,153.69653 L 853.43042,165.91166"
+       id="path5434" />
+    <path
+       style="fill:#000000"
+       d="M 147.88626,362.47555 C 144.85423,358.76187 144.76621,358.20232 147.37454,359.22191 C 149.31675,359.9811 152.20067,358.53433 154.89589,355.44867 C 161.47951,347.91129 162.95177,349.43759 157.47323,358.12056 C 154.8093,362.34263 152.38633,366.05884 152.08885,366.37879 C 151.79138,366.69874 149.9002,364.94228 147.88626,362.47555 z "
+       id="path2720" />
+    <path
+       style="fill:#000000"
+       d="M 134.43813,473.4508 C 134.43813,472.1402 135.59675,470.32014 137.01281,469.40626 C 138.4289,468.49236 140.58447,465.00641 141.80299,461.65971 C 143.0215,458.31302 145.10253,455.5748 146.42748,455.5748 C 147.75246,455.5748 148.13565,457.48197 147.27905,459.81299 C 146.09915,463.02377 146.70547,463.65691 149.78025,462.42482 C 152.01253,461.53034 153.83892,461.93047 153.83892,463.31406 C 153.83892,464.69761 151.21669,466.87068 148.01175,468.14309 C 144.80681,469.41551 141.46852,471.66642 140.59332,473.14515 C 138.62339,476.47356 134.43813,476.68139 134.43813,473.4508 z "
+       id="path2722" />
+  </g>
+</svg>
