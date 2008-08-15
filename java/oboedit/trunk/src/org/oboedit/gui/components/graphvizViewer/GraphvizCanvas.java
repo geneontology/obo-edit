@@ -66,6 +66,11 @@ import org.oboedit.gui.event.SelectionListener;
  * are now accessed via the wrench icon instead of via the options button. 
  * The modifications were made by Jennifer Deegan and Nicolas Rodriguez at the EBI
  * in Summer 2008.
+ * 
+ * There is a diagram showing how the configuration code interacts at 
+ * graphvizViewer/doc-files/GraphvizConfiguration.png
+ * The editing version is in the same directory in svg format. 
+ * 
  */
 
 
