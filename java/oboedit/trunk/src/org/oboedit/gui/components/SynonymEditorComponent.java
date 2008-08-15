@@ -39,6 +39,8 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	public final static FieldPathSpec spec = new FieldPathSpec(
 			SynonymSearchCriterion.CRITERION);
 
+	private Synonym previousSynonym;
+
 	protected class SynonymTableRenderer extends DefaultTableCellRenderer {
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
@@ -57,7 +59,12 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	}
 
 	protected void configureLabel(JTable table, JLabel out, Synonym synonym,
-			int index, boolean isSelected) {
+				      int index, boolean isSelected) {
+		// Avoid updating the label if it doesn't actually need to change
+		if (synonym.equals(previousSynonym)) {
+			return;
+		}
+		previousSynonym = synonym;
 		out.setOpaque(true);
 		out.setBorder(new EmptyBorder(10, 10, 10, 10));
 		out.setMinimumSize(new Dimension(table.getWidth(), 0));
