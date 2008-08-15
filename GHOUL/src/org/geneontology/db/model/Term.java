@@ -1,6 +1,7 @@
 package org.geneontology.db.model;
 
-import java.util.Vector;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The CVTerm class corresponds to the Chado cvterm table.  
@@ -10,7 +11,7 @@ import java.util.Vector;
 public class Term extends GOModel {
 		
 	/** The cvterm cterm_id */
-	protected int go_term_id;
+	protected int term_id;
 	
 	protected String acc;
 
@@ -29,7 +30,10 @@ public class Term extends GOModel {
 	protected TermDefinition term_definition;
 	
 	/** The {@link DBXref} of the cvterm */
-	protected Vector<DBXref> dbxref;
+	protected Set<DBXref> dbxrefs;
+
+	/** The {@link DBXref} of the cvterm */
+	protected Set<TermSynonym> synonyms;
 
 	public Term(){
 		String[] uniqueConstraintFields = {"acc"};
@@ -95,8 +99,16 @@ public class Term extends GOModel {
 		if (this.term_definition == null) {
 			this.term_definition = new TermDefinition();
 		}
-		this.term_definition.setTerm_id(go_term_id);
+		this.term_definition.setTerm_id(term_id);
 		this.term_definition.setTerm_definition(definition);
+	}
+
+	public Set<DBXref> getDbxrefs() {
+		return dbxrefs;
+	}
+
+	public void setDbxrefs(Set<DBXref> dbxrefs) {
+		this.dbxrefs = dbxrefs;
 	}
 
 	/**
@@ -104,7 +116,7 @@ public class Term extends GOModel {
 	 * @return cvterm {@link DBXref} object.
 	 */
 	public DBXref getDbxref() {
-		return this.dbxref != null ? (DBXref) this.dbxref.get(0) : null;
+		return this.dbxrefs != null ? (DBXref) this.dbxrefs.iterator() : null;
 }
 
 	/**
@@ -112,17 +124,17 @@ public class Term extends GOModel {
 	 * @param dbxref the {@link DBXref} object of the cvterm.
 	 */
 	public void setDbxref(DBXref dbxref) {
-		if (this.dbxref == null)
-			this.dbxref = new Vector<DBXref> (2);
-		this.dbxref.add(dbxref);
+		if (this.dbxrefs == null)
+			this.dbxrefs = new HashSet<DBXref> (2);
+		this.dbxrefs.add(dbxref);
 	}
 
-	public int getGo_term_id() {
-		return go_term_id;
+	public int getTerm_id() {
+		return term_id;
 	}
 
-	public void setGo_term_id(int go_term_id) {
-		this.go_term_id = go_term_id;
+	public void setTerm_id(int term_id) {
+		this.term_id = term_id;
 	}
 
 	public String getName() {
@@ -143,6 +155,28 @@ public class Term extends GOModel {
 	
 	public String toString() {
 		return acc + " " + (name != null ? name : "");
+	}
+
+	public Set<TermSynonym> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(Set<TermSynonym> synonyms) {
+		this.synonyms = synonyms;
+	}
+
+	/**
+	 */
+	public TermSynonym getSynonym() {
+		return this.synonyms != null ? (TermSynonym) this.synonyms.iterator() : null;
+}
+
+	/**
+	 */
+	public void setDbxref(TermSynonym synonym) {
+		if (this.synonyms == null)
+			this.synonyms = new HashSet<TermSynonym> (2);
+		this.synonyms.add(synonym);
 	}
 
 

@@ -7,12 +7,12 @@
 		<id name="db_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
-		<property name="name" not-null="true"/>
-		<property name="fullname"/>
-		<property name="description" column="datatype"/>
-		<property name="url" column="generic_url"/>
-		<property name="url_syntax"/>
-		<property name="url_example"/>
-		<property name="urlprefix"/>
+		<property name="name" type="java.lang.String" not-null="true"/>
+		<property name="fullname" type="java.lang.String" />
+		<property name="description" column="datatype" type="java.lang.String" />
+		<property name="url" column="generic_url" type="java.lang.String" />
+		<property name="url_syntax" type="java.lang.String" />
+		<property name="url_example" type="java.lang.String" />
+		<property name="uri_prefix" type="java.lang.String" />
 	</class>
 </hibernate-mapping>

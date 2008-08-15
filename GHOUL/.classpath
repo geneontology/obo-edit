@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="jars/mysql-connector-java-5.1.6/mysql-connector-java-5.1.6-bin.jar"/>
-	<classpathentry kind="lib" path="hibernateLib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="hibernateLib/hibernate3.jar" sourcepath="hibernateLib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/ant-1.6.5.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/ant-antlr-1.6.5.jar"/>

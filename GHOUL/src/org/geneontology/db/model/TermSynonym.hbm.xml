@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.TermSynonym" table="term_synonym">
+	
+     	<id name="term_id" column="term_id">
+        	<generator class="foreign">
+            	<param name="property">term_id</param>
+        	</generator>
+    	</id>
+
+		<property name="synonym" column="term_synonym" type="java.lang.String"/>
+		<property name="alternateID" column="acc_synonym" type="java.lang.String"/>
+   		<many-to-one name="synonymType" column="synonym_type_id" class="org.geneontology.db.model.Term" foreign-key="id" />
+   		<many-to-one name="synonymCategory" column="synonym_category_id" class="org.geneontology.db.model.Term" foreign-key="id" />
+	
+	</class>
+</hibernate-mapping>

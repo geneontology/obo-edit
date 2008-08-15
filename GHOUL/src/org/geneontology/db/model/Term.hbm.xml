@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class name="org.geneontology.db.model.Term" table="term">
 	
-		<id name="go_term_id" column="id" unsaved-value="undefined">
+		<id name="term_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
 		
@@ -17,5 +17,15 @@
 		
    		<one-to-one name="term_definition" class="org.geneontology.db.model.TermDefinition" foreign-key="term_id" />
 
+	    <set name="dbxrefs" table="term_dbxref" lazy="false">
+		  <key column="term_id"/>
+		  <many-to-many class="org.geneontology.db.model.DBXref" column="dbxref_id"/>
+	    </set>
+
+   		<set name="synonyms" table="term_synonym" lazy="false">
+   		  <key column="term_id"/>
+   		  <many-to-one class="org.geneontology.db.model.TermSynonym"/>
+		</set>
+		
 	</class>
 </hibernate-mapping>
