@@ -36,84 +36,40 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	protected RestrictedJTree tree;
-
+	public RestrictedJTree tree;
 	protected JScrollPane pane;
-
 	protected JLabel emptyLabel = new JLabel("No terms selected");
-
 	protected JLabel statusLabel = new JLabel("No paths loaded");
-
 	protected JCheckBox multiTermCheckbox = new JCheckBox(
 			"Show paths to multiple selected terms");
-
 	protected JCheckBox trimPathsCheckbox = new JCheckBox(
 			"Collapse already shown paths");
-
 	protected JCheckBox showNonTransitiveCheckbox = new JCheckBox(
 			"Show non-transitive paths");
-
 	protected JButton configButton = new JButton("Config");
-
 	protected JProgressBar progressBar = new JProgressBar();
-
-	public static class TreeViewConfig implements ComponentConfiguration {
-		protected boolean multiSelect = false;
-
-		protected boolean trimPaths = true;
-
-		protected boolean showNonTransitive = false;
-
-		public TreeViewConfig() {
-		}
-
-		public void setShowNonTransitive(boolean showNonTransitive) {
-			this.showNonTransitive = showNonTransitive;
-		}
-
-		public boolean getShowNonTransitive() {
-			return showNonTransitive;
-		}
-
-		public void setMultiSelect(boolean multiSelect) {
-			this.multiSelect = multiSelect;
-		}
-
-		public boolean getMultiSelect() {
-			return multiSelect;
-		}
-
-		public void setTrimPaths(boolean trimPaths) {
-			this.trimPaths = trimPaths;
-		}
-
-		public boolean getTrimPaths() {
-			return trimPaths;
-		}
-	}
-
 	protected TreeViewConfig configuration = new TreeViewConfig();
 
 	protected boolean multiTerm() {
+		System.out.println("TreeView: multiTerm method.");
 		return multiTermCheckbox.isSelected();
 	}
 
 	protected SelectionListener selectionListener;
-
 	protected ReloadListener historyListener;
-
 	TreeModel model;
 
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			setToolTips();
+			System.out.println("TreeView: configReloaded method.");
 		}
 	};
 
 	MouseInputAdapter clickListener = new MouseInputAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			System.out.println("TreeView: mouseClicked method.");
 			if (SwingUtilities.isMiddleMouseButton(e)
 					|| SwingUtilities.isRightMouseButton(e)) {
 				TreePath path = tree.getSelectionPath();
@@ -139,10 +95,13 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public String getName() {
 //		return "DAG Viewer";
+		System.out.println("TreeView: getName method.");
+
 		return "Tree Viewer";
 	}
 
 	public ComponentConfiguration getConfiguration() {
+		System.out.println("TreeView: getConfiguration method.");
 		configuration.setMultiSelect(multiTermCheckbox.isSelected());
 		configuration.setTrimPaths(trimPaths());
 		configuration.setShowNonTransitive(showNonTransitive());
@@ -150,6 +109,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void setConfiguration(ComponentConfiguration configuration) {
+		System.out.println("TreeView: setConfiguration method.");
+
 		if (configuration instanceof TreeViewConfig)
 			this.configuration = (TreeViewConfig) configuration;
 
@@ -161,6 +122,8 @@ public class TreeView extends AbstractGUIComponent {
 
 	public TreeView(String id) {
 		super(id);
+		System.out.println("TreeView: constructor.");
+
 		eventQueue = new BackgroundEventQueue();
 		trimPathsCheckbox
 				.setToolTipText("Collapse parts of paths that have already been shown to greatly speed up Tree Viewer redraws.");
@@ -189,6 +152,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void setToolTips() {
+		System.out.println("TreeView: setToolTips method.");
+
 		if (Preferences.getPreferences().getShowToolTips())
 			ToolTipManager.sharedInstance().registerComponent(tree);
 		else
@@ -196,6 +161,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void init() {
+		System.out.println("TreeView: init method.");
+
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
 		selectionModel
@@ -233,13 +200,19 @@ public class TreeView extends AbstractGUIComponent {
 		selectionListener = new SelectionListener() {
 			public void selectionChanged(SelectionEvent e) {
 				update();
+				System.out.println("TreeView: selectionListener method.");
+
 			}
 		};
 		historyListener = new ReloadListener() {
 			public void reload(ReloadEvent e) {
 				update();
+				System.out.println("TreeView: historyListener method.");
+
 			}
 		};
+
+		System.out.println("TreeView: add listeners.");
 
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
@@ -249,6 +222,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void cleanup() {
+		System.out.println("TreeView: cleanup method.");
+
 		SelectionManager.getManager()
 				.removeSelectionListener(selectionListener);
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
@@ -256,6 +231,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected TreePath trimPathToNode(TreePath path, Object node) {
+		System.out.println("TreeView: trimPathToNode method.");
+
 		Object[] objects = path.getPath();
 		int length = 0;
 		boolean stop = false;
@@ -279,6 +256,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void finishUpdate(TreePath[] paths) {
+		System.out.println("TreeView: finishUpdate method.");
+
 		if (paths.length == 0) {
 			if (isAncestorOf(progressBar)) {
 				remove(progressBar);
@@ -315,10 +294,14 @@ public class TreeView extends AbstractGUIComponent {
 	}
 	
 	protected void doUpdate() {
+		System.out.println("TreeView: doUpdate method.");
+
 		final PathTask task = new PathTask();
 		task.addPostExecuteRunnable(new Runnable() {
 
 			public void run() {
+				System.out.println("TreeView: run method.");
+
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
 				while(it.hasNext()) {
@@ -353,6 +336,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected void showConfigurationWindow() {
+		System.out.println("TreeView: showConfigurationWindow method.");
+
 		JButton closeButton = new JButton("Close");
 
 		JPanel checkboxPanel = new JPanel();
@@ -379,6 +364,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void update() {
+		System.out.println("TreeView: update method.");
+
 		eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			if (!isAncestorOf(emptyLabel)) {
@@ -406,127 +393,34 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected DragFriendlyTreeUI getDefaultUI() {
+		System.out.println("TreeView: getDefaultUI method.");
+
 		DragFriendlyTreeUI ui = new DragFriendlyTreeUI();
 		ui.setRightChildIndent(0);
 		return ui;
 	}
 
 	public boolean showNonTransitive() {
+		System.out.println("TreeView: showNonTransitive method.");
 		return showNonTransitiveCheckbox.isSelected();
 	}
 
 	public boolean trimPaths() {
+		System.out.println("TreeView: trimPaths method.");
 		return trimPathsCheckbox.isSelected();
 	}
 
-	private class RestrictedJTree extends JTree {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		protected class VisibleRunnable implements Runnable {
-			protected TreePath path;
-
-			public VisibleRunnable(TreePath path) {
-				this.path = path;
-			}
-
-			public void run() {
-				makeVisible(path);
-			}
-		}
-
-		protected Runnable visibleRunnable = new Runnable() {
-			public void run() {
-				makeVisible(path);
-			}
-		};
-
-		boolean expandAllowed = false;
-
-		TreePath path;
-
-		public void refresh() {
-			refresh(false);
-		}
-
-		public void refresh(boolean fromThread) {
-			if (model == null)
-				return;
-			expandAllowed = true;
-			expandPaths(fromThread);
-			expandAllowed = false;
-			repaint();
-		}
-
-		protected void expandPaths(boolean fromThread) {
-			Set<Object> seenem = new HashSet<Object>();
-			Object root = getModel().getRoot();
-			expandPaths(null, root, seenem, fromThread);
-		}
-
-		protected void expandPaths(TreePath parentPath, Object o,
-				Set<Object> seenem, boolean fromThread) {
-			if (trimPaths() && seenem.contains(o)) {
-				return;
-			}
-			seenem.add(o);
-			TreePath path;
-			if (parentPath == null)
-				path = new TreePath(o);
-			else
-				path = parentPath.pathByAddingChild(o);
-			makeVisible(path);
-			/*
-			 * try { SwingUtilities.invokeLater(new VisibleRunnable(path)); }
-			 * catch (Exception ex) {}
-			 */
-			int childCount = getModel().getChildCount(o);
-			for (int i = 0; i < childCount; i++) {
-				expandPaths(path, getModel().getChild(o, i), seenem, fromThread);
-			}
-		}
-
-		@Override
-		public String getToolTipText(MouseEvent e) {
-			TreePath path = getPathForLocation(e.getX(), e.getY());
-			if (path == null)
-				return null;
-			Object o = path.getLastPathComponent();
-			if (!(o instanceof Link))
-				return null;
-			LinkedObject child = ((Link) o).getChild();
-			return child.getID();
-		}
-
-		@Override
-		public void makeVisible(TreePath path) {
-			expandAllowed = true;
-			super.makeVisible(path);
-			expandAllowed = false;
-		}
-		/*
-		 * public void expandPath(TreePath path) { if (expandAllowed)
-		 * super.expandPath(path); }
-		 * 
-		 * public void expandRow(int row) { if (expandAllowed)
-		 * super.expandRow(row); }
-		 * 
-		 * public void collapsePath(TreePath path) { }
-		 * 
-		 * public void collapseRow(int row) { }
-		 */
-	}
-
 	public JComponent getComponent() {
+		System.out.println("TreeView: getComponent method.");
 		return this;
 	}
 
 	public boolean isXMLSettable() {
+		System.out.println("TreeView: isXMLSettable method.");
 		return false;
 	}
 
 	public void setXML(String xml) {
+		System.out.println("TreeView: setXML method.");
 	}
 }
