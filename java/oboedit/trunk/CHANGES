@@ -1,4 +1,4 @@
-Changes in b47:
+Changes in b47 (15 Aug 2008):
 - Don't automatically start a new dbxref record when user commits the previous
 one--let them do that if they want to.
 - Fixed dbxref library bug (SF 2025804):  adding 3 or more dbxrefs to a term
@@ -16,3 +16,5 @@ spikes that midori was seeing, because she said she was adding/editing
 synonyms.
 - "Cyclical" relationships shown in OTE with double-headed arrow
 icons.
+- Enabled mass addition of dbxrefs (regular or definition) to all selected
+terms (feature request 2032637) from Dbxref Library component.
