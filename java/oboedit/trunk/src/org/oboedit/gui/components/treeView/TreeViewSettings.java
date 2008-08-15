@@ -2,7 +2,7 @@ package org.oboedit.gui.components.treeView;
 
 import org.bbop.framework.ComponentConfiguration;
 
-public class TreeViewConfig implements ComponentConfiguration {
+public class TreeViewSettings implements ComponentConfiguration {
 	protected boolean multiSelect = false;
 
 	protected boolean trimPaths = true;
@@ -10,9 +10,9 @@ public class TreeViewConfig implements ComponentConfiguration {
 	protected boolean showNonTransitive = false;
 
 	
-	public TreeViewConfig() {
+	public TreeViewSettings() {
 
-	System.out.println("TreeViewConfig: entered this method to access getters and setters.");
+	System.out.println("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}
 
