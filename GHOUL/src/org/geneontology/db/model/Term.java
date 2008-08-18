@@ -35,6 +35,16 @@ public class Term extends GOModel {
 	/** The {@link DBXref} of the cvterm */
 	protected Set<TermSynonym> synonyms;
 
+	protected Set<TermDBXref> termDBXrefs;
+	
+	public Set<TermDBXref> getTermDBXrefs() {
+		return termDBXrefs;
+	}
+
+	public void setTermDBXrefs(Set<TermDBXref> termDBXrefs) {
+		this.termDBXrefs = termDBXrefs;
+	}
+
 	public Term(){
 		String[] uniqueConstraintFields = {"acc"};
 		this.initUniqueConstraintFields(Term.class,uniqueConstraintFields);
@@ -108,26 +118,32 @@ public class Term extends GOModel {
 	}
 
 	public void setDbxrefs(Set<DBXref> dbxrefs) {
+		
 		this.dbxrefs = dbxrefs;
+		System.out.println(dbxrefs.size());
 	}
 
 	/**
 	 * Override Getter of the CVTerm {@link DBXref} object.
 	 * @return cvterm {@link DBXref} object.
 	 */
+	/*
 	public DBXref getDbxref() {
 		return this.dbxrefs != null ? (DBXref) this.dbxrefs.iterator() : null;
-}
+	}
+	*/
 
 	/**
 	 * Override Setter of the CVTerm {@link DBXref} object.
 	 * @param dbxref the {@link DBXref} object of the cvterm.
 	 */
+	/*
 	public void setDbxref(DBXref dbxref) {
 		if (this.dbxrefs == null)
 			this.dbxrefs = new HashSet<DBXref> (2);
 		this.dbxrefs.add(dbxref);
 	}
+	*/
 
 	public int getTerm_id() {
 		return term_id;

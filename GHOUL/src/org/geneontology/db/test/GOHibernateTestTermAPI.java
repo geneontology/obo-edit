@@ -5,6 +5,7 @@ import org.geneontology.db.factory.GOobjectFactory;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GOModel;
 import org.geneontology.db.model.Term;
+import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
 
 public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
@@ -20,7 +21,6 @@ public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
 		GOobjectFactory goFactory = initSessionFactory();
 		
 		Term term = goFactory.getTermByName(test_name);
-		
 		logResult(term);
 	}
 	
@@ -29,17 +29,21 @@ public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
 		System.out.println(term.getCv() + " - " + term.getAcc() + ": " + term.getName());
 		System.out.println("def: " + term.getDefinition());
 		System.out.println("obsolete=" + term.getIs_obsolete() + ", is_root=" + term.getIs_root());
-		Iterator<DBXref> dbxrefs = term.getDbxrefs().iterator();
-		while (dbxrefs.hasNext()) {
-			DBXref dbxref = (DBXref) dbxrefs.next();
-			prettyPrintDBXref(dbxref);
+		if (term.getTermDBXrefs() != null) {
+			Iterator<TermDBXref> dbxrefs = term.getTermDBXrefs().iterator();
+			while (dbxrefs.hasNext()) {
+				DBXref dbxref = ((TermDBXref) dbxrefs.next()).getDbxref();
+				prettyPrintDBXref(dbxref);
+			}
 		}
-		Iterator<TermSynonym> synonyms = term.getSynonyms().iterator();
-		while (synonyms.hasNext()) {
-			TermSynonym synonym = (TermSynonym) synonyms.next();
-			System.out.println(synonym.getSynonym() + " category=" + synonym.getSynonymCategory() + 
-					" type=" + synonym.getSynonymType().getName() + " alt=" + synonym.getAlternateID());
+		if (term.getSynonyms() != null) {
+			Iterator<TermSynonym> synonyms = term.getSynonyms().iterator();
+			while (synonyms.hasNext()) {
+				TermSynonym synonym = (TermSynonym) synonyms.next();
+				System.out.println(synonym.getSynonym() + " category=" + synonym.getSynonymCategory() + 
+						" type=" + synonym.getSynonymType().getName() + " alt=" + synonym.getAlternateID());
 
+			}
 		}
 	}
 	
