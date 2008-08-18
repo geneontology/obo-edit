@@ -15,6 +15,8 @@
 		<pathelement location="${lib.dir}/bbop.jar"/>
 		<pathelement location="${lib.dir}/obdapi.jar"/>
 		<pathelement location="${lib.dir}/pgsql.jar"/>
+		<pathelement location="${lib.dir}/obo.jar"/>
+		<pathelement location="${lib.dir}/obo-vocab.jar"/>
 		
 		
 	</path>
@@ -65,13 +67,14 @@
         <javac fork="true"
         	failonerror="true"
         	debug="on"
-        	source="1.5"
+					source="1.5"
 					destdir="${build.dir}/WEB-INF/classes"
         	srcdir="${src.dir}"
-					includes="${server.src.dir}/**"
         	memorymaximumsize="256m">
-        	<classpath refid="classpath.gwt.server.compile"/>
-        </javac>
+				<classpath refid="classpath.gwt.server.compile"/>
+				<include name="${gwt.server.src1}"/>
+				<include name="${gwt.server.src2}"/>
+		 </javac>
     </target>
 
 <!-- ================================= 
@@ -84,6 +87,7 @@
         		<include name="bbop.jar"/>
         		<include name="pgsql.jar"/>
         		<include name="obo.jar"/>
+        		<include name="obo-vocab.jar"/>
 			</fileset>
         </copy>
     	<copy file="WEB-INFs/${project.name}/${conf.file}" todir="${build.dir}/WEB-INF"/>
