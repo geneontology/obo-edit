@@ -25,7 +25,7 @@ public class DBXref extends GOModel {
 	boolean for_definition;
 
 	public DBXref(){
-		String[] uniqueConstraintFields = {"dbxref_id"};
+		String[] uniqueConstraintFields = {"db", "accession"};
 		this.initUniqueConstraintFields(DBXref.class, uniqueConstraintFields);
 	}
 	

@@ -29,6 +29,10 @@ public class Term extends GOModel {
 	
 	protected TermDefinition term_definition;
 	
+	protected Set<Term> parents;
+
+	protected Set<Term> children;
+
 	/** The {@link DBXref} of the cvterm */
 	protected Set<DBXref> dbxrefs;
 
@@ -195,4 +199,19 @@ public class Term extends GOModel {
 		this.synonyms.add(synonym);
 	}
 
+	public Set<Term> getParents() {
+		return parents;
+	}
+
+	public void setParents(Set<Term> parents) {
+		this.parents = parents;
+	}
+
+	public Set<Term> getChildren() {
+		return children;
+	}
+
+	public void setChildren(Set<Term> children) {
+		this.children = children;
+	}
 }

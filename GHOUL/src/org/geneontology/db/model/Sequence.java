@@ -30,7 +30,7 @@ public class Sequence extends GOModel {
 	protected Timestamp timelastmodified;
 	
 	public Sequence(){
-		String[] uniqueConstraintFields = {"organism","uniquename","type"};
+		String[] uniqueConstraintFields = {"name", "md5checksum"};
 		this.initUniqueConstraintFields(Sequence.class,uniqueConstraintFields);
 	}
 	/**

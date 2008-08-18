@@ -1,11 +1,8 @@
 package org.geneontology.db.test;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.geneontology.db.factory.GOobjectFactory;
-import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GOModel;
 import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermDBXref;
@@ -24,15 +21,7 @@ public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
 		GOobjectFactory goFactory = initSessionFactory();
 		
 		Term term = goFactory.getTermByName(test_name);
-		for (TermDBXref tdbx : term.getTermDBXrefs()){
-			System.out.println("ID:\t" + tdbx.getTerm().getName() + "\t" + tdbx.getDbxref().getDbxref_id());
-			
-		}
-		
-		for (TermDBXref tdbx: (List<TermDBXref>)this.getSessionFactory().getCurrentSession().createQuery("from TermDBXref where term=?").setEntity(0, term).list()){
-			System.out.println("ID2:\t" + tdbx.getTerm().getName() + "\t" + tdbx.getDbxref().getDbxref_id());
-		}
-		
+		prettyPrint (term);
 	}
 	
 	public void prettyPrint(GOModel model) {
@@ -40,26 +29,33 @@ public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
 		System.out.println(term.getCv() + " - " + term.getAcc() + ": " + term.getName());
 		System.out.println("def: " + term.getDefinition());
 		System.out.println("obsolete=" + term.getIs_obsolete() + ", is_root=" + term.getIs_root());
-		if (term.getTermDBXrefs() != null) {
-			Iterator<TermDBXref> dbxrefs = term.getTermDBXrefs().iterator();
-			while (dbxrefs.hasNext()) {
-				DBXref dbxref = ((TermDBXref) dbxrefs.next()).getDbxref();
-				prettyPrintDBXref(dbxref);
-			}
-		}
-		if (term.getSynonyms() != null) {
-			Iterator<TermSynonym> synonyms = term.getSynonyms().iterator();
-			while (synonyms.hasNext()) {
-				TermSynonym synonym = (TermSynonym) synonyms.next();
-				System.out.println(synonym.getSynonym() + " category=" + synonym.getSynonymCategory() + 
-						" type=" + synonym.getSynonymType().getName() + " alt=" + synonym.getAlternateID());
-
-			}
+		/*
+		prettyPrintTerm (term.getParents(), "PARENTS");
+		prettyPrintTerm (term.getChildren(), "CHILDREN");
+		*/
+		prettyPrintDBXrefs(term);
+		prettyPrintSyns(term);
+	}
+	
+	protected void prettyPrintTerm(Set<Term> term_list, String label) {
+		for (Term t : term_list) {
+			System.out.println(label + ":\t" + t.getName());
 		}
 	}
 	
-	protected void prettyPrintDBXref(DBXref dbxref) {
-		System.out.println(dbxref.getDb().getName() + ":" + dbxref.getAccession() + 
-			" keytype=" + dbxref.getKeytype() + " desc=" + dbxref.getDescription());
+	protected void prettyPrintDBXrefs(Term term) {
+		for (TermDBXref tdbx : term.getTermDBXrefs()){
+			System.out.println("ID:\t" + tdbx.getDbxref().getDb().getName() + ":" + tdbx.getDbxref().getAccession() + "\t" + tdbx.getDbxref().getDescription() + 
+					"\t" + tdbx.getDbxref().getKeytype() + "\t" + tdbx.getIs_for_definition());		
+		}
 	}
+	
+	protected void prettyPrintSyns(Term term) {
+		for (TermSynonym tsyn : term.getSynonyms()){
+			System.out.println("SYN:\t" + tsyn.getSynonym() + "\t" + tsyn.getSynonymCategory() + "\t" + 
+					tsyn.getSynonymType().getName() + "\t" + tsyn.getAlternateID());
+			
+		}
+	}
+
 }

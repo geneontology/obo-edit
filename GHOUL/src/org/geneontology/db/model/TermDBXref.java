@@ -10,7 +10,7 @@ public class TermDBXref  extends GOModel implements Serializable {
 	
 	
 	public TermDBXref(){
-		String[] fieldNames = {"term","dbxref","is_for_definition"};
+		String[] fieldNames = {"term", "dbxref", "is_for_definition"};
 		this.initUniqueConstraintFields(TermDBXref.class, fieldNames);
 	}
 	

@@ -16,27 +16,21 @@
 		<property name="is_root"/>
 		
    		<one-to-one name="term_definition" class="org.geneontology.db.model.TermDefinition" foreign-key="term_id" />
-	
-		<!--
-		<join table="term_definition">
-			<key column="term_id"/>
-			<property name="term_definition" not-null="true" type="java.lang.String"/>
-			<property name="term_comment" type="java.lang.String"/>
-			<property name="reference" type="java.lang.String"/>
-		</join>
-		-->
 		
-		<!--
-	    <set name="dbxrefs" table="term_dbxref" lazy="false">
-		  <key column="term_id"/>
-		  <many-to-many class="org.geneontology.db.model.DBXref" column="dbxref_id"/>
-	    </set>
-
-   		<set name="synonyms" table="term_synonym" lazy="false">
+		<set name="parents" table="term2term">
+		  <key column="term2_id"/>
+   		  <one-to-many class="org.geneontology.db.model.Relation"/>
+		</set>
+		
+		<set name="children" table="term2term">
+		  <key column="term1_id"/>
+   		  <one-to-many class="org.geneontology.db.model.Relation"/>
+		</set>
+		
+   		<set name="synonyms" table="term_synonym">
    		  <key column="term_id"/>
    		  <one-to-many class="org.geneontology.db.model.TermSynonym"/>
 		</set>
-		-->
 		
 		<set name="termDBXrefs">
 			<key column="term_id"/>

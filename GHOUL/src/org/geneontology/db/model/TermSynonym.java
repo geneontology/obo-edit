@@ -1,13 +1,15 @@
 package org.geneontology.db.model;
 
+import java.io.Serializable;
+
 /**
  * The TermDefinition class corresponds to the GO term_definition table.  
  * @author Suzanna Lewis
  *
  */
-public class TermSynonym extends GOModel {
+public class TermSynonym extends GOModel implements Serializable {
 		
-	protected int term_id;
+	protected Term term;
 
 	protected String synonym;
 	
@@ -18,14 +20,16 @@ public class TermSynonym extends GOModel {
 	protected Term synonymCategory;
 
 	public TermSynonym(){
+		String[] uniqueConstraintFields = {"term", "synonym"};
+		this.initUniqueConstraintFields(TermSynonym.class,uniqueConstraintFields);
 	}
 
-	public int getTerm_id() {
-		return term_id;
+	public Term getTerm() {
+		return term;
 	}
 
-	public void setTerm_id(int term_id) {
-		this.term_id = term_id;
+	public void setTerm(Term term) {
+		this.term = term;
 	}
 
 	public String getSynonym() {

@@ -8,9 +8,9 @@
 		<composite-id>
 			<key-many-to-one name="term" class="org.geneontology.db.model.Term" column="term_id"/>
 			<key-many-to-one name="dbxref" class="org.geneontology.db.model.DBXref" column="dbxref_id"/>
+			<key-property name="is_for_definition"/>
 		</composite-id>
 
-		<property name="is_for_definition"/>
 				
   	</class>
 </hibernate-mapping>
