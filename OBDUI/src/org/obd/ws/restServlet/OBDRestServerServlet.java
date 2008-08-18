@@ -2,11 +2,9 @@ package org.obd.ws.restServlet;
 
 import org.restlet.Application;
 import org.restlet.Context;
-
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
-
-public class OBDRestServerServlet extends ServerServlet{
+public class OBDRestServerServlet extends ServerServlet {
 	
 	/**
 	 * 

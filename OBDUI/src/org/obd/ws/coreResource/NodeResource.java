@@ -443,6 +443,8 @@ public class NodeResource extends OBDResource {
 			nodeHash.put("subjectLabel", cd.toString());
 		} else {
 			//System.out.println("Has Many Args.");
+			nodeHash.put("relationId", cd.getRelationId());
+			nodeHash.put("relationURL", this.getNodeURL(cd.getRelationId()));
 			nodeHash.put("relationLabel", this.prettifyRelationshipTerm(cd.getRelationId()));
 			nodeHash.put("args", this.decomposeArguments(cd.getArguments()));
 		}
@@ -454,6 +456,8 @@ public class NodeResource extends OBDResource {
 		for (CompositionalDescription arg : args){
 			SimpleHash target = new SimpleHash();
 			if (this.hasSingularAtomicArgument(arg)){
+				target.put("relationId", arg.getRelationId());
+				target.put("relationURL", this.getNodeURL(arg.getRelationId()));
 				target.put("relationLabel", this.prettifyRelationshipTerm(arg.getRelationId()));
 				String targetLabel = "";
 				if (arg.getPredicate().equals(Predicate.RESTRICTION)){
@@ -466,8 +470,12 @@ public class NodeResource extends OBDResource {
 				
 				Node targetNode = this.getShard(dataSource).getNode(arg.getFirstArgument().getNodeId());
 				if (targetNode != null && targetNode.getLabel() != null){
+   				    target.put("targetId", targetNode.getId());
+   					target.put("targetURL", this.getNodeURL(targetNode));
 					targetLabel += targetNode.getLabel();
 				} else {
+ 				    target.put("targetId", arg.getFirstArgument().getNodeId());
+ 				    target.put("targetURL", this.getNodeURL(arg.getFirstArgument().getNodeId()));
 					targetLabel += arg.getFirstArgument().getNodeId();
 				}
 				target.put("targetLabel", targetLabel);
@@ -546,5 +554,46 @@ public class NodeResource extends OBDResource {
 		}
 		return nodeHash;
 	}
+
+	/**
+	 * @param node
+	 * @return string containing relative REST URL portion
+	 */
+	protected String getNodeURL(Node node) {
+		return getNodeURL(node, "node");
+	}
+	
+	/**
+	 * @param nodeId
+	 * @return string containing relative REST URL portion
+	 */
+	protected String getNodeURL(String id) {
+		return getNodeURL(id, "node");
+	}
+
+	/**
+	 * @param node
+	 * @param view - e.g. node
+	 * @return string containing relative REST URL portion
+	 * @author cjm
+	 */
+	protected String getNodeURL(Node node, String view) {
+		return getNodeURL(node.getId(), view);
+	}
+	
+	/**
+	 * @param nodeId
+	 * @param view - e.g. node
+	 * @return string containing relative REST URL portion
+	 * @author cjm
+	 */
+	protected String getNodeURL(String id, String view) {
+		return "/" + this.getContextName() + 
+		"/" + this.dataSource + 
+		"/html/"+view+"/" + 
+		Reference.encode(id);
+	}
+
+
 	
 }
