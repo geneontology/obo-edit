@@ -9,18 +9,29 @@
 <h1>The Dbxref Library</h1>
 <p>The Dbxref Library allows users to keep a 
 database of frequently used dbxrefs to save the effort of typing long or obscure 
-dbxrefs each time they are needed.</p>
+dbxrefs each time they want to add a dbxref to a term or a definition.</p>
 <p><IMG hspace=0 
 src="../images/dbxref_library.png"  border=0></p>
 
-<h2>Using Dbxrefs in the Library</h2>
-<p>To use a dbxref from the library, select the dbxref from 
-the list, and press the "Use dbxref" or "Use 
-as def dbxref" button.
+<h2>Loading a Dbxref Library</h2>
+<p>A dbxref library file is simply a text file with one dbxref on each line.
+  Usually dbxrefs have a database identifier, a colon, and a term identifier
+  (e.g., GOC:cr), but sometimes they are a URL or a text string.</p>
+<p>To load a dbxref library, press the "Import dbxrefs" button and select your
+  dbxref library file via the file browser.</p>
+
+<h2>Adding Dbxrefs to Terms</h2>
+<p>To add a dbxref from the library to one or more terms, select the dbxref from 
+the list.  Press the "Add dbxref" or "Add
+as def dbxref" button to add the selected dbxref to the currently selected
+  term (the one that is shown in the Text Editor).  If you want to add dbxrefs
+  to multiple terms, select the desired terms in an Ontology Tree Editor that
+  is in global selection mode, and check the "Apply to all selected terms"
+  checkbox before pressing one of the Add buttons.
 </p>
 
 <h2>Modifying the Library</h2>
-<p>To add new dbxrefs, or to remove items from the list, 
+<p>To add new dbxrefs or remove items from the list, 
 press the "Configure dbxrefs" button. The Dbxref Library configuration window 
 will appear:</p>
 <p><IMG hspace=0 
