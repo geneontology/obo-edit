@@ -1,6 +1,9 @@
 package org.geneontology.db.test;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.geneontology.db.factory.GOobjectFactory;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GOModel;
@@ -21,7 +24,15 @@ public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
 		GOobjectFactory goFactory = initSessionFactory();
 		
 		Term term = goFactory.getTermByName(test_name);
-		logResult(term);
+		for (TermDBXref tdbx : term.getTermDBXrefs()){
+			System.out.println("ID:\t" + tdbx.getTerm().getName() + "\t" + tdbx.getDbxref().getDbxref_id());
+			
+		}
+		
+		for (TermDBXref tdbx: (List<TermDBXref>)this.getSessionFactory().getCurrentSession().createQuery("from TermDBXref where term=?").setEntity(0, term).list()){
+			System.out.println("ID2:\t" + tdbx.getTerm().getName() + "\t" + tdbx.getDbxref().getDbxref_id());
+		}
+		
 	}
 	
 	public void prettyPrint(GOModel model) {

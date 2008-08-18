@@ -195,5 +195,4 @@ public class Term extends GOModel {
 		this.synonyms.add(synonym);
 	}
 
-
 }
