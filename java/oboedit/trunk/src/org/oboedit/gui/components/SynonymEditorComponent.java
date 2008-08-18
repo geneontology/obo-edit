@@ -39,17 +39,28 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 	public final static FieldPathSpec spec = new FieldPathSpec(
 			SynonymSearchCriterion.CRITERION);
 
-	private Synonym previousSynonym;
-
 	protected class SynonymTableRenderer extends DefaultTableCellRenderer {
+		private Synonym previousSynonym;
+		private Component previousTableCellRendererComponent;
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
+			if (value instanceof Synonym) {
+				Synonym synonym = (Synonym) value;
+				// Avoid updating the label if it doesn't actually need to change
+				if (synonym.equals(previousSynonym)) {
+					return previousTableCellRendererComponent;
+				}
+			}
 			JLabel out = (JLabel) super.getTableCellRendererComponent(table,
 					value, isSelected, hasFocus, row, column);
-			if (value instanceof Synonym)
+			if (value instanceof Synonym) {
 				configureLabel(table, out, (Synonym) value, row, isSelected);
+				previousSynonym = (Synonym) value;
+				previousTableCellRendererComponent = out;
+			}
 			// Need?
 // 			if (out.getPreferredSize().height != table.getRowHeight(row)) {
 // 				table.setRowHeight(row, out.getPreferredSize().height);
@@ -60,11 +71,6 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 	protected void configureLabel(JTable table, JLabel out, Synonym synonym,
 				      int index, boolean isSelected) {
-		// Avoid updating the label if it doesn't actually need to change
-		if (synonym.equals(previousSynonym)) {
-			return;
-		}
-		previousSynonym = synonym;
 		out.setOpaque(true);
 		out.setBorder(new EmptyBorder(10, 10, 10, 10));
 		out.setMinimumSize(new Dimension(table.getWidth(), 0));
