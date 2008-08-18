@@ -33,7 +33,7 @@ public class GeneResource extends NodeResource{
 		
 		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
 		
-		
+		resourceMap.put("encodedId", Reference.encode(this.getNodeId()));
 		resourceMap.put("contextName", this.getContextName());
 		resourceMap.put("dataSource", this.dataSource);
 		try {
@@ -67,10 +67,10 @@ public class GeneResource extends NodeResource{
 		
 		int annotationStatementsCount = 0;
 		for (String genotypeId : genotypeIds){
-			SimpleHash genotype = this.hashifyNode(genotypeId, "/" + this.getContextName() + "/" + dataSource + "/html/node/" + Reference.encode(genotypeId));
+			SimpleHash genotype = this.hashifyNode(genotypeId, "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(genotypeId));
 			SimpleHash genotypeHash = new SimpleHash();
 			genotypeHash.put("genotype", genotype);
-			Collection<SimpleHash> as = this.getHashifiedStatements("annotation",genotypeId);
+			Collection<SimpleHash> as = this.getHashifiedStatements("annotation","html");
 			annotationStatementsCount += as.size();
 			if (as.size()>0){
 				genotypeHash.put("annotationStatements", as);
