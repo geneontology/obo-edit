@@ -32,7 +32,7 @@
         <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
 
         <!-- Echo all executed SQL to stdout -->
-		<property name="show_sql">false</property>
+		<property name="show_sql">true</property>
 		<property name="format_sql">true</property>
 		
 
@@ -45,6 +45,7 @@
         <mapping resource="org/geneontology/db/model/DBXref.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/DB.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/TermDBXref.hbm.xml"/>
         
         <!-- Load up the extended Chado Object Hibernate Mapping Files --> 
         
