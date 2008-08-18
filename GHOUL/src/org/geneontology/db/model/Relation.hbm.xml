@@ -3,7 +3,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.geneontology.db.model.TermRelationship" table="term2term">
+	<class name="org.geneontology.db.model.Relation" table="term2term">
 		<id name="term_relationship_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
@@ -14,4 +14,5 @@
 		<many-to-one name="subject" class="org.geneontology.db.model.Term" column="term2_id" not-null="true"/>
 		<many-to-one name="object" class="org.geneontology.db.model.Term" column="term1_id" not-null="true" cascade="save-update"/>
 	</class>
+	
 </hibernate-mapping>

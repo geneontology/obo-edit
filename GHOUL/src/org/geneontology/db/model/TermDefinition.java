@@ -21,6 +21,8 @@ public class TermDefinition extends GOModel {
 	protected Term term;
 	
 	public TermDefinition(){
+		String[] fieldNames = {"term_id"};
+		this.initUniqueConstraintFields(TermDefinition.class, fieldNames);
 	}
 
 	public int getTerm_id() {

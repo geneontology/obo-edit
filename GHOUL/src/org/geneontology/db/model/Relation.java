@@ -7,7 +7,7 @@ package org.geneontology.db.model;
  * @author Suzanna Lewis
  * 
  */
-public class TermRelationship extends GOModel {
+public class Relation extends GOModel {
 	
 	/** The cvterm_relationship_id of the CVTermRelationship} */
 	public int term_relationship_id;
@@ -24,8 +24,9 @@ public class TermRelationship extends GOModel {
 	/** The set of all edges with complete=1 for any term2_id states the NECESSARY AND SUFFICIENT CONDITIONS for that term. */
 	protected int complete;
 
-	public TermRelationship(){
-		super();
+	public Relation(){
+		String[] uniqueConstraintFields = {"type", "subject", "object", "complete"};
+		this.initUniqueConstraintFields(Relation.class,uniqueConstraintFields);
 	}
 	
 	/**
@@ -45,19 +46,35 @@ public class TermRelationship extends GOModel {
 	}
 	
 	/**
-	 * Setter of CVTermRelationship subject {@link CVTerm}.
-	 * @param subject CVTermRelationship subject {@link CVTerm}.
-	 */
-	public void setSubject(Term subject) {
-		this.subject = subject;
-	}
-	
-	/**
 	 * Getter of CVTermRelationship relationship type.
 	 * @return CVTermRelationship relationship type.
 	 */
 	public Term getType() {
 		return type;
+	}
+	
+	/**
+	 * Setter of CVTermRelationship relationship type.
+	 * @param type CVTermRelationship relationship type.
+	 */
+	public void setType(Term type) {
+		this.type = type;
+	}
+
+	/**
+	 * Getter of CVTermRelationship subject {@link CVTerm}.
+	 * @return CVTermRelationship subject {@link CVTerm}.
+	 */
+	public Term getSubject() {
+		return subject;
+	}
+	
+	/**
+	 * Setter of CVTermRelationship subject {@link CVTerm}.
+	 * @param subject CVTermRelationship subject {@link CVTerm}.
+	 */
+	public void setSubject(Term subject) {
+		this.subject = subject;
 	}
 	
 	/**
@@ -76,21 +93,6 @@ public class TermRelationship extends GOModel {
 		this.object = object;
 	}
 	
-	/**
-	 * Getter of CVTermRelationship subject {@link CVTerm}.
-	 * @return CVTermRelationship subject {@link CVTerm}.
-	 */
-	public Term getSubject() {
-		return subject;
-	}
-	
-	/**
-	 * Setter of CVTermRelationship relationship type.
-	 * @param type CVTermRelationship relationship type.
-	 */
-	public void setType(Term type) {
-		this.type = type;
-	}
 	/**
 	 * Getter of CVTerm complete flag.
 	 * @return 1 if root, 0 otherwise.
