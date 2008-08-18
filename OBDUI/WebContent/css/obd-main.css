@@ -189,6 +189,10 @@ table.statementTableWrapper td {
 	padding:10px;
 }
 
+.relation {
+    font-style: italic;
+    color: #ff0000;
+}
 
 .li_divider{
     padding:0px;

@@ -29,8 +29,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/bbop.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.ext.servlet_2.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obo-vocab.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obdapi.jar"/>
@@ -40,5 +38,8 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/postgresql-8.3-603.jdbc3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v5.5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OBDAPI"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.ext.servlet_2.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.noelios.restlet.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

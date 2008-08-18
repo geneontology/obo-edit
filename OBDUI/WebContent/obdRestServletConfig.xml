@@ -16,6 +16,17 @@
 	</dataSource>
 	
 	<dataSource>
+		<resourcePath>obdp808</resourcePath>
+		<OBDSQLAdaptor>
+			<hostname>localhost</hostname>
+			<port>5432</port>
+			<username>cjm</username>
+			<password></password>
+			<databaseName>obdp808</databaseName>
+		</OBDSQLAdaptor>
+	</dataSource>
+	
+	<dataSource>
 		<resourcePath>obdPhenotypeAll2008</resourcePath>
 		<OBDSQLAdaptor>
 			<hostname>spade</hostname>

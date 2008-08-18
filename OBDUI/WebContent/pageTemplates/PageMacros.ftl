@@ -86,28 +86,22 @@
 </#macro>
 
 <#macro labelDecompose node target="none">
-	<#if target != "none">
-		<a href="${target}">
-	</#if>
 	<#if node.subjectLabel?exists>
 		${node.subjectLabel}
 	</#if>
 	<#if node.relationLabel?exists>
-		<span style="color:#ff0000;">${node.relationLabel}</span>
+		<span class="relation"><a href="${node.relationURL}">${node.relationLabel}</a></span>
 	</#if>
 	<#list node.args as arg>
 		<#if arg.relationLabel?exists>
-			<span style="color:#ff0000;">${arg.relationLabel}</span>
+	   		<span class="relation"><a href="${arg.relationURL}">${arg.relationLabel}</a></span>
 		</#if>
 		<#if arg.targetIsComplex?exists>
 			(<@labelDecompose node=arg.composedClass/>)
 		<#else>
-			${arg.targetLabel}
+	  		<a href="${arg.targetURL}">${arg.targetLabel}</a>
 		</#if>
 	</#list>
-	<#if target != "none">
-		</a>
-	</#if>
 </#macro>
 
 <#macro labelDecomposeLimit limit node target="none" >
