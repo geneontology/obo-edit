@@ -10,7 +10,8 @@ public class TermDBXref  extends GOModel implements Serializable {
 	
 	
 	public TermDBXref(){
-		
+		String[] fieldNames = {"term","dbxref","is_for_definition"};
+		this.initUniqueConstraintFields(TermDBXref.class, fieldNames);
 	}
 	
 	public Term getTerm() {
@@ -37,5 +38,5 @@ public class TermDBXref  extends GOModel implements Serializable {
 	public void setIs_for_definition(int is_for_definition) {
 		this.is_for_definition = is_for_definition;
 	}
-
+		
 }
