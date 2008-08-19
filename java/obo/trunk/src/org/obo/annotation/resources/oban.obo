@@ -30,6 +30,11 @@ name: assigned_by
 domain: oban:Annotation
 range: oban:Agent
 
+[Typedef]
+id: oban:has_description
+name: has_description
+domain: oban:Annotation
+
 [Term]
 id: oban:Publication
 name: publication

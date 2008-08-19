@@ -72,7 +72,7 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 			return aterm;
 		}
 		else {
-			logger.info("adding aterm "+id+" lo="+lo+" type="+lo.getType());
+			//logger.info("adding aterm "+id+" lo="+lo+" type="+lo.getType());
 			aterm = ATermUtils.makeTermAppl(id);
 			idToATerm.put(id,aterm);
 			aTermToObject.put(aterm,lo);
@@ -137,16 +137,16 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 					//ecterms = ATermUtils.makeList(el);
 					ecterms = new LinkedList<ATerm>();
 					objectToEquivATermSet.put(child,ecterms);
-					logger.info("saving EC for later: "+child+" "+ecterms);
+					//logger.info("saving EC for later: "+child+" "+ecterms);
 				}
 				if (type.equals(OBOProperty.IS_A)) {
-					logger.info("  adding genus "+c+" < "+p);
+					//logger.info("  adding genus "+c+" < "+p);
 					ecterms.add(p);
 				}
 				else {
 					ATermAppl t = makeATerm(type);
 					ATermAppl restr = ATermUtils.makeSomeValues(t,p);
-					logger.info("  adding EC restriction "+c+" < "+restr+" /"+p);
+					//logger.info("  adding EC restriction "+c+" < "+restr+" /"+p);
 					ecterms.add(restr);
 				}
 				logger.info("ecterms="+ecterms.toString());
@@ -154,11 +154,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 			else {
 				if (type.equals(OBOProperty.IS_A)) {
 					if (link.getChild() instanceof OBOProperty) {
-						logger.info("adding subprop "+c+" < "+p);
+						//logger.info("adding subprop "+c+" < "+p);
 						kb.addSubProperty(c, p);
 					}
 					else {
-						logger.info("adding subclass "+c+" < "+p);
+						//logger.info("adding subclass "+c+" < "+p);
 						kb.addSubClass(c,p);
 					}
 				}
@@ -166,11 +166,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 					ATermAppl t = makeATerm(type);
 					if (link.getChild() instanceof OBOProperty) {
 						// TODO
-						logger.info("ignoring "+link);
+						//logger.info("ignoring "+link);
 					}
 					else {
 						ATermAppl restr = ATermUtils.makeSomeValues(t,p);
-						logger.info("adding restriction "+c+" < "+restr+" /"+p);
+						//	logger.info("adding restriction "+c+" < "+restr+" /"+p);
 						kb.addSubClass(c,restr);
 					}
 				}
@@ -182,10 +182,10 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		if (p.equals(OBOProperty.IS_A)) {
 			return;
 		}
-		logger.info("adding prop "+p);
+		//ogger.info("adding prop "+p);
 		ATermAppl atermProp = makeATerm(p);
 		if (p.isTransitive()) {
-			logger.info("setting to transitive:" +atermProp);
+			//logger.info("setting to transitive:" +atermProp);
 			ATermUtils.makeTransitive(atermProp);
 		}
 		kb.addProperty(atermProp);
@@ -250,16 +250,16 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 	public Collection<Link> getParents(LinkedObject lo) {
 		ATermAppl aterm = makeATerm(lo);
 		
-		logger.info(" getting parents of "+lo.getID()+" "+lo);
+		//logger.info(" getting parents of "+lo.getID()+" "+lo);
 		// in OWL, the only class-level relation is subClassOf
 		// non-is_a links are obtained by finding the superclasses that are restrictions
 		Set<Set<ATermAppl>> equivClassSetSet = tax.getSupers(aterm, false);
 		Collection<Link> s = new TinySet<Link>();
 		for (Set<ATermAppl> ecs : equivClassSetSet) {
 			for (ATermAppl parentATerm : ecs) {
-				logger.info("    p="+parentATerm);
+				//logger.info("    p="+parentATerm);
 				if (ATermUtils.isTop(parentATerm)) {
-					logger.info("ignoring TOP");
+					//logger.info("ignoring TOP");
 				}
 //				else if (ATermUtils.isSomeValues(parentATerm)) {
 //				}

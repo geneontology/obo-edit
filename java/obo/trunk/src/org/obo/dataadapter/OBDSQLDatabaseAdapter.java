@@ -168,7 +168,6 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	protected ProgressableInputStream pfis;
 	protected boolean cancelled = false;
 	protected OBDSQLDatabaseAdapterConfiguration ioprofile;
-	protected List streams = new LinkedList();
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
 	
 	protected HashMap<Connection,HashMap<Integer,IdentifiedObject>> conn2objmap =
@@ -768,6 +767,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	// transforms from generic links to OBO metadata model
 	public void includeLinkInSession(OBOSession session, Link link) {
+		if (link.getType() == null)
+			return;
 		String pid = link.getType().getID();
 		LinkedObject lo = link.getChild();
 		LinkedObject p = link.getParent();
@@ -775,7 +776,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		
 		// TODO: use metadata ontology
 		if (pid.equals("oboMetaModel:inSubset")) {
-			logger.info("subset "+link+"//"+p);
+			//logger.info("subset "+link+"//"+p);
 			TermUtil.castToClass(lo);
 			TermCategory category = session.getCategory(p.getID());
 			if (category == null) {
@@ -850,6 +851,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 							ioprofile.getAnnotationMode().equals(
 							OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY))
 						continue;
+					System.out.println((io instanceof Annotation ? "A" : "-") + " " +io);
 					saveObject(io);
 					
 				}
@@ -859,7 +861,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			for (IdentifiedObject io : savedObjects) {
 				if (io instanceof LinkedObject) {
 					if (io instanceof Annotation) {
-						logger.info("saving annot links:"+io);
+						//logger.info("saving annot links:"+io);
 					}
 					for (Link link : ldb.getParents((LinkedObject) io)) {
 						if (link.getType().equals(AnnotationOntology.POSITS_REL()))
@@ -900,13 +902,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (lo instanceof NamespacedObject && lo.getNamespace() != null) {
 			ns = lo.getNamespace().getID();
 		}
-		if (lo instanceof DanglingObject || lo.getName() == null) {
-			iid =
-				callSqlFunc("store_node",
-						lo.getID());
-	
-		}
-		else if (lo instanceof Annotation) {
+		if (lo instanceof Annotation) {
 			Annotation annot = (Annotation)lo;
 			LinkedObject obj = annot.getObject();
 			if (obj == null) {
@@ -928,6 +924,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						annot.getNamespace() == null ? "_" : annot.getNamespace().getID());
 //			for (Link link : annot.getParents())
 //				saveLink(link);
+		}
+		else if (lo instanceof DanglingObject || lo.getName() == null) {
+			iid =
+				callSqlFunc("store_node",
+						lo.getID());
+	
 		}
 		else if (lo instanceof OBOClass) {
 			iid =
@@ -1041,15 +1043,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	protected int saveLink(Link link) throws SQLException {
 		LinkedObject child = link.getChild();
-		logger.info("child="+child);
+		//logger.info("child="+child);
 		Integer childDbId = obj2iid.get(child);
-		logger.info("saving "+link);
+		//logger.info("saving "+link);
 		if (link instanceof ValueLink) {
 			ValueLink pv = (ValueLink)link;
 			Value v = pv.getValue();
 			if (v instanceof DatatypeValue) {
 				DatatypeValue dv = (DatatypeValue) v;
-				logger.info("dv type="+dv.getType());
+				//logger.info("dv type="+dv.getType());
 				return callSqlFunc("store_tagval",
 						link.getChild().getID(),
 						link.getType().getID(),
@@ -1169,7 +1171,6 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		sql.append(")}");
 		logger.debug("sql="+sql);
-		System.out.print("sql="+sql+" :: ");
 		for (Object ob : args) {
 			logger.debug("  arg:"+ob);
 		}
@@ -1198,7 +1199,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		
 		boolean rs = stmt.execute();	
 		
-		logger.info("rs="+rs);
+		//logger.debug("rs="+rs);
 		return stmt.getInt(1);
 	}
 	

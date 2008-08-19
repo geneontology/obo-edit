@@ -171,6 +171,8 @@ public class AnnotationParserExtension implements ParserExtension,
 						((Instance) ab).setType(AnnotationOntology.AGENT());
 					}
 					annotation.setAssignedBy((LinkedObject) ab);
+				} else if (pv.getProperty().equals(DESCRIPTION_TAG.getName())) {
+					annotation.addDescription(pv.getValue());
 					it.remove();
 				} else if (pv.getProperty().equals(SUBJECT_TAG.getName())) {
 					IdentifiedObject subject = parser.getObject(pv.getValue());
@@ -385,6 +387,7 @@ public class AnnotationParserExtension implements ParserExtension,
 		tagOrder.add(index++, SUBJECT_TAG);
 		tagOrder.add(index++, RELATIONSHIP_TAG);
 		tagOrder.add(index++, OBJECT_TAG);
+		tagOrder.add(index++, DESCRIPTION_TAG);
 		tagOrder.add(index++, EVIDENCE_TAG);
 		tagOrder.add(index, SOURCE_TAG);
 	}

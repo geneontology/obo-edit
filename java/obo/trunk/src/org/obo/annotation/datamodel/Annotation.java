@@ -2,12 +2,15 @@ package org.obo.annotation.datamodel;
 
 import java.util.Collection;
 
+import org.obo.datamodel.Datatype;
 import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkLinkedObject;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.impl.DatatypeValueImpl;
+import org.obo.datamodel.impl.InstancePropertyValue;
 import org.obo.history.HistoryItem;
 
 public interface Annotation extends Instance {
@@ -29,6 +32,8 @@ public interface Annotation extends Instance {
 	public LinkedObject getAssignedBy();
 	public LinkedObject getSubject();
 	public LinkedObject getObject();
+	public Collection<String> getDescriptions();
+
 	public Collection<LinkedObject> getEvidence();
 	public Collection<LinkedObject> getSources();
 	public OBOProperty getRelationship();
@@ -43,6 +48,9 @@ public interface Annotation extends Instance {
 	public void removeEvidence(LinkedObject evidence);
 	public void setIsNegated(boolean isNegated);
 	
+	public void addDescription(String desc);
+	public void removeDescription(String desc);
+
 	// TODO: deprecate these two, or keep them as convenience methods?
 	public void addSource(String source);
 	//public void removeSource(String source);
