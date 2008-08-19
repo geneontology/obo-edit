@@ -29,9 +29,9 @@ public class Term extends GOModel {
 	
 	protected TermDefinition term_definition;
 	
-	protected Set<Term> parents;
+	protected Set<Relation> parents;
 
-	protected Set<Term> children;
+	protected Set<Relation> children;
 
 	/** The {@link DBXref} of the cvterm */
 	protected Set<DBXref> dbxrefs;
@@ -41,13 +41,9 @@ public class Term extends GOModel {
 
 	protected Set<TermDBXref> termDBXrefs;
 	
-	public Set<TermDBXref> getTermDBXrefs() {
-		return termDBXrefs;
-	}
-
-	public void setTermDBXrefs(Set<TermDBXref> termDBXrefs) {
-		this.termDBXrefs = termDBXrefs;
-	}
+	protected Set<Term> subsets;
+	
+	protected Set<MetaRelation> considerations;
 
 	public Term(){
 		String[] uniqueConstraintFields = {"acc"};
@@ -199,19 +195,44 @@ public class Term extends GOModel {
 		this.synonyms.add(synonym);
 	}
 
-	public Set<Term> getParents() {
+	public Set<Relation> getParents() {
 		return parents;
 	}
 
-	public void setParents(Set<Term> parents) {
+	public void setParents(Set<Relation> parents) {
 		this.parents = parents;
 	}
 
-	public Set<Term> getChildren() {
+	public Set<Relation> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Set<Term> children) {
+	public void setChildren(Set<Relation> children) {
 		this.children = children;
 	}
+	
+	public Set<TermDBXref> getTermDBXrefs() {
+		return termDBXrefs;
+	}
+
+	public void setTermDBXrefs(Set<TermDBXref> termDBXrefs) {
+		this.termDBXrefs = termDBXrefs;
+	}
+
+	public Set<Term> getSubsets() {
+		return subsets;
+	}
+
+	public void setSubsets(Set<Term> subsets) {
+		this.subsets = subsets;
+	}
+
+	public Set<MetaRelation> getConsiderations() {
+		return considerations;
+	}
+
+	public void setConsiderations(Set<MetaRelation> considerations) {
+		this.considerations = considerations;
+	}
+
 }

@@ -46,6 +46,7 @@
         <mapping resource="org/geneontology/db/model/DB.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermDBXref.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/MetaRelation.hbm.xml"/>
         
         <!-- Load up the extended Chado Object Hibernate Mapping Files --> 
         
