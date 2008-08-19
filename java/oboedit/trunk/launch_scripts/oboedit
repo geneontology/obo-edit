@@ -47,10 +47,12 @@ fi
 #Remove the name of this script from the end of the path
 PATH_TO_ME=`echo $PATH_TO_ME | sed -e "s/\(.*\)\/.*/\1/g"`
 
-# oboedit.vmoptions specifies memory setting (e.g. -Xmx1024M)
+# OBO-Edit.vmoptions specifies memory setting (e.g. -Xmx1024M)
+# (Changed it from oboedit.vmoptions because the installed launcher is called
+# OBO-Edit, not oboedit, and the discrepancy was causing problems.)
 JAVAARGS=" ";
-if [ -e "$PATH_TO_ME/oboedit.vmoptions" ]; then
-	VMOPTIONS=`cat $PATH_TO_ME/oboedit.vmoptions`;
+if [ -e "$PATH_TO_ME/OBO-Edit.vmoptions" ]; then
+	VMOPTIONS=`cat $PATH_TO_ME/OBO-Edit.vmoptions`;
 	for OPTION in "$VMOPTIONS"; do
 		JAVAARGS="$JAVAARGS ${OPTION}";
 	done
@@ -58,7 +60,7 @@ fi
 
 # This script is intended to be run from the main oboedit directory (launch_scripts/..).
 # The jar target in build.xml now copies it there.
-CMD="$JAVAPATH $JAVAARGS -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -jar ${PATH_TO_ME}/runtime/oboedit.jar \"$@\""
+CMD="$JAVAPATH $JAVAARGS -Dsun.java2d.opengl=True -DlauncherDir=${PATH_TO_ME} -DlauncherName=$0 -Xdock:icon=${PATH_TO_ME}/docs/images/oboedit_icon_mac.icns -jar ${PATH_TO_ME}/runtime/oboedit.jar \"$@\""
 echo $CMD
 sh -c "$CMD"
 
