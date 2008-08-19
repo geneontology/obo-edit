@@ -86,6 +86,10 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 		return TermUtil.getPropValues(this, AnnotationOntology.EVIDENCE_REL());
 	}
 
+	public Collection<String> getDescriptions() {
+		return TermUtil.getPropValues(this, AnnotationOntology.DESCRIPTION_REL());
+	}
+
 	public Link getPositedLink() {
 		LinkLinkedObject llo = (LinkLinkedObject) TermUtil.getPropValue(this,
 				AnnotationOntology.POSITS_REL(), LinkedObject.class, true);
@@ -324,6 +328,20 @@ public class AnnotationImpl extends InstanceImpl implements Annotation {
 	public void removeEvidence(LinkedObject evidence) {
 		Link link = new InstancePropertyValue(this, AnnotationOntology
 				.EVIDENCE_REL(), evidence);
+		removeParent(link);
+	}
+
+	public void addDescription(String desc) {
+		Link link = new InstancePropertyValue(this, AnnotationOntology
+				.DESCRIPTION_REL(), new DatatypeValueImpl(Datatype.STRING,
+				desc));
+		addParent(link);
+	}
+
+	public void removeDescription(String desc) {
+		Link link = new InstancePropertyValue(this, AnnotationOntology
+				.DESCRIPTION_REL(), new DatatypeValueImpl(Datatype.STRING,
+						desc));
 		removeParent(link);
 	}
 

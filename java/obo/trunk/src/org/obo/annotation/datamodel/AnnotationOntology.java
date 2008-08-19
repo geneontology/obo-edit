@@ -21,6 +21,7 @@ public class AnnotationOntology {
 	
 	protected static final String AGENT_TYPE_ID = "oban:Agent";
 	protected static final String ASSIGNED_BY_PROPERTY_ID = "oban:assigned_by";
+	protected static final String DESCRIPTION_PROPERTY_ID = "oban:has_description";
 	protected static final String SOURCE_PROPERTY_ID = "oban:has_data_source";
 	protected static final String EVIDENCE_PROPERTY_ID = "oban:has_evidence";
 	protected static final String POSITS_PROPERTY_ID = "oban:posits";
@@ -37,6 +38,10 @@ public class AnnotationOntology {
 
 	public static OBOProperty ASSIGNED_BY_REL() {
 		return (OBOProperty) getSession().getObject(ASSIGNED_BY_PROPERTY_ID);
+	}
+
+	public static OBOProperty DESCRIPTION_REL() {
+		return (OBOProperty) getSession().getObject(DESCRIPTION_PROPERTY_ID);
 	}
 
 	public static OBOProperty SOURCE_REL() {

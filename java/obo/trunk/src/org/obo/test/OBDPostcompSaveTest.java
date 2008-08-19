@@ -109,6 +109,7 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		IdentifiedObject ae = session.getObject("ZFIN:ZDB-GENO-070219-2");
 		Collection<Annotation> annots2 = getAnnotationsForSubject(ae);
 		boolean assignedByOk = false;
+		boolean descFound = false;
 		
 		// check annotation. We can't do an ID check on the object as
 		// it's stored as anonymous in OBD (OBD grants it a temp ID).
@@ -116,6 +117,10 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 		Annotation match = null;
 		for (Annotation annot : annots2) {
 			LinkedObject obj = annot.getObject();
+			for (String desc : annot.getDescriptions()) {
+				System.out.println("desc="+desc);
+				descFound = true;
+			}
 			boolean genusFound = false;
 			boolean diffFound = false;
 			for (Link link : obj.getParents()) {
@@ -139,6 +144,7 @@ public class OBDPostcompSaveTest extends AbstractAnnotationTest {
 				match = annot;
 			}
 		}
+		assertTrue(descFound);
 		assertTrue(match!=null);
 		logger.info("assby="+match.getAssignedBy());
 		logger.info("annotation ns="+match.getNamespace());

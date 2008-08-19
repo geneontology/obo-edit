@@ -550,6 +550,8 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		recaching = false;
 		fireDone();
 		isRunning = false;
+		logger.info("   Total reasoner time = "+ time + " ms");
+		
 		return time;
 	}
 
