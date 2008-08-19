@@ -38,28 +38,23 @@ public class TreeView extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeView.class);
 
-	TreeViewSettings treeViewSettingsInstance = new TreeViewSettings();
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public RestrictedJTree tree;
 	protected JScrollPane pane;
 	protected JLabel emptyLabel = new JLabel("No terms selected");
 	protected JLabel statusLabel = new JLabel("No paths loaded");
-	protected JCheckBox multiTermCheckbox = new JCheckBox(
-			"Show paths to multiple selected terms");
-	protected JCheckBox trimPathsCheckbox = new JCheckBox(
-			"Collapse already shown paths");
-	protected JCheckBox showNonTransitiveCheckbox = new JCheckBox(
-			"Show non-transitive paths");
 	protected JButton configButton = new JButton("Config");
 	protected JProgressBar progressBar = new JProgressBar();
-	protected TreeViewSettings configuration = new TreeViewSettings();
+	protected TreeViewSettings treeViewSettingsInstance = new TreeViewSettings();
+	TreeViewConfigPanel treeViewConfigPanelInstance;
+	public RestrictedJTree tree;
+
 
 	protected boolean multiTerm() {
 		System.out.println("TreeView: multiTerm method.");
-		return multiTermCheckbox.isSelected();
+		return treeViewSettingsInstance.getMultiSelect();
 	}
 
 	protected SelectionListener selectionListener;
@@ -84,7 +79,7 @@ public class TreeView extends AbstractGUIComponent {
 				SelectionManager.setGlobalSelection(SelectionManager
 						.createSelectionFromPaths(TreeView.this, paths, null,
 								SessionManager.getManager()
-										.getCurrentLinkDatabase(),
+								.getCurrentLinkDatabase(),
 								RootAlgorithm.GREEDY, true));
 				/*
 				 * if (path != null) { Link link = (Link)
@@ -97,8 +92,9 @@ public class TreeView extends AbstractGUIComponent {
 		}
 	};
 
-	protected BackgroundEventQueue eventQueue;
 
+	
+	
 	@Override
 	public String getName() {
 //		return "DAG Viewer";
@@ -107,70 +103,16 @@ public class TreeView extends AbstractGUIComponent {
 		return "Tree Viewer";
 	}
 
-	TreeViewConfigPanel treeViewConfigPanelInstance;
 
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
 		logger.info("TreeView: getConfigurationPanel()");
-		
+
 		if (treeViewConfigPanelInstance == null) {
 			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
 		}
-		
+
 		return treeViewConfigPanelInstance;
-	}
-	
-	
-
-	public ComponentConfiguration getConfiguration() {
-		System.out.println("TreeView: getConfiguration method.");
-		configuration.setMultiSelect(multiTermCheckbox.isSelected());
-		configuration.setTrimPaths(trimPaths());
-		configuration.setShowNonTransitive(showNonTransitive());
-		return configuration;
-	}
-
-	public void setConfiguration(ComponentConfiguration configuration) {
-		System.out.println("TreeView: setConfiguration method.");
-
-		if (configuration instanceof TreeViewSettings)
-			this.configuration = (TreeViewSettings) configuration;
-
-		multiTermCheckbox.setSelected(this.configuration.getMultiSelect());
-		trimPathsCheckbox.setSelected(this.configuration.getTrimPaths());
-		showNonTransitiveCheckbox.setSelected(this.configuration
-				.getShowNonTransitive());
-	}
-
-	public TreeView(String id) {
-		super(id);
-		System.out.println("TreeView: constructor.");
-
-		eventQueue = new BackgroundEventQueue();
-		trimPathsCheckbox
-				.setToolTipText("Collapse parts of paths that have already been shown to greatly speed up Tree Viewer redraws.");
-		multiTermCheckbox
-				.setToolTipText("If multiple terms are selected, show paths to all of them.");
-		showNonTransitiveCheckbox
-				.setToolTipText("Show paths that contain non-transitive relationships. Enabling this option will cause the view to become very confusing in some ontologies");
-		progressBar.setStringPainted(true);
-		multiTermCheckbox.setOpaque(false);
-		trimPathsCheckbox.setOpaque(false);
-		showNonTransitiveCheckbox.setOpaque(false);
-		ActionListener updateListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				update();
-			}
-		};
-		multiTermCheckbox.addActionListener(updateListener);
-		trimPathsCheckbox.addActionListener(updateListener);
-		showNonTransitiveCheckbox.addActionListener(updateListener);
-		configButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showConfigurationWindow();
-			}
-		});
-		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
 	}
 
 	public void setToolTips() {
@@ -182,72 +124,43 @@ public class TreeView extends AbstractGUIComponent {
 			ToolTipManager.sharedInstance().unregisterComponent(tree);
 	}
 
-	public void init() {
-		System.out.println("TreeView: init method.");
-
-		removeAll();
-		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
-		selectionModel
-				.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(200, 200));
-		setOpaque(true);
-		tree = new RestrictedJTree();
-		tree.setUI(getDefaultUI());
-		tree.setCellRenderer(new OBOCellRenderer());
-		tree.setSelectionModel(selectionModel);
-		tree.putClientProperty("JTree.lineStyle", "Angled");
-		pane = new JScrollPane(tree);
-
-		/*
-		 * String multiSelectStr = props.getProperty("multiselect"); boolean
-		 * multiSelect = false; if (multiSelectStr != null &&
-		 * multiSelectStr.equals("true")) multiSelect = true;
-		 * multiTermCheckbox.setSelected(multiSelect);
-		 */
-		JPanel controlPanel = new JPanel();
-		controlPanel.setOpaque(false);
-		controlPanel.setLayout(new BorderLayout());
-		// controlPanel.add(checkboxPanel, "East");
-		controlPanel.add(configButton, "East");
-		controlPanel.add(statusLabel, "Center");
-
-		add("Center", pane);
-		add("South", controlPanel);
-		emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(true);
-		update();
-		selectionListener = new SelectionListener() {
-			public void selectionChanged(SelectionEvent e) {
-				update();
-				System.out.println("TreeView: selectionListener method.");
-
-			}
-		};
-		historyListener = new ReloadListener() {
-			public void reload(ReloadEvent e) {
-				update();
-				System.out.println("TreeView: historyListener method.");
-
-			}
-		};
-
-		System.out.println("TreeView: add listeners.");
-
-		SelectionManager.getManager().addSelectionListener(selectionListener);
-		Preferences.getPreferences().addReconfigListener(reconfigListener);
-		GUIUtil.addReloadListener(historyListener);
-		tree.addMouseListener(clickListener);
-		setToolTips();
+	
+	@Override
+	public ComponentConfiguration getConfiguration() {
+		System.out.println("TreeView: getConfiguration method.");
+//		treeViewSettingsInstance.setMultiSelect(treeViewSettingsInstance.getMultiSelect());
+//		treeViewSettingsInstance.setTrimPaths(trimPaths());
+//		treeViewSettingsInstance.setShowNonTransitive(showNonTransitive());
+		return treeViewSettingsInstance;
 	}
 
+
+
+	public void setConfiguration(TreeViewSettings treeViewSettingsInstance) {
+		System.out.println("TreeView: setConfiguration method.");
+
+		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings)
+			this.treeViewSettingsInstance = (TreeViewSettings) this.treeViewSettingsInstance;
+
+//		multiTermCheckbox.setSelected(this.treeViewSettingsInstance.getMultiSelect());
+//		trimPathsCheckbox.setSelected(this.treeViewSettingsInstance.getTrimPaths());
+//		showNonTransitiveCheckbox.setSelected(this.treeViewSettingsInstance
+//		.getShowNonTransitive());
+	}
+
+	public TreeView(String id) {
+		super(id);
+		System.out.println("TreeView: constructor.");
+
+	}
+	
+
+	
 	public void cleanup() {
 		System.out.println("TreeView: cleanup method.");
 
 		SelectionManager.getManager()
-				.removeSelectionListener(selectionListener);
+		.removeSelectionListener(selectionListener);
 		Preferences.getPreferences().removeReconfigListener(reconfigListener);
 		GUIUtil.addReloadListener(historyListener);
 	}
@@ -314,7 +227,7 @@ public class TreeView extends AbstractGUIComponent {
 				+ (paths.length == 1 ? "" : "s") + " loaded.");
 		repaint();
 	}
-	
+
 	protected void doUpdate() {
 		System.out.println("TreeView: doUpdate method.");
 
@@ -329,7 +242,7 @@ public class TreeView extends AbstractGUIComponent {
 				while(it.hasNext()) {
 					TreePath path = (TreePath) it.next();
 					if (PathUtil.pathIsCircular(path)
-							|| (!showNonTransitive() && PathUtil
+							|| (!treeViewSettingsInstance.getShowNonTransitive() == true && PathUtil //changed this line.
 									.pathContainsNonTransitive(path))) {
 						it.remove();
 					}
@@ -343,70 +256,70 @@ public class TreeView extends AbstractGUIComponent {
 		});
 		task.setLinkDatabase(SessionManager.getManager()
 				.getCurrentLinkDatabase());
-		
+
 		Set<LinkedObject> termSet = new HashSet<LinkedObject>();
 		if (multiTerm()) {
 			termSet
-					.addAll(SelectionManager.getGlobalSelection()
-							.getTerms());
+			.addAll(SelectionManager.getGlobalSelection()
+					.getTerms());
 		} else
 			termSet.add(SelectionManager.getGlobalSelection()
 					.getTermSubSelection());
-		
+
 		task.setTerms(termSet);
-		eventQueue.scheduleTask(task);
+		treeViewConfigPanelInstance.eventQueue.scheduleTask(task);
 	}
 
-	protected void showConfigurationWindow() {
-		System.out.println("TreeView: showConfigurationWindow method.");
-
-		JButton closeButton = new JButton("Close");
-
-		JPanel checkboxPanel = new JPanel();
-		checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
-		checkboxPanel.add(multiTermCheckbox);
-		checkboxPanel.add(Box.createVerticalStrut(2));
-		checkboxPanel.add(trimPathsCheckbox);
-		checkboxPanel.add(Box.createVerticalStrut(2));
-		checkboxPanel.add(showNonTransitiveCheckbox);
-		checkboxPanel.add(Box.createVerticalStrut(10));
-		checkboxPanel.add(closeButton);
-
-		final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
-				true);
-		closeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dialog.dispose();
-			}
-		});
-
-		dialog.setContentPane(checkboxPanel);
-		dialog.pack();
-		dialog.setVisible(true);
-	}
+//	protected void showConfigurationWindow() {
+//		System.out.println("TreeView: showConfigurationWindow method.");
+//
+//		JButton closeButton = new JButton("Close");
+//
+//		JPanel checkboxPanel = new JPanel();
+//		checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
+//		checkboxPanel.add(multiTermCheckbox);
+//		checkboxPanel.add(Box.createVerticalStrut(2));
+//		checkboxPanel.add(trimPathsCheckbox);
+//		checkboxPanel.add(Box.createVerticalStrut(2));
+//		checkboxPanel.add(showNonTransitiveCheckbox);
+//		checkboxPanel.add(Box.createVerticalStrut(10));
+//		checkboxPanel.add(closeButton);
+//
+//		final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
+//				true);
+//		closeButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				dialog.dispose();
+//			}
+//		});
+//
+//		dialog.setContentPane(checkboxPanel);
+//		dialog.pack();
+//		dialog.setVisible(true);
+//	}
 
 	public void update() {
 		System.out.println("TreeView: update method.");
 
-		eventQueue.cancelAll();
+		treeViewConfigPanelInstance.eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
-			if (!isAncestorOf(emptyLabel)) {
-				remove(pane);
-				add(emptyLabel, "Center");
+			if (!isAncestorOf(treeViewConfigPanelInstance.emptyLabel)) {
+				remove(treeViewConfigPanelInstance.pane);
+				add(treeViewConfigPanelInstance.emptyLabel, "Center");
 				validate();
 				repaint();
 			}
 		} else {
-			if (isAncestorOf(emptyLabel)) {
-				remove(emptyLabel);
+			if (isAncestorOf(treeViewConfigPanelInstance.emptyLabel)) {
+				remove(treeViewConfigPanelInstance.emptyLabel);
 			}
 
-			if (isAncestorOf(pane)) {
-				remove(pane);
+			if (isAncestorOf(treeViewConfigPanelInstance.pane)) {
+				remove(treeViewConfigPanelInstance.pane);
 			}
 
-			if (!isAncestorOf(progressBar)) {
-				add(progressBar, "Center");
+			if (!isAncestorOf(treeViewConfigPanelInstance.progressBar)) {
+				add(treeViewConfigPanelInstance.progressBar, "Center");
 			}
 			validate();
 			repaint();
@@ -422,20 +335,20 @@ public class TreeView extends AbstractGUIComponent {
 		return ui;
 	}
 
-	public boolean showNonTransitive() {
-		System.out.println("TreeView: showNonTransitive method.");
-		return showNonTransitiveCheckbox.isSelected();
-	}
+//	public boolean showNonTransitive() {
+//		System.out.println("TreeView: showNonTransitive method.");
+//		return showNonTransitiveCheckbox.isSelected();
+//	}
+//
+//	public boolean trimPaths() {
+//		System.out.println("TreeView: trimPaths method.");
+//		return trimPathsCheckbox.isSelected();
+//	}
 
-	public boolean trimPaths() {
-		System.out.println("TreeView: trimPaths method.");
-		return trimPathsCheckbox.isSelected();
-	}
-
-	public JComponent getComponent() {
-		System.out.println("TreeView: getComponent method.");
-		return this;
-	}
+//	public JComponent getComponent() {
+//		System.out.println("TreeView: getComponent method.");
+//		return this;
+//	}
 
 	public boolean isXMLSettable() {
 		System.out.println("TreeView: isXMLSettable method.");
