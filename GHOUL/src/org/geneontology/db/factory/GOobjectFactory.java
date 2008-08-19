@@ -1,8 +1,9 @@
 package org.geneontology.db.factory;
 
+import org.geneontology.db.model.DBXref;
+import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
-import org.geneontology.db.model.DBXref;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -27,6 +28,11 @@ public class GOobjectFactory {
 	public Term getTermByName(String name){
 		Session session = sf.getCurrentSession();
 		return (Term)session.createQuery("from Term where name = ?").setString(0, name).uniqueResult();
+	}
+	
+	public GeneProduct getGPByDBXref(int dbxref_id){
+		Session session = sf.getCurrentSession();
+		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, dbxref_id).uniqueResult();
 	}
 	
 	public Species getSpeciesByTaxa(int taxa){
