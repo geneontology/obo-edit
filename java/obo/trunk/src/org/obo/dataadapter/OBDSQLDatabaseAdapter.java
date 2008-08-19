@@ -165,6 +165,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 	protected String path;
 	protected AdapterConfiguration config;
+	protected List streams = new LinkedList();
+
 	protected ProgressableInputStream pfis;
 	protected boolean cancelled = false;
 	protected OBDSQLDatabaseAdapterConfiguration ioprofile;
