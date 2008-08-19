@@ -22,8 +22,8 @@ public class HTMLSpecEditor extends JPanel implements
 		add(new JLabel("<html>Enter HTML code for the renderer below."
 				+ " Use the variable " + HTMLSpecField.REPLACE_SEQ
 				+ " to represent the term name.<br>"
-				+ "Do not use the &lt;html&gt; tag in you code -"
-				+ " it will be added automatically.</html>"),
+				+ "Do not use the &lt;html&gt; tag in your code--"
+			        + "it will be added automatically.</html>"),
 				BorderLayout.NORTH);
 		add(new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
