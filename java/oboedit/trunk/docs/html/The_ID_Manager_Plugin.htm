@@ -8,7 +8,7 @@
 <body bgcolor="#ffffff">
 <h1>The ID Manager</h1>
 <h2>Overview - ID Generation Profiles</h2>
-<p>The ID Manager controls id generation through the use of <strong>ID 
+<p>The ID Manager controls ID generation through the use of <strong>ID 
 generation profiles</strong>.</p>
 <p>An&nbsp;ID generation profile is a collection of ID generation rules, each of 
 which may be used depending on where the new term is created in the ontology. 
@@ -20,18 +20,18 @@ href="Filters.htm">filter</a>&nbsp;that specifies when a given conditional rule
 should be used.</p>
 <p>When a new term is created, OBO-Edit looks at the parent term under which the 
 new term was created. That parent term is checked against the rule filters in 
-the active id generation profile. If the parent term matches a filter, the 
-associated id generation rule is used.</p>
+the active ID generation profile. If the parent term matches a filter, the 
+associated ID generation rule is used.</p>
 <p>If no conditional rule matches the parent term, or if 
 there is no parent term (for example, if a new root was created), the 
-<strong>default rule</strong> is used. Every id generation profile <em>must</em>     specify a default 
+<strong>default rule</strong> is used. Every ID generation profile <em>must</em>     specify a default 
 rule.</p>
 <h2>ID Generation Rules</h2>
 <p>ID Generation rules are character strings that contain some combination of 
 <strong>character literals</strong> and <strong>variables</strong>.</p>
 <h3>Character Literals</h3>
 <p>Character literals are text characters that will appear, unaltered, when an 
-id is generated. An id generation rule can, in theory, consist entirely of 
+ID is generated. An ID generation rule can, in theory, consist entirely of 
 character literals, such as:</p>
 <code><br>
 OBO:SINGLE_ID
@@ -39,22 +39,22 @@ OBO:SINGLE_ID
 </code>
 <p>When a new term is created using this rule, it will be 
 given the ID <em>OBO:SINGLE_ID</em>. The limitations of this kind of rule become 
-immediately apparent: you can only generate a single id from this rule. The next 
+immediately apparent: you can only generate a single ID from this rule. The next 
 time a user tries to create a term from this rule, the term creation operation 
-will fail, because the id generation rule cannot create an id that is not 
+will fail, because the ID generation rule cannot create an ID that is not 
 already in use.</p>
 <p>To avoid this problem, we need:</p>
 <h3>Variables</h3>
 <p>Variables are special sequences (enclosed in $&nbsp;characters) in the ID 
-generation rule that will be replaced with some other value when a new id is 
+generation rule that will be replaced with some other value when a new ID is 
 generated.</p>
 <p>The most important rule variable is <strong>$sequence$</strong>. $sequence$ 
 is replaced by a numeric sequence of a fixed length (the default is 7 
 characters). Because this is a fixed length sequence, low numbered values will 
 often be preceded by a number of zeros.</p>
-<p>When a new id is generated, OBO-Edit will replace the $sequence$ variable 
+<p>When a new ID is generated, OBO-Edit will replace the $sequence$ variable 
 with the numerically smallest possible value that is not in use.</p>
-<p>For example, let's say our ontology consists of 4 terms with the following ids:</p>
+<p>For example, let's say our ontology consists of 4 terms with the following IDs:</p>
 <ul>
   <li>OBO:0000000-A 
   <li>OBO:0000001-A 
@@ -62,10 +62,10 @@ with the numerically smallest possible value that is not in use.</p>
   <li>OBO:0000002</li></ul>
 <p>If&nbsp;the ID generation rule is:</p>
 <code><br>OBO:$sequence$-A <br></code>
-<p>the next id OBO-Edit will generate is "OBO:0000002-A". 
-OBO-Edit chooses this id because "OBO:0000000-A" and "OBO:0000001-A"<br>are 
+<p>the next ID OBO-Edit will generate is "OBO:0000002-A". 
+OBO-Edit chooses this ID because "OBO:0000000-A" and "OBO:0000001-A"<br>are 
 already in use. The fact that "OBO:0000002" is in use doesn't matter; since our 
-id generation rule specifies a "-A" suffix, the ids don't conflict.</p>
+ID generation rule specifies a "-A" suffix, the IDs don't conflict.</p>
 <h4>Variable Parameters</h4>
 <p>The replacement behavior of some variables can be configured. This 
 configuration is done through the use of <strong>variable parameters</strong>. 
@@ -85,12 +85,12 @@ $sequence(<i>length</i>, <i>min_value</i>, <i>max_value</i>)$
   number specifying the maximum numeric value of the generated sequence.<em> 
   Default value: infinity</em>         
      </li></ul>
-<p>Let's say our id generation rule is:</p>
+<p>Let's say our ID generation rule is:</p>
 <code><br>
   OBO:$sequence(7,4,9999999)$-A
 <br></code>
 <p>If we used this rule with the example ontology described 
-above, the next id OBO-Edit would generate is "OBO:0000005-A", because OBO-Edit 
+above, the next ID OBO-Edit would generate is "OBO:0000005-A", because OBO-Edit 
 generates a sequence with a minimum value of 4. Since "OBO:0000004-A" is already 
 in use, OBO-Edit generates "OBO:0000005-A".</p>
 <p>If the rule were:</p>
@@ -110,51 +110,51 @@ all equivalent:</p>
 future others will probably be added). The other variable is called 
 <strong>$id$</strong>.</p>
 <p>$id$ is replaced with the ID of the parent term. In theory, this makes it 
-possible to build recursive ids that contain information about the parentage of 
+possible to build recursive IDs that contain information about the parentage of 
 a term.</p>
 <p><em><strong>This is a really, really&nbsp;bad idea.</strong></em> IDs should 
-not encode any information about the structure of an ontology. Remember, ids 
+not encode any information about the structure of an ontology. Remember, IDs 
 cannot be modified once they are created. If ontology structure is encoded into 
-ids, there is no way to fix the ids if there is some rearrangement of the 
+IDs, there is no way to fix the IDs if there is some rearrangement of the 
 ontology later; either the encoding scheme must be broken, or large parts of the 
 ontology must be obsoleted and recreated.</p>
 <p>This variable is only included here because some ontologies require it for 
 historical reasons. If you are creating a new ontology, do not use it!</p>
 <h2>Using the ID Manager<a 
 name="editing_profiles"></a>    </h2>
-<p>The ID Manager is used to edit id profiles, and to select 
-the&nbsp;active id profile:</p>
+<p>The ID Manager is used to edit ID profiles, and to select 
+the&nbsp;active ID profile:</p>
 <p><IMG hspace=0 src="../images/id_manager.png" border=0></p>
 <p>The pulldown list shows all available ID 
-Generation Profiles. When an id generation profile is selected, it becomes the active id 
-profile, and its rules are used to generate ids for new terms.</p>
+Generation Profiles. When an ID generation profile is selected, it becomes the active ID 
+profile, and its rules are used to generate IDs for new terms.</p>
 <p>The next control to the right is the configuration button. Press this button 
 to edit the currently selected profile. See <A href="#editing_profiles">Editing 
 ID Profiles</a> for details.</p>
 <p>The + button creates a new ID profile named "&lt;new id profile&gt;". The new 
 profile can be modified using the configuration button.</p>
 <p>The&nbsp;- button deletes the currently selected profile. There must be at 
-one id profile in existence, so it is not possible to delete the last id 
-profile. If there is only one id profile, a new id profile must be created 
+one ID profile in existence, so it is not possible to delete the last ID 
+profile. If there is only one ID profile, a new ID profile must be created 
 before that profile can be deleted.</p>
 <h2>Editing ID Profiles</h2>
-<p>When the configuration button is pressed, the id profile editor appears:</p>
+<p>When the configuration button is pressed, the ID profile editor appears:</p>
 <p><IMG hspace=0 src="../images/id_manager_editor.png" border=0></p>
 <p>The topmost box contains the profile name. This name is 
 used in the display, but doesn't affect what the profile does.</p>
-<p>The next text box contains the default id rule.</p>
-<p>The bottom most component is a list of conditional id generation rules.</p>
-<p>To add a new conditional id generation rule, press the "Add" button. A new 
+<p>The next text box contains the default ID rule.</p>
+<p>The bottom most component is a list of conditional ID generation rules.</p>
+<p>To add a new conditional ID generation rule, press the "Add" button. A new 
 rule will be generated with the rule "&lt;your rule&gt;".</p>
 <p>To delete a conditional rule, left-click the rule to select it, and press the 
 "Del" button to delete it.</p>
-<p>To edit a conditional id generation rule, left-click a rule to select it. The 
+<p>To edit a conditional ID generation rule, left-click a rule to select it. The 
 conditional rule editor will appear to the right:</p>
 <p><IMG hspace=0 src="../images/conditional_rule_editor.png" border=0></p>
 <p>At the top of the editor is a <A href="Term_Filters.htm">term filter 
 editor</a>. This defines the filter that is used to determine whether this 
 conditional rule should be used.</p>
-<p>At the bottom is a text box that contains the actual id generation rule to be 
+<p>At the bottom is a text box that contains the actual ID generation rule to be 
 used when this conditional rule applies.</p>
 <p>                
      &nbsp;</p>
@@ -188,17 +188,5 @@ the rules will be applied. A GO term will have an ID as below:</P>
 <p><IMG hspace=0 src="../images/new_go_term.png" border=0></p>
 <P>A term that is a descendant of JD:1 will have an ID as below. </P>
 <p><IMG hspace=0 src="../images/new_non_go_term.png" border=0></p>
-<p>&nbsp;</p>
-
-<p>                
-     &nbsp;</p>
-<p>                
-     &nbsp;</p>
-<p>                
-     &nbsp;</p>
-<p>                
-     &nbsp;</p>
-<p>                
-     &nbsp;</p>
 </body>
 </html>
