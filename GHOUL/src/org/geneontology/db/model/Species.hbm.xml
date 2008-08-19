@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.Species" table="species">
+	
+		<id name="species_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+			
+		<property name="ncbi_taxa_id" not-null="true"/>
+		<property name="common_name"/>
+		<property name="lineage_string"/>
+		<property name="genus"/>
+		<property name="species"/>
+		<property name="left_value"/>
+		<property name="right_value"/>
+		<property name="taxonomic_rank"/>
+		
+   		<many-to-one name="parent" column="parent_id" class="org.geneontology.db.model.Species"/>
+				
+	</class>
+</hibernate-mapping>
