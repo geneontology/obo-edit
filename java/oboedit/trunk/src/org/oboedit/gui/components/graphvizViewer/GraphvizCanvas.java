@@ -558,6 +558,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 				imageFile.deleteOnExit();
 				textFile.deleteOnExit();
+				noDisjointTextFile.deleteOnExit();
 			} catch (Exception ex) {
 				String failureHTML = "<html><center>Could not load GraphViz package.<br>"
 					+ "Make sure your properly obtained and installed GraphViz from<br>"
