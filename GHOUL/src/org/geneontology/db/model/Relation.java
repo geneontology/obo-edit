@@ -10,7 +10,7 @@ package org.geneontology.db.model;
 public class Relation extends GOModel {
 	
 	/** The cvterm_relationship_id of the CVTermRelationship} */
-	public int term_relationship_id;
+	public int relation_id;
 	
 	/** The {@link CVTerm} type of this relationship */
 	public Term type;
@@ -33,16 +33,16 @@ public class Relation extends GOModel {
 	 * Getter of CVTermRelationship cvterm_relationship_id.
 	 * @return the cvterm_relationship_id of the CVTermRelationship.
 	 */
-	public int getTerm_relationship_id() {
-		return term_relationship_id;
+	public int getRelation_id() {
+		return relation_id;
 	}
 	
 	/**
 	 * Setter of CVTermRelationship cvterm_relationship_id
 	 * @param cvterm_relationship_id the cvterm_relationship_id of this CVTermRelationship.
 	 */
-	public void setTerm_relationship_id(int term_relationship_id) {
-		this.term_relationship_id = term_relationship_id;
+	public void setRelation_id(int relation_id) {
+		this.relation_id = relation_id;
 	}
 	
 	/**

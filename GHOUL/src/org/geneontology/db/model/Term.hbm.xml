@@ -37,6 +37,22 @@
 			<one-to-many class="org.geneontology.db.model.TermDBXref"/>
 		</set>
 		
+		<set name="subsets" table="term_subset">
+			<key column="term_id"/>
+			<many-to-many column="subset_id" class="org.geneontology.db.model.Term"/>
+		</set>
+
+		<!--
+		<set name="subset_terms" inverse="true" table="term_subset">
+			<key column="subset_id"/>
+			<many-to-many column="term_id" class="org.geneontology.db.model.Term"/>
+		</set>
+		-->
+		
+		<set name="considerations" table="term2term_metadata">
+		  <key column="term2_id"/>
+   		  <one-to-many class="org.geneontology.db.model.MetaRelation"/>
+		</set>
 		
 	</class>
 </hibernate-mapping>
