@@ -62,12 +62,12 @@ import org.oboedit.gui.event.SelectionListener;
 
 /*
  * The org.oboedit.gui.components.graphvizViewer package has been developed from John Day-Richter's original Graphviz Component file. 
- * The package now has several classes in separate files, and the configuration settings
+ * The package now has several classes in separate files, and the treeViewSettingsInstance settings
  * are now accessed via the wrench icon instead of via the options button. 
  * The modifications were made by Jennifer Deegan and Nicolas Rodriguez at the EBI
  * in Summer 2008.
  * 
- * There is a diagram showing how the configuration code interacts at 
+ * There is a diagram showing how the treeViewSettingsInstance code interacts at 
  * graphvizViewer/doc-files/GraphvizConfiguration.png
  * The editing version is in the same directory in svg format. 
  * 
@@ -102,7 +102,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
 	/**
-	 * Holds all the configuration options to call graphviz.
+	 * Holds all the treeViewSettingsInstance options to call graphviz.
 	 * 
 	 * There should be only one instance of it !! 
 	 */
@@ -123,7 +123,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		public void selectionChanged(SelectionEvent e) {
 			update();
 			reloadImage();
-			 logger.info("now updating selection.");
+			 //logger.debug("now updating selection.");
 		}
 	};
 	JComboBox formatBox = new JComboBox(formatList);
@@ -182,14 +182,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		logger.info("GraphvizCanvas: getConfiguration() method : config = " + graphvizSettingsInstance);
+		//logger.debug("GraphvizCanvas: getConfiguration() method : config = " + graphvizSettingsInstance);
 		return graphvizSettingsInstance;
 		
 	}
 
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
-		logger.info("GraphvizCanvas: getConfigurationPanel()");
+		//logger.debug("GraphvizCanvas: getConfigurationPanel()");
 		
 		if (graphvizConfigPanelInstance == null) {
 			graphvizConfigPanelInstance = new GraphvizConfigPanel(this);
@@ -204,9 +204,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		SelectionManager.getManager()
 		.removeSelectionListener(selectionListener);
 
-		logger.info("GraphvizCanvas: cleanup() method: " +
-		"SelectionManager.getManager()" + 
-		".removeSelectionListener run on selectionListener");
+		//logger.debug("GraphvizCanvas: cleanup() method: " +
+//		"SelectionManager.getManager()" + 
+//		".removeSelectionListener run on selectionListener");
 
 	}
 
@@ -226,7 +226,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		modeList.setSelectedItem(mode);
 		reloadImage();
-		logger.info("GraphvizCanvas: init() method.");
+		//logger.debug("GraphvizCanvas: init() method.");
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
@@ -237,13 +237,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		setDoFiltering(this.graphvizSettingsInstance.getDoFiltering());
 		reloadImage();
 		
-		logger.info("GraphvizCanvas: setConfiguration() method.");
-		logger.info("GraphvizCanvas : setConfiguration() : config = " + graphvizSettingsInstance);
+		//logger.debug("GraphvizCanvas: setConfiguration() method.");
+		//logger.debug("GraphvizCanvas : setConfiguration() : config = " + graphvizSettingsInstance);
 
 	}
 
 	public void update() {
-		logger.info("GraphvizCanvas: update() method.");
+		//logger.debug("GraphvizCanvas: update() method.");
 
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			validate();
@@ -256,14 +256,14 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected String convertID(String id) {
-		logger.info("GraphvizCanvas: convertID() method.");
+		//logger.debug("GraphvizCanvas: convertID() method.");
 
 		return id.replace(':', '_');
 	
 	}
 
 	protected String formatLabel(String name) {
-		logger.info("GraphvizCanvas: formatLabel() method.");
+		//logger.debug("GraphvizCanvas: formatLabel() method.");
 
 		StringBuffer out = new StringBuffer();
 		String spacerTokens = "-_, \t";
@@ -287,7 +287,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	}
 
 	protected ColorPair getColor(Link tr) {
-		// logger.info("GraphvizCanvas: ColorPair getColor() method.");
+		// //logger.debug("GraphvizCanvas: ColorPair getColor() method.");
 
 		ColorPair c = (ColorPair) graphvizSettingsInstance.getColorMap().get(
 				tr.getType().getID());
@@ -301,7 +301,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected Color getColor(String s) {
 		
-		// logger.info("GraphvizCanvas: Color getColor() method.");
+		// //logger.debug("GraphvizCanvas: Color getColor() method.");
 
 		if (s == null)
 			return null;
@@ -314,7 +314,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getColorString(Color color) {
 		
-		logger.info("GraphvizCanvas: getColorString() method.");
+		//logger.debug("GraphvizCanvas: getColorString() method.");
 
 		float[] floats = Color.RGBtoHSB(color.getRed(), color.getGreen(), color
 				.getBlue(), null);
@@ -323,7 +323,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(Link tr) {
 		
-		logger.info("GraphvizCanvas: Link getOptions() method.");
+		//logger.debug("GraphvizCanvas: Link getOptions() method.");
 		
 		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
 		+ "dir=" + (graphvizSettingsInstance.getFlipOver() ? "back" : "forward")
@@ -337,7 +337,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getOptions(OBOClass t) {
 		
-		logger.info("GraphvizCanvas: OBOClass getOptions() method.");
+		//logger.debug("GraphvizCanvas: OBOClass getOptions() method.");
 
 		
 		Color fontColor = graphvizSettingsInstance.getTermFontColor();
@@ -365,7 +365,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected String getShape(OBOClass t) {
 		
-		logger.info("GraphvizCanvas: OBOClass getShape() method.");
+		//logger.debug("GraphvizCanvas: OBOClass getShape() method.");
 		
 		if (t.isObsolete())
 			return graphvizSettingsInstance.getObsoleteShape();
@@ -377,7 +377,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void outputFile(File textFile) throws IOException {
 		
-		logger.info("GraphvizCanvas: outputFile() method.");
+		//logger.debug("GraphvizCanvas: outputFile() method.");
 		
 		PrintWriter writer = new PrintWriter(new FileOutputStream(textFile));
 		writer.println("digraph G {");
@@ -387,7 +387,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		writer.println("nodesep=\"" + nodesep + "\";");
 		HashSet relationshipSet = new HashSet();
 		populateSet(relationshipSet);
-		// logger.info("DEBUG : GraphPlugin : outputFile : relationSet size = "
+		// //logger.debug("DEBUG : GraphPlugin : outputFile : relationSet size = "
 		// + relationshipSet.size());
 		Iterator it = relationshipSet.iterator();
 		Set termSet = new HashSet();
@@ -419,7 +419,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateMinimalSelectionGraph(Set set) {
 		
-		logger.info("GraphvizCanvas: populateMinimalSelectionGraph() method.");
+		//logger.debug("GraphvizCanvas: populateMinimalSelectionGraph() method.");
 
 		
 		populateSelectedToRoot(set);
@@ -428,7 +428,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedOnly(Set set) {
 		
-		logger.info("GraphvizCanvas: populateSelectedOnly() method.");
+		//logger.debug("GraphvizCanvas: populateSelectedOnly() method.");
 		
 		set.addAll(SelectionManager.getManager().getSelection().getTerms());
 		// This is not working because the getTerms class was changed in the
@@ -441,7 +441,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSelectedToRoot(Set set) {
 		
-		logger.info("GraphvizCanvas: populateSelectedToRoot() method.");
+		//logger.debug("GraphvizCanvas: populateSelectedToRoot() method.");
 		
 		Iterator it = SelectionManager.getManager().getSelection().getTerms()
 		.iterator();
@@ -466,7 +466,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected void populateSelectedToRoot(Set set, LinkedObject term,
 			HashSet lookedAt) {
 		
-		logger.info("GraphvizCanvas: populateSelectedToRoot() method.");
+		//logger.debug("GraphvizCanvas: populateSelectedToRoot() method.");
 
 		
 		if (lookedAt.contains(term))
@@ -482,7 +482,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void populateSet(Set relationshipSet) {
 		
-		logger.info("GraphvizCanvas: populateSet() method.");
+		//logger.debug("GraphvizCanvas: populateSet() method.");
 
 		
 		if (mode.equals(SELECTED_ONLY)) {
@@ -496,9 +496,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void reloadImage() {
 		
-		logger.info("GraphvizCanvas: reloadImage() method.");
+		//logger.debug("GraphvizCanvas: reloadImage() method.");
 
-		logger.info("GraphvizCanvas: reloadImage() : " + graphvizSettingsInstance.getLabelFont());
+		//logger.debug("GraphvizCanvas: reloadImage() : " + graphvizSettingsInstance.getLabelFont());
 		
 		if (1 == 1 || SelectionManager.getGlobalSelection().isEmpty())
 			try {
@@ -518,8 +518,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ graphvizSettingsInstance.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 
-				// logger.info(configuration.getDotPath() + " -T"
-				// + configuration.getViewerFormat() + " -o "
+				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -T"
+				// + treeViewSettingsInstance.getViewerFormat() + " -o "
 				// + imageFile.getPath() + " " + textFile.getPath());
 
 				p.waitFor();
@@ -528,7 +528,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						graphvizSettingsInstance.getDotPath() + " -Tcmapx "
 						+ noDisjointTextFile.getPath());
 
-				// logger.info(configuration.getDotPath() + " -Tcmapx "
+				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -Tcmapx "
 				// + textFile.getPath());
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
@@ -578,7 +578,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	 */
 	public void removeDisjoints(File textFile, File noDisjointTextFile) {
 	
-		logger.info("GraphvizCanvas: removeDisjoints() method.");
+		//logger.debug("GraphvizCanvas: removeDisjoints() method.");
 
 		try
 		{
@@ -590,10 +590,11 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 			while( (graphvizTextFileLine=textFileBufferedReader.readLine())!=null )
 			{
-				//logger.info(graphvizTextFileLine);
+				//logger.debug(graphvizTextFileLine);
 				if(graphvizTextFileLine.contains(text_to_be_deleted))
-				{//This is working. Only disjoint lines print. 
-					logger.info(graphvizTextFileLine); }
+				{
+					//logger.debug(graphvizTextFileLine); 
+					}
 				else
 				{
 					//The file is created but empty so this must be the problem.
@@ -609,7 +610,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void setDoFiltering(boolean doFiltering) {
 		
-		logger.info("GraphvizCanvas: setDoFiltering() method.");
+		//logger.debug("GraphvizCanvas: setDoFiltering() method.");
 
 		
 		graphvizSettingsInstance.setDoFiltering(doFiltering);
@@ -629,7 +630,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void storeImage() {
 		
-		logger.info("GraphvizCanvas: storeImage() method.");
+		//logger.debug("GraphvizCanvas: storeImage() method.");
 
 		
 		try {
@@ -653,7 +654,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// check the user answer, is he press "ok" continue in the if block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				// logger.info("DEBUG : GraphPlugin : storeImage : temp file
+				// //logger.debug("DEBUG : GraphPlugin : storeImage : temp file
 				// name = " + textFile.getAbsolutePath());
 
 				// Creating the .dot file for graphviz
@@ -670,7 +671,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					outputFile += ef.getExt();
 				}
 
-				// logger.info(configuration.getDotPath() + " -T"
+				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -T"
 				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
 				// + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
@@ -700,7 +701,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	protected void trimSet(Set set) {
 		
-		logger.info("GraphvizCanvas: trimSet() method.");
+		//logger.debug("GraphvizCanvas: trimSet() method.");
 
 		
 		HashSet roots = new HashSet();
