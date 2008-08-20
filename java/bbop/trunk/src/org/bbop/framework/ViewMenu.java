@@ -2,6 +2,7 @@ package org.bbop.framework;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
@@ -24,6 +26,8 @@ import org.bbop.swing.DynamicMenu;
 import org.bbop.util.ObjectUtil;
 
 import org.apache.log4j.*;
+
+/** No longer used by OBO-Edit, but still used by Phenote. */
 
 public class ViewMenu extends AbstractDynamicMenuItem {
 
@@ -57,6 +61,22 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 
 	            out.add(new JSeparator());
 
+		    // Also added to LayoutMenu.java for OBO-Edit, which doesn't use ViewMenu anymore.
+	            JMenuItem importPerspectiveItem = new JMenuItem(
+	                    new AbstractAction("Import perspective...") {
+	                        public void actionPerformed(ActionEvent e) {
+					JFileChooser chooser = new JFileChooser();
+					if (chooser.showOpenDialog(GUIManager.getManager().getFrame()) == JFileChooser.APPROVE_OPTION) {
+						File file = chooser.getSelectedFile();
+						if (!file.getName().endsWith(".idw")) {
+							JOptionPane.showMessageDialog(null, "File " + file + " doesn't end with .idw--can't import as perspective.");
+							return;
+						}
+						ComponentManager.getManager().importPerspective(file);
+					}
+	                        }
+	                    });
+
 	            final Perspective current = ComponentManager.getManager()
 	            .getDriver().getCurrentPerspective();
 	            JMenuItem savePerspectiveAsItem = new JMenuItem(
@@ -77,6 +97,7 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 	                    .deletePerspective(current);
 	                }
 	            });
+	            out.add(importPerspectiveItem);
 	            boolean builtin = current == null ? false : current
 	                    .getBuiltIn();
 	            deleteItem.setEnabled(!builtin);

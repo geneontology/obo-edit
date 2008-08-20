@@ -2,6 +2,7 @@ package org.bbop.framework.dock;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.io.File;
 import java.util.List;
 
 import org.bbop.framework.GUIComponent;
@@ -24,6 +25,8 @@ public interface LayoutDriver {
 	public Perspective getPerspective(String name);
 	
 	public boolean deletePerspective(Perspective p);
+
+	public boolean importPerspective(File file);
 
 	public String showComponent(GUIComponentFactory factory, GUIComponent target,
 			String name, String label, boolean preferFloat, Rectangle floatRect);
