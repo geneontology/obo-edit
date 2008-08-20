@@ -392,7 +392,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	public void commit() {
-		logger.info("called commit");
+//		logger.debug("IntersectionPanel.commit");
 		ActionEvent e = new ActionEvent(this, (int) Math.random()
 				* Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
@@ -431,10 +431,11 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 					if (completeDefLink.equals(link)) {
 						found = true;
 						break;
-					} else {
-						logger.info("   " + completeDefLink + " != "
-								+ link);
-					}
+					} 
+//					else {
+//						logger.info("   " + completeDefLink + " != "
+//								+ link);
+//					}
 				}
 
 				if (!found) {
