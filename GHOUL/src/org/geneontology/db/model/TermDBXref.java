@@ -4,13 +4,17 @@ import java.io.Serializable;
 
 public class TermDBXref  extends GOModel implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Term term;
 	private DBXref dbxref;
 	private int is_for_definition;
 	
-	
 	public TermDBXref(){
-		String[] fieldNames = {"term", "dbxref", "is_for_definition"};
+		final String[] fieldNames = {"term", "dbxref", "is_for_definition"};
 		this.initUniqueConstraintFields(TermDBXref.class, fieldNames);
 	}
 	
@@ -18,7 +22,7 @@ public class TermDBXref  extends GOModel implements Serializable {
 		return term;
 	}
 
-	public void setTerm(Term term) {
+	public void setTerm(final Term term) {
 		this.term = term;
 	}
 
@@ -26,7 +30,7 @@ public class TermDBXref  extends GOModel implements Serializable {
 		return dbxref;
 	}
 	
-	public void setDbxref(DBXref dbxref) {
+	public void setDbxref(final DBXref dbxref) {
 		this.dbxref = dbxref;
 	}
 	
@@ -35,7 +39,7 @@ public class TermDBXref  extends GOModel implements Serializable {
 	}
 
 	
-	public void setIs_for_definition(int is_for_definition) {
+	public void setIs_for_definition(final int is_for_definition) {
 		this.is_for_definition = is_for_definition;
 	}
 		

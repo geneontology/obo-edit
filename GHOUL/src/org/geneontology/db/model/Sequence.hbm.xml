@@ -3,32 +3,18 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.geneontology.db.model.Sequence" table="seq" discriminator-value="not null" dynamic-insert="true" dynamic-update="true">
-		<id name="feature_id" column="id" unsaved-value="undefined">
+	<class name="org.geneontology.db.model.Sequence" table="seq">
+		<id name="seq_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
 	
-		<discriminator type="string" insert="false">
-			<formula>
-				(select cvt.name from cvterm cvt where cvt.cvterm_id=type_id)
-			</formula>
-		</discriminator>
-	
-		
 		<property name="name" column="display_id"/>
-		
+		<property name="description"/>		
 		<property name="residues" column="seq" lazy="true"/>
-		
-		<property name="seqlen" column="seq_len" not-null="false"/>
-		
+		<property name="seq_len"/>	
 		<property name="md5checksum"/>
-
 		<property name="moltype"/>
-
 		<property name="timelastmodified" column="timestamp" generated="insert"/>
-
-		<many-to-one name="type" class="org.geneontology.db.model.Term" column="type_id"  cascade="save-update"/>
-		<many-to-one name="dbxref" class="org.geneontology.db.model.DBXref" column="dbxref_id" cascade="all"/>
-												
+    	
 	</class>
 </hibernate-mapping>

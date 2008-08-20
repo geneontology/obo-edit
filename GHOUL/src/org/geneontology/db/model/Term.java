@@ -34,9 +34,6 @@ public class Term extends GOModel {
 	protected Set<Relation> children;
 
 	/** The {@link DBXref} of the cvterm */
-	protected Set<DBXref> dbxrefs;
-
-	/** The {@link DBXref} of the cvterm */
 	protected Set<TermSynonym> synonyms;
 
 	protected Set<TermDBXref> termDBXrefs;
@@ -112,38 +109,6 @@ public class Term extends GOModel {
 		this.term_definition.setTerm_id(term_id);
 		this.term_definition.setTerm_definition(definition);
 	}
-
-	public Set<DBXref> getDbxrefs() {
-		return dbxrefs;
-	}
-
-	public void setDbxrefs(Set<DBXref> dbxrefs) {
-		
-		this.dbxrefs = dbxrefs;
-		System.out.println(dbxrefs.size());
-	}
-
-	/**
-	 * Override Getter of the CVTerm {@link DBXref} object.
-	 * @return cvterm {@link DBXref} object.
-	 */
-	/*
-	public DBXref getDbxref() {
-		return this.dbxrefs != null ? (DBXref) this.dbxrefs.iterator() : null;
-	}
-	*/
-
-	/**
-	 * Override Setter of the CVTerm {@link DBXref} object.
-	 * @param dbxref the {@link DBXref} object of the cvterm.
-	 */
-	/*
-	public void setDbxref(DBXref dbxref) {
-		if (this.dbxrefs == null)
-			this.dbxrefs = new HashSet<DBXref> (2);
-		this.dbxrefs.add(dbxref);
-	}
-	*/
 
 	public int getTerm_id() {
 		return term_id;

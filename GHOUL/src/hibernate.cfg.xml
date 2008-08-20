@@ -37,20 +37,18 @@
 		
 
 		<!-- Load up the basic GO Object Hibernate Mapping Files -->
-        
         <mapping resource="org/geneontology/db/model/Term.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermDefinition.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermSynonym.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/Relation.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/DBXref.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/DB.hbm.xml"/>
-        <mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermDBXref.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/MetaRelation.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/Species.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/GeneProduct.hbm.xml"/>
-        
-        <!-- Load up the extended Chado Object Hibernate Mapping Files --> 
-        
+        <mapping resource="org/geneontology/db/model/ProductSeq.hbm.xml"/>
+       	<mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
+             
     </session-factory>
 </hibernate-configuration>

@@ -15,5 +15,15 @@
   		<many-to-one name="species" column="species_id" class="org.geneontology.db.model.Species"/>
   		<many-to-one name="SO_type" column="type_id" class="org.geneontology.db.model.Term"/>
 
+   		<set name="synonyms" table="gene_product_synonym">
+   		  <key column="gene_product_id"/>
+   		  <element column="product_synonym" type="string" />
+		</set>
+
+   		<set name="seqs" table="gene_product_seq">
+   		  <key column="gene_product_id"/>
+    	  <one-to-many class="org.geneontology.db.model.ProductSeq"/>
+		</set>
+
 	</class>
 </hibernate-mapping>
