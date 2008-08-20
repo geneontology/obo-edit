@@ -15,6 +15,11 @@
 		<property name="md5checksum"/>
 		<property name="moltype"/>
 		<property name="timelastmodified" column="timestamp" generated="insert"/>
+		
+   		<set name="dbxrefs" table="seq_dbxref">
+   		  <key column="seq_id"/>
+   		  <many-to-many class="org.geneontology.db.model.DBXref" column="dbxref_id" unique="true"/>
+		</set>
     	
 	</class>
 </hibernate-mapping>

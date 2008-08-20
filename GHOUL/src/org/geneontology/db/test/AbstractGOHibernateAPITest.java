@@ -55,7 +55,7 @@ public class AbstractGOHibernateAPITest extends TestCase{
 	}
 	
 	public void prettyPrint(GeneProduct gp) {
-		System.out.println("gp:" + gp.getSymbol() + " (" + gp.getFull_name() + ")\t" + 
+		System.out.println("GENEP:" + gp.getSymbol() + " (" + gp.getFull_name() + ")\t" + 
 				gp.getDbxref().getDb().getFullname() + ":" + gp.getDbxref().getAccession() + "\t" +
 				gp.getSpecies().getGenus() + " " + gp.getSpecies().getSpecies() + "\t" +
 				gp.getSO_type().getName());
@@ -65,13 +65,17 @@ public class AbstractGOHibernateAPITest extends TestCase{
 		for (ProductSeq s : gp.getSeqs()) {
 			prettyPrint (s.getSeq());
 		}
-		
+
 	}
 	
 	public void prettyPrint (Sequence s) {
 		System.out.println("SEQ:\t" + s.getName() + "\tl(lastmodified=" + s.getTimelastmodified() + ")");
 		System.out.println("SEQ:\tmoltype=" + s.getMoltype() + "\t" + s.getDescription());
 		System.out.println("SEQ:\tlen=" + s.getSeq_len() + "\tchecksum=" + s.getMd5checksum());
+		for (DBXref x : s.getDbxrefs()) {
+			prettyPrint (x, "SEQ_XREF");
+		}
+
 	}
 
 	public void prettyPrint(Term term) {

@@ -1,6 +1,7 @@
  package org.geneontology.db.model;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 /**
  * The GOSequence class is based on the GO Sequence table.
@@ -37,6 +38,9 @@ public class Sequence extends GOModel {
 
 	/** time last modified of the Feature object */
 	protected Timestamp timelastmodified;
+	
+	/** external identifiers for a sequence */
+	protected Set<DBXref> dbxrefs;
 	
 	public Sequence(){
 		String[] uniqueConstraintFields = {"name", "md5checksum"};
@@ -105,5 +109,13 @@ public class Sequence extends GOModel {
 
 	public void setTimelastmodified(Timestamp timelastmodified) {
 		this.timelastmodified = timelastmodified;
+	}
+
+	public Set<DBXref> getDbxrefs() {
+		return dbxrefs;
+	}
+
+	public void setDbxrefs(Set<DBXref> dbxrefs) {
+		this.dbxrefs = dbxrefs;
 	}
 }
