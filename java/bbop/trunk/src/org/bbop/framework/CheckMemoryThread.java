@@ -22,8 +22,8 @@ public class CheckMemoryThread extends Thread {
 
   public CheckMemoryThread() {
     maxMemory = Runtime.getRuntime().maxMemory();
-    // Complain if free memory goes below 5% of max memory
-    minMemory = maxMemory/(long)20;
+    // Complain if free memory goes below 10% of max memory
+    minMemory = maxMemory/(long)10;
     setDaemon(true);
     logger.info("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
   }
@@ -40,6 +40,7 @@ public class CheckMemoryThread extends Thread {
 //    logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
 
     if (freeMemory < minMemory) {
+      logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed + ".  Garbage collecting.");
       // Try garbage collecting first and see if that helps.
       try {
 	System.gc();
@@ -51,7 +52,7 @@ public class CheckMemoryThread extends Thread {
 
       memoryUsed = Runtime.getRuntime().totalMemory();
       freeMemory = maxMemory - memoryUsed;
-      logger.info("checkFreeMemory: After garbage collecting, free memory = " + freeMemory);
+//      logger.info("checkFreeMemory: After garbage collecting, free memory = " + freeMemory);
       if (freeMemory < minMemory) {
 	String m = "WARNING: you are almost out of memory (" + freeMemory + " bytes left).\nIf you run out of memory, this application could crash and you could lose your work.\nWe recommend saving now, then exiting the application and restarting.";
 	logger.info(m);
