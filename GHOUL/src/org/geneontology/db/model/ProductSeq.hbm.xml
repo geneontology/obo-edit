@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.ProductSeq" table="gene_product_seq">
+		<composite-id>
+			<key-many-to-one name="gene_product" class="org.geneontology.db.model.GeneProduct" column="gene_product_id"/>
+			<key-many-to-one name="seq" class="org.geneontology.db.model.Sequence" column="seq_id"/>
+		</composite-id>
+		<property name="is_primary_seq" not-null="false"/>
+     			
+  	</class>
+</hibernate-mapping>
