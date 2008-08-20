@@ -115,8 +115,8 @@ public class IDWDriver implements LayoutDriver {
 
 	protected Collection<LayoutListener> layoutListeners = new ArrayList<LayoutListener>();
 
-  /** whether to save layout when exiting - default is true */
-  private boolean saveLayoutOnExit = true;
+	/** whether to save layout when exiting - default is true */
+	private boolean saveLayoutOnExit = true;
 
 	protected DockingWindowListener floatingWindowCloseListener = new DockingWindowAdapter() {
 		public void windowClosed(DockingWindow window) {
@@ -352,6 +352,31 @@ public class IDWDriver implements LayoutDriver {
 		return false;
 	}
 
+
+	public boolean importPerspective(File newPerspectiveFile) {
+		logger.info("IDWDriver.importPerspective " + newPerspectiveFile);
+		try {
+			IOUtil.copyFiles(newPerspectiveFile, new File(getPerspectivesDir(), newPerspectiveFile.getName()));
+		} catch (Exception e) {
+			logger.warn("Couldn't copy " + newPerspectiveFile + " to prefs dir.");
+			return false;
+		}
+		XMLDecoder d;
+		try {
+			d = new XMLDecoder(new BufferedInputStream(new FileInputStream(newPerspectiveFile)));
+		} catch (Exception e) {
+			logger.warn("Couldn't open " + newPerspectiveFile);
+			return false;
+		}
+		String name = newPerspectiveFile.getName();
+		name = name.replace(".idw", "");
+		Perspective newPerspective = new Perspective(name.toLowerCase(), name);
+		perspectives.add(newPerspective);
+		setPerspective(newPerspective);
+		savePerspectives();
+		return true;
+	}
+
 	public Perspective getCurrentPerspective() {
 		return currentPerspective;
 	}
@@ -380,8 +405,8 @@ public class IDWDriver implements LayoutDriver {
 		return new File(GUIManager.getPrefsDir(), "perspectives");
 	}
 
-  /** this is the name of the file that will get written in user prefs,
-      NOT the resource that gets read from jar/classfiles */
+	/** this is the name of the file that will get written in user prefs,
+	    NOT the resource that gets read from jar/classfiles */
 	protected static File getPerspectivesFile() {
 		return new File(getPerspectivesDir(), "perspectives.xml");
 	}
@@ -611,6 +636,7 @@ public class IDWDriver implements LayoutDriver {
 	public Perspective savePerspectiveAs(Perspective p, String name) {
 		Perspective result;
 		try {
+//			logger.debug("savePerspectiveAs: p = " + p + ", name = " + name + ", currentPerspective = " + currentPerspective); // DEL
 			if (currentPerspective == null || currentPerspective.equals(p)) {
 				getFile(name).getParentFile().mkdirs();
 				ObjectOutputStream out = getOutputStream(getFile(name)

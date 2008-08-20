@@ -159,6 +159,12 @@ public class ComponentManager {
 		driver.savePerspectives();
 	}
 
+	public void importPerspective(File file) {
+		driver.importPerspective(file);
+		driver.savePerspectives();
+	}
+
+
 	public String showComponent(GUIComponentFactory factory,
 			boolean showInNewWindow) {
 		return showComponent(factory, null, null, showInNewWindow);
