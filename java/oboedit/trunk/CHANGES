@@ -1,21 +1,8 @@
-Changes in b47 (15 Aug 2008):
-- Fixed dbxref library bug (SF 2025804): adding 3 or more dbxrefs to a term
-caused CPU spikes and drawing problems as the Text Editor tried unsuccessfully
-to render them.  (For some reason, you only saw this bug if you changed your
-default font size!)
-- Enabled mass addition of dbxrefs (regular or definition) to all selected
-terms (feature request 2032637) from Dbxref Library component.
-- Fixed problem that wasted a huge amount of CPU rendering synonyms
-that have errors.  I suspect that this was a major cause of the CPU
-spikes that midori was seeing, because she said she was adding/editing
-synonyms.
-- Jen has improved the Graphviz component.  Config settings are now
-accessed via the wrench icon instead of the archaic options button.
-- When dragging term(s) in the OTE, the drag target must be obsolete
-to show the menu items "Add/Consider replacement".
-- Don't automatically start a new dbxref record when user commits the previous
-one--let them do that if they want to.
-- "Cyclical" relationships shown in OTE with double-headed arrow
-icons.
-- Fixed: If you start up OE with the reasoner on (from the previous session),
-it doesn't show that in the titlebar until you load an ontology (SF 2048191).
+Changes in b48:
+- Fixed "bouncing" synonym display when editing neighboring synonyms (SF bug
+2057430).
+- When run from the command line on Mac, OE now shows up in the dock with the
+OBO-Edit icon rather than the boring gray "exec" icon.
+- Layout menu now has "Import perspective" to add a new perspective (from an
+.idw file).  (The instructions on the Perspectives help page for adding a new
+perspective were incomplete.)
