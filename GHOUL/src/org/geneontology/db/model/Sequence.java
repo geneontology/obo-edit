@@ -10,22 +10,31 @@ import java.sql.Timestamp;
 
 public class Sequence extends GOModel {
 	
-	/** The feature_id of the Feature object. */
-	protected int feature_id;
-	/** The name of the Feature object */
+	/** The primary database key of the Sequence object. */
+	protected int seq_id;
+	
+	/** The primary label used for identifying the sequence for humans. 
+	 * Not guaranteed to be globally unique. typically corresponds to the first part of a FASTA header */
 	protected String name;
-	/** The {@link CVTerm} type of the Feature object */
-	protected Term type;
-	/** The {@link DBXref} of the Feature object */
-	protected DBXref dbxref;
-		/** The residues of the Feature object */
+	
+	/** textual information for humans concerning this sequence. 
+	 * typically corresponds to the part after the ID in the FASTA header  */
+	protected String description;
+	
+	/** residue sequence: standard IUPAC alphabetic codes are used */
 	protected String residues;
-	/** The length of the Feature object */
-	protected Integer seqlen;
-	/** The md5 checksum of the residues, maybe? */
+
+	/** number of residues in sequence. should always correspond to length(seq), where seq is populated  */
+	protected Integer seq_len;
+
+	/** result of md5(seq), where md5 is the standard MD5 checksum algorithm. 
+	 * see GO::Model::Seq for calculation 
+	 * almost 100% guaranteed to be unique for any sequence of symbols representing the biopolymer */
 	protected String md5checksum;
+
 	/** The molecular type (AA or DNA ...) of the residues */
 	protected String moltype;
+
 	/** time last modified of the Feature object */
 	protected Timestamp timelastmodified;
 	
@@ -33,68 +42,68 @@ public class Sequence extends GOModel {
 		String[] uniqueConstraintFields = {"name", "md5checksum"};
 		this.initUniqueConstraintFields(Sequence.class,uniqueConstraintFields);
 	}
-	/**
-	 * Getter of Feature moltype
-	 * @return moltype of Feature
-	 */
-	public String getMoltype() {
-		return moltype;
+
+	public int getSeq_id() {
+		return seq_id;
 	}
-	
-	/**
-	 * Setter of Feature MD5 Checksum
-	 * @param md5checksum MD5 Checksum of Feature.
-	 */
-	public void setMoltype(String moltype) {
-		this.moltype = moltype;
+
+	public void setSeq_id(int seq_id) {
+		this.seq_id = seq_id;
 	}
-	public int getFeature_id() {
-		return feature_id;
-	}
-	public void setFeature_id(int feature_id) {
-		this.feature_id = feature_id;
-	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Term getType() {
-		return type;
+
+	public String getDescription() {
+		return description;
 	}
-	public void setType(Term type) {
-		this.type = type;
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
-	public DBXref getDbxref() {
-		return dbxref;
-	}
-	public void setDbxref(DBXref dbxref) {
-		this.dbxref = dbxref;
-	}
+
 	public String getResidues() {
 		return residues;
 	}
+
 	public void setResidues(String residues) {
 		this.residues = residues;
 	}
-	public Integer getSeqlen() {
-		return seqlen;
+
+	public Integer getSeq_len() {
+		return seq_len;
 	}
-	public void setSeqlen(Integer seqlen) {
-		this.seqlen = seqlen;
+
+	public void setSeq_len(Integer seq_len) {
+		this.seq_len = seq_len;
 	}
+
 	public String getMd5checksum() {
 		return md5checksum;
 	}
+
 	public void setMd5checksum(String md5checksum) {
 		this.md5checksum = md5checksum;
 	}
+
+	public String getMoltype() {
+		return moltype;
+	}
+
+	public void setMoltype(String moltype) {
+		this.moltype = moltype;
+	}
+
 	public Timestamp getTimelastmodified() {
 		return timelastmodified;
 	}
+
 	public void setTimelastmodified(Timestamp timelastmodified) {
 		this.timelastmodified = timelastmodified;
-	}	
-
+	}
 }

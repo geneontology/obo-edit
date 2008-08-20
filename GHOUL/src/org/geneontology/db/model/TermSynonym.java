@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class TermSynonym extends GOModel implements Serializable {
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected Term term;
 
 	protected String synonym;
@@ -20,7 +25,7 @@ public class TermSynonym extends GOModel implements Serializable {
 	protected Term synonymCategory;
 
 	public TermSynonym(){
-		String[] uniqueConstraintFields = {"term", "synonym"};
+		final String[] uniqueConstraintFields = {"term", "synonym"};
 		this.initUniqueConstraintFields(TermSynonym.class,uniqueConstraintFields);
 	}
 
@@ -28,7 +33,7 @@ public class TermSynonym extends GOModel implements Serializable {
 		return term;
 	}
 
-	public void setTerm(Term term) {
+	public void setTerm(final Term term) {
 		this.term = term;
 	}
 
@@ -36,7 +41,7 @@ public class TermSynonym extends GOModel implements Serializable {
 		return synonym;
 	}
 
-	public void setSynonym(String synonym) {
+	public void setSynonym(final String synonym) {
 		this.synonym = synonym;
 	}
 
@@ -44,7 +49,7 @@ public class TermSynonym extends GOModel implements Serializable {
 		return alternateID;
 	}
 
-	public void setAlternateID(String alternateID) {
+	public void setAlternateID(final String alternateID) {
 		this.alternateID = alternateID;
 	}
 
@@ -52,7 +57,7 @@ public class TermSynonym extends GOModel implements Serializable {
 		return synonymType;
 	}
 
-	public void setSynonymType(Term synonymType) {
+	public void setSynonymType(final Term synonymType) {
 		this.synonymType = synonymType;
 	}
 
@@ -60,7 +65,7 @@ public class TermSynonym extends GOModel implements Serializable {
 		return synonymCategory;
 	}
 
-	public void setSynonymCategory(Term synonymCategory) {
+	public void setSynonymCategory(final Term synonymCategory) {
 		this.synonymCategory = synonymCategory;
 	}
 

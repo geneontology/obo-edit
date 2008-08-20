@@ -1,5 +1,7 @@
 package org.geneontology.db.model;
 
+import java.util.Set;
+
 
 /**
  * The GeneProduct class corresponds to the GO gene_product table.  
@@ -25,6 +27,11 @@ public class GeneProduct extends GOModel {
 	
 	/** symbol is typically a concise label, full_name may be more textual (column 10 in the gene-association file) */
 	protected String full_name;
+	
+	/** alternate labels for the gene or gene product (column 11 in the gene-association file) */
+	protected Set<String> synonyms;
+		
+	protected Set<ProductSeq> seqs;
 	
 	public GeneProduct(){
 		String[] uniqueConstraintFields = {"dbxref"};
@@ -79,4 +86,19 @@ public class GeneProduct extends GOModel {
 		this.full_name = full_name;
 	}
 
+	public Set<String> getSynonyms() {
+		return synonyms;
+	}
+
+	public void setSynonyms(Set<String> synonyms) {
+		this.synonyms = synonyms;
+	}
+
+	public Set<ProductSeq> getSeqs() {
+		return seqs;
+	}
+
+	public void setSeqs(Set<ProductSeq> seqs) {
+		this.seqs = seqs;
+	}
 }
