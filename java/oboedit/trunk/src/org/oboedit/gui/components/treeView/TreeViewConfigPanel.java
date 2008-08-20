@@ -79,7 +79,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		mainPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		System.out.println("TreeViewConfigPanel: constructor called, building GUI.");
+		//logger.debug("TreeViewConfigPanel: constructor called, building GUI.");
 
 
 
@@ -147,8 +147,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 		this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
 
-		logger.debug("TreeViewConfigPanel: init() run.");
-		logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
+		//logger.debug("TreeViewConfigPanel: init() run.");
+		//logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
 
 		multiTermCheckbox.setSelected(treeViewSettings.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettings.getTrimPaths());
@@ -160,8 +160,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	@Override
 	public void commit() {
 
-		logger.debug("TreeViewConfigPanel: commit() run.");
-		logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+		//logger.debug("TreeViewConfigPanel: commit() run.");
+		//logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
 
 		treeViewSettings.setMultiSelect(multiTermCheckbox.isSelected());
 		treeViewSettings.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
@@ -177,7 +177,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 	@Override
 	public GUIComponent getComponent() {
-		logger.info("Config panel New : getComponent.");
+		//logger.debug("Config panel New : getComponent.");
 		return treeViewInstance;
 	}	
 
@@ -187,9 +187,9 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 			treeViewInstance = (TreeView)comp;
 			this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
 
-			logger.info("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
-			logger.info("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
-			logger.info("Config panel New : setComponent.");
+			//logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
+			//logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+			//logger.debug("Config panel New : setComponent.");
 		}
 	}
 }
