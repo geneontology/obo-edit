@@ -12,7 +12,7 @@ public class TreeViewSettings implements ComponentConfiguration {
 	
 	public TreeViewSettings() {
 
-	System.out.println("TreeViewSettings: entered this method to access getters and setters.");
+	//logger.debug("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}
 

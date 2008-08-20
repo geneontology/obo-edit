@@ -53,7 +53,7 @@ public class TreeView extends AbstractGUIComponent {
 
 
 	protected boolean multiTerm() {
-		System.out.println("TreeView: multiTerm method.");
+		//logger.debug("TreeView: multiTerm method.");
 		return treeViewSettingsInstance.getMultiSelect();
 	}
 
@@ -64,14 +64,14 @@ public class TreeView extends AbstractGUIComponent {
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			setToolTips();
-			System.out.println("TreeView: configReloaded method.");
+			//logger.debug("TreeView: configReloaded method.");
 		}
 	};
 
 	MouseInputAdapter clickListener = new MouseInputAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			System.out.println("TreeView: mouseClicked method.");
+			//logger.debug("TreeView: mouseClicked method.");
 			if (SwingUtilities.isMiddleMouseButton(e)
 					|| SwingUtilities.isRightMouseButton(e)) {
 				TreePath path = tree.getSelectionPath();
@@ -98,7 +98,7 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public String getName() {
 //		return "DAG Viewer";
-		System.out.println("TreeView: getName method.");
+		//logger.debug("TreeView: getName method.");
 
 		return "Tree Viewer";
 	}
@@ -106,7 +106,7 @@ public class TreeView extends AbstractGUIComponent {
 
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
-		logger.info("TreeView: getConfigurationPanel()");
+		//logger.debug("TreeView: getConfigurationPanel()");
 
 		if (treeViewConfigPanelInstance == null) {
 			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
@@ -116,7 +116,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void setToolTips() {
-		System.out.println("TreeView: setToolTips method.");
+		//logger.debug("TreeView: setToolTips method.");
 
 		if (Preferences.getPreferences().getShowToolTips())
 			ToolTipManager.sharedInstance().registerComponent(tree);
@@ -127,7 +127,7 @@ public class TreeView extends AbstractGUIComponent {
 	
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		System.out.println("TreeView: getConfiguration method.");
+		//logger.debug("TreeView: getConfiguration method.");
 //		treeViewSettingsInstance.setMultiSelect(treeViewSettingsInstance.getMultiSelect());
 //		treeViewSettingsInstance.setTrimPaths(trimPaths());
 //		treeViewSettingsInstance.setShowNonTransitive(showNonTransitive());
@@ -137,7 +137,7 @@ public class TreeView extends AbstractGUIComponent {
 
 
 	public void setConfiguration(TreeViewSettings treeViewSettingsInstance) {
-		System.out.println("TreeView: setConfiguration method.");
+		//logger.debug("TreeView: setConfiguration method.");
 
 		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings)
 			this.treeViewSettingsInstance = (TreeViewSettings) this.treeViewSettingsInstance;
@@ -150,14 +150,14 @@ public class TreeView extends AbstractGUIComponent {
 
 	public TreeView(String id) {
 		super(id);
-		System.out.println("TreeView: constructor.");
+		//logger.debug("TreeView: constructor.");
 
 	}
 	
 
 	
 	public void cleanup() {
-		System.out.println("TreeView: cleanup method.");
+		//logger.debug("TreeView: cleanup method.");
 
 		SelectionManager.getManager()
 		.removeSelectionListener(selectionListener);
@@ -166,7 +166,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected TreePath trimPathToNode(TreePath path, Object node) {
-		System.out.println("TreeView: trimPathToNode method.");
+		//logger.debug("TreeView: trimPathToNode method.");
 
 		Object[] objects = path.getPath();
 		int length = 0;
@@ -191,7 +191,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	public void finishUpdate(TreePath[] paths) {
-		System.out.println("TreeView: finishUpdate method.");
+		//logger.debug("TreeView: finishUpdate method.");
 
 		if (paths.length == 0) {
 			if (isAncestorOf(progressBar)) {
@@ -229,13 +229,13 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected void doUpdate() {
-		System.out.println("TreeView: doUpdate method.");
+		//logger.debug("TreeView: doUpdate method.");
 
 		final PathTask task = new PathTask();
 		task.addPostExecuteRunnable(new Runnable() {
 
 			public void run() {
-				System.out.println("TreeView: run method.");
+				//logger.debug("TreeView: run method.");
 
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
@@ -271,7 +271,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 //	protected void showConfigurationWindow() {
-//		System.out.println("TreeView: showConfigurationWindow method.");
+//		//logger.debug("TreeView: showConfigurationWindow method.");
 //
 //		JButton closeButton = new JButton("Close");
 //
@@ -299,7 +299,7 @@ public class TreeView extends AbstractGUIComponent {
 //	}
 
 	public void update() {
-		System.out.println("TreeView: update method.");
+		//logger.debug("TreeView: update method.");
 
 		treeViewConfigPanelInstance.eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
@@ -328,7 +328,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	protected DragFriendlyTreeUI getDefaultUI() {
-		System.out.println("TreeView: getDefaultUI method.");
+		//logger.debug("TreeView: getDefaultUI method.");
 
 		DragFriendlyTreeUI ui = new DragFriendlyTreeUI();
 		ui.setRightChildIndent(0);
@@ -336,26 +336,26 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 //	public boolean showNonTransitive() {
-//		System.out.println("TreeView: showNonTransitive method.");
+//		//logger.debug("TreeView: showNonTransitive method.");
 //		return showNonTransitiveCheckbox.isSelected();
 //	}
 //
 //	public boolean trimPaths() {
-//		System.out.println("TreeView: trimPaths method.");
+//		//logger.debug("TreeView: trimPaths method.");
 //		return trimPathsCheckbox.isSelected();
 //	}
 
 //	public JComponent getComponent() {
-//		System.out.println("TreeView: getComponent method.");
+//		//logger.debug("TreeView: getComponent method.");
 //		return this;
 //	}
 
 	public boolean isXMLSettable() {
-		System.out.println("TreeView: isXMLSettable method.");
+		//logger.debug("TreeView: isXMLSettable method.");
 		return false;
 	}
 
 	public void setXML(String xml) {
-		System.out.println("TreeView: setXML method.");
+		//logger.debug("TreeView: setXML method.");
 	}
 }
