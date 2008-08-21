@@ -98,7 +98,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		};
 		multiTermCheckbox.addActionListener(updateListener);
 		trimPathsCheckbox.addActionListener(updateListener);
-		showNonTransitiveCheckbox.addActionListener(updateListener);			//need to uncomment and fix.
+		showNonTransitiveCheckbox.addActionListener(updateListener);			
 
 		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
 
@@ -106,6 +106,26 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 
 
+
+	
+	@Override
+	public void commit() {
+
+		logger.debug("TreeViewConfigPanel: commit() run.");
+		logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+
+		
+		
+		treeViewSettings.setMultiSelect(multiTermCheckbox.isSelected());
+		treeViewSettings.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
+		treeViewSettings.setTrimPaths(trimPathsCheckbox.isSelected());
+		
+		treeViewInstance.treeViewSettingsInstance = treeViewSettings;
+		
+		treeViewInstance.update();
+
+		
+	}
 
 	@Override
 	public void init() {
@@ -121,24 +141,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 	}
 
-
-	@Override
-	public void commit() {
-
-		logger.debug("TreeViewConfigPanel: commit() run.");
-		logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
-
-		treeViewSettings.setMultiSelect(multiTermCheckbox.isSelected());
-		treeViewSettings.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
-		treeViewSettings.setTrimPaths(trimPathsCheckbox.isSelected());
-		
-		treeViewInstance.treeViewSettingsInstance = treeViewSettings;
-		
-//		treeViewInstance.reloadImage();
-
-		
-	}
-
+	
+	
 
 	@Override
 	public GUIComponent getComponent() {
