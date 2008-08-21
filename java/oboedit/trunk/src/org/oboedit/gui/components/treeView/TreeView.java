@@ -4,6 +4,9 @@ package org.oboedit.gui.components.treeView;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,12 +26,15 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.event.*;
 
 import org.apache.log4j.Logger;
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentConfiguration;
 import org.bbop.framework.ConfigurationPanel;
+import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.PathTreeModel;
+import org.bbop.swing.ProgressBarUpdateRunnable;
 import org.bbop.swing.plaf.DragFriendlyTreeUI;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.RootAlgorithm;
@@ -58,12 +64,11 @@ public class TreeView extends AbstractGUIComponent {
 	protected JScrollPane pane;
 	protected JLabel emptyLabel = new JLabel("No terms selected");
 	protected JLabel statusLabel = new JLabel("No paths loaded");
-	protected JButton configButton = new JButton("Config");
 	protected JProgressBar progressBar = new JProgressBar();
 	protected TreeViewSettings treeViewSettingsInstance = new TreeViewSettings();
 	TreeViewConfigPanel treeViewConfigPanelInstance;
 	public RestrictedJTree tree;
-
+	protected BackgroundEventQueue eventQueue;
 
 	protected boolean multiTerm() {
 		logger.debug("TreeView: multiTerm method.");
@@ -137,8 +142,6 @@ public class TreeView extends AbstractGUIComponent {
 		JPanel controlPanel = new JPanel();
 		controlPanel.setOpaque(false);
 		controlPanel.setLayout(new BorderLayout());
-		// controlPanel.add(checkboxPanel, "East");
-		controlPanel.add(configButton, "East");
 		controlPanel.add(statusLabel, "Center");
 
 		add("Center", pane);
@@ -199,9 +202,9 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		logger.debug("TreeView: getConfiguration method.");
-		treeViewSettingsInstance.setMultiSelect(treeViewSettingsInstance.getMultiSelect());
-		treeViewSettingsInstance.setTrimPaths(treeViewSettingsInstance.getTrimPaths());
-		treeViewSettingsInstance.setShowNonTransitive(treeViewSettingsInstance.getShowNonTransitive());
+//		treeViewSettingsInstance.setMultiSelect(treeViewSettingsInstance.getMultiSelect());
+//		treeViewSettingsInstance.setTrimPaths(treeViewSettingsInstance.getTrimPaths());
+//		treeViewSettingsInstance.setShowNonTransitive(treeViewSettingsInstance.getShowNonTransitive());
 		return treeViewSettingsInstance;
 	}
 
@@ -211,20 +214,33 @@ public class TreeView extends AbstractGUIComponent {
 		logger.debug("TreeView: setConfiguration method.");
 
 		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings)
-			this.treeViewSettingsInstance = (TreeViewSettings) this.treeViewSettingsInstance;
+			this.treeViewSettingsInstance = (TreeViewSettings) treeViewSettingsInstance;
 
+		update();
+		
 //		multiTermCheckbox.setSelected(this.treeViewSettingsInstance.getMultiSelect());
 //		trimPathsCheckbox.setSelected(this.treeViewSettingsInstance.getTrimPaths());
 //		showNonTransitiveCheckbox.setSelected(this.treeViewSettingsInstance
 //		.getShowNonTransitive());
 	}
 
-	public TreeView(String id) {
-		super(id);
-		logger.debug("TreeView: constructor.");
+		
+		public TreeView(String id) {
+			super(id);
+			logger.debug("TreeView: constructor.");
 
-	}
-	
+			
+			eventQueue = new BackgroundEventQueue();
+						progressBar.setStringPainted(true);
+			ActionListener updateListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					update();
+				}
+			};
+			eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
+		}
+		
+		
 
 	
 	public void cleanup() {
