@@ -7,8 +7,10 @@
 		<id name="dbxref_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
-		
-		<many-to-one name="db" class="org.geneontology.db.model.DB" column="xref_dbname" property-ref="name" />
+		<property name="db_name" column="xref_dbname"/>		
+		<!-- Can't do this because sometimes the DB cannot be found
+			<many-to-one name="db" class="org.geneontology.db.model.DB" column="xref_dbname" property-ref="name" />
+		-->
 		<property name="accession" column="xref_key" type="java.lang.String" not-null="true"/>
 		<property name="keytype" column="xref_keytype" type="java.lang.String" />
 		<property name="description" column="xref_desc" type="java.lang.String" />

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.HomolSet" table="homolset">
+	
+		<id name="homolset_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="symbol" not-null="true"/>
+   		<one-to-one name="dbxref" class="org.geneontology.db.model.DBXref"/>
+    	<one-to-one name="target_gp" class="org.geneontology.db.model.GeneProduct"/>
+    	<one-to-one name="species" class="org.geneontology.db.model.Species"/>
+    	<one-to-one name="term" class="org.geneontology.db.model.Term"/>
+		<property name="description"/>
+		
+		<!-- how to handle join to gene products -->
+	    <set name="genes" table="gene_product_homolset">
+        	<key column="homolset_id"/>
+        	<many-to-many 	class="org.geneontology.db.model.GeneProduct" 
+        					column="gene_product_id" 
+        					unique="true"/>
+    	</set>
+	</class>
+</hibernate-mapping>
