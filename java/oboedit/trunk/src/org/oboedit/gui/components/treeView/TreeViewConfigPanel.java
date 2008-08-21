@@ -1,8 +1,5 @@
 package org.oboedit.gui.components.treeView;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -10,33 +7,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.ToolTipManager;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 import org.bbop.framework.ConfigurationPanel;
 import org.bbop.framework.GUIComponent;
-import org.bbop.framework.GUIManager;
 import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.ProgressBarUpdateRunnable;
-import org.oboedit.controller.SelectionManager;
-import org.oboedit.gui.OBOCellRenderer;
-import org.oboedit.gui.Preferences;
-import org.oboedit.gui.components.graphvizViewer.GraphvizCanvas;
-import org.oboedit.gui.components.graphvizViewer.NamedColor;
-import org.oboedit.gui.components.graphvizViewer.TypeColorPair;
-import org.oboedit.gui.event.ReloadEvent;
-import org.oboedit.gui.event.ReloadListener;
-import org.oboedit.gui.event.SelectionEvent;
-import org.oboedit.gui.event.SelectionListener;
-import org.oboedit.util.GUIUtil;
 
 
 
@@ -63,7 +42,6 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	JLabel trimPathsLabel = new JLabel();
 	JLabel showNonTransitiveLabel = new JLabel();
 	JButton closeButton = new JButton("Close");
-	final JDialog pane = new JDialog((Frame) null, true);
 
 
 
@@ -74,36 +52,36 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
 		JPanel mainPanel = new JPanel();
 
-		pane.setContentPane(mainPanel);
-
+		add(mainPanel);
+		
 		mainPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		//logger.debug("TreeViewConfigPanel: constructor called, building GUI.");
+		logger.debug("TreeViewConfigPanel: constructor called, building GUI.");
 
 
 
-
-
-		mainPanel.add(multiTermCheckbox);
+		constraints.anchor = GridBagConstraints.LINE_START;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		mainPanel.add(trimPathsCheckbox);
+		mainPanel.add(multiTermCheckbox, constraints);
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		mainPanel.add(showNonTransitiveCheckbox);
+		mainPanel.add(trimPathsCheckbox, constraints);
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		mainPanel.add(multiTermLabel);
+		mainPanel.add(showNonTransitiveCheckbox, constraints);
 		constraints.gridx = 1;
-		constraints.gridy = 0;		
-		mainPanel.add(trimPathsLabel);
+		constraints.gridy = 0;
+		mainPanel.add(multiTermLabel, constraints);
 		constraints.gridx = 1;
-		constraints.gridy = 1;
-		mainPanel.add(showNonTransitiveLabel);
+		constraints.gridy = 1;		
+		mainPanel.add(trimPathsLabel, constraints);
 		constraints.gridx = 1;
-		constraints.gridy = 2;		
-		mainPanel.add(closeButton);
+		constraints.gridy = 2;
+		mainPanel.add(showNonTransitiveLabel, constraints);
+	
+		
 
 		eventQueue = new BackgroundEventQueue();
 		trimPathsCheckbox.setToolTipText("Collapse parts of paths that have already been shown to greatly speed up Tree Viewer redraws.");
@@ -124,19 +102,6 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
 
-//		final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
-//		true);
-//		closeButton.addActionListener(new ActionListener() {
-//		public void actionPerformed(ActionEvent e) {
-//		dialog.dispose();
-//		}
-//		});
-
-//		dialog.setContentPane(mainPanel);
-//		dialog.pack();
-//		dialog.setVisible(true);
-
-
 	}
 
 
@@ -147,8 +112,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 		this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
 
-		//logger.debug("TreeViewConfigPanel: init() run.");
-		//logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
+		logger.debug("TreeViewConfigPanel: init() run.");
+		logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
 
 		multiTermCheckbox.setSelected(treeViewSettings.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettings.getTrimPaths());
@@ -160,8 +125,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	@Override
 	public void commit() {
 
-		//logger.debug("TreeViewConfigPanel: commit() run.");
-		//logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+		logger.debug("TreeViewConfigPanel: commit() run.");
+		logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
 
 		treeViewSettings.setMultiSelect(multiTermCheckbox.isSelected());
 		treeViewSettings.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
@@ -177,7 +142,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 	@Override
 	public GUIComponent getComponent() {
-		//logger.debug("Config panel New : getComponent.");
+		logger.debug("Config panel New : getComponent.");
 		return treeViewInstance;
 	}	
 
@@ -187,9 +152,9 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 			treeViewInstance = (TreeView)comp;
 			this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
 
-			//logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
-			//logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
-			//logger.debug("Config panel New : setComponent.");
+			logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
+			logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+			logger.debug("Config panel New : setComponent.");
 		}
 	}
 }
