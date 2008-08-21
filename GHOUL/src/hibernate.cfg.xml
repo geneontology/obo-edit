@@ -50,6 +50,8 @@
         <mapping resource="org/geneontology/db/model/ProductSeq.hbm.xml"/>
        	<mapping resource="org/geneontology/db/model/Sequence.hbm.xml"/>
        	<mapping resource="org/geneontology/db/model/HomolSet.hbm.xml"/>
+       	<mapping resource="org/geneontology/db/model/Association.hbm.xml"/>
+       	<mapping resource="org/geneontology/db/model/Evidence.hbm.xml"/>
              
     </session-factory>
 </hibernate-configuration>
