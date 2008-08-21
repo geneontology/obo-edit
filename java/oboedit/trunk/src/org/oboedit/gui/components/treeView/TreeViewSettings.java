@@ -1,5 +1,6 @@
 package org.oboedit.gui.components.treeView;
 
+import org.apache.log4j.Logger;
 import org.bbop.framework.ComponentConfiguration;
 
 public class TreeViewSettings implements ComponentConfiguration {
@@ -9,10 +10,12 @@ public class TreeViewSettings implements ComponentConfiguration {
 
 	protected boolean showNonTransitive = false;
 
+	// initialize logger
+	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
 	
 	public TreeViewSettings() {
 
-	//logger.debug("TreeViewSettings: entered this method to access getters and setters.");
+	logger.debug("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}
 
