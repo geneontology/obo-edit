@@ -42,6 +42,13 @@ public class Term extends GOModel {
 	
 	protected Set<MetaRelation> considerations;
 
+	/** 
+	 * An association is a link between a gene product record and an ontology term, 
+	 * with one or more pieces of evidence 
+	 * *** IMPORTANT: NOT all associations are positive: some posit negative links.
+	 */
+	protected Set<Association> associations;
+
 	public Term(){
 		String[] uniqueConstraintFields = {"acc"};
 		this.initUniqueConstraintFields(Term.class,uniqueConstraintFields);
@@ -198,6 +205,14 @@ public class Term extends GOModel {
 
 	public void setConsiderations(Set<MetaRelation> considerations) {
 		this.considerations = considerations;
+	}
+
+	public Set<Association> getAssociations() {
+		return associations;
+	}
+
+	public void setAssociations(Set<Association> associations) {
+		this.associations = associations;
 	}
 
 }

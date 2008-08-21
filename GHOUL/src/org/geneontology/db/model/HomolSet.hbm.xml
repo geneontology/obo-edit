@@ -10,10 +10,10 @@
 		</id>
 		
 		<property name="symbol" not-null="true"/>
-   		<one-to-one name="dbxref" class="org.geneontology.db.model.DBXref"/>
-    	<one-to-one name="target_gp" class="org.geneontology.db.model.GeneProduct"/>
-    	<one-to-one name="species" class="org.geneontology.db.model.Species"/>
-    	<one-to-one name="term" class="org.geneontology.db.model.Term"/>
+   		<many-to-one name="dbxref" column="dbxref_id" class="org.geneontology.db.model.DBXref"/>
+    	<many-to-one name="target_gp" column="target_gene_product_id" class="org.geneontology.db.model.GeneProduct"/>
+    	<many-to-one name="species" column="taxon_id" class="org.geneontology.db.model.Species"/>
+    	<many-to-one name="term" column="type_id" class="org.geneontology.db.model.Term"/>
 		<property name="description"/>
 		
 		<!-- how to handle join to gene products -->
