@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <!DOCTYPE obdRESTServletConfig SYSTEM "http://www.berkeleybop.org/obd/obd-rest-servlet-config-0.1.dtd">
- 
+
 <obdRESTServletConfig>
 
 	<dataSource>
