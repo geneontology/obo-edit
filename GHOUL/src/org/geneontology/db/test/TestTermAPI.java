@@ -1,14 +1,7 @@
 package org.geneontology.db.test;
 
-import java.util.Set;
-
 import org.geneontology.db.factory.GOobjectFactory;
-import org.geneontology.db.model.GOModel;
-import org.geneontology.db.model.MetaRelation;
-import org.geneontology.db.model.Relation;
 import org.geneontology.db.model.Term;
-import org.geneontology.db.model.TermDBXref;
-import org.geneontology.db.model.TermSynonym;
 
 public class TestTermAPI extends AbstractGOHibernateAPITest{
 	
@@ -22,7 +15,9 @@ public class TestTermAPI extends AbstractGOHibernateAPITest{
 	public void testTermQuery(){
 		GOobjectFactory goFactory = initSessionFactory();
 		
-		Term term = goFactory.getTermByName(test_name);
+//		Term term = goFactory.getTermByName(test_name);
+		this.getSessionFactory().getCurrentSession().beginTransaction();
+		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 96);
 		prettyPrint (term);
 	}
 	

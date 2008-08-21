@@ -7,8 +7,10 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 import org.geneontology.db.factory.GOobjectFactory;
+import org.geneontology.db.model.Association;
 import org.geneontology.db.model.DB;
 import org.geneontology.db.model.DBXref;
+import org.geneontology.db.model.Evidence;
 import org.geneontology.db.model.GOModel;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.HomolSet;
@@ -65,6 +67,9 @@ public class AbstractGOHibernateAPITest extends TestCase{
 		for (String s : gp.getSynonyms()) {
 			System.out.println("SYN:\t" + s);
 		}
+		for (Association a : gp.getAssociations()) {
+			prettyPrint (a);
+		}
 		for (ProductSeq s : gp.getSeqs()) {
 			prettyPrint (s.getSeq());
 		}
@@ -101,6 +106,9 @@ public class AbstractGOHibernateAPITest extends TestCase{
 		}
 		prettyPrintSyns(term);
 		
+		for (Association a : term.getAssociations()) {
+			prettyPrint (a);
+		}
 		prettyPrintParents (term.getParents());
 		prettyPrintChildren (term.getChildren());
 		prettyPrintSubsets (term.getSubsets());
@@ -141,6 +149,7 @@ public class AbstractGOHibernateAPITest extends TestCase{
 		DB db = goFactory.getDBByName(db_name);
 		return (db == null ? "(not in db table)" : "");
 	}
+	
 	protected void prettyPrintSyns(Term term) {
 		for (TermSynonym tsyn : term.getSynonyms()){
 			System.out.println("SYN:\t" + tsyn.getSynonym() + "\t" + tsyn.getSynonymCategory() + "\t" + 
@@ -163,12 +172,33 @@ public class AbstractGOHibernateAPITest extends TestCase{
 			Term term = homol_set.getTerm();
 			System.out.println("HOMOL:\t" + homol_set.getSymbol() + "\tdescription=" + homol_set.getDescription());
 			prettyPrint (homol_set.getDbxref(), "HOMOL-XREF:");
-			System.out.println("HOMOL:\tspecies=" + getString(homol_set.getSpecies()) + "\t" +
+			System.out.println("HOMOL:\t" + getString(homol_set.getSpecies()) + "\t" +
 					(gp == null ? "no target" : "gp=" + gp.getSymbol()) + "\t" +
 					(term == null ? "no term" : "term=" + term.getName()) + "\t");
 			for (GeneProduct member : homol_set.getGenes()) {
 				System.out.println("\thomol_gene:\t" + member.getSymbol());
 			}
 		}
+	}
+	
+	protected void prettyPrint(Association assoc) {
+		if (assoc == null) {
+			System.out.println("\tASSOC:\tnone");
+		} else {
+			System.out.println("\tASSOC:\t" + (assoc.getSource_db() == null ? "null" : assoc.getSource_db().getName()) + 
+				"\tdate=" + assoc.getDate() + 
+				(assoc.getIs_not() == null ? "\t" : (assoc.getIs_not() == 0 ? "\t" : "\tNOT")));
+			for (Evidence e : assoc.getEvidence()) {
+				prettyPrint(e);
+			}
+		}
+	}
+	
+	protected void prettyPrint (Evidence e) {
+		System.out.print("\tevidence:\t" + e.getCode() + "\txref=" + e.getDbxref().getAccession());
+		for (DBXref x : e.getWiths()) {
+			System.out.print("\tWith=" + x.getAccession());
+		}
+		System.out.println();
 	}
 }

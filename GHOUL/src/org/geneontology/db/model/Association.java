@@ -38,6 +38,13 @@ public class Association extends GOModel {
   	 */
   	protected DB source_db;
 
+  	/**
+  	 *  each association can have one or more pieces of evidence attached to it 
+  	 *  (the schema actually allows zero or more, but with GO all annotation have at least one piece of evidence) 
+  	 *  (doc: http://www.geneontology.org/GO.evidence.shtml)
+  	 */
+  	protected Set<Evidence> evidence;
+  	
   	public Association(){
 		String[] uniqueConstraintFields = {"term", "gene_product"};
 		this.initUniqueConstraintFields(Association.class,uniqueConstraintFields);
@@ -89,6 +96,14 @@ public class Association extends GOModel {
 
 	public void setSource_db(DB source_db) {
 		this.source_db = source_db;
+	}
+
+	public Set<Evidence> getEvidence() {
+		return evidence;
+	}
+
+	public void setEvidence(Set<Evidence> evidence) {
+		this.evidence = evidence;
 	}
 
 }

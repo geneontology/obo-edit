@@ -21,7 +21,7 @@ public class GOobjectFactory {
 	}
 	
 		
-	/** Term  factories 
+	/** Graph factories for term class
 	 */
 	
 	/**
@@ -32,20 +32,7 @@ public class GOobjectFactory {
 		return (Term)session.createQuery("from Term where name = ?").setString(0, name).uniqueResult();
 	}
 	
-	/** Gene product factories 
-	 */
-	
-	/** 
-	 * getGPByDBXref: Fetches a gene prduct using the unique identifier as the bait
-	 * @param int dbxref_id
-	 * @return GeneProduct
-	 */
-	public GeneProduct getGPByID(int dbxref_id){
-		Session session = sf.getCurrentSession();
-		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, dbxref_id).uniqueResult();
-	}
-	
-	/** General DB xref utility factories
+	/** General utility factories for DBXref and DB classes
 	 */
 	
 	/**
@@ -68,9 +55,23 @@ public class GOobjectFactory {
 		return (DB)session.createQuery("from DB where name = ?").setString(0, name).uniqueResult();
 	}
 
-	/** Association factories
+	/** Association factories for these classes:
+    * association (includes tables association_qualifier, association_species_qualifier, assoc_rel
+    * evidence (includes table evidence_dbxref)
+    * gene_product (includes table gene_product_synonym)
+    * species
 	 */
 	
+	/** 
+	 * getGPByDBXref: Fetches a gene product using the unique identifier as the bait
+	 * @param int dbxref_id
+	 * @return GeneProduct
+	 */
+	public GeneProduct getGPByID(int dbxref_id){
+		Session session = sf.getCurrentSession();
+		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, dbxref_id).uniqueResult();
+	}
+
 	/**
 	 * getSpeciesByTaxa
 	 * @param taxa

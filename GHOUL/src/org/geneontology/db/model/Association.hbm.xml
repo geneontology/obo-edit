@@ -14,6 +14,9 @@
 		<property name="is_not"/>
 		<property name="date" column="assocdate"/>
     	<many-to-one name="source_db" column="source_db_id" class="org.geneontology.db.model.DB"/>
-		
+		<set name="evidence" table="evidence">
+			<key column="association_id"/>
+			<one-to-many class="org.geneontology.db.model.Evidence"/>
+		</set>
 	</class>
 </hibernate-mapping>
