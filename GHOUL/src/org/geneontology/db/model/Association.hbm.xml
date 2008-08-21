@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.Association" table="association">
+	
+		<id name="assoc_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+		
+    	<many-to-one name="term" column="term_id" class="org.geneontology.db.model.Term" not-null="true"/>
+    	<many-to-one name="gene_product" column="gene_product_id" class="org.geneontology.db.model.GeneProduct" not-null="true"/>
+		<property name="is_not"/>
+		<property name="date" column="assocdate"/>
+    	<many-to-one name="source_db" column="source_db_id" class="org.geneontology.db.model.DB"/>
+		
+	</class>
+</hibernate-mapping>

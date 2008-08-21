@@ -46,6 +46,11 @@
 		  <key column="term2_id"/>
    		  <one-to-many class="org.geneontology.db.model.MetaRelation"/>
 		</set>
+
+		<set name="associations" table="association">
+			<key column="term_id"/>
+			<one-to-many class="org.geneontology.db.model.Association"/>
+		</set>
 		
 	</class>
 </hibernate-mapping>

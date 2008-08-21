@@ -35,6 +35,13 @@ public class GeneProduct extends GOModel {
 	
 	protected HomolSet homol_set;
 	
+	/** 
+	 * An association is a link between a gene product record and an ontology term, 
+	 * with one or more pieces of evidence 
+	 * *** IMPORTANT: NOT all associations are positive: some posit negative links.
+	 */
+	protected Set<Association> associations;
+	
 	public GeneProduct(){
 		String[] uniqueConstraintFields = {"dbxref"};
 		this.initUniqueConstraintFields(GeneProduct.class,uniqueConstraintFields);
@@ -112,4 +119,12 @@ public class GeneProduct extends GOModel {
 		this.homol_set = homol_set;
 	}
 	
+	public Set<Association> getAssociations() {
+		return associations;
+	}
+
+	public void setAssociations(Set<Association> associations) {
+		this.associations = associations;
+	}
+
 }
