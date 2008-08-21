@@ -10,8 +10,8 @@ public class DBXref extends GOModel {
 	/** the dbxref_id of the DBXref object */
 	protected int dbxref_id;
 	
-	/** the {@link DB} of this DBXref object */
-	protected DB db;
+	/** for backup also keep the DB name here because not all of them can be found in DB */
+	protected String db_name;
 	
 	/** the accession of this DBXRef object */
 	protected String accession;
@@ -25,7 +25,7 @@ public class DBXref extends GOModel {
 	boolean for_definition;
 
 	public DBXref(){
-		String[] uniqueConstraintFields = {"db", "accession"};
+		String[] uniqueConstraintFields = {"db_name", "accession"};
 		this.initUniqueConstraintFields(DBXref.class, uniqueConstraintFields);
 	}
 	
@@ -45,22 +45,14 @@ public class DBXref extends GOModel {
 		this.dbxref_id = dbxref_id;
 	}
 	
-	/**
-	 * Getter of DBxref {@link DB} object.
-	 * @return {@link DB} of DBXref object.
-	 */
-	public DB getDb() {
-		return db;
+	public String getDb_name() {
+		return db_name;
 	}
-	
-	/**
-	 * setter of DBXref DB Object. 
-	 * @param db DBXref DB object.
-	 */
-	public void setDb(DB db) {
-		this.db = db;
+
+	public void setDb_name(String db_name) {
+		this.db_name = db_name;
 	}
-	
+
 	/**
 	 * Getter of DBXref accession.
 	 * @return accession number of DBXref object.

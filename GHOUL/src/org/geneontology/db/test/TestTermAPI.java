@@ -10,12 +10,12 @@ import org.geneontology.db.model.Term;
 import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
 
-public class GOHibernateTestTermAPI extends AbstractGOHibernateAPITest{
+public class TestTermAPI extends AbstractGOHibernateAPITest{
 	
 	// These probably will need to be adjusted as the database changes. 
 	private final String test_name = "protein tetramerization activity";
 	
-	public GOHibernateTestTermAPI () {
+	public TestTermAPI () {
 		super();
 	}
 	 

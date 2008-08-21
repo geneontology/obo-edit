@@ -33,6 +33,8 @@ public class GeneProduct extends GOModel {
 		
 	protected Set<ProductSeq> seqs;
 	
+	protected HomolSet homol_set;
+	
 	public GeneProduct(){
 		String[] uniqueConstraintFields = {"dbxref"};
 		this.initUniqueConstraintFields(GeneProduct.class,uniqueConstraintFields);
@@ -101,4 +103,13 @@ public class GeneProduct extends GOModel {
 	public void setSeqs(Set<ProductSeq> seqs) {
 		this.seqs = seqs;
 	}
+
+	public HomolSet getHomol_set() {
+		return homol_set;
+	}
+
+	public void setHomol_set(HomolSet homol_set) {
+		this.homol_set = homol_set;
+	}
+	
 }
