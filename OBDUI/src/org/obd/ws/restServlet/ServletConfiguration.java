@@ -95,6 +95,7 @@ public class ServletConfiguration{
         try {
         	System.out.println("Parsing Server configuration");
         	parser.parse(configurationFile); 
+        	
         	Document d = parser.getDocument();
         	NodeList list = d.getElementsByTagName("obdRESTServletConfig");
         	if (list.getLength() != 1){
