@@ -221,8 +221,8 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			multiIcon.addIcon(linkIcon);
 			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
-//			linkIcon.setLineWidth(1);  // Already the default
-// 			linkIcon.setLineType(LineType.SOLID_LINE);  // Already the default
+			linkIcon.setLineWidth(1);
+ 			linkIcon.setLineType(LineType.SOLID_LINE);
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
