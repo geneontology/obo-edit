@@ -31,7 +31,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obo-vocab.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/obdapi.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-3.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-runtime-3.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/stringtemplate-3.1b1.jar"/>

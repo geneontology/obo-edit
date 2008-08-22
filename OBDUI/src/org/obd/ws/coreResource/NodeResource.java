@@ -7,8 +7,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -43,16 +45,16 @@ import freemarker.template.SimpleHash;
  */
 public class NodeResource extends OBDResource {
 
-    private Node node;
-    protected String nodeString;
+	private Node node;
+	protected String nodeString;
 	protected String format;
 	protected String dataSource;
 	protected String uriString;
-	
+
 	protected List<Statement> toAnnotationStatements;
 	protected List<Statement> aboutAnnotationStatements;	
 
-    public String getFormat() {
+	public String getFormat() {
 		return format;
 	}
 
@@ -62,86 +64,86 @@ public class NodeResource extends OBDResource {
 	}
 
 	/**
-     * Constructor.
-     * 
-     * @param context
-     *                The parent context.
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to return.
-     */
-    public NodeResource(Context context, Request request, Response response) {
-        
-    	super(context, request, response);
-        
-        this.nodeString = (String) request.getAttributes().get("id");
-        System.out.println("Requested Node String is: " + this.nodeString);
-        if (this.nodeString != null){
-        	this.nodeString = Reference.decode(this.nodeString);
-        	System.out.println("Decoded is: " + this.nodeString);
-        }
-        this.format = (String) request.getAttributes().get("format");
-        this.dataSource = (String) request.getAttributes().get("dataSource");
-        this.uriString = (String) request.getResourceRef().toString();
-  
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
-    }
+	 * Constructor.
+	 * 
+	 * @param context
+	 *                The parent context.
+	 * @param request
+	 *                The request to handle.
+	 * @param response
+	 *                The response to return.
+	 */
+	public NodeResource(Context context, Request request, Response response) {
 
- 
-    /**
-     * Finds the associated node.
-     * 
-     * @return The node found or null.
-     */
-    public Node findNode() {
-        Node result = null;
+		super(context, request, response);
 
-        System.out.print("Looking for Node " + this.nodeString + " in data source " + this.dataSource + "..... ");
-        if (nodeString != null) {       	
-        	result = getShard(this.dataSource).getNode(nodeString);
-        } 
-        if (result != null){
-        	System.out.println("Found.");
-        	this.node = result;
-        } else {
-        	System.out.println("Not Found.");
-        }
-        
-        return result;
-    }
-    
-    public Collection<Node> findNodes() throws Exception {
-    	HashSet<Node> nodes = new HashSet<Node>();
-    	Node n = findNode();
-    	if (n!= null)
-    		nodes.add(n);
-    	return nodes;
-    }
+		this.nodeString = (String) request.getAttributes().get("id");
+		System.out.println("Requested Node String is: " + this.nodeString);
+		if (this.nodeString != null){
+			this.nodeString = Reference.decode(this.nodeString);
+			System.out.println("Decoded is: " + this.nodeString);
+		}
+		this.format = (String) request.getAttributes().get("format");
+		this.dataSource = (String) request.getAttributes().get("dataSource");
+		this.uriString = (String) request.getResourceRef().toString();
 
- 
-    @Override
-    public Representation getRepresentation(Variant variant) {
-    	   	
-    	
-    	this.node = findNode();
-    	
-    	List<SimpleHash> altViews = new ArrayList<SimpleHash>();
-    	TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
-		
-    	resourceMap.put("contextName", this.getContextName());
+		getVariants().add(new Variant(MediaType.TEXT_HTML));
+	}
+
+
+	/**
+	 * Finds the associated node.
+	 * 
+	 * @return The node found or null.
+	 */
+	public Node findNode() {
+		Node result = null;
+
+		System.out.print("Looking for Node " + this.nodeString + " in data source " + this.dataSource + "..... ");
+		if (nodeString != null) {       	
+			result = getShard(this.dataSource).getNode(nodeString);
+		} 
+		if (result != null){
+			System.out.println("Found.");
+			this.node = result;
+		} else {
+			System.out.println("Not Found.");
+		}
+
+		return result;
+	}
+
+	public Collection<Node> findNodes() throws Exception {
+		HashSet<Node> nodes = new HashSet<Node>();
+		Node n = findNode();
+		if (n!= null)
+			nodes.add(n);
+		return nodes;
+	}
+
+
+	@Override
+	public Representation getRepresentation(Variant variant) {
+
+
+		this.node = findNode();
+
+		List<SimpleHash> altViews = new ArrayList<SimpleHash>();
+		TreeMap<String, Object> resourceMap = new TreeMap<String, Object>();
+
+		resourceMap.put("contextName", this.getContextName());
 		resourceMap.put("dataSource", this.dataSource);
 		resourceMap.put("node",this.node);
 		resourceMap.put("id", this.nodeString);
 		resourceMap.put("encodedId", Reference.encode(this.nodeString));
-		
+
 		try {
 			InetAddress addr = InetAddress.getLocalHost();
 			resourceMap.put("hostname",addr.getCanonicalHostName());
 		} catch (UnknownHostException e) {
 			System.err.println("Hostname fetching error: " + e.getMessage());
 		}
-		
+
 		Type nodeType = NodeTyper.getNodeType(this.nodeString, this.getShard(this.dataSource));
 		resourceMap.put("nodeType", nodeType.toString());
 		if (nodeType.equals(Type.GENE)){
@@ -150,158 +152,206 @@ public class NodeResource extends OBDResource {
 			view.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/html/gene/" + Reference.encode(this.nodeString));
 			altViews.add(view);
 		}
-		
+
 		String otherFormat = "exhibit";
 		if (this.format.equals("exhibit")){
 			otherFormat = "html";
 		}
 		SimpleHash view = new SimpleHash();
 		view.put("view", otherFormat);
+		view.put("lens", "XPTable");
 		view.put("href", "/" + this.getContextName() + "/" + this.dataSource + "/" + otherFormat + "/node/" + Reference.encode(this.nodeString));
 		altViews.add(view);
-		
+
 		resourceMap.put("nodeViews", altViews);
-		
-    	Representation result = null;
 
-    	if (format == null) {
-    		format = "";
-    	}
-    	if (format.equals("exhibitData")){
-    		
-    		
-    		List<SimpleHash> statements = new ArrayList<SimpleHash>();
-    		
-    		String[] aspects = new String[]{"to","about","annotation"};
-    		
-    		for (String aspect : aspects){
-    			List<SimpleHash> aspectStatements = this.getHashifiedStatements(aspect,"exhibit");
-    			for (SimpleHash sh : aspectStatements ){
-    				sh.put("aspect",aspect);
-    			}
-    			statements.addAll(aspectStatements);
-    			
-    		}
-    		
-    		resourceMap.put("statements", statements);
-    		
-    		return getTemplateRepresentation("ExhibitNodeData",resourceMap);
-    		
-    		
-    	} else if (format.equals("json")) {
-    		result = new StringRepresentation(OBDJSONBridge.toJSON(this.node).toString());
-    	}
-    	else if (format.equals("obo")) {
-    		result = new StringRepresentation(OBOBridge.toOBOString(node));
-    		return result;
-    	}
-    	else if (format.equals("owl")) {
-    		result = new StringRepresentation(OWLBridge.toOWLString(node));
-    		
-    		return result;
-    	} else if (format.equals("obdxml")){
-    		if (node==null){
-    			return null;
-    		} else {
-    			result = new StringRepresentation(OBDXMLBridge.toXML(node),MediaType.TEXT_XML);
-    		}
-    		return result;
-    	} else if (format.equals("exhibit")){
-    		
-    		return getTemplateRepresentation("ExhibitNode",resourceMap);
-    		
-    	} else if (format.equals("html")||(format.equals("bioPortal"))){
-    		
+		Representation result = null;
 
-    		
-    		
-    		if (this.node != null){
-    			resourceMap.put("node", this.hashifyNode(this.node.getId(), "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.node.getId()) ));
-    		}
-    		
-    		// Statements to Node
-    		List<SimpleHash> toStatements = this.getHashifiedStatements("to","html");
-    		if (toStatements.size()>0){
-    			Collections.sort(toStatements,new StatementHashComparator());
-    			resourceMap.put("toStatements", toStatements);
-    		}
-    		
-    		// Statements about node
-    		List<SimpleHash> aboutStatements = this.getHashifiedStatements("about","html");
-    		if (aboutStatements.size()>0){
-    			Collections.sort(aboutStatements,new StatementHashComparator());
-    			resourceMap.put("aboutStatements", aboutStatements);
-    		}
-    		
-    		// Annotation Statements 
-    		List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation","html");
-    		if (annotationStatements.size()>0){
-    			Collections.sort(annotationStatements,new StatementHashComparator());
-    			resourceMap.put("annotationStatements", annotationStatements);
-    		}
-    		
-    		if (format.equals("html")){
-    			return getTemplateRepresentation("NodeDetails",resourceMap);
-    		} else {
-    			return getTemplateRepresentation("BPNodeDetails",resourceMap);
-    		}
-    		
-    		
-    		
-    	} else {
-    		//Creates a text representation
-    		StringBuilder sb = new StringBuilder();
-    		sb.append("<pre>");
-    		sb.append("------------\n");
-    		sb.append("Node details\n");
-    		sb.append("------------\n\n");
-    		sb.append("Id:  ").append(href(node,this.dataSource)).append('\n');
-    		sb.append("Label: ").append(this.node.getLabel()).append("\n");
-    		sb.append("Source: ").append(this.node.getSourceId()).append("\n\n");
-    		sb.append("Statements: ").append(hrefStatementsFor(node.getId(),this.dataSource)).append("\n\n");
-    		sb.append("Description: ").append(hrefDescriptionFor(node.getId(),this.dataSource)).append("\n\n");
-    		sb.append("Graph: ").append(hrefGraph(node.getId(),this.dataSource)).append("\n\n");
-           	sb.append(hrefToOtherFormats("/node/"+getNodeId(),this.dataSource));
-    		sb.append("</pre>");
-    		return new StringRepresentation(sb, MediaType.TEXT_HTML);
-
-    	}
-    	return result;
-    }
-    
-    protected List<SimpleHash> getHashifiedStatements(String aspect,String format){
-    	return getHashifiedStatements(aspect,getNodeId(),format);
-    }
-    
-    protected List<SimpleHash> getHashifiedStatements(String aspect,String nodeId,String format){
-    	List<SimpleHash> statements = new ArrayList<SimpleHash>();
-    	if (aspect.equals("annotation")){
-    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(), true,format));
-    	} else {
-    		statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(),false,format));
+		if (format == null) {
+			format = "";
 		}
-    	return statements;
-    }
+		if (format.equals("exhibitData")){
 
-    /**
-     * Returns the associated node.
-     * 
-     * @return The associated node.
-     */
-    public Node getNode() {
-        return this.node;
-    }
 
-  
-    /**
-     * Sets the associated node.
-     * 
-     * @param node
-     *                The node to set.
-     */
-    public void setNode(Node node) {
-        this.node = node;
-    }
+			List<SimpleHash> statements = new ArrayList<SimpleHash>();
+
+			String[] aspects = new String[]{"to","about","annotation"};
+
+			for (String aspect : aspects){
+				List<SimpleHash> aspectStatements = this.getHashifiedStatements(aspect,"exhibit");
+				for (SimpleHash sh : aspectStatements ){
+					sh.put("aspect",aspect);
+				}
+				statements.addAll(aspectStatements);
+
+			}
+
+			resourceMap.put("statements", statements);
+
+			return getTemplateRepresentation("ExhibitNodeData",resourceMap);
+
+
+		} else if (format.equals("json")) {
+			result = new StringRepresentation(OBDJSONBridge.toJSON(this.node).toString());
+		}
+		else if (format.equals("obo")) {
+			result = new StringRepresentation(OBOBridge.toOBOString(node));
+			return result;
+		}
+		else if (format.equals("owl")) {
+			result = new StringRepresentation(OWLBridge.toOWLString(node));
+
+			return result;
+		} else if (format.equals("obdxml")){
+			if (node==null){
+				return null;
+			} else {
+				result = new StringRepresentation(OBDXMLBridge.toXML(node),MediaType.TEXT_XML);
+			}
+			return result;
+		} else if (format.equals("exhibit")){
+
+			return getTemplateRepresentation("ExhibitNode",resourceMap);
+
+		} else if (format.equals("XPTable")){
+			if (this.node != null){
+				resourceMap.put("node", this.hashifyNode(this.node.getId(), "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.node.getId()) ));
+			}
+
+			// Annotation Statements 
+			List<SimpleHash> ahl = new ArrayList<SimpleHash>();
+			Map<String,Integer> relCount = new HashMap<String,Integer>();
+			Collection<Statement> stmts = getGraph("annotation",getNodeId()).getStatements();
+			for (Statement s : stmts) {
+
+				if (! (s instanceof LinkStatement))
+					continue;
+				LinkStatement ls = (LinkStatement)s;
+				SimpleHash ah = hashifyStatement(ls, true,"html");
+				ahl.add(ah);
+				// TODO: this gets computed again in hashify nodes
+				String tid = ls.getTargetId();
+				CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(tid, true);
+				if ((cd != null) && (cd.getArguments() != null)){
+					for (CompositionalDescription arg : cd.getArguments()) {
+						String relId = arg.getRelationId();
+						if (relId == null)
+							relId = "";
+						if (!relCount.containsKey(relId))
+							relCount.put(relId, 0);
+						relCount.put(relId, relCount.get(relId)+1);
+						String t = arg.getNodeId();
+						if (arg.getPredicate().equals(Predicate.RESTRICTION)) {
+							t = arg.getRestriction().getTargetId();
+						}
+						String href = this.getNodeURL(t);
+						ah.put(relId, this.hashifyNode(t, href));
+					}
+				}
+
+			}
+			List<String> rels = new ArrayList<String>();
+			// TODO: ordering
+			for (String relId : relCount.keySet()) {
+				rels.add(relId);
+			}
+			resourceMap.put("xpRelations", rels);
+			resourceMap.put("annotationStatements", ahl);
+			return getTemplateRepresentation("NodeDetails",resourceMap);
+
+		} else if (format.equals("html")||(format.equals("bioPortal"))){
+
+
+
+
+			if (this.node != null){
+				resourceMap.put("node", this.hashifyNode(this.node.getId(), "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(this.node.getId()) ));
+			}
+
+			// Statements to Node
+			List<SimpleHash> toStatements = this.getHashifiedStatements("to","html");
+			if (toStatements.size()>0){
+				Collections.sort(toStatements,new StatementHashComparator());
+				resourceMap.put("toStatements", toStatements);
+			}
+
+			// Statements about node
+			List<SimpleHash> aboutStatements = this.getHashifiedStatements("about","html");
+			if (aboutStatements.size()>0){
+				Collections.sort(aboutStatements,new StatementHashComparator());
+				resourceMap.put("aboutStatements", aboutStatements);
+			}
+
+			// Annotation Statements 
+			List<SimpleHash> annotationStatements = this.getHashifiedStatements("annotation","html");
+			if (annotationStatements.size()>0){
+				Collections.sort(annotationStatements,new StatementHashComparator());
+				resourceMap.put("annotationStatements", annotationStatements);
+			}
+
+			if (format.equals("html")){
+				return getTemplateRepresentation("NodeDetails",resourceMap);
+			} else {
+				return getTemplateRepresentation("BPNodeDetails",resourceMap);
+			}
+
+
+
+		} else {
+			//Creates a text representation
+			StringBuilder sb = new StringBuilder();
+			sb.append("<pre>");
+			sb.append("------------\n");
+			sb.append("Node details\n");
+			sb.append("------------\n\n");
+			sb.append("Id:  ").append(href(node,this.dataSource)).append('\n');
+			sb.append("Label: ").append(this.node.getLabel()).append("\n");
+			sb.append("Source: ").append(this.node.getSourceId()).append("\n\n");
+			sb.append("Statements: ").append(hrefStatementsFor(node.getId(),this.dataSource)).append("\n\n");
+			sb.append("Description: ").append(hrefDescriptionFor(node.getId(),this.dataSource)).append("\n\n");
+			sb.append("Graph: ").append(hrefGraph(node.getId(),this.dataSource)).append("\n\n");
+			sb.append(hrefToOtherFormats("/node/"+getNodeId(),this.dataSource));
+			sb.append("</pre>");
+			return new StringRepresentation(sb, MediaType.TEXT_HTML);
+
+		}
+
+		return result;
+	}
+
+	protected List<SimpleHash> getHashifiedStatements(String aspect,String format){
+		return getHashifiedStatements(aspect,getNodeId(),format);
+	}
+
+	protected List<SimpleHash> getHashifiedStatements(String aspect,String nodeId,String format){
+		List<SimpleHash> statements = new ArrayList<SimpleHash>();
+		if (aspect.equals("annotation")){
+			statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(), true,format));
+		} else {
+			statements.addAll(this.hashifyStatements(this.getGraph(aspect,nodeId).getStatements(),false,format));
+		}
+		return statements;
+	}
+
+	/**
+	 * Returns the associated node.
+	 * 
+	 * @return The associated node.
+	 */
+	public Node getNode() {
+		return this.node;
+	}
+
+
+	/**
+	 * Sets the associated node.
+	 * 
+	 * @param node
+	 *                The node to set.
+	 */
+	public void setNode(Node node) {
+		this.node = node;
+	}
 
 
 	public String getNodeId() {
@@ -312,18 +362,18 @@ public class NodeResource extends OBDResource {
 	public void setNodeId(String nodeId) {
 		this.nodeString = nodeId;
 	}
-    
+
 	protected Graph getGraph(String aspect){
 		return getGraph(aspect,getNodeId());
 	}
-	
+
 	protected Graph getGraph(String aspect,String nodeId){
 
 		Graph graph;
 		if (aspect == null || aspect.equals("")){
 			aspect = "about";
 		}
-		
+
 		Collection<Statement> statements = new ArrayList<Statement>();
 		if (aspect.equals("about")){
 			for (Statement s : this.getShard(dataSource).getStatementsForNode(nodeId,false)){
@@ -331,7 +381,7 @@ public class NodeResource extends OBDResource {
 					statements.add(s);
 				}
 			}
-			
+
 		} else if (aspect.equals("to")){
 			for (Statement s : this.getShard(dataSource).getStatementsForTarget(nodeId,false)){
 				if (!s.isAnnotation()){
@@ -348,7 +398,7 @@ public class NodeResource extends OBDResource {
 		}
 		graph = new Graph(statements);
 		if (true) {
-			String[] nids = graph.getReferencedNodeIds();
+			Collection<String> nids = graph.getReferencedNodeIds();
 			for (String nid : nids) {
 				Node n = getShard(this.dataSource).getNode(nid);
 				graph.addNode(n);
@@ -356,13 +406,13 @@ public class NodeResource extends OBDResource {
 		}
 		return graph;
 	}
-	
-	
-	
+
+
+
 	protected SimpleHash hashifyStatement(Statement s){
 		return this.hashifyStatement(s,false,"html"); 
 	}
-	
+
 
 	protected Collection<SimpleHash> hashifyStatements(Statement[] statements){
 		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
@@ -371,18 +421,24 @@ public class NodeResource extends OBDResource {
 		}
 		return hashifiedStatements;
 	}
-	
-	protected Collection<SimpleHash> hashifyStatements(Statement[] statements,boolean populateProvenance,String format){
+
+	protected Collection<SimpleHash> hashifyStatements(Collection<Statement> statements,boolean populateProvenance,String format){
 		List<SimpleHash> hashifiedStatements = new ArrayList<SimpleHash>();
 		for (Statement s : statements){
 			hashifiedStatements.add(this.hashifyStatement(s,populateProvenance,format));
 		}
 		return hashifiedStatements;
 	}
+	/**
+	 * @param s
+	 * @param populateProvenance : if true will get substatements and populate assigned_by etc tags
+	 * @param format
+	 * @return
+	 */
 	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance, String format){
-		
+
 		SimpleHash statementHash = new SimpleHash();
-	 	
+
 		if (format==null){
 			format="html";
 		}
@@ -391,7 +447,7 @@ public class NodeResource extends OBDResource {
 		SimpleHash relationshipHash = this.hashifyNode(s.getRelationId(), (hrefBase+Reference.encode(s.getRelationId())));
 		relationshipHash.put("label", this.prettifyRelationshipTerm(s.getRelationId()));
 		statementHash.put("predicate", relationshipHash);
-		
+
 		if (s instanceof LinkStatement) {
 			SimpleHash objectHash =this.hashifyNode(s.getTargetId(), (hrefBase+Reference.encode(s.getTargetId())));
 			if (s.isIntersectionSemantics()) {
@@ -401,13 +457,13 @@ public class NodeResource extends OBDResource {
 		} else if (s instanceof LiteralStatement) {
 			statementHash.put("object", this.hashifyNode(((LiteralStatement)s).getSValue(), null));
 		}
-		
+
 		if (s.isInferred()){
 			statementHash.put("entailment","I");
 		} else {
 			statementHash.put("entailment","A");
 		}
-		
+
 		if (populateProvenance){
 			Set<String> assignmentSources = new HashSet<String>();
 			Set<String> provenanceSources = new HashSet<String>();
@@ -418,14 +474,14 @@ public class NodeResource extends OBDResource {
 				if (subStatement.getRelationId().equals("oban:has_data_source")){
 					provenanceSources.add(this.href(subStatement.getTargetId(),dataSource));
 				}
-    			statementHash.put("assigned_by",assignmentSources);
-    			statementHash.put("provenance",provenanceSources);
+				statementHash.put("assigned_by",assignmentSources);
+				statementHash.put("provenance",provenanceSources);
 			}
 		}
-		
+
 		return statementHash;
 	}
-	
+
 	protected SimpleHash decomposeNode(CompositionalDescription cd){
 		SimpleHash nodeHash = new SimpleHash();
 		//System.out.print("Trying to decompose: " + cd.toString() + ".....");
@@ -450,7 +506,7 @@ public class NodeResource extends OBDResource {
 		}
 		return nodeHash;
 	}
-	
+
 	protected List<SimpleHash> decomposeArguments(Collection<CompositionalDescription> args){
 		List<SimpleHash> decomposedArgs = new ArrayList<SimpleHash>();
 		for (CompositionalDescription arg : args){
@@ -467,15 +523,15 @@ public class NodeResource extends OBDResource {
 						targetLabel += " all ";
 					}
 				}
-				
+
 				Node targetNode = this.getShard(dataSource).getNode(arg.getFirstArgument().getNodeId());
 				if (targetNode != null && targetNode.getLabel() != null){
-   				    target.put("targetId", targetNode.getId());
-   					target.put("targetURL", this.getNodeURL(targetNode));
+					target.put("targetId", targetNode.getId());
+					target.put("targetURL", this.getNodeURL(targetNode));
 					targetLabel += targetNode.getLabel();
 				} else {
- 				    target.put("targetId", arg.getFirstArgument().getNodeId());
- 				    target.put("targetURL", this.getNodeURL(arg.getFirstArgument().getNodeId()));
+					target.put("targetId", arg.getFirstArgument().getNodeId());
+					target.put("targetURL", this.getNodeURL(arg.getFirstArgument().getNodeId()));
 					targetLabel += arg.getFirstArgument().getNodeId();
 				}
 				target.put("targetLabel", targetLabel);
@@ -487,8 +543,8 @@ public class NodeResource extends OBDResource {
 		}
 		return decomposedArgs;
 	}
-	
-	
+
+
 	protected boolean hasSingularAtomicArgument(CompositionalDescription cd){
 		if (cd.getArguments().size()==1){
 			CompositionalDescription arg = cd.getFirstArgument();
@@ -498,7 +554,7 @@ public class NodeResource extends OBDResource {
 		}
 		return false;
 	}
-	
+
 	protected String prettifyRelationshipTerm(String term){
 		String formatted;
 		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
@@ -506,17 +562,17 @@ public class NodeResource extends OBDResource {
 		} else {
 			formatted  = term.replace("_", " ");
 		}
-		
+
 		if (term.equals("part of")){
 			formatted = "that is part of";
 		}
-		
+
 		if (term.equals("inheres in")){
 			formatted = "that inheres in";
 		}
 		return formatted;
 	}
-	
+
 	protected List<SimpleHash> hashifyNodes(Collection<String> nodeIds,String hrefPrefix){
 		List<SimpleHash> hashifiedNodes = new ArrayList<SimpleHash>();
 		for (String nodeId : nodeIds){
@@ -524,10 +580,13 @@ public class NodeResource extends OBDResource {
 		}
 		return hashifiedNodes;
 	}
-	
+
 	protected SimpleHash hashifyNode(String nodeId,String href){
 		SimpleHash nodeHash = new SimpleHash();
 		Node n = this.getShard(dataSource).getNode(nodeId);
+		if (n == null) {
+			return nodeHash;
+		}
 		String label = "";
 		if (n != null && n.getLabel() != null){
 			label = n.getLabel();
@@ -540,11 +599,12 @@ public class NodeResource extends OBDResource {
 		nodeHash.put("id", nodeId);
 		nodeHash.put("encodedId", Reference.encode(nodeId));
 		nodeHash.put("label", label);
-		nodeHash.put("source",n.getSourceId());
+		if (n != null)
+			nodeHash.put("source",n.getSourceId());
 		if (href != null){
 			nodeHash.put("href", href);
 		}
-		
+
 		if (nodeId.contains("^")){
 			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
 			if ((cd != null) && (cd.getArguments() != null)){
@@ -562,7 +622,7 @@ public class NodeResource extends OBDResource {
 	protected String getNodeURL(Node node) {
 		return getNodeURL(node, "node");
 	}
-	
+
 	/**
 	 * @param nodeId
 	 * @return string containing relative REST URL portion
@@ -580,7 +640,7 @@ public class NodeResource extends OBDResource {
 	protected String getNodeURL(Node node, String view) {
 		return getNodeURL(node.getId(), view);
 	}
-	
+
 	/**
 	 * @param nodeId
 	 * @param view - e.g. node
@@ -595,5 +655,5 @@ public class NodeResource extends OBDResource {
 	}
 
 
-	
+
 }

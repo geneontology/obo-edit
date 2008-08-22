@@ -131,7 +131,7 @@ public class StatementsResource extends NodeResource {
 		
 		graph = new Graph(stmts);
 		if (true) {
-			String[] nids = graph.getReferencedNodeIds();
+			Collection<String> nids = graph.getReferencedNodeIds();
 			for (String nid : nids) {
 				Node n = getShard(this.dataSource).getNode(nid);
 				graph.addNode(n);

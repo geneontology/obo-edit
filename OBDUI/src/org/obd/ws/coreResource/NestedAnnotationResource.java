@@ -61,7 +61,7 @@ public class NestedAnnotationResource extends NodeResource {
 
 
 	protected void iterativeFetch(Graph graph, String id, Map<String,Aspect> followRelationMap) {
-		Collection<Statement> outStmts = getShard(this.dataSource).getStatementsForNode(id);
+		Collection<Statement> outStmts = getShard(this.dataSource).getStatementsByNode(id);
 		Collection<Statement> inStmts = getShard(this.dataSource).getStatementsForTarget(id);
 		Set<String> nodeIds = new HashSet<String>();
 		for (Statement stmt : outStmts) {
@@ -97,7 +97,7 @@ public class NestedAnnotationResource extends NodeResource {
 		String id = getNodeId();
 		iterativeFetch(graph, id, rmap);
 		if (true) {
-			String[] nids = graph.getReferencedNodeIds();
+			Collection<String> nids = graph.getReferencedNodeIds();
 			for (String nid : nids) {
 				Node n = getShard(this.dataSource).getNode(nid);
 				graph.addNode(n);
