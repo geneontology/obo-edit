@@ -7,20 +7,25 @@
 </head>
 <body bgcolor="#ffffff">
 <h1>Filtering</h1>
-<p>Filters can be used to hide certain terms and/or links 
-in an ontology editor panel. When a filter is placed on an ontology editor panel, only 
-matching terms and links are shown.</p>
-<p>Ontologies can be filtered using the standard search panel: </p><IMG hspace=0 src="../images/filter_term_standard.png" 
-border=0>
-<p>An ontology editor panel can be filtered by designing a 
-filter in the filter designer on the left, and pressing the "Filter" button. The 
-primary ontology editor panel will be filtered. If the primary ontology editor panel is 
-already filtered and a new filter is applied, the old filter will be replaced 
-with the new filter.</p>
-<p>To apply a filter to an ontology editor panel other than the primary ontology editor 
-panel, drag and drop the filter button onto the desired ontology editor panel. The 
-filter will be applied to the target panel.</p>
+<p>Filters can be used to hide certain terms and/or links in an
+Ontology Tree Editor panel or a Graph Editor panel. When a filter is
+placed on a panel, only matching terms and links are shown.</p>
+
+<p>To apply a filter to a panel, click the wrench icon on the panel
+that you want to filter. Choose the "Term Filters" or "Link Filters"
+tab. Click the "Filter Terms" or "Filter Links" button to bring up a
+filter panel, then specify the filter criteria or load a saved filter
+(see <a href="Building_a_Filter.htm">Building Filters</a> for how to
+do this) using the standard search panel: </p>
+
+<p><IMG hspace=0 src="../images/filter_term_standard.png" border=0></p>
+
+<p>To apply the new filter to the panel, click the check mark to
+complete panel configuration. The filter shown above will show terms
+that have "kinase" in the name or a synonym, and hide others.</P>
+
 <h2>Term Filters vs. Link Filters</h2>
+<b> TO DO: CONFIRM THAT THIS IS ALSO TRUE FOR OE2</b>
 <p>If a term filter is used to filter an ontology editor panel, only terms that match 
 the filter will be shown. The only links that will be shown are links between 
 matching terms.</p>
@@ -33,15 +38,20 @@ links that match the link filter will be shown. If a link matches the link
 filter, but the child term of that link does not match the term filter, the link 
 will not be shown. This kind of filtering gives you the greatest degree of 
 control of filtering behavior.</p>
-<p>Note that the filtering behavior is quite different depending on whether you 
-are filtering with a term filter, a link filter, or both. The kind of filter 
-that is applied depends on whether "Term filtering" and "Link filtering" are 
-enabled in the "Advanced" tab. Make sure that you have selected the filtering 
-mode you want before filtering to avoid unexpected behavior.</p>
+
+<p>Note that the filtering behavior is quite different depending on
+whether you are filtering with a term filter, a link filter, or
+both. The kind of filter that is applied depends on whether you use
+the "Term filters" or "Link filters" configuration tab. Make sure that
+you have selected the filtering mode you want before filtering to
+avoid unexpected behavior.</p>
+
 <h2>Removing Filters</h2>
-<p>To remove a filter, click your right mouse button in the Ontology Tree
-  Editor panel to pop up a menu.
-Choose "Remove link filter", "Remove term filter", or "Remove all filters and renderers" from the popup
-  menu. </p>
+<p>To remove a filter, click the wrench icon to open the configuration
+screen, and choose the "Term Filters" or "Link Filters" tab. You can
+then alter the filter criteria, or simply uncheck the "Filter Terms"
+or "Filter Links" button to remove filters from the panel. Click the
+check mark to finish and exit configuration.</p>
+
 </body>
 </html>
