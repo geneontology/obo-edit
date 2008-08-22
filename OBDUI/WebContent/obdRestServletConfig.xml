@@ -16,13 +16,24 @@
 	</dataSource>
 	
 	<dataSource>
-		<resourcePath>obdp808</resourcePath>
+		<resourcePath>obdp</resourcePath>
 		<OBDSQLAdaptor>
 			<hostname>localhost</hostname>
 			<port>5432</port>
 			<username>cjm</username>
 			<password></password>
-			<databaseName>obdp808</databaseName>
+			<databaseName>obdp</databaseName>
+		</OBDSQLAdaptor>
+	</dataSource>
+	
+	<dataSource>
+		<resourcePath>obdtest</resourcePath>
+		<OBDSQLAdaptor>
+			<hostname>localhost</hostname>
+			<port>5432</port>
+			<username>cjm</username>
+			<password></password>
+			<databaseName>obdtest</databaseName>
 		</OBDSQLAdaptor>
 	</dataSource>
 	

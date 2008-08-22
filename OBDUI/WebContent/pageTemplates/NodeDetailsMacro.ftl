@@ -123,6 +123,33 @@
 						</tr>
 					</table>
 						<table class="annotationStatementTable">
+							<#if xpRelations?exists>
+								<tr>
+									<th>-</th>
+									<th>relation</th>
+									<#list xpRelations as rel>
+										<th>${rel}</th>
+									</#list>
+								</tr>
+								<#list annotationStatements as statement>
+									<tr>
+										<td>
+										<@nodeHashHref nodeHash=statement.subject/>
+										</td>
+										<td>
+					 					<@nodeHashHref nodeHash=statement.predicate/>
+					 					</td>
+										<#list xpRelations as rel>
+											<td>
+											  <@nodeHashHref nodeHash=statement[rel]/>
+											</td>
+										</#list>
+					 					
+										
+									</tr>
+								</#list>
+	
+							<#else>
 							<#list annotationStatements as statement>
 							<tr>
 								<th rowspan="3">
@@ -163,6 +190,7 @@
 								<td colspan="2" height="10"></td>
 							</tr>
 							</#list>
+							</#if>
 						</table>
 					
 					
