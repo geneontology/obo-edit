@@ -73,6 +73,16 @@ public class GOobjectFactory {
 	}
 
 	/**
+	 * getGPByName
+	 * @param String name
+	 * @return GeneProduct
+	 */
+	public GeneProduct getGPByName (String name) {
+		Session session = sf.getCurrentSession();
+		return (GeneProduct)session.createQuery("from GeneProduct where symbol = ?").setString(0, name).uniqueResult();
+	}
+
+	/**
 	 * getSpeciesByTaxa
 	 * @param taxa
 	 * @return Species

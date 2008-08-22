@@ -52,8 +52,10 @@ public class GHOUL_UnitTest extends TestCase{
 	}
 	
 	public void testGP() {
-		this.getSessionFactory().getCurrentSession().beginTransaction();
-		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 250070);
+//		this.getSessionFactory().getCurrentSession().beginTransaction();
+//		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 252956);
+		GOobjectFactory factory = initSessionFactory();
+		GeneProduct gp = (GeneProduct) factory.getGPByName("myo6b");
 		Assert.assertTrue(gp != null);
 		if (gp != null) {
 			logger.assertLog(gp.getSymbol().equals("myo6b"), "Symbol matches myo6b");
@@ -78,7 +80,7 @@ public class GHOUL_UnitTest extends TestCase{
 	
 	public void testObsolete() {
 		this.getSessionFactory().getCurrentSession().beginTransaction();
-		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 25320);
+		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 23572);
 		Assert.assertTrue(term != null);
 		if (term != null) {
 			logger.info("\n\t" + prettyPrint(term));
@@ -92,10 +94,10 @@ public class GHOUL_UnitTest extends TestCase{
 		if (term != null) {
 			/** check for associations with foreign keys to DB table that don't exist in the DB table */
 			for (Association a : term.getAssociations()) {
-				logger.assertLog(a.getSource_db().getName() == null, 
+				logger.assertLog(a.getSource_db().getName() != null, 
 						term.getAcc() + " has association (id=" + a.getAssoc_id() + ") with source_db_id null");
 				Assert.assertTrue(term.getAcc() + " has association with source_db_id null", 
-								a.getSource_db().getName() == null);
+								a.getSource_db().getName() != null);
 			}			
 			logger.info("\n\t" + prettyPrint(term));
 		}
@@ -113,7 +115,7 @@ public class GHOUL_UnitTest extends TestCase{
 				gp.getDbxref().getAccession() + "\t" + getString(gp.getSpecies()) + "\tSO-type=" +
 				gp.getSO_type().getName() + "\n");
 		for (String s : gp.getSynonyms()) {
-			buffer.append("SYN:\t" + s + "\n");
+			buffer.append("\tSYN:\t" + s + "\n");
 		}
 		for (Association a : gp.getAssociations()) {
 			prettyPrint (a, buffer);
@@ -173,16 +175,14 @@ public class GHOUL_UnitTest extends TestCase{
 	
 	protected void prettyPrintParents(Set<Relation> rels, StringBuffer buffer) {
 		for (Relation r : rels) {
-			buffer.append("\tPARENTS:\t" + r.getType().getName() + "\t" + r.getObject().getName());
+			buffer.append("\tPARENT:\t" + r.getType().getName() + "\t" + r.getObject().getName() + "\n");
 		}
-		buffer.append("\n");
 	}
 	
 	protected void prettyPrintChildren(Set<Relation> rels, StringBuffer buffer) {
 		for (Relation r : rels) {
-			buffer.append("\tCHILDREN:\t" + r.getType().getName() + "\t" + r.getSubject().getName());
+			buffer.append("\tCHILD:\t" + r.getType().getName() + "\t" + r.getSubject().getName() + "\n");
 		}
-		buffer.append("\n");
 	}
 
 	protected void prettyPrintSubsets(Set<Term> slims, StringBuffer buffer) {
@@ -212,8 +212,8 @@ public class GHOUL_UnitTest extends TestCase{
 	
 	protected String prettyPrintSyns(Term term, StringBuffer buffer) {
 		for (TermSynonym tsyn : term.getSynonyms()){
-			buffer.append("SYN:\t" + tsyn.getSynonym() + "\t" + tsyn.getSynonymCategory() + "\t" + 
-					tsyn.getSynonymType().getName() + "\t" + tsyn.getAlternateID());
+			buffer.append("\tSYN:\t" + tsyn.getSynonym() + "\ttype=" + tsyn.getSynonymType().getName() + 
+						"\tcategory=" + tsyn.getSynonymCategory() + "\talt_id=" + tsyn.getAlternateID() + "\n");
 			
 		}
 		return buffer.toString();
@@ -245,7 +245,7 @@ public class GHOUL_UnitTest extends TestCase{
 		return buffer.toString();
 	}
 	
-	protected String prettyPrint(Association assoc, StringBuffer buffer) {
+	protected void prettyPrint(Association assoc, StringBuffer buffer) {
 		if (assoc == null) {
 			Assert.assertNotNull("Gene product without associations", assoc);
 			logger.info("Association is null");
@@ -256,19 +256,16 @@ public class GHOUL_UnitTest extends TestCase{
 				(assoc.getSource_db() == null ? "\tsource=null" : assoc.getSource_db().getName()) + 
 				"\tdate=" + assoc.getDate());
 			for (Evidence e : assoc.getEvidence()) {
-				buffer.append("\n\t\tEVI:\t");
-				buffer.append(prettyPrint(e, buffer));
+				prettyPrint(e, buffer);
 			}
 		}
-		return buffer.toString();
 	}
 	
-	protected String prettyPrint (Evidence e, StringBuffer buffer) {
-		buffer.append("\tevidence:\t" + e.getCode() + "\txref=" + e.getDbxref().getAccession());
+	protected void prettyPrint (Evidence e, StringBuffer buffer) {
+		buffer.append("\n\t\tEVIDENCE:\t" + e.getCode() + "\txref=" + e.getDbxref().getDb_name() + ":" + e.getDbxref().getAccession());
 		for (DBXref x : e.getWiths()) {
-			buffer.append("\tWith=" + x.getAccession());
+			buffer.append("\tWith=" + x.getDb_name() + ":" + x.getAccession());
 		}
 		buffer.append("\n");
-		return buffer.toString();
 	}
 }
