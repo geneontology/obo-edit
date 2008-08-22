@@ -276,7 +276,7 @@ public class DefaultTermModel implements TermModel {
 
 	public void setLinkFilter(Filter filter) {
 		if ((filter == null && userLinkFilter == null) ||
-		    filter.equals(userLinkFilter)) {
+		    (filter != null && filter.equals(userLinkFilter))) {
 			// Avoid unnecessary reload
 			return;
 		}
@@ -292,7 +292,7 @@ public class DefaultTermModel implements TermModel {
 
 	public void setTermFilter(Filter filter) {
 		if ((filter == null && userTermFilter == null) ||
-		    filter.equals(userTermFilter))
+		    (filter != null && filter.equals(userTermFilter)))
 			// Avoid unnecessary reload
 			return;
 		if (userTermFilter != null)
@@ -498,7 +498,7 @@ public class DefaultTermModel implements TermModel {
 			}
 		}
 		// There are times when we don't want this to fire, because it collapses the tree.
-		logger.debug("DefaultTermModel.reload: fireTreeStructureChanged"); // DEL
+//		logger.debug("DefaultTermModel.reload: fireTreeStructureChanged"); // DEL
 		fireTreeStructureChanged(new TreeModelEvent(this, new TreePath(PathUtil.ROOT)));
 	}
 
