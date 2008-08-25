@@ -100,5 +100,9 @@ public class DBXref extends GOModel {
 	public void setFor_definition(boolean for_definition) {
 		this.for_definition = for_definition;
 	}
+	
+	public String toString() {
+		return getDb_name()+":"+getAccession();
+	}
 
 }

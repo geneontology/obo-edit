@@ -105,5 +105,9 @@ public class Association extends GOModel {
 	public void setEvidence(Set<Evidence> evidence) {
 		this.evidence = evidence;
 	}
+	
+	public String toString() {
+		return getGene_product().toString()+" "+getTerm().toString();
+	}
 
 }
