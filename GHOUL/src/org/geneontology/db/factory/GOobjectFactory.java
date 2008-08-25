@@ -5,6 +5,7 @@ import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -23,6 +24,15 @@ public class GOobjectFactory {
 		
 	/** Graph factories for term class
 	 */
+	
+	/**
+	 * @param acc
+	 * @return
+	 */
+	public Term getTermByAcc(String acc){
+		Session session = sf.getCurrentSession();
+		return (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
+	}
 	
 	/**
 	 * getTermByName: Fetches a Term from the database with the specified name
@@ -44,6 +54,14 @@ public class GOobjectFactory {
 		Session session = sf.getCurrentSession();
 		return (DBXref)session.createQuery("from DBXref where id = ?").setInteger(0, id).uniqueResult();
 	}
+	
+	public DBXref getDBXrefByDBAcc (String db, String acc) {
+		Session session = sf.getCurrentSession();
+		Query q = session.createQuery("from DBXref where db = ? and acc = ?");
+		q.setString(0, db);
+		q.setString(1, acc);
+		return (DBXref)q.uniqueResult();
+	}
 
 	/**
 	 * getDBByName
@@ -61,6 +79,19 @@ public class GOobjectFactory {
     * gene_product (includes table gene_product_synonym)
     * species
 	 */
+	
+	/**
+	 * @param xs - DBXref string - e.g. "UniProtKB:P00001"
+	 * @return
+	 */
+	public GeneProduct getGPByDBXrefStr(String xs){
+		int pos = xs.indexOf(':');
+		String db = xs.substring(0, pos);
+		String acc = xs.substring(pos+1);
+		Session session = sf.getCurrentSession();
+		DBXref xref = getDBXrefByDBAcc(db,acc); // TODO: use a join
+		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, xref.getDbxref_id()).uniqueResult();
+	}
 	
 	/** 
 	 * getGPByDBXref: Fetches a gene product using the unique identifier as the bait
