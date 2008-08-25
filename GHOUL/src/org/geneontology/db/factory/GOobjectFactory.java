@@ -1,5 +1,8 @@
 package org.geneontology.db.factory;
 
+import java.util.Iterator;
+
+import org.geneontology.db.model.Association;
 import org.geneontology.db.model.DB;
 import org.geneontology.db.model.DBXref;
 import org.geneontology.db.model.GeneProduct;
@@ -19,6 +22,10 @@ public class GOobjectFactory {
 	 */
 	public GOobjectFactory(SessionFactory sf){
 		this.sf = sf;
+	}
+	
+	public Session getSession() {
+		return sf.getCurrentSession();
 	}
 	
 		
@@ -93,7 +100,7 @@ public class GOobjectFactory {
 		//return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, xref.getDbxref_id()).uniqueResult();
 		//return (GeneProduct)session.createQuery("from GeneProduct where dbxref = ?").setEntity(0,xref);
 		// TODO: test this. Rob will help if not right
-		return (GeneProduct)session.createQuery("from GeneProduct as gp where gp.dbxref.db = ? and gp.dbxref.xref_key = ?").setString(0, db).setString(1, acc).uniqueResult();
+		return (GeneProduct)session.createQuery("from GeneProduct as gp where gp.dbxref.db_name = ? and gp.dbxref.accession = ?").setString(0, db).setString(1, acc).uniqueResult();
 	}
 	
 	/** 
@@ -124,6 +131,11 @@ public class GOobjectFactory {
 	public Species getSpeciesByTaxa(int taxa){
 		Session session = sf.getCurrentSession();
 		return (Species)session.createQuery("from Species where ncbi_taxa_id = ?").setInteger(0, taxa).uniqueResult();
+	}
+	
+	public Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp) {
+		Iterator<Association> it = getSession().createQuery("from Association where gene_product = ?").setEntity(0, gp).iterate();
+		return it;
 	}
 	
 
