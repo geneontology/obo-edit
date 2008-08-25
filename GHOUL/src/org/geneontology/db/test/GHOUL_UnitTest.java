@@ -1,5 +1,6 @@
 package org.geneontology.db.test;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -75,6 +76,17 @@ public class GHOUL_UnitTest extends TestCase{
 			logger.assertLog(gp.getSpecies().getSpecies().equals("rerio"), "species name matches rerio");
 			Assert.assertEquals(gp.getSpecies().getSpecies(), "rerio");
 			logger.info("\n" + prettyPrint(gp));
+			
+			gp = (GeneProduct) factory.getGPByDBXrefStr(gp.getDbxref().toString());
+			Assert.assertTrue(gp != null);
+			
+			Iterator<Association> it = factory.getAssociationsIteratorByGP(gp);
+			Assert.assertTrue(it.hasNext());
+			while (it.hasNext()) {
+				Association assoc = it.next();
+				logger.info(" assoc: "+assoc);
+			}
+			
 		}
 	}
 	
