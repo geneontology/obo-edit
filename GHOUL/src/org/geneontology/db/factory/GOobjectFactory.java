@@ -89,8 +89,11 @@ public class GOobjectFactory {
 		String db = xs.substring(0, pos);
 		String acc = xs.substring(pos+1);
 		Session session = sf.getCurrentSession();
-		DBXref xref = getDBXrefByDBAcc(db,acc); // TODO: use a join
-		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, xref.getDbxref_id()).uniqueResult();
+		//DBXref xref = getDBXrefByDBAcc(db,acc); // TODO: use a join
+		//return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, xref.getDbxref_id()).uniqueResult();
+		//return (GeneProduct)session.createQuery("from GeneProduct where dbxref = ?").setEntity(0,xref);
+		// TODO: test this. Rob will help if not right
+		return (GeneProduct)session.createQuery("from GeneProduct as gp where gp.dbxref.db = ? and gp.dbxref.xref_key = ?").setString(0, db).setString(1, acc).uniqueResult();
 	}
 	
 	/** 
