@@ -27,11 +27,23 @@ import org.obd.query.exception.ShardExecutionException;
 
 public class GhoulShard extends AbstractShard {
 	
-	GOobjectFactory factory = initSessionFactory();
+	GOobjectFactory factory;
 
 	private SessionFactory sessionFactory;
 	protected final static Logger logger = Logger.getLogger(GhoulShard.class);
 	
+
+	
+	public GhoulShard() {
+		super();
+		factory = initSessionFactory();
+	}
+
+	public GhoulShard(SessionFactory sf) {
+		super();
+		factory = initSessionFactory();
+		setSessionFactory(sf);
+	}
 
 	public SessionFactory getSessionFactory() {
 		return this.sessionFactory;
