@@ -11,9 +11,9 @@
       </generator>
     </primary-key>
     
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
+    
     <column name="acquisitiondate" property="acquisitionDate"/>
-    
-    
     <foreign-key constraint-name="acquisition_relationship_subject_id_fkey">
       <many-to-one property="subjectAcquisition"/>
       <set property="childAcquisitionRelationships"/>
@@ -31,6 +31,9 @@
         <param name="sequence">acquisitionprop_acquisitionprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="acquisition_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="acquisition_relationship" class="AcquisitionRelationship">
@@ -39,6 +42,10 @@
         <param name="sequence">acquisition_relationship_acquisition_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="analysis" class="Analysis">
@@ -47,8 +54,9 @@
         <param name="sequence">analysis_analysis_id_seq</param>
       </generator>
     </primary-key>
-    <column name="programversion" property="programVersion"/>
-    <column name="sourcename" property="sourceName"/>
+    <column name="program"><meta attribute="use-in-equals">true</meta></column>
+    <column name="programversion" property="programVersion"><meta attribute="use-in-equals">true</meta></column>
+    <column name="sourcename" property="sourceName"><meta attribute="use-in-equals">true</meta></column>
     <column name="sourceversion" property="sourceVersion"/>
     <column name="sourceuri" property="sourceURI"/>
     <column name="timeexecuted" property="timeExecuted"/>
@@ -68,6 +76,8 @@
     </primary-key>
     <column name="rawscore" property="rawScore"/>
     <column name="normscore" property="normalizedScore"/>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="analysis_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="analysisprop" class="AnalysisProperty">
@@ -76,6 +86,9 @@
         <param name="sequence">analysisprop_analysisprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="analysis_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="value"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="arraydesign" class="ArrayDesign">
@@ -91,6 +104,7 @@
     <column name="num_grid_rows" property="numberOfGridRows"/>
     <column name="num_sub_columns" property="numberOfSubColumns"/>
     <column name="num_sub_rows" property="numberOfSubRows"/>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="arraydesignprop" class="ArrayDesignProperty">
@@ -99,6 +113,9 @@
         <param name="sequence">arraydesignprop_arraydesignprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="arraydesign_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="assay" class="Assay">
@@ -107,6 +124,7 @@
         <param name="sequence">assay_assay_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <column name="assaydate" property="assayDate"/>
     <column name="arrayidentifier" property="arrayIdentifier"/>
     <column name="arraybatchidentifier"  property="arrayBatchIdentifier"/>
@@ -128,6 +146,10 @@
         <param name="sequence">assay_biomaterial_assay_biomaterial_id_seq</param>
       </generator>
     </primary-key>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="biomaterial_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="channel_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="assay_project" class="AssayProject">
@@ -136,6 +158,8 @@
         <param name="sequence">assay_project_assay_project_id_seq</param>
       </generator>
     </primary-key>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="project_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="assayprop" class="AssayProperty">
@@ -144,6 +168,9 @@
         <param name="sequence">assayprop_assayprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="biomaterial" class="Biomaterial">
@@ -152,6 +179,7 @@
         <param name="sequence">biomaterial_biomaterial_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="biomaterial_dbxref" class="BiomaterialDBXref">
@@ -160,6 +188,8 @@
         <param name="sequence">biomaterial_dbxref_biomaterial_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="biomaterial_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="biomaterial_relationship" class="BiomaterialRelationship">
@@ -168,6 +198,9 @@
         <param name="sequence">biomaterial_relationship_biomaterial_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="biomaterial_relationship_subject_id_fkey">
       <many-to-one property="subjectBiomaterial"/>
       <set property="childBiomaterialRelationships"/>
@@ -176,6 +209,7 @@
       <many-to-one property="objectBiomaterial"/>
       <set property="parentBiomaterialRelationships"/>
     </foreign-key>
+
   </table>
   
   <table schema="public" name="biomaterial_treatment" class="BiomaterialTreatment">
@@ -184,6 +218,8 @@
         <param name="sequence">biomaterial_treatment_biomaterial_treatment_id_seq</param>
       </generator>
     </primary-key>
+    <column name="biomaterial_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="treatment_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="biomaterialprop" class="BiomaterialProperty">
@@ -192,6 +228,9 @@
         <param name="sequence">biomaterialprop_biomaterialprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="biomaterial_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="channel" class="Channel">
@@ -200,12 +239,14 @@
         <param name="sequence">channel_channel_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="acquisition_channel_id_fkey">
       <set exclude="true"/>
     </foreign-key>
     <foreign-key constraint-name="assay_biomaterial_channel_id_fkey">
       <set exclude="true"/>
     </foreign-key>
+    
   </table>
   
   <table schema="public" name="contact" class="Contact">
@@ -214,7 +255,7 @@
         <param name="sequence">contact_contact_id_seq</param>
       </generator>
     </primary-key>
-    
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="contact_relationship_object_id_fkey">
       <many-to-one property="objectContact"/>
       <set property="parentContactRelationships"/>
@@ -257,6 +298,9 @@
         <param name="sequence">contact_relationship_contact_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="control" class="Control">
@@ -265,6 +309,10 @@
         <param name="sequence">control_control_id_seq</param>
       </generator>
     </primary-key>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="tableinfo_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="row_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="cv" class="CV">
@@ -273,9 +321,7 @@
         <param name="sequence">cv_cv_id_seq</param>
       </generator>
     </primary-key>
-    <column name="name">
-    	<meta attribute="use-in-equals">true</meta>
-    </column>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="cvtermpath_cv_id_fkey">
       <many-to-one property="cv"/>
       <set exclude="true"/>
@@ -640,6 +686,8 @@
         <param name="sequence">cvterm_dbxref_cvterm_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="cvterm_relationship" class="CVTermRelationship">
@@ -648,6 +696,9 @@
         <param name="sequence">cvterm_relationship_cvterm_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="cvtermpath" class="CVTermPath">
@@ -656,7 +707,10 @@
         <param name="sequence">cvtermpath_cvtermpath_id_seq</param>
       </generator>
     </primary-key>
-    <column name="pathdistance" property="pathDistance"/>
+    <column name="pathdistance" property="pathDistance"><meta attribute="use-in-equals">true</meta></column>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="cvtermprop" class="CVTermProperty">
@@ -665,6 +719,10 @@
         <param name="sequence">cvtermprop_cvtermprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="value"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="cvtermsynonym" class="CVTermSynonym">
@@ -673,6 +731,8 @@
         <param name="sequence">cvtermsynonym_cvtermsynonym_id_seq</param>
       </generator>
     </primary-key>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="synonym"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="db" class="DB">
@@ -681,6 +741,7 @@
         <param name="sequence">db_db_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <column name="urlprefix" property="urlPrefix"/>
     <foreign-key constraint-name="dbxref_db_id_fkey">
       <many-to-one property="db"/>
@@ -694,7 +755,9 @@
         <param name="sequence">dbxref_dbxref_id_seq</param>
       </generator>
     </primary-key>
-
+    <column name="db_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="accession"><meta attribute="use-in-equals">true</meta></column>
+    <column name="version"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="arraydesign_dbxref_id_fkey">
       <many-to-one property="dbxref"/>
       <set exclude="true"/>
@@ -783,6 +846,9 @@
         <param name="sequence">dbxrefprop_dbxrefprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="eimage" class="EImage">
@@ -791,8 +857,8 @@
         <param name="sequence">eimage_eimage_id_seq</param>
       </generator>
     </primary-key>
-    <column name="eimage_data" property="data"/>
-    <column name="eimage_type" property="type"/>
+    <column name="eimage_data" property="data"><meta attribute="use-in-equals">true</meta></column>
+    <column name="eimage_type" property="type"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="expression_image_eimage_id_fkey">
       <many-to-one property="eImage"/>
     </foreign-key>
@@ -804,7 +870,8 @@
         <param name="sequence">element_element_id_seq</param>
       </generator>
     </primary-key>
-    
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="arraydesign_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="element_relationship_subject_id_fkey">
       <many-to-one property="subjectElement"/>
       <set property="childElementRelationships"/>
@@ -822,6 +889,8 @@
         <param name="sequence">elementresult_elementresult_id_seq</param>
       </generator>
     </primary-key>
+    <column name="element_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="quantification_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="elementresult_relationship_subject_id_fkey">
       <many-to-one property="subjectElementResult"/>
       <set property="childElementResultRelationships"/>
@@ -838,6 +907,9 @@
         <param name="sequence">elementresult_relationship_elementresult_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="element_relationship" class="ElementRelationship">
@@ -846,6 +918,9 @@
         <param name="sequence">element_relationship_element_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="environment" class="Environment">
@@ -854,6 +929,7 @@
         <param name="sequence">environment_environment_id_seq</param>
       </generator>
     </primary-key>
+    <column name="uniquename"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="phenotype_comparison_environment2_id_fkey">
       <many-to-one property="environment2"/>
       <set exclude="true"/>
@@ -876,6 +952,8 @@
         <param name="sequence">environment_cvterm_environment_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="environment_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expression" class="Expression">
@@ -884,6 +962,7 @@
         <param name="sequence">expression_expression_id_seq</param>
       </generator>
     </primary-key>
+    <column name="uniquename"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expression_cvterm" class="ExpressionCVTerm">
@@ -892,6 +971,9 @@
         <param name="sequence">expression_cvterm_expression_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expression_cvtermprop" class="ExpressionCVTermProperty">
@@ -900,6 +982,9 @@
         <param name="sequence">expression_cvtermprop_expression_cvtermprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expression_image" class="ExpressionImage">
@@ -908,6 +993,8 @@
         <param name="sequence">expression_image_expression_image_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="eimage_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expression_pub" class="ExpressionPublication">
@@ -916,6 +1003,8 @@
         <param name="sequence">expression_pub_expression_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="expressionprop" class="ExpressionProperty">
@@ -924,6 +1013,9 @@
         <param name="sequence">expressionprop_expressionprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature" class="Feature">
@@ -932,7 +1024,9 @@
         <param name="sequence">feature_feature_id_seq</param>
       </generator>
     </primary-key>
-    <column name="uniquename" property="uniqueName"/>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
+    <column name="organism_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="seqlen" property="sequenceLength"/>
     <column name="timeaccessioned" property="timeAccessioned"/>
     <column name="timelastmodified" property="timeLastModified"/>
@@ -1016,6 +1110,10 @@
         <param name="sequence">feature_cvterm_feature_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_cvterm_dbxref" class="FeatureCVTermDBXref">
@@ -1024,6 +1122,8 @@
         <param name="sequence">feature_cvterm_dbxref_feature_cvterm_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_cvterm_pub" class="FeatureCVTermPublication">
@@ -1032,6 +1132,8 @@
         <param name="sequence">feature_cvterm_pub_feature_cvterm_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_cvtermprop" class="FeatureCVTermProperty">
@@ -1040,6 +1142,9 @@
         <param name="sequence">feature_cvtermprop_feature_cvtermprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_dbxref" class="FeatureDBXref">
@@ -1048,6 +1153,8 @@
         <param name="sequence">feature_dbxref_feature_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_expression" class="FeatureExpression">
@@ -1056,6 +1163,9 @@
         <param name="sequence">feature_expression_feature_expression_id_seq</param>
       </generator>
     </primary-key>
+    <column name="expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_expressionprop" class="FeatureExpressionProperty">
@@ -1064,6 +1174,9 @@
         <param name="sequence">feature_expressionprop_feature_expressionprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_expression_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_genotype" class="FeatureGenotype">
@@ -1072,6 +1185,12 @@
         <param name="sequence">feature_genotype_feature_genotype_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="genotype_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="chromosome_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cgroup"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_phenotype" class="FeaturePhenotype">
@@ -1080,6 +1199,8 @@
         <param name="sequence">feature_phenotype_feature_phenotype_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="phenotype_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_pub" class="FeaturePublication">
@@ -1088,6 +1209,8 @@
         <param name="sequence">feature_pub_feature_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_pubprop" class="FeaturePublicationProperty">
@@ -1096,6 +1219,9 @@
         <param name="sequence">feature_pubprop_feature_pubprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_pub_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_relationship" class="FeatureRelationship">
@@ -1104,6 +1230,10 @@
         <param name="sequence">feature_relationship_feature_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_relationship_pub" class="FeatureRelationshipPublication">
@@ -1112,6 +1242,8 @@
         <param name="sequence">feature_relationship_pub_feature_relationship_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_relationship_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_relationshipprop" class="FeatureRelationshipProperty">
@@ -1120,6 +1252,9 @@
         <param name="sequence">feature_relationshipprop_feature_relationshipprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_relationship_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_relationshipprop_pub" class="FeatureRelationshipPropertyPublication">
@@ -1128,6 +1263,8 @@
         <param name="sequence">feature_relationshipprop_pub_feature_relationshipprop_pub_i_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_relationshipprop_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="feature_synonym" class="FeatureSynonym">
@@ -1136,6 +1273,9 @@
         <param name="sequence">feature_synonym_feature_synonym_id_seq</param>
       </generator>
     </primary-key>
+    <column name="synonym_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featureloc" class="FeatureLocation">
@@ -1144,6 +1284,9 @@
         <param name="sequence">featureloc_featureloc_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="locgroup"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featureloc_pub" class="FeatureLocationPublication">
@@ -1152,6 +1295,8 @@
         <param name="sequence">featureloc_pub_featureloc_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="featureloc_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featuremap" class="FeatureMap">
@@ -1160,6 +1305,7 @@
         <param name="sequence">featuremap_featuremap_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featuremap_pub" class="FeatureMapPublication">
@@ -1168,6 +1314,8 @@
         <param name="sequence">featuremap_pub_featuremap_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="featuremap_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featurepos" class="FeaturePosition">
@@ -1176,6 +1324,9 @@
         <param name="sequence">featurepos_featurepos_id_seq</param>
       </generator>
     </primary-key>
+    <column name="featuremap_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="map_feature_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="mappos" property="mapPosition"/>
   </table>
   
@@ -1185,6 +1336,9 @@
         <param name="sequence">featureprop_featureprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featureprop_pub" class="FeaturePropertyPublication">
@@ -1193,6 +1347,8 @@
         <param name="sequence">featureprop_pub_featureprop_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="featureprop_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="featurerange" class="FeatureRange">
@@ -1201,6 +1357,8 @@
         <param name="sequence">featurerange_featurerange_id_seq</param>
       </generator>
     </primary-key>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="featuremap_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="rangestr" property="rangeString"/>
   </table>
   
@@ -1210,7 +1368,7 @@
         <param name="sequence">genotype_genotype_id_seq</param>
       </generator>
     </primary-key>
-    <column name="uniquename" property="uniqueName"/>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="phenotype_comparison_genotype1_id_fkey">
       <many-to-one property="genotype1"/>
       <set exclude="true"/>
@@ -1231,7 +1389,9 @@
         <param name="sequence">library_library_id_seq</param>
       </generator>
     </primary-key>
-    <column name="uniquename" property="uniqueName"/>
+    <column name="organism_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
     <column name="timeaccessioned" property="timeAccessioned"/>
     <column name="timelastmodified" property="timeLastModified"/>
   </table>
@@ -1242,6 +1402,9 @@
         <param name="sequence">library_cvterm_library_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="library_dbxref" class="LibraryDBXref">
@@ -1250,6 +1413,8 @@
         <param name="sequence">library_dbxref_library_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="library_feature" class="LibraryFeature">
@@ -1258,6 +1423,8 @@
         <param name="sequence">library_feature_library_feature_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="library_pub" class="LibraryPublication">
@@ -1266,6 +1433,8 @@
         <param name="sequence">library_pub_library_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="library_synonym" class="LibrarySynonym">
@@ -1274,6 +1443,9 @@
         <param name="sequence">library_synonym_library_synonym_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="synonym_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_Id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="libraryprop" class="LibraryProperty">
@@ -1282,6 +1454,9 @@
         <param name="sequence">libraryprop_libraryprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="library_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="libraryprop_pub" class="LibraryPropertyPublication">
@@ -1290,6 +1465,8 @@
         <param name="sequence">libraryprop_pub_libraryprop_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="libraryprop_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="magedocumentation" class="MAGEDocumentation">
@@ -1298,6 +1475,9 @@
         <param name="sequence">magedocumentation_magedocumentation_id_seq</param>
       </generator>
     </primary-key>
+    <column name="mageml_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="tableinfo_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="row_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="mageidentifier" property="mageIdentifier"/>
   </table>
   
@@ -1307,7 +1487,7 @@
         <param name="sequence">mageml_mageml_id_seq</param>
       </generator>
     </primary-key>
-    <column name="mage_ml" property="mageml"/>
+    <column name="mage_ml" property="mageml"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="magedocumentation_mageml_id_fkey">
       <many-to-one property="mageml"/>
       <set property="mageDocuments"/>
@@ -1320,6 +1500,8 @@
         <param name="sequence">organism_organism_id_seq</param>
       </generator>
     </primary-key>
+    <column name="genus"><meta attribute="use-in-equals">true</meta></column>
+    <column name="species"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="biomaterial_taxon_id_fkey">
       <many-to-one property="taxon"/>
       <set exclude="true"/>
@@ -1347,6 +1529,8 @@
         <param name="sequence">organism_dbxref_organism_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="organism_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="organismprop" class="OrganismProperty">
@@ -1355,6 +1539,9 @@
         <param name="sequence">organismprop_organismprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="organism_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phendesc" class="PhenotypeDescription">
@@ -1363,6 +1550,10 @@
         <param name="sequence">phendesc_phendesc_id_seq</param>
       </generator>
     </primary-key>
+    <column name="genotype_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="environment_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phenotype" class="Phenotype">
@@ -1371,7 +1562,7 @@
         <param name="sequence">phenotype_phenotype_id_seq</param>
       </generator>
     </primary-key>
-    <column name="uniquename" property="uniqueName"/>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="phenotype_comparison_phenotype1_id_fkey">
       <many-to-one property="phenotype1"/>
       <set exclude="true"/>
@@ -1388,6 +1579,12 @@
         <param name="sequence">phenotype_comparison_phenotype_comparison_id_seq</param>
       </generator>
     </primary-key>
+    <column name="genotype1_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="environment1_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="genotype2_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="environment2_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="phenotype1_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phenotype_comparison_cvterm" class="PhenotypeComparisonCVTerm">
@@ -1396,6 +1593,8 @@
         <param name="sequence">phenotype_comparison_cvterm_phenotype_comparison_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phenotype_comparison_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phenotype_cvterm" class="PhenotypeCVTerm">
@@ -1404,6 +1603,9 @@
         <param name="sequence">phenotype_cvterm_phenotype_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phenotype_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phenstatement" class="PhenotypeStatement">
@@ -1412,6 +1614,11 @@
         <param name="sequence">phenstatement_phenstatement_id_seq</param>
       </generator>
     </primary-key>
+    <column name="genotype_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="phenotype_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="environment_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylonode" class="PhylogeneticNode">
@@ -1420,6 +1627,10 @@
         <param name="sequence">phylonode_phylonode_id_seq</param>
       </generator>
     </primary-key>
+    
+    <!-- This is wrong for equals calulation... but needes something-->
+    <column name="label"><meta attribute="use-in-equals">true</meta></column>
+    
     <column name="left_idx" property="leftIndex"/>
     <column name="right_idx" property="rightIndex"/>
     <foreign-key constraint-name="phylonode_parent_phylonode_id_fkey">
@@ -1442,6 +1653,8 @@
         <param name="sequence">phylonode_dbxref_phylonode_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phylonode_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylonode_organism" class="PhylogeneticNodeOrganism">
@@ -1450,6 +1663,7 @@
         <param name="sequence">phylonode_organism_phylonode_organism_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phylonode-id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylonode_pub" class="PhylogeneticNodePublication">
@@ -1458,6 +1672,8 @@
         <param name="sequence">phylonode_pub_phylonode_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phylonode_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylonode_relationship" class="PhylogeneticNodeRelationship">
@@ -1466,7 +1682,9 @@
         <param name="sequence">phylonode_relationship_phylonode_relationship_id_seq</param>
       </generator>
     </primary-key>
-    <foreign-key></foreign-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylonodeprop" class="PhylogeneticNodeProperty">
@@ -1475,6 +1693,10 @@
         <param name="sequence">phylonodeprop_phylonodeprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phylonode_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="value"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="phylotree" class="PhylogeneticTree">
@@ -1483,6 +1705,8 @@
         <param name="sequence">phylotree_phylotree_id_seq</param>
       </generator>
     </primary-key>
+    <!-- Probably wrong equals calculation -->
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="phylonode_relationship_phylotree_id_fkey">
       <set exclude="true"/>
     </foreign-key>
@@ -1494,6 +1718,8 @@
         <param name="sequence">phylotree_pub_phylotree_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="phylotree_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="project" class="Project">
@@ -1502,6 +1728,7 @@
         <param name="sequence">project_project_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="protocol" class="Protocol">
@@ -1513,6 +1740,7 @@
     <column name="protocoldescription" property="protocolDescription"/>
     <column name="hardwaredescription" property="hardwareDescription"/>
     <column name="softwaredescription" property="softwareDescription"/>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="treatment_protocol_id_fkey">
       <set exclude="true"/>
     </foreign-key>
@@ -1536,6 +1764,8 @@
         <param name="sequence">protocolparam_protocolparam_id_seq</param>
       </generator>
     </primary-key>
+    <column name="protocol_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="pub" class="Publication">
@@ -1547,7 +1777,7 @@
     <column name="volumetitle" property="volumeTitle"/>
     <column name="pyear" property="publicationYear"/>
     <column name="miniref" property="miniReference"/>
-    <column name="uniquename" property="uniqueName"/>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
     <column name="pubplace" property="publicationPlace"/>
     <foreign-key constraint-name="pub_relationship_object_id_fkey">
       <many-to-one property="objectPublication"/>
@@ -1649,6 +1879,8 @@
         <param name="sequence">pub_dbxref_pub_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="pub_relationship" class="PublicationRelationship">
@@ -1657,6 +1889,9 @@
         <param name="sequence">pub_relationship_pub_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="pubauthor" class="PublicationAuthor">
@@ -1665,6 +1900,8 @@
         <param name="sequence">pubauthor_pubauthor_id_seq</param>
       </generator>
     </primary-key>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
     <column name="givennames" property="givenNames"/>
   </table>
   
@@ -1674,6 +1911,9 @@
         <param name="sequence">pubprop_pubprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="quantification" class="Quantification">
@@ -1682,6 +1922,8 @@
         <param name="sequence">quantification_quantification_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
+    <column name="analysis_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="quantificationdate" property="quantificationDate"/>
     <foreign-key constraint-name="elementresult_quantification_id_fkey">
       <set exclude="true"/>
@@ -1702,6 +1944,9 @@
         <param name="sequence">quantification_relationship_quantification_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="quantificationprop" class="QuantificationProperty">
@@ -1710,6 +1955,9 @@
         <param name="sequence">quantificationprop_quantificationprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="quantification_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock" class="Stock">
@@ -1718,6 +1966,9 @@
         <param name="sequence">stock_stock_id_seq</param>
       </generator>
     </primary-key>
+    <column name="organism_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="stock_relationship_object_id_fkey">
       <many-to-one property="objectStock"/>
       <set property="parentStockRelationships"/>
@@ -1737,6 +1988,9 @@
         <param name="sequence">stock_cvterm_stock_cvterm_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="cvterm_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock_dbxref" class="StockDBXref">
@@ -1745,6 +1999,8 @@
         <param name="sequence">stock_dbxref_stock_dbxref_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="dbxref_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock_genotype" class="StockGenotype">
@@ -1753,6 +2009,8 @@
         <param name="sequence">stock_genotype_stock_genotype_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="genotype_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock_pub" class="StockPublication">
@@ -1761,6 +2019,8 @@
         <param name="sequence">stock_pub_stock_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock_relationship" class="StockRelationship">
@@ -1769,6 +2029,10 @@
         <param name="sequence">stock_relationship_stock_relationship_id_seq</param>
       </generator>
     </primary-key>
+    <column name="subject_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="object_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stock_relationship_pub" class="StockRelationshipPublication">
@@ -1777,6 +2041,8 @@
         <param name="sequence">stock_relationship_pub_stock_relationship_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_relationship_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stockcollection" class="StockCollection">
@@ -1785,6 +2051,8 @@
         <param name="sequence">stockcollection_stockcollection_id_seq</param>
       </generator>
     </primary-key>
+    <column name="uniquename" property="uniqueName"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stockcollection_stock" class="StockCollectionStock">
@@ -1793,6 +2061,8 @@
         <param name="sequence">stockcollection_stock_stockcollection_stock_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stockcollection_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stockcollectionprop" class="StockCollectionProperty">
@@ -1801,6 +2071,9 @@
         <param name="sequence">stockcollectionprop_stockcollectionprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stockcollection_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stockprop" class="StockProperty">
@@ -1809,6 +2082,9 @@
         <param name="sequence">stockprop_stockprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stock_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="stockprop_pub" class="StockPropertyPublication">
@@ -1817,6 +2093,8 @@
         <param name="sequence">stockprop_pub_stockprop_pub_id_seq</param>
       </generator>
     </primary-key>
+    <column name="stockprop_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="pub_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="study" class="Study">
@@ -1825,6 +2103,7 @@
         <param name="sequence">study_study_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="study_assay_study_id_fkey">
       <set property="studyAssays"/>
     </foreign-key>
@@ -1836,6 +2115,8 @@
         <param name="sequence">study_assay_study_assay_id_seq</param>
       </generator>
     </primary-key>
+    <column name="study_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studydesign" class="StudyDesign">
@@ -1844,6 +2125,7 @@
         <param name="sequence">studydesign_studydesign_id_seq</param>
       </generator>
     </primary-key>
+    <column name="study_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studydesignprop" class="StudyDesignProperty">
@@ -1852,6 +2134,9 @@
         <param name="sequence">studydesignprop_studydesignprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="studydesign_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studyfactor" class="StudyFactor">
@@ -1860,6 +2145,8 @@
         <param name="sequence">studyfactor_studyfactor_id_seq</param>
       </generator>
     </primary-key>
+    <column name="studydesign_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studyfactorvalue" class="StudyFactorValue">
@@ -1869,6 +2156,8 @@
       </generator>
     </primary-key>
     <column name="factorvalue" property="factorValue"/>
+    <column name="studyfactor_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="assay_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studyprop" class="StudyProperty">
@@ -1877,6 +2166,9 @@
         <param name="sequence">studyprop_studyprop_id_seq</param>
       </generator>
     </primary-key>
+    <column name="study_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="rank"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="studyprop_feature" class="StudyPropertyFeature">
@@ -1885,6 +2177,8 @@
         <param name="sequence">studyprop_feature_studyprop_feature_id_seq</param>
       </generator>
     </primary-key>
+    <column name="studyprop_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
   <table schema="public" name="synonym" class="Synonym">
@@ -1893,6 +2187,8 @@
         <param name="sequence">synonym_synonym_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="synonym_sgml" property="synonymSGML"/>
     <foreign-key constraint-name="library_synonym_synonym_id_fkey">
       <set exclude="true"/>
@@ -1908,6 +2204,7 @@
         <param name="sequence">tableinfo_tableinfo_id_seq</param>
       </generator>
     </primary-key>
+    <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="magedocumentation_tableinfo_id_fkey">
       <set property="mageDocuments"/>
     </foreign-key>
@@ -1922,6 +2219,9 @@
         <param name="sequence">treatment_treatment_id_seq</param>
       </generator>
     </primary-key>
+    <column name="biomaterial_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
+    <column name="protocol_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
   
 </hibernate-reverse-engineering>
