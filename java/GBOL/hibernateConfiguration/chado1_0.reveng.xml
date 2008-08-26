@@ -2,9 +2,50 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
 
 <hibernate-reverse-engineering>
-    
+  
+  
+  
+  <!-- Ignore views. I don't know why you can't just configure this once but hibernate tools treats views as tables. -->
+  <table-filter match-name="all_feature_names" exclude="true"/>
+  <table-filter exclude="true" match-name="common_ancestor_cvterm"/>
+  <table-filter exclude="true" match-name="common_descendant_cvterm"/>
+  <table-filter exclude="true" match-name="cv_cvterm_count"/>
+  <table-filter exclude="true" match-name="cv_cvterm_count_with_obs"/>
+  <table-filter exclude="true" match-name="cv_leaf"/>
+  <table-filter exclude="true" match-name="cv_link_count"/>
+  <table-filter exclude="true" match-name="cv_path_count"/>
+  <table-filter exclude="true" match-name="cv_root"/>
+  <table-filter exclude="true" match-name="db_dbxref_count"/>
+  <table-filter exclude="true" match-name="dfeatureloc"/>
+  <table-filter exclude="true" match-name="f_loc"/>
+  <table-filter exclude="true" match-name="f_type"/>
+  <table-filter exclude="true" match-name="feature_contains"/>
+  <table-filter exclude="true" match-name="feature_difference"/>
+  <table-filter exclude="true" match-name="feature_disjoint"/>
+  <table-filter exclude="true" match-name="feature_distance"/>
+  <table-filter exclude="true" match-name="feature_intersection"/>
+  <table-filter exclude="true" match-name="feature_meets"/>
+  <table-filter exclude="true" match-name="feature_meets_on_same_strand"/>
+  <table-filter exclude="true" match-name="feature_union"/>
+  <table-filter exclude="true" match-name="featureset_meets"/>
+  <table-filter exclude="true" match-name="fnr_type"/>
+  <table-filter exclude="true" match-name="fp_key"/>
+  <table-filter exclude="true" match-name="gff3atts"/>
+  <table-filter exclude="true" match-name="gff3view"/>
+  <table-filter exclude="true" match-name="gffatts"/>
+  <table-filter exclude="true" match-name="intron_combined_view"/>
+  <table-filter exclude="true" match-name="intronloc_view"/>
+  <table-filter exclude="true" match-name="stats_paths_to_root"/>
+  <table-filter exclude="true" match-name="type_feature_count"/>
+  
+  <table-filter exclude="true" match-name="materialized_view"/>
+  
+  <table-filter match-name=".*" package="org.gmod.gbol.simpleObject.generated" match-schema="public">
+    <meta attribute="extends">org.gmod.gbol.simpleObject.AbstractSimpleObject</meta>
+    <meta attribute="scope-class">public abstract</meta>
+  </table-filter>
+      
   <table schema="public" name="acquisition" class="Acquisition">
-    
     <primary-key>
       <generator class="sequence">
         <param name="sequence">acquisition_acquisition_id_seq</param>

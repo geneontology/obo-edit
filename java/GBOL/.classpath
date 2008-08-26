@@ -40,5 +40,9 @@
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-8.3-603.jdbc3.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-tools.jar"/>
+	<classpathentry kind="lib" path="lib/freemarker.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/Tidy.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
