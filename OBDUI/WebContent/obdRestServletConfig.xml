@@ -18,7 +18,7 @@
 	<dataSource>
 		<resourcePath>obdp</resourcePath>
 		<OBDSQLAdaptor>
-			<hostname>localhost</hostname>
+			<hostname>131.243.192.78</hostname>
 			<port>5432</port>
 			<username>cjm</username>
 			<password></password>
