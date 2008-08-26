@@ -5,9 +5,9 @@
 <hibernate-configuration>
     <session-factory name="SessionFactory">
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.password">limecat</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://bop.lbl.gov:5432/chado_1_test</property>
-        <property name="hibernate.connection.username">db_public</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/chado_1_test</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <!--  <property name="hibernate.connection.password"></property>-->
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     </session-factory>
 </hibernate-configuration>
