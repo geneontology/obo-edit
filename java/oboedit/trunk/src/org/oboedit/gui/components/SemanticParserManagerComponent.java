@@ -88,9 +88,9 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		summaryField.setEditable(false);
 	}
 
-// 	protected void enableReasoner(final boolean enableReasoner) {
-// 		SessionManager.getManager().setUseReasoner(enableReasoner);
-// 	}
+ 	protected void enableReasoner(final boolean enableReasoner) {
+ 		SessionManager.getManager().setUseReasoner(enableReasoner);
+ 	}
 	protected void enableSemanticParser(final boolean enableParser) {
 		if (enableParser) {
 			logger.info("creating parser");
@@ -109,7 +109,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		String text = "<html><body>\n";
 		text += "Reasoning completed.";
 		text += "</body></html>";
-		// logger.info("newLinks = "+reasoner.getNewLinks());
+		//logger.info("newLinks = "+reasoner.getNewLinks());
 		final String summaryText = text;
 
 		Runnable screenUpdate = new Runnable() {
@@ -121,8 +121,8 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 
 //				useReasonerCheckbox.removeActionListener(reasonerListener);
 //				useReasonerCheckbox.setSelected(enableReasoner);
+				
 				useSemanticParserCheckbox.addActionListener(semanticParserListener);
-
 				validate();
 				repaint();
 				summaryField.setText(summaryText);
@@ -130,9 +130,14 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		};
 		SwingUtilities.invokeLater(screenUpdate);
 	}
+	
+
 
 	@Override
 	public void init() {
+		updateProgressPanel(SessionManager.getManager().getUseReasoner());
+
+		
 		/*
 		 * useReasonerCheckbox.removeActionListener(reasonerListener);
 		 * useReasonerCheckbox.setSelected(controller.getUseReasoner()); for(int
@@ -143,7 +148,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 
 //		SessionManager.getManager().addReasonerListener(reasonerActionListener, true);
 
-//		updateProgressPanel(SessionManager.getManager().getUseReasoner());
+		//updateProgressPanel(SessionManager.getManager().getUseReasoner());
 	}
 
 	@Override
