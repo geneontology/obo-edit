@@ -13,35 +13,33 @@ import org.obo.datamodel.LinkedObject;
 
 	public class RestrictedJTree extends JTree {
 		
-		
 		TreeModel model;
+		TreeViewSettings treeViewSettingsInstance;
+		TreePath path;
 		
 		private static final long serialVersionUID = 1L;
+		
+		//I added this constructor.
+		public RestrictedJTree(TreeViewSettings treeViewSettingsInstance) {
+			super();
 
-		protected class VisibleRunnable implements Runnable {
-			protected TreePath path;
-
-			public VisibleRunnable(TreePath path) {
-				this.path = path;
-			}
-
-			public void run() {
-				makeVisible(path);
-			}
+			this.treeViewSettingsInstance = treeViewSettingsInstance;
+			System.out.println("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
 		}
+		
 
 		protected Runnable visibleRunnable = new Runnable() {
 			public void run() {
 				makeVisible(path);
+				System.out.println("RestrictedJTree: visibleRunnable: path is " + path);
 			}
 		};
 
 		boolean expandAllowed = false;
-
-		TreePath path;
-
+	
 		public void refresh() {
 			refresh(false);
+			System.out.println("RestrictedJTree: refresh method.");	
 		}
 
 		public void refresh(boolean fromThread) {
@@ -51,6 +49,8 @@ import org.obo.datamodel.LinkedObject;
 			expandPaths(fromThread);
 			expandAllowed = false;
 			repaint();
+			System.out.println("RestrictedJTree: refresh method with fromThread arg.");	
+
 		}
 
 		protected void expandPaths(boolean fromThread) {
@@ -62,10 +62,10 @@ import org.obo.datamodel.LinkedObject;
 		protected void expandPaths(TreePath parentPath, Object o,
 				Set<Object> seenem, boolean fromThread) {
 
-//Needs fixed!			
-//			if (trimPaths() && seenem.contains(o)) {
-//				return;
-//			}
+			//I changed trimPaths() to treeViewSettingsInstance.getTrimPaths()
+			if (treeViewSettingsInstance.getTrimPaths() && seenem.contains(o)) {
+				return;
+			}
 			seenem.add(o);
 			TreePath path;
 			if (parentPath == null)

@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.bbop.framework.ComponentConfiguration;
 
 public class TreeViewSettings implements ComponentConfiguration {
-	protected boolean multiSelect = false;
+	protected boolean multiSelect = true;
 
-	protected boolean trimPaths = true;
+	protected boolean trimPaths = false;
 
 	protected boolean showNonTransitive = false;
 

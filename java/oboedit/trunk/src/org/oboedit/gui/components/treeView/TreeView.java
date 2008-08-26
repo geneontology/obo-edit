@@ -57,9 +57,6 @@ public class TreeView extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeView.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	protected JScrollPane pane;
 	protected JLabel emptyLabel = new JLabel("No terms selected");
@@ -126,7 +123,7 @@ public class TreeView extends AbstractGUIComponent {
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(200, 200));
 		setOpaque(true);
-		tree = new RestrictedJTree();
+		tree = new RestrictedJTree(treeViewSettingsInstance);
 		tree.setUI(getDefaultUI());
 		tree.setCellRenderer(new OBOCellRenderer());
 		tree.setSelectionModel(selectionModel);
@@ -411,15 +408,6 @@ public class TreeView extends AbstractGUIComponent {
 		return ui;
 	}
 
-//	public boolean showNonTransitive() {
-//		logger.debug("TreeView: showNonTransitive method.");
-//		return showNonTransitiveCheckbox.isSelected();
-//	}
-//
-//	public boolean trimPaths() {
-//		logger.debug("TreeView: trimPaths method.");
-//		return trimPathsCheckbox.isSelected();
-//	}
 
 //	public JComponent getComponent() {
 //		logger.debug("TreeView: getComponent method.");

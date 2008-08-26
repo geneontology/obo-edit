@@ -105,6 +105,11 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	}
 
 
+	public boolean showNonTransitive() {
+		logger.debug("TreeView: showNonTransitive method.");
+		return showNonTransitiveCheckbox.isSelected();
+	}
+
 
 
 	
