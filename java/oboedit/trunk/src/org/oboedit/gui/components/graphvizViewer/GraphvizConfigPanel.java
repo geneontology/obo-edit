@@ -123,7 +123,7 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 		//not sure what this line does.
 		pane.setContentPane(panel);
 
-//		Adds the main panel to the treeViewSettingsInstance window.
+//		Adds the main panel to the configuration window.
 
 		add(panel);
 		panel.setBackground(Preferences.defaultBackgroundColor());
