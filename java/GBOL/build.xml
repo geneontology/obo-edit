@@ -113,9 +113,13 @@
 	</target>
 	
 	<target name="generateExtendedClasses">
-		<hibernatetool destdir="src" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/pojo/">
+		<hibernatetool destdir="src" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="hibernateConfiguration/GBOLhibernate.cfg.xml"  revengfile="hibernateConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate template="SimpleObjectSubclassGenerator.ftl" filepattern="../generated/extendedClasses/{class-name}.java"/>
+			<hbmtemplate template="SimpleObjectSubclass.ftl" filepattern="../generated/extendedClasses/{class-name}.java"/>
+		</hibernatetool>
+		<hibernatetool destdir="src" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/gbolCustomTemplates/">
+			<jdbcconfiguration configurationfile="hibernateConfiguration/GBOLhibernate.cfg.xml"  revengfile="hibernateConfiguration/chado1_0.reveng.xml"/>
+			<hbmtemplate template="SimpleObjectSubclassHibernateMapping.ftl" filepattern="../generated/extendedClasses/{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
 	
