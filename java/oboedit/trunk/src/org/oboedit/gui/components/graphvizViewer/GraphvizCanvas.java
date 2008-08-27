@@ -62,12 +62,12 @@ import org.oboedit.gui.event.SelectionListener;
 
 /*
  * The org.oboedit.gui.components.graphvizViewer package has been developed from John Day-Richter's original Graphviz Component file. 
- * The package now has several classes in separate files, and the treeViewSettingsInstance settings
+ * The package now has several classes in separate files, and the configuration settings
  * are now accessed via the wrench icon instead of via the options button. 
  * The modifications were made by Jennifer Deegan and Nicolas Rodriguez at the EBI
  * in Summer 2008.
  * 
- * There is a diagram showing how the treeViewSettingsInstance code interacts at 
+ * There is a diagram showing how the configuration code interacts at 
  * graphvizViewer/doc-files/GraphvizConfiguration.png
  * The editing version is in the same directory in svg format. 
  * 
@@ -102,7 +102,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	static int idgen = 0;
 	public JCheckBox primaryFiltersCheckbox = new JCheckBox("Use primary filters", false);
 	/**
-	 * Holds all the treeViewSettingsInstance options to call graphviz.
+	 * Holds all the configuration options to call graphviz.
 	 * 
 	 * There should be only one instance of it !! 
 	 */
@@ -518,8 +518,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ graphvizSettingsInstance.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 
-				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -T"
-				// + treeViewSettingsInstance.getViewerFormat() + " -o "
+				// //logger.debug(configuration.getDotPath() + " -T"
+				// + configuration.getViewerFormat() + " -o "
 				// + imageFile.getPath() + " " + textFile.getPath());
 
 				p.waitFor();
@@ -528,7 +528,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						graphvizSettingsInstance.getDotPath() + " -Tcmapx "
 						+ noDisjointTextFile.getPath());
 
-				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -Tcmapx "
+				// //logger.debug(configuration.getDotPath() + " -Tcmapx "
 				// + textFile.getPath());
 				StringBuffer buffer = new StringBuffer();
 				buffer.append("<html>\n");
@@ -671,7 +671,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					outputFile += ef.getExt();
 				}
 
-				// //logger.debug(treeViewSettingsInstance.getDotPath() + " -T"
+				// //logger.debug(configuration.getDotPath() + " -T"
 				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
 				// + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
