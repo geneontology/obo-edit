@@ -1,6 +1,13 @@
 package org.oboedit.gui.components;
 
-/** This class used to be called DAGView */
+/** This class used to be called DAGView 
+ * 
+ * Please note that this class file is currently being replaced by a new version of
+ * the Tree Viewer in its own package at org.oboedit.gui.components.treeView.
+ * The new version is still under construction and is quite buggy. If you would
+ * like to make changes to the Tree Viewer it would be helpful to mail
+ * Jennifer Deegan at jdeegan @ ebi.ac.uk first to discuss which version to modify. 
+ * */
 
 import javax.swing.*;
 
