@@ -40,12 +40,14 @@
   
   <table-filter exclude="true" match-name="materialized_view"/>
   
+  
   <table-filter match-name=".*" package="org.gmod.gbol.simpleObject.generated" match-schema="public">
     <meta attribute="extends">org.gmod.gbol.simpleObject.AbstractSimpleObject</meta>
-    <meta attribute="scope-class">public abstract</meta>
   </table-filter>
-      
+  
   <table schema="public" name="acquisition" class="Acquisition">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">acquisition_acquisition_id_seq</param>
@@ -67,6 +69,8 @@
   </table>
     
   <table schema="public" name="acquisitionprop" class="AcquisitionProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="acquisitionPropertyId">
       <generator class="sequence">
         <param name="sequence">acquisitionprop_acquisitionprop_id_seq</param>
@@ -78,6 +82,8 @@
   </table>
   
   <table schema="public" name="acquisition_relationship" class="AcquisitionRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">acquisition_relationship_acquisition_relationship_id_seq</param>
@@ -90,6 +96,8 @@
   </table>
   
   <table schema="public" name="analysis" class="Analysis">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">analysis</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">analysis_analysis_id_seq</param>
@@ -110,6 +118,8 @@
   </table>
   
   <table schema="public" name="analysisfeature" class="AnalysisFeature">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">analysis</meta>
     <primary-key property="analysisFeatureId">
       <generator class="sequence">
         <param name="sequence">analysisfeature_analysisfeature_id_seq</param>
@@ -122,6 +132,8 @@
   </table>
   
   <table schema="public" name="analysisprop" class="AnalysisProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">analysis</meta>
     <primary-key property="analysisPropertyId">
       <generator class="sequence">
         <param name="sequence">analysisprop_analysisprop_id_seq</param>
@@ -133,6 +145,8 @@
   </table>
   
   <table schema="public" name="arraydesign" class="ArrayDesign">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="arrayDesignId">
       <generator class="sequence">
         <param name="sequence">arraydesign_arraydesign_id_seq</param>
@@ -149,6 +163,8 @@
   </table>
   
   <table schema="public" name="arraydesignprop" class="ArrayDesignProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="arrayDesignPropertyId">
       <generator class="sequence">
         <param name="sequence">arraydesignprop_arraydesignprop_id_seq</param>
@@ -160,6 +176,8 @@
   </table>
   
   <table schema="public" name="assay" class="Assay">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">assay_assay_id_seq</param>
@@ -182,6 +200,8 @@
   </table>
   
   <table schema="public" name="assay_biomaterial" class="AssayBiomaterial">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">assay_biomaterial_assay_biomaterial_id_seq</param>
@@ -194,6 +214,8 @@
   </table>
   
   <table schema="public" name="assay_project" class="AssayProject">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">assay_project_assay_project_id_seq</param>
@@ -204,6 +226,8 @@
   </table>
   
   <table schema="public" name="assayprop" class="AssayProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="assayPropertyId">
       <generator class="sequence">
         <param name="sequence">assayprop_assayprop_id_seq</param>
@@ -215,6 +239,8 @@
   </table>
   
   <table schema="public" name="biomaterial" class="Biomaterial">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">biomaterial_biomaterial_id_seq</param>
@@ -224,6 +250,8 @@
   </table>
   
   <table schema="public" name="biomaterial_dbxref" class="BiomaterialDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="biomaterialDBXrefId">
       <generator class="sequence">
         <param name="sequence">biomaterial_dbxref_biomaterial_dbxref_id_seq</param>
@@ -234,6 +262,8 @@
   </table>
   
   <table schema="public" name="biomaterial_relationship" class="BiomaterialRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">biomaterial_relationship_biomaterial_relationship_id_seq</param>
@@ -254,6 +284,8 @@
   </table>
   
   <table schema="public" name="biomaterial_treatment" class="BiomaterialTreatment">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">biomaterial_treatment_biomaterial_treatment_id_seq</param>
@@ -264,6 +296,8 @@
   </table>
   
   <table schema="public" name="biomaterialprop" class="BiomaterialProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="biomaterialPropertyId">
       <generator class="sequence">
         <param name="sequence">biomaterialprop_biomaterialprop_id_seq</param>
@@ -275,6 +309,8 @@
   </table>
   
   <table schema="public" name="channel" class="Channel">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">channel_channel_id_seq</param>
@@ -291,6 +327,8 @@
   </table>
   
   <table schema="public" name="contact" class="Contact">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">contact</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">contact_contact_id_seq</param>
@@ -334,6 +372,8 @@
   </table>
   
   <table schema="public" name="contact_relationship" class="ContactRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">contact</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">contact_relationship_contact_relationship_id_seq</param>
@@ -345,6 +385,8 @@
   </table>
   
   <table schema="public" name="control" class="Control">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">control_control_id_seq</param>
@@ -357,6 +399,8 @@
   </table>
   
   <table schema="public" name="cv" class="CV">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">cv_cv_id_seq</param>
@@ -374,6 +418,8 @@
   </table>
   
   <table schema="public" name="cvterm" class="CVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermId">
       <generator class="sequence">
         <param name="sequence">cvterm_cvterm_id_seq</param>
@@ -722,6 +768,8 @@
   </table>
   
   <table schema="public" name="cvterm_dbxref" class="CVTermDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermDBXrefId">
       <generator class="sequence">
         <param name="sequence">cvterm_dbxref_cvterm_dbxref_id_seq</param>
@@ -732,6 +780,8 @@
   </table>
   
   <table schema="public" name="cvterm_relationship" class="CVTermRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermRelationshipId">
       <generator class="sequence">
         <param name="sequence">cvterm_relationship_cvterm_relationship_id_seq</param>
@@ -743,6 +793,8 @@
   </table>
   
   <table schema="public" name="cvtermpath" class="CVTermPath">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermPathId">
       <generator class="sequence">
         <param name="sequence">cvtermpath_cvtermpath_id_seq</param>
@@ -755,6 +807,8 @@
   </table>
   
   <table schema="public" name="cvtermprop" class="CVTermProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermPropertyId">
       <generator class="sequence">
         <param name="sequence">cvtermprop_cvtermprop_id_seq</param>
@@ -767,6 +821,8 @@
   </table>
   
   <table schema="public" name="cvtermsynonym" class="CVTermSynonym">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="cvtermSynonym">
       <generator class="sequence">
         <param name="sequence">cvtermsynonym_cvtermsynonym_id_seq</param>
@@ -777,6 +833,8 @@
   </table>
   
   <table schema="public" name="db" class="DB">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">general</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">db_db_id_seq</param>
@@ -791,6 +849,8 @@
   </table>
   
   <table schema="public" name="dbxref" class="DBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">general</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">dbxref_dbxref_id_seq</param>
@@ -882,6 +942,8 @@
   </table>
   
   <table schema="public" name="dbxrefprop" class="DBXrefProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">cv</meta>
     <primary-key property="dbxrefPropertyId">
       <generator class="sequence">
         <param name="sequence">dbxrefprop_dbxrefprop_id_seq</param>
@@ -893,6 +955,8 @@
   </table>
   
   <table schema="public" name="eimage" class="EImage">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="eImageId">
       <generator class="sequence">
         <param name="sequence">eimage_eimage_id_seq</param>
@@ -906,6 +970,8 @@
   </table>
   
   <table schema="public" name="element" class="Element">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">element_element_id_seq</param>
@@ -925,6 +991,8 @@
   </table>
   
   <table schema="public" name="elementresult" class="ElementResult">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="elementResultId">
       <generator class="sequence">
         <param name="sequence">elementresult_elementresult_id_seq</param>
@@ -943,6 +1011,8 @@
   </table>
   
   <table schema="public" name="elementresult_relationship" class="ElementResultRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="elementResultRelationshipId">
       <generator class="sequence">
         <param name="sequence">elementresult_relationship_elementresult_relationship_id_seq</param>
@@ -954,6 +1024,8 @@
   </table>
   
   <table schema="public" name="element_relationship" class="ElementRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">element_relationship_element_relationship_id_seq</param>
@@ -965,6 +1037,8 @@
   </table>
   
   <table schema="public" name="environment" class="Environment">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">environment_environment_id_seq</param>
@@ -988,6 +1062,8 @@
   </table>
   
   <table schema="public" name="environment_cvterm" class="EnvironmentCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">environment_cvterm_environment_cvterm_id_seq</param>
@@ -998,6 +1074,8 @@
   </table>
   
   <table schema="public" name="expression" class="Expression">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">expression_expression_id_seq</param>
@@ -1007,6 +1085,8 @@
   </table>
   
   <table schema="public" name="expression_cvterm" class="ExpressionCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="expressionCVTermId">
       <generator class="sequence">
         <param name="sequence">expression_cvterm_expression_cvterm_id_seq</param>
@@ -1018,6 +1098,8 @@
   </table>
   
   <table schema="public" name="expression_cvtermprop" class="ExpressionCVTermProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="expressionCVTermPropertyId">
       <generator class="sequence">
         <param name="sequence">expression_cvtermprop_expression_cvtermprop_id_seq</param>
@@ -1029,6 +1111,8 @@
   </table>
   
   <table schema="public" name="expression_image" class="ExpressionImage">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">expression_image_expression_image_id_seq</param>
@@ -1039,6 +1123,8 @@
   </table>
   
   <table schema="public" name="expression_pub" class="ExpressionPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="expressionPublicationId">
       <generator class="sequence">
         <param name="sequence">expression_pub_expression_pub_id_seq</param>
@@ -1049,6 +1135,8 @@
   </table>
   
   <table schema="public" name="expressionprop" class="ExpressionProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="expressionPropertyId">
       <generator class="sequence">
         <param name="sequence">expressionprop_expressionprop_id_seq</param>
@@ -1060,6 +1148,8 @@
   </table>
   
   <table schema="public" name="feature" class="Feature">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_feature_id_seq</param>
@@ -1146,6 +1236,8 @@
   </table>
   
   <table schema="public" name="feature_cvterm" class="FeatureCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureCVTermId">
       <generator class="sequence">
         <param name="sequence">feature_cvterm_feature_cvterm_id_seq</param>
@@ -1158,6 +1250,8 @@
   </table>
   
   <table schema="public" name="feature_cvterm_dbxref" class="FeatureCVTermDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureCVTermDBXrefId">
       <generator class="sequence">
         <param name="sequence">feature_cvterm_dbxref_feature_cvterm_dbxref_id_seq</param>
@@ -1168,6 +1262,8 @@
   </table>
   
   <table schema="public" name="feature_cvterm_pub" class="FeatureCVTermPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureCVTermPublicationId">
       <generator class="sequence">
         <param name="sequence">feature_cvterm_pub_feature_cvterm_pub_id_seq</param>
@@ -1178,6 +1274,8 @@
   </table>
   
   <table schema="public" name="feature_cvtermprop" class="FeatureCVTermProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureCVTermPropertyId">
       <generator class="sequence">
         <param name="sequence">feature_cvtermprop_feature_cvtermprop_id_seq</param>
@@ -1189,6 +1287,8 @@
   </table>
   
   <table schema="public" name="feature_dbxref" class="FeatureDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureDBXrefId">
       <generator class="sequence">
         <param name="sequence">feature_dbxref_feature_dbxref_id_seq</param>
@@ -1199,6 +1299,8 @@
   </table>
   
   <table schema="public" name="feature_expression" class="FeatureExpression">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_expression_feature_expression_id_seq</param>
@@ -1210,6 +1312,8 @@
   </table>
   
   <table schema="public" name="feature_expressionprop" class="FeatureExpressionProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">expression</meta>
     <primary-key property="featureExpressionPropertyId">
       <generator class="sequence">
         <param name="sequence">feature_expressionprop_feature_expressionprop_id_seq</param>
@@ -1221,6 +1325,8 @@
   </table>
   
   <table schema="public" name="feature_genotype" class="FeatureGenotype">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_genotype_feature_genotype_id_seq</param>
@@ -1235,6 +1341,8 @@
   </table>
   
   <table schema="public" name="feature_phenotype" class="FeaturePhenotype">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_phenotype_feature_phenotype_id_seq</param>
@@ -1245,6 +1353,8 @@
   </table>
   
   <table schema="public" name="feature_pub" class="FeaturePublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featurePublicationId">
       <generator class="sequence">
         <param name="sequence">feature_pub_feature_pub_id_seq</param>
@@ -1255,6 +1365,8 @@
   </table>
   
   <table schema="public" name="feature_pubprop" class="FeaturePublicationProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featurePublicationPropertyId">
       <generator class="sequence">
         <param name="sequence">feature_pubprop_feature_pubprop_id_seq</param>
@@ -1266,6 +1378,8 @@
   </table>
   
   <table schema="public" name="feature_relationship" class="FeatureRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_relationship_feature_relationship_id_seq</param>
@@ -1278,6 +1392,8 @@
   </table>
   
   <table schema="public" name="feature_relationship_pub" class="FeatureRelationshipPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureRleationshipPublication">
       <generator class="sequence">
         <param name="sequence">feature_relationship_pub_feature_relationship_pub_id_seq</param>
@@ -1288,6 +1404,8 @@
   </table>
   
   <table schema="public" name="feature_relationshipprop" class="FeatureRelationshipProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureRelationshipPropertyId">
       <generator class="sequence">
         <param name="sequence">feature_relationshipprop_feature_relationshipprop_id_seq</param>
@@ -1299,6 +1417,8 @@
   </table>
   
   <table schema="public" name="feature_relationshipprop_pub" class="FeatureRelationshipPropertyPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureRelationshipPropertyPublicationId">
       <generator class="sequence">
         <param name="sequence">feature_relationshipprop_pub_feature_relationshipprop_pub_i_seq</param>
@@ -1309,6 +1429,8 @@
   </table>
   
   <table schema="public" name="feature_synonym" class="FeatureSynonym">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">feature_synonym_feature_synonym_id_seq</param>
@@ -1320,6 +1442,8 @@
   </table>
   
   <table schema="public" name="featureloc" class="FeatureLocation">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureLocationId">
       <generator class="sequence">
         <param name="sequence">featureloc_featureloc_id_seq</param>
@@ -1331,6 +1455,8 @@
   </table>
   
   <table schema="public" name="featureloc_pub" class="FeatureLocationPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featureLocationPublicationId">
       <generator class="sequence">
         <param name="sequence">featureloc_pub_featureloc_pub_id_seq</param>
@@ -1341,6 +1467,8 @@
   </table>
   
   <table schema="public" name="featuremap" class="FeatureMap">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">map</meta>
     <primary-key property="featureMapId">
       <generator class="sequence">
         <param name="sequence">featuremap_featuremap_id_seq</param>
@@ -1350,6 +1478,8 @@
   </table>
   
   <table schema="public" name="featuremap_pub" class="FeatureMapPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">map</meta>
     <primary-key property="featureMapPublicationId">
       <generator class="sequence">
         <param name="sequence">featuremap_pub_featuremap_pub_id_seq</param>
@@ -1360,6 +1490,8 @@
   </table>
   
   <table schema="public" name="featurepos" class="FeaturePosition">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">map</meta>
     <primary-key property="featurePositionId">
       <generator class="sequence">
         <param name="sequence">featurepos_featurepos_id_seq</param>
@@ -1372,6 +1504,8 @@
   </table>
   
   <table schema="public" name="featureprop" class="FeatureProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featurePropertyId">
       <generator class="sequence">
         <param name="sequence">featureprop_featureprop_id_seq</param>
@@ -1383,6 +1517,8 @@
   </table>
   
   <table schema="public" name="featureprop_pub" class="FeaturePropertyPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key property="featurePropertyPublicationId">
       <generator class="sequence">
         <param name="sequence">featureprop_pub_featureprop_pub_id_seq</param>
@@ -1393,6 +1529,8 @@
   </table>
   
   <table schema="public" name="featurerange" class="FeatureRange">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">map</meta>
     <primary-key property="featureRangeId">
       <generator class="sequence">
         <param name="sequence">featurerange_featurerange_id_seq</param>
@@ -1404,6 +1542,8 @@
   </table>
   
   <table schema="public" name="genotype" class="Genotype">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">genotype_genotype_id_seq</param>
@@ -1425,6 +1565,8 @@
   </table>
   
   <table schema="public" name="library" class="Library">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">library_library_id_seq</param>
@@ -1438,6 +1580,8 @@
   </table>
   
   <table schema="public" name="library_cvterm" class="LibraryCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="libraryCVTermId">
       <generator class="sequence">
         <param name="sequence">library_cvterm_library_cvterm_id_seq</param>
@@ -1449,6 +1593,8 @@
   </table>
   
   <table schema="public" name="library_dbxref" class="LibraryDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="libraryDBXrefId">
       <generator class="sequence">
         <param name="sequence">library_dbxref_library_dbxref_id_seq</param>
@@ -1459,6 +1605,8 @@
   </table>
   
   <table schema="public" name="library_feature" class="LibraryFeature">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">library_feature_library_feature_id_seq</param>
@@ -1469,6 +1617,8 @@
   </table>
   
   <table schema="public" name="library_pub" class="LibraryPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="libraryPublicationId">
       <generator class="sequence">
         <param name="sequence">library_pub_library_pub_id_seq</param>
@@ -1479,6 +1629,8 @@
   </table>
   
   <table schema="public" name="library_synonym" class="LibrarySynonym">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="librarySynonymId">
       <generator class="sequence">
         <param name="sequence">library_synonym_library_synonym_id_seq</param>
@@ -1490,6 +1642,8 @@
   </table>
   
   <table schema="public" name="libraryprop" class="LibraryProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="libraryPropertyId">
       <generator class="sequence">
         <param name="sequence">libraryprop_libraryprop_id_seq</param>
@@ -1501,6 +1655,8 @@
   </table>
   
   <table schema="public" name="libraryprop_pub" class="LibraryPropertyPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">library</meta>
     <primary-key property="libraryPropertyPublicationId">
       <generator class="sequence">
         <param name="sequence">libraryprop_pub_libraryprop_pub_id_seq</param>
@@ -1511,6 +1667,8 @@
   </table>
   
   <table schema="public" name="magedocumentation" class="MAGEDocumentation">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="mageDocumentationId">
       <generator class="sequence">
         <param name="sequence">magedocumentation_magedocumentation_id_seq</param>
@@ -1523,6 +1681,8 @@
   </table>
   
   <table schema="public" name="mageml" class="MAGEML">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">mageml_mageml_id_seq</param>
@@ -1536,6 +1696,8 @@
   </table>
   
   <table schema="public" name="organism" class="Organism">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">organism</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">organism_organism_id_seq</param>
@@ -1565,6 +1727,8 @@
   </table>
   
   <table schema="public" name="organism_dbxref" class="OrganismDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">organism</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">organism_dbxref_organism_dbxref_id_seq</param>
@@ -1575,6 +1739,8 @@
   </table>
   
   <table schema="public" name="organismprop" class="OrganismProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">organism</meta>
     <primary-key property="organismPropertyId">
       <generator class="sequence">
         <param name="sequence">organismprop_organismprop_id_seq</param>
@@ -1586,6 +1752,8 @@
   </table>
   
   <table schema="public" name="phendesc" class="PhenotypeDescription">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key property="phenotypeDescriptionId">
       <generator class="sequence">
         <param name="sequence">phendesc_phendesc_id_seq</param>
@@ -1598,6 +1766,8 @@
   </table>
   
   <table schema="public" name="phenotype" class="Phenotype">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">phenotype_phenotype_id_seq</param>
@@ -1615,6 +1785,8 @@
   </table>
   
   <table schema="public" name="phenotype_comparison" class="PhenotypeComparison">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">phenotype_comparison_phenotype_comparison_id_seq</param>
@@ -1629,6 +1801,8 @@
   </table>
   
   <table schema="public" name="phenotype_comparison_cvterm" class="PhenotypeComparisonCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key property="phenotypeComparisonCVTermId">
       <generator class="sequence">
         <param name="sequence">phenotype_comparison_cvterm_phenotype_comparison_cvterm_id_seq</param>
@@ -1639,6 +1813,8 @@
   </table>
   
   <table schema="public" name="phenotype_cvterm" class="PhenotypeCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key property="phenotypeCVTermId">
       <generator class="sequence">
         <param name="sequence">phenotype_cvterm_phenotype_cvterm_id_seq</param>
@@ -1650,6 +1826,8 @@
   </table>
   
   <table schema="public" name="phenstatement" class="PhenotypeStatement">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">genetic</meta>
     <primary-key property="phenotypeStatementId">
       <generator class="sequence">
         <param name="sequence">phenstatement_phenstatement_id_seq</param>
@@ -1663,6 +1841,8 @@
   </table>
   
   <table schema="public" name="phylonode" class="PhylogeneticNode">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodeId">
       <generator class="sequence">
         <param name="sequence">phylonode_phylonode_id_seq</param>
@@ -1689,6 +1869,8 @@
   </table>
   
   <table schema="public" name="phylonode_dbxref" class="PhylogeneticNodeDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodeDBXrefId">
       <generator class="sequence">
         <param name="sequence">phylonode_dbxref_phylonode_dbxref_id_seq</param>
@@ -1699,6 +1881,8 @@
   </table>
   
   <table schema="public" name="phylonode_organism" class="PhylogeneticNodeOrganism">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodeOrganismId">
       <generator class="sequence">
         <param name="sequence">phylonode_organism_phylonode_organism_id_seq</param>
@@ -1708,6 +1892,8 @@
   </table>
   
   <table schema="public" name="phylonode_pub" class="PhylogeneticNodePublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodePublicationId">
       <generator class="sequence">
         <param name="sequence">phylonode_pub_phylonode_pub_id_seq</param>
@@ -1718,6 +1904,8 @@
   </table>
   
   <table schema="public" name="phylonode_relationship" class="PhylogeneticNodeRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodeRelationshipId">
       <generator class="sequence">
         <param name="sequence">phylonode_relationship_phylonode_relationship_id_seq</param>
@@ -1729,6 +1917,8 @@
   </table>
   
   <table schema="public" name="phylonodeprop" class="PhylogeneticNodeProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticNodePropertyId">
       <generator class="sequence">
         <param name="sequence">phylonodeprop_phylonodeprop_id_seq</param>
@@ -1741,6 +1931,8 @@
   </table>
   
   <table schema="public" name="phylotree" class="PhylogeneticTree">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticTreeId">
       <generator class="sequence">
         <param name="sequence">phylotree_phylotree_id_seq</param>
@@ -1754,6 +1946,8 @@
   </table>
   
   <table schema="public" name="phylotree_pub" class="PhylogeneticTreePublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">phylogeny</meta>
     <primary-key property="phylogeneticTreePublicationId">
       <generator class="sequence">
         <param name="sequence">phylotree_pub_phylotree_pub_id_seq</param>
@@ -1764,6 +1958,8 @@
   </table>
   
   <table schema="public" name="project" class="Project">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">general</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">project_project_id_seq</param>
@@ -1773,6 +1969,8 @@
   </table>
   
   <table schema="public" name="protocol" class="Protocol">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">protocol_protocol_id_seq</param>
@@ -1800,6 +1998,8 @@
   </table>
   
   <table schema="public" name="protocolparam" class="ProtocolParameter">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="protocolParameterId">
       <generator class="sequence">
         <param name="sequence">protocolparam_protocolparam_id_seq</param>
@@ -1810,6 +2010,8 @@
   </table>
   
   <table schema="public" name="pub" class="Publication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">publication</meta>
     <primary-key property="publicationId">
       <generator class="sequence">
         <param name="sequence">pub_pub_id_seq</param>
@@ -1915,6 +2117,8 @@
   </table>
   
   <table schema="public" name="pub_dbxref" class="PublicationDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">publication</meta>
     <primary-key property="publicationDBXrefId">
       <generator class="sequence">
         <param name="sequence">pub_dbxref_pub_dbxref_id_seq</param>
@@ -1925,6 +2129,8 @@
   </table>
   
   <table schema="public" name="pub_relationship" class="PublicationRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">publication</meta>
     <primary-key property="publicationRelationshipId">
       <generator class="sequence">
         <param name="sequence">pub_relationship_pub_relationship_id_seq</param>
@@ -1936,6 +2142,8 @@
   </table>
   
   <table schema="public" name="pubauthor" class="PublicationAuthor">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">publication</meta>
     <primary-key property="publicationAuthorId">
       <generator class="sequence">
         <param name="sequence">pubauthor_pubauthor_id_seq</param>
@@ -1947,6 +2155,8 @@
   </table>
   
   <table schema="public" name="pubprop" class="PublicationProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">publication</meta>
     <primary-key property="publicationPropertyId">
       <generator class="sequence">
         <param name="sequence">pubprop_pubprop_id_seq</param>
@@ -1958,6 +2168,8 @@
   </table>
   
   <table schema="public" name="quantification" class="Quantification">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">quantification_quantification_id_seq</param>
@@ -1980,6 +2192,8 @@
   </table>
   
   <table schema="public" name="quantification_relationship" class="QuantificationRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">quantification_relationship_quantification_relationship_id_seq</param>
@@ -1991,6 +2205,8 @@
   </table>
   
   <table schema="public" name="quantificationprop" class="QuantificationProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="quantificationPropertyId">
       <generator class="sequence">
         <param name="sequence">quantificationprop_quantificationprop_id_seq</param>
@@ -2002,6 +2218,8 @@
   </table>
   
   <table schema="public" name="stock" class="Stock">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">stock_stock_id_seq</param>
@@ -2024,6 +2242,8 @@
   </table>
   
   <table schema="public" name="stock_cvterm" class="StockCVTerm">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockCVTermId">
       <generator class="sequence">
         <param name="sequence">stock_cvterm_stock_cvterm_id_seq</param>
@@ -2035,6 +2255,8 @@
   </table>
   
   <table schema="public" name="stock_dbxref" class="StockDBXref">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockDBXrefId">
       <generator class="sequence">
         <param name="sequence">stock_dbxref_stock_dbxref_id_seq</param>
@@ -2045,6 +2267,8 @@
   </table>
   
   <table schema="public" name="stock_genotype" class="StockGenotype">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">stock_genotype_stock_genotype_id_seq</param>
@@ -2055,6 +2279,8 @@
   </table>
   
   <table schema="public" name="stock_pub" class="StockPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockPublicationId">
       <generator class="sequence">
         <param name="sequence">stock_pub_stock_pub_id_seq</param>
@@ -2065,6 +2291,8 @@
   </table>
   
   <table schema="public" name="stock_relationship" class="StockRelationship">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">stock_relationship_stock_relationship_id_seq</param>
@@ -2077,6 +2305,8 @@
   </table>
   
   <table schema="public" name="stock_relationship_pub" class="StockRelationshipPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockRelationshipPublicationId">
       <generator class="sequence">
         <param name="sequence">stock_relationship_pub_stock_relationship_pub_id_seq</param>
@@ -2087,6 +2317,8 @@
   </table>
   
   <table schema="public" name="stockcollection" class="StockCollection">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockCollectionId">
       <generator class="sequence">
         <param name="sequence">stockcollection_stockcollection_id_seq</param>
@@ -2097,6 +2329,8 @@
   </table>
   
   <table schema="public" name="stockcollection_stock" class="StockCollectionStock">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockCollectionStockId">
       <generator class="sequence">
         <param name="sequence">stockcollection_stock_stockcollection_stock_id_seq</param>
@@ -2107,6 +2341,8 @@
   </table>
   
   <table schema="public" name="stockcollectionprop" class="StockCollectionProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockCollectionPropertyId">
       <generator class="sequence">
         <param name="sequence">stockcollectionprop_stockcollectionprop_id_seq</param>
@@ -2118,6 +2354,8 @@
   </table>
   
   <table schema="public" name="stockprop" class="StockProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockPropertyId">
       <generator class="sequence">
         <param name="sequence">stockprop_stockprop_id_seq</param>
@@ -2129,6 +2367,8 @@
   </table>
   
   <table schema="public" name="stockprop_pub" class="StockPropertyPublication">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">stock</meta>
     <primary-key property="stockPropertyPublicationId">
       <generator class="sequence">
         <param name="sequence">stockprop_pub_stockprop_pub_id_seq</param>
@@ -2139,6 +2379,8 @@
   </table>
   
   <table schema="public" name="study" class="Study">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">study_study_id_seq</param>
@@ -2151,6 +2393,8 @@
   </table>
   
   <table schema="public" name="study_assay" class="StudyAssay">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">study_assay_study_assay_id_seq</param>
@@ -2161,6 +2405,8 @@
   </table>
   
   <table schema="public" name="studydesign" class="StudyDesign">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyDesignId">
       <generator class="sequence">
         <param name="sequence">studydesign_studydesign_id_seq</param>
@@ -2170,6 +2416,8 @@
   </table>
   
   <table schema="public" name="studydesignprop" class="StudyDesignProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyDesignPropertyId">
       <generator class="sequence">
         <param name="sequence">studydesignprop_studydesignprop_id_seq</param>
@@ -2181,6 +2429,8 @@
   </table>
   
   <table schema="public" name="studyfactor" class="StudyFactor">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyFactorId">
       <generator class="sequence">
         <param name="sequence">studyfactor_studyfactor_id_seq</param>
@@ -2191,6 +2441,8 @@
   </table>
   
   <table schema="public" name="studyfactorvalue" class="StudyFactorValue">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyFactorValueId">
       <generator class="sequence">
         <param name="sequence">studyfactorvalue_studyfactorvalue_id_seq</param>
@@ -2202,6 +2454,8 @@
   </table>
   
   <table schema="public" name="studyprop" class="StudyProperty">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyPropertyId">
       <generator class="sequence">
         <param name="sequence">studyprop_studyprop_id_seq</param>
@@ -2213,6 +2467,8 @@
   </table>
   
   <table schema="public" name="studyprop_feature" class="StudyPropertyFeature">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key property="studyPropertyFeatureId">
       <generator class="sequence">
         <param name="sequence">studyprop_feature_studyprop_feature_id_seq</param>
@@ -2223,6 +2479,8 @@
   </table>
   
   <table schema="public" name="synonym" class="Synonym">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">sequence</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">synonym_synonym_id_seq</param>
@@ -2240,6 +2498,8 @@
   </table>
   
   <table schema="public" name="tableinfo" class="TableInfo">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">general</meta>
     <primary-key property="tableInfoId">
       <generator class="sequence">
         <param name="sequence">tableinfo_tableinfo_id_seq</param>
@@ -2255,6 +2515,8 @@
   </table>
   
   <table schema="public" name="treatment" class="Treatment">
+    <meta attribute="scope-class">public abstract</meta>
+    <meta attribute="chadoModule">mage</meta>
     <primary-key>
       <generator class="sequence">
         <param name="sequence">treatment_treatment_id_seq</param>
@@ -2264,5 +2526,6 @@
     <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="protocol_id"><meta attribute="use-in-equals">true</meta></column>
   </table>
+  
   
 </hibernate-reverse-engineering>
