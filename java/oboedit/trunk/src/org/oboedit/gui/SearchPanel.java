@@ -118,8 +118,10 @@ public class SearchPanel extends JPanel {
 		return colorArray[index];
 	}
 
+	/*The lightbulb switches on when the currently selected term in the OTE, Graph Editor or Search Results Panel match the corresponding filter.
+	This can be useful when multiple filters are in use and the Search Results are designed to show the "Matches all" case and 
+	would be interesting to get an indication of "Matches any" terms with the lightbulb swiching on while browsing an ontology.*/
 	protected ActionListener lightbulbActionListener = new ActionListener() {
-
 		public void actionPerformed(ActionEvent e) {
 			setLightbulbsVisible(lightbulbButton.isSelected());
 		}
@@ -250,8 +252,7 @@ public class SearchPanel extends JPanel {
 		statusPanel.setOpaque(false);
 		statusPanel.setLayout(new GridLayout(1, 1));
 
-//		lightbulbButton = new JCheckBox("Show debugging hints   ", true);
-		lightbulbButton = new JCheckBox("Show lightbulb   ", true);
+		lightbulbButton = new JCheckBox("Indicate if selected term matches filter", true);
 		lightbulbButton.addActionListener(lightbulbActionListener);
 
 		buttonPanel = new JPanel();
