@@ -112,7 +112,11 @@
 		</hibernatetool>
 	</target>
 	
-	
-	
+	<target name="generateExtendedClasses">
+		<hibernatetool destdir="src" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/pojo/">
+			<jdbcconfiguration configurationfile="hibernateConfiguration/GBOLhibernate.cfg.xml"  revengfile="hibernateConfiguration/chado1_0.reveng.xml"/>
+			<hbmtemplate template="Tester.ftl" filepattern="tester/{class-name}.java"/>
+		</hibernatetool>
+	</target>
 	
 </project>
