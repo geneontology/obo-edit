@@ -175,8 +175,11 @@ public class GUIManager {
 	}
 
 	public void setEnabledMenuItem(String path, boolean enabled) {
-		ComponentPath.getComponent(path, getFrame().getJMenuBar()).setEnabled(enabled);
-
+		if (path!= null){
+			ComponentPath.getComponent(path, getFrame().getJMenuBar()).setEnabled(enabled);
+		}
+		else
+			logger.info("GUIManager.setEnabledMenuItem failed - null path");
 	}
 
 	public boolean installToolBar(JToolBar toolbar) {
