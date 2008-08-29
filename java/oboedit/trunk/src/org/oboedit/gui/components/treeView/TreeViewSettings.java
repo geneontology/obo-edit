@@ -4,17 +4,23 @@ import org.apache.log4j.Logger;
 import org.bbop.framework.ComponentConfiguration;
 
 public class TreeViewSettings implements ComponentConfiguration {
-	protected boolean multiSelect = true;
+	protected boolean multiSelect = getMultiSelect();
 
-	protected boolean trimPaths = false;
+	protected boolean trimPaths = getTrimPaths();
 
-	protected boolean showNonTransitive = false;
+	protected boolean showNonTransitive = getShowNonTransitive();
 
+	TreeView treeViewInstance;
+	TreeViewSettings treeViewSettingsInstance;
+	
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
 	
-	public TreeViewSettings() {
+	public TreeViewSettings(TreeView treeViewInstance) {
 
+	treeViewInstance = this.treeViewInstance;
+//	treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;	
+	
 	logger.debug("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}

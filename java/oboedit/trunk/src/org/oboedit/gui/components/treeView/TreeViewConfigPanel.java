@@ -26,7 +26,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
 
-	TreeViewSettings treeViewSettings;
+	TreeViewSettings treeViewSettingsInstance;
 	TreeView treeViewInstance;
 	protected BackgroundEventQueue eventQueue;
 	public RestrictedJTree tree;
@@ -49,7 +49,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 		this.treeViewInstance = treeViewInstance;
 
-		this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
+		this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
 		JPanel mainPanel = new JPanel();
 
 		add(mainPanel);
@@ -91,6 +91,13 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		multiTermCheckbox.setOpaque(false);
 		trimPathsCheckbox.setOpaque(false);
 		showNonTransitiveCheckbox.setOpaque(false);
+	
+		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
+		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
+		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
+	
+		
+		
 		ActionListener updateListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				TreeViewConfigPanel.this.treeViewInstance.update();
@@ -117,15 +124,15 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	public void commit() {
 
 		logger.debug("TreeViewConfigPanel: commit() run.");
-		logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+		logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
 
 		
 		
-		treeViewSettings.setMultiSelect(multiTermCheckbox.isSelected());
-		treeViewSettings.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
-		treeViewSettings.setTrimPaths(trimPathsCheckbox.isSelected());
+		treeViewSettingsInstance.setMultiSelect(multiTermCheckbox.isSelected());
+		treeViewSettingsInstance.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
+		treeViewSettingsInstance.setTrimPaths(trimPathsCheckbox.isSelected());
 		
-		treeViewInstance.treeViewSettingsInstance = treeViewSettings;
+		treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;
 		
 		treeViewInstance.update();
 
@@ -135,14 +142,14 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	@Override
 	public void init() {
 
-		this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
-
+		this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
+		
 		logger.debug("TreeViewConfigPanel: init() run.");
 		logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
 
-		multiTermCheckbox.setSelected(treeViewSettings.getMultiSelect());
-		trimPathsCheckbox.setSelected(treeViewSettings.getTrimPaths());
-		showNonTransitiveCheckbox.setSelected(treeViewSettings.getShowNonTransitive());
+		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
+		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
+		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
 
 	}
 
@@ -159,10 +166,10 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	public void setComponent(GUIComponent comp) {
 		if (comp instanceof TreeView) {
 			treeViewInstance = (TreeView)comp;
-			this.treeViewSettings = treeViewInstance.treeViewSettingsInstance;
+			this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
 
 			logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
-			logger.debug("TreeViewConfigPanel: treeViewSettings = " + treeViewSettings);
+			logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
 			logger.debug("Config panel New : setComponent.");
 		}
 	}

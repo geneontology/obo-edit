@@ -52,26 +52,49 @@ import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.util.GUIUtil;
 import org.oboedit.util.PathUtil;
 
+/**
+ * 
+ * @author John Day-Richter<br>
+ * Docs by J. Deegan.<br>
+ * 29th August 2008.<br>
+ *<br>
+ *TreeView is the main class of the Tree Viewer component. This component displays the graph from roots at the top to the 
+ *leaf terms at the bottom, where leaf terms are only those selected in the Ontology Editor Panel on Global Selection. 
+ *All paths from root to leaf terms are shown. 
+ *
+ */
+
 public class TreeView extends AbstractGUIComponent {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeView.class);
 
 	private static final long serialVersionUID = 1L;
-	protected JScrollPane pane;
+	protected JScrollPane scrollPane;
 	protected JLabel emptyLabel = new JLabel("No terms selected");
 	protected JLabel statusLabel = new JLabel("No paths loaded");
 	protected JProgressBar progressBar = new JProgressBar();
-	protected TreeViewSettings treeViewSettingsInstance = new TreeViewSettings();
+	protected TreeViewSettings treeViewSettingsInstance = new TreeViewSettings(this);
 	TreeViewConfigPanel treeViewConfigPanelInstance;
-	public RestrictedJTree tree;
+	public RestrictedJTree restrictedJTreeInstance;
 	protected BackgroundEventQueue eventQueue;
 
+	/**
+	 * @return
+	 * 
+	 * multiTerm class returns the boolean multiSelect variable, showing whether or not 
+	 * the component is set up to display multiple leaf terms.
+	 */
+	
 	protected boolean multiTerm() {
 		logger.debug("TreeView: multiTerm method.");
 		return treeViewSettingsInstance.getMultiSelect();
 	}
 
+	/**
+	 * Mediates changing of the selected leaf term in the interface. Listens for changes in selection
+	 * in the Ontology Tree Editor. 
+	 */
 	protected SelectionListener selectionListener = new SelectionListener() {
 
 		public void selectionChanged(SelectionEvent e) {
@@ -79,9 +102,14 @@ public class TreeView extends AbstractGUIComponent {
 			logger.debug("TreeView: selectionListener method.");
 		}
 	};;
+	
 	protected ReloadListener historyListener;
 	TreeModel model;
 
+	
+	/**
+	 * I think this enables the part of the component to show tooltips. 
+	 */
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			setToolTips();
@@ -89,13 +117,18 @@ public class TreeView extends AbstractGUIComponent {
 		}
 	};
 
+	/**
+	 * Passes on mouse clicks to the Global Selection Listener.
+	 * This probably is the listener that enables terms selected in the Tree Viewer to be displayed in all other
+	 * components that are currently set on Global Selection. 
+	 */
 	MouseInputAdapter clickListener = new MouseInputAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			logger.debug("TreeView: mouseClicked method.");
 			if (SwingUtilities.isMiddleMouseButton(e)
 					|| SwingUtilities.isRightMouseButton(e)) {
-				TreePath path = tree.getSelectionPath();
+				TreePath path = restrictedJTreeInstance.getSelectionPath();
 				TreePath[] paths = { path };
 				SelectionManager.setGlobalSelection(SelectionManager
 						.createSelectionFromPaths(TreeView.this, paths, null,
@@ -115,7 +148,12 @@ public class TreeView extends AbstractGUIComponent {
 
 
 	
+	/**
+	 * This sets up the GUI of the main display area of the component, where the tree will be shown. 
+	 * This is separate from the GUI of the config system, which is set up in TreeViewConfigPanel.  
+	 */
 	public void init() {
+		
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
 		selectionModel
@@ -123,12 +161,12 @@ public class TreeView extends AbstractGUIComponent {
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(200, 200));
 		setOpaque(true);
-		tree = new RestrictedJTree(treeViewSettingsInstance);
-		tree.setUI(getDefaultUI());
-		tree.setCellRenderer(new OBOCellRenderer());
-		tree.setSelectionModel(selectionModel);
-		tree.putClientProperty("JTree.lineStyle", "Angled");
-		pane = new JScrollPane(tree);
+		restrictedJTreeInstance = new RestrictedJTree(treeViewSettingsInstance);
+		restrictedJTreeInstance.setUI(getDefaultUI());
+		restrictedJTreeInstance.setCellRenderer(new OBOCellRenderer()); //This doesn't seem to be used. A toggle breakpoint here is never reached.
+		restrictedJTreeInstance.setSelectionModel(selectionModel);
+		restrictedJTreeInstance.putClientProperty("JTree.lineStyle", "Angled");
+		scrollPane = new JScrollPane(restrictedJTreeInstance);
 
 		/*
 		 * String multiSelectStr = props.getProperty("multiselect"); boolean
@@ -141,12 +179,12 @@ public class TreeView extends AbstractGUIComponent {
 		controlPanel.setLayout(new BorderLayout());
 		controlPanel.add(statusLabel, "Center");
 
-		add("Center", pane);
+		add("Center", scrollPane);
 		add("South", controlPanel);
 		emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(true);
+		restrictedJTreeInstance.setRootVisible(false);
+		restrictedJTreeInstance.setShowsRootHandles(true);
 		update();
 		selectionListener = new SelectionListener() {
 			public void selectionChanged(SelectionEvent e) {
@@ -162,11 +200,14 @@ public class TreeView extends AbstractGUIComponent {
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		GUIUtil.addReloadListener(historyListener);
-		tree.addMouseListener(clickListener);
+		restrictedJTreeInstance.addMouseListener(clickListener);
 		setToolTips();
 	}
 
 	
+	/**
+	 * Provides the name of the component.
+	 */
 	@Override
 	public String getName() {
 		logger.debug("TreeView: getName method.");
@@ -175,6 +216,10 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 
+	/**
+	 * Part of the standard OBO-Edit component configuration system. 
+	 * Calls the TreeViewConfigPanel, which returns a new treeViewConfigPanelInstance.
+	 */
 	@Override
 	public ConfigurationPanel getConfigurationPanel() {
 		logger.debug("TreeView: getConfigurationPanel()");
@@ -186,49 +231,62 @@ public class TreeView extends AbstractGUIComponent {
 		return treeViewConfigPanelInstance;
 	}
 
+	/**
+	 * Examines preferences, and according to results registers component as being configured to show tooltips on mouseover. 
+	 */
 	public void setToolTips() {
 		logger.debug("TreeView: setToolTips method.");
 
 		if (Preferences.getPreferences().getShowToolTips())
-			ToolTipManager.sharedInstance().registerComponent(tree);
+			ToolTipManager.sharedInstance().registerComponent(restrictedJTreeInstance);
 		else
-			ToolTipManager.sharedInstance().unregisterComponent(tree);
+			ToolTipManager.sharedInstance().unregisterComponent(restrictedJTreeInstance);
 	}
-
 	
+	/**
+	 * Part of the standard OBO-Edit component configuration system. 
+	 * Calls the TreeViewSettings class, which returns a new treeViewSettingsInstance.
+	 */
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		logger.debug("TreeView: getConfiguration method.");
-//		treeViewSettingsInstance.setMultiSelect(treeViewSettingsInstance.getMultiSelect());
-//		treeViewSettingsInstance.setTrimPaths(treeViewSettingsInstance.getTrimPaths());
-//		treeViewSettingsInstance.setShowNonTransitive(treeViewSettingsInstance.getShowNonTransitive());
 		return treeViewSettingsInstance;
 	}
 
 
-
+/**
+ * @param treeViewSettingsInstance
+ * 
+ * Sets the current treeViewSettings object to treeViewSettingsInstance for use in this class. 
+ *
+ */
 	public void setConfiguration(TreeViewSettings treeViewSettingsInstance) {
 		logger.debug("TreeView: setConfiguration method.");
 
 		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings)
 			this.treeViewSettingsInstance = (TreeViewSettings) treeViewSettingsInstance;
-
 		update();
-		
-//		multiTermCheckbox.setSelected(this.treeViewSettingsInstance.getMultiSelect());
-//		trimPathsCheckbox.setSelected(this.treeViewSettingsInstance.getTrimPaths());
-//		showNonTransitiveCheckbox.setSelected(this.treeViewSettingsInstance
-//		.getShowNonTransitive());
 	}
 
-		
+	/**
+	 * @param id
+	 *
+	 * The constructor inherits the id variable.
+	 * A new BackgroundEventQueue is initiated.
+	 * The progress bar setStringPainted boolean is set to true so that a percentage value will be displayed to show 
+	 * percentage of process complete on the progress bar. 
+	 * An actionListener is added.
+	 * 
+	 * Addition of the startupNotifier is to get the backgroundEventThread, and the progress bar is added to this. 
+	 */
+	
 		public TreeView(String id) {
 			super(id);
 			logger.debug("TreeView: constructor.");
 
 			
 			eventQueue = new BackgroundEventQueue();
-						progressBar.setStringPainted(true);
+			progressBar.setStringPainted(true);
 			ActionListener updateListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					update();
@@ -239,6 +297,12 @@ public class TreeView extends AbstractGUIComponent {
 		
 		
 
+		/**
+		 * cleanup method removes the selectionListener and the ReconfigListener and adds the ReloadListener. 
+		 * 
+		 * Adds a reloadListener which may be to reload the display when something changes elsewhere in the application. 
+		 * 
+		 */
 	
 	public void cleanup() {
 		logger.debug("TreeView: cleanup method.");
@@ -273,6 +337,15 @@ public class TreeView extends AbstractGUIComponent {
 			return new TreePath(nodes);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param paths
+	 *
+	 * finishUpdate checks if there are any terms selected in the TreePath[] that has been passed. 
+	 * If there are then is sets up the progress bar to display progress on displaying the terms.
+	 *
+	 */
 
 	public void finishUpdate(TreePath[] paths) {
 		logger.debug("TreeView: finishUpdate method.");
@@ -283,8 +356,8 @@ public class TreeView extends AbstractGUIComponent {
 				validate();
 			}
 
-			if (isAncestorOf(pane)) {
-				remove(pane);
+			if (isAncestorOf(scrollPane)) {
+				remove(scrollPane);
 			}
 			validate();
 		} else {
@@ -294,16 +367,16 @@ public class TreeView extends AbstractGUIComponent {
 			progressBar.setString("Selecting paths...");
 			progressBar.repaint();
 			for (int i = 0; i < paths.length; i++) {
-				if (tree.isVisible(paths[i]))
-					tree.addSelectionPath(paths[i]);
+				if (restrictedJTreeInstance.isVisible(paths[i]))
+					restrictedJTreeInstance.addSelectionPath(paths[i]);
 			}
-			// tree.setSelectionPaths(paths);
+			// restrictedJTreeInstance.setSelectionPaths(paths);
 			if (isAncestorOf(progressBar)) {
 				remove(progressBar);
 				validate();
 			}
-			if (!isAncestorOf(pane)) {
-				add(pane, "Center");
+			if (!isAncestorOf(scrollPane)) {
+				add(scrollPane, "Center");
 				validate();
 			}
 		}
@@ -312,6 +385,11 @@ public class TreeView extends AbstractGUIComponent {
 		repaint();
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 */
 	protected void doUpdate() {
 		logger.debug("TreeView: doUpdate method.");
 
@@ -333,8 +411,8 @@ public class TreeView extends AbstractGUIComponent {
 				}
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
 				model = new PathTreeModel(paths);
-				tree.setModel(model);
-				tree.refresh(true);
+				restrictedJTreeInstance.setModel(model);
+				restrictedJTreeInstance.refresh(true);
 				finishUpdate(paths);
 			}			
 		});
@@ -382,6 +460,9 @@ public class TreeView extends AbstractGUIComponent {
 //		dialog.setVisible(true);
 //	}
 
+	/**
+	 * This just validates and repaints whether something is selected or not.
+	 */
 	public void update() {
 		logger.debug("TreeView: update method.");
 
@@ -414,11 +495,21 @@ public class TreeView extends AbstractGUIComponent {
 //		return this;
 //	}
 
+	
+	/**
+	 * Allows asking whether XML is settable. Returns false. 
+	 * 
+	 */
 	public boolean isXMLSettable() {
 		logger.debug("TreeView: isXMLSettable method.");
 		return false;
 	}
 
+	/**
+	 * 
+	 * Doesn't do anything. 
+	 * 
+	 */
 	public void setXML(String xml) {
 		logger.debug("TreeView: setXML method.");
 	}
