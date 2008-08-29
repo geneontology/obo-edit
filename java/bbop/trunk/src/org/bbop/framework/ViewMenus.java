@@ -25,7 +25,11 @@ import org.bbop.swing.AbstractDynamicMenuItem;
 import org.bbop.swing.DynamicMenu;
 import org.bbop.util.ObjectUtil;
 
+import org.apache.log4j.*;
+
 public class ViewMenus {
+//	initialize logger
+	protected final static Logger logger = Logger.getLogger(ViewMenus.class);
 
 	public ViewMenus() {
 	}
@@ -35,46 +39,49 @@ public class ViewMenus {
 		Map<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>> factoryMap = 
 			new HashMap<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>>();
 		Collection<GUIComponentFactory<?>> f = ComponentManager
-			.getManager().getFactories();
+		.getManager().getFactories();
 		// Figure out the menu category for each component factory
 		for (final GUIComponentFactory factory : f) {
-	                if (!factory.showInMenus())
+			if (!factory.showInMenus())
 				continue;
-	                List<GUIComponentFactory> factories = factoryMap.get(factory.getCategory());
-	                if (factories == null) {
+			List<GUIComponentFactory> factories = factoryMap.get(factory.getCategory());
+			if (factories == null) {
 				factories = new ArrayList<GUIComponentFactory>();
 				factoryMap.put(factory.getCategory(), factories);
-	                }
-	                factories.add(factory);
+			}
+			factories.add(factory);
 		}
 		Comparator<GUIComponentFactory> factoryComparator = new Comparator<GUIComponentFactory>() {
-	                public int compare(GUIComponentFactory o1,
-					   GUIComponentFactory o2) {
+			public int compare(GUIComponentFactory o1,
+					GUIComponentFactory o2) {
 //				return o1.toString().compareTo(o2.toString());
 				return o1.getName().compareTo(o2.getName());
-	                }
+			}
 		};
 
 		// Construct submenu for each factory type
 		List<JMenu> out = new LinkedList<JMenu>();
 		for (GUIComponentFactory.FactoryCategory category : GUIComponentFactory.FactoryCategory.values()) {
-	                List<GUIComponentFactory> factories = factoryMap.get(category);
-	                if (factories != null && factories.size() > 0) {
+			List<GUIComponentFactory> factories = factoryMap.get(category);
+			if (factories != null && factories.size() > 0) {
 				// Within each submenu, items are sorted alphabetically
 				Collections.sort(factories, factoryComparator);
 				JMenu subMenu = new JMenu(category.toString());
+				subMenu.setName(category.toString());
 				for (final GUIComponentFactory factory : factories) {
 					JMenuItem item = new JMenuItem(new AbstractAction(factory.getName()) {
-							public void actionPerformed(ActionEvent e) {
-								ComponentManager.getManager()
-									.showComponent(factory, null);
-							}
-						});
-//					System.out.println(category.toString() + " menu: " + item.getText().toString() + " (factory = " + factory.toString() + ")"); // DEL
+						public void actionPerformed(ActionEvent e) {
+							ComponentManager.getManager()
+							.showComponent(factory, null);
+						}
+					});
+					item.setName(item.getText());
+					//logger.debug(category.toString() + " menu: " + item.getText().toString() + " (factory = " + factory.toString() + ")"); // DEL
 					subMenu.add(item);
 				}
 				out.add(subMenu);
-	                }
+
+			}
 		}
 		return out;
 	}

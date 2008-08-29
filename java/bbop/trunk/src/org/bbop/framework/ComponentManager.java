@@ -180,38 +180,38 @@ public class ComponentManager {
 	}
 
 	public String showComponent(GUIComponentFactory factory,
-	        GUIComponent target, String label, boolean showInNewWindow) {
-	    if (factory.isSingleton()) {
-	        // shouldn't create a new component if one already exists, just bring it forward
-	        for (GUIComponent component : this.getActiveComponents()) {
-            if (getFactory(component) == null) {
-              String m = "Cant find factory for "+component;
-              logger.fatal(m); System.out.println(m);
-              return null; // ?
-            }
-	            if (this.getFactory(component).equals(factory)) {
-	                this.focusComponent(component);
-	                return component.getID();
-	            }
-	        }
-	    }
-	    return getDriver().showComponent(factory, target, null, label,
-	            factory.getPreferSeparateWindow() || showInNewWindow, null);
+			GUIComponent target, String label, boolean showInNewWindow) {
+		if (factory.isSingleton()) {
+			// shouldn't create a new component if one already exists, just bring it forward
+			for (GUIComponent component : this.getActiveComponents()) {
+				if (getFactory(component) == null) {
+					String m = "Cant find factory for "+component;
+					logger.fatal(m); System.out.println(m);
+					return null; // ?
+				}
+				if (this.getFactory(component).equals(factory)) {
+					this.focusComponent(component);
+					return component.getID();
+				}
+			}
+		}
+		return getDriver().showComponent(factory, target, null, label,
+				factory.getPreferSeparateWindow() || showInNewWindow, null);
 	}
-	
+
 	/**
 	 * Focus component in interface, bringing it to the front or
 	 * unminimizing if necessary.
 	 */
 	public void focusComponent(GUIComponent component) {
-	    this.getDriver().restoreComponent(component); //unminimizes
-	    this.getDriver().focusComponent(component); //focuses
+		this.getDriver().restoreComponent(component); //unminimizes
+		this.getDriver().focusComponent(component); //focuses
 	}
 
 	public static File getPrefsPath() {
 		if (prefsPath == null)
 			prefsPath = new File(GUIManager.getPrefsDir(),
-					"components.prefs.xml");
+			"components.prefs.xml");
 		return prefsPath;
 	}
 
@@ -221,18 +221,18 @@ public class ComponentManager {
 			XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 					new FileInputStream(getPrefsPath())));
 			Map<String, List<ComponentConfiguration>> out = (Map) decoder
-					.readObject();
+			.readObject();
 			decoder.close();
 			return out;
 		} catch (Exception ex) {
 			return new HashMap<String, List<ComponentConfiguration>>();
 		}
 	}
-	
+
 	public boolean isFloating(GUIComponent c) {
 		return driver.isFloating(c);
 	}
-	
+
 	public void setFloating(GUIComponent c, boolean floating) {
 		driver.setFloating(c, floating);
 	}
@@ -245,19 +245,19 @@ public class ComponentManager {
 	public String getLabel(GUIComponent c) {
 		return driver.getComponentLabel(c);
 	}
-	
+
 	public void setTitlebarTooltip(GUIComponent c, String tooltip) {
 		driver.setComponentTitlebarTooltip(c, tooltip);
 	}
-	
+
 	public String getTitlebarTooltip(GUIComponent c) {
 		return driver.getComponentLabel(c);
 	}
-	
+
 	public void setTitlebarColor(GUIComponent c, Color color) {
 		driver.setComponentTitlebarColor(c, color);
 	}
-	
+
 	public Color getTitlebarColor(GUIComponent c) {
 		return driver.getComponentTitlebarColor(c);
 	}
@@ -330,8 +330,7 @@ public class ComponentManager {
 	}
 
 	public Collection<GUIComponentFactory<?>> getFactories() {
-		Collection<GUIComponentFactory<?>> out = new LinkedHashSet(factoryMap
-				.values());
+		Collection<GUIComponentFactory<?>> out = new LinkedHashSet(factoryMap.values());
 		return out;
 	}
 
@@ -355,7 +354,7 @@ public class ComponentManager {
 
 	protected static File getFile(GUIComponent comp) {
 		File compPrefsDir = new File(GUIManager.getPrefsDir(),
-				"component_prefs");
+		"component_prefs");
 		compPrefsDir.mkdirs();
 		File f = new File(compPrefsDir, comp.getID());
 		return f;

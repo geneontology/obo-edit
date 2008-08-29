@@ -80,6 +80,7 @@ public class ScreenLockRunnable extends AbstractPeriodicUpdateRunnable {
 	@Override
 	protected void cleanupUpdate() {
 		if (dialog != null) {
+			dialog.setFocusable(true);
 		    dialog.setVisible(false);  // not good enough!
 		    dialog.dispose();  // We're done!  Make it go away!
 		}

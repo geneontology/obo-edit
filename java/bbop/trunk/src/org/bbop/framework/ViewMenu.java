@@ -109,6 +109,7 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 
 	    DynamicMenu showMenu = new DynamicMenu("Show") {
 	        public List<Component> getItems() {
+	        	logger.debug(">>> View Menu.getItems");
 	            List<Component> out = new LinkedList<Component>();
 	            Map<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>> factoryMap = new HashMap<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>>();
 	            Collection<GUIComponentFactory<?>> f = ComponentManager
@@ -148,6 +149,8 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 	                            }
 	                        });
 	                        subMenu.add(item);
+	                        // >>>
+	                        logger.debug("View Menu - item: " + item.getText().toString());
 	                    }
 	                    out.add(subMenu);
 	                }
