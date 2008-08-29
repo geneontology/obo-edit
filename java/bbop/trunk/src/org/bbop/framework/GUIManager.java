@@ -52,7 +52,7 @@ public class GUIManager {
 	protected static boolean confirmOnExit = true;
 
 	protected static File prefsDir;
-	
+
 	protected boolean lockDoc; //used to determine if the GUI componenets should be locked down
 
 	public BackgroundEventQueue getScreenLockQueue() {
@@ -132,14 +132,14 @@ public class GUIManager {
 	public void addStartupTask(GUITask task) {
 		if (started)
 			throw new IllegalStateException(
-					"Cannot add a new startup task once the gui manager has started");
+			"Cannot add a new startup task once the gui manager has started");
 		startupTasks.add(task);
 	}
 
 	public void removeStartupTask(GUITask task) {
 		if (started)
 			throw new IllegalStateException(
-					"Cannot remove a startup task once the gui manager has started");
+			"Cannot remove a startup task once the gui manager has started");
 		startupTasks.remove(task);
 	}
 
@@ -173,11 +173,16 @@ public class GUIManager {
 		return ComponentPath.removeComponent(path, getFrame().getJMenuBar(),
 				item);
 	}
-	
+
+	public void setEnabledMenuItem(String path, boolean enabled) {
+		ComponentPath.getComponent(path, getFrame().getJMenuBar()).setEnabled(enabled);
+
+	}
+
 	public boolean installToolBar(JToolBar toolbar) {
 		return ComponentPath.addComponent(null, getFrame(), toolbar);
 	}
-	
+
 	public void setDocLockStatus(boolean lock) {
 		lockDoc = lock;
 		if (lockDoc)
@@ -191,7 +196,7 @@ public class GUIManager {
 		return lockDoc;
 	}
 
-	
+
 	public void start() {
 		addShutdownHook(new Runnable() {
 

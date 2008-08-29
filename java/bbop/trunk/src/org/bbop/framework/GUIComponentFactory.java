@@ -11,6 +11,7 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 //		TOOLBARS, ONTOLOGY, ANNOTATION, SEARCH, INFO, REASONER, HISTORY, METADATA, CONFIG, TOOLS, MISC;
 		TOOLBARS, ONTOLOGY, ANNOTATION, EDITORS, VIEWERS, SEARCH, TOOLS, METADATA, INFO, REASONER, HISTORY, SUMMARY, CONFIG, MISC;
 
+
 		public String toString() {
 			return StringUtil.toTitleCase(name().toLowerCase());
 		}
