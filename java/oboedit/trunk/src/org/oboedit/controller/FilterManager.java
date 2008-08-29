@@ -470,7 +470,7 @@ public class FilterManager {
 			// use a safe file writer here eventually
 			XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
 					new FileOutputStream(new File(GUIManager.getPrefsDir(),
-							"filter_prefs.xml"))));
+					"filter_prefs.xml"))));
 			Map config = getGlobalFilterConfig();
 			encoder.writeObject(config);
 			encoder.close();
@@ -495,7 +495,7 @@ public class FilterManager {
 		try {
 			XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 					new FileInputStream(new File(GUIManager.getPrefsDir(),
-							"filter_prefs.xml"))));
+					"filter_prefs.xml"))));
 			Map<String, Collection> out = (Map) decoder.readObject();
 			decoder.close();
 			return out;
@@ -514,6 +514,7 @@ public class FilterManager {
 
 		setGlobalTermRenderers((Collection) configMap
 				.get("Controller.globalTermRenderers"));
+
 		setGlobalLinkRenderers((Collection) configMap
 				.get("Controller.globalLinkRenderers"));
 
