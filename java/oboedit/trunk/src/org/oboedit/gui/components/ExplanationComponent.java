@@ -32,9 +32,6 @@ public class ExplanationComponent extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ExplanationComponent.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	protected JEditorPane field = new JEditorPane("text/html", "<html></html>");

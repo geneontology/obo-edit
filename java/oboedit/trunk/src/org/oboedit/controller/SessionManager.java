@@ -5,17 +5,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-//asa
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
+import org.bbop.framework.GUIManager;
+import org.bbop.framework.ViewMenus;
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
+import org.bbop.util.CollectionUtil;
 import org.bbop.util.EventUtil;
-import org.bbop.util.TaskDelegate;
-import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
-import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.HistoryItem;
@@ -27,17 +26,10 @@ import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.ReasonerRegistry;
-import org.obo.reasoner.impl.ForwardChainingReasoner;
-import org.obo.reasoner.impl.ForwardChainingReasonerFactory;
-import org.obo.reasoner.impl.LinkPileReasoner;
-import org.obo.reasoner.impl.LinkPileReasonerFactory;
-import org.obo.reasoner.impl.OnTheFlyReasonerFactory;
 import org.obo.reasoner.impl.ReasonerOperationModel;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
-import org.obo.util.TermUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
-import org.oboedit.gui.Selection.PathCalcMode;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.gui.event.OntologyReloadListener;
@@ -45,8 +37,9 @@ import org.oboedit.gui.event.ReasonerStatusEvent;
 import org.oboedit.gui.event.ReasonerStatusListener;
 import org.oboedit.gui.event.RootChangeEvent;
 import org.oboedit.gui.event.RootChangeListener;
+import org.oboedit.gui.tasks.DefaultGUIStartupTask;
 import org.oboedit.util.GUIUtil;
-import org.oboedit.util.PathUtil;
+
 
 import org.apache.log4j.*;
 
@@ -70,9 +63,9 @@ public class SessionManager {
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
 
-        protected ReasonerFactory reasonerFactory;
+	protected ReasonerFactory reasonerFactory;
 
-        protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
+	protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
 
 	protected ReasonedLinkDatabase reasoner;
 
@@ -109,7 +102,7 @@ public class SessionManager {
 	public void addReasonerListener(ReasonerListener listener, boolean AWTThread) {
 		if (AWTThread)
 			listener = (ReasonerListener) EventUtil
-					.getThreadSafeListener(listener);
+			.getThreadSafeListener(listener);
 		reasonerListeners.add(listener);
 	}
 
@@ -184,35 +177,38 @@ public class SessionManager {
 		if (getUseReasoner() != useReasoner) {
 			Preferences.getPreferences().setUseReasoner(useReasoner);
 			fireReasonerStatusChange(new ReasonerStatusEvent(this, useReasoner));
-			if (useReasoner)
+			if (useReasoner){
 				initializeReasonerDatabase();
+				reasonerReqComponentsOn();
+			}
 			else { // Reasoner was just turned off
 				clearReasonerDatabase();
+				reasonerReqComponentsOff();
 				fireDone(); // Need to make sure listeners are informed when reasoner is turned OFF
 			}
 		}
 	}
 
-    	protected void fireDone() {
+	protected void fireDone() {
 		for (ReasonerListener reasonerListener : reasonerListeners) {
 			reasonerListener.reasoningFinished();
 		}
 	}
 
-    public String getReasonerName() {
-	return Preferences.getPreferences().getReasonerName();
-    }
-    public void setReasonerName(String newReasonerName) {
-//	logger.debug("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
-	if (!(newReasonerName.equals(getReasonerName()))) {
-	    Preferences.getPreferences().setReasonerName(newReasonerName);
-	    setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
-	    if (newReasonerName.equals("") || newReasonerName.equalsIgnoreCase("off"))
-		return;  // we already turned it off
-	    else
-		setUseReasoner(true); // initialize the newly selected reasoner
+	public String getReasonerName() {
+		return Preferences.getPreferences().getReasonerName();
 	}
-    }
+	public void setReasonerName(String newReasonerName) {
+//		logger.debug("setReasonerName: old = " + getReasonerName() + ", new = " + newReasonerName); // DEL
+		if (!(newReasonerName.equals(getReasonerName()))) {
+			Preferences.getPreferences().setReasonerName(newReasonerName);
+			setUseReasoner(false);  // If the new reasoner is not "off", we'll turn it on again with the newly selected reasoner
+			if (newReasonerName.equals("") || newReasonerName.equalsIgnoreCase("off"))
+				return;  // we already turned it off
+			else
+				setUseReasoner(true); // initialize the newly selected reasoner
+		}
+	}
 
 	public void addRootChangeListener(RootChangeListener listener) {
 		rootChangeListeners.add(listener);
@@ -257,7 +253,7 @@ public class SessionManager {
 //		long time = System.currentTimeMillis();
 		fireHistoryApplied(new HistoryAppliedEvent(this, item));
 //		logger.info("fired history applied in "
-//				+ (System.currentTimeMillis() - time));
+//		+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));
@@ -369,17 +365,29 @@ public class SessionManager {
 			}
 	}
 
+	protected void reasonerReqComponentsOn() {
+		//logger.debug("SessionManager.reasonerReqComponentsOn");
+		List<JMenu> viewMenus = new ViewMenus().getMenus();
+		GUIManager.getManager().setEnabledMenuItem("Reasoner:Explanations", true);
+	}
+
+	protected void reasonerReqComponentsOff() {
+		//logger.debug("SessionManager.reasonerReqComponentsOff");
+		GUIManager.getManager().setEnabledMenuItem("Reasoner:Explanations", false);
+	}
+
+
 	public ReasonedLinkDatabase createReasoner(String reasonerName) {
-	    reasonerFactory = registry.lookupFactory(reasonerName);
-	    if (reasonerFactory == null) {
-		reasonerFactory = registry.getDefaultReasonerFactory();
-		logger.info("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
-		return reasonerFactory.createReasoner();
-	    }
-	    else {
-//	    	logger.debug("Got factory for reasoner " + reasonerName);  // DEL
-		return reasonerFactory.createReasoner();
-	    }
+		reasonerFactory = registry.lookupFactory(reasonerName);
+		if (reasonerFactory == null) {
+			reasonerFactory = registry.getDefaultReasonerFactory();
+			logger.info("ERROR: can't find factory for reasoner " + reasonerName + "--using default reasoner " + reasonerFactory); 
+			return reasonerFactory.createReasoner();
+		}
+		else {
+//			logger.debug("Got factory for reasoner " + reasonerName);  // DEL
+			return reasonerFactory.createReasoner();
+		}
 	}
 
 	public ReasonedLinkDatabase getReasoner() {
@@ -426,8 +434,8 @@ public class SessionManager {
 			if (getUseReasoner()) {
 				OperationWarning reasonerWarning = reasonerOpModel.apply(item);
 				Object[] params = { item, reasonerWarning };
-				
-				
+
+
 				logger.warn("Reasoner warning message while trying to apply history item");
 			}
 			if (warning != null) {
@@ -460,7 +468,7 @@ public class SessionManager {
 
 	public void redo() {
 		HistoryItem item = (HistoryItem) redoHistoryItems
-				.remove(redoHistoryItems.size() - 1);
+		.remove(redoHistoryItems.size() - 1);
 		doApply(item);
 	}
 

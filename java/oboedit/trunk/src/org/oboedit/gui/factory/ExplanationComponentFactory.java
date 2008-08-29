@@ -28,4 +28,5 @@ public class ExplanationComponentFactory extends
 	public FactoryCategory getCategory() {
 		return FactoryCategory.REASONER;
 	}
+	
 }

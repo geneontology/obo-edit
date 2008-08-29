@@ -1,17 +1,21 @@
 package org.oboedit.gui.components;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+
 import org.bbop.framework.AbstractGUIComponent;
-import org.bbop.framework.GUIManager;
-import org.bbop.util.*;
-import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.ReasonerRegistry;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 import org.apache.log4j.*;
 
@@ -49,7 +53,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    logger.debug("actionPerformed: calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+		    logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
 		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -92,6 +96,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	    summaryField.setText("");
 	    sessionManager.setReasonerName(reasonerChoice);
 	}
+	
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
 		String text = "";
@@ -125,7 +130,6 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	@Override
 	public void init() {
 		sessionManager.addReasonerListener(reasonerActionListener, true);
-
 		updateProgressPanel(sessionManager.getUseReasoner());
 	}
 

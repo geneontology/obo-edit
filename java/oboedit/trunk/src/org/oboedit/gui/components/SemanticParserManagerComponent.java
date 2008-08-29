@@ -28,7 +28,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 
 
 //	protected JCheckBox useReasonerCheckbox = new JCheckBox("Use reasoner");
@@ -41,22 +41,22 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-// 	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
+//	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
 
-// 		public void reasoningFinished() {
-// 			updateProgressPanel(SessionManager.getManager().getUseReasoner());
-// 		}
+//	public void reasoningFinished() {
+//	updateProgressPanel(SessionManager.getManager().getUseReasoner());
+//	}
 
-// 		public void reasoningStarted() {
-// 		}
-// 	};
+//	public void reasoningStarted() {
+//	}
+//	};
 
-// 	protected ActionListener reasonerListener = new ActionListener() {
-// 		public void actionPerformed(ActionEvent e) {
-// 			enableReasoner(useReasonerCheckbox.isSelected());
-// 			// updateProgressPanel(useReasonerCheckbox.isSelected());
-// 		}
-// 	};
+//	protected ActionListener reasonerListener = new ActionListener() {
+//	public void actionPerformed(ActionEvent e) {
+//	enableReasoner(useReasonerCheckbox.isSelected());
+//	// updateProgressPanel(useReasonerCheckbox.isSelected());
+//	}
+//	};
 
 	protected ActionListener semanticParserListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -88,9 +88,9 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		summaryField.setEditable(false);
 	}
 
- 	protected void enableReasoner(final boolean enableReasoner) {
- 		SessionManager.getManager().setUseReasoner(enableReasoner);
- 	}
+	protected void enableReasoner(final boolean enableReasoner) {
+		SessionManager.getManager().setUseReasoner(enableReasoner);
+	}
 	protected void enableSemanticParser(final boolean enableParser) {
 		if (enableParser) {
 			logger.info("creating parser");
@@ -100,7 +100,7 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 			Collection<TermMacroHistoryItem> items = sp.parseTerms();
 			logger.info("new items: "+items.size());
 			sp.apply(items);
-			
+
 		}
 	}
 
@@ -118,10 +118,9 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 					add(summaryScroller, "Center");
 				else
 					remove(summaryScroller);
-
 //				useReasonerCheckbox.removeActionListener(reasonerListener);
 //				useReasonerCheckbox.setSelected(enableReasoner);
-				
+
 				useSemanticParserCheckbox.addActionListener(semanticParserListener);
 				validate();
 				repaint();
@@ -130,14 +129,13 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		};
 		SwingUtilities.invokeLater(screenUpdate);
 	}
-	
+
 
 
 	@Override
 	public void init() {
 		updateProgressPanel(SessionManager.getManager().getUseReasoner());
 
-		
 		/*
 		 * useReasonerCheckbox.removeActionListener(reasonerListener);
 		 * useReasonerCheckbox.setSelected(controller.getUseReasoner()); for(int
@@ -145,7 +143,6 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 		 * controller.getUseReasoner());
 		 * useReasonerCheckbox.addActionListener(reasonerListener);
 		 */
-
 //		SessionManager.getManager().addReasonerListener(reasonerActionListener, true);
 
 		//updateProgressPanel(SessionManager.getManager().getUseReasoner());
@@ -159,6 +156,6 @@ public class SemanticParserManagerComponent extends AbstractGUIComponent {
 	@Override
 	public void cleanup() {
 //		SessionManager.getManager().removeReasonerListener(
-//				reasonerActionListener);
+//		reasonerActionListener);
 	}
 }
