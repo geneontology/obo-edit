@@ -11,11 +11,28 @@ import javax.swing.tree.TreePath;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 
+
+/**
+ * 
+ * @author John Day-Richter
+ * 
+ * Docs by J. Deegan.
+ * 29th August 2008.
+ * 
+ * RestrictedJTree class
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
 	public class RestrictedJTree extends JTree {
 		
-		TreeModel model;
+		TreeModel treeModelInstance;
 		TreeViewSettings treeViewSettingsInstance;
-		TreePath path;
+		TreePath treePathInstance;
+	
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -24,26 +41,41 @@ import org.obo.datamodel.LinkedObject;
 			super();
 
 			this.treeViewSettingsInstance = treeViewSettingsInstance;
+			
 			System.out.println("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
 		}
 		
 
+		/**
+		 * Why does this instantiation of a visibleRunnable object have the run() method in it,
+		 * when this method is already present in the visibleRunnable code?
+		 * The run method calls makeVisible, which then calls makeVisible. Not sure why.
+		 */
 		protected Runnable visibleRunnable = new Runnable() {
 			public void run() {
-				makeVisible(path);
-				System.out.println("RestrictedJTree: visibleRunnable: path is " + path);
+				makeVisible(treePathInstance);
+				System.out.println("RestrictedJTree: visibleRunnable: treePathInstance is " + treePathInstance);
 			}
 		};
 
-		boolean expandAllowed = false;
-	
+		
 		public void refresh() {
 			refresh(false);
 			System.out.println("RestrictedJTree: refresh method.");	
 		}
 
+		boolean expandAllowed = false;
+		
+		/**
+		 * 
+		 * @param fromThread
+		 * 
+		 * This seems to redraw the display of the tree in the component window. 
+		 * (unless there is nothing selected)
+		 * 
+		 */
 		public void refresh(boolean fromThread) {
-			if (model == null)
+			if (treeModelInstance == null)
 				return;
 			expandAllowed = true;
 			expandPaths(fromThread);
@@ -53,6 +85,13 @@ import org.obo.datamodel.LinkedObject;
 
 		}
 
+		/**
+		 * 
+		 * @param fromThread
+		 *
+		 *This seems to expand the paths to the term that has been selected. 
+		 *
+		 */
 		protected void expandPaths(boolean fromThread) {
 			Set<Object> seenem = new HashSet<Object>();
 			Object root = getModel().getRoot();
@@ -61,6 +100,16 @@ import org.obo.datamodel.LinkedObject;
 
 		}
 
+		/**
+		 * 
+		 * @param parentPath
+		 * @param o
+		 * @param seenem
+		 * @param fromThread
+		 *
+		 * This is another version of expandPaths that had more arguments. 
+		 *
+		 */
 		protected void expandPaths(TreePath parentPath, Object o,
 				Set<Object> seenem, boolean fromThread) {
 
@@ -78,7 +127,7 @@ import org.obo.datamodel.LinkedObject;
 				path = parentPath.pathByAddingChild(o);
 			makeVisible(path);
 			/*
-			 * try { SwingUtilities.invokeLater(new VisibleRunnable(path)); }
+			 * try { SwingUtilities.invokeLater(new VisibleRunnable(treePathInstance)); }
 			 * catch (Exception ex) {}
 			 */
 			int childCount = getModel().getChildCount(o);
@@ -87,6 +136,10 @@ import org.obo.datamodel.LinkedObject;
 			}
 		}
 
+		/**
+		 * This method produces the tool tips for mouseover. 
+		 */
+		
 		@Override
 		public String getToolTipText(MouseEvent e) {
 			TreePath path = getPathForLocation(e.getX(), e.getY());
@@ -101,22 +154,31 @@ import org.obo.datamodel.LinkedObject;
 			return child.getID();
 		}
 
+		/**
+		 * makeVisible method is duplicated from VisibleRunnable and maybe should  be 
+		 * taken out into an abstract class so they can share it. 
+		 * It overrides the version in JTree, though I cannot access the code of JTree to see what is changed.
+		 *
+		 * It's not clear to me yet what super.makeVisible(treePathInstance) is for.
+		 *
+		 */
 		@Override
 		public void makeVisible(TreePath path) {
 			expandAllowed = true;
 			super.makeVisible(path);
 			expandAllowed = false;
 			System.out.println("RestrictedJTree: makeVisible method.");	
+			System.out.println("makeVisible method: path = " + path);
 
 		}
 		/*
-		 * public void expandPath(TreePath path) { if (expandAllowed)
-		 * super.expandPath(path); }
+		 * public void expandPath(TreePath treePathInstance) { if (expandAllowed)
+		 * super.expandPath(treePathInstance); }
 		 * 
 		 * public void expandRow(int row) { if (expandAllowed)
 		 * super.expandRow(row); }
 		 * 
-		 * public void collapsePath(TreePath path) { }
+		 * public void collapsePath(TreePath treePathInstance) { }
 		 * 
 		 * public void collapseRow(int row) { }
 		 */
