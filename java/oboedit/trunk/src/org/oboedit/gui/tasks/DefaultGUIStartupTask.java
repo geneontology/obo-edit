@@ -165,13 +165,13 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				.getFrame(), Preferences.getPreferences()
 				.getUseModalProgressMonitors());
 		return CollectionUtil.list(new AutosaveTask(),
-					   new PostLoadVerifyTask(), new PreSaveVerifyTask(),
-					   new FrameNameUpdateTask(), screenLockTask,
-					   new InstallTask(),
-					   new LoadRelationIconsTask()
+				new PostLoadVerifyTask(), new PreSaveVerifyTask(),
+				new FrameNameUpdateTask(), screenLockTask,
+				new InstallTask(),
+				new LoadRelationIconsTask()
 		// , new AnnotationNumberFetchBehaviorTask()
-				// , new LineNumberFetchBehaviorTask()
-				);
+		// , new LineNumberFetchBehaviorTask()
+		);
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 						return JOptionPane.showConfirmDialog(GUIManager
 								.getManager().getFrame(),
 								"<html>There are unsaved changes to your "
-										+ "ontology.<br>Really quit?</html>",
+								+ "ontology.<br>Really quit?</html>",
 								"Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 					} else if (GUIManager.isConfirmOnExit())
 						return JOptionPane.showConfirmDialog(GUIManager
@@ -241,7 +241,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new VerificationManagerFactory(), new DockPanelFactory(),
 				new ConfigurableMessageComponentFactory(),
 				new SearchResultsComponentFactory()
-			);
+		);
 	}
 
 	@Override
@@ -252,15 +252,15 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 					public void configReloaded(ReconfigEvent e) {
 						SessionManager.getManager().getSession()
-								.setCurrentUser(
-										Preferences.getPreferences()
-												.getUserName());
+						.setCurrentUser(
+								Preferences.getPreferences()
+								.getUserName());
 					}
 				});
 		UIManager.put("Tree.paintLines", Boolean.FALSE);
 		HelpManager.getManager().setHelpSetFile(
 				new File(Preferences.getInstallationDirectory(),
-						"docs/OBO-Edit.hs"));
+				"docs/OBO-Edit.hs"));
 		FocusMenuManager.install();
 		installDefaultActions();
 		installGlobalScriptObjects();
@@ -331,20 +331,20 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			public void viewCreated(View v, final GUIComponent c) {
 				if (c instanceof Filterable) {
 					final JButton filterButton = IDWUtil
-							.createFlatHighlightButton(filterIcon,
-									"Quick filtering", 0, null);
+					.createFlatHighlightButton(filterIcon,
+							"Quick filtering", 0, null);
 					filterButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							JPopupMenu menu = new JPopupMenu();
 							JLabel label = new JLabel("Quick filtering");
 							label
-									.setFont(label.getFont().deriveFont(
-											Font.BOLD));
+							.setFont(label.getFont().deriveFont(
+									Font.BOLD));
 
 							menu.add(label);
 							menu.addSeparator();
 							JMenuItem showAllItem = new JMenuItem(
-									"Show all relationship types");
+							"Show all relationship types");
 							showAllItem.addActionListener(new ActionListener() {
 
 								public void actionPerformed(ActionEvent arg0) {
@@ -353,10 +353,10 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 							});
 							menu.add(showAllItem);
 							JMenu showOnlyMenu = new JMenu(
-									"Show a single relationship");
+							"Show a single relationship");
 							menu.add(showOnlyMenu);
 							JMenu showParticularMenu = new JMenu(
-									"Show particular relationships");
+							"Show particular relationships");
 							menu.add(showParticularMenu);
 							final Map<JCheckBoxMenuItem, OBOProperty> items = new HashMap<JCheckBoxMenuItem, OBOProperty>();
 							Filter f = ((Filterable) c).getLinkFilter();
@@ -365,14 +365,14 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 											.getManager().getSession())) {
 								JMenuItem onlyItem = new JMenuItem(p.toString());
 								onlyItem
-										.addActionListener(new ActionListener() {
-											public void actionPerformed(
-													ActionEvent arg0) {
-												((Filterable) c)
-														.setLinkFilter(FilterUtil
-																.getTypeFilter(p));
-											}
-										});
+								.addActionListener(new ActionListener() {
+									public void actionPerformed(
+											ActionEvent arg0) {
+										((Filterable) c)
+										.setLinkFilter(FilterUtil
+												.getTypeFilter(p));
+									}
+								});
 								showOnlyMenu.add(onlyItem);
 								JCheckBoxMenuItem item = new JCheckBoxMenuItem(
 										"Show " + p);
@@ -389,16 +389,16 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 												selected.add(items.get(item));
 										}
 										((Filterable) c)
-												.setLinkFilter(FilterUtil
-														.getTypeFilter(selected
-																.toArray(new OBOProperty[0])));
+										.setLinkFilter(FilterUtil
+												.getTypeFilter(selected
+														.toArray(new OBOProperty[0])));
 									}
 								});
 								showParticularMenu.add(item);
 							}
 							menu.show(filterButton,
 									filterButton.getWidth() / 2, filterButton
-											.getHeight() / 2);
+									.getHeight() / 2);
 
 						}
 					});
@@ -406,9 +406,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				}
 				if (c instanceof ObjectSelector) {
 					final JToggleButton liveButton = IDWUtil.createFlatHighlightToggleButton(
-						globeIcon,
-						"Switch to local selection mode",
-						0, null);
+							globeIcon,
+							"Switch to local selection mode",
+							0, null);
 					if (c instanceof OntologyEditor)
 						((OntologyEditor) c).setLiveButton(liveButton);
 					liveButton.setSelected(((ObjectSelector) c).isLive());
@@ -437,14 +437,14 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 				// Add camera icon to list of icons to add to titlebars
 				final JButton cameraButton = IDWUtil.createFlatHighlightButton(
-					cameraIcon, "Click to save an image file of this component", 0,
-					null);
+						cameraIcon, "Click to save an image file of this component", 0,
+						null);
 				compMap.add(c, cameraButton);
 				cameraButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							InstallTask.saveImage(c);
-						}
-					});
+					public void actionPerformed(ActionEvent e) {
+						InstallTask.saveImage(c);
+					}
+				});
 				cameraButton.setToolTipText("Save an image file of this component");
 
 				// Add icons to titlebars
@@ -486,11 +486,11 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 						oboadapter.setUserName(Preferences.getPreferences()
 								.getUserName());
 						IDGenerator idGen = IDManager.getManager()
-								.getIDAdapter();
+						.getIDAdapter();
 						if (idGen instanceof DefaultIDGenerator)
 							oboadapter
-									.setIDProfile(((DefaultIDGenerator) idGen)
-											.getProfile());
+							.setIDProfile(((DefaultIDGenerator) idGen)
+									.getProfile());
 					}
 				});
 		goadapter.setAutogenString("OBO-Edit "
@@ -530,7 +530,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addDropMenuAction(new MoveAction());
 		EditActionManager.getManager().addDropMenuAction(new MergeAction());
 		EditActionManager.getManager()
-				.addDropMenuAction(new TypeChangeAction());
+		.addDropMenuAction(new TypeChangeAction());
 		EditActionManager.getManager().addDropMenuAction(
 				new DomainChangeAction());
 		EditActionManager.getManager().addDropMenuAction(
@@ -564,7 +564,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new InvNecessaryAction());
 		EditActionManager.getManager().addEditAction(new CompletesAction());
 		EditActionManager.getManager()
-				.addEditAction(new RemoveConsiderAction());
+		.addEditAction(new RemoveConsiderAction());
 		EditActionManager.getManager().addEditAction(
 				new RemoveReplacementAction());
 	}
@@ -572,15 +572,27 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 	@Override
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
 //		return CollectionUtil.list(new FileMenu(), new EditMenu(),
-//					   new ViewMenu(), new LayoutMenu(), new OEHelpMenu());
+//		new ViewMenu(), new LayoutMenu(), new OEHelpMenu());
 		// New menu organization
 		List<JMenuItem> menus = new ArrayList<JMenuItem>();
 		menus.add(new FileMenu());
 		menus.add(new EditMenu());
 		menus.add(new LayoutMenu());
+
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
-		for (JMenu m : viewMenus)
+		for (JMenu m : viewMenus){
 			menus.add(m);
+			//logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
+			if(m.getText().toString().equalsIgnoreCase("reasoner")){
+				if(!SessionManager.getManager().getUseReasoner()){
+					for (int i = 0; i < m.getItemCount(); i++) {
+						if(m.getItem(i).getText().equalsIgnoreCase("explanations")){
+							m.getItem(i).setEnabled(false);
+						}
+					}
+				}
+			}
+		}
 		menus.add(new OEHelpMenu());
 		return menus;
 	}
@@ -603,19 +615,19 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected String getAppID() {
-	    // TODO Auto-generated method stub
-	    //		return "oboedit";
-	    return Preferences.getAppName();
+		// TODO Auto-generated method stub
+		//		return "oboedit";
+		return Preferences.getAppName();
 	}
 
 	// Moved to Preferences
 	@Override
 	public File getPrefsDir() {
-	        return Preferences.getOBOEditPrefsDir();
+		return Preferences.getOBOEditPrefsDir();
 	}
 
 	@Override
-    	protected void installDefaultToolBars() {
+	protected void installDefaultToolBars() {
 	}
 
 }
