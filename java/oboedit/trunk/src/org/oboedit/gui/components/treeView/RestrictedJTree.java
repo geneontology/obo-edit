@@ -57,14 +57,18 @@ import org.obo.datamodel.LinkedObject;
 			Set<Object> seenem = new HashSet<Object>();
 			Object root = getModel().getRoot();
 			expandPaths(null, root, seenem, fromThread);
+			System.out.println("RestrictedJTree: expandPaths method.");	
+
 		}
 
 		protected void expandPaths(TreePath parentPath, Object o,
 				Set<Object> seenem, boolean fromThread) {
 
+			System.out.println("RestrictedJTree: expandPaths method with several args.");	
+
 			//I changed trimPaths() to treeViewSettingsInstance.getTrimPaths()
 			if (treeViewSettingsInstance.getTrimPaths() && seenem.contains(o)) {
-				return;
+			return;
 			}
 			seenem.add(o);
 			TreePath path;
@@ -92,6 +96,8 @@ import org.obo.datamodel.LinkedObject;
 			if (!(o instanceof Link))
 				return null;
 			LinkedObject child = ((Link) o).getChild();
+			System.out.println("RestrictedJTree: getToolTipText method.");	
+
 			return child.getID();
 		}
 
@@ -100,6 +106,8 @@ import org.obo.datamodel.LinkedObject;
 			expandAllowed = true;
 			super.makeVisible(path);
 			expandAllowed = false;
+			System.out.println("RestrictedJTree: makeVisible method.");	
+
 		}
 		/*
 		 * public void expandPath(TreePath path) { if (expandAllowed)
