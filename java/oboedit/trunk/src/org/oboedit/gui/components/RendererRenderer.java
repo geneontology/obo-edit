@@ -29,15 +29,15 @@ public class RendererRenderer extends HTMLTableRenderer {
 			if (isLink)
 				return "<html>Display link lines as <b>"
 						+ HTMLUtil.escapeHTML(fr.getSpec().toString())
-						+ "</b> for links that match<br><i>"
+						+ "</b> for links that match <i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
-						+ "</i></html>";
+						+ "</i><br><br><br><br></html>";
 			else
 				return "<html>Display terms lines as <b>"
 						+ HTMLUtil.escapeHTML(fr.getSpec().toString())
-						+ "</b> for terms that match<br><i>"
+						+ "</b> for terms that match <i>"
 						+ FilterUtil.getOBOFilterExpression(fr.getFilter())
-						+ "</i></html>";
+						+ "</i><br><br><br><br></html>";
 		} else
 			return "<html>" + value + "</value>";
 	}
