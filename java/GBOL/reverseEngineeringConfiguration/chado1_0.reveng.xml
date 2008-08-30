@@ -41,7 +41,7 @@
   <table-filter exclude="true" match-name="materialized_view"/>
   
   
-  <table-filter match-name=".*" package="org.gmod.gbol.simpleObject.generated" match-schema="public">
+  <table-filter match-name=".*" package="org.gmod.gbol.simpleObject" match-schema="public">
     <meta attribute="extends">org.gmod.gbol.simpleObject.AbstractSimpleObject</meta>
   </table-filter>
   
@@ -59,11 +59,11 @@
     <column name="acquisitiondate" property="acquisitionDate"/>
     <foreign-key constraint-name="acquisition_relationship_subject_id_fkey">
       <many-to-one property="subjectAcquisition"/>
-      <set property="childAcquisitionRelationships"/>
+      <set property="parentAcquisitionRelationships"/>
     </foreign-key>  
     <foreign-key constraint-name="acquisition_relationship_object_id_fkey">
       <many-to-one property="objectAcquisition"/>
-      <set property="parentAcquisitionRelationships"/>
+      <set property="childAcquisitionRelationships"/>
     </foreign-key>
     
   </table>
@@ -274,11 +274,11 @@
     <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="biomaterial_relationship_subject_id_fkey">
       <many-to-one property="subjectBiomaterial"/>
-      <set property="childBiomaterialRelationships"/>
+      <set property="parentBiomaterialRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="biomaterial_relationship_object_id_fkey">
       <many-to-one property="objectBiomaterial"/>
-      <set property="parentBiomaterialRelationships"/>
+      <set property="childBiomaterialRelationships"/>
     </foreign-key>
 
   </table>
@@ -337,11 +337,11 @@
     <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="contact_relationship_object_id_fkey">
       <many-to-one property="objectContact"/>
-      <set property="parentContactRelationships"/>
+      <set property="childContactRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="contact_relationship_subject_id_fkey">
       <many-to-one property="subjectContact"/>
-      <set property="childContactRelationships"/>
+      <set property="parentContactRelationships"/>
     </foreign-key>
     
     <foreign-key constraint-name="arraydesign_manufacturer_id_fkey">
@@ -441,20 +441,20 @@
     </foreign-key>
     <foreign-key constraint-name="cvterm_relationship_subject_id_fkey">
       <many-to-one property="subjectCVTerm"/>
-      <set property="childCVTermRelationships"/>
+      <set property="parentCVTermRelationships"/>
     </foreign-key>  
     <foreign-key constraint-name="cvterm_relationship_object_id_fkey">
       <many-to-one property="objectCVTerm"/>
-      <set property="parentCVTermRelationships"/>
+      <set property="childCVTermRelationships"/>
     </foreign-key>
     
     <foreign-key constraint-name="cvtermpath_object_id_fkey">
       <many-to-one property="objectCVTerm"/>
-      <set property="parentCVTermPaths"/>
+      <set property="childCVTermPaths"/>
     </foreign-key>
     <foreign-key constraint-name="cvtermpath_subject_id_fkey">
       <many-to-one property="subjectCVTerm"/>
-      <set property="childCVTermPaths"/>
+      <set property="parentCVTermPaths"/>
     </foreign-key>
     
     <foreign-key constraint-name="acquisitionprop_type_id_fkey">
@@ -842,10 +842,12 @@
     </primary-key>
     <column name="name"><meta attribute="use-in-equals">true</meta></column>
     <column name="urlprefix" property="urlPrefix"/>
+    
     <foreign-key constraint-name="dbxref_db_id_fkey">
       <many-to-one property="db"/>
-      <set property="dbxrefs"/>
+      <set exclude="true"/>
     </foreign-key>
+    
   </table>
   
   <table schema="public" name="dbxref" class="DBXref">
@@ -981,11 +983,11 @@
     <column name="arraydesign_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="element_relationship_subject_id_fkey">
       <many-to-one property="subjectElement"/>
-      <set property="childElementRelationships"/>
+      <set property="parentElementRelationships"/>
     </foreign-key>  
     <foreign-key constraint-name="element_relationship_object_id_fkey">
       <many-to-one property="objectElement"/>
-      <set property="parentElementRelationships"/>
+      <set property="childElementRelationships"/>
     </foreign-key>
     
   </table>
@@ -1002,11 +1004,11 @@
     <column name="quantification_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="elementresult_relationship_subject_id_fkey">
       <many-to-one property="subjectElementResult"/>
-      <set property="childElementResultRelationships"/>
+      <set property="parentElementResultRelationships"/>
     </foreign-key>  
     <foreign-key constraint-name="elementresult_relationship_object_id_fkey">
       <many-to-one property="objectElementResult"/>
-      <set property="parentElementResultRelationships"/>
+      <set property="childElementResultRelationships"/>
     </foreign-key>
   </table>
   
@@ -1202,11 +1204,11 @@
     
     <foreign-key constraint-name="feature_relationship_subject_id_fkey">
       <many-to-one property="subjectFeature"/>
-      <set property="childFeatureRelationships"/>
+      <set property="parentFeatureRelationships"/>
     </foreign-key>  
     <foreign-key constraint-name="feature_relationship_object_id_fkey">
       <many-to-one property="objectFeature"/>
-      <set property="parentFeatureRelationships"/>
+      <set property="childFeatureRelationships"/>
     </foreign-key>
     
     <foreign-key constraint-name="library_feature_feature_id_fkey">
@@ -1860,11 +1862,11 @@
     </foreign-key>
     <foreign-key constraint-name="phylonode_relationship_subject_id_fkey">
       <many-to-one property="subjectPhylogeneticNode"/>
-      <set property="childPhylogeneticNodeRelationships"/>
+      <set property="parentPhylogeneticNodeRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="phylonode_relationship_object_id_fkey">
       <many-to-one property="objectPhylogeneticNode"/>
-      <set property="parentPhylogeneticNodeRelationships"/>
+      <set property="childPhylogeneticNodeRelationships"/>
     </foreign-key>
   </table>
   
@@ -2024,11 +2026,11 @@
     <column name="pubplace" property="publicationPlace"/>
     <foreign-key constraint-name="pub_relationship_object_id_fkey">
       <many-to-one property="objectPublication"/>
-      <set property="parentPublicationRelationships"/>
+      <set property="childPublicationRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="pub_relationship_subject_id_fkey">
       <many-to-one property="subjectPublication"/>
-      <set property="childPublicationRelationships"/>
+      <set property="parentPublicationRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="expression_pub_pub_id_fkey">
       <set exclude="true"/>
@@ -2183,11 +2185,11 @@
     </foreign-key>
     <foreign-key constraint-name="quantification_relationship_object_id_fkey">
       <many-to-one property="objectQuantification"/>
-      <set property="parentQuantificationRelationships"/>
+      <set property="childQuantificationRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="quantification_relationship_subject_id_fkey">
       <many-to-one property="subjectQuantification"/>
-      <set property="childQuantificationRelationships"/>
+      <set property="parentQuantificationRelationships"/>
     </foreign-key>
   </table>
   
@@ -2230,11 +2232,11 @@
     <column name="type_id"><meta attribute="use-in-equals">true</meta></column>
     <foreign-key constraint-name="stock_relationship_object_id_fkey">
       <many-to-one property="objectStock"/>
-      <set property="parentStockRelationships"/>
+      <set property="childStockRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="stock_relationship_subject_id_fkey">
       <many-to-one property="subjectStock"/>
-      <set property="childStockRelationships"/>
+      <set property="parentStockRelationships"/>
     </foreign-key>
     <foreign-key constraint-name="stockcollection_stock_stock_id_fkey">
       <set exclude="true"/>

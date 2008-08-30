@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory name="SessionFactory">
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://flybase.net:5432/flybase</property>
+        <property name="hibernate.connection.username">flybase</property>
+        <!--  <property name="hibernate.connection.password"></property>-->
+
+        
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+        
+        <!-- Disable the second-level cache  -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">false</property>
+        <property name="format_sql">true</property>
+        
+        
+        <!-- Load up the basic Chado Object Hibernate Mapping Files -->
+        <mapping resource="org/gmod/gbol/simpleObject/generated/DB_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/DB.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/DBXref_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/DBXref.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/DBXrefProperty_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/DBXrefProperty.hbm.xml"/>
+        
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CV_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CV.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTerm_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTerm.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermDBXref_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTermDBXref.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermPath_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTermPath.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermProperty_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTermProperty.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermRelationship_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTermRelationship.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermSynonym_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/CVTermSynonym.hbm.xml"/>
+
+        
+        
+
+        
+        
+        
+        <!--
+        <mapping resource="org/gmod/gbol/simpleObject/CV.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTerm.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/cv/CVTerm.hbm.xml"/>
+        -->
+        
+    </session-factory>
+</hibernate-configuration>
