@@ -834,6 +834,8 @@ public class Preferences {
 		return getPreferences().logFile;
 	}
 
+	// These are the files that will be deleted if you select "Reset all configuration files"
+	// from the Configuration Manager.
 	public static List<String> getPrefsFilenames() {
 		return CollectionUtil.list("config.xml", "filter_prefs.xml", "verify.xml",
 					   "component_prefs", "perspectives");
