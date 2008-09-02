@@ -40,7 +40,6 @@ import org.bbop.framework.HelpManager;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.VetoableShutdownListener;
-import org.bbop.framework.ViewMenu;
 import org.bbop.framework.ViewMenus;
 import org.bbop.framework.LayoutMenu;
 import org.bbop.framework.dock.LayoutDriver;
