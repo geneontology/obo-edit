@@ -32,7 +32,7 @@ public class BackgroundColorSpecField extends
 	public ColorProvider merge(FilteredRenderable selector, ColorProvider a,
 			ColorProvider b, Object o) {
 		return new ConfiguredColor(ColorUtil.mergeColors(a
-				.getColor(selector, o), a.getColor(selector, o)), true);
+				.getColor(selector, o), b.getColor(selector, o)), true);
 	}
 
 	public int getHTMLType() {
