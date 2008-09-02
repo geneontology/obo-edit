@@ -41,7 +41,6 @@ public class InstallTask implements GUITask {
 
 	public void install() {
 		ImageIO.scanForPlugins();
-		IOManager.getManager().installDataAdapter(new EPSImageAdapter());
 		Collection<String> formats = new ArrayList<String>();
 		for (String s : ImageIO.getWriterMIMETypes()) {
 			Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType(s);
@@ -51,9 +50,9 @@ public class InstallTask implements GUITask {
 						.getFormatNames()[0];
 				IOManager.getManager().installDataAdapter(
 						new ImageAdapter(formatName, formatName + " adapter"));
-
 			}
 		}
+		IOManager.getManager().installDataAdapter(new EPSImageAdapter());
 	}
 
 	public void shutdown() {
