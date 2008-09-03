@@ -10,7 +10,7 @@ mappings of columns called "version" for some reason. So in AbstractDBXref.hbm.x
     <version name="version" type="string">
 		<column name="version" not-null="true" />
 	</version>
-	
+
 with
 
 	<property name="version"/>
