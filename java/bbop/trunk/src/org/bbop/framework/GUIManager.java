@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
@@ -179,7 +178,7 @@ public class GUIManager {
 			ComponentPath.getComponent(path, getFrame().getJMenuBar()).setEnabled(enabled);
 		}
 		else
-			logger.info("GUIManager.setEnabledMenuItem failed - null path");
+			logger.error("GUIManager.setEnabledMenuItem failed - null path");
 	}
 
 	public boolean installToolBar(JToolBar toolbar) {
@@ -293,4 +292,7 @@ public class GUIManager {
 	public static void setConfirmOnExit(boolean confirmOnExit) {
 		GUIManager.confirmOnExit = confirmOnExit;
 	}
+
+
+
 }
