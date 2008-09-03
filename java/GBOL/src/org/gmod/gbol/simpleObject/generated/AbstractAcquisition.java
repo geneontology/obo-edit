@@ -1,6 +1,5 @@
 package org.gmod.gbol.simpleObject.generated;
 
-
 import org.gmod.gbol.simpleObject.*; 
 
 import java.util.Date;
