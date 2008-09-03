@@ -1,18 +1,5 @@
-Changes in b48:
-- Fixed "bouncing" synonym display when editing neighboring synonyms (SF bug
-2057430).
-- When run from the command line on Mac, OE now shows up in the dock with the
-OBO-Edit icon rather than the boring gray "exec" icon.
-- Layout menu now has "Import perspective" to add a new perspective (from an
-.idw file).  (The instructions on the Perspectives help page for adding a new
-perspective were incomplete.)
+Changes in b49:
 
-amina:
-- Fixed Semantic Parser Manager startup bug
-
-- Modified Search Panel checkbox to "Indicate if selected term matches filter" which is its exact function - the lightbulb switches on when the currently selected term in the OTE, Graph Editor or Search Results Panel match the corresponding filter. This can be useful when multiple filters are in use and the Search Results are designed to show the "Matches all" case and would be interesting to get an indication of "Matches any" terms with the lightbulb swiching on while browsing an ontology.
-
-- Fixed Bug: [ 1986916 ] Explanations component should be disabled if reasoner off
-There aren't any explanations when the reasoner is not ON and therefore explanations component menu item is enabled only when the reasoner is ON and grayed out otherwise. 
-
-- Fixed Bug: [ 2009016 ] Global renderer descriptions misleadingly truncated
+Features:
+- [ 2086577 ] add parent to filter menu
+Adding "Parent" to search panel - enables searching for terms with a given parent.
