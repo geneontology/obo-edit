@@ -1,5 +1,5 @@
 <${c2h.getTag(clazz)} 
-    name="${c2h.getClassName(clazz)?replace("simpleObject","simpleObject.generated")}_g"
+    name="${c2h.getClassName(clazz)?replace("simpleObject.","simpleObject.generated.Abstract")}"
 <#if !c2h.getClassName(clazz).equals(clazz.entityName)>
     entity-name="${clazz.entityName}"
 </#if>

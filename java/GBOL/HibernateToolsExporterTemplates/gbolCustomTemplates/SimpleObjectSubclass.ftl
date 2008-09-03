@@ -9,7 +9,7 @@ package org.gmod.gbol.simpleObject;
  *
 */
 
-public class ${pojo.getDeclarationName()} extends org.gmod.gbol.simpleObject.generated.${pojo.getDeclarationName()}_g {
+public class ${pojo.getDeclarationName()} extends org.gmod.gbol.simpleObject.generated.Abstract${pojo.getDeclarationName()} {
 
 	private static final long serialVersionUID = 1L;
 

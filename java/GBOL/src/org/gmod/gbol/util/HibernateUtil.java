@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.hibernate.*;
 import org.hibernate.cfg.*;
-import org.hibernate.tuple.Property;
 
 /**
  * HibernateUtil is a class that creates a new Hibernate {@link SessionFactory}

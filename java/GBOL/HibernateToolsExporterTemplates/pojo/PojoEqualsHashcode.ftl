@@ -1,8 +1,8 @@
 <#if pojo.needsEqualsHashCode() && !clazz.superclass?exists>   public boolean equals(Object other) {
          if ( (this == other ) ) return true;
 		 if ( (other == null ) ) return false;
-		 if ( !(other instanceof ${pojo.getDeclarationName()}_g) ) return false;
-		 ${pojo.getDeclarationName()}_g castOther = ( ${pojo.getDeclarationName()}_g ) other; 
+		 if ( !(other instanceof Abstract${pojo.getDeclarationName()}) ) return false;
+		 Abstract${pojo.getDeclarationName()} castOther = ( Abstract${pojo.getDeclarationName()} ) other; 
          
 		 return ${pojo.generateEquals("this", "castOther", jdk5)};
    }
