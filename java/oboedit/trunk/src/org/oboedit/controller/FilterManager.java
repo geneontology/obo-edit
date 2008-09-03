@@ -64,6 +64,7 @@ import org.obo.filters.NamespaceSearchCriterion;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
 import org.obo.filters.ParentCountCriterion;
+import org.obo.filters.ParentSearchAspect;
 import org.obo.filters.ParentSearchCriterion;
 import org.obo.filters.RegexpComparison;
 import org.obo.filters.RootSearchAspect;
@@ -94,8 +95,6 @@ import org.oboedit.gui.filter.HTMLSpecField;
 import org.oboedit.gui.filter.ItalicSpecField;
 import org.oboedit.gui.filter.LineTypeSpecField;
 import org.oboedit.gui.filter.LineWidthSpecField;
-import org.oboedit.gui.filter.LinkRenderSpec;
-import org.oboedit.gui.filter.ObjectRenderSpec;
 import org.oboedit.gui.filter.RenderedFilter;
 import org.oboedit.gui.filter.StrikeoutSpecField;
 import org.oboedit.gui.filter.UnderlineSpecField;
@@ -224,6 +223,7 @@ public class FilterManager {
 		addAspect(new RootSearchAspect());
 		addAspect(new AncestorSearchAspect());
 		addAspect(new DescendantSearchAspect());
+		addAspect(new ParentSearchAspect());
 
 		buildDefaultGlobalTermFilter();
 		buildDefaultGlobalLinkFilter();
