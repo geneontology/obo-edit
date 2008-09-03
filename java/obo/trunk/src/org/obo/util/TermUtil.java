@@ -69,13 +69,13 @@ public class TermUtil {
 	protected final static Logger logger = Logger.getLogger(TermUtil.class);
 
 	public static class AncestorTask extends
-			AbstractTaskDelegate<Collection<LinkedObject>> {
+	AbstractTaskDelegate<Collection<LinkedObject>> {
 		protected Map<LinkedObject, Collection<LinkedObject>> memoizeTable;
 
 		protected LinkedObject term;
 
 		protected LinkDatabase linkDatabase;
-		
+
 		protected LinkFilter linkFilter;
 
 		public AncestorTask(LinkDatabase linkDatabase, LinkedObject term,
@@ -131,7 +131,7 @@ public class TermUtil {
 	}
 
 	public static class DescendantTask extends
-			AbstractTaskDelegate<Collection<LinkedObject>> {
+	AbstractTaskDelegate<Collection<LinkedObject>> {
 		protected Map<LinkedObject, Collection<LinkedObject>> memoizeTable;
 
 		protected LinkedObject term;
@@ -257,7 +257,7 @@ public class TermUtil {
 	}
 
 	public static OBOSession getSession(String path)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
@@ -390,7 +390,7 @@ public class TermUtil {
 			LinkDatabase linkDatabase) {
 		return new AncestorTask(linkDatabase, term, null);
 	}
-	
+
 	public static boolean isAncestor(LinkedObject term, LinkedObject ancestor,
 			LinkDatabase linkDatabase) {
 		return getAncestors(term, linkDatabase, true).contains(ancestor);
@@ -490,7 +490,7 @@ public class TermUtil {
 	public static Collection<ObsoletableObject> getObsoletes(OBOSession session) {
 		return getObsoletes(session.getLinkDatabase());
 	}
-	
+
 	/**
 	 * Returns the dangling terms in the given {@link LinkDatabase}
 	 */
@@ -513,7 +513,7 @@ public class TermUtil {
 	public static int getParentCount(LinkDatabase linkDatabase, LinkedObject lo) {
 		return linkDatabase.getParents(lo).size();
 	}
-	
+
 	public static Collection<LinkedObject> getParentsByType(LinkedObject lo, OBOProperty type) {
 		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
 		for (Link link : lo.getParents()) {
@@ -523,6 +523,15 @@ public class TermUtil {
 		}
 		return parents;
 	}
+	
+	public static Collection<LinkedObject> getParents(LinkedObject lo) {
+		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
+		for (Link link : lo.getParents()) {
+				parents.add(link.getParent());
+		}
+		return parents;
+	}
+
 
 	/**
 	 * Returns a single value for a given property from a given instance. If the
@@ -590,14 +599,14 @@ public class TermUtil {
 		for (Value<?> v : values) {
 			if (v.getType() instanceof Datatype && v instanceof DatatypeValue) {
 				Object o = ((Datatype) v.getType())
-						.getValue(((DatatypeValue) v).getValue());
+				.getValue(((DatatypeValue) v).getValue());
 				list.add(o);
 			} else
 				list.add(v);
 		}
 		return list;
 	}
-	
+
 
 
 	/**
@@ -790,7 +799,7 @@ public class TermUtil {
 		}
 		return out;
 	}
-	
+
 	public static Collection<Instance> getInstances(OBOSession session) {
 		return getInstances(session.getLinkDatabase());
 	}
@@ -820,7 +829,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns whether a {@link LinkedObject} has a given ancestor.
 	 */
@@ -847,7 +856,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 	public static Link getLink(LinkDatabase linkDatabase, Link link) {
 		for(Link l : linkDatabase.getParents(link.getChild()))
 			if (l.equals(link))
@@ -1041,7 +1050,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns whether the given link is a union link. That is, whether
 	 * this link provides part of a union definition.
@@ -1086,7 +1095,7 @@ public class TermUtil {
 	 */
 	public static boolean isObsolete(IdentifiableObject o) {
 		return o instanceof ObsoletableObject
-				&& ((ObsoletableObject) o).isObsolete();
+		&& ((ObsoletableObject) o).isObsolete();
 	}
 
 	/**
@@ -1191,7 +1200,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * maps enum int to string
 	 * (lifted from OBO_1_2_Serializer by cjm)
@@ -1211,7 +1220,7 @@ public class TermUtil {
 		else
 			return null;
 	}
-	
+
 	public static int getScopeEnum(String label) {
 		if (label == null)
 			return Synonym.RELATED_SYNONYM;
@@ -1234,7 +1243,7 @@ public class TermUtil {
 		} else
 			return null;
 	}
-	
+
 	public static Instance castToInstance(LinkedObject lo) {
 		if (lo instanceof Instance) {
 			return (Instance) lo;
@@ -1243,7 +1252,7 @@ public class TermUtil {
 		} else
 			return null;
 	}
-	
+
 	public static OBOProperty castToProperty(IdentifiedObject lo) {
 		if (lo instanceof OBOProperty) {
 			return (OBOProperty) lo;
@@ -1276,7 +1285,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 	public static boolean resolveDanglingLink(OBOSession session, Link link) {
 		if (isDangling(link)) {
 			boolean resolved = true;
@@ -1305,7 +1314,7 @@ public class TermUtil {
 		}
 		return true;
 	}
-	
+
 	public static boolean resolveDanglingLinks(OBOSession session) {
 		boolean allResolved = true;
 		for (IdentifiedObject io : session.getObjects()) {
@@ -1319,7 +1328,7 @@ public class TermUtil {
 		}
 		return allResolved;
 	}
-	
+
 
 	public static Iterator<Link> getAllLinks(final LinkDatabase linkDatabase) {
 		IteratorFactory<LinkDatabase, IdentifiedObject> objIteratorFactory = new IteratorFactory<LinkDatabase, IdentifiedObject>() {
@@ -1334,7 +1343,7 @@ public class TermUtil {
 			public Iterator<Link> getIterator(IdentifiedObject object) {
 				if (object instanceof LinkedObject) {
 					return linkDatabase.getParents((LinkedObject) object)
-							.iterator();
+					.iterator();
 				} else
 					return EmptyIterator.emptyIterator();
 			}
@@ -1350,7 +1359,7 @@ public class TermUtil {
 	 */
 	public static boolean equals(Link a, Link b) {
 		return TermUtil.equalsWithoutIntersection(a, b)
-				&& (isIntersection(a) == isIntersection(b));
+		&& (isIntersection(a) == isIntersection(b));
 	}
 
 	/**
@@ -1359,10 +1368,10 @@ public class TermUtil {
 	 */
 	public static boolean equalsWithoutIntersection(Link a, Link b) {
 		return ObjectUtil.equals(a.getChild(), b.getChild())
-				&& ObjectUtil.equals(a.getType(), b.getType())
-				&& ObjectUtil.equals(a.getParent(), b.getParent());
+		&& ObjectUtil.equals(a.getType(), b.getType())
+		&& ObjectUtil.equals(a.getParent(), b.getParent());
 	}
-	
+
 	public static TermMacroHistoryItem createGenusDifferentiaHistoryItem(LinkedObject lo, LinkedObject genus, String relID, LinkedObject diffClass) {
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Created new xp term");
 		String id = lo.getID();
@@ -1376,12 +1385,12 @@ public class TermUtil {
 			if (link.getType().equals(OBOProperty.IS_A) &&
 					link.getParent().equals(genus)) {
 				item.addItem(new CreateLinkHistoryItem(id, "OBO_REL:is_a", genus.getID()));
-			
+
 			}
 			if (link.getType().getID().equals(relID) &&
 					link.getParent().equals(diffClass)) {
 				item.addItem(new CreateLinkHistoryItem(id, relID, diffClass.getID()));
-				
+
 			}
 		}
 		return item;
@@ -1397,7 +1406,7 @@ public class TermUtil {
 		}
 		return labels;
 	}
-	
+
 	public static Collection<String> getExactLabels(IdentifiedObject lo) {
 		LinkedList<String> labels = new LinkedList<String>();
 		if (lo.getName() != null)
@@ -1409,10 +1418,10 @@ public class TermUtil {
 		}
 		return labels;
 	}
-	
 
 
-	
+
+
 	public static Collection<OBOObject> getOBOObjects(OBOSession session) {
 		Collection<OBOObject> objs  = new HashSet<OBOObject>();
 		for (IdentifiedObject io : session.getObjects()) {
@@ -1423,16 +1432,16 @@ public class TermUtil {
 		}
 		return objs;
 	}
-	
+
 	public static Collection<OBOObject> getSubclasses(OBOObject obj) {
 		Collection<OBOObject> subclasses = new HashSet<OBOObject>();
 		for (Link link : obj.getChildren())
 			if (link.getType().equals(OBOProperty.IS_A))
 				subclasses.add((OBOObject) link.getChild());
 		return subclasses;
-		
+
 	}
-	
+
 	public static TermMacroHistoryItem makeAllSubclassesMutuallyDisjointHistoryItem(OBOObject obj) {
 		Collection<OBOObject> subclasses = getSubclasses(obj);
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Created new disjoint set");
@@ -1447,7 +1456,7 @@ public class TermUtil {
 		}
 		return item;
 	}
-	
+
 	public static String getNameSafe(LinkedObject lo) {
 		String name = lo.getName();
 		if (name != null)
