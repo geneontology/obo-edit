@@ -118,7 +118,7 @@
 		
 		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/pojo/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate template="Pojo.ftl" filepattern="{package-name}/generated/{class-name}_g.java">
+			<hbmtemplate template="Pojo.ftl" filepattern="{package-name}/generated/Abstract{class-name}.java">
 				<property key="jdk5" value="true" />
 				<property key="ejb3" value="false" />
 			</hbmtemplate>
@@ -126,7 +126,7 @@
 		
 		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/hbm/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate template="hibernate-mapping.hbm.ftl" filepattern="{package-name}/generated/{class-name}_g.hbm.xml"/>
+			<hbmtemplate template="hibernate-mapping.hbm.ftl" filepattern="{package-name}/generated/Abstract{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
 	

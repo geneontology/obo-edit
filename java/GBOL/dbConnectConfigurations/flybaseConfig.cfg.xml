@@ -24,26 +24,26 @@
         
         
         <!-- Load up the basic Chado Object Hibernate Mapping Files -->
-        <mapping resource="org/gmod/gbol/simpleObject/generated/DB_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractDB.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/DB.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/DBXref_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractDBXref.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/DBXref.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/DBXrefProperty_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractDBXrefProperty.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/DBXrefProperty.hbm.xml"/>
         
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CV_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCV.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CV.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTerm_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTerm.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTerm.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermDBXref_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTermDBXref.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTermDBXref.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermPath_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTermPath.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTermPath.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermProperty_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTermProperty.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTermProperty.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermRelationship_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTermRelationship.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTermRelationship.hbm.xml"/>
-        <mapping resource="org/gmod/gbol/simpleObject/generated/CVTermSynonym_g.hbm.xml"/>
+        <mapping resource="org/gmod/gbol/simpleObject/generated/AbstractCVTermSynonym.hbm.xml"/>
         <mapping resource="org/gmod/gbol/simpleObject/CVTermSynonym.hbm.xml"/>
 
         
