@@ -116,7 +116,7 @@
 	
 	<target name="generateBaseClasses">
 		
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/pojo/">
+		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/pojo/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="Pojo.ftl" filepattern="{package-name}/generated/Abstract{class-name}.java">
 				<property key="jdk5" value="true" />
@@ -124,21 +124,28 @@
 			</hbmtemplate>
 		</hibernatetool>
 		
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/hbm/">
+		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/hbm/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="hibernate-mapping.hbm.ftl" filepattern="{package-name}/generated/Abstract{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
 	
 	<target name="generateExtendedClasses">
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/gbolCustomTemplates/">
+		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="SimpleObjectSubclass.ftl" filepattern="{package-name}/{class-name}.java"/>
 		</hibernatetool>
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/HibernateToolsExporterTemplates/gbolCustomTemplates/">
+		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="SimpleObjectSubclassHibernateMapping.ftl" filepattern="{package-name}/{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
-	
+	<target name="test">
+		<hibernatetool destdir="generated/tmp" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
+			<hbmtemplate template="Test.ftl" filepattern="test.txt">
+				<property key="for_each" value="configuration"/>
+			</hbmtemplate>
+		</hibernatetool>
+	</target>
 </project>
