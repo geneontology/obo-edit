@@ -60,19 +60,22 @@ options are:</p>
 <h2><a name="config"></a>Configuring the Viewer</h2>
 <h3><a name="getting_started"></a>Getting Started</h3>
 <h4>Step 1 - Install Graphviz</h4>
-<p>Graphviz is available for Windows, Mac OS and Linux from 
+<p>Graphviz is available for Windows and Linux from 
 <a href="http://www.graphviz.org">http://www.graphviz.org</a>. Graphviz is also 
 packaged with some Linux distributions, such as Suse Linux. Linux users should 
 try to use the version of Graphviz that comes with their distribution if 
 possible to avoid compatibility problems.</p>
+<p><b>Mac users</b> should download Graphviz 1.13 (version 16) from 
+<a href="http://www.pixelglow.com/graphviz/">http://www.pixelglow.com/graphviz/</a>.
+Download the dmg version.  You will see a folder that includes the Graphviz icon; 
+drag this into your Applications folder.</p>
 <p>The heart of Graphviz is a tiny program called "dot". 
 This is the program that OBO-Edit uses to create Graphviz displays.</p>
 <h4>Step 2 - Set the path to "dot"</h4>
-<p>To set the path, click the "Options" button on the Graphviz
-Viewer. When the configuration window appears, click the "Paths" tab at 
-the top of the screen.</p>
+<p>To set the path, click the little wrench/spanner icon on the Graphviz
+Viewer. When the configuration window appears, click the "Behavior" tab.</p>
 <p>Type the path to the "dot" utility into the box labeled 
-"Application path", or use the "Browse..." button to locate the file on disk. 
+"Application path", or use the "Browse..." button to locate the "dot" file on disk. 
 The default locations for the dot utility on various platforms are:</p>
 <ul>
   <li>
@@ -82,15 +85,11 @@ The default locations for the dot utility on various platforms are:</p>
   Files\ATT\Graphviz\bin\dot.exe</div>
   <li>
 <div><strong>MacOS</strong> - 
-  /Applications/Graphviz</div></li></ul>
-<p>Note that on MacOS, you do not need to specify the 
-location of the "dot" utility, just the location of the Graphviz 
-application.&nbsp;The "dot" utility is hidden inside the Graphviz application, 
-and OBO-Edit knows how to dig it out.</p>
+/Applications/Graphviz.app/Contents/MacOS/dot</div></li></ul>
 <p>The Graphviz Viewer&nbsp;should now be working!</p>
 <h3>Detailed Configuration</h3>
-<p>To configure the Graphviz Viewer, click the 
-"Options" button:</p>
+<p>To configure the Graphviz Viewer, click the wrench/spanner icon in the
+  Graphviz titlebar:</p>
 <p><IMG height=404 hspace=0 
 src="../images/graph_viewer_options_fonts.gif" width=604 border=0></p>
 <p> Once the configuration options have been set, press the "Save Options" 
@@ -115,7 +114,7 @@ that will be used to display term names.</p>
 <p>The colors tab controls the colors in the graph 
 image:</p>
 <p><IMG 
-src="../images/graph_viewer_options_colors.gif" border=0></p>
+src="../images/graph_viewer_options_colors.png" border=0></p>
 <p>The list on the left contains the names of all the 
 configurable colors. The first 10 color options are the same in every ontology; 
 these are called <strong>named colors</strong>. The rest of the 
@@ -210,8 +209,8 @@ for terms, obsoletes, and relationship types. The available shapes are:</p>
 <div><strong>invtriangle</strong> - <IMG height=55 
   hspace=0 src="../images/graph_viewer_invtriangle.gif" width=105 
   border=0></div></li></ul>
-<h4>Paths</h4>
-<p>The Paths tab specifies the Graphviz application path 
+<h4>Behavior</h4>
+<p>The Behavior tab lets you set the Graphviz application path 
 and other options:</p>
 <p><IMG height=149 hspace=0 
 src="../images/graph_viewer_options_paths.gif" width=598 border=0></p>
