@@ -14,3 +14,5 @@ mappings of columns called "version" for some reason. So in AbstractDBXref.hbm.x
 with
 
 	<property name="version"/>
+
+Also need to make that change in AbstractArrayDesign.hbm.xml
