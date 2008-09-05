@@ -100,20 +100,11 @@
 		<path location="lib/asm.jar"/>
 		<path location="lib/commons-collections-2.1.1.jar"/>
 		<path location="lib/Tidy.jar"/>
+		<path location="lib/HibernateConfigurationExporter.jar"/>
 	</path>
 	
 	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="toolslib"/>
-	
-	<!--
-	<target name="generateBaseClasses">
-		<hibernatetool destdir="src">
-			<jdbcconfiguration configurationfile="hibernateConfiguration/GBOLhibernate.cfg.xml"  revengfile="hibernateConfiguration/chado1_0.reveng.xml"/>
-			<hbm2java jdk5="true"/>
-			<hbm2hbmxml/>
-		</hibernatetool>
-	</target>
-	-->
-	
+		
 	<target name="generateBaseClasses">
 		
 		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/pojo/">
@@ -140,12 +131,20 @@
 			<hbmtemplate template="SimpleObjectSubclassHibernateMapping.ftl" filepattern="{package-name}/{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
-	<target name="test">
-		<hibernatetool destdir="generated/tmp" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+	
+	<target name="buildHibernateConfigurationExporter">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/" srcdir="src/org/gmod/gbol/exporter/" includes="HibernateConfigurationExporter.java">
+		  	<src path="src"/>
+		  	<classpath refid="GBOL.classpath"/>
+		</javac>
+		<jar destfile="lib/HibernateConfigurationExporter.jar" basedir="./bin/" includes="org/gmod/gbol/exporter/HibernateConfigurationExporter.class"/>
+	</target>
+	
+	<target name="generateHibernateConfiguration" depends="buildHibernateConfigurationExporter">
+		<hibernatetool destdir="generated" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate template="Test.ftl" filepattern="test.txt">
-				<property key="for_each" value="configuration"/>
-			</hbmtemplate>
+			<hbmtemplate exporterclass="org.gmod.gbol.exporter.HibernateConfigurationExporter"/>
 		</hibernatetool>
 	</target>
+	
 </project>

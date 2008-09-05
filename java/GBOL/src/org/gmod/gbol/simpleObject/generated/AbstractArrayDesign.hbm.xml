@@ -21,9 +21,8 @@
 
         <discriminator column="arraydesign_id" insert="false" />
 
-        <version name="version" type="string">
-            <column name="version" />
-        </version>
+        <property name="version"/>
+        
 
         <many-to-one name="manufacturer" class="org.gmod.gbol.simpleObject.Contact" fetch="select">
             <column name="manufacturer_id" not-null="true" />
