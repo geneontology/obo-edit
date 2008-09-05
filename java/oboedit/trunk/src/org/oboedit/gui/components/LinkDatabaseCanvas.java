@@ -220,10 +220,11 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			}
 			else if (pc instanceof Link) {
 				Link link = (Link) pc;
-				// Show disjoint relationships as leaves, so they can't be expanded further
-				if (SHOW_DISJOINTS_AS_LEAVES) {
+				// Show is_disjoint (and inverse of) relationships as leaves, so they can't be expanded further
+				if (SHOW_SYMMETRIC_RELATIONS_AS_LEAVES) {
 					OBOProperty relationshipType =  link.getType();
-					if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+//					if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+					if (relationshipType != null && relationshipType.isSymmetric()) {
 //						logger.debug("GE.getLinkedObjectCollection: not including link " + pc); // 
 					}
 					else {
@@ -371,7 +372,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 
 	protected List<ViewBehavior> viewBehaviors = new LinkedList<ViewBehavior>();
 
-        protected static boolean SHOW_DISJOINTS_AS_LEAVES = true;  // ! Make this settable
+        protected static boolean SHOW_SYMMETRIC_RELATIONS_AS_LEAVES = true;  // ! Make this user-settable
 
 	public LinkDatabaseCanvas(GraphLayout graphLayout) {
 		super();
@@ -796,9 +797,10 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				LinkedObject lo = (LinkedObject) io;
 				out.add(lo);
 				for (Link link : linkDatabase.getParents(lo)) {
-					if (SHOW_DISJOINTS_AS_LEAVES && link.getParent() != null) {
+					if (SHOW_SYMMETRIC_RELATIONS_AS_LEAVES && link.getParent() != null) {
 						OBOProperty relationshipType =  link.getType();
-						if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+//						if (relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+						if (relationshipType != null && relationshipType.isSymmetric()) {
 //							logger.debug("GE.getVisibleObjects: not including link " + link); // 
 						}
 						else
