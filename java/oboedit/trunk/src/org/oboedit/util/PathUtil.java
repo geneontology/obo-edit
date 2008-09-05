@@ -681,15 +681,13 @@ public class PathUtil {
 		for (int i = 0; i < obs.length; i++) {
 			if (obs[i] instanceof Link) {
 				Link tr = (Link) obs[i];
-				if (scratchSet.contains(tr.getChild())) {
+				// If we've already visited this child...
+				if (scratchSet.contains(tr.getChild())
+				    // ...and it's not a symmetric relation  [added by NH, 9/5/2008]
+				    && !(tr.getType().isSymmetric())) {
 					return true;
 				}
 				scratchSet.add(tr.getChild());
-				/*
-				 * if (tr.getParent() != null) scratchMap.put(tr.getParent(),
-				 * tr.getParent()); if (scratchMap.containsKey(tr.getChild()))
-				 * return true;
-				 */
 			}
 		}
 		return false;
