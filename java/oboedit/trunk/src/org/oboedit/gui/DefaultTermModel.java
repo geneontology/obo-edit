@@ -30,7 +30,7 @@ public class DefaultTermModel implements TermModel {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultTermModel.class);
 
-        protected boolean SHOW_DISJOINTS_AS_LEAVES = true;  // ! Make this settable
+        protected boolean SHOW_SYMMETRIC_RELATIONS_AS_LEAVES = true;  // ! Make this user-settable
 
 	protected Vector listeners = new Vector();
 
@@ -374,7 +374,8 @@ public class DefaultTermModel implements TermModel {
 		if (answerLeafHonestly) {
 			if (parent instanceof Relationship) {
 				OBOProperty relationshipType = ((Relationship)parent).getType();
-				if (SHOW_DISJOINTS_AS_LEAVES && relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+//				if (SHOW_DISJOINTS_AS_LEAVES && relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
+				if (SHOW_SYMMETRIC_RELATIONS_AS_LEAVES && relationshipType != null && relationshipType.isSymmetric()) {
 					return true;
 				}
 
@@ -550,7 +551,7 @@ public class DefaultTermModel implements TermModel {
 				LinkedObject io = (LinkedObject) o;
 				link = new OBORestrictionImpl(io);
 			} else if (o instanceof Link) {
-				// We can keep the disjoint relations out of the OBOTermPanel this way...
+				// We could keep the disjoint relations out of the OBOTermPanel this way...
 //				if (HIDE_DISJOINT && ((Link)o).getType() != null && ((Link)o).getType().equals(OBOProperty.DISJOINT_FROM)) {
 //					logger.debug("wrapSet: not adding " + o); // DEL
 //					continue;
