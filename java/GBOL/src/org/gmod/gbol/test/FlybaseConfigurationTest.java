@@ -3,14 +3,14 @@ package org.gmod.gbol.test;
 import org.gmod.gbol.simpleObject.CVTermRelationship;
 import org.gmod.gbol.simpleObject.CVTerm;
 
-public class FlybaseConfigurationTest extends AbstractGBOLTest{
+public class FlybaseConfigurationTest extends AbstractGBOLHibernateTest{
 
 	public FlybaseConfigurationTest(String name) {
 		super(name);
 		try {
 
 			if (this.sf == null){
-				this.configureConnection("dbConnectConfigurations/flybaseConfig.cfg.xml");
+				this.configureConnection("testSupport/flybaseConfig.cfg.xml");
 			}
 			assertTrue(true);
 		} catch (Exception e) {
