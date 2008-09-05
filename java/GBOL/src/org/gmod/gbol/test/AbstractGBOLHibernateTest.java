@@ -5,12 +5,12 @@ import org.apache.log4j.PropertyConfigurator;
 import org.gmod.gbol.util.HibernateUtil;
 import junit.framework.TestCase;
 
-public class AbstractGBOLTest extends TestCase {
+public class AbstractGBOLHibernateTest extends TestCase {
 
 	SessionFactory sf;
-	private final String log4jPropFile = "dbConnectConfigurations/log4j.properties";
+	private final String log4jPropFile = "testSupport/log4j.properties";
 	
-	public AbstractGBOLTest(String name) {
+	public AbstractGBOLHibernateTest(String name) {
 		super(name);
 		PropertyConfigurator.configure(this.log4jPropFile);
 	}
