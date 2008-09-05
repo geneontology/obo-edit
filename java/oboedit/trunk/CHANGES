@@ -1,5 +1,10 @@
 Changes in b49:
 
+- Fixed bug 2026858: Gray terms in OTE after removing parent in Parent Editor.  
+Fix is in PathUtil.pathIsCircular:  it doesn't count as a circular path if the
+relationship leading to the already-visited child is symmetric (disjoint_from
+or inverse of).
+
 Features:
 - [ 2086577 ] add parent to filter menu
 Adding "Parent" to search panel - enables searching for terms with a given parent.
