@@ -7,20 +7,10 @@ import java.io.IOException;
 
 public abstract class FileHandler{
 	
-	private ConfigurationInterface configuration;
 	private String filePath;
 	private FileReader fileReader;
 	
-	protected ConfigurationInterface getConfiguration() {
-		return configuration;
-	}
-
-	protected void setConfiguration(ConfigurationInterface configuration) {
-		this.configuration = configuration;
-	}
-	
-	public FileHandler(String filePath,ConfigurationInterface configuration) throws IOException{
-		this.configuration=configuration;
+	public FileHandler(String filePath) throws IOException{
 		this.filePath = filePath;
 		File f = new File(this.filePath);
 		if (!f.exists()){
