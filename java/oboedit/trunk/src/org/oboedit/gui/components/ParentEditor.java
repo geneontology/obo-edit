@@ -258,12 +258,12 @@ public class ParentEditor extends AbstractGUIComponent {
 	}
 
 	public void reload() {
-//		logger.info("RELOADING");
 		loadTerm(currentObject);
 	}
 
 	protected static class TypeRenderer extends DefaultListCellRenderer {
 
+		// This gets called a lot--could it get called less?
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			return super.getListCellRendererComponent(list,
@@ -296,7 +296,11 @@ public class ParentEditor extends AbstractGUIComponent {
 			remove(buttonPanel);
 		} else {
 			add(buttonPanel, "South");
-			final TreePath[] oldpaths = PathUtil.getPaths(t);
+			// Getting oldpaths is really slow.  It's done so that when an edit is done in the
+			// Parent Editor, the OTE can be made to select all instances of the current term.
+			// That is unnecessary as well as slow.
+//			// This is the really expensive operation!
+//			final TreePath[] oldpaths = PathUtil.getPaths(t);
 			List<Link> v = new ArrayList<Link>();
 			if (showImpliedCheckbox.isSelected()
 					&& SessionManager.getManager().getUseReasoner()) {
@@ -411,22 +415,25 @@ public class ParentEditor extends AbstractGUIComponent {
 						GUIUtil.setPreSelection(ditem, SelectionManager
 								.getGlobalSelection());
 
-						List<TreePath> temp = new ArrayList<TreePath>();
-						for (int i = 0; i < oldpaths.length; i++) {
-							if (!oldpaths[i].getLastPathComponent().equals(tr)) {
-								temp.add(oldpaths[i]);
-							}
-						}
-						TreePath[] paths = temp.toArray(new TreePath[temp
-								.size()]);
-
-						GUIUtil.setPostSelection(ditem, SelectionManager
-								.createSelectionFromPaths(ParentEditor.this,
-										paths, null, SessionManager
-												.getManager()
-												.getCurrentLinkDatabase(),
-										RootAlgorithm.GREEDY, true));
+						// Getting oldpaths (above) is REALLY REALLY slow and not really necessary.
+//						List<TreePath> temp = new ArrayList<TreePath>();
+//						for (int i = 0; i < oldpaths.length; i++) {
+//							if (!oldpaths[i].getLastPathComponent().equals(tr)) {
+//								temp.add(oldpaths[i]);
+//							}
+//						}
+//						TreePath[] paths = temp.toArray(new TreePath[temp.size()]);
+//
+//						GUIUtil.setPostSelection(ditem, SelectionManager
+//								.createSelectionFromPaths(ParentEditor.this,
+//										paths, null, SessionManager
+//												.getManager()
+//												.getCurrentLinkDatabase(),
+//										RootAlgorithm.GREEDY, true));
+						// Do the edit
 						SessionManager.getManager().apply(ditem);
+						// Just re-select currently selected term (not all instances of it, as with the paths thing)
+						GUIUtil.setPostSelection(ditem, SelectionManager.getManager().getSelection());
 					}
 				});
 				trashButton.setEnabled(enabled
