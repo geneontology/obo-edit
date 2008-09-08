@@ -8,6 +8,9 @@ or inverse of).
 relationships (SF 1963283: Parent Editor is very slow).  It no longer tries to
 find and select ALL instances of current term in OTE.
 
+- Fixed bug [ 1989257 ] "Remove redundant links" doesn't work
+
+
 Features:
 - [ 2086577 ] add parent to filter menu
 Added "Parent" to pulldown list in advanced options in search panel (click the
