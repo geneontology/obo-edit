@@ -7,19 +7,19 @@ import java.io.IOException;
 
 public abstract class FileHandler{
 	
-	private IOConfiguration configuration;
+	private ConfigurationInterface configuration;
 	private String filePath;
 	private FileReader fileReader;
 	
-	protected IOConfiguration getConfiguration() {
+	protected ConfigurationInterface getConfiguration() {
 		return configuration;
 	}
 
-	protected void setConfiguration(IOConfiguration configuration) {
+	protected void setConfiguration(ConfigurationInterface configuration) {
 		this.configuration = configuration;
 	}
 	
-	public FileHandler(String filePath,IOConfiguration configuration) throws IOException{
+	public FileHandler(String filePath,ConfigurationInterface configuration) throws IOException{
 		this.configuration=configuration;
 		this.filePath = filePath;
 		File f = new File(this.filePath);
