@@ -15,7 +15,7 @@ public class FileHandlerTest extends TestCase {
 	
 	public void testConstructor(){
 		try {
-			this.fileHandler = new GFF3Handler(filePath,null,null);
+			this.fileHandler = new GFF3Handler(filePath);
 			Assert.assertTrue("Opened file.",true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
