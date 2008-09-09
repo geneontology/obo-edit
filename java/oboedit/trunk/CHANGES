@@ -10,8 +10,18 @@ find and select ALL instances of current term in OTE.
 
 - Fixed bug [ 1989257 ] "Remove redundant links" doesn't work
 
+- Closed bug [ 2010574 ] Trim redundant links when integrating XPs.
+Can be achieved using global link filters.  The same filter can be
+used in combination with "save implied links [for presentation]" to remove
+redundant links when implied links are instantiated for release.
+
+
 
 Features:
 - [ 2086577 ] add parent to filter menu
 Added "Parent" to pulldown list in advanced options in search panel (click the
 gear icon) - enables searching for terms with a given parent.
+
+To Do:
+- Documentation for Parent search panel option with examples
+- Documentation for setting up global link filter to remove redundant links display from OTE
