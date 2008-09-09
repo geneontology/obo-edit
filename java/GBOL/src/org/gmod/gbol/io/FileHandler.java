@@ -34,6 +34,7 @@ public abstract class FileHandler{
 		} catch (FileNotFoundException e) {
 			System.err.println("Unable to open file handle to " + this.filePath);
 			e.printStackTrace();
+			System.exit(-1);
 		}
 		
 	}
@@ -44,6 +45,7 @@ public abstract class FileHandler{
 		} catch (IOException e) {
 			System.err.println("Unable to close file handle to " + this.filePath);
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 	
@@ -60,8 +62,12 @@ public abstract class FileHandler{
 			System.err.println(e.getMessage());
 			System.exit(0);
 		}
-		return fileContents;
 		
+		return fileContents;
+	}
+	
+	protected String getFilePath(){
+		return this.filePath;
 	}
 	
 	
