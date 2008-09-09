@@ -338,7 +338,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	throws IOException {
 		print("domain: " + engine.mapID(domain, domain.getID()));
 		writeNestedValue(nv);
-		print(" ! " + domain.getName());
+		if (domain.getName() != null)
+			print(" ! " + domain.getName());
 		println();
 	}
 
@@ -355,7 +356,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	public void writeRangeTag(Type range, NestedValue nv) throws IOException {
 		print("range: " + engine.mapID(range, range.getID()));
 		writeNestedValue(nv);
-		print(" ! " + range.getName());
+		if (range.getName() != null)
+			print(" ! " + range.getName());
 		println();
 	}
 
@@ -470,7 +472,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 		stream.print(engine.mapID(link.getParent(), link.getParent().getID()));
 		writeNestedValue(nv, scratch);
-		print(" ! " + link.getParent().getName());
+		if (link.getParent().getName() != null)
+			print(" ! " + link.getParent().getName());
 		println();
 	}
 
