@@ -27,6 +27,7 @@ public class OSUtil
     WINDOWS_2000,
     WINDOWS_98,
     WINDOWS_ME,
+    SUN,
     UNKNOWN
   }
 
@@ -103,6 +104,10 @@ public class OSUtil
                osVersion.equals("4.10")) {
         return OS.WINDOWS_ME;
       }
+      //Linux
+      else if (osName.equalsIgnoreCase("SunOS")) {
+	      return OS.SUN;
+    }
     }
     return OS.UNKNOWN;
   }
@@ -114,6 +119,15 @@ public class OSUtil
   public static boolean isLinux()
   {
     return getOS() == OS.LINUX;
+  }
+
+  /** Check to see if the OS is SunOS
+   *
+   *  @return true if the OS is SunOS
+   */
+  public static boolean isSun()
+  {
+    return getOS() == OS.SUN;
   }
 
   /** Check to see if the OS is Mac OS X.
@@ -183,6 +197,17 @@ public class OSUtil
     return false;
   }
 
+  /** Check to see if the OS is any currently recognized flavor of Unix (Linux or SunOS)
+   *
+   *  @return true if the OS is any currently recognized flavor of Unix (Linux or SunOS)
+   */
+  public static boolean isUnix()
+  {
+	  if (isLinux() || isSun())
+		  return true;
+	  return false;
+  }
+
   /** Get the suggested configuration directory given the operating
    *  system.  Follows the convention used by Firefox.
    *
@@ -193,8 +218,8 @@ public class OSUtil
   public static String getConfigDirectory(String projectName)
   {
     String userHome = System.getProperty("user.home");
-    if (isLinux()) {
-      return userHome + "/." + projectName;
+    if (isUnix()) {
+	    return userHome + "/." + projectName.toLowerCase();
     }
     else if (isMacOSX()) {
       return userHome + "/Library/Application Support/" + projectName;
