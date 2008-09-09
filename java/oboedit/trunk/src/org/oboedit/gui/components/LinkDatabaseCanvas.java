@@ -215,7 +215,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		Collection<IdentifiedObject> out = new HashSet<IdentifiedObject>();
 		for (Object pc : pcs) {
 			if (pc instanceof LinkedObject) {
-				out.add((LinkedObject) pc);
+				LinkedObject node = (LinkedObject)pc;
+				if (node.getName() != null)
+					out.add((LinkedObject) pc);
 //				logger.debug("GE.getLinkedObjectCollection: adding linkedobject " + pc); // DEL
 			}
 			else if (pc instanceof Link) {
