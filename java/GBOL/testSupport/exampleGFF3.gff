@@ -1723,7 +1723,7 @@
 2LHet	McPromoter3.0	match_part	158316	158317	.	+	.	ID=:2536345_dummy;Name=:2536345;Parent=:1167833_McPromoter3.0_dummy
 2LHet	sim4_na_dbEST.same.dmel	match	159081	159694	.	-	.	ID=:1150182_sim4_na_dbEST.same.dmel;Name=RE52236.3prime-CP000215-na_dbEST.same.dmel-sim4
 2LHet	sim4_na_dbEST.same.dmel	match_part	159081	159694	97.0	-	.	ID=:2522201_na_dbEST.same.dmel;Name=:2522201;Parent=:1150182_sim4_na_dbEST.same.dmel;Target=RE52236.3prime 1 613 +
-###
+##FASTA
 >2LHet
 TTCATCTTTCGTCTTTATGAAAAACACAAACATGTATCTCGATTTGTCATCTACGAAGGT
 GACAAAATAGCGTGCACCTCCAACAGACGTCGTTTGTATTGGACCACAGATGTCACTATG

@@ -8,6 +8,6 @@ public interface IOInterface {
 	
 	public boolean write(AbstractSimpleObject simpleObject);
 	public boolean write(Collection<AbstractSimpleObject> simpleObjects);
-	public Collection<AbstractSimpleObject> readAll() throws Exception;
+	public Collection<?extends AbstractSimpleObject> readAll() throws Exception;
 	
 }

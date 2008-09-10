@@ -17,11 +17,6 @@ public class FileHandlerTest extends TestCase {
 		try {
 			this.fileHandler = new GFF3Handler(filePath);
 			Assert.assertTrue("Opened file.",true);
-			
-			String dbxref = "NCBI_gi:10727410";
-			String db = dbxref.substring(0,dbxref.indexOf(':'));
-			String accession = dbxref.substring(dbxref.indexOf(':')+1);
-			System.out.println("DB\t" + db + "(:)" + accession);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Assert.assertTrue("Could not open file: " + e.getMessage(),false);
