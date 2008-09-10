@@ -173,8 +173,14 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive()) {
-//				logger.debug("selectionChanged and isLive()"); // DEL
-				OBOTermPanel.this.select(e.getSelection());
+				// Sometimes this is triggered from a selection inside the OBOTermPanel, which
+				// makes the SelectionManager fire a selection event, which triggers this method,
+				// but the selection in that case didn't really change, so there's no need to
+				// select it.
+				if (!(e.getSelection().equals(getSelection()))) {
+//					logger.debug("selectionChanged: new selection is different"); // DEL
+					OBOTermPanel.this.select(e.getSelection());
+				}
 			}
 		}
 	};
@@ -1290,7 +1296,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	public void reload() {
 		// This is sometimes called because of a TreeStructureChanged event, which makes the whole OTE collapse.
 		// Maybe it shouldn't do that if we're in local mode?
-//		logger.debug("Reloading OBO Term Panel...");
+		logger.debug("Reloading OBO Term Panel...");
 //		(new Exception()).printStackTrace();  // DEL
 
 		long time = System.currentTimeMillis();
