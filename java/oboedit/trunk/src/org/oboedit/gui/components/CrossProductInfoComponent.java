@@ -110,8 +110,8 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 
 		// build sets
 		for (PathCapable io : gs.getAllSelectedObjects()) {
-			logger.info("selected: " + io + " ? "+
-					(io instanceof LinkedObject));
+//			logger.info("selected: " + io + " ? "+
+//					(io instanceof LinkedObject));
 
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject)io;
@@ -159,15 +159,15 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 		boolean showCrossProductPanel = xpObjs.size() > 0;
 		if (showCrossProductPanel) {
 
-			logger.info("about to write xps.."+xpObjs);
+//			logger.info("about to write xps.."+xpObjs);
 
 			for (LinkedObject xp : xpObjs) {
 
-				logger.info("xp = "+xp);
+//				logger.info("xp = "+xp);
 				IdentifiedObject xpGenus = ReasonerUtil.getGenus((OBOClass)xp);
-				logger.info("genus = "+xpGenus);
+//				logger.info("genus = "+xpGenus);
 				Collection<Link> xpDiffs = ReasonerUtil.getDifferentia((OBOClass)xp);
-				logger.info("diffs = "+xpDiffs);
+//				logger.info("diffs = "+xpDiffs);
 				out.append("<h3>" + xp + "</h3>");
 				out.append("<b>Genus:</b> " + objectHref(xpGenus)
 						+ "<br><br>");
@@ -195,8 +195,8 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 
 		// show xps in which this is a genus or differentium
 		for (PathCapable io : gs.getAllSelectedObjects()) {
-			logger.info("selected: " + io + " ? "+
-					(io instanceof LinkedObject));
+//			logger.info("selected: " + io + " ? "+
+//					(io instanceof LinkedObject));
 			if (io instanceof LinkedObject) {
 				LinkedObject xo = (LinkedObject)io;
 				out.append("<li>");
