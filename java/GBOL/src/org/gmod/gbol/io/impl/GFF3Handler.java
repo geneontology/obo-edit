@@ -3,6 +3,7 @@ package org.gmod.gbol.io.impl;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gmod.gbol.io.FileHandler;
@@ -15,7 +16,6 @@ import org.gmod.gbol.simpleObject.DBXref;
 import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
 import org.gmod.gbol.simpleObject.FeatureRelationship;
-import org.gmod.gbol.simpleObject.FeatureSynonym;
 import org.gmod.gbol.simpleObject.Organism;
 
 
@@ -24,9 +24,13 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	private Organism organism;
 	private String newlineCharacter;
 	private String columnDelimiter;
+	private String sourceFeature;
+	
+	private enum ParseMode {FEATURE,FASTA,FEATURE_COMPLETE};
 	private ParseMode parseMode;
+	
 	private Map<String,Feature> features;
-	private Map<String,Feature> sourceFeatures;
+	//private Map<String,Feature> sourceFeatures;
 	
 	// Configuration settings
 	private CVTerm sourceFeatureType;
@@ -41,22 +45,21 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	private Map<String,CVTerm> featureTypes;
 	private Map<String,CVTerm> sources;
 	private Map<String,DB> dbs;
-	private Map<String,CV> cvs;
+	
 	private Map<String,CVTerm> featurePropertyTypes;
 
-	private enum ParseMode {FEATURE,FASTA};
+
 	
 	public GFF3Handler(String filePath) throws IOException {
 		super(filePath);
 		this.newlineCharacter = "\n";
 		this.columnDelimiter = "\t";
 		this.parseMode = ParseMode.FEATURE;
-		this.sourceFeatures =  new HashMap<String,Feature>();
+		//this.sourceFeatures =  new HashMap<String,Feature>();
 		this.features =  new HashMap<String,Feature>();
 		this.featureTypes = new HashMap<String,CVTerm>();
 		this.sources = new HashMap<String,CVTerm>();
 		this.dbs = new HashMap<String,DB>();
-		this.cvs = new HashMap<String,CV>();
 		this.featurePropertyTypes = new HashMap<String,CVTerm>();
 		
 		this.organism = null;
@@ -66,6 +69,18 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		this.setSynonymTypeName("synonym");
 	}
 
+	public List<Feature> getAllFeatures(){
+		return null;
+	}
+	
+	public List<Feature> getTopLevelFeatures(){
+		return null;
+	}
+	
+	public List<Feature> getSourceFeatures(){
+		return null;
+	}
+	
 	private Organism getOrganism() {
 		return organism;
 	}
@@ -74,7 +89,8 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		this.organism = organism;
 	}
 
-	public Collection<AbstractSimpleObject> readAll() throws Exception{
+	@SuppressWarnings("unchecked")
+	public Collection<?extends AbstractSimpleObject> readAll() throws Exception{
 		
 		this.openHandle();
 		StringBuilder contents = this.readFileContents();
@@ -82,10 +98,11 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		String[] lines = contents.toString().split(this.newlineCharacter);
 		for (int i=0;i<lines.length;i++){
 			String line = lines[i].trim();
-			if (line != ""){
+			if ((!line.equals("")) && (line != null)){
+
 				if (line.charAt(0) == '#'){
 					if (line.charAt(1) == '#'){
-						this.processDirective(lines[i].substring(2));
+						this.processDirective(lines[i].substring(2).trim());
 					}
 				} else {
 					if (this.parseMode.equals(ParseMode.FEATURE)){
@@ -96,14 +113,16 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 							System.err.println("Error message: " + e.getMessage());
 							System.exit(-1);
 						}
+					} else if (this.parseMode.equals(ParseMode.FASTA)){
+						this.parseFASTA(line.trim());
 					} else {
-						
+						System.err.println("Don't know how to handle line " + line + " in parse mode " + this.parseMode.toString() + ".");
 					}
 				}
 			}
 		}
 		
-		return null;
+		return (Collection<? extends AbstractSimpleObject>) this.features.values();
 	}
 
 	public boolean write(AbstractSimpleObject simpleObject) {
@@ -116,11 +135,29 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		return false;
 	}
 	
-	private void processDirective(String directive){
-		
+	private void parseFASTA(String line){
+		if (line.charAt(0) == '>'){
+			this.sourceFeature = line.substring(1);
+			if (!this.features.containsKey(this.sourceFeature)){
+				this.constructSourceFeature(this.sourceFeature);
+			}
+		} else {
+			this.features.get(this.sourceFeature).getResidues().concat(line);
+		}
 	}
 	
-	private Feature constructFeature(String line) throws Exception{
+	private void processDirective(String directive){
+		if (directive.equals("#")){
+			System.out.println("Feature Parsing Complete.");
+			this.parseMode = ParseMode.FEATURE_COMPLETE;
+		} else if (directive.equals("FASTA")){
+			this.parseMode = ParseMode.FASTA;
+		} else {
+			System.err.println("Can't handle directive '" + directive + "' yet.");
+		}
+	}
+	
+	private void constructFeature(String line) throws Exception{
 		
 		Feature feature = new Feature();
 		feature.setOrganism(this.getOrganism());
@@ -130,7 +167,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			throw new Exception("Unexpected number of columns (" + parts.length + "). Expecting 9.");
 		}
 		
-		if (!this.sourceFeatures.containsKey(parts[0])){
+		if (!this.features.containsKey(parts[0])){
 			this.constructSourceFeature(parts[0]);
 		}
 		
@@ -174,14 +211,20 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			this.processAttribute(feature, keyval[0], keyval[1]);
 		}
 		
-		return feature;
+		if (feature.getUniqueName() == null) {
+			throw new Exception("Feature is missing required attribute 'ID'.");
+		}
 		
 	}
 	
 	private void processAttribute(Feature feature, String key, String value) throws Exception{
 		if (key.equals("ID")){
 			feature.setUniqueName(value);
-			this.features.put(value, feature);
+			if (this.features.containsKey(feature.getUniqueName())){
+				throw new Exception("Feature ID " + feature.getUniqueName() + " is not unique.");
+			} else {
+				this.features.put(feature.getUniqueName(), feature);
+			}
 		} else if (key.equals("Name")){
 			feature.setName(value);
 		} else if (key.equals("Alias")){
@@ -226,7 +269,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			feature.addFeatureProperty(this.featurePropertyTypes.get(key), value);
 		}
 		
-		this.features.put(feature.getUniqueName(), feature);
+		
 		
 		
 	}
@@ -236,7 +279,8 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		sourceFeature.setUniqueName(uniqueName);
 		sourceFeature.setIsObsolete(false);
 		sourceFeature.setType(this.getSourceFeatureType());
-		this.sourceFeatures.put(uniqueName, sourceFeature);
+		sourceFeature.setResidues("");
+		this.features.put(uniqueName, sourceFeature);
 	}
 
 	public String getNewlineCharacter() {

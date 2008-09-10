@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public abstract class FileHandler{
+public abstract class FileHandler implements IOInterface{
 	
 	private String filePath;
 	private FileReader fileReader;
