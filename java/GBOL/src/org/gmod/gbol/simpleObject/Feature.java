@@ -15,6 +15,10 @@ public class Feature extends org.gmod.gbol.simpleObject.generated.AbstractFeatur
 
 	private static final long serialVersionUID = 1L;
 	
+	public Feature(){
+		super();
+	}
+	
 	public boolean addFeatureProperty(CVTerm type,String value){
 		FeatureProperty featureProperty = new FeatureProperty();
 		featureProperty.setType(type);

@@ -1,6 +1,7 @@
 package org.gmod.gbol.io.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,12 +70,20 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		this.setSynonymTypeName("synonym");
 	}
 
-	public List<Feature> getAllFeatures(){
-		return null;
+	public Collection<Feature> getAllFeatures(){
+		return this.features.values();
 	}
 	
+
+	// Rename this to something less confusing
 	public List<Feature> getTopLevelFeatures(){
-		return null;
+		List<Feature> features = new ArrayList<Feature>();
+		for (Feature f : this.features.values()){
+			if ((f.getParentFeatureRelationships().size()==0) && (!f.getType().equals(this.sourceFeatureType))){
+				features.add(f);
+			}
+		}
+		return features;
 	}
 	
 	public List<Feature> getSourceFeatures(){
