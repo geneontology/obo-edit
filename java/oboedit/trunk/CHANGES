@@ -13,6 +13,14 @@ been fixed before b49.)
 Can be achieved using global link filters.  The same filter can be
 used in combination with "save implied links [for presentation]" to remove
 redundant links when implied links are instantiated for release.
+- Fixed bug 2051357: unexpected autoscroll ("In the OTE when I select a term
+and then use shift-click to select a lot of adjacent terms, the OTE view
+immediately scrolls away after the second click to some random other point.").
+Fix is not to redo selection in OTE if you did the selecting yourself (it was
+responding as if there had been an external selection event, e.g. selecting
+the term from the Search panel instead of in the OTE).  Not only does this fix
+the bug, it should reduce some unnecessary selecting and redrawing in the OTE,
+thus improving efficiency.
 - Fixed bug [ 2093464 ] OTE wrongly allows you to delete a term with children.
 It wasn't actually letting you delete a term with children; it was letting you
 delete a *relationship* in which the term in question was the child, but it
