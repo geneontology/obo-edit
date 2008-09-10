@@ -246,7 +246,7 @@ public class SessionManager {
 		if (warning != null) {
 			Object[] params = { item, warning };
 		}
-		logger.info(item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
+		logger.info("SessionManager.doApply " + item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
 
 		// if (getUseReasoner())
 		// reasonerOpModel.apply(item);
@@ -434,15 +434,11 @@ public class SessionManager {
 			if (getUseReasoner()) {
 				OperationWarning reasonerWarning = reasonerOpModel.apply(item);
 				Object[] params = { item, reasonerWarning };
-
-
-				logger.warn("Reasoner warning message while trying to apply history item");
+				logger.warn("Reasoner warning message while trying to apply history item " + item + ": " + reasonerWarning);
 			}
 			if (warning != null) {
 				Object[] params = { item, warning };
-				logger.warn("Warning message while trying to apply history item");
-
-				logger.info("*** GOT WARNING = " + warning);
+				logger.warn("Warning message while trying to apply history item " + item + ": " + warning);
 			}
 			fireHistoryApplied(new HistoryAppliedEvent(this, item));
 		}
@@ -457,7 +453,7 @@ public class SessionManager {
 	protected void reverse(HistoryItem item) {
 		OperationWarning warning = getOperationModel().reverse(item);
 		if (warning != null)
-			logger.info("SessionManager.reverse: warning = " + warning);
+			logger.warn("SessionManager.reverse " + item + ": warning = " + warning);
 		if (getUseReasoner()) {
 			reasonerOpModel.reverse(item);
 		}
