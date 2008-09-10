@@ -24,6 +24,8 @@
 
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
 	<property name="install4j_installation_path" location="/Applications/install4j 4" />
+	<!-- change install path for linux -->
+	<!-- property name="install4j_installation_path" location="/opt/install4j" / -->
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
 
@@ -172,7 +174,7 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
-
+	<!-- target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, install4j_installers" description="Build installers" -->
 	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
 	</target>
 
@@ -312,7 +314,9 @@
 		</move>
 	</target>
 
-	<target name="docindex" depends="-dojhindex">
+	<!-- target name="docindex" depends="-dojhindex" -->
+	<!-- jhindex is not required anymore -->
+	<target name="docindex">
 		<xslt out="docs/toc.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
 			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
 		</xslt>
