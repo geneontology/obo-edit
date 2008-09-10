@@ -11,5 +11,9 @@ package org.gmod.gbol.simpleObject;
 public class CV extends org.gmod.gbol.simpleObject.generated.AbstractCV {
 
 	private static final long serialVersionUID = 1L;
+	
+	public CV(String name){
+		super(name);
+	}
 
 }
