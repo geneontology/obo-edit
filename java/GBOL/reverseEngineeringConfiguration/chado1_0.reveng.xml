@@ -1451,6 +1451,7 @@
         <param name="sequence">featureloc_featureloc_id_seq</param>
       </generator>
     </primary-key>
+    <column name="strand" property="strand" type="java.lang.Integer"/>
     <column name="feature_id"><meta attribute="use-in-equals">true</meta></column>
     <column name="locgroup"><meta attribute="use-in-equals">true</meta></column>
     <column name="rank"><meta attribute="use-in-equals">true</meta></column>

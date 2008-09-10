@@ -8,7 +8,14 @@ import java.util.Map;
 import org.gmod.gbol.io.FileHandler;
 import org.gmod.gbol.io.IOInterface;
 import org.gmod.gbol.simpleObject.AbstractSimpleObject;
+import org.gmod.gbol.simpleObject.CV;
+import org.gmod.gbol.simpleObject.CVTerm;
+import org.gmod.gbol.simpleObject.DB;
+import org.gmod.gbol.simpleObject.DBXref;
 import org.gmod.gbol.simpleObject.Feature;
+import org.gmod.gbol.simpleObject.FeatureLocation;
+import org.gmod.gbol.simpleObject.FeatureRelationship;
+import org.gmod.gbol.simpleObject.FeatureSynonym;
 import org.gmod.gbol.simpleObject.Organism;
 
 
@@ -21,7 +28,22 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	private Map<String,Feature> features;
 	private Map<String,Feature> sourceFeatures;
 	
+	// Configuration settings
+	private CVTerm sourceFeatureType;
+	private CVTerm synonymType;
+	private CVTerm featureRelationshipType;
 	
+	private CV sequenceOntology;
+	private CV gffFeaturePropertyOntology;
+	private CV synonymOntology;
+	private CV relationshipOntology;
+	
+	private Map<String,CVTerm> featureTypes;
+	private Map<String,CVTerm> sources;
+	private Map<String,DB> dbs;
+	private Map<String,CV> cvs;
+	private Map<String,CVTerm> featurePropertyTypes;
+
 	private enum ParseMode {FEATURE,FASTA};
 	
 	public GFF3Handler(String filePath) throws IOException {
@@ -31,9 +53,20 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		this.parseMode = ParseMode.FEATURE;
 		this.sourceFeatures =  new HashMap<String,Feature>();
 		this.features =  new HashMap<String,Feature>();
+		this.featureTypes = new HashMap<String,CVTerm>();
+		this.sources = new HashMap<String,CVTerm>();
+		this.dbs = new HashMap<String,DB>();
+		this.cvs = new HashMap<String,CV>();
+		this.featurePropertyTypes = new HashMap<String,CVTerm>();
+		
+		this.organism = null;
+		this.setSequenceOntologyName("SO");
+		this.setGFFFeaturePropertyOntologyName("GFF Feature Property");
+		this.setSynonymOntologyName("synonym");
+		this.setSynonymTypeName("synonym");
 	}
 
-	public Organism getOrganism() {
+	private Organism getOrganism() {
 		return organism;
 	}
 
@@ -43,8 +76,6 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 
 	public Collection<AbstractSimpleObject> readAll() throws Exception{
 		
-		
-		
 		this.openHandle();
 		StringBuilder contents = this.readFileContents();
 		
@@ -53,11 +84,13 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			String line = lines[i].trim();
 			if (line != ""){
 				if (line.charAt(0) == '#'){
-					
+					if (line.charAt(1) == '#'){
+						this.processDirective(lines[i].substring(2));
+					}
 				} else {
 					if (this.parseMode.equals(ParseMode.FEATURE)){
 						try {
-							Feature f = this.constructFeature(line);
+							this.constructFeature(line);
 						} catch (Exception e){
 							System.err.println("Error parsing line " + i + " of GFF3 file " + this.getFilePath());
 							System.err.println("Error message: " + e.getMessage());
@@ -83,11 +116,15 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		return false;
 	}
 	
-	private void processCommentDirective(){
+	private void processDirective(String directive){
 		
 	}
 	
 	private Feature constructFeature(String line) throws Exception{
+		
+		Feature feature = new Feature();
+		feature.setOrganism(this.getOrganism());
+		
 		String[] parts = line.split(this.columnDelimiter);
 		if (parts.length != 9){
 			throw new Exception("Unexpected number of columns (" + parts.length + "). Expecting 9.");
@@ -96,15 +133,159 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		if (!this.sourceFeatures.containsKey(parts[0])){
 			this.constructSourceFeature(parts[0]);
 		}
+		
+		if (!this.sources.containsKey(parts[1])){
+			this.sources.put(parts[1], new CVTerm("source",this.gffFeaturePropertyOntology,0));
+		}
+		feature.addFeatureProperty(this.sources.get(parts[1]), parts[1]);
 
-		return null;
+		if (!this.featureTypes.containsKey(parts[2])){
+			this.featureTypes.put(parts[2], new CVTerm(parts[2],this.sequenceOntology,0));
+		}
+		feature.setType(this.featureTypes.get(parts[2]));
+		
+		FeatureLocation fl = new FeatureLocation();
+	
+		// Subtract 1 to convert to interbase.
+		fl.setFmin((Integer.parseInt(parts[3])-1));
+		fl.setFmax(Integer.parseInt(parts[4]));
+		if (fl.getFmin()>=fl.getFmax()){
+			throw new Exception("Feature fmax (" + fl.getFmax() + ") cannot be <= feature fmin (" + fl.getFmin() + ").");
+		}
+		if (parts[6].equals("+")){
+			fl.setStrand(1);
+		} else if (parts[6].equals("-")){
+			fl.setStrand(-1);
+		} else {
+			fl.setStrand(0);
+		}
+		
+		try {
+			fl.setPhase(Integer.parseInt(parts[7]));
+		} catch (Exception e){
+			// No Phase.
+		}
+		
+		feature.addFeatureLocation(fl);
+		
+		// This needs to be altered to handle escaped semicolons. 
+		for (String attribute : parts[8].split(";")){
+			String[] keyval = attribute.split("=");
+			this.processAttribute(feature, keyval[0], keyval[1]);
+		}
+		
+		return feature;
+		
+	}
+	
+	private void processAttribute(Feature feature, String key, String value) throws Exception{
+		if (key.equals("ID")){
+			feature.setUniqueName(value);
+			this.features.put(value, feature);
+		} else if (key.equals("Name")){
+			feature.setName(value);
+		} else if (key.equals("Alias")){
+			feature.addSynonym(this.synonymType, value);
+		} else if (key.equals("Parent")){
+			for (String parentId : value.split(",")){
+				if (!this.features.containsKey(parentId)){
+					throw new Exception("Can't find parent feature " + parentId + ". Maybe it hasn't been parsed yet?");
+				}
+				FeatureRelationship fr = new FeatureRelationship();
+				fr.setSubjectFeature(feature);
+				fr.setObjectFeature(this.features.get(parentId));
+				fr.setType(this.featureRelationshipType);
+				this.features.get(parentId).getChildFeatureRelationships().add(fr);
+				feature.getParentFeatureRelationships().add(fr);
+			}
+		} else if (key.equals("Target")){
+			System.err.println("Can't handle 'Target' attribute yet.");
+		} else if (key.equals("Gap")){
+			System.err.println("Can't handle 'Gap' attribute yet.");
+		} else if (key.equals("Derives_from")){
+			System.err.println("Can't handle 'Derives_from' attribute yet.");
+		} else if (key.equals("Dbxref")){
+			if (!value.contains(":")){
+				throw new Exception("Dbxref must be of the form DBTAG:ID");
+			}
+			String db = value.substring(0, value.indexOf(':'));
+			String accession = value.substring(value.indexOf(':')+1);
+			if (!this.dbs.containsKey(db)){
+				this.dbs.put(db, new DB(db));
+			}
+			DBXref dbxref = new DBXref();
+			dbxref.setDb(this.dbs.get(db));
+			dbxref.setAccession(accession);
+			feature.addDBXref(dbxref);
+		} else if (key.equals("Ontology_term")){
+			System.err.println("Can't handle 'Ontology_term' attribute yet.");
+		} else {
+			if (!this.featurePropertyTypes.containsKey(key)){
+				this.featurePropertyTypes.put(key, new CVTerm(key,this.gffFeaturePropertyOntology,0));
+			}
+			feature.addFeatureProperty(this.featurePropertyTypes.get(key), value);
+		}
+		
+		this.features.put(feature.getUniqueName(), feature);
+		
 		
 	}
 	
 	private void constructSourceFeature(String uniqueName){
 		Feature sourceFeature = new Feature();
 		sourceFeature.setUniqueName(uniqueName);
-		
+		sourceFeature.setIsObsolete(false);
+		sourceFeature.setType(this.getSourceFeatureType());
+		this.sourceFeatures.put(uniqueName, sourceFeature);
+	}
+
+	public String getNewlineCharacter() {
+		return newlineCharacter;
+	}
+
+	public void setNewlineCharacter(String newlineCharacter) {
+		this.newlineCharacter = newlineCharacter;
+	}
+
+	public String getColumnDelimiter() {
+		return columnDelimiter;
+	}
+
+	public void setColumnDelimiter(String columnDelimiter) {
+		this.columnDelimiter = columnDelimiter;
+	}
+
+
+	public void setSequenceOntologyName(String sequenceOntologyName) {
+		this.sequenceOntology = new CV(sequenceOntologyName);
+	}
+	
+	public CVTerm getSourceFeatureType() {
+		return this.sourceFeatureType;
+	}
+
+	public void setSourceFeatureType(String sourceFeatureType) {
+		this.sourceFeatureType = new CVTerm(sourceFeatureType,this.sequenceOntology,0);
+	}
+	
+	public void setGFFFeaturePropertyOntologyName(String gffFeaturePropertyOntologyName){
+		this.gffFeaturePropertyOntology = new CV(gffFeaturePropertyOntologyName);
+	}
+	
+	public void setSynonymOntologyName(String synonymOntologyName){
+		this.synonymOntology = new CV(synonymOntologyName);
+	}
+	
+	public void setSynonymTypeName(String synonymTypeName){
+		this.synonymType = new CVTerm(synonymTypeName,this.synonymOntology,0);
+	}
+
+	public void setRelationshipOntologyName(String relationshipOntologyName){
+		this.relationshipOntology = new CV(relationshipOntologyName);
+	}
+	
+	public void setFeatureRelationshipTypeName(String featureRelationshipTypeName){
+		this.featureRelationshipType = new CVTerm(featureRelationshipTypeName,this.relationshipOntology,0);
 	}
 	
 }

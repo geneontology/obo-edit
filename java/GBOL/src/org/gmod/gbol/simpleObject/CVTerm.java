@@ -11,5 +11,12 @@ package org.gmod.gbol.simpleObject;
 public class CVTerm extends org.gmod.gbol.simpleObject.generated.AbstractCVTerm {
 
 	private static final long serialVersionUID = 1L;
+	
+	public CVTerm(String name,CV cv, int isObsolete ){
+		this.setCv(cv);
+        this.setName(name);
+        this.setIsObsolete(isObsolete);
+	}
 
+	
 }
