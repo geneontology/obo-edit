@@ -133,73 +133,77 @@ public class DeleteAction implements ClickMenuAction {
 		// What *is* legacyMode really??  It seems to be true whenever the selection
 		// was made in the Ontology Tree Editor (rather than in the Graph Editor).
 		legacyMode = selection.getSelector() != null
-		    && selection.getSelector().hasCombinedTermsAndLinks();
+			&& selection.getSelector().hasCombinedTermsAndLinks();
 
 		boolean warnBeforeDelete = Preferences.getPreferences().getWarnBeforeDelete();
 
-		    deleteTerm = false;
-			for (PathCapable pc : selection.getAllSelectedObjects()) {
-				if (pc instanceof LinkedObject) {
-					LinkedObject lo = (LinkedObject) pc;
+		deleteTerm = false;
+		for (PathCapable pc : selection.getAllSelectedObjects()) {
+			if (pc instanceof LinkedObject) {  // Term (not link)
+				LinkedObject lo = (LinkedObject) pc;
 //					logger.info("Checking linkedobject " + lo.getName()); // DEL
-					// 3/2008: If node has (non-obsolete) children, don't allow user to delete it.
-					if (hasNonObsoleteChildren(lo)) {
+				// 3/2008: If node has (non-obsolete) children, don't allow user to delete it.
+				if (hasNonObsoleteChildren(lo)) {
 //					    && TermUtil.hasAncestor(lo, lo)) { 
-//					    logger.info("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
-					    wontDelete += lo.getName() + " (" + lo.getID() + ")"
+//					    logger.debug("Can't delete " + lo.getName() + "--it has children: " + lo.getChildren()); // DEL
+					wontDelete += lo.getName() + " (" + lo.getID() + ")"
 						+ " will not be deleted because it still has children.\n";
-					}
-					else {  // No children--ok to delete
-					    if (!legacyMode || lo.getParents().size() <= 1) { // Sometimes it's 0--??
+				}
+				else {  // No children--ok to delete term
+					if (!legacyMode || lo.getParents().size() <= 1) { // Sometimes it's 0--??
 //						!(TermUtil.isObsolete(lo.getParents().iterator().next()))) {
 						deleteTerm = true;
+//						logger.debug("Can delete " + lo.getName() + ".  children: " + lo.getChildren()); // DEL
 						lastInstanceCount++;
 						instanceString += lo.getName() + " ("
-						    + lo.getID() + ")\n";
+							+ lo.getID() + ")\n";
 
 						// Delete the parent links for this term
 						for (Link parentLink : lo.getParents()) {
-						    if (!out.contains(parentLink)) {
-							out.add(parentLink);
-						    }
+							if (!out.contains(parentLink)) {
+								out.add(parentLink);
+							}
 						}
-					    }
-					    // It doesn't have children, right?  We already checked.
+					}
+					// It doesn't have children, right?  We already checked.
 //					    for (Link childLink : lo.getChildren()) { // ??
 //						if (!out.contains(childLink))
 //						    out.add(childLink);
 //					    }
 					out.add(lo);  // Add the term itself to the delete list
-					}
-				} else if (pc instanceof Link) {
-					Link link = (Link) pc;
-					// ! Check whether the link is to null (as for a singleton)?
-					if (!TermUtil.isImplied(link) 
-					    && link.getType() != null) {  // ?
-//					    logger.info("Adding to delete list: link " + link); // DEL
-					    out.add(pc);
+				}
+			} else if (pc instanceof Link) {
+				Link link = (Link) pc;
+				// ! Check whether the link is to null (as for a singleton)?
+				if (!TermUtil.isImplied(link) 
+				    && link.getType() != null) {  // ?
+					// If the child of this link only this one parent, then you're not
+					// allowed to delete this link (which would make the child into a root).
+					if (link.getChild().getParents().size() > 1) {
+//							logger.info("Adding to delete list: link " + link); // DEL
+						out.add(pc);
 					}
 				}
 			}
-			return true;
-//		}
+		}
+		return true;
 	}
 
-    private boolean hasNonObsoleteChildren(LinkedObject lo) {
-	if (lo.getChildren().size() == 0)
-	    return false;
-	for (Link childLink : lo.getChildren()) {
-	    LinkedObject child = childLink.getChild();
-	    if (TermUtil.isObsolete(child))
+	private boolean hasNonObsoleteChildren(LinkedObject lo) {
+		if (lo.getChildren().size() == 0)
+			return false;
+		for (Link childLink : lo.getChildren()) {
+			LinkedObject child = childLink.getChild();
+			if (TermUtil.isObsolete(child))
 //		logger.info("Child " + child.getName() + " is obsolete");
-		;
-	    else {
+				;
+			else {
 //		logger.info("Child " + child.getName() + " is NOT obsolete");
-		return true;
-	    }
+				return true;
+			}
+		}
+		return false;
 	}
-	return false;
-    }
 
 	public HistoryItem execute() {
 	    if (shouldDestroy) {
