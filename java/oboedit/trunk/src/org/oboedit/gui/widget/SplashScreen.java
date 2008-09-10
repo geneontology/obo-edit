@@ -106,13 +106,13 @@ public class SplashScreen extends JWindow {
 				 + "copyright 2001-" + year + "\n"
 				 + "Originally written by John Day-Richter, with\n"
 				 + "contributions by Nomi Harris, Chris Mungall,\n"
-				 + "Jennifer Deegan, Amina Abdulla, and.\n"
+				 + "Jennifer Deegan, Amina Abdulla, and\n"
 				 + "Nicolas Rodriguez.");
 		bip.setBorder(null);
 		return bip;
 	}
 
-	protected void kill() {
+	public void kill() {
 		setVisible(false);
 		if (thread.isAlive())
 			thread.interrupt();
