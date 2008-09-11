@@ -20,9 +20,6 @@ public class FlybaseConfigurationTest extends AbstractGBOLHibernateTest{
 	}
 	
 	public void testConfigure(){
-
-
-		
 		CVTerm cvterm = (CVTerm) this.sf.getCurrentSession().get(CVTerm.class, 30);
 		System.out.println("Parent: " + cvterm.getName());
 		for (CVTermRelationship cvtr : cvterm.getChildCVTermRelationships()){

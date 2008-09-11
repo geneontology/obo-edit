@@ -13,4 +13,7 @@ public class ${pojo.getDeclarationName()} extends org.gmod.gbol.simpleObject.gen
 
 	private static final long serialVersionUID = 1L;
 
+	public ${pojo.getDeclarationName()}(){
+		super();
+	}
 }
