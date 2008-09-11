@@ -181,12 +181,12 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		}
 		
 		if (!this.sources.containsKey(parts[1])){
-			this.sources.put(parts[1], new CVTerm("source",this.gffFeaturePropertyOntology,0));
+			this.sources.put(parts[1], new CVTerm("source",this.gffFeaturePropertyOntology));
 		}
 		feature.addFeatureProperty(this.sources.get(parts[1]), parts[1]);
 
 		if (!this.featureTypes.containsKey(parts[2])){
-			this.featureTypes.put(parts[2], new CVTerm(parts[2],this.sequenceOntology,0));
+			this.featureTypes.put(parts[2], new CVTerm(parts[2],this.sequenceOntology));
 		}
 		feature.setType(this.featureTypes.get(parts[2]));
 		
@@ -273,7 +273,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			System.err.println("Can't handle 'Ontology_term' attribute yet.");
 		} else {
 			if (!this.featurePropertyTypes.containsKey(key)){
-				this.featurePropertyTypes.put(key, new CVTerm(key,this.gffFeaturePropertyOntology,0));
+				this.featurePropertyTypes.put(key, new CVTerm(key,this.gffFeaturePropertyOntology));
 			}
 			feature.addFeatureProperty(this.featurePropertyTypes.get(key), value);
 		}
@@ -318,7 +318,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	}
 
 	public void setSourceFeatureType(String sourceFeatureType) {
-		this.sourceFeatureType = new CVTerm(sourceFeatureType,this.sequenceOntology,0);
+		this.sourceFeatureType = new CVTerm(sourceFeatureType,this.sequenceOntology);
 	}
 	
 	public void setGFFFeaturePropertyOntologyName(String gffFeaturePropertyOntologyName){
@@ -330,7 +330,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	}
 	
 	public void setSynonymTypeName(String synonymTypeName){
-		this.synonymType = new CVTerm(synonymTypeName,this.synonymOntology,0);
+		this.synonymType = new CVTerm(synonymTypeName,this.synonymOntology);
 	}
 
 	public void setRelationshipOntologyName(String relationshipOntologyName){
@@ -338,7 +338,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	}
 	
 	public void setFeatureRelationshipTypeName(String featureRelationshipTypeName){
-		this.featureRelationshipType = new CVTerm(featureRelationshipTypeName,this.relationshipOntology,0);
+		this.featureRelationshipType = new CVTerm(featureRelationshipTypeName,this.relationshipOntology);
 	}
 	
 }
