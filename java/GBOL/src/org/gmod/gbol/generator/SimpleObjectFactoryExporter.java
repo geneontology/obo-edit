@@ -1,4 +1,4 @@
-package org.gmod.gbol.generators;
+package org.gmod.gbol.generator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,16 +19,16 @@ import org.hibernate.mapping.RootClass;
 import org.hibernate.tool.hbm2x.AbstractExporter;
 import org.hibernate.tool.hbm2x.ExporterException;
 
-public class HibernateConfigurationExporter extends AbstractExporter{
+public class SimpleObjectFactoryExporter extends AbstractExporter{
 
 	private Writer output;
     private Properties customProperties = new Properties();
 
-	public HibernateConfigurationExporter(Configuration configuration, File outputdir) {
+	public SimpleObjectFactoryExporter(Configuration configuration, File outputdir) {
 		super(configuration, outputdir);
 	}
 
-	public HibernateConfigurationExporter() {
+	public SimpleObjectFactoryExporter() {
 		
 	}
 	
@@ -57,7 +57,7 @@ public class HibernateConfigurationExporter extends AbstractExporter{
 		File file = null;
 		try  {
         if(output==null) {
-            file = new File(getOutputDirectory(), "hibernate.cfg.xml");
+            file = new File(getOutputDirectory(), "SimpleObjectFactory.java");
             getTemplateHelper().ensureExistence(file);
 			pw = new PrintWriter(new FileWriter(file) );
 			getArtifactCollector().addFile(file, "cfg.xml");
@@ -67,11 +67,7 @@ public class HibernateConfigurationExporter extends AbstractExporter{
         }
 		
 		
-		pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<!DOCTYPE hibernate-configuration PUBLIC\r\n" + 
-				"		\"-//Hibernate/Hibernate Configuration DTD 3.0//EN\"\r\n" + 
-				"		\"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd\">\r\n" + 
-				"<hibernate-configuration>");
+		pw.println("Init Stuff");
 
         boolean ejb3 = Boolean.valueOf((String)getProperties().get("ejb3")).booleanValue();
         
@@ -143,8 +139,7 @@ public class HibernateConfigurationExporter extends AbstractExporter{
 		if(useClass) {
 			pw.println("<mapping class=\"" + element.getClassName() + "\"/>");
 		} else {
-			pw.print("<mapping resource=\"" + getMappingFileResource(element).replace("simpleObject/", "simpleObject/generated/Abstract") + "\"/>");
-			pw.print("<mapping resource=\"" + getMappingFileResource(element) + "\"/>");
+			pw.print("Insert object factory here.");
 		}
 			
 		Iterator directSubclasses = element.getDirectSubclasses();
@@ -155,15 +150,7 @@ public class HibernateConfigurationExporter extends AbstractExporter{
 		
 	}
 
-	/**
-	 * @param element
-	 * @return
-	 */
-	private String getMappingFileResource(PersistentClass element) {
-		
-		return element.getClassName().replace('.', '/') + ".hbm.xml";
-	}
-	
+
 	public String getName() {
 		return "cfg2cfgxml";
 	}

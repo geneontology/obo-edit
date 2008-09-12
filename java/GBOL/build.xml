@@ -101,6 +101,7 @@
 		<path location="lib/commons-collections-2.1.1.jar"/>
 		<path location="lib/Tidy.jar"/>
 		<path location="lib/HibernateConfigurationExporter.jar"/>
+		<path location="lib/SimpleObjectFactoryExporter.jar"/>
 	</path>
 	
 	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask" classpathref="toolslib"/>
@@ -133,17 +134,32 @@
 	</target>
 	
 	<target name="buildHibernateConfigurationExporter">
-		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/" srcdir="src/org/gmod/gbol/exporter/" includes="HibernateConfigurationExporter.java">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/" srcdir="src/org/gmod/gbol/generator/" includes="HibernateConfigurationExporter.java">
 		  	<src path="src"/>
 		  	<classpath refid="GBOL.classpath"/>
 		</javac>
-		<jar destfile="lib/HibernateConfigurationExporter.jar" basedir="./bin/" includes="org/gmod/gbol/exporter/HibernateConfigurationExporter.class"/>
+		<jar destfile="lib/HibernateConfigurationExporter.jar" basedir="./bin/" includes="org/gmod/gbol/generator/HibernateConfigurationExporter.class"/>
 	</target>
 	
 	<target name="generateHibernateConfiguration" depends="buildHibernateConfigurationExporter">
 		<hibernatetool destdir="generated" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate exporterclass="org.gmod.gbol.exporter.HibernateConfigurationExporter"/>
+			<hbmtemplate exporterclass="org.gmod.gbol.generator.HibernateConfigurationExporter"/>
+		</hibernatetool>
+	</target>
+	
+	<target name="buildSimpleObjectFactoryExporter">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/" srcdir="src/org/gmod/gbol/generator/" includes="SimpleObjectFactoryExporter.java">
+		  	<src path="src"/>
+		  	<classpath refid="GBOL.classpath"/>
+		</javac>
+		<jar destfile="lib/SimpleObjectFactoryExporter.jar" basedir="./bin/" includes="org/gmod/gbol/generator/SimpleObjectFactoryExporter.class"/>
+	</target>
+			
+	<target name="generateSimpleObjectFactory" depends="buildSimpleObjectFactoryExporter">
+		<hibernatetool destdir="generated" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
+			<hbmtemplate exporterclass="org.gmod.gbol.generator.SimpleObjectFactoryExporter"/>
 		</hibernatetool>
 	</target>
 	
