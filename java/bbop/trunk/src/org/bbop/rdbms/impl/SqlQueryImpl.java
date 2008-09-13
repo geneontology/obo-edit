@@ -73,8 +73,8 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 			getSelectClause().toSQL() + " " +
 			getFromClause().toSQL() + " " +
 			getWhereClause().toSQL() + " " +
-			getOrderByClause().toSQL() + " " +
-			getGroupByClause().toSQL();
+			getGroupByClause().toSQL() + " " +
+			getOrderByClause().toSQL();
 	}
 	
 
@@ -200,7 +200,7 @@ public class SqlQueryImpl extends AbstractRelationalTerm implements RelationalQu
 			// TODO
 			i++;
 		}
-		
+		//System.out.println(toSQL()); // TEMP TODO
 		return stmt.executeQuery();
 	}
 
