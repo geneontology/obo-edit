@@ -13,13 +13,12 @@
 
         <id name="cvId" type="java.lang.Integer">
             <column name="cv_id" />
-
             <generator class="sequence">
                 <param name="sequence">cv_cv_id_seq</param>
             </generator>
         </id>
 
-        <discriminator column="cv_id" insert="false" />
+        <discriminator column="cv_id" insert="false"/>
 
         <property name="name" type="string">
             <meta attribute="use-in-equals" inherit="false">true</meta>
