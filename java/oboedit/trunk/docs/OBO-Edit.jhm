@@ -114,6 +114,7 @@
    <mapID target="The_Term_Editor_Panel" url="html/The_Term_Editor_Panel.htm"/>
    <mapID target="Parent_Editor" url="html/Parent_Editor.htm"/>
    <mapID target="The_Reasoner_and_the_Interface" url="html/The_Reasoner_and_the_Interface.htm"/>
+   <mapID target="The_Reasoner_Manager" url="html/The_Reasoner_Manager.htm"/>
    <mapID target="The_Reasoner_Plugin" url="html/The_Reasoner_Plugin.htm"/>
    <mapID target="The_Serial_Adapter" url="html/The_Serial_Adapter.htm"/>
    <mapID target="The_Verification_Plugin" url="html/The_Verification_Plugin.htm"/>
