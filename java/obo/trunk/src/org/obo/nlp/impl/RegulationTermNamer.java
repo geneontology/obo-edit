@@ -42,7 +42,7 @@ public class RegulationTermNamer extends AbstractNamer implements Namer {
 					else {
 						bases.add("regulation of");
 					}
-					
+
 					for (String base : bases) {
 						for (String targetLabel : targetLabels) {
 							String newName = base+" "+targetLabel;
@@ -57,10 +57,37 @@ public class RegulationTermNamer extends AbstractNamer implements Namer {
 	}
 
 	public Collection<String> constructTextDefs(LinkedObject lo) {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<String> defs = new LinkedList<String>();
+		if (TermUtil.isIntersection(lo)) {
+			OBOClass genus = ReasonerUtil.getGenus((OBOClass)lo);
+			Collection<String> currentLabels = TermUtil.getLabels(lo);
+			Collection<Link> diffs = ReasonerUtil.getDifferentia((OBOClass)lo);
+			if (diffs.size() == 1) {
+				String txt = null;
+				Link diff = diffs.iterator().next();
+				if (diff.getType().getID().contains("negatively_regulates")) {
+					txt = "decreases";
+				}
+				else if (diff.getType().getID().contains("positively_regulates")) {
+					txt = "increases";
+				}
+				else  if (diff.getType().getID().contains("regulates")){
+					txt = "modulates";
+				}
+				else {
+					
+				}
+				if (txt != null) {
+					String def = "Any process that "+txt+" the rate, frequency or extent of " +
+					diff.getParent().getName()+".";
+					defs.add(def);
+				}
+			}
+
+		}
+		return defs;
 	}
-	
-	
+
+
 
 }
