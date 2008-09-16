@@ -152,6 +152,12 @@ public class ReasonerUtil {
 		return exps.size() > 0;
 	}
 
+	/**
+	 * @see shouldBeTrimmedOld
+	 * @param linkDatabase
+	 * @param inLink
+	 * @return
+	 */
 	public static boolean shouldBeTrimmed(LinkDatabase linkDatabase, Link inLink) {
 		if (!TermUtil.isImplied(inLink))
 			return false;
@@ -185,10 +191,20 @@ public class ReasonerUtil {
 		return false;
 	}
 
+	/**
+	 * false if the link is not implied; true if implied and an intersection link (does this happen?).
+	 * true if this link is the same as a grandparent link
+	 * 
+	 * Note: despite its name this appears to be the current means of trimming in
+	 * TrimmedLinkDatabase
+	 * @param linkDatabase
+	 * @param link
+	 * @return
+	 */
 	public static boolean shouldBeTrimmedOld(LinkDatabase linkDatabase,
 			Link link) {
 		if (!TermUtil.isImplied(link))
-			return false;
+			return false; // asserted links are never trimmed
 		if (TermUtil.isIntersection(link))
 			return true;
 		Iterator it;
@@ -199,6 +215,7 @@ public class ReasonerUtil {
 
 		boolean oldMethod = true;
 
+		// links that originate from the same child
 		Collection<Link> parents = linkDatabase.getParents(link.getChild());
 		it = parents.iterator();
 		// for each parent link
@@ -212,6 +229,8 @@ public class ReasonerUtil {
 			if (!(parentLink.getType().equals(link.getType()) || parentLink
 					.getType().equals(OBOProperty.IS_A)))
 				continue;
+			
+			// relations are identical
 			boolean sawType = parentLink.getType().equals(link.getType());
 
 			Iterator it2 = linkDatabase.getParents(parentLink.getParent())
@@ -229,9 +248,9 @@ public class ReasonerUtil {
 				// link and should be removed
 
 				if (link.getParent().equals(gpLink.getParent())
-						&& (((!sawType || link.getType().isTransitive()) && link
-								.getType().equals(gpLink.getType())) || (sawType && gpLink
-										.getType().equals(OBOProperty.IS_A)))) {
+						&& (((!sawType || link.getType().isTransitive()) &&
+								link.getType().equals(gpLink.getType())) || 
+						     (sawType && gpLink.getType().equals(OBOProperty.IS_A)))) {
 					return true;
 				}
 			}
@@ -420,7 +439,7 @@ public class ReasonerUtil {
 	}
 
 	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link) {
-		return isRedundant(reasoner,link,false);
+		return isRedundant(reasoner,link,true);
 	}
 
 	@Deprecated
@@ -455,7 +474,7 @@ public class ReasonerUtil {
 
 		while (it.hasNext()) {
 			Link link = it.next();
-			if (isRedundant(reasoner,link,false)) {
+			if (isRedundant(reasoner,link,true)) { // TODO: make configurable
 				redundantLinks.add(link);
 			}
 		}
