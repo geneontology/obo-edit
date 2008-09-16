@@ -74,7 +74,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		protected byte finalPunctuationCondition = VerificationManager.ALL;
 
 		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_THREAD
-				^ VerificationManager.TEXT_EDIT_COMMIT;
+			^ VerificationManager.TEXT_EDIT_COMMIT 
+			^ VerificationManager.MANUAL;
 
 		public AbstractCheckConfiguration() {
 			super();
@@ -482,11 +483,13 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			try {
 				out.addAll(getWarnings(path, allowNewlines, allowBlank,
 						allowExtended, sentenceStructureChecks, condition));
+//				logger.debug("check: added " + out.size() + " warnings"); // DEL
 			} catch (TooManyWarningsException ex) {
 				out.addAll(ex.getWarnings());
 			}
 		}
 		appendAdditionalWarnings(out, session, path, condition);
+//		logger.debug("check: out.size = " + out.size()); // DEL
 		return out;
 	}
 
@@ -584,6 +587,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 	}
 
 	protected boolean doSpellCheck(byte condition) {
+//		logger.debug("doSpellCheck: condition = " + condition + ", getSpellCheckCondition = " +
+//			     ((AbstractCheckConfiguration) configuration).getSpellcheckCondition()); // DEL
 		return (((AbstractCheckConfiguration) configuration)
 				.getSpellcheckCondition() & condition) > 0;
 	}
@@ -641,10 +646,13 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	protected static void addWarning(Collection<CheckWarning> out,
 			CheckWarning w) throws TooManyWarningsException {
-		out.add(w);
-		if (out.size() > VerificationManager.MAX_WARNINGS) {
+//		logger.debug("out size = " + out.size() + ", addWarning " + w);  // DEL
+		if ((w.isFatal() && out.size() >= VerificationManager.MAX_ERRORS) ||
+		    (w.isFatal() && out.size() >= VerificationManager.MAX_WARNINGS)) {
+			logger.debug("Too many warnings for one term: " + out.size() + "; last warning is " + w); // DEL
 			throw new TooManyWarningsException(out);
 		}
+		out.add(w);
 	}
 
 	protected Collection getWarnings(final FieldPath path,
@@ -698,7 +706,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 				}
 			}
 			// Why not do this check while looking for repeated words?
-			if (doSpellCheck(condition)) {
+			if (doSpellCheck(condition) && text.length() > 0) {
+//				logger.debug("Doing spell check on " + text); // DEL
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
 				SpellCheckListener listener = new SpellCheckListener() {
 
@@ -1018,6 +1027,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		} catch (TooManyWarningsException ex) {
 			throw ex;
 		}
+//		logger.debug("getWarnings: returning " + out.size() + " warnings"); // DEL
 		return out;
 	}
 
