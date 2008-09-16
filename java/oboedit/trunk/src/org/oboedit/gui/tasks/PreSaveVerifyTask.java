@@ -74,7 +74,7 @@ public class PreSaveVerifyTask implements GUITask {
 										+ " to the associated terms - can be found "
 										+ "on the \"Verification Results\" tab of the "
 										+ "Verification Plugin.</p>";
-								footer = "Proceed with save?";
+								footer = "<p><b><font size=5>Proceed with save?</font></b>";
 							}
 							warningComponent.setWarnings(c, header, footer,
 									true, showWarnings, true);
