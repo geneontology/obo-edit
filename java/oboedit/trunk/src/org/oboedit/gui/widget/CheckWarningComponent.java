@@ -344,7 +344,7 @@ public class CheckWarningComponent extends JEditorPane {
 		if (showTermNames) {
 			StringBuffer warningMessage = new StringBuffer();
 			if (io == null)
-				warningMessage.append("The entire ontology generated ");
+				warningMessage.append("The overall ontology generated ");
 			else
 				warningMessage
 						.append("<a href='file:" + io.getID() + "'>"
@@ -359,8 +359,9 @@ public class CheckWarningComponent extends JEditorPane {
 			if (warningCount > 0)
 				warningMessage.append(warningCount + " warning"
 						+ (warningCount != 1 ? "s" : ""));
-			warningMessage.append(".");
+			warningMessage.append(":");
 			html.append("<li>" + warningMessage);
+//			logger.debug(warningMessage); // DEL
 			html.append("<ul style='list-style-type:none;'>");
 		}
 		Iterator it2 = c.iterator();
@@ -378,6 +379,7 @@ public class CheckWarningComponent extends JEditorPane {
 			html.append("<img src=\"" + iconURL + "\"> ");
 			html.append("&nbsp;");
 			html.append(warning.getMessage());
+//			logger.debug(warning.getMessage()); // DEL
 			if (warning.getFixes().size() > 0 && allowRerun)
 				html.append(" <a href='file:__warningindex"
 						+ warnings.indexOf(warning) + "'><img src=\""
@@ -387,6 +389,7 @@ public class CheckWarningComponent extends JEditorPane {
 		if (showTermNames) {
 			html.append("</ul>");
 		}
+//		logger.debug(html); // DEL
 	}
 
 	public void selectTerm(URL url, OBOSession session) {
@@ -455,8 +458,8 @@ public class CheckWarningComponent extends JEditorPane {
 				}
 				if (globalWarningCount > 0) {
 					html.append("<p>" + globalWarningCount
-							+ " non-critical warning"
-							+ (globalWarningCount != 1 ? "s" : "") + ":</p>\n");
+						    + " non-critical warning"
+						    + (globalWarningCount != 1 ? "s" : "") + ":</p>\n");
 				}
 			}
 
@@ -471,6 +474,7 @@ public class CheckWarningComponent extends JEditorPane {
 			html.append("</ul>");
 			if (footer != null)
 				html.append(footer);
+			logger.info("Found " + globalErrorCount + " errors and " + globalWarningCount + " warnings");
 		} else {
 			html.append("No problems found.");
 		}

@@ -49,7 +49,8 @@ public class VerificationManager {
 	public static final byte ALL = TEXT_EDIT_THREAD ^ TEXT_EDIT_COMMIT
 			^ REASONER_ACTIVATED ^ LOAD ^ SAVE ^ MANUAL;
 
-	public static final int MAX_WARNINGS = 100;
+	public static final int MAX_WARNINGS = 200;
+//	public static final int MAX_ERRORS = 500;
 
 	protected static VerificationManager manager;
 

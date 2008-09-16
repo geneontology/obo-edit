@@ -15,6 +15,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.event.VerificationEvent;
 import org.oboedit.gui.event.VerificationListener;
 
@@ -55,6 +56,10 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 
 	public void helpRunCheck(FieldCheck fcheck, IdentifiedObject io,
 			byte condition, Collection<CheckWarning> out) {
+		// Don't run any more checks if we've already generated too many warnings
+		if (out.size() > VerificationManager.MAX_WARNINGS) {
+			return;
+		}
 		if (io.isBuiltIn())
 			return;
 		if (!getCheckObsoletes() && TermUtil.isObsolete(io))
@@ -69,6 +74,11 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		for (FieldPath qpath : paths) {
 			out.addAll(fcheck.check(session, qpath, condition,
 					getCheckObsoletes()));
+			if (out.size() > VerificationManager.MAX_WARNINGS) {
+				logger.info("After checking " + qpath + " there are too many warnings (" + out.size() + ")--stopping verification.");
+				out.add(new CheckWarning("Too many warnings--showing only the first " + out.size() + ".", false));
+				return;
+			}
 		}
 	}
 
@@ -92,9 +102,10 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 						break;
 					}
 				}
-				if (matches)
+				if (matches) {
 					out.addAll(fcheck.check(session, path, condition,
 							getCheckObsoletes()));
+				}
 			} else if (path.getLength() == 0 && path.getObject() != null) {
 				helpRunCheck(fcheck, path.getObject(), condition, out);
 			} else {
@@ -165,6 +176,10 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 		}
 		Iterator<Check> it = liveChecks.iterator();
 		for (checkIndex = 0; it.hasNext(); checkIndex++) {
+			if (out.size() > VerificationManager.MAX_WARNINGS) {
+				out.add(new CheckWarning("Too many warnings--not running any more checks.", false));
+				break;
+			}
 			currentCheck = it.next();
 			if (cancelled)
 				break;
