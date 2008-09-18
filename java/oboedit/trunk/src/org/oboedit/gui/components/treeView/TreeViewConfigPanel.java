@@ -19,6 +19,11 @@ import org.bbop.swing.ProgressBarUpdateRunnable;
 
 
 
+/**
+  * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
+  * Docs by Jennifer Deegan and Nicolas Rodriguez.
+  *
+ */
 public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -97,15 +102,17 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
 	
 		
+		//This actionListener below caused the main panel to reload every time a config checkbox was checked or unchecked,
+		//but it was not necessary to reload and was wasteful so I have commented it out. 
 		
-		ActionListener updateListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TreeViewConfigPanel.this.treeViewInstance.update();
-			}
-		};
-		multiTermCheckbox.addActionListener(updateListener);
-		trimPathsCheckbox.addActionListener(updateListener);
-		showNonTransitiveCheckbox.addActionListener(updateListener);			
+//		ActionListener updateListener = new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				TreeViewConfigPanel.this.treeViewInstance.update();
+//			}
+//		};
+//		multiTermCheckbox.addActionListener(updateListener);
+//		trimPathsCheckbox.addActionListener(updateListener);
+//		showNonTransitiveCheckbox.addActionListener(updateListener);			
 
 		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
 
@@ -134,7 +141,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		
 		treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;
 		
-		treeViewInstance.update();
+		//treeViewInstance.update();
 
 		
 	}
@@ -145,7 +152,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
 		
 		logger.debug("TreeViewConfigPanel: init() run.");
-		logger.debug("TreeViewConfigPanel, init method: variable graphvizCanvasInstance = " + treeViewInstance);
+		logger.debug("TreeViewConfigPanel, init method: variable treeViewInstance = " + treeViewInstance);
 
 		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
