@@ -11,8 +11,9 @@ say "about" because it depends how many warnings the last checked term
 has--you can end up with 204 warnings or so, but not much more than that.)
 This cutoff should ideally be user-configurable.
 
-- Installer now won't let you set the memory allocation to 2048M.  This works
-on my Mac, but unfortunately was not enough to fix bug 2111929, which affects
-some Windows machines.  Sandra's Windows box can't start OE if the memory
-setting is >1568M, but I don't want to make that the cap for everyone.
+- Installer now won't let you set the memory allocation higher than 2048M.
+This works on my Mac, but unfortunately was not enough to fix bug 2111929,
+which affects some Windows machines.  Sandra's Windows box can't start OE if
+the memory setting is >1568M, but I don't want to make that the cap for
+everyone.
 
