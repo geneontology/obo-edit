@@ -67,27 +67,35 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 	}
 
 	public int allowDrop(JComponent dropPanel, Object o, GestureTarget dest,
-			Point p, KeyRecorder.KeyChecker keyChecker) {
+			     Point p, KeyRecorder.KeyChecker keyChecker) {
 		if (o instanceof Selection) {
 			init((Selection) o, dest);
 			// sourcePanel.setDragTitle("Merge");
 			if (isLegal()) {
+//				logger.debug("MergeAction.allowDrop: object = " + o + ", isLegal = " + isLegal() + ", returning accept"); // DEL
 				return InputHandlerI.ACCEPT_DROP;
-			} else
+			} else {
+//				logger.debug("MergeAction.allowDrop: object = " + o + ", isLegal = " + isLegal() + ", returning almost accept"); // DEL
 				return InputHandlerI.ALMOST_ACCEPT_DROP;
+			}
 		}
+//		logger.debug("MergeAction.allowDrop: object = " + o + ", isLegal = " + isLegal() + ", returning reject"); // DEL
 		return InputHandlerI.REJECT_DROP;
 	}
 
 	public boolean drop(JComponent dropPanel, Object o, GestureTarget dest,
 			Point p, KeyRecorder.KeyChecker keyChecker) {
+//		logger.debug("MergeAction.drop: object = " + o + ", isLegal = " + isLegal() + ", keyChecker.isDown(KeyEvent.VK_M) = " + keyChecker.isDown(KeyEvent.VK_M)); // DEL
+		// What does this mean, keyChecker.isDown?
 		if (o instanceof Selection && keyChecker.isDown(KeyEvent.VK_M)) {
 			init((Selection) o, dest);
 			if (!isLegal())
 				return false;
+//			logger.debug("MergeAction.drop: executing"); // DEL
 			SessionManager.getManager().apply(execute());
 			return true;
 		} else {
+//			logger.debug("MergeAction.drop: returning false");  // DEL
 			return false;
 		}
 	}
@@ -111,6 +119,7 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 	}
 
 	public void init(Selection paths, GestureTarget destPath) {
+//		logger.debug("MergeAction.init: paths = " + paths + ", destPath = " + destPath); // DEL
 		this.preSelection = paths;
 		this.postSelection = destPath;
 		if (paths == null) {
@@ -127,6 +136,7 @@ public class MergeAction implements ClickMenuAction, DropMenuAction,
 	}
 
 	public void init(LinkedObject master, LinkedObject slave) {
+//		logger.debug("MergeAction.init: master = " + master + ", slave = " + slave); // DEL
 		if (master == null || slave == null) {
 			isLegal = false;
 		} else if (TermUtil.isProperty(master) || TermUtil.isProperty(slave)) {
