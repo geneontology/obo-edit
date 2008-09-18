@@ -51,10 +51,8 @@ import org.oboedit.util.PathUtil;
 
 /**
  * 
- * @author John Day-Richter<br>
- * Docs by J. Deegan.<br>
- * 29th August 2008.<br>
- * Modifications by Jennifer Deegan and Nicolas Rodriguez.
+  * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
+ * Docs by Jennifer Deegan and Nicolas Rodriguez.
  *<br>
  *TreeView is the main class of the Tree Viewer component. This component displays the graph from roots at the top to the 
  *leaf terms at the bottom, where leaf terms are only those selected in the Ontology Editor Panel on Global Selection. 
@@ -62,18 +60,6 @@ import org.oboedit.util.PathUtil;
  *
  */
 
-/**
- * @author Jennifer Deegan
- *
- */
-/**
- * @author Jennifer Deegan
- *
- */
-/**
- * @author Jennifer Deegan
- *
- */
 public class TreeView extends AbstractGUIComponent {
 
 	//initialize logger
