@@ -243,6 +243,8 @@ public class SearchComponent extends AbstractGUIComponent {
 						.getManager().getActiveComponent(id);
 				src.setFactory(factory);
 				src.setResults(task.getResults());
+				// This should bring the search results tab to the top (bug 2062509), but doesn't seem to
+				ComponentManager.getManager().focusComponent(src);
 			}
 
 		};
