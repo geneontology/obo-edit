@@ -5,10 +5,8 @@ import javax.swing.tree.TreePath;
 
 /**
  * 
- * @author John Day-Richter
- * 
- * Docs by J. Deegan.
- * 29th August 2008.
+ * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
+ * Docs by Jennifer Deegan and Nicolas Rodriguez.
  * 
  * VisibleRunnable class
  * 
@@ -37,7 +35,7 @@ public class VisibleRunnable extends JTree implements Runnable {
 
 	}
 
-	boolean expandAllowed = false;
+	boolean expandAllowed = true;
 
 	/**
 	 * makeVisible method is duplicated from RestrictedJTree and maybe should  be 
@@ -53,7 +51,7 @@ public class VisibleRunnable extends JTree implements Runnable {
 		expandAllowed = true;
 		super.makeVisible(path);  
 		expandAllowed = false;
-		System.out.println("RestrictedJTree: makeVisible method.");	
+		System.out.println("VisibleRunnable: makeVisible method.");	
 
 	}
 
