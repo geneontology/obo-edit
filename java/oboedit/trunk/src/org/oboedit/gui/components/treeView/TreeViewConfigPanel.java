@@ -141,7 +141,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		
 		treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;
 		
-		//treeViewInstance.update();
+		treeViewInstance.update();
 
 		
 	}
