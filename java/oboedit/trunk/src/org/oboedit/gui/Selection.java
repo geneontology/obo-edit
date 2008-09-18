@@ -11,7 +11,19 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.RootAlgorithm;
 
+
+/**
+ * 
+ * Passes on information about what terms are selected to other components 
+ * that can display the terms or use this information 
+ * for other purposes. 
+ * 
+ * @author John Day-Richter
+ * Docs by Jennifer Deegan and Nicolas Rodriguez.
+ * 
+ */
 public interface Selection {
+	
 	public static enum PathCalcMode {
 		DONT_CALCULATE, CALCULATE_FROM_LINKS, CALCULATE_FROM_TERMS,
 		CALCULATE_FROM_TERMS_AND_LINKS
