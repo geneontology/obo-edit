@@ -4,7 +4,6 @@ package org.oboedit.gui.components.treeView;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,7 +12,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -26,7 +24,6 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.swing.event.*;
 
 import org.apache.log4j.Logger;
 import org.bbop.framework.AbstractGUIComponent;
@@ -57,6 +54,7 @@ import org.oboedit.util.PathUtil;
  * @author John Day-Richter<br>
  * Docs by J. Deegan.<br>
  * 29th August 2008.<br>
+ * Modifications by Jennifer Deegan and Nicolas Rodriguez.
  *<br>
  *TreeView is the main class of the Tree Viewer component. This component displays the graph from roots at the top to the 
  *leaf terms at the bottom, where leaf terms are only those selected in the Ontology Editor Panel on Global Selection. 
@@ -64,6 +62,18 @@ import org.oboedit.util.PathUtil;
  *
  */
 
+/**
+ * @author Jennifer Deegan
+ *
+ */
+/**
+ * @author Jennifer Deegan
+ *
+ */
+/**
+ * @author Jennifer Deegan
+ *
+ */
 public class TreeView extends AbstractGUIComponent {
 
 	//initialize logger
@@ -78,37 +88,57 @@ public class TreeView extends AbstractGUIComponent {
 	TreeViewConfigPanel treeViewConfigPanelInstance;
 	public RestrictedJTree restrictedJTreeInstance;
 	protected BackgroundEventQueue eventQueue;
+	TreeView treeViewInstance;
 
 	/**
-	 * @return
-	 * 
-	 * multiTerm class returns the boolean multiSelect variable, showing whether or not 
-	 * the component is set up to display multiple leaf terms.
+	 * 	  
+	 * Returns whether or not the component is set up to carry over multiple selection of terms from the Ontology Tree Editor.
+	 *
+	 * @return whether or not the component is set up to carry over multiple selection of terms from the Ontology Tree Editor.
 	 */
-	
+	//Method that returns a boolean. Returns the boolean for the current settings object.
 	protected boolean multiTerm() {
 		logger.debug("TreeView: multiTerm method.");
 		return treeViewSettingsInstance.getMultiSelect();
 	}
 
 	/**
-	 * Mediates changing of the selected leaf term in the interface. Listens for changes in selection
-	 * in the Ontology Tree Editor. 
+	 * Listens for selection of a different term in any other component. 
+	 * <br/>
+	 * Enables the term selected in another component to be displayed in the Tree View. 
+	 * Updates the Tree View to show the newly selected terms. 
+	 * 
 	 */
+	//This is a variable of the class TreeView but it also has an inner class. 	
 	protected SelectionListener selectionListener = new SelectionListener() {
-
+		//SelectionEvent is a class that can contain a term or list of terms that has been selected. 
+		//Why is 'e' not used?
 		public void selectionChanged(SelectionEvent e) {
 			update();
+			logger.debug("TreeView: SelectionChanged: SelectionEvent = " + e.getSelection());
 			logger.debug("TreeView: selectionListener method.");
 		}
-	};;
+	};
 	
-	protected ReloadListener historyListener;
+	
+	/**
+	 * Listens for undo or redo command that would require the Tree Viewer to reload to a different state.
+	 */
+	protected ReloadListener historyListener = new ReloadListener() {
+		public void reload(ReloadEvent e) {
+			update();
+		}
+	};
+
+	
+	/**
+	 * Declares a TreeModel variable pointing to a TreeModel that will hold information about the ontology tree that is selected.
+	 */
 	TreeModel model;
 
 	
 	/**
-	 * I think this enables the part of the component to show tooltips. 
+	 * Enables the component to show tooltips. 
 	 */
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
@@ -118,8 +148,8 @@ public class TreeView extends AbstractGUIComponent {
 	};
 
 	/**
-	 * Passes on mouse clicks to the Global Selection Listener.
-	 * This probably is the listener that enables terms selected in the Tree Viewer to be displayed in all other
+	 * Passes on right or middle mouse clicks to send current selection to the Global Selection Listener.
+	 * This is the listener that enables terms selected in the Tree Viewer to be displayed in all other
 	 * components that are currently set on Global Selection. 
 	 */
 	MouseInputAdapter clickListener = new MouseInputAdapter() {
@@ -156,6 +186,8 @@ public class TreeView extends AbstractGUIComponent {
 		
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
+		
+		//Enables the selection model to include selection of terms that are not in the same branch. 
 		selectionModel
 				.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		setLayout(new BorderLayout());
@@ -163,7 +195,11 @@ public class TreeView extends AbstractGUIComponent {
 		setOpaque(true);
 		restrictedJTreeInstance = new RestrictedJTree(treeViewSettingsInstance);
 		restrictedJTreeInstance.setUI(getDefaultUI());
-		restrictedJTreeInstance.setCellRenderer(new OBOCellRenderer()); //This doesn't seem to be used. A toggle breakpoint here is never reached.
+		
+		//Causes the terms names to be shown in the display as a JLabel in a coloured box. This is how the tree diagram is constructed.
+		restrictedJTreeInstance.setCellRenderer(new OBOCellRenderer());  
+		
+		
 		restrictedJTreeInstance.setSelectionModel(selectionModel);
 		restrictedJTreeInstance.putClientProperty("JTree.lineStyle", "Angled");
 		scrollPane = new JScrollPane(restrictedJTreeInstance);
@@ -186,17 +222,7 @@ public class TreeView extends AbstractGUIComponent {
 		restrictedJTreeInstance.setRootVisible(false);
 		restrictedJTreeInstance.setShowsRootHandles(true);
 		update();
-		selectionListener = new SelectionListener() {
-			public void selectionChanged(SelectionEvent e) {
-				update();
-			}
-		};
-		historyListener = new ReloadListener() {
-			public void reload(ReloadEvent e) {
-				update();
-			}
-		};
-
+		
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		GUIUtil.addReloadListener(historyListener);
@@ -224,6 +250,7 @@ public class TreeView extends AbstractGUIComponent {
 	public ConfigurationPanel getConfigurationPanel() {
 		logger.debug("TreeView: getConfigurationPanel()");
 
+		System.out.println("TreeView: getConfiguration: treeViewInstance = " + treeViewInstance);
 		if (treeViewConfigPanelInstance == null) {
 			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
 		}
@@ -250,6 +277,8 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		logger.debug("TreeView: getConfiguration method.");
+		System.out.println("TreeView: getConfiguration method: treeViewSettingsInstance = " + treeViewSettingsInstance);
+		System.out.println("TreeView: getConfiguration method: treeViewInstance = " + treeViewInstance);
 		return treeViewSettingsInstance;
 	}
 
@@ -279,31 +308,32 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 * Addition of the startupNotifier is to get the backgroundEventThread, and the progress bar is added to this. 
 	 */
-	
-		public TreeView(String id) {
-			super(id);
-			logger.debug("TreeView: constructor.");
+	public TreeView(String id) {
+		super(id);
+		logger.debug("TreeView: constructor.");
+		treeViewInstance = this.treeViewInstance;
+		System.out.println("TreeView: constructor, treeViewInstance = " + treeViewInstance);
 
-			
-			eventQueue = new BackgroundEventQueue();
-			progressBar.setStringPainted(true);
-			ActionListener updateListener = new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					update();
-				}
-			};
-			eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
-		}
-		
-		
+		eventQueue = new BackgroundEventQueue();
+		progressBar.setStringPainted(true);
+		ActionListener updateListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				update();
+			}
+		};
+		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
+	}
 
-		/**
-		 * cleanup method removes the selectionListener and the ReconfigListener and adds the ReloadListener. 
-		 * 
-		 * Adds a reloadListener which may be to reload the display when something changes elsewhere in the application. 
-		 * 
-		 */
-	
+
+
+
+
+	/**
+	 * Removes the selectionListener and the ReconfigListener and adds the ReloadListener. 
+	 * 
+	 * Adds a reloadListener which may be to reload the display undo or redo is used. 
+	 * 
+	 */	
 	public void cleanup() {
 		logger.debug("TreeView: cleanup method.");
 
@@ -313,6 +343,15 @@ public class TreeView extends AbstractGUIComponent {
 		GUIUtil.addReloadListener(historyListener);
 	}
 
+	
+	/**
+	 * Takes the full TreePath object that is the path to root, and the object listing the node(s) that have been selected
+	 * and populates an object with the list of terms and relationships that are between the root and the selected node(s)
+	 * 
+	 * @param path A path in a tree.
+	 * @param node A node in the tree that will be used to trim the path if it is present in the path.
+	 * @return The trimmed path or the original path untrimmed if the node was not part of that path.
+	 */
 	protected TreePath trimPathToNode(TreePath path, Object node) {
 		logger.debug("TreeView: trimPathToNode method.");
 
@@ -342,11 +381,10 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 * @param paths
 	 *
-	 * finishUpdate checks if there are any terms selected in the TreePath[] that has been passed. 
+	 * Checks if there are any terms selected in the TreePath[] that has been passed. 
 	 * If there are then is sets up the progress bar to display progress on displaying the terms.
 	 *
 	 */
-
 	public void finishUpdate(TreePath[] paths) {
 		logger.debug("TreeView: finishUpdate method.");
 
@@ -386,8 +424,7 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
 	 * 
 	 */
 	protected void doUpdate() {
@@ -397,7 +434,7 @@ public class TreeView extends AbstractGUIComponent {
 		task.addPostExecuteRunnable(new Runnable() {
 
 			public void run() {
-				logger.debug("TreeView: run method.");
+				logger.debug("TreeView: doUpdate.task.AaddPostExecuteRunnable : run method.");
 
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
@@ -412,8 +449,9 @@ public class TreeView extends AbstractGUIComponent {
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
 				model = new PathTreeModel(paths);
 				restrictedJTreeInstance.setModel(model);
-				restrictedJTreeInstance.refresh(true);
+				restrictedJTreeInstance.refresh(true); //If this line is commented out then the tree does not expand.
 				finishUpdate(paths);
+				
 			}			
 		});
 		task.setLinkDatabase(SessionManager.getManager()
@@ -465,6 +503,7 @@ public class TreeView extends AbstractGUIComponent {
 	 */
 	public void update() {
 		logger.debug("TreeView: update method.");
+		System.out.println("TreeView: update method: treeViewSettingsInstance = " + treeViewSettingsInstance);
 
 		treeViewConfigPanelInstance.eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
