@@ -23,6 +23,8 @@ import org.bbop.swing.ProgressBarUpdateRunnable;
   * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
   * Docs by Jennifer Deegan and Nicolas Rodriguez.
   *
+  * Makes the GUI for adjusting the configuration settings of the Tree Viewer.
+  *
  */
 public class TreeViewConfigPanel  extends ConfigurationPanel {
 
@@ -50,6 +52,11 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 
 
+	/**
+	 * Sets up the GUI elements of the configuration screen. 
+	 * 
+	 * @param treeViewInstance
+	 */
 	public TreeViewConfigPanel(TreeView treeViewInstance) {
 
 		this.treeViewInstance = treeViewInstance;
@@ -119,6 +126,11 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	}
 
 
+	/**
+	 * Return information about whether the component is configured to show non-transitive relationships.
+	 * 
+	 * @return information about whether the component is configured to show non-transitive relationships. 
+	 */
 	public boolean showNonTransitive() {
 		logger.debug("TreeView: showNonTransitive method.");
 		return showNonTransitiveCheckbox.isSelected();
@@ -127,25 +139,42 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 
 	
+	
+	/** 
+	 * @see org.bbop.framework.ConfigurationPanel#commit()
+	 * 
+	 * Sets the configurable variables in the settings object once the settings have been chosen by the user in the 
+	 * configuration panel. Commit() is run when the configuration panel is closed (by clicking tick icon)
+	 * and the new settings are 'committed' for use in the component. 
+	 * 
+	 */
+	//Overrides commit() in ConfigurationPanel, but that one has no variables, so all information needed is here.  
 	@Override
 	public void commit() {
 
 		logger.debug("TreeViewConfigPanel: commit() run.");
 		logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
-
 		
-		
+		//These lines set the variables in the settings object.
 		treeViewSettingsInstance.setMultiSelect(multiTermCheckbox.isSelected());
 		treeViewSettingsInstance.setShowNonTransitive(showNonTransitiveCheckbox.isSelected());
 		treeViewSettingsInstance.setTrimPaths(trimPathsCheckbox.isSelected());
 		
 		treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;
 		
+		//This line updates the view in the component according to the new variables. 
 		treeViewInstance.update();
 
 		
 	}
 
+	/** (non-Javadoc)
+	 * @see org.bbop.framework.ConfigurationPanel#init()
+	 * 
+	 * Gets the configurable variables from the settings object when the configuration window is opened.
+	 * init() is run in response to clicking the wrench icon. 
+	 */
+	//Overrides init() in ConfigurationPanel, but that one has no variables, so all information needed is here.  
 	@Override
 	public void init() {
 
@@ -154,6 +183,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		logger.debug("TreeViewConfigPanel: init() run.");
 		logger.debug("TreeViewConfigPanel, init method: variable treeViewInstance = " + treeViewInstance);
 
+		//Gets the settings. 
 		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
 		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
