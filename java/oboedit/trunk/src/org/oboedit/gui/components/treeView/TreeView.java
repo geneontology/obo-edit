@@ -410,7 +410,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 	/**
-	 *
+	 * 
+	 * Seems to make an array of the paths from root down to each selected node, and each node in between.
 	 * 
 	 */
 	protected void doUpdate() {
@@ -435,7 +436,7 @@ public class TreeView extends AbstractGUIComponent {
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
 				model = new PathTreeModel(paths);
 				restrictedJTreeInstance.setModel(model);
-				restrictedJTreeInstance.refresh(true); //If this line is commented out then the tree does not expand.
+				//restrictedJTreeInstance.refresh(true); //If this line is commented out then the tree does not expand.
 				finishUpdate(paths);
 				
 			}			
@@ -485,7 +486,7 @@ public class TreeView extends AbstractGUIComponent {
 //	}
 
 	/**
-	 * This just validates and repaints whether something is selected or not.
+	 * Validates and repaints, but may also run doUpdate depending on the state of global selection. 
 	 */
 	public void update() {
 		logger.debug("TreeView: update method.");
@@ -494,7 +495,7 @@ public class TreeView extends AbstractGUIComponent {
 		treeViewConfigPanelInstance.eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			if (!isAncestorOf(treeViewConfigPanelInstance.emptyLabel)) {
-				
+
 				validate();
 				repaint();
 			}
