@@ -936,7 +936,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
-	    logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
+	   // logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {
