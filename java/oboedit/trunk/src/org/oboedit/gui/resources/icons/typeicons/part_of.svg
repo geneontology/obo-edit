@@ -1,70 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="99.999985"
-   height="99.999985"
-   id="svg2"
-   sodipodi:version="0.32"
-   inkscape:version="0.45.1"
-   sodipodi:docbase="/Users/jrichter/workspace/OBO-Edit/src/org/oboedit/gui/resources/icons/typeicons"
-   sodipodi:docname="part_of.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   version="1.0">
-  <defs
-     id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     gridtolerance="10000"
-     guidetolerance="10"
-     objecttolerance="10"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="127.79884"
-     inkscape:cy="120.00113"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     inkscape:window-width="944"
-     inkscape:window-height="745"
-     inkscape:window-x="900"
-     inkscape:window-y="466" />
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-162.85712,-569.50502)">
-    <rect
-       style="fill:#0000ff;fill-opacity:1;stroke:none"
-       id="rect4126"
-       width="100"
-       height="100"
-       x="162.85712"
-       y="569.505" />
-    <path
-       transform="scale(1.02116,0.9792784)"
-       style="font-size:113.84640503px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Serif"
-       d="M 200.35817,618.66093 L 200.35817,624.49778 C 200.35814,631.39084 201.22903,636.37532 202.97086,639.45124 C 204.74967,642.52717 207.60324,644.06513 211.53157,644.06513 C 215.571,644.06513 218.40604,642.43452 220.0367,639.17329 C 221.70432,635.91208 222.53815,630.03817 222.53821,621.55156 C 222.53815,613.065 221.70432,607.20962 220.0367,603.98541 C 218.40604,600.72424 215.571,599.09363 211.53157,599.09357 C 207.60324,599.09363 204.74967,600.63159 202.97086,603.70747 C 201.22903,606.78344 200.35814,611.76792 200.35817,618.66093 M 180.67964,598.76004 L 172.2301,598.76004 L 172.2301,592.03376 L 200.35817,592.03376 L 200.35817,599.53829 C 202.02581,596.46241 204.2679,594.18326 207.08445,592.70083 C 209.90092,591.18146 213.3845,590.42174 217.53519,590.42168 C 225.94761,590.42174 232.5627,593.20119 237.38049,598.76004 C 242.23519,604.28193 244.66258,611.8791 244.66265,621.55156 C 244.66258,631.22407 242.23519,638.83977 237.38049,644.39866 C 232.5627,649.95757 225.94761,652.73702 217.53519,652.73702 C 213.3845,652.73702 209.90092,651.99583 207.08445,650.51346 C 204.2679,648.99403 202.02581,646.69635 200.35817,643.62042 L 200.35817,668.0796 L 209.47478,668.0796 L 209.47478,674.80588 L 172.2301,674.80588 L 172.2301,668.0796 L 180.67964,668.0796 L 180.67964,598.76004"
-       id="text4128" />
-  </g>
+   version="1.0"
+   width="60"
+   height="60"
+   viewBox="0 0 60 60"
+   id="svg2268"
+   xml:space="preserve">
+<defs
+   id="defs2270">
+</defs>
+<rect
+   width="60"
+   height="60"
+   style="fill:#ffffff"
+   opacity="0.0"
+   x="0"
+   y="0" />
+<circle
+   cx="30"
+   cy="30"
+   r="25.6"
+   style="fill:#0000CC"
+   id="circle2280" />
+	<path
+   d="M 32,16 C 27.4,16 20,16 20,16 L 20,44 C 20,44 22.2,44 24,44 L 24,32 L 32,32 C 37,32 40,29 40,24 C 40,19 37,16 32,16 z M 32,28 L 24,28 L 24,20 L 32,20 C 34,20 36,22 36,24 C 36,26 34,28 32,28 z "
+   style="fill:#ffffff;fill-rule:evenodd"
+   id="path2320" />
 </svg>
