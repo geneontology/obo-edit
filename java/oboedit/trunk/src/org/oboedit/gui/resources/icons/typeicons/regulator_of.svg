@@ -15,20 +15,18 @@
 <rect
    width="60"
    height="60"
-   style="fill:#ffffff"
+   style="fill:#000000"
    x="0"
-   y="0"
-   opacity="0.0"
-   id="squr1" />
-	<rect
+   y="0" />
+<rect
    width="44"
    height="44"
    x="8"
    y="8"
-   style="fill:#666699"
+   style="fill:#ffffff"
    id="rect2290" />
 	<path
-   d="M 36,20 L 36,16 L 24,16 L 24,20 L 28,20 L 28,40 L 24,40 L 24,44 C 24,44 35.6,44 36,44 L 36,40 L 32,40 L 32,20 L 36,20 z "
-   style="fill:#ffffff;fill-rule:evenodd"
-   id="path2325" />
+   d="M 40,24 C 40,19 37,16 32,16 C 27.4,16 20,16 20,16 L 20,44 C 20,44 22.2,44 24,44 L 24,32 L 27,32 L 35,44 L 40,44 L 32,32 C 37,32 40,29 40,24 z M 24,28 L 24,20 L 32,20 C 34,20 36,22 36,24 C 36,26.3 34,28 32,28 L 24,28 z "
+   style="fill:#000000;fill-rule:evenodd"
+   id="path2330" />
 </svg>

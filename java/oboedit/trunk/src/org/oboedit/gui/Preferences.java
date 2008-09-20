@@ -204,9 +204,23 @@ public class Preferences {
 		iconURLIndex.put(OBOProperty.IS_A.getID(), "resource:is_a.svg");
 		iconURLIndex.put("part_of", "resource:part_of.svg");
 		iconURLIndex.put("develops_from", "resource:develops_from.svg");
-		iconURLIndex.put("regulates", "resource:regs-square.svg");
+		iconURLIndex.put("involved_in", "resource:involved_in.svg");
+		
+		iconURLIndex.put("regulates", "resource:regulates.svg");
 		iconURLIndex.put("positively_regulates", "resource:upregs-arrow.svg");
 		iconURLIndex.put("negatively_regulates", "resource:downregs-arrow.svg");
+		
+		iconURLIndex.put("regulator_of", "resource:regulator_of.svg");
+		iconURLIndex.put("positive_regulator_of", "resource:positive_regulator_of.svg");		
+		iconURLIndex.put("negative_regulator_of", "resource:negative_regulator_of");
+				
+//		iconURLIndex.put("has_function_in", "resource: ");	
+//		iconURLIndex.put("has_component_in", "resource: ");		
+//		iconURLIndex.put("union of", "resource: ");
+				
+
+		
+		
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", orange);
 		colorIndex.put("develops_from", Color.green.darker());
@@ -922,7 +936,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
-//	    logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
+	    logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {
