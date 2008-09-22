@@ -25,7 +25,8 @@ public class TextIcon implements Icon {
 //		String newtext = text.replace("_","\n");
 //		logger.debug("newtext:" + newtext);
 //		logger.debug("newtext.length()" + newtext.length());
-//		setText(newtext, true);
+//needs to recalculate bounds - font metrics gets messy
+		//		setText(newtext, true);
 
 		setText(text, false);
 		//setFont(new Font("Arial", 0, 12), false);
