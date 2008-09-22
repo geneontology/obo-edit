@@ -1,17 +1,19 @@
 <project name="RefGenomeBuilder" default="war" basedir="..">
 	<property file="ant/build.properties"/>
+
+	<property environment="env"/>
 	
 	
 	<path id="classpath.gwt.client.compile" >
 		<pathelement location="${src.dir}" />
-		<pathelement location="${gwt.os.jar}" />
-		<pathelement location="${gwt.user.jar}" />
+		<pathelement location="${env.GWT_HOME}/${gwt.os.jar}" />
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar" />
 		<pathelement location="${lib.dir}/mygwt.jar" />
 	</path>
 	
 	<path id="classpath.gwt.server.compile">
 		<pathelement location="${src.dir}"/>
-		<pathelement location="${gwt.user.jar}" />
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar" />
 		<pathelement location="${lib.dir}/bbop.jar"/>
 		<pathelement location="${lib.dir}/obdapi.jar"/>
 		<pathelement location="${lib.dir}/pgsql.jar"/>
@@ -98,7 +100,7 @@
 			<copy todir="${build.dir}">
 				 <fileset dir="${tmp.compile.dir}/${module.name}"/>
 			</copy>
-    	<copy file="${gwt.servlet.jar}" todir="${build.dir}/WEB-INF/lib"/>
+			<copy file="${env.GWT_HOME}/gwt-servlet.jar" todir="${build.dir}/WEB-INF/lib"/>
 
     </target>
 	
