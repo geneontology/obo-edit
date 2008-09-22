@@ -21,12 +21,17 @@ public class TextIcon implements Icon {
 	private int iconHeight;
 
 	public TextIcon(String text) {
+// For icons in GraphEditor the relationship name is split on _ to /n to increase readability
+//		String newtext = text.replace("_","\n");
+//		logger.debug("newtext:" + newtext);
+//		logger.debug("newtext.length()" + newtext.length());
+//		setText(newtext, true);
+
 		setText(text, false);
-//		setFont(new Font("Arial", 0, 9), false);
-		// Check user's font setting (Preferences.getPreferences().getFont()) and use that
+		//setFont(new Font("Arial", 0, 12), false);
 		setFont(Preferences.getPreferences().getFont(), false);
-		setBackground(Color.black);
-		setForeground(Color.white);
+		setBackground(Color.lightGray);
+		setForeground(Color.black);
 		recalculateBounds();
 //		logger.info("Created TextIcon(" + text + "), width = " + iconWidth + ", height = " + iconHeight); // DEL
 	}
@@ -60,7 +65,7 @@ public class TextIcon implements Icon {
 			recalculateBounds();
 	}
 
-	protected void recalculateBounds() {
+	protected void recalculateBounds() { 
 		iconWidth = 1 + metrics.stringWidth(text);
 //		iconHeight = 1 + metrics.getHeight();
 		iconHeight = metrics.getHeight()-2;  // Leave a little vertical space between text icons
@@ -85,7 +90,7 @@ public class TextIcon implements Icon {
 		g.setColor(foreground);
 //		g.drawString(text, x, y + iconHeight - 4);
 		g.drawString(text, x, y + iconHeight - 2);
-		g.setFont(oldFont);
 		g.setColor(oldColor);
+		g.setFont(oldFont);
 	}
 }
