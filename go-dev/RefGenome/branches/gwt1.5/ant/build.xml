@@ -1,20 +1,24 @@
 <project name="RefGenomeBuilder" default="war" basedir="..">
 	<property file="ant/build.properties"/>
+
+	<property environment="env"/>
 	
 	
 	<path id="classpath.gwt.client.compile" >
 		<pathelement location="${src.dir}" />
-		<pathelement location="${gwt.os.jar}" />
-		<pathelement location="${gwt.user.jar}" />
-		<pathelement location="${lib.dir}/mygwt.jar" />
+		<pathelement location="${env.GWT_HOME}/${gwt.os.jar}" />
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar" />
+		<pathelement location="${lib.dir}/gxt.jar" />
 	</path>
 	
 	<path id="classpath.gwt.server.compile">
 		<pathelement location="${src.dir}"/>
-		<pathelement location="${gwt.user.jar}" />
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar" />
 		<pathelement location="${lib.dir}/bbop.jar"/>
 		<pathelement location="${lib.dir}/obdapi.jar"/>
 		<pathelement location="${lib.dir}/pgsql.jar"/>
+		<pathelement location="${lib.dir}/obo.jar"/>
+		<pathelement location="${lib.dir}/obo-vocab.jar"/>
 		
 		
 	</path>
@@ -48,7 +52,6 @@
         	classname="com.google.gwt.dev.GWTCompiler"
         	taskname="java1.4"
         	maxmemory="256m">
-        	
         	<classpath refid="classpath.gwt.client.compile"/>
         	<arg value="-out"/>
         	<arg value="${tmp.compile.dir}"/>
@@ -66,13 +69,14 @@
         <javac fork="true"
         	failonerror="true"
         	debug="on"
-        	source="1.5"
+					source="1.5"
 					destdir="${build.dir}/WEB-INF/classes"
         	srcdir="${src.dir}"
-        	includes="${gwt.server.src1},${gwt.server.src2}"	
         	memorymaximumsize="256m">
-        	<classpath refid="classpath.gwt.server.compile"/>
-        </javac>
+				<classpath refid="classpath.gwt.server.compile"/>
+				<include name="${gwt.server.src1}"/>
+				<include name="${gwt.server.src2}"/>
+		 </javac>
     </target>
 
 <!-- ================================= 
@@ -85,6 +89,7 @@
         		<include name="bbop.jar"/>
         		<include name="pgsql.jar"/>
         		<include name="obo.jar"/>
+        		<include name="obo-vocab.jar"/>
 			</fileset>
         </copy>
     	<copy file="WEB-INFs/${project.name}/${conf.file}" todir="${build.dir}/WEB-INF"/>
@@ -95,7 +100,7 @@
 			<copy todir="${build.dir}">
 				 <fileset dir="${tmp.compile.dir}/${module.name}"/>
 			</copy>
-    	<copy file="${gwt.servlet.jar}" todir="${build.dir}/WEB-INF/lib"/>
+			<copy file="${env.GWT_HOME}/gwt-servlet.jar" todir="${build.dir}/WEB-INF/lib"/>
 
     </target>
 	
