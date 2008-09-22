@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+  <servlet>
+    <servlet-name>RefG</servlet-name>
+    <servlet-class>org.bbop.server.RefGenomeServiceImpl</servlet-class>
+  </servlet>	
+	
+  <servlet-mapping>
+    <servlet-name>RefG</servlet-name>
+    <url-pattern>/RefG</url-pattern>
+  </servlet-mapping>
+
+</web-app>
