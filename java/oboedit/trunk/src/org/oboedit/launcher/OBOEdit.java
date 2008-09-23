@@ -7,7 +7,11 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
+import java.awt.Dimension;
 import javax.swing.SwingUtilities;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +26,8 @@ import org.bbop.dataadapter.ParameterUI;
 import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
+import org.bbop.swing.BackgroundImagePanel;
+import org.bbop.swing.SwingUtil;
 import org.bbop.util.CommandLineParser;
 import org.bbop.util.Tag;
 import org.bbop.util.TagSpec;
@@ -31,6 +37,7 @@ import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
+import org.oboedit.gui.widget.SplashScreen;
 
 public class OBOEdit {
 
@@ -237,14 +244,37 @@ public class OBOEdit {
 					// Also start thread to check free memory
 					CheckMemoryThread cmt = new CheckMemoryThread();
 					cmt.start();
+//					splash.dispose();
 					logger.debug("Loading took " + (System.currentTimeMillis() - time) + " ms"); // DEL
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
 			}
 		};
-		System.setProperty("com.apple.mrj.application.apple.menu.about.name", getAppName());
 
+// 		// Put up splash screen
+// 		// This is not working--it doesn't seem to be able to show the contents of the splash screen
+// 		// until the main OE panel is already displayed, at which point it's useless.
+// 		JDialog splash = new JDialog();
+// 		splash.setTitle(getAppName() + " " + Preferences.getVersion());
+// 		BackgroundImagePanel bip = (new SplashScreen()).getSplashPanel();
+// 		bip.setMaximumSize(new Dimension(400, 400));
+// 		bip.setMinimumSize(new Dimension(400, 400));
+// 		bip.setPreferredSize(new Dimension(400, 400));
+// //		splash.setContentPane(bip);
+// 		JPanel contentPane = new JPanel(); // del
+// 		splash.setContentPane(contentPane); // del
+// 		contentPane.add(new JLabel("this is a test")); // del
+// 		contentPane.repaint(); // DEL
+// //		bip = new BackgroundImagePanel(); // DEL
+// //		bip.add(new JLabel("this is a test")); // del
+// //		bip.repaint();
+// 		splash.pack();
+// 		logger.debug("Displaying splash screen"); // DEL
+// 		SwingUtil.center(splash);
+// 		splash.setVisible(true);
+		
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", getAppName());
 		SwingUtilities.invokeAndWait(r);
 	}
 
@@ -259,6 +289,7 @@ public class OBOEdit {
 		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
 		props.setProperty("log4j.appender.A2.file",logFile);
 		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
+//		props.setProperty("log4j.appender.A2.MaxFileSize","1KB");  // experiment
 		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.append","true");
 		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
