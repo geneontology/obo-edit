@@ -5,8 +5,8 @@
 <hibernate-configuration>
     <session-factory name="SessionFactory">
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/FB2008_06</property>
-        <property name="hibernate.connection.username">db_public</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://flybase.net:5432/flybase</property>
+        <property name="hibernate.connection.username">flybase</property>
         <!--  <property name="hibernate.connection.password"></property>-->
 
         
