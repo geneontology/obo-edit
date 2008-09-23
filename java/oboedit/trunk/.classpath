@@ -59,6 +59,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/relaxngDatatype.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
-	<classpathentry exported="true" kind="lib" path="/home/amina/eclipseworkspace/OBO-Edit/lib/runlibs/commons-lang-2.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
