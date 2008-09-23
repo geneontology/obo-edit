@@ -29,7 +29,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-anim.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-awt-util.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/macify-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/OBO/lib/commons-lang-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
@@ -60,5 +59,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/relaxngDatatype.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/amina/eclipseworkspace/OBO-Edit/lib/runlibs/commons-lang-2.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
