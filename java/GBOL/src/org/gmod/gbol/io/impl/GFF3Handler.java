@@ -18,6 +18,7 @@ import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
 import org.gmod.gbol.simpleObject.FeatureRelationship;
 import org.gmod.gbol.simpleObject.Organism;
+import org.gmod.gbol.simpleObject.generated.AbstractFeature;
 
 
 public class GFF3Handler extends FileHandler implements IOInterface {
@@ -99,7 +100,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Collection<?extends AbstractSimpleObject> readAll() throws Exception{
+	public Collection<?extends AbstractFeature> readAll() throws Exception{
 		
 		this.openHandle();
 		StringBuilder contents = this.readFileContents();
@@ -131,7 +132,7 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			}
 		}
 		
-		return (Collection<? extends AbstractSimpleObject>) this.features.values();
+		return (Collection<? extends AbstractFeature>) this.features.values();
 	}
 
 	public boolean write(AbstractSimpleObject simpleObject) {
