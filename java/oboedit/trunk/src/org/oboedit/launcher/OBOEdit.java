@@ -202,7 +202,7 @@ public class OBOEdit {
 					// Figure out where logfile will go before starting GUI (so Configuration Manager can
 					// show the logfile path)
 					String configDir = Preferences.getOBOEditPrefsDir().toString();
-					String logFile = configDir + "/log/oboedit_log4j.log";
+					String logFile = configDir + "/log/OBOEdit_log4j.log";
 					Preferences.getPreferences().setLogfile(logFile);
 
 					Preferences.setBatchMode(false);  // we're running with a GUI, not in batch mode
@@ -214,14 +214,14 @@ public class OBOEdit {
 
 					// Configure logging
 					Properties props = new Properties();
-					try {
-						InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
-						props.load(configStream);
-						configStream.close();
-					} catch(IOException e) {
-						System.err.println("Error: Cannot load logger configuration file log4j.properties from jar. " + e.getMessage());
-						Preferences.getPreferences().setLogfile("(Could not configure logging--log4j.properties not found)");  // there won't be a log file
-					}
+//					try {
+//					//InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
+//					props.load(configStream);
+//					configStream.close();
+//					} catch(IOException e) {
+//					System.err.println("Error: Cannot load logger configuration file log4j.properties from jar. " + e.getMessage());
+//					Preferences.getPreferences().setLogfile("(Could not configure logging--log4j.properties not found)");  // there won't be a log file
+//					}
 					setupLog4j(props, logFile);
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
@@ -231,7 +231,7 @@ public class OBOEdit {
 
 					// Set up Data Adapter registry
 					DataAdapterRegistry registry = IOManager.getManager()
-					    .getAdapterRegistry();
+					.getAdapterRegistry();
 
 					TagSpec spec = getCommandLineSpec(registry);
 					Tag topLevel = CommandLineParser.parse(spec, args);
@@ -252,49 +252,46 @@ public class OBOEdit {
 			}
 		};
 
-// 		// Put up splash screen
-// 		// This is not working--it doesn't seem to be able to show the contents of the splash screen
-// 		// until the main OE panel is already displayed, at which point it's useless.
-// 		JDialog splash = new JDialog();
-// 		splash.setTitle(getAppName() + " " + Preferences.getVersion());
-// 		BackgroundImagePanel bip = (new SplashScreen()).getSplashPanel();
-// 		bip.setMaximumSize(new Dimension(400, 400));
-// 		bip.setMinimumSize(new Dimension(400, 400));
-// 		bip.setPreferredSize(new Dimension(400, 400));
-// //		splash.setContentPane(bip);
-// 		JPanel contentPane = new JPanel(); // del
-// 		splash.setContentPane(contentPane); // del
-// 		contentPane.add(new JLabel("this is a test")); // del
-// 		contentPane.repaint(); // DEL
-// //		bip = new BackgroundImagePanel(); // DEL
-// //		bip.add(new JLabel("this is a test")); // del
-// //		bip.repaint();
-// 		splash.pack();
-// 		logger.debug("Displaying splash screen"); // DEL
-// 		SwingUtil.center(splash);
-// 		splash.setVisible(true);
-		
+//		// Put up splash screen
+//		// This is not working--it doesn't seem to be able to show the contents of the splash screen
+//		// until the main OE panel is already displayed, at which point it's useless.
+//		JDialog splash = new JDialog();
+//		splash.setTitle(getAppName() + " " + Preferences.getVersion());
+//		BackgroundImagePanel bip = (new SplashScreen()).getSplashPanel();
+//		bip.setMaximumSize(new Dimension(400, 400));
+//		bip.setMinimumSize(new Dimension(400, 400));
+//		bip.setPreferredSize(new Dimension(400, 400));
+//		//		splash.setContentPane(bip);
+//		JPanel contentPane = new JPanel(); // del
+//		splash.setContentPane(contentPane); // del
+//		contentPane.add(new JLabel("this is a test")); // del
+//		contentPane.repaint(); // DEL
+//		//		bip = new BackgroundImagePanel(); // DEL
+//		//		bip.add(new JLabel("this is a test")); // del
+//		//		bip.repaint();
+//		splash.pack();
+//		logger.debug("Displaying splash screen"); // DEL
+//		SwingUtil.center(splash);
+//		splash.setVisible(true);
+
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", getAppName());
 		SwingUtilities.invokeAndWait(r);
 	}
 
 	private static void setupLog4j(Properties props, String logFile){
-
 		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
-
 		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
 		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
 		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
 
 		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
 		props.setProperty("log4j.appender.A2.file",logFile);
-		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
-//		props.setProperty("log4j.appender.A2.MaxFileSize","1KB");  // experiment
-		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.append","true");
+		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
+		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
 		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
-		LogManager.resetConfiguration();
+//		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(props);
 	}
 
