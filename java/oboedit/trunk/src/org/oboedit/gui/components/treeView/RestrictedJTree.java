@@ -15,7 +15,7 @@ import org.obo.datamodel.LinkedObject;
 
 /**
  * 
- * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
+ * @author John Day-Richer, Jennifer Deegan, and Nicolas Rodriguez.<br>
  * Docs by Jennifer Deegan and Nicolas Rodriguez.
  * 
  */
