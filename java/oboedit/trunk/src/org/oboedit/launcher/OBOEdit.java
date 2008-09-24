@@ -214,6 +214,7 @@ public class OBOEdit {
 
 					// Configure logging
 					Properties props = new Properties();
+					// not required - setting up properties in here.
 //					try {
 //					//InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
 //					props.load(configStream);
