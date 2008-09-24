@@ -100,9 +100,9 @@ public class TreeView extends AbstractGUIComponent {
 		//SelectionEvent is a class that can contain a term or list of terms that has been selected. 
 		//Why is 'e' not used?
 		public void selectionChanged(SelectionEvent e) {
-			update();
-			logger.debug("TreeView: SelectionChanged: SelectionEvent = " + e.getSelection());
+			logger.debug("\n\n\nTreeView: SelectionChanged: SelectionEvent = " + e.getSelection());
 			logger.debug("TreeView: selectionListener method.");
+			update();
 		}
 	};
 	
@@ -421,22 +421,23 @@ public class TreeView extends AbstractGUIComponent {
 		task.addPostExecuteRunnable(new Runnable() {
 
 			public void run() {
-				logger.debug("TreeView: doUpdate.task.AaddPostExecuteRunnable : run method.");
+				logger.debug("TreeView: doUpdate.task.AddPostExecuteRunnable : run method.");
 
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
 				while(it.hasNext()) {
 					TreePath path = (TreePath) it.next();
 					if (PathUtil.pathIsCircular(path)
-							|| (!treeViewSettingsInstance.getShowNonTransitive() == true && PathUtil //changed this line.
-									.pathContainsNonTransitive(path))) {
+							|| (!treeViewSettingsInstance.getShowNonTransitive() == true && 
+									PathUtil.pathContainsNonTransitive(path))) {  //changed this line.
 						it.remove();
 					}
 				}
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
 				model = new PathTreeModel(paths);
 				restrictedJTreeInstance.setModel(model);
-				//restrictedJTreeInstance.refresh(true); //If this line is commented out then the tree does not expand.
+				//restrictedJTreeInstance.refresh(true); //If this line is commented 
+				//out then the tree does not expand.
 				finishUpdate(paths);
 				
 			}			
@@ -445,16 +446,26 @@ public class TreeView extends AbstractGUIComponent {
 				.getCurrentLinkDatabase());
 
 		Set<LinkedObject> termSet = new HashSet<LinkedObject>();
+		//The line above makes an object that can contain a set of other objects. Since it is set to contain LinkedObjects 
+		//this time it is able to contain the set of linked terms that will show in the graph. 
+		// The set is called termSet.		
+		
 		if (multiTerm()) {
 			termSet
 			.addAll(SelectionManager.getGlobalSelection()
 					.getTerms());
-		} else
+		} else {
 			termSet.add(SelectionManager.getGlobalSelection()
 					.getTermSubSelection());
-
+		}
+		
 		task.setTerms(termSet);
 		treeViewConfigPanelInstance.eventQueue.scheduleTask(task);
+	
+		restrictedJTreeInstance.refresh(true); //Added this so the tree just redraws once at the end
+												//rather than continuously throughout.
+	
+	
 	}
 
 //	protected void showConfigurationWindow() {
@@ -498,6 +509,7 @@ public class TreeView extends AbstractGUIComponent {
 
 				validate();
 				repaint();
+				System.out.println("TreeView: update method, getGlobalSelection is empty and we have just validated.");
 			}
 		} else {
 
