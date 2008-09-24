@@ -52,10 +52,7 @@ public class DanglingIntersectionCheck extends AbstractCheck implements
 				CheckWarning warning = new CheckWarning(
 						"The cross product definition of " + object.getName()
 								+ " (" + object.getID() + ") refers to a "
-								+ "dangling parent " + link.getParent() + ". "
-								+ "Dangling parents cannot be used by "
-								+ "the reasoner, so this cross product "
-								+ "definition will not be used.", false, this,
+								+ "dangling parent " + link.getParent() + ". ", false, this,
 						object);
 				warnings.add(warning);
 				if (isCancelled()
