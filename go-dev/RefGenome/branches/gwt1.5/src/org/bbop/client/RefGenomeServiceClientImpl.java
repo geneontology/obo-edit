@@ -195,6 +195,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 
 		public void onSuccess(Object result) {
 			// TODO Auto-generated method stub
+			System.err.println("Got back taxon objects");
 			refgview.getSearchPanel().fillTaxonNodes(result);
 			
 		}

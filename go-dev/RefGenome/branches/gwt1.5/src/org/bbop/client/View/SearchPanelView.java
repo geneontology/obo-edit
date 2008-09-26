@@ -204,8 +204,9 @@ public class SearchPanelView implements SearchPanelManagerI {
 			// TODO Auto-generated method stub
 			if (txnList.getItemCount() <= 2 ) {
 				txnList.clear();
-				txnList.addItem("Wait.....");
-				MessageBox info = new MessageBox();
+				txnList.addItem("Waiting.....");
+				refgListener.fetchTaxonNodes();
+				info = new MessageBox();
 	    		info.setButtons(MessageBox.OK);
 	    		info.setIcon(MessageBox.INFO);
 	    		info.setTitle("Search in progress");
@@ -397,13 +398,15 @@ public class SearchPanelView implements SearchPanelManagerI {
 
 	public void fillTaxonNodes(Object obj) {
 		// TODO Auto-generated method stub
-		listInfo.hide();
+		//System.err.println("got taxon list: "+obj);
+		
+		info.hide();
 		txnList.clear();
-		System.err.println("got taxon list: "+obj);
 		NodeDTO[] list = (NodeDTO[]) obj;
-		for(int i = 0; i < list.length; i++) {
-			if (list[i].getLabel() != null)
-				txnList.addItem(list[i].getId()+" "+list[i].getLabel());
+		for (NodeDTO node : list) {
+			if (node.getLabel() != null) {
+				txnList.addItem(node.getLabel());
+			}
 		}
 		
 	}
