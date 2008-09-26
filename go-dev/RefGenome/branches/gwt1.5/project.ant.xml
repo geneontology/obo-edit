@@ -16,6 +16,11 @@
 		<pathelement path="${java.class.path}" />
 	
 	</path>
+
+
+	<target name="osdetect" description="detect and write the os name to a file">
+		 <echo message = "${os.name}" file = "os.txt" />
+  </target>
 	
 	
 	<!-- ================================= 
@@ -32,7 +37,7 @@
 	<!-- ================================= 
           target: gwt-server-compile              
          ================================= -->
-    <target name="gwt-server-compile" depends="clean" description="Compiles the gwt server side code">
+    <target name="gwt-server-compile" depends="clean,osdetect" description="Compiles the gwt server side code">
 			 <mkdir dir="bin"/>
         <javac fork="true"
         	failonerror="true"

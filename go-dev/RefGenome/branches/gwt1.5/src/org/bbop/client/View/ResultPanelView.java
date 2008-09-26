@@ -10,6 +10,7 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
@@ -173,7 +174,33 @@ public class ResultPanelView {
 		tblHolder.add(tblFolder);
 		
 	}
+
 	
+   public void addTargetListView(Grid targets, ToolBar[] tbars, String title) {
+	   tblHolder = new LayoutContainer();
+		TabPanel tblFolder = new TabPanel();
+		tblFolder.setTabWidth(80);
+		
+		TabItem tblItem = new TabItem();
+		tblItem.setText(title);
+		tblItem.setIconStyle("icon-tabs");
+		tblItem.setLayout(new RowLayout(Orientation.VERTICAL));
+		
+		//adds the toolbar for target list manipulation
+		tblItem.add(tbars[1],new RowData(1,-1));
+		tblItem.add(targets,new RowData(1,1));
+		tblFolder.add(tblItem);
+		tblFolder.setSelection(tblItem);
+		
+		//tblHolder.setScrollEnabled(false);  
+		RowLayout layout = new RowLayout(Orientation.VERTICAL);  
+		//layout.setMargin(8);  
+		tblHolder.setLayout(layout); 
+		
+		//Add toolbar and tabview
+		tblHolder.add(tbars[0],new RowData(1,-1));
+		tblHolder.add(tblFolder, new RowData(1,1));
+   }
 
 	
 	public void resetView() {
