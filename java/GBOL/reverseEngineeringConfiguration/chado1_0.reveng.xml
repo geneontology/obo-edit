@@ -39,10 +39,11 @@
   
   <table-filter exclude="true" match-name="materialized_view"/>
   
-  
+    
   <table-filter match-name=".*" package="org.gmod.gbol.simpleObject" match-schema="public">
     <meta attribute="extends">org.gmod.gbol.simpleObject.AbstractSimpleObject</meta>
   </table-filter>
+  
   
   <table schema="public" name="acquisition" class="Acquisition">
     <meta attribute="scope-class">public abstract</meta>

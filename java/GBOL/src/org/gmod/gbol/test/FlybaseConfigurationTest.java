@@ -26,29 +26,14 @@ public class FlybaseConfigurationTest extends AbstractGBOLHibernateTest{
 	}
 	
 	public void testConfigure(){
-		/*
+		
 		CVTerm cvterm = (CVTerm) this.sf.getCurrentSession().get(CVTerm.class, 30);
 		System.out.println("Parent: " + cvterm.getName());
 		for (CVTermRelationship cvtr : cvterm.getChildCVTermRelationships()){
 			System.out.println(cvtr.getSubjectCVTerm().getName() + " " + cvtr.getType().getName() + " " + cvtr.getObjectCVTerm().getName());
 		}
-		*/
-		
-		Query q = this.sf.getCurrentSession().createQuery("from CV where name=?");
-		q.setString(0, "SO");
-		
-		CV cv = (CV)q.uniqueResult();
-		System.out.println("CV: " + cv.getName());
-
-		cv.setName("sequence_ontology");
-		
-		Feature f = null;
-		
-		f.getType().setName("new_name");
 		
 		
-		
-		this.sf.getCurrentSession().save(f);
 		
 		
 	}
