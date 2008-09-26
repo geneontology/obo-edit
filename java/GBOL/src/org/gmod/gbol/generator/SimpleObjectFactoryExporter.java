@@ -53,6 +53,16 @@ public class SimpleObjectFactoryExporter extends AbstractExporter{
 	 */
 	@SuppressWarnings("unchecked")
 	public void doStart() throws ExporterException {
+		
+		File f = new File("/tmp/test.txt");
+		try {
+			FileWriter fw = new FileWriter(f);
+			fw.append("Test1\nTest2\n");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		PrintWriter pw = null;
 		File file = null;
 		try  {
