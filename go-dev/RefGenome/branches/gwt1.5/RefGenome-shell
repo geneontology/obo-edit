@@ -4,15 +4,40 @@ APPDIR=`dirname $0`;
 external=''
 osfile='os.txt'
 
+if [ -e "$osfile" ]
+then
+  osname=`cat $osfile`
+else
+  echo "os.txt file does not exist"
+  echo "Please run ** ant -f project.xml ** first"
+  exit
+fi
+
+
 for name in external/*.jar
   do
 	external=$external:$name
 done
 
-osname=`cat $osfile`
+
+case $osname in
+Mac*)
+gwtdev='gwt-dev-mac.jar'
+java='java -XstartOnFirstThread -Xmx512M -cp'
+;;
+Linux*)
+gwtdev='gwt-dev-linux.jar'
+java='java -X512M -cp'
+;;
+*)
+echo "unrecognized operating system"
+exit
+;;
+esac
 
 
+	
 
-java -XstartOnFirstThread -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:$GWT_HOME/gwt-user.jar:$GWT_HOME/gwt-dev-mac.jar$external" com.google.gwt.dev.GWTShell -port 9000 -out "$APPDIR/www" "$@" org.bbop.RefGenome/RefGenome.html;
+$java "$APPDIR/src:$APPDIR/bin:$GWT_HOME/gwt-user.jar:$GWT_HOME/$gwtdev$external" com.google.gwt.dev.GWTShell -port 9000 -out "$APPDIR/www" "$@" org.bbop.RefGenome/RefGenome.html;
 
 #java -XstartOnFirstThread -Xmx256M -cp "$APPDIR/src:$APPDIR/bin:/Users/siddharthabasu/Documents/Projects/Support/gwt-mac-1.5.0/gwt-user.jar:/Users/siddharthabasu/Documents/Projects/Support/gwt-mac-1.5.0/gwt-dev-mac.jar:$APPDIR/external/gxt.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.bbop.RefGenome/RefGenome.html;
