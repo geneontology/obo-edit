@@ -23,11 +23,11 @@ done
 case $osname in
 Mac*)
 gwtdev='gwt-dev-mac.jar'
-java='java -XstartOnFirstThread -Xmx512M -cp'
+java='java -XstartOnFirstThread -Xmx256M -cp'
 ;;
 Linux*)
 gwtdev='gwt-dev-linux.jar'
-java='java -X512M -cp'
+java='java -Xmx256M -cp'
 ;;
 *)
 echo "unrecognized operating system"
