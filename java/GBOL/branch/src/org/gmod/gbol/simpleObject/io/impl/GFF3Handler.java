@@ -1,4 +1,4 @@
-package org.gmod.gbol.io.impl;
+package org.gmod.gbol.simpleObject.io.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gmod.gbol.io.FileHandler;
-import org.gmod.gbol.io.IOInterface;
 import org.gmod.gbol.simpleObject.AbstractSimpleObject;
 import org.gmod.gbol.simpleObject.CV;
 import org.gmod.gbol.simpleObject.CVTerm;
@@ -18,10 +16,11 @@ import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
 import org.gmod.gbol.simpleObject.FeatureRelationship;
 import org.gmod.gbol.simpleObject.Organism;
-import org.gmod.gbol.simpleObject.generated.AbstractFeature;
+import org.gmod.gbol.simpleObject.io.FileHandler;
+import org.gmod.gbol.simpleObject.io.SimpleObjectIOInterface;
 
 
-public class GFF3Handler extends FileHandler implements IOInterface {
+public class GFF3Handler extends FileHandler implements SimpleObjectIOInterface {
 
 	private Organism organism;
 	private String newlineCharacter;
@@ -99,8 +98,19 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 		this.organism = organism;
 	}
 
+	public Collection<? extends Feature> getAllFeaturesByRange(FeatureLocation loc) throws Exception
+	{
+		throw new RuntimeException("Not yet implemented");
+	}
+
+	public Collection<? extends Feature> getFeaturesByCVTermAndRange(CVTerm cvterm, FeatureLocation loc) throws Exception
+	{
+		throw new RuntimeException("Not yet implemented");
+	}
+
+	
 	@SuppressWarnings("unchecked")
-	public Collection<?extends AbstractFeature> readAll() throws Exception{
+	public Collection<?extends AbstractSimpleObject> readAll() throws Exception{
 		
 		this.openHandle();
 		StringBuilder contents = this.readFileContents();
@@ -132,12 +142,12 @@ public class GFF3Handler extends FileHandler implements IOInterface {
 			}
 		}
 		
-		return (Collection<? extends AbstractFeature>) this.features.values();
+		return (Collection<? extends AbstractSimpleObject>) this.features.values();
 	}
 
-	public boolean write(AbstractSimpleObject simpleObject) {
-		System.err.println("Not implemented yet.");
-		return false;
+	public Collection<? extends Feature> getFeaturesByCVTerm(CVTerm cvterm) throws Exception
+	{
+		throw new RuntimeException("Not implemented yet");
 	}
 
 	public boolean write(Collection<AbstractSimpleObject> simpleObjects) {

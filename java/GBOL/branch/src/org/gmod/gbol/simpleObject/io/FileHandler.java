@@ -1,11 +1,11 @@
-package org.gmod.gbol.io;
+package org.gmod.gbol.simpleObject.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public abstract class FileHandler implements IOInterface{
+public abstract class FileHandler implements SimpleObjectIOInterface{
 	
 	private String filePath;
 	private FileReader fileReader;

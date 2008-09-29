@@ -1,6 +1,7 @@
 package org.gmod.gbol.simpleObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.gmod.gbol.simpleObject.CVTerm;
@@ -66,5 +67,11 @@ public class Feature extends org.gmod.gbol.simpleObject.generated.AbstractFeatur
 			}
 		}
 		return featureProperties;
+	}
+
+	@Override
+	public Collection<AbstractSimpleObject> getWriteObjects() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

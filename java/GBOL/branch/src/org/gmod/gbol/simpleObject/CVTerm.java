@@ -1,5 +1,7 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.Collection;
+
 import org.gmod.gbol.simpleObject.CV;
 
 /*
@@ -22,5 +24,11 @@ public class CVTerm extends org.gmod.gbol.simpleObject.generated.AbstractCVTerm 
 		this.setCv(cv);
         this.setName(name);
         this.setIsObsolete(0);
+	}
+
+	@Override
+	public Collection<AbstractSimpleObject> getWriteObjects() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
