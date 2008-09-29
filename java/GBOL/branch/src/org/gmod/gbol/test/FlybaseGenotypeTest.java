@@ -1,8 +1,5 @@
 package org.gmod.gbol.test;
 
-import org.gmod.gbol.simpleObject.CVTermRelationship;
-import org.gmod.gbol.simpleObject.CVTerm;
-
 public class FlybaseGenotypeTest extends AbstractGBOLHibernateTest{
 
 	public FlybaseGenotypeTest(String name) {

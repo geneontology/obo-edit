@@ -1,13 +1,7 @@
 package org.gmod.gbol.test;
 
-import java.util.Collection;
-
-import org.gmod.gbol.simpleObject.CV;
 import org.gmod.gbol.simpleObject.CVTermRelationship;
 import org.gmod.gbol.simpleObject.CVTerm;
-import org.gmod.gbol.simpleObject.Feature;
-import org.gmod.gbol.simpleObject.FeatureRelationship;
-import org.hibernate.Query;
 
 public class FlybaseConfigurationTest extends AbstractGBOLHibernateTest{
 
