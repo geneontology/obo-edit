@@ -2,8 +2,8 @@ package org.gmod.gbol.test;
 
 import java.io.IOException;
 
-import org.gmod.gbol.io.FileHandler;
-import org.gmod.gbol.io.impl.GFF3Handler;
+import org.gmod.gbol.simpleObject.io.FileHandler;
+import org.gmod.gbol.simpleObject.io.impl.GFF3Handler;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;

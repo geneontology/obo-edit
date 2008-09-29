@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.gmod.gbol.io.FileHandler;
-import org.gmod.gbol.io.impl.GFF3Handler;
+import org.gmod.gbol.simpleObject.io.FileHandler;
+import org.gmod.gbol.simpleObject.io.impl.GFF3Handler;
 import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureRelationship;
 
