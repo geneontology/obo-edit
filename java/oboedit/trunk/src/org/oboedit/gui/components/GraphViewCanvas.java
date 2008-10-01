@@ -493,7 +493,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 				if (i > 0 && terms.size() > 2)
 					buffer.append(", ");
 				if (i == terms.size() - 1 && terms.size() > 1)
-					buffer.append("and ");
+					buffer.append(" and ");
 				buffer.append(terms.get(i).getName());
 			}
 			topLabel.setText(buffer.toString());
