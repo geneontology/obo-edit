@@ -28,6 +28,36 @@ public class Feature extends org.gmod.gbol.simpleObject.generated.AbstractFeatur
 		super();
 	}
 	
+	/** Copy constructor.  Does a shallow copy from the source Feature.
+	 * 
+	 * @param src - Feature to copy the data from
+	 */
+	public Feature(Feature src)
+	{
+		setType(src.getType());
+		setDbxref(src.getDbxref());
+		setOrganism(src.getOrganism());
+		setName(src.getName());
+		setUniqueName(src.getUniqueName());
+		setResidues(src.getResidues());
+		setSequenceLength(src.getSequenceLength());
+		setMd5checksum(src.getMd5checksum());
+		setIsAnalysis(src.isIsAnalysis());
+		setIsObsolete(src.isIsObsolete());
+		setTimeAccessioned(src.getTimeAccessioned());
+		setTimeLastModified(src.getTimeLastModified());
+		setFeatureLocations(src.getFeatureLocations());
+		setFeatureGenotypes(src.getFeatureGenotypes());
+		setParentFeatureRelationships(src.getParentFeatureRelationships());
+		setChildFeatureRelationships(src.getChildFeatureRelationships());
+		setFeatureCVTerms(src.getFeatureCVTerms());
+		setFeatureSynonyms(src.getFeatureSynonyms());
+		setFeatureDBXrefs(src.getFeatureDBXrefs());
+		setFeaturePublications(src.getFeaturePublications());
+		setFeaturePhenotypes(src.getFeaturePhenotypes());
+		setFeatureProperties(src.getFeatureProperties());
+	}
+	
 	public boolean addFeatureProperty(CVTerm type,String value){
 		FeatureProperty featureProperty = new FeatureProperty();
 		featureProperty.setType(type);

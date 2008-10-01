@@ -17,6 +17,21 @@ public class FeatureRelationship extends org.gmod.gbol.simpleObject.generated.Ab
 	public FeatureRelationship(){
 		super();
 	}
+	
+	/** Copy constructor.  Does a shallow copy from the source FeatureRelationship.
+	 * 
+	 * @param src - FeatureRelationship to copy the data from
+	 */
+	public FeatureRelationship(FeatureRelationship src)
+	{
+		setType(src.getType());
+		setObjectFeature(src.getObjectFeature());
+		setSubjectFeature(src.getSubjectFeature());
+		setValue(src.getValue());
+		setRank(src.getRank());
+		setFeatureRelationshipProperties(src.getFeatureRelationshipProperties());
+		setFeatureRelationshipPublications(src.getFeatureRelationshipPublications());
+	}
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
