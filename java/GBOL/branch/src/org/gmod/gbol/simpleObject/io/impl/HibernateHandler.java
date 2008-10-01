@@ -38,7 +38,7 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 		Query query = sf.getCurrentSession().createQuery(hql);
 		query.setString(0, cvterm.getName());
 		query.setString(1, cvterm.getCv().getName());
-		Iterator i = query.iterate();
+		Iterator<?> i = query.iterate();
 		while (i.hasNext()) {
 			features.add((Feature)i.next());
 		}
@@ -49,7 +49,7 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 	{
 		String hql = "from Feature";
 		List<Feature> features = new ArrayList<Feature>();
-		Iterator i = sf.getCurrentSession().createQuery(hql).iterate();
+		Iterator<?> i = sf.getCurrentSession().createQuery(hql).iterate();
 		while (i.hasNext()) {
 			features.add((Feature)i.next());
 		}
