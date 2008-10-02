@@ -25,11 +25,13 @@ scheme.
 Making the war file
 -------------------
 
-* From the top of repository foler.
+* From the top of repository folder.
 	$_> cd ant
-	$_> ant
+	$_> ant	
+  If you're using linux, the last step should be:
+	$_> ant -f build-linux.xml
 	
-*	Will make a RefG.war under the dist folder.
+* Will make a RefG.war under the dist folder.
 
 * Copy that to tomcat's webapps folder.
 
