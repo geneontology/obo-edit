@@ -17,12 +17,7 @@ public class AllReasonerTestsWithFCR extends TestCase {
 
 		AbstractReasonerTest.setReasonerFactory(new ForwardChainingReasonerFactory());
 
-		TestSuite out = new TestSuite();
 
-		out.addTestSuite(IntersectionBloodCellExampleTest.class);
-		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
-		out.addTestSuite(IntersectionUsingSubRelationsTest.class);
-
-		return out;
+		return AllReasonerTests.suite();
 	}
 }

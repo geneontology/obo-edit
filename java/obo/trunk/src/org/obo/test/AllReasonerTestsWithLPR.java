@@ -17,12 +17,7 @@ public class AllReasonerTestsWithLPR extends TestCase {
 
 		AbstractReasonerTest.setReasonerFactory(new LinkPileReasonerFactory());
 
-		TestSuite out = new TestSuite();
+		return AllReasonerTests.suite();
 
-		out.addTestSuite(IntersectionBloodCellExampleTest.class);
-		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
-		out.addTestSuite(IntersectionUsingSubRelationsTest.class);
-
-		return out;
 	}
 }

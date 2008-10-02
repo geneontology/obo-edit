@@ -158,7 +158,7 @@ public class ReasonerUtil {
 	 * @param inLink
 	 * @return
 	 */
-	public static boolean shouldBeTrimmed(LinkDatabase linkDatabase, Link inLink) {
+	public static boolean shouldBeTrimmedNew(LinkDatabase linkDatabase, Link inLink) {
 		if (!TermUtil.isImplied(inLink))
 			return false;
 		if (TermUtil.isIntersection(inLink))
@@ -201,57 +201,64 @@ public class ReasonerUtil {
 	 * @param link
 	 * @return
 	 */
-	public static boolean shouldBeTrimmedOld(LinkDatabase linkDatabase,
+	public static boolean shouldBeTrimmed(LinkDatabase linkDatabase,
 			Link link) {
 		if (!TermUtil.isImplied(link))
 			return false; // asserted links are never trimmed
 		if (TermUtil.isIntersection(link))
 			return true;
-		Iterator it;
+		if (link.getChild().equals(link.getParent()))
+			return true; // trim all reflexive links
 
 		// trim any links to parents that are redundant with
 		// a GRANDPARENT link
 		// if any trimmed link is a GIVEN link, it is redundant
 
-		boolean oldMethod = true;
 
 		// links that originate from the same child
+		// link = <A R B>, parent = <A R2 X>
 		Collection<Link> parents = linkDatabase.getParents(link.getChild());
-		it = parents.iterator();
+
 		// for each parent link
-		while (it.hasNext()) {
-			Link parentLink = (Link) it.next();
+		for (Link parentLink : parents) {
 
 			if (parentLink.equals(link)) {
 				continue;
+			}
+			if (parentLink.getChild().equals(parentLink.getParent())) {
+				continue; // reflexive
 			}
 
 			if (!(parentLink.getType().equals(link.getType()) || parentLink
 					.getType().equals(OBOProperty.IS_A)))
 				continue;
-			
-			// relations are identical
+
+			// relations are identical; R2=R
 			boolean sawType = parentLink.getType().equals(link.getType());
 
-			Iterator it2 = linkDatabase.getParents(parentLink.getParent())
-			.iterator();
 
 			// for each grandparent link accessible via the current
 			// parent link...
-			while (it2.hasNext()) {
-				Link gpLink = (Link) it2.next();
+			// <X R3 B2>
+			for (Link gpLink : linkDatabase.getParents(parentLink.getParent())) {
+				if (gpLink.getChild().equals(gpLink.getParent())) {
+					continue; // reflexive
+				}
 				if (TermUtil.isIntersection(gpLink))
 					continue;
+				
 				// see if the grandparent link has the same type
 				// and parent as the current link. if it does,
 				// the current link is redundant with the grandparent
 				// link and should be removed
-
-				if (link.getParent().equals(gpLink.getParent())
-						&& (((!sawType || link.getType().isTransitive()) &&
-								link.getType().equals(gpLink.getType())) || 
-						     (sawType && gpLink.getType().equals(OBOProperty.IS_A)))) {
-					return true;
+				if (link.getParent().equals(gpLink.getParent())) { // B=B2
+					if ((!sawType || link.getType().isTransitive()) &&
+							link.getType().equals(gpLink.getType())) {
+						return true; 
+					}
+					if (sawType && gpLink.getType().equals(OBOProperty.IS_A)) {
+						return true;
+					}
 				}
 			}
 
@@ -346,7 +353,7 @@ public class ReasonerUtil {
 	public static boolean isExplanationForLinkCyclic(ReasonedLinkDatabase reasoner, Explanation exp, Link link) {
 		return isExplanationForLinkCyclic(reasoner, exp, link, new HashSet<Link>());
 	}
-	
+
 	/**
 	 * explanations are recursive. Some explanation chains m ay be cyclic. For example, an asserted link can end up supporting itself in an intersection rule.
 	 * 
@@ -372,7 +379,7 @@ public class ReasonerUtil {
 				return true;
 			}
 			checkedLinks.add(evidenceLink);
-			
+
 			if (evidenceLink.equals(link)) {
 				return true;
 			}
@@ -420,7 +427,7 @@ public class ReasonerUtil {
 					continue;
 			}
 			// from here on we are not in repair mode; i.e. if a link can be inferred by an xp rule then it is considered redundant
-			
+
 			if (exp.getExplanationType().equals(ExplanationType.INTERSECTION)) {
 				continue;
 				// test: negative regulation of programmed cell death --OBO_REL:is_a--> negative regulation of developmental process

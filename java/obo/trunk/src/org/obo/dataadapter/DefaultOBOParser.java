@@ -1171,11 +1171,17 @@ public class DefaultOBOParser implements OBOParser {
 							+ rs.getType(), rs.getPath(), rs.getLine(), rs
 							.getLineNum());
 				}
-			} else if (!(type instanceof OBOProperty))
-				throw new OBOParseException("Tried to use non-type "
+			} else if (!(type instanceof OBOProperty)) {
+				if (allowDanglingParents) {
+					type = (OBOProperty) objectFactory.createDanglingObject(rs
+							.getType(), true);
+					logger.info("No type for " + child + "--added dangling type object " + type);
+				} else {
+					throw new OBOParseException("Tried to use non-type "
 						+ rs.getType() + " as relationship " + "type", rs
 						.getPath(), rs.getLine(), rs.getLineNum());
-
+				}
+			}
 			Namespace ns = null;
 
 			String nsString = rs.getNamespace();
@@ -1684,11 +1690,11 @@ public class DefaultOBOParser implements OBOParser {
 		if (!handled) {
 			PropertyValue pv = new PropertyValueImpl(name, value, engine
 					.getCurrentPath(), engine.getLineNum());
-			if (currentStanza == null)
+			if (currentStanza == null) // in header
 				session.addPropertyValue(pv);
 			else if (unknownStanza != null)
 				unknownStanza.addPropertyValue(pv, nv);
-			else
+			else  // not in header
 				currentObject.addPropertyValue(pv);
 		}
 		return true;

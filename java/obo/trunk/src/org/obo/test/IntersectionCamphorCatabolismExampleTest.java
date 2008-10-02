@@ -15,6 +15,7 @@ import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.DeleteLinkHistoryItem;
 import org.obo.history.HistoryItem;
+import org.obo.util.TermUtil;
 import org.obo.datamodel.*;
 import org.obo.filters.IsCompleteLinkCriterion;
 import org.obo.filters.IsImpliedLinkCriterion;
@@ -53,18 +54,43 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 		String CAMPHOR = "CHEBI:36773";
 		String CAMPHORS = "CHEBI:22996";
 		String XENOBIOTIC = "CHEBI:35703";
+		
+		LinkedObject camcat = (LinkedObject) session.getObject(CAMPHOR_CATABOLISM);
+		for (Link link :reasonedDB.getParents(camcat)) {
+			if (link.getType().equals(OBOProperty.IS_A))
+				logger.info("  reasonedDB:"+link);
+		}
+		for (Link link :trimmedDB.getParents(camcat)) {
+			if (link.getType().equals(OBOProperty.IS_A))
+				logger.info("  trimmedDB:"+link);
+		}
 
 		testForIsA(RCAMPHOR, CAMPHOR);
 		testForIsA("CHEBI:24974","CHEBI:23367"); /* is_a transitivity */
 		testForIsA("CHEBI:33304","CHEBI:33675"); /* asserted */
 		testForIsA(CAMPHOR_CATABOLISM,"GO:0009056"); /* genus */
+		
+		// we expect the reasoner to contain both the XP link and
+		// the trivially inferred plain link
+		boolean gotXPLink = false;
+		boolean gotPlainLink = false;
+		for (Link link : getLinks(CAMPHOR_CATABOLISM,OBOProperty.IS_A.getID(),"GO:0009056")) {
+			logger.info("genus link: "+link);
+			if (TermUtil.isIntersection(link))
+				gotXPLink = true;
+			else
+				gotPlainLink = true;
+		}
+		assertTrue(gotXPLink);
+		assertTrue(gotPlainLink);
+		
 		testForIsA(CAMPHOR_CATABOLISM,XENOBIOTIC_CATABOLISM); /* completeness : c-catab is_a xeno catab*/
 		testForLink("testA","part_of","testB"); /* asserted */
 		testForLink("testA","part_of","testC"); /* transitivity */
 		testForLink("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
 
-		testForIsAInTrimmed("GO:0019383","GO:0042178"); 
-		testForLinkInTrimmed("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
+		testForIsAInTrimmed(CAMPHOR_CATABOLISM,XENOBIOTIC_CATABOLISM); 
+		testForLink("GO:0019383","UCDHSC:results_in_division_of","CHEBI:35703"); /* differentia + transitivity */
 
 		// test incremental reasoning
 		if (true) {
@@ -99,7 +125,7 @@ public class IntersectionCamphorCatabolismExampleTest extends AbstractReasonerTe
 
 			assertTrue(matches.size() > 0);
 		}
-
+		writeTempTrimmedReasonedOBOFile();
 	}
 }
 

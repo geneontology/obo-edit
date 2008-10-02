@@ -34,7 +34,7 @@ import org.obo.datamodel.MutableLinkDatabase;
 
 import org.apache.log4j.*;
 
-public class FixedCacheMutableLinkDatabase implements MutableLinkDatabase {
+public class FixedCacheMutableLinkDatabase extends AbstractLinkDatabase implements MutableLinkDatabase {
 
 	protected class FlushThread extends Thread {
 		public static final long SLEEP_TIME = 100;

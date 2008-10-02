@@ -27,6 +27,11 @@ import java.util.*;
 
 import org.apache.log4j.*;
 
+/**
+ * Writes OBO Files.
+ * Delegates work to OBOSerializer
+ *
+ */
 public class OBOSerializationEngine extends AbstractProgressValued {
 
 	//initialize logger
@@ -58,7 +63,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean saveImplied = false;
 		
-		protected boolean filterRedundant = false; // TODO: not yet implemented. If set, removes redundant links
 
 		// FCR does not appear to work with regulation examples...
 		protected ReasonerFactory reasonerFactory = new
@@ -150,20 +154,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return saveImplied;
 		}
 		
-		
-
-		/**
-		 * @return true if the path should filter out redundant links
-		 * TODO: not yet implemented
-		 */
-		public boolean isFilterRedundant() {
-			return filterRedundant;
-		}
-
-		public void setFilterRedundant(boolean filterRedundant) {
-			this.filterRedundant = filterRedundant;
-		}
-
 		public void setPath(String path) {
 			this.path = path;
 		}
@@ -636,6 +626,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				serializer.writeRemarkHeaderTag(remark);
 			}
 		}
+		for (PropertyValue pv : session.getPropertyValues()) {
+			serializer.writeGenericHeaderTag(pv.getProperty(),pv.getValue());
+		}
 		serializer.endHeader();
 	}
 
@@ -1088,7 +1081,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		boolean saveAll = impliedType.equals(SAVE_ALL);
 
 		LinkDatabase database = new DefaultLinkDatabase(session);
-		if (saveImplied || filteredPath.isFilterRedundant() || prefilterProperty != null) {
+		if (saveImplied || prefilterProperty != null) {
 			ReasonedLinkDatabase fullReasoner;
 			if (filteredPath.getUseSessionReasoner() && getReasoner() != null) {
 				fullReasoner = getReasoner();
@@ -1122,7 +1115,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 						public boolean satisfies(Object o) {
 							if (o instanceof Link) {
 								Link link = (Link) o;
-								return !ReasonerUtil.shouldBeTrimmed(
+								return !ReasonerUtil.shouldBeTrimmedNew(
 										propertyFiltered, link);
 							} else
 								return false;
@@ -1152,7 +1145,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 			}
 			if (database instanceof ReasonedLinkDatabase) {
-				((ReasonedLinkDatabase) database).recache();
+				((ReasonedLinkDatabase) database).recache(); // why twice?
 			}
 		}
 

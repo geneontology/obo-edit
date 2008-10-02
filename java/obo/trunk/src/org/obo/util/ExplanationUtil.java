@@ -45,7 +45,7 @@ public class ExplanationUtil {
 	public static boolean hasBeenTrimmed(ReasonedLinkDatabase reasoner,
 			LinkDatabase activeLinkDatabase, Link link) {
 		return !isGiven(reasoner, link)
-				&& ReasonerUtil.shouldBeTrimmed(activeLinkDatabase, link);
+				&& ReasonerUtil.shouldBeTrimmedNew(activeLinkDatabase, link);
 	}
 
 	public static String getDescriptionReasoned(ReasonedLinkDatabase reasoner,

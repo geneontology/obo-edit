@@ -87,17 +87,6 @@ public interface ReasonedLinkDatabase extends LinkDatabase, ProgressValued {
 	 */
 	public boolean isInstanceOf(Instance a, OBOClass b);
 
-	/**
-	 * Whether {@link LinkedObject} a has a relationship of type prop to
-	 * {@link LinkedObject} b.
-	 * 
-	 * @param a
-	 * @param prop
-	 * @param b
-	 * @return
-	 */
-	public Link hasRelationship(LinkedObject a, OBOProperty prop,
-			LinkedObject b);
 
 	/**
 	 * Returns all the parents (including parents implied by transitivity) of

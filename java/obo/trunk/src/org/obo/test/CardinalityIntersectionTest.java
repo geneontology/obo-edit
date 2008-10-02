@@ -30,7 +30,6 @@ public class CardinalityIntersectionTest extends AbstractReasonerTest {
 		return Arrays.asList(files);
 	}
 	
-
 	public void testForCard() throws Exception {
 
 		OBOObject obj = (OBOObject) session.getObject("GO:0022614");

@@ -7,7 +7,7 @@ import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
-public class MergedLinkDatabase implements LinkDatabase {
+public class MergedLinkDatabase extends AbstractLinkDatabase implements LinkDatabase {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(MergedLinkDatabase.class);
