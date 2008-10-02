@@ -50,6 +50,7 @@ public class HoldsOverChainReasonerTest extends AbstractReasonerTest {
 		for (List<OBOProperty >chain : propIR.getHoldsOverChains()) {
 			logger.info(chain);
 		}
+		logger.info("all props: "+reasonedDB.getProperties());
 		this.testForLink(PRoAA, IR, APOPTOSIS);
 		this.testForLink(PRoAA, INR, APOPTOSIS);
 		for (Link link : reasonedDB.getParents((LinkedObject) session.getObject(BCL2))) {

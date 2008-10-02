@@ -52,11 +52,11 @@ public class TrimmingTest extends AbstractReasonerTest {
 				continue;
 
 			long time = System.nanoTime();
-			linkDatabase.oldTrimming = false;
+			linkDatabase.normalTrimming = false;
 			fetchParents((LinkedObject) io, linkDatabase);
 			newTime += System.nanoTime() - time;
 			time = System.nanoTime();
-			linkDatabase.oldTrimming = true;
+			linkDatabase.normalTrimming = true;
 			fetchParents((LinkedObject) io, linkDatabase);
 			oldTime += System.nanoTime() - time;
 

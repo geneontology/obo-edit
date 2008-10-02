@@ -1,5 +1,6 @@
 package org.obo.reasoner.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -10,11 +11,16 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.util.ReasonerUtil;
 
 import org.apache.log4j.*;
 
-public class TrimmedLinkDatabase implements LinkDatabase {
+/**
+ * A view over a LinkDatabase in which links are trimmed
+ *
+ */
+public class TrimmedLinkDatabase extends AbstractLinkDatabase  implements LinkDatabase {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TrimmedLinkDatabase.class);
@@ -63,7 +69,7 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		this.enableTrimming = enableTrimming;
 	}
 
-	public boolean oldTrimming = true;
+	public boolean normalTrimming = true;
 
 	public Collection<Link> getChildren(LinkedObject lo) {
 		if (!enableTrimming)
@@ -72,10 +78,10 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		VectorFilter<Link> filter = new VectorFilter<Link>() {
 			public boolean satisfies(Link inLink) {
 				boolean trim;
-				if (oldTrimming)
-					trim = !ReasonerUtil.shouldBeTrimmedOld(linkDatabase, inLink);
-				else
+				if (normalTrimming)
 					trim = !ReasonerUtil.shouldBeTrimmed(linkDatabase, inLink);
+				else
+					trim = !ReasonerUtil.shouldBeTrimmedNew(linkDatabase, inLink);
 				return trim;
 			}
 		};
@@ -84,6 +90,7 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		Collection<Link> out = new Subset<Link>(filter, children, false);
 		return out;
 	}
+
 
 	public Collection<Link> getParents(LinkedObject lo) {
 		if (!enableTrimming)
@@ -111,7 +118,13 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		 */
 		VectorFilter<Link> filter = new VectorFilter<Link>() {
 			public boolean satisfies(Link inLink) {
-				boolean trim = !ReasonerUtil.shouldBeTrimmedOld(linkDatabase, inLink);
+				boolean trim;
+				if (normalTrimming)
+					trim = !ReasonerUtil.shouldBeTrimmed(linkDatabase, inLink);
+				else
+					trim = !ReasonerUtil.shouldBeTrimmedNew(linkDatabase, inLink);
+
+				//boolean trim = !ReasonerUtil.shouldBeTrimmedOld(linkDatabase, inLink);
 				return trim;
 			}
 		};
@@ -120,6 +133,33 @@ public class TrimmedLinkDatabase implements LinkDatabase {
 		Collection<Link> out = new Subset<Link>(filter, parents, false);
 		return out;
 	}
+	
+	/*
+	public Collection<Link> getChildren(LinkedObject lo) {
+		if (!enableTrimming)
+			return linkDatabase.getChildren(lo);
+
+		Collection<Link> out = new ArrayList<Link>();
+		for (Link link : linkDatabase.getChildren(lo)) {
+			if (!ReasonerUtil.shouldBeTrimmed(linkDatabase, link))
+				out.add(link);
+		}
+		return out;
+	}
+
+	public Collection<Link> getParents(LinkedObject lo) {
+		if (!enableTrimming)
+			return linkDatabase.getParents(lo);
+
+		Collection<Link> out = new ArrayList<Link>();
+		for (Link link : linkDatabase.getParents(lo)) {
+			if (!ReasonerUtil.shouldBeTrimmed(linkDatabase, link))
+				out.add(link);
+		}
+		return out;
+	}
+	*/
+
 
 	public Collection<IdentifiedObject> getObjects() {
 		if (linkDatabase == null)

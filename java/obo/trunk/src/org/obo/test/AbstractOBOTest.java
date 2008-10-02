@@ -2,6 +2,7 @@ package org.obo.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -106,6 +107,8 @@ public abstract class AbstractOBOTest extends TestCase {
 	public void tearDown() throws Exception {
 		session = null;
 	}
+	
+
 
 	public void testForIsA(String childID, String parentID) {
 		LinkedObject child = (LinkedObject) session.getObject(childID);

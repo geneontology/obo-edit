@@ -12,6 +12,7 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerListener;
@@ -27,7 +28,7 @@ import org.obo.reasoner.ReasonerListener;
  */
 import org.apache.log4j.*;
 
-public class ReasonerPassthroughLinkDatabase implements ReasonedLinkDatabase {
+public class ReasonerPassthroughLinkDatabase extends AbstractLinkDatabase implements ReasonedLinkDatabase {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ReasonerPassthroughLinkDatabase.class);

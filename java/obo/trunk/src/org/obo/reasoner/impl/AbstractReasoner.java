@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiHashSetMap;
 import org.bbop.util.MultiMap;
@@ -25,11 +26,15 @@ import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ExplanationType;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerListener;
+import org.obo.reasoner.rbr.RuleBasedReasoner;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
 public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		ReasonedLinkDatabase {
+
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(AbstractReasoner.class);
 
 	protected MultiMap<Link, Explanation> explanationMap;
 
@@ -68,7 +73,9 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected MutableLinkDatabase createImpliedLinkDatabase(
 			LinkDatabase linkDatabase) {
 		// linkDatabase argument ignored? not overridden in LPR... [cjm]
-		return new DefaultMutableLinkDatabase(true);
+		DefaultMutableLinkDatabase mldb = new DefaultMutableLinkDatabase(true);
+		mldb.setProperties(linkDatabase.getProperties());
+		return mldb;
 	}
 
 	public void cancel() {
@@ -163,6 +170,7 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
+		this.setProperties(linkDatabase.getProperties());
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
@@ -326,6 +334,7 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected void internalAddExplanation(Link link, Explanation explanation) {
 		long time = System.nanoTime();
 		explanationMap.add(link, explanation);
+		//logger.debug("added to explMap: "+link+" -> " +explanation);
 		for (Link evidence : explanation.getEvidence()) {
 			explanationDeps.add(evidence, explanation);
 		}

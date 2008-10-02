@@ -36,17 +36,4 @@ public class DisjointnessTest extends AbstractReasonerTest {
 		
 	}
 
-	public static Test suite() {
-		logger.info("foo");
-		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
-
-		System.setErr(audited);
-		TestSuite suite = new TestSuite();
-		addTests(suite);
-		return suite;
-	}
-
-	public static void addTests(TestSuite suite) {
-		suite.addTest(new DisjointnessTest("testLinks"));
-	}
 }

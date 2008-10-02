@@ -13,6 +13,7 @@ import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 import org.apache.log4j.*;
@@ -183,11 +184,16 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				}
 				stream.print(col);
 			}
+			LinkDatabase ldb = fullReasoner;
+			if (filteredPath.getImpliedType() == OBOSerializationEngine.SAVE_FOR_PRESENTATION) {
+				logger.info("using trimmed link db");
+				ldb = new TrimmedLinkDatabase(fullReasoner);
+			}
 			stream.print("\n");
-			for (IdentifiedObject io : fullReasoner.getObjects()) {
+			for (IdentifiedObject io : ldb.getObjects()) {
 				if (io instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) io;
-					for (Link link : fullReasoner.getParents(lo)) {
+					for (Link link : ldb.getParents(lo)) {
 						stream.print(link.getChild().getID());
 						if (ioprofile.isIncludeNames())
 							stream.print(" "+link.getChild().getName());
@@ -200,11 +206,12 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 							stream.print(" "+link.getParent().getName());
 
 						stream.print("\t");
-						stream.print(TermUtil.isImplied(link) ? "implied" : "asserted");
+						boolean isImplied = TermUtil.isImplied(link);
+						stream.print(isImplied ? "implied" : "asserted");
 						stream.print("\t");
 						stream.print(TermUtil.isIntersection(link) ? "intersection" : "link");
-						stream.print("\t");
-						stream.print(ReasonerUtil.isRedundant(fullReasoner, link, false) ? "redundant" : "");
+						stream.print("\t"); // TODO: make isRepairMode configurable
+						stream.print(ReasonerUtil.isRedundant(fullReasoner, link, true) ? "redundant" : "");
 						if (ioprofile.isIncludeExplanations()) {
 							stream.print("\t");
 							stream.print(fullReasoner.getExplanations(link));

@@ -5,6 +5,11 @@ import org.obo.datamodel.*;
 import java.util.*;
 import java.io.*;
 
+/**
+ * performs the bulk of OBO writing.
+ * Called by OBOSerializationEngine
+ *
+ */
 public interface OBOSerializer {
 
 	public void setEngine(OBOSerializationEngine engine);
@@ -164,4 +169,6 @@ public interface OBOSerializer {
 			NestedValue createdByExtension) throws IOException;
 
 	public void writeHoldsOverChainTag(List<OBOProperty> chain) throws IOException;
+
+	public void writeGenericHeaderTag(String property, String value) throws IOException;
 }

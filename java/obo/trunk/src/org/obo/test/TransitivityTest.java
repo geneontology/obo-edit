@@ -29,14 +29,13 @@ public class TransitivityTest extends AbstractReasonerTest {
 				"part_of_test.obo"};
 		return Arrays.asList(files);
 	}
-	
 
 	public static Collection<String> getTests() {
 		String[] tests = {};
 		return Arrays.asList(tests);
 	}
 
-	public void testLinks() throws Exception {
+	public void testBasicLinks() throws Exception {
 		for(IdentifiedObject io : reasonedDB.getObjects()) {
 			if (io instanceof LinkedObject) {
 				logger.info("parents of "+io);
@@ -55,7 +54,10 @@ public class TransitivityTest extends AbstractReasonerTest {
 		
 		// test always implies inverse link. TODO - all reasoners?
 		// testForLink("Emily", "is_right_of", "Bob");
-		
+	}
+	
+	public void testInverseLinks() throws Exception {
+	
 		/*
 		 * make sure reasoner has both asserted inverse link and
 		 * the implied link through symmetry.
@@ -66,17 +68,5 @@ public class TransitivityTest extends AbstractReasonerTest {
 			testForLink("is_right_of", "inverse_of", "is_left_of");
 	}
 
-	public static Test suite() {
-		logger.info("foo");
-		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
 
-		System.setErr(audited);
-		TestSuite suite = new TestSuite();
-		addTests(suite);
-		return suite;
-	}
-
-	public static void addTests(TestSuite suite) {
-		suite.addTest(new TransitivityTest("testLinks"));
-	}
 }

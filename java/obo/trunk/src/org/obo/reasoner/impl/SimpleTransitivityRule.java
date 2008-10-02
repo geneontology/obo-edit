@@ -35,6 +35,7 @@ public class SimpleTransitivityRule extends AbstractReasonerRule {
 		Collection<Explanation> out = new LinkedList<Explanation>();
 		long time;
 		time = System.nanoTime();
+		// given a link <X R Y>, findall links <Y R2 Z>
 		Collection<Link> parents = reasoner.getParents(link.getParent());
 		fetchTime += System.nanoTime() - time;
 		for (Link gpLink : parents) {
@@ -51,6 +52,7 @@ public class SimpleTransitivityRule extends AbstractReasonerRule {
 			}
 		}
 		time = System.nanoTime();
+		// given a link <X R Y>, findall links <W R2 X>
 		Collection<Link> children = reasoner.getChildren(link.getChild());
 		fetchTime += System.nanoTime() - time;
 		for (Link gcLink : children) {
