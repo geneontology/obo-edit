@@ -97,7 +97,7 @@ is_a: GO:0003002  ! regionalization
 id: GO:0014807
 name: regulation of somitogenesis
 namespace: biological_process
-def: "Any process that modulates the frequency, rate or extent of somitogenesis." [GOC:mtg_muscle]
+!def: "Any process that modulates the frequency, rate or extent of somitogenesis." [GOC:mtg_muscle]
 relationship: part_of GO:0001756  ! somitogenesis
 is_a: GO:0050793  ! regulation of developmental process
 

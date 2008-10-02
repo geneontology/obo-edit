@@ -19,6 +19,7 @@ subject: ZFIN:ZDB-GENO-070219-2  ! Df(LG03:sox8,sox9b)b971/b971;sox9a&lt;sup&gt;
 relation: OBOL:influences 
 object: PATO:0000462^OBO_REL:inheres_in(ZFA:0000051)^during(ZFIN:ZDB-STAGE-010723-35) 
 assigned_by: ZFIN
+description: TEST DESC
 
 [Annotation]
 namespace: zfin 
