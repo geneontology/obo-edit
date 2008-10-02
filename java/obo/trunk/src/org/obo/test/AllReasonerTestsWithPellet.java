@@ -17,14 +17,7 @@ public class AllReasonerTestsWithPellet extends TestCase {
 
 		AbstractReasonerTest.setReasonerFactory(new PelletWrappedReasonerFactory());
 
-		TestSuite out = new TestSuite();
 
-		out.addTestSuite(TransitivityTest.class);
-
-		out.addTestSuite(IntersectionBloodCellExampleTest.class);
-		out.addTestSuite(IntersectionCamphorCatabolismExampleTest.class);
-
-		
-		return out;
+		return AllReasonerTests.suite();
 	}
 }

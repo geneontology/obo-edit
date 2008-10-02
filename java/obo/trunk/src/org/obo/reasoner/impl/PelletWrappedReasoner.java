@@ -395,7 +395,6 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 							findOrCreateLink(null,prop,(LinkedObject)io));
 				}
 			}
-			
 		}
 		setEquivalentClasses();
 

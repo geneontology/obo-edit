@@ -36,10 +36,10 @@ public class TrimmingLibraryTest extends AbstractReasonerTest {
 
 	protected boolean testLink(Link link) throws Exception {
 		long time = System.nanoTime();
-		boolean firstResult = ReasonerUtil.shouldBeTrimmedOld(reasonedDB, link);
+		boolean firstResult = ReasonerUtil.shouldBeTrimmed(reasonedDB, link);
 		oldTime += System.nanoTime() - time;
 		time = System.nanoTime();
-		boolean secondResult = ReasonerUtil.shouldBeTrimmed(reasonedDB, link);
+		boolean secondResult = ReasonerUtil.shouldBeTrimmedNew(reasonedDB, link);
 		newTime += System.nanoTime() - time;
 		boolean match = firstResult == secondResult;
 		if (!match) {

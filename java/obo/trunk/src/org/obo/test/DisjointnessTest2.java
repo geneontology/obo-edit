@@ -17,7 +17,7 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
-public class DisjointnessTest2 extends AbstractReasonerTest {
+public class DisjointnessTest2 extends AbstractOBOTest {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DisjointnessTest2.class);

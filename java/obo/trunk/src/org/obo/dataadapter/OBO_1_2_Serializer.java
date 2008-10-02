@@ -635,4 +635,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		print("idspace: " + escapeBeforeQuotes(idspace) + " "+uriPrefix);
 		println();		
 	}
+
+	public void writeGenericHeaderTag(String property, String value) throws IOException {
+		print(property+": "+value);
+		println();
+		
+	}
 }

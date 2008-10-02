@@ -339,6 +339,9 @@ public class OBOSessionImpl implements OBOSession {
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
+		if (idHash == null) {
+			return null;
+		}
 		return idHash.values();
 	}
 

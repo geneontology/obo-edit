@@ -8,10 +8,11 @@ import org.obo.datamodel.*;
 import org.apache.log4j.*;
 
 public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
-	MutableLinkDatabase {
+MutableLinkDatabase {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultMutableLinkDatabase.class);
+
 
 	/**
 	 * 
@@ -20,6 +21,7 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 	protected Map<LinkedObject, Collection<Link>> parentLinkMap = new LinkedHashMap<LinkedObject, Collection<Link>>(
 			100, .75f, true);
 	protected Map<LinkedObject, Collection<Link>> childLinkMap;
+	protected Map<OBOProperty, Collection<Link>> propertyLinkMap;
 	protected Map<String, IdentifiedObject> objects;
 	protected IdentifiedObjectIndex index;
 	protected boolean returnNulls;
@@ -39,6 +41,8 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 	public DefaultMutableLinkDatabase(boolean cacheChildren, boolean returnNulls) {
 		if (cacheChildren)
 			childLinkMap = new HashMap<LinkedObject, Collection<Link>>();
+		propertyLinkMap = new HashMap<OBOProperty, Collection<Link>>();
+
 		this.returnNulls = returnNulls;
 	}
 
@@ -93,6 +97,13 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 			}
 			children.add(link);
 		}
+		if (propertyLinkMap != null) {
+			OBOProperty prop = link.getType();
+			if (!propertyLinkMap.containsKey(prop)) {
+				propertyLinkMap.put(prop, new HashSet<Link>());
+			}
+			propertyLinkMap.get(prop).add(link);
+		}
 	}
 
 	public void removeParent(Link link) {
@@ -110,6 +121,11 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 					childLinkMap.remove(link.getParent());
 			}
 		}
+		if (propertyLinkMap != null) {
+			OBOProperty prop = link.getType();
+			propertyLinkMap.get(prop).remove(link);
+		}
+
 	}
 
 	public void setParents(LinkedObject lo, Collection<Link> parents) {
@@ -130,6 +146,8 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 		parentLinkMap.clear();
 		if (childLinkMap != null)
 			childLinkMap.clear();
+		if (propertyLinkMap != null)
+			propertyLinkMap.clear();
 	}
 
 	public void addObject(IdentifiedObject lo) {
@@ -164,4 +182,14 @@ public class DefaultMutableLinkDatabase extends AbstractLinkDatabase implements
 		else
 			return null;
 	}
+
+	@Override
+	public Collection<Link> getLinks(OBOProperty p) {
+		return propertyLinkMap.get(p);
+	}
+
+	
+	
+	
+
 }

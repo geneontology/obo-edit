@@ -16,6 +16,7 @@ import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
@@ -25,7 +26,7 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
-public class OnTheFlyReasoner implements ReasonedLinkDatabase {
+public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLinkDatabase {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OnTheFlyReasoner.class);

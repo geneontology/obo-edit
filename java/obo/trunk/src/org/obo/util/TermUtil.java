@@ -1422,6 +1422,14 @@ public class TermUtil {
 
 
 
+	/**
+	 * this utility method is used to get all the OBOObjects references in an OBOSession.
+	 * Note that OBOSession currently tracks all IdentifiedObjects, which is a superclass of
+	 * OBOOBject. Eventually IdentifiedObject, LinkedObject will be deprecated and
+	 * everything will be an OBOObject
+	 * @param session
+	 * @return all OBOObjects in session
+	 */
 	public static Collection<OBOObject> getOBOObjects(OBOSession session) {
 		Collection<OBOObject> objs  = new HashSet<OBOObject>();
 		for (IdentifiedObject io : session.getObjects()) {
@@ -1431,6 +1439,24 @@ public class TermUtil {
 				objs.add((OBOObject)io);
 		}
 		return objs;
+	}
+
+	/**
+	 * @param session
+	 * @return all properties (aka relations) defined in this session
+	 */
+	public static Collection<OBOProperty> getProperties(OBOSession session) {
+		Collection<OBOProperty> props  = new HashSet<OBOProperty>();
+		if (session.getObjects() == null) {
+			return null;
+		}
+		for (IdentifiedObject io : session.getObjects()) {
+			if (io.isBuiltIn())
+				continue;
+			if (io instanceof OBOProperty)
+				props.add((OBOProperty)io);
+		}
+		return props;
 	}
 
 	public static Collection<OBOObject> getSubclasses(OBOObject obj) {
@@ -1462,6 +1488,16 @@ public class TermUtil {
 		if (name != null)
 			return name;
 		return lo.getID();
+	}
+
+	public static Collection<OBOProperty> getSuperProperties(OBOProperty prop) {
+		Collection<OBOProperty> props = new HashSet<OBOProperty> ();
+		for (Link link : prop.getParents()) {
+			if (link.getType().equals(OBOProperty.IS_A)) {
+				props.add((OBOProperty) link.getParent());
+			}
+		}
+		return props;
 	}
 
 }

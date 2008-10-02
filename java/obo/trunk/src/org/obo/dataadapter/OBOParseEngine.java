@@ -21,6 +21,14 @@ import org.bbop.util.*;
 
 import org.apache.log4j.*;
 
+/**
+ * The OBOParseEngine does the main work in parsing a .obo file. It parses tags
+ * and delegates further work to a {@link OBOSimpleParser}. The main implementation
+ * of this is {@link DefaultOBOParser}.
+ * 
+ * 
+ *
+ */
 public class OBOParseEngine extends AbstractParseEngine {
 
 	//initialize logger
@@ -375,6 +383,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 				if (value.length() == 0)
 					throw new OBOParseException("Tag found with no value",
 							getCurrentPath(), line, linenum);
+				/*
+				 * CJM NOTES: this needs further documentation. When would a non
+				 * OBOParser object be used?
+				 */
 				if (parser instanceof OBOParser) {
 					try {
 						parseTag(currentStanza, line, linenum, pair.index + 1,
@@ -403,6 +415,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 		if (((OBOParser) parser).prefersRaw(name, value, nv)) {
 			return true;
 		} else if (name.equals("import")) {
+			// TODO: CJM - improve imports. Allow registry/cache, selective imports
 			if (stanza != null) {
 				throw new OBOParseException("import tags may only occur "
 						+ "in the header", getCurrentPath(), line, linenum, 0);
