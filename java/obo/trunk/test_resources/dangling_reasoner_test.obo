@@ -1,0 +1,24 @@
+[Term]
+id: Ax
+intersection_of: A
+intersection_of: r x
+
+[Term]
+id: Ay
+intersection_of: A
+intersection_of: r y
+
+[Term]
+id: y
+is_a: x
+
+[Term]
+id: E1
+intersection_of: Z1
+intersection_of: s foo
+
+[Term]
+id: E2
+intersection_of: Z1
+intersection_of: s foo
+

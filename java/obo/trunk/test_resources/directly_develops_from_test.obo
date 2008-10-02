@@ -1,0 +1,38 @@
+[Typedef]
+id: develops_from
+name: develops_from
+is_transitive: true
+
+[Typedef]
+id: directly_develops_from
+name: directly_develops_from
+is_a: develops_from
+
+[Term]
+id: a
+name: a
+is_a: IndependentContinuant
+relationship: directly_develops_from b
+
+[Term]
+id: b
+name: b
+is_a: IndependentContinuant
+relationship: directly_develops_from c
+
+[Term]
+id: c
+name: c
+is_a: IndependentContinuant
+
+[Term]
+id: DIRECTLY_Develops_from_C
+name: DIRECTLY_Develops_from_C
+intersection_of: IndependentContinuant
+intersection_of: directly_develops_from c
+
+[Term]
+id: Develops_from_C
+name: Develops_from_C
+intersection_of: IndependentContinuant
+intersection_of: develops_from c
