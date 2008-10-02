@@ -6,7 +6,12 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
+	
+	protected final static Logger logger = Logger.getLogger(AbstractTaskDelegate.class);
+
 
 	protected boolean cancelled = false;
 	protected boolean threwException = false;
@@ -55,7 +60,8 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 			execute();
 		} catch (Throwable t) {
 			threwException = true;
-			exception = t;
+			exception = t; 
+			logger.error("Problem running task:", t);
 		}
 		
 		if (isFailed()) {
