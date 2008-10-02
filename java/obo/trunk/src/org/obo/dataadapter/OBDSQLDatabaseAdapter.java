@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.bbop.dataadapter.AdapterConfiguration;
 import org.bbop.dataadapter.DataAdapterException;
@@ -171,21 +172,22 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	protected boolean cancelled = false;
 	protected OBDSQLDatabaseAdapterConfiguration ioprofile;
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
-	
-	protected HashMap<Connection,HashMap<Integer,IdentifiedObject>> conn2objmap =
+
+	protected Map<Connection,HashMap<Integer,IdentifiedObject>> conn2objmap =
 		new HashMap <Connection,HashMap<Integer,IdentifiedObject>>();
-	protected HashMap<Integer,IdentifiedObject> iid2obj =
+	protected Map<Integer,IdentifiedObject> iid2obj =
 		new HashMap <Integer,IdentifiedObject>();
-	protected HashMap<IdentifiedObject,Integer> obj2iid =
+	protected Map<IdentifiedObject,Integer> obj2iid =
 		new HashMap <IdentifiedObject,Integer>();
-	
-	LinkedList<IdentifiedObject> savedObjects = new LinkedList<IdentifiedObject>();
-	
+
+	Collection<IdentifiedObject> savedObjects = new LinkedList<IdentifiedObject>();
+	Map<Link,Integer> link2iid = new HashMap<Link,Integer>();
+
 	LinkDatabase linkDatabase;
 
-	
+
 	protected Connection connection;
-	
+
 
 	public static class OBDSQLDatabaseAdapterConfiguration extends
 	JDBCAdapterConfiguration {
@@ -194,21 +196,21 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		protected boolean failFast = true;
 
 		protected boolean saveImplied;
-		
+
 		// true if all links for saved terms should be replaced
 		protected boolean replaceLinks = false; 
 
 		protected java.util.List saveRecords = new ArrayList();
 
 		protected boolean basicSave = true;
-		
+
 		protected Collection<Namespace> namespaces = 
 			new LinkedList<Namespace>();
-		
+
 		public enum AnnotationMode {
 			BOTH, ANNOTATIONS_ONLY, ONTOLOGY_ONLY
 		}
-		
+
 		protected AnnotationMode annotationMode = AnnotationMode.BOTH;
 
 		protected String serializer = "OBDSQL";
@@ -284,7 +286,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		public void setNamespaces(Collection<Namespace> namespaces) {
 			this.namespaces = namespaces;
 		}
-		
+
 		public void addNamespace(String namespace) {
 			namespaces.add(new Namespace(namespace));
 		}
@@ -308,13 +310,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	}
 
 
-		
+
 	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
 			IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
 			AdapterConfiguration configuration, INPUT_TYPE input)
-//	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
-//			Object o)
-		throws DataAdapterException {
+	//	public Object doOperation(IOOperation op, AdapterConfiguration configuration,
+	//			Object o)
+	throws DataAdapterException {
 		if (!(configuration instanceof OBDSQLDatabaseAdapterConfiguration)) {
 			throw new DataAdapterException("Invalid configuration; this "
 					+ "adapter requires an "
@@ -325,7 +327,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (op.equals(READ_ONTOLOGY)) {
 			OBOSession session = objectFactory.createSession();
 			session.setDefaultNamespace(objectFactory.createNamespace("test", "test")); // TODO
-			
+
 			try {
 				//connect(ioprofile.getReadPath());
 				connect();
@@ -336,8 +338,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				e.printStackTrace();
 				throw new DataAdapterException("SQL error");
 			}
-						
-			
+
+
 		} else if (op.equals(WRITE_ONTOLOGY)) {
 			java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
@@ -356,7 +358,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				FilteredPath filteredPath = it.next();
 				LinkDatabase ldb = session.getLinkDatabase();
 				if (filteredPath.saveImplied) {
-					
+
 					if (reasoner == null) {
 						reasoner = new ForwardChainingReasoner();
 						reasoner.setLinkDatabase(new DefaultLinkDatabase(session));
@@ -372,15 +374,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					ioprofile.setReadPath(filteredPath.getPath());
 					this.connect();
 					logger.info("conn="+connection);
-					
+
 					storeAll(session,ldb);
 					return (OUTPUT_TYPE) input;
 				}  catch (Exception ex) {
 					logger.info(ex);
 					ex.printStackTrace();
-					
+
 					throw new DataAdapterException("Bad configuration", ex);
-				// write((OBOSession) o);
+					// write((OBOSession) o);
 				}
 			}
 		}
@@ -390,9 +392,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	public String getID() {
 		return "OBO:OBDSQLDatabaseAdapter";
 	}
-	
 
-	
+
+
 	/*
 	 * This function was comment out because the connection parameters for the database connection
 	 * should be entirely specified in the JDBCconfiguration (this.ioprofile) part of the OBDSQLDatabaseAdaptor object.
@@ -401,14 +403,14 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		connection = ioprofile.getConnection(readPath,"cjm","");
 		logger.info("connecting "+readPath+" "+connection);
 	}
-	*/
-	
+	 */
+
 	public void disconnect() throws SQLException {
 		connection.close();
 	}
-	
-	
-	
+
+
+
 	public void connect() throws SQLException, ClassNotFoundException {
 		// TODO
 		this.connection = this.ioprofile.getConnection();
@@ -425,17 +427,17 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	}
 
 	protected ReasonedLinkDatabase reasoner;
-	
+
 	public void setReasoner(ReasonedLinkDatabase reasoner) {
 		this.reasoner = reasoner;
 	}
-	
+
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}
 
 	public void fetchAll(OBOSession session) throws SQLException {
-		
+
 		// TODO : add filters
 		// for now we just slurp everything
 		Statement stmt = connection.createStatement();
@@ -454,41 +456,41 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			session.addObject(io);
 			ios.add(io);
 		}
-		
+
 		// get links after we have fetched all objects
 		for (IdentifiedObject io : ios) {
 			fetchObjectInfo(session, io);
 			fetchObjectLinks(session, io);
 		}
-		
+
 	}
-	
+
 	public Collection<Annotation> fetchAnnotationsByObject(OBOSession session, LinkedObject obj) throws SQLException {
-	
+
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("node_link_node_with_pred_and_source");
 		WhereClause whereClause = q.getWhereClause();
 		//whereClause.addEqualityConstraint("is_inferred", false);
 		//whereClause.addEqualityConstraint("object_uid",obj.getID());
 		whereClause.addConstraint("reiflink_node_id IS NOT NULL");
-		
+
 		// we use a subquery, as transitive closure may not incl annot statements
 		// example: G has_role X, X part_of Y
 		whereClause.addConstraint("object_id IN (SELECT DISTINCT node_id FROM link_to_node WHERE object_uid ='"+
 				obj.getID()+"')"); 		// TODO: use SQL constructors
 
-		
+
 		ResultSet rs = q.execute(connection);
-		
+
 		OBOSession tempSession = new OBOSessionImpl();
 		while (rs.next()) {
 			includeLinkResultSetInSession(tempSession, rs);
 		}
 		return AnnotationUtil.getAnnotations(tempSession);
 	}
-	
+
 	public Collection<Link> fetchLinksByObject(String id, String ns) throws SQLException {
-		
+
 		WhereClause whereClause = new SqlWhereClauseImpl();
 		if (ns != null) {
 			whereClause.addEqualityConstraint("source_uid",ns);
@@ -497,15 +499,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		whereClause.addEqualityConstraint("object_uid", id);
 		return fetchLinks(whereClause);
 	}
-	
+
 	public Collection<Link> fetchLinks(WhereClause whereClause) throws SQLException {
-		
+
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("node_link_node_with_pred_and_source");
 		q.setWhereClause(whereClause);
 		q.getSelectClause().setDistinct(true);
 		ResultSet rs = q.execute(connection);
-		
+
 		OBOSession tempSession = new OBOSessionImpl();
 		while (rs.next()) {
 			includeLinkResultSetInSession(tempSession, rs);
@@ -517,21 +519,21 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return links;
 	}
-	
-	
-	
+
+
+
 	public Collection<Link> fetchLinksByObject(String id) throws SQLException {
-	
+
 		return fetchLinksByObject(id,null);
 	}
 
-	
-	
-	
-	
+
+
+
+
 	// TODO: DRY
 	public int fetchAnnotationCountByObject(OBOSession session, LinkedObject obj) throws SQLException {
-		
+
 		RelationalQuery q = new SqlQueryImpl();
 		/*
 		q.addTable("link");
@@ -540,40 +542,40 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		whereClause.addConstraint("object_id IN (SELECT node_id FROM link_to_node WHERE object_uid ='"+
 				obj.getID()+"')");
 		q.getSelectClause().addColumn("COUNT(DISTINCT reiflink_node_id) AS c");
-		*/
+		 */
 		// TODO: use cached node_id if available?
 		q.addTable("annotation_count_by_class INNER JOIN node USING (node_id)");
 		WhereClause whereClause = q.getWhereClause();
 		whereClause.addEqualityConstraint("uid", obj.getID());
 		q.getSelectClause().addColumn("annotation_count");
-		
+
 		ResultSet rs = q.execute(connection);
-		
+
 		if (rs.next())
 			return rs.getInt("annotation_count");
 		else
 			return 0;
 	}
-	
+
 	public float fetchAnnotationInformationContentByObject(OBOSession session, LinkedObject obj) throws SQLException {
-		
+
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("class_node_entropy_by_evidence INNER JOIN node USING (node_id)");
 		WhereClause whereClause = q.getWhereClause();
 		whereClause.addEqualityConstraint("uid", obj.getID());
-		
+
 		ResultSet rs = q.execute(connection);
-			if (rs.next())
+		if (rs.next())
 			return rs.getFloat("shannon_information");
 		else
 			return 0;
 	}
-	
-	
-	
+
+
+
 	// fetches into temporary session
 	public Collection<Annotation> retrieveAllAnnotations(OBOSession session) throws SQLException, ClassNotFoundException {
-		
+
 		connect();
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("obd_prejoins_view.node_link_node_with_pred_and_source");
@@ -582,7 +584,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		whereClause. addConstraint("reiflink_node_id IS NOT NULL");
 
 		PreparedStatement stmt = connection.prepareStatement(q.toSQL());
-			
+
 		ResultSet rs = stmt.executeQuery();
 		OBOSession tempSession = new OBOSessionImpl();
 		while (rs.next()) {
@@ -590,7 +592,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return AnnotationUtil.getAnnotations(tempSession);
 	}
-	
+
 
 
 	public IdentifiedObject fetchObjectByInternalID(OBOSession session, int iid) throws SQLException {
@@ -599,13 +601,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		nodeQuery.addTable("node_with_source");
 		WhereClause whereClause = nodeQuery.getWhereClause();
 		whereClause.addEqualityConstraint("node_id", iid);
-		
+
 		ResultSet rs = nodeQuery.execute(connection);
 		if (rs.next())
 			return fetchObject(session, rs);
 		return null;
 	}
-	
+
 	public IdentifiedObject fetchObject(OBOSession session, ResultSet rs) throws SQLException {
 		IdentifiedObject io;
 		String metatype = rs.getString("metatype");
@@ -643,7 +645,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		//fetchObjectInfo(session, io);
 		return io;
 	}
-	
+
 	public void fetchObjectInfo(OBOSession session, IdentifiedObject obj) throws SQLException {
 
 		fetchObjectDescription(session, obj);
@@ -651,12 +653,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		//fetchObjectLinks(session, obj);
 	}
 	public void fetchObjectDescription(OBOSession session, IdentifiedObject obj) throws SQLException {
-		
+
 		RelationalQuery descriptionQuery = new SqlQueryImpl();
 		descriptionQuery.addTable("description_d");
 		WhereClause whereClause = descriptionQuery.getWhereClause();
 		whereClause.addEqualityConstraint("node_uid",obj.getID());
-		
+
 
 		PreparedStatement stmt = connection.prepareStatement(descriptionQuery.toSQL());
 		int i=1;
@@ -664,21 +666,21 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			stmt.setString(i, (String)v);
 			i++;
 		}
-		
+
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			attachDescription(session, rs);
 		}
 
 	}
-	
+
 	public void fetchObjectAliases(OBOSession session, IdentifiedObject obj) throws SQLException {
-		
+
 		RelationalQuery aliasQuery = new SqlQueryImpl();
 		aliasQuery.addTable("alias_d");
 		WhereClause whereClause = aliasQuery.getWhereClause();
 		whereClause.addEqualityConstraint("node_uid",obj.getID());
-		
+
 
 		PreparedStatement stmt = connection.prepareStatement(aliasQuery.toSQL());
 		int i=1;
@@ -686,22 +688,22 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			stmt.setString(i, (String)v);
 			i++;
 		}
-		
+
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			attachAlias(session, rs);
 		}
 
 	}
-	
+
 	public void fetchObjectLinks(OBOSession session, IdentifiedObject obj) throws SQLException {
-		
+
 		RelationalQuery q = new SqlQueryImpl();
 		q.addTable("node_link_node_with_pred_and_source");
 		WhereClause whereClause = q.getWhereClause();
 		whereClause.addEqualityConstraint("is_inferred", false);
 		whereClause.addEqualityConstraint("node_uid",obj.getID());
-		
+
 		PreparedStatement stmt = connection.prepareStatement(q.toSQL());
 		int i=1;
 		for (Object v : q.getPlaceHolderVals()) {
@@ -714,7 +716,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			// TODO
 			i++;
 		}
-		
+
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			includeLinkResultSetInSession(session, rs);
@@ -725,7 +727,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	public void includeLinkResultSetInSession(OBOSession session, ResultSet rs) throws SQLException {
 		includeLinkResultSetInSession(session, rs, new HashMap<String,Link>());
 	}
-	
+
 	public void includeLinkResultSetInSession(OBOSession session, ResultSet rs, HashMap<String,Link> positsMap) throws SQLException {
 		Link link;
 		LinkedObject node = (LinkedObject) lookupObject(session, rs.getString("node_uid"));
@@ -733,7 +735,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		LinkedObject obj = (LinkedObject) lookupObject(session, rs.getString("object_uid"));
 		Namespace source =  lookupNamespace(session, rs.getString("source_uid"));
 		boolean isImplied = rs.getBoolean("is_inferred");
-		
+
 		String metatype = rs.getString("node_metatype"); 
 		if (metatype != null && metatype.equals("C")) {
 			link = new OBORestrictionImpl(node,pred,obj,isImplied);
@@ -752,7 +754,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				//o = session.getObjectFactory().createObject(annotId.toString(), OBOClass.OBO_INSTANCE, false);
 				iid2obj.put(annotId,o);
 			}
-			
+
 			Instance inst = TermUtil.castToInstance((LinkedObject)o);
 			//logger.info("this is a reified link; annotId="+annotId+" inst="+inst+" link="+link);
 			Annotation annot = new AnnotationImpl(inst, link);
@@ -760,12 +762,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			session.addObject(annot);
 		}
 		//logger.info("included link: "+link);
-		
+
 		link.setNamespace(source);
-		
+
 		includeLinkInSession(session,link);
 	}
-	
+
 
 	// transforms from generic links to OBO metadata model
 	public void includeLinkInSession(OBOSession session, Link link) {
@@ -774,8 +776,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		String pid = link.getType().getID();
 		LinkedObject lo = link.getChild();
 		LinkedObject p = link.getParent();
-		
-		
+
+
 		// TODO: use metadata ontology
 		if (pid.equals("oboMetaModel:inSubset")) {
 			//logger.info("subset "+link+"//"+p);
@@ -789,7 +791,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		else if (pid.equals("oboMetaModel:xref")) {
 			OBOClass oboClass = 
-			TermUtil.castToClass(lo);
+				TermUtil.castToClass(lo);
 			if (oboClass == null) {
 				logger.info("cannot cast "+lo);
 			}
@@ -797,7 +799,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				oboClass.addDbxref(getDbxref(p.getID()));
 		}
 		else if (pid.equals("OBO_REL:instance_of")) {
-	
+
 			if (p.getID().equals("subsetdef")) {
 				TermCategory cat = objectFactory.createCategory(lo.getID(), lo.getName());
 				session.addCategory(cat);
@@ -816,7 +818,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			lo.addParent(link);
 		}
 	}
-	
+
 	protected Dbxref getDbxref(String dbx) {
 		int index = dbx.indexOf(':');
 		String id;
@@ -835,9 +837,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 	public void storeAll(OBOSession session, LinkDatabase ldb) throws DataAdapterException {
 		try {
 			setProgressString("Saving to db...");
-			
+
 			linkDatabase = ldb;
-	
+
 			savedObjects = new LinkedList<IdentifiedObject>();
 
 			for (TermCategory cat : session.getCategories()) {
@@ -845,20 +847,20 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			for (IdentifiedObject io : session.getObjects()) {
 				if (io.isBuiltIn()) {
-					
+
 				}
 				else {
 					// do not save any annotations if annotation mode is on 
 					if (!(io instanceof Annotation) &&
 							ioprofile.getAnnotationMode().equals(
-							OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY))
+									OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY))
 						continue;
-					System.out.println((io instanceof Annotation ? "A" : "-") + " " +io);
+					//System.out.println((io instanceof Annotation ? "A" : "-") + " " +io);
 					saveObject(io);
-					
+
 				}
 			}
-			
+
 			// save links for all objects that have been saved
 			for (IdentifiedObject io : savedObjects) {
 				if (io instanceof LinkedObject) {
@@ -866,14 +868,15 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						//logger.info("saving annot links:"+io);
 					}
 					for (Link link : ldb.getParents((LinkedObject) io)) {
-						if (link.getType().equals(AnnotationOntology.POSITS_REL()))
+						if (link.getType().equals(AnnotationOntology.POSITS_REL())) {
 							continue;
+						}
 						saveLink(link);
 					}
 				}
 			}
-		
-			
+
+
 			/*
 			if (!ioprofile.getAnnotationMode().equals(
 				OBDSQLDatabaseAdapterConfiguration.AnnotationMode.ANNOTATIONS_ONLY)) {
@@ -885,8 +888,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					}
 				}
 			}
-			*/
-		
+			 */
+
 		} catch (Exception e) {
 			logger.info(e);
 			throw new DataAdapterException(e, "Write error");
@@ -917,21 +920,31 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				for (Link link : obj.getParents())
 					saveLink(link);
 			}
-			
+
 			iid =
 				callSqlFunc("store_annotation",
 						annot.getSubject(),
 						annot.getRelationship(),
 						annot.getObject(),
 						annot.getNamespace() == null ? "_" : annot.getNamespace().getID());
-//			for (Link link : annot.getParents())
-//				saveLink(link);
+			link2iid.put(annot.getPositedLink(), iid);
+
+			//			for (Link link : annot.getParents())
+			//			saveLink(link);
 		}
 		else if (lo instanceof DanglingObject || lo.getName() == null) {
-			iid =
-				callSqlFunc("store_node",
-						lo.getID());
-	
+			if (lo instanceof OBOClass) {
+				iid =
+					callSqlFunc("store_class_node",
+							lo.getID());
+
+			}
+			else {
+				iid =
+					callSqlFunc("store_node",
+							lo.getID());
+			}
+
 		}
 		else if (lo instanceof OBOClass) {
 			iid =
@@ -940,7 +953,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 						lo.getName(),
 						ns,
 				"C");
-	
+
 		}
 		else if (lo instanceof Instance) {
 			if (lo.getType() == null)
@@ -970,18 +983,18 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				callSqlFunc("set_node_is_transitive_i",iid,true);
 			if (prop.isSymmetric())
 				callSqlFunc("set_node_is_symmetric_i",iid,true);
-			
-		
+
+
 		}
 		else {
 			iid =
 				callSqlFunc("store_node",
 						lo.getID());
-			
+
 		}
-		
+
 		// node is saved in database. Now for additional metadata:
-		
+
 		if (lo instanceof ObsoletableObject) {
 			ObsoletableObject olo = (ObsoletableObject)lo;
 			callSqlFunc("set_node_is_obsolete_i",iid,olo.isObsolete());
@@ -1016,14 +1029,14 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			if (def != null) {
 				callSqlFunc("store_textdef_i",
 						iid,def);
-				
+
 			}
 		}
 		savedObjects.add(lo); // redundant with obj2iid?
 		obj2iid.put(lo, iid);
-		
+
 		if (false) {
-//			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
+			//			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
 			for (Link link : ((LinkedObject) lo).getParents()) {
 				if (link.getType().equals(AnnotationOntology.POSITS_REL()))
 					continue;
@@ -1033,28 +1046,33 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 		return iid;
 	}
-	
+
 	protected int saveCategory(TermCategory cat) throws SQLException {
 		return
 		callSqlFunc("store_subset",
-					cat.getName(),
-					cat.getDesc());
-	
+				cat.getName(),
+				cat.getDesc());
+
 	}
 
 
 	protected int saveLink(Link link) throws SQLException {
+
+		// never save a link twice
+		if (link2iid.containsKey(link))
+			return link2iid.get(link);
 		LinkedObject child = link.getChild();
 		//logger.info("child="+child);
 		Integer childDbId = obj2iid.get(child);
 		//logger.info("saving "+link);
+		int iid;
 		if (link instanceof ValueLink) {
 			ValueLink pv = (ValueLink)link;
 			Value v = pv.getValue();
 			if (v instanceof DatatypeValue) {
 				DatatypeValue dv = (DatatypeValue) v;
 				//logger.info("dv type="+dv.getType());
-				return callSqlFunc("store_tagval",
+				iid = callSqlFunc("store_tagval",
 						link.getChild().getID(),
 						link.getType().getID(),
 						dv.getValue(),
@@ -1065,21 +1083,21 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			else if (v instanceof IdentifiedObject) {
 				// 
-				return
-				  callSqlFunc("store_link_si",
-						childDbId,
-						link.getType().getID(),
-						link.getParent().getID(),
-						(TermUtil.isIntersection(link) ? "I" : ""),
-						TermUtil.isImplied(link),
-						link.getNamespace());
+				iid =
+					callSqlFunc("store_link_si",
+							childDbId,
+							link.getType().getID(),
+							link.getParent().getID(),
+							(TermUtil.isIntersection(link) ? "I" : ""),
+							TermUtil.isImplied(link),
+							link.getNamespace());
 			}
 			else {
-				return 1;
+				iid = 0;
 			}
 		}
 		else {
-			return callSqlFunc("store_link_si",
+			iid = callSqlFunc("store_link_si",
 					//link.getChild().getID(),
 					childDbId,
 					link.getType().getID(),
@@ -1088,6 +1106,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 					TermUtil.isImplied(link),
 					link.getNamespace());
 		}
+		link2iid.put(link, iid);
+		return iid;
 
 	}
 
@@ -1101,7 +1121,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			if (type.equals("definition")) {
 				//logger.info(io+" def: "+label);
 				if (io instanceof DefinedObject)
-				((DefinedObject)io).setDefinition(label);
+					((DefinedObject)io).setDefinition(label);
 			}
 			else {
 				// TODO
@@ -1112,7 +1132,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return io;
 	}
-	
+
 	public IdentifiedObject attachAlias(OBOSession session, ResultSet rs) throws SQLException {
 		IdentifiedObject io;
 		String id = rs.getString("node_uid");
@@ -1132,9 +1152,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return io;
 	}
-	
 
-	
+
+
 	public IdentifiedObject lookupObject(OBOSession session, String id) {
 		IdentifiedObject io = session.getObject(id);
 		if (io == null) {
@@ -1144,7 +1164,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return io;
 	}
-	
+
 	public OBOProperty lookupProperty(OBOSession session, String id) {
 		IdentifiedObject io = session.getObject(id);
 		if (io == null) {
@@ -1152,13 +1172,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		return TermUtil.castToProperty(io);
 	}
-	
+
 	public Namespace lookupNamespace(OBOSession session, String id) {
 		Namespace io = session.getNamespace(id);
 		return io;
 	}
 
-	
+
 	// TODO: move to generic place
 	protected int callSqlFunc(String func, Object... args) throws SQLException {
 		StringBuffer sql = new StringBuffer();
@@ -1198,13 +1218,13 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 		}
 		//logger.info("stmt="+stmt+" :: "+args);
-		
+
 		boolean rs = stmt.execute();	
-		
+
 		//logger.debug("rs="+rs);
 		return stmt.getInt(1);
 	}
-	
+
 	// TODO: move
 	protected String join(String sep, Collection<String> tokens) {
 		StringBuffer s = new StringBuffer();
