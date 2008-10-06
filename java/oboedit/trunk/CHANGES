@@ -1,4 +1,7 @@
 Changes in b50:
+
+- Fixed bug: [ 2126697 ] multiple cross products / xps won't save in latest OE2.
+
 - Fixed definition spellcheck problem (2092991).
 Jane wrote:
 1. The spell checker doesn't run unless you change the repeated word check
