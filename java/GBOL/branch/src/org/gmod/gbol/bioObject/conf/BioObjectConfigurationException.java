@@ -14,7 +14,7 @@ public class BioObjectConfigurationException extends RuntimeException {
 	 * 
 	 * @param errMsg - Error message
 	 */
-	BioObjectConfigurationException(String errMsg)
+	public BioObjectConfigurationException(String errMsg)
 	{
 		super(errMsg);
 	}
