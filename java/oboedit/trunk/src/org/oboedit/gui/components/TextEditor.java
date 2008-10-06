@@ -41,6 +41,7 @@ import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
+import org.obo.postcomp.PostcompUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
@@ -69,13 +70,12 @@ import org.oboedit.gui.factory.VerificationManagerFactory;
 import org.oboedit.gui.widget.CheckWarningComponent;
 import org.oboedit.script.TextEditorScriptDelegate;
 import org.oboedit.util.GUIUtil;
-import org.oboedit.verify.CheckTask;
 import org.oboedit.verify.CheckWarning;
 
 import org.apache.log4j.*;
 
 public class TextEditor extends AbstractXMLOBOEditComponent implements
-	RootTextEditComponent, SelectionDrivenComponent {
+RootTextEditComponent, SelectionDrivenComponent {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TextEditor.class);
@@ -111,7 +111,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	};
 
-        private Color titlebarErrorColor = Color.red.darker();
+	private Color titlebarErrorColor = Color.red.darker();
 
 	protected ObjectSelector selector;
 
@@ -139,8 +139,8 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		return selector;
 	}
 
-        // Note: if this method returns false, then this component continues
-        // to run in the background even when it's not in the current layout.
+	// Note: if this method returns false, then this component continues
+	// to run in the background even when it's not in the current layout.
 	// This is the desired behavior for TextEditor because otherwise if
 	// there are warning messages from the Verification Manager and you
 	// click on the term name in the warning report, it brings up a fresh
@@ -169,7 +169,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		if (currentObject == null)
 			return;
 		if (requireDirtyPaths && 
-		    (this.dirtyPaths.size() == 0 || !hasChanges()))
+				(this.dirtyPaths.size() == 0 || !hasChanges()))
 			return;
 //		logger.debug("TextEditor.doTimedTextChecks: object = " + currentObject + ", requiredirty = " + requireDirtyPaths + ", onCommit = " + onCommit + ", " + dirtyPaths.size() + " dirtyPaths"); // DEL
 
@@ -183,12 +183,12 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		}
 		// Why are these final?
 		final Collection<CheckWarning> warnings = VerificationManager
-				.getManager().runChecks(
-						SessionManager.getManager().getSession(),
-						new FieldPath(clone),
-						onCommit ?
+		.getManager().runChecks(
+				SessionManager.getManager().getSession(),
+				new FieldPath(clone),
+				onCommit ?
 						VerificationManager.TEXT_EDIT_COMMIT :
-						VerificationManager.TEXT_EDIT_THREAD);
+							VerificationManager.TEXT_EDIT_THREAD);
 		final MultiMap<FieldPath, CheckWarning> allWarnings = new MultiHashMap<FieldPath, CheckWarning>();
 		for (CheckWarning w : warnings) {
 			allWarnings.add(w.getPath(), w);
@@ -319,7 +319,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					ComponentManager.getManager().setLabel(TextEditor.this,
-							"Text Editor");
+					"Text Editor");
 					ComponentManager.getManager().setTitlebarTooltip(
 							TextEditor.this, null);
 					ComponentManager.getManager().setTitlebarColor(
@@ -410,15 +410,15 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		super(id);
 		SwingUtil.mapAction(this,
 				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, KeyStroke
-						.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
-								.getDefaultToolkit().getMenuShortcutKeyMask()),
-				new AbstractAction("commit") {
+				.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
+						.getDefaultToolkit().getMenuShortcutKeyMask()),
+						new AbstractAction("commit") {
 
-					public void actionPerformed(ActionEvent e) {
-						commit();
-					}
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}
 
-				});
+		});
 		setObjectSelector(SelectionManager.getManager());
 		errorPanel.add(errorLabel);
 		errorPanel.setVisible(false);
@@ -487,13 +487,14 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 //		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
+		PostcompUtil.getNameExpression(currentObject, true);
 		// Why do we have to clone it?  I guess in case the user decides not to commit?
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
 		Collection<CheckWarning> warnings = VerificationManager.getManager()
-				.runChecks(SessionManager.getManager().getSession(),
-						new FieldPath(clone),
-						VerificationManager.TEXT_EDIT_COMMIT);
+		.runChecks(SessionManager.getManager().getSession(),
+				new FieldPath(clone),
+				VerificationManager.TEXT_EDIT_COMMIT);
 		boolean fatal = false;
 		for (CheckWarning warning : warnings) {
 			if (warning.isFatal()) {
@@ -505,11 +506,11 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		if (fatal) {
 			Object[] options = { "Open Verify perspective to display errors",
 					"Correct errors without changing the display",
-					"Abandon pending edits" };
+			"Abandon pending edits" };
 			Object choice = JOptionPane.showInputDialog(this,
 					"There are pending text edits that "
-							+ "cannot be autocommitted because of "
-							+ "fatal errors. How do you wish to correct this?",
+					+ "cannot be autocommitted because of "
+					+ "fatal errors. How do you wish to correct this?",
 					"Fatal errors", JOptionPane.ERROR_MESSAGE, null, options,
 					options[0]);
 			if (ObjectUtil.equals(choice, options[2])) {
@@ -523,20 +524,20 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 			if (Preferences.getPreferences().getAutoCommitTextEdits()) {
 				autocommit();
 			} else if (Preferences.getPreferences()
-				   .getWarnBeforeDiscardingEdits()
-				   && hasChanges()) {
+					.getWarnBeforeDiscardingEdits()
+					&& hasChanges()) {
 				// Should we change this to "Commit these edits?"  (yes=keep, no=discard)
 				// I'm worried that would confuse the experienced OBO-Editors.
 				int val = JOptionPane.showConfirmDialog(GUIManager.getManager()
-									.getFrame(), "There are uncommitted text edits.\n"
-									+ "Discard these edits?", "Pending edits",
-									JOptionPane.YES_NO_OPTION);
+						.getFrame(), "There are uncommitted text edits.\n"
+						+ "Discard these edits?", "Pending edits",
+						JOptionPane.YES_NO_OPTION);
 				return val == JOptionPane.YES_OPTION;
 			}
 		}
 		logger.info("Committed text edit(s) to " + currentObject.getName() + ".  There " +
-			    (fatal ? "were" : "were no") +
-			    " fatal errors.");
+				(fatal ? "were" : "were no") +
+		" fatal errors.");
 		// Now can we release the clone?
 		clone = null;
 		return !fatal;
@@ -545,10 +546,10 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	protected void activateVerifyPerspective() {
 //		ComponentManager.getManager().setPerspective("verify");
 		GUIComponent c = ComponentManager.getManager().getActiveComponent(
-				"VERIFICATION_MANAGER:main");
+		"VERIFICATION_MANAGER:main");
 		if (c == null || !((JComponent) c).isVisible()) {
 			ComponentManager.getManager().showComponent(
-				new VerificationManagerFactory(), null);
+					new VerificationManagerFactory(), null);
 		}
 		else {
 			// This doesn't seem to bring it to the front if it's an undocked component
@@ -567,7 +568,7 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 
 	protected void installAutocommitListener() {
 		SelectionManager.getManager()
-				.addPreSelectionListener(preSelectListener);
+		.addPreSelectionListener(preSelectListener);
 		IOManager.getManager().addIOListener(ioListener);
 	}
 
@@ -575,143 +576,158 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		return (TextComponentNameResolver) getResolver();
 	}
 
+
+
+
 	@Override
 	public String getDefaultLayout() {
 		String defaultLayout = "<grid cols='1' rows='1' margins='5'>"
-				+
+			+
 
-				"<if eval='TextEditor.getObject() != null'>"
-				+
+			"<if eval='TextEditor.getObject() != null'>"
+			+
 
-				"<box orientation='vert'>"
-				// put this back if we need it
-				// + "<component id='ERROR_PANEL'/>"
-				+
+			"<box orientation='vert'>"
+			// put this back if we need it
+			// + "<component id='ERROR_PANEL'/>"
+			+
 
-				"<compactgrid cols='2' yPad='3'>"
-				+ "<label text='ID'/>"
-				+ "<component id='ID_EDITOR' leftmargin='10'>"
-				+ " <component id='id_label'/>"
-				+ "</component>"
-				+
+			"<compactgrid cols='2' yPad='3'>"
+			+ "<label text='ID'/>"
+			+ "<component id='ID_EDITOR' leftmargin='10'>"
+			+ " <component id='id_label'/>"
+			+ "</component>"
+			+
 
-				"<if eval='size(TextEditor.getObject().getSecondaryIDs()) > 0'>"
-				+ "<label text='Secondary IDs'/>"
-				+ "<component id='ID_EDITOR' leftmargin='10'>"
-				+ " <component id='secondary_id_label'/>"
-				+ "</component>"
-				+ "</if>"
-				+
+			"<if eval='size(TextEditor.getObject().getSecondaryIDs()) > 0'>"
+			+ "<label text='Secondary IDs'/>"
+			+ "<component id='ID_EDITOR' leftmargin='10'>"
+			+ " <component id='secondary_id_label'/>"
+			+ "</component>"
+			+ "</if>"
+			+
 
-				"<label text='Namespace'/>"
-				+ "<component id='NAMESPACE_EDITOR' leftmargin='10'>"
-				+ " <component id='list'/>"
-				+ "</component>"
-				+
+			"<label text='Namespace'/>"
+			+ "<component id='NAMESPACE_EDITOR' leftmargin='10'>"
+			+ " <component id='list'/>"
+			+ "</component>"
+			+
 
-				"<if eval='TermUtil.isProperty(TextEditor.getObject())'>"
-				+ "<label text='Range'/>"
-				+ "<component id='RANGE_EDITOR' leftmargin='10'>"
-				+ " <component id='range_button'/>"
-				+ "</component>"
-				+ "<label text='Domain'/>"
-				+ "<component id='DOMAIN_EDITOR' leftmargin='10'>"
-				+ " <component id='domain_button'/>"
-				+ "</component>"
-				+ "</if>"
-				+
+			"<if eval='TermUtil.isProperty(TextEditor.getObject())'>"
+			+ "<label text='Range'/>"
+			+ "<component id='RANGE_EDITOR' leftmargin='10'>"
+			+ " <component id='range_button'/>"
+			+ "</component>"
+			+ "<label text='Domain'/>"
+			+ "<component id='DOMAIN_EDITOR' leftmargin='10'>"
+			+ " <component id='domain_button'/>"
+			+ "</component>"
+			+ "</if>"
+			+
 
-				"<label text='Name'/>"
-				+ "<component id='NAME_EDITOR' leftmargin='10'>"
-				+ " <component id='field'/>"
-				+ "</component>"
-				+
+			"<label text='Name'/>"
+			+ "<component id='NAME_EDITOR' leftmargin='10'>"
+			+ " <component id='field'/>"
+			+ "</component>"
+			+
 
-				"</compactgrid>"
-				+
+			"</compactgrid>"
+			+
 
-				"<panel>"
-				+ "<center>"
-				+ "<panel>"
-				+ "<north>"
-				+ "<if eval='TermUtil.isProperty(TextEditor.getObject())'>"
-				+ "<component id='PROPERTY_BOXES_EDITOR' leftmargin='10'/>"
-				+ "</if>"
-				+ "</north>"
-				+ "<center>"
-				+
+			"<panel>"
+			+ "<center>"
+			+ "<panel>"
+			+ "<north>"
+			+ "<if eval='TermUtil.isProperty(TextEditor.getObject())'>"
+			+ "<component id='PROPERTY_BOXES_EDITOR' leftmargin='10'/>"
+			+ "</if>"
+			+ "</north>"
+			+ "<center>"
+			+
 
-				"<grid rows='2' cols='1'>"
-				+
+			"<grid rows='2' cols='1'>"
+			+
 
-				"<tabs>"
-				+ "<tab name='Definition`if (TextEditor.getObject().getDefinition().length() > 0) \" *\"; else \"\";`' selected='`TextEditor.getObject().getDefinition().length() > 0`'>"
-				+ "<component id='DEFINITION_EDITOR'/>"
-				+ "</tab>"
-				+ "<tab name='Comment`if (TextEditor.getObject().getComment().length() > 0) \" *\"; else \"\";`' selected='`TextEditor.getObject().getComment().length() > 0`'>"
-				+ "<component id='COMMENT_EDITOR'/>"
-				+ "</tab>"
-				+
+			"<tabs>"
+			+ "<tab name='Definition`if (TextEditor.getObject().getDefinition().length() > 0) \" *\"; else \"\";`' selected='`TextEditor.getObject().getDefinition().length() > 0`'>"
+			+ "<component id='DEFINITION_EDITOR'/>"
+			+ "</tab>"
+			+ "<tab name='Comment`if (TextEditor.getObject().getComment().length() > 0) \" *\"; else \"\";`' selected='`TextEditor.getObject().getComment().length() > 0`'>"
+			+ "<component id='COMMENT_EDITOR'/>"
+			+ "</tab>"
+			+
 
-				"<tab name='Cross Products`if (TermUtil.isIntersection(TextEditor.getObject())) \" *\"; else \"\";`' selected='`TermUtil.isIntersection(TextEditor.getObject())`'>"
-				+ "<if eval='!TermUtil.isProperty(TextEditor.getObject())'>"
-				+ "<component id='INTERSECTION_EDITOR'/>"
-				+ "</if>"
-				+ "</tab>"
-				+
+//			"<tab name=' Cross Products`if (TermUtil.isIntersection(TextEditor.getObject())) \" *\"; else \"\";`' selected='`TermUtil.isIntersection(TextEditor.getObject())`'>"
+//			+ "<if eval='!TermUtil.isProperty(TextEditor.getObject())'>"
+//			+ "<component id='INTERSECTION_EDITOR'/>"
+//			+ "</if>"
+//			+ "</tab>"
+//			+
 
-				"</tabs>"
-				+
+			"<tab name=' Cross Products`if (TermUtil.isIntersection(TextEditor.getObject())) \" *\"; else \"\";`' selected='`TermUtil.isIntersection(TextEditor.getObject())`'>"
+			+ "<if eval='!TermUtil.isProperty(TextEditor.getObject())'>"
+			+ "<component id='CROSSPRODUCT_EDITOR'/>"
+			+ "</if>"
+			+ "</tab>"
+			+
+			
+			"</tabs>"
+			+
 
-				"<tabs>"
-				+ "<tab name='Dbxrefs`if (size(TextEditor.getObject().getDbxrefs()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getDbxrefs()) > 0`'>"
-				+ "<component id='DBXREF_EDITOR'/>"
-				+ "</tab>"
-				+
+			"<tabs>"
+			+ "<tab name='Dbxrefs`if (size(TextEditor.getObject().getDbxrefs()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getDbxrefs()) > 0`'>"
+			+ "<component id='DBXREF_EDITOR'/>"
+			+ "</tab>"
+			+
 
-				"<tab name='Synonyms`if (size(TextEditor.getObject().getSynonyms()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getSynonyms()) > 0`'>"
-				+ "<component id='SYNONYM_EDITOR'/>"
-				+ "</tab>"
-				+
+			"<tab name='Synonyms`if (size(TextEditor.getObject().getSynonyms()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getSynonyms()) > 0`'>"
+			+ "<component id='SYNONYM_EDITOR'/>"
+			+ "</tab>"
+			+
 
-				"<tab name='Categories`if (size(TextEditor.getObject().getCategories()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getCategories()) > 0`'>"
-				+ "<component id='CATEGORY_EDITOR'/>"
-				+ "</tab>"
-				+
+			"<tab name='Categories`if (size(TextEditor.getObject().getCategories()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getCategories()) > 0`'>"
+			+ "<component id='CATEGORY_EDITOR'/>"
+			+ "</tab>"
+			+
 
-				"</tabs>"
-				+
+			"</tabs>"
+			+
 
-				"</grid>"
-				+ "</center>"
-				+ "</panel>"
-				+
+			"</grid>"
+			+ "</center>"
+			+ "</panel>"
+			+
 
-				"</center>"
-				+ "<south>"
-				+ "<if eval='!GUI.autoCommitTextEdits()'>"
-				+ "<box orientation='horz' topmargin='5'>"
-				+ "<glue/><component id='TEXT_COMMIT'/>"
-				+ "<spacer orientation='horz' size='30'/>"
-				+ "<component id='TEXT_REVERT'/><glue/>"
-				+ "</box>"
-				+ "</if>"
-				+ "</south>"
-				+ "</panel>"
-				+ "</box>"
-				+ "</if>"
-				+
+			"</center>"
+			+ "<south>"
+			+ "<if eval='!GUI.autoCommitTextEdits()'>"
+			+ "<box orientation='horz' topmargin='5'>"
+			+ "<glue/><component id='TEXT_COMMIT'/>"
+			+ "<spacer orientation='horz' size='30'/>"
+			+ "<component id='TEXT_REVERT'/><glue/>"
+			+ "</box>"
+			+ "</if>"
+			+ "</south>"
+			+ "</panel>"
+			+ "</box>"
+			+ "</if>"
+			+
 
-				"<if eval='TextEditor.getObject() == null'>"
-				+ "<label text='Select a term to edit the text' halign='CENTER' />"
-				+ "</if>" + "</grid>";
+			"<if eval='TextEditor.getObject() == null'>"
+			+ "<label text='Select a term to edit the text' halign='CENTER' />"
+			+ "</if>" + "</grid>";
+
+
 		return defaultLayout;
 	}
+
+
 
 	public List<HistoryItem> getChanges() {
 		List<HistoryItem> out = new LinkedList<HistoryItem>();
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
-			Collection<HistoryItem> changes = c.getChanges();
+			//Collection<HistoryItem> changes = c.getChanges();
+			List<HistoryItem> changes = c.getChanges();
 			out.addAll(changes);
 		}
 		return out;
@@ -758,8 +774,10 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 	}
 
 	public void commit() {
-		if (checkComponents())
+		if (checkComponents()){
 			flushEdits();
+			Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+		}
 	}
 
 	public void setRoot(RootTextEditComponent root) {
@@ -781,11 +799,14 @@ public class TextEditor extends AbstractXMLOBOEditComponent implements
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
 		}
+//		logger.debug("> item.size(): " + item.size());
 		if (item.size() > 0) {
+//			logger.debug("> item: " + item);
 			GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 					SelectionManager.getGlobalSelection());
 
 			SessionManager.getManager().apply(item, false);
+
 		}
 	}
 }

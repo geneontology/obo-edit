@@ -108,7 +108,7 @@ public class CommentEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public java.util.List getChanges() {
-		if (currentObject != null && currentObject instanceof CommentedObject) {
+				if (currentObject != null && currentObject instanceof CommentedObject) {
 			CommentedObject co = (CommentedObject) currentObject;
 			if (!ObjectUtil.equals(getText(), co.getComment())) {
 				HistoryItem item = new CommentChangeHistoryItem(co, getText());

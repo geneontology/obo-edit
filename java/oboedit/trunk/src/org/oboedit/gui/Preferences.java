@@ -100,7 +100,8 @@ public class Preferences {
 
 	protected int selectionBatchSize = 100;
 
-	protected boolean autoCommitTextEdits = true;
+//	protected boolean autoCommitTextEdits = true;
+	protected boolean autoCommitTextEdits = false;
 
 	protected boolean warnBeforeDiscardingEdits = true;
 
