@@ -1,10 +1,7 @@
 package org.gmod.gbol.bioObject;
 
-import java.util.Collection;
-
 import org.gmod.gbol.bioObject.conf.BioObjectConfiguration;
 import org.gmod.gbol.simpleObject.Feature;
-import org.gmod.gbol.simpleObject.FeatureLocation;
 
 /** Wrapper class representing a generic region.
  * 
@@ -12,9 +9,7 @@ import org.gmod.gbol.simpleObject.FeatureLocation;
  *
  */
 
-public class Region extends AbstractBioObject {
-
-	protected Feature feature;
+public class Region extends AbstractBioFeature {
 
 	/** Constructor.
 	 * 
@@ -23,25 +18,7 @@ public class Region extends AbstractBioObject {
 	 */
 	public Region(Feature feature, BioObjectConfiguration conf)
 	{
-		super(conf);
-		this.feature = feature;
+		super(feature, conf);
 	}
 
-	/** Get all feature locations associated with this region.
-	 * 
-	 * @return Collection of feature locations associated with this region
-	 */
-	public Collection<FeatureLocation> getFeatureLocations()
-	{
-		return feature.getFeatureLocations();
-	}
-	
-	/** Get the name of this region.
-	 * 
-	 * @return Name of this region
-	 */
-	public String getName()
-	{
-		return feature.getName();
-	}
 }
