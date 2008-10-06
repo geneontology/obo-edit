@@ -1,6 +1,7 @@
 package org.gmod.gbol.bioObject;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.gmod.gbol.bioObject.conf.BioObjectConfiguration;
@@ -73,6 +74,17 @@ public abstract class AbstractBioFeature extends AbstractBioObject {
 				throw new BioObjectConfigurationException("No default set for " + className);
 			}
 			clone.setType(defaultCvTerm);
+		}
+		//clone and translate FeatureLocations
+		clone.setFeatureLocations(new HashSet<FeatureLocation>());
+		for (FeatureLocation loc : feature.getFeatureLocations()) {
+			FeatureLocation cloneLoc = new FeatureLocation(loc);
+			AbstractBioFeature srcFeat =
+				(AbstractBioFeature)BioObjectUtil.createBioObject(loc.getSourceFeature(), conf);
+			if (srcFeat != null) {
+				cloneLoc.setSourceFeature(srcFeat.translateSimpleObjectType(c));
+			}
+			clone.getFeatureLocations().add(cloneLoc);
 		}
 		return clone;
 	}
