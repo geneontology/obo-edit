@@ -536,6 +536,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autoCommitCheckBox = new JCheckBox("Autocommit text edits");
 		autoCommitCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				logger.debug("in Autocommit text edits listener");
 				warnBeforeDiscardingEditsBox.setEnabled(!autoCommitCheckBox
 						.isSelected());
 			}

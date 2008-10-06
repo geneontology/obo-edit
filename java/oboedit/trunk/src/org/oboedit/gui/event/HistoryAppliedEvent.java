@@ -23,6 +23,7 @@ public class HistoryAppliedEvent extends EventObject {
 	}
 
 	public HistoryItem getHistoryItem() {
+		logger.debug("\n\n >> HistoryAppliedEvent.getHistoryItem");
 		return item;
 	}
 }

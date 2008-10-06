@@ -96,7 +96,7 @@ public class OBOCommitButton extends JButton implements OBOTextEditComponent {
 
 	protected void doCommit() {
 		RootTextEditComponent root = (RootTextEditComponent) SwingUtilities
-				.getAncestorOfClass(RootTextEditComponent.class, this);
+		.getAncestorOfClass(RootTextEditComponent.class, this);
 		root.commit();
 	}
 

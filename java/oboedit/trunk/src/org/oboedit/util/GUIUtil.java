@@ -215,8 +215,11 @@ public class GUIUtil {
 				SessionManager.getManager().getSession(), parent);
 	}
 
-	public static void setSelections(HistoryItem item, Selection pre,
-			Selection post) {
+	public static void setSelections(HistoryItem item, Selection pre, Selection post) {
+//		logger.debug("GUIUtil.setSelections");
+//		logger.debug("HistoryItem item: " + item);
+//		logger.debug("Selection pre: " + pre);
+//		logger.debug("Selection post: " + post);
 		setPreSelection(item, pre);
 		setPostSelection(item, post);
 	}
