@@ -9,6 +9,7 @@ import org.bbop.swing.ComponentNameResolver;
 import org.oboedit.gui.components.CategoryEditorComponent;
 import org.oboedit.gui.components.CommentEditorComponent;
 import org.oboedit.gui.components.CompleteDefPanel;
+import org.oboedit.gui.components.CrossProductEditorComponent;
 import org.oboedit.gui.components.DefinitionEditorComponent;
 import org.oboedit.gui.components.DomainEditorComponent;
 import org.oboedit.gui.components.GeneralDbxrefEditorComponent;
@@ -25,7 +26,7 @@ import org.oboedit.gui.widget.IntersectionPanel;
 import org.apache.log4j.*;
 
 public class TextComponentNameResolver implements
-	ComponentNameResolver {
+ComponentNameResolver {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TextComponentNameResolver.class);
@@ -33,15 +34,15 @@ public class TextComponentNameResolver implements
 	protected Collection<OBOTextEditComponent> components = new LinkedList<OBOTextEditComponent>();
 
 	protected RootTextEditComponent root;
-	
+
 	public TextComponentNameResolver(RootTextEditComponent root) {
 		setRoot(root);
 	}
-	
+
 	public void setRoot(RootTextEditComponent root) {
 		this.root = root;
 	}
-	
+
 	public Component createComponent(String id) {
 		Component out = null;
 		if (id.equals("NAME_EDITOR")) {
@@ -54,6 +55,8 @@ public class TextComponentNameResolver implements
 			out = new CommentEditorComponent();
 		} else if (id.equals("DEFINITION_EDITOR")) {
 			out = new DefinitionEditorComponent();
+		} else if (id.equals("CROSSPRODUCT_EDITOR")) {
+			out = new CrossProductEditorComponent();
 		} else if (id.equals("DBXREF_EDITOR")) {
 			out = new GeneralDbxrefEditorComponent();
 		} else if (id.equals("SYNONYM_EDITOR")) {
@@ -79,7 +82,7 @@ public class TextComponentNameResolver implements
 		((OBOTextEditComponent) out).setRoot(root);
 		return out;		
 	}
-	
+
 	public Component resolveName(String id, Properties props, String xml) {
 		Component out = createComponent(id);
 		registerComponent((OBOTextEditComponent) out);

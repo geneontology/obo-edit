@@ -82,6 +82,7 @@ public class TextEditButtonBehavior implements ToolbarButtonBehavior {
 	
 	protected Action commitAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
+			logger.debug("commitEdits");
 			commitEdits();			
 		}
 	};
@@ -128,6 +129,7 @@ public class TextEditButtonBehavior implements ToolbarButtonBehavior {
 	}
 
 	protected void commitEdits() {
+		logger.debug("TextEditButtonBehavior.commitEdits");
 		editor.commit();
 		hideEditor();
 	}
