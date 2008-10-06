@@ -49,7 +49,7 @@ import org.apache.log4j.*;
 public class RegulationTermParser implements SemanticParser {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger("SemanticParser.class");
+	protected final static Logger logger = Logger.getLogger("RegulationTermParser.class");
 
 	protected Map<String,LinkedObject>name2obj = 
 		new HashMap<String,LinkedObject>();
