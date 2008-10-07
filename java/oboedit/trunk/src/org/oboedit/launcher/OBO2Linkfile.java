@@ -15,6 +15,7 @@ import org.obo.dataadapter.OBOSerializationEngine;
 import org.obo.dataadapter.SimpleLinkFileAdapter;
 import org.obo.datamodel.OBOSession;
 import org.obo.filters.Filter;
+import org.obo.reasoner.ReasonerFactory;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.gui.Preferences;
@@ -132,6 +133,10 @@ public class OBO2Linkfile {
 				OBOSerializationEngine.FilteredPath path = new OBOSerializationEngine.FilteredPath();
 				path.setUseSessionReasoner(false);
 
+				// here we differ from obo2obo - by default we save all implied links
+				path.setImpliedType(OBOSerializationEngine.SAVE_ALL);
+
+
 				for (; i < args.length; i++) {
 					if (args[i].equals("-f")) {
 						if (i >= args.length - 1)
@@ -142,11 +147,16 @@ public class OBO2Linkfile {
 
 						path.setDoFilter(filter != null);
 						path.setObjectFilter(filter);
+					} else if (args[i].equals("-reasonerfactory")) {
+						if (i >= args.length - 1)
+							printUsage(1);
+						i++;
+						path.setReasonerFactory((ReasonerFactory)Class.forName(args[i]).newInstance());
 					} else if (args[i].equals("-allowdangling")) {
 						path.setAllowDangling(true);
 					} else if (args[i].equals("-strictrootdetection")) {
 						path.setRootAlgorithm("STRICT");
-					} else if (args[i].equals("-saveimpliedlinks")) {
+					} else if (args[i].equals("-filterredundant")) {
 						path.setSaveImplied(true);
 						path
 								.setImpliedType(OBOSerializationEngine.SAVE_FOR_PRESENTATION);

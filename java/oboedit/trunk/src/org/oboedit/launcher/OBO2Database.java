@@ -79,10 +79,10 @@ public class OBO2Database {
 		ExpressionUtil.exec(script, context);
 	}
 
-
-
 	public static void main(String[] args) throws Exception {
-		logger.info("version = "+Preferences.getVersion());
+		Preferences.setAppName("OBO2Database");
+		logger.info("Starting OBO2Database");
+		logger.info("OBO-Edit version = "+Preferences.getVersion());
 		if (args.length == 0)
 			printUsage(1);
 		OBOFileAdapter.OBOAdapterConfiguration readConfig = new OBOFileAdapter.OBOAdapterConfiguration();

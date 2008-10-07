@@ -117,10 +117,12 @@ public class OBO2OBO {
 			Collection<? extends HistoryItem> items = semanticParser.parseTerms();
 			for (HistoryItem item : items) {
 				//logger.info(item);
+				System.err.println("  change:"+item);
 			}
 			semanticParser.apply(items);
 			if (semanticParser.getNamer() != null) {
 				semanticParser.apply(semanticParser.getNamer().generateSynonymChanges(session));
+				semanticParser.apply(semanticParser.getNamer().generateDefinitionChanges(session));
 			}
 				
 			logger.info("SEMANTIC PARSER REPORT:");
@@ -673,8 +675,6 @@ public class OBO2OBO {
 						break;
 					}
 				}
-//				System.err
-//						.println("Allowdangling = " + path.getAllowDangling());
 				if (path.getPath() == null)
 					printUsage(1);
 				else
