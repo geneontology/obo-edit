@@ -56,7 +56,7 @@ public class RegulationTermParser implements SemanticParser {
 	protected Collection<String> reports = new LinkedList<String>();
 	protected OBOSession session;
 
-	
+
 	boolean replacePartOfs = true;
 
 	LinkedObject brObj ;
@@ -65,7 +65,7 @@ public class RegulationTermParser implements SemanticParser {
 	LinkedObject robpObj ;
 	LinkedObject mfObj ;
 	LinkedObject bpObj ;
-	
+
 	OBOProperty regRel;	
 	OBOProperty partOfRel;
 	OBOProperty negRegRel;
@@ -73,7 +73,7 @@ public class RegulationTermParser implements SemanticParser {
 	String regRelId = "regulates";
 	String negRegRelId = "negatively_regulates";
 	String posRegRelId = "positively_regulates";
-	
+
 
 
 	public RegulationTermParser() {
@@ -98,7 +98,7 @@ public class RegulationTermParser implements SemanticParser {
 				LinkedObject lo = (LinkedObject)io;
 				for (String label : TermUtil.getExactLabels(lo)) {
 					label = label.replace('_', ' ');
-//					logger.info("label="+label);
+					//					logger.info("label="+label);
 					name2obj.put(label, lo);
 				}
 			}
@@ -116,7 +116,7 @@ public class RegulationTermParser implements SemanticParser {
 		mfObj = lookup("molecular_function");
 		bpObj = lookup("biological_process");
 
-		 partOfRel = (OBOProperty)session.getObject("part_of");
+		partOfRel = (OBOProperty)session.getObject("part_of");
 
 		// add relations if not present
 		regRel = (OBOProperty)session.getObject(regRelId);
@@ -151,7 +151,7 @@ public class RegulationTermParser implements SemanticParser {
 			negRegRel.addParent(subProp);
 			negRegRel.setTransitiveOver(partOfRel);
 		}
-		
+
 		for (IdentifiedObject io : session.getObjects()) {
 			if (io.isBuiltIn())
 				continue;
@@ -167,6 +167,16 @@ public class RegulationTermParser implements SemanticParser {
 			return Collections.EMPTY_LIST;			
 		}
 		TermMacroHistoryItem item = parseTerm(lo,lo.getName());
+		if (item == null) {
+			for (String label : TermUtil.getExactLabels(lo)) {
+				if (label.equals(lo.getName())) {
+					continue;
+				}
+				item = parseTerm(lo,label);
+				if (item != null)
+					break;
+			}
+		}
 		if (item == null) { // ro
 			if (TermUtil.hasIsAAncestor(lo, brObj)) {
 				report("NP",lo,lo.getName(),"No parse for regulation subclass");
@@ -188,7 +198,7 @@ public class RegulationTermParser implements SemanticParser {
 			return null;
 		}
 		name = name.replace('_', ' ');
-//		logger.info("splitting: "+name+" in:"+lo);
+		//		logger.info("splitting: "+name+" in:"+lo);
 		String[] tokens = name.split("\\s");
 		int p = 0;
 		String dir="";
@@ -290,11 +300,11 @@ public class RegulationTermParser implements SemanticParser {
 	public void setNamer(Namer namer) {
 		this.namer = namer;
 	}
-	
+
 	public void useDefaultNamer() {
 		namer = new RegulationTermNamer();
 	}
-	
+
 
 
 }
