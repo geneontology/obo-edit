@@ -1,21 +1,18 @@
 package org.bbop.framework;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Driver;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -23,24 +20,31 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
-import javax.swing.ButtonGroup;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
+import org.apache.log4j.Logger;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.LayoutListener;
 import org.bbop.framework.dock.Perspective;
 import org.bbop.framework.dock.idw.IDWDriver;
 import org.bbop.framework.event.GUIComponentEvent;
 import org.bbop.framework.event.GUIComponentListener;
-import org.bbop.swing.AbstractDynamicMenuItem;
-import org.bbop.swing.DynamicMenu;
-import org.bbop.util.ObjectUtil;
 
-import org.apache.log4j.*;
 
+
+/**
+ * <p>@author John Day-Richter</p>
+ * 
+ * <p>Docs by Jennifer Deegan and Nicolas Rodriguez, October 2008.</p>
+ * 
+ * <p>Manages aspects of GUI component generation, configuration and cleanup. </p>
+ * 
+ * <p> For example when a Tree Viewer component is started this class is responsible for reading in the XML configuration file.</p>
+ * 
+ * <p> See also org.bbop.framework.ComponentConfiguration docs. </p>
+ * 
+ * 
+ * 
+ *
+ */
 public class ComponentManager {
 
 	//initialize logger
@@ -301,7 +305,7 @@ public class ComponentManager {
 	public GUIComponent createComponent(GUIComponentFactory<?> factory,
 			String componentID) {
 		if (componentID == null)
-			componentID = factory.getID() + ":" + DEFAULT_COMPONENT_ID_SUFFIX;
+			componentID = factory.getID() + "." + DEFAULT_COMPONENT_ID_SUFFIX;// ; changed to . to make config files visible in windows. Search on getID to find all. 
 		if (componentID != null)
 			if (getActiveComponent(componentID) != null) {
 				componentID = null;
@@ -309,7 +313,7 @@ public class ComponentManager {
 		if (componentID == null) {
 			int idgen = 1;
 			do {
-				componentID = factory.getID() + ":" + (idgen++);
+				componentID = factory.getID() + "." + (idgen++);// ; changed to . to make config files visible in windows.
 			} while (getActiveComponent(componentID) != null);
 		}
 
@@ -360,18 +364,59 @@ public class ComponentManager {
 		return f;
 	}
 
-	public void addActiveComponent(GUIComponent comp) {
+
+
+
+
+	/**
+	 * @param comp
+	 * @throws FileNotFoundException
+	 * 
+	 * <p>Reads in the saved configuration settings for a component that is being newly opened. 
+	 * The settings class is a <a href="http://en.wikipedia.org/wiki/JavaBeans">JavaBean</a> 
+	 * and is serializable. This is necessary so it can be read by the 
+	 * <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/beans/XMLDecoder.html">XMLDecoder</a>. </p>
+	 * 
+	 */
+	public void addActiveComponent(GUIComponent comp) throws FileNotFoundException   {
+		logger.debug("ComponentManager: addActiveComponent. comp = " + comp);
 		activeComponents.put(comp.getID(), comp);
+		//logger.debug("ComponentManager: addActiveComponent. comp.getID() = " + comp.getID());
 		ComponentConfiguration config = comp.getConfiguration();
+		//logger.debug("ComponentManager: addActiveComponent. config = " + config);
 		File f = getFile(comp);
+
+		//logger.debug("ComponentManager: addActiveComponent. file f = " + f);
 		if (f.exists()) {
+			//logger.debug("ComponentManager: addActiveComponent, file name is " + f.toString());
+			//logger.debug("ComponentManager: addActiveComponent, file contents:\n");
+
+
+			//This section below enables the contents of the config file to be written to the console for debugging purposes. 
+
+			//			BufferedReader fileInputReader = new BufferedReader(new FileReader(f));
+			//			StringBuffer buffer = new StringBuffer();
+			//			String text;
+			//			try {
+			//				while ((text = fileInputReader.readLine()) !=null)
+			//					buffer.append(text + "\n");
+			//			} catch (IOException e) {
+			//				e.printStackTrace();
+			//			}
+
+			//logger.debug(buffer.toString());
+			//logger.debug("ComponentManager: addActiveComponent. File f exists.");
 			try {
 				XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(
 						new FileInputStream(f)));
 				config = (ComponentConfiguration) decoder.readObject();
+				//logger.debug("ComponentManager: addActiveComponent. New XMLDecoder created.");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+		}
+		else{
+			//logger.debug("ComponentManager: addActiveComponent. file f does not exist.");
 		}
 		comp.setConfiguration(config);
 		comp.init();
@@ -380,6 +425,8 @@ public class ComponentManager {
 					false));
 		}
 	}
+
+
 
 	public void removeActiveComponent(GUIComponent comp) {
 		activeComponents.remove(comp.getID());
@@ -413,7 +460,7 @@ public class ComponentManager {
 	}
 
 	public static String getIDSuffix(String componentID) {
-		int endIndex = componentID.indexOf(':');
+		int endIndex = componentID.indexOf('.');
 		return componentID.substring(endIndex + 1, componentID.length());
 	}
 
