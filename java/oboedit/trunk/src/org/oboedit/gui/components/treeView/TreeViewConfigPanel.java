@@ -105,6 +105,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		showNonTransitiveCheckbox.setOpaque(false);
 	
 		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
+		System.out.println("TreeViewConfigurationPanel: Constructor, MultiSelect() = " + treeViewSettingsInstance.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
 		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
 	
@@ -135,7 +136,6 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		logger.debug("TreeView: showNonTransitive method.");
 		return showNonTransitiveCheckbox.isSelected();
 	}
-
 
 
 	
