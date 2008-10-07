@@ -579,13 +579,27 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		menus.add(new LayoutMenu());
 
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
+		String[] advancedMenuItems = {"SemanticParser Manager", "Intersection Editor", "Cross-Product Matrix Editor"};
+		String reqReasonerMenuItem = "Explanations";
+
 		for (JMenu m : viewMenus){
 			menus.add(m);
 			//logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
-			if(m.getText().toString().equalsIgnoreCase("reasoner")){
+			if(m.getText().toString().equalsIgnoreCase("Reasoner") || m.getText().toString().equalsIgnoreCase("Editors")){
+
+				//components that can be switched on through the Advanced configuration settings
+				for (int i=0; i < m.getItemCount(); i++) {
+					for(String advItem : advancedMenuItems){
+						if(m.getItem(i).getText().equalsIgnoreCase(advItem)){
+							m.getItem(i).setEnabled(false);
+						}
+					}
+				}
+
+				//components that require the reasoner to be on
 				if(!SessionManager.getManager().getUseReasoner()){
 					for (int i = 0; i < m.getItemCount(); i++) {
-						if(m.getItem(i).getText().equalsIgnoreCase("explanations")){
+						if(m.getItem(i).getText().equalsIgnoreCase(reqReasonerMenuItem)){
 							m.getItem(i).setEnabled(false);
 						}
 					}
