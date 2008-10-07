@@ -60,8 +60,14 @@ public class Preferences {
 
 	protected boolean confirmOnExit = true;
 
+	protected boolean advxpMatrixEditorCheckBox = false;
+
+	protected boolean advIntersectionEditorCheckBox = false;
+
+	protected boolean advSemanticParserCheckBox = false;
+
 	protected boolean useReasoner = false;
-        protected String reasonerName = "OFF";
+	protected String reasonerName = "OFF";
 
 	protected boolean showComplete = false;
 
@@ -156,44 +162,44 @@ public class Preferences {
 	protected static VersionNumber version;
 
 	protected static final String PLIST_TRANSFORM = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n"
-			+ "  <xsl:output method=\"xml\" indent=\"yes\"/>\n"
-			+ "  <xsl:param name=\"memoryOption\" select=\"\'7M\'\"/>\n"
-			+ "  <xsl:variable name=\"firstDictID\" select=\"generate-id(/plist/dict[1])\"/>\n"
-			+ "  <xsl:template match=\"/\">\n"
-			+ "     <xsl:apply-templates/>\n"
-			+ "  </xsl:template>\n"
-			+ "  <xsl:template match=\"dict\">\n"
-			+ "    <xsl:copy>\n"
-			+ "      <xsl:copy-of select=\"@*\"/>\n"
-			+ "      <xsl:if test=\"generate-id() = $firstDictID and false() = (//key=\'VMOptions\')\">\n"
-			+ "	<key>Java</key>\n"
-			+ "	<dict>\n"
-			+ "	  <key>VMOptions</key>\n"
-			+ "	  <string>-Xmx<xsl:value-of select=\"$memoryOption\"/></string>\n"
-			+ "	</dict>\n"
-			+ "      </xsl:if>\n"
-			+ "      <xsl:apply-templates/>\n"
-			+ "   </xsl:copy>\n"
-			+ "  </xsl:template>\n"
-			+ "  <xsl:template match=\"string\">\n"
-			+ "   <xsl:copy>\n"
-			+ "     <xsl:copy-of select=\"@*\"/>\n"
-			+ "     <xsl:choose>\n"
-			+ "       <xsl:when test=\"preceding-sibling::*[1] = \'VMOptions\'\">\n"
-			+ "         <xsl:text>-Xmx</xsl:text><xsl:value-of select=\"$memoryOption\"/>\n"
-			+ "       </xsl:when>\n"
-			+ "       <xsl:otherwise>       \n"
-			+ "         <xsl:value-of select=\"text()\"/>\n"
-			+ "       </xsl:otherwise>\n"
-			+ "     </xsl:choose>\n"
-			+ "   </xsl:copy>	 	\n"
-			+ "  </xsl:template>\n"
-			+ "  <xsl:template match=\"node()\">\n"
-			+ "    <xsl:copy>\n"
-			+ "      <xsl:copy-of select=\"@*\"/>\n"
-			+ "      <xsl:apply-templates/>\n"
-			+ "    </xsl:copy>\n"
-			+ "  </xsl:template>\n" + "</xsl:stylesheet>";
+		+ "  <xsl:output method=\"xml\" indent=\"yes\"/>\n"
+		+ "  <xsl:param name=\"memoryOption\" select=\"\'7M\'\"/>\n"
+		+ "  <xsl:variable name=\"firstDictID\" select=\"generate-id(/plist/dict[1])\"/>\n"
+		+ "  <xsl:template match=\"/\">\n"
+		+ "     <xsl:apply-templates/>\n"
+		+ "  </xsl:template>\n"
+		+ "  <xsl:template match=\"dict\">\n"
+		+ "    <xsl:copy>\n"
+		+ "      <xsl:copy-of select=\"@*\"/>\n"
+		+ "      <xsl:if test=\"generate-id() = $firstDictID and false() = (//key=\'VMOptions\')\">\n"
+		+ "	<key>Java</key>\n"
+		+ "	<dict>\n"
+		+ "	  <key>VMOptions</key>\n"
+		+ "	  <string>-Xmx<xsl:value-of select=\"$memoryOption\"/></string>\n"
+		+ "	</dict>\n"
+		+ "      </xsl:if>\n"
+		+ "      <xsl:apply-templates/>\n"
+		+ "   </xsl:copy>\n"
+		+ "  </xsl:template>\n"
+		+ "  <xsl:template match=\"string\">\n"
+		+ "   <xsl:copy>\n"
+		+ "     <xsl:copy-of select=\"@*\"/>\n"
+		+ "     <xsl:choose>\n"
+		+ "       <xsl:when test=\"preceding-sibling::*[1] = \'VMOptions\'\">\n"
+		+ "         <xsl:text>-Xmx</xsl:text><xsl:value-of select=\"$memoryOption\"/>\n"
+		+ "       </xsl:when>\n"
+		+ "       <xsl:otherwise>       \n"
+		+ "         <xsl:value-of select=\"text()\"/>\n"
+		+ "       </xsl:otherwise>\n"
+		+ "     </xsl:choose>\n"
+		+ "   </xsl:copy>	 	\n"
+		+ "  </xsl:template>\n"
+		+ "  <xsl:template match=\"node()\">\n"
+		+ "    <xsl:copy>\n"
+		+ "      <xsl:copy-of select=\"@*\"/>\n"
+		+ "      <xsl:apply-templates/>\n"
+		+ "    </xsl:copy>\n"
+		+ "  </xsl:template>\n" + "</xsl:stylesheet>";
 
 	protected static File filterFile;
 
@@ -206,22 +212,22 @@ public class Preferences {
 		iconURLIndex.put("part_of", "resource:part_of.svg");
 		iconURLIndex.put("develops_from", "resource:develops_from.svg");
 		iconURLIndex.put("involved_in", "resource:involved_in.svg");
-		
+
 		iconURLIndex.put("regulates", "resource:regulates.svg");
 		iconURLIndex.put("positively_regulates", "resource:upregs-arrow.svg");
 		iconURLIndex.put("negatively_regulates", "resource:downregs-arrow.svg");
-		
+
 		iconURLIndex.put("regulator_of", "resource:regulator_of.svg");
 		iconURLIndex.put("positive_regulator_of", "resource:positive_regulator_of.svg");		
 		iconURLIndex.put("negative_regulator_of", "resource:negative_regulator_of");
-				
+
 //		iconURLIndex.put("has_function_in", "resource: ");	
 //		iconURLIndex.put("has_component_in", "resource: ");		
 //		iconURLIndex.put("union of", "resource: ");
-				
 
-		
-		
+
+
+
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", orange);
 		colorIndex.put("develops_from", Color.green.darker());
@@ -263,11 +269,11 @@ public class Preferences {
 	public static File getOBOEditPrefsDir() {
 		VersionNumber version = Preferences.getVersion();
 		// New: OS-appropriate directory
- 		File prefsDir = new File(OSUtil.getConfigDirectory(
-						 getAppName() +
-						 version.getMajorVersion() + 
-						 (version.isBeta() ? "-beta" : "") + 
-						 "/"));
+		File prefsDir = new File(OSUtil.getConfigDirectory(
+				getAppName() +
+				version.getMajorVersion() + 
+				(version.isBeta() ? "-beta" : "") + 
+		"/"));
 //		logger.debug("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
@@ -275,7 +281,7 @@ public class Preferences {
 		if (!prefsDir.exists() && !isBatchMode()) {
 			// Old: ~/.oboeditbeta
 			File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
-						    + (version.isBeta() ? "beta" : "") + "/");
+					+ (version.isBeta() ? "beta" : "") + "/");
 			if (oldPrefsDir.exists())
 				GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
 		}
@@ -478,21 +484,21 @@ public class Preferences {
 				"org/oboedit/gui/resources/icons/" + name);
 		if (url == null) {
 			url = getExtensionLoader().getResource(
-				"org/oboedit/gui/resources/icons/typeicons/" + name);
+					"org/oboedit/gui/resources/icons/typeicons/" + name);
 		}
 		return getIconForURL(url);
 	}
 
 	public static Icon getIconForURL(URL url) {
-	    if (url == null)
-		return null;
+		if (url == null)
+			return null;
 
 		try {
 			String urlStr = url.toString();
 			if (urlStr.endsWith("svg"))
 				return new SVGIcon(urlStr);
 		} catch (Exception e) {
-		    logger.info("WARNING: Exception getting icon for " + url + ": " + e); // DEL
+			logger.info("WARNING: Exception getting icon for " + url + ": " + e); // DEL
 		}
 		return new ImageIcon(url);
 	}
@@ -505,7 +511,7 @@ public class Preferences {
 
 	public static String readMemStringFromDisk() {
 		File optionFile = new File(getInstallationDirectory(), 
-					   getLauncherName() + ".vmoptions");
+				getLauncherName() + ".vmoptions");
 		String mem = null;
 		if (optionFile.exists()) {
 			try {
@@ -529,10 +535,10 @@ public class Preferences {
 			}
 		}
 		if (mem == null) {
-		    mem = DEFAULT_MEMORY_SETTING;
-		    String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
-		    logger.info(warning);
-//		    JOptionPane.showMessageDialog(null, warning); // DEL
+			mem = DEFAULT_MEMORY_SETTING;
+			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
+			logger.info(warning);
+//			JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		return mem;
 	}
@@ -553,7 +559,7 @@ public class Preferences {
 	}
 
 	public void setUseReasoner(boolean useReasoner) {
-	    logger.debug("Prefs.setUseReasoner " + useReasoner);
+		logger.debug("Prefs.setUseReasoner " + useReasoner);
 		this.useReasoner = useReasoner;
 	}
 
@@ -562,8 +568,8 @@ public class Preferences {
 	}
 
 	public void setReasonerName(String name) {
-	    logger.debug("Prefs.setReasonerName " + name); 
-	        this.reasonerName = name;
+		logger.debug("Prefs.setReasonerName " + name); 
+		this.reasonerName = name;
 	}
 
 	public boolean getConfirmOnExit() {
@@ -575,10 +581,36 @@ public class Preferences {
 		GUIManager.setConfirmOnExit(confirmOnExit);
 	}
 
+	public boolean getadvMatrixEditorOptions() {
+		return advxpMatrixEditorCheckBox;
+	}
+	public void setadvMatrixEditorOptions(boolean advxpMatrixEditorCheckBox) {
+		this.advxpMatrixEditorCheckBox = advxpMatrixEditorCheckBox;
+		GUIManager.setadvxpMatrixEditorCheckBox(advxpMatrixEditorCheckBox);
+	}
+
+	public boolean getadvIntersectionEditorOptions() {
+		return advIntersectionEditorCheckBox;
+	}
+	public void setadvIntersectionEditorOptions(boolean advIntersectionEditorCheckBox) {
+		this.advIntersectionEditorCheckBox = advIntersectionEditorCheckBox;
+		GUIManager.setadvIntersectionEditorCheckBox(advIntersectionEditorCheckBox);
+	}
+
+	public boolean getadvSemanticParserOptions(){
+		return advSemanticParserCheckBox;
+	}
+	public void setadvSemanticParserOptions(boolean advSemanticParserCheckBox) {
+		this.advSemanticParserCheckBox = advSemanticParserCheckBox;
+		GUIManager.setadvSemanticParserCheckBox(advSemanticParserCheckBox);
+	}
+
+
+
 	public Color getLightSelectionColor() {
 		if (lightSelectionColor == null)
-		    lightSelectionColor = new Color(230, 230, 255);  // pale lavender-blue
-//		    lightSelectionColor = Color.yellow;  // for testing
+			lightSelectionColor = new Color(230, 230, 255);  // pale lavender-blue
+//		lightSelectionColor = Color.yellow;  // for testing
 		return lightSelectionColor;
 	}
 
@@ -586,13 +618,13 @@ public class Preferences {
 		this.lightSelectionColor = lightSelectionColor;
 	}
 
-    // Color for the subselection (darker)
+	// Color for the subselection (darker)
 	public Color getSelectionColor() {
 		if (selectionColor == null)
 //			selectionColor = new Color(204, 204, 255);
-		    // Slightly darker blue than before
-		    selectionColor = new Color(180, 190, 255);
-//		    selectionColor = Color.orange;  // for testing
+			// Slightly darker blue than before
+			selectionColor = new Color(180, 190, 255);
+//		selectionColor = Color.orange;  // for testing
 		return selectionColor;
 	}
 
@@ -671,8 +703,8 @@ public class Preferences {
 	}
 
 	public void updateInstallJLaunchers() throws IOException {
-	    File optionFile = new File(getInstallationDirectory(),
-				       getLauncherName() + ".vmoptions");
+		File optionFile = new File(getInstallationDirectory(),
+				getLauncherName() + ".vmoptions");
 		logger.info("updateInstallJLaunchers: adding -Xmx" + getMemString() + " to " + optionFile); // DEL
 		PrintWriter stream = new PrintWriter(new FileWriter(optionFile));
 		stream.println("-Xmx" + getMemString());
@@ -684,8 +716,8 @@ public class Preferences {
 		if (mem == null)
 			return;
 		File infoPlist = new File(getInstallationDirectory(),
-					  getAppName()
-					  + ".app/Contents/Info.plist");
+				getAppName()
+				+ ".app/Contents/Info.plist");
 		logger.info("infoPlist = " + infoPlist); // DEL
 		Map params = new HashMap();
 		params.put("memoryOption", mem);
@@ -714,7 +746,7 @@ public class Preferences {
 
 	public static String getLauncherName() {
 //		return System.getProperty("launcherName", "oboedit");
-	    return System.getProperty("launcherName", getAppName());
+		return System.getProperty("launcherName", getAppName());
 	}
 
 	public static String getAppName() {
@@ -757,7 +789,7 @@ public class Preferences {
 	}
 
 	protected static void writePreferences(Preferences preferences)
-			throws IOException {
+	throws IOException {
 		XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
 				new FileOutputStream(getPrefsXMLFile())));
 		logger.info("Writing preferences to " + getPrefsXMLFile());
@@ -786,7 +818,7 @@ public class Preferences {
 			if (file.getName().equals("oboedit.jar")) {
 				try {
 					installationDir = file.getCanonicalFile().getParentFile()
-							.getParentFile();
+					.getParentFile();
 					return;
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -806,7 +838,7 @@ public class Preferences {
 		if (version == null) {
 			try {
 				URL url = getExtensionLoader().getResource(
-						"org/oboedit/resources/VERSION");
+				"org/oboedit/resources/VERSION");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(url.openStream()));
 				version = new VersionNumber(reader.readLine());
@@ -830,7 +862,7 @@ public class Preferences {
 
 	// No longer used--replaced by log4j logging
 //	public static File getStderrFile() {
-//		return new File(getOBOEditPrefsDir(), "stderr");
+//	return new File(getOBOEditPrefsDir(), "stderr");
 //	}
 
 	public static File getPrefsXMLFile() {
@@ -853,7 +885,7 @@ public class Preferences {
 	// from the Configuration Manager.
 	public static List<String> getPrefsFilenames() {
 		return CollectionUtil.list("config.xml", "filter_prefs.xml", "verify.xml",
-					   "component_prefs", "perspectives");
+				"component_prefs", "perspectives");
 	}
 
 	public static Icon loadLibraryIcon(String name) {
@@ -919,11 +951,11 @@ public class Preferences {
 	public Map<String, String> getIconURLIndex() {
 		return iconURLIndex;
 	}
-	
+
 	public Color getColorForRelationshipType(OBOProperty type) {
 		return getColorForRelationshipType(type.getID());
 	}
-	
+
 	public Color getColorForRelationshipType(String id) {
 		Color out = colorIndex.get(id);
 		if (out == null)
@@ -938,7 +970,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
-//	   logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
+//		logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {
@@ -958,7 +990,7 @@ public class Preferences {
 				}
 			}
 			if (out == null) {
-			    out = new TextIcon((name == null) ? id : name);
+				out = new TextIcon((name == null) ? id : name);
 			}
 			iconIndex.put(id, out);
 		}

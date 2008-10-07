@@ -402,7 +402,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	public java.util.List getChanges() {
-		logger.debug(">>> IntersectionPanel.getChanges \n\n");
 		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
 		if (createNewObject) {
 			historyList
@@ -474,7 +473,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	protected RelationshipLinePanel getLastRelationshipLine() {
-		logger.debug("IntersectionPanel.RelationshionLinePanel.getLastRelationshipLine");
+//		logger.debug("IntersectionPanel.RelationshionLinePanel.getLastRelationshipLine");
 		Component lastComp = null;
 		for (Component c : linkListPanel.getComponents()) {
 			if (c instanceof RelationshipLinePanel)
@@ -484,7 +483,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 	}
 
 	public Collection<Link> getRelationshipList() {
-		logger.debug(">> IntersectionPanel.getRelationshipList");
+//		logger.debug("IntersectionPanel.getRelationshipList");
 		LinkedList<Link> out = new LinkedList<Link>();
 		if (genusField.getValue() != null
 				&& genusField.getValue() instanceof LinkedObject) {
@@ -492,7 +491,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 					OBOProperty.IS_A, (LinkedObject) genusField.getValue());
 			isaLink.setCompletes(true);
 			out.add(isaLink);
-			logger.debug(">> IntersectionPanel.getRelationshipList >> isaLink: " + isaLink);
 		}
 
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
@@ -506,8 +504,6 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 						panel.getProperty(), panel.getParentTerm());
 				discLink.setCompletes(true);
 				out.add(discLink);
-				logger.debug(">> IntersectionPanel.getRelationshipList >> discLink: " + discLink);
-
 			}
 		}
 		return out;
@@ -622,6 +618,7 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 		SpringUtilities.makeCompactGrid(northPanel, -1, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 0);
+
 
 		editorPanel.add(northPanel, "North");
 		editorPanel.add(linkWrapperPanel, "Center");
