@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,13 @@ public class PhenotypeCVTerm extends org.gmod.gbol.simpleObject.generated.Abstra
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getCvterm().getWriteObjects());
+		
+		return writeObjects;
 	}
 }

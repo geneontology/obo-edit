@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -35,7 +36,21 @@ public class FeatureRelationship extends org.gmod.gbol.simpleObject.generated.Ab
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getType().getWriteObjects());
+		writeObjects.addAll(this.getSubjectFeature().getWriteObjects());
+		writeObjects.addAll(this.getObjectFeature().getWriteObjects());
+		
+		// Multiples
+		for (FeatureRelationshipProperty frprop : this.getFeatureRelationshipProperties())
+			writeObjects.addAll(frprop.getWriteObjects());
+		for (FeatureRelationshipPublication frpub : this.getFeatureRelationshipPublications())
+			writeObjects.addAll(frpub.getWriteObjects());
+		
+		return writeObjects;
 	}
 }

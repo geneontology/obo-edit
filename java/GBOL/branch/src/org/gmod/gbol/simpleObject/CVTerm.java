@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.gmod.gbol.simpleObject.CV;
@@ -28,7 +29,17 @@ public class CVTerm extends org.gmod.gbol.simpleObject.generated.AbstractCVTerm 
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getCv().getWriteObjects());
+		writeObjects.addAll(this.getDbxref().getWriteObjects());
+
+		// Specifically not traversing CVTermRelationships or CVTermPaths, since that 
+		// could involve us in a loop or a very long traversal	
+		
+		return writeObjects;
 	}
 }

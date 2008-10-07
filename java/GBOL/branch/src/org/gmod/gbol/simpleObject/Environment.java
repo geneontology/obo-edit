@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,14 @@ public class Environment extends org.gmod.gbol.simpleObject.generated.AbstractEn
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Multiples
+		for (EnvironmentCVTerm ecvt : this.getEnvironmentCVTerms())
+			writeObjects.addAll(ecvt.getWriteObjects());
+		
+		return writeObjects;
 	}
 }
