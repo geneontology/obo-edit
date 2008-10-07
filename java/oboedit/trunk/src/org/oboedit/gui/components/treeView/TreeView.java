@@ -58,6 +58,9 @@ import org.oboedit.util.PathUtil;
  *leaf terms at the bottom, where leaf terms are only those selected in the Ontology Editor Panel on Global Selection. 
  *All paths from root to leaf terms are shown. 
  *
+ *AbstractGUIComponent docs at:
+ *http://oboedit.org/api/bbop/org/bbop/framework/AbstractGUIComponent.html
+ *
  */
 
 public class TreeView extends AbstractGUIComponent {
@@ -70,12 +73,48 @@ public class TreeView extends AbstractGUIComponent {
 	protected JLabel emptyLabel = new JLabel("No terms selected");
 	protected JLabel statusLabel = new JLabel("No paths loaded");
 	protected JProgressBar progressBar = new JProgressBar();
-	protected TreeViewSettings treeViewSettingsInstance = new TreeViewSettings(this);
+	protected TreeViewSettings treeViewSettingsInstance;
 	TreeViewConfigPanel treeViewConfigPanelInstance;
 	public RestrictedJTree restrictedJTreeInstance;
 	protected BackgroundEventQueue eventQueue;
-	TreeView treeViewInstance;
 
+	
+
+	/**
+	 * @param id
+	 *
+	 * The constructor inherits the id variable.
+	 * A new BackgroundEventQueue is initiated.
+	 * The progress bar setStringPainted boolean is set to true so that a percentage value will be displayed to show 
+	 * percentage of process complete on the progress bar. 
+	 * An actionListener is added.
+	 * 
+	 * Addition of the startupNotifier is to get the backgroundEventThread, and the progress bar is added to this. 
+	 * 
+	 * If I move the contents of init into here then the Tree Viewer doesn't open at all any more. 
+	 * 
+	 */
+	public TreeView(String id) {
+		super(id);
+		System.out.println("TreeView Constructor: id = " + id);
+		logger.debug("TreeView: constructor.");
+
+		System.out.println("TreeView: constructor, treeViewInstance = " + this);
+
+		treeViewSettingsInstance = new TreeViewSettings();
+		eventQueue = new BackgroundEventQueue();
+		progressBar.setStringPainted(true);
+		ActionListener updateListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				update();
+			}
+		};
+		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
+	}
+
+
+	
+	
 	/**
 	 * 	  
 	 * Returns whether or not the component is set up to carry over multiple selection of terms from the Ontology Tree Editor.
@@ -169,7 +208,7 @@ public class TreeView extends AbstractGUIComponent {
 	 * This is separate from the GUI of the config system, which is set up in TreeViewConfigPanel.  
 	 */
 	public void init() {
-		
+		System.out.println("TreeView: init Method.");
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
 		
@@ -236,7 +275,8 @@ public class TreeView extends AbstractGUIComponent {
 	public ConfigurationPanel getConfigurationPanel() {
 		logger.debug("TreeView: getConfigurationPanel()");
 
-		System.out.println("TreeView: getConfiguration: treeViewInstance = " + treeViewInstance);
+		System.out.println("TreeView: getConfiguration: treeViewInstance = " + this);
+		
 		if (treeViewConfigPanelInstance == null) {
 			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
 		}
@@ -263,8 +303,10 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		logger.debug("TreeView: getConfiguration method.");
+		
 		System.out.println("TreeView: getConfiguration method: treeViewSettingsInstance = " + treeViewSettingsInstance);
-		System.out.println("TreeView: getConfiguration method: treeViewInstance = " + treeViewInstance);
+		System.out.println("TreeView: getConfiguration method: treeViewInstance = " + this);
+		
 		return treeViewSettingsInstance;
 	}
 
@@ -278,40 +320,11 @@ public class TreeView extends AbstractGUIComponent {
 	public void setConfiguration(TreeViewSettings treeViewSettingsInstance) {
 		logger.debug("TreeView: setConfiguration method.");
 
-		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings)
+		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings) {
 			this.treeViewSettingsInstance = (TreeViewSettings) treeViewSettingsInstance;
-		update();
+			update();
+		}
 	}
-
-	/**
-	 * @param id
-	 *
-	 * The constructor inherits the id variable.
-	 * A new BackgroundEventQueue is initiated.
-	 * The progress bar setStringPainted boolean is set to true so that a percentage value will be displayed to show 
-	 * percentage of process complete on the progress bar. 
-	 * An actionListener is added.
-	 * 
-	 * Addition of the startupNotifier is to get the backgroundEventThread, and the progress bar is added to this. 
-	 */
-	public TreeView(String id) {
-		super(id);
-		logger.debug("TreeView: constructor.");
-		treeViewInstance = this.treeViewInstance;
-		System.out.println("TreeView: constructor, treeViewInstance = " + treeViewInstance);
-
-		eventQueue = new BackgroundEventQueue();
-		progressBar.setStringPainted(true);
-		ActionListener updateListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				update();
-			}
-		};
-		eventQueue.addStartupNotifier(new ProgressBarUpdateRunnable(eventQueue, progressBar));
-	}
-
-
-
 
 
 	/**
