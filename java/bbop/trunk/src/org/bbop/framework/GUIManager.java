@@ -49,6 +49,13 @@ public class GUIManager {
 	protected MultiMap<String, UserListener> userListeners = new MultiHashMap<String, UserListener>();
 
 	protected static boolean confirmOnExit = true;
+	
+	protected static boolean advxpMatrixEditorCheckBox = false;
+
+	protected static boolean advIntersectionEditorCheckBox = false;
+
+	protected static boolean advSemanticParserCheckBox = false;
+	
 
 	protected static File prefsDir;
 
@@ -292,7 +299,29 @@ public class GUIManager {
 	public static void setConfirmOnExit(boolean confirmOnExit) {
 		GUIManager.confirmOnExit = confirmOnExit;
 	}
+	
+	public static boolean advxpMatrixEditorCheckBox() {
+		return advxpMatrixEditorCheckBox;
+	}
 
+	public static void setadvxpMatrixEditorCheckBox(boolean advxpMatrixEditorCheckBox) {
+		GUIManager.advxpMatrixEditorCheckBox = advxpMatrixEditorCheckBox;
+	}
 
+	public static boolean advIntersectionEditorCheckBox() {
+		return advIntersectionEditorCheckBox;
+	}
+
+	public static void setadvIntersectionEditorCheckBox(boolean advIntersectionEditorCheckBox) {
+		GUIManager.advIntersectionEditorCheckBox =  advIntersectionEditorCheckBox;
+	}
+	
+	public static boolean  advSemanticParserCheckBox() {
+		return advSemanticParserCheckBox;
+	}
+
+	public static void setadvSemanticParserCheckBox (boolean advSemanticParserCheckBox) {
+		GUIManager.advSemanticParserCheckBox = advSemanticParserCheckBox ;
+	}
 
 }
