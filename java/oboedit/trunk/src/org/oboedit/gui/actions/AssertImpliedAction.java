@@ -154,7 +154,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 		while (it.hasNext()) {
 			final Link link = it.next();
 			if (TermUtil.isImplied(link)) {
-				logger.info("implied link: "+link);
+				//logger.info("implied link: "+link);
 				Namespace subjNS = link.getChild().getNamespace();
 				Namespace objNS = link.getParent().getNamespace();
 				//logger.info("ns: "+subjNS + " " +objNS);
@@ -163,12 +163,12 @@ public class AssertImpliedAction implements ClickMenuAction {
 					//logger.info("ignoring "+link+" as it spans ontologies");
 					continue;
 				}
-				logger.debug("checking if this should be trimmed");
-				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
+				//logger.debug("checking if this should be trimmed");
+				if (!ReasonerUtil.shouldBeTrimmedNew(reasoner, link) &&
 					!impliedLinks.contains(link) &&
 					(selectedRelation == null ||
 							link.getType().equals(selectedRelation))) {
-					logger.debug("checking explanations");
+					//logger.debug("checking explanations");
 					Collection<Explanation> explanations = reasoner.getExplanations(link);
 					
 					Explanation chosenExplanation = null;
