@@ -15,17 +15,11 @@ public class TreeViewSettings implements ComponentConfiguration {
 
 	protected boolean showNonTransitive = getShowNonTransitive();
 
-	TreeView treeViewInstance;
-	TreeViewSettings treeViewSettingsInstance;
-	
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
 	
-	public TreeViewSettings(TreeView treeViewInstance) {
+	public TreeViewSettings() {
 
-	treeViewInstance = this.treeViewInstance;
-//	treeViewInstance.treeViewSettingsInstance = treeViewSettingsInstance;	
-	
 	logger.debug("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}
