@@ -88,7 +88,7 @@ public class RemoveRedundantAction implements ClickMenuAction {
 		while (it.hasNext()) {
 			final Link link = it.next();
 			// TODO: make configurable, allow repair mode, in which links implied via xps are not considered redundant
-			Explanation explanation = ReasonerUtil.getRedundancyExplanation(reasoner,link,false);
+			Explanation explanation = ReasonerUtil.getRedundancyExplanation(reasoner,link,true); // TODO: configurable
 			if (explanation == null)
 				continue;
 			redundantLinks.add(link);
