@@ -139,8 +139,6 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	public GraphvizCanvas(String id) {
 		super(id);
 		
-		
-		
 		formatBox.setBackground(Preferences.defaultButtonColor());
 		imagePanel.setLayout(new BorderLayout());
 		imagePanel.add(imageLabel, "Center");
@@ -439,11 +437,11 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 
 	}
 
-	protected void populateSelectedToRoot(Set set) {
+	protected void populateSelectedToRoot(Set<Link> set) {
 		
 		//logger.debug("GraphvizCanvas: populateSelectedToRoot() method.");
 		
-		Iterator it = SelectionManager.getManager().getSelection().getTerms()
+		Iterator<LinkedObject> it = SelectionManager.getManager().getSelection().getTerms()
 		.iterator();
 		HashSet lookedAt = new HashSet();
 		while (it.hasNext()) {
@@ -463,7 +461,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		}
 	}
 
-	protected void populateSelectedToRoot(Set set, LinkedObject term,
+	protected void populateSelectedToRoot(Set<Link> set, LinkedObject term,
 			HashSet lookedAt) {
 		
 		//logger.debug("GraphvizCanvas: populateSelectedToRoot() method.");
@@ -472,9 +470,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		if (lookedAt.contains(term))
 			return;
 		lookedAt.add(term);
-		Iterator it = linkDatabase.getParents(term).iterator();
+		Iterator<Link> it = linkDatabase.getParents(term).iterator();
 		while (it.hasNext()) {
-			Link tr = (Link) it.next();
+			Link tr = it.next();
 			set.add(tr);
 			populateSelectedToRoot(set, tr.getParent(), lookedAt);
 		}
