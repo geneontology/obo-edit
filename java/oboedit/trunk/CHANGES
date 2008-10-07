@@ -1,6 +1,8 @@
 Changes in b50:
-
-- Fixed bug: [ 2126697 ] multiple cross products / xps won't save in latest OE2.
+Bug Fixes:
+- [ 2126697 ] multiple cross products / xps won't save in latest OE2.
+- [ 2137953 ] semantic parser - suppress
+- [ 2137834 ] intersection editor
 
 - Fixed definition spellcheck problem (2092991).
 Jane wrote:
@@ -19,4 +21,9 @@ This works on my Mac, but unfortunately was not enough to fix bug 2111929,
 which affects some Windows machines.  Sandra's Windows box can't start OE if
 the memory setting is >1568M, but I don't want to make that the cap for
 everyone.
+
+
+Features:
+- Advanced Tab in Configuration Manager
+
 
