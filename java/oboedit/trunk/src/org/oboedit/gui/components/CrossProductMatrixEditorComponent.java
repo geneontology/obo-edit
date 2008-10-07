@@ -593,7 +593,7 @@ public class CrossProductMatrixEditorComponent extends AbstractGUIComponent {
 							ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
 							for (Link link : reasoner.getParents(newObj)) {
 								if (TermUtil.isImplied(link) &&
-										!ReasonerUtil.shouldBeTrimmed(reasoner, link)) {
+										!ReasonerUtil.shouldBeTrimmedNew(reasoner, link)) {
 									if (checkBoxForAll.isSelected() ||
 											link.getType().equals(OBOProperty.IS_A)) {
 										item.addItem(new CreateLinkHistoryItem(link));
