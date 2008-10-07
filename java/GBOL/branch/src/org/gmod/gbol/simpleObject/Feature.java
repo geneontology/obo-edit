@@ -101,7 +101,33 @@ public class Feature extends org.gmod.gbol.simpleObject.generated.AbstractFeatur
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getType().getWriteObjects());
+		writeObjects.addAll(this.getDbxref().getWriteObjects());
+		writeObjects.addAll(this.getOrganism().getWriteObjects());
+		
+		// Multiples
+		for (FeatureLocation fl : this.getFeatureLocations())
+			writeObjects.addAll(fl.getWriteObjects());
+		for (FeatureGenotype fgt : this.getFeatureGenotypes())
+			writeObjects.addAll(fgt.getWriteObjects());
+		for (FeatureCVTerm fcv : this.getFeatureCVTerms())
+			writeObjects.addAll(fcv.getWriteObjects());
+		for (FeatureSynonym fsy : this.getFeatureSynonyms())
+			writeObjects.addAll(fsy.getWriteObjects());
+		for (FeaturePublication fsy : this.getFeaturePublications())
+			writeObjects.addAll(fsy.getWriteObjects());
+		for (FeaturePhenotype fsy : this.getFeaturePhenotypes())
+			writeObjects.addAll(fsy.getWriteObjects());
+		for (FeatureProperty fsy : this.getFeatureProperties())
+			writeObjects.addAll(fsy.getWriteObjects());
+	
+		// Specifically not traversing FeatureRelationships, since that 
+		// could involve us in a loop or a very long traversal
+		return writeObjects;
 	}
 }

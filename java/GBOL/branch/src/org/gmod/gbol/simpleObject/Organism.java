@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,16 @@ public class Organism extends org.gmod.gbol.simpleObject.generated.AbstractOrgan
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+				
+		// Multiples
+		for (OrganismProperty op : this.getOrganismProperties())
+			writeObjects.addAll(op.getWriteObjects());
+		for (OrganismDBXref odbx : this.getOrganismDBXrefs())
+			writeObjects.addAll(odbx.getWriteObjects());
+		
+		return writeObjects;
 	}
 }
