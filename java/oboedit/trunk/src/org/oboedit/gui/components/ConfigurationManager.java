@@ -85,6 +85,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 	JCheckBox confirmOnExitBox;
 
+	JCheckBox advxpMatrixEditorCheckBox;
+
+	JCheckBox advIntersectionEditorCheckBox;
+
+	JCheckBox advSemanticParserCheckBox;
+
 	JCheckBox autosaveEnabledCheckBox;
 
 	JTextField autosavePathField;
@@ -220,9 +226,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 							ConfigurationManager.this, "Select link color",
 							colorButton.getForeground());
 					if (c != null) {
-//					    colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray.  (May be a Mac-specific problem.)
-					    colorButton.setForeground(c);
-					    colorButton.setText(ColorUtil.getName(c)
+//						colorButton.setBackground(c);   // Doesn't seem to do anything--background stays light gray.  (May be a Mac-specific problem.)
+						colorButton.setForeground(c);
+						colorButton.setText(ColorUtil.getName(c)
 								+ " (click to modify)");
 					}
 				}
@@ -299,7 +305,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 							.substring(9));
 				else
 					icon = Preferences
-							.getIconForURL(new URL(urlField.getText()));
+					.getIconForURL(new URL(urlField.getText()));
 				validate();
 			} catch (Exception e) {
 				File file = new File(urlField.getText());
@@ -397,7 +403,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	protected Font getChosenFont() {
 		return GUIUtil.decodeFont((String) fontNameList.getSelectedItem(),
 				(String) fontSizeList.getSelectedItem(), (String) fontTypeList
-						.getSelectedItem());
+				.getSelectedItem());
 	}
 
 	public void buildFontPreview() {
@@ -426,19 +432,19 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		defTextArea.setEnabled(enabled);
 		defDbxrefList.setEnabled(enabled);
 	}
-	
+
 	protected LayoutListener layoutListener = new LayoutAdapter() {
 
 		public boolean closing(GUIComponent c) {
 			// Don't save unless asked!  Maybe user wanted to close it w/o saving.
 //			if (c.equals(ConfigurationManager.this)) {
-				// save();
+			// save();
 //			}
 			return true;
 		}
-		
+
 	};
-	
+
 	@Override
 	public void init() {
 		ComponentManager.getManager().addLayoutListener(layoutListener);
@@ -536,13 +542,12 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		autoCommitCheckBox = new JCheckBox("Autocommit text edits");
 		autoCommitCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				logger.debug("in Autocommit text edits listener");
 				warnBeforeDiscardingEditsBox.setEnabled(!autoCommitCheckBox
 						.isSelected());
 			}
 		});
 		warnBeforeDiscardingEditsBox = new JCheckBox(
-				"Warn before discarding text edits");
+		"Warn before discarding text edits");
 		advancedRootDetectionBox = new JCheckBox("Use advanced root "
 				+ "detection");
 		onlyOneGlobalOTECheckbox = new JCheckBox("Only one Ontology Tree Editor at a time can be in global mode");
@@ -550,8 +555,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		caseSensitiveSortBox = new JCheckBox("Case-sensitive term sorting");
 		showToolTipsBox = new JCheckBox("Show term IDs as tool tips in "
 				+ "term panels");
-		confirmOnExitBox = new JCheckBox("Confirm on exit");
 
+		confirmOnExitBox = new JCheckBox("Confirm on exit");
+		advxpMatrixEditorCheckBox = new JCheckBox("Cross-Product Matrix Editor");
+		advIntersectionEditorCheckBox = new JCheckBox("Intersection Editor");
+		advSemanticParserCheckBox = new JCheckBox("Semantic Parser Manager");
 		autosaveEnabledCheckBox = new JCheckBox("Enable autosave");
 		autosavePathField = new JTextField();
 		autosaveExpirationField = new JTextField();
@@ -570,6 +578,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		caseSensitiveSortBox.setOpaque(false);
 		showToolTipsBox.setOpaque(false);
 		confirmOnExitBox.setOpaque(false);
+		advxpMatrixEditorCheckBox.setOpaque(false);
+		advIntersectionEditorCheckBox.setOpaque(false);
+		advSemanticParserCheckBox.setOpaque(false);
 
 		useDefaultBrowserBox.setSelected(Preferences.getPreferences()
 				.getBrowserCommand().length() == 0);
@@ -579,7 +590,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getAutosaveEnabled());
 		dbxrefEditor.load(Preferences.getPreferences().getPersonalDbxref());
 		autosavePathField.setText(Preferences.getPreferences()
-					  .getAutosavePath().toString());
+				.getAutosavePath().toString());
 		autosaveExpirationField.setText(Preferences.getPreferences()
 				.getAutosaveExpirationDays()
 				+ "");
@@ -630,7 +641,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		advancedRootDetectionBox.setSelected(!Preferences.getPreferences()
 				.getUseBasicRootDetection());
 		onlyOneGlobalOTECheckbox.setSelected(Preferences.getPreferences()
-						     .getOnlyOneGlobalOTE());
+				.getOnlyOneGlobalOTE());
 		// showUndefinedTermsBox.setSelected(controller.getGlobalFilteredRenderers().contains(grayUndefinedRenderer));
 		caseSensitiveSortBox.setSelected(Preferences.getPreferences()
 				.getCaseSensitiveSort());
@@ -638,6 +649,13 @@ public class ConfigurationManager extends AbstractGUIComponent {
 				.getShowToolTips());
 		confirmOnExitBox.setSelected(Preferences.getPreferences()
 				.getConfirmOnExit());
+
+		advxpMatrixEditorCheckBox.setSelected(Preferences.getPreferences()
+				.getadvMatrixEditorOptions());
+		advIntersectionEditorCheckBox.setSelected(Preferences.getPreferences()
+				.getadvIntersectionEditorOptions());
+		advSemanticParserCheckBox.setSelected(Preferences.getPreferences()
+				.getadvSemanticParserOptions());
 
 		allowBox.add(allowCyclesBox);
 		allowBox.add(Box.createHorizontalGlue());
@@ -706,10 +724,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JButton removeConfigFiles = new JButton("Reset all configuration files (requires restart)");
 		removeConfigFiles.setAlignmentX((float) .6);
 		removeConfigFiles.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					removeConfigFiles();
-				}
-			});
+			public void actionPerformed(ActionEvent e) {
+				removeConfigFiles();
+			}
+		});
 		configFileLabelBox.add(configFileLabel);
 		configFileLabelBox.add(Box.createHorizontalStrut(5));
 		configFileLabelBox.add(Box.createHorizontalGlue());
@@ -764,7 +782,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		String[] sizes = { "6", "8", "10", "12", "14", "16", "18", "20", "24",
 				"30", "36", "42", "48", "56", "64", "72", "80", "90", "100" };
 		String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getAvailableFontFamilyNames();
+		.getAvailableFontFamilyNames();
 		String[] fontStyles = { "Normal", "Italic", "Bold", "Bold-Italic" };
 		fontNameList = new JComboBox(fonts);
 		fontSizeList = new JComboBox(sizes);
@@ -841,7 +859,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		moreOptionsPanel.setLayout(new BoxLayout(moreOptionsPanel,
 				BoxLayout.Y_AXIS));
 		moreOptionsPanel.setBorder(new TitledBorder(
-				"Startup Options (changes do not take effect until restart)"));
+		"Startup Options (changes do not take effect until restart)"));
 		moreOptionsPanel.add(Box.createVerticalStrut(10));
 //		moreOptionsPanel.add(memoryBox);
 //		moreOptionsPanel.add(Box.createVerticalStrut(10));
@@ -850,7 +868,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		JPanel runtimeDisplayPanel = new JPanel();
 //		runtimeDisplayPanel.setBorder(new TitledBorder(
-//				"Runtime display options"));
+//		"Runtime display options"));
 		runtimeDisplayPanel.setOpaque(false);
 		runtimeDisplayPanel.setLayout(new BoxLayout(runtimeDisplayPanel,
 				BoxLayout.Y_AXIS));
@@ -887,15 +905,15 @@ public class ConfigurationManager extends AbstractGUIComponent {
 
 		behaviorPanel.setLayout(new BoxLayout(behaviorPanel, BoxLayout.Y_AXIS));
 
- 		behaviorPanel.add(caseSensitiveSortPanel);
- 		behaviorPanel.add(showToolTipsPanel);
+		behaviorPanel.add(caseSensitiveSortPanel);
+		behaviorPanel.add(showToolTipsPanel);
 		behaviorPanel.add(allowBox);
 		behaviorPanel.add(advancedRootBox);
 		behaviorPanel.add(onlyOneGlobalOTEBox);
- 		behaviorPanel.add(Box.createVerticalStrut(10));
+		behaviorPanel.add(Box.createVerticalStrut(10));
 		behaviorPanel.add(warnDeleteBox);
 		behaviorPanel.add(warnDefinitionBox);
- 		behaviorPanel.add(showConfirmOnExitPanel);
+		behaviorPanel.add(showConfirmOnExitPanel);
 		behaviorPanel.add(Box.createVerticalGlue());
 
 		JScrollPane scroller = new JScrollPane(defTextArea,
@@ -939,15 +957,30 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		textEditPanel.add(personalDefinitionPanel, "Center");
 		textEditPanel.add(textEditTopPanel, "North");
 
- 		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
-// 		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
- 		mainPanel.addTab("Font", null, guiPanel, "Set default font");
- 		mainPanel.addTab("Icons & Colors", null, iconPanel,
- 				 "Set up default colors and icons for relationship types");
- 		mainPanel.addTab("Autosave", null, autosavePanel, "Set autosave behavior");
+
+		// advanced users config tab
+		JPanel advancedPanel = new JPanel();
+		advancedPanel.setLayout(new GridLayout(5,1));
+//		advancedPanel.setOpaque(true);
+		JLabel advEditorsLabel = new JLabel("Editors");
+		JLabel advReasonerLabel = new JLabel("Reasoner");
+
+		advancedPanel.add(advEditorsLabel);
+		advancedPanel.add(advxpMatrixEditorCheckBox);
+		advancedPanel.add(advIntersectionEditorCheckBox);
+		advancedPanel.add(advReasonerLabel);
+		advancedPanel.add(advSemanticParserCheckBox);
+
+		mainPanel.addTab("User Settings", null, userPanel, "Set user options");
+//		mainPanel.addTab("General GUI", null, guiPanel, "General GUI options");
+		mainPanel.addTab("Font", null, guiPanel, "Set default font");
+		mainPanel.addTab("Icons & Colors", null, iconPanel,
+		"Set up default colors and icons for relationship types");
+		mainPanel.addTab("Autosave", null, autosavePanel, "Set autosave behavior");
 		mainPanel.addTab("Behavior", null, behaviorPanel, "Set behavior options");
 		mainPanel.addTab("Text Editing", null, textEditPanel,
-				 "Set text editing options");
+		"Set text editing options");
+		mainPanel.addTab("Advanced", null, advancedPanel, "Advanced user options");
 
 		add(mainPanel, "Center");
 		Box buttonBox = Box.createVerticalBox();
@@ -995,7 +1028,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 	}
 
 //	protected boolean validateConfiguration() {
-//		return true;
+//	return true;
 //	}
 
 	/** Remove all of the user config files that control the look of OBO-Edit */
@@ -1008,9 +1041,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			files += "\n" + configFile;
 		}
 		if (JOptionPane.showConfirmDialog(this, "The following files and subdirectories will be deleted from " + confDir + ":" +
-						  files + "\n\nYou will then need to quit and restart OBO-Edit to reset your configuration.\nProceed?", "Delete your config files?",
-						  JOptionPane.YES_NO_OPTION)
-		    != JOptionPane.YES_OPTION)
+				files + "\n\nYou will then need to quit and restart OBO-Edit to reset your configuration.\nProceed?", "Delete your config files?",
+				JOptionPane.YES_NO_OPTION)
+				!= JOptionPane.YES_OPTION)
 			return;
 
 		String errors = "";
@@ -1073,6 +1106,26 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		preferences.setCaseSensitiveSort(caseSensitiveSortBox.isSelected());
 		preferences.setShowToolTips(showToolTipsBox.isSelected());
 		preferences.setConfirmOnExit(confirmOnExitBox.isSelected());
+
+		preferences.setadvMatrixEditorOptions(advxpMatrixEditorCheckBox.isSelected());
+		if (advxpMatrixEditorCheckBox.isSelected()) {
+			GUIManager.getManager().setEnabledMenuItem("Editors:Cross-Product Matrix Editor", true);
+		}
+		else 
+			GUIManager.getManager().setEnabledMenuItem("Editors:Cross-Product Matrix Editor", false);
+
+		preferences.setadvIntersectionEditorOptions(advIntersectionEditorCheckBox.isSelected());
+		if (advIntersectionEditorCheckBox.isSelected()) {
+			GUIManager.getManager().setEnabledMenuItem("Editors:Intersection Editor", true);
+		}else
+			GUIManager.getManager().setEnabledMenuItem("Editors:Intersection Editor", false);
+
+		preferences.setadvSemanticParserOptions(advSemanticParserCheckBox.isSelected());
+		if (advSemanticParserCheckBox.isSelected()) {
+			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", true);
+		} else
+			GUIManager.getManager().setEnabledMenuItem("Reasoner:SemanticParser Manager", false);
+
 		preferences.setAutosaveEnabled(autosaveEnabledCheckBox.isSelected());
 
 		try {
@@ -1116,6 +1169,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDbxrefs(null);
 		}
 
+
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 	}
 
@@ -1124,9 +1178,9 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		ComponentManager.getManager().removeLayoutListener(layoutListener);
 		super.cleanup();
 	}
-	
-	
-	
+
+
+
 	public ConfigurationManager(String id) {
 		super(id);
 	}
