@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,22 @@ public class Publication extends org.gmod.gbol.simpleObject.generated.AbstractPu
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getType().getWriteObjects());
+		
+		// Multiples
+		for (PublicationAuthor pa : this.getPublicationAuthors())
+			writeObjects.addAll(pa.getWriteObjects());
+		for (PublicationDBXref pdbx : this.getPublicationDBXrefs())
+			writeObjects.addAll(pdbx.getWriteObjects());
+
+		// Specifically not traversing PublicationRelationships, since that 
+		// could involve us in a loop or a very long traversal
+
+		return writeObjects;
 	}
 }

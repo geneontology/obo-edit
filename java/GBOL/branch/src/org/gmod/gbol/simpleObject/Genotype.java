@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,17 @@ public class Genotype extends org.gmod.gbol.simpleObject.generated.AbstractGenot
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+				
+		// Multiples
+		for (PhenotypeDescription pd : this.getPhenotypeDescriptions())
+			writeObjects.addAll(pd.getWriteObjects());
+
+		// Specifically not traversing PhenotypeStatements, since that 
+		// could involve us in a loop or a very long traversal
+
+		return writeObjects;
 	}
 }

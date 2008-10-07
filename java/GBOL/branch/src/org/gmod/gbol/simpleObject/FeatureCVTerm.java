@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,22 @@ public class FeatureCVTerm extends org.gmod.gbol.simpleObject.generated.Abstract
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getCvterm().getWriteObjects());
+		writeObjects.addAll(this.getPublication().getWriteObjects());
+
+		// Multiples
+		for (FeatureCVTermProperty fcvtprop : this.getFeatureCVTermProperties())
+			writeObjects.addAll(fcvtprop.getWriteObjects());
+		for (FeatureCVTermPublication fcvtpub : this.getFeatureCVTermPublications())
+			writeObjects.addAll(fcvtpub.getWriteObjects());
+		for (FeatureCVTermDBXref fcvtdbx : this.getFeatureCVTermDBXrefs())
+			writeObjects.addAll(fcvtdbx.getWriteObjects());
+		
+		return writeObjects;
 	}
 }

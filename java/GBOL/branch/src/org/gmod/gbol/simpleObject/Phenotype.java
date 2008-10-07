@@ -1,5 +1,6 @@
 package org.gmod.gbol.simpleObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /*
@@ -20,7 +21,23 @@ public class Phenotype extends org.gmod.gbol.simpleObject.generated.AbstractPhen
 
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
+		// Have to write yourself
+		writeObjects.add(this);
+		
+		// Singletons
+		writeObjects.addAll(this.getAttribute().getWriteObjects());
+		writeObjects.addAll(this.getAssay().getWriteObjects());
+		writeObjects.addAll(this.getCvalue().getWriteObjects());
+		writeObjects.addAll(this.getObservable().getWriteObjects());
+
+		// Multiples
+		for (PhenotypeCVTerm pcvt : this.getPhenotypeCVTerms())
+			writeObjects.addAll(pcvt.getWriteObjects());
+		
+		// Specifically not traversing PhenotypeStatements, since that 
+		// could involve us in a loop or a very long traversal
+
+		return writeObjects;	
 	}
 }
