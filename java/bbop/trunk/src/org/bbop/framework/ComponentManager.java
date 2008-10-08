@@ -305,7 +305,7 @@ public class ComponentManager {
 	public GUIComponent createComponent(GUIComponentFactory<?> factory,
 			String componentID) {
 		if (componentID == null)
-			componentID = factory.getID() + "." + DEFAULT_COMPONENT_ID_SUFFIX;// ; changed to . to make config files visible in windows. Search on getID to find all. 
+			componentID = factory.getID() + ":" + DEFAULT_COMPONENT_ID_SUFFIX;// ; changed to . to make config files visible in windows. Search on getID to find all. 
 		if (componentID != null)
 			if (getActiveComponent(componentID) != null) {
 				componentID = null;
@@ -313,7 +313,7 @@ public class ComponentManager {
 		if (componentID == null) {
 			int idgen = 1;
 			do {
-				componentID = factory.getID() + "." + (idgen++);// ; changed to . to make config files visible in windows.
+				componentID = factory.getID() + ":" + (idgen++);// ; changed to . to make config files visible in windows.
 			} while (getActiveComponent(componentID) != null);
 		}
 
