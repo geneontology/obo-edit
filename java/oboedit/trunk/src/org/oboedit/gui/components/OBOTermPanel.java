@@ -144,11 +144,8 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 				TermUtil.detectRoots(roots, getLinkDatabase(),
 						getRootAlgorithm());
 				TreePath rootPath = new TreePath(PathUtil.ROOT);
-				Iterator it = roots.iterator();
-				while (it.hasNext()) {
-					OBORestriction tr = new OBORestrictionImpl(
-							(LinkedObject) it.next());
-
+				for (LinkedObject rootObj : roots) {
+					OBORestriction tr = new OBORestrictionImpl(rootObj);
 					TreePath path = rootPath.pathByAddingChild(tr);
 					if (expansionBridge != null) {
 						removeTreeExpansionListener(expansionBridge);
@@ -1296,7 +1293,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 	public void reload() {
 		// This is sometimes called because of a TreeStructureChanged event, which makes the whole OTE collapse.
 		// Maybe it shouldn't do that if we're in local mode?
-		logger.debug("Reloading OBO Term Panel...");
+//		logger.debug("Reloading OBO Term Panel...");
 //		(new Exception()).printStackTrace();  // DEL
 
 		long time = System.currentTimeMillis();

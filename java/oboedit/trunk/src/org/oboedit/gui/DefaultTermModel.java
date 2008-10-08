@@ -494,7 +494,8 @@ public class DefaultTermModel implements TermModel {
 							.insertSorted(obsoleteRoots, comparator, rootLink);
 				else if (io instanceof OBOClass)
 					VectorUtil.insertSorted(classRoots, comparator, rootLink);
-				else if (io instanceof OBOProperty)
+				// remove built-ins from display
+				else if (io instanceof OBOProperty && !io.isBuiltIn())
 					VectorUtil.insertSorted(typeRoots, comparator, rootLink);
 			}
 		}

@@ -36,7 +36,7 @@ import java.util.*;
 import org.apache.log4j.*;
 
 public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
-	ListCellRenderer {
+ListCellRenderer {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBOCellRenderer.class);
@@ -47,7 +47,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 	private static final long serialVersionUID = 1L;
 
 	protected final static Color ignoreSelectionColor = new Color(204, 255, 204);
-//    protected final static Color ignoreSelectionColor = Color.red;  // for debugging
+//	protected final static Color ignoreSelectionColor = Color.red;  // for debugging
 
 	protected final static Color highlightColor = Color.yellow;
 
@@ -94,7 +94,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 		// Use preferred font for text
 		setFont(Preferences.getPreferences().getFont());
-//		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
+		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
 		setIcon(multiIcon);
 	}
 
@@ -115,9 +115,9 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
+		logger.debug("getListCellRenderer");
 		if (isSelected) {
 			setOpaque(true);
-//			logger.info("getListCellRendererComponent: choosing darker selection color"); // DEL
 			setBackground(Preferences.defaultSelectionColor());
 		} else {
 			setOpaque(false);
@@ -217,12 +217,13 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				return this;
 			} else
 				setForeground(Color.black);
+			multiIcon.addIcon(scaledIcon);
 
 			multiIcon.addIcon(linkIcon);
-			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
 			linkIcon.setLineWidth(1);
- 			linkIcon.setLineType(LineType.SOLID_LINE);
+			linkIcon.setLineType(LineType.SOLID_LINE);
+
 			if (!(value instanceof Relationship)) {
 				setText("Some unknown item " + value);
 				return this;
@@ -230,14 +231,21 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 			Relationship link = (Relationship) value;
 
+
 			if (link.getType() != null) {
 				Color c = Preferences.getPreferences()
-						.getColorForRelationshipType(link.getType());
+				.getColorForRelationshipType(link.getType());
 				if (c != null)
 					linkIcon.setColor(c);
 			}
 
 			RenderSpec spec;
+			//  >>>
+//			if (!link.getChild().isBuiltIn()) {
+//				multiIcon.addIcon(linkIcon);
+//				linkIcon.setColor(Color.black);
+//				linkIcon.setLineWidth(1);
+//				linkIcon.setLineType(LineType.SOLID_LINE);
 			if (tree instanceof FilteredRenderable) {
 				FilteredRenderable fr = (FilteredRenderable) tree;
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
@@ -269,6 +277,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				}
 
 			}
+//			}
 
 			linkIcon.setLeaf(leaf);
 			linkIcon.setPath(tree.getPathForRow(row));
@@ -277,7 +286,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 
 			if (link.getType() != null) {
 				icon = Preferences.getPreferences().getIconForRelationshipType(
-					link.getType());
+						link.getType());
 			}
 			scaledIcon.setIcon(icon);
 			Icon origIcon = icon;
@@ -310,13 +319,13 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			// This attempt to disable "circular" relation nodes* was making them show up without their arrows.
 			// *For example, in SO, genome is a child of disjoint_from chromosome_variation, which is a child of genome.
 			// Instead, color the "circular" nodes gray to discourage users from clicking on them.
- 			TreePath path = tree.getPathForRow(row);
-  			if (path != null && PathUtil.pathIsCircular(path)) {
-// // 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
- 				setForeground(circularLinkColor);
+			TreePath path = tree.getPathForRow(row);
+			if (path != null && PathUtil.pathIsCircular(path)) {
+//				// 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
+				setForeground(circularLinkColor);
 				linkIcon.setDoubleHeaded(true);
 				linkIcon.setColor(circularLinkColor);
-  			}
+			}
 			else
 				linkIcon.setDoubleHeaded(false);
 
@@ -326,12 +335,12 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			} else if (selected) {
 				setOpaque(true);
 				if (ignoreSelection) {
-//				    logger.info("Ignoring selection for link = " + link.getType()); // DEL
+//					logger.info("Ignoring selection for link = " + link.getType()); // DEL
 					setBackground(ignoreSelectionColor);
 				}
 				else {
 					Selection selection = SelectionManager.getManager()
-							.getGlobalSelection();
+					.getGlobalSelection();
 
 					// Note on this if:
 					// As it was, with the ||, you could end up with two dark-shaded terms
@@ -342,13 +351,13 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 					// Both behaviors are slightly wrong; I decided the second was less wrong.
 					// I'm not sure how to fix it completely.
 					if (// link.getChild().equals(selection.getTermSubSelection()) ||
-					     ObjectUtil.equals(link, selection
-								 .getLinkSubSelection())) {
-					    // Use darker color (this is the subselection)
-					    setBackground(Preferences.defaultSelectionColor());
+							ObjectUtil.equals(link, selection
+									.getLinkSubSelection())) {
+						// Use darker color (this is the subselection)
+						setBackground(Preferences.defaultSelectionColor());
 					} else {
-					    // Use lighter color (this is NOT the subselection)
-					    setBackground(Preferences.lightSelectionColor());
+						// Use lighter color (this is NOT the subselection)
+						setBackground(Preferences.lightSelectionColor());
 					}
 				}
 			} else {
@@ -357,13 +366,13 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 				if (tree instanceof FilteredRenderable) {
 					FilteredRenderable fr = (FilteredRenderable) tree;
 					RenderSpec bgspec = GUIUtil
-							.getSpec(fr, link.getChild(), FilterManager
-									.getManager().getGlobalTermRenderers(), fr
-									.getObjectRenderers(), fr
-									.getAutomaticObjectRenderers());
+					.getSpec(fr, link.getChild(), FilterManager
+							.getManager().getGlobalTermRenderers(), fr
+							.getObjectRenderers(), fr
+							.getAutomaticObjectRenderers());
 					if (bgspec instanceof GeneralRendererSpec) {
 						ColorProvider c = ((GeneralRendererSpec) bgspec)
-								.getValue(BackgroundColorSpecField.FIELD);
+						.getValue(BackgroundColorSpecField.FIELD);
 						if (c != null) {
 							setOpaque(true);
 							setBackground(c.getColor(fr, link.getChild()));
@@ -379,7 +388,7 @@ public class OBOCellRenderer extends JLabel implements TreeCellRenderer,
 			}
 
 		} catch (Throwable t) {
-		    logger.info("getTreeCellRendererComponent: caught error.  Stack trace:");
+			logger.info("getTreeCellRendererComponent: caught error.  Stack trace:");
 			t.printStackTrace();
 		}
 		validate();  // Need?

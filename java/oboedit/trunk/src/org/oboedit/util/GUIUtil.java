@@ -265,6 +265,7 @@ public class GUIUtil {
 	public static String renderHTML(FilteredRenderable selector, String text,
 			Collection<GeneralRendererSpecField<?>> ignore,
 			GeneralRendererSpec spec, Object obj) {
+//		logger.debug("GUIUtil.renderHTML()");
 		StringBuffer out = new StringBuffer(text);
 		if (spec != null) {
 			for (GeneralRendererSpecField field : spec.getFields()) {
