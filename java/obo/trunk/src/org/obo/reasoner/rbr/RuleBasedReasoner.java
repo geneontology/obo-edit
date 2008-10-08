@@ -40,7 +40,7 @@ import org.bbop.util.MultiHashSetMap;
  *
  */
 //public class RuleBasedReasoner extends AbstractLinkDatabase implements ReasonedLinkDatabase  {
-	public class RuleBasedReasoner extends AbstractReasoner {
+public class RuleBasedReasoner extends AbstractReasoner {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(RuleBasedReasoner.class);
@@ -195,11 +195,11 @@ import org.bbop.util.MultiHashSetMap;
 		addRule(new SubPropertyRule());
 		addRule(new PropagateOverIsARule());
 		addRule(new TransitiveRelationRule());
-		addRule(new IntersectionRule());
 		addRule(new TransitiveOverRule());
 		addRule(new LinkCompositionRule());
 		addRule(new PropertyIntersectionRule());
-		
+		addRule(new IntersectionRule());
+
 	}
 
 
@@ -211,7 +211,7 @@ import org.bbop.util.MultiHashSetMap;
 	protected void initReasoner() {
 		running = true;
 		fireStart();
-		
+
 		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
 		explanationMap =
 			new MultiHashSetMap<Link, Explanation>();
@@ -228,9 +228,9 @@ import org.bbop.util.MultiHashSetMap;
 	}
 
 
-//	@Override
+	//	@Override
 	protected void doReasoning() {
-		
+
 		long initTime = System.nanoTime();
 
 		for (Rule rule : rules) {
@@ -238,7 +238,7 @@ import org.bbop.util.MultiHashSetMap;
 		}
 		setProgressString("Initializing reasoner...");
 
-			setProgressString("Reasoning...");
+		setProgressString("Reasoning...");
 		boolean isExhausted = false;
 		int sweep = 0;
 		int newLinks = 0;
@@ -256,17 +256,27 @@ import org.bbop.util.MultiHashSetMap;
 					if (link.getChild().equals(link.getParent())) {
 						// no reflexive links
 					}
-					else if (this.hasRelationship(link.getChild(), link.getType(), link.getParent()) != null &&
-							expl.getExplanationType() != ExplanationType.GENUS &&
-							expl.getExplanationType() != ExplanationType.DIFFERENTIA) {
-						// do not add redundant explanation
-						// - the exception is genus and differentia "trivial" inferences
-						// both should be present
-					}
 					else {
-						addExplanation(expl);
-						newLinks++;
-						isExhausted = false;
+						Link existingLink = hasRelationship(link.getChild(), link.getType(), link.getParent());
+						/*
+						if (existingLink != null &&
+
+								expl.getExplanationType() != ExplanationType.GENUS &&
+								expl.getExplanationType() != ExplanationType.DIFFERENTIA) {
+							// do not add redundant explanation
+							// - the exception is genus and differentia "trivial" inferences
+							// both should be present
+						}
+						 */
+						if (false && existingLink != null && rule.isRedundant(this, existingLink)) {
+						}
+						else {
+							//logger.debug("  new link: "+link);
+							if (addExplanation(expl)) {
+								newLinks++;
+								isExhausted = false;
+							}
+						}
 					}
 				}
 				logger.info("  new links: "+newLinks);
@@ -307,18 +317,33 @@ import org.bbop.util.MultiHashSetMap;
 		Link link = (Link) explanation.getExplainedObject();
 
 		// add link to impliedLinkDatabase, and attach explanation to link
-		addLinkWithExplanation(link, explanation);
-		return true;
+		return addLinkWithExplanation(link, explanation);
 	}
 
 	// this replaces explain in Abstract
-	private void addLinkWithExplanation(Link link, Explanation explanation) {
+	private boolean addLinkWithExplanation(Link link, Explanation explanation) {
 		//logger.debug("adding link "+link+" ;; expl: "+explanation);
 		internalAddLink(link);
-		internalAddExplanation(link, explanation);
-
+		long time = System.nanoTime();
+		Collection<Explanation> existingExpls = getExplanations(link);
+		if (existingExpls.size() > 1) {
+			return false; // never need >1 explanation
+		}
+		if (existingExpls.size() == 1) {
+			if (!existingExpls.iterator().next().getExplanationType().equals(ExplanationType.GIVEN)) {
+				return false; // there is at least one reasoner explanation
+			}
+		}
+		explanationMap.add(link, explanation);
+		//logger.debug("added to explMap: "+link+" -> " +explanation);
+		for (Link evidence : explanation.getEvidence()) {
+			explanationDeps.add(evidence, explanation);
+		}
+		expTime += System.nanoTime() - time;
+		return true;
 	}
-	
+
+
 	@Override
 	public Collection<Explanation> getExplanations(PathCapable link) {
 		Collection<Explanation> exps = explanationMap.get(link);
@@ -377,7 +402,7 @@ import org.bbop.util.MultiHashSetMap;
 		cascadingRemoveLink(link);
 		doReasoning(); // it may be possible to re-populate some links via different explanations
 	}
-	
+
 	protected void cascadingRemoveLink(Link link) {
 		logger.info("removing link:"+link);
 		// actually remove the dead link from the various caches
