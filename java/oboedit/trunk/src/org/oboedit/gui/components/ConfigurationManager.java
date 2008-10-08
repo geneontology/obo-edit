@@ -1168,8 +1168,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDefinition(null);
 			preferences.setPersonalDbxrefs(null);
 		}
-
-
+		
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 	}
 

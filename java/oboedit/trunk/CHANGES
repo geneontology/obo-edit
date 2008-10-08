@@ -3,6 +3,7 @@ Bug Fixes:
 - [ 2126697 ] multiple cross products / xps won't save in latest OE2.
 - [ 2137953 ] semantic parser - suppress
 - [ 2137834 ] intersection editor
+- [ 2116690 ] autocommit fail
 
 - Fixed definition spellcheck problem (2092991).
 Jane wrote:
