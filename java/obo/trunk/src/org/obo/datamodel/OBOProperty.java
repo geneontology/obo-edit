@@ -32,10 +32,8 @@ public interface OBOProperty extends OBOObject {
 
 	public static final OBOProperty DISJOINT_FROM = new OBOPropertyImpl(
 			"disjoint_from", null) {
-		/**
-				 * 
-				 */
-				private static final long serialVersionUID = 3485031633547592064L;
+
+		private static final long serialVersionUID = 3485031633547592064L;
 
 		{
 			this.name = "disjoint from";
