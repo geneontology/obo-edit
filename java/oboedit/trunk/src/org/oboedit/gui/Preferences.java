@@ -957,7 +957,6 @@ public class Preferences {
 	}
 
 	public Color getColorForRelationshipType(String id) {
-		logger.debug("Preferences.getColorForRelationshipType");
 		Color out = colorIndex.get(id);
 		if (out == null)
 //			out = Color.black;
