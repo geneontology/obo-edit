@@ -78,7 +78,7 @@ public class DefaultOBOParser implements OBOParser {
 	protected OBOMetaData metaData;
 
 	protected boolean failFast = false;
-	
+
 	//need this so that flag can be changed in case if offline
 	protected boolean followImports = true;
 
@@ -414,7 +414,7 @@ public class DefaultOBOParser implements OBOParser {
 	public boolean getAllowDanglingParents() {
 		return allowDanglingParents;
 	}
-	
+
 	public boolean getFollowImports() {
 		return followImports;
 	}
@@ -470,9 +470,9 @@ public class DefaultOBOParser implements OBOParser {
 			if (!pathSet.contains(path)) {
 				metaData.addImport(getCurrentPath(), path);
 				if (getFollowImports()) {
-						engine.parse(path);
-					}
+					engine.parse(path);
 				}
+			}
 		} catch (MalformedURLException ex) {
 			// throw new OBOParseException("Bad import URL:
 			// "+originalURL+"/"+path);
@@ -541,16 +541,18 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	protected static boolean isBuiltInID(String id) {
-		for (int i = 0; i < OBOProperty.BUILTIN_TYPES.length; i++)
+//		logger.debug("DefaultOBOParser.isBiuiltInID");
+		for (int i = 0; i < OBOProperty.BUILTIN_TYPES.length; i++) {
 			if (OBOProperty.BUILTIN_TYPES[i].getID().equals(id))
 				return true;
+		}
 		return false;
 	}
 
 	public String mapID(String id) {
 
 		if (idPrefix != null && id.indexOf(':') == -1 
-		    && !isBuiltInID(id))
+				&& !isBuiltInID(id))
 			id = idPrefix + ":" + id;
 		String newid = (String) idMapping.get(id);
 		if (newid != null)
@@ -655,7 +657,7 @@ public class DefaultOBOParser implements OBOParser {
 					engine.getCurrentLine(), engine.getLineNum());
 		domainMap.put(currentObject, domain);
 	}
-	
+
 	public void readHoldsOverChain(String[] ids, String ns, boolean implied,
 			NestedValue nv) throws OBOParseException {
 		if (!(currentObject instanceof OBOProperty))
@@ -673,7 +675,7 @@ public class DefaultOBOParser implements OBOParser {
 		for (String id : ids) {
 			mappedIds.add(mapID(id));
 		}
-		
+
 		holdsOverChainMap.add(currentObject, mappedIds);
 	}
 
@@ -1178,8 +1180,8 @@ public class DefaultOBOParser implements OBOParser {
 					logger.info("No type for " + child + "--added dangling type object " + type);
 				} else {
 					throw new OBOParseException("Tried to use non-type "
-						+ rs.getType() + " as relationship " + "type", rs
-						.getPath(), rs.getLine(), rs.getLineNum());
+							+ rs.getType() + " as relationship " + "type", rs
+							.getPath(), rs.getLine(), rs.getLineNum());
 				}
 			}
 			Namespace ns = null;
@@ -1227,7 +1229,7 @@ public class DefaultOBOParser implements OBOParser {
 			if (o == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-					    .createDanglingObject(rangeID, false);
+					.createDanglingObject(rangeID, false);
 					logger.info("assigned DANGLING " + dangling
 							+ " to property " + t.getID());
 					t.setRange(dangling);
@@ -1255,8 +1257,8 @@ public class DefaultOBOParser implements OBOParser {
 			if (domain == null) {
 				if (allowDanglingParents) {
 					DanglingObject dangling = objectFactory
-					    .createDanglingObject(domainID, false);
-				    logger.info("Domain is null for domainID " + domainID + "--added dangling object");
+					.createDanglingObject(domainID, false);
+					logger.info("Domain is null for domainID " + domainID + "--added dangling object");
 					t.setDomain(dangling);
 				} else
 					throw new OBOParseException("Assigned non-existant domain "
@@ -1271,12 +1273,12 @@ public class DefaultOBOParser implements OBOParser {
 				t.setDomain((OBOClass) domain);
 			}
 		}
-		
+
 		for (IdentifiedObject io : holdsOverChainMap.keySet()) {
 			if (halted)
 				throw new OBOParseException("Operation cancelled " + "by user",
 						null, null, -1);
-			
+
 			OBOProperty t = (OBOProperty) io;
 			for (List<String> chain : holdsOverChainMap.get(io)) {
 				List<OBOProperty> pChain = new ArrayList<OBOProperty>();
@@ -1285,8 +1287,8 @@ public class DefaultOBOParser implements OBOParser {
 					if (p == null) {
 						if (allowDanglingParents) {
 							DanglingObject dangling = objectFactory
-							    .createDanglingObject(pid, false);
-						    logger.info("null property " + pid + "--added dangling object");
+							.createDanglingObject(pid, false);
+							logger.info("null property " + pid + "--added dangling object");
 							p = dangling;
 						} else
 							throw new OBOParseException("Assigned non-existant property in chain "
@@ -1300,7 +1302,7 @@ public class DefaultOBOParser implements OBOParser {
 
 						pChain.add((OBOProperty) p);
 					}
-				
+
 				}
 				t.addHoldsOverChain(pChain);
 			}
@@ -1396,7 +1398,7 @@ public class DefaultOBOParser implements OBOParser {
 					throw new OBOParseException("Unrecognized datatype "
 							+ pvs.typeID, pvs.getPath(), pvs.getLine(), pvs
 							.getLineNum());
-							*/
+				 */
 
 				if (!(type_o instanceof Datatype))
 					throw new OBOParseException("Non-datatype " + pvs.typeID
