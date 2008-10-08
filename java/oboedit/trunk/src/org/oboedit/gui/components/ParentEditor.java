@@ -404,7 +404,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				field.setMinimumSize(new Dimension(0, (int) field
 						.getMinimumSize().getHeight()));
 				panel.add(field, "Center");
-
+				
 				final JButton trashButton = new JButton(Preferences
 						.loadLibraryIcon("trashcan.gif"));
 				trashButton.setPreferredSize(new Dimension(20, 18));

@@ -30,6 +30,7 @@ public class LabelBasedNodeSizeProvider implements NodeSizeProvider {
 	}
 
 	public String getLabel(ObjectSelector selector, IdentifiedObject io) {
+		logger.debug(">> LabelBasedNodeSizeProvider.getLabel");
 		return labelProvider.getLabel(selector, io);
 	}
 

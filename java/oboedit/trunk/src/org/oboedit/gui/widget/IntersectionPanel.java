@@ -118,6 +118,8 @@ public class IntersectionPanel extends AbstractTextEditComponent {
 			for (OBOProperty property : TermUtil
 					.getRelationshipTypes(SessionManager.getManager()
 							.getSession())) {
+				logger.debug("IntersectionPanel.getRelationshipTypes");
+				logger.debug(">> property: " + property);
 				propertyBox.addItem(property);
 			}
 			add(Box.createHorizontalStrut(30));
