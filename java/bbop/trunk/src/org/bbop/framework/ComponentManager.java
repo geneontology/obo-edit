@@ -460,7 +460,7 @@ public class ComponentManager {
 	}
 
 	public static String getIDSuffix(String componentID) {
-		int endIndex = componentID.indexOf('.');
+		int endIndex = componentID.indexOf(':');
 		return componentID.substring(endIndex + 1, componentID.length());
 	}
 
