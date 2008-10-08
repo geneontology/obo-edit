@@ -197,7 +197,7 @@ ListCellRenderer {
 				setBackground(null);
 				return this;
 			} else if (value.equals(PathUtil.TYPES)) {
-				setText("Relations");
+				setText("User-specified Relations");
 				setForeground(Color.blue);
 				setBorder(null);
 				setBackground(null);
