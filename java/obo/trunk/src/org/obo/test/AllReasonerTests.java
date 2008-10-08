@@ -25,6 +25,8 @@ public class AllReasonerTests extends TestCase {
 		out.addTestSuite(DisjointnessTest2.class);
 
 		out.addTestSuite(HoldsOverChainReasonerTest.class);
+		out.addTestSuite(RedundancyTest.class);
+
 		out.addTestSuite(ReasonerRedundancyTest.class);
 
 		out.addTestSuite(IntersectionBloodCellExampleTest.class);

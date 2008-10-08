@@ -48,7 +48,7 @@ public class RedundancyTest extends AbstractReasonerTest {
 
 
 
-	public void check() throws Exception {
+	public void testIsRedundant() throws Exception {
 
 		for (OBOObject oo : TermUtil.getOBOObjects(session)) {
 			for (Link link : reasonedDB.getParents(oo)) {
@@ -82,14 +82,6 @@ public class RedundancyTest extends AbstractReasonerTest {
 		// set both child and parent tags
 	}
 	
-	public void testIsRedundant() throws Exception {
-
-		reReason(new LinkPileReasonerFactory());
-		check();
-		reReason(new ForwardChainingReasonerFactory());
-		check();
-
-	}
 
 
 }
