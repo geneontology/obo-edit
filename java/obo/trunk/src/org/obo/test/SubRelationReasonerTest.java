@@ -60,7 +60,7 @@ public class SubRelationReasonerTest extends AbstractReasonerTest {
 		testForIsA("b","DIRECTLY_Develops_from_C"); 
 		testForIsAInTrimmed("b","DIRECTLY_Develops_from_C"); 
 		testForIsA("b","Develops_from_C"); 
-		testForNoIsAInTrimmed("b","Develops_from_C"); 
+		testForNoIsAInTrimmed("b","Develops_from_C");
 		testForIsA("a","Develops_from_C"); 
 		testForIsAInTrimmed("a","Develops_from_C"); 
 		//testForNoIsAInTrimmed("b","Develops_from_C");  // redundant

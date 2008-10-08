@@ -11,6 +11,7 @@ import org.bbop.io.AuditedPrintStream;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOProperty;
 import org.obo.reasoner.impl.PelletWrappedReasonerFactory;
 
 import org.apache.log4j.*;
@@ -63,9 +64,9 @@ public class TransitivityTest extends AbstractReasonerTest {
 		 * the implied link through symmetry.
 		 *  Can/should pellet do this?
 		 */
-		testForLink("is_left_of", "inverse_of", "is_right_of");
+		testForLink("is_left_of", OBOProperty.INVERSE_OF.toString(), "is_right_of");
 		if (!getReasonerFactory().getClass().equals(PelletWrappedReasonerFactory.class))
-			testForLink("is_right_of", "inverse_of", "is_left_of");
+			testForLink("is_right_of", OBOProperty.INVERSE_OF.toString(), "is_left_of");
 	}
 
 
