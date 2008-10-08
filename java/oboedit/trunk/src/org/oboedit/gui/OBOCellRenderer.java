@@ -94,7 +94,7 @@ ListCellRenderer {
 
 		// Use preferred font for text
 		setFont(Preferences.getPreferences().getFont());
-		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
+//		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
 		setIcon(multiIcon);
 	}
 
@@ -115,7 +115,6 @@ ListCellRenderer {
 
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
-		logger.debug("getListCellRenderer");
 		if (isSelected) {
 			setOpaque(true);
 			setBackground(Preferences.defaultSelectionColor());
@@ -240,12 +239,6 @@ ListCellRenderer {
 			}
 
 			RenderSpec spec;
-			//  >>>
-//			if (!link.getChild().isBuiltIn()) {
-//				multiIcon.addIcon(linkIcon);
-//				linkIcon.setColor(Color.black);
-//				linkIcon.setLineWidth(1);
-//				linkIcon.setLineType(LineType.SOLID_LINE);
 			if (tree instanceof FilteredRenderable) {
 				FilteredRenderable fr = (FilteredRenderable) tree;
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
