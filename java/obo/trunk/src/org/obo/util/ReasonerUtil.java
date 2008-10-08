@@ -206,7 +206,9 @@ public class ReasonerUtil {
 		if (!TermUtil.isImplied(link))
 			return false; // asserted links are never trimmed
 		if (TermUtil.isIntersection(link))
-			return true;
+			return true; // TODO
+		if (!link.getType().equals(OBOProperty.IS_A))
+			return true; // trim all implied non-is_a links
 		if (link.getChild().equals(link.getParent()))
 			return true; // trim all reflexive links
 
