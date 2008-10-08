@@ -370,7 +370,6 @@ public class ComponentManager {
 
 	/**
 	 * @param comp
-	 * @throws FileNotFoundException
 	 * 
 	 * <p>Reads in the saved configuration settings for a component that is being newly opened. 
 	 * The settings class is a <a href="http://en.wikipedia.org/wiki/JavaBeans">JavaBean</a> 
@@ -378,7 +377,7 @@ public class ComponentManager {
 	 * <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/beans/XMLDecoder.html">XMLDecoder</a>. </p>
 	 * 
 	 */
-	public void addActiveComponent(GUIComponent comp) throws FileNotFoundException   {
+	public void addActiveComponent(GUIComponent comp) {
 		logger.debug("ComponentManager: addActiveComponent. comp = " + comp);
 		activeComponents.put(comp.getID(), comp);
 		//logger.debug("ComponentManager: addActiveComponent. comp.getID() = " + comp.getID());
@@ -411,7 +410,7 @@ public class ComponentManager {
 						new FileInputStream(f)));
 				config = (ComponentConfiguration) decoder.readObject();
 				//logger.debug("ComponentManager: addActiveComponent. New XMLDecoder created.");
-			} catch (Exception ex) {
+			} catch (FileNotFoundException ex) {
 				ex.printStackTrace();
 			}
 		}
