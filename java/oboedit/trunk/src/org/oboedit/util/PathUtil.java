@@ -462,8 +462,9 @@ public class PathUtil {
 			os[0] = PathUtil.ROOT;
 			if (TermUtil.isObsolete(link.getChild()))
 				os[1] = PathUtil.OBSOLETE;
-			else if (TermUtil.isProperty(link.getChild()))
+			else if (TermUtil.isProperty(link.getChild())){
 				os[1] = PathUtil.TYPES;
+				}
 			else if (TermUtil.isClass(link.getChild()))
 				os[1] = PathUtil.CLASSES;
 			else

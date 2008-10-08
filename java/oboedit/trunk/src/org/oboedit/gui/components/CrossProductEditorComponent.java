@@ -68,10 +68,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		.loadLibraryIcon("trashcan.gif");
 		protected JButton deleteButton = new JButton(deleteIcon);
 
-		//cotton ball icon
+
+		//cotton ball icon - select genus term
 		protected Icon selectIcon = Preferences
 		.loadLibraryIcon("selector.gif");
-		protected JButton selectButton = new JButton(selectIcon);
+		JButton selectButton = new JButton(selectIcon);
 
 		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(
 				new TermAutocompleteModel());
@@ -83,7 +84,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		public RelationshipLinePanel() {
 			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 					KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false),
-			"escapeLine");
+					"escapeLine");
 			getActionMap().put("escapeLine", new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					if (getProperty() == null || getParentTerm() == null) {
@@ -125,7 +126,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			add(Box.createHorizontalStrut(10));
 			add(parentBox);
 			add(Box.createHorizontalStrut(10));
+			selectButton.setToolTipText("Select genus term");
 			add(selectButton);
+			deleteButton.setToolTipText("Delete relation");
 			add(deleteButton);
 		}
 
@@ -379,7 +382,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	public java.util.List getChanges() {
 		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
-		
+
 		if (currentObject instanceof LinkedObject) {
 			//get existing differentia
 			Collection<Link> differentia = ReasonerUtil
