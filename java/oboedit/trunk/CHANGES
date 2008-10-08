@@ -25,5 +25,8 @@ everyone.
 
 Features:
 - Advanced Tab in Configuration Manager
+- Relations section in OTE only shows user-specified relations (no built-ins).
+- Cross Products Tab in Text Editor now shows only user-defined relations while selecting Discriminating relations.
+
 
 
