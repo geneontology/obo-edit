@@ -615,9 +615,10 @@ public class TermUtil {
 	 */
 	public static Collection<OBOProperty> getRelationshipTypes(
 			LinkDatabase linkDatabase) {
+//		logger.debug("TermUtil.getRelationshipTypes");
 		Collection<OBOProperty> out = new LinkedList<OBOProperty>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
-			if (isProperty(io) && !isObsolete(io)) {
+			if (isProperty(io) && !isObsolete(io) && !io.isBuiltIn()){
 				out.add((OBOProperty) io);
 			}
 		}
