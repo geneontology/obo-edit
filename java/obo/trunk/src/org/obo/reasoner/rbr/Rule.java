@@ -13,4 +13,5 @@ public interface Rule {
 	public Collection<Explanation> getNewInferences(ReasonedLinkDatabase reasoner);
 	public void end(ReasonedLinkDatabase reasoner);
 	public void uninstall(ReasonedLinkDatabase reasoner);
+	public boolean isRedundant(ReasonedLinkDatabase reasoner, Link link);
 }

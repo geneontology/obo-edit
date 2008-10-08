@@ -97,6 +97,9 @@ public class IntersectionRule extends AbstractRule {
 	}
 
 	public Collection<Explanation> getNewInferences(ReasonedLinkDatabase reasoner) {
+		long time;
+		time = System.nanoTime();
+
 		ArrayList<Explanation> expls = new ArrayList<Explanation>();
 
 		if (isFirstPass) {
@@ -137,9 +140,17 @@ public class IntersectionRule extends AbstractRule {
 				}
 			}
 			for (Link candidateLink : reasoner.getChildren(bestLink.getParent())) {
-				if (candidateLink.getType().equals(bestLink.getType())) {
+				OBOProperty prop = candidateLink.getType();
+				if (prop.equals(bestLink.getType())) {
+					LinkedObject candidateSubClass = candidateLink.getChild();
+					Link existingLink = reasoner.hasRelationship(candidateSubClass, prop, xp);
+					if (existingLink != null) {
+						Collection<Explanation> existingExpls = reasoner.getExplanations(existingLink);
+						if (!onlyGiven(existingExpls))
+							continue; // we have this already
+					}	
 					// on the first pass we collect potential candidates
-					candidateSubClasses.add(candidateLink.getChild());
+					candidateSubClasses.add(candidateSubClass);
 				}
 			}
 			for (Link nsLink : intersectionMap.get(xp)) {
@@ -169,6 +180,7 @@ public class IntersectionRule extends AbstractRule {
 				expls.add(exp);	
 			}
 		}
+		ruleTime += (System.nanoTime() - time);
 		return expls;	
 	}
 

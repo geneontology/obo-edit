@@ -53,6 +53,9 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected String progressString;
 
 	protected Number progressValue;
+	
+	protected long expTime = 0;
+
 
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
 
@@ -330,7 +333,6 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 		}
 	}
 	
-	long expTime = 0;
 	protected void internalAddExplanation(Link link, Explanation explanation) {
 		long time = System.nanoTime();
 		explanationMap.add(link, explanation);
