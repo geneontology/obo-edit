@@ -71,7 +71,7 @@ public class LinkDatabaseLayoutEngine {
 		// ViewRenderedStyleText text = null;
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (TermUtil.isProperty(io) || TermUtil.isObsolete(io)
-					|| !(io instanceof LinkedObject) || !io.isBuiltIn())
+					|| !(io instanceof LinkedObject) || io.isBuiltIn())
 				continue;
 			graphLayout.addNode(io);
 			int width = 0;
@@ -148,7 +148,7 @@ public class LinkDatabaseLayoutEngine {
 		});
 		for (IdentifiedObject io : objects) {
 			if (TermUtil.isProperty(io) || TermUtil.isObsolete(io)
-					|| !(io instanceof LinkedObject) || !io.isBuiltIn())
+					|| !(io instanceof LinkedObject) || io.isBuiltIn())
 				continue;
 			LinkedObject lo = (LinkedObject) io;
 			Shape s = graphLayout.getNodeShape(lo);
