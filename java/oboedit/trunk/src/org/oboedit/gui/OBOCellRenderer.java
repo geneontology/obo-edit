@@ -94,7 +94,7 @@ ListCellRenderer {
 
 		// Use preferred font for text
 		setFont(Preferences.getPreferences().getFont());
-//		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
+		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
 		setIcon(multiIcon);
 	}
 
@@ -131,7 +131,6 @@ ListCellRenderer {
 			setForeground(Color.red);
 		else
 			setForeground(Color.black);
-
 		setText(text);
 
 		return this;
@@ -197,7 +196,8 @@ ListCellRenderer {
 				setBackground(null);
 				return this;
 			} else if (value.equals(PathUtil.TYPES)) {
-				setText("User-specified Relations");
+				setText("Relations");  
+//				setText("User-specified Relations");
 				setForeground(Color.blue);
 				setBorder(null);
 				setBackground(null);
@@ -216,9 +216,9 @@ ListCellRenderer {
 				return this;
 			} else
 				setForeground(Color.black);
-			multiIcon.addIcon(scaledIcon);
-
+			
 			multiIcon.addIcon(linkIcon);
+			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
 			linkIcon.setLineWidth(1);
 			linkIcon.setLineType(LineType.SOLID_LINE);
@@ -270,7 +270,7 @@ ListCellRenderer {
 				}
 
 			}
-//			}
+
 
 			linkIcon.setLeaf(leaf);
 			linkIcon.setPath(tree.getPathForRow(row));
