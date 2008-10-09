@@ -30,7 +30,7 @@ public class DefaultTermModel implements TermModel {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DefaultTermModel.class);
 
-        protected boolean SHOW_SYMMETRIC_RELATIONS_AS_LEAVES = true;  // ! Make this user-settable
+	protected boolean SHOW_SYMMETRIC_RELATIONS_AS_LEAVES = true;  // ! Make this user-settable
 
 	protected Vector listeners = new Vector();
 
@@ -112,15 +112,15 @@ public class DefaultTermModel implements TermModel {
 	// on initial load.  So I've gotten rid of this reloadListener and gone back to having
 	// OBOTermPanel call upon this class to reload when appropriate.  There's a new method
 	// reloadFilters for that.
-//  	protected ReloadListener reloadListener = new ReloadListener() {
-//  	        public void reload(ReloadEvent e) {
-// //			if (e.isHistory()) // Don't need to reload for history events
-// //				return;
-//  			linkFilter.clear();
-//  			termFilter.clear();
-//  			initializeFilters();
-// 			DefaultTermModel.this.reload();
-//  		} };
+//	protected ReloadListener reloadListener = new ReloadListener() {
+//	public void reload(ReloadEvent e) {
+//	//			if (e.isHistory()) // Don't need to reload for history events
+//	//				return;
+//	linkFilter.clear();
+//	termFilter.clear();
+//	initializeFilters();
+//	DefaultTermModel.this.reload();
+//	} };
 
 	protected static class TermSorter implements Comparator {
 		protected boolean ignoreCase = true;
@@ -145,17 +145,17 @@ public class DefaultTermModel implements TermModel {
 				String namea = terma.getName();
 				String nameb = termb.getName();
 				if (namea == null && nameb == null)
-				    return 0;
+					return 0;
 				if (namea == null)
-				    return -1;
+					return -1;
 				if (nameb == null)
-				    return 1;
+					return 1;
 
 				int compval;
 				if (ignoreCase)
-				    compval = namea.compareToIgnoreCase(nameb);
+					compval = namea.compareToIgnoreCase(nameb);
 				else
-				    compval = namea.compareTo(nameb);
+					compval = namea.compareTo(nameb);
 
 				if (compval == 0) {
 					if (la.getType() != lb.getType()) {
@@ -166,8 +166,8 @@ public class DefaultTermModel implements TermModel {
 						else {
 							if (ignoreCase)
 								compval = la.getType().getID()
-										.compareToIgnoreCase(
-												lb.getType().getID());
+								.compareToIgnoreCase(
+										lb.getType().getID());
 							else
 								compval = la.getType().getID().compareTo(
 										lb.getType().getID());
@@ -276,7 +276,7 @@ public class DefaultTermModel implements TermModel {
 
 	public void setLinkFilter(Filter filter) {
 		if ((filter == null && userLinkFilter == null) ||
-		    (filter != null && filter.equals(userLinkFilter))) {
+				(filter != null && filter.equals(userLinkFilter))) {
 			// Avoid unnecessary reload
 			return;
 		}
@@ -292,7 +292,7 @@ public class DefaultTermModel implements TermModel {
 
 	public void setTermFilter(Filter filter) {
 		if ((filter == null && userTermFilter == null) ||
-		    (filter != null && filter.equals(userTermFilter)))
+				(filter != null && filter.equals(userTermFilter)))
 			// Avoid unnecessary reload
 			return;
 		if (userTermFilter != null)
@@ -414,7 +414,7 @@ public class DefaultTermModel implements TermModel {
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
 					.getManager().getReasoner());
 			filteredLinkDatabase.setFilters(getMergedTermFilter(),
-							getMergedLinkFilter());
+					getMergedLinkFilter());
 			trimmedLinkDB = new TrimmedLinkDatabase(filteredLinkDatabase);
 			linkDatabase = trimmedLinkDB;
 			// if (filterProperty == null)
@@ -441,7 +441,7 @@ public class DefaultTermModel implements TermModel {
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
 					.getManager().getSession().getLinkDatabase());
 			filteredLinkDatabase.setFilters(getMergedTermFilter(),
-							getMergedLinkFilter());
+					getMergedLinkFilter());
 			linkDatabase = filteredLinkDatabase;
 		}
 	}
@@ -474,7 +474,7 @@ public class DefaultTermModel implements TermModel {
 			if (trimmedLinkDB != null)
 				trimmedLinkDB.setEnableTrimming(true);
 //			logger.info("   detected roots in "
-//					+ (System.currentTimeMillis() - time));
+//			+ (System.currentTimeMillis() - time));
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -491,7 +491,7 @@ public class DefaultTermModel implements TermModel {
 
 				if (TermUtil.isObsolete(io))
 					VectorUtil
-							.insertSorted(obsoleteRoots, comparator, rootLink);
+					.insertSorted(obsoleteRoots, comparator, rootLink);
 				else if (io instanceof OBOClass)
 					VectorUtil.insertSorted(classRoots, comparator, rootLink);
 				// remove built-ins from display
@@ -554,8 +554,8 @@ public class DefaultTermModel implements TermModel {
 			} else if (o instanceof Link) {
 				// We could keep the disjoint relations out of the OBOTermPanel this way...
 //				if (HIDE_DISJOINT && ((Link)o).getType() != null && ((Link)o).getType().equals(OBOProperty.DISJOINT_FROM)) {
-//					logger.debug("wrapSet: not adding " + o); // DEL
-//					continue;
+//				logger.debug("wrapSet: not adding " + o); // DEL
+//				continue;
 //				}
 				link = (Link) o;
 			}
@@ -603,7 +603,7 @@ public class DefaultTermModel implements TermModel {
 			return obsoleteRoots;
 		else if (parent instanceof Relationship) {
 			LinkedObject lo = (LinkedObject) SessionManager.getManager().getSession()
-					.getObject(((Relationship) parent).getChild().getID());
+			.getObject(((Relationship) parent).getChild().getID());
 			List out = (List) childCache.get(lo);
 
 			if (out == null) {
@@ -613,7 +613,7 @@ public class DefaultTermModel implements TermModel {
 					Collection<Link> children = linkDatabase.getChildren(lo);
 					// Not used
 //					Collection<Link> realChildren = SessionManager.getManager()
-//							.getSession().getLinkDatabase().getChildren(lo);
+//					.getSession().getLinkDatabase().getChildren(lo);
 					out = wrapSet(children);
 				}
 				childCache.put(lo, out);
