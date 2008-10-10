@@ -9,7 +9,7 @@ import org.gmod.gbol.simpleObject.Feature;
  *
  */
 
-public class Exon extends AbstractSingleLocationBioObject {
+public class Exon extends AbstractSingleLocationBioFeature {
 
 	/** Constructor.
 	 * 
