@@ -23,4 +23,10 @@ public class PhylogeneticNodeRelationship extends org.gmod.gbol.simpleObject.gen
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

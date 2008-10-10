@@ -23,4 +23,10 @@ public class CVTermProperty extends org.gmod.gbol.simpleObject.generated.Abstrac
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

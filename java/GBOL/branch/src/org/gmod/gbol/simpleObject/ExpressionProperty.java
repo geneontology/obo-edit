@@ -23,4 +23,10 @@ public class ExpressionProperty extends org.gmod.gbol.simpleObject.generated.Abs
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

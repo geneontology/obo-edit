@@ -23,4 +23,10 @@ public class Acquisition extends org.gmod.gbol.simpleObject.generated.AbstractAc
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

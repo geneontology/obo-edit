@@ -23,4 +23,10 @@ public class PhylogeneticNodeProperty extends org.gmod.gbol.simpleObject.generat
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

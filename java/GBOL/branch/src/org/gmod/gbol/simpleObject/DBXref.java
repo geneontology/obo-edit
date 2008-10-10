@@ -34,4 +34,44 @@ public class DBXref extends org.gmod.gbol.simpleObject.generated.AbstractDBXref 
 
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int db = 1;
+			public static final int dbxrefprops = 2;
+		}
+		
+		public SimpleObjectIterator(DBXref dbxref)
+		{
+			super(dbxref);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			DBXref dbxref = (DBXref)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.db, dbxref.getDb());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.db) {
+					processCollectionIterators(Status.dbxrefprops, dbxref.getDbxrefProperties());
+				}
+				if (status == Status.dbxrefprops) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
 }

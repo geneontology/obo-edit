@@ -30,4 +30,42 @@ public class PhenotypeCVTerm extends org.gmod.gbol.simpleObject.generated.Abstra
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int cvterm = 1;
+		}
+	
+		public SimpleObjectIterator(PhenotypeCVTerm phenotypeCvterm)
+		{
+			super(phenotypeCvterm);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			PhenotypeCVTerm phenotypeCvterm = (PhenotypeCVTerm)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				status = Status.cvterm;
+				soIter = phenotypeCvterm.getCvterm().getWriteableObjects();
+			}
+			else {
+				if (status == Status.cvterm) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+	
 }

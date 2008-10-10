@@ -39,4 +39,49 @@ public class Publication extends org.gmod.gbol.simpleObject.generated.AbstractPu
 
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int type = 1;
+			public static final int pubAuthors = 2;
+			public static final int pubDbxrefs = 3;
+		}
+				
+		public SimpleObjectIterator(Publication pub)
+		{
+			super(pub);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Publication pub = (Publication)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.type, pub.getType());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.type) {
+					processCollectionIterators(Status.pubAuthors, pub.getPublicationAuthors());
+				}
+				if (status == Status.pubAuthors) {
+					processCollectionIterators(Status.pubDbxrefs, pub.getPublicationDBXrefs());
+				}
+				if (status == Status.pubDbxrefs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+	
 }

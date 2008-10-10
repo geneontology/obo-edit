@@ -23,4 +23,10 @@ public class BiomaterialDBXref extends org.gmod.gbol.simpleObject.generated.Abst
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

@@ -23,4 +23,10 @@ public class ArrayDesign extends org.gmod.gbol.simpleObject.generated.AbstractAr
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

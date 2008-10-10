@@ -23,4 +23,10 @@ public class PublicationRelationship extends org.gmod.gbol.simpleObject.generate
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

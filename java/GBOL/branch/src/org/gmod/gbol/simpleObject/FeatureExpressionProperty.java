@@ -23,4 +23,10 @@ public class FeatureExpressionProperty extends org.gmod.gbol.simpleObject.genera
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

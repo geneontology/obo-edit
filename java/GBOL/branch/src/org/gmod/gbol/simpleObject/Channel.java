@@ -23,4 +23,10 @@ public class Channel extends org.gmod.gbol.simpleObject.generated.AbstractChanne
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

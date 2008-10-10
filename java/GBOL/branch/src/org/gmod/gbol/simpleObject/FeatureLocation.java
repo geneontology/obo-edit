@@ -19,6 +19,26 @@ public class FeatureLocation extends org.gmod.gbol.simpleObject.generated.Abstra
 		super();
 	}
 
+	/** Copy constructor.  Does a shallow copy from the source FeatureLocation.
+	 * 
+	 * @param src - FeatureLocation to copy the data from
+	 */
+	public FeatureLocation(FeatureLocation src)
+	{
+		setSourceFeature(src.getSourceFeature());
+		setFeature(src.getFeature());
+		setFmin(src.getFmin());
+		setIsFminPartial(src.isIsFminPartial());
+		setFmax(src.getFmax());
+		setIsFmaxPartial(src.isIsFmaxPartial());
+		setStrand(src.getStrand());
+		setPhase(src.getPhase());
+		setResidueInfo(src.getResidueInfo());
+		setLocgroup(src.getLocgroup());
+		setRank(src.getRank());
+		setFeatureLocationPublications(src.getFeatureLocationPublications());
+	}
+	
 	@Override
 	public Collection<AbstractSimpleObject> getWriteObjects() {
 		ArrayList<AbstractSimpleObject> writeObjects = new ArrayList<AbstractSimpleObject>();
@@ -34,4 +54,46 @@ public class FeatureLocation extends org.gmod.gbol.simpleObject.generated.Abstra
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int srcFeature = 1;
+			public static final int featureLocPubs = 2;
+		}
+				
+		public SimpleObjectIterator(FeatureLocation loc)
+		{
+			super(loc);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			FeatureLocation loc = (FeatureLocation)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.srcFeature, loc.getSourceFeature());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.srcFeature) {
+					processCollectionIterators(Status.featureLocPubs, loc.getFeatureLocationPublications());
+				}
+				if (status == Status.featureLocPubs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+
 }

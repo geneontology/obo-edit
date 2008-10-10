@@ -33,4 +33,47 @@ public class Organism extends org.gmod.gbol.simpleObject.generated.AbstractOrgan
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int organismProps = 1;
+			public static final int organismDbxrefs = 2;
+		}
+		
+		public SimpleObjectIterator(Organism organism)
+		{
+			super(organism);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Organism organism = (Organism)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processCollectionIterators(Status.organismProps, organism.getOrganismProperties());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.organismProps) {
+					processCollectionIterators(Status.organismDbxrefs, organism.getOrganismDBXrefs());
+				}
+				if (status == Status.organismDbxrefs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+
 }

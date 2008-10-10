@@ -34,4 +34,47 @@ public class FeatureRelationshipProperty extends org.gmod.gbol.simpleObject.gene
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int type = 1;
+			public static final int featureRelationshipPropPubs = 2;
+		}
+				
+		public SimpleObjectIterator(FeatureRelationshipProperty featureRelationshipProp)
+		{
+			super(featureRelationshipProp);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			FeatureRelationshipProperty featureRelationshipProp = (FeatureRelationshipProperty)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.type, featureRelationshipProp.getType());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.type) {
+					processCollectionIterators(Status.featureRelationshipPropPubs,
+							featureRelationshipProp.getFeatureRelationshipPropertyPublications());
+				}
+				else if (status == Status.featureRelationshipPropPubs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+	
 }

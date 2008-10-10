@@ -29,4 +29,42 @@ public class FeaturePhenotype extends org.gmod.gbol.simpleObject.generated.Abstr
 		writeObjects.addAll(this.getPhenotype().getWriteObjects());
 		
 		return writeObjects;	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int phenotype = 1;
+		}
+	
+		public SimpleObjectIterator(FeaturePhenotype featurePhenotype)
+		{
+			super(featurePhenotype);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeaturePhenotype featurePhenotype = (FeaturePhenotype)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.phenotype, featurePhenotype.getPhenotype());
+			}
+			else {
+				if (status == Status.phenotype) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
+
 }

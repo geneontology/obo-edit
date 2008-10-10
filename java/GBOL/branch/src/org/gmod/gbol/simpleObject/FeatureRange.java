@@ -23,4 +23,10 @@ public class FeatureRange extends org.gmod.gbol.simpleObject.generated.AbstractF
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

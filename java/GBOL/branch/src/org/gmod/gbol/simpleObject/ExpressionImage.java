@@ -23,4 +23,10 @@ public class ExpressionImage extends org.gmod.gbol.simpleObject.generated.Abstra
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }
