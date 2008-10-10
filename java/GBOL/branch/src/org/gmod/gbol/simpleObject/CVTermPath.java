@@ -23,4 +23,10 @@ public class CVTermPath extends org.gmod.gbol.simpleObject.generated.AbstractCVT
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

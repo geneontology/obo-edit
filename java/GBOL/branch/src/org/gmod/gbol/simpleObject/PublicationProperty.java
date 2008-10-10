@@ -23,4 +23,10 @@ public class PublicationProperty extends org.gmod.gbol.simpleObject.generated.Ab
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

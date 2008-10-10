@@ -30,4 +30,41 @@ public class FeatureCVTermDBXref extends org.gmod.gbol.simpleObject.generated.Ab
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int dbxref = 1;
+		}
+	
+		public SimpleObjectIterator(FeatureCVTermDBXref featureCvtermDbxref)
+		{
+			super(featureCvtermDbxref);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeatureCVTermDBXref featureCvtermDbxref = (FeatureCVTermDBXref)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.dbxref, featureCvtermDbxref.getDbxref());
+			}
+			else {
+				if (status == Status.dbxref) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
 }

@@ -23,4 +23,10 @@ public class AssayProject extends org.gmod.gbol.simpleObject.generated.AbstractA
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

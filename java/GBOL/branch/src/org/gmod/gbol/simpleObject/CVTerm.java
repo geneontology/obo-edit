@@ -42,4 +42,42 @@ public class CVTerm extends org.gmod.gbol.simpleObject.generated.AbstractCVTerm 
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int cv = 1;
+			public final static int dbxref = 2;
+		}
+	
+		public SimpleObjectIterator(CVTerm cvterm)
+		{
+			super(cvterm);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			CVTerm cvterm = (CVTerm)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.cv, cvterm.getCv());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.cv) {
+					processSingletonIterator(Status.dbxref, cvterm.getDbxref());
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
 }

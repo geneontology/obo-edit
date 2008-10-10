@@ -53,4 +53,60 @@ public class FeatureRelationship extends org.gmod.gbol.simpleObject.generated.Ab
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int type = 1;
+			public static final int subjectFeature = 2;
+			public static final int objectFeature = 3;
+			public static final int featureRelationshipProps = 4;
+			public static final int featureRelationshipPubs = 5;
+		}
+				
+		public SimpleObjectIterator(FeatureRelationship featureRelationship)
+		{
+			super(featureRelationship);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			FeatureRelationship featureRelationship = (FeatureRelationship)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.type, featureRelationship.getType());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.type) {
+					processSingletonIterator(Status.subjectFeature, featureRelationship.getSubjectFeature());
+				}
+				if (status == Status.subjectFeature) {
+					processSingletonIterator(Status.objectFeature, featureRelationship.getObjectFeature());
+				}
+				if (status == Status.objectFeature) {
+					processCollectionIterators(Status.featureRelationshipProps,
+							featureRelationship.getFeatureRelationshipPublications());
+				}
+				if (status == Status.featureRelationshipProps) {
+					processCollectionIterators(Status.featureRelationshipPubs,
+							featureRelationship.getFeatureRelationshipPublications());
+				}
+				if (status == Status.featureRelationshipPubs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+
 }

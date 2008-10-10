@@ -6,10 +6,12 @@ import org.gmod.gbol.simpleObject.AbstractSimpleObject;
 import org.gmod.gbol.simpleObject.CVTerm;
 import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
+import org.gmod.gbol.simpleObject.SimpleObjectIteratorInterface;
 
 public interface SimpleObjectIOInterface {
 
-	public boolean write(Collection<AbstractSimpleObject> simpleObjects);
+	//public boolean write(Collection<AbstractSimpleObject> simpleObjects);
+	public boolean write(SimpleObjectIteratorInterface iter) throws Exception;
 	public Collection<? extends AbstractSimpleObject> readAll() throws Exception;
 	public Collection<? extends Feature> getAllFeatures() throws Exception;
 	public Collection<? extends Feature> getAllFeaturesByRange(FeatureLocation loc) throws Exception;

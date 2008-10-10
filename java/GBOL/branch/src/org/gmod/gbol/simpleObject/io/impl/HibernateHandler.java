@@ -9,19 +9,23 @@ import org.gmod.gbol.simpleObject.AbstractSimpleObject;
 import org.gmod.gbol.simpleObject.CVTerm;
 import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
+import org.gmod.gbol.simpleObject.SimpleObjectIteratorInterface;
 import org.gmod.gbol.simpleObject.io.SimpleObjectIOInterface;
 import org.gmod.gbol.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class HibernateHandler implements SimpleObjectIOInterface {
 
 	private SessionFactory sf;
+	private Session session;
 	
 	public HibernateHandler(String hibernateConfig) throws Exception
 	{
 		sf = HibernateUtil.buildSessionFactory(hibernateConfig);
+		session = sf.openSession();
 		beginTransaction();
 	}
 	
@@ -35,7 +39,7 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 	{
 		List<Feature> features = new ArrayList<Feature>();
 		String hql = "from Feature where type.name=? and type.cv.name=?";
-		Query query = sf.getCurrentSession().createQuery(hql);
+		Query query = session.createQuery(hql);
 		query.setString(0, cvterm.getName());
 		query.setString(1, cvterm.getCv().getName());
 		Iterator<?> i = query.iterate();
@@ -49,16 +53,49 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 	{
 		String hql = "from Feature";
 		List<Feature> features = new ArrayList<Feature>();
-		Iterator<?> i = sf.getCurrentSession().createQuery(hql).iterate();
+		Iterator<?> i = session.createQuery(hql).iterate();
 		while (i.hasNext()) {
 			features.add((Feature)i.next());
+		}
+		return features;
+	}
+	
+	public Collection<? extends Feature> getAllFeaturesByRange(FeatureLocation loc) throws Exception {
+		String hql = "from Feature as f join f.featureLocations as fl where fl.fmin>=? and fl.fmax<=? and fl.strand=?";
+		Query query = session.createQuery(hql);
+		query.setInteger(0, loc.getFmin());
+		query.setInteger(1, loc.getFmax());
+		query.setInteger(2, loc.getStrand());
+		List<Feature> features = new ArrayList<Feature>();
+		Iterator<?> i = query.iterate();
+		while (i.hasNext()) {
+			Object []objs = (Object [])i.next();
+			features.add((Feature)objs[0]);
+		}
+		return features;
+	}
+
+
+	public Collection<? extends Feature> getFeaturesByCVTermAndRange(CVTerm cvterm, FeatureLocation loc) throws Exception {
+		String hql = "from Feature as f join f.featureLocations as fl where fl.fmin>=? and fl.fmax<=? and fl.strand=? and f.type.name=? and f.type.cv.name=?";
+		Query query = session.createQuery(hql);
+		query.setInteger(0, loc.getFmin());
+		query.setInteger(1, loc.getFmax());
+		query.setInteger(2, loc.getStrand());
+		query.setString(3, cvterm.getName());
+		query.setString(4, cvterm.getCv().getName());
+		List<Feature> features = new ArrayList<Feature>();
+		Iterator<?> i = query.iterate();
+		while (i.hasNext()) {
+			Object []objs = (Object [])i.next();
+			features.add((Feature)objs[0]);
 		}
 		return features;
 	}
 
 	public boolean write(AbstractSimpleObject simpleObject) {
 		try {
-			sf.getCurrentSession().saveOrUpdate(simpleObject);
+			session.saveOrUpdate(simpleObject);
 		}
 		catch (HibernateException e) {
 			return false;
@@ -66,9 +103,9 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 		return true;
 	}
 
-	public boolean write(Collection<AbstractSimpleObject> simpleObjects) {
-		for (AbstractSimpleObject o : simpleObjects) {
-			if (!write(o)) {
+	public boolean write(SimpleObjectIteratorInterface iter) {
+		while (iter.hasNext()) {
+			if (!write(iter.next())) {
 				return false;
 			}
 		}
@@ -77,34 +114,22 @@ public class HibernateHandler implements SimpleObjectIOInterface {
 	
 	public void beginTransaction()
 	{
-		sf.getCurrentSession().getTransaction().begin();
+		session.getTransaction().begin();
 	}
 	
 	public void commitTransaction()
 	{
-		sf.getCurrentSession().getTransaction().commit();
+		session.getTransaction().commit();
 	}
 	
 	public void rollbackTransaction()
 	{
-		sf.getCurrentSession().getTransaction().rollback();
+		session.getTransaction().rollback();
 	}
 	
 	public void closeSession()
 	{
-		sf.getCurrentSession().close();
-	}
-
-	public Collection<? extends Feature> getAllFeaturesByRange(
-			FeatureLocation loc) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Collection<? extends Feature> getFeaturesByCVTermAndRange(
-			CVTerm cvterm, FeatureLocation loc) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		session.close();
 	}
 
 }

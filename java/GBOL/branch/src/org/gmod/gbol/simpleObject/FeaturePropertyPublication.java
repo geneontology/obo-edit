@@ -30,4 +30,41 @@ public class FeaturePropertyPublication extends org.gmod.gbol.simpleObject.gener
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int pub = 1;
+		}
+	
+		public SimpleObjectIterator(FeaturePropertyPublication featurePropPub)
+		{
+			super(featurePropPub);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeaturePropertyPublication featurePropPub = (FeaturePropertyPublication)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.pub, featurePropPub.getPublication());
+			}
+			else {
+				if (status == Status.pub) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
 }

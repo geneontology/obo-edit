@@ -23,4 +23,10 @@ public class CVTermDBXref extends org.gmod.gbol.simpleObject.generated.AbstractC
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

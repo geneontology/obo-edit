@@ -23,4 +23,10 @@ public class AssayProperty extends org.gmod.gbol.simpleObject.generated.Abstract
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

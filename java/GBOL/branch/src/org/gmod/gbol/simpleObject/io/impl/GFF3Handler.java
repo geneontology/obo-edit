@@ -16,6 +16,7 @@ import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureLocation;
 import org.gmod.gbol.simpleObject.FeatureRelationship;
 import org.gmod.gbol.simpleObject.Organism;
+import org.gmod.gbol.simpleObject.SimpleObjectIteratorInterface;
 import org.gmod.gbol.simpleObject.io.FileHandler;
 import org.gmod.gbol.simpleObject.io.SimpleObjectIOInterface;
 
@@ -150,7 +151,7 @@ public class GFF3Handler extends FileHandler implements SimpleObjectIOInterface 
 		throw new RuntimeException("Not implemented yet");
 	}
 
-	public boolean write(Collection<AbstractSimpleObject> simpleObjects) {
+	public boolean write(SimpleObjectIteratorInterface simpleObjects) {
 		System.err.println("Not implemented yet.");
 		return false;
 	}

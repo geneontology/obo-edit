@@ -23,4 +23,10 @@ public class Control extends org.gmod.gbol.simpleObject.generated.AbstractContro
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

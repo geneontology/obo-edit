@@ -23,4 +23,10 @@ public class StockCVTerm extends org.gmod.gbol.simpleObject.generated.AbstractSt
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

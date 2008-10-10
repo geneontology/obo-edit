@@ -30,4 +30,41 @@ public class FeatureLocationPublication extends org.gmod.gbol.simpleObject.gener
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int pub = 1;
+		}
+	
+		public SimpleObjectIterator(FeatureLocationPublication featureLocPub)
+		{
+			super(featureLocPub);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeatureLocationPublication pub = (FeatureLocationPublication)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.pub, pub.getPublication());
+			}
+			else {
+				if (status == Status.pub) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+	
 }

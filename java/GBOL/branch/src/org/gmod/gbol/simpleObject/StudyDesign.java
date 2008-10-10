@@ -23,4 +23,10 @@ public class StudyDesign extends org.gmod.gbol.simpleObject.generated.AbstractSt
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }
