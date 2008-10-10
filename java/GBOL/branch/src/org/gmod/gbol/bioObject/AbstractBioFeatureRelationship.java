@@ -4,7 +4,6 @@ import org.gmod.gbol.bioObject.conf.BioObjectConfiguration;
 import org.gmod.gbol.bioObject.conf.BioObjectConfigurationException;
 import org.gmod.gbol.bioObject.util.BioObjectUtil;
 import org.gmod.gbol.simpleObject.AbstractSimpleObject;
-import org.gmod.gbol.simpleObject.AbstractSimpleObjectIterator;
 import org.gmod.gbol.simpleObject.CVTerm;
 import org.gmod.gbol.simpleObject.Feature;
 import org.gmod.gbol.simpleObject.FeatureRelationship;

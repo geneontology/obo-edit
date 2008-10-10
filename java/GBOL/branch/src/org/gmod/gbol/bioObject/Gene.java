@@ -14,7 +14,7 @@ import org.gmod.gbol.simpleObject.FeatureRelationship;
  *
  */
 
-public class Gene extends AbstractSingleLocationBioObject {
+public class Gene extends AbstractSingleLocationBioFeature {
 
 	/** Constructor.
 	 * 
