@@ -23,4 +23,10 @@ public class EImage extends org.gmod.gbol.simpleObject.generated.AbstractEImage 
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

@@ -30,4 +30,41 @@ public class FeatureCVTermProperty extends org.gmod.gbol.simpleObject.generated.
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int type = 1;
+		}
+	
+		public SimpleObjectIterator(FeatureCVTermProperty featureCvtermProp)
+		{
+			super(featureCvtermProp);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeatureCVTermProperty featureCvtermProp = (FeatureCVTermProperty)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.type, featureCvtermProp.getType());
+			}
+			else {
+				if (status == Status.type) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+	
 }

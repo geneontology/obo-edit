@@ -23,4 +23,10 @@ public class Protocol extends org.gmod.gbol.simpleObject.generated.AbstractProto
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

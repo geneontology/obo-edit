@@ -23,4 +23,10 @@ public class Analysis extends org.gmod.gbol.simpleObject.generated.AbstractAnaly
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

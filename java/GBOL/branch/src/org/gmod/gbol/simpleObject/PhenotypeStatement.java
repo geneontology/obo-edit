@@ -34,4 +34,10 @@ public class PhenotypeStatement extends org.gmod.gbol.simpleObject.generated.Abs
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

@@ -23,4 +23,10 @@ public class PhylogeneticTreePublication extends org.gmod.gbol.simpleObject.gene
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

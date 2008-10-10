@@ -23,4 +23,10 @@ public class TableInfo extends org.gmod.gbol.simpleObject.generated.AbstractTabl
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

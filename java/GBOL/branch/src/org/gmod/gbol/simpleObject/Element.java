@@ -23,4 +23,10 @@ public class Element extends org.gmod.gbol.simpleObject.generated.AbstractElemen
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

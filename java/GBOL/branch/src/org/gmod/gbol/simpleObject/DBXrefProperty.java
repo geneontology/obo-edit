@@ -30,4 +30,41 @@ public class DBXrefProperty extends org.gmod.gbol.simpleObject.generated.Abstrac
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int type = 1;
+		}
+	
+		public SimpleObjectIterator(DBXrefProperty dbxrefProp)
+		{
+			super(dbxrefProp);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			DBXrefProperty dbxrefProp = (DBXrefProperty)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.type, dbxrefProp.getType());
+			}
+			else {
+				if (status == Status.type) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
 }

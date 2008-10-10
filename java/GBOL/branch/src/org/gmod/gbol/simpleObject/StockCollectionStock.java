@@ -23,4 +23,10 @@ public class StockCollectionStock extends org.gmod.gbol.simpleObject.generated.A
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

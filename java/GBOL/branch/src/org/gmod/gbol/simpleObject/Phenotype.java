@@ -40,4 +40,58 @@ public class Phenotype extends org.gmod.gbol.simpleObject.generated.AbstractPhen
 
 		return writeObjects;	
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int attribute = 1;
+			public static final int assay = 2;
+			public static final int cvalue = 3;
+			public static final int observable = 4;
+			public static final int phenotypeCvterms = 5;
+		}
+				
+		public SimpleObjectIterator(Phenotype phenotype)
+		{
+			super(phenotype);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Phenotype phenotype = (Phenotype)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.attribute, phenotype.getAttribute());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.attribute) {
+					processSingletonIterator(Status.assay, phenotype.getAssay());
+				}
+				if (status == Status.assay) {
+					processSingletonIterator(Status.cvalue, phenotype.getCvalue());
+				}
+				if (status == Status.cvalue) {
+					processSingletonIterator(Status.observable, phenotype.getObservable());
+				}
+				if (status == Status.observable) {
+						processCollectionIterators(Status.phenotypeCvterms, phenotype.getPhenotypeCVTerms());
+				}
+				if (status == Status.phenotypeCvterms) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+
 }

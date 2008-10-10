@@ -34,4 +34,42 @@ public class Genotype extends org.gmod.gbol.simpleObject.generated.AbstractGenot
 
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int phenotypeDescs = 1;
+		}
+				
+		public SimpleObjectIterator(Genotype genotype)
+		{
+			super(genotype);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Genotype genotype = (Genotype)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processCollectionIterators(Status.phenotypeDescs, genotype.getPhenotypeDescriptions());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.phenotypeDescs) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
+
 }

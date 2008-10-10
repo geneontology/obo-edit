@@ -31,4 +31,43 @@ public class Environment extends org.gmod.gbol.simpleObject.generated.AbstractEn
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int environmentCvterms = 1;
+		}
+				
+		public SimpleObjectIterator(Environment environment)
+		{
+			super(environment);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Environment environment = (Environment)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processCollectionIterators(Status.environmentCvterms, environment.getEnvironmentCVTerms());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.environmentCvterms) {
+					processLastCollectionIterator();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+
+	}
+
+
 }

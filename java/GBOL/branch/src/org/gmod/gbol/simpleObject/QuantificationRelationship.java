@@ -23,4 +23,10 @@ public class QuantificationRelationship extends org.gmod.gbol.simpleObject.gener
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

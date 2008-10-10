@@ -31,4 +31,34 @@ public class CV extends org.gmod.gbol.simpleObject.generated.AbstractCV {
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int done = 1;
+		}
+		
+		public SimpleObjectIterator(CV cv)
+		{
+			super(cv);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				status = Status.done;
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
 }

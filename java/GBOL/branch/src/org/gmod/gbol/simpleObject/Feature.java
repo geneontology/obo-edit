@@ -130,4 +130,92 @@ public class Feature extends org.gmod.gbol.simpleObject.generated.AbstractFeatur
 		// could involve us in a loop or a very long traversal
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public static final int type = 1;
+			public static final int dbxref = 2;
+			public static final int organism = 3;
+			public static final int featureLocs = 4;
+			public static final int featureGenotypes = 5;
+			public static final int featureCvterms = 6;
+			public static final int featureSynonyms = 7;
+			public static final int featurePubs = 8;
+			public static final int featurePhenotypes = 9;
+			public static final int featureProperties = 10;
+		}
+				
+		public SimpleObjectIterator(Feature feature)
+		{
+			super(feature);
+		}
+
+		public AbstractSimpleObject next()
+		{
+			Feature feature = (Feature)object;
+			AbstractSimpleObject retVal = null;
+			if (status != Status.self) {
+				retVal = soIter.next();
+				if (status == Status.notSet) {
+					processCollectionIterators(Status.featureProperties, feature.getFeatureProperties());
+				}
+				if (status == Status.featureProperties) {
+					processCollectionIterators(Status.featurePhenotypes, feature.getFeaturePhenotypes());
+				}
+				if (status == Status.featurePhenotypes) {
+					processCollectionIterators(Status.featurePubs, feature.getFeaturePublications());
+				}
+				if (status == Status.featurePubs) {
+					processCollectionIterators(Status.featureSynonyms, feature.getFeatureSynonyms());
+				}
+				if (status == Status.featureSynonyms) {
+					processCollectionIterators(Status.featureCvterms, feature.getFeatureCVTerms());
+				}
+				if (status == Status.featureCvterms) {
+					processCollectionIterators(Status.featureGenotypes, feature.getFeatureGenotypes());
+				}
+				if (status == Status.featureGenotypes) {
+					processCollectionIterators(Status.featureLocs, feature.getFeatureLocations());
+				}
+				if (status == Status.featureLocs) {
+					processSingletonIterator(Status.organism, feature.getOrganism());
+				}
+				if (status == Status.organism) {
+					AbstractSimpleObject newClone = 
+						processSingletonIterator(Status.dbxref, feature.getDbxref());
+					if (newClone != null) {
+						((Feature)clone).setOrganism(((Organism)newClone));
+					}
+				}
+				if (status == Status.dbxref) {
+					AbstractSimpleObject newClone = 
+						processSingletonIterator(Status.type, feature.getType());
+					if (newClone != null) {
+						((Feature)clone).setDbxref(((DBXref)newClone));
+					}
+				}
+				if (status == Status.type) {
+					AbstractSimpleObject newClone = 
+						processLastSingletonIterator();
+					if (newClone != null) {
+						((Feature)clone).setType(((CVTerm)newClone));
+					}
+				}
+			}
+			else {
+				retVal = peek();
+				status = Status.done;
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
 }

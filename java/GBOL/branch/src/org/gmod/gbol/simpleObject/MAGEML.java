@@ -23,4 +23,10 @@ public class MAGEML extends org.gmod.gbol.simpleObject.generated.AbstractMAGEML 
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

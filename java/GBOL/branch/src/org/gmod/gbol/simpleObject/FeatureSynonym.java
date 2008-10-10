@@ -31,4 +31,43 @@ public class FeatureSynonym extends org.gmod.gbol.simpleObject.generated.Abstrac
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int pub = 1;
+			public final static int synonym = 2;
+		}
+	
+		public SimpleObjectIterator(FeatureSynonym featureSynonym)
+		{
+			super(featureSynonym);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			FeatureSynonym featureSynonym = (FeatureSynonym)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.pub, featureSynonym.getPublication());
+			}
+			else {
+				retVal = soIter.next();
+				if (status == Status.pub) {
+					processSingletonIterator(Status.synonym, featureSynonym.getSynonym());
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+	
 }

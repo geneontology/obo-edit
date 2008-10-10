@@ -23,4 +23,10 @@ public class FeatureMap extends org.gmod.gbol.simpleObject.generated.AbstractFea
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return null;
+	}
+
 }

@@ -30,4 +30,41 @@ public class OrganismDBXref extends org.gmod.gbol.simpleObject.generated.Abstrac
 		
 		return writeObjects;
 	}
+
+	public AbstractSimpleObjectIterator getWriteableObjects()
+	{
+		return new SimpleObjectIterator(this);
+	}
+	
+	private static class SimpleObjectIterator extends AbstractSimpleObjectIterator
+	{
+
+		private static class Status extends AbstractSimpleObjectIterator.Status
+		{
+			public final static int dbxref = 1;
+		}
+	
+		public SimpleObjectIterator(OrganismDBXref organismDbxref)
+		{
+			super(organismDbxref);
+		}
+		
+		public AbstractSimpleObject next()
+		{
+			OrganismDBXref organismDbxref = (OrganismDBXref)object;
+			AbstractSimpleObject retVal = null;
+			if (status == Status.self) {
+				retVal = peek();
+				processSingletonIterator(Status.dbxref, organismDbxref.getDbxref());
+			}
+			else {
+				if (status == Status.dbxref) {
+					retVal = soIter.next();
+				}
+			}
+			current = retVal;
+			return retVal;
+		}
+	}
+
 }
