@@ -110,6 +110,17 @@ public abstract class AbstractPublicationAuthor extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractPublicationAuthor generateClone() {
+	AbstractPublicationAuthor cloned = new PublicationAuthor(); 
+    	   cloned.publication = this.publication;
+    	   cloned.rank = this.rank;
+    	   cloned.editor = this.editor;
+    	   cloned.surname = this.surname;
+    	   cloned.givenNames = this.givenNames;
+    	   cloned.suffix = this.suffix;
+	return cloned;
+}
+
 
 }
 

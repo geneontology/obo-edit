@@ -75,6 +75,14 @@ public abstract class AbstractCVTermRelationship extends AbstractSimpleObject im
          return result;
    }   
 
+public AbstractCVTermRelationship generateClone() {
+	AbstractCVTermRelationship cloned = new CVTermRelationship(); 
+    	   cloned.type = this.type;
+    	   cloned.subjectCVTerm = this.subjectCVTerm;
+    	   cloned.objectCVTerm = this.objectCVTerm;
+	return cloned;
+}
+
 
 }
 

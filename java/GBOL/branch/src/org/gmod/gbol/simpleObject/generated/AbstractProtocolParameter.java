@@ -110,6 +110,17 @@ public abstract class AbstractProtocolParameter extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractProtocolParameter generateClone() {
+	AbstractProtocolParameter cloned = new ProtocolParameter(); 
+    	   cloned.unitType = this.unitType;
+    	   cloned.dataType = this.dataType;
+    	   cloned.protocol = this.protocol;
+    	   cloned.name = this.name;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

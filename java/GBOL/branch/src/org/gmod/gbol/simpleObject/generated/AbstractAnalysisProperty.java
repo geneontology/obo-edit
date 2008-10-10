@@ -80,6 +80,14 @@ public abstract class AbstractAnalysisProperty extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractAnalysisProperty generateClone() {
+	AbstractAnalysisProperty cloned = new AnalysisProperty(); 
+    	   cloned.analysis = this.analysis;
+    	   cloned.type = this.type;
+    	   cloned.value = this.value;
+	return cloned;
+}
+
 
 }
 

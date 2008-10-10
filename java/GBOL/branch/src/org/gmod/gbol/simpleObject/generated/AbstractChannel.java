@@ -63,6 +63,13 @@ public abstract class AbstractChannel extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractChannel generateClone() {
+	AbstractChannel cloned = new Channel(); 
+    	   cloned.name = this.name;
+    	   cloned.definition = this.definition;
+	return cloned;
+}
+
 
 }
 

@@ -103,6 +103,16 @@ public abstract class AbstractAcquisitionRelationship extends AbstractSimpleObje
          return result;
    }   
 
+public AbstractAcquisitionRelationship generateClone() {
+	AbstractAcquisitionRelationship cloned = new AcquisitionRelationship(); 
+    	   cloned.type = this.type;
+    	   cloned.subjectAcquisition = this.subjectAcquisition;
+    	   cloned.objectAcquisition = this.objectAcquisition;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

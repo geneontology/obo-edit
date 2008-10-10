@@ -102,6 +102,16 @@ public abstract class AbstractPhylogeneticNodeRelationship extends AbstractSimpl
          return result;
    }   
 
+public AbstractPhylogeneticNodeRelationship generateClone() {
+	AbstractPhylogeneticNodeRelationship cloned = new PhylogeneticNodeRelationship(); 
+    	   cloned.type = this.type;
+    	   cloned.objectPhylogeneticNode = this.objectPhylogeneticNode;
+    	   cloned.subjectPhylogeneticNode = this.subjectPhylogeneticNode;
+    	   cloned.phylogeneticTree = this.phylogeneticTree;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

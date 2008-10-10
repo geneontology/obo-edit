@@ -74,6 +74,14 @@ public abstract class AbstractFeatureDBXref extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractFeatureDBXref generateClone() {
+	AbstractFeatureDBXref cloned = new FeatureDBXref(); 
+    	   cloned.feature = this.feature;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.isCurrent = this.isCurrent;
+	return cloned;
+}
+
 
 }
 

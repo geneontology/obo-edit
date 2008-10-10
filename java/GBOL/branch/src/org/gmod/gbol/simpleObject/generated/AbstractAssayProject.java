@@ -64,6 +64,13 @@ public abstract class AbstractAssayProject extends AbstractSimpleObject implemen
          return result;
    }   
 
+public AbstractAssayProject generateClone() {
+	AbstractAssayProject cloned = new AssayProject(); 
+    	   cloned.assay = this.assay;
+    	   cloned.project = this.project;
+	return cloned;
+}
+
 
 }
 

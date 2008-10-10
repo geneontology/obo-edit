@@ -133,6 +133,19 @@ public abstract class AbstractTableInfo extends AbstractSimpleObject implements 
          return result;
    }   
 
+public AbstractTableInfo generateClone() {
+	AbstractTableInfo cloned = new TableInfo(); 
+    	   cloned.name = this.name;
+    	   cloned.primaryKeyColumn = this.primaryKeyColumn;
+    	   cloned.isView = this.isView;
+    	   cloned.viewOnTableId = this.viewOnTableId;
+    	   cloned.superclassTableId = this.superclassTableId;
+    	   cloned.isUpdateable = this.isUpdateable;
+    	   cloned.modificationDate = this.modificationDate;
+    	   cloned.mageDocuments = this.mageDocuments;
+	return cloned;
+}
+
 
 }
 

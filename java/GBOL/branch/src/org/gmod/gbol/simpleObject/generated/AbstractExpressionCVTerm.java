@@ -104,6 +104,16 @@ public abstract class AbstractExpressionCVTerm extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractExpressionCVTerm generateClone() {
+	AbstractExpressionCVTerm cloned = new ExpressionCVTerm(); 
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.type = this.type;
+    	   cloned.expression = this.expression;
+    	   cloned.rank = this.rank;
+    	   cloned.expressionCVTermProperties = this.expressionCVTermProperties;
+	return cloned;
+}
+
 
 }
 

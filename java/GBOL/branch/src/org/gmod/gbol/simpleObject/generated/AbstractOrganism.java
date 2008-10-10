@@ -121,6 +121,18 @@ public abstract class AbstractOrganism extends AbstractSimpleObject implements j
          return result;
    }   
 
+public AbstractOrganism generateClone() {
+	AbstractOrganism cloned = new Organism(); 
+    	   cloned.abbreviation = this.abbreviation;
+    	   cloned.genus = this.genus;
+    	   cloned.species = this.species;
+    	   cloned.commonName = this.commonName;
+    	   cloned.comment = this.comment;
+    	   cloned.organismProperties = this.organismProperties;
+    	   cloned.organismDBXrefs = this.organismDBXrefs;
+	return cloned;
+}
+
 
 }
 

@@ -91,6 +91,15 @@ public abstract class AbstractStockCollectionProperty extends AbstractSimpleObje
          return result;
    }   
 
+public AbstractStockCollectionProperty generateClone() {
+	AbstractStockCollectionProperty cloned = new StockCollectionProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.stockCollection = this.stockCollection;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

@@ -64,6 +64,13 @@ public abstract class AbstractFeatureRelationshipPropertyPublication extends Abs
          return result;
    }   
 
+public AbstractFeatureRelationshipPropertyPublication generateClone() {
+	AbstractFeatureRelationshipPropertyPublication cloned = new FeatureRelationshipPropertyPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.featureRelationshipProperty = this.featureRelationshipProperty;
+	return cloned;
+}
+
 
 }
 

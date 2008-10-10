@@ -64,6 +64,13 @@ public abstract class AbstractFeatureMapPublication extends AbstractSimpleObject
          return result;
    }   
 
+public AbstractFeatureMapPublication generateClone() {
+	AbstractFeatureMapPublication cloned = new FeatureMapPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.featureMap = this.featureMap;
+	return cloned;
+}
+
 
 }
 

@@ -64,6 +64,13 @@ public abstract class AbstractEnvironmentCVTerm extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractEnvironmentCVTerm generateClone() {
+	AbstractEnvironmentCVTerm cloned = new EnvironmentCVTerm(); 
+    	   cloned.environment = this.environment;
+    	   cloned.cvterm = this.cvterm;
+	return cloned;
+}
+
 
 }
 

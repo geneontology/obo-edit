@@ -64,6 +64,13 @@ public abstract class AbstractBiomaterialDBXref extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractBiomaterialDBXref generateClone() {
+	AbstractBiomaterialDBXref cloned = new BiomaterialDBXref(); 
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.biomaterial = this.biomaterial;
+	return cloned;
+}
+
 
 }
 

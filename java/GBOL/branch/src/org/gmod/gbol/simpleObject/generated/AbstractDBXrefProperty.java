@@ -85,6 +85,15 @@ public abstract class AbstractDBXrefProperty extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractDBXrefProperty generateClone() {
+	AbstractDBXrefProperty cloned = new DBXrefProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

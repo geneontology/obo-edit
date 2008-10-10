@@ -115,6 +115,17 @@ public abstract class AbstractStockRelationship extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractStockRelationship generateClone() {
+	AbstractStockRelationship cloned = new StockRelationship(); 
+    	   cloned.subjectStock = this.subjectStock;
+    	   cloned.type = this.type;
+    	   cloned.objectStock = this.objectStock;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.stockRelationshipPublications = this.stockRelationshipPublications;
+	return cloned;
+}
+
 
 }
 

@@ -187,6 +187,24 @@ public abstract class AbstractLibrary extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractLibrary generateClone() {
+	AbstractLibrary cloned = new Library(); 
+    	   cloned.type = this.type;
+    	   cloned.organism = this.organism;
+    	   cloned.name = this.name;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.isObsolete = this.isObsolete;
+    	   cloned.timeAccessioned = this.timeAccessioned;
+    	   cloned.timeLastModified = this.timeLastModified;
+    	   cloned.librarySynonyms = this.librarySynonyms;
+    	   cloned.libraryDBXrefs = this.libraryDBXrefs;
+    	   cloned.libraryCVTerms = this.libraryCVTerms;
+    	   cloned.libraryProperties = this.libraryProperties;
+    	   cloned.libraryFeatures = this.libraryFeatures;
+    	   cloned.libraryPublications = this.libraryPublications;
+	return cloned;
+}
+
 
 }
 

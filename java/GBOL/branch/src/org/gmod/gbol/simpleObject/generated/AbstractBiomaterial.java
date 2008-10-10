@@ -165,6 +165,23 @@ public abstract class AbstractBiomaterial extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractBiomaterial generateClone() {
+	AbstractBiomaterial cloned = new Biomaterial(); 
+    	   cloned.taxon = this.taxon;
+    	   cloned.sourceProvider = this.sourceProvider;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.biomaterialProperties = this.biomaterialProperties;
+    	   cloned.biomaterialDBXrefs = this.biomaterialDBXrefs;
+    	   cloned.treatments = this.treatments;
+    	   cloned.parentBiomaterialRelationships = this.parentBiomaterialRelationships;
+    	   cloned.assayBiomaterials = this.assayBiomaterials;
+    	   cloned.childBiomaterialRelationships = this.childBiomaterialRelationships;
+    	   cloned.biomaterialTreatments = this.biomaterialTreatments;
+	return cloned;
+}
+
 
 }
 

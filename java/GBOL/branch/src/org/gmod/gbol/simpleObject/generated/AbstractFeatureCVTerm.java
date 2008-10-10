@@ -136,6 +136,19 @@ public abstract class AbstractFeatureCVTerm extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractFeatureCVTerm generateClone() {
+	AbstractFeatureCVTerm cloned = new FeatureCVTerm(); 
+    	   cloned.publication = this.publication;
+    	   cloned.feature = this.feature;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.isNot = this.isNot;
+    	   cloned.rank = this.rank;
+    	   cloned.featureCVTermProperties = this.featureCVTermProperties;
+    	   cloned.featureCVTermPublications = this.featureCVTermPublications;
+    	   cloned.featureCVTermDBXrefs = this.featureCVTermDBXrefs;
+	return cloned;
+}
+
 
 }
 

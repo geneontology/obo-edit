@@ -125,6 +125,18 @@ public abstract class AbstractFeatureRelationship extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractFeatureRelationship generateClone() {
+	AbstractFeatureRelationship cloned = new FeatureRelationship(); 
+    	   cloned.type = this.type;
+    	   cloned.objectFeature = this.objectFeature;
+    	   cloned.subjectFeature = this.subjectFeature;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.featureRelationshipProperties = this.featureRelationshipProperties;
+    	   cloned.featureRelationshipPublications = this.featureRelationshipPublications;
+	return cloned;
+}
+
 
 }
 

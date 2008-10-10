@@ -100,6 +100,16 @@ public abstract class AbstractBiomaterialTreatment extends AbstractSimpleObject 
          return result;
    }   
 
+public AbstractBiomaterialTreatment generateClone() {
+	AbstractBiomaterialTreatment cloned = new BiomaterialTreatment(); 
+    	   cloned.unitType = this.unitType;
+    	   cloned.treatment = this.treatment;
+    	   cloned.biomaterial = this.biomaterial;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

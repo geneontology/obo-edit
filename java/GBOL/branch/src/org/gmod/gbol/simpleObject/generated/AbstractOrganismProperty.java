@@ -91,6 +91,15 @@ public abstract class AbstractOrganismProperty extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractOrganismProperty generateClone() {
+	AbstractOrganismProperty cloned = new OrganismProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.organism = this.organism;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

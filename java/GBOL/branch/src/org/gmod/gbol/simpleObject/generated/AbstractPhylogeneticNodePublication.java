@@ -64,6 +64,13 @@ public abstract class AbstractPhylogeneticNodePublication extends AbstractSimple
          return result;
    }   
 
+public AbstractPhylogeneticNodePublication generateClone() {
+	AbstractPhylogeneticNodePublication cloned = new PhylogeneticNodePublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.phylogeneticNode = this.phylogeneticNode;
+	return cloned;
+}
+
 
 }
 

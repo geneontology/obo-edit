@@ -103,6 +103,16 @@ public abstract class AbstractFeatureProperty extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractFeatureProperty generateClone() {
+	AbstractFeatureProperty cloned = new FeatureProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.feature = this.feature;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.featurePropertyPublications = this.featurePropertyPublications;
+	return cloned;
+}
+
 
 }
 

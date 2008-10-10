@@ -109,6 +109,17 @@ public abstract class AbstractAnalysisFeature extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractAnalysisFeature generateClone() {
+	AbstractAnalysisFeature cloned = new AnalysisFeature(); 
+    	   cloned.analysis = this.analysis;
+    	   cloned.feature = this.feature;
+    	   cloned.rawScore = this.rawScore;
+    	   cloned.normalizedScore = this.normalizedScore;
+    	   cloned.significance = this.significance;
+    	   cloned.identity = this.identity;
+	return cloned;
+}
+
 
 }
 

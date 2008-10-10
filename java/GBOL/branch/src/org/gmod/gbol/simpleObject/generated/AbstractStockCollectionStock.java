@@ -64,6 +64,13 @@ public abstract class AbstractStockCollectionStock extends AbstractSimpleObject 
          return result;
    }   
 
+public AbstractStockCollectionStock generateClone() {
+	AbstractStockCollectionStock cloned = new StockCollectionStock(); 
+    	   cloned.stockCollection = this.stockCollection;
+    	   cloned.stock = this.stock;
+	return cloned;
+}
+
 
 }
 

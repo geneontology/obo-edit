@@ -99,6 +99,16 @@ public abstract class AbstractContact extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractContact generateClone() {
+	AbstractContact cloned = new Contact(); 
+    	   cloned.type = this.type;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.parentContactRelationships = this.parentContactRelationships;
+    	   cloned.childContactRelationships = this.childContactRelationships;
+	return cloned;
+}
+
 
 }
 

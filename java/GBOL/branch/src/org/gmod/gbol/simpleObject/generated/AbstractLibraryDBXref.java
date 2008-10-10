@@ -74,6 +74,14 @@ public abstract class AbstractLibraryDBXref extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractLibraryDBXref generateClone() {
+	AbstractLibraryDBXref cloned = new LibraryDBXref(); 
+    	   cloned.library = this.library;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.isCurrent = this.isCurrent;
+	return cloned;
+}
+
 
 }
 

@@ -91,6 +91,15 @@ public abstract class AbstractBiomaterialProperty extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractBiomaterialProperty generateClone() {
+	AbstractBiomaterialProperty cloned = new BiomaterialProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.biomaterial = this.biomaterial;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

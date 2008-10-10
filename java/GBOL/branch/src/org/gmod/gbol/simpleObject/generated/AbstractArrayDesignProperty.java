@@ -91,6 +91,15 @@ public abstract class AbstractArrayDesignProperty extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractArrayDesignProperty generateClone() {
+	AbstractArrayDesignProperty cloned = new ArrayDesignProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.arrayDesign = this.arrayDesign;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

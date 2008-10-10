@@ -64,6 +64,13 @@ public abstract class AbstractStockGenotype extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractStockGenotype generateClone() {
+	AbstractStockGenotype cloned = new StockGenotype(); 
+    	   cloned.genotype = this.genotype;
+    	   cloned.stock = this.stock;
+	return cloned;
+}
+
 
 }
 

@@ -121,6 +121,18 @@ public abstract class AbstractFeatureRange extends AbstractSimpleObject implemen
          return result;
    }   
 
+public AbstractFeatureRange generateClone() {
+	AbstractFeatureRange cloned = new FeatureRange(); 
+    	   cloned.rightEndFeature = this.rightEndFeature;
+    	   cloned.leftEndFeature = this.leftEndFeature;
+    	   cloned.feature = this.feature;
+    	   cloned.featureMap = this.featureMap;
+    	   cloned.leftStartFeature = this.leftStartFeature;
+    	   cloned.rightStartFeature = this.rightStartFeature;
+    	   cloned.rangeString = this.rangeString;
+	return cloned;
+}
+
 
 }
 

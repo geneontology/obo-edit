@@ -150,6 +150,20 @@ public abstract class AbstractPhenotypeComparison extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractPhenotypeComparison generateClone() {
+	AbstractPhenotypeComparison cloned = new PhenotypeComparison(); 
+    	   cloned.phenotype1 = this.phenotype1;
+    	   cloned.publication = this.publication;
+    	   cloned.genotype1 = this.genotype1;
+    	   cloned.phenotype2 = this.phenotype2;
+    	   cloned.environment2 = this.environment2;
+    	   cloned.environment1 = this.environment1;
+    	   cloned.genotype2 = this.genotype2;
+    	   cloned.organism = this.organism;
+    	   cloned.phenotypeComparisonCVTerms = this.phenotypeComparisonCVTerms;
+	return cloned;
+}
+
 
 }
 

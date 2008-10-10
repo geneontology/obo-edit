@@ -91,6 +91,15 @@ public abstract class AbstractAcquisitionProperty extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractAcquisitionProperty generateClone() {
+	AbstractAcquisitionProperty cloned = new AcquisitionProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.acquisition = this.acquisition;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

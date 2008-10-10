@@ -96,6 +96,16 @@ public abstract class AbstractPhenotypeDescription extends AbstractSimpleObject 
          return result;
    }   
 
+public AbstractPhenotypeDescription generateClone() {
+	AbstractPhenotypeDescription cloned = new PhenotypeDescription(); 
+    	   cloned.environment = this.environment;
+    	   cloned.type = this.type;
+    	   cloned.publication = this.publication;
+    	   cloned.genotype = this.genotype;
+    	   cloned.description = this.description;
+	return cloned;
+}
+
 
 }
 

@@ -175,6 +175,23 @@ public abstract class AbstractFeatureLocation extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractFeatureLocation generateClone() {
+	AbstractFeatureLocation cloned = new FeatureLocation(); 
+    	   cloned.sourceFeature = this.sourceFeature;
+    	   cloned.feature = this.feature;
+    	   cloned.fmin = this.fmin;
+    	   cloned.isFminPartial = this.isFminPartial;
+    	   cloned.fmax = this.fmax;
+    	   cloned.isFmaxPartial = this.isFmaxPartial;
+    	   cloned.strand = this.strand;
+    	   cloned.phase = this.phase;
+    	   cloned.residueInfo = this.residueInfo;
+    	   cloned.locgroup = this.locgroup;
+    	   cloned.rank = this.rank;
+    	   cloned.featureLocationPublications = this.featureLocationPublications;
+	return cloned;
+}
+
 
 }
 

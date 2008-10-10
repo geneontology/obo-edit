@@ -86,6 +86,15 @@ public abstract class AbstractCVTermProperty extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractCVTermProperty generateClone() {
+	AbstractCVTermProperty cloned = new CVTermProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

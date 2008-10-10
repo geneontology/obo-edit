@@ -64,6 +64,13 @@ public abstract class AbstractStudyAssay extends AbstractSimpleObject implements
          return result;
    }   
 
+public AbstractStudyAssay generateClone() {
+	AbstractStudyAssay cloned = new StudyAssay(); 
+    	   cloned.assay = this.assay;
+    	   cloned.study = this.study;
+	return cloned;
+}
+
 
 }
 

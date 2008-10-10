@@ -116,6 +116,17 @@ public abstract class AbstractFeatureGenotype extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractFeatureGenotype generateClone() {
+	AbstractFeatureGenotype cloned = new FeatureGenotype(); 
+    	   cloned.genotype = this.genotype;
+    	   cloned.feature = this.feature;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.chromosomeFeature = this.chromosomeFeature;
+    	   cloned.rank = this.rank;
+    	   cloned.cgroup = this.cgroup;
+	return cloned;
+}
+
 
 }
 

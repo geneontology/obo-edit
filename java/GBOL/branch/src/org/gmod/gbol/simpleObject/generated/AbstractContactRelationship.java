@@ -75,6 +75,14 @@ public abstract class AbstractContactRelationship extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractContactRelationship generateClone() {
+	AbstractContactRelationship cloned = new ContactRelationship(); 
+    	   cloned.subjectContact = this.subjectContact;
+    	   cloned.type = this.type;
+    	   cloned.objectContact = this.objectContact;
+	return cloned;
+}
+
 
 }
 

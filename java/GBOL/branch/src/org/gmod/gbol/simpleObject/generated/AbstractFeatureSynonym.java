@@ -95,6 +95,16 @@ public abstract class AbstractFeatureSynonym extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractFeatureSynonym generateClone() {
+	AbstractFeatureSynonym cloned = new FeatureSynonym(); 
+    	   cloned.publication = this.publication;
+    	   cloned.feature = this.feature;
+    	   cloned.synonym = this.synonym;
+    	   cloned.isCurrent = this.isCurrent;
+    	   cloned.isInternal = this.isInternal;
+	return cloned;
+}
+
 
 }
 

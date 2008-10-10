@@ -91,6 +91,15 @@ public abstract class AbstractFeaturePublicationProperty extends AbstractSimpleO
          return result;
    }   
 
+public AbstractFeaturePublicationProperty generateClone() {
+	AbstractFeaturePublicationProperty cloned = new FeaturePublicationProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.featurePublication = this.featurePublication;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

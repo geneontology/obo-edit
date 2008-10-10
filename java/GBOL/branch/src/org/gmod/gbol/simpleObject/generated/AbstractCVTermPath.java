@@ -102,6 +102,16 @@ public abstract class AbstractCVTermPath extends AbstractSimpleObject implements
          return result;
    }   
 
+public AbstractCVTermPath generateClone() {
+	AbstractCVTermPath cloned = new CVTermPath(); 
+    	   cloned.type = this.type;
+    	   cloned.subjectCVTerm = this.subjectCVTerm;
+    	   cloned.cv = this.cv;
+    	   cloned.objectCVTerm = this.objectCVTerm;
+    	   cloned.pathDistance = this.pathDistance;
+	return cloned;
+}
+
 
 }
 

@@ -124,6 +124,18 @@ public abstract class AbstractControl extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractControl generateClone() {
+	AbstractControl cloned = new Control(); 
+    	   cloned.tableInfo = this.tableInfo;
+    	   cloned.assay = this.assay;
+    	   cloned.type = this.type;
+    	   cloned.rowId = this.rowId;
+    	   cloned.name = this.name;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

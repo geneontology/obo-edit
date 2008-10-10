@@ -103,6 +103,16 @@ public abstract class AbstractStockProperty extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractStockProperty generateClone() {
+	AbstractStockProperty cloned = new StockProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.stock = this.stock;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.stockPropertyPublications = this.stockPropertyPublications;
+	return cloned;
+}
+
 
 }
 

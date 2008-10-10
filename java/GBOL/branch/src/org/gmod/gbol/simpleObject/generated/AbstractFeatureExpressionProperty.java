@@ -91,6 +91,15 @@ public abstract class AbstractFeatureExpressionProperty extends AbstractSimpleOb
          return result;
    }   
 
+public AbstractFeatureExpressionProperty generateClone() {
+	AbstractFeatureExpressionProperty cloned = new FeatureExpressionProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.featureExpression = this.featureExpression;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

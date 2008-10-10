@@ -79,6 +79,14 @@ public abstract class AbstractCVTermSynonym extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractCVTermSynonym generateClone() {
+	AbstractCVTermSynonym cloned = new CVTermSynonym(); 
+    	   cloned.type = this.type;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.synonym = this.synonym;
+	return cloned;
+}
+
 
 }
 

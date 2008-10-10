@@ -74,6 +74,14 @@ public abstract class AbstractSynonym extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractSynonym generateClone() {
+	AbstractSynonym cloned = new Synonym(); 
+    	   cloned.type = this.type;
+    	   cloned.name = this.name;
+    	   cloned.synonymSGML = this.synonymSGML;
+	return cloned;
+}
+
 
 }
 
