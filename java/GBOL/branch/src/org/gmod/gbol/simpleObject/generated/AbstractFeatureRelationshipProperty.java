@@ -103,6 +103,16 @@ public abstract class AbstractFeatureRelationshipProperty extends AbstractSimple
          return result;
    }   
 
+public AbstractFeatureRelationshipProperty generateClone() {
+	AbstractFeatureRelationshipProperty cloned = new FeatureRelationshipProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.featureRelationship = this.featureRelationship;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.featureRelationshipPropertyPublications = this.featureRelationshipPropertyPublications;
+	return cloned;
+}
+
 
 }
 

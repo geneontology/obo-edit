@@ -80,6 +80,14 @@ public abstract class AbstractProject extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractProject generateClone() {
+	AbstractProject cloned = new Project(); 
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.assayProjects = this.assayProjects;
+	return cloned;
+}
+
 
 }
 

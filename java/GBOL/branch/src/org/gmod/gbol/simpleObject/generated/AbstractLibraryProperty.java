@@ -103,6 +103,16 @@ public abstract class AbstractLibraryProperty extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractLibraryProperty generateClone() {
+	AbstractLibraryProperty cloned = new LibraryProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.library = this.library;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+    	   cloned.libraryPropertyPublications = this.libraryPropertyPublications;
+	return cloned;
+}
+
 
 }
 

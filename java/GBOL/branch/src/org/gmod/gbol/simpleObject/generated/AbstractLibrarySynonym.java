@@ -94,6 +94,16 @@ public abstract class AbstractLibrarySynonym extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractLibrarySynonym generateClone() {
+	AbstractLibrarySynonym cloned = new LibrarySynonym(); 
+    	   cloned.publication = this.publication;
+    	   cloned.synonym = this.synonym;
+    	   cloned.library = this.library;
+    	   cloned.isCurrent = this.isCurrent;
+    	   cloned.isInternal = this.isInternal;
+	return cloned;
+}
+
 
 }
 

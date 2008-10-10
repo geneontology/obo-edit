@@ -129,6 +129,19 @@ public abstract class AbstractExpression extends AbstractSimpleObject implements
          return result;
    }   
 
+public AbstractExpression generateClone() {
+	AbstractExpression cloned = new Expression(); 
+    	   cloned.uniquename = this.uniquename;
+    	   cloned.md5checksum = this.md5checksum;
+    	   cloned.description = this.description;
+    	   cloned.expressionProperties = this.expressionProperties;
+    	   cloned.expressionPublications = this.expressionPublications;
+    	   cloned.featureExpressions = this.featureExpressions;
+    	   cloned.expressionImages = this.expressionImages;
+    	   cloned.expressionCVTerms = this.expressionCVTerms;
+	return cloned;
+}
+
 
 }
 

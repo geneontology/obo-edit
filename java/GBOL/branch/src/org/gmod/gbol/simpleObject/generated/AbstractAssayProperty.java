@@ -91,6 +91,15 @@ public abstract class AbstractAssayProperty extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractAssayProperty generateClone() {
+	AbstractAssayProperty cloned = new AssayProperty(); 
+    	   cloned.assay = this.assay;
+    	   cloned.type = this.type;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

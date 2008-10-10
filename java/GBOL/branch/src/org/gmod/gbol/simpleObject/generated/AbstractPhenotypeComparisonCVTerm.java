@@ -84,6 +84,15 @@ public abstract class AbstractPhenotypeComparisonCVTerm extends AbstractSimpleOb
          return result;
    }   
 
+public AbstractPhenotypeComparisonCVTerm generateClone() {
+	AbstractPhenotypeComparisonCVTerm cloned = new PhenotypeComparisonCVTerm(); 
+    	   cloned.publication = this.publication;
+    	   cloned.phenotypeComparison = this.phenotypeComparison;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

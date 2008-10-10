@@ -91,6 +91,15 @@ public abstract class AbstractExpressionProperty extends AbstractSimpleObject im
          return result;
    }   
 
+public AbstractExpressionProperty generateClone() {
+	AbstractExpressionProperty cloned = new ExpressionProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.expression = this.expression;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

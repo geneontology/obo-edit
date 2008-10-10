@@ -75,6 +75,14 @@ public abstract class AbstractStockCVTerm extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractStockCVTerm generateClone() {
+	AbstractStockCVTerm cloned = new StockCVTerm(); 
+    	   cloned.publication = this.publication;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.stock = this.stock;
+	return cloned;
+}
+
 
 }
 

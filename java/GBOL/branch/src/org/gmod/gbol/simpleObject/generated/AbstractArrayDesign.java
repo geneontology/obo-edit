@@ -250,6 +250,30 @@ public abstract class AbstractArrayDesign extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractArrayDesign generateClone() {
+	AbstractArrayDesign cloned = new ArrayDesign(); 
+    	   cloned.manufacturer = this.manufacturer;
+    	   cloned.platformType = this.platformType;
+    	   cloned.protocol = this.protocol;
+    	   cloned.substrateType = this.substrateType;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.arrayDimensions = this.arrayDimensions;
+    	   cloned.elementDimensions = this.elementDimensions;
+    	   cloned.numberOfElements = this.numberOfElements;
+    	   cloned.numberOfArrayColumns = this.numberOfArrayColumns;
+    	   cloned.numberOfArrayRows = this.numberOfArrayRows;
+    	   cloned.numberOfGridColumns = this.numberOfGridColumns;
+    	   cloned.numberOfGridRows = this.numberOfGridRows;
+    	   cloned.numberOfSubColumns = this.numberOfSubColumns;
+    	   cloned.numberOfSubRows = this.numberOfSubRows;
+    	   cloned.assays = this.assays;
+    	   cloned.arrayDesignProperties = this.arrayDesignProperties;
+    	   cloned.elements = this.elements;
+	return cloned;
+}
+
 
 }
 

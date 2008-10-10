@@ -64,6 +64,13 @@ public abstract class AbstractExpressionImage extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractExpressionImage generateClone() {
+	AbstractExpressionImage cloned = new ExpressionImage(); 
+    	   cloned.eImage = this.eImage;
+    	   cloned.expression = this.expression;
+	return cloned;
+}
+
 
 }
 

@@ -111,6 +111,17 @@ public abstract class AbstractStockCollection extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractStockCollection generateClone() {
+	AbstractStockCollection cloned = new StockCollection(); 
+    	   cloned.type = this.type;
+    	   cloned.contact = this.contact;
+    	   cloned.name = this.name;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.stockCollectionProperties = this.stockCollectionProperties;
+    	   cloned.stockCollectionStocks = this.stockCollectionStocks;
+	return cloned;
+}
+
 
 }
 

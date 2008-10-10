@@ -109,6 +109,17 @@ public abstract class AbstractGenotype extends AbstractSimpleObject implements j
          return result;
    }   
 
+public AbstractGenotype generateClone() {
+	AbstractGenotype cloned = new Genotype(); 
+    	   cloned.name = this.name;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.description = this.description;
+    	   cloned.phenotypeDescriptions = this.phenotypeDescriptions;
+    	   cloned.featureGenotypes = this.featureGenotypes;
+    	   cloned.phenotypeStatements = this.phenotypeStatements;
+	return cloned;
+}
+
 
 }
 

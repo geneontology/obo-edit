@@ -64,6 +64,13 @@ public abstract class AbstractLibraryPropertyPublication extends AbstractSimpleO
          return result;
    }   
 
+public AbstractLibraryPropertyPublication generateClone() {
+	AbstractLibraryPropertyPublication cloned = new LibraryPropertyPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.libraryProperty = this.libraryProperty;
+	return cloned;
+}
+
 
 }
 

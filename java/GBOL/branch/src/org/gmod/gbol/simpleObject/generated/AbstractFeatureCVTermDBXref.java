@@ -64,6 +64,13 @@ public abstract class AbstractFeatureCVTermDBXref extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractFeatureCVTermDBXref generateClone() {
+	AbstractFeatureCVTermDBXref cloned = new FeatureCVTermDBXref(); 
+    	   cloned.featureCVTerm = this.featureCVTerm;
+    	   cloned.dbxref = this.dbxref;
+	return cloned;
+}
+
 
 }
 

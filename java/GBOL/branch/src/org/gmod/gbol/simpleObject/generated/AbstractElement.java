@@ -120,6 +120,18 @@ public abstract class AbstractElement extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractElement generateClone() {
+	AbstractElement cloned = new Element(); 
+    	   cloned.type = this.type;
+    	   cloned.arrayDesign = this.arrayDesign;
+    	   cloned.feature = this.feature;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.parentElementRelationships = this.parentElementRelationships;
+    	   cloned.elementResults = this.elementResults;
+    	   cloned.childElementRelationships = this.childElementRelationships;
+	return cloned;
+}
+
 
 }
 

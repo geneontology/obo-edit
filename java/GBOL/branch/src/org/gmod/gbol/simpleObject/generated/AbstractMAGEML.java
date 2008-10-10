@@ -80,6 +80,14 @@ public abstract class AbstractMAGEML extends AbstractSimpleObject implements jav
          return result;
    }   
 
+public AbstractMAGEML generateClone() {
+	AbstractMAGEML cloned = new MAGEML(); 
+    	   cloned.magePackage = this.magePackage;
+    	   cloned.mageml = this.mageml;
+    	   cloned.mageDocuments = this.mageDocuments;
+	return cloned;
+}
+
 
 }
 

@@ -155,6 +155,21 @@ public abstract class AbstractCVTerm extends AbstractSimpleObject implements jav
          return result;
    }   
 
+public AbstractCVTerm generateClone() {
+	AbstractCVTerm cloned = new CVTerm(); 
+    	   cloned.cv = this.cv;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.definition = this.definition;
+    	   cloned.isObsolete = this.isObsolete;
+    	   cloned.isRelationshipType = this.isRelationshipType;
+    	   cloned.childCVTermRelationships = this.childCVTermRelationships;
+    	   cloned.parentCVTermRelationships = this.parentCVTermRelationships;
+    	   cloned.parentCVTermPaths = this.parentCVTermPaths;
+    	   cloned.childCVTermPaths = this.childCVTermPaths;
+	return cloned;
+}
+
 
 }
 

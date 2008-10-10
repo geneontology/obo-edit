@@ -75,6 +75,14 @@ public abstract class AbstractBiomaterialRelationship extends AbstractSimpleObje
          return result;
    }   
 
+public AbstractBiomaterialRelationship generateClone() {
+	AbstractBiomaterialRelationship cloned = new BiomaterialRelationship(); 
+    	   cloned.type = this.type;
+    	   cloned.subjectBiomaterial = this.subjectBiomaterial;
+    	   cloned.objectBiomaterial = this.objectBiomaterial;
+	return cloned;
+}
+
 
 }
 

@@ -119,6 +119,18 @@ public abstract class AbstractPhylogeneticTree extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractPhylogeneticTree generateClone() {
+	AbstractPhylogeneticTree cloned = new PhylogeneticTree(); 
+    	   cloned.analysis = this.analysis;
+    	   cloned.type = this.type;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.comment = this.comment;
+    	   cloned.phylogeneticNodes = this.phylogeneticNodes;
+    	   cloned.phylogeneticTreePublications = this.phylogeneticTreePublications;
+	return cloned;
+}
+
 
 }
 

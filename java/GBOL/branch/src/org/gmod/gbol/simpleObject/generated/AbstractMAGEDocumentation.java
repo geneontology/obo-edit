@@ -85,6 +85,15 @@ public abstract class AbstractMAGEDocumentation extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractMAGEDocumentation generateClone() {
+	AbstractMAGEDocumentation cloned = new MAGEDocumentation(); 
+    	   cloned.tableInfo = this.tableInfo;
+    	   cloned.mageml = this.mageml;
+    	   cloned.rowId = this.rowId;
+    	   cloned.mageIdentifier = this.mageIdentifier;
+	return cloned;
+}
+
 
 }
 

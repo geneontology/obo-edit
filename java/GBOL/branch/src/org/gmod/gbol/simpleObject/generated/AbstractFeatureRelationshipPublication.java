@@ -64,6 +64,13 @@ public abstract class AbstractFeatureRelationshipPublication extends AbstractSim
          return result;
    }   
 
+public AbstractFeatureRelationshipPublication generateClone() {
+	AbstractFeatureRelationshipPublication cloned = new FeatureRelationshipPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.featureRelationship = this.featureRelationship;
+	return cloned;
+}
+
 
 }
 

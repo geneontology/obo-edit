@@ -130,6 +130,19 @@ public abstract class AbstractStudy extends AbstractSimpleObject implements java
          return result;
    }   
 
+public AbstractStudy generateClone() {
+	AbstractStudy cloned = new Study(); 
+    	   cloned.publication = this.publication;
+    	   cloned.contact = this.contact;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.studyAssays = this.studyAssays;
+    	   cloned.studyDesigns = this.studyDesigns;
+    	   cloned.studyProperties = this.studyProperties;
+	return cloned;
+}
+
 
 }
 

@@ -101,6 +101,15 @@ public abstract class AbstractDBXref extends AbstractSimpleObject implements jav
          return result;
    }   
 
+public AbstractDBXref generateClone() {
+	AbstractDBXref cloned = new DBXref(); 
+    	   cloned.db = this.db;
+    	   cloned.accession = this.accession;
+    	   cloned.description = this.description;
+    	   cloned.dbxrefProperties = this.dbxrefProperties;
+	return cloned;
+}
+
 
 }
 

@@ -64,6 +64,13 @@ public abstract class AbstractOrganismDBXref extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractOrganismDBXref generateClone() {
+	AbstractOrganismDBXref cloned = new OrganismDBXref(); 
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.organism = this.organism;
+	return cloned;
+}
+
 
 }
 

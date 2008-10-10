@@ -74,6 +74,14 @@ public abstract class AbstractStockDBXref extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractStockDBXref generateClone() {
+	AbstractStockDBXref cloned = new StockDBXref(); 
+    	   cloned.stock = this.stock;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.isCurrent = this.isCurrent;
+	return cloned;
+}
+
 
 }
 

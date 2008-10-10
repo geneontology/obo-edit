@@ -64,6 +64,13 @@ public abstract class AbstractFeaturePhenotype extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractFeaturePhenotype generateClone() {
+	AbstractFeaturePhenotype cloned = new FeaturePhenotype(); 
+    	   cloned.feature = this.feature;
+    	   cloned.phenotype = this.phenotype;
+	return cloned;
+}
+
 
 }
 

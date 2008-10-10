@@ -64,6 +64,13 @@ public abstract class AbstractStockRelationshipPublication extends AbstractSimpl
          return result;
    }   
 
+public AbstractStockRelationshipPublication generateClone() {
+	AbstractStockRelationshipPublication cloned = new StockRelationshipPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.stockRelationship = this.stockRelationship;
+	return cloned;
+}
+
 
 }
 

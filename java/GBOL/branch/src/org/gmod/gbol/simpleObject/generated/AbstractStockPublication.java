@@ -64,6 +64,13 @@ public abstract class AbstractStockPublication extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractStockPublication generateClone() {
+	AbstractStockPublication cloned = new StockPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.stock = this.stock;
+	return cloned;
+}
+
 
 }
 

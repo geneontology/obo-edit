@@ -64,6 +64,13 @@ public abstract class AbstractLibraryFeature extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractLibraryFeature generateClone() {
+	AbstractLibraryFeature cloned = new LibraryFeature(); 
+    	   cloned.feature = this.feature;
+    	   cloned.library = this.library;
+	return cloned;
+}
+
 
 }
 

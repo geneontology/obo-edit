@@ -102,6 +102,16 @@ public abstract class AbstractElementResult extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractElementResult generateClone() {
+	AbstractElementResult cloned = new ElementResult(); 
+    	   cloned.element = this.element;
+    	   cloned.quantification = this.quantification;
+    	   cloned.signal = this.signal;
+    	   cloned.childElementResultRelationships = this.childElementResultRelationships;
+    	   cloned.parentElementResultRelationships = this.parentElementResultRelationships;
+	return cloned;
+}
+
 
 }
 

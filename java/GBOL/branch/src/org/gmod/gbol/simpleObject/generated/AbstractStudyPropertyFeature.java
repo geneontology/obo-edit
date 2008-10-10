@@ -79,6 +79,14 @@ public abstract class AbstractStudyPropertyFeature extends AbstractSimpleObject 
          return result;
    }   
 
+public AbstractStudyPropertyFeature generateClone() {
+	AbstractStudyPropertyFeature cloned = new StudyPropertyFeature(); 
+    	   cloned.type = this.type;
+    	   cloned.feature = this.feature;
+    	   cloned.studyProperty = this.studyProperty;
+	return cloned;
+}
+
 
 }
 

@@ -75,6 +75,14 @@ public abstract class AbstractPhenotypeCVTerm extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractPhenotypeCVTerm generateClone() {
+	AbstractPhenotypeCVTerm cloned = new PhenotypeCVTerm(); 
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.phenotype = this.phenotype;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

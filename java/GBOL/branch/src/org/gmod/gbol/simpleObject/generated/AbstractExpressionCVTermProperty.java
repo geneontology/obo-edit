@@ -91,6 +91,15 @@ public abstract class AbstractExpressionCVTermProperty extends AbstractSimpleObj
          return result;
    }   
 
+public AbstractExpressionCVTermProperty generateClone() {
+	AbstractExpressionCVTermProperty cloned = new ExpressionCVTermProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.expressionCVTerm = this.expressionCVTerm;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

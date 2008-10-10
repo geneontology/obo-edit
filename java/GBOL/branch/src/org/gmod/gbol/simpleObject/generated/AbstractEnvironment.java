@@ -79,6 +79,14 @@ public abstract class AbstractEnvironment extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractEnvironment generateClone() {
+	AbstractEnvironment cloned = new Environment(); 
+    	   cloned.uniquename = this.uniquename;
+    	   cloned.description = this.description;
+    	   cloned.environmentCVTerms = this.environmentCVTerms;
+	return cloned;
+}
+
 
 }
 

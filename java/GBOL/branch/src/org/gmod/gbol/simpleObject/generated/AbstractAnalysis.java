@@ -164,6 +164,22 @@ public abstract class AbstractAnalysis extends AbstractSimpleObject implements j
          return result;
    }   
 
+public AbstractAnalysis generateClone() {
+	AbstractAnalysis cloned = new Analysis(); 
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.program = this.program;
+    	   cloned.programVersion = this.programVersion;
+    	   cloned.algorithm = this.algorithm;
+    	   cloned.sourceName = this.sourceName;
+    	   cloned.sourceVersion = this.sourceVersion;
+    	   cloned.sourceURI = this.sourceURI;
+    	   cloned.timeExecuted = this.timeExecuted;
+    	   cloned.analysisFeatures = this.analysisFeatures;
+    	   cloned.analysisProperties = this.analysisProperties;
+	return cloned;
+}
+
 
 }
 
