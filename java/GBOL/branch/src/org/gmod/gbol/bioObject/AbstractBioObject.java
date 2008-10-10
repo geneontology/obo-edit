@@ -1,7 +1,6 @@
 package org.gmod.gbol.bioObject;
 
 import org.gmod.gbol.bioObject.conf.BioObjectConfiguration;
-import org.gmod.gbol.simpleObject.AbstractSimpleObjectIterator;
 
 /** Abstract wrapper class from which all Bio objects inherit from.
  * 
@@ -26,7 +25,7 @@ public abstract class AbstractBioObject {
 	 *  underlying AbstractSimpleObject.
 	 *  
 	 * @param conf - Configuration containing mapping information
-	 * @return AbstractSimpleObjectIterator for iterating through high level AbstractSimpleObjects to be written
+	 * @return SimpleObjectIteratorInterface for iterating through high level AbstractSimpleObjects to be written
 	 */
 	public abstract AbstractSimpleObjectIterator getWriteableSimpleObjects(BioObjectConfiguration conf);
 	

@@ -14,7 +14,7 @@ import org.gmod.gbol.simpleObject.FeatureRelationship;
  *
  */
 
-public class Transcript extends AbstractSingleLocationBioObject {
+public class Transcript extends AbstractSingleLocationBioFeature {
 
 	/** Constructor.
 	 * 

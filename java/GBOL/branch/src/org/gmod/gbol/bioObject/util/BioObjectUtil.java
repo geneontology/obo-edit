@@ -25,8 +25,8 @@ public class BioObjectUtil {
 	 *  (e.g. my.package.className returns className).  If a class name is passed
 	 *  with no package identifier, it just returns the class name.
 	 * 
-	 * @param className - Class name without fully qualified package identifier
-	 * @return
+	 * @param className - Class name with fully qualified package identifier
+	 * @return Class name without fully qualified package identifier
 	 */
 	public static String stripPackageNameFromClassName(String className)
 	{
