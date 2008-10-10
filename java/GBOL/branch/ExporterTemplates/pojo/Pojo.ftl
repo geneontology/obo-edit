@@ -16,6 +16,8 @@ import org.gmod.gbol.simpleObject.*;
 
 <#include "PojoEqualsHashcode.ftl"/>
 
+<#include "PojoClone.ftl"/>
+
 <#else>
 <#include "PojoInterfacePropertyAccessors.ftl"/>
 
