@@ -108,7 +108,7 @@
 		
 	<target name="generateBaseClasses">
 		
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/workspace/GBOL/ExporterTemplates/pojo/">
+		<hibernatetool destdir="generated/" templatepath="/users/yostinso/Documents/modENCODE/workspace/GBOL/GBOL/ExporterTemplates/pojo/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="Pojo.ftl" filepattern="{package-name}/generated/Abstract{class-name}.java">
 				<property key="jdk5" value="true" />
@@ -116,9 +116,9 @@
 			</hbmtemplate>
 		</hibernatetool>
 		
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/workspace/GBOL/ExporterTemplates/hbm/">
+		<hibernatetool destdir="generated/chado_1_0_HibernateMappings/" templatepath="/users/yostinso/Documents/modENCODE/workspace/GBOL/GBOL/ExporterTemplates/hbm/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
-			<hbmtemplate template="hibernate-mapping.hbm.ftl" filepattern="{package-name}/generated/Abstract{class-name}.hbm.xml"/>
+			<hbmtemplate template="hibernate-mapping.hbm.ftl" filepattern="Abstract{class-name}.hbm.xml"/>
 		</hibernatetool>
 	</target>
 	
@@ -127,7 +127,7 @@
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="SimpleObjectSubclass.ftl" filepattern="{package-name}/{class-name}.java"/>
 		</hibernatetool>
-		<hibernatetool destdir="generated/" templatepath="/Users/rbruggner/Documents/dev/workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+		<hibernatetool destdir="generated/" templatepath="/users/yostinso/Documents/modENCODE/workspace/GBOL/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate template="SimpleObjectSubclassHibernateMapping.ftl" filepattern="{package-name}/{class-name}.hbm.xml"/>
 		</hibernatetool>
@@ -142,7 +142,7 @@
 	</target>
 	
 	<target name="generateHibernateConfiguration" depends="buildHibernateConfigurationExporter">
-		<hibernatetool destdir="generated" templatepath="/Users/rbruggner/Documents/dev/workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+		<hibernatetool destdir="generated" templatepath="/users/yostinso/Documents/modENCODE/workspace/GBOL/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate exporterclass="org.gmod.gbol.generator.HibernateConfigurationExporter"/>
 		</hibernatetool>
@@ -157,7 +157,7 @@
 	</target>
 			
 	<target name="generateSimpleObjectFactory" depends="buildSimpleObjectFactoryExporter">
-		<hibernatetool destdir="generated" templatepath="/Users/rbruggner/Documents/dev/eclipse/bbop_workspace/GBOL/ExporterTemplates/gbolCustomTemplates/">
+		<hibernatetool destdir="generated" templatepath="/users/yostinso/Documents/modENCODE/workspace/GBOL/GBOL/ExporterTemplates/gbolCustomTemplates/">
 			<jdbcconfiguration configurationfile="reverseEngineeringConfiguration/GBOLhibernate.cfg.xml"  revengfile="reverseEngineeringConfiguration/chado1_0.reveng.xml"/>
 			<hbmtemplate exporterclass="org.gmod.gbol.generator.SimpleObjectFactoryExporter"/>
 		</hibernatetool>
