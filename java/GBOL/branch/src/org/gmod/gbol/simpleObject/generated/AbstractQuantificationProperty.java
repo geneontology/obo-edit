@@ -91,6 +91,15 @@ public abstract class AbstractQuantificationProperty extends AbstractSimpleObjec
          return result;
    }   
 
+public AbstractQuantificationProperty generateClone() {
+	AbstractQuantificationProperty cloned = new QuantificationProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.quantification = this.quantification;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

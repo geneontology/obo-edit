@@ -191,6 +191,25 @@ public abstract class AbstractPhylogeneticNode extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractPhylogeneticNode generateClone() {
+	AbstractPhylogeneticNode cloned = new PhylogeneticNode(); 
+    	   cloned.parentPhylogeneticNode = this.parentPhylogeneticNode;
+    	   cloned.type = this.type;
+    	   cloned.feature = this.feature;
+    	   cloned.phylogeneticTree = this.phylogeneticTree;
+    	   cloned.leftIndex = this.leftIndex;
+    	   cloned.rightIndex = this.rightIndex;
+    	   cloned.label = this.label;
+    	   cloned.distance = this.distance;
+    	   cloned.childPhylogeneticNodeRelationships = this.childPhylogeneticNodeRelationships;
+    	   cloned.phylogeneticNodeOrganisms = this.phylogeneticNodeOrganisms;
+    	   cloned.phylogeneticNodePublications = this.phylogeneticNodePublications;
+    	   cloned.parentPhylogeneticNodeRelationships = this.parentPhylogeneticNodeRelationships;
+    	   cloned.phylogeneticNodeDBXrefs = this.phylogeneticNodeDBXrefs;
+    	   cloned.phylogeneticNodeProperties = this.phylogeneticNodeProperties;
+	return cloned;
+}
+
 
 }
 

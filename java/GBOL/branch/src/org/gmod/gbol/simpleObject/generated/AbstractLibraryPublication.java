@@ -64,6 +64,13 @@ public abstract class AbstractLibraryPublication extends AbstractSimpleObject im
          return result;
    }   
 
+public AbstractLibraryPublication generateClone() {
+	AbstractLibraryPublication cloned = new LibraryPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.library = this.library;
+	return cloned;
+}
+
 
 }
 

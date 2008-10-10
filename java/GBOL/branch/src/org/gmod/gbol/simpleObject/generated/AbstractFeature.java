@@ -278,6 +278,33 @@ public abstract class AbstractFeature extends AbstractSimpleObject implements ja
          return result;
    }   
 
+public AbstractFeature generateClone() {
+	AbstractFeature cloned = new Feature(); 
+    	   cloned.type = this.type;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.organism = this.organism;
+    	   cloned.name = this.name;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.residues = this.residues;
+    	   cloned.sequenceLength = this.sequenceLength;
+    	   cloned.md5checksum = this.md5checksum;
+    	   cloned.isAnalysis = this.isAnalysis;
+    	   cloned.isObsolete = this.isObsolete;
+    	   cloned.timeAccessioned = this.timeAccessioned;
+    	   cloned.timeLastModified = this.timeLastModified;
+    	   cloned.featureLocations = this.featureLocations;
+    	   cloned.featureGenotypes = this.featureGenotypes;
+    	   cloned.parentFeatureRelationships = this.parentFeatureRelationships;
+    	   cloned.childFeatureRelationships = this.childFeatureRelationships;
+    	   cloned.featureCVTerms = this.featureCVTerms;
+    	   cloned.featureSynonyms = this.featureSynonyms;
+    	   cloned.featureDBXrefs = this.featureDBXrefs;
+    	   cloned.featurePublications = this.featurePublications;
+    	   cloned.featurePhenotypes = this.featurePhenotypes;
+    	   cloned.featureProperties = this.featureProperties;
+	return cloned;
+}
+
 
 }
 

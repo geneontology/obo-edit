@@ -102,6 +102,16 @@ public abstract class AbstractElementRelationship extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractElementRelationship generateClone() {
+	AbstractElementRelationship cloned = new ElementRelationship(); 
+    	   cloned.subjectElement = this.subjectElement;
+    	   cloned.type = this.type;
+    	   cloned.objectElement = this.objectElement;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

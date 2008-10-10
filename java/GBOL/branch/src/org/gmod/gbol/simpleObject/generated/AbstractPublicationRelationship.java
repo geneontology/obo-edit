@@ -75,6 +75,14 @@ public abstract class AbstractPublicationRelationship extends AbstractSimpleObje
          return result;
    }   
 
+public AbstractPublicationRelationship generateClone() {
+	AbstractPublicationRelationship cloned = new PublicationRelationship(); 
+    	   cloned.subjectPublication = this.subjectPublication;
+    	   cloned.type = this.type;
+    	   cloned.objectPublication = this.objectPublication;
+	return cloned;
+}
+
 
 }
 

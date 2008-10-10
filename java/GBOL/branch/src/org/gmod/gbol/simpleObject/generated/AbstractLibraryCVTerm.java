@@ -75,6 +75,14 @@ public abstract class AbstractLibraryCVTerm extends AbstractSimpleObject impleme
          return result;
    }   
 
+public AbstractLibraryCVTerm generateClone() {
+	AbstractLibraryCVTerm cloned = new LibraryCVTerm(); 
+    	   cloned.publication = this.publication;
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.library = this.library;
+	return cloned;
+}
+
 
 }
 

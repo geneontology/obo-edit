@@ -152,6 +152,21 @@ public abstract class AbstractQuantification extends AbstractSimpleObject implem
          return result;
    }   
 
+public AbstractQuantification generateClone() {
+	AbstractQuantification cloned = new Quantification(); 
+    	   cloned.analysis = this.analysis;
+    	   cloned.operator = this.operator;
+    	   cloned.acquisition = this.acquisition;
+    	   cloned.protocol = this.protocol;
+    	   cloned.quantificationDate = this.quantificationDate;
+    	   cloned.name = this.name;
+    	   cloned.uri = this.uri;
+    	   cloned.parentQuantificationRelationships = this.parentQuantificationRelationships;
+    	   cloned.quantificationProperties = this.quantificationProperties;
+    	   cloned.childQuantificationRelationships = this.childQuantificationRelationships;
+	return cloned;
+}
+
 
 }
 

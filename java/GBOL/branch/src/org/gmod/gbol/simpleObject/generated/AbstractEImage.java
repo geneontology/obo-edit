@@ -90,6 +90,15 @@ public abstract class AbstractEImage extends AbstractSimpleObject implements jav
          return result;
    }   
 
+public AbstractEImage generateClone() {
+	AbstractEImage cloned = new EImage(); 
+    	   cloned.data = this.data;
+    	   cloned.type = this.type;
+    	   cloned.imageUri = this.imageUri;
+    	   cloned.expressionImages = this.expressionImages;
+	return cloned;
+}
+
 
 }
 

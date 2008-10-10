@@ -93,6 +93,15 @@ public abstract class AbstractFeatureExpression extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractFeatureExpression generateClone() {
+	AbstractFeatureExpression cloned = new FeatureExpression(); 
+    	   cloned.publication = this.publication;
+    	   cloned.feature = this.feature;
+    	   cloned.expression = this.expression;
+    	   cloned.featureExpressionProperties = this.featureExpressionProperties;
+	return cloned;
+}
+
 
 }
 

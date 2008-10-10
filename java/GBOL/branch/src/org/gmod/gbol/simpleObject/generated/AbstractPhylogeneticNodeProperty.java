@@ -86,6 +86,15 @@ public abstract class AbstractPhylogeneticNodeProperty extends AbstractSimpleObj
          return result;
    }   
 
+public AbstractPhylogeneticNodeProperty generateClone() {
+	AbstractPhylogeneticNodeProperty cloned = new PhylogeneticNodeProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.phylogeneticNode = this.phylogeneticNode;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

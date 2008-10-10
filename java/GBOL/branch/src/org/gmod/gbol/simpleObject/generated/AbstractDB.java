@@ -87,6 +87,15 @@ public abstract class AbstractDB extends AbstractSimpleObject implements java.io
          return result;
    }   
 
+public AbstractDB generateClone() {
+	AbstractDB cloned = new DB(); 
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.urlPrefix = this.urlPrefix;
+    	   cloned.url = this.url;
+	return cloned;
+}
+
 
 }
 

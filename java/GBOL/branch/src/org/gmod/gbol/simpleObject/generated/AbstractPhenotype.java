@@ -139,6 +139,20 @@ public abstract class AbstractPhenotype extends AbstractSimpleObject implements 
          return result;
    }   
 
+public AbstractPhenotype generateClone() {
+	AbstractPhenotype cloned = new Phenotype(); 
+    	   cloned.attribute = this.attribute;
+    	   cloned.cvalue = this.cvalue;
+    	   cloned.assay = this.assay;
+    	   cloned.observable = this.observable;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.value = this.value;
+    	   cloned.phenotypeCVTerms = this.phenotypeCVTerms;
+    	   cloned.phenotypeStatements = this.phenotypeStatements;
+    	   cloned.featurePhenotypes = this.featurePhenotypes;
+	return cloned;
+}
+
 
 }
 

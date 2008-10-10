@@ -113,6 +113,17 @@ public abstract class AbstractTreatment extends AbstractSimpleObject implements 
          return result;
    }   
 
+public AbstractTreatment generateClone() {
+	AbstractTreatment cloned = new Treatment(); 
+    	   cloned.type = this.type;
+    	   cloned.protocol = this.protocol;
+    	   cloned.biomaterial = this.biomaterial;
+    	   cloned.rank = this.rank;
+    	   cloned.name = this.name;
+    	   cloned.biomaterialTreatments = this.biomaterialTreatments;
+	return cloned;
+}
+
 
 }
 

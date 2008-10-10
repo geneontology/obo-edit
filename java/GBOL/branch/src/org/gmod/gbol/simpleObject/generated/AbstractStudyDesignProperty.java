@@ -91,6 +91,15 @@ public abstract class AbstractStudyDesignProperty extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractStudyDesignProperty generateClone() {
+	AbstractStudyDesignProperty cloned = new StudyDesignProperty(); 
+    	   cloned.studyDesign = this.studyDesign;
+    	   cloned.type = this.type;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

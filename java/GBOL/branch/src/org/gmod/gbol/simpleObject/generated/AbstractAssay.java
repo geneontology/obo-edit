@@ -201,6 +201,26 @@ public abstract class AbstractAssay extends AbstractSimpleObject implements java
          return result;
    }   
 
+public AbstractAssay generateClone() {
+	AbstractAssay cloned = new Assay(); 
+    	   cloned.operator = this.operator;
+    	   cloned.arrayDesign = this.arrayDesign;
+    	   cloned.protocol = this.protocol;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.assayDate = this.assayDate;
+    	   cloned.arrayIdentifier = this.arrayIdentifier;
+    	   cloned.arrayBatchIdentifier = this.arrayBatchIdentifier;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.studyAssays = this.studyAssays;
+    	   cloned.controls = this.controls;
+    	   cloned.assayBiomaterials = this.assayBiomaterials;
+    	   cloned.assayProperties = this.assayProperties;
+    	   cloned.acquisitions = this.acquisitions;
+    	   cloned.assayProjects = this.assayProjects;
+	return cloned;
+}
+
 
 }
 

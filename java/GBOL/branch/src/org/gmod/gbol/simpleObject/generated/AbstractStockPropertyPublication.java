@@ -64,6 +64,13 @@ public abstract class AbstractStockPropertyPublication extends AbstractSimpleObj
          return result;
    }   
 
+public AbstractStockPropertyPublication generateClone() {
+	AbstractStockPropertyPublication cloned = new StockPropertyPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.stockProperty = this.stockProperty;
+	return cloned;
+}
+
 
 }
 

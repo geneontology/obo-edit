@@ -64,6 +64,13 @@ public abstract class AbstractExpressionPublication extends AbstractSimpleObject
          return result;
    }   
 
+public AbstractExpressionPublication generateClone() {
+	AbstractExpressionPublication cloned = new ExpressionPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.expression = this.expression;
+	return cloned;
+}
+
 
 }
 

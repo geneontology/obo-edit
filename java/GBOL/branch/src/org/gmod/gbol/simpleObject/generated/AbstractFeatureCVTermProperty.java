@@ -91,6 +91,15 @@ public abstract class AbstractFeatureCVTermProperty extends AbstractSimpleObject
          return result;
    }   
 
+public AbstractFeatureCVTermProperty generateClone() {
+	AbstractFeatureCVTermProperty cloned = new FeatureCVTermProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.featureCVTerm = this.featureCVTerm;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

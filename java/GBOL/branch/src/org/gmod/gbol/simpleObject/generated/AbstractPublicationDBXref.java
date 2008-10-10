@@ -74,6 +74,14 @@ public abstract class AbstractPublicationDBXref extends AbstractSimpleObject imp
          return result;
    }   
 
+public AbstractPublicationDBXref generateClone() {
+	AbstractPublicationDBXref cloned = new PublicationDBXref(); 
+    	   cloned.publication = this.publication;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.isCurrent = this.isCurrent;
+	return cloned;
+}
+
 
 }
 

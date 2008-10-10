@@ -74,6 +74,14 @@ public abstract class AbstractCVTermDBXref extends AbstractSimpleObject implemen
          return result;
    }   
 
+public AbstractCVTermDBXref generateClone() {
+	AbstractCVTermDBXref cloned = new CVTermDBXref(); 
+    	   cloned.cvterm = this.cvterm;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.isForDefinition = this.isForDefinition;
+	return cloned;
+}
+
 
 }
 

@@ -81,6 +81,14 @@ public abstract class AbstractFeaturePublication extends AbstractSimpleObject im
          return result;
    }   
 
+public AbstractFeaturePublication generateClone() {
+	AbstractFeaturePublication cloned = new FeaturePublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.feature = this.feature;
+    	   cloned.featurePublicationProperties = this.featurePublicationProperties;
+	return cloned;
+}
+
 
 }
 

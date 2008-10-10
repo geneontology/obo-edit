@@ -85,6 +85,15 @@ public abstract class AbstractFeaturePosition extends AbstractSimpleObject imple
          return result;
    }   
 
+public AbstractFeaturePosition generateClone() {
+	AbstractFeaturePosition cloned = new FeaturePosition(); 
+    	   cloned.feature = this.feature;
+    	   cloned.featureMap = this.featureMap;
+    	   cloned.mapFeature = this.mapFeature;
+    	   cloned.mapPosition = this.mapPosition;
+	return cloned;
+}
+
 
 }
 

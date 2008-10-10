@@ -97,6 +97,16 @@ public abstract class AbstractPhenotypeStatement extends AbstractSimpleObject im
          return result;
    }   
 
+public AbstractPhenotypeStatement generateClone() {
+	AbstractPhenotypeStatement cloned = new PhenotypeStatement(); 
+    	   cloned.environment = this.environment;
+    	   cloned.type = this.type;
+    	   cloned.publication = this.publication;
+    	   cloned.genotype = this.genotype;
+    	   cloned.phenotype = this.phenotype;
+	return cloned;
+}
+
 
 }
 

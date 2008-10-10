@@ -150,6 +150,21 @@ public abstract class AbstractAcquisition extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractAcquisition generateClone() {
+	AbstractAcquisition cloned = new Acquisition(); 
+    	   cloned.assay = this.assay;
+    	   cloned.channel = this.channel;
+    	   cloned.protocol = this.protocol;
+    	   cloned.acquisitionDate = this.acquisitionDate;
+    	   cloned.name = this.name;
+    	   cloned.uri = this.uri;
+    	   cloned.quantifications = this.quantifications;
+    	   cloned.acquisitionProperties = this.acquisitionProperties;
+    	   cloned.parentAcquisitionRelationships = this.parentAcquisitionRelationships;
+    	   cloned.childAcquisitionRelationships = this.childAcquisitionRelationships;
+	return cloned;
+}
+
 
 }
 

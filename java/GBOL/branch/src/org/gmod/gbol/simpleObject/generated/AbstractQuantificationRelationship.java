@@ -74,6 +74,14 @@ public abstract class AbstractQuantificationRelationship extends AbstractSimpleO
          return result;
    }   
 
+public AbstractQuantificationRelationship generateClone() {
+	AbstractQuantificationRelationship cloned = new QuantificationRelationship(); 
+    	   cloned.subjectQuantification = this.subjectQuantification;
+    	   cloned.type = this.type;
+    	   cloned.objectQuantification = this.objectQuantification;
+	return cloned;
+}
+
 
 }
 

@@ -79,6 +79,14 @@ public abstract class AbstractCV extends AbstractSimpleObject implements java.io
          return result;
    }   
 
+public AbstractCV generateClone() {
+	AbstractCV cloned = new CV(); 
+    	   cloned.name = this.name;
+    	   cloned.definition = this.definition;
+    	   cloned.cvterms = this.cvterms;
+	return cloned;
+}
+
 
 }
 

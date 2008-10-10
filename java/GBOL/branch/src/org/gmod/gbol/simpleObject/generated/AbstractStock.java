@@ -194,6 +194,25 @@ public abstract class AbstractStock extends AbstractSimpleObject implements java
          return result;
    }   
 
+public AbstractStock generateClone() {
+	AbstractStock cloned = new Stock(); 
+    	   cloned.type = this.type;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.organism = this.organism;
+    	   cloned.name = this.name;
+    	   cloned.uniqueName = this.uniqueName;
+    	   cloned.description = this.description;
+    	   cloned.isObsolete = this.isObsolete;
+    	   cloned.parentStockRelationships = this.parentStockRelationships;
+    	   cloned.stockPublications = this.stockPublications;
+    	   cloned.stockDBXrefs = this.stockDBXrefs;
+    	   cloned.stockProperties = this.stockProperties;
+    	   cloned.childStockRelationships = this.childStockRelationships;
+    	   cloned.stockCVTerms = this.stockCVTerms;
+    	   cloned.stockGenotypes = this.stockGenotypes;
+	return cloned;
+}
+
 
 }
 

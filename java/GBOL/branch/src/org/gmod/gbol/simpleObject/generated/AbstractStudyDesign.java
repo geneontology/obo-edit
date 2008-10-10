@@ -89,6 +89,15 @@ public abstract class AbstractStudyDesign extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractStudyDesign generateClone() {
+	AbstractStudyDesign cloned = new StudyDesign(); 
+    	   cloned.study = this.study;
+    	   cloned.description = this.description;
+    	   cloned.studyDesignProperties = this.studyDesignProperties;
+    	   cloned.studyFactors = this.studyFactors;
+	return cloned;
+}
+
 
 }
 

@@ -140,6 +140,20 @@ public abstract class AbstractProtocol extends AbstractSimpleObject implements j
          return result;
    }   
 
+public AbstractProtocol generateClone() {
+	AbstractProtocol cloned = new Protocol(); 
+    	   cloned.type = this.type;
+    	   cloned.publication = this.publication;
+    	   cloned.dbxref = this.dbxref;
+    	   cloned.name = this.name;
+    	   cloned.uri = this.uri;
+    	   cloned.protocolDescription = this.protocolDescription;
+    	   cloned.hardwareDescription = this.hardwareDescription;
+    	   cloned.softwareDescription = this.softwareDescription;
+    	   cloned.protocolParameters = this.protocolParameters;
+	return cloned;
+}
+
 
 }
 

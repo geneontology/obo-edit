@@ -64,6 +64,13 @@ public abstract class AbstractPhylogeneticNodeDBXref extends AbstractSimpleObjec
          return result;
    }   
 
+public AbstractPhylogeneticNodeDBXref generateClone() {
+	AbstractPhylogeneticNodeDBXref cloned = new PhylogeneticNodeDBXref(); 
+    	   cloned.phylogeneticNode = this.phylogeneticNode;
+    	   cloned.dbxref = this.dbxref;
+	return cloned;
+}
+
 
 }
 

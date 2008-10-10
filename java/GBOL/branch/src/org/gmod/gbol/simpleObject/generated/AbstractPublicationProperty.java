@@ -91,6 +91,15 @@ public abstract class AbstractPublicationProperty extends AbstractSimpleObject i
          return result;
    }   
 
+public AbstractPublicationProperty generateClone() {
+	AbstractPublicationProperty cloned = new PublicationProperty(); 
+    	   cloned.type = this.type;
+    	   cloned.publication = this.publication;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

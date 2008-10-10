@@ -64,6 +64,13 @@ public abstract class AbstractFeatureCVTermPublication extends AbstractSimpleObj
          return result;
    }   
 
+public AbstractFeatureCVTermPublication generateClone() {
+	AbstractFeatureCVTermPublication cloned = new FeatureCVTermPublication(); 
+    	   cloned.publication = this.publication;
+    	   cloned.featureCVTerm = this.featureCVTerm;
+	return cloned;
+}
+
 
 }
 

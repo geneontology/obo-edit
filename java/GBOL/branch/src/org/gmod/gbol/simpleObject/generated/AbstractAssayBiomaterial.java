@@ -92,6 +92,15 @@ public abstract class AbstractAssayBiomaterial extends AbstractSimpleObject impl
          return result;
    }   
 
+public AbstractAssayBiomaterial generateClone() {
+	AbstractAssayBiomaterial cloned = new AssayBiomaterial(); 
+    	   cloned.assay = this.assay;
+    	   cloned.channel = this.channel;
+    	   cloned.biomaterial = this.biomaterial;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

@@ -105,6 +105,17 @@ public abstract class AbstractFeatureMap extends AbstractSimpleObject implements
          return result;
    }   
 
+public AbstractFeatureMap generateClone() {
+	AbstractFeatureMap cloned = new FeatureMap(); 
+    	   cloned.unitType = this.unitType;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.featureMapPublications = this.featureMapPublications;
+    	   cloned.featurePositions = this.featurePositions;
+    	   cloned.featureRanges = this.featureRanges;
+	return cloned;
+}
+
 
 }
 

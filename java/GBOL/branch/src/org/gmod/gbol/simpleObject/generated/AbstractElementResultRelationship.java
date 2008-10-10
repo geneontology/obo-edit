@@ -102,6 +102,16 @@ public abstract class AbstractElementResultRelationship extends AbstractSimpleOb
          return result;
    }   
 
+public AbstractElementResultRelationship generateClone() {
+	AbstractElementResultRelationship cloned = new ElementResultRelationship(); 
+    	   cloned.subjectElementResult = this.subjectElementResult;
+    	   cloned.type = this.type;
+    	   cloned.objectElementResult = this.objectElementResult;
+    	   cloned.value = this.value;
+    	   cloned.rank = this.rank;
+	return cloned;
+}
+
 
 }
 

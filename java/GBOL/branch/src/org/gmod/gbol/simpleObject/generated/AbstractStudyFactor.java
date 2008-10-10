@@ -101,6 +101,16 @@ public abstract class AbstractStudyFactor extends AbstractSimpleObject implement
          return result;
    }   
 
+public AbstractStudyFactor generateClone() {
+	AbstractStudyFactor cloned = new StudyFactor(); 
+    	   cloned.studyDesign = this.studyDesign;
+    	   cloned.type = this.type;
+    	   cloned.name = this.name;
+    	   cloned.description = this.description;
+    	   cloned.studyFactorValues = this.studyFactorValues;
+	return cloned;
+}
+
 
 }
 

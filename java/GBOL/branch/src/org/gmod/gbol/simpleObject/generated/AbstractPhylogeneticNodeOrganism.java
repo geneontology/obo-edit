@@ -46,6 +46,13 @@ public abstract class AbstractPhylogeneticNodeOrganism extends AbstractSimpleObj
 
 
 
+public AbstractPhylogeneticNodeOrganism generateClone() {
+	AbstractPhylogeneticNodeOrganism cloned = new PhylogeneticNodeOrganism(); 
+    	   cloned.phylogeneticNode = this.phylogeneticNode;
+    	   cloned.organism = this.organism;
+	return cloned;
+}
+
 
 }
 
