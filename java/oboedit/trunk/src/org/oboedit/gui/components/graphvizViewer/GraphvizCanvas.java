@@ -134,7 +134,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	JScrollPane pane = new JScrollPane(htmlPane,
 			ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	JButton saveButton = new JButton("Save");
+	JButton saveButton = new JButton("Save Graph");
 
 	public GraphvizCanvas(String id) {
 		super(id);
