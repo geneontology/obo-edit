@@ -302,7 +302,7 @@ public class TreeView extends AbstractGUIComponent {
 	 */
 	@Override
 	public ComponentConfiguration getConfiguration() {
-		logger.debug("TreeView: getConfiguration method.");
+		logger.debug("TreeView: getConfiguration method : multiSelect = " + treeViewSettingsInstance.getMultiSelect());
 		
 		System.out.println("TreeView: getConfiguration method: treeViewSettingsInstance = " + treeViewSettingsInstance);
 		System.out.println("TreeView: getConfiguration method: treeViewInstance = " + this);
@@ -317,7 +317,7 @@ public class TreeView extends AbstractGUIComponent {
  * Sets the current treeViewSettings object to treeViewSettingsInstance for use in this class. 
  *
  */
-	public void setConfiguration(TreeViewSettings treeViewSettingsInstance) {
+	public void setConfiguration(ComponentConfiguration treeViewSettingsInstance) {
 		logger.debug("TreeView: setConfiguration method.");
 
 		if (treeViewSettingsInstance != null && treeViewSettingsInstance instanceof TreeViewSettings) {
