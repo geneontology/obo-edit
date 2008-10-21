@@ -980,7 +980,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		mainPanel.addTab("Behavior", null, behaviorPanel, "Set behavior options");
 		mainPanel.addTab("Text Editing", null, textEditPanel,
 		"Set text editing options");
-		mainPanel.addTab("Advanced", null, advancedPanel, "Advanced user options");
+		mainPanel.addTab("Enable Experimental Components", null, advancedPanel, "Advanced user options");
 
 		add(mainPanel, "Center");
 		Box buttonBox = Box.createVerticalBox();
