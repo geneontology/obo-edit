@@ -23,9 +23,9 @@
 	<property name="main_jar_manifest_template" location="templates/jar_manifest.template" />
 
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
-	<property name="install4j_installation_path" location="/Applications/install4j 4" />
+	<!--property name="install4j_installation_path" location="/Applications/install4j 4" / -->
 	<!-- change install path for linux -->
-	<!-- property name="install4j_installation_path" location="/opt/install4j" / -->
+	<property name="install4j_installation_path" location="/opt/install4j" />
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
 
@@ -39,7 +39,7 @@
 	<!-- Note: to make javahelp_inders, you will need to install javahelp 
 	     (see http://java.sun.com/products/javahelp/download_binary.html)
 	     and you may need to change the path below to point to where you've installed it. -->
-	<property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" />
+	<!-- property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" / -->
 
 	<!-- test to see if optional regular expression targets are available -->
 	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
@@ -174,8 +174,8 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
-	<!-- target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, install4j_installers" description="Build installers" -->
-	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, install4j_installers" description="Build installers">
+	<!-- target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers" -->
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
@@ -300,7 +300,7 @@
 			<arg value="." />
 			<arg value="-db" />
 			<arg value="JavaHelpSearch" />
-		</exec>
+		</exec >
 
 		<!-- Restore directories that were moved out of the way -->
 		<move todir="docs/html/.svn">
@@ -317,7 +317,8 @@
 	<!-- target name="docindex" depends="-dojhindex" -->
 	<!-- jhindex is not required anymore -->
 	<target name="docindex">
-		<xslt out="docs/toc.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
+			<xslt out="docs/index.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
+
 			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
 		</xslt>
 	</target>
