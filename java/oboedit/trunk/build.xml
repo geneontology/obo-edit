@@ -25,6 +25,9 @@
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
 	<!--property name="install4j_installation_path" location="/Applications/install4j 4" / -->
 	<!-- change install path for linux -->
+	<!-- note that this path should be the directory above bin/install4j, -->
+	<!-- e.g., if the path to install4j is /opt/install4j/bin/install4j, -->
+	<!-- you'd put /opt/install4j here for install4j_installation_path.  -->
 	<property name="install4j_installation_path" location="/opt/install4j" />
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
@@ -174,8 +177,10 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
+
 	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, install4j_installers" description="Build installers">
 	<!-- target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers" -->
+	<fail message="Can't build releases because install4j could not be found at ${install4j_installation_path}/bin/install4j" />
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
