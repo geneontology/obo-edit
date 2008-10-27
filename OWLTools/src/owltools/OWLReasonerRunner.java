@@ -113,6 +113,10 @@ public class OWLReasonerRunner {
 				OWLDataFactory owlFactory = manager.getOWLDataFactory();
 
 
+				// we want to be able to make queries such as "what is a nucleus part_of"? To be able to do this
+				// we have to create named restrictions for all C x P combinations, where C is a class and P is an ObjectProperty.
+				// we can then say "what is a nucleus a subclass of" and then extract the part information from amongst the named classes
+				// that are returned
 				if (createNamedRestrictions) {
 
 					Collection<OWLEquivalentClassesAxiom> newAxioms = new ArrayList<OWLEquivalentClassesAxiom>();
