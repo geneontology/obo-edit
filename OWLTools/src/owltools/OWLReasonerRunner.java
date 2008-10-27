@@ -63,12 +63,16 @@ public class OWLReasonerRunner {
 		Collection<String> paths = new ArrayList<String>();
 		int i=0;
 		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner";
+		boolean createNamedRestrictions = false;
 
 		while (i < args.length) {
 			String opt = args[i];
 			i++;
 			if (opt.equals("--pellet")) {
 				reasonerClassName = "org.mindswap.pellet.owlapi.Reasoner";
+			}
+			else if (opt.equals("-r") || opt.equals("--namerestr")) {
+				createNamedRestrictions = true;
 			}
 			else {
 				paths.add(opt);
@@ -105,10 +109,41 @@ public class OWLReasonerRunner {
 				// Obtain and load the imports closure of the pizza ontology
 				Set<OWLOntology> importsClosure = manager.getImportsClosure(ont);
 				reasoner.loadOntologies(importsClosure);
-				long initTime = System.nanoTime();
 
+				OWLDataFactory owlFactory = manager.getOWLDataFactory();
+
+
+				if (createNamedRestrictions) {
+
+					Collection<OWLEquivalentClassesAxiom> newAxioms = new ArrayList<OWLEquivalentClassesAxiom>();
+					Set<OWLClass> owlClasses = ont.getReferencedClasses();
+					Set<OWLObjectProperty> owlProperties = ont.getReferencedObjectProperties();
+					for (OWLObjectProperty property : owlProperties) {
+						URI pURI = property.getURI();
+						if (!property.isTransitive(ont))
+							continue;
+						for (OWLClass cls : owlClasses) {
+							OWLObjectSomeRestriction restr = 
+								owlFactory.getOWLObjectSomeRestriction(property, cls);
+							URI rURI = URI.create(pURI+"/"+cls.getURI().getFragment());
+							OWLClass ec = 
+								owlFactory.getOWLClass(rURI);
+							//OWLLabelAnnotation label = 
+							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
+							OWLEquivalentClassesAxiom ecAxiom = owlFactory.getOWLEquivalentClassesAxiom(ec,restr);
+							newAxioms.add(ecAxiom);
+
+						}
+					}
+					for (OWLEquivalentClassesAxiom ecAxiom : newAxioms) {
+						manager.addAxiom(ont, ecAxiom);							
+					}
+
+
+				}
+
+				long initTime = System.nanoTime();
 				reasoner.classify();
-				
 				long totalTime = System.nanoTime() - initTime;
 				System.out.println("   Total reasoner time = "
 						+ (totalTime / 1000000d) + " ms");
@@ -232,7 +267,7 @@ public class OWLReasonerRunner {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static String getLabel(OWLClass cls, OWLOntology ont) {
 		String label = cls.toString();
 		for (OWLAnnotation a : cls.getAnnotations(ont, OWLRDFVocabulary.RDFS_LABEL.getURI())) {
