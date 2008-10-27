@@ -164,7 +164,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 					continue;
 				}
 				//logger.debug("checking if this should be trimmed");
-				if (!ReasonerUtil.shouldBeTrimmedNew(reasoner, link) &&
+				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
 					!impliedLinks.contains(link) &&
 					(selectedRelation == null ||
 							link.getType().equals(selectedRelation))) {
@@ -180,7 +180,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 					}
 					if (chosenExplanation != null) {
 
-						logger.info("ADDING LINK. chosen explanation: "+chosenExplanation);
+						logger.info("Proposed new link: "+chosenExplanation);
 
 						count++;
 						final JCheckBox checkBox = new JCheckBox("Assert: ["
