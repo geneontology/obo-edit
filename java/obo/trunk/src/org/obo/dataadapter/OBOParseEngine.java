@@ -866,6 +866,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 			RelStruct relStruct = parseRelationship(value, nv, "transitive_over");
 			doReadRelationship(relStruct, (OBOParser) parser);
 			return true;
+		} else if (name.equals("disjoint_over")) {
+			RelStruct relStruct = parseRelationship(value, nv, "disjoint_over");
+			doReadRelationship(relStruct, (OBOParser) parser);
+			return true;
 		} else if (name.equals("inverse_of")) {
 			RelStruct relStruct = parseRelationship(value, nv, "inverse_of");
 			doReadRelationship(relStruct, (OBOParser) parser);
