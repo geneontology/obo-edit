@@ -1,13 +1,12 @@
 package org.geneontology.db.model;
 
 /**
- * The CVTermRelationship class corresponds to the GO term2term
- * table. CVTermRelationship relates one {@link CVTerm} object to another.
+ * Parent class for any term to term relationship
  * 
- * @author Suzanna Lewis
+ * @author cjm
  * 
  */
-public class MetaRelation extends GOModel {
+public abstract class AbstractRelationship extends GOModel {
 	
 	/** The cvterm_relationship_id of the CVTermRelationship} */
 	public int relation_id;
@@ -21,9 +20,10 @@ public class MetaRelation extends GOModel {
 	/** The object {@link CVTerm} term */
 	public Term object;
 
-	public MetaRelation(){
-		String[] uniqueConstraintFields = {"subject", "object"};
-		this.initUniqueConstraintFields(MetaRelation.class,uniqueConstraintFields);
+
+	public AbstractRelationship(){
+		String[] uniqueConstraintFields = {"type", "subject", "object"};
+		this.initUniqueConstraintFields(AbstractRelationship.class,uniqueConstraintFields);
 	}
 	
 	/**
@@ -90,4 +90,5 @@ public class MetaRelation extends GOModel {
 		this.object = object;
 	}
 	
+
 }
