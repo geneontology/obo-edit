@@ -132,6 +132,32 @@ public interface OBOProperty extends OBOObject {
 		}
 	};
 	
+	public static final OBOProperty DISJOINT_OVER = new OBOPropertyImpl(
+			"disjoint_over", null) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 3635477793098376143L;
+
+		{
+			this.name = "transitive_over";
+		}
+
+		@Override
+		public boolean isSymmetric() {
+			return false;
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return true;
+		}
+		
+		public boolean isNonInheritable() {
+			return true;
+		}
+	};
+	
 	public static final OBOProperty HOLDS_OVER_CHAIN = new OBOPropertyImpl(
 			"holds_over_chain", null) {
 		/**
@@ -355,6 +381,14 @@ public interface OBOProperty extends OBOObject {
 	 */
 	public OBOProperty getTransitiveOver();
 	public void setTransitiveOver(OBOProperty transitiveOver);
+	
+	/**
+	 * R disjoint_over R2 & A R B => not exists X : X R2 A & X R2 B
+	 * Example: spatially_disconnected_from disjoint_over part_of
+	 * @return
+	 */
+	public OBOProperty getDisjointOver();
+	public void setDisjointOver(OBOProperty disjointOver);
 	
 	/**
 	 * for each chain:
