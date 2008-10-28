@@ -951,6 +951,23 @@ public class DefaultOBOParser implements OBOParser {
 				false, implied, null, null, null, ns, nv));
 	}
 
+	public void readMetaRelation(String id, String ns, String metaRelationId, boolean implied,
+			NestedValue nv) throws OBOParseException {
+		if (!(currentObject instanceof LinkedObject))
+			throw new OBOParseException("Tried to specify inverse_of "
+					+ "for object " + currentObject + " which "
+					+ "does not support relationships.", getCurrentPath(),
+					engine.getCurrentLine(), engine.getLineNum());
+
+		if (assignDefaultNamespaceToLinks)
+			if (ns == null && this.getDefaultNamespace() != null)
+				ns = this.getDefaultNamespace().getID();
+
+		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+				metaRelationId, getCurrentPath(), engine
+				.getLineNum(), engine.getCurrentLine(), true, false,
+				false, implied, null, null, null, ns, nv));
+	}
 
 	public void readIsCyclic(boolean isCyclic, NestedValue nv)
 	throws OBOParseException {
@@ -1287,7 +1304,7 @@ public class DefaultOBOParser implements OBOParser {
 					if (p == null) {
 						if (allowDanglingParents) {
 							DanglingObject dangling = objectFactory
-							.createDanglingObject(pid, false);
+							.createDanglingObject(pid, true);
 							logger.info("null property " + pid + "--added dangling object");
 							p = dangling;
 						} else
@@ -1300,8 +1317,8 @@ public class DefaultOBOParser implements OBOParser {
 							throw new OBOParseException("Cannot use non-relation " + p
 									+ " in chain.", null, null, -1);
 
-						pChain.add((OBOProperty) p);
 					}
+					pChain.add((OBOProperty) p);
 
 				}
 				t.addHoldsOverChain(pChain);

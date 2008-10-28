@@ -266,6 +266,8 @@ public class OBOConstants {
 			"is_symmetric", OBOProperty.class);	
 	public static final TagMapping TRANSITIVE_OVER_TAG = new TagMapping(
 			"transitive_over", OBOProperty.class);
+	public static final TagMapping DISJOINT_OVER_TAG = new TagMapping(
+			"disjoint_over", OBOProperty.class);
 	public static final TagMapping HOLDS_OVER_CHAIN_TAG = new TagMapping(
 			"holds_over_chain", OBOProperty.class);
 

@@ -436,6 +436,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			stream.print("disjoint_from: ");
 		} else if (link.getType().equals(OBOProperty.TRANSITIVE_OVER)) {
 			stream.print("transitive_over: ");
+		} else if (link.getType().equals(OBOProperty.DISJOINT_OVER)) {
+			stream.print("disjoint_over: ");
 		} else if (link.getType().equals(OBOProperty.UNION_OF)) {
 			stream.print("union_of: ");
 		} else if (link.getType().equals(OBOProperty.INVERSE_OF)) {
