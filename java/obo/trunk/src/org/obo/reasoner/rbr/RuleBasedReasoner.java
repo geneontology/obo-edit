@@ -49,13 +49,11 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	 * the LPR works by maintaining a linkPile. initialized on the doReasoning() step,
 	 * 
 	 */
-	protected Collection<Link> linkPile;
 	protected List<Rule> rules = new ArrayList<Rule>();
-	protected int maxLinkPileSize = 0;
 	protected int lastVal;
 	protected HashMap<Link, Link> linkMap;
-	protected boolean lowMemoryMode = false;
 	protected HashMap<OBOProperty,Link> propertyLinkMap;
+	protected RelationCompositionTable rct;
 
 	/**
 	 * a Link that has been inferred by the LinkPileReasoner.
@@ -193,15 +191,26 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		// SymmetryRule is weakly deprecated - we rarely have type-level symmetric relations
 		// addRule(new SymmetryRule());
 		addRule(new SubPropertyRule());
-		addRule(new PropagateOverIsARule());
-		addRule(new TransitiveRelationRule());
-		addRule(new TransitiveOverRule());
+		//addRule(new PropagateOverIsARule());
+		//addRule(new TransitiveRelationRule());
+		//addRule(new TransitiveOverRule());
 		addRule(new LinkCompositionRule());
 		addRule(new PropertyIntersectionRule());
 		addRule(new IntersectionRule());
 
 	}
+	
+	// TODO: 
+	public boolean hasDelayedIncrementalMode() {
+		return true;
+	}
+	
+	
 
+
+	public RelationCompositionTable getRelationCompositionTable() {
+		return rct;
+	}
 
 	/**
 	 *  called before doReasoner() on recache() --
@@ -213,6 +222,8 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		fireStart();
 
 		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
+		rct = new RelationCompositionTable(getLinkDatabase());
+		logger.info("RCT:\n"+rct.toTable());
 		explanationMap =
 			new MultiHashSetMap<Link, Explanation>();
 		explanationDeps =
@@ -225,6 +236,13 @@ public class RuleBasedReasoner extends AbstractReasoner {
 			addExplanation(e); // adds the link too
 		}
 
+	}
+
+	// called from ReasonerOperationModel. 
+	// doReasoning() is protected so we need to go via this public method.
+	// TODO: need a cleaner way of reasoners genericaly exposing this method
+	public void findNewImplications() {
+		doReasoning();
 	}
 
 
@@ -350,46 +368,12 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		return exps;
 	}
 
-	protected boolean isLookedAt(Link link) {
-		if (link instanceof ReasonerLink)
-			return ((ReasonerLink) link).isLookedAt();
-		else
-			return false;
-	}
-
-	protected void setLookedAt(Link link) {
-		if (link instanceof ReasonerLink) {
-			((ReasonerLink) link).setLookedAt(true);
-		}
-	}
-
-	protected void reasonRemoval(Link link) {
-		reasonRemoval(link, new HashSet<Link>());
-	}
-
-	protected void reasonRemoval(PathCapable pc, Collection<Link> seenem) {
-		if (pc instanceof Link)
-			reasonRemoval((Link) pc, seenem);
-	}
-
-	protected void reasonRemoval(Link link, Collection<Link> seenem) {
-		logger.info("Removing link: "+link);
-		if (seenem.contains(link))
-			return;
-		else
-			seenem.add(link);
-
-
-		// TODO
-
-	}
 
 	// incremental reasoning
 	protected void doAddLink(Link link) {
 		addExplanation(new GivenExplanation(link));
-		doReasoning(); // TODO - don't need to add all givens every time..
+		doReasoning(); // TODO - selective reasoning
 	}
-
 	public Collection<Link> getChildren(LinkedObject lo) {
 		return impliedLinkDatabase.getChildren(lo);
 	}
@@ -400,7 +384,8 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	protected void doRemoveLink(Link link) {
 		cascadingRemoveLink(link);
-		doReasoning(); // it may be possible to re-populate some links via different explanations
+		//doReasoning(); // it may be possible to re-populate some links via different explanations
+		//doReasoning(); // TODO - don't need to add all givens every time.. CHANGED - but in an ugly way. ReasonerOperationModel takes care of this at the end of a macro op
 	}
 
 	protected void cascadingRemoveLink(Link link) {
@@ -416,6 +401,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		Collection<Link> togo = new HashSet<Link>();
 		for (Explanation exp : deps) {
 			Link depLink = (Link) exp.getExplainedObject();
+			logger.debug("link : "+link+" // has DEP: "+depLink+" // via EXPL: "+exp);
 			togo.add(depLink);
 		}
 		explanationDeps.remove(link);
@@ -438,6 +424,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		return out;
 	}
 
+	// TODO: use an index
 	public Link hasRelationship(LinkedObject a, OBOProperty prop, LinkedObject b) {
 		Iterator<Link> it = getParents(a).iterator();
 		while (it.hasNext()) {
@@ -468,6 +455,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	public boolean isSubclassOf(OBOClass a, OBOClass b) {
 		return hasRelationship(a, OBOProperty.IS_A, b) != null;
 	}
+
 
 
 

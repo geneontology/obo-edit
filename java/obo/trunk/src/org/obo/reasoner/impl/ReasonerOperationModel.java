@@ -14,6 +14,7 @@ import org.obo.history.OperationWarning;
 import org.obo.history.StringRelationship;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.rbr.RuleBasedReasoner;
 import org.obo.util.HistoryUtil;
 
 import org.apache.log4j.*;
@@ -78,7 +79,17 @@ public class ReasonerOperationModel implements OperationModel {
 			CompletesHistoryItem chi = (CompletesHistoryItem) item;
 			Link link = HistoryUtil.getRealRel(session, chi.getRel());
 			setCompleteness(link, !chi.getOldCompletes());
+		} else if (item instanceof TermMacroHistoryItem) {
+			// TODO: find a cleaner way of doing this. Reasoner interface should expose what is required
+			// incremental reasoning.
+			// TODO: what about when not in a macro?
+			if (reasoner instanceof RuleBasedReasoner) {
+				((RuleBasedReasoner) reasoner).findNewImplications();
+			}
+		} else {
+			// 
 		}
+		
 		return null;
 	}
 

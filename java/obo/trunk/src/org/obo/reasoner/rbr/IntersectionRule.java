@@ -59,7 +59,7 @@ public class IntersectionRule extends AbstractRule {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(IntersectionRule.class);
 	protected boolean isFirstPass = true;
-
+	public long findBestLinkTime = 0;
 
 	/**
 	 * maps from the OBOClass which is defined to the links comprising the intersection definition.
@@ -131,14 +131,27 @@ public class IntersectionRule extends AbstractRule {
 			// the most efficient)
 			Integer minSize = null;
 			Link bestLink = null;
-			for (Link nsLink : intersectionMap.get(xp)) {
-				OBOProperty p = nsLink.getType();
-				int numLinks = reasoner.getLinks(p).size();
-				if (minSize == null || numLinks < minSize) {
-					minSize = numLinks;
-					bestLink = nsLink;
+			if (false) {
+				// this was extremely inefficient
+				for (Link nsLink : intersectionMap.get(xp)) {
+					OBOProperty p = nsLink.getType();
+					long itime = System.nanoTime();
+					int numLinks = reasoner.getLinks(p).size(); // we map by properties so this should be fast
+					findBestLinkTime += (System.nanoTime() - itime);
+					if (minSize == null || numLinks < minSize) {
+						minSize = numLinks;
+						bestLink = nsLink;
+					}
 				}
 			}
+			else {
+				// choose an arbitrary candidate link
+				// could be inefficient for ontologies e.g. with lots of genus-root terms
+				bestLink = intersectionMap.get(xp).iterator().next(); // arbitrary
+			}
+
+
+			// find candidates based on one of the N+S conditions
 			for (Link candidateLink : reasoner.getChildren(bestLink.getParent())) {
 				OBOProperty prop = candidateLink.getType();
 				if (prop.equals(bestLink.getType())) {
@@ -149,10 +162,24 @@ public class IntersectionRule extends AbstractRule {
 						if (!onlyGiven(existingExpls))
 							continue; // we have this already
 					}	
+
 					// on the first pass we collect potential candidates
-					candidateSubClasses.add(candidateSubClass);
+					boolean satisfies = true;
+					for (Link nsLink : intersectionMap.get(xp)) {
+						if (nsLink.equals(bestLink))
+							continue;
+						if (reasoner.hasRelationship(candidateSubClass, nsLink.getType(), nsLink.getParent()) == null) {
+							satisfies = false;
+							break;
+						}
+					}
+					if (satisfies)
+						candidateSubClasses.add(candidateSubClass);
 				}
 			}
+
+			/*
+			// test the candidate satisfies all conditions
 			for (Link nsLink : intersectionMap.get(xp)) {
 				if (nsLink.equals(bestLink))
 					continue;
@@ -166,6 +193,7 @@ public class IntersectionRule extends AbstractRule {
 				}
 				candidateSubClasses.removeAll(togo);
 			}
+			 */
 
 			for (LinkedObject candidate : candidateSubClasses) {
 				Link out = createLink(candidate, OBOProperty.IS_A, xp);
@@ -180,6 +208,9 @@ public class IntersectionRule extends AbstractRule {
 				expls.add(exp);	
 			}
 		}
+		logger.info("      findBestLinkTime = "
+				+ (findBestLinkTime / 1000000d) + " ms");
+
 		ruleTime += (System.nanoTime() - time);
 		return expls;	
 	}
