@@ -51,7 +51,7 @@ public class SimilarityPairResource extends NodesResource{
 			SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(nodes.get(0).getId(), nodes.get(1).getId());			
 			this.getShard(dataSource).calculateInformationContentMetrics(sp);
 			
-			resourceMap.put("contentRatioScore",sp.getSimilarityByInformationContentRatio());
+			resourceMap.put("contentRatioScore",sp.getInformationContentRatio());
 			resourceMap.put("basicSimilarityScore", sp.getBasicSimilarityScore());
 			//resourceMap.put("maxContentNode", sp.getNodeWithMaximumInformationContent());
 			
