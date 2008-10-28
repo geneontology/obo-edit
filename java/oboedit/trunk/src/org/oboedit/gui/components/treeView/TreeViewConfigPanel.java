@@ -79,7 +79,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		mainPanel.add(multiTermCheckbox, constraints);
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		mainPanel.add(trimPathsCheckbox, constraints);
+		//mainPanel.add(trimPathsCheckbox, constraints); //Uncomment this to bring the option back. 
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		mainPanel.add(showNonTransitiveCheckbox, constraints);
@@ -88,7 +88,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		mainPanel.add(multiTermLabel, constraints);
 		constraints.gridx = 1;
 		constraints.gridy = 1;		
-		mainPanel.add(trimPathsLabel, constraints);
+		//mainPanel.add(trimPathsLabel, constraints);   //Uncomment this to bring the option back. 
 		constraints.gridx = 1;
 		constraints.gridy = 2;
 		mainPanel.add(showNonTransitiveLabel, constraints);
