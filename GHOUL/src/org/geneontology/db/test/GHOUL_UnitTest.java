@@ -15,9 +15,9 @@ import org.geneontology.db.model.Evidence;
 import org.geneontology.db.model.GOModel;
 import org.geneontology.db.model.GeneProduct;
 import org.geneontology.db.model.HomolSet;
-import org.geneontology.db.model.MetaRelation;
+import org.geneontology.db.model.MetaRelationship;
 import org.geneontology.db.model.ProductSeq;
-import org.geneontology.db.model.Relation;
+import org.geneontology.db.model.Relationship;
 import org.geneontology.db.model.Sequence;
 import org.geneontology.db.model.Species;
 import org.geneontology.db.model.Term;
@@ -185,14 +185,14 @@ public class GHOUL_UnitTest extends TestCase{
 		return buffer.toString();
 	}
 	
-	protected void prettyPrintParents(Set<Relation> rels, StringBuffer buffer) {
-		for (Relation r : rels) {
+	protected void prettyPrintParents(Set<Relationship> rels, StringBuffer buffer) {
+		for (Relationship r : rels) {
 			buffer.append("\tPARENT:\t" + r.getType().getName() + "\t" + r.getObject().getName() + "\n");
 		}
 	}
 	
-	protected void prettyPrintChildren(Set<Relation> rels, StringBuffer buffer) {
-		for (Relation r : rels) {
+	protected void prettyPrintChildren(Set<Relationship> rels, StringBuffer buffer) {
+		for (Relationship r : rels) {
 			buffer.append("\tCHILD:\t" + r.getType().getName() + "\t" + r.getSubject().getName() + "\n");
 		}
 	}
@@ -231,8 +231,8 @@ public class GHOUL_UnitTest extends TestCase{
 		return buffer.toString();
 	}
 
-	protected void prettyPrintConsiderations(Set<MetaRelation> metas, StringBuffer buffer) {
-		for (MetaRelation r : metas) {
+	protected void prettyPrintConsiderations(Set<MetaRelationship> metas, StringBuffer buffer) {
+		for (MetaRelationship r : metas) {
 			buffer.append("META:\t" + r.getType().getAcc() + "\t" + r.getObject().getName());
 		}
 	}

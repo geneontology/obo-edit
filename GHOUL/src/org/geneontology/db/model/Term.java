@@ -29,9 +29,9 @@ public class Term extends GOModel {
 	
 	protected TermDefinition term_definition;
 	
-	protected Set<Relation> parents;
+	protected Set<Relationship> parents;
 
-	protected Set<Relation> children;
+	protected Set<Relationship> children;
 
 	/** The {@link DBXref} of the cvterm */
 	protected Set<TermSynonym> synonyms;
@@ -40,7 +40,7 @@ public class Term extends GOModel {
 	
 	protected Set<Term> subsets;
 	
-	protected Set<MetaRelation> considerations;
+	protected Set<MetaRelationship> considerations;
 
 	/** 
 	 * An association is a link between a gene product record and an ontology term, 
@@ -167,19 +167,19 @@ public class Term extends GOModel {
 		this.synonyms.add(synonym);
 	}
 
-	public Set<Relation> getParents() {
+	public Set<Relationship> getParents() {
 		return parents;
 	}
 
-	public void setParents(Set<Relation> parents) {
+	public void setParents(Set<Relationship> parents) {
 		this.parents = parents;
 	}
 
-	public Set<Relation> getChildren() {
+	public Set<Relationship> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Set<Relation> children) {
+	public void setChildren(Set<Relationship> children) {
 		this.children = children;
 	}
 	
@@ -199,11 +199,11 @@ public class Term extends GOModel {
 		this.subsets = subsets;
 	}
 
-	public Set<MetaRelation> getConsiderations() {
+	public Set<MetaRelationship> getConsiderations() {
 		return considerations;
 	}
 
-	public void setConsiderations(Set<MetaRelation> considerations) {
+	public void setConsiderations(Set<MetaRelationship> considerations) {
 		this.considerations = considerations;
 	}
 

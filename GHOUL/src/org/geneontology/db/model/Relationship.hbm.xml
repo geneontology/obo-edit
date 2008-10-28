@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+	
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="org.geneontology.db.model.Relationship" table="term2term">
+		<id name="relation_id" column="id" unsaved-value="undefined">
+			<generator class="increment"/>
+		</id>
+		
+		<property name="complete"/>
+		
+		<many-to-one name="type" class="org.geneontology.db.model.Term" column="relationship_type_id" not-null="true" cascade="save-update"/>
+		<many-to-one name="subject" class="org.geneontology.db.model.Term" column="term2_id" not-null="true"/>
+		<many-to-one name="object" class="org.geneontology.db.model.Term" column="term1_id" not-null="true" cascade="save-update"/>
+
+	</class>
+	
+</hibernate-mapping>

@@ -3,12 +3,12 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="org.geneontology.db.model.Relation" table="term2term">
+	<class name="org.geneontology.db.model.GraphPath" table="graph_path">
 		<id name="relation_id" column="id" unsaved-value="undefined">
 			<generator class="increment"/>
 		</id>
 		
-		<property name="complete"/>
+		<property name="distance"/>
 		
 		<many-to-one name="type" class="org.geneontology.db.model.Term" column="relationship_type_id" not-null="true" cascade="save-update"/>
 		<many-to-one name="subject" class="org.geneontology.db.model.Term" column="term2_id" not-null="true"/>

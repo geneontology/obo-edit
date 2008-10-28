@@ -9,9 +9,9 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost/go_latest_lite</property>
-        <property name="connection.username">suzi</property>
-        <property name="connection.password"></property>
+       <property name="connection.url">jdbc:mysql://mysql.ebi.ac.uk:4085/go_latest</property>
+        <property name="connection.username">go_select</property>
+        <property name="connection.password">amigo</property>
         <!-- property name="c3p0.min_size">2</property>
 		<property name="c3p0.max_size">3</property>
 		<property name="c3p0.timeout">1800</property>
@@ -40,11 +40,12 @@
         <mapping resource="org/geneontology/db/model/Term.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermDefinition.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermSynonym.hbm.xml"/>
-        <mapping resource="org/geneontology/db/model/Relation.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/Relationship.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/GraphPath.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/DBXref.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/DB.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/TermDBXref.hbm.xml"/>
-        <mapping resource="org/geneontology/db/model/MetaRelation.hbm.xml"/>
+        <mapping resource="org/geneontology/db/model/MetaRelationship.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/Species.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/GeneProduct.hbm.xml"/>
         <mapping resource="org/geneontology/db/model/ProductSeq.hbm.xml"/>
