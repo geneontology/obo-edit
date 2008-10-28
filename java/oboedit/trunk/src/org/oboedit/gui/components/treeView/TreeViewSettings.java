@@ -9,11 +9,11 @@ import org.bbop.framework.ComponentConfiguration;
   *
  */
 public class TreeViewSettings implements ComponentConfiguration {
-	protected boolean multiSelect = getMultiSelect();
+	protected boolean multiSelect = true;
 
-	protected boolean trimPaths = getTrimPaths();
+	protected boolean trimPaths = false;
 
-	protected boolean showNonTransitive = getShowNonTransitive();
+	protected boolean showNonTransitive = false;
 
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
