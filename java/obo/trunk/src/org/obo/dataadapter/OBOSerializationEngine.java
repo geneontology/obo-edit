@@ -925,6 +925,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 			}
 		} else if (obj instanceof OBOProperty
+				&& tagMapping.equals(OBOConstants.DISJOINT_OVER_TAG)) {
+			OBOProperty property = (OBOProperty) obj;
+			for (Link link : property.getParents()) {
+				if (link.getType().equals(OBOProperty.DISJOINT_OVER)) {
+					serializer.writeLinkTag(link, null);
+				}
+			}
+		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.HOLDS_OVER_CHAIN_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
 			if (property.getHoldsOverChains() != null) {
