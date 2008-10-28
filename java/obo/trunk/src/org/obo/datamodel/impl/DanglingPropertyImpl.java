@@ -162,6 +162,13 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 	public void setTransitiveOver(OBOProperty transitiveOver) {
 	}
 	
+	public OBOProperty getDisjointOver() {
+		return null;
+	}
+
+	public void setDisjointOver(OBOProperty disjointOver) {
+	}
+	
 	
 
 	public boolean isUniversallyQuantifier() {

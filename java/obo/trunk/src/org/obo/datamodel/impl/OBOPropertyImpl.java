@@ -233,6 +233,24 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 		addParent(link);
 	}
 	
+	public OBOProperty getDisjointOver() {
+		//return transitiveOver;
+		for (Link link : this.getParents()) {
+			if (link.getType().getID().equals("disjoint_over")) {
+				return (OBOProperty)link.getParent();
+			}
+		}
+		return null;
+	}
+
+	public void setDisjointOver(OBOProperty disjointOver) {
+		OBORestrictionImpl link = new OBORestrictionImpl();
+		link.setChild(this);
+		link.setType(OBOProperty.DISJOINT_OVER);
+		link.setParent(disjointOver);
+		addParent(link);
+	}
+	
 	
 
 	public Collection<List<OBOProperty>> getHoldsOverChains() {

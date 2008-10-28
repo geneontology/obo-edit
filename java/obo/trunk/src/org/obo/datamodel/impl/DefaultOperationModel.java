@@ -108,6 +108,10 @@ public class DefaultOperationModel implements OperationModel {
 		else
 			warning = new OperationWarning("Unknown history item " + item
 					+ " found of type " + item.getClass() + "!");
+		
+		// lockstepModels are typically ReasonerOperationModels.
+		// these need to know about changes to keep in sync for
+		// incremental reasoning
 		for (OperationModel lockstepModel : lockstepModels) {
 			OperationWarning lwarning = lockstepModel.apply(item);
 			if (lwarning != null)
