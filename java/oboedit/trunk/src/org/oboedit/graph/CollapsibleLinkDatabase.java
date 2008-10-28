@@ -262,4 +262,11 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 		else
 			return null;
 	}
+
+	public Collection<OBOProperty> getProperties() {
+		return linkDatabase.getProperties(); // delegate
+	}
+
+	
+
 }
