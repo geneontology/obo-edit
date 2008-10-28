@@ -22,6 +22,8 @@ public class PropagateOverIsARule extends AbstractRule {
 		for (OBOProperty inferredProp : reasoner.getProperties()) {
 			if (inferredProp.isNonInheritable())
 				continue;
+			if (inferredProp.equals(OBOProperty.IS_A))
+				continue; // already covered in transitivity of is_a
 			expls.addAll(getNewInferencesForComposition(reasoner, inferredProp, inferredProp, OBOProperty.IS_A));
 			expls.addAll(getNewInferencesForComposition(reasoner, inferredProp, OBOProperty.IS_A, inferredProp));
 		}
