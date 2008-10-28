@@ -19,12 +19,12 @@
 		
 		<set name="parents" table="term2term">
 		  <key column="term2_id"/>
-   		  <one-to-many class="org.geneontology.db.model.Relation"/>
+   		  <one-to-many class="org.geneontology.db.model.Relationship"/>
 		</set>
 		
 		<set name="children" table="term2term">
 		  <key column="term1_id"/>
-   		  <one-to-many class="org.geneontology.db.model.Relation"/>
+   		  <one-to-many class="org.geneontology.db.model.Relationship"/>
 		</set>
 		
    		<set name="synonyms" table="term_synonym">
@@ -44,7 +44,7 @@
 
 		<set name="considerations" table="term2term_metadata">
 		  <key column="term2_id"/>
-   		  <one-to-many class="org.geneontology.db.model.MetaRelation"/>
+   		  <one-to-many class="org.geneontology.db.model.MetaRelationship"/>
 		</set>
 
 		<set name="associations" table="association">

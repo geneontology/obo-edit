@@ -8,7 +8,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 
 public abstract class GOModel{
-	
+
 	private Vector<Field> uniqueConstraintFields = new Vector<Field>();
 
 	public Vector<Field> getUniqueConstraintFields() {
@@ -16,24 +16,39 @@ public abstract class GOModel{
 	}
 
 	public void initUniqueConstraintFields(Class<?extends GOModel> c, String[] fieldNames){
-		
+
 		for (String fieldName : fieldNames){
-			try{
-				this.getUniqueConstraintFields().add(c.getDeclaredField(fieldName));
-			} catch (SecurityException e) {
+			try {
+				Class<?extends GOModel> sc = c;
+				boolean isInit = false;
+				while (!isInit) {
+					isInit = true;
+					try{
+						this.getUniqueConstraintFields().add(sc.getDeclaredField(fieldName));
+					}
+					catch (NoSuchFieldException e) {
+						isInit = false;
+						sc = (Class<? extends GOModel>) c.getSuperclass();
+						if (sc.equals(c)) {
+							System.err.println("ERROR: Unable to fetch field " + fieldName + " for uniqueConstraints initialization. No field for class " + sc.getClass().getName() );
+							e.printStackTrace();
+							System.exit(-1);
+						}
+					}
+
+				}
+			}
+			catch (SecurityException e) {
 				System.err.println("ERROR: Unable to fetch field " + fieldName + " for uniqueConstraints initialization. Security Exception: " +e.getMessage() );				
 				e.printStackTrace();
 				System.exit(-1);
-			} catch (NoSuchFieldException e) {
-				System.err.println("ERROR: Unable to fetch field " + fieldName + " for uniqueConstraints initialization. No field for class " + c.getClass().getName() );
-				e.printStackTrace();
-				System.exit(-1);
+
 			}
 		}
 	}
 
-	
-	
+
+
 	/*
 	 * Hmmm... This could use some discussion. Currently, equals is based on the 
 	 * database unique constraints for an object. But that means that if there are two 
@@ -43,26 +58,26 @@ public abstract class GOModel{
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object co) {
-		
+
 		if (co == null){
 			return false;
 		}
-		
+
 		Class<?> thisClass = this.getClass();
 		Class<?> comparaClass = co.getClass();
-		
+
 		for (Class<?> c : thisClass.getInterfaces()){
 			if (c.equals(HibernateProxy.class)){
 				thisClass = ((HibernateProxy)this).getHibernateLazyInitializer().getPersistentClass();
 			}
 		}
-		
+
 		for (Class<?> c : comparaClass.getInterfaces()){
 			if (c.equals(HibernateProxy.class)){
 				comparaClass = ((HibernateProxy)co).getHibernateLazyInitializer().getPersistentClass();
 			}
 		}
-		
+
 		if (co instanceof GOModel){
 			boolean isEqual = true;
 			for (Field f : this.getUniqueConstraintFields()){
@@ -81,7 +96,7 @@ public abstract class GOModel{
 					} catch (NoSuchMethodException e){
 						return false;
 					}
-					
+
 					Object[] args = new Object[0];
 					//System.out.println("Trying to invoke: " + m.getName() + " on a " + this.getClass().getName() + " and a " + co.getClass().getName());
 					Object thisVal = m.invoke(this, args);
@@ -91,10 +106,10 @@ public abstract class GOModel{
 					} else if ((thisVal != null)&&(coVal != null)){
 						if (!thisVal.equals(coVal)){
 							isEqual = false;
-				
+
 						}
 					}
-					
+
 				} catch (IllegalArgumentException e) {
 					System.err.println("ERROR: Can't access field " + f.getName() + " of class " + this.getClass().getName() + " for equals calculation. Bad Argument.");
 					e.printStackTrace();
@@ -147,15 +162,15 @@ public abstract class GOModel{
 		}
 		return hashCodeString.hashCode();
 	}
-	
+
 	public Method getGetter(Field f) throws NoSuchMethodException {		
 		Method returnMethod = null;
 		String prefix = "get";
-		
+
 		if (f.getType().equals(Boolean.TYPE)){
 			prefix = "is";
 		}
-		
+
 		String methodName = prefix + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
 
 		try {
@@ -168,7 +183,7 @@ public abstract class GOModel{
 		}
 		return returnMethod;
 	}
-	
+
 	public Method getSetter(Field f){
 		Method returnMethod = null;
 		String methodName = "set" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
@@ -182,29 +197,29 @@ public abstract class GOModel{
 		}
 		return returnMethod;
 	}
-	
+
 	/*
 	public Boolean proxyClassEquals(Class comparaClass){
-	
+
 		System.out.println(this instanceof HibernateProxy);
-		
-		
+
+
 		System.out.println(this.getClass().getName() + "\t" + comparaClass.getName());
-		
+
 		if (this.getClass().equals(comparaClass)){
 			return true;
 		}
-		
+
 		Class<?> thisClass = this.getClass();
-		
+
 		for (Class<?> c : thisClass.getInterfaces()){
 			if (c.equals(HibernateProxy.class)){
 				thisClass = ((HibernateProxy)this).getHibernateLazyInitializer().getPersistentClass();
 			}
 		}
-		
+
 		return comparaClass.equals(thisClass);
 	}
-	*/
+	 */
 
 }
