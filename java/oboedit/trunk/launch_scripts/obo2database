@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 # Set the classname of the Java class to execute
 CLASSNAME=org.oboedit.launcher.OBO2Database
 
@@ -136,4 +136,7 @@ fi
 
 echo CMDARGS=$CMDARGS
 
-sh -c "$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+CMD="$JAVAPATH -classpath $CLASSPATH -DlauncherDir=$PATH_TO_ME $JAVAARGS $CLASSNAME $CMDARGS"
+echo
+echo $CMD
+sh -c "$CMD"
