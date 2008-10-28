@@ -1500,5 +1500,14 @@ public class TermUtil {
 		}
 		return props;
 	}
+	public static Collection<OBOProperty> getSubProperties(OBOProperty prop) {
+		Collection<OBOProperty> props = new HashSet<OBOProperty> ();
+		for (Link link : prop.getChildren()) {
+			if (link.getType().equals(OBOProperty.IS_A)) {
+				props.add((OBOProperty) link.getParent());
+			}
+		}
+		return props;
+	}
 
 }
