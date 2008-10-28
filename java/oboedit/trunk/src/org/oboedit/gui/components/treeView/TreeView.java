@@ -16,10 +16,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -258,6 +260,7 @@ public class TreeView extends AbstractGUIComponent {
 	
 	/**
 	 * Provides the name of the component.
+	 * This doesn't seem to actually override anything. 
 	 */
 	@Override
 	public String getName() {
@@ -282,6 +285,7 @@ public class TreeView extends AbstractGUIComponent {
 		}
 
 		return treeViewConfigPanelInstance;
+	
 	}
 
 	/**
@@ -419,8 +423,27 @@ public class TreeView extends AbstractGUIComponent {
 		}
 		statusLabel.setText(paths.length + " path"
 				+ (paths.length == 1 ? "" : "s") + " loaded.");
+
+		expandAll(restrictedJTreeInstance); //Comment this line to make the 'collapse all but one instance of a term' option work. 
+		validate();
 		repaint();
 	}
+	
+	public void expandAll(JTree tree) {
+	    int row = 0;
+	    while (row < tree.getRowCount()) {
+	      tree.expandRow(row);
+	      row++;
+	      }
+	    }
+
+
+	  public void expandToLast(JTree tree) {
+	    // expand to the last leaf from the root
+	    DefaultMutableTreeNode  root;
+	    root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+	    tree.scrollPathToVisible(new TreePath(root.getLastLeaf().getPath()));
+	    }
 
 	/**
 	 * 
@@ -526,9 +549,10 @@ public class TreeView extends AbstractGUIComponent {
 			}
 		} else {
 
+			
+			doUpdate();
 			validate();
 			repaint();
-			doUpdate();
 		}
 	}
 
