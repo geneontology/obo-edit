@@ -34,5 +34,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BBOP"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/postgresql-8.2-506.jdbc3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
