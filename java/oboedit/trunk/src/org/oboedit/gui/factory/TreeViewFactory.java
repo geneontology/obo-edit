@@ -9,7 +9,7 @@ import java.util.List;
 import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIComponentFactory.FactoryCategory;
-import org.oboedit.gui.components.TreeView;
+import org.oboedit.gui.components.treeView.TreeView;
 
 import org.apache.log4j.*;
 
