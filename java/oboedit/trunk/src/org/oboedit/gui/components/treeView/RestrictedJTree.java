@@ -16,7 +16,11 @@ import org.obo.datamodel.LinkedObject;
 /**
  * 
  * @author John Day-Richer, Jennifer Deegan, and Nicolas Rodriguez.<br>
- * Docs by Jennifer Deegan and Nicolas Rodriguez.
+ * Docs by Jennifer Deegan and Nicolas Rodriguez.<br>
+ * 
+ * An extension of JTree, this class enables the component to open only some of the branches of the tree, for example so that only the first
+ * instance of a given term will be opened out, and the others will have their branches closed up. In a normal JTree the options would be for the 
+ * branches to be either all open or all closed. 
  * 
  */
 
@@ -34,26 +38,23 @@ public class RestrictedJTree extends JTree {
 
 		this.treeViewSettingsInstance = treeViewSettingsInstance;
 
-		System.out.println("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
+		//logger.debug("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
 	}
 
 
 	/**
-	 * Why does this instantiation of a visibleRunnable object have the run() method in it,
-	 * when this method is already present in the visibleRunnable code?
-	 * The run method calls makeVisible, which then calls makeVisible. Not sure why.
 	 */
 	protected Runnable visibleRunnable = new Runnable() {
 		public void run() {
 			makeVisible(treePathInstance);
-			System.out.println("RestrictedJTree: visibleRunnable: treePathInstance is " + treePathInstance);
+			//logger.debug("RestrictedJTree: visibleRunnable: treePathInstance is " + treePathInstance);
 		}
 	};
 
 
 	public void refresh() {
 		refresh(false);
-		System.out.println("RestrictedJTree: refresh method.");	
+		//logger.debug("RestrictedJTree: refresh method.");	
 	}
 
 	boolean expandAllowed = true;
@@ -67,17 +68,17 @@ public class RestrictedJTree extends JTree {
 	 * 
 	 */
 	public void refresh(boolean fromThread) {
-		System.out.println("RestrictedJTree: refresh method with " + fromThread + " arg.");
+		//logger.debug("RestrictedJTree: refresh method with " + fromThread + " arg.");
 
 		if (getModel() == null)
 			return;
 
-		System.out.println("RestrictedJTree: refresh method : treeModelInstance != null.");
+		//logger.debug("RestrictedJTree: refresh method : treeModelInstance != null.");
 
 		expandAllowed = true;
 		expandPaths(fromThread);
 		expandAllowed = false;
-		repaint(); //If this line is commented out then selecting terms in the OTE does not lead to them showinging
+		repaint(); //If this line is commented out then selecting terms in the OTE does not lead to them showing
 		//the Tree Viewer.
 
 
@@ -91,7 +92,7 @@ public class RestrictedJTree extends JTree {
 	 *
 	 */
 	protected void expandPaths(boolean fromThread) {
-		System.out.println("RestrictedJTree: expandPaths method.");
+		//logger.debug("RestrictedJTree: expandPaths method.");
 
 		Set<Object> seenem = new HashSet<Object>();
 		Object root = getModel().getRoot();
@@ -113,7 +114,7 @@ public class RestrictedJTree extends JTree {
 	protected void expandPaths(TreePath parentPath, Object o,
 			Set<Object> seenem, boolean fromThreads) {
 
-		System.out.println("RestrictedJTree: expandPaths method with several args.");	
+		//logger.debug("RestrictedJTree: expandPaths method with several args.");	
 
 		if (o == null){
 			return;
@@ -121,7 +122,7 @@ public class RestrictedJTree extends JTree {
 		
 		//I changed trimPaths() to treeViewSettingsInstance.getTrimPaths()
 		if (treeViewSettingsInstance.getTrimPaths() && seenem.contains(o)) {
-			System.out.println("RestrictedJTree: expandPaths : recurtion ended.");
+			//logger.debug("RestrictedJTree: expandPaths : recursion ended.");
 			return;
 		}
 		seenem.add(o);
@@ -155,7 +156,7 @@ public class RestrictedJTree extends JTree {
 		if (!(o instanceof Link))
 			return null;
 		LinkedObject child = ((Link) o).getChild();
-		System.out.println("RestrictedJTree: getToolTipText method.");	
+		//logger.debug("RestrictedJTree: getToolTipText method.");	
 
 		return child.getID();
 	}
@@ -171,8 +172,8 @@ public class RestrictedJTree extends JTree {
 	 */
 	@Override
 	public void makeVisible(TreePath path) {
-		System.out.println("RestrictedJTree: makeVisible method.");
-		System.out.println("RestrictedJTree: makeVisible method: path = " + path);
+		//logger.debug("RestrictedJTree: makeVisible method.");
+		//logger.debug("RestrictedJTree: makeVisible method: path = " + path);
 		expandAllowed = true;		//If these two lines are commented out, then when I click a term in the OTE
 		super.makeVisible(path);	//it appears closed up in the TreeViewer, and I have to click the plus signs to see the children.  
 		expandAllowed = false;	//If this line is commented out it doesn't seem to make any difference.

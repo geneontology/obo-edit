@@ -9,10 +9,10 @@
  * selected in the Ontology Tree Editor. All possible paths from leaf node to root 
  * are shown in this view, and the graph is not editable in this component.
  * 
- * This package is currently under construction. The version of the Tree Viewer 
- * currently in use is in org.oboedit.gui.components. The old version is configured
- * via an options button, whereas this version will be configured via the 
- * wrench icon. 
+ * Configuration of this component happens via the standard wrench icon, with settings held in a JavaBean class and accessed using the same flow
+ * as shown in the Graphviz Viewer component diagram at org.oboedit.gui.components.graphvizViewer.doc-files.GraphvizConfiguration.png.
+ * 
+ * 
  * 
  * */ 
 package org.oboedit.gui.components.treeView;

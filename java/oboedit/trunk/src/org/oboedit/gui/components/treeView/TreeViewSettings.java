@@ -6,6 +6,9 @@ import org.bbop.framework.ComponentConfiguration;
 /**
   * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
   * Docs by Jennifer Deegan and Nicolas Rodriguez.
+  * 
+  * Holds the configuration settings for the component. This class is a <a href="http://en.wikipedia.org/wiki/JavaBeans">JavaBean</a>.
+  * 
   *
  */
 public class TreeViewSettings implements ComponentConfiguration {
@@ -20,17 +23,17 @@ public class TreeViewSettings implements ComponentConfiguration {
 	
 	public TreeViewSettings() {
 
-	logger.debug("TreeViewSettings: entered this method to access getters and setters.");
+	//logger.debug("TreeViewSettings: entered this method to access getters and setters.");
 	
 	}
 
 	public void setShowNonTransitive(boolean showNonTransitive) {
-		System.out.println("TreeViewSettings: setShowNonTransitive");
+		//logger.debug("TreeViewSettings: setShowNonTransitive");
 		this.showNonTransitive = showNonTransitive;
 	}
 
 	public boolean getShowNonTransitive() {
-		System.out.println("TreeViewSettings: getShowNonTransitive");
+		//logger.debug("TreeViewSettings: getShowNonTransitive");
 		return showNonTransitive;
 	}
 
@@ -38,7 +41,7 @@ public class TreeViewSettings implements ComponentConfiguration {
 	 * @param multiSelect
 	 */
 	public void setMultiSelect(boolean multiSelect) {
-		System.out.println("TreeViewSettings: setMultiSelect");
+		//logger.debug("TreeViewSettings: setMultiSelect");
 		this.multiSelect = multiSelect;
 	}
 
@@ -48,17 +51,17 @@ public class TreeViewSettings implements ComponentConfiguration {
 	 * @return whether or not the component is set up to carry over multiple selection of terms from the Ontology Tree Editor.
 	 */
 	public boolean getMultiSelect() {
-		System.out.println("TreeViewSettings: getMultiSelect");
+		//logger.debug("TreeViewSettings: getMultiSelect");
 		return multiSelect;
 	}
 
 	public void setTrimPaths(boolean trimPaths) {
-		System.out.println("TreeViewSettings: setTrimPaths");
+		//logger.debug("TreeViewSettings: setTrimPaths");
 		this.trimPaths = trimPaths;
 	}
 
 	public boolean getTrimPaths() {
-		System.out.println("TreeViewSettings: getTrimPaths");
+		//logger.debug("TreeViewSettings: getTrimPaths");
 		return trimPaths;
 	}
 }

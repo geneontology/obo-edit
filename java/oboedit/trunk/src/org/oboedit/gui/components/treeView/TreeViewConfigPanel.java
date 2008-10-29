@@ -69,7 +69,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		mainPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 
-		logger.debug("TreeViewConfigPanel: constructor called, building GUI.");
+		//logger.debug("TreeViewConfigPanel: constructor called, building GUI.");
 
 
 
@@ -105,7 +105,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 		showNonTransitiveCheckbox.setOpaque(false);
 	
 		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
-		System.out.println("TreeViewConfigurationPanel: Constructor, MultiSelect() = " + treeViewSettingsInstance.getMultiSelect());
+		//logger.debug("TreeViewConfigurationPanel: Constructor, MultiSelect() = " + treeViewSettingsInstance.getMultiSelect());
 		trimPathsCheckbox.setSelected(treeViewSettingsInstance.getTrimPaths());
 		showNonTransitiveCheckbox.setSelected(treeViewSettingsInstance.getShowNonTransitive());
 	
@@ -152,8 +152,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	@Override
 	public void commit() {
 
-		logger.debug("TreeViewConfigPanel: commit() run.");
-		logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
+		//logger.debug("TreeViewConfigPanel: commit() run.");
+		//logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
 		
 		//These lines set the variables in the settings object.
 		treeViewSettingsInstance.setMultiSelect(multiTermCheckbox.isSelected());
@@ -180,8 +180,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 		this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
 		
-		logger.debug("TreeViewConfigPanel: init() run.");
-		logger.debug("TreeViewConfigPanel, init method: variable treeViewInstance = " + treeViewInstance);
+		//logger.debug("TreeViewConfigPanel: init() run.");
+		//logger.debug("TreeViewConfigPanel, init method: variable treeViewInstance = " + treeViewInstance);
 
 		//Gets the settings. 
 		multiTermCheckbox.setSelected(treeViewSettingsInstance.getMultiSelect());
@@ -195,7 +195,7 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 
 	@Override
 	public GUIComponent getComponent() {
-		logger.debug("Config panel New : getComponent.");
+		//logger.debug("Config panel New : getComponent.");
 		return treeViewInstance;
 	}	
 
@@ -205,9 +205,9 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 			treeViewInstance = (TreeView)comp;
 			this.treeViewSettingsInstance = treeViewInstance.treeViewSettingsInstance;
 
-			logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
-			logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
-			logger.debug("Config panel New : setComponent.");
+			//logger.debug("TreeViewConfigPanel, setComponent method:  variable treeViewInstance = " + treeViewInstance);
+			//logger.debug("TreeViewConfigPanel: treeViewSettingsInstance = " + treeViewSettingsInstance);
+			//logger.debug("Config panel New : setComponent.");
 		}
 	}
 }
