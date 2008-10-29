@@ -6,12 +6,14 @@ import javax.swing.tree.TreePath;
 /**
  * 
  * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
- * Docs by Jennifer Deegan and Nicolas Rodriguez.
+ * Docs by Jennifer Deegan and Nicolas Rodriguez.<br>
  * 
- * VisibleRunnable class
+ * VisibleRunnable class<br>
  * 
  * The constructor takes a TreePath argument called path that defines the path of the current object and assigns it to
- * a protected TreePath variable 'path'.
+ * a protected TreePath variable 'path'.<br>
+ * 
+ * Contains code for threading and for expansion of the tree. 
  * 
  */
 
@@ -21,17 +23,14 @@ public class VisibleRunnable extends JTree implements Runnable {
 	public VisibleRunnable(TreePath path) {
 
 		this.path = path;
-		System.out.println("VisibleRunnable class: constructor.");
+		//logger.debug("VisibleRunnable class: constructor.");
 	}
 
 	/**
-	 * The run() method: 
-	 * Takes no arguments. 
-	 * calls makeVisible on the path variable. 
 	 */
 	public void run() {
 		makeVisible(path);
-		System.out.println("VisibleRunnable class: run method.");
+		//logger.debug("VisibleRunnable class: run method.");
 
 	}
 
@@ -51,7 +50,7 @@ public class VisibleRunnable extends JTree implements Runnable {
 		expandAllowed = true;
 		super.makeVisible(path);  
 		expandAllowed = false;
-		System.out.println("VisibleRunnable: makeVisible method.");	
+		//logger.debug("VisibleRunnable: makeVisible method.");	
 
 	}
 
