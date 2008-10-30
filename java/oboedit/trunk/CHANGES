@@ -1,33 +1,3 @@
-Changes in b50:
+Changes in b51:
 Bug Fixes:
-- [ 2126697 ] multiple cross products / xps won't save in latest OE2.
-- [ 2137953 ] semantic parser - suppress
-- [ 2137834 ] intersection editor
-- [ 2116690 ] autocommit fail
-
-- Fixed definition spellcheck problem (2092991).
-Jane wrote:
-1. The spell checker doesn't run unless you change the repeated word check
-config, even though it's supposedly on.
-(Now the definition spell-checker runs (by default) when you do a manual check.)
-2. There are so many words missing from the dictionary it causes a crash
-when you run a spell check on the definitions.
-To prevent this, I am limiting the number of warnings shown to about 200.  (I
-say "about" because it depends how many warnings the last checked term
-has--you can end up with 204 warnings or so, but not much more than that.)
-This cutoff should ideally be user-configurable.
-
-- Installer now won't let you set the memory allocation higher than 2048M.
-This works on my Mac, but unfortunately was not enough to fix bug 2111929,
-which affects some Windows machines.  Sandra's Windows box can't start OE if
-the memory setting is >1568M, but I don't want to make that the cap for
-everyone.
-
-
-Features:
-- Advanced Tab in Configuration Manager
-- Relations section in OTE only shows user-specified relations (no built-ins).
-- Cross Products Tab in Text Editor now shows only user-defined relations while selecting Discriminating relations.
-
-
-
+[ 2209801 ] Verification Manager--clicking quick-fix icon doesn't work
