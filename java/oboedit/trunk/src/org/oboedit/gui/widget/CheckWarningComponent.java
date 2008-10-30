@@ -12,6 +12,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 
+import org.bbop.framework.GUIManager;
 import org.bbop.swing.*;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
@@ -84,13 +85,14 @@ public class CheckWarningComponent extends JEditorPane {
 				SessionManager.getManager().apply(
 						((HistoryQuickFix) action).getItem());
 			}
-			CheckWarning warning = (CheckWarning) action.getWarning();
 			boolean globalReload = action.getLevel().equals(
-					QuickFix.ReloadLevel.GLOBAL);
+				QuickFix.ReloadLevel.GLOBAL) || (action instanceof ImmediateQuickFix);
 			if (globalReload)
 				redoCheck();
-			else
+			else {
+				CheckWarning warning = (CheckWarning) action.getWarning();
 				redoCheck(warning.getSource());
+			}
 		}
 	}
 
@@ -101,6 +103,7 @@ public class CheckWarningComponent extends JEditorPane {
 					String path = e.getURL().getPath();
 					int index = Integer.parseInt(path.substring(14, path
 							.length()));
+//					logger.info("path = " + path + ", index = " + index + ", num warnings = " + warnings.size()); // DEL
 					CheckWarning warning = (CheckWarning) warnings.get(index);
 					JPopupMenu menu = new JPopupMenu();
 					Iterator<QuickFix> it = warning.getFixes().iterator();
@@ -143,8 +146,9 @@ public class CheckWarningComponent extends JEditorPane {
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
+				JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(), "Rerunning verification checks...");
 				VerificationManager.getManager().runChecks(session,
-						currentObject, condition);
+									   currentObject, condition);
 			}
 		};
 		thread.start();
@@ -167,9 +171,9 @@ public class CheckWarningComponent extends JEditorPane {
 				Collection newWarnings = VerificationManager.getManager()
 						.runCheck(source, session, currentObject, condition);
 				warnings.addAll(newWarnings);
-				logger.info("oldWarnings = " + oldWarnings.size());
-				logger.info("warnings = " + warnings.size());
-				logger.info("newWarnings = " + newWarnings.size());
+//				logger.debug("oldWarnings = " + oldWarnings.size());
+//				logger.debug("warnings = " + warnings.size());
+//				logger.debug("newWarnings = " + newWarnings.size());
 
 				Runnable r = new Runnable() {
 					public void run() {
