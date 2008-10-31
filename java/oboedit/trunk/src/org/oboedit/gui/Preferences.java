@@ -293,6 +293,18 @@ public class Preferences {
 		return new File(getOBOEditPrefsDir(), "dictionary.dict");
 	}
 
+	public static File getPeriodWordsFile() {
+		return new File(getOBOEditPrefsDir(), "periodwords.dict");
+	}
+	
+	public static File getAlwaysLowercaseFile() {
+		return new File(getOBOEditPrefsDir(), "alwayslowercase.dict");
+	}
+	
+	public static File getAllowedRepeatsFile() {
+		return new File(getOBOEditPrefsDir(), "allowedrepeats.dict");
+	}
+	
 	public boolean getAutoCommitTextEdits() {
 		return autoCommitTextEdits;
 	}
