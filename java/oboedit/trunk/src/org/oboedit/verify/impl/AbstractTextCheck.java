@@ -245,11 +245,9 @@ FieldCheck {
 				FileUtil.ensureExists(Preferences.getAllowedRepeatsFile(),
 				"org/oboedit/resources/allowedrepeats.dict");
 				BufferedReader input = new BufferedReader( new FileReader(Preferences.getAllowedRepeatsFile()));
-				StringBuffer buffer = new StringBuffer();
 				String text;
 				while ( (text = input.readLine() ) != null ) {
-					buffer.append( text );
-					allowedRepeats.add(buffer.toString());
+					allowedRepeats.add(text);
 					//logger.debug("Legal repeatable word loaded from config file = " + text);
 				}
 			} catch (IOException e) {
@@ -339,16 +337,17 @@ FieldCheck {
 	}
 
 	protected static void writeWordSet(Collection words, String filename) {
+		//logger.debug("words = " + words.toString());
 		StringBuffer buf = new StringBuffer();
 		Iterator it = words.iterator();
-		System.out.println("writeWordSet: it = " + it.toString());
+		//logger.debug("writeWordSet: it = " + it.toString());
 		while (it.hasNext()) {
 			buf.append(it.next()).append("%n");
 
 		}
 		writeWordSet(buf.toString(), filename);
 	
-		System.out.println("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
+		//logger.debug("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
 	}
 
 
@@ -897,15 +896,15 @@ FieldCheck {
 								currentObject)) == -1)
 								&& isWord(word.toString())) {
 					int[] ranges = getCurrentPeriodWordRange(text, i);
-					//System.out.println("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
+					//logger.debug("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
 					final String periodWord = text.substring(ranges[0],
 							ranges[1]);
-					//System.out.println("getWarnings: periodWord " + periodWord );
-					//System.out.println("getWarnings: text.substring: " + text.substring(ranges[0], ranges[1]));
+					//logger.debug("getWarnings: periodWord " + periodWord );
+					//logger.debug("getWarnings: text.substring: " + text.substring(ranges[0], ranges[1]));
 					word = new StringBuffer();
-					//System.out.println("getWarnings: word = " + word );
+					//logger.debug("getWarnings: word = " + word );
 					final String s = sentence.toString().trim();
-					//System.out.println("getWarnings: s = " + s);
+					//logger.debug("getWarnings: s = " + s);
 
 					if (doSentenceSeparationCheck(condition)
 							&& i < text.length() - 1
