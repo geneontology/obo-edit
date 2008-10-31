@@ -34,9 +34,9 @@ import com.swabunga.spell.event.StringWordTokenizer;
 import com.swabunga.spell.event.WordFinder;
 
 public abstract class AbstractTextCheck extends AbstractCheck implements
-		FieldCheck {
-	
-//	initialize logger
+FieldCheck {
+
+	//	initialize logger
 	protected final static Logger logger = Logger.getLogger(CycleCheck.class);
 
 	public static class TooManyWarningsException extends RuntimeException {
@@ -74,8 +74,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		protected byte finalPunctuationCondition = VerificationManager.ALL;
 
 		protected byte spellcheckCondition = VerificationManager.TEXT_EDIT_THREAD
-			^ VerificationManager.TEXT_EDIT_COMMIT 
-			^ VerificationManager.MANUAL;
+		^ VerificationManager.TEXT_EDIT_COMMIT 
+		^ VerificationManager.MANUAL;
 
 		public AbstractCheckConfiguration() {
 			super();
@@ -211,11 +211,11 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	protected static Set alwaysLowercaseWords = null;
 
-	{
-		defaultPeriodWords.add("i.e.");
-		defaultPeriodWords.add("e.g.");
-		defaultPeriodWords.add("etc.");
-	}
+	//	{
+	//		defaultPeriodWords.add("i.e.");
+	//		defaultPeriodWords.add("e.g.");
+	//		defaultPeriodWords.add("etc.");
+	//	}
 
 	protected static SpellChecker spellChecker;
 
@@ -224,7 +224,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			SpellDictionary dictionary = null;
 			try {
 				FileUtil.ensureExists(Preferences.getDictionaryFile(),
-						"org/oboedit/resources/dictionary.dict");
+				"org/oboedit/resources/dictionary.dict");
 				dictionary = new SpellDictionaryHashMap(Preferences.getDictionaryFile());
 			} catch (IOException e) {
 			}
@@ -233,23 +233,84 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		return spellChecker;
 	}
 
+
+
 	protected static Set getAllowedRepeats() {
-		if (allowedRepeats == null)
+		if (allowedRepeats == null){
 			reloadWordSets();
+			//logger.debug("getAllowedRepeats: allowedRepeats = " + allowedRepeats.toString());
+		}
+		if (allowedRepeats.isEmpty()) {
+			try {
+				FileUtil.ensureExists(Preferences.getAllowedRepeatsFile(),
+				"org/oboedit/resources/allowedrepeats.dict");
+				BufferedReader input = new BufferedReader( new FileReader(Preferences.getAllowedRepeatsFile()));
+				StringBuffer buffer = new StringBuffer();
+				String text;
+				while ( (text = input.readLine() ) != null ) {
+					buffer.append( text );
+					allowedRepeats.add(buffer.toString());
+					//logger.debug("Legal repeatable word loaded from config file = " + text);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return allowedRepeats;
 	}
 
+
 	protected static Set getPeriodWords() {
-		if (periodWords == null)
+		if (periodWords == null){
 			reloadWordSets();
+			//logger.debug("getPeriodWords: periodWords = " + periodWords.toString());
+		}
+		if (periodWords.isEmpty()) {
+			try {
+				FileUtil.ensureExists(Preferences.getPeriodWordsFile(),
+				"org/oboedit/resources/periodwords.dict");
+				BufferedReader input = new BufferedReader( new FileReader(Preferences.getPeriodWordsFile()));
+				StringBuffer buffer = new StringBuffer();
+				String text;
+				while ( (text = input.readLine() ) != null ) {
+					buffer.append( text );
+					periodWords.add(buffer.toString());
+					//logger.debug("Legal period word loaded from config file = " + text);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return periodWords;
 	}
 
 	protected static Set getAlwaysLowercaseWords() {
-		if (alwaysLowercaseWords == null)
+		if (alwaysLowercaseWords == null){
 			reloadWordSets();
+			//logger.debug("getAlwaysLowercaseWords: alwaysLowercaseWords = " + alwaysLowercaseWords.toString());
+		}
+		if (alwaysLowercaseWords.isEmpty()) {
+			try {
+				FileUtil.ensureExists(Preferences.getAlwaysLowercaseFile(),
+				"org/oboedit/resources/alwayslowercase.dict");
+				BufferedReader input = new BufferedReader( new FileReader(Preferences.getAlwaysLowercaseFile()));
+				StringBuffer buffer = new StringBuffer();
+				String lowercase;
+				while ( (lowercase = input.readLine() ) != null ) {
+					buffer.append( lowercase );
+					alwaysLowercaseWords.add(buffer.toString());
+					//logger.debug("Legal lowercase word loaded from config file = " + lowercase);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return alwaysLowercaseWords;
 	}
+
 
 	protected static void reloadWordSets() {
 		allowedRepeats = loadWordSet("allowedrepeats.txt");
@@ -316,8 +377,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			return VerificationManager.TEXT_EDIT_THREAD;
 		} else if (word.equals("On Text Edit / Manual")) {
 			return VerificationManager.TEXT_EDIT_COMMIT
-					^ VerificationManager.TEXT_EDIT_THREAD
-					^ VerificationManager.MANUAL;
+			^ VerificationManager.TEXT_EDIT_THREAD
+			^ VerificationManager.MANUAL;
 		} else {
 			return 0;
 		}
@@ -331,13 +392,13 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		config.setFinalPunctuationCondition(getCondition(finalPunctuationList
 				.getSelectedItem().toString()));
 		config
-				.setRepeatedWhitespaceCondition(getCondition(repeatedWhitespaceList
-						.getSelectedItem().toString()));
+		.setRepeatedWhitespaceCondition(getCondition(repeatedWhitespaceList
+				.getSelectedItem().toString()));
 		config.setSentenceCaseCondition(getCondition(sentenceCaseList
 				.getSelectedItem().toString()));
 		config
-				.setSentenceSeparationCondition(getCondition(sentenceSeparationList
-						.getSelectedItem().toString()));
+		.setSentenceSeparationCondition(getCondition(sentenceSeparationList
+				.getSelectedItem().toString()));
 		config.setSpellcheckCondition(getCondition(spellcheckList
 				.getSelectedItem().toString()));
 		reloadWordSets();
@@ -425,10 +486,10 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		JLabel finalPunctuationLabel = new JLabel("Do final punctuation check");
 		JLabel repeatedWordLabel = new JLabel("Do repeated word check");
 		JLabel repeatedWhitespaceLabel = new JLabel(
-				"Do repeated whitespace check");
+		"Do repeated whitespace check");
 		JLabel sentenceCaseLabel = new JLabel("Do sentence case check");
 		JLabel sentenceSeparationLabel = new JLabel(
-				"Do sentence separation check");
+		"Do sentence separation check");
 		JLabel spellcheckLabel = new JLabel("Do spell checks");
 
 		springPanel.add(finalPunctuationLabel);
@@ -448,23 +509,23 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		}
 
 		finalPunctuationList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getFinalPunctuationCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getFinalPunctuationCondition()));
 		repeatedWordList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getRepeatedWordCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getRepeatedWordCondition()));
 		repeatedWhitespaceList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getRepeatedWhitespaceCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getRepeatedWhitespaceCondition()));
 		sentenceCaseList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getSentenceCaseCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getSentenceCaseCondition()));
 		sentenceSeparationList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getSentenceSeparationCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getSentenceSeparationCondition()));
 		spellcheckList
-				.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
-						.getSpellcheckCondition()));
+		.setSelectedItem(getConditionWord(((AbstractCheckConfiguration) configuration)
+				.getSpellcheckCondition()));
 		SpringUtilities.makeCompactGrid(springPanel, -1, 2, // rows, cols
 				6, 6, // initX, initY
 				6, 6);
@@ -483,13 +544,13 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			try {
 				out.addAll(getWarnings(path, allowNewlines, allowBlank,
 						allowExtended, sentenceStructureChecks, condition));
-//				logger.debug("check: added " + out.size() + " warnings"); // DEL
+				//				logger.debug("check: added " + out.size() + " warnings"); // DEL
 			} catch (TooManyWarningsException ex) {
 				out.addAll(ex.getWarnings());
 			}
 		}
 		appendAdditionalWarnings(out, session, path, condition);
-//		logger.debug("check: out.size = " + out.size()); // DEL
+		//		logger.debug("check: out.size = " + out.size()); // DEL
 		return out;
 	}
 
@@ -531,8 +592,12 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		int[] range = getCurrentPeriodWordRange(text, index);
 		String currentWord = text.substring(range[0], range[1]);
 
-		if (getPeriodWords().contains(currentWord))
+		if (getPeriodWords().contains(currentWord)){
+			//logger.debug("periodWords[] = " + periodWords.toString());
+			//logger.debug("isLegalPeriodWord: currentWord = " + currentWord);
+			//logger.debug(" returning " + range[1]);
 			return range[1];
+		}
 
 		if (currentWord.length() == 2 && currentWord.charAt(1) == '.')
 			return range[1];
@@ -577,8 +642,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	protected boolean doFinalPunctuationCheck(byte condition) {
 		return getSentenceStructureChecks()
-				&& (((AbstractCheckConfiguration) configuration)
-						.getFinalPunctuationCondition() & condition) > 0;
+		&& (((AbstractCheckConfiguration) configuration)
+				.getFinalPunctuationCondition() & condition) > 0;
 	}
 
 	protected boolean doRepeatedWordCheck(byte condition) {
@@ -587,8 +652,8 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 	}
 
 	protected boolean doSpellCheck(byte condition) {
-//		logger.debug("doSpellCheck: condition = " + condition + ", getSpellCheckCondition = " +
-//			     ((AbstractCheckConfiguration) configuration).getSpellcheckCondition()); // DEL
+		//		logger.debug("doSpellCheck: condition = " + condition + ", getSpellCheckCondition = " +
+		//			     ((AbstractCheckConfiguration) configuration).getSpellcheckCondition()); // DEL
 		return (((AbstractCheckConfiguration) configuration)
 				.getSpellcheckCondition() & condition) > 0;
 	}
@@ -600,19 +665,19 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	protected boolean doSentenceCaseCheck(byte condition) {
 		return getSentenceStructureChecks()
-				&& (((AbstractCheckConfiguration) configuration)
-						.getSentenceCaseCondition() & condition) > 0;
+		&& (((AbstractCheckConfiguration) configuration)
+				.getSentenceCaseCondition() & condition) > 0;
 	}
 
 	protected boolean doSentenceSeparationCheck(byte condition) {
 		return getSentenceStructureChecks()
-				&& (((AbstractCheckConfiguration) configuration)
-						.getSentenceSeparationCondition() & condition) > 0;
+		&& (((AbstractCheckConfiguration) configuration)
+				.getSentenceSeparationCondition() & condition) > 0;
 	}
 
 	protected boolean isWord(String wordStr) {
 		return wordStr.equals("a") || wordStr.equals("A")
-				|| wordStr.equals("I") || wordStr.length() > 1;
+		|| wordStr.equals("I") || wordStr.length() > 1;
 	}
 
 	protected boolean isRepeatAllowed(String word) {
@@ -646,7 +711,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 	protected static void addWarning(Collection<CheckWarning> out,
 			CheckWarning w) throws TooManyWarningsException {
-//		logger.debug("out size = " + out.size() + ", addWarning " + w);  // DEL
+		//		logger.debug("out size = " + out.size() + ", addWarning " + w);  // DEL
 		if ((w.isFatal() && out.size() >= VerificationManager.MAX_WARNINGS)) {
 			logger.debug("Too many warnings for one term: " + out.size() + "; last warning is " + w); // DEL
 			throw new TooManyWarningsException(out);
@@ -657,7 +722,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 	protected Collection getWarnings(final FieldPath path,
 			boolean allowNewlines, boolean allowBlank, boolean allowExtended,
 			boolean sentenceStructureChecks, final byte condition)
-			throws TooManyWarningsException {
+	throws TooManyWarningsException {
 		if (!(path.getLastValue() instanceof String))
 			return new LinkedList();
 		final Collection<CheckWarning> out = new LinkedList<CheckWarning>();
@@ -667,7 +732,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 
 			if (doRepeatedWordCheck(condition)) {
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text,
-											wordFinder);
+						wordFinder);
 				String last = null;
 				int lastPos = -1;
 				while (tokenizer.hasMoreWords()) {
@@ -675,29 +740,29 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 					int start = tokenizer.getCurrentWordPosition();
 					if (last != null) {
 						if (word.equalsIgnoreCase(last)
-						    && !isRepeatAllowed(word)) {
+								&& !isRepeatAllowed(word)) {
 							// ! Should also check whether there is punctuation between the repeated words, e.g.
 							// "development. Development".
 							QuickFix fixAction = new AbstractImmediateQuickFix(
-								"Add \"" + word
-								+ "\" to legally repeatable words") {
-									public void run() {
-										getAllowedRepeats().add(word);
-										flushWordSets();
-									}
-								};
+									"Add \"" + word
+									+ "\" to legally repeatable words") {
+								public void run() {
+									getAllowedRepeats().add(word);
+									flushWordSets();
+								}
+							};
 							Collection<QuickFix> fixes = new LinkedList<QuickFix>();
 							fixes.add(fixAction);
 							addWarning(out, new TextCheckWarning(getWarningLabel(
-												     path, condition)
-											     + " contains the repeated "
-											     + "word \""
-											     + word
-											     + "\".",
-//												     + " start = " + start + ", lastPos = " + lastPos, // DEL
-											     false, this, lastPos, start
-											     + word.length(), path, fixes,
-											     "text:repeated_word"));
+									path, condition)
+									+ " contains the repeated "
+									+ "word \""
+									+ word
+									+ "\".",
+									//												     + " start = " + start + ", lastPos = " + lastPos, // DEL
+									false, this, lastPos, start
+									+ word.length(), path, fixes,
+							"text:repeated_word"));
 						}
 					}
 					last = word;
@@ -706,17 +771,17 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 			}
 			// Why not do this check while looking for repeated words?
 			if (doSpellCheck(condition) && text.length() > 0) {
-//				logger.debug("Doing spell check on " + text); // DEL
+				//				logger.debug("Doing spell check on " + text); // DEL
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
 				SpellCheckListener listener = new SpellCheckListener() {
 
 					public void spellingError(final SpellCheckEvent arg0) {
 						QuickFix fixAction = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
-										+ "\" to dictionary") {
+								+ "\" to dictionary") {
 							public void run() {
 								getSpellChecker().addToDictionary(
-								    arg0.getInvalidWord());
+										arg0.getInvalidWord());
 								// Add this word to the user's dictionary
 								saveWord(arg0.getInvalidWord(), Preferences.getDictionaryFile());
 							}
@@ -745,9 +810,9 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 								+ "word \""
 								+ arg0.getInvalidWord() + "\".", false,
 								AbstractTextCheck.this, arg0
-										.getWordContextPosition(), arg0
-										.getWordContextPosition()
-										+ arg0.getInvalidWord().length(), path,
+								.getWordContextPosition(), arg0
+								.getWordContextPosition()
+								+ arg0.getInvalidWord().length(), path,
 								fixes, "text:spelling_error"));
 					}
 
@@ -779,11 +844,11 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 					if (!allowExtended && !AbstractTextCheck.isLegal(c)
 							&& !foundExtended) {
 						out
-								.add(new TextCheckWarning(getWarningLabel(path,
-										condition)
-										+ " cannot contain extended "
-										+ "characters.", true, this, i, i + 1,
-										path, "text:no_extended"));
+						.add(new TextCheckWarning(getWarningLabel(path,
+								condition)
+								+ " cannot contain extended "
+								+ "characters.", true, this, i, i + 1,
+								path, "text:no_extended"));
 						foundExtended = true;
 					}
 					if (!allowNewlines && c == '\n' && !foundNewlines) {
@@ -808,13 +873,13 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 						"End sentence with a question mark", path, text + "?"));
 				fixes.add(new ReplacementFix(
 						"End sentence with an exclamation point", path, text
-								+ "!"));
+						+ "!"));
 				addWarning(out, new TextCheckWarning(getWarningLabel(path,
 						condition)
 						+ " does not end with a period, "
 						+ "question mark or exclamation point.", false, this,
 						text.length() - 1, text.length(), path, fixes,
-						"text:no_punctuation"));
+				"text:no_punctuation"));
 			}
 			StringBuffer word = new StringBuffer();
 			StringBuffer sentence = new StringBuffer();
@@ -825,7 +890,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 				if ((c == '?' || c == '!' || c == '.')
 						&& ((abbrevIndex = isLegalPeriodWord(text, i,
 								currentObject)) == -1)
-						&& isWord(word.toString())) {
+								&& isWord(word.toString())) {
 					int[] ranges = getCurrentPeriodWordRange(text, i);
 					final String periodWord = text.substring(ranges[0],
 							ranges[1]);
@@ -839,7 +904,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 						Collection<QuickFix> fixes = new LinkedList<QuickFix>();
 						QuickFix fixAction = new AbstractImmediateQuickFix(
 								"Add \"" + periodWord
-										+ "\" to legal period-containing words") {
+								+ "\" to legal period-containing words") {
 							public void run() {
 								getPeriodWords().add(periodWord);
 								flushWordSets();
@@ -847,7 +912,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 						};
 						fixes.add(fixAction);
 						String newText = text.substring(0, i + 1) + " "
-								+ text.substring(i + 1, text.length());
+						+ text.substring(i + 1, text.length());
 						// Why would we not do this on TEXT_EDIT_COMMIT?
 						if (condition != VerificationManager.TEXT_EDIT_COMMIT) {
 							int firstWordIndex = i - 1;
@@ -867,34 +932,34 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 							String secondWord = text.substring(i + 1,
 									secondWordIndex);
 							fixes
-									.add(new ReplacementFix(
-											"Add the missing space between \""
-													+ firstWord + "\" and \""
-													+ secondWord + "\"", path,
-											newText));
+							.add(new ReplacementFix(
+									"Add the missing space between \""
+									+ firstWord + "\" and \""
+									+ secondWord + "\"", path,
+									newText));
 
 						}
 
 						CheckWarning warning = new TextCheckWarning(
 								getWarningLabel(path, condition)
-										+ " contains sentences that are"
-										+ " not separated by whitespace.",
+								+ " contains sentences that are"
+								+ " not separated by whitespace.",
 								false, this, i - 1, i + 2, path, fixes,
-								"text:joined_sentences");
+						"text:joined_sentences");
 						addWarning(out, warning);
 						foundNoSepSentences = true;
 					}
 					int sentenceStartIndex = i - sentence.length() + 1;
 					for (; sentenceStartIndex < text.length()
-							&& Character.isWhitespace(text
-									.charAt(sentenceStartIndex)); sentenceStartIndex++)
+					&& Character.isWhitespace(text
+							.charAt(sentenceStartIndex)); sentenceStartIndex++)
 						;
 
 					int firstSentenceWordEndIndex;
 					for (firstSentenceWordEndIndex = sentenceStartIndex; firstSentenceWordEndIndex < text
-							.length()
-							&& !Character.isWhitespace(text
-									.charAt(firstSentenceWordEndIndex)); firstSentenceWordEndIndex++)
+					.length()
+					&& !Character.isWhitespace(text
+							.charAt(firstSentenceWordEndIndex)); firstSentenceWordEndIndex++)
 						;
 
 					final String firstSentenceWord = text.substring(
@@ -902,23 +967,23 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 					if (doSentenceCaseCheck(condition)
 							&& !getAlwaysLowercaseWords().contains(
 									firstSentenceWord)
-							&& !(Character.isUpperCase(s.charAt(0)) || !Character
-									.isLetter(s.charAt(0)))
-							&& !foundNoCapSentences) {
+									&& !(Character.isUpperCase(s.charAt(0)) || !Character
+											.isLetter(s.charAt(0)))
+											&& !foundNoCapSentences) {
 						QuickFix fixAction = new AbstractImmediateQuickFix(
 								"Add \"" + firstSentenceWord
-										+ "\" to legal always-lowercase words") {
+								+ "\" to legal always-lowercase words") {
 							public void run() {
 								getAlwaysLowercaseWords()
-										.add(firstSentenceWord);
+								.add(firstSentenceWord);
 								flushWordSets();
 							}
 						};
 						Collection<QuickFix> fixes = new LinkedList<QuickFix>();
 						fixes.add(fixAction);
 						String newText = text.substring(0, sentenceStartIndex)
-								+ Character.toUpperCase(text
-										.charAt(sentenceStartIndex))
+						+ Character.toUpperCase(text
+								.charAt(sentenceStartIndex))
 								+ text.substring(sentenceStartIndex + 1, text
 										.length());
 						if (condition != VerificationManager.TEXT_EDIT_COMMIT) {
@@ -933,7 +998,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 								+ "not start with a capital " + "letter.",
 								false, this, sentenceStartIndex,
 								sentenceStartIndex + 1, path, fixes,
-								"text:no_starting_caps"));
+						"text:no_starting_caps"));
 						foundNoCapSentences = true;
 					}
 					sentence = new StringBuffer();
@@ -973,9 +1038,9 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 							secondWordIndex);
 
 					String newText = text.substring(0, repeatedWhitespaceStart)
-							+ " "
-							+ text.substring(repeatedWhitespaceEnd, text
-									.length());
+					+ " "
+					+ text.substring(repeatedWhitespaceEnd, text
+							.length());
 
 					QuickFix fixAction = new ReplacementFix(
 							"Replace repeated spaces with a single space",
@@ -1026,7 +1091,7 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 		} catch (TooManyWarningsException ex) {
 			throw ex;
 		}
-//		logger.debug("getWarnings: returning " + out.size() + " warnings"); // DEL
+		//		logger.debug("getWarnings: returning " + out.size() + " warnings"); // DEL
 		return out;
 	}
 
@@ -1045,17 +1110,17 @@ public abstract class AbstractTextCheck extends AbstractCheck implements
 						Character.UnicodeBlock.LATIN_1_SUPPLEMENT);
 	}
 
-    private void saveWord(String word, File dictFile) {
-	if (dictFile == null || word == null || word.equals(""))
-	    return;
-                try {
-		    FileWriter w = new FileWriter(dictFile.toString(), true);
-		    // Open with append.
-		    w.write(word);
-		    w.write("\n");
-		    w.close();
+	private void saveWord(String word, File dictFile) {
+		if (dictFile == null || word == null || word.equals(""))
+			return;
+		try {
+			FileWriter w = new FileWriter(dictFile.toString(), true);
+			// Open with append.
+			w.write(word);
+			w.write("\n");
+			w.close();
 		} catch (IOException ex) {
-		    logger.info("Error writing to dictionary file");
+			logger.info("Error writing to dictionary file");
 		}
-    }
+	}
 }
