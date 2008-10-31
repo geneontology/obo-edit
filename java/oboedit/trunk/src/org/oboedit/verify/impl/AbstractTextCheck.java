@@ -260,7 +260,6 @@ FieldCheck {
 		return allowedRepeats;
 	}
 
-
 	protected static Set getPeriodWords() {
 		if (periodWords == null){
 			reloadWordSets();
@@ -313,16 +312,16 @@ FieldCheck {
 
 
 	protected static void reloadWordSets() {
-		allowedRepeats = loadWordSet("allowedrepeats.txt");
-		periodWords = loadWordSet("periodwords.txt");
-		alwaysLowercaseWords = loadWordSet("alwayslowercase.txt");
+		allowedRepeats = loadWordSet("allowedrepeats.dict");
+		periodWords = loadWordSet("periodwords.dict");
+		alwaysLowercaseWords = loadWordSet("alwayslowercase.dict");
 		periodWords.addAll(defaultPeriodWords);
 	}
 
 	protected static void flushWordSets() {
-		writeWordSet(allowedRepeats, "allowedrepeats.txt");
-		writeWordSet(periodWords, "periodwords.txt");
-		writeWordSet(alwaysLowercaseWords, "alwayslowercase.txt");
+		writeWordSet(allowedRepeats, "allowedrepeats.dict");
+		writeWordSet(periodWords, "periodwords.dict");
+		writeWordSet(alwaysLowercaseWords, "alwayslowercase.dict");
 	}
 
 	protected static Set loadWordSet(String filename) {
@@ -342,11 +341,16 @@ FieldCheck {
 	protected static void writeWordSet(Collection words, String filename) {
 		StringBuffer buf = new StringBuffer();
 		Iterator it = words.iterator();
+		System.out.println("writeWordSet: it = " + it.toString());
 		while (it.hasNext()) {
-			buf.append(it.next().toString() + "\n");
+			buf.append(it.next() + "\n");
+
 		}
 		writeWordSet(buf.toString(), filename);
+
+		System.out.println("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
 	}
+
 
 	protected static void writeWordSet(String words, String filename) {
 		File file = new File(GUIManager.getPrefsDir(), filename);
@@ -594,8 +598,8 @@ FieldCheck {
 
 		if (getPeriodWords().contains(currentWord)){
 			//logger.debug("periodWords[] = " + periodWords.toString());
-			//logger.debug("isLegalPeriodWord: currentWord = " + currentWord);
-			//logger.debug(" returning " + range[1]);
+			logger.debug("isLegalPeriodWord: currentWord = " + currentWord);
+			logger.debug(" returning " + range[1]);
 			return range[1];
 		}
 
@@ -748,6 +752,7 @@ FieldCheck {
 									+ "\" to legally repeatable words") {
 								public void run() {
 									getAllowedRepeats().add(word);
+
 									flushWordSets();
 								}
 							};
@@ -892,10 +897,15 @@ FieldCheck {
 								currentObject)) == -1)
 								&& isWord(word.toString())) {
 					int[] ranges = getCurrentPeriodWordRange(text, i);
+					System.out.println("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
 					final String periodWord = text.substring(ranges[0],
 							ranges[1]);
+					System.out.println("getWarnings: periodWord " + periodWord );
+					System.out.println("getWarnings: text.substring: " + text.substring(ranges[0], ranges[1]));
 					word = new StringBuffer();
+					System.out.println("getWarnings: word = " + word );
 					final String s = sentence.toString().trim();
+					System.out.println("getWarnings: s = " + s);
 
 					if (doSentenceSeparationCheck(condition)
 							&& i < text.length() - 1
