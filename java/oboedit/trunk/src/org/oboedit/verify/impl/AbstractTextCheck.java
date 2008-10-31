@@ -343,11 +343,11 @@ FieldCheck {
 		Iterator it = words.iterator();
 		System.out.println("writeWordSet: it = " + it.toString());
 		while (it.hasNext()) {
-			buf.append(it.next() + "\n");
+			buf.append(it.next()).append("%n");
 
 		}
 		writeWordSet(buf.toString(), filename);
-
+	
 		System.out.println("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
 	}
 
@@ -897,15 +897,15 @@ FieldCheck {
 								currentObject)) == -1)
 								&& isWord(word.toString())) {
 					int[] ranges = getCurrentPeriodWordRange(text, i);
-					System.out.println("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
+					//System.out.println("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
 					final String periodWord = text.substring(ranges[0],
 							ranges[1]);
-					System.out.println("getWarnings: periodWord " + periodWord );
-					System.out.println("getWarnings: text.substring: " + text.substring(ranges[0], ranges[1]));
+					//System.out.println("getWarnings: periodWord " + periodWord );
+					//System.out.println("getWarnings: text.substring: " + text.substring(ranges[0], ranges[1]));
 					word = new StringBuffer();
-					System.out.println("getWarnings: word = " + word );
+					//System.out.println("getWarnings: word = " + word );
 					final String s = sentence.toString().trim();
-					System.out.println("getWarnings: s = " + s);
+					//System.out.println("getWarnings: s = " + s);
 
 					if (doSentenceSeparationCheck(condition)
 							&& i < text.length() - 1
