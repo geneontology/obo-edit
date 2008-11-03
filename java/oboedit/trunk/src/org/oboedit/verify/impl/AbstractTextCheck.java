@@ -268,12 +268,10 @@ FieldCheck {
 				FileUtil.ensureExists(Preferences.getPeriodWordsFile(),
 				"org/oboedit/resources/periodwords.dict");
 				BufferedReader input = new BufferedReader( new FileReader(Preferences.getPeriodWordsFile()));
-				StringBuffer buffer = new StringBuffer();
 				String text;
 				while ( (text = input.readLine() ) != null ) {
-					buffer.append( text );
-					periodWords.add(buffer.toString());
-					//logger.debug("Legal period word loaded from config file = " + text);
+					periodWords.add(text.trim());
+					logger.debug("Legal period word loaded from config file = " + text);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -293,11 +291,9 @@ FieldCheck {
 				FileUtil.ensureExists(Preferences.getAlwaysLowercaseFile(),
 				"org/oboedit/resources/alwayslowercase.dict");
 				BufferedReader input = new BufferedReader( new FileReader(Preferences.getAlwaysLowercaseFile()));
-				StringBuffer buffer = new StringBuffer();
 				String lowercase;
 				while ( (lowercase = input.readLine() ) != null ) {
-					buffer.append( lowercase );
-					alwaysLowercaseWords.add(buffer.toString());
+					alwaysLowercaseWords.add(lowercase.trim());
 					//logger.debug("Legal lowercase word loaded from config file = " + lowercase);
 				}
 			} catch (IOException e) {
@@ -597,8 +593,8 @@ FieldCheck {
 
 		if (getPeriodWords().contains(currentWord)){
 			//logger.debug("periodWords[] = " + periodWords.toString());
-			logger.debug("isLegalPeriodWord: currentWord = " + currentWord);
-			logger.debug(" returning " + range[1]);
+			//logger.debug("isLegalPeriodWord: currentWord = " + currentWord);
+			//logger.debug(" returning " + range[1]);
 			return range[1];
 		}
 
@@ -735,15 +731,15 @@ FieldCheck {
 
 			if (doRepeatedWordCheck(condition)) {
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text,
-						wordFinder);
-				String last = null;
+						wordFinder); //tokenizer refers to the word in the array of words that is currently being looked at. 
+				String last = null; //last means the previous word in the tokenizer (before the word that we are looking at.)
 				int lastPos = -1;
-				while (tokenizer.hasMoreWords()) {
+				while (tokenizer.hasMoreWords()) {  
 					final String word = tokenizer.nextWord();
 					int start = tokenizer.getCurrentWordPosition();
 					if (last != null) {
 						if (word.equalsIgnoreCase(last)
-								&& !isRepeatAllowed(word)) {
+								&& !isRepeatAllowed(word) && !tokenizer.isNewSentence()) {
 							// ! Should also check whether there is punctuation between the repeated words, e.g.
 							// "development. Development".
 							QuickFix fixAction = new AbstractImmediateQuickFix(
@@ -889,12 +885,12 @@ FieldCheck {
 			StringBuffer sentence = new StringBuffer();
 			for (int i = 0; i < text.length(); i++) {
 				char c = text.charAt(i);
+				//System.out.println("c = " + c);
 				sentence.append(c);
+				//System.out.println("sentence = " + sentence);
 				int abbrevIndex = -1;
-				if ((c == '?' || c == '!' || c == '.')
-						&& ((abbrevIndex = isLegalPeriodWord(text, i,
-								currentObject)) == -1)
-								&& isWord(word.toString())) {
+				if ((c == '?' || c == '!' || c == '.')&& ((abbrevIndex = isLegalPeriodWord(text, i,	currentObject)) == -1)
+						&& isWord(word.toString())) {
 					int[] ranges = getCurrentPeriodWordRange(text, i);
 					//logger.debug("getWarnings: getCurrentPeriodWordRange(text, i)" + getCurrentPeriodWordRange(text, i));
 					final String periodWord = text.substring(ranges[0],
