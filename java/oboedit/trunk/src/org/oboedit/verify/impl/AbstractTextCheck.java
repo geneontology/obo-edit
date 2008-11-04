@@ -271,7 +271,7 @@ FieldCheck {
 				String text;
 				while ( (text = input.readLine() ) != null ) {
 					periodWords.add(text.trim());
-					logger.debug("Legal period word loaded from config file = " + text);
+					//logger.debug("Legal period word loaded from config file = " + text);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -776,9 +776,11 @@ FieldCheck {
 				SpellCheckListener listener = new SpellCheckListener() {
 
 					public void spellingError(final SpellCheckEvent arg0) {
+						//logger.debug(arg0.getInvalidWord());
 						QuickFix fixAction = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
 								+ "\" to dictionary") {
+
 							public void run() {
 								getSpellChecker().addToDictionary(
 										arg0.getInvalidWord());
