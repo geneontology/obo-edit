@@ -166,7 +166,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		println("auto-generated-by: " + generatedBy);
 	}
 
-	public void writeSubsetDefHeaderTag(TermCategory category)
+	public void writeSubsetDefHeaderTag(TermSubset category)
 	throws IOException {
 		print("subsetdef: " + escapeBeforeQuotes(category.getName()) + " \""
 				+ escapeQuoted(category.getDesc(), '"') + "\"\n");
@@ -180,7 +180,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		print("namespace-id-rule: " + escapeSpaces(nsName) + " " + rule + "\n");
 	}
 
-	public void writeSynonymTypeDefHeaderTag(SynonymCategory category)
+	public void writeSynonymTypeDefHeaderTag(SynonymType category)
 	throws IOException {
 		print("synonymtypedef: " + escapeBeforeQuotes(category.getID()) + " \""
 				+ escapeQuoted(category.getName()) + "\"");
@@ -287,7 +287,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		}
 	}
 
-	public void writeSubsetTag(TermCategory category, NestedValue nv)
+	public void writeSubsetTag(TermSubset category, NestedValue nv)
 	throws IOException {
 		print("subset: " + category.getName());
 		writeNestedValue(nv);
@@ -298,10 +298,10 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		print("synonym: \"" + escapeQuoted(syn.getText()) + "\"");
 		if (syn.getScope() != Synonym.RELATED_SYNONYM
 				|| syn.getScope() != Synonym.UNKNOWN_SCOPE
-				|| syn.getSynonymCategory() != null) {
+				|| syn.getSynonymType() != null) {
 			print(" " + getScopeStr(syn.getScope()));
-			if (syn.getSynonymCategory() != null) {
-				print(" " + syn.getSynonymCategory().getID());
+			if (syn.getSynonymType() != null) {
+				print(" " + syn.getSynonymType().getID());
 			}
 		}
 		List<Dbxref> dbxrefs = new ArrayList<Dbxref>(syn.getDbxrefs());

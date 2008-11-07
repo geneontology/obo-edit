@@ -130,9 +130,9 @@ public class TermSplitHistoryItem extends SubclassedMacroHistoryItem {
 
 			out.add(new AddSynonymHistoryItem(result, syn.getText()));
 
-			if (syn.getSynonymCategory() != null)
-				out.add(new ChangeSynCategoryHistoryItem(result, syn.getText(),
-						null, syn.getSynonymCategory().getID()));
+			if (syn.getSynonymType() != null)
+				out.add(new ChangeSynTypeHistoryItem(result, syn.getText(),
+						null, syn.getSynonymType().getID()));
 
 			if (syn.getScope() == Synonym.RELATED_SYNONYM)
 				out.add(new ChangeSynScopeHistoryItem(result, syn.getText(),

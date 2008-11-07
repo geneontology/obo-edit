@@ -12,7 +12,7 @@ import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.Type;
 
 import org.apache.log4j.*;
@@ -128,21 +128,21 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 
 	public void setTransitiveExtension(NestedValue nv) {}
 
-	public void addCategory(TermCategory category) {
+	public void addCategory(TermSubset category) {
 	}
 
-	public void addCategoryExtension(TermCategory category, NestedValue nv) {
+	public void addCategoryExtension(TermSubset category, NestedValue nv) {
 	}
 
-	public Set<TermCategory> getCategories() {
+	public Set<TermSubset> getSubsets() {
 		return null;
 	}
 
-	public NestedValue getCategoryExtension(TermCategory category) {
+	public NestedValue getCategoryExtension(TermSubset category) {
 		return null;
 	}
 
-	public void removeCategory(TermCategory category) {
+	public void removeCategory(TermSubset category) {
 	}
 
 	public NestedValue getAlwaysImpliesInverseExtension() {

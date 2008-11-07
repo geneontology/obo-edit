@@ -8,7 +8,7 @@ import org.obo.datamodel.Instance;
 import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.Type;
 import org.obo.datamodel.Value;
 

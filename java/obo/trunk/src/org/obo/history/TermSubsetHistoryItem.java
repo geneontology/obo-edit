@@ -8,30 +8,30 @@ import java.util.*;
 
 import org.apache.log4j.*;
 
-public class TermCategoryHistoryItem extends HistoryItem {
+public class TermSubsetHistoryItem extends HistoryItem {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(TermCategoryHistoryItem.class);
+	protected final static Logger logger = Logger.getLogger(TermSubsetHistoryItem.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2799032354303157650L;
-	protected TermCategory oldcat;
-	protected TermCategory newcat;
+	protected TermSubset oldcat;
+	protected TermSubset newsubset;
 	protected boolean isAdd;
 	protected boolean isDel;
 
-	public TermCategoryHistoryItem() {
+	public TermSubsetHistoryItem() {
 		this(null, null, false, false);
 	}
 
-	public TermCategoryHistoryItem(TermCategory oldcat, TermCategory newcat,
+	public TermSubsetHistoryItem(TermSubset oldsubset, TermSubset newsubset,
 			boolean isAdd, boolean isDel) {
-		if (oldcat != null)
-			this.oldcat = (TermCategory) oldcat.clone();
-		if (newcat != null)
-			this.newcat = (TermCategory) newcat.clone();
+		if (oldsubset != null)
+			this.oldcat = (TermSubset) oldsubset.clone();
+		if (newsubset != null)
+			this.newsubset = (TermSubset) newsubset.clone();
 
 		this.isAdd = isAdd;
 		this.isDel = isDel;
@@ -39,26 +39,26 @@ public class TermCategoryHistoryItem extends HistoryItem {
 
 	@Override
 	public int hashCode() {
-		return getHash(oldcat) ^ getHash(newcat) ^ getHash(isAdd)
+		return getHash(oldcat) ^ getHash(newsubset) ^ getHash(isAdd)
 				^ getHash(isDel);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof TermCategoryHistoryItem))
+		if (!(o instanceof TermSubsetHistoryItem))
 			return false;
-		TermCategoryHistoryItem item = (TermCategoryHistoryItem) o;
+		TermSubsetHistoryItem item = (TermSubsetHistoryItem) o;
 		return ObjectUtil.equals(oldcat, item.getOldCategory())
-				&& ObjectUtil.equals(newcat, item.getNewCategory())
+				&& ObjectUtil.equals(newsubset, item.getNewSubset())
 				&& isAdd == item.isAdd() && isDel == item.isDel();
 	}
 
-	public void setOldCat(TermCategory oldcat) {
+	public void setOldCat(TermSubset oldcat) {
 		this.oldcat = oldcat;
 	}
 
-	public void setNewCat(TermCategory newcat) {
-		this.newcat = newcat;
+	public void setNewCat(TermSubset newcat) {
+		this.newsubset = newcat;
 	}
 
 	public void setIsAdd(boolean isAdd) {
@@ -69,12 +69,12 @@ public class TermCategoryHistoryItem extends HistoryItem {
 		this.isDel = isDel;
 	}
 
-	public TermCategory getOldCategory() {
+	public TermSubset getOldCategory() {
 		return oldcat;
 	}
 
-	public TermCategory getNewCategory() {
-		return newcat;
+	public TermSubset getNewSubset() {
+		return newsubset;
 	}
 
 	public boolean isAdd() {
@@ -87,17 +87,17 @@ public class TermCategoryHistoryItem extends HistoryItem {
 
 	@Override
 	public String getShortName() {
-		return "Category Edit";
+		return "Subset Edit";
 	}
 
 	@Override
 	public String toString() {
 		if (isAdd)
-			return "Created category " + newcat;
+			return "Created category " + newsubset;
 		else if (isDel)
 			return "Removed category " + oldcat;
 		else
-			return "Changed category " + oldcat + " to " + newcat;
+			return "Changed category " + oldcat + " to " + newsubset;
 	}
 
 	@Override

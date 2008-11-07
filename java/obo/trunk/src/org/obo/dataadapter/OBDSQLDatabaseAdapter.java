@@ -32,7 +32,7 @@ import org.obo.annotation.datamodel.Annotation;
 import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
-import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.DanglingObject;
 import org.obo.datamodel.DatatypeValue;
 import org.obo.datamodel.Dbxref;
@@ -53,9 +53,9 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObjectFactory;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.SynonymCategory;
+import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.SynonymedObject;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.Value;
 import org.obo.datamodel.ValueLink;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
@@ -782,10 +782,10 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (pid.equals("oboMetaModel:inSubset")) {
 			//logger.info("subset "+link+"//"+p);
 			TermUtil.castToClass(lo);
-			TermCategory category = session.getCategory(p.getID());
+			TermSubset category = session.getCategory(p.getID());
 			if (category == null) {
-				category = objectFactory.createCategory(p.getID(), "");
-				session.addCategory(category);
+				category = objectFactory.createSubset(p.getID(), "");
+				session.addSubset(category);
 			}
 			TermUtil.castToClass(lo).addCategory(category);
 		}
@@ -801,8 +801,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		else if (pid.equals("OBO_REL:instance_of")) {
 
 			if (p.getID().equals("subsetdef")) {
-				TermCategory cat = objectFactory.createCategory(lo.getID(), lo.getName());
-				session.addCategory(cat);
+				TermSubset cat = objectFactory.createSubset(lo.getID(), lo.getName());
+				session.addSubset(cat);
 				// TODO: remove this at the end; still required as object of subset links
 				// session.removeObject(lo);
 			}
@@ -842,7 +842,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 			savedObjects = new LinkedList<IdentifiedObject>();
 
-			for (TermCategory cat : session.getCategories()) {
+			for (TermSubset cat : session.getSubsets()) {
 				saveCategory(cat);
 			}
 			for (IdentifiedObject io : session.getObjects()) {
@@ -1008,8 +1008,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				callSqlFunc("store_node_dbxref_i",iid,x.toString());
 			}
 		}
-		if (lo instanceof CategorizedObject) {
-			for (TermCategory x : ((CategorizedObject) lo).getCategories()) {
+		if (lo instanceof SubsetObject) {
+			for (TermSubset x : ((SubsetObject) lo).getSubsets()) {
 				callSqlFunc("store_node_subset_link_i",iid,x.getName());
 			}
 		}
@@ -1021,7 +1021,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		if (lo instanceof SynonymedObject) {
 			for (Synonym x : ((SynonymedObject) lo).getSynonyms()) {
 				callSqlFunc("store_node_synonym_i",
-						iid,TermUtil.getScopeLabel(x.getScope()),x.getSynonymCategory(),x.getText());
+						iid,TermUtil.getScopeLabel(x.getScope()),x.getSynonymType(),x.getText());
 			}
 		}
 		if (lo instanceof DefinedObject) {
@@ -1047,7 +1047,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		return iid;
 	}
 
-	protected int saveCategory(TermCategory cat) throws SQLException {
+	protected int saveCategory(TermSubset cat) throws SQLException {
 		return
 		callSqlFunc("store_subset",
 				cat.getName(),
@@ -1144,8 +1144,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			int scopeEnum = TermUtil.getScopeEnum(scope);
 			Synonym syn = objectFactory.createSynonym(label, scopeEnum);
 			if (category != null) {
-				SynonymCategory categoryObj = objectFactory.createSynonymCategory(category, "", 0);
-				syn.setSynonymCategory(categoryObj);
+				SynonymType categoryObj = objectFactory.createSynonymType(category, "", 0);
+				syn.setSynonymType(categoryObj);
 			}
 
 			((SynonymedObject)io).addSynonym(syn);
@@ -1210,8 +1210,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			else if (arg instanceof IdentifiedObject) {
 				stmt.setString(i+2, ((IdentifiedObject) arg).getID());
 			}
-			else if (arg instanceof SynonymCategory) {
-				stmt.setString(i+2, ((SynonymCategory) arg).getID());
+			else if (arg instanceof SynonymType) {
+				stmt.setString(i+2, ((SynonymType) arg).getID());
 			}
 			else {
 				stmt.setString(i+2, (String)arg);

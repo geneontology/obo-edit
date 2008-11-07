@@ -524,15 +524,15 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	public void readSubsetDef(String name, String desc) {
-		TermCategory cat = objectFactory.createCategory(name, desc);
-		session.addCategory(cat);
+		TermSubset cat = objectFactory.createSubset(name, desc);
+		session.addSubset(cat);
 	}
 
 	public void readSynonymCategory(String id, String name, int scope) {
-		SynonymCategory cat = objectFactory.createSynonymCategory(id, name,
+		SynonymType cat = objectFactory.createSynonymType(id, name,
 				scope);
 		// new SynonymCategoryImpl(id, name, scope);
-		session.addSynonymCategory(cat);
+		session.addSynonymType(cat);
 	}
 
 	public IdentifiedObject getObject(String id) {
@@ -742,12 +742,12 @@ public class DefaultOBOParser implements OBOParser {
 		Synonym s = objectFactory.createSynonym(name, type);
 		s.setNestedValue(nv);
 		if (catID != null) {
-			SynonymCategory synCat = session.getSynonymCategory(catID);
-			if (synCat == null)
+			SynonymType synType = session.getSynonymType(catID);
+			if (synType == null)
 				throw new OBOParseException("Unrecognized category ID " + catID
 						+ " found", getCurrentPath(), engine.getCurrentLine(),
 						engine.getLineNum());
-			s.setSynonymCategory(synCat);
+			s.setSynonymType(synType);
 		}
 		for (int i = 0; i < xrefs.length; i++) {
 			Dbxref ref = getDbxref(xrefs[i], Dbxref.RELATED_SYNONYM);
@@ -812,21 +812,21 @@ public class DefaultOBOParser implements OBOParser {
 
 	public void readSubset(String name, NestedValue nv)
 	throws OBOParseException {
-		if (!(currentObject instanceof CategorizedObject)) {
+		if (!(currentObject instanceof SubsetObject)) {
 			throw new OBOParseException("Attempted to add category to "
 					+ "object " + currentObject
 					+ " which does not support categories.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
 		}
-		TermCategory cat = session.getCategory(name);
+		TermSubset cat = session.getCategory(name);
 
 		if (cat == null)
 			throw new OBOParseException("Undefined category " + name + ".",
 					getCurrentPath(), engine.getCurrentLine(), engine
 					.getLineNum());
 
-		((CategorizedObject) currentObject).addCategory(cat);
-		((CategorizedObject) currentObject).addCategoryExtension(cat, nv);
+		((SubsetObject) currentObject).addCategory(cat);
+		((SubsetObject) currentObject).addCategoryExtension(cat, nv);
 	}
 
 	public void readSynonym(String name, XrefPair[] xrefs, int scope,

@@ -4,24 +4,24 @@ import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
-public class SynonymCategoryImpl implements SynonymCategory {
+public class SynonymTypeImpl implements SynonymType {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(SynonymCategoryImpl.class);
+	protected final static Logger logger = Logger.getLogger(SynonymTypeImpl.class);
 
 	protected String id;
 	protected String name;
 	protected int scope;
 
-	public SynonymCategoryImpl() {
+	public SynonymTypeImpl() {
 		this(null, null, Synonym.UNKNOWN_SCOPE);
 	}
 
-	public SynonymCategoryImpl(String id, String name) {
+	public SynonymTypeImpl(String id, String name) {
 		this(id, name, Synonym.UNKNOWN_SCOPE);
 	}
 
-	public SynonymCategoryImpl(String id, String name, int scope) {
+	public SynonymTypeImpl(String id, String name, int scope) {
 		setID(id);
 		setName(name);
 		setScope(scope);
@@ -72,8 +72,8 @@ public class SynonymCategoryImpl implements SynonymCategory {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof SynonymCategory) {
-			return ((SynonymCategory) o).getID().equals(id);
+		if (o instanceof SynonymType) {
+			return ((SynonymType) o).getID().equals(id);
 		} else
 			return false;
 	}

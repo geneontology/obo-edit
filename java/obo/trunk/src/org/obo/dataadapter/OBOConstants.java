@@ -152,15 +152,15 @@ public class OBOConstants {
 
 	public static final Comparator DEFAULT_RELATED_SYNONYM_CATEGORY_COMPARATOR = new Comparator() {
 		public int compare(Object a, Object b) {
-			return DEFAULT_ID_COMPARATOR.compare(((SynonymCategory) a).getID(),
-					((SynonymCategory) b).getID());
+			return DEFAULT_ID_COMPARATOR.compare(((SynonymType) a).getID(),
+					((SynonymType) b).getID());
 		}
 	};
 
 	public static final Comparator DEFAULT_CATEGORY_COMPARATOR = new Comparator() {
 		public int compare(Object a, Object b) {
-			return DEFAULT_ID_COMPARATOR.compare(((TermCategory) a).getName(),
-					((TermCategory) b).getName());
+			return DEFAULT_ID_COMPARATOR.compare(((TermSubset) a).getName(),
+					((TermSubset) b).getName());
 		}
 	};
 
@@ -233,7 +233,7 @@ public class OBOConstants {
 			CommentedObject.class);
 
 	public static final TagMapping SUBSET_TAG = new TagMapping("subset",
-			CategorizedObject.class);
+			SubsetObject.class);
 
 	public static final TagMapping RELATED_SYNONYM_TAG = new TagMapping(
 			"synonym", SynonymedObject.class);
