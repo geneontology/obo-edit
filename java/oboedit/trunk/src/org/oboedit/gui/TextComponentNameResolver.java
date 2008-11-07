@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import org.bbop.swing.ComponentNameResolver;
-import org.oboedit.gui.components.CategoryEditorComponent;
+import org.oboedit.gui.components.SubsetEditorComponent;
 import org.oboedit.gui.components.CommentEditorComponent;
 import org.oboedit.gui.components.CompleteDefPanel;
 import org.oboedit.gui.components.CrossProductEditorComponent;
@@ -69,8 +69,8 @@ ComponentNameResolver {
 			out = new OBOCommitButton();
 		} else if (id.equals("TEXT_REVERT")) {
 			out = new OBORevertButton();
-		} else if (id.equals("CATEGORY_EDITOR")) {
-			out = new CategoryEditorComponent();
+		} else if (id.equals("SUBSET_EDITOR")) {
+			out = new SubsetEditorComponent();
 		} else if (id.equals("RANGE_EDITOR")) {
 			out = new RangeEditorComponent();
 		} else if (id.equals("DOMAIN_EDITOR")) {

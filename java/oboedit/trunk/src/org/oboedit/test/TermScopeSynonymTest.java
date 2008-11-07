@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.SynonymCategory;
-import org.obo.datamodel.impl.SynonymCategoryImpl;
+import org.obo.datamodel.SynonymType;
+import org.obo.datamodel.impl.SynonymTypeImpl;
 import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.history.ChangeSynScopeHistoryItem;
 import org.obo.history.HistoryItem;
@@ -26,7 +26,7 @@ public class TermScopeSynonymTest extends OperationTest {
 
 		String newText = testUtil.getRandomString(20);
 
-		SynonymCategory synCat = new SynonymCategoryImpl();
+		SynonymType synCat = new SynonymTypeImpl();
 
 		Synonym syn = new SynonymImpl(newText);
 

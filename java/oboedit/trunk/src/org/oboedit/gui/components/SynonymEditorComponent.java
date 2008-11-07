@@ -33,7 +33,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 
 	protected static final Color reallyLightGray = new Color(230, 230, 230);
 
-	public static final String[] TYPES = { "Related Synonym", "Exact Synonym",
+	public static final String[] SYNSCOPES = { "Related Synonym", "Exact Synonym",
 			"Narrow Synonym", "Broad Synonym" };
 
 	public final static FieldPathSpec spec = new FieldPathSpec(
@@ -80,6 +80,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 			else
 				out.setBackground(Color.white);
 		}
+		
 		StringBuffer s = new StringBuffer();
 		s.append("<html><table border=0 cellpadding=0 cellspacing=0 width='"
 				+ table.getWidth() + "'>");
@@ -88,11 +89,11 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		s.append("<table>");
 		s.append("<tr valign=top><td>" + synonym.getText() + "</td>");
 		s.append("<tr valign=top><td>");
-		s.append("Scope: <i>" + TYPES[synonym.getScope()] + "</i>");
+		s.append("Scope: <i>" + SYNSCOPES[synonym.getScope()] + "</i>");
 		s.append("</td>");
-		if (synonym.getSynonymCategory() != null) {
+		if (synonym.getSynonymType() != null) {
 			s.append("<tr valign=top><td>");
-			s.append("Category: <i>" + synonym.getSynonymCategory().getName()
+			s.append("Type: <i>" + synonym.getSynonymType()
 					+ "</i>");
 			s.append("</td>");
 		}
@@ -187,6 +188,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		if (currentObject instanceof SynonymedObject) {
 			synonymList
 					.setData(((SynonymedObject) currentObject).getSynonyms());
+			
 		}
 	}
 
@@ -235,8 +237,8 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 						out.add(sitem);
 					}
 
-					if (ref.getSynonymCategory() != null) {
-						ChangeSynCategoryHistoryItem citem = new ChangeSynCategoryHistoryItem(
+					if (ref.getSynonymType() != null) {
+						ChangeSynTypeHistoryItem citem = new ChangeSynTypeHistoryItem(
 								synonymed, ref, null);
 						out.add(citem);
 					}
@@ -280,9 +282,9 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 						out.add(ritem);
 					}
 
-					if (ref.getSynonymCategory() != null) {
-						ChangeSynCategoryHistoryItem citem = new ChangeSynCategoryHistoryItem(
-								synonymed, ref, ref.getSynonymCategory());
+					if (ref.getSynonymType() != null) {
+						ChangeSynTypeHistoryItem citem = new ChangeSynTypeHistoryItem(
+								synonymed, ref, ref.getSynonymType());
 						out.add(citem);
 					}
 

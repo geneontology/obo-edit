@@ -25,9 +25,9 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 
 	JTextField textField;
 
-	JComboBox typeList;
+	JComboBox scopeList;
 
-	JComboBox categoryList;
+	JComboBox typeList;
 
 	Object obj;
 
@@ -43,7 +43,7 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 
 	Border lineBorder = new LineBorder(Color.black);
 
-	protected static final String[] TYPES = { "Related Synonym",
+	protected static final String[] SCOPES = { "Related Synonym",
 			"Exact Synonym", "Narrow Synonym", "Broad Synonym" };
 
 	/*
@@ -77,14 +77,14 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		referenceList = new JList();
 		referenceLabel = new JLabel("DbXrefs");
 		referenceButton = new JButton("Edit");
-		typeList = new JComboBox(TYPES);
-		categoryList = new JComboBox();
+		scopeList = new JComboBox(SCOPES);
+		typeList = new JComboBox();
 
 		// referenceList.setPreferredSize(new Dimension(40,100));
 		// referenceList.setMinimumSize(new Dimension(40,100));
 		referenceLabel.setFont(getFont());
 		referenceButton.setFont(getFont());
-		typeList.setFont(getFont());
+		scopeList.setFont(getFont());
 		textField.setFont(getFont());
 
 		textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 16));
@@ -97,8 +97,8 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 	public void setEnabled(boolean enable) {
 		super.setEnabled(enable);
 		textField.setEnabled(enable);
+		scopeList.setEnabled(enable);
 		typeList.setEnabled(enable);
-		categoryList.setEnabled(enable);
 		// editor.setEnabled(enable);
 		referenceList.setEnabled(enable);
 		referenceLabel.setEnabled(enable);
@@ -172,27 +172,27 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		referenceBox.add(referenceButton);
 
 		JLabel textLabel = new JLabel("Synonym text");
-		JLabel typeLabel = new JLabel("Synonym scope");
-		JLabel categoryLabel = new JLabel("Synonym type");
+		JLabel scopeLabel = new JLabel("Synonym scope");
+		JLabel typeLabel = new JLabel("Synonym type");
 		textLabel.setFont(getFont());
+		scopeLabel.setFont(getFont());
 		typeLabel.setFont(getFont());
-		categoryLabel.setFont(getFont());
-		categoryList.setFont(getFont());
+		typeList.setFont(getFont());
 
 		textPanel.add(textLabel);
 		textPanel.add(textField);
 		textPanel.add(Box.createVerticalStrut(5));
+		textPanel.add(scopeLabel);
+		textPanel.add(scopeList);
+		textPanel.add(Box.createVerticalStrut(5));
 		textPanel.add(typeLabel);
 		textPanel.add(typeList);
 		textPanel.add(Box.createVerticalStrut(5));
-		textPanel.add(categoryLabel);
-		textPanel.add(categoryList);
-		textPanel.add(Box.createVerticalStrut(5));
 		textPanel.add(referenceBox);
 
+		scopeList.setAlignmentX(LEFT_ALIGNMENT);
 		typeList.setAlignmentX(LEFT_ALIGNMENT);
-		categoryList.setAlignmentX(LEFT_ALIGNMENT);
-		categoryLabel.setAlignmentX(LEFT_ALIGNMENT);
+		typeLabel.setAlignmentX(LEFT_ALIGNMENT);
 		referenceBox.setAlignmentX(LEFT_ALIGNMENT);
 		textField.setAlignmentX(LEFT_ALIGNMENT);
 		textLabel.setAlignmentX(LEFT_ALIGNMENT);
@@ -232,18 +232,18 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 				commit();
 			}
 		});
-		categoryList.addActionListener(new ActionListener() {
+		typeList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (categoryList.getSelectedIndex() < 1) {
-					typeList.setEnabled(isEnabled());
+				if (typeList.getSelectedIndex() < 1) {
+					scopeList.setEnabled(isEnabled());
 				} else {
-					SynonymCategory cat = (SynonymCategory) categoryList
+					SynonymType type = (SynonymType) typeList
 							.getSelectedItem();
-					if (cat.getScope() != Synonym.UNKNOWN_SCOPE) {
-						typeList.setSelectedIndex(cat.getScope());
-						typeList.setEnabled(false);
+					if (type.getScope() != Synonym.UNKNOWN_SCOPE) {
+						scopeList.setSelectedIndex(type.getScope());
+						scopeList.setEnabled(false);
 					} else {
-						typeList.setEnabled(isEnabled());
+						scopeList.setEnabled(isEnabled());
 					}
 				}
 			}
@@ -276,11 +276,11 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 			syn.getDbxrefs().add((Dbxref) it.next());
 
 		// syn.setDbxrefs(references);
-		syn.setScope(typeList.getSelectedIndex());
-		if (categoryList.getSelectedIndex() < 1)
-			syn.setSynonymCategory(null);
+		syn.setScope(scopeList.getSelectedIndex());
+		if (typeList.getSelectedIndex() < 1)
+			syn.setSynonymType(null);
 		else
-			syn.setSynonymCategory((SynonymCategory) categoryList
+			syn.setSynonymType((SynonymType) typeList
 					.getSelectedItem());
 	}
 
@@ -293,13 +293,13 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		obj = in;
 		Synonym syn = (Synonym) obj;
 
-		categoryList.removeAllItems();
-		categoryList.addItem("<no synonym category>");
+		typeList.removeAllItems();
+		typeList.addItem("<no synonym type>");
 		Iterator it = SessionManager.getManager().getSession()
-				.getSynonymCategories().iterator();
+				.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
-			categoryList.addItem(cat);
+			SynonymType syntype = (SynonymType) it.next();
+			typeList.addItem(syntype);
 		}
 
 		textField.setText(syn.getText());
@@ -308,10 +308,10 @@ public class SynonymListEditor extends JPanel implements GenericEditorComponent 
 		references.addAll(syn.getDbxrefs());
 		referenceList.setListData(references);
 
-		if (syn.getSynonymCategory() == null)
-			categoryList.setSelectedIndex(0);
+		if (syn.getSynonymType() == null)
+			typeList.setSelectedIndex(0);
 		else
-			categoryList.setSelectedItem(syn.getSynonymCategory());
+			typeList.setSelectedItem(syn.getSynonymType());
 
 		revalidate();
 		repaint();

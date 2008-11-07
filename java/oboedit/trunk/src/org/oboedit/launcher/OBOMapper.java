@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.identifier.IDWarning;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.ReasonerFactory;
@@ -195,7 +195,7 @@ public class OBOMapper {
 				mapIDsInFile(mapper,inputPath,out,countMode);
 			}
 			else {
-				for (TermCategory cat : session.getCategories()) {
+				for (TermSubset cat : session.getSubsets()) {
 					mapper.reset();
 					mapper.setSession(session);
 					mapper.setCategory(cat);
