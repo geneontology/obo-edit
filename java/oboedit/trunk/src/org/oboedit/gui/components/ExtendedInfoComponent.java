@@ -64,10 +64,10 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		labels.add(totalTermsLabel);
 
 		Hashtable catHash = new Hashtable();
-		Iterator it = SessionManager.getManager().getSession().getCategories()
+		Iterator it = SessionManager.getManager().getSession().getSubsets()
 				.iterator();
 		while (it.hasNext()) {
-			TermCategory ct = (TermCategory) it.next();
+			TermSubset ct = (TermSubset) it.next();
 			catHash.put(ct, new Integer(0));
 		}
 
@@ -87,9 +87,9 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 					&& term.getDefinition().length() > 0)
 				definedTermCount++;
 
-			it = term.getCategories().iterator();
+			it = term.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory tc = (TermCategory) it.next();
+				TermSubset tc = (TermSubset) it.next();
 				Integer integerCount = (Integer) catHash.get(tc);
 				int intCount = integerCount.intValue();
 				intCount++;
@@ -159,7 +159,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 		Enumeration e = catHash.keys();
 		while (e.hasMoreElements()) {
-			TermCategory tc = (TermCategory) e.nextElement();
+			TermSubset tc = (TermSubset) e.nextElement();
 			Integer tcCount = (Integer) catHash.get(tc);
 			JLabel catLabel = new JLabel("Category " + tc.getDesc() + " has "
 					+ tcCount + " members");

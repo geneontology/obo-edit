@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.FocusManager;
@@ -25,14 +26,17 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import org.bbop.framework.GUIManager;
 import org.bbop.swing.tablelist.AbstractListTableEditor;
 import org.bbop.swing.widget.TableList;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.Synonym;
+import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.impl.SynonymImpl;
 import org.obo.filters.SynonymDbxrefSearchCriterion;
 import org.obo.filters.SynonymTextSearchCriterion;
+import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.components.SynonymEditorComponent;
 
 import org.apache.log4j.*;
@@ -46,11 +50,15 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 
 	protected JLabel nameLabel = new JLabel("Name");
 	protected JLabel scopeLabel = new JLabel("Scope");
+	protected JLabel typeLabel = new JLabel("Type");
+	protected JLabel dbxrefLabel = new JLabel("Dbxrefs");
+	protected JComboBox scopeList;
 	protected JComboBox typeList;
 	protected TableList<Dbxref> dbxrefList = new TableList<Dbxref>();
 	protected JButton addDbxrefButton = new JButton("+");
 	protected JButton removeDbxrefButton = new JButton("-");
-
+	Object obj;
+	
 	public SynonymTableCellEditor() {
 		if (synonymField.getDocument() instanceof AbstractDocument) {
 			((AbstractDocument) synonymField.getDocument())
@@ -72,7 +80,35 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 						}
 					});
 		}
-		typeList = new JComboBox(SynonymEditorComponent.TYPES);
+		scopeList = new JComboBox(SynonymEditorComponent.SYNSCOPES);
+		typeList = new JComboBox();
+		
+		typeList.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				Synonym syn = (Synonym) obj;
+				
+				if (typeList.getSelectedIndex() < 1) {
+					typeList.setEnabled(isEnabled());
+				} else {
+					SynonymType type = (SynonymType) typeList.getSelectedItem();
+					if (type.getScope() != Synonym.UNKNOWN_SCOPE) {
+						scopeList.setSelectedIndex(type.getScope());
+						scopeList.setEnabled(false);
+					} else {
+						scopeList.setEnabled(isEnabled());
+					}
+				}
+			}
+		});
+
+		Iterator it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
+		while (it.hasNext()){
+			SynonymType syntype = (SynonymType) it.next();
+			logger.debug("syntype" + syntype);
+			typeList.addItem(syntype);
+		}
+		
+		
 		dbxrefList.setRenderer(new DbxrefTableRenderer());
 		dbxrefList.setEditor(new DbxrefListTableEditor());
 
@@ -112,16 +148,22 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		add(nameLabel, "0,0");
 		add(synonymField, "2,0");
 		add(scopeLabel, "0,1");
-		add(typeList, "2,1");
+		add(scopeList, "2,1");
+		add(typeLabel, "0,2");
+		add(typeList, "2,2");
+
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		JPanel buttonPanel = new JPanel();
+		JLabel dbxrefLabel = new JLabel("Dbxrefs");
 		buttonPanel.setLayout(new GridLayout(1, 2));
 		buttonPanel.add(addDbxrefButton);
 		buttonPanel.add(removeDbxrefButton);
 		panel.add(new JScrollPane(dbxrefList,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Center");
+		panel.add(dbxrefLabel, "North");
 		panel.add(buttonPanel, "South");
 		add(panel, "3,0,3,2");
 	}
@@ -181,7 +223,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 	public Synonym getValue() {
 		Synonym out = createNewValue();
 		out.setText(synonymField.getText());
-		out.setScope(typeList.getSelectedIndex());
+		out.setScope(scopeList.getSelectedIndex());
 		for (Dbxref ref : dbxrefList.getData()) {
 			out.addDbxref(ref);
 		}
@@ -190,7 +232,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 
 	public void setValue(Synonym value) {
 		synonymField.setText(value.getText());
-		typeList.setSelectedIndex(value.getScope());
+		scopeList.setSelectedIndex(value.getScope());
 		dbxrefList.setData(value.getDbxrefs());
 	}
 }

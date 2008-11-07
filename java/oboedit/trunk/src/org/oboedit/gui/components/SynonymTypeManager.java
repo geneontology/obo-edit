@@ -19,20 +19,20 @@ import java.util.*;
 
 import org.apache.log4j.*;
 
-public class SynonymCategoryManager extends AbstractGUIComponent {
+public class SynonymTypeManager extends AbstractGUIComponent {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(SynonymCategoryManager.class);
+	protected final static Logger logger = Logger.getLogger(SynonymTypeManager.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected ListEditor catList;
+	protected ListEditor typeList;
 
-	protected JLabel noCategoryLabel = new JLabel(
-			"Click a category to edit it.");
+	protected JLabel noTypeLabel = new JLabel(
+			"Select type to edit");
 
 	protected JButton commitButton = new JButton("Save Changes");
 
@@ -43,7 +43,7 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 
 	protected ActionListener scopeListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			catList.commit();
+			typeList.commit();
 		}
 	};
 
@@ -71,13 +71,13 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 		}
 
 		public CategoryEditor() {
-			JLabel idLabel = new JLabel("Category id");
-			JLabel nameLabel = new JLabel("Category name");
-			JLabel scopeLabel = new JLabel("Category scope");
+			JLabel idLabel = new JLabel("Type id");
+			JLabel nameLabel = new JLabel("Type name");
+			JLabel scopeLabel = new JLabel("Type scope");
 
 			FocusListener listener = new FocusListener() {
 				public void focusLost(FocusEvent e) {
-					catList.commit();
+					typeList.commit();
 				}
 
 				public void focusGained(FocusEvent e) {
@@ -91,12 +91,12 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 			KeyListener keyListener = new KeyAdapter() {
 				@Override
 				public void keyPressed(KeyEvent e) {
-					catList.commit();
+					typeList.commit();
 				}
 
 				@Override
 				public void keyReleased(KeyEvent e) {
-					catList.commit();
+					typeList.commit();
 				}
 			};
 
@@ -122,14 +122,14 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 		}
 
 		public void load(Object o) {
-			CategoryWrapper rtw = (CategoryWrapper) o;
+			TypeWrapper rtw = (TypeWrapper) o;
 			idField.setText(rtw.getID());
 			nameField.setText(rtw.getName());
 			scopeDrop.setSelectedIndex(rtw.getScope() + 1);
 		}
 
 		public void store(Object o) {
-			CategoryWrapper rtw = (CategoryWrapper) o;
+			TypeWrapper rtw = (TypeWrapper) o;
 			rtw.setID(idField.getText());
 			rtw.setName(nameField.getText());
 			rtw.setScope(scopeDrop.getSelectedIndex() - 1);
@@ -140,36 +140,36 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 		}
 
 		public Object createNewValue() {
-			return new CategoryWrapper(new SynonymCategoryImpl("NEWSYNCAT",
-					"<new synonym category>"));
+			return new TypeWrapper(new SynonymTypeImpl("NEWSYNTYPE",
+					"<new synonym type>"));
 		}
 	}
 
-	public SynonymCategoryManager(String id) {
+	public SynonymTypeManager(String id) {
 		super(id);
 
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				saveCategories();
+				saveTypes();
 			}
 		});
 		revertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadCategories();
+				loadTypes();
 			}
 		});
 	}
 
 	@Override
 	public String getName() {
-		return "Synonym Category Manager Plugin";
+		return "Synonym Type Manager";
 	}
 
 	@Override
 	public void init() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
-		catList = new ListEditor(new CategoryEditor(), noCategoryLabel,
+		typeList = new ListEditor(new CategoryEditor(), noTypeLabel,
 				new Vector(), true, true, true, true, false);
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
@@ -179,13 +179,13 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 		commitBox.add(Box.createHorizontalGlue());
 
 		removeAll();
-		add(catList);
+		add(typeList);
 		add(commitBox);
 		validate();
 
 		GUIUtil.addReloadListener(reloadListener);
 
-		loadCategories();
+		loadTypes();
 	}
 
 	@Override
@@ -196,29 +196,29 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			if (!e.isFilter())
-				loadCategories();
+				loadTypes();
 		}
 	};
 
-	protected static class CategoryWrapper {
+	protected static class TypeWrapper {
 		protected String id;
 
 		protected String name;
 
 		protected int scope;
 
-		protected SynonymCategory oldcat;
+		protected SynonymType oldtype;
 
-		public CategoryWrapper(SynonymCategory cat) {
+		public TypeWrapper(SynonymType cat) {
 			this.id = cat.getID();
 			this.name = cat.getName();
 			this.scope = cat.getScope();
-			this.oldcat = cat;
+			this.oldtype = cat;
 		}
 
 		public boolean isChanged() {
-			return !oldcat.getID().equals(id) || !oldcat.getName().equals(name)
-					|| oldcat.getScope() != scope;
+			return !oldtype.getID().equals(id) || !oldtype.getName().equals(name)
+					|| oldtype.getScope() != scope;
 		}
 
 		public void setName(String name) {
@@ -245,8 +245,8 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 			this.scope = scope;
 		}
 
-		public SynonymCategory getCategory() {
-			return oldcat;
+		public SynonymType getSynType() {
+			return oldtype;
 		}
 
 		@Override
@@ -255,25 +255,25 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 		}
 	}
 
-	protected void loadCategories() {
+	protected void loadTypes() {
 		Vector v = new Vector();
 
 		Iterator it = SessionManager.getManager().getSession()
-				.getSynonymCategories().iterator();
+				.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
-			v.add(new CategoryWrapper(cat));
+			SynonymType syntype = (SynonymType) it.next();
+			v.add(new TypeWrapper(syntype));
 		}
-		catList.setData(v);
+		typeList.setData(v);
 	}
 
-	protected void saveCategories() {
+	protected void saveTypes() {
 		Set v = new HashSet();
-		catList.commit();
-		Vector data = catList.getData();
+		typeList.commit();
+		Vector data = typeList.getData();
 		Set names = new HashSet();
 		for (int i = 0; i < data.size(); i++) {
-			CategoryWrapper rtw = (CategoryWrapper) data.get(i);
+			TypeWrapper rtw = (TypeWrapper) data.get(i);
 			if (names.contains(rtw.getID())) {
 				JOptionPane.showMessageDialog(this, "Could not commit changes "
 						+ "because multiple categories " + "are using the id "
@@ -293,28 +293,28 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 				return;
 			}
 
-			v.add(rtw.getCategory());
+			v.add(rtw.getSynType());
 			names.add(rtw.getID());
 		}
 
-		Vector oldcats = new Vector(SessionManager.getManager().getSession()
-				.getSynonymCategories());
-		TermMacroHistoryItem item = new TermMacroHistoryItem("Category edits");
-		Vector newcats = (Vector) data.clone();
-		for (int i = 0; i < oldcats.size(); i++) {
-			SynonymCategory cat = (SynonymCategory) oldcats.get(i);
+		Vector oldtypes = new Vector(SessionManager.getManager().getSession()
+				.getSynonymTypes());
+		TermMacroHistoryItem item = new TermMacroHistoryItem("Type edits");
+		Vector newtypes = (Vector) data.clone();
+		for (int i = 0; i < oldtypes.size(); i++) {
+			SynonymType syntype = (SynonymType) oldtypes.get(i);
 			boolean found = false;
 			for (int j = 0; j < data.size(); j++) {
-				CategoryWrapper tw = (CategoryWrapper) data.get(j);
-				if (tw.getCategory() == cat) {
-					logger.info(tw.getCategory() + " == " + cat);
-					newcats.remove(tw);
+				TypeWrapper tw = (TypeWrapper) data.get(j);
+				if (tw.getSynType() == syntype) {
+					logger.info(tw.getSynType() + " == " + syntype);
+					newtypes.remove(tw);
 					if (tw.isChanged()) {
-						SynonymCategoryHistoryItem catitem = new SynonymCategoryHistoryItem(
-								tw.getCategory(), new SynonymCategoryImpl(tw
+						SynonymTypeHistoryItem typeitem = new SynonymTypeHistoryItem(
+								tw.getSynType(), new SynonymTypeImpl(tw
 										.getID(), tw.getName(), tw.getScope()),
 								false, false);
-						item.addItem(catitem);
+						item.addItem(typeitem);
 					}
 					found = true;
 					break;
@@ -331,11 +331,11 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 					Iterator it2 = term.getSynonyms().iterator();
 					while (it2.hasNext()) {
 						Synonym s = (Synonym) it2.next();
-						if (s.getSynonymCategory() != null) {
-							if (s.getSynonymCategory().equals(cat)) {
+						if (s.getSynonymType() != null) {
+							if (s.getSynonymType().equals(syntype)) {
 								JOptionPane.showMessageDialog(this,
 										"Could not commit changes "
-												+ "because " + cat + " "
+												+ "because " + syntype + " "
 												+ "is still in use in the "
 												+ "ontology");
 								return;
@@ -343,19 +343,19 @@ public class SynonymCategoryManager extends AbstractGUIComponent {
 						}
 					}
 				}
-				SynonymCategoryHistoryItem catitem = new SynonymCategoryHistoryItem(
-						cat, null, false, true);
-				item.addItem(catitem);
+				SynonymTypeHistoryItem typeitem = new SynonymTypeHistoryItem(
+						syntype, null, false, true);
+				item.addItem(typeitem);
 			}
 		}
-		for (int i = 0; i < newcats.size(); i++) {
-			CategoryWrapper cw = (CategoryWrapper) newcats.get(i);
-			SynonymCategoryHistoryItem catitem = new SynonymCategoryHistoryItem(
+		for (int i = 0; i < newtypes.size(); i++) {
+			TypeWrapper tw = (TypeWrapper) newtypes.get(i);
+			SynonymTypeHistoryItem typeitem = new SynonymTypeHistoryItem(
 					null, SessionManager.getManager().getSession()
-							.getObjectFactory().createSynonymCategory(
-									cw.getID(), cw.getName(), cw.getScope()),
+							.getObjectFactory().createSynonymType(
+									tw.getID(), tw.getName(), tw.getScope()),
 					true, false);
-			item.addItem(catitem);
+			item.addItem(typeitem);
 		}
 		GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 				SelectionManager.getGlobalSelection());
