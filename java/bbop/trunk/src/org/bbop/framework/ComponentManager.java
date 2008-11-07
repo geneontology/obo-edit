@@ -378,7 +378,7 @@ public class ComponentManager {
 	 * 
 	 */
 	public void addActiveComponent(GUIComponent comp) {
-		logger.debug("ComponentManager: addActiveComponent. comp = " + comp);
+//		logger.debug("ComponentManager: addActiveComponent. comp = " + comp);
 		activeComponents.put(comp.getID(), comp);
 		//logger.debug("ComponentManager: addActiveComponent. comp.getID() = " + comp.getID());
 		ComponentConfiguration config = comp.getConfiguration();

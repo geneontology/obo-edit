@@ -64,8 +64,11 @@ public class FileUtil {
       OutputStream os = new BufferedOutputStream(
         new FileOutputStream(file));
       
-      logger.info("ensureExists: creating " + file.getAbsolutePath() + " from resource "
-                         + resource); // DEL
+//      logger.info("ensureExists: creating " + file.getAbsolutePath() + " from resource "
+//                         + resource); // DEL
+      
+      logger.info("Creating " + file.getAbsolutePath() + " from resource "
+              + resource);
       for(int next = is.read(); next != -1; next = is.read()) {
         os.write(next);
       }
