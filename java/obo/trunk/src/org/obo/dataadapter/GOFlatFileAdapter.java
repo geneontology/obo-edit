@@ -1026,7 +1026,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		history.getCurrentHistory().setUser(System.getProperty("user.name"));
 		history.getCurrentHistory().setDate(new Date());
 		history.getCurrentHistory().setComment(config.getComment());
-		history.getCategories().addAll(getTermCategories());
+		history.getSubsets().addAll(getTermCategories());
 
 		it = nsHash.values().iterator();
 		while (it.hasNext()) {
@@ -1902,7 +1902,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			Vector relationshipTypes = new Vector(TermUtil
 					.getRelationshipTypes(history));
 			write(sr.getFilename(), sr.getDefFilename(), term,
-					relationshipTypes, new Vector(history.getCategories()),
+					relationshipTypes, new Vector(history.getSubsets()),
 					OBOProperty.IS_A);
 		}
 		if (!config.getBasicSave())

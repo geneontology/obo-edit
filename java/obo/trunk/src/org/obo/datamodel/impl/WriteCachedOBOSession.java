@@ -27,8 +27,8 @@ import org.obo.datamodel.ObjectFactory;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.SynonymCategory;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.SynonymType;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.Type;
 import org.obo.datamodel.UnknownStanza;
 import org.obo.history.HistoryItem;
@@ -52,11 +52,11 @@ public class WriteCachedOBOSession implements OBOSession {
 			this.oboClass = oboClass;
 		}
 
-		public void addCategory(TermCategory category) {
+		public void addCategory(TermSubset category) {
 			oboClass.addCategory(category);
 		}
 
-		public void addCategoryExtension(TermCategory category, NestedValue nv) {
+		public void addCategoryExtension(TermSubset category, NestedValue nv) {
 			oboClass.addCategoryExtension(category, nv);
 		}
 
@@ -136,11 +136,11 @@ public class WriteCachedOBOSession implements OBOSession {
 			return oboClass.getAnonymousExtension();
 		}
 
-		public Set getCategories() {
-			return oboClass.getCategories();
+		public Set getSubsets() {
+			return oboClass.getSubsets();
 		}
 
-		public NestedValue getCategoryExtension(TermCategory category) {
+		public NestedValue getCategoryExtension(TermSubset category) {
 			return oboClass.getCategoryExtension(category);
 		}
 
@@ -256,7 +256,7 @@ public class WriteCachedOBOSession implements OBOSession {
 			return oboClass.isObsolete();
 		}
 
-		public void removeCategory(TermCategory category) {
+		public void removeCategory(TermSubset category) {
 			oboClass.removeCategory(category);
 		}
 
@@ -428,9 +428,9 @@ public class WriteCachedOBOSession implements OBOSession {
 
 	protected SessionHistoryList currentHistory;
 
-	protected Collection<TermCategory> categories;
+	protected Collection<TermSubset> categories;
 
-	protected Collection<SynonymCategory> synonymCategories;
+	protected Collection<SynonymType> synonymCategories;
 
 	protected Collection<Namespace> namespaces;
 
@@ -517,14 +517,14 @@ public class WriteCachedOBOSession implements OBOSession {
 		cachedIDHash = new LinkedHashMap<String, IdentifiedObject>();
 		destroyedObjects = new LinkedHashSet<String>();
 		objectFactory = new DefaultObjectFactory();
-		categories = new TinySet<TermCategory>();
-		synonymCategories = new TinySet<SynonymCategory>();
+		categories = new TinySet<TermSubset>();
+		synonymCategories = new TinySet<SynonymType>();
 		namespaces = new TinySet<Namespace>();
-		for (TermCategory cat : session.getCategories()) {
-			categories.add((TermCategory) cat.clone());
+		for (TermSubset cat : session.getSubsets()) {
+			categories.add((TermSubset) cat.clone());
 		}
-		for (SynonymCategory cat : session.getSynonymCategories()) {
-			synonymCategories.add((SynonymCategory) cat.clone());
+		for (SynonymType cat : session.getSynonymTypes()) {
+			synonymCategories.add((SynonymType) cat.clone());
 		}
 		for (Namespace ns : session.getNamespaces()) {
 			namespaces.add((Namespace) ns.clone());
@@ -536,22 +536,22 @@ public class WriteCachedOBOSession implements OBOSession {
 		this.loadRemark = session.getLoadRemark();
 	}
 
-	public Collection<TermCategory> getCategories() {
+	public Collection<TermSubset> getSubsets() {
 		return categories;
 	}
 
-	public void addCategory(TermCategory cat) {
+	public void addSubset(TermSubset cat) {
 		categories.add(cat);
 	}
 
-	public void removeCategory(TermCategory cat) {
+	public void removeCategory(TermSubset cat) {
 		categories.remove(cat);
 	}
 
-	public TermCategory getCategory(String name) {
+	public TermSubset getCategory(String name) {
 		Iterator it = categories.iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
+			TermSubset cat = (TermSubset) it.next();
 			if (cat.getName().equals(name))
 				return cat;
 		}
@@ -596,22 +596,22 @@ public class WriteCachedOBOSession implements OBOSession {
 		return namespaces;
 	}
 
-	public Collection<SynonymCategory> getSynonymCategories() {
+	public Collection<SynonymType> getSynonymTypes() {
 		return synonymCategories;
 	}
 
-	public void addSynonymCategory(SynonymCategory cat) {
+	public void addSynonymType(SynonymType cat) {
 		synonymCategories.add(cat);
 	}
 
-	public void removeSynonymCategory(SynonymCategory cat) {
+	public void removeSynonymCategory(SynonymType cat) {
 		synonymCategories.remove(cat);
 	}
 
-	public SynonymCategory getSynonymCategory(String id) {
+	public SynonymType getSynonymType(String id) {
 		Iterator it = synonymCategories.iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
+			SynonymType cat = (SynonymType) it.next();
 			if (cat.getID().equals(id))
 				return cat;
 		}
@@ -821,13 +821,13 @@ public class WriteCachedOBOSession implements OBOSession {
 				if (getObject(lo.getID()) == null)
 					addObject(lo);
 			}
-			for (TermCategory cat : session.getCategories()) {
+			for (TermSubset cat : session.getSubsets()) {
 				if (!categories.contains(cat))
-					addCategory(cat);
+					addSubset(cat);
 			}
-			for (SynonymCategory cat : session.getSynonymCategories()) {
+			for (SynonymType cat : session.getSynonymTypes()) {
 				if (!synonymCategories.contains(cat))
-					addSynonymCategory(cat);
+					addSynonymType(cat);
 			}
 			for (Namespace namespace : session.getNamespaces()) {
 				if (!namespaces.contains(namespace))

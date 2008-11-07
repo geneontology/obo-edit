@@ -41,26 +41,26 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	protected HashMap categoryExtensionHash;
 
 	@Override
-	public void addCategoryExtension(TermCategory category, NestedValue nv) {
+	public void addCategoryExtension(TermSubset category, NestedValue nv) {
 		if (categoryExtensionHash == null)
 			categoryExtensionHash = new HashMap();
 		categoryExtensionHash.put(category, nv);
 	}
 
 	@Override
-	public NestedValue getCategoryExtension(TermCategory category) {
+	public NestedValue getCategoryExtension(TermSubset category) {
 		if (categoryExtensionHash == null)
 			return null;
 		return (NestedValue) categoryExtensionHash.get(category);
 	}
 
 	@Override
-	public void addCategory(TermCategory category) {
+	public void addCategory(TermSubset category) {
 		categories.add(category);
 	}
 
 	@Override
-	public void removeCategory(TermCategory category) {
+	public void removeCategory(TermSubset category) {
 		categories.remove(category);
 	}
 	
@@ -69,7 +69,7 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	}
 
 	@Override
-	public Set getCategories() {
+	public Set getSubsets() {
 		return categories;
 	}
 

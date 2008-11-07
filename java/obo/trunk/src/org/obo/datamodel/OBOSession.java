@@ -12,7 +12,7 @@ import org.obo.history.DestroyObjectHistoryItem;
 import org.obo.history.HistoryItem;
 import org.obo.history.OperationModel;
 import org.obo.history.SessionHistoryList;
-import org.obo.history.TermCategoryHistoryItem;
+import org.obo.history.TermSubsetHistoryItem;
 import org.obo.identifier.IDProfile;
 import org.obo.query.QueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
@@ -277,77 +277,77 @@ public interface OBOSession extends IdentifiedObjectIndex, Serializable {
 	public Collection<UnknownStanza> getUnknownStanzas();
 
 	/**
-	 * Returns all the {@link TermCategory TermCategories} in the session.
+	 * Returns all the {@link TermSubset TermCategories} in the session.
 	 * 
 	 * @return the session's term categories
 	 */
-	public Collection<TermCategory> getCategories();
+	public Collection<TermSubset> getSubsets();
 
 	/**
-	 * Adds a {@link TermCategory TermCategory} to the session. This method
+	 * Adds a {@link TermSubset TermCategory} to the session. This method
 	 * should not normally be called directly by user code (unless the user code
-	 * is a data adapter). To add a {@link TermCategory TermCategory} to a
-	 * session, apply a {@link TermCategoryHistoryItem} to the session's
+	 * is a data adapter). To add a {@link TermSubset TermCategory} to a
+	 * session, apply a {@link TermSubsetHistoryItem} to the session's
 	 * {@link #getOperationModel() OperationModel}.
 	 * 
 	 * @return the category to add
 	 */
-	public void addCategory(TermCategory cat);
+	public void addSubset(TermSubset subset);
 
 	/**
-	 * Removes a {@link TermCategory TermCategory} from the session. This method
+	 * Removes a {@link TermSubset TermCategory} from the session. This method
 	 * should not normally be called directly by user code. To remove a
-	 * {@link TermCategory TermCategory} from a session, apply a
-	 * {@link TermCategoryHistoryItem} to the session's
+	 * {@link TermSubset TermCategory} from a session, apply a
+	 * {@link TermSubsetHistoryItem} to the session's
 	 * {@link #getOperationModel() OperationModel}.
 	 * 
 	 * @return the category to remove
 	 */
-	public void removeCategory(TermCategory cat);
+	public void removeCategory(TermSubset cat);
 
 	/**
-	 * Returns the {@link TermCategory} with the given
-	 * {@link TermCategory#getName() name}.
+	 * Returns the {@link TermSubset} with the given
+	 * {@link TermSubset#getName() name}.
 	 * 
 	 * @param name
 	 *            the name of the category to fetch
 	 * @return the category with the given name, or null if there is no match
 	 * 
 	 */
-	public TermCategory getCategory(String name);
+	public TermSubset getCategory(String name);
 
 	/**
-	 * Returns all the {@link SynonymCategory SynonymCategories} in the session.
+	 * Returns all the {@link SynonymType SynonymCategories} in the session.
 	 * 
 	 * @return the session's synonym categories
 	 */
-	public Collection<SynonymCategory> getSynonymCategories();
+	public Collection<SynonymType> getSynonymTypes();
 
 	/**
-	 * Adds a {@link SynonymCategory} to the session. This method should not
+	 * Adds a {@link SynonymType} to the session. This method should not
 	 * normally be called directly by user code (unless the user code is a data
-	 * adapter). To add a {@link SynonymCategory} to a session, apply a
+	 * adapter). To add a {@link SynonymType} to a session, apply a
 	 * {@link SynonymCategoryHistoryItem} to the session's
 	 * {@link #getOperationModel() OperationModel}.
 	 * 
 	 * @return the synonym category to add
 	 */
-	public void addSynonymCategory(SynonymCategory cat);
+	public void addSynonymType(SynonymType typ);
 
 	/**
-	 * Removes a {@link SynonymCategory} from the session. This method should
+	 * Removes a {@link SynonymType} from the session. This method should
 	 * not normally be called directly by user code. To remove a
-	 * {@link SynonymCategory} from a session, apply a
+	 * {@link SynonymType} from a session, apply a
 	 * {@link SynonymCategoryHistoryItem} to the session's
 	 * {@link #getOperationModel() OperationModel}.
 	 * 
 	 * @return the synonym category to remove
 	 */
-	public void removeSynonymCategory(SynonymCategory cat);
+	public void removeSynonymCategory(SynonymType typ);
 
 	/**
-	 * Returns the {@link SynonymCategory} with the given
-	 * {@link SynonymCategory#getName() name}.
+	 * Returns the {@link SynonymType} with the given
+	 * {@link SynonymType#getName() name}.
 	 * 
 	 * @param name
 	 *            the name of the synonym category to fetch
@@ -355,7 +355,7 @@ public interface OBOSession extends IdentifiedObjectIndex, Serializable {
 	 *         match
 	 * 
 	 */
-	public SynonymCategory getSynonymCategory(String name);
+	public SynonymType getSynonymType(String name);
 
 	/**
 	 * Returns a list of past editing sessions that were performed on the

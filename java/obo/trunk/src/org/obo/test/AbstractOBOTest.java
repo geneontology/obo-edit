@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.bbop.dataadapter.DataAdapterException;
 import org.obo.dataadapter.OBOAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
-import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
 import org.obo.datamodel.DefinedObject;
@@ -26,7 +26,7 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.SynonymedObject;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.impl.DefaultLinkDatabase;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.filters.Filter;
@@ -183,9 +183,9 @@ public abstract class AbstractOBOTest extends TestCase {
 
 	
 	public void testForCategory(String childID, String catName) {
-		CategorizedObject child = (CategorizedObject) session.getObject(childID);
-		TermCategory cat =session.getCategory(catName);
-		assertTrue(child.getCategories().contains(cat));
+		SubsetObject child = (SubsetObject) session.getObject(childID);
+		TermSubset cat =session.getCategory(catName);
+		assertTrue(child.getSubsets().contains(cat));
 	}
 	
 	public void testForDbxref(String childID, String xrefStr) {

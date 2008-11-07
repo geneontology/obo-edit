@@ -4,7 +4,7 @@ import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
-public class TermCategoryImpl implements TermCategory {
+public class TermCategoryImpl implements TermSubset {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(TermCategoryImpl.class);
@@ -62,8 +62,8 @@ public class TermCategoryImpl implements TermCategory {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof TermCategory) {
-			return ((TermCategory) o).getName().equals(name);
+		if (o instanceof TermSubset) {
+			return ((TermSubset) o).getName().equals(name);
 		} else
 			return false;
 	}

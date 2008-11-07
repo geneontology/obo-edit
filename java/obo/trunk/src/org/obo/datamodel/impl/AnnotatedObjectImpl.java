@@ -9,7 +9,7 @@ import org.apache.log4j.*;
 import java.util.*;
 
 public abstract class AnnotatedObjectImpl implements AnnotatedObject,
-		CategorizedObject {
+		SubsetObject {
 
 //	initialize logger
 	protected final static Logger logger = Logger.getLogger(AnnotatedObjectImpl.class);
@@ -340,13 +340,13 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 		this.definition = definition;
 	}
 
-	public void addCategoryExtension(TermCategory category, NestedValue nv) {
+	public void addCategoryExtension(TermSubset category, NestedValue nv) {
 		if (categoryExtensionHash == null)
 			categoryExtensionHash = new HashMap();
 		categoryExtensionHash.put(category, nv);
 	}
 
-	public NestedValue getCategoryExtension(TermCategory category) {
+	public NestedValue getCategoryExtension(TermSubset category) {
 		if (categoryExtensionHash == null)
 			return null;
 		return (NestedValue) categoryExtensionHash.get(category);
@@ -369,15 +369,15 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 			propertyValues.remove(pv);
 	}
 
-	public void addCategory(TermCategory category) {
+	public void addCategory(TermSubset category) {
 		categories.add(category);
 	}
 
-	public void removeCategory(TermCategory category) {
+	public void removeCategory(TermSubset category) {
 		categories.remove(category);
 	}
 
-	public Set getCategories() {
+	public Set getSubsets() {
 		return categories;
 	}
 
@@ -432,7 +432,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 			out.categories = new TinySet();
 			it = categories.iterator();
 			while (it.hasNext()) {
-				out.addCategory((TermCategory) it.next());
+				out.addCategory((TermSubset) it.next());
 			}
 
 			out.secondaryIDs = new TinySet();

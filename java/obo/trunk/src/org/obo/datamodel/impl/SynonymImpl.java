@@ -19,7 +19,7 @@ public class SynonymImpl implements Synonym {
 	protected String text;
 	protected Set references;
 	protected int type;
-	protected SynonymCategory category;
+	protected SynonymType syntype;
 	protected String privateid;
 
 	private static int idgen = 0;
@@ -48,12 +48,12 @@ public class SynonymImpl implements Synonym {
 		return true;
 	}
 
-	public SynonymCategory getSynonymCategory() {
-		return category;
+	public SynonymType getSynonymType() {
+		return syntype;
 	}
 
-	public void setSynonymCategory(SynonymCategory category) {
-		this.category = category;
+	public void setSynonymType(SynonymType syntype) {
+		this.syntype = syntype;
 	}
 
 	public void setNestedValue(NestedValue nestedValue) {
@@ -65,10 +65,10 @@ public class SynonymImpl implements Synonym {
 	}
 
 	public int getScope() {
-		if (category == null || category.getScope() == UNKNOWN_SCOPE)
+		if (syntype == null || syntype.getScope() == UNKNOWN_SCOPE)
 			return type;
 		else
-			return category.getScope();
+			return syntype.getScope();
 	}
 
 	public void setScope(int type) {
@@ -135,7 +135,7 @@ public class SynonymImpl implements Synonym {
 		if (o instanceof Synonym) {
 			Synonym in = (Synonym) o;
 			return ObjectUtil.equals(text, in.getText())
-					&& ObjectUtil.equals(category, in.getSynonymCategory())
+					&& ObjectUtil.equals(syntype, in.getSynonymType())
 					&& type == in.getScope()
 					&& in.getDbxrefs().equals(references);
 		} else

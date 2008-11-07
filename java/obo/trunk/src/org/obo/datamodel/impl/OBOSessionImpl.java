@@ -35,8 +35,8 @@ public class OBOSessionImpl implements OBOSession {
 	protected LinkDatabase linkDatabase = new DefaultLinkDatabase(this);
 	protected Pattern p = Pattern
 			.compile("(.+)([-|~])(.+)[-|~]>(.+)");
-	protected Collection<TermCategory> categories;
-	protected Collection<SynonymCategory> synonymCategories;
+	protected Collection<TermSubset> categories;
+	protected Collection<SynonymType> synonymCategories;
 	protected Collection<Namespace> namespaces;
 	protected Map<String, IdentifiedObject> idHash;
 	protected Collection<PropertyValue> propertyValues;
@@ -120,8 +120,8 @@ public class OBOSessionImpl implements OBOSession {
 		currentHistory = new DefaultHistoryList();
 		operationModel = new DefaultOperationModel();
 		operationModel.setSession(this);
-		categories = new TinySet<TermCategory>();
-		synonymCategories = new TinySet<SynonymCategory>();
+		categories = new TinySet<TermSubset>();
+		synonymCategories = new TinySet<SynonymType>();
 		namespaces = new TinySet<Namespace>();
 		propertyValues = new TinySet<PropertyValue>();
 		unknownStanzas = new TinySet<UnknownStanza>();
@@ -290,44 +290,44 @@ public class OBOSessionImpl implements OBOSession {
 		idHash.remove(obj.getID());
 	}
 
-	public Collection<TermCategory> getCategories() {
+	public Collection<TermSubset> getSubsets() {
 		return categories;
 	}
 
-	public void addCategory(TermCategory cat) {
+	public void addSubset(TermSubset cat) {
 		categories.add(cat);
 	}
 
-	public void removeCategory(TermCategory cat) {
+	public void removeCategory(TermSubset cat) {
 		categories.remove(cat);
 	}
 
-	public TermCategory getCategory(String name) {
+	public TermSubset getCategory(String name) {
 		Iterator it = categories.iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
+			TermSubset cat = (TermSubset) it.next();
 			if (cat.getName().equals(name))
 				return cat;
 		}
 		return null;
 	}
 
-	public Collection<SynonymCategory> getSynonymCategories() {
+	public Collection<SynonymType> getSynonymTypes() {
 		return synonymCategories;
 	}
 
-	public void addSynonymCategory(SynonymCategory cat) {
+	public void addSynonymType(SynonymType cat) {
 		synonymCategories.add(cat);
 	}
 
-	public void removeSynonymCategory(SynonymCategory cat) {
+	public void removeSynonymCategory(SynonymType cat) {
 		synonymCategories.remove(cat);
 	}
 
-	public SynonymCategory getSynonymCategory(String id) {
+	public SynonymType getSynonymType(String id) {
 		Iterator it = synonymCategories.iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
+			SynonymType cat = (SynonymType) it.next();
 			if (cat.getID().equals(id))
 				return cat;
 		}
@@ -404,13 +404,13 @@ public class OBOSessionImpl implements OBOSession {
 				}
 
 			}
-			for(TermCategory cat : session.getCategories()) {
+			for(TermSubset cat : session.getSubsets()) {
 				if (!categories.contains(cat))
-					addCategory(cat);
+					addSubset(cat);
 			}
-			for(SynonymCategory cat : session.getSynonymCategories()) {
+			for(SynonymType cat : session.getSynonymTypes()) {
 				if (!synonymCategories.contains(cat))
-					addSynonymCategory(cat);
+					addSynonymType(cat);
 			}
 			for(Namespace namespace : session.getNamespaces()) {
 				if (!namespaces.contains(namespace))

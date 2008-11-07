@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.Serializable;
 
 import org.bbop.util.*;
-import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.Dbxref;
 import org.obo.datamodel.DbxrefedObject;
@@ -20,9 +20,9 @@ import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.ObsoletableObject;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.SynonymCategory;
+import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.SynonymedObject;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.impl.*;
 import org.obo.history.*;
 import org.obo.util.HistoryUtil;
@@ -86,56 +86,56 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		// find category collection changes
-		it = oldHistory.getCategories().iterator();
+		it = oldHistory.getSubsets().iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
-			if (!newHistory.getCategories().contains(cat)) {
-				TermCategoryHistoryItem item = new TermCategoryHistoryItem(cat,
+			TermSubset cat = (TermSubset) it.next();
+			if (!newHistory.getSubsets().contains(cat)) {
+				TermSubsetHistoryItem item = new TermSubsetHistoryItem(cat,
 						null, false, true);
 				history.addItem(item);
 			} else {
-				TermCategory cat2 = HistoryUtil.findCategory(cat, newHistory);
+				TermSubset cat2 = HistoryUtil.findCategory(cat, newHistory);
 				if (!cat.getDesc().equals(cat2.getDesc())) {
-					TermCategoryHistoryItem item = new TermCategoryHistoryItem(
+					TermSubsetHistoryItem item = new TermSubsetHistoryItem(
 							cat, cat2, false, false);
 					history.addItem(item);
 				}
 			}
 		}
-		it = newHistory.getCategories().iterator();
+		it = newHistory.getSubsets().iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
-			if (!oldHistory.getCategories().contains(cat)) {
-				TermCategoryHistoryItem item = new TermCategoryHistoryItem(
+			TermSubset cat = (TermSubset) it.next();
+			if (!oldHistory.getSubsets().contains(cat)) {
+				TermSubsetHistoryItem item = new TermSubsetHistoryItem(
 						null, cat, true, false);
 				history.addItem(item);
 			}
 		}
 
 		// find synonym category collection changes
-		it = oldHistory.getSynonymCategories().iterator();
+		it = oldHistory.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
-			if (!newHistory.getSynonymCategories().contains(cat)) {
-				SynonymCategoryHistoryItem item = new SynonymCategoryHistoryItem(
+			SynonymType cat = (SynonymType) it.next();
+			if (!newHistory.getSynonymTypes().contains(cat)) {
+				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						cat, null, false, true);
 				history.addItem(item);
 			} else {
-				SynonymCategory cat2 = HistoryUtil.findSynonymCategory(cat,
+				SynonymType cat2 = HistoryUtil.findSynonymCategory(cat,
 						newHistory);
 				if (!cat.getName().equals(cat2.getName())
 						|| cat.getScope() != cat2.getScope()) {
-					SynonymCategoryHistoryItem item = new SynonymCategoryHistoryItem(
+					SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 							cat, cat2, false, false);
 					history.addItem(item);
 				}
 			}
 		}
-		it = newHistory.getSynonymCategories().iterator();
+		it = newHistory.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
-			if (!oldHistory.getSynonymCategories().contains(cat)) {
-				SynonymCategoryHistoryItem item = new SynonymCategoryHistoryItem(
+			SynonymType cat = (SynonymType) it.next();
+			if (!oldHistory.getSynonymTypes().contains(cat)) {
+				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						null, cat, true, false);
 				history.addItem(item);
 			}
@@ -521,31 +521,31 @@ public class HistoryGenerator implements Serializable {
 			}
 		}
 
-		if (checkInterface(io, history, CategorizedObject.class, warnings) != checkInterface(
-				newio, history, CategorizedObject.class, warnings)
+		if (checkInterface(io, history, SubsetObject.class, warnings) != checkInterface(
+				newio, history, SubsetObject.class, warnings)
 				&& warnings != null) {
 			warnings
 					.add(io + " changed whether it is a " + "CategorizedObject");
-		} else if (checkInterface(io, history, CategorizedObject.class,
+		} else if (checkInterface(io, history, SubsetObject.class,
 				warnings)) {
-			CategorizedObject cio = (CategorizedObject) io;
-			CategorizedObject cnewio = (CategorizedObject) newio;
+			SubsetObject cio = (SubsetObject) io;
+			SubsetObject cnewio = (SubsetObject) newio;
 
-			Iterator it = cio.getCategories().iterator();
+			Iterator it = cio.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory termCategory = (TermCategory) it.next();
+				TermSubset termCategory = (TermSubset) it.next();
 
-				if (!cnewio.getCategories().contains(termCategory)) {
-					CategoryChangeHistoryItem item = new CategoryChangeHistoryItem(
+				if (!cnewio.getSubsets().contains(termCategory)) {
+					SubsetChangeHistoryItem item = new SubsetChangeHistoryItem(
 							termCategory.getName(), true, io.getID());
 					history.addItem(item);
 				}
 			}
-			it = cnewio.getCategories().iterator();
+			it = cnewio.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory termCategory = (TermCategory) it.next();
-				if (!cio.getCategories().contains(termCategory)) {
-					CategoryChangeHistoryItem item = new CategoryChangeHistoryItem(
+				TermSubset termCategory = (TermSubset) it.next();
+				if (!cio.getSubsets().contains(termCategory)) {
+					SubsetChangeHistoryItem item = new SubsetChangeHistoryItem(
 							termCategory.getName(), false, io.getID());
 					history.addItem(item);
 				}
@@ -586,10 +586,10 @@ public class HistoryGenerator implements Serializable {
 										.getID(), newref, false, s.getText()));
 						}
 
-						if (!ObjectUtil.equals(news.getSynonymCategory(), s
-								.getSynonymCategory())) {
-							history.addItem(new ChangeSynCategoryHistoryItem(
-									sio, s, news.getSynonymCategory()));
+						if (!ObjectUtil.equals(news.getSynonymType(), s
+								.getSynonymType())) {
+							history.addItem(new ChangeSynTypeHistoryItem(
+									sio, s, news.getSynonymType()));
 						}
 
 						if (news.getScope() != s.getScope()) {
@@ -628,10 +628,10 @@ public class HistoryGenerator implements Serializable {
 						history.addItem(new AddDbxrefHistoryItem(sio.getID(),
 								ref, false, s.getText()));
 					}
-					if (s.getSynonymCategory() != null)
-						history.addItem(new ChangeSynCategoryHistoryItem(sio
+					if (s.getSynonymType() != null)
+						history.addItem(new ChangeSynTypeHistoryItem(sio
 								.getID(), s.getText(), null, s
-								.getSynonymCategory().getID()));
+								.getSynonymType().getID()));
 					if (s.getScope() != Synonym.RELATED_SYNONYM)
 						history.addItem(new ChangeSynScopeHistoryItem(io
 								.getID(), s.getText(), Synonym.RELATED_SYNONYM,

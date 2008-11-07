@@ -26,9 +26,9 @@ public interface Synonym extends Cloneable, Serializable, Comparable, Identifiab
 		}
 	};
 
-	public SynonymCategory getSynonymCategory();
+	public SynonymType getSynonymType();
 
-	public void setSynonymCategory(SynonymCategory category);
+	public void setSynonymType(SynonymType type);
 
 	public void setNestedValue(NestedValue nestedValue);
 

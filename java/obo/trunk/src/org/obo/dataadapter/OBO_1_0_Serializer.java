@@ -38,7 +38,7 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 	}
 	
 	@Override
-	public void writeSynonymTypeDefHeaderTag(SynonymCategory category)
+	public void writeSynonymTypeDefHeaderTag(SynonymType category)
 			throws IOException {
 		print("!synonymtypedef: " + escapeBeforeQuotes(category.getID())
 				+ " \"" + escapeQuoted(category.getName()) + "\"");
@@ -61,8 +61,8 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 		print("\"" + escapeQuoted(syn.getText()) + "\"");
 		writeDbxrefList(syn.getDbxrefs());
 		writeNestedValue(nv);
-		if (syn.getSynonymCategory() != null)
-			print(" ! belonged to category " + syn.getSynonymCategory().getID());
+		if (syn.getSynonymType() != null)
+			print(" ! belonged to category " + syn.getSynonymType().getID());
 		println();
 	}
 

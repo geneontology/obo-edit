@@ -18,10 +18,10 @@ public interface ObjectFactory extends Serializable, Cloneable {
 	public OBORestriction createOBORestriction(LinkedObject child,
 			OBOProperty type, LinkedObject parent, boolean implied);
 
-	public SynonymCategory createSynonymCategory(String id, String name,
+	public SynonymType createSynonymType(String id, String name,
 			int scope);
 
-	public TermCategory createCategory(String id, String name);
+	public TermSubset createSubset(String id, String name);
 
 	public Namespace createNamespace(String id, String path);
 

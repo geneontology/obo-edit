@@ -58,12 +58,12 @@ public class DefaultObjectFactory implements ObjectFactory {
 		return restriction;
 	}
 
-	public SynonymCategory createSynonymCategory(String id, String name,
+	public SynonymType createSynonymType(String id, String name,
 			int scope) {
-		return new SynonymCategoryImpl(id, name, scope);
+		return new SynonymTypeImpl(id, name, scope);
 	}
 
-	public TermCategory createCategory(String id, String name) {
+	public TermSubset createSubset(String id, String name) {
 		return new TermCategoryImpl(id, name);
 	}
 

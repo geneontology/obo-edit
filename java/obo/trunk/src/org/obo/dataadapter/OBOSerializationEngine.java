@@ -523,19 +523,19 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					Iterator it2 = linkDatabase.getObjects().iterator();
 					while (it2.hasNext()) {
 						IdentifiedObject io = (IdentifiedObject) it2.next();
-						if (io instanceof CategorizedObject) {
-							CategorizedObject co = (CategorizedObject) io;
-							usedCategories.addAll(co.getCategories());
+						if (io instanceof SubsetObject) {
+							SubsetObject co = (SubsetObject) io;
+							usedCategories.addAll(co.getSubsets());
 						}
 					}
 					scratchList.addAll(usedCategories);
 				} else
-					scratchList.addAll(session.getCategories());
+					scratchList.addAll(session.getSubsets());
 				Collections.sort(scratchList, comparator);
 				Iterator it2 = scratchList.iterator();
 				while (it2.hasNext()) {
 					Object o = it2.next();
-					TermCategory cat = (TermCategory) o;
+					TermSubset cat = (TermSubset) o;
 					serializer.writeSubsetDefHeaderTag(cat);
 				}
 			} else if (tagSpec
@@ -555,18 +555,18 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 							Iterator it3 = so.getSynonyms().iterator();
 							while (it3.hasNext()) {
 								Synonym s = (Synonym) it3.next();
-								if (s.getSynonymCategory() != null)
-									usedCategories.add(s.getSynonymCategory());
+								if (s.getSynonymType() != null)
+									usedCategories.add(s.getSynonymType());
 							}
 						}
 					}
 					scratchList.addAll(usedCategories);
 				} else
-					scratchList.addAll(session.getSynonymCategories());
+					scratchList.addAll(session.getSynonymTypes());
 				Collections.sort(scratchList, comparator);
 				Iterator it2 = scratchList.iterator();
 				while (it2.hasNext()) {
-					SynonymCategory cat = (SynonymCategory) it2.next();
+					SynonymType cat = (SynonymType) it2.next();
 					serializer.writeSynonymTypeDefHeaderTag(cat);
 				}
 			} else if (tagSpec
@@ -818,16 +818,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (mobj.getModifiedBy() != null)
 				serializer.writeModifiedByTag(mobj.getModifiedBy(), mobj
 						.getModifiedByExtension());
-		} else if (obj instanceof CategorizedObject
+		} else if (obj instanceof SubsetObject
 				&& tagMapping.equals(OBOConstants.SUBSET_TAG)) {
 
 			List scratchList = new LinkedList();
-			scratchList.addAll(((CategorizedObject) obj).getCategories());
+			scratchList.addAll(((SubsetObject) obj).getSubsets());
 			Collections.sort(scratchList, getCategoryComparator(serializer));
 			Iterator it2 = scratchList.iterator();
 			while (it2.hasNext()) {
-				TermCategory category = (TermCategory) it2.next();
-				NestedValue nv = ((CategorizedObject) obj)
+				TermSubset category = (TermSubset) it2.next();
+				NestedValue nv = ((SubsetObject) obj)
 				.getCategoryExtension(category);
 				serializer.writeSubsetTag(category, nv);
 			}

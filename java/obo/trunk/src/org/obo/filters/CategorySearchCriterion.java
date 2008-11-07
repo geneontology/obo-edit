@@ -19,10 +19,10 @@ public class CategorySearchCriterion extends AbstractStringCriterion {
 	protected final static Logger logger = Logger.getLogger(CategorySearchCriterion.class);
 
 	public Collection getValues(Collection scratch, Object obj) {
-		if (obj instanceof CategorizedObject) {
-			Iterator it = ((CategorizedObject) obj).getCategories().iterator();
+		if (obj instanceof SubsetObject) {
+			Iterator it = ((SubsetObject) obj).getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory cat = (TermCategory) it.next();
+				TermSubset cat = (TermSubset) it.next();
 				scratch.add(cat.getName());
 			}
 		}
