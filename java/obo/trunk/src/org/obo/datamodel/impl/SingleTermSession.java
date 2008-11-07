@@ -1,6 +1,6 @@
 package org.obo.datamodel.impl;
 
-import org.obo.datamodel.CategorizedObject;
+import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
@@ -15,17 +15,17 @@ public class SingleTermSession extends OBOSessionImpl {
 
 	public SingleTermSession(OBOSession basis, IdentifiedObject term) {
 		if (basis != null) {
-			categories.addAll(basis.getCategories());
-			synonymCategories.addAll(basis.getSynonymCategories());
+			categories.addAll(basis.getSubsets());
+			synonymCategories.addAll(basis.getSynonymTypes());
 			namespaces.addAll(basis.getNamespaces());
 		} else {
-			if (term instanceof CategorizedObject) {
-				categories.addAll(((CategorizedObject) term).getCategories());
+			if (term instanceof SubsetObject) {
+				categories.addAll(((SubsetObject) term).getSubsets());
 			}
 			if (term instanceof SynonymedObject) {
 				for (Synonym s : ((SynonymedObject) term).getSynonyms()) {
-					if (s.getSynonymCategory() != null) {
-						synonymCategories.add(s.getSynonymCategory());
+					if (s.getSynonymType() != null) {
+						synonymCategories.add(s.getSynonymType());
 					}
 				}
 			}

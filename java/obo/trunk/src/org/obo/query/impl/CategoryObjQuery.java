@@ -9,7 +9,7 @@ import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.FieldPath;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.OBOObject;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.query.Query;
 import org.obo.util.TermUtil;
 
@@ -31,8 +31,8 @@ public class CategoryObjQuery implements Query<OBOObject, OBOObject> {
 		}
 	};
 
-	public CategoryObjQuery(TermCategory... categories) {
-		for (TermCategory ns : categories) {
+	public CategoryObjQuery(TermSubset... categories) {
+		for (TermSubset ns : categories) {
 			categoryIDs.add(ns.getName());
 		}
 	}
@@ -69,7 +69,7 @@ public class CategoryObjQuery implements Query<OBOObject, OBOObject> {
 	public OBOObject matches(OBOObject a) {
 		if (!a.isBuiltIn() && TermUtil.isClass(a)) {
 			for (String catName : categoryIDs) {
-				for (TermCategory cat : a.getCategories()) {
+				for (TermSubset cat : a.getSubsets()) {
 					if (cat.getName().equals(catName))
 						return a;
 				}

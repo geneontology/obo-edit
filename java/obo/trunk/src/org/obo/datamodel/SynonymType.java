@@ -1,16 +1,16 @@
 package org.obo.datamodel;
 
 /*
- * A category to which a term synonym may belong. Synonym categories may
- * specify an optional category scope. If a scope is specified in a
- * synonym category, that scope will override the assigned scope of any
- * synonym that belongs to the category.
+ * Type of synonym for a term. Synonym types may
+ * specify an optional  scope. If a scope is specified for a
+ * synonym type, that scope will override the assigned scope of any
+ * synonym that belongs to the type.
  *
  * @see Synonym#getSynonymCategory()
  * @see SynonymCategoryHistoryItem
  */
 
-public interface SynonymCategory extends Cloneable {
+public interface SynonymType extends Cloneable {
 
 	public String getID();
 

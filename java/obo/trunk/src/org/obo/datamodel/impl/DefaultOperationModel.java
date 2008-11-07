@@ -43,12 +43,12 @@ public class DefaultOperationModel implements OperationModel {
 			warning = apply((NameChangeHistoryItem) item);
 		else if (item instanceof DefinitionChangeHistoryItem)
 			warning = apply((DefinitionChangeHistoryItem) item);
-		else if (item instanceof TermCategoryHistoryItem)
-			warning = apply((TermCategoryHistoryItem) item);
-		else if (item instanceof SynonymCategoryHistoryItem)
-			warning = apply((SynonymCategoryHistoryItem) item);
-		else if (item instanceof ChangeSynCategoryHistoryItem)
-			warning = apply((ChangeSynCategoryHistoryItem) item);
+		else if (item instanceof TermSubsetHistoryItem)
+			warning = apply((TermSubsetHistoryItem) item);
+		else if (item instanceof SynonymTypeHistoryItem)
+			warning = apply((SynonymTypeHistoryItem) item);
+		else if (item instanceof ChangeSynTypeHistoryItem)
+			warning = apply((ChangeSynTypeHistoryItem) item);
 		else if (item instanceof ChangeSynScopeHistoryItem)
 			warning = apply((ChangeSynScopeHistoryItem) item);
 		else if (item instanceof TermNamespaceHistoryItem)
@@ -63,8 +63,8 @@ public class DefaultOperationModel implements OperationModel {
 			warning = apply((DelSynonymHistoryItem) item);
 		else if (item instanceof CommentChangeHistoryItem)
 			warning = apply((CommentChangeHistoryItem) item);
-		else if (item instanceof CategoryChangeHistoryItem)
-			warning = apply((CategoryChangeHistoryItem) item);
+		else if (item instanceof SubsetChangeHistoryItem)
+			warning = apply((SubsetChangeHistoryItem) item);
 		else if (item instanceof SecondaryIDHistoryItem)
 			warning = apply((SecondaryIDHistoryItem) item);
 		else if (item instanceof NecessarilyTrueHistoryItem)
@@ -573,34 +573,34 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning apply(TermCategoryHistoryItem item) {
+	public OperationWarning apply(TermSubsetHistoryItem item) {
 		if (item.isAdd())
-			session.addCategory(item.getNewCategory());
+			session.addSubset(item.getNewSubset());
 		else if (item.isDel()) {
 			session.removeCategory(item.getOldCategory());
 		} else {
-			Iterator it = session.getCategories().iterator();
+			Iterator it = session.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory cat = (TermCategory) it.next();
+				TermSubset cat = (TermSubset) it.next();
 				if (cat.equals(item.getOldCategory())) {
-					cat.setName(item.getNewCategory().getName());
-					cat.setDesc(item.getNewCategory().getDesc());
+					cat.setName(item.getNewSubset().getName());
+					cat.setDesc(item.getNewSubset().getDesc());
 				}
 			}
 		}
 		return null;
 	}
 
-	public OperationWarning reverse(TermCategoryHistoryItem item) {
+	public OperationWarning reverse(TermSubsetHistoryItem item) {
 		if (item.isAdd())
-			session.removeCategory(item.getNewCategory());
+			session.removeCategory(item.getNewSubset());
 		else if (item.isDel()) {
-			session.addCategory(item.getOldCategory());
+			session.addSubset(item.getOldCategory());
 		} else {
-			Iterator it = session.getCategories().iterator();
+			Iterator it = session.getSubsets().iterator();
 			while (it.hasNext()) {
-				TermCategory cat = (TermCategory) it.next();
-				if (cat.equals(item.getNewCategory())) {
+				TermSubset cat = (TermSubset) it.next();
+				if (cat.equals(item.getNewSubset())) {
 					cat.setName(item.getOldCategory().getName());
 					cat.setDesc(item.getOldCategory().getDesc());
 				}
@@ -609,15 +609,15 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning apply(SynonymCategoryHistoryItem item) {
+	public OperationWarning apply(SynonymTypeHistoryItem item) {
 		if (item.isAdd())
-			session.addSynonymCategory(item.getNewCategory());
+			session.addSynonymType(item.getNewCategory());
 		else if (item.isDel()) {
 			session.removeSynonymCategory(item.getOldCategory());
 		} else {
-			Iterator it = session.getSynonymCategories().iterator();
+			Iterator it = session.getSynonymTypes().iterator();
 			while (it.hasNext()) {
-				SynonymCategory cat = (SynonymCategory) it.next();
+				SynonymType cat = (SynonymType) it.next();
 				if (cat.equals(item.getOldCategory())) {
 					cat.setID(item.getNewCategory().getID());
 					cat.setName(item.getNewCategory().getName());
@@ -628,15 +628,15 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning reverse(SynonymCategoryHistoryItem item) {
+	public OperationWarning reverse(SynonymTypeHistoryItem item) {
 		if (item.isAdd())
 			session.removeSynonymCategory(item.getNewCategory());
 		else if (item.isDel()) {
-			session.addSynonymCategory(item.getOldCategory());
+			session.addSynonymType(item.getOldCategory());
 		} else {
-			Iterator it = session.getSynonymCategories().iterator();
+			Iterator it = session.getSynonymTypes().iterator();
 			while (it.hasNext()) {
-				SynonymCategory cat = (SynonymCategory) it.next();
+				SynonymType cat = (SynonymType) it.next();
 				if (cat.equals(item.getNewCategory())) {
 					cat.setID(item.getOldCategory().getID());
 					cat.setName(item.getOldCategory().getName());
@@ -1836,13 +1836,13 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning apply(CategoryChangeHistoryItem item) {
+	public OperationWarning apply(SubsetChangeHistoryItem item) {
 		IdentifiedObject o = getRealIDObject(item.getTarget());
-		if (!(o instanceof CategorizedObject))
+		if (!(o instanceof SubsetObject))
 			return new OperationWarning("Could not apply category change to "
 					+ "non-categorizable object " + item.getTarget());
-		CategorizedObject target = (CategorizedObject) o;
-		TermCategory cat = session.getCategory(item.getCategory());
+		SubsetObject target = (SubsetObject) o;
+		TermSubset cat = session.getCategory(item.getCategory());
 		if (item.isDel())
 			target.removeCategory(cat);
 		else
@@ -1850,13 +1850,13 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning reverse(CategoryChangeHistoryItem item) {
+	public OperationWarning reverse(SubsetChangeHistoryItem item) {
 		IdentifiedObject o = getRealIDObject(item.getTarget());
-		if (!(o instanceof CategorizedObject))
+		if (!(o instanceof SubsetObject))
 			return new OperationWarning("Could not reverse category change to "
 					+ "non-categorizable object " + item.getTarget());
-		CategorizedObject target = (CategorizedObject) o;
-		TermCategory cat = session.getCategory(item.getCategory());
+		SubsetObject target = (SubsetObject) o;
+		TermSubset cat = session.getCategory(item.getCategory());
 
 		if (item.isDel())
 			target.addCategory(cat);
@@ -1893,7 +1893,7 @@ public class DefaultOperationModel implements OperationModel {
 		return null;
 	}
 
-	public OperationWarning apply(ChangeSynCategoryHistoryItem item) {
+	public OperationWarning apply(ChangeSynTypeHistoryItem item) {
 		IdentifiedObject o = getRealIDObject(item.getTarget());
 		if (!(o instanceof SynonymedObject))
 			return new OperationWarning("Could not change synonym category "
@@ -1903,18 +1903,18 @@ public class DefaultOperationModel implements OperationModel {
 		if (s == null)
 			return new OperationWarning("Couldn't modify non-existant "
 					+ "synonym " + item.getSynonym());
-		SynonymCategory cat = null;
-		if (item.getNewCategory() != null) {
-			cat = session.getSynonymCategory(item.getNewCategory());
+		SynonymType cat = null;
+		if (item.getNewType() != null) {
+			cat = session.getSynonymType(item.getNewType());
 			if (cat == null)
 				return new OperationWarning("Couldn't find category "
-						+ item.getNewCategory());
+						+ item.getNewType());
 		}
-		s.setSynonymCategory(cat);
+		s.setSynonymType(cat);
 		return null;
 	}
 
-	public OperationWarning reverse(ChangeSynCategoryHistoryItem item) {
+	public OperationWarning reverse(ChangeSynTypeHistoryItem item) {
 		IdentifiedObject o = getRealIDObject(item.getTarget());
 		if (!(o instanceof SynonymedObject))
 			return new OperationWarning("Could not change synonym category "
@@ -1925,14 +1925,14 @@ public class DefaultOperationModel implements OperationModel {
 			return new OperationWarning("Couldn't modify non-existant "
 					+ "synonym " + item.getSynonym());
 
-		SynonymCategory cat = null;
-		if (item.getOldCategory() != null) {
-			cat = session.getSynonymCategory(item.getOldCategory());
+		SynonymType cat = null;
+		if (item.getOldType() != null) {
+			cat = session.getSynonymType(item.getOldType());
 			if (cat == null)
 				return new OperationWarning("Couldn't find category "
-						+ item.getOldCategory());
+						+ item.getOldType());
 		}
-		s.setSynonymCategory(cat);
+		s.setSynonymType(cat);
 		return null;
 	}
 
@@ -2227,12 +2227,12 @@ public class DefaultOperationModel implements OperationModel {
 			warning = reverse((AddSynonymHistoryItem) item);
 		else if (item instanceof DelSynonymHistoryItem)
 			warning = reverse((DelSynonymHistoryItem) item);
-		else if (item instanceof TermCategoryHistoryItem)
-			warning = reverse((TermCategoryHistoryItem) item);
-		else if (item instanceof SynonymCategoryHistoryItem)
-			warning = reverse((SynonymCategoryHistoryItem) item);
-		else if (item instanceof ChangeSynCategoryHistoryItem)
-			warning = reverse((ChangeSynCategoryHistoryItem) item);
+		else if (item instanceof TermSubsetHistoryItem)
+			warning = reverse((TermSubsetHistoryItem) item);
+		else if (item instanceof SynonymTypeHistoryItem)
+			warning = reverse((SynonymTypeHistoryItem) item);
+		else if (item instanceof ChangeSynTypeHistoryItem)
+			warning = reverse((ChangeSynTypeHistoryItem) item);
 		else if (item instanceof ChangeSynScopeHistoryItem)
 			warning = reverse((ChangeSynScopeHistoryItem) item);
 		else if (item instanceof TermNamespaceHistoryItem)
@@ -2243,8 +2243,8 @@ public class DefaultOperationModel implements OperationModel {
 			warning = reverse((DelDbxrefHistoryItem) item);
 		else if (item instanceof CommentChangeHistoryItem)
 			warning = reverse((CommentChangeHistoryItem) item);
-		else if (item instanceof CategoryChangeHistoryItem)
-			warning = reverse((CategoryChangeHistoryItem) item);
+		else if (item instanceof SubsetChangeHistoryItem)
+			warning = reverse((SubsetChangeHistoryItem) item);
 		else if (item instanceof SecondaryIDHistoryItem)
 			warning = reverse((SecondaryIDHistoryItem) item);
 		else if (item instanceof NecessarilyTrueHistoryItem)

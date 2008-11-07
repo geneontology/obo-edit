@@ -12,9 +12,9 @@ import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBORestriction;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
-import org.obo.datamodel.SynonymCategory;
+import org.obo.datamodel.SynonymType;
 import org.obo.datamodel.SynonymedObject;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.HistoryItem;
 import org.obo.history.HistoryList;
@@ -121,13 +121,13 @@ public class HistoryUtil {
 
 
 	/**
-	 * Returns the {@link TermCategory} with the given name in the given
+	 * Returns the {@link TermSubset} with the given name in the given
 	 * {@link OBOSession}, or null if no such category exists.
 	 */
-	public static TermCategory findCategory(String name, OBOSession session) {
-		Iterator it = session.getCategories().iterator();
+	public static TermSubset findCategory(String name, OBOSession session) {
+		Iterator it = session.getSubsets().iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
+			TermSubset cat = (TermSubset) it.next();
 			if (cat.getName().equals(name))
 				return cat;
 		}
@@ -135,11 +135,11 @@ public class HistoryUtil {
 	}
 
 	/**
-	 * Finds the {@link TermCategory} in the given {@link OBOSession} that has
-	 * the same name as the given {@link TermCategory}. If no matching category
+	 * Finds the {@link TermSubset} in the given {@link OBOSession} that has
+	 * the same name as the given {@link TermSubset}. If no matching category
 	 * can be found, null is returned.
 	 */
-	public static TermCategory findCategory(TermCategory cat, OBOSession session) {
+	public static TermSubset findCategory(TermSubset cat, OBOSession session) {
 		return findCategory(cat.getName(), session);
 	}
 
@@ -243,18 +243,18 @@ public class HistoryUtil {
 		return findSynonym(t, s.getText());
 	}
 
-	public static SynonymCategory findSynonymCategory(String cat_id,
+	public static SynonymType findSynonymCategory(String cat_id,
 			OBOSession session) {
-		Iterator it = session.getSynonymCategories().iterator();
+		Iterator it = session.getSynonymTypes().iterator();
 		while (it.hasNext()) {
-			SynonymCategory cat = (SynonymCategory) it.next();
+			SynonymType cat = (SynonymType) it.next();
 			if (cat.getID().equals(cat_id))
 				return cat;
 		}
 		return null;
 	}
 
-	public static SynonymCategory findSynonymCategory(SynonymCategory cat,
+	public static SynonymType findSynonymCategory(SynonymType cat,
 			OBOSession session) {
 		return findSynonymCategory(cat.getID(), session);
 	}

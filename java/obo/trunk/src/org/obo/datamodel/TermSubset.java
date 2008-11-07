@@ -2,7 +2,7 @@ package org.obo.datamodel;
 
 import java.io.Serializable;
 
-public interface TermCategory extends Cloneable, Serializable {
+public interface TermSubset extends Cloneable, Serializable {
 
 	public String getName();
 

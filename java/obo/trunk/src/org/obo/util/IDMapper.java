@@ -20,7 +20,7 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
-import org.obo.datamodel.TermCategory;
+import org.obo.datamodel.TermSubset;
 import org.obo.filters.CategorySearchCriterion;
 import org.obo.filters.Filter;
 import org.obo.filters.ObjectFilter;
@@ -166,7 +166,7 @@ public class IDMapper extends SessionWrapper {
 	private ReasonedLinkDatabase reasoner;
 	private Collection<OBOProperty> propertiesToTraverse;
 	private IDFileMetadata fileMetadata = new IDFileMetadata();
-	private Collection<TermCategory> categories = new HashSet<TermCategory>();
+	private Collection<TermSubset> categories = new HashSet<TermSubset>();
 	private Filter filter;
 	private MapperInputParams inputParams;
 
@@ -204,11 +204,11 @@ public class IDMapper extends SessionWrapper {
 		return entityCountByOboIDMap;
 	}
 
-	public Collection<TermCategory> getCategories() {
+	public Collection<TermSubset> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(Collection<TermCategory> categories) {
+	public void setCategories(Collection<TermSubset> categories) {
 		this.categories = categories;
 	}
 
@@ -216,11 +216,11 @@ public class IDMapper extends SessionWrapper {
 		categories.add(session.getCategory(cat));
 	}
 
-	public void addCategory(TermCategory cat) {
+	public void addCategory(TermSubset cat) {
 		categories.add(cat);
 	}
-	public void setCategory(TermCategory cat) {
-		categories = new  HashSet<TermCategory>();
+	public void setCategory(TermSubset cat) {
+		categories = new  HashSet<TermSubset>();
 		addCategory(cat);
 	}
 
@@ -431,7 +431,7 @@ public class IDMapper extends SessionWrapper {
 	}
 	public Collection<OBOObject> mapIdentifierViaCategories(String id, boolean countMode) {
 		Collection<Filter<LinkedObject>> filters = new LinkedList<Filter<LinkedObject>>();
-		for (TermCategory cat : categories) {
+		for (TermSubset cat : categories) {
 			ObjectFilter f = new ObjectFilterImpl();
 			f.setCriterion(new CategorySearchCriterion());
 			f.setValue(cat.getName());

@@ -191,9 +191,9 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			} else if (qName.equalsIgnoreCase("ObsoleteObjectHistoryItem")) {
 				objectStack.push(new ObsoleteObjectHistoryItem());
 			} else if (qName.equalsIgnoreCase("TermCategoryHistoryItem")) {
-				objectStack.push(new TermCategoryHistoryItem());
+				objectStack.push(new TermSubsetHistoryItem());
 			} else if (qName.equalsIgnoreCase("SynonymCategoryHistoryItem")) {
-				objectStack.push(new SynonymCategoryHistoryItem());
+				objectStack.push(new SynonymTypeHistoryItem());
 			} else if (qName.equalsIgnoreCase("TermCopyHistoryItem")) {
 				objectStack.push(new CreateLinkHistoryItem());
 			} else if (qName.equalsIgnoreCase("TermMoveHistoryItem")) {
@@ -221,9 +221,9 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			} else if (qName.equalsIgnoreCase("CommentChangeHistoryItem")) {
 				objectStack.push(new CommentChangeHistoryItem());
 			} else if (qName.equalsIgnoreCase("CategoryChangeHistoryItem")) {
-				objectStack.push(new CategoryChangeHistoryItem());
+				objectStack.push(new SubsetChangeHistoryItem());
 			} else if (qName.equalsIgnoreCase("ChangeSynCategoryHistoryItem")) {
-				objectStack.push(new ChangeSynCategoryHistoryItem());
+				objectStack.push(new ChangeSynTypeHistoryItem());
 			} else if (qName.equalsIgnoreCase("ChangeSynScopeHistoryItem")) {
 				objectStack.push(new ChangeSynScopeHistoryItem());
 			} else if (qName.equalsIgnoreCase("TermMacroHistoryItem")) {
@@ -237,9 +237,9 @@ public class XMLHistoryAdapter implements OBOAdapter {
 				objectStack.push(objectFactory.createSynonym("",
 						Synonym.RELATED_SYNONYM));
 			} else if (qName.equalsIgnoreCase("TermCategory")) {
-				objectStack.push(objectFactory.createCategory("", ""));
+				objectStack.push(objectFactory.createSubset("", ""));
 			} else if (qName.equalsIgnoreCase("SynonymCategory")) {
-				objectStack.push(objectFactory.createSynonymCategory("", "",
+				objectStack.push(objectFactory.createSynonymType("", "",
 						Synonym.UNKNOWN_SCOPE));
 			}
 
@@ -344,13 +344,13 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					item.setResult(getString());
 
 				} else if (tagName.equalsIgnoreCase("syncatid")) {
-					SynonymCategory cat = (SynonymCategory) objectStack.peek();
+					SynonymType cat = (SynonymType) objectStack.peek();
 					cat.setID(getString());
 				} else if (tagName.equalsIgnoreCase("syncatname")) {
-					SynonymCategory cat = (SynonymCategory) objectStack.peek();
+					SynonymType cat = (SynonymType) objectStack.peek();
 					cat.setName(getString());
 				} else if (tagName.equalsIgnoreCase("syncatscope")) {
-					SynonymCategory cat = (SynonymCategory) objectStack.peek();
+					SynonymType cat = (SynonymType) objectStack.peek();
 					try {
 						int scope = Integer.parseInt(getString());
 						cat.setScope(scope);
@@ -359,13 +359,13 @@ public class XMLHistoryAdapter implements OBOAdapter {
 								+ getString());
 					}
 				} else if (tagName.equalsIgnoreCase("oldSynCategory")) {
-					ChangeSynCategoryHistoryItem item = (ChangeSynCategoryHistoryItem) objectStack
+					ChangeSynTypeHistoryItem item = (ChangeSynTypeHistoryItem) objectStack
 							.peek();
-					item.setOldCategory(getString());
+					item.setOldType(getString());
 				} else if (tagName.equalsIgnoreCase("newSynCategory")) {
-					ChangeSynCategoryHistoryItem item = (ChangeSynCategoryHistoryItem) objectStack
+					ChangeSynTypeHistoryItem item = (ChangeSynTypeHistoryItem) objectStack
 							.peek();
-					item.setNewCategory(getString());
+					item.setNewType(getString());
 				} else if (tagName.equalsIgnoreCase("oldScope")) {
 					ChangeSynScopeHistoryItem item = (ChangeSynScopeHistoryItem) objectStack
 							.peek();
@@ -447,20 +447,20 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					DefinitionChangeHistoryItem item = (DefinitionChangeHistoryItem) oldObj;
 					item.setNewText(getString());
 				} else if (tagName.equalsIgnoreCase("oldcat")) {
-					TermCategory cat = (TermCategory) objectStack.pop();
-					TermCategoryHistoryItem item = (TermCategoryHistoryItem) objectStack
+					TermSubset cat = (TermSubset) objectStack.pop();
+					TermSubsetHistoryItem item = (TermSubsetHistoryItem) objectStack
 							.peek();
 					item.setOldCat(cat);
 				} else if (tagName.equalsIgnoreCase("newcat")) {
-					TermCategory cat = (TermCategory) objectStack.pop();
-					TermCategoryHistoryItem item = (TermCategoryHistoryItem) objectStack
+					TermSubset cat = (TermSubset) objectStack.pop();
+					TermSubsetHistoryItem item = (TermSubsetHistoryItem) objectStack
 							.peek();
 					item.setNewCat(cat);
 				} else if (tagName.equalsIgnoreCase("catname")) {
-					TermCategory cat = (TermCategory) objectStack.peek();
+					TermSubset cat = (TermSubset) objectStack.peek();
 					cat.setName(getString());
 				} else if (tagName.equalsIgnoreCase("catdesc")) {
-					TermCategory cat = (TermCategory) objectStack.peek();
+					TermSubset cat = (TermSubset) objectStack.peek();
 					cat.setDesc(getString());
 				} else if (tagName.equalsIgnoreCase("syntext")) {
 					Synonym s = (Synonym) objectStack.peek();
@@ -486,7 +486,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					item.setNewNamespace(new Namespace(getString(), null));
 				} else if (tagName.equalsIgnoreCase("category")) {
 					Object oldObj = objectStack.peek();
-					CategoryChangeHistoryItem item = (CategoryChangeHistoryItem) oldObj;
+					SubsetChangeHistoryItem item = (SubsetChangeHistoryItem) oldObj;
 					item.setCategory(getString());
 				} else if (tagName.equalsIgnoreCase("oldCardinality")) {
 					Object oldObj = objectStack.peek();
@@ -544,37 +544,37 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					item.setNewValue(val);
 				} else if (tagName.equalsIgnoreCase("iscatdel")) {
 					Object oldObj = objectStack.peek();
-					TermCategoryHistoryItem item = (TermCategoryHistoryItem) oldObj;
+					TermSubsetHistoryItem item = (TermSubsetHistoryItem) oldObj;
 					item.setIsDel(getString().equalsIgnoreCase("true"));
 				} else if (tagName.equalsIgnoreCase("iscatadd")) {
 					Object oldObj = objectStack.peek();
-					TermCategoryHistoryItem item = (TermCategoryHistoryItem) oldObj;
+					TermSubsetHistoryItem item = (TermSubsetHistoryItem) oldObj;
 					item.setIsAdd(getString().equalsIgnoreCase("true"));
 
 				} else if (tagName.equalsIgnoreCase("issyncatadd")) {
 					Object oldObj = objectStack.peek();
-					SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) oldObj;
+					SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) oldObj;
 					item.setIsAdd(getString().equalsIgnoreCase("true"));
 				} else if (tagName.equalsIgnoreCase("issyncatdel")) {
 					Object oldObj = objectStack.peek();
-					SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) oldObj;
+					SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) oldObj;
 					item.setIsDel(getString().equalsIgnoreCase("true"));
 
 				} else if (tagName.equalsIgnoreCase("oldsyncat")) {
-					SynonymCategory synCat = (SynonymCategory) objectStack
+					SynonymType synCat = (SynonymType) objectStack
 							.pop();
 					Object oldObj = objectStack.peek();
-					SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) oldObj;
+					SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) oldObj;
 					item.setOldCat(synCat);
 				} else if (tagName.equalsIgnoreCase("newsyncat")) {
-					SynonymCategory synCat = (SynonymCategory) objectStack
+					SynonymType synCat = (SynonymType) objectStack
 							.pop();
 					Object oldObj = objectStack.peek();
-					SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) oldObj;
+					SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) oldObj;
 					item.setNewCat(synCat);
 				} else if (tagName.equalsIgnoreCase("istermcatdel")) {
 					Object oldObj = objectStack.peek();
-					CategoryChangeHistoryItem item = (CategoryChangeHistoryItem) oldObj;
+					SubsetChangeHistoryItem item = (SubsetChangeHistoryItem) oldObj;
 					item.setIsDel(getString().equalsIgnoreCase("true"));
 				} else if (tagName.equalsIgnoreCase("isNamespaceAdd")) {
 					Object oldObj = objectStack.peek();
@@ -699,8 +699,8 @@ public class XMLHistoryAdapter implements OBOAdapter {
 					else if (oldObj instanceof ChangeSynScopeHistoryItem)
 						((ChangeSynScopeHistoryItem) oldObj)
 								.setSynonym(getString());
-					else if (oldObj instanceof ChangeSynCategoryHistoryItem)
-						((ChangeSynCategoryHistoryItem) oldObj)
+					else if (oldObj instanceof ChangeSynTypeHistoryItem)
+						((ChangeSynTypeHistoryItem) oldObj)
 								.setSynonym(getString());
 					else
 						throw new RuntimeException(
@@ -985,7 +985,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 		 */
 	}
 
-	protected void dumpCategory(PrintStream stream, TermCategory cat,
+	protected void dumpCategory(PrintStream stream, TermSubset cat,
 			int indentLevel) {
 		printLine(stream, indentLevel, "<TermCategory>");
 		printLine(stream, indentLevel, "  <catname>"
@@ -995,7 +995,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 		printLine(stream, indentLevel, "</TermCategory>");
 	}
 
-	protected void dumpSynonymCategory(PrintStream stream, SynonymCategory cat,
+	protected void dumpSynonymCategory(PrintStream stream, SynonymType cat,
 			int indentLevel) {
 		printLine(stream, indentLevel, "<SynonymCategory>");
 		printLine(stream, indentLevel + 2, "<syncatid>"
@@ -1120,8 +1120,8 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			printLine(stream, indentLevel + 4, item.getOldNecessary() + "");
 			printLine(stream, indentLevel + 2, "</oldNecessary>");
 			printLine(stream, indentLevel, "</NecessarilyTrueHistoryItem>");
-		} else if (hitem instanceof TermCategoryHistoryItem) {
-			TermCategoryHistoryItem item = (TermCategoryHistoryItem) hitem;
+		} else if (hitem instanceof TermSubsetHistoryItem) {
+			TermSubsetHistoryItem item = (TermSubsetHistoryItem) hitem;
 			printLine(stream, indentLevel, "<TermCategoryHistoryItem>");
 			if (item.getTarget() != null) {
 				printLine(stream, indentLevel + 2, "<target>");
@@ -1130,7 +1130,7 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			}
 			if (!item.isDel()) {
 				printLine(stream, indentLevel + 2, "<newcat>");
-				dumpCategory(stream, item.getNewCategory(), indentLevel + 4);
+				dumpCategory(stream, item.getNewSubset(), indentLevel + 4);
 				printLine(stream, indentLevel + 2, "</newcat>");
 			}
 			if (!item.isAdd()) {
@@ -1458,8 +1458,8 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			printLine(stream, indentLevel + 2, "<synonym_edit_target>"
 					+ escapeText(item.getSynonym()) + "</synonym_edit_target>");
 			printLine(stream, indentLevel, "</DelSynonymHistoryItem>");
-		} else if (hitem instanceof CategoryChangeHistoryItem) {
-			CategoryChangeHistoryItem item = (CategoryChangeHistoryItem) hitem;
+		} else if (hitem instanceof SubsetChangeHistoryItem) {
+			SubsetChangeHistoryItem item = (SubsetChangeHistoryItem) hitem;
 			printLine(stream, indentLevel, "<CategoryChangeHistoryItem>");
 			printLine(stream, indentLevel + 2, "<target>"
 					+ escapeText(item.getTarget()) + "</target>");
@@ -1470,20 +1470,20 @@ public class XMLHistoryAdapter implements OBOAdapter {
 						"<isTermCatDel>true</isTermCatDel>");
 
 			printLine(stream, indentLevel, "</CategoryChangeHistoryItem>");
-		} else if (hitem instanceof ChangeSynCategoryHistoryItem) {
-			ChangeSynCategoryHistoryItem item = (ChangeSynCategoryHistoryItem) hitem;
+		} else if (hitem instanceof ChangeSynTypeHistoryItem) {
+			ChangeSynTypeHistoryItem item = (ChangeSynTypeHistoryItem) hitem;
 			printLine(stream, indentLevel, "<ChangeSynCategoryHistoryItem>");
 			printLine(stream, indentLevel + 2, "<target>"
 					+ escapeText(item.getTarget()) + "</target>");
 			printLine(stream, indentLevel + 2, "<synonym_edit_target>"
 					+ escapeText(item.getSynonym()) + "</synonym_edit_target>");
-			if (item.getOldCategory() != null)
+			if (item.getOldType() != null)
 				printLine(stream, indentLevel + 2, "<oldSynCategory>"
-						+ escapeText(item.getOldCategory())
+						+ escapeText(item.getOldType())
 						+ "</oldSynCategory>");
-			if (item.getNewCategory() != null)
+			if (item.getNewType() != null)
 				printLine(stream, indentLevel + 2, "<newSynCategory>"
-						+ escapeText(item.getNewCategory())
+						+ escapeText(item.getNewType())
 						+ "</newSynCategory>");
 
 			printLine(stream, indentLevel, "</ChangeSynCategoryHistoryItem>");
@@ -1573,9 +1573,9 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			printLine(stream, indentLevel + 2, "<target>"
 					+ escapeText(item.getTarget()) + "</target>");
 			printLine(stream, indentLevel, "</ObsoleteObjectHistoryItem>");
-		} else if (hitem instanceof SynonymCategoryHistoryItem) {
-			SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) hitem;
-			printLine(stream, indentLevel, "<SynonymCategoryHistoryItem>");
+		} else if (hitem instanceof SynonymTypeHistoryItem) {
+			SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) hitem;
+			printLine(stream, indentLevel, "<SynonymTypeHistoryItem>");
 			if (item.isAdd())
 				printLine(stream, indentLevel + 2,
 						"<isSynCatAdd>true</isSynCatAdd>");

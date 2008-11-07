@@ -8,10 +8,10 @@ import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
 
-public class CategoryChangeHistoryItem extends HistoryItem {
+public class SubsetChangeHistoryItem extends HistoryItem {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(CategoryChangeHistoryItem.class);
+	protected final static Logger logger = Logger.getLogger(SubsetChangeHistoryItem.class);
 
 	/**
 	 * 
@@ -21,11 +21,11 @@ public class CategoryChangeHistoryItem extends HistoryItem {
 	boolean isDel;
 	protected String target;
 
-	public CategoryChangeHistoryItem() {
+	public SubsetChangeHistoryItem() {
 		this(null, false, null);
 	}
 
-	public CategoryChangeHistoryItem(String category, boolean isDel,
+	public SubsetChangeHistoryItem(String category, boolean isDel,
 			String target) {
 		this.category = category;
 		this.isDel = isDel;
@@ -39,9 +39,9 @@ public class CategoryChangeHistoryItem extends HistoryItem {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof CategoryChangeHistoryItem))
+		if (!(o instanceof SubsetChangeHistoryItem))
 			return false;
-		CategoryChangeHistoryItem edit = (CategoryChangeHistoryItem) o;
+		SubsetChangeHistoryItem edit = (SubsetChangeHistoryItem) o;
 		return ObjectUtil.equals(target, edit.getTarget())
 				&& ObjectUtil.equals(category, edit.getCategory())
 				&& isDel == edit.isDel();

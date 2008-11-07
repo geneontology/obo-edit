@@ -14,30 +14,30 @@ import java.util.*;
 
 import org.apache.log4j.*;
 
-public class SynonymCategoryHistoryItem extends HistoryItem {
+public class SynonymTypeHistoryItem extends HistoryItem {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(SynonymCategoryHistoryItem.class);
+	protected final static Logger logger = Logger.getLogger(SynonymTypeHistoryItem.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2764272842685200832L;
-	protected SynonymCategory oldcat;
-	protected SynonymCategory newcat;
+	protected SynonymType oldcat;
+	protected SynonymType newtype;
 	protected boolean isAdd;
 	protected boolean isDel;
 
-	public SynonymCategoryHistoryItem() {
+	public SynonymTypeHistoryItem() {
 		this(null, null, false, false);
 	}
 
-	public SynonymCategoryHistoryItem(SynonymCategory oldcat,
-			SynonymCategory newcat, boolean isAdd, boolean isDel) {
-		if (oldcat != null)
-			this.oldcat = (SynonymCategory) oldcat.clone();
+	public SynonymTypeHistoryItem(SynonymType oldtype,
+			SynonymType newcat, boolean isAdd, boolean isDel) {
+		if (oldtype != null)
+			this.oldcat = (SynonymType) oldtype.clone();
 		if (newcat != null)
-			this.newcat = (SynonymCategory) newcat.clone();
+			this.newtype = (SynonymType) newcat.clone();
 
 		this.isAdd = isAdd;
 		this.isDel = isDel;
@@ -45,26 +45,26 @@ public class SynonymCategoryHistoryItem extends HistoryItem {
 
 	@Override
 	public int hashCode() {
-		return getHash(oldcat) ^ getHash(newcat) ^ getHash(isAdd)
+		return getHash(oldcat) ^ getHash(newtype) ^ getHash(isAdd)
 				^ getHash(isDel);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof SynonymCategoryHistoryItem))
+		if (!(o instanceof SynonymTypeHistoryItem))
 			return false;
-		SynonymCategoryHistoryItem item = (SynonymCategoryHistoryItem) o;
+		SynonymTypeHistoryItem item = (SynonymTypeHistoryItem) o;
 		return ObjectUtil.equals(oldcat, item.getOldCategory())
-				&& ObjectUtil.equals(newcat, item.getNewCategory())
+				&& ObjectUtil.equals(newtype, item.getNewCategory())
 				&& isAdd == item.isAdd() && isDel == item.isDel();
 	}
 
-	public void setOldCat(SynonymCategory oldcat) {
+	public void setOldCat(SynonymType oldcat) {
 		this.oldcat = oldcat;
 	}
 
-	public void setNewCat(SynonymCategory newcat) {
-		this.newcat = newcat;
+	public void setNewCat(SynonymType newcat) {
+		this.newtype = newcat;
 	}
 
 	public void setIsAdd(boolean isAdd) {
@@ -75,12 +75,12 @@ public class SynonymCategoryHistoryItem extends HistoryItem {
 		this.isDel = isDel;
 	}
 
-	public SynonymCategory getOldCategory() {
+	public SynonymType getOldCategory() {
 		return oldcat;
 	}
 
-	public SynonymCategory getNewCategory() {
-		return newcat;
+	public SynonymType getNewCategory() {
+		return newtype;
 	}
 
 	public boolean isAdd() {
@@ -93,17 +93,17 @@ public class SynonymCategoryHistoryItem extends HistoryItem {
 
 	@Override
 	public String getShortName() {
-		return "Synonym Category Edit";
+		return "Synonym Type Edit";
 	}
 
 	@Override
 	public String toString() {
 		if (isAdd)
-			return "Created synonym category " + newcat;
+			return "Created synonym category " + newtype;
 		else if (isDel)
 			return "Removed synonym category " + oldcat;
 		else
-			return "Changed synonym category " + oldcat + " to " + newcat;
+			return "Changed synonym category " + oldcat + " to " + newtype;
 	}
 
 	@Override
