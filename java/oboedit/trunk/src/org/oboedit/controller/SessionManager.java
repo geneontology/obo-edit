@@ -256,7 +256,7 @@ public class SessionManager {
 //		logger.info("fired history applied in "
 //		+ (System.currentTimeMillis() - time));
 		if (GUIUtil.getPostSelection(item) != null && doSelect) {
-			logger.debug(">> getPostSelection(item)" + GUIUtil.getPostSelection(item) );
+//			logger.debug("getPostSelection(item)" + GUIUtil.getPostSelection(item) );
 			Selection selection = SelectionManager.resolveSelectionDanglers(
 					session, GUIUtil.getPostSelection(item));
 			if (SelectionManager.getManager().doPreSelectValidation(selection))

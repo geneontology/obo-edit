@@ -18,26 +18,26 @@ import java.util.*;
 
 import org.apache.log4j.*;
 
-public class CategoryManagerComponent extends AbstractGUIComponent {
+public class SubsetManagerComponent extends AbstractGUIComponent {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(CategoryManagerComponent.class);
+	protected final static Logger logger = Logger.getLogger(SubsetManagerComponent.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected ListEditor catList;
+	protected ListEditor subsetList;
 
-	protected JLabel noCategoryLabel = new JLabel(
-			"Click a category to edit it.");
+	protected JLabel noSubsetLabel = new JLabel(
+			"Select subset to edit");
 
 	protected JButton commitButton = new JButton("Save Changes");
 
 	protected JButton revertButton = new JButton("Revert");
 
-	private class CategoryEditor extends JPanel implements
+	private class SubsetEditor extends JPanel implements
 			GenericEditorComponent {
 
 		/**
@@ -58,12 +58,12 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 				editor = (ListEditor) c;
 		}
 
-		public CategoryEditor() {
-			JLabel nameLabel = new JLabel("Category name");
-			JLabel descLabel = new JLabel("Category description");
+		public SubsetEditor() {
+			JLabel nameLabel = new JLabel("Subset name");
+			JLabel descLabel = new JLabel("Subset description");
 			FocusListener listener = new FocusListener() {
 				public void focusLost(FocusEvent e) {
-					catList.commit();
+					subsetList.commit();
 				}
 
 				public void focusGained(FocusEvent e) {
@@ -76,7 +76,7 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 			nameField.addFocusListener(listener);
 			descField.addFocusListener(listener);
 
-			setLayout(new BoxLayout(CategoryEditor.this, BoxLayout.Y_AXIS));
+			setLayout(new BoxLayout(SubsetEditor.this, BoxLayout.Y_AXIS));
 			add(nameLabel);
 			add(nameField);
 			add(Box.createVerticalStrut(10));
@@ -86,50 +86,50 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void load(Object o) {
-			CategoryWrapper rtw = (CategoryWrapper) o;
+			SubsetWrapper rtw = (SubsetWrapper) o;
 			nameField.setText(rtw.getName());
 			descField.setText(rtw.getDesc());
 		}
 
 		public void store(Object o) {
-			CategoryWrapper rtw = (CategoryWrapper) o;
+			SubsetWrapper rtw = (SubsetWrapper) o;
 			rtw.setName(nameField.getText());
 			rtw.setDesc(descField.getText());
 		}
 
 		public Object createNewValue() {
-			return new CategoryWrapper(SessionManager.getManager().getSession()
-					.getObjectFactory().createCategory("NEWCAT",
-							"<new term category>"));
+			return new SubsetWrapper(SessionManager.getManager().getSession()
+					.getObjectFactory().createSubset("NEWSUBSET",
+							"<new term subset>"));
 		}
 	}
 
 	protected String id;
 
-	public CategoryManagerComponent(String id) {
+	public SubsetManagerComponent(String id) {
 		super(id);
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				saveCategories();
+				saveSubsets();
 			}
 		});
 		revertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadCategories();
+				loadSubsets();
 			}
 		});
 	}
 
 	@Override
 	public String getName() {
-		return "Category Manager Plugin";
+		return "Subset Manager";
 	}
 
 	@Override
 	public void init() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
-		catList = new ListEditor(new CategoryEditor(), noCategoryLabel,
+		subsetList = new ListEditor(new SubsetEditor(), noSubsetLabel,
 				new Vector(), true, true, true, true, false);
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
@@ -139,12 +139,12 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 		commitBox.add(Box.createHorizontalGlue());
 
 		removeAll();
-		add(catList);
+		add(subsetList);
 		add(commitBox);
 		validate();
 
 		GUIUtil.addReloadListener(reloadListener);
-		loadCategories();
+		loadSubsets();
 	}
 
 	@Override
@@ -155,18 +155,18 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
 			if (!e.isFilter())
-				loadCategories();
+				loadSubsets();
 		}
 	};
 
-	protected static class CategoryWrapper {
+	protected static class SubsetWrapper {
 		protected String name;
 
 		protected String desc;
 
-		protected TermCategory oldcat;
+		protected TermSubset oldcat;
 
-		public CategoryWrapper(TermCategory cat) {
+		public SubsetWrapper(TermSubset cat) {
 			this.name = cat.getName();
 			this.desc = cat.getDesc();
 			this.oldcat = cat;
@@ -193,7 +193,7 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 			return desc;
 		}
 
-		public TermCategory getCategory() {
+		public TermSubset getSubset() {
 			return oldcat;
 		}
 
@@ -203,53 +203,53 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 		}
 	}
 
-	protected void loadCategories() {
+	protected void loadSubsets() {
 		Vector v = new Vector();
 
-		Iterator it = SessionManager.getManager().getSession().getCategories()
+		Iterator it = SessionManager.getManager().getSession().getSubsets()
 				.iterator();
 		while (it.hasNext()) {
-			TermCategory cat = (TermCategory) it.next();
+			TermSubset cat = (TermSubset) it.next();
 			Iterator it2 = TermUtil.getTerms(
 					SessionManager.getManager().getSession()).iterator();
 			while (it2.hasNext()) {
 				OBOClass term = (OBOClass) it2.next();
-				if (term.getCategories().contains(cat)) {
+				if (term.getSubsets().contains(cat)) {
 					break;
 				}
 			}
-			v.add(new CategoryWrapper(cat));
+			v.add(new SubsetWrapper(cat));
 		}
-		catList.setData(v);
+		subsetList.setData(v);
 	}
 
-	protected void saveCategories() {
-		(new Exception("Called saveCategories()")).printStackTrace();
+	protected void saveSubsets() {
+		(new Exception("Called saveSubsets()")).printStackTrace();
 		Set v = new HashSet();
-		Vector data = catList.getData();
+		Vector data = subsetList.getData();
 		Set names = new HashSet();
 		for (int i = 0; i < data.size(); i++) {
-			CategoryWrapper rtw = (CategoryWrapper) data.get(i);
+			SubsetWrapper rtw = (SubsetWrapper) data.get(i);
 			if (names.contains(rtw.getName())) {
 				JOptionPane.showMessageDialog(this, "Could not commit changes "
-						+ "because multiple categories "
+						+ "because multiple subsets "
 						+ "are using the name " + rtw.getName());
 				return;
 			}
 
-			v.add(rtw.getCategory());
+			v.add(rtw.getSubset());
 			names.add(rtw.getName());
 		}
 		Iterator it = TermUtil.getTerms(
 				SessionManager.getManager().getSession()).iterator();
 		while (it.hasNext()) {
 			OBOClass term = (OBOClass) it.next();
-			Iterator it2 = term.getCategories().iterator();
+			Iterator it2 = term.getSubsets().iterator();
 			while (it2.hasNext()) {
-				TermCategory cat = (TermCategory) it2.next();
-				if (!v.contains(cat)) {
+				TermSubset sub = (TermSubset) it2.next();
+				if (!v.contains(sub)) {
 					JOptionPane.showMessageDialog(this,
-							"Could not commit changes " + "because " + cat
+							"Could not commit changes " + "because " + sub
 									+ " " + "is still in use in the "
 									+ "ontology");
 					return;
@@ -258,44 +258,44 @@ public class CategoryManagerComponent extends AbstractGUIComponent {
 		}
 
 		Vector oldcats = new Vector(SessionManager.getManager().getSession()
-				.getCategories());
-		TermMacroHistoryItem item = new TermMacroHistoryItem("Category edits");
+				.getSubsets());
+		TermMacroHistoryItem item = new TermMacroHistoryItem("Subset edits");
 		Vector newcats = (Vector) data.clone();
 		for (int i = 0; i < oldcats.size(); i++) {
-			TermCategory cat = (TermCategory) oldcats.get(i);
+			TermSubset subset = (TermSubset) oldcats.get(i);
 			boolean found = false;
 			for (int j = 0; j < data.size(); j++) {
-				CategoryWrapper tw = (CategoryWrapper) data.get(j);
-				if (tw.getCategory() == cat) {
+				SubsetWrapper tw = (SubsetWrapper) data.get(j);
+				if (tw.getSubset() == subset) {
 					newcats.remove(tw);
 					if (tw.isChanged()) {
-						TermCategory tc = SessionManager
+						TermSubset ts = SessionManager
 								.getManager()
 								.getSession()
 								.getObjectFactory()
-								.createCategory("NEWCAT", "<new term category>");
-						TermCategoryHistoryItem catitem = new TermCategoryHistoryItem(
-								tw.getCategory(), tc, false, false);
+								.createSubset("NEWSUBSET", "<new term subset>");
+						TermSubsetHistoryItem subsetitem = new TermSubsetHistoryItem(
+								tw.getSubset(), ts, false, false);
 
-						item.addItem(catitem);
+						item.addItem(subsetitem);
 					}
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				TermCategoryHistoryItem catitem = new TermCategoryHistoryItem(
-						cat, null, false, true);
-				item.addItem(catitem);
+				TermSubsetHistoryItem subsetitem = new TermSubsetHistoryItem(
+						subset, null, false, true);
+				item.addItem(subsetitem);
 			}
 		}
 		for (int i = 0; i < newcats.size(); i++) {
-			CategoryWrapper cw = (CategoryWrapper) newcats.get(i);
-			TermCategoryHistoryItem catitem = new TermCategoryHistoryItem(null,
+			SubsetWrapper cw = (SubsetWrapper) newcats.get(i);
+			TermSubsetHistoryItem subsetitem = new TermSubsetHistoryItem(null,
 					SessionManager.getManager().getSession().getObjectFactory()
-							.createCategory(cw.getName(), cw.getDesc()), true,
+							.createSubset(cw.getName(), cw.getDesc()), true,
 					false);
-			item.addItem(catitem);
+			item.addItem(subsetitem);
 		}
 		GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 				SelectionManager.getGlobalSelection());

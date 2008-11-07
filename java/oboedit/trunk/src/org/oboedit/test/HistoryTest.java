@@ -20,13 +20,13 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.Synonym;
 import org.obo.datamodel.impl.DbxrefImpl;
 import org.obo.datamodel.impl.DefaultOperationModel;
-import org.obo.datamodel.impl.SynonymCategoryImpl;
+import org.obo.datamodel.impl.SynonymTypeImpl;
 import org.obo.datamodel.impl.TermCategoryImpl;
 import org.obo.history.AddDbxrefHistoryItem;
 import org.obo.history.AddSynonymHistoryItem;
 import org.obo.history.CardinalityHistoryItem;
-import org.obo.history.CategoryChangeHistoryItem;
-import org.obo.history.ChangeSynCategoryHistoryItem;
+import org.obo.history.SubsetChangeHistoryItem;
+import org.obo.history.ChangeSynTypeHistoryItem;
 import org.obo.history.ChangeSynScopeHistoryItem;
 import org.obo.history.CommentChangeHistoryItem;
 import org.obo.history.CompletesHistoryItem;
@@ -51,9 +51,9 @@ import org.obo.history.OperationModel;
 import org.obo.history.RangeHistoryItem;
 import org.obo.history.SecondaryIDHistoryItem;
 import org.obo.history.SymmetricHistoryItem;
-import org.obo.history.SynonymCategoryHistoryItem;
+import org.obo.history.SynonymTypeHistoryItem;
 import org.obo.history.TRNamespaceHistoryItem;
-import org.obo.history.TermCategoryHistoryItem;
+import org.obo.history.TermSubsetHistoryItem;
 import org.obo.history.TermMergeHistoryItem;
 import org.obo.history.TermMoveHistoryItem;
 import org.obo.history.TermNamespaceHistoryItem;
@@ -108,20 +108,20 @@ public class HistoryTest extends TestCase {
 			System.exit(1);
 		}
 
-		out.addItem(new SynonymCategoryHistoryItem(null,
-				new SynonymCategoryImpl("special", "my special category",
+		out.addItem(new SynonymTypeHistoryItem(null,
+				new SynonymTypeImpl("special", "my special category",
 						Synonym.UNKNOWN_SCOPE), true, false));
 
-		out.addItem(new TermCategoryHistoryItem(null, new TermCategoryImpl(
+		out.addItem(new TermSubsetHistoryItem(null, new TermCategoryImpl(
 				"mysubset", "my subset"), true, false));
 
-		out.addItem(new CategoryChangeHistoryItem("mysubset", false, randomTerm
+		out.addItem(new SubsetChangeHistoryItem("mysubset", false, randomTerm
 				.getID()));
 
 		out.addItem(new AddSynonymHistoryItem(randomTerm.getID(),
 				"Extra special synonym"));
 
-		out.addItem(new ChangeSynCategoryHistoryItem(randomTerm.getID(),
+		out.addItem(new ChangeSynTypeHistoryItem(randomTerm.getID(),
 				"Extra special synonym", null, "special"));
 		out.addItem(new ChangeSynScopeHistoryItem(randomTerm.getID(),
 				"Extra special synonym", Synonym.RELATED_SYNONYM,
@@ -264,7 +264,7 @@ public class HistoryTest extends TestCase {
 		checkForSelfLinks(changed);
 
 		assertTrue("Plain applied ontology should not contain null categories",
-				!changed.getCategories().contains(null));
+				!changed.getSubsets().contains(null));
 
 		// get a copy of the original ontology, and use the history
 		// generate to generate its own version of the changes
@@ -309,7 +309,7 @@ public class HistoryTest extends TestCase {
 		// here's the problem; the
 
 		assertTrue("Generated changes ontology should not contain null "
-				+ "categories", !session.getCategories().contains(null));
+				+ "categories", !session.getSubsets().contains(null));
 
 		// see if the changes match
 		HistoryList troubleList = HistoryGenerator.getHistory(session, changed);

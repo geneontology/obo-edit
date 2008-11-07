@@ -13,47 +13,47 @@ import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.*;
 
-public class CategoryEditorComponent extends AbstractTextEditComponent {
+public class SubsetEditorComponent extends AbstractTextEditComponent {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(CategoryEditorComponent.class);
+	protected final static Logger logger = Logger.getLogger(SubsetEditorComponent.class);
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected Comparator catComparator = new Comparator() {
+	protected Comparator subsetComparator = new Comparator() {
 		public int compare(Object a, Object b) {
-			TermCategory tca = (TermCategory) a;
-			TermCategory tcb = (TermCategory) b;
+			TermSubset tca = (TermSubset) a;
+			TermSubset tcb = (TermSubset) b;
 			return tca.toString().compareTo(tcb.toString());
 		}
 	};
 
-	protected class CategoryTableModel extends AbstractTableModel {
+	protected class SubsetTableModel extends AbstractTableModel {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		protected Vector catList = new Vector();
+		protected Vector subsetList = new Vector();
 		protected Vector valList = new Vector();
 
-		public CategoryTableModel() {
+		public SubsetTableModel() {
 		}
 
 		public void reload() {
-			catList.clear();
+			subsetList.clear();
 			valList.clear();
-			catList.addAll(SessionManager.getManager().getSession()
-					.getCategories());
-			Collections.sort(catList, catComparator);
-			Iterator it = catList.iterator();
+			subsetList.addAll(SessionManager.getManager().getSession()
+					.getSubsets());
+			Collections.sort(subsetList, subsetComparator);
+			Iterator it = subsetList.iterator();
 			while (it.hasNext()) {
-				TermCategory cat = (TermCategory) it.next();
+				TermSubset sub = (TermSubset) it.next();
 				if (currentObject != null
-						&& currentObject instanceof CategorizedObject)
-					valList.add(new Boolean(((CategorizedObject) currentObject)
-							.getCategories().contains(cat)));
+						&& currentObject instanceof SubsetObject)
+					valList.add(new Boolean(((SubsetObject) currentObject)
+							.getSubsets().contains(sub)));
 			}
 
 			fireTableStructureChanged();
@@ -62,7 +62,7 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 		@Override
 		public Class getColumnClass(int col) {
 			if (col == 0)
-				return TermCategory.class;
+				return TermSubset.class;
 			else
 				return Boolean.class;
 		}
@@ -74,7 +74,7 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 		@Override
 		public String getColumnName(int col) {
 			if (col == 0)
-				return "Category";
+				return "Subset";
 			else
 				return "Active?";
 		}
@@ -85,7 +85,7 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 
 		public Object getValueAt(int row, int column) {
 			if (column == 0)
-				return catList.get(row);
+				return subsetList.get(row);
 			else {
 				return valList.get(row);
 			}
@@ -109,31 +109,31 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 		}
 	}
 
-	protected JTable categoryTable = new JTable();
+	protected JTable subsetTable = new JTable();
 	protected JPanel tablePanel = new JPanel();
-	protected CategoryTableModel categoryTableModel = new CategoryTableModel();
+	protected SubsetTableModel subsetTableModel = new SubsetTableModel();
 
-	protected JScrollPane categoryScroller;
+	protected JScrollPane subsetScroller;
 
 	@Override
 	public Component resolveName(String id, Properties props, String xml) {
 		if (id.equals("table"))
-			return categoryScroller;
+			return subsetScroller;
 		else
 			return new JButton(id);
 	}
 
-	public CategoryEditorComponent() {
-		categoryTable.setModel(categoryTableModel);
-		categoryTable.setDefaultRenderer(TermCategory.class,
+	public SubsetEditorComponent() {
+		subsetTable.setModel(subsetTableModel);
+		subsetTable.setDefaultRenderer(TermSubset.class,
 				new DefaultTableCellRenderer());
-		categoryTable.setTableHeader(null);
-		categoryTable.setColumnSelectionAllowed(false);
-		categoryTable.setRowSelectionAllowed(false);
-		categoryTable.setOpaque(false);
+		subsetTable.setTableHeader(null);
+		subsetTable.setColumnSelectionAllowed(false);
+		subsetTable.setRowSelectionAllowed(false);
+		subsetTable.setOpaque(false);
 		tablePanel.setLayout(new GridLayout(1, 1));
-		tablePanel.add(categoryTable);
-		categoryScroller = new JScrollPane(tablePanel,
+		tablePanel.add(subsetTable);
+		subsetScroller = new JScrollPane(tablePanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -146,12 +146,12 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	protected String getDefaultLayout() {
-		return "<component id='table' titleborder='Categories'/>";
+		return "<component id='table' titleborder='Subsets'/>";
 	}
 
 	@Override
 	protected void loadGUI() {
-		categoryTableModel.reload();
+		subsetTableModel.reload();
 	}
 
 	protected String getWarningLabel() {
@@ -167,21 +167,21 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public String getID() {
-		return "CATEGORY_EDITOR";
+		return "SUBSET_EDITOR";
 	}
 
 	public void populateFields(IdentifiedObject io) {
 		IdentifiedObject term = io;
-		if (term instanceof CategorizedObject) {
-			for (int i = 0; i < categoryTableModel.getRowCount(); i++) {
-				TermCategory cat = (TermCategory) categoryTableModel
+		if (term instanceof SubsetObject) {
+			for (int i = 0; i < subsetTableModel.getRowCount(); i++) {
+				TermSubset cat = (TermSubset) subsetTableModel
 						.getValueAt(i, 0);
-				boolean selected = ((Boolean) categoryTableModel.getValueAt(i,
+				boolean selected = ((Boolean) subsetTableModel.getValueAt(i,
 						1)).booleanValue();
 				if (selected)
-					((CategorizedObject) term).addCategory(cat);
+					((SubsetObject) term).addCategory(cat);
 				else
-					((CategorizedObject) term).removeCategory(cat);
+					((SubsetObject) term).removeCategory(cat);
 			}
 		}
 	}
@@ -189,16 +189,16 @@ public class CategoryEditorComponent extends AbstractTextEditComponent {
 	public java.util.List getChanges() {
 		if (currentObject != null) {
 			java.util.List out = new LinkedList();
-			if (currentObject instanceof CategorizedObject) {
-				for (int i = 0; i < categoryTableModel.getRowCount(); i++) {
-					TermCategory cat = (TermCategory) categoryTableModel
+			if (currentObject instanceof SubsetObject) {
+				for (int i = 0; i < subsetTableModel.getRowCount(); i++) {
+					TermSubset sub = (TermSubset) subsetTableModel
 							.getValueAt(i, 0);
-					boolean selected = ((Boolean) categoryTableModel
+					boolean selected = ((Boolean) subsetTableModel
 							.getValueAt(i, 1)).booleanValue();
-					if (selected != ((CategorizedObject) currentObject)
-							.getCategories().contains(cat)) {
-						CategoryChangeHistoryItem item = new CategoryChangeHistoryItem(
-								cat.getName(), !selected, currentObject.getID());
+					if (selected != ((SubsetObject) currentObject)
+							.getSubsets().contains(sub)) {
+						SubsetChangeHistoryItem item = new SubsetChangeHistoryItem(
+								sub.getName(), !selected, currentObject.getID());
 						out.add(item);
 					}
 				}

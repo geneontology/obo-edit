@@ -685,8 +685,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+ "</tab>"
 			+
 
-			"<tab name='Categories`if (size(TextEditor.getObject().getCategories()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getCategories()) > 0`'>"
-			+ "<component id='CATEGORY_EDITOR'/>"
+			"<tab name='Subsets`if (size(TextEditor.getObject().getSubsets()) > 0) \" *\"; else \"\";`' selected='`size(TextEditor.getObject().getSubsets()) > 0`'>"
+			+ "<component id='SUBSET_EDITOR'/>"
 			+ "</tab>"
 			+
 

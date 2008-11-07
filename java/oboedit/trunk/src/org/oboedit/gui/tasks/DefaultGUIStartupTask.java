@@ -110,7 +110,7 @@ import org.oboedit.gui.components.imageplugin.factory.TermImageComponentFactory;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
-import org.oboedit.gui.factory.CategoryManagerFactory;
+import org.oboedit.gui.factory.SubsetManagerFactory;
 import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
 import org.oboedit.gui.factory.CrossProductInfoFactory;
@@ -135,7 +135,7 @@ import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
 import org.oboedit.gui.factory.SemanticParserManagerFactory;
-import org.oboedit.gui.factory.SynonymCategoryManagerFactory;
+import org.oboedit.gui.factory.SynonymTypeManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
 import org.oboedit.gui.factory.TextEditorFactory;
@@ -220,8 +220,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new IDResolutionComponentFactory(), new TreeViewFactory(),
 				new GraphViewFactory(), new SearchComponentFactory(),
 				new LinkSearchComponentFactory(),
-				new IntersectionEditorFactory(), new CategoryManagerFactory(),
-				new GraphvizViewFactory(), new SynonymCategoryManagerFactory(),
+				new IntersectionEditorFactory(), new SubsetManagerFactory(),
+				new GraphvizViewFactory(), new SynonymTypeManagerFactory(),
 				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
 				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
 				new IDManagerFactory(), new ReasonerManagerFactory(),
