@@ -82,6 +82,13 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		
 	}
 	
+	/**
+	 * @author cartik 
+	 */
+	public void addLikeConstraint(String colName, String in){
+		this.constraintSet.addConstraint("(" + colName + " LIKE '%" + in.trim() + "%')");
+	}
+	
 	public void addContainsAnyConstraint(String colName,String in){
 		String[] parts = in.split("\\s");
 		

@@ -24,6 +24,13 @@ public interface WhereClause extends RelationalTerm {
 	public void addContainsAnyConstraint(String colName,String in);
 	public void addContainsAllConstraint(String colName,String in);
 	
+	/**
+	 * @author cartik1.0
+	 * @param colName
+	 * @param in
+	 */
+	public void addLikeConstraint(String colName, String in);
+	
 	public void addConstraint(String constr);
 
 	public Collection<Object> getPlaceHolderVals();
@@ -31,6 +38,8 @@ public interface WhereClause extends RelationalTerm {
 	public void addInConstraint(String string, RelationalQuery subQuery);
 	public void addNotInConstraint(String string, RelationalQuery subQuery);
 
+	
+	
 	public void addDisjunctiveConstraints(WhereClause booleanWhereClause);
 	
 	public BooleanOperator getOperator() ;
