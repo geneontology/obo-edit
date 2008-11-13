@@ -34,11 +34,11 @@ public class ChangeSynTypeHistoryItem extends HistoryItem {
 	}
 
 	public ChangeSynTypeHistoryItem(String target, String synonym,
-			String oldcat, String newcat) {
+			String oldtype, String newtype) {
 		this.target = target;
 		this.synonym = synonym;
-		this.oldtype = oldcat;
-		this.newtype = newcat;
+		this.oldtype = oldtype;
+		this.newtype = newtype;
 	}
 
 	public boolean equals(Object o) {

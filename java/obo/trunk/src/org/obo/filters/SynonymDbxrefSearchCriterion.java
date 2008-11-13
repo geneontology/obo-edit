@@ -16,7 +16,7 @@ public class SynonymDbxrefSearchCriterion extends
 
 	@Override
 	protected void addDbxrefs(Collection scratch, Synonym s) {
-		addDbxrefs(scratch, s.getDbxrefs());
+		addDbxrefs(scratch, s.getXrefs());
 	}
 
 	public Class<Synonym> getInputType() {

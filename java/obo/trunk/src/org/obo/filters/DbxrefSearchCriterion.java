@@ -23,7 +23,7 @@ public class DbxrefSearchCriterion extends AbstractDbxrefSearchCriterion<Identif
 			Iterator it = ((SynonymedObject) obj).getSynonyms().iterator();
 			while (it.hasNext()) {
 				Synonym s = (Synonym) it.next();
-				addDbxrefs(scratch, s.getDbxrefs());
+				addDbxrefs(scratch, s.getXrefs());
 			}
 		}
 	}
