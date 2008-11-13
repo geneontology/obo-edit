@@ -250,7 +250,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 				Iterator it2 = ((SynonymedObject) io).getSynonyms().iterator();
 				for (int sindex = 0; it2.hasNext(); sindex++) {
 					Synonym s = (Synonym) it2.next();
-					checkDbxrefs(s.getDbxrefs(), io, out, "Synonym " + i
+					checkDbxrefs(s.getXrefs(), io, out, "Synonym " + i
 							+ " dbxref ");
 				}
 			}
@@ -403,7 +403,7 @@ public class DbxrefCheck extends AbstractCheck implements FieldCheck,
 					Iterator sit = dbo.getSynonyms().iterator();
 					while (sit.hasNext()) {
 						Synonym s = (Synonym) sit.next();
-						Iterator dit = s.getDbxrefs().iterator();
+						Iterator dit = s.getXrefs().iterator();
 						while (dit.hasNext()) {
 							Dbxref ref = (Dbxref) dit.next();
 							String key = ref.getDatabase() + ":"

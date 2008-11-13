@@ -8,7 +8,6 @@ import org.obo.datamodel.impl.*;
 import org.obo.history.*;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 
@@ -47,7 +46,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 		}
 	};
 
-	private class CategoryEditor extends JPanel implements
+	private class TypeEditor extends JPanel implements
 			GenericEditorComponent {
 
 		/**
@@ -61,8 +60,6 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 
 		protected JComboBox scopeDrop;
 
-		// private JCheckBox defaultBox;
-
 		protected ListEditor editor;
 
 		public void setMasterComponent(Component c) {
@@ -70,7 +67,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 				editor = (ListEditor) c;
 		}
 
-		public CategoryEditor() {
+		public TypeEditor() {
 			JLabel idLabel = new JLabel("Type id");
 			JLabel nameLabel = new JLabel("Type name");
 			JLabel scopeLabel = new JLabel("Type scope");
@@ -109,7 +106,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 			nameField.addFocusListener(listener);
 			scopeLabel.addFocusListener(listener);
 
-			setLayout(new BoxLayout(CategoryEditor.this, BoxLayout.Y_AXIS));
+			setLayout(new BoxLayout(TypeEditor.this, BoxLayout.Y_AXIS));
 			add(idLabel);
 			add(idField);
 			add(Box.createVerticalStrut(10));
@@ -169,7 +166,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 	public void init() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setPreferredSize(new Dimension(400, 300));
-		typeList = new ListEditor(new CategoryEditor(), noTypeLabel,
+		typeList = new ListEditor(new TypeEditor(), noTypeLabel,
 				new Vector(), true, true, true, true, false);
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
@@ -182,10 +179,10 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 		add(typeList);
 		add(commitBox);
 		validate();
-
+		
 		GUIUtil.addReloadListener(reloadListener);
-
 		loadTypes();
+		
 	}
 
 	@Override
@@ -257,7 +254,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 
 	protected void loadTypes() {
 		Vector v = new Vector();
-
+		
 		Iterator it = SessionManager.getManager().getSession()
 				.getSynonymTypes().iterator();
 		while (it.hasNext()) {

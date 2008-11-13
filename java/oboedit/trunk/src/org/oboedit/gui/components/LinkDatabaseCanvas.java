@@ -1178,7 +1178,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	public void relayout() {
 		if (linkDatabase == null)
 			return;
-		logger.debug("LinkDatabaseCanvas.relayout"); // DEL
+//		logger.debug("LinkDatabaseCanvas.relayout"); // DEL
 //		(new Exception()).printStackTrace(); // DEL
 		isLayingOut = true;
 		dim();
