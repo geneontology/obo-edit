@@ -570,18 +570,18 @@ public class HistoryGenerator implements Serializable {
 					if (news.getText().equals(s.getText())) {
 						found = true;
 
-						Iterator it3 = s.getDbxrefs().iterator();
+						Iterator it3 = s.getXrefs().iterator();
 						while (it3.hasNext()) {
 							Dbxref oldref = (Dbxref) it3.next();
-							if (!news.getDbxrefs().contains(oldref))
+							if (!news.getXrefs().contains(oldref))
 								history.addItem(new DelDbxrefHistoryItem(sio
 										.getID(), oldref, false, s.getText()));
 						}
 
-						it3 = news.getDbxrefs().iterator();
+						it3 = news.getXrefs().iterator();
 						while (it3.hasNext()) {
 							Dbxref newref = (Dbxref) it3.next();
-							if (!s.getDbxrefs().contains(newref))
+							if (!s.getXrefs().contains(newref))
 								history.addItem(new AddDbxrefHistoryItem(sio
 										.getID(), newref, false, s.getText()));
 						}
@@ -622,7 +622,7 @@ public class HistoryGenerator implements Serializable {
 				if (!found) {
 					history.addItem(new AddSynonymHistoryItem(io.getID(), s
 							.getText()));
-					it2 = s.getDbxrefs().iterator();
+					it2 = s.getXrefs().iterator();
 					while (it2.hasNext()) {
 						Dbxref ref = (Dbxref) it2.next();
 						history.addItem(new AddDbxrefHistoryItem(sio.getID(),

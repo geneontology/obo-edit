@@ -33,7 +33,7 @@ public class TextUtil {
 			Iterator it = ((SynonymedObject) io).getSynonyms().iterator();
 			while (it.hasNext()) {
 				Synonym s = (Synonym) it.next();
-				out.addAll(s.getDbxrefs());
+				out.addAll(s.getXrefs());
 			}
 		}
 		return out;

@@ -59,7 +59,7 @@ public class OBO_1_0_Serializer extends OBO_1_2_Serializer {
 		else
 			print("related_synonym: ");
 		print("\"" + escapeQuoted(syn.getText()) + "\"");
-		writeDbxrefList(syn.getDbxrefs());
+		writeDbxrefList(syn.getXrefs());
 		writeNestedValue(nv);
 		if (syn.getSynonymType() != null)
 			print(" ! belonged to category " + syn.getSynonymType().getID());

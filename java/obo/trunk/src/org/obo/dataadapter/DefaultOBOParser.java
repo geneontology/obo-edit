@@ -738,20 +738,20 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	protected Synonym getSynonym(String name, XrefPair[] xrefs, int type,
-			String catID, NestedValue nv) throws OBOParseException {
+			String synTypeID, NestedValue nv) throws OBOParseException {
 		Synonym s = objectFactory.createSynonym(name, type);
 		s.setNestedValue(nv);
-		if (catID != null) {
-			SynonymType synType = session.getSynonymType(catID);
+		if (synTypeID != null) {
+			SynonymType synType = session.getSynonymType(synTypeID);
 			if (synType == null)
-				throw new OBOParseException("Unrecognized category ID " + catID
+				throw new OBOParseException("Unrecognized synonym type ID " + synTypeID
 						+ " found", getCurrentPath(), engine.getCurrentLine(),
 						engine.getLineNum());
 			s.setSynonymType(synType);
 		}
 		for (int i = 0; i < xrefs.length; i++) {
 			Dbxref ref = getDbxref(xrefs[i], Dbxref.RELATED_SYNONYM);
-			s.addDbxref(ref);
+			s.addXref(ref);
 		}
 		return s;
 	}

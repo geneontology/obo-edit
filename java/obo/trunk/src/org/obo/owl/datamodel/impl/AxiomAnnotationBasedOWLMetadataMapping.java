@@ -71,7 +71,7 @@ public class AxiomAnnotationBasedOWLMetadataMapping extends NCBOOboInOWLMetadata
 							getVocabURI(HAS_SYNONYM),
 							s.getText());
 				axioms.add(axiom);
-				for (Dbxref x : s.getDbxrefs()) {
+				for (Dbxref x : s.getXrefs()) {
 					try {
 						axioms.add(getAxiomAnnotationAxiom(axiom,OWLRDFVocabulary.RDFS_SEE_ALSO.getURI(),
 								adapter.getURI(x)));
