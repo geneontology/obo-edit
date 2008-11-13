@@ -51,44 +51,54 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 	protected JLabel nameLabel = new JLabel("Name");
 	protected JLabel scopeLabel = new JLabel("Scope");
 	protected JLabel typeLabel = new JLabel("Type");
-	protected JLabel dbxrefLabel = new JLabel("Dbxrefs");
+	protected JLabel xrefLabel = new JLabel("Xrefs");
 	protected JComboBox scopeList;
 	protected JComboBox typeList;
-	protected TableList<Dbxref> dbxrefList = new TableList<Dbxref>();
+	protected TableList<Dbxref> xrefList = new TableList<Dbxref>();
 	protected JButton addDbxrefButton = new JButton("+");
 	protected JButton removeDbxrefButton = new JButton("-");
 	Object obj;
-	
+
 	public SynonymTableCellEditor() {
 		if (synonymField.getDocument() instanceof AbstractDocument) {
 			((AbstractDocument) synonymField.getDocument())
-					.setDocumentFilter(new DocumentFilter() {
-						@Override
-						public void insertString(FilterBypass fb, int offset,
-								String string, AttributeSet attr)
-								throws BadLocationException {
-							super.insertString(fb, offset,
-									replaceNewlines(string), attr);
-						}
+			.setDocumentFilter(new DocumentFilter() {
+				@Override
+				public void insertString(FilterBypass fb, int offset,
+						String string, AttributeSet attr)
+				throws BadLocationException {
+					super.insertString(fb, offset,
+							replaceNewlines(string), attr);
+				}
 
-						@Override
-						public void replace(FilterBypass fb, int offset,
-								int length, String text, AttributeSet attrs)
-								throws BadLocationException {
-							super.replace(fb, offset, length,
-									replaceNewlines(text), attrs);
-						}
-					});
+				@Override
+				public void replace(FilterBypass fb, int offset,
+						int length, String text, AttributeSet attrs)
+				throws BadLocationException {
+					super.replace(fb, offset, length,
+							replaceNewlines(text), attrs);
+				}
+			});
 		}
 		scopeList = new JComboBox(SynonymEditorComponent.SYNSCOPES);
 		typeList = new JComboBox();
+		typeList.removeAllItems();
+		typeList.addItem("<no synonym type>");
+		Synonym syn = (Synonym) obj;
+
+
+		Iterator it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
+		while (it.hasNext()){
+			SynonymType syntype = (SynonymType) it.next();
+			typeList.addItem(syntype);
+		}
 		
 		typeList.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				Synonym syn = (Synonym) obj;
-				
 				if (typeList.getSelectedIndex() < 1) {
-					typeList.setEnabled(isEnabled());
+					scopeList.setEnabled(isEnabled());
+					syn.setSynonymType(null);
 				} else {
 					SynonymType type = (SynonymType) typeList.getSelectedItem();
 					if (type.getScope() != Synonym.UNKNOWN_SCOPE) {
@@ -96,32 +106,25 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 						scopeList.setEnabled(false);
 					} else {
 						scopeList.setEnabled(isEnabled());
+						typeList.setEnabled(isEnabled());
 					}
 				}
 			}
 		});
 
-		Iterator it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
-		while (it.hasNext()){
-			SynonymType syntype = (SynonymType) it.next();
-			logger.debug("syntype" + syntype);
-			typeList.addItem(syntype);
-		}
-		
-		
-		dbxrefList.setRenderer(new DbxrefTableRenderer());
-		dbxrefList.setEditor(new DbxrefListTableEditor());
+		xrefList.setRenderer(new DbxrefTableRenderer());
+		xrefList.setEditor(new DbxrefListTableEditor());
 
 		addDbxrefButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				dbxrefList.add();
+				xrefList.add();
 			}
 		});
 		removeDbxrefButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				dbxrefList.deleteSelectedRows();
+				xrefList.deleteSelectedRows();
 			}
 		});
 
@@ -143,7 +146,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		double[][] sizes = {
 				{ TableLayout.PREFERRED, 10, .6, .4 },
 				{ TableLayout.FILL, TableLayout.PREFERRED,
-						TableLayout.PREFERRED, TableLayout.PREFERRED } };
+					TableLayout.PREFERRED, TableLayout.PREFERRED } };
 		setLayout(new TableLayout(sizes));
 		add(nameLabel, "0,0");
 		add(synonymField, "2,0");
@@ -152,31 +155,31 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		add(typeLabel, "0,2");
 		add(typeList, "2,2");
 
-		
+
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		JPanel buttonPanel = new JPanel();
-		JLabel dbxrefLabel = new JLabel("Dbxrefs");
+		JLabel xrefLabel = new JLabel("Xrefs");
 		buttonPanel.setLayout(new GridLayout(1, 2));
 		buttonPanel.add(addDbxrefButton);
 		buttonPanel.add(removeDbxrefButton);
-		panel.add(new JScrollPane(dbxrefList,
+		panel.add(new JScrollPane(xrefList,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), "Center");
-		panel.add(dbxrefLabel, "North");
+		panel.add(xrefLabel, "North");
 		panel.add(buttonPanel, "South");
 		add(panel, "3,0,3,2");
 	}
 
 	protected static String replaceNewlines(String str) {
 		// Why do it this painstaking way?
-// 		StringBuffer b = new StringBuffer();
-// 		for (int i = 0; i < str.length(); i++) {
-// 			char c = str.charAt(i);
-// 			if (c != '\n')
-// 				b.append(c);
-// 		}
-// 		return b.toString();
+//		StringBuffer b = new StringBuffer();
+//		for (int i = 0; i < str.length(); i++) {
+//		char c = str.charAt(i);
+//		if (c != '\n')
+//		b.append(c);
+//		}
+//		return b.toString();
 		return(str.replace('\n', ' '));
 	}
 
@@ -184,7 +187,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		Component lastComponent = getFocusTraversalPolicy().getLastComponent(
 				this);
 		Component focused = FocusManager.getCurrentKeyboardFocusManager()
-				.getFocusOwner();
+		.getFocusOwner();
 		if (SwingUtilities.isDescendingFrom(focused, lastComponent)) {
 			commit();
 		} else
@@ -204,11 +207,11 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		parent.getRoot().addMapping(
 				new FieldPathSpec(parent.spec,
 						SynonymTextSearchCriterion.CRITERION), parent,
-				synonymField);
+						synonymField);
 		parent.getRoot().addMapping(
 				new FieldPathSpec(parent.spec,
 						SynonymDbxrefSearchCriterion.CRITERION), parent,
-				dbxrefList);
+						xrefList);
 	}
 
 	public void uninstallMappings(SynonymEditorComponent parent) {
@@ -217,15 +220,18 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 						SynonymTextSearchCriterion.CRITERION), synonymField);
 		parent.getRoot().removeMapping(
 				new FieldPathSpec(parent.spec,
-						SynonymDbxrefSearchCriterion.CRITERION), dbxrefList);
+						SynonymDbxrefSearchCriterion.CRITERION), xrefList);
 	}
 
 	public Synonym getValue() {
 		Synonym out = createNewValue();
 		out.setText(synonymField.getText());
 		out.setScope(scopeList.getSelectedIndex());
-		for (Dbxref ref : dbxrefList.getData()) {
-			out.addDbxref(ref);
+//		if(typeList.getSelectedItem() != null)
+		out.setSynonymType((SynonymType) typeList.getSelectedItem());
+
+		for (Dbxref ref : xrefList.getData()) {
+			out.addXref(ref);
 		}
 		return out;
 	}
@@ -233,6 +239,8 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 	public void setValue(Synonym value) {
 		synonymField.setText(value.getText());
 		scopeList.setSelectedIndex(value.getScope());
-		dbxrefList.setData(value.getDbxrefs());
+//		if(typeList.getSelectedItem() != null)
+		typeList.setSelectedItem(value.getSynonymType());
+		xrefList.setData(value.getXrefs());
 	}
 }

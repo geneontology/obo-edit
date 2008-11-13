@@ -93,19 +93,18 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 		s.append("</td>");
 		if (synonym.getSynonymType() != null) {
 			s.append("<tr valign=top><td>");
-			s.append("Type: <i>" + synonym.getSynonymType()
-					+ "</i>");
+			s.append("Type: <i>" + synonym.getSynonymType() + "</i>");
 			s.append("</td>");
-		}
+		} 		
 		s.append("</table>");
 		s.append("</td>");
 
-		if (synonym.getDbxrefs().size() > 0) {
+		if (synonym.getXrefs().size() > 0) {
 			s.append("<td width='33%'>");
-			s.append("<center><i>Dbxrefs</i></center>");
+			s.append("<center><i>Xrefs</i></center>");
 			s.append("<hr>");
 			s.append("<ul>");
-			for (Dbxref d : synonym.getDbxrefs()) {
+			for (Dbxref d : synonym.getXrefs()) {
 				s.append("<li> " + d.toString() + "\n");
 			}
 			s.append("</ul>");
@@ -159,8 +158,8 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 				delSynonym();
 			}
 		});
-		addButton.setToolTipText("Add new dbxref");
-		removeButton.setToolTipText("Remove selected dbxrefs");
+		addButton.setToolTipText("Add new synonym");
+		removeButton.setToolTipText("Remove selected synonym");
 		add(pane, "Center");
 		add(buttonPanel, "South");
 	}
@@ -238,12 +237,12 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 					}
 
 					if (ref.getSynonymType() != null) {
-						ChangeSynTypeHistoryItem citem = new ChangeSynTypeHistoryItem(
+						ChangeSynTypeHistoryItem titem = new ChangeSynTypeHistoryItem(
 								synonymed, ref, null);
-						out.add(citem);
+						out.add(titem);
 					}
 
-					Iterator it3 = ref.getDbxrefs().iterator();
+					Iterator it3 = ref.getXrefs().iterator();
 					while (it3.hasNext()) {
 						Dbxref xref = (Dbxref) it3.next();
 						DelDbxrefHistoryItem ritem = new DelDbxrefHistoryItem(
@@ -274,7 +273,7 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 							synonymed.getID(), ref.getText());
 					out.add(item);
 
-					Iterator it3 = ref.getDbxrefs().iterator();
+					Iterator it3 = ref.getXrefs().iterator();
 					while (it3.hasNext()) {
 						Dbxref xref = (Dbxref) it3.next();
 						AddDbxrefHistoryItem ritem = new AddDbxrefHistoryItem(
@@ -283,9 +282,9 @@ public class SynonymEditorComponent extends AbstractTextEditComponent {
 					}
 
 					if (ref.getSynonymType() != null) {
-						ChangeSynTypeHistoryItem citem = new ChangeSynTypeHistoryItem(
+						ChangeSynTypeHistoryItem titem = new ChangeSynTypeHistoryItem(
 								synonymed, ref, ref.getSynonymType());
-						out.add(citem);
+						out.add(titem);
 					}
 
 					if (ref.getScope() != Synonym.RELATED_SYNONYM) {
