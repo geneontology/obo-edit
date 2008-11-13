@@ -138,7 +138,7 @@ public class TermSplitHistoryItem extends SubclassedMacroHistoryItem {
 				out.add(new ChangeSynScopeHistoryItem(result, syn.getText(),
 						Synonym.RELATED_SYNONYM, syn.getScope()));
 
-			Iterator it2 = syn.getDbxrefs().iterator();
+			Iterator it2 = syn.getXrefs().iterator();
 			while (it2.hasNext()) {
 				Dbxref ref = (Dbxref) it2.next();
 				out.add(new AddDbxrefHistoryItem(result, ref, false, syn

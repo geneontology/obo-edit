@@ -148,10 +148,10 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 				masters = DefaultObjectFactory.getFactory().createSynonym(
 						s.getText(), Synonym.RELATED_SYNONYM);
 			}
-			Iterator it2 = s.getDbxrefs().iterator();
+			Iterator it2 = s.getXrefs().iterator();
 			while (it2.hasNext()) {
 				Dbxref ref = (Dbxref) it2.next();
-				if (!masters.getDbxrefs().contains(ref)) {
+				if (!masters.getXrefs().contains(ref)) {
 					out.add(new AddDbxrefHistoryItem(masterNode.getID(), ref,
 							false, masters.getText()));
 				}

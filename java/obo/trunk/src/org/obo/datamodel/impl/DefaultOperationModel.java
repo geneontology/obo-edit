@@ -337,7 +337,7 @@ public class DefaultOperationModel implements OperationModel {
 			if (s == null)
 				return new OperationWarning("Could not modify non-existant "
 						+ "synonym " + s + " of " + target);
-			s.addDbxref(item.getDbxref());
+			s.addXref(item.getDbxref());
 		} else {
 			if (!(target instanceof DbxrefedObject))
 				return new OperationWarning("Could not add dbxref to "
@@ -363,7 +363,7 @@ public class DefaultOperationModel implements OperationModel {
 						+ "from non-synonymed object " + item.getTarget());
 			Synonym s = HistoryUtil.findSynonym((SynonymedObject) target, item
 					.getSynonym());
-			s.removeDbxref(item.getDbxref());
+			s.removeXref(item.getDbxref());
 		} else {
 			if (!(target instanceof DbxrefedObject))
 				return new OperationWarning("Could not remove dbxref from "
@@ -389,7 +389,7 @@ public class DefaultOperationModel implements OperationModel {
 						+ "to non-synonymed object " + item.getTarget());
 			Synonym s = HistoryUtil.findSynonym((SynonymedObject) target, item
 					.getSynonym());
-			s.addDbxref(item.getDbxref());
+			s.addXref(item.getDbxref());
 		} else {
 			if (!(target instanceof DbxrefedObject))
 				return new OperationWarning("Could not add dbxref to "
@@ -415,7 +415,7 @@ public class DefaultOperationModel implements OperationModel {
 						+ "from non-synonymed object " + item.getTarget());
 			Synonym s = HistoryUtil.findSynonym((SynonymedObject) target, item
 					.getSynonym());
-			s.removeDbxref(item.getDbxref());
+			s.removeXref(item.getDbxref());
 		} else {
 			if (!(target instanceof DbxrefedObject))
 				return new OperationWarning("Could not remove dbxref from "
@@ -1896,7 +1896,7 @@ public class DefaultOperationModel implements OperationModel {
 	public OperationWarning apply(ChangeSynTypeHistoryItem item) {
 		IdentifiedObject o = getRealIDObject(item.getTarget());
 		if (!(o instanceof SynonymedObject))
-			return new OperationWarning("Could not change synonym category "
+			return new OperationWarning("Could not change synonym type "
 					+ "in non-synonymable object " + item.getTarget());
 		SynonymedObject target = (SynonymedObject) o;
 		Synonym s = HistoryUtil.findSynonym(target, item.getSynonym());
@@ -1929,7 +1929,7 @@ public class DefaultOperationModel implements OperationModel {
 		if (item.getOldType() != null) {
 			cat = session.getSynonymType(item.getOldType());
 			if (cat == null)
-				return new OperationWarning("Couldn't find category "
+				return new OperationWarning("Couldn't find type "
 						+ item.getOldType());
 		}
 		s.setSynonymType(cat);

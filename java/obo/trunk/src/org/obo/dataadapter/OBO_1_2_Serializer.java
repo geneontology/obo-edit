@@ -304,7 +304,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 				print(" " + syn.getSynonymType().getID());
 			}
 		}
-		List<Dbxref> dbxrefs = new ArrayList<Dbxref>(syn.getDbxrefs());
+		List<Dbxref> dbxrefs = new ArrayList<Dbxref>(syn.getXrefs());
 		Comparator c = getDbxrefComparator();
 		if (c == null)
 			c = OBOConstants.DEFAULT_DBXREF_COMPARATOR;

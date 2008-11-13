@@ -26,7 +26,7 @@ public interface Synonym extends Cloneable, Serializable, Comparable, Identifiab
 		}
 	};
 
-	public SynonymType getSynonymType();
+	public  SynonymType getSynonymType();
 
 	public void setSynonymType(SynonymType type);
 
@@ -35,14 +35,14 @@ public interface Synonym extends Cloneable, Serializable, Comparable, Identifiab
 	public NestedValue getNestedValue();
 
 	public int getScope();
+	
+	public void setScope(int scope);
 
-	public void setScope(int type);
+	public void addXref(Dbxref ref);
 
-	public void addDbxref(Dbxref ref);
+	public void removeXref(Dbxref ref);
 
-	public void removeDbxref(Dbxref ref);
-
-	public Collection<Dbxref> getDbxrefs();
+	public Collection<Dbxref> getXrefs();
 
 	public Object clone();
 
