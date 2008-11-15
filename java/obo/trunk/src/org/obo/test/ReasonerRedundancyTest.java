@@ -12,6 +12,11 @@ import org.obo.reasoner.impl.LinkPileReasonerFactory;
 
 import org.apache.log4j.*;
 
+/**
+ * https://sourceforge.net/tracker2/index.php?func=detail&aid=2263348&group_id=36855&atid=418257
+ * @author cjm
+ *
+ */
 public class ReasonerRedundancyTest extends AbstractReasonerTest {
 
 	//initialize logger
