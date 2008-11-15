@@ -120,118 +120,47 @@ public abstract class AbstractReasonerTest extends AbstractOBOTest {
 
 	public void testForNoIsA(String childID, String parentID)  {
 		assertFalse(hasIsALink(childID, parentID));
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		logger.info(reasonedDB+" testing "+child+" - "+parent);
-		assertTrue(reasonedDB.hasRelationship(child, OBOProperty.IS_A, parent) == null);
-		 */
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
-		//logger.info(path+" pathlen="+path.size());
 	}
 
 	public void testForIsAInTrimmed(String childID, String parentID)  {
 		assertTrue(hasIsALink(trimmedDB, childID, parentID));
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		logger.info(trimmedDB+" testing "+child+" - "+parent);
-		assertTrue(trimmedDB.getParents(child).contains(
-				new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
-		 */
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
-		//logger.info(path+" pathlen="+path.size());
 	}
 
 	public void testForNoIsAInTrimmed(String childID, String parentID)  {
 		assertFalse(hasIsALink(trimmedDB, childID, parentID));
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		logger.info(trimmedDB+" testing "+child+" - "+parent);
-		Collection<Link> parents = trimmedDB.getParents(child);
-		boolean isInTrimmed = false;
-		for (Link p : parents) {
-			logger.debug("IN TRIMMED SET (ie non-redundant): "+p.getClass()+"  "+p);
-			if (p.getChild().getID().equals(childID) &&
-					p.getType().equals(OBOProperty.IS_A) &&
-					p.getParent().getID().equals(parentID)) {
-				isInTrimmed = true;
-			}
-		}
-
-		assertTrue(!isInTrimmed);
-		 */
-
-		//assertFalse(parents.contains(
-		//		new OBORestrictionImpl(child, OBOProperty.IS_A, parent)));
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, OBOProperty.IS_A, parent);
-		//logger.info(path+" pathlen="+path.size());
 	}
 
-	public void testForRedundantIsA(String childID, String parentID)  {
+	public boolean isRedundantIsA(String childID, String parentID)  {
 		LinkedObject child = (LinkedObject) session.getObject(childID);
 		LinkedObject parent = (LinkedObject) session.getObject(parentID);
 		logger.info(reasonedDB+" testing redundant isa "+child+" - "+parent);
 		for (Link link : reasonedDB.getParents(child)) {
 			if (link.getParent().equals(parent) && link.getType().equals(OBOProperty.IS_A)) {
-				assertTrue(ReasonerUtil.isRedundant(reasonedDB, link));
-				return;
+				return ReasonerUtil.isRedundant(reasonedDB, link);
 			}
 		}
-		assertTrue(false);
+		return false;
+	}
+
+	public void testForRedundantIsA(String childID, String parentID)  {
+		assertTrue(isRedundantIsA(childID,parentID));
+	}
+	public void testForNonRedundantIsA(String childID, String parentID)  {
+		assertFalse(isRedundantIsA(childID,parentID));
 	}
 
 
 
 	public void testForLink(String childID, String relID, String parentID)  {
 		assertTrue(hasLink(childID, relID, parentID));
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		OBOProperty rel = (OBOProperty) session.getObject(relID);
-		logger.info(reasonedDB+" testing "+child+" "+rel+" "+parent);
-		assertTrue(reasonedDB.hasRelationship(child, rel, parent) != null);
-		Link link = new OBORestrictionImpl(child,rel,parent);
-		logger.info("inferred="+link);
-		for (Explanation exp : reasonedDB.getExplanations(link)) {
-			logger.info("  exp="+exp);
-		}
-		 */
-		//Collection<PathCapable> path = ReasonerUtil.getShortestExplanationPath(reasonedDB,child, rel, parent); // TODO - Cycle
-		//logger.info(path+" pathlen="+path.size());
 
 	}
 	public void testForNoLink(String childID, String relID, String parentID)  {
 		assertFalse(hasLink(childID, relID, parentID));
-
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		OBOProperty rel = (OBOProperty) session.getObject(relID);
-		logger.info(reasonedDB+" testing "+child+" "+rel+" "+parent);
-		Link link = reasonedDB.hasRelationship(child, rel, parent);
-		if (link != null) {
-			logger.info("found a link in the wrong place:"+link);
-			for (Explanation exp : reasonedDB.getExplanations(link)) {
-				logger.info("  exp="+exp);
-			}
-			showExplanation(link, 0);
-		}
-		assertTrue(link == null);
-		 */
 	}
 
 	public void testForLinkInTrimmed(String childID, String relID, String parentID)  {
 		assertTrue(hasLink(trimmedDB, childID, relID, parentID));
-		/*
-		LinkedObject child = (LinkedObject) session.getObject(childID);
-		LinkedObject parent = (LinkedObject) session.getObject(parentID);
-		OBOProperty rel = (OBOProperty) session.getObject(relID);
-		logger.info(trimmedDB+" testing "+child+" "+rel+" "+parent);
-		assertTrue(trimmedDB.getParents(child).contains(
-				new OBORestrictionImpl(child, rel, parent)));
-		 */
 
 	}
 

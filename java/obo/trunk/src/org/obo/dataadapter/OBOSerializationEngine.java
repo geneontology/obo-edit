@@ -945,7 +945,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (obj instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) obj;
 				List<Link> linkList = new LinkedList<Link>();
-				linkList.addAll(linkDatabase.getParents(lo));
+				Collection<Link> parents = linkDatabase.getParents(lo);
+				for (Link p : parents) {
+					if (p.getParent() == null) {
+						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
+					}
+					if (p.getType() == null) {
+						logger.error("invalid link: "+p+" Child: "+p.getChild().getClass());
+					}
+				}
+				linkList.addAll(parents);
 				Collections.sort(linkList, getLinkComparator(serializer));
 				for (Link link : linkList) {
 					// CJM: I added this defensive test

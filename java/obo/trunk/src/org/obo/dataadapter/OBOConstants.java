@@ -141,6 +141,9 @@ public class OBOConstants {
 				compVal = DEFAULT_ID_COMPARATOR.compare(la.getType().getID(),
 						lb.getType().getID());
 				if (compVal == 0) {
+					if (la instanceof ValueLink || lb instanceof ValueLink) {
+						return 0;
+					}
 					return DEFAULT_ID_COMPARATOR.compare(
 							la.getParent().getID(), lb.getParent().getID());
 				} else
