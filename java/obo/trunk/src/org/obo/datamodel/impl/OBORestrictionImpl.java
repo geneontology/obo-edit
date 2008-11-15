@@ -1,6 +1,8 @@
 package org.obo.datamodel.impl;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.obo.datamodel.*;
 import org.obo.reasoner.impl.ForwardChainingReasoner;
@@ -60,6 +62,8 @@ public class OBORestrictionImpl implements OBORestriction {
 	protected boolean implied = false;
 	
 	protected OBORestrictionMetaData metadata = null;
+	
+	protected List<LinkedObject> additionalArguments;
 
 	@Override
 	public Object clone() {
@@ -321,4 +325,33 @@ public class OBORestrictionImpl implements OBORestriction {
 	public boolean isAnonymous() {
 		return false;
 	}
+
+	public List<LinkedObject> getAdditionalArguments() {
+		return additionalArguments;
+	}
+
+	public void setAdditionalArguments(List<LinkedObject> additionalArguments) {
+		this.additionalArguments = additionalArguments;
+	}
+	
+	public int getNumberOfAdditionalArguments() {
+		if (additionalArguments == null)
+			return 0;
+		return additionalArguments.size();
+	}
+	
+	public int getArity() {
+		return getNumberOfAdditionalArguments() + 2;
+	}
+	
+	public LinkedObject getAdditionalArgumentAt(int index) {
+		return additionalArguments.get(index);
+	}
+	public void setAdditionalArgumentAt(int index, LinkedObject lo) {
+		if (additionalArguments == null)
+			additionalArguments = new ArrayList<LinkedObject>();
+		((ArrayList)additionalArguments).ensureCapacity(index+1);
+		 additionalArguments.set(index, lo);
+	}
+	
 }

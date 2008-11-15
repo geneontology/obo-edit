@@ -1,6 +1,7 @@
 package org.obo.datamodel;
 
 import java.io.*;
+import java.util.List;
 
 /** This is a relationship between terms/classes - not instances */
 public interface OBORestriction extends Link, Cloneable,
@@ -33,4 +34,17 @@ public interface OBORestriction extends Link, Cloneable,
 	public boolean isNecessarilyTrue();
 
 	public boolean isInverseNecessarilyTrue();
+	
+	public List<LinkedObject> getAdditionalArguments() ;
+
+	public void setAdditionalArguments(List<LinkedObject> additionalArguments);
+	
+	public int getNumberOfAdditionalArguments() ;
+	
+	public int getArity() ;
+	
+	public LinkedObject getAdditionalArgumentAt(int index) ;
+	
+	public void setAdditionalArgumentAt(int index, LinkedObject lo) ;
+
 }

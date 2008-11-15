@@ -152,126 +152,6 @@ public class ReasonerUtil {
 		return exps.size() > 0;
 	}
 
-	/**
-	 * @see shouldBeTrimmedOld
-	 * @param linkDatabase
-	 * @param inLink
-	 * @return
-	 */
-	public static boolean shouldBeTrimmedNew(LinkDatabase linkDatabase, Link inLink) {
-		if (!TermUtil.isImplied(inLink))
-			return false;
-		if (TermUtil.isIntersection(inLink))
-			return true;
-		// if (onlyHasGenusDiffExplanation(reasoner, inLink))
-		// return false;
-		Collection<Link> parents = new LinkedList<Link>(linkDatabase
-				.getParents(inLink.getChild()));
-		Collection<Link> children = linkDatabase
-		.getChildren(inLink.getParent());
-		OBORestriction scratch = new OBORestrictionImpl();
-		for (Link link : parents) {
-			if (TermUtil.isIntersection(link))
-				continue;
-			scratch.setChild(link.getParent());
-			scratch.setType(inLink.getType());
-			scratch.setParent(inLink.getParent());
-			// logger.info("parents = " + parents);
-			// logger.info("children = " + children);
-			if (children.contains(scratch)) {
-				// logger.info("explanations: "
-				// + linkDatabase.getExplanations(inLink));
-				return true;
-			}
-
-			scratch.setType(OBOProperty.IS_A);
-			if (children.contains(scratch))
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * false if the link is not implied; true if implied and an intersection link (does this happen?).
-	 * true if this link is the same as a grandparent link
-	 * 
-	 * Note: despite its name this appears to be the current means of trimming in
-	 * TrimmedLinkDatabase
-	 * @param linkDatabase
-	 * @param link
-	 * @return
-	 */
-	public static boolean shouldBeTrimmed(LinkDatabase linkDatabase,
-			Link link) {
-		if (!TermUtil.isImplied(link))
-			return false; // asserted links are never trimmed
-		if (TermUtil.isIntersection(link))
-			return true; // TODO
-		if (!link.getType().equals(OBOProperty.IS_A))
-			return true; // trim all implied non-is_a links
-		if (link.getChild().equals(link.getParent()))
-			return true; // trim all reflexive links
-
-		// trim any links to parents that are redundant with
-		// a GRANDPARENT link
-		// if any trimmed link is a GIVEN link, it is redundant
-
-
-		// links that originate from the same child
-		// link = <A R B>, parent = <A R2 X>
-		Collection<Link> parents = linkDatabase.getParents(link.getChild());
-
-		// for each parent link
-		for (Link parentLink : parents) {
-
-			if (parentLink.equals(link)) {
-				continue;
-			}
-			if (parentLink.getChild().equals(parentLink.getParent())) {
-				continue; // reflexive
-			}
-
-			if (!(parentLink.getType().equals(link.getType()) || parentLink
-					.getType().equals(OBOProperty.IS_A)))
-				continue;
-
-			// relations are identical; R2=R
-			boolean sawType = parentLink.getType().equals(link.getType());
-
-
-			// for each grandparent link accessible via the current
-			// parent link...
-			// <X R3 B2>
-			for (Link gpLink : linkDatabase.getParents(parentLink.getParent())) {
-				if (gpLink.getChild().equals(gpLink.getParent())) {
-					continue; // reflexive
-				}
-				if (TermUtil.isIntersection(gpLink))
-					continue;
-				
-				// see if the grandparent link has the same type
-				// and parent as the current link. if it does,
-				// the current link is redundant with the grandparent
-				// link and should be removed
-				if (link.getParent().equals(gpLink.getParent())) { // B=B2
-					if ((!sawType || link.getType().isTransitive()) &&
-							link.getType().equals(gpLink.getType())) {
-						return true; 
-					}
-					if (sawType && gpLink.getType().equals(OBOProperty.IS_A)) {
-						return true;
-					}
-				}
-			}
-
-			// add a section where we trim links that have a sibling link
-			// with the same parent, but a more specific type,
-			// than the current link
-		}
-
-		return false;
-
-	}
 
 	public static Collection<Link> getGivenSupportingLinks(
 			ReasonedLinkDatabase database, Link link) {
@@ -412,11 +292,15 @@ public class ReasonerUtil {
 	 */
 	public static Explanation getRedundancyExplanation(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
 		if (TermUtil.isIntersection(link))
-			return null; // N+S conditions are never false
+			return null; // N+S conditions are never redundant
 		if (TermUtil.isImplied(link))
 			return null; // only asserted links can be redundant
+		
+		Explanation redExp = null;
 		for (Explanation exp : reasoner.getExplanations(link)) {
+
 			if (exp.getExplanationType().equals(ExplanationType.GIVEN)) {
+				// we expect at least one of these, due to the previous test (given = asserted = !implied)
 				continue;
 			}
 			if (isRepairMode) {
@@ -438,9 +322,33 @@ public class ReasonerUtil {
 				//	continue;
 				//}
 			}
-			return exp;			
+			/*
+			 *  B
+			 *  -A  == B that (part_of C)
+			 *  -D  (part_of C)
+			 *  
+			 *  D is_a B appears redundant: but removing it 
+			 */
+			boolean nr = false;
+			for (Link evLink : exp.getEvidence()) {
+				for (Explanation evExp : reasoner.getExplanations(evLink)) {
+					if (evExp.getExplanationType().equals(ExplanationType.INTERSECTION)) {
+						for (Link ilink : evExp.getEvidence()) {
+							if (ilink.getChild().equals(link.getChild()) &&
+									ilink.getType().equals(link.getType()) &&
+									ilink.getParent().equals(link.getParent())) {
+								nr = true;
+							}
+						}
+					}
+				}		
+			}
+			if (nr) {
+				return null;
+			}
+			redExp = exp;			
 		}
-		return null;
+		return redExp;
 	}
 
 	public static boolean isRedundant(ReasonedLinkDatabase reasoner, Link link, Boolean isRepairMode) {
@@ -488,6 +396,127 @@ public class ReasonerUtil {
 			}
 		}
 		return redundantLinks;
+	}
+
+	/**
+	 * @see shouldBeTrimmedOld
+	 * @param linkDatabase
+	 * @param inLink
+	 * @return
+	 */
+	public static boolean shouldBeTrimmedNew(LinkDatabase linkDatabase, Link inLink) {
+		if (!TermUtil.isImplied(inLink))
+			return false;
+		if (TermUtil.isIntersection(inLink))
+			return true;
+		// if (onlyHasGenusDiffExplanation(reasoner, inLink))
+		// return false;
+		Collection<Link> parents = new LinkedList<Link>(linkDatabase
+				.getParents(inLink.getChild()));
+		Collection<Link> children = linkDatabase
+		.getChildren(inLink.getParent());
+		OBORestriction scratch = new OBORestrictionImpl();
+		for (Link link : parents) {
+			if (TermUtil.isIntersection(link))
+				continue;
+			scratch.setChild(link.getParent());
+			scratch.setType(inLink.getType());
+			scratch.setParent(inLink.getParent());
+			// logger.info("parents = " + parents);
+			// logger.info("children = " + children);
+			if (children.contains(scratch)) {
+				// logger.info("explanations: "
+				// + linkDatabase.getExplanations(inLink));
+				return true;
+			}
+
+			scratch.setType(OBOProperty.IS_A);
+			if (children.contains(scratch))
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * false if the link is not implied; true if implied and an intersection link (does this happen?).
+	 * true if this link is the same as a grandparent link
+	 * 
+	 * Note: despite its name this appears to be the current means of trimming in
+	 * TrimmedLinkDatabase
+	 * @param linkDatabase
+	 * @param link
+	 * @return
+	 */
+	public static boolean shouldBeTrimmed(LinkDatabase linkDatabase,
+			Link link) {
+		if (!TermUtil.isImplied(link))
+			return false; // asserted links are never trimmed
+		if (TermUtil.isIntersection(link))
+			return true; // TODO
+		if (!link.getType().equals(OBOProperty.IS_A))
+			return true; // trim all implied non-is_a links
+		if (link.getChild().equals(link.getParent()))
+			return true; // trim all reflexive links
+
+		// trim any links to parents that are redundant with
+		// a GRANDPARENT link
+		// if any trimmed link is a GIVEN link, it is redundant
+
+
+		// links that originate from the same child
+		// link = <A R B>, parent = <A R2 X>
+		Collection<Link> parents = linkDatabase.getParents(link.getChild());
+
+		// for each parent link
+		for (Link parentLink : parents) {
+
+			if (parentLink.equals(link)) {
+				continue;
+			}
+			if (parentLink.getChild().equals(parentLink.getParent())) {
+				continue; // reflexive
+			}
+
+			if (!(parentLink.getType().equals(link.getType()) || parentLink
+					.getType().equals(OBOProperty.IS_A)))
+				continue;
+
+			// relations are identical; R2=R
+			boolean sawType = parentLink.getType().equals(link.getType());
+
+
+			// for each grandparent link accessible via the current
+			// parent link...
+			// <X R3 B2>
+			for (Link gpLink : linkDatabase.getParents(parentLink.getParent())) {
+				if (gpLink.getChild().equals(gpLink.getParent())) {
+					continue; // reflexive
+				}
+				if (TermUtil.isIntersection(gpLink))
+					continue;
+
+				// see if the grandparent link has the same type
+				// and parent as the current link. if it does,
+				// the current link is redundant with the grandparent
+				// link and should be removed
+				if (link.getParent().equals(gpLink.getParent())) { // B=B2
+					if ((!sawType || link.getType().isTransitive()) &&
+							link.getType().equals(gpLink.getType())) {
+						return true; 
+					}
+					if (sawType && gpLink.getType().equals(OBOProperty.IS_A)) {
+						return true;
+					}
+				}
+			}
+
+			// add a section where we trim links that have a sibling link
+			// with the same parent, but a more specific type,
+			// than the current link
+		}
+
+		return false;
+
 	}
 
 

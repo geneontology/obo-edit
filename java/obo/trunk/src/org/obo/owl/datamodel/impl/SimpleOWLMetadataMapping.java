@@ -22,26 +22,26 @@ public class SimpleOWLMetadataMapping extends AbstractOWLMetadataMapping {
 	protected final static Logger logger = Logger.getLogger(SimpleOWLMetadataMapping.class);
 
 	public boolean isOboToOWLLossy() { return true; }
-	
+
 	public String getName() { return "Simple mapping"; }
 	public String getDesc() { return "Uses basic RDFS vocabulary for all metadata"; }
-	
+
 	public Set<OWLAxiom> getOWLAxioms(OWLAdapter adapter, OWLEntity owlEntity, IdentifiedObject io) {
 		HashSet<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		setFactory(adapter.getOwlFactory());
 		if (io instanceof CommentedObject) {
-			 String comment = ((CommentedObject)io).getComment();
-			 if (comment != null && !comment.equals(""))
-				 axioms.add(getAnnotationAxiom(owlEntity,
-								 OWLRDFVocabulary.RDFS_COMMENT.getURI(),
-								 comment));
+			String comment = ((CommentedObject)io).getComment();
+			if (comment != null && !comment.equals(""))
+				axioms.add(getAnnotationAxiom(owlEntity,
+						OWLRDFVocabulary.RDFS_COMMENT.getURI(),
+						comment));
 		}
 		if (io instanceof DefinedObject) {
-			 String def = ((DefinedObject)io).getDefinition();
-			 if (def != null && !def.equals(""))
-				 axioms.add(getAnnotationAxiom(owlEntity,
-								 OWLRDFVocabulary.RDFS_COMMENT.getURI(),
-								 def));
+			String def = ((DefinedObject)io).getDefinition();
+			if (def != null && !def.equals(""))
+				axioms.add(getAnnotationAxiom(owlEntity,
+						OWLRDFVocabulary.RDFS_COMMENT.getURI(),
+						def));
 		}
 		return axioms;
 	}
@@ -49,14 +49,16 @@ public class SimpleOWLMetadataMapping extends AbstractOWLMetadataMapping {
 	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		OWLAnnotation owlAnnot = axiom.getAnnotation();
 		URI uri = owlAnnot.getAnnotationURI();
-		String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
-		if (uri.equals(OWLRDFVocabulary.RDFS_COMMENT.getURI())) {
-			if (lo instanceof CommentedObject)
-				((CommentedObject)lo).setComment(val);
-			return true;
-		}		
+		if (owlAnnot.isAnnotationByConstant()) {
+			String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
+			if (uri.equals(OWLRDFVocabulary.RDFS_COMMENT.getURI())) {
+				if (lo instanceof CommentedObject)
+					((CommentedObject)lo).setComment(val);
+				return true;
+			}		
+		}
 		return false;
 	}
 
 }
-		
+

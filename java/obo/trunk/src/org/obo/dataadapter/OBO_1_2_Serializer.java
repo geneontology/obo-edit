@@ -118,7 +118,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	}
 
 	public static String escapePVValue(String s) {
-		return OBOSerializationEngine.escapePVValue(s);
+		return "\""+escapeQuoted(s)+"\"";
+		//return OBOSerializationEngine.escapePVValue(s);
 	}
 
 	public static String escapeDbxref(String s) {
@@ -472,7 +473,18 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 		if (TermUtil.isImplied(link))
 			scratch.add(new PropertyValueImpl("implied", "true"));
 
+		if (link.getParent() == null) {
+		  logger.error("invalid link object: "+link);	
+		}
 		stream.print(engine.mapID(link.getParent(), link.getParent().getID()));
+		if (link instanceof OBORestriction) {
+			OBORestriction r = (OBORestriction) link;
+			if (r.getNumberOfAdditionalArguments() > 0) {
+				for (LinkedObject a : r.getAdditionalArguments()) {
+					stream.print(" "+engine.mapID(a, a.getID()));					
+				}
+			}
+		}
 		writeNestedValue(nv, scratch);
 		if (link.getParent().getName() != null)
 			print(" ! " + link.getParent().getName());
@@ -583,12 +595,12 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			Iterator it = writeNestedValueScratch.iterator();
 
 			print(" {");
-			while (it.hasNext()) {
+			for (PropertyValue pv : writeNestedValueScratch) {
 				if (notFirst)
 					print(", ");
-				PropertyValue pv = (PropertyValue) it.next();
 				print(escapePVName(pv.getProperty()) + "="
 						+ escapePVValue(pv.getValue()));
+				notFirst = true;
 			}
 
 			print("}");

@@ -221,6 +221,10 @@ public class DefaultOBOParser implements OBOParser {
 		}
 	}
 
+	/**
+	 * TODO: DRY. A similar inner class exists in OBOParseEngine
+	 *
+	 */
 	protected static class RelStruct implements Comparable {
 		protected String child;
 
@@ -251,6 +255,8 @@ public class DefaultOBOParser implements OBOParser {
 		protected Integer maxCardinality;
 
 		protected Integer cardinality;
+		
+		protected List<String> args; // future expansion: n-ary relations
 
 		public int compareTo(Object b) {
 			if (b instanceof RelStruct) {
@@ -264,6 +270,29 @@ public class DefaultOBOParser implements OBOParser {
 				return 1;
 		}
 
+		public RelStruct(String child, String parent, String type, String path,
+				int linenum, String line, boolean necessary,
+				boolean inverseNecessary, boolean completes, boolean implied,
+				Integer minCardinality, Integer maxCardinality,
+				Integer cardinality, String ns, NestedValue nv, List<String> args) {
+			this.child = child;
+			this.parent = parent;
+			this.type = type;
+			this.linenum = linenum;
+			this.path = path;
+			this.line = line;
+			this.necessary = necessary;
+			this.inverseNecessary = inverseNecessary;
+			this.completes = completes;
+			this.implied = implied;
+			this.cardinality = cardinality;
+			this.maxCardinality = maxCardinality;
+			this.minCardinality = minCardinality;
+			this.nv = nv;
+			this.ns = ns;
+			this.args = args;
+			
+		}
 		/*
 		 * public RelStruct(String child, String parent, String type, int
 		 * linenum, String line) { this(child, parent, type, linenum, line,
@@ -354,6 +383,15 @@ public class DefaultOBOParser implements OBOParser {
 		public String getType() {
 			return type;
 		}
+		
+		public List<String> getArgs() {
+			return args;
+		}
+
+		public void setArgs(List<String> args) {
+			this.args = args;
+		}
+
 	}
 
 	public DefaultOBOParser() {
@@ -534,6 +572,23 @@ public class DefaultOBOParser implements OBOParser {
 		// new SynonymCategoryImpl(id, name, scope);
 		session.addSynonymType(cat);
 	}
+	
+	public LinkedObject getLinkedObject(String id) {
+		LinkedObject lo = (LinkedObject) getObject(id);
+		if (lo == null) {
+			if (allowDanglingParents) {
+				lo = objectFactory.createDanglingObject(id,
+						false);
+				session.addObject(lo);
+				logger.info("Added dangling object for "+id);
+			} else {
+				//danglingViolations.add(rs);
+				logger.error("dangling: "+id);
+			}
+		}
+		return lo;
+	}
+
 
 	public IdentifiedObject getObject(String id) {
 		IdentifiedObject io = session.getObject(mapID(id));
@@ -843,7 +898,7 @@ public class DefaultOBOParser implements OBOParser {
 	public void readRelationship(String rel_type, String id, boolean necessary,
 			boolean inverseNecessary, boolean completes, boolean implied,
 			Integer minCardinality, Integer maxCardinality,
-			Integer cardinality, String ns, NestedValue nv)
+			Integer cardinality, String ns, NestedValue nv, List<String> args)
 	throws OBOParseException {
 		if (!(currentObject instanceof LinkedObject))
 			throw new OBOParseException("Tried to specify relationship "
@@ -858,7 +913,7 @@ public class DefaultOBOParser implements OBOParser {
 				mapID(rel_type), getCurrentPath(), engine.getLineNum(), engine
 				.getCurrentLine(), necessary, inverseNecessary,
 				completes, implied, minCardinality, maxCardinality,
-				cardinality, ns, nv));
+				cardinality, ns, nv, args));
 	}
 
 	public void readIsa(String id, String ns, boolean completes,
@@ -1228,6 +1283,15 @@ public class DefaultOBOParser implements OBOParser {
 			tr.setMaxCardinality(rs.getMaxCardinality());
 			tr.setMinCardinality(rs.getMinCardinality());
 			tr.setCardinality(rs.getCardinality());
+			if (rs.getArgs() != null && rs.getArgs().size() > 0) {
+				List<LinkedObject> args = new ArrayList<LinkedObject>();
+				for (int i=0; i<rs.getArgs().size(); i++) {
+					args.add( getLinkedObject(rs.getArgs().get(i)));
+				}
+				tr.setAdditionalArguments(args);
+
+			}
+			
 
 			if (ns != null && !ns.equals(child.getNamespace())) {
 				tr.setNamespace(ns);

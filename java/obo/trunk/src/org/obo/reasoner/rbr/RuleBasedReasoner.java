@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 import org.bbop.util.MultiHashSetMap;
+import org.bbop.util.MultiMap;
 
 /**
  *
@@ -54,6 +56,9 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	protected HashMap<Link, Link> linkMap;
 	protected HashMap<OBOProperty,Link> propertyLinkMap;
 	protected RelationCompositionTable rct;
+	protected Map<Link, Collection<Explanation>> explanationMap; // we are overriding MultiMap in AbstractReasoner
+
+
 
 	/**
 	 * a Link that has been inferred by the LinkPileReasoner.
@@ -224,8 +229,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		impliedLinkDatabase = createImpliedLinkDatabase(getLinkDatabase());
 		rct = new RelationCompositionTable(getLinkDatabase());
 		logger.info("RCT:\n"+rct.toTable());
+		// TODO: replace with standard Map
 		explanationMap =
-			new MultiHashSetMap<Link, Explanation>();
+//			new MultiHashSetMap<Link, Explanation>();
+			new HashMap<Link,Collection<Explanation>>();
 		explanationDeps =
 			new MultiHashSetMap<Link, Explanation>();
 		// we seed the impliedLinkDatabase with all given links
@@ -352,7 +359,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 				return false; // there is at least one reasoner explanation
 			}
 		}
-		explanationMap.add(link, explanation);
+		//explanationMap.add(link, explanation);
+		if (!explanationMap.containsKey(link))
+			explanationMap.put(link, new ArrayList<Explanation>());
+		explanationMap.get(link).add(explanation);
 		//logger.debug("added to explMap: "+link+" -> " +explanation);
 		for (Link evidence : explanation.getEvidence()) {
 			explanationDeps.add(evidence, explanation);
@@ -364,8 +374,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	@Override
 	public Collection<Explanation> getExplanations(PathCapable link) {
-		Collection<Explanation> exps = explanationMap.get(link);
-		return exps;
+		if (explanationMap.containsKey(link))
+			return explanationMap.get(link);
+		return Collections.EMPTY_LIST;
+		//Collection<Explanation> exps = explanationMap.get(link);
 	}
 
 

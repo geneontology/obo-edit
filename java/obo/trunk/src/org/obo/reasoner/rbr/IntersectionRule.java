@@ -2,8 +2,10 @@ package org.obo.reasoner.rbr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.bbop.util.MultiHashMap;
@@ -67,12 +69,8 @@ public class IntersectionRule extends AbstractRule {
 	 * T cell differentiation -> [ <is_a differentiation>, <results_in_acquisition_of_features_of T-cell>]
 	 */
 	protected MultiMap<LinkedObject, Link> intersectionMap;
+	protected Map<LinkedObject, Link> bestLinkMap;
 
-	/**
-	 * maps from an OBOClass used in an intersection definition to the defined class. For example
-	 * T-cell -> [T-cell differentiation, T-cell proliferation, T-cell anergy, ...]
-	 */
-	protected MultiMap<LinkedObject, LinkedObject> hintMap;
 
 	@Override
 	public void init(ReasonedLinkDatabase reasoner) {
@@ -82,14 +80,12 @@ public class IntersectionRule extends AbstractRule {
 
 	protected void buildIntersectionMap(ReasonedLinkDatabase reasoner) {
 		intersectionMap = new MultiHashMap<LinkedObject, Link>();
-		hintMap = new MultiHashMap<LinkedObject, LinkedObject>();
 		for (IdentifiedObject io : reasoner.getObjects()) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
 				for (Link link : lo.getParents()) {
 					if (TermUtil.isIntersection(link)) {
 						intersectionMap.add(lo, link);
-						hintMap.add(link.getParent(), lo);
 					}
 				}
 			}
@@ -102,10 +98,19 @@ public class IntersectionRule extends AbstractRule {
 
 		ArrayList<Explanation> expls = new ArrayList<Explanation>();
 
+		// add trivial links
 		if (isFirstPass) {
+			long itime = System.nanoTime();
+			bestLinkMap = new HashMap<LinkedObject,Link>();
+
 			// TODO!! do we need this? oe expects impliedLinkDatabase to contain both..
 			isFirstPass = false;
 			for (LinkedObject xp : intersectionMap.keySet()) {
+				// find the xp link that has the fewest match links and
+				// use this to build candidate list (this will be
+				// the most efficient)
+				Integer minSize = null;
+				Link bestLink = null;
 				for (Link link : intersectionMap.get(xp)) {
 
 					OBOProperty prop = link.getType();
@@ -118,37 +123,30 @@ public class IntersectionRule extends AbstractRule {
 					exp.setExplainedLink(out);
 					expls.add(exp);
 
+					int numLinks = reasoner.getChildren(link.getParent()).size(); // we map by properties so this should be fast
+					if (minSize == null || numLinks < minSize) {
+						minSize = numLinks;
+						bestLink = link;
+					}
 				}
+				bestLinkMap.put(xp, bestLink);
 			}
+			long xpInitTime = System.nanoTime() - itime;
+			logger.info("      xpInitTime = "
+					+ (xpInitTime / 1000000d) + " ms");
 		}
 		for (LinkedObject xp : intersectionMap.keySet()) {
 
 			// each candidate is a potential subclass of xp
 			Set<LinkedObject> candidateSubClasses = new HashSet<LinkedObject>();
 
-			// find the xp link that has the fewest match links and
-			// use this to build candidate list (this will be
-			// the most efficient)
-			Integer minSize = null;
 			Link bestLink = null;
-			if (false) {
-				// this was extremely inefficient
-				for (Link nsLink : intersectionMap.get(xp)) {
-					OBOProperty p = nsLink.getType();
-					long itime = System.nanoTime();
-					int numLinks = reasoner.getLinks(p).size(); // we map by properties so this should be fast
-					findBestLinkTime += (System.nanoTime() - itime);
-					if (minSize == null || numLinks < minSize) {
-						minSize = numLinks;
-						bestLink = nsLink;
-					}
-				}
-			}
-			else {
+			if (bestLinkMap.containsKey(xp))
+				bestLink = bestLinkMap.get(xp);
+			else
 				// choose an arbitrary candidate link
 				// could be inefficient for ontologies e.g. with lots of genus-root terms
 				bestLink = intersectionMap.get(xp).iterator().next(); // arbitrary
-			}
 
 
 			// find candidates based on one of the N+S conditions
@@ -177,23 +175,6 @@ public class IntersectionRule extends AbstractRule {
 						candidateSubClasses.add(candidateSubClass);
 				}
 			}
-
-			/*
-			// test the candidate satisfies all conditions
-			for (Link nsLink : intersectionMap.get(xp)) {
-				if (nsLink.equals(bestLink))
-					continue;
-				OBOProperty prop = nsLink.getType();
-				LinkedObject to = nsLink.getParent();
-				Collection<LinkedObject> togo = new ArrayList<LinkedObject>();
-				for (LinkedObject candidate : candidateSubClasses) {
-					if (reasoner.hasRelationship(candidate, prop, to) == null) {
-						togo.add(candidate);
-					}
-				}
-				candidateSubClasses.removeAll(togo);
-			}
-			 */
 
 			for (LinkedObject candidate : candidateSubClasses) {
 				Link out = createLink(candidate, OBOProperty.IS_A, xp);
