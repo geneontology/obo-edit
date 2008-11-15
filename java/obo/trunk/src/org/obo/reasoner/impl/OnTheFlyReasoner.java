@@ -26,6 +26,13 @@ import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
+/**
+ *  On-demand reasoning using a subset of the full reasoning rules: transitivity and propagation over and under IS_A.
+ *  Whereas most implementations of ReasonedLinkDatabase use forward chaining, this performs backwards chaining.
+ *  TODO: use relation composition from rbr
+ * (documented retrospectively by cjm)
+ * @author JDR
+ */
 public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLinkDatabase {
 
 	//initialize logger

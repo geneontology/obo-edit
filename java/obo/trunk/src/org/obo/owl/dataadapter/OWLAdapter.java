@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.bbop.dataadapter.AdapterConfiguration;
@@ -146,7 +145,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		protected boolean failFast = false;
 
 		protected boolean saveImplied;
-		
+
 		protected boolean combineOWLOntologies = true;
 
 		protected List<FilteredPath> saveRecords = new ArrayList<FilteredPath>();
@@ -236,7 +235,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		public void setMetadataMappings(Set<MetadataMapping> metadataMappings) {
 			this.metadataMappings = metadataMappings;
 		}
-		
+
 		/**
 		 * Different ontologies use different annotation properties for
 		 * encoding synonyms, definitions, obsolete classes etc. This
@@ -349,12 +348,12 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 	}
 	public void fireLossyWarning(String message) throws DataAdapterException {
 		if (ioprofile.allowLossy) {
-			logger.severe(message);
+			logger.error(message);
 			// TODO capture errors
 		}
 		else
 			throw new DataAdapterException(message+
-					" -- set allowLossy to true to ignore this message");				
+			" -- set allowLossy to true to ignore this message");				
 	}
 
 	public AdapterConfiguration getConfiguration() {
@@ -438,9 +437,9 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			transformToOBOSession(ontology, session);			
 		}
 
-		
+
 	}
-	
+
 	public void transformToOBOSession(OWLOntology ontology, OBOSession session) throws DataAdapterException {
 		ObjectFactory oboFactory = session.getObjectFactory();
 
@@ -465,6 +464,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 						}
 						else  {
 							oboInstance.addPropertyValue(oboProp, oboRefInst);
+							logger.debug("PV: "+oboProp+" = "+oboRefInst);
 						}
 					}
 				}
@@ -480,6 +480,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 								owlConst.getLiteral());
 						//logger.info("dv="+dv+" "+oboProp);
 						oboInstance.addPropertyValue(oboProp,dv);
+						logger.debug("PV: "+oboProp+" = "+dv);
 					}
 				}
 
@@ -506,6 +507,11 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			OBOClass oboClass = 
 				(OBOClass)oboFactory.createObject(id, OBOClass.OBO_CLASS, false);
 			session.addObject(oboClass);
+		}
+		
+		for (OWLClass owlClass : ontology.getReferencedClasses()) {
+			String id = getOboID(owlClass.getURI());
+			OBOClass oboClass = (OBOClass) session.getObject(id);
 			Set<OWLAnnotationAxiom> owlAnnotationAxioms = owlClass.getAnnotationAxioms(ontology);
 			getMetadataFromAnnotationAxioms(oboClass,owlAnnotationAxioms);
 
@@ -546,15 +552,20 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				addDescription(oboClass,equivTo);
 
 			}
-			/* Find all N+S conditions
+			/* Find all disjoint classes
 			 * 
 			 */
 			for (OWLDescription owlDisjointClass : owlClass.getDisjointClasses(ontology)) {
 				OBOClass oboDisjointClass = getOboClass(owlDisjointClass);
-				// all axioms are stored in OBO as "Restriction"s
-				oboClass.addParent(new OBORestrictionImpl(oboClass,
-						OBOProperty.DISJOINT_FROM,
-						oboDisjointClass));
+				if (oboDisjointClass != null) { 
+					// all axioms are stored in OBO as "Restriction"s
+					oboClass.addParent(new OBORestrictionImpl(oboClass,
+							OBOProperty.DISJOINT_FROM,
+							oboDisjointClass));
+				}
+				else {
+					fireLossyWarning("disjointWith axioms must be to named classes. Can't handle: "+oboClass+" with "+owlDisjointClass);
+				}
 			}
 
 		}
@@ -658,13 +669,12 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		OBOProperty oboProp;
 		OBOClass oboParentClass;
 		ObjectFactory oboFactory = session.getObjectFactory();
-		OBORestriction link;
+		OBORestriction link = null;
 		if (desc instanceof OWLClass) {
 			oboProp = OBOProperty.IS_A;
 			oboParentClass = getOboClass((OWLClass)desc);
 			link = (OBORestriction)oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
-			return link;
-
+			logger.debug("subclass of named class: "+desc+" :: "+link);
 		}
 		else if (desc instanceof OWLObjectSomeRestriction) {
 			OWLObjectSomeRestriction restr =
@@ -672,10 +682,10 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			oboProp = getOboProperty(restr.getProperty().asOWLObjectProperty());
 			oboParentClass = getOboClass(restr.getFiller());
 			link = oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
-			return link;
-
+			logger.debug("subclass of existential restriction: "+desc+" :: "+link);
 		}
 		else if (desc instanceof OWLObjectAllRestriction) {
+			logger.debug("subclass of universal restriction: "+desc+" :: "+link);
 			//			TODO - obof1.3
 		}
 		else if (desc instanceof OWLObjectCardinalityRestriction) {
@@ -696,25 +706,32 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				link.setCardinality(card);
 			}
 			else {
-				// should this be an assertion error?
-				return null;
+				fireLossyWarning("unknown class of OWLObjectCardinalityRestriction: "+desc);
 			}
-			return link;
+			logger.debug("subclass of QCR: "+desc+" :: "+link);
+
 		}
 		else if (desc instanceof OWLObjectIntersectionOf) {
 			oboProp = OBOProperty.IS_A;
 			oboParentClass = getOboClass(desc);
 			// oboRestrictions are not owl restrictions!!
 			link = (OBORestriction)oboFactory.createOBORestriction(oboClass, oboProp, oboParentClass, false);
-			return link;
-
-//			logger.info("cannot do recursive intersections yet: "+desc);
-//			not yet
+			logger.debug("subclass of intersection: "+desc+" :: "+link);
 		}
 		else {
 
 		}
-		return null;
+		if (link != null) {
+			if (link.getParent() == null) {
+				fireLossyWarning("incomplete link: "+link+"; from conversion of: "+desc);
+				link = null;
+			}
+
+		}
+		else {
+
+		}
+		return link;
 	}
 
 	public OBOClass getOboClass(OWLDescription owlDesc) throws DataAdapterException {
@@ -757,7 +774,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				}
 			}
 			description2oboclass.put(owlDesc,oboClass);
-				
+
 			return oboClass;
 		}
 	}
@@ -861,7 +878,7 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 				if (true) {
 					String val = owlAnnot.getAnnotationValueAsConstant().getLiteral();
 					pv = new PropertyValueImpl("property_value",propid+" "+val);
-					
+
 				}
 				lo.addPropertyValue(pv);
 			}
@@ -879,8 +896,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		if (io == null) {
 			return
 			TermUtil.castToProperty(session.getObjectFactory().createDanglingObject(id, true));
-//			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
-//			false);
+			//			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
+			//			false);
 		}
 		else {
 			return TermUtil.castToProperty(io);
@@ -891,8 +908,8 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 		if (io == null) {
 			return
 			TermUtil.castToInstance(session.getObjectFactory().createDanglingObject(id, true));
-//			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
-//			false);
+			//			return (OBOProperty)session.getObjectFactory().createObject(id, OBOClass.OBO_PROPERTY,
+			//			false);
 		}
 		else {
 			return TermUtil.castToInstance((LinkedObject)io);
@@ -1313,11 +1330,11 @@ public class OWLAdapter extends AbstractProgressValued implements DataAdapter {
 			throw new UnsupportedEncodingException();
 		}
 
-//		} catch (Exception e) {
-//		logger.info(db+" : "+safeId + " is not safe!");
-//		e.printStackTrace();
-//		uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
-//		}
+		//		} catch (Exception e) {
+		//		logger.info(db+" : "+safeId + " is not safe!");
+		//		e.printStackTrace();
+		//		uri = URI.create(PURL_OBO_OWL + db + "#_"); // TODO
+		//		}
 
 		return  uri;
 		//return URI.create("http://purl.org/obo/" + db + "#" + db + "_" + safeId); // TODO

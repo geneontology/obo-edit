@@ -23,7 +23,6 @@ public class LinkCompositionRule extends AbstractRule {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(LinkCompositionRule.class);
 
-	
 	/**
 	 * Given a composition table of rules
 	 * R1.R2->IR
@@ -103,23 +102,6 @@ public class LinkCompositionRule extends AbstractRule {
 		return expls;	
 	}
 
-	public Collection<Explanation> getNewInferencesOLD(ReasonedLinkDatabase reasoner) {
-		ArrayList<Explanation> expls = new ArrayList<Explanation>();
-		logger.debug("all properties: "+reasoner.getProperties());
-		for (OBOProperty inferredProp : reasoner.getProperties()) {
-			Collection<List<OBOProperty>> chains = inferredProp.getHoldsOverChains();
-			if (chains == null)
-				continue;
-			for (List<OBOProperty> chain : chains) {
-				if (chain.size() == 2) {
-					expls.addAll(getNewInferencesForComposition(reasoner, inferredProp, chain.get(0), chain.get(1)));
-				}
-				else {
-					// TODO
-				}
-			}
-		}
-		return expls;	
-	}
+
 
 }

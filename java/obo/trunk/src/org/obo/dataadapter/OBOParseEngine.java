@@ -997,8 +997,18 @@ public class OBOParseEngine extends AbstractParseEngine {
 		protected Integer card;
 
 		protected String ns;
+		
+		protected List<String> args; // future expansion: n-ary relations
 
 		protected NestedValue nv;
+
+		public RelStruct(String type, String id, boolean nec, boolean invNec,
+				boolean completes, boolean implied, Integer minCard,
+				Integer maxCard, Integer card, String ns, NestedValue nv,
+				List<String> args) {
+			this(type,id,nec,invNec,completes,implied,minCard,maxCard,card,ns,nv);
+			this.args = args;
+		}
 
 		public RelStruct(String type, String id, boolean nec, boolean invNec,
 				boolean completes, boolean implied, Integer minCard,
@@ -1100,6 +1110,14 @@ public class OBOParseEngine extends AbstractParseEngine {
 			this.type = type;
 		}
 
+		public List<String> getArgs() {
+			return args;
+		}
+
+		public void setArgs(List<String> args) {
+			this.args = args;
+		}
+
 	}
 
 	protected void doReadRelationship(RelStruct relStruct, OBOParser parser)
@@ -1121,7 +1139,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 					relStruct.getNec(), relStruct.getInvNec(), relStruct
 					.completes(), relStruct.isImplied(), relStruct
 					.getMinCard(), relStruct.getMaxCard(), relStruct
-					.getCard(), relStruct.getNS(), relStruct.getNV());
+					.getCard(), relStruct.getNS(), relStruct.getNV(), relStruct.getArgs());
 	}
 
 	protected RelStruct parseRelationship(String value, NestedValue nv,
@@ -1153,6 +1171,17 @@ public class OBOParseEngine extends AbstractParseEngine {
 		if (id.length() == 0)
 			throw new OBOParseException("Empty ID specified for"
 					+ " relationship.", getCurrentPath(), line, linenum, 0);
+		String[] ids = id.split(" ");
+		List<String> args = new ArrayList<String>();
+		if (ids.length > 1) {
+			id = ids[0].trim();
+			for (int i=1; i<ids.length;i++) {
+				if (ids[i].trim().length() ==0)
+					continue;
+				args.add(ids[i].trim());
+			}
+			//logger.error("can't handle n-ary relations yet");
+		}
 		boolean necessary = true;
 		boolean inverseNecessary = false;
 		boolean completes = false;
@@ -1224,7 +1253,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			type = null;
 
 		return new RelStruct(type, id, necessary, inverseNecessary, completes,
-				implied, minCardinality, maxCardinality, cardinality, ns, nv);
+				implied, minCardinality, maxCardinality, cardinality, ns, nv, args);
 	}
 
 	protected OBOParser.XrefPair[] getDbxrefList(String line, int linenum,
