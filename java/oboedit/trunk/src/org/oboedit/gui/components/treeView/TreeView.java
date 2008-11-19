@@ -498,9 +498,13 @@ public class TreeView extends AbstractGUIComponent {
 		task.setTerms(termSet);
 		treeViewConfigPanelInstance.eventQueue.scheduleTask(task);
 	
-		restrictedJTreeInstance.refresh(true); //Added this so the tree just redraws once at the end
+		//restrictedJTreeInstance.refresh(true); //Added this so the tree just redraws once at the end
 												//rather than continuously throughout.
-	
+		//A new bug has appeared that mean that component cannot be started when
+		//a term is selected in the OTE unless this line is commented out.
+		//Once this line is commented out the old redraw bugs seem to have gone away.
+		//It is not clear what has caused this change. 
+		
 	
 	}
 
