@@ -246,63 +246,6 @@ public interface OBOProperty extends OBOObject {
 		}
 	};
 
-	public static final OBOProperty REGULATES = new OBOPropertyImpl("regulates", null) {
-		{
-			this.name = "regulates";
-		}
-
-		@Override
-		public boolean isTransitive() {
-			return false;
-		}
-
-//		@Override
-//		public boolean isBuiltIn() {
-//			return true;
-//		}
-
-		public boolean isNonInheritable() {
-			return true;
-		}
-	};
-	public static final OBOProperty NEGATIVELY_REGULATES = new OBOPropertyImpl("negatively_regulates", null) {
-		{
-			this.name = "negatively_regulates";
-		}
-
-		@Override
-		public boolean isTransitive() {
-			return false;
-		}
-
-//		@Override
-//		public boolean isBuiltIn() {
-//			return true;
-//		}
-
-		public boolean isNonInheritable() {
-			return true;
-		}
-	};
-	public static final OBOProperty POSITIVELY_REGULATES = new OBOPropertyImpl("positively_regulates", null) {
-		{
-			this.name = "positively_regulates";
-		}
-
-		@Override
-		public boolean isTransitive() {
-			return false;
-		}
-
-//		@Override
-//		public boolean isBuiltIn() {
-//			return true;
-//		}
-
-		public boolean isNonInheritable() {
-			return true;
-		}
-	};
 
 	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
 							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER};
