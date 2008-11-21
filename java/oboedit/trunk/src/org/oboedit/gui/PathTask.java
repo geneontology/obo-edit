@@ -141,18 +141,35 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 		}
 
 		Iterator it = linkDatabase.getParents(link.getParent()).iterator();
-		while (it.hasNext()) {
+		while (it.hasNext()) { 			//This goes into endless loop with disjoint rels in tree view.
+			
 			Link parentRel = (Link) it.next();
+			
+			
+			logger.debug("PathTask: Collection: parentRel = " + parentRel.getID());
+			
+	        // This line below is running over and over again, 
+			//and it never gets to the next while. Probably because of non-transitivity of disjoint 
+			//being wrongly handled. Or possible to do with symmetry. 
+			
 			Collection parentVector = getPathsAsVector(incSize
-					/ TermUtil.getParentCount(linkDatabase, link.getParent()),
-					parentRel, lookedAt, lookedAtCount);
-			Iterator it2 = parentVector.iterator();
+						/ TermUtil.getParentCount(linkDatabase, link.getParent()),
+						parentRel, lookedAt, lookedAtCount);
+				
+//				logger.debug("PathTask: Collection: " + getPathsAsVector(incSize
+//						/ TermUtil.getParentCount(linkDatabase, link.getParent()),
+//						parentRel, lookedAt, lookedAtCount)); //This is sometimes empty with disjoint rels.
+				Iterator it2 = parentVector.iterator();
+			
+						
 			while (it2.hasNext()) {
 				TreePath path = (TreePath) it2.next();
 				TreePath pathByAddingChild = path.pathByAddingChild(link);
 				if (!lookedAt.get(link).contains(pathByAddingChild))
 					lookedAt.add(link, pathByAddingChild);
 			}
+			
+
 		}
 		return lookedAt.get(link);
 	}
