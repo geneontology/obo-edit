@@ -451,9 +451,10 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 */
 	protected void doUpdate() {
-		//logger.debug("TreeView: doUpdate method.");
+		logger.debug("TreeView: doUpdate method.");
 
 		final PathTask task = new PathTask();
+		logger.debug("TreeView: doUpdate: new PathTask created.");
 		task.addPostExecuteRunnable(new Runnable() {
 
 			public void run() {
@@ -462,11 +463,21 @@ public class TreeView extends AbstractGUIComponent {
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
 				while(it.hasNext()) {
+					logger.debug("TreeView: doUpdate: it = " + it);
+					logger.debug("TreeView: run: it.hasNext");
 					TreePath path = (TreePath) it.next();
+					logger.debug("TreeView: doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
+					logger.debug("TreeView: doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
+					logger.debug("TreeView: doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
+
 					if (PathUtil.pathIsCircular(path)
-							|| (!treeViewSettingsInstance.getShowNonTransitive() == true && 
-									PathUtil.pathContainsNonTransitive(path))) {  //changed this line.
+							|| (treeViewSettingsInstance.getShowNonTransitive() == false && 
+									PathUtil.pathContainsNonTransitive(path))) {  
+						logger.debug("TreeView: run: it = " + it);
 						it.remove();
+						logger.debug("TreeView: doUpdate: it.remove() run, it = " + it.toString());
+
+						
 					}
 				}
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
