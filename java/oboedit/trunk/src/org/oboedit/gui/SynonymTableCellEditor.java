@@ -84,26 +84,29 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		typeList = new JComboBox();
 		typeList.removeAllItems();
 		typeList.addItem("<no synonym type>");
-		Synonym syn = (Synonym) obj;
-
+//		logger.debug("typeList.getSelectedIndex(): " + typeList.getSelectedIndex());
 
 		Iterator it = SessionManager.getManager().getSession().getSynonymTypes().iterator();
 		while (it.hasNext()){
 			SynonymType syntype = (SynonymType) it.next();
 			typeList.addItem(syntype);
 		}
-		
+
 		typeList.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				Synonym syn = (Synonym) obj;
-				if (typeList.getSelectedIndex() < 1) {
+				if (typeList.getSelectedIndex() < 1){
+					typeList.setSelectedItem(null);
+					typeList.setSelectedItem("<no synonym type>");
 					scopeList.setEnabled(isEnabled());
-					syn.setSynonymType(null);
-				} else {
+				}
+				else {
 					SynonymType type = (SynonymType) typeList.getSelectedItem();
+					if (type == null)
+						typeList.setSelectedIndex(0);
+
 					if (type.getScope() != Synonym.UNKNOWN_SCOPE) {
 						scopeList.setSelectedIndex(type.getScope());
-						scopeList.setEnabled(false);
+
 					} else {
 						scopeList.setEnabled(isEnabled());
 						typeList.setEnabled(isEnabled());
@@ -227,7 +230,7 @@ public class SynonymTableCellEditor extends AbstractListTableEditor<Synonym> {
 		Synonym out = createNewValue();
 		out.setText(synonymField.getText());
 		out.setScope(scopeList.getSelectedIndex());
-//		if(typeList.getSelectedItem() != null)
+		if(typeList.getSelectedItem() != null && typeList.getSelectedItem() != "<no synonym type>")
 		out.setSynonymType((SynonymType) typeList.getSelectedItem());
 
 		for (Dbxref ref : xrefList.getData()) {
