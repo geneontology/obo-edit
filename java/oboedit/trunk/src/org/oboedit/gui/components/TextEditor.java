@@ -670,7 +670,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 			+ "</if>"
 			+ "</tab>"
 			+
-			
+
 			"</tabs>"
 			+
 
@@ -799,9 +799,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
 		}
-//		logger.debug("> item.size(): " + item.size());
 		if (item.size() > 0) {
-//			logger.debug("> item: " + item);
 			GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 					SelectionManager.getGlobalSelection());
 

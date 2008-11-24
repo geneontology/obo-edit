@@ -1,24 +1,4 @@
-Changes in b51:
+Changes in b52:
 
-Bug Fixes:
-[ 2209801 ] Verification Manager--clicking quick-fix icon doesn't work
-[ 2020766 ] no way to add synonym type
-
-Tree Viewer:
-The code has been rearranged so that the classes are all in separate files and so the code is easier to maintain.
-The configuration options are now reached via the wrench icon rather than via the options button. This means that it is now fully standardized to the same config system as the other components. [ 1881847 ]
-The bug that prevented any tree from being shown but instead just produced an endless progress bar is now fixed.
-[ 1958615 ][ 2225023 ]
-There are a number of outstanding bugs and these have all been entered in the bug tracker.
-
-Verification Manager:
-I have added comprehensive lists of correct spellings, repeatable words, always lowercase words and period-containing words.
-These lists are presented in the jar, but on running OBO-Edit the lists are also saved as text files to the config directory where new additions from the user can be integrated.
-I have worked through the live GO file correcting all typos so that when the verification manager is run there are now no errors flagged.
-A feature has been added that means repeated words are not flagged as errors if they straddle the end of a sentence.
-[ 1944175 ]
-
-
-Features:
 
 
