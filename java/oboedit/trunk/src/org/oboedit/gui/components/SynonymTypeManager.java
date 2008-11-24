@@ -8,6 +8,7 @@ import org.obo.datamodel.impl.*;
 import org.obo.history.*;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
 
@@ -148,6 +149,7 @@ public class SynonymTypeManager extends AbstractGUIComponent {
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveTypes();
+				Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 			}
 		});
 		revertButton.addActionListener(new ActionListener() {
