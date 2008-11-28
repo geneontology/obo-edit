@@ -136,10 +136,8 @@ public class TreeView extends AbstractGUIComponent {
 	 * Updates the Tree View to show the newly selected terms. 
 	 * 
 	 */
-	//This is a variable of the class TreeView but it also has an inner class. 	
+	
 	protected SelectionListener selectionListener = new SelectionListener() {
-		//SelectionEvent is a class that can contain a term or list of terms that has been selected. 
-		//Why is 'e' not used?
 		public void selectionChanged(SelectionEvent e) {
 			//logger.debug("\n\n\nTreeView: SelectionChanged: SelectionEvent = " + e.getSelection());
 			//logger.debug("TreeView: selectionListener method.");
@@ -159,9 +157,11 @@ public class TreeView extends AbstractGUIComponent {
 
 	
 	/**
-	 * Declares a TreeModel variable pointing to a TreeModel that will hold information about the ontology tree that is selected.
+	 * Declares a TreeModel variable pointing to a TreeModel that 
+	 * will hold information about the ontology tree that is selected.
 	 */
 	TreeModel model;
+	
 
 	
 	/**
@@ -175,8 +175,10 @@ public class TreeView extends AbstractGUIComponent {
 	};
 
 	/**
-	 * Passes on right or middle mouse clicks to send current selection to the Global Selection Listener.
-	 * This is the listener that enables terms selected in the Tree Viewer to be displayed in all other
+	 * Passes on right or middle mouse clicks to send current selection to 
+	 * the Global Selection Listener.
+	 * This is the listener that enables terms selected in the Tree Viewer 
+	 * to be displayed in all other
 	 * components that are currently set on Global Selection. 
 	 */
 	MouseInputAdapter clickListener = new MouseInputAdapter() {
@@ -206,15 +208,17 @@ public class TreeView extends AbstractGUIComponent {
 
 	
 	/**
-	 * This sets up the GUI of the main display area of the component, where the tree will be shown. 
-	 * This is separate from the GUI of the config system, which is set up in TreeViewConfigPanel.  
+	 * This sets up the GUI of the main display area of the component, where the 
+	 * tree will be shown. This is separate from the GUI of the config system, 
+	 * which is set up in TreeViewConfigPanel.  
 	 */
 	public void init() {
 		//logger.debug("TreeView: init Method.");
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
 		
-		//Enables the selection model to include selection of terms that are not in the same branch. 
+		//Enables the selection model to include selection of terms that are not in 
+		//the same branch. 
 		selectionModel
 				.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		setLayout(new BorderLayout());
@@ -222,6 +226,7 @@ public class TreeView extends AbstractGUIComponent {
 		setOpaque(true);
 		restrictedJTreeInstance = new RestrictedJTree(treeViewSettingsInstance);
 		restrictedJTreeInstance.setUI(getDefaultUI());
+		
 		
 		//Causes the terms names to be shown in the display as a JLabel in a coloured box. This is how the tree diagram is constructed.
 		restrictedJTreeInstance.setCellRenderer(new OBOCellRenderer());  
@@ -255,6 +260,9 @@ public class TreeView extends AbstractGUIComponent {
 		GUIUtil.addReloadListener(historyListener);
 		restrictedJTreeInstance.addMouseListener(clickListener);
 		setToolTips();
+		doUpdate(); //This line gets rid of the default sports ontology on startup
+					// by including a check for selected terms.
+		
 	}
 
 	
