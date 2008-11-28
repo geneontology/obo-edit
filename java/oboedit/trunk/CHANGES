@@ -1,4 +1,8 @@
 Changes in b52:
 
+[ 2207440 ] Tree Viewer - displays default tree
+On startup, the Tree Viewer displayed the default java sports and food ontology
+if no other term was selected in any component on global 
+selection mode. Now, in these circumstances, nothing is displayed. 
 
 
