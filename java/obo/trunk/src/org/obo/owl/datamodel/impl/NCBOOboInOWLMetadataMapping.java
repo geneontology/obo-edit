@@ -19,10 +19,12 @@ import org.obo.owl.util.IDSpaceRegistry;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectAnnotation;
@@ -42,59 +44,59 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 	}
 
 	public boolean isOboToOWLLossy() { return true; } // TODO: unfinished
-	
+
 	public String getName() { return "NCBO OboInOWL mapping"; }
 	public String getDesc() { return "See http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page";}
-	
+
 	//public static String ns() { return "http://www.geneontology.org/formats/oboInOwl";}
 	public static String ns() { return "http://www.w3.org/2000/01/rdf-schema";}
 
 	public enum OboInOWLNamespaces {
 
-	    OboInOWL("http://www.geneontology.org/formats/oboInOwl#");
+		OboInOWL("http://www.geneontology.org/formats/oboInOwl#");
 
-	    String ns;
-	    OboInOWLNamespaces(String ns) {
-	        this.ns = ns;
-	    }
+		String ns;
+		OboInOWLNamespaces(String ns) {
+			this.ns = ns;
+		}
 
-	    public String toString() {
-	        return ns;
-	    }
+		public String toString() {
+			return ns;
+		}
 	}
-	
+
 	public enum OboInOWLVocabulary {
 		SYNONYM("synonym"),
 		HAS_DEFINITION("hasDefinition"),
 		OBSOLETE_CLASS("ObsoleteClass");
-		
+
 		URI uri;
 
-	    OboInOWLVocabulary(String uri) {
-	    	this.uri = URI.create(OboInOWLNamespaces.OboInOWL + uri);
-	    }
+		OboInOWLVocabulary(String uri) {
+			this.uri = URI.create(OboInOWLNamespaces.OboInOWL + uri);
+		}
 
-	    public URI getURI() {
-	    	return uri;
-	    }
-	    
-	    public String toString() {
-	        return uri.toString();
-	    }
+		public URI getURI() {
+			return uri;
+		}
+
+		public String toString() {
+			return uri.toString();
+		}
 
 	}
 
 	public static final String HAS_DEFINITION = "hasDefinition";
 	public static final String HAS_SYNONYM = "hasSynonym";
-	
+
 	public URI getVocabURI(String s) {
 		return URI.create(ns() + "#" + s);
 	}
-		
+
 	public Set<OWLAxiom> getOWLAxioms(OWLAdapter adapter, OWLEntity owlEntity, IdentifiedObject io) {
 		HashSet<OWLAxiom> axioms = new HashSet<OWLAxiom>();
 		setFactory(adapter.getOwlFactory());
-		
+
 		OWLDataFactory owlFactory = adapter.getOwlFactory();
 		if (io instanceof CommentedObject) {
 			String comment = ((CommentedObject)io).getComment();
@@ -107,18 +109,18 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 			String def = ((DefinedObject)io).getDefinition();
 			if (def != null && !def.equals("")) {
 				// n=ary relation
-				
+
 				// TODO: is it necessary to create the anon ID?			
 				OWLIndividual defInst;
 				try {
 					defInst = //					owlFactory.getOWLIndividual(adapter.getURI("_"));
-					owlFactory.getOWLIndividual(adapter.getURI(io.getID()+"__def"));
+						owlFactory.getOWLIndividual(adapter.getURI(io.getID()+"__def"));
 					OWLAnnotationAxiom axiom1 = 
 						getAnnotationAxiom(owlEntity,
 								getVocabURI(HAS_DEFINITION),
 								defInst);
 					axioms.add(axiom1);
-					
+
 					OWLConstant defCon = owlFactory.getOWLUntypedConstant(def);
 					OWLDataProperty rdfsHasLabel = 
 						owlFactory.getOWLDataProperty(OWLRDFVocabulary.RDFS_LABEL.getURI());
@@ -136,7 +138,7 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 								hasDbxrefOwlProperty, 
 								xOwl));
 					}
-					*/
+					 */
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -148,11 +150,26 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 			}
 		}
 		if (io instanceof SynonymedObject) {
+			SynonymedObject so = (SynonymedObject)io;
+		}
+		if (io instanceof ObsoletableObject) {
+			OWLClass obCls = owlFactory.getOWLClass(OboInOWLVocabulary.OBSOLETE_CLASS.uri);
+			if (owlEntity instanceof OWLDescription) {
+				OWLAxiom axiom = 
+					owlFactory.getOWLSubClassAxiom((OWLDescription) owlEntity, obCls);
+			}
+			else {
+				logger.error("cannot handle obsolete "+io.getClass());
+				if (!isOboToOWLLossy()) {
+					// TODO
+				}
+			}
+			// TODO: consider, replace
 		}
 		return axioms;
-	
+
 	}
-	
+
 	public boolean translateOWLAxiom(OWLAnnotationAxiom axiom, IdentifiedObject lo, OWLAdapter adapter) {
 		OWLAnnotation owlAnnot = axiom.getAnnotation();
 		URI uri = owlAnnot.getAnnotationURI();
@@ -165,7 +182,7 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 			}	
 		}
 		if (owlAnnot instanceof OWLObjectAnnotation) {
-			
+
 			OWLIndividual val = ((OWLObjectAnnotation)owlAnnot).getAnnotationValue();
 			String instId = adapter.getOboID(val);
 			IdentifiedObject io = adapter.getSession().getObject(instId);
@@ -179,7 +196,7 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 				}
 				return true;
 			}	
-			
+
 		}
 		return false;
 	}
@@ -198,8 +215,8 @@ public class NCBOOboInOWLMetadataMapping extends AbstractOWLMetadataMapping {
 			}
 		}
 	}
-		
+
 }
 
 
-		
+
