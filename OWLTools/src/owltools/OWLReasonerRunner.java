@@ -1,16 +1,21 @@
 package owltools;
 
+import org.apache.log4j.Logger;
+import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.inference.OWLReasonerFactory;
 import org.semanticweb.owl.model.*;
 import org.semanticweb.owl.util.DLExpressivityChecker;
+import org.semanticweb.owl.util.VersionInfo;
 import org.semanticweb.owl.util.InferredAxiomGenerator;
 import org.semanticweb.owl.util.InferredAxiomGeneratorException;
 import org.semanticweb.owl.util.InferredOntologyGenerator;
 import org.semanticweb.owl.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
+import org.semanticweb.reasonerfactory.factpp.FaCTPlusPlusReasonerFactory;
 
 
 import java.lang.reflect.Constructor;
@@ -18,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 /*
@@ -57,22 +63,30 @@ import java.util.Set;
 public class OWLReasonerRunner {
 
 	public static final String PHYSICAL_URI = "http://purl.org/obo/owl/CARO";
+	protected final static Logger logger = Logger.getLogger(OWLReasonerRunner.class);
+
 
 	public static void main(String[] args) {
 
 		Collection<String> paths = new ArrayList<String>();
 		int i=0;
 		String reasonerClassName = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner";
+		String reasonerName = null;
 		boolean createNamedRestrictions = false;
+		boolean createDefaultInstances = false;
 
 		while (i < args.length) {
 			String opt = args[i];
 			i++;
 			if (opt.equals("--pellet")) {
 				reasonerClassName = "org.mindswap.pellet.owlapi.Reasoner";
+				reasonerName = "pellet";
 			}
 			else if (opt.equals("-r") || opt.equals("--namerestr")) {
 				createNamedRestrictions = true;
+			}
+			else if (opt.equals("-i") || opt.equals("--inst")) {
+				createDefaultInstances = true;
 			}
 			else {
 				paths.add(opt);
@@ -82,13 +96,14 @@ public class OWLReasonerRunner {
 		if (paths.size() == 0) {
 			paths.add(PHYSICAL_URI);
 		}
+		System.out.println("OWLAPI: "+VersionInfo.getVersionInfo().getVersion());
 
 		try {
 			for (String uri : paths) {
 				// Create our ontology manager in the usual way.
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
-				// Load a copy of the pizza ontology.  We'll load the ontology from the web.
+				// Load a copy of the  ontology.
 				OWLOntology ont = manager.loadOntologyFromPhysicalURI(URI.create(uri));
 				System.out.println("Loaded " + ont.getURI());
 
@@ -98,16 +113,14 @@ public class OWLReasonerRunner {
 				// query functionality that we need, for example the ability obtain the subclasses
 				// of a class etc.  See the createReasoner method implementation for more details
 				// on how to instantiate the reasoner
-				OWLReasoner reasoner = createReasoner(manager,reasonerClassName);
+				OWLReasoner reasoner = createReasoner(manager,reasonerName);
+				
+
 
 				// We now need to load some ontologies into the reasoner.  This is typically the
-				// imports closure of an ontology that we're interested in.  In this case, we want
-				// the imports closure of the pizza ontology.  Note that no assumptions are made
-				// about the dependency of one ontology on another ontology.  This means that if
-				// we loaded just the pizza ontology (using a singleton set) then any imported ontologies
-				// would not automatically be loaded.
-				// Obtain and load the imports closure of the pizza ontology
+				// imports closure of an ontology that we're interested in.  
 				Set<OWLOntology> importsClosure = manager.getImportsClosure(ont);
+				System.out.println("importsClosure: "+importsClosure);
 				reasoner.loadOntologies(importsClosure);
 
 				OWLDataFactory owlFactory = manager.getOWLDataFactory();
@@ -117,7 +130,9 @@ public class OWLReasonerRunner {
 				// we have to create named restrictions for all C x P combinations, where C is a class and P is an ObjectProperty.
 				// we can then say "what is a nucleus a subclass of" and then extract the part information from amongst the named classes
 				// that are returned
+				Set<OWLClass> nrClasses = new HashSet<OWLClass>();
 				if (createNamedRestrictions) {
+					System.out.println("creating named restrictions");
 
 					Collection<OWLEquivalentClassesAxiom> newAxioms = new ArrayList<OWLEquivalentClassesAxiom>();
 					Set<OWLClass> owlClasses = ont.getReferencedClasses();
@@ -126,24 +141,33 @@ public class OWLReasonerRunner {
 						URI pURI = property.getURI();
 						if (!property.isTransitive(ont))
 							continue;
+						System.out.println("  creating named restrictions for: "+property);
 						for (OWLClass cls : owlClasses) {
 							OWLObjectSomeRestriction restr = 
 								owlFactory.getOWLObjectSomeRestriction(property, cls);
 							URI rURI = URI.create(pURI+"/"+cls.getURI().getFragment());
 							OWLClass ec = 
 								owlFactory.getOWLClass(rURI);
+							nrClasses.add(ec);
 							//OWLLabelAnnotation label = 
 							//	owlFactory.getOWLLabelAnnotation(pURI.getFragment(), cls.getURI().getFragment());
 							OWLEquivalentClassesAxiom ecAxiom = owlFactory.getOWLEquivalentClassesAxiom(ec,restr);
 							newAxioms.add(ecAxiom);
-
 						}
 					}
 					for (OWLEquivalentClassesAxiom ecAxiom : newAxioms) {
 						manager.addAxiom(ont, ecAxiom);							
 					}
+				}
+				if (createDefaultInstances) {
+					Set<OWLClass> owlClasses = ont.getReferencedClasses();
 
-
+					for (OWLClass cls : owlClasses) {
+						URI iuri = URI.create(cls.getURI()+"/default-inst");					
+						owlFactory.getOWLIndividual(iuri);
+						// TODO
+					}
+					
 				}
 
 				long initTime = System.nanoTime();
@@ -158,7 +182,7 @@ public class OWLReasonerRunner {
 				DLExpressivityChecker checker = new DLExpressivityChecker(importsClosure);
 				System.out.println("Expressivity: " + checker.getDescriptionLogicName());
 
-				// We can determine if the pizza ontology is actually consistent.  (If an ontology is
+				// We can determine if the ontology is actually consistent.  (If an ontology is
 				// inconsistent then owl:Thing is equivalent to owl:Nothing - i.e. there can't be any
 				// models of the ontology)
 				boolean consistent = reasoner.isConsistent(ont);
@@ -184,7 +208,11 @@ public class OWLReasonerRunner {
 				System.out.println("\n");
 
 				for (OWLClass cls : ont.getReferencedClasses()) {
+					if (nrClasses.contains(cls))
+						continue; // do not report these
 					for (OWLClass ec : reasoner.getEquivalentClasses(cls)) {
+						if (nrClasses.contains(ec))
+							continue; // do not report these
 						if (cls.toString().compareTo(ec.toString()) > 0) // equivalence is symmetric: report each pair once
 							System.out.println("  INFERRED: equivalent "+getLabel(cls,ont)+" "+getLabel(ec,ont));
 					}
@@ -195,6 +223,8 @@ public class OWLReasonerRunner {
 							if (sc.toString().equals("Thing")) {
 								continue;
 							}
+							if (nrClasses.contains(sc))
+								continue; // do not report these
 							//ont.get
 							//System.out.println("    super: "+sc);
 							Set<OWLDescription> ascs = cls.getSuperClasses(ont);
@@ -207,6 +237,7 @@ public class OWLReasonerRunner {
 								}
 							}
 							for (OWLDescription ec : cls.getEquivalentClasses(ont)) {
+								
 								if (ec instanceof OWLObjectIntersectionOf) {
 									OWLObjectIntersectionOf io = (OWLObjectIntersectionOf)ec;
 									for (OWLDescription op : io.getOperands()) {
@@ -250,13 +281,13 @@ public class OWLReasonerRunner {
 
 
 		catch(UnsupportedOperationException exception) {
-			System.out.println("Unsupported reasoner operation.");
+			logger.error("Unsupported reasoner operation.");
 		}
 		catch(OWLReasonerException ex) {
-			System.out.println("Reasoner error: " + ex.getMessage());
+			logger.error("Reasoner error: " + ex.getMessage());
 		}
 		catch (OWLOntologyCreationException e) {
-			System.out.println("Could not load the pizza ontology: " + e.getMessage());
+			logger.error("Could not load the ontology: " + e.getMessage());
 		} catch (InferredAxiomGeneratorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -280,7 +311,19 @@ public class OWLReasonerRunner {
 		return label;
 	}
 
-	private static OWLReasoner createReasoner(OWLOntologyManager man, String reasonerClassName) {
+	private static OWLReasoner createReasoner(OWLOntologyManager man, String reasonerName) {
+			OWLReasonerFactory reasonerFactory = null;
+			if (reasonerName == null || reasonerName.equals("factpp"))
+				reasonerFactory = new FaCTPlusPlusReasonerFactory();
+			else if (reasonerName.equals("pellet"))
+				reasonerFactory = new PelletReasonerFactory();
+			else
+				logger.error("no such reasoner: "+reasonerName);
+			OWLReasoner reasoner = reasonerFactory.createReasoner(man);
+			return reasoner;
+	}
+	
+	private static OWLReasoner old__createReasoner(OWLOntologyManager man, String reasonerClassName) {
 		try {
 			// The following code is a little overly complicated.  The reason for using
 			// reflection to create an instance of pellet is so that there is no compile time
