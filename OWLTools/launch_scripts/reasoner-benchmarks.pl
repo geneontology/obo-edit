@@ -5,12 +5,15 @@ use FileHandle;
 my $verbose = 1;
 
 #our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-Xss128m -Xms256m -Xmx4096m';
-our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-Xss128m -Xms256m -Xmx2048m';
-our $PELLET = "java $PELLET_OPTS -jar ".$ENV{HOME}.'/src/pellet/lib/pellet.jar';
+our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-d64 -Xss256m -Xms512m -Xmx4096m';
+our $PELLET = "java $PELLET_OPTS -jar $ENV{PELLET}/lib/pellet-cli.jar extract -s DirectSubClassOf ";
+our $HERMIT = "java  -mx2048m -jar /Users/cjm/OWLTools/runtime/HermiT.jar -c -v2 ";
+#our $PELLET = "java $PELLET_OPTS -jar ".$ENV{HOME}.'/src/pellet/lib/pellet.jar';
+
+my $MAX_TIME = 3600;
 
 my $totaltime_h = {};
 my $reasonertime_h = {};
-
 my $reasoner_h =
 {
     oboedit_lpr => sub {
@@ -69,7 +72,14 @@ my $reasoner_h =
         my $f = shift;
         my $benchf = shift;
 	my $owlfile = genowl($f);
-        runcmd("$PELLET -timing -c RDF -if $owlfile >& $benchf");
+        runcmd("$PELLET $owlfile >& $benchf");
+    },
+
+    hermit => sub {
+        my $f = shift;
+        my $benchf = shift;
+	my $owlfile = genowl($f);
+        runcmd("$HERMIT $owlfile >& $benchf");
     },
 
     blipkit => sub {
@@ -87,6 +97,7 @@ my $reasoner_h =
             $n =~ s/.*\///;
             $n =~ s/\..*//;
             $n =~ tr/a-zA-Z0-9_//cd;
+            $n = 'obdtest_'.$n;
         }
         runcmd("obd-create-db.pl --drop --reasoner perl -d $n $f >& $benchf");
     },
@@ -100,10 +111,19 @@ my $reasoner_h =
             $n =~ s/.*\///;
             $n =~ s/\..*//;
             $n =~ tr/a-zA-Z0-9_//cd;
+            $n = 'godtest_'.$n;
         }
+        $ENV{GO_NEW_ADD_ROOT}=1;
         runcmd("go-create-database-and-load.pl -d $n -h 127.0.0.1  -reasoner perl $f >& $benchf");
     },
 };
+
+my %depend_h = 
+(
+ owlapi_factpp_mr=>'owlapi_factpp',
+ owlapi_pellet_mr=>'owlapi_pellet',
+);
+ 
 
 if (!@ARGV) {
     usage();
@@ -112,6 +132,10 @@ if (!@ARGV) {
 
 my %only = ();
 my @skipped = ();
+my %continue;
+my $collect = 0;
+my $new_only = 0;
+
 while ($ARGV[0] && $ARGV[0] =~ /(^\-.*)/) {
     my $opt = shift;
     if ($opt eq '-s' || $opt eq '--skip') {
@@ -122,6 +146,18 @@ while ($ARGV[0] && $ARGV[0] =~ /(^\-.*)/) {
     elsif ($opt eq '--only') {
 	my $x = shift @ARGV;
         $only{$x} = 1;
+    }
+    elsif ($opt eq '--collect') {
+        $collect = 1;
+    }
+    elsif ($opt eq '--new-only') {
+        $new_only = 1;
+    }
+    elsif ($opt eq '-t' || $opt eq '--maxtime') {
+	$MAX_TIME = shift @ARGV;
+    }
+    elsif ($opt eq '-c' || $opt eq '--continue') {
+	$continue{shift @ARGV} = 1;
     }
     elsif ($opt eq '-h' || $opt eq '--help') {
         usage();
@@ -140,15 +176,20 @@ if (%only) {
 	usage();
 	exit(1);
     }
-    foreach my $ r (keys %$reasoner_h) {
+    foreach my $ r (sort (keys %$reasoner_h)) {
 	delete $reasoner_h->{$r} unless $only{$r};
     }
     
 }
 
 my $summaryf = "results.tab";
-my $summaryfh = FileHandle->new(">$summaryf") || die $summaryf;
-
+my $summaryfh;
+if (keys %continue) {
+    $summaryfh = FileHandle->new(">>$summaryf") || die $summaryf;
+}
+else {
+    $summaryfh = FileHandle->new(">$summaryf") || die $summaryf;
+}
 my @reasoners = keys %$reasoner_h;
 printf $summaryfh "ONT\t";
 printf $summaryfh (join("\t", @reasoners));
@@ -158,16 +199,28 @@ my @files = @ARGV;
 foreach my $f (@files) {
     foreach my $r (@reasoners) {
         logmsg("reasoner: $r");
+        if ($depend_h{$r} && $reasonertime_h->{$f}->{$depend_h{$r}} eq 'NULL') {
+            logmsg("No point running $r as $depend_h{$r} already failed");
+            next;
+        }
         my $outf = $f;
         $outf =~ s/.*\///;
         $outf =~ s/\..*//;
         $outf .= ".$r.bench";
-        my $t1 = time;
-        $reasoner_h->{$r}->($f,$outf);
-        my $t2 = time;
-        my $td = $t2-$t1;
-        $totaltime_h->{$f}->{$r} = $td;
-        logmsg("totaltime: $f $r :: $td s");
+        if ($collect) {
+            logmsg("collecting: $outf");
+        }
+        elsif ($new_only && -e $outf) {
+            logmsg("already have: $outf (running new-only)");
+        }
+        else {
+            my $t1 = time;
+            $reasoner_h->{$r}->($f,$outf);
+            my $t2 = time;
+            my $td = $t2-$t1;
+            $totaltime_h->{$f}->{$r} = $td;
+            logmsg("totaltime: $f $r :: $td s");
+        }
         my $rtime = parse_benchmarks($outf,$r);
         if (defined $rtime) {
             #$rtime = $rtime * 1000; # seconds
@@ -194,6 +247,7 @@ sub run_oboedit_reasoner {
     my $f = shift;
     my $benchf = shift;
     my $argstr = shift || '';
+    $ENV{OBO2OBO_JAVAARGS}='-d64 -Xmx4096M'; # takes precedence over vmoptions
     runcmd("obo2obo -o $argstr -saveimpliedlinks $benchf.out $f >& $benchf");    
 }
 
@@ -219,7 +273,7 @@ sub runcmd {
     logmsg("CMD: $cmd");
     # HARDCODE: 5hr limit (CPU time)
     my $t = time;
-    my $err = system("ulimit -t 18000; (($cmd) > OUT) >&  ERR");
+    my $err = system("ulimit -t $MAX_TIME; (($cmd) > OUT) >&  ERR");
     my $t2 = time;
     my $td = $t2-$t;
     print STDERR "TIME: $td\n";
@@ -233,10 +287,12 @@ sub runcmd {
     return 0;
 }
 
+# will not make an owl file if one exists already
+# todo: timestamps
 sub genowl {
     my $f = shift;
     my $owlf = "$f.owl";
-    runcmd("test -f $owlf || go2owl $f > $owlf");
+    runcmd("test $owlf -nt $f || go2owl $f > $owlf");
     return $owlf;
 }
 
@@ -246,7 +302,8 @@ sub parse_benchmarks {
     my $re;
     my $ms;
     my $mult = 1;
-    if ($r =~ /obdsql/) {
+    my $smh = 0;
+    if ($r =~ /sql/) { # go & obd
         $re = 'Duration: (\S+)';
         #$mult = 1000;
     }
@@ -258,20 +315,43 @@ sub parse_benchmarks {
         $re = 'Total reasoner time = (\S+)';
         $mult = 1000;
     }
+    elsif ($r =~ /hermit/) {
+        $re = 'action completed in (\S+) msec';
+        $mult = 1000;
+    }
     elsif ($r =~ /blip/) {
         $re = 'Total reasoner time = (\S+)';
     }
     elsif ($r =~ /pellet/) {
+        # new:
+        # Classifying finished in 00:00:01
+        $re = 'Classif.*ing finished in (\d+):(\d+):(\d+)'; # TYPO!
+        $mult = 1;
+        $smh = 1;
+        # old:
         # Time: 5826 ms (Loading: 2519 Species Validation: 1909 Consistency: 70 Classification: 1322 )
-        $re = '^Time:.*Classification: (\d+)';
-        $mult = 1000;
+        #$re = '^Time:.*Classification: (\d+)';
+        #$mult = 1000;
     }
     else {
     }
-    my $fh = FileHandle->new($f) || die("assertion error: $f");
+    my $fh = FileHandle->new($f);
+    if (!$fh) {
+        if (!$collect) {
+            die("assertion error: $f");
+        }
+        logmsg("no benchmarks for $f");
+        return undef;
+    }
+    logmsg("collecting: $f $smh $re");
     while (<$fh>) {
         if (/$re/) {
-            $ms = $1 / $mult;
+            if ($smh) {
+                $ms = $3 + $2*60 + $1*3600;
+            }
+            else {
+                $ms = $1 / $mult;
+            }
             last;
         }
     }
