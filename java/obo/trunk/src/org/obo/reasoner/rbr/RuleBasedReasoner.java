@@ -23,6 +23,7 @@ import org.obo.datamodel.NestedValue;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.ValueLink;
 import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ExplanationType;
@@ -239,6 +240,9 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		Iterator<Link> it = TermUtil.getAllLinks(linkDatabase);
 		while (it.hasNext()) {
 			Link link = it.next();
+			if (link instanceof ValueLink)
+				continue; // no literals
+			//logger.debug("  init link:"+link.getClass()+" == "+link);
 			Explanation e = new GivenExplanation(link);
 			addExplanation(e); // adds the link too
 		}
