@@ -546,7 +546,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void runChecks() {
-		System.out.println("Running manually-invoked verification checks...");
+		logger.debug("Running manually-invoked verification checks...");
 		CheckTask task = VerificationManager.getManager().getCheckTask(
 						SessionManager.getManager().getSession(),
 						(IdentifiedObject) null, VerificationManager.MANUAL);
