@@ -289,8 +289,12 @@ public class Preferences {
 		return prefsDir;
 	}
 
-	public static File getDictionaryFile() {
-		return new File(getOBOEditPrefsDir(), "dictionary.dict");
+	public static File getStandardDictionaryFile() {
+		return new File(getOBOEditPrefsDir(), "standard.dict");
+	}
+	
+	public static File getUserDefDictionaryFile() {
+		return new File(getOBOEditPrefsDir(), "user.dict");
 	}
 
 	public static File getPeriodWordsFile() {
@@ -892,7 +896,11 @@ public class Preferences {
 	public String getLogfile() {
 		return getPreferences().logFile;
 	}
-
+	
+	//system dictionary files that will be updated with "Update system dictionary files"
+	public static List<String> getSystemDictFilenames() {
+		return CollectionUtil.list("allowedrepeats.dict", "alwayslowercase.dict", "standard.dict", "periodwords.dict");
+	}
 	// These are the files that will be deleted if you select "Reset all configuration files"
 	// from the Configuration Manager.
 	public static List<String> getPrefsFilenames() {

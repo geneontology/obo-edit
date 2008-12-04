@@ -217,23 +217,41 @@ FieldCheck {
 	//		defaultPeriodWords.add("etc.");
 	//	}
 
-	protected static SpellChecker spellChecker;
+	protected static SpellChecker stdspellChecker;
+	protected static SpellChecker usrspellChecker;
 
+	//standard dictionary spell check
 	public SpellChecker getSpellChecker() {
-		if (spellChecker == null) {
+//		logger.debug("standard spell check... ");
+		if (stdspellChecker == null) {
 			SpellDictionary dictionary = null;
 			try {
-				FileUtil.ensureExists(Preferences.getDictionaryFile(),
-				"org/oboedit/resources/dictionary.dict");
-				dictionary = new SpellDictionaryHashMap(Preferences.getDictionaryFile());
+				FileUtil.ensureExists(Preferences.getStandardDictionaryFile(),
+				"org/oboedit/resources/standard.dict");
+				dictionary = new SpellDictionaryHashMap(Preferences.getStandardDictionaryFile());
 			} catch (IOException e) {
 			}
-			spellChecker = new SpellChecker(dictionary);
+			stdspellChecker = new SpellChecker(dictionary);
 		}
-		return spellChecker;
+		return stdspellChecker;
 	}
-
-
+	//user-defined (domain specific vocabulary) spell check
+	public SpellChecker getUserDefSpellChecker() {
+//		logger.debug("user-defined dict spell check");
+		if (usrspellChecker == null) {
+			SpellDictionary dictionary = null;
+			String confDir = Preferences.getOBOEditPrefsDir().toString();
+			String userDictPath = confDir + "/" + "user.dict";
+			try {
+				//initializing the user-def dict with standard dict
+				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/standard.dict");
+				dictionary = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
+			} catch (IOException e) {
+			}
+				usrspellChecker = new SpellChecker(dictionary);
+		}
+		return usrspellChecker;
+	}
 
 	protected static Set getAllowedRepeats() {
 		if (allowedRepeats == null){
@@ -342,7 +360,7 @@ FieldCheck {
 
 		}
 		writeWordSet(buf.toString(), filename);
-	
+
 		//logger.debug("writeWordSet: buf.toString(), filename = " + buf.toString() + filename);
 	}
 
@@ -777,20 +795,33 @@ FieldCheck {
 
 					public void spellingError(final SpellCheckEvent arg0) {
 						//logger.debug(arg0.getInvalidWord());
-						QuickFix fixAction = new AbstractImmediateQuickFix(
+						QuickFix fixAction1 = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
-								+ "\" to dictionary") {
+								+ "\" to user-defined dictionary") {
 
 							public void run() {
 								getSpellChecker().addToDictionary(
 										arg0.getInvalidWord());
-								// Add this word to the user's dictionary
-								saveWord(arg0.getInvalidWord(), Preferences.getDictionaryFile());
+								// Add this word to the user defined dictionary: user.dict
+								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
+							}
+						};
+						
+						QuickFix fixAction2 = new AbstractImmediateQuickFix(
+								"Add \"" + arg0.getInvalidWord()
+								+ "\" to standard system dictionary") {
+
+							public void run() {
+								getSpellChecker().addToDictionary(
+										arg0.getInvalidWord());
+								// Add this word to the standard dictionary: standard.dict
+								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
 							}
 						};
 
 						Collection<QuickFix> fixes = new LinkedList<QuickFix>();
-						fixes.add(fixAction);
+						fixes.add(fixAction1);
+						fixes.add(fixAction2);
 						Iterator<Word> it = arg0.getSuggestions().iterator();
 						while (it.hasNext()) {
 							String replacement = it.next().getWord();
@@ -819,10 +850,15 @@ FieldCheck {
 					}
 
 				};
-
+				// standard system dictionary spell check
 				getSpellChecker().addSpellCheckListener(listener);
 				getSpellChecker().checkSpelling(tokenizer);
 				getSpellChecker().removeSpellCheckListener(listener);
+				// user-defined dictionary spell check
+				getUserDefSpellChecker().addSpellCheckListener(listener);
+				getUserDefSpellChecker().checkSpelling(tokenizer);
+				getUserDefSpellChecker().removeSpellCheckListener(listener);
+
 			}
 			boolean foundNoCapSentences = false;
 			boolean foundNoSepSentences = false;
