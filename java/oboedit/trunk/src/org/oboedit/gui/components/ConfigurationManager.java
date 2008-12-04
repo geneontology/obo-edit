@@ -6,6 +6,7 @@ import org.bbop.framework.GUIComponent;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.dock.LayoutAdapter;
 import org.bbop.framework.dock.LayoutListener;
+import org.bbop.io.FileUtil;
 import org.bbop.io.IOUtil;
 import org.bbop.swing.*;
 import org.obo.datamodel.*;
@@ -722,12 +723,30 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		configFilePath.setBackground(getBackground()); // so that it looks non-editable
 		configFilePath.setMaximumSize(new Dimension(Integer.MAX_VALUE, configFilePath.getPreferredSize().height));
 		JButton removeConfigFiles = new JButton("Reset all configuration files (requires restart)");
+		JButton updateSystemDicts = new JButton("Update system dictionaries");
+		JButton backupUserDefDict = new JButton("Backup user-defined dictionary");
+
 		removeConfigFiles.setAlignmentX((float) .6);
 		removeConfigFiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeConfigFiles();
 			}
 		});
+		updateSystemDicts.setAlignmentX((float) .6);
+		updateSystemDicts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logger.debug(">> update system dicts.. ");
+				updateSystemDicts();
+			}
+		});
+		backupUserDefDict.setAlignmentX((float) .6);
+		backupUserDefDict.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logger.debug(">> backup user def dictionary.. ");
+				backupUserDefDict();
+			}
+		});
+
 		configFileLabelBox.add(configFileLabel);
 		configFileLabelBox.add(Box.createHorizontalStrut(5));
 		configFileLabelBox.add(Box.createHorizontalGlue());
@@ -771,6 +790,10 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(configFileLabelBox);
 		userPanel.add(removeConfigFiles);
+		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(updateSystemDicts);
+		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(backupUserDefDict);
 		userPanel.add(Box.createVerticalStrut(50));
 		userPanel.add(logFileBox);
 		userPanel.add(Box.createVerticalStrut(10));
@@ -1030,6 +1053,47 @@ public class ConfigurationManager extends AbstractGUIComponent {
 //	protected boolean validateConfiguration() {
 //	return true;
 //	}
+	protected void updateSystemDicts() {
+		logger.debug("ConfigurationManager.updateSystemDicts()");
+		List<String>systemDictFiles = Preferences.getSystemDictFilenames();
+		String confDir = Preferences.getOBOEditPrefsDir().toString();
+		String files = "";
+		for (String f : systemDictFiles) {
+			String systemDictFile = confDir + "/" + f;
+			files += "\n" + systemDictFile;
+		}
+		if (JOptionPane.showConfirmDialog(this, "The following standard system dictionary files will be replaced in " + confDir + ":" +
+				files + "\nProceed?", "Update system dictionary files?",
+				JOptionPane.YES_NO_OPTION)
+				!= JOptionPane.YES_OPTION)
+			return;
+		String errors = "";
+		for (String f : systemDictFiles) {
+			File  systemDictFile = new File(confDir + "/" + f);
+			try {
+				IOUtil.deltree(systemDictFile);
+			} catch (Exception e) {
+				errors = errors + ("Couldn't delete " + systemDictFile + "\n");
+			}
+		}
+		try {
+			FileUtil.ensureExists(Preferences.getStandardDictionaryFile(),
+			"org/oboedit/resources/standard.dict");
+			FileUtil.ensureExists(Preferences.getAllowedRepeatsFile(), 
+			"org/oboedit/resources/allowedrepeats.dict");
+			FileUtil.ensureExists(Preferences.getAlwaysLowercaseFile(), 
+			"org/oboedit/resources/alwayslowercase.dict");
+			FileUtil.ensureExists(Preferences.getPeriodWordsFile(), 
+			"org/oboedit/resources/periodwords.dict");
+		} catch (IOException e) {
+		}
+
+	}
+	protected void backupUserDefDict(){
+		logger.debug("ConfigurationManager.backupUserDefDict");
+		logger.debug("open dialog box to save file...");
+
+	}
 
 	/** Remove all of the user config files that control the look of OBO-Edit */
 	protected void removeConfigFiles() {
@@ -1168,7 +1232,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 			preferences.setPersonalDefinition(null);
 			preferences.setPersonalDbxrefs(null);
 		}
-		
+
 		Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 	}
 
