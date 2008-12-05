@@ -726,24 +726,26 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		JButton updateSystemDicts = new JButton("Update system dictionaries");
 		JButton backupUserDefDict = new JButton("Backup user-defined dictionary");
 
-		removeConfigFiles.setAlignmentX((float) .6);
+		removeConfigFiles.setAlignmentX((float) .5);
 		removeConfigFiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeConfigFiles();
 			}
 		});
-		updateSystemDicts.setAlignmentX((float) .6);
+		updateSystemDicts.setAlignmentX((float) .5);
 		updateSystemDicts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				logger.debug(">> update system dicts.. ");
 				updateSystemDicts();
 			}
 		});
-		backupUserDefDict.setAlignmentX((float) .6);
+		backupUserDefDict.setAlignmentX((float) .5);
 		backupUserDefDict.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				logger.debug(">> backup user def dictionary.. ");
-				backupUserDefDict();
+				try {
+					backupUserDefDict();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -790,11 +792,11 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(configFileLabelBox);
 		userPanel.add(removeConfigFiles);
-		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(Box.createVerticalStrut(40));
 		userPanel.add(updateSystemDicts);
-		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(Box.createVerticalStrut(40));
 		userPanel.add(backupUserDefDict);
-		userPanel.add(Box.createVerticalStrut(50));
+		userPanel.add(Box.createVerticalStrut(40));
 		userPanel.add(logFileBox);
 		userPanel.add(Box.createVerticalStrut(10));
 		userPanel.add(memoryBox);
@@ -1054,7 +1056,6 @@ public class ConfigurationManager extends AbstractGUIComponent {
 //	return true;
 //	}
 	protected void updateSystemDicts() {
-		logger.debug("ConfigurationManager.updateSystemDicts()");
 		List<String>systemDictFiles = Preferences.getSystemDictFilenames();
 		String confDir = Preferences.getOBOEditPrefsDir().toString();
 		String files = "";
@@ -1089,10 +1090,29 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		}
 
 	}
-	protected void backupUserDefDict(){
-		logger.debug("ConfigurationManager.backupUserDefDict");
-		logger.debug("open dialog box to save file...");
-
+	protected void backupUserDefDict() throws IOException{
+		String confDir = Preferences.getOBOEditPrefsDir().toString();
+		File userDictFile = new File(confDir + "/" + "user.dict");
+		JFileChooser chooser = new JFileChooser(confDir);
+		chooser.setDialogTitle("Save user.dict");
+		chooser.setSelectedFile(userDictFile);
+		int returnVal = chooser.showSaveDialog(GUIManager.getManager()
+				.getFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File dictfile = chooser.getSelectedFile();
+			InputStream in = null;
+			OutputStream out = null;
+			in = new FileInputStream(userDictFile);
+			out = new FileOutputStream(dictfile);
+			// Transfer bytes from in to out
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			in.close();
+			out.close();
+		}
 	}
 
 	/** Remove all of the user config files that control the look of OBO-Edit */
