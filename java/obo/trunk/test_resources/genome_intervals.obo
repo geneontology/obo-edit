@@ -1,0 +1,1026 @@
+format-version: 1.2
+date: 12:06:2008 17:38
+saved-by: kareneilbeck
+auto-generated-by: OBO-Edit 1.101
+subsetdef: biosapiens "biosapiens protein feature ontology"
+subsetdef: SOFA "SOFA"
+subsetdef: allen "Allen Interval Algebra"
+default-namespace: sequence
+
+[Term]
+id: SO:0000001
+name: region
+def: "A sequence_feature with an extent greater than zero. A nucleotide region is composed of bases and a polypeptide region is composed of amino acids." [SO:ke]
+comment: every region is adjacent_to 2 junctions -- CJM
+synonym: "sequence" EXACT []
+intersection_of: SO:0000110 ! sequence_feature
+intersection_of: is_consecutive_sequence_of SO:0001236 ! base
+relationship: adjacent_to SO:0000699 {min_cardinality=2} ! junction
+disjoint_from: SO:0000699 ! junction
+
+[Term]
+id: SO:0000104
+name: polypeptide
+def: "A sequence of amino acids linked by peptide bonds which may lack appreciable tertiary structure and may not be liable to irreversible denaturation." [SO:ma]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+is_a: SO:0000001 ! region
+relationship: translation_of SO:0000316 ! CDS
+relationship: is_consecutive_sequence_of SO:0001237 ! amino_acid
+
+[Term]
+id: SO:0001237
+name: amino_acid
+def: "A sequence feature that corresponds to a single amino acid residue in a polypeptide." [RSC:cb]
+synonym: "amino acid" EXACT []
+is_a: SO:0001411 ! biological_region
+relationship: part_of SO:0000104 ! polypeptide
+
+[Term]
+id: SO:0000110
+name: sequence_feature
+def: "An extent of biological sequence." [SO:ke]
+synonym: "located sequence feature" RELATED []
+synonym: "located_sequence_feature" EXACT []
+union_of: SO:0000001 ! region
+union_of: SO:0000699 ! junction
+
+[Term]
+id: SO:0000120
+name: protein_coding_primary_transcript
+def: "A primary transcript that, at least in part, encodes one or more proteins." [SO:ke]
+comment: May contain introns.
+synonym: "pre mRNA" RELATED []
+is_a: SO:0000185 ! primary_transcript
+relationship: has_integral_part SO:0000316 ! CDS
+
+[Term]
+id: SO:0000147
+name: exon
+def: "A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA splicing." [SO:ke]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+is_a: SO:0000001 ! region
+relationship: integral_part_of SO:0000673 ! transcript
+
+[Term]
+id: SO:0000178
+name: operon
+def: "A group of contiguous genes transcribed as a single (polycistronic) mRNA from a single regulatory region." [SO:ma]
+synonym: "gene cassette" EXACT [SO:cjm]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+is_a: SO:0000001 ! region
+relationship: encodes SO:0000631 ! polycistronic_primary_transcript
+relationship: has_part SO:0000704 ! gene
+
+[Term]
+id: SO:0000185
+name: primary_transcript
+def: "A transcript that in its initial state requires modification to be functional." [SO:ma]
+synonym: "precursor RNA" EXACT []
+is_a: SO:0000673 ! transcript
+relationship: processed_into SO:0000233 ! mature_transcript
+relationship: encoded_by SO:0000704 ! gene
+
+[Term]
+id: SO:0000315
+name: TSS
+def: "The first base where RNA polymerase begins to synthesize the RNA transcript." [SO:ke]
+subset: SOFA
+synonym: "transcription start site" EXACT []
+is_a: SO:0000835 ! primary_transcript_region
+
+[Term]
+id: SO:0000318
+name: start_codon
+def: "First codon to be translated by a ribosome." [SO:ke]
+subset: SOFA
+synonym: "initiation codon" EXACT []
+synonym: "start codon" EXACT []
+intersection_of: SO:0000360 ! codon
+intersection_of: starts SO:0000316 ! CDS
+
+[Term]
+id: SO:0000319
+name: stop_codon
+def: "In mRNA, a set of three nucleotides that indicates the end of information for protein synthesis." [SO:ke]
+subset: SOFA
+synonym: "stop codon" EXACT []
+intersection_of: SO:0000360 ! codon
+intersection_of: stops SO:0000316 ! CDS
+
+[Term]
+id: SO:0000360
+name: codon
+def: "A set of (usually) three nucleotide bases in a DNA or RNA sequence, which together signify a unique amino acid or the termination of translation." [http://www.everythingbio.com/glos/definition.php?word=codon]
+subset: SOFA
+intersection_of: SO:0000836 ! mRNA_region
+intersection_of: overlaps SO:0001236 {cardinality=3} ! base
+intersection_of: translates_to SO:0001237 {cardinality=1} ! amino_acid
+
+[Term]
+id: SO:0001236
+name: base
+def: "A base is a sequence feature that corresponds to a single unit of a nucleotide polymer." [SO:ke]
+is_a: SO:0001411 ! biological_region
+relationship: part_of SO:0000001 ! region
+xref: CHEBI:36976 ! nucleotides
+
+[Term]
+id: SO:0000201
+name: interior_exon
+def: "An exon that is bounded by 5' and 3' splice sites." [PMID:10373547]
+synonym: "interior exon" EXACT []
+comment: how do we interpret bounded? See https://sourceforge.net/tracker2/?func=detail&aid=2385918&group_id=72703&atid=810408 - adjacent_to may not be correct
+intersection_of: SO:0000147 ! exon
+intersection_of: adjacent_to SO:0000163 ! 5' splice site
+intersection_of: adjacent_to SO:0000164 ! 3' splice site
+intersection_of: disconnected_from SO:0000162 ! splice_site
+
+[Term]
+id: SO:0000195
+name: coding_exon
+namespace: sequence
+def: "An exon whereby at least one base is part of a codon, including the stop_codon." [SO:ke]
+synonym: "coding exon" EXACT  []
+intersection_of: SO:0000147  ! exon
+intersection_of: overlaps SO:0000316 ! CDS
+
+[Term]
+id: SO:0000004
+name: interior_coding_exon
+subset: SOFA
+synonym: "interior coding exon" EXACT []
+intersection_of: SO:0000201 ! interior_exon
+intersection_of: overlaps SO:0000316 ! CDS
+
+[Term]
+id: SO:0000198
+name: noncoding_exon
+namespace: sequence
+def: "An exon that does not contain any codons." [SO:ke]
+subset: SOFA  ! SO feature annotation
+synonym: "noncoding exon" EXACT  []
+intersection_of: SO:0000147  ! exon
+intersection_of: disconnected_from SO:0000316 ! CDS
+
+[Term]
+id: SO:0000200
+name: five_prime_coding_exon
+namespace: sequence
+def: "The 5' most coding exon." [SO:ke]
+synonym: "5' coding exon" EXACT  []
+synonym: "five prime coding exon" EXACT  []
+intersection_of: SO:0000195  ! coding exon
+intersection_of: overlaps SO:0000318 ! start_codon
+
+[Term]
+id: SO:0000202
+name: three_prime_coding_exon
+namespace: sequence
+def: "The exon that is most 3-prime on a given transcript." [SO:ma]
+synonym: "3' coding exon" RELATED  []
+synonym: "three prime coding exon" EXACT  []
+intersection_of: SO:0000195  ! coding exon
+intersection_of: overlaps SO:0000319 ! stop_codon
+
+[Term]
+id: SO:0005845
+name: exon_of_single_exon_gene
+namespace: sequence
+def: "An exon that is the only exon in a gene." [RSC:cb]
+synonym: "exon of single exon gene" EXACT  []
+synonym: "single_exon" RELATED  []
+synonym: "singleton exon" EXACT  []
+intersection_of: SO:0000147  ! exon
+intersection_of: indirectly_encoded_by CJM:single_exon_gene
+
+[Term]
+id: CJM:single_exon_gene
+name: single_exon_gene
+namespace: sequence
+comment: new class introduced to define exon_of_single_exon_gene
+def: "A gene with one exon." [SO:cjm]
+intersection_of: SO:0000704 ! gene
+intersection_of: indirectly_encodes SO:0000147 {cardinality=1} ! exon 
+
+[Term]
+id: SO:0000190
+name: five_prime_intron
+namespace: sequence
+synonym: "5' intron" EXACT  []
+synonym: "5' intron sequence" EXACT  []
+synonym: "five prime intron" EXACT  []
+intersection_of: SO:0000188  ! intron
+intersection_of: overlaps SO:0000204 ! five_prime_UTR
+
+[Term]
+id: SO:0000191
+name: interior_intron
+synonym: "interior intron" EXACT []
+intersection_of: SO:0000188 ! intron
+intersection_of: part_of SO:0000316 ! CDS
+
+[Term]
+id: SO:0000192
+name: three_prime_intron
+namespace: sequence
+synonym: "3' intron" EXACT  []
+synonym: "3' intron sequence" RELATED  []
+synonym: "three prime intron" EXACT  []
+intersection_of: SO:0000188  ! intron
+intersection_of: overlaps SO:0000204 ! three_prime_UTR
+
+[Term]
+id: SO:0000196
+name: five_prime_exon_coding_region
+namespace: sequence
+def: "The sequence of the 5' exon that encodes for protein." [SO:ke]
+comment: for a computable def, we need to specify that this is the maximal portion overlapping the CDS and five_prime_coding_exon
+subset: SOFA  ! SO feature annotation
+synonym: "five prime exon coding region" EXACT  []
+is_a: SO:0001215  ! coding_region_of_exon
+relationship: part_of SO:0000200 ! five_prime_coding_exon
+
+[Term]
+id: SO:0000197
+name: three_prime_exon_coding_region
+namespace: sequence
+def: "The sequence of the 3' exon that encodes for protein." [SO:ke]
+subset: SOFA  ! SO feature annotation
+synonym: "three prime exon coding region" EXACT  []
+is_a: SO:0001215  ! coding_region_of_exon
+relationship: part_of SO:0000202 ! three_prime_coding_exon
+
+[Term]
+id: SO:0001214
+name: noncoding_region_of_exon
+comment: An exon containing either a start or stop codon will be partially coding and partially non coding.
+synonym: "noncoding region of exon" EXACT []
+is_a: SO:0000852 ! exon_region
+
+[Term]
+id: SO:0001215
+name: coding_region_of_exon
+def: "The region of an exon that encodes for protein sequence." [SO:ke]
+comment: An exon containing either a start or stop codon will be partially coding and partially non coding.
+synonym: "coding region of exon" EXACT []
+intersection_of: SO:0000852 ! exon_region
+intersection_of: maximally_overlaps SO:0000147 SO:0000316 ! exon  CDS
+
+[Term]
+id: SO:0000204
+name: five_prime_UTR
+namespace: sequence
+def: "A region at the 5' end of a mature transcript (preceding the initiation codon) that is not translated into a protein." [http://www.ebi.ac.uk/embl/Documentation/FT_definitions/feature_table.html]
+subset: SOFA  ! SO feature annotation
+synonym: "5' UTR" EXACT  []
+synonym: "five prime UTR" EXACT  []
+synonym: "five_prime_untranslated_region" EXACT  []
+intersection_of: SO:0000203  ! UTR
+intersection_of: upstream_adjacent_to SO:0000316 ! CDS
+
+[Term]
+id: SO:0000205
+name: three_prime_UTR
+namespace: sequence
+def: "A region at the 3' end of a mature transcript (following the stop codon) that is not translated into a protein." [http://www.ebi.ac.uk/embl/Documentation/FT_definitions/feature_table.html]
+comment: Note that spatial relations such as adjacent_to must be 'contextualized'
+subset: SOFA  ! SO feature annotation
+synonym: "three prime UTR" EXACT  []
+synonym: "three prime untranslated region" EXACT  []
+intersection_of: SO:0000203  ! UTR
+intersection_of: downstream_adjacent_to SO:0000316 ! CDS
+
+[Term]
+id: SO:0000203
+name: UTR
+def: "Messenger RNA sequences that are untranslated and lie five prime and three prime to sequences which are translated." [SO:ke]
+comment: or not and? Note that spatial relations such as adjacent_to must be 'contextualized'
+subset: SOFA
+synonym: "untranslated region" EXACT []
+intersection_of: SO:0000836 ! mRNA_region
+intersection_of: adjacent_to SO:0000316 ! CDS
+!intersection_of: starts_or_finishes SO:0000234 ! mRNA
+
+[Term]
+id: SO:0000837
+name: UTR_region
+def: "A region of UTR." [SO:ke]
+comment: A region of UTR. This term is a grouping term to allow the parts of UTR to have an is_a path to the root.
+subset: SOFA
+synonym: "UTR region" EXACT []
+intersection_of: SO:0000836 ! mRNA_region
+intersection_of: disconnected_from SO:0000316 ! CDS
+
+[Term]
+id: SO:0000446
+name: UTR_intron
+def: "Intron located in the untranslated region." [SO:ke]
+synonym: "UTR intron" EXACT []
+intersection_of: SO:0000188 ! intron
+intersection_of: part_of SO:0000203 ! UTR
+
+[Term]
+id: SO:0000447
+name: five_prime_UTR_intron
+def: "An intron located in the 5' UTR." [SO:ke]
+synonym: "five prime UTR intron" EXACT []
+intersection_of: SO:0000446 ! UTR_intron
+intersection_of: part_of SO:0000204 ! five_prime_UTR
+
+[Term]
+id: SO:0000448
+name: three_prime_UTR_intron
+def: "An intron located in the 3' UTR." [SO:ke]
+synonym: "three prime UTR intron" EXACT []
+intersection_of: SO:0000446 ! UTR_intron
+intersection_of: part_of SO:0000205 ! three_prime_UTR
+
+[Term]
+id: SO:0000162
+name: splice_site
+namespace: sequence
+def: "The position where intron is excised." [SO:ke]
+subset: SOFA  ! SO feature annotation
+synonym: "splice site" EXACT  []
+is_a: SO:0000001  ! region
+relationship: connects_on SO:0000147 SO:0000147 SO:0000233 ! exon-exon-mature_transcript
+relationship: connects_on SO:0000147 SO:0000188 SO:0000185 ! exon-intron-primary_transcript
+
+[Term]
+id: SO:0000163
+name: five_prime_splice_site
+def: "The junction between the 3 prime end of an exon and the following intron." [http://www.ucl.ac.uk/~ucbhjow/b241/glossary.html]
+subset: SOFA
+synonym: "5' splice site" EXACT []
+synonym: "donor" RELATED []
+synonym: "donor splice site" EXACT []
+synonym: "five prime splice site" EXACT []
+synonym: "splice donor site" EXACT []
+is_a: SO:0000162 ! splice_site
+relationship: upstream_adjacent_to SO:0000147 ! exon
+relationship: downstream_adjacent_to SO:0000188 ! intron
+
+[Term]
+id: SO:0000164
+name: three_prime_splice_site
+def: "The junction between the 3 prime end of an intron and the following exon." [http://www.ucl.ac.uk/~ucbhjow/b241/glossary.html]
+subset: SOFA
+synonym: "3' splice site" RELATED []
+synonym: "acceptor" RELATED []
+synonym: "acceptor splice site" EXACT []
+synonym: "splice acceptor site" EXACT []
+synonym: "three prime splice site" EXACT []
+is_a: SO:0000162 ! splice_site
+relationship: downstream_adjacent_to SO:0000147 ! exon
+relationship: upstream_adjacent_to SO:0000188 ! intron
+
+[Term]
+id: SO:0000706
+name: trans_splice_acceptor_site
+def: "The process that produces mature transcripts by combining exons of independent pre-mRNA molecules. The acceptor site lies on the 3' of these molecules." [SO:ke]
+subset: SOFA
+synonym: "trans splice acceptor site" EXACT []
+is_a: SO:0000164 ! three_prime_splice_site
+
+[Term]
+id: SO:0000707
+name: trans_splice_donor_site
+def: "The site at which trans-splicing occurs." [SO:ke]
+synonym: "trans splice donor site" EXACT []
+synonym: "trans-splice donor site" EXACT []
+is_a: SO:0000163 ! five_prime_splice_site
+
+[Term]
+id: SO:0000188
+name: intron
+def: "A segment of DNA that is transcribed, but removed from within the transcript by splicing together the sequences (exons) on either side of it." [http://www.ebi.ac.uk/embl/Documentation/FT_definitions/feature_table.html]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+is_a: SO:0000001 ! region
+relationship: only_part_of SO:0000185 ! primary_transcript
+relationship: upstream_adjacent_to SO:0000147 ! exon
+relationship: downstream_adjacent_to SO:0000147 ! exon
+
+[Term]
+id: SO:0000406
+name: twintron
+def: "An intron within an intron. Twintrons are group II or III introns, into which another group II or III intron has been transposed." [PMID:1899376, PMID:7823908]
+intersection_of: SO:0000188 ! intron
+intersection_of: part_of SO:0000188 ! intron
+
+[Term]
+id: SO:0000233
+name: mature_transcript
+def: "A transcript which has undergone the necessary modifications, if any, for its function. In eukaryotes this includes, for example, processing of introns, cleavage, base modification, and modifications to the 5' and/or the 3' ends, other than addition of bases. In bacteria functional mRNAs are usually not modified." [SO:ke]
+comment: A processed transcript cannot contain introns. TODO: add reverse links
+is_a: SO:0000673 ! transcript
+relationship: is_consecutive_sequence_of SO:0000147 ! exon
+
+[Term]
+id: SO:0000234
+name: mRNA
+def: "Messenger RNA is the intermediate molecule between DNA and protein. It includes UTR and coding sequences. It does not contain introns." [SO:ma]
+comment: An mRNA does not contain introns as it is a processed_transcript. The equivalent kind of primary_transcript is protein_coding_primary_transcript (SO:0000120) which may contain introns. This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+synonym: "messenger RNA" EXACT []
+is_a: SO:0000233 ! mature_transcript
+relationship: has_integral_part SO:0000316 ! CDS
+
+[Term]
+id: SO:0000316
+name: CDS
+def: "A contiguous sequence which begins with, and includes, a start codon and ends with, and includes, a stop codon." [SO:ma]
+synonym: "coding sequence" EXACT []
+intersection_of: SO:0000836 ! mRNA_region
+intersection_of: started_by SO:0000318 ! start_codon
+intersection_of: finished_by SO:0000319 ! stop_codon
+relationship: is_consecutive_sequence_of SO:0000360 ! codon
+
+[Term]
+id: SO:0000605
+name: intergenic_region
+def: "The region between two known genes." [SO:ke]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.
+subset: SOFA
+synonym: "intergenic region" EXACT []
+is_a: SO:0001411 ! biological_region
+relationship: adjacent_to SO:0000704 {cardinality=2} ! gene
+relationship: disjoint_from SO:0000704 ! gene
+
+[Term]
+id: SO:0000400
+name: sequence_attribute
+def: "An attribute describes a quality of sequence." [SO:ke]
+
+[Term]
+id: SO:0000483
+name: nc_primary_transcript
+def: "A primary transcript that is never translated into a protein." [SO:ke]
+synonym: "noncoding primary transcript" EXACT []
+is_a: SO:0000185 ! primary_transcript
+
+[Term]
+id: SO:0000631
+name: polycistronic_primary_transcript
+def: "A primary transcript encoding for more than one gene product." [SO:ke]
+is_a: SO:0000185 ! primary_transcript
+relationship: processed_into SO:3000001 ! polycistronic_mature_transcript
+
+[Term]
+id: SO:0000632
+name: monocistronic_primary_transcript
+def: "A primary transcript encoding for one gene product." [SO:ke]
+is_a: SO:0000185 ! primary_transcript
+relationship: processed_into SO:3000008 ! monocistronic_mature_transcript
+
+[Term]
+id: SO:0000634
+name: polycistronic_mRNA
+def: "An mRNA that encodes multiple proteins from at least two non-overlapping regions." [SO:rd]
+comment: merge with is_a parent? The definition states proteins. Is the intent that functional regions of e.g. miRNAs are 'cistrons'? -- CJM
+is_a: SO:3000001 ! polycistronic_mature_transcript
+relationship: has_part SO:0000316 {min_cardinality=2} ! CDS
+
+[Term]
+id: SO:0000655
+name: ncRNA
+def: "An RNA transcript that does not encode for a protein, rather the RNA molecule is the gene product." [SO:ke]
+comment: A ncRNA is a processed_transcript, so it may not contain parts such as transcribed_spacer_regions that are removed in the act of processing. For the corresponding primary_transcripts, please see term SO:0000483 nc_primary_transcript.
+synonym: "noncoding RNA" EXACT []
+is_a: SO:0000185 ! primary_transcript
+disjoint_from: SO:0000234 ! mRNA
+
+[Term]
+id: SO:0000673
+name: transcript
+def: "An RNA synthesized on a DNA or RNA template by an RNA polymerase." [SO:ma]
+is_a: SO:0000001 ! region
+
+[Term]
+id: SO:0000699
+name: junction
+def: "A sequence_feature with an extent of zero." [SO:ke]
+comment: A junction is a boundary between regions. A boundary has an extent of zero.
+synonym: "boundary" EXACT []
+relationship: adjacent_to SO:0001236 {cardinality=2} ! base
+is_a: SO:0000110 ! sequence_feature
+disjoint_from: SO:0000001 ! region
+formula: "instance_of(x,junction) <-> alpha(x) = omega(x)" Prover9 []
+
+[Term]
+id: SO:0000704
+name: gene
+def: "A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene may include regulatory regions, transcribed regions and/or other functional sequence regions." [SO:immuno_workshop]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology. A gene may be considered as a unit of inheritance.
+is_a: SO:0000001 ! region
+relationship: encodes SO:0000185 ! primary_transcript
+
+[Term]
+id: SO:0001026
+name: genome
+def: "A genome is the sum of genetic material within a cell or virion." [SO:immuno_workshop]
+is_a: SO:3000005 ! sequence_collection
+
+[Term]
+id: SO:0005836
+name: regulatory_region
+def: "A DNA sequence that controls the expression of a gene." [http://www.genpromag.com/scripts/glossary.asp?LETTER=R]
+is_a: SO:0000001 ! region
+relationship: regulates_expression_of SO:0000704 ! gene
+
+[Term]
+id: SO:3000000
+name: sequence_quality
+def: "An attribute that applies to the sequence regardless of context. Can include the position of a region within another region, the sorts of regions it contains. (These may actually indicate that representing the idea by a parthood relationship would be more appropriate. ) Also includes properties like length." [SO:cb]
+comment: SO examples: wild_type (SO:0000817), reverse (SO:0001031), monocistronic (SO:0000878).
+is_a: SO:0000400 ! sequence_attribute
+
+[Term]
+id: SO:3000001
+name: polycistronic_mature_transcript
+is_a: SO:0000233 ! mature_transcript
+
+[Term]
+id: SO:3000002
+name: sequence_disposition
+def: "An attribute of a sequence that causes a process or transformation of the sequence to occur under specific circumstances. In general if the attribute has something to do with an event, such as transcription, translation or alternative splicing, then the attribute will probably be a disposition." [SO:cb]
+comment: SO examples: the disposition of a sequence to be transcribed into an snRNA (snRNA_encoding, SO:0000623), silenced_by_DNA_methylation (SO:0000895), codon_redefined (SO:0000882).
+is_a: SO:0000400 ! sequence_attribute
+
+[Term]
+id: SO:3000003
+name: sequence_function
+def: "An attribute of a sequence which describes an end-directed activity of a sequence that follows from the kind of sequence it is." [SO:cb]
+is_a: SO:0000400 ! sequence_attribute
+
+[Term]
+id: SO:3000004
+name: sequence_role
+def: "An attribute that describes something about the region that is not essential to it but arises in certain contexts. Often if an attribute only makes sense for the sequence in the context of another sequence, for example a paralog, or being a member of an operon." [SO:cb]
+comment: SO examples: the role of a sequence as a forward (SO:0001030) strand in a duplex; the role of a sequence in being paralogous (SO:0000859) to some other sequence, the role of a gene in being a member of a gene array (SO:0000081).
+is_a: SO:0000400 ! sequence_attribute
+
+[Term]
+id: SO:0000068
+name: overlapping
+def: "An attribute describing a gene that has a sequence that overlaps the sequence of another gene." [SO:ke]
+comment: strandedness?
+is_a: SO:0000067 ! gene_to_gene_feature
+intersection_of: SO:0000400 ! sequence_attribute
+intersection_of: quality_of SO:0000704^overlaps(SO:0000704) ! attribute_of (gene that overlaps gene)
+
+[Term]
+id: SO:0000069
+name: inside_intron
+def: "An attribute to describe a gene when it is located within the intron of another gene." [SO:ke]
+comment: strandedness?
+synonym: "inside intron" EXACT []
+is_a: SO:0000068 ! overlapping
+
+[Term]
+id: SO:0000070
+name: inside_intron_antiparallel
+def: "An attribute to describe a gene when it is located within the intron of another gene and on the opposite strand." [SO:ke]
+synonym: "inside intron antiparallel" EXACT []
+is_a: SO:0000069 ! inside_intron
+
+[Term]
+id: SO:0000071
+name: inside_intron_parallel
+def: "An attribute to describe a gene when it is located within the intron of another gene and on the same strand." [SO:ke]
+synonym: "inside intron parallel" EXACT []
+is_a: SO:0000069 ! inside_intron
+
+[Term]
+id: SO:3000005
+name: sequence_collection
+
+[Term]
+id: SO:3000006
+name: polycistronic_non_coding_primary_transcript
+is_a: SO:0000631 ! polycistronic_primary_transcript
+
+[Term]
+id: SO:3000007
+name: polycistronic_coding_primary_transcript
+is_a: SO:0000631 ! polycistronic_primary_transcript
+relationship: has_part SO:0000316 ! CDS
+
+[Term]
+id: SO:3000008
+name: monocistronic_mature_transcript
+is_a: SO:0000233 ! mature_transcript
+relationship: has_part SO:0000316 {cardinality=1} ! CDS
+
+[Term]
+id: SO:3000009
+name: polycistronic_ncRNA
+is_a: SO:3000001 ! polycistronic_mature_transcript
+
+[Term]
+id: SO:0000140
+name: attenuator
+def: "A sequence segment located within the five prime end of an mRNA that causes premature termination of translation." [SO:as]
+subset: SOFA
+synonym: "attenuator sequence" EXACT []
+is_a: SO:0005836 ! regulatory_region
+relationship: part_of SO:0000234 ! mRNA
+
+[Term]
+id: SO:0000141
+name: terminator
+def: "The sequence of DNA located either at the end of the transcript that causes RNA polymerase to terminate transcription." [http://www.ebi.ac.uk/embl/Documentation/FT_definitions/feature_table.html]
+subset: SOFA
+synonym: "terminator sequence" EXACT []
+is_a: SO:0005836 ! regulatory_region
+relationship: part_of SO:0000673 ! transcript
+
+[Term]
+id: SO:0001055
+name: transcriptional_cis_regulatory_region
+def: "A regulatory_region that modulates the transcription of a gene or genes." [SO:regcreative]
+synonym: "transcriptional cis regulatory region" EXACT []
+is_a: SO:0005836 ! regulatory_region
+
+[Term]
+id: SO:0001056
+name: splicing_regulatory_region
+def: "A regulatory_region that modulates splicing." [SO:ke]
+synonym: "splicing regulatory region" EXACT []
+is_a: SO:0005836 ! regulatory_region
+
+[Term]
+id: SO:0000727
+name: CRM
+def: "A regulatory_region where more than 1 TF_binding_site together are regulatorily active." [SO:SG]
+comment: Requested by Stepen Grossmann Dec 2004.
+synonym: "cis regulatory module" EXACT []
+synonym: "TF module" EXACT []
+is_a: SO:0001055 ! transcriptional_cis_regulatory_region
+
+[Term]
+id: SO:0000165
+name: enhancer
+def: "A cis-acting sequence that increases the utilization of (some) eukaryotic promoters, and can function in either orientation and in any location (upstream or downstream) relative to the promoter." [http://www.ebi.ac.uk/embl/Documentation/FT_definitions/feature_table.html]
+comment: An enhancer may participate in an enhanceosome GO:0034206.\nA protein-DNA complex formed by the association of a distinct set of general and specific transcription factors with a region of enhancer DNA. The cooperative assembly of an enhanceosome confers specificity of transcriptional regulation.\nThis comment is a placeholder should we start to make cross products with GO.
+subset: SOFA
+is_a: SO:0000727 ! CRM
+
+[Term]
+id: SO:0000167
+name: promoter
+def: "A regulatory_region composed of the TSS(s) and binding sites for TF_complexes of the basal transcription machinery." [SO:regcreative]
+comment: This term is mapped to MGED. Do not obsolete without consulting MGED ontology.\nThe region on a DNA molecule involved in RNA polymerase binding to initiate transcription.
+subset: SOFA
+synonym: "promoter sequence" EXACT []
+is_a: SO:0001055 ! transcriptional_cis_regulatory_region
+relationship: site_of GO:0034062 ! RNA polymerase activity
+
+[Term]
+id: SO:0000276
+name: miRNA
+def: "Small, ~22-nt, RNA molecule that is the endogenous transcript of a miRNA gene. Micro RNAs are produced from precursor molecules (SO:0000647) that can form local hairpin structures, which ordinarily are processed (via the Dicer pathway) such that a single miRNA molecule accumulates from one arm of a hairpin precursor molecule. Micro RNAs may trigger the cleavage of their target molecules or act as translational repressors." [PMID:12592000]
+subset: SOFA
+synonym: "micro RNA" EXACT []
+synonym: "microRNA" EXACT []
+is_a: SO:0000370 ! small_regulatory_ncRNA
+relationship: processed_from SO:0000647 ! miRNA_primary_transcript
+
+[Term]
+id: SO:0000647
+name: miRNA_primary_transcript
+def: "A primary transcript encoding a micro RNA." [SO:ke]
+synonym: "micro RNA primary transcript" EXACT []
+synonym: "miRNA primary transcript" EXACT []
+is_a: SO:0000483 ! nc_primary_transcript
+
+[Term]
+id: SO:0000344
+name: splice_enhancer
+def: "Region of a transcript that regulates splicing." [SO:ke]
+subset: SOFA
+synonym: "splice enhancer" EXACT []
+is_a: SO:0001056 ! splicing_regulatory_region
+
+[Term]
+id: SO:0000370
+name: small_regulatory_ncRNA
+def: "A non-coding RNA, usually with a specific secondary structure, that acts to regulate gene expression." [SO:ma]
+subset: SOFA
+synonym: "small regulatory ncRNA" EXACT []
+is_a: SO:0000655 ! ncRNA
+intersection_of: regulates_expression_of SO:0000704 ! gene 
+
+[Term]
+id: SO:0005836
+name: regulatory_region
+def: "A DNA sequence that controls the expression of a gene." [http://www.genpromag.com/scripts/glossary.asp?LETTER=R]
+subset: SOFA
+synonym: "regulatory region" EXACT []
+intersection_of: SO:0000001 ! region
+intersection_of: regulates_expression_of SO:0000704 ! gene 
+
+[Typedef]
+id: coincident_with
+name: coincident_with
+is_a: overlaps
+comment: In Allen Interval Algebra, this is =
+subset: allen
+
+[Typedef]
+id: upstream_of
+name: upstream_of
+comment: In Allen Interval Algebra, this is union(< m)
+subset: allen
+
+[Typedef]
+id: downstream_of
+name: downstream_of
+comment: In Allen Interval Algebra, this is union(> mi)
+subset: allen
+
+[Typedef]
+id: adjacent_to
+name: adjacent_to
+comment: In Allen Interval Algebra, this is union(m mi)
+def: "A geometric operator, specified in Egenhofer 1989. Two features meet if they share a junction on the sequence." [SO:ke]
+comment: TODO - check. Is this the same as m/mi? is an exon adjacent_to it's containing sequence?
+union_of: upstream_adjacent_to
+union_of: downstream_adjacent_to
+
+[Typedef]
+id: upstream_adjacent_to
+name: upstream_adjacent_to
+comment: In Allen Interval Algebra, this is m
+subset: allen
+intersection_of: adjacent_to
+intersection_of: upstream_of
+
+[Typedef]
+id: downstream_adjacent_to
+name: downstream_adjacent_to
+comment: In Allen Interval Algebra, this is mi
+subset: allen
+intersection_of: adjacent_to
+intersection_of: downstream_of
+
+[Typedef]
+id: overlaps
+name: overlaps
+subset: allen
+formula: "(forall (x y) (<=> (overlaps x y) (exists (z) (and (part_of z x) (part_of z y)))))" CLIF [RO:overlaps]
+comment: In Allen Interval Algebra, this is union(o F D S e SI DI FI oi). We may want to define partial_overlaps as Union(o oi)?
+union_of: upstream_overlaps
+union_of: downstream_overlaps
+
+[Typedef]
+id: upstream_overlaps
+name: upstream_overlaps
+comment: In Allen Interval Algebra, this is o (primitive)
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_o.png
+xref: http://upload.wikimedia.org/wikipedia/commons/1/1f/Allen_calculus_overlap.png
+formula: "upstream_overlaps(x,y) <-> alpha(x) < alpha(y) & omega(x) < omega(y) & alpha(y) < omega(x)" Prover9 [RO:Neuhaus]
+intersection_of: upstream_of
+intersection_of: overlaps
+
+[Typedef]
+id: downstream_overlaps
+name: downstream_overlaps
+comment: In Allen Interval Algebra, this is oi
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_oi.png
+intersection_of: upstream_of
+intersection_of: overlaps
+
+[Typedef]
+id: starts
+name: starts
+comment: In Allen Interval Algebra, this is s (primitive). Is the name intuitive enough?. Example: start_codon starts CDS
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_s.png
+xref: http://upload.wikimedia.org/wikipedia/commons/4/4a/Allen_calculus_start.png
+inverse_of_on_instance_level: started_by
+
+[Typedef]
+id: started_by
+name: started_by
+comment: In Allen Interval Algebra, this is si (primitive). Examples: CDS started_by start_codon
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_si.png
+
+[Typedef]
+id: finishes
+name: finishes
+comment: In Allen Interval Algebra, this is f (primitive)
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_f.png
+inverse_of_on_instance_level: finished_by
+
+[Typedef]
+id: finished_by
+name: finished_by
+comment: In Allen Interval Algebra, this is fi (primitive)
+subset: allen
+xref: http://www.ics.uci.edu/~alspaugh/foundations/images/A_fi.png
+
+[Typedef]
+id: connects_on
+name: connects_on
+arity: 3
+def: "X connects_on Y,Z,R iff whenever X is on a R, X is adjacent_to a Y and adjacent_to a Z" [SO:cjm]
+
+[Typedef]
+id: complete_evidence_for_feature
+name: complete_evidence_for_feature
+def: "B is complete_evidence_for_feature A if the extent (5' and 3' boundaries) and internal boundaries of B fully support the extent and internal boundaries of A." [SO:ke]
+comment: If A is a feature with multiple regions such as a multi exon transcript, the supporting EST evidence is complete if each of the regions is supported by an equivalent region in B. Also there must be no extra regions in B that are not represented in A. This relationship was requested by jeltje on the SO term tracker. The thread for the discussion is available here: http://sourceforge.net/tracker/index.php?func=detail&aid=1917222&group_id=72703&atid=810408.
+is_transitive: true
+is_a: evidence_for_feature ! evidence_for_feature
+
+[Typedef]
+id: part_of_i
+comment: instance-level version of part_of relation
+inverse_of: has_part_i
+
+[Typedef]
+id: has_part_i
+comment: instance-level version of has_part relation
+inverse_of: part_of_i
+
+[Typedef]
+id: encodes_i
+is_instance_level: true
+comment: instance-level version of encodes relation
+inverse_of: encoded_by_i
+
+[Typedef]
+id: encoded_by_i
+is_instance_level: true
+comment: instance-level version of encoded_by relation
+
+[Typedef]
+id: is_consecutive_sequence_of
+name: is_consecutive_sequence_of
+is_a: has_part
+def: "R is_consecutive_sequence_of U if and only if every instance of R is equivalent to a collection of instances of U u1,u2,...,un such that no pair ux uy is overlapping, and for all ux, ux is adjacent_to ux-1 and ux+1, with the exception of the initial and terminal u1 and un (which may be identical)." [SO:cjm]
+example: SO "CDS is_consecutive_sequence_of codon"
+
+[Typedef]
+id: encodes
+name: encodes
+comment: all some, all only
+relationship: all_some encodes_i
+relationship: all_only encodes_i
+relationship: holds_bidirectionally_for encoded_by
+
+[Typedef]
+id: encoded_by
+name: encoded_by
+relationship: all_some encoded_by_i
+relationship: all_only encoded_by_i
+
+[Typedef]
+id: indirectly_encodes
+name: indirectly_encodes
+holds_over_chain: encodes processed_into
+def: "X indirectly_encodes Y if there exists some Z such that X encodes Z and Z processed_into Y." [SO:cjm]
+comment: Example: gene indirectly_encodes mature_transcript (inferred)
+
+[Typedef]
+id: indirectly_encoded_by
+name: indirectly_encoded_by
+holds_over_chain: encoded_by processed_from
+comment: Example: CDS indirectly_encoded_by gene (inferred)
+
+[Typedef]
+id: evidence_for_feature
+name: evidence_for_feature
+def: "B is evidence_for_feature A, if an instance of B supports the existence of A." [SO:ke]
+comment: This relationship was requested by nlw on the SO term tracker. The thread for the discussion is available here: http://sourceforge.net/tracker/index.php?func=detail&aid=1911481&group_id=72703&atid=810408.
+is_transitive: true
+
+[Typedef]
+id: has_part
+name: has_part
+
+[Typedef]
+id: has_quality
+name: has_quality
+comment: The relationship between a feature and an atrribute.
+
+[Typedef]
+id: quality_of
+name: quality_of
+comment: The relationship between an atrribute and a feature.
+inverse_of_on_instance_level: has_quality
+
+[Typedef]
+id: homologous_to
+name: homologous_to
+is_symmetric: true
+
+[Typedef]
+id: non_functional_homolog_of
+name: non_functional_homolog_of
+def: "A relationship between a pseudogenic feature and its functional ancestor." [SO:ke]
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: orthologous_to
+name: orthologous_to
+is_symmetric: true
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: disconnected_from
+name: disconnected_from
+synonym: "non_overlapping_with" EXACT []
+def: "A is disconnected_from B if they have no parts in common." [SO:cjm]
+comment: Union(p m pi mi) in Allen. note that this relation is not inherited in the normal way. We need to hack this in OE with a metadata declaration.
+disjoint_over: part_of
+!is_metadata_tag: true
+
+[Typedef]
+id: paralogous_to
+name: paralogous_to
+is_symmetric: true
+is_a: homologous_to ! homologous_to
+
+[Typedef]
+id: part_of
+name: part_of
+comment: I suggest we treat this as equivalent to contained_by in Allen -- CJM
+is_transitive: true
+relationship: all_some part_of_i
+
+[Typedef]
+id: integral_part_of
+name: integral_part_of
+is_a: part_of
+relationship: holds_bidirectionally_for has_integral_part
+comment: see RO. integral_part_of is like all-some part_of, but also holds in the inverse direction. Example: CDS integral_part_of mRNA
+
+[Typedef]
+id: has_integral_part
+name: has_integral_part
+is_a: has_part
+relationship: holds_bidirectionally_for integral_part_of
+
+[Typedef]
+id: partial_evidence_for_feature
+name: partial_evidence_for_feature
+def: "B is partial_evidence_for_feature A if the extent of B supports part_of but not all of A." [SO:ke]
+is_a: evidence_for_feature ! evidence_for_feature
+
+[Typedef]
+id: derived_from
+name: derived_from
+
+[Typedef]
+id: processed_from
+name: processed_from
+is_a: derived_from
+
+[Typedef]
+id: processed_into
+name: processed_into
+
+[Typedef]
+id: regulates
+name: regulates
+
+[Typedef]
+id: regulates_expression_of
+name: regulates_expression_of
+comment: reified version of GO:0010467 ! gene expression
+
+[Typedef]
+id: similar_to
+name: similar_to
+is_symmetric: true
+
+[Typedef]
+id: transcribed_from
+name: transcribed_from
+is_a: derived_from
+
+[Typedef]
+id: translation_of
+name: translation_of
+is_a: derived_from
+
+[Typedef]
+id: translates_to
+name: translates_to
+inverse_of_on_instance_level: translation_of
+
+[Typedef]
+id: site_of
+name: site_of
+comment: Relation between a region and a biological process
+
+[Typedef]
+id: variant_of
+name: variant_of
+def: "A' is a variant (mutation) of A = definition every instance of A' is either an immediate mutation of some instance of A, or there is a chain of immediate mutation processes linking A' to some instance of A." [SO:immuno_workshop]
+comment: Added to SO during the immunology workshop, June 2007.  This relationship was approved by Barry Smith.
+

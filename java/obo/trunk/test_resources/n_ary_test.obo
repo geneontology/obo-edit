@@ -1,0 +1,21 @@
+[Term]
+id: x
+is_a: b {id="axiom:1", x="a", y="b \"z\n+/&*"}
+is_a: c
+relationship: r z a {cardinality=1, derived=true, extra="y"}
+relationship: r   foo    bar   
+relationship: normal foo
+
+[Typedef]
+id: r
+is_transitive: true {id="RO:x-axiom1"}
+
+[Typedef]
+id: RO:x
+is_transitive: true {id="RO:x-axiom1"}
+is_reflexive: true
+axiom: "" {foo="bar"}
+
+[Instance]
+id: RO:x-axiom1
+name: foo
