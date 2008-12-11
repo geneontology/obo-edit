@@ -1,0 +1,69 @@
+remark: https://sourceforge.net/tracker2/index.php?func=detail&aid=2263348&group_id=36855&atid=418257
+
+[Term]
+id: A
+name: A
+intersection_of: B
+intersection_of: part_of C
+
+[Term]
+id: B
+name: B
+
+[Term]
+id: C
+name: C
+
+[Term]
+id: D
+name: D
+is_a: B
+relationship: part_of C
+
+[Term]
+id: E
+name: E
+is_a: D
+is_a: B
+
+[Term]
+id: bone
+name: bone
+
+[Term]
+id: endochondral_bone
+name: endochondral_bone
+intersection_of: bone
+intersection_of: develops_from cartilage
+
+[Term]
+id: tripus
+name: tripus
+is_a: bone
+relationship: develops_from bv_cartilage
+
+[Term]
+id: cartilage
+name: cartilage
+
+[Term]
+id: bv_cartilage
+name: bv_cartilage
+is_a: cartilage
+
+[Typedef]
+id: develops_from
+
+[Term]
+id: X1
+is_a: X2
+is_a: X3 ! redundant
+
+[Term]
+id: X2
+is_a: X3
+
+[Term]
+id: X3
+is_a: X4
+
