@@ -14,6 +14,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
+import org.obo.datamodel.OBORestriction;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.CompletenessMatch;
@@ -80,14 +81,31 @@ public class IntersectionRule extends AbstractRule {
 
 	protected void buildIntersectionMap(ReasonedLinkDatabase reasoner) {
 		intersectionMap = new MultiHashMap<LinkedObject, Link>();
+		Collection<LinkedObject> skipset = new HashSet<LinkedObject>();
 		for (IdentifiedObject io : reasoner.getObjects()) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
 				for (Link link : lo.getParents()) {
 					if (TermUtil.isIntersection(link)) {
 						intersectionMap.add(lo, link);
+						OBORestriction r = (OBORestriction) link;
+						if (r.getCardinality() != null ||
+								(r.getMinCardinality() != null &&
+										r.getMinCardinality() != 1) ||
+										r.getMaxCardinality() != null) {
+							logger.info("Ignoring xp def of "+lo+" Reason: cardinality ");
+							skipset.add(lo);
+						}
+						if (r.getAdditionalArguments() != null &&
+								r.getAdditionalArguments().size() > 0) {
+							logger.info("Ignoring xp def of "+lo+" Reason: n-ary relations ");
+							skipset.add(lo);
+						}
 					}
 				}
+			}
+			for (LinkedObject s : skipset) {
+				intersectionMap.remove(s);
 			}
 		}
 	}

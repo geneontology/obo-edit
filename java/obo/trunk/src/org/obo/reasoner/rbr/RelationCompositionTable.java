@@ -41,6 +41,8 @@ public class RelationCompositionTable {
 			if (a.isNonInheritable()) {
 				continue;
 			}
+			if (a.getDisjointOver() != null)
+				continue;
 			if (a.isTransitive()) {
 				add(a,a,a);
 			}
