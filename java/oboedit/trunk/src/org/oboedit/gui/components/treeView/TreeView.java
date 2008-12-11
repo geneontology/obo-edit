@@ -470,17 +470,22 @@ public class TreeView extends AbstractGUIComponent {
 
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
+				logger.debug("TreeView: run: pathc = " + pathc);
 				while(it.hasNext()) {
 					logger.debug("TreeView: doUpdate: it = " + it);
 					logger.debug("TreeView: run: it.hasNext");
-					TreePath path = (TreePath) it.next();
-					logger.debug("TreeView: doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
+					
+							TreePath path = (TreePath) it.next();
+							//logger.debug("TreeView: run: path = " + path); //this line prevents anything from showing in the the tree viewer.
+
+							logger.debug("TreeView: doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
 					logger.debug("TreeView: doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
 					logger.debug("TreeView: doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
 
 					if (PathUtil.pathIsCircular(path)
 							|| (treeViewSettingsInstance.getShowNonTransitive() == false && 
-									PathUtil.pathContainsNonTransitive(path))) {  
+									PathUtil.pathContainsNonTransitive(path))							
+					) {  
 						logger.debug("TreeView: run: it = " + it);
 						it.remove();
 						logger.debug("TreeView: doUpdate: it.remove() run, it = " + it.toString());
