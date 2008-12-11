@@ -8,9 +8,5 @@ Users without personal dictionaries will have the option to build one over the s
 
 On a clean beta install or on getting rid of the entire config folder the Verification Manager will work right off the bat. On existing beta installations the dictionary files in the config folder will have to be updated through the Configuration Manager which will have the following new options "Update standard system dictionaries" and "Backup user-defined dictionary" which lets the user save their dictionary to a separate location.
 
-[2207440 ] Tree Viewer - displays default tree
-On startup, the Tree Viewer displayed the default java sports and food ontology
-if no other term was selected in any component on global 
-selection mode. Now, in these circumstances, nothing is displayed. 
 
 
