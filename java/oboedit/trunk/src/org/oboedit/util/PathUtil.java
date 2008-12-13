@@ -686,6 +686,7 @@ public class PathUtil {
 				if (scratchSet.contains(tr.getChild())
 				    // ...and it's not a symmetric relation  [added by NH, 9/5/2008]
 				    && !(tr.getType().isSymmetric())) {
+					//logger.debug("PathUtil: pathIsCircular: " + tr.getType().isSymmetric());
 					return true;
 				}
 				scratchSet.add(tr.getChild());
