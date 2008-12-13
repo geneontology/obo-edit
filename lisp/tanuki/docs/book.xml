@@ -1,0 +1,149 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//Norman Walsh//DTD DocBk XML V3.1.7//EN"
+               "/usr/lib/sgml/dtd/docbook-xml/4.1.2/docbookx.dtd" [
+<!ENTITY fileXTANUKI-DBX_package SYSTEM "TANUKI-DB/_package.xml">
+<!ENTITY fileXTANUKI-DBXTANUKI-DATABASE SYSTEM "TANUKI-DB/TANUKI-DATABASE.xml">
+<!ENTITY fileXTANUKI-DECIDEX_package SYSTEM "TANUKI-DECIDE/_package.xml">
+<!ENTITY fileXTANUKI-FILEX_package SYSTEM "TANUKI-FILE/_package.xml">
+<!ENTITY fileXTANUKI-HTMLX_package SYSTEM "TANUKI-HTML/_package.xml">
+<!ENTITY fileXTANUKIX_package SYSTEM "TANUKI/_package.xml">
+<!ENTITY fileXTANUKI-DBXcontentlist SYSTEM "TANUKI-DB/contentlist.xml">
+<!ENTITY fileXTANUKI-DECIDEXcontentlist SYSTEM "TANUKI-DECIDE/contentlist.xml">
+<!ENTITY fileXTANUKI-FILEXcontentlist SYSTEM "TANUKI-FILE/contentlist.xml">
+<!ENTITY fileXTANUKI-HTMLXcontentlist SYSTEM "TANUKI-HTML/contentlist.xml">
+<!ENTITY fileXTANUKIXcontentlist SYSTEM "TANUKI/contentlist.xml">
+<!ENTITY fileXglobal-index SYSTEM "global-index.xml">
+]>
+<book>
+<title>Tanuki Reference Documentation</title>
+<bookinfo>
+<productname>Tanuki</productname>
+<productnumber>0.5</productnumber>
+<pubdate>Spring 2008</pubdate>
+</bookinfo>
+<reference id="packageXTANUKI-DB">
+  <title>Package TANUKI-DB</title>
+ <refentry id="packageXcontentXTANUKI-DB">
+<refmeta><refentrytitle>TANUKI-DB package</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Project name</refmiscinfo>
+</refmeta>
+<refnamediv><refname>TANUKI-DB package</refname>
+<refpurpose>Exports/uses/nicknames/etc</refpurpose>
+</refnamediv>
+<refsect1><title>Description</title>
+<para>[No description in DEFPACKAGE]</para>
+</refsect1>
+<refsect1>
+ <title>Exports</title>
+<informaltable frame="all" shortentry="0">
+<tgroup cols="2" colsep="1" rowsep="1"><tbody>
+<row><entry>CLOSE-DATABASE</entry><entry>ENTER-LINK</entry></row><row><entry>GET-ALL-LINKS</entry><entry>GET-BAD-LINK-COUNT</entry></row><row><entry>GET-DATABASE</entry><entry>GET-LINK-COUNT</entry></row><row><entry>GET-LINK-URL</entry><entry>GET-META</entry></row><row><entry>GET-NAME</entry><entry>GET-NTH-LINK</entry></row><row><entry>GET-NTH-UNVISITED-LINK</entry><entry>GET-TARGET</entry></row><row><entry>GET-UNVISITED-LINK-COUNT</entry><entry>GET-UNVISITED-LINKS</entry></row><row><entry>GET-VISITED-LINKS</entry><entry>INITIALIZE-DATABASE</entry></row><row><entry>LINK</entry><entry>META</entry></row><row><entry>OPEN-DATABASE</entry><entry>SQL-ENGINE</entry></row><row><entry>TANUKI-DATABASE</entry><entry>UPDATE-LINK</entry></row><row><entry>URL-IN-DB-P</entry></row></tbody></tgroup></informaltable>
+</refsect1>
+<refsect1>
+ <title>Uses</title>
+<simpara>CLSQL, CLSQL-SQLITE3 and CL</simpara>
+</refsect1>
+</refentry>
+&fileXTANUKI-DBXTANUKI-DATABASE;
+&fileXTANUKI-DBXcontentlist;
+</reference>
+<reference id="packageXTANUKI-DECIDE">
+  <title>Package TANUKI-DECIDE</title>
+ <refentry id="packageXcontentXTANUKI-DECIDE">
+<refmeta><refentrytitle>TANUKI-DECIDE package</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Project name</refmiscinfo>
+</refmeta>
+<refnamediv><refname>TANUKI-DECIDE package</refname>
+<refpurpose>Exports/uses/nicknames/etc</refpurpose>
+</refnamediv>
+<refsect1><title>Description</title>
+<para>[No description in DEFPACKAGE]</para>
+</refsect1>
+<refsect1>
+ <title>Exports</title>
+<simpara>DECIDE and LEVENSHTEIN-DISTANCE</simpara>
+</refsect1>
+<refsect1>
+ <title>Uses</title>
+<simpara>CL</simpara>
+</refsect1>
+&fileXTANUKI-DECIDEXcontentlist;
+</refentry>
+</reference>
+<reference id="packageXTANUKI-FILE">
+  <title>Package TANUKI-FILE</title>
+ <refentry id="packageXcontentXTANUKI-FILE">
+<refmeta><refentrytitle>TANUKI-FILE package</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Project name</refmiscinfo>
+</refmeta>
+<refnamediv><refname>TANUKI-FILE package</refname>
+<refpurpose>Exports/uses/nicknames/etc</refpurpose>
+</refnamediv>
+<refsect1><title>Description</title>
+<para>[No description in DEFPACKAGE]</para>
+</refsect1>
+<refsect1>
+ <title>Exports</title>
+<simpara>FILE-EXISTS-P</simpara>
+</refsect1>
+<refsect1>
+ <title>Uses</title>
+<simpara>CL-PPCRE and CL</simpara>
+</refsect1>
+&fileXTANUKI-FILEXcontentlist;
+</refentry>
+</reference>
+<reference id="packageXTANUKI-HTML">
+  <title>Package TANUKI-HTML</title>
+ <refentry id="packageXcontentXTANUKI-HTML">
+<refmeta><refentrytitle>TANUKI-HTML package</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Project name</refmiscinfo>
+</refmeta>
+<refnamediv><refname>TANUKI-HTML package</refname>
+<refpurpose>Exports/uses/nicknames/etc</refpurpose>
+</refnamediv>
+<refsect1><title>Description</title>
+<para>[No description in DEFPACKAGE]</para>
+</refsect1>
+<refsect1>
+ <title>Exports</title>
+<informaltable frame="all" shortentry="0">
+<tgroup cols="2" colsep="1" rowsep="1"><tbody>
+<row><entry>EXTRACT-LINKS</entry><entry>FETCH-DOC</entry></row><row><entry>INTERNAL-P</entry><entry>PULL-ALL-HREFS</entry></row><row><entry>RENDER</entry></row></tbody></tgroup></informaltable>
+</refsect1>
+<refsect1>
+ <title>Uses</title>
+<simpara>CLOSURE-HTML, PURI, S-HTTP-CLIENT and CL</simpara>
+</refsect1>
+&fileXTANUKI-HTMLXcontentlist;
+</refentry>
+</reference>
+<reference id="packageXTANUKI">
+  <title>Package TANUKI</title>
+ <refentry id="packageXcontentXTANUKI">
+<refmeta><refentrytitle>TANUKI package</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Project name</refmiscinfo>
+</refmeta>
+<refnamediv><refname>TANUKI package</refname>
+<refpurpose>Exports/uses/nicknames/etc</refpurpose>
+</refnamediv>
+<refsect1><title>Description</title>
+<para>[No description in DEFPACKAGE]</para>
+</refsect1>
+<refsect1>
+ <title>Uses</title>
+<simpara><link hovertext="(defpackage TANUKI-DB ...)" linkend="packageXTANUKI-DB">TANUKI-DB</link>, <link hovertext="(defpackage TANUKI-FILE ...)" linkend="packageXTANUKI-FILE">TANUKI-FILE</link>, <link hovertext="(defpackage TANUKI-DECIDE ...)" linkend="packageXTANUKI-DECIDE">TANUKI-DECIDE</link>, <link hovertext="(defpackage TANUKI-HTML ...)" linkend="packageXTANUKI-HTML">TANUKI-HTML</link> and CL</simpara>
+</refsect1>
+</refentry>
+&fileXTANUKIXcontentlist;
+</reference>
+<reference id="indexReference">
+  <title>Indexes</title>
+&fileXglobal-index;
+</reference>
+</book>

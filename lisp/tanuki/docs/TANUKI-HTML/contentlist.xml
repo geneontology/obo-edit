@@ -1,0 +1,137 @@
+   <refsect1>
+    <title>Package Content</title>
+<refsect2>
+<title class="contenttitle">Methods</title>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-HTMLXEXTRACT-LINKS"/>EXTRACT-LINKS</title>
+<para>
+<programlisting> (EXTRACT-LINKS URL-OR-STR &amp;OPTIONAL (BASE-STR-OR-PURI NIL)) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Returns two values, a list of internal URLs and a list of external
+URLs. If you want the results to be relative to a different base, use
+the second argument.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(FETCH-DOC STR-OR-PURI) [function]" linkend="methXTANUKI-HTMLXFETCH-DOC">FETCH-DOC</link>, <link hovertext="(INTERNAL-P QUERY-STR-OR-PURI BASE-STR-OR-PURI) [function]" linkend="methXTANUKI-HTMLXINTERNAL-P">INTERNAL-P</link>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mapc_.htm">MAPCAN</ulink>, <link hovertext="(MERGE-WITH-BASE URL-LIST &amp;OPTIONAL (BASE-STR-OR-PURI NIL)) [function]" linkend="methXTANUKI-HTMLXMERGE-WITH-BASE">MERGE-WITH-BASE</link>, PARSE-URI, <link hovertext="(PULL-ALL-HREFS STR) [function]" linkend="methXTANUKI-HTMLXPULL-ALL-HREFS">PULL-ALL-HREFS</link> and <link hovertext="(RENDER FOO) [function]" linkend="methXTANUKI-HTMLXRENDER">RENDER</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-HTMLXFETCH-DOC"/>FETCH-DOC</title>
+<para>
+<programlisting> (FETCH-DOC STR-OR-PURI) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Fetch a document from the intrawebs. Return doc as string.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">=</ulink>, DO-HTTP-REQUEST and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/a_error.htm">ERROR</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-HTMLXINTERNAL-P"/>INTERNAL-P</title>
+<para>
+<programlisting> (INTERNAL-P QUERY-STR-OR-PURI BASE-STR-OR-PURI) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Check whether the first is internal to the second.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>PARSE-URI, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_stgeq_.htm">STRING=</ulink> and URI-AUTHORITY</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-HTMLXMERGE-WITH-BASE"/>MERGE-WITH-BASE</title>
+<para>
+<programlisting> (MERGE-WITH-BASE URL-LIST &amp;OPTIONAL (BASE-STR-OR-PURI NIL)) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Takes a list of urls and a base url and merges them together to
+produce fully qualified strings if possible. While the second argument
+is technically optional, and the first in the list will be used in its
+stead, it's probably not particularly useful behavior.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mapc_.htm">MAPCAR</ulink>, MERGE-URIS, PARSE-URI and RENDER-URI</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-HTMLXPULL-ALL-HREFS"/>PULL-ALL-HREFS</title>
+<para>
+<programlisting> (PULL-ALL-HREFS STR) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Extract all of the hrefs as a list from an HTML string.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>CLOSURE-HTML:MAKE-PT-BUILDER, CLOSURE-HTML:PARSE, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_getf.htm">GETF</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mapc_.htm">MAPCAR</ulink>, PT-ATTRS, PT-CHILDREN, PT-NAME, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_push.htm">PUSH</ulink>, REC-DEC and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_stgeq_.htm">STRING=</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-HTMLXRENDER"/>RENDER</title>
+<para>
+<programlisting> (RENDER FOO) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Changes (a list of) str/urls into a list of proper urls.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/a_atom.htm">ATOM</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mapc_.htm">MAPCAR</ulink> and RENDER-URI</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>html.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect2>
+   </refsect1>

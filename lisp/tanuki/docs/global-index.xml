@@ -1,0 +1,91 @@
+<refentry id="globalIndex">
+<refnamediv><refname>Global Index</refname><refpurpose>Clickable index of all symbols</refpurpose></refnamediv>
+<refsect1><title>Index for package TANUKI-DB</title>
+<simplelist columns="2">
+<member><link hovertext="((SETF DATABASE) (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXXSETFXDATABASEX">(SETF DATABASE)</link></member>
+<member><link hovertext="variable +CURRENT-DATABASE+ is of type T [parameter]" linkend="varXTANUKI-DBXXCURRENT-DATABASEX">+CURRENT-DATABASE+</link></member>
+<member><link hovertext="(ACTION-ON &amp;REST LIST) [function]" linkend="methXTANUKI-DBXACTION-ON">ACTION-ON</link></member>
+<member><link hovertext="(CLOSE-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXCLOSE-DATABASE">CLOSE-DATABASE</link></member>
+<member><link hovertext="variable DATABASE is of type T" linkend="varXTANUKI-DATABASEXDATABASE">DATABASE</link></member>
+<member><link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link></member>
+<member><link hovertext="(DATABASE-GET-TYPE-SPECIFIER (TYPE (EQL 'INTEGER)) ARGS DATABASE (DB-TYPE (EQL SQLITE3))) [method]" linkend="methXTANUKI-DBXDATABASE-GET-TYPE-SPECIFIER">DATABASE-GET-TYPE-SPECIFIER</link></member>
+<member><link hovertext="(DATABASE-PKEY-CONSTRAINT (CLASS STANDARD-DB-CLASS) (DATABASE DATABASE)) [method]" linkend="methXTANUKI-DBXDATABASE-PKEY-CONSTRAINT">DATABASE-PKEY-CONSTRAINT</link></member>
+<member><link hovertext="(ENTER-LINK (DBO TANUKI-DATABASE) &amp;KEY (URL NIL) (VISITED NIL) (FAILED NIL) (MANDATED NIL) (INTERNAL NIL)) [method]" linkend="methXTANUKI-DBXENTER-LINK">ENTER-LINK</link></member>
+<member><link hovertext="(ENTER-META (DBO TANUKI-DATABASE) &amp;KEY (TARGET NIL) (NAME NIL)) [method]" linkend="methXTANUKI-DBXENTER-META">ENTER-META</link></member>
+<member><link hovertext="(GET-ALL-LINKS (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-ALL-LINKS">GET-ALL-LINKS</link></member>
+<member><link hovertext="(GET-BAD-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-BAD-LINK-COUNT">GET-BAD-LINK-COUNT</link></member>
+<member><link hovertext="(GET-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-DATABASE">GET-DATABASE</link></member>
+<member><link hovertext="(GET-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-LINK-COUNT">GET-LINK-COUNT</link></member>
+<member><link hovertext="(GET-LINK-URL (LINK LINK)) [method]" linkend="methXTANUKI-DBXGET-LINK-URL">GET-LINK-URL</link></member>
+<member><link hovertext="(GET-META (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-META">GET-META</link></member>
+<member><link hovertext="(GET-NAME (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-NAME">GET-NAME</link></member>
+<member><link hovertext="(GET-NTH-LINK (DBO TANUKI-DATABASE) N) [method]" linkend="methXTANUKI-DBXGET-NTH-LINK">GET-NTH-LINK</link></member>
+<member><link hovertext="(GET-NTH-UNVISITED-LINK (DBO TANUKI-DATABASE) N) [method]" linkend="methXTANUKI-DBXGET-NTH-UNVISITED-LINK">GET-NTH-UNVISITED-LINK</link></member>
+<member><link hovertext="(GET-TARGET (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-TARGET">GET-TARGET</link></member>
+<member><link hovertext="(GET-UNVISITED-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-UNVISITED-LINK-COUNT">GET-UNVISITED-LINK-COUNT</link></member>
+<member><link hovertext="(GET-UNVISITED-LINKS (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-UNVISITED-LINKS">GET-UNVISITED-LINKS</link></member>
+<member><link hovertext="(GET-VISITED-LINKS (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-VISITED-LINKS">GET-VISITED-LINKS</link></member>
+<member><link hovertext="(IN-LIST LIST &amp;OPTIONAL (FUNCT #'EVENP)) [function]" linkend="methXTANUKI-DBXIN-LIST">IN-LIST</link></member>
+<member><link hovertext="(INITIALIZE-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL) (TARGET NIL) (NAME NIL)) [method]" linkend="methXTANUKI-DBXINITIALIZE-DATABASE">INITIALIZE-DATABASE</link></member>
+<member><link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link></member>
+<member><link hovertext="(LIST-EVEN-P LIST) [function]" linkend="methXTANUKI-DBXLIST-EVEN-P">LIST-EVEN-P</link></member>
+<member><link hovertext="(LIST-HAS-NO-KEYWORDS-P LIST) [function]" linkend="methXTANUKI-DBXLIST-HAS-NO-KEYWORDS-P">LIST-HAS-NO-KEYWORDS-P</link></member>
+<member><link hovertext="(LIST-IS-ALL-KEYWORDS-P LIST) [function]" linkend="methXTANUKI-DBXLIST-IS-ALL-KEYWORDS-P">LIST-IS-ALL-KEYWORDS-P</link></member>
+<member><link hovertext="(MAKE-WHERE-CLAUSE PAIRS) [function]" linkend="methXTANUKI-DBXMAKE-WHERE-CLAUSE">MAKE-WHERE-CLAUSE</link></member>
+<member><link hovertext="(OPEN-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL)) [method]" linkend="methXTANUKI-DBXOPEN-DATABASE">OPEN-DATABASE</link></member>
+<member><link hovertext="(PRINT-LINK LINK) [function]" linkend="methXTANUKI-DBXPRINT-LINK">PRINT-LINK</link></member>
+<member><link hovertext="(RSEQ NUM) [function]" linkend="methXTANUKI-DBXRSEQ">RSEQ</link></member>
+<member><link hovertext="(RSEQ-IN-RANGE NUM RANGE) [function]" linkend="methXTANUKI-DBXRSEQ-IN-RANGE">RSEQ-IN-RANGE</link></member>
+<member><link hovertext="(SHUFFLE SEQUENCE) [function]" linkend="methXTANUKI-DBXSHUFFLE">SHUFFLE</link></member>
+<member><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></member>
+<member><link hovertext="(defclass TANUKI-DATABASE ()(...))" linkend="classXTANUKI-DBXTANUKI-DATABASE">TANUKI-DATABASE</link></member>
+<member><link hovertext="(UPDATE-LINK (DBO TANUKI-DATABASE) &amp;KEY (LINK NIL) (VISITED NIL) (FAILED NIL) (INTERNAL NIL) (URL NIL) (MANDATED NIL)) [method]" linkend="methXTANUKI-DBXUPDATE-LINK">UPDATE-LINK</link></member>
+<member><link hovertext="(URL-IN-DB-P (DBO TANUKI-DATABASE) USTR) [method]" linkend="methXTANUKI-DBXURL-IN-DB-P">URL-IN-DB-P</link></member>
+</simplelist>
+</refsect1>
+<refsect1><title>Index for package TANUKI-DECIDE</title>
+<simplelist columns="2">
+<member><link hovertext="(AVERAGE NUM-LIST) [function]" linkend="methXTANUKI-DECIDEXAVERAGE">AVERAGE</link></member>
+<member><link hovertext="(AVERAGE-DISTANCE STR BACKGROUND) [function]" linkend="methXTANUKI-DECIDEXAVERAGE-DISTANCE">AVERAGE-DISTANCE</link></member>
+<member><link hovertext="(DECIDE SAMPLE BACKGROUND) [function]" linkend="methXTANUKI-DECIDEXDECIDE">DECIDE</link></member>
+<member><link hovertext="(LEVENSHTEIN-DISTANCE S1 S2) [function]" linkend="methXTANUKI-DECIDEXLEVENSHTEIN-DISTANCE">LEVENSHTEIN-DISTANCE</link></member>
+<member><link hovertext="(MAX-DISTANCE STR BACKGROUND) [function]" linkend="methXTANUKI-DECIDEXMAX-DISTANCE">MAX-DISTANCE</link></member>
+</simplelist>
+</refsect1>
+<refsect1><title>Index for package TANUKI-FILE</title>
+<simplelist columns="2">
+<member><link hovertext="variable *COMMENT-SCANNER* is of type T" linkend="varXTANUKI-FILEXXCOMMENT-SCANNERX">*COMMENT-SCANNER*</link></member>
+<member><link hovertext="variable *URL-SCANNER* is of type T" linkend="varXTANUKI-FILEXXURL-SCANNERX">*URL-SCANNER*</link></member>
+<member><link hovertext="variable *WS-SCANNER* is of type T" linkend="varXTANUKI-FILEXXWS-SCANNERX">*WS-SCANNER*</link></member>
+<member><link hovertext="(EXTRACT-STRING STR) [function]" linkend="methXTANUKI-FILEXEXTRACT-STRING">EXTRACT-STRING</link></member>
+<member><link hovertext="(FILE-EXISTS-P PATHNAME) [function]" linkend="methXTANUKI-FILEXFILE-EXISTS-P">FILE-EXISTS-P</link></member>
+<member><link hovertext="(SLURP-FILE FILENAME) [function]" linkend="methXTANUKI-FILEXSLURP-FILE">SLURP-FILE</link></member>
+</simplelist>
+</refsect1>
+<refsect1><title>Index for package TANUKI-HTML</title>
+<simplelist columns="2">
+<member><link hovertext="(EXTRACT-LINKS URL-OR-STR &amp;OPTIONAL (BASE-STR-OR-PURI NIL)) [function]" linkend="methXTANUKI-HTMLXEXTRACT-LINKS">EXTRACT-LINKS</link></member>
+<member><link hovertext="(FETCH-DOC STR-OR-PURI) [function]" linkend="methXTANUKI-HTMLXFETCH-DOC">FETCH-DOC</link></member>
+<member><link hovertext="(INTERNAL-P QUERY-STR-OR-PURI BASE-STR-OR-PURI) [function]" linkend="methXTANUKI-HTMLXINTERNAL-P">INTERNAL-P</link></member>
+<member><link hovertext="(MERGE-WITH-BASE URL-LIST &amp;OPTIONAL (BASE-STR-OR-PURI NIL)) [function]" linkend="methXTANUKI-HTMLXMERGE-WITH-BASE">MERGE-WITH-BASE</link></member>
+<member><link hovertext="(PULL-ALL-HREFS STR) [function]" linkend="methXTANUKI-HTMLXPULL-ALL-HREFS">PULL-ALL-HREFS</link></member>
+<member><link hovertext="(RENDER FOO) [function]" linkend="methXTANUKI-HTMLXRENDER">RENDER</link></member>
+</simplelist>
+</refsect1>
+<refsect1><title>Index for package TANUKI</title>
+<simplelist columns="2">
+<member><link hovertext="variable *BASE-URL* is of type T" linkend="varXTANUKIXXBASE-URLX">*BASE-URL*</link></member>
+<member><link hovertext="variable *PAUSE-LENGTH* is of type T" linkend="varXTANUKIXXPAUSE-LENGTHX">*PAUSE-LENGTH*</link></member>
+<member><link hovertext="variable *STEPS-TO-DATE* is of type T" linkend="varXTANUKIXXSTEPS-TO-DATEX">*STEPS-TO-DATE*</link></member>
+<member><link hovertext="variable *STOP-SIGNAL* is of type T" linkend="varXTANUKIXXSTOP-SIGNALX">*STOP-SIGNAL*</link></member>
+<member><link hovertext="variable *TANUKI-THREAD* is of type T" linkend="varXTANUKIXXTANUKI-THREADX">*TANUKI-THREAD*</link></member>
+<member><link hovertext="variable +TANUKI-DB+ is of type T [parameter]" linkend="varXTANUKIXXTANUKI-DBX">+TANUKI-DB+</link></member>
+<member><link hovertext="(INIT &amp;KEY (FILE NIL) (TARGET NIL) (NICKNAME NIL)) [function]" linkend="methXTANUKIXINIT">INIT</link></member>
+<member><link hovertext="(RECONNECT &amp;KEY (FILE NIL)) [function]" linkend="methXTANUKIXRECONNECT">RECONNECT</link></member>
+<member><link hovertext="(STATUS ) [function]" linkend="methXTANUKIXSTATUS">STATUS</link></member>
+<member><link hovertext="(STOP ) [function]" linkend="methXTANUKIXSTOP">STOP</link></member>
+<member><link hovertext="(TANUKI-HANDLER ) [function]" linkend="methXTANUKIXTANUKI-HANDLER">TANUKI-HANDLER</link></member>
+<member><link hovertext="(TANUKI-STEP ) [function]" linkend="methXTANUKIXTANUKI-STEP">TANUKI-STEP</link></member>
+</simplelist>
+</refsect1>
+</refentry>
