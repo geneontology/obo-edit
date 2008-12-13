@@ -1,0 +1,153 @@
+   <refentry id="packageXTANUKIXvariables">
+<refnamediv>
+<refname>TANUKI variables</refname>
+<refpurpose>All variables and constants</refpurpose></refnamediv>
+   <refsect1>
+    <title>Variables</title>
+<refsect2>
+<title class="contenttitle">Variables</title>
+<para>
+<anchor id="varXTANUKIXXBASE-URLX"/><anchor id="varXTANUKIXXPAUSE-LENGTHX"/><anchor id="varXTANUKIXXSTEPS-TO-DATEX"/><anchor id="varXTANUKIXXSTOP-SIGNALX"/><anchor id="varXTANUKIXXTANUKI-THREADX"/><anchor id="varXTANUKIXXTANUKI-DBX"/><programlisting><property role="internal">variable *BASE-URL* is of type T</property>
+<property role="internal">variable *PAUSE-LENGTH* is of type T</property>
+<property role="internal">variable *STEPS-TO-DATE* is of type T</property>
+<property role="internal">variable *STOP-SIGNAL* is of type T</property>
+<property role="internal">variable *TANUKI-THREAD* is of type T</property>
+<property role="internal">variable +TANUKI-DB+ is of type T [parameter]</property>
+</programlisting>
+</para>
+</refsect2>
+   </refsect1>
+ </refentry>
+   <refentry id="packageXTANUKIXcontent">
+<refnamediv>
+<refname>TANUKI full listing</refname>
+<refpurpose>All funcallable objects</refpurpose></refnamediv>
+   <refsect1>
+    <title>Package Content</title>
+<refsect2>
+<title class="contenttitle">Methods</title>
+<formalpara>
+<title><anchor id="methXTANUKIXINIT"/>INIT</title>
+<para>
+<programlisting> (INIT &amp;KEY (FILE NIL) (TARGET NIL) (NICKNAME NIL)) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Set up a Tanuki system in our environment.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(INITIALIZE-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL) (TARGET NIL) (NAME NIL)) [method]" linkend="methXTANUKI-DBXINITIALIZE-DATABASE">INITIALIZE-DATABASE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKIXRECONNECT"/>RECONNECT</title>
+<para>
+<programlisting> (RECONNECT &amp;KEY (FILE NIL)) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Reconnect to an already run Tanuki system.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(OPEN-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL)) [method]" linkend="methXTANUKI-DBXOPEN-DATABASE">OPEN-DATABASE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKIXSTATUS"/>STATUS</title>
+<para>
+<programlisting> (STATUS) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Print the current status of current Tanuki system and return the
+number of unvisited URLs.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_format.htm">FORMAT</ulink>, <link hovertext="(GET-BAD-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-BAD-LINK-COUNT">GET-BAD-LINK-COUNT</link>, <link hovertext="(GET-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-LINK-COUNT">GET-LINK-COUNT</link>, <link hovertext="(GET-NAME (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-NAME">GET-NAME</link>, <link hovertext="(GET-TARGET (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-TARGET">GET-TARGET</link> and <link hovertext="(GET-UNVISITED-LINK-COUNT (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-UNVISITED-LINK-COUNT">GET-UNVISITED-LINK-COUNT</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKIXSTOP"/>STOP</title>
+<para>
+<programlisting> (STOP) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Politely stop the tanuki process.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_format.htm">FORMAT</ulink> and SB-THREAD:JOIN-THREAD</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKIXTANUKI-HANDLER"/>TANUKI-HANDLER</title>
+<para>
+<programlisting> (TANUKI-HANDLER) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Handle starting and stopping with flags, looping.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_format.htm">FORMAT</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_return.htm">RETURN</ulink> and <link hovertext="(TANUKI-STEP ) [function]" linkend="methXTANUKIXTANUKI-STEP">TANUKI-STEP</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKIXTANUKI-STEP"/>TANUKI-STEP</title>
+<para>
+<programlisting> (TANUKI-STEP) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>A single stepping cycle in the Tanuki system.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>tanuki.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect2>
+   </refsect1>
+ </refentry>

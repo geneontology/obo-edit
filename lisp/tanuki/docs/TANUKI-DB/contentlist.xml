@@ -1,0 +1,602 @@
+   <refentry id="packageXTANUKI-DBXcontent">
+<refnamediv>
+<refname>TANUKI-DB full listing</refname>
+<refpurpose>All funcallable objects and all variables</refpurpose></refnamediv>
+   <refsect1>
+    <title>Package Content</title>
+<refsect2>
+<title class="contenttitle">Methods</title>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXACTION-ON"/>ACTION-ON</title>
+<para>
+<programlisting> (ACTION-ON &amp;REST LIST) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>pseudo &amp;key--pairs keywords and their arguments into a list</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/a_error.htm">ERROR</ulink>, <link hovertext="(IN-LIST LIST &amp;OPTIONAL (FUNCT #'EVENP)) [function]" linkend="methXTANUKI-DBXIN-LIST">IN-LIST</link>, <link hovertext="(LIST-EVEN-P LIST) [function]" linkend="methXTANUKI-DBXLIST-EVEN-P">LIST-EVEN-P</link>, <link hovertext="(LIST-HAS-NO-KEYWORDS-P LIST) [function]" linkend="methXTANUKI-DBXLIST-HAS-NO-KEYWORDS-P">LIST-HAS-NO-KEYWORDS-P</link> and <link hovertext="(LIST-IS-ALL-KEYWORDS-P LIST) [function]" linkend="methXTANUKI-DBXLIST-IS-ALL-KEYWORDS-P">LIST-IS-ALL-KEYWORDS-P</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXCLOSE-DATABASE"/>CLOSE-DATABASE</title>
+<para>
+<programlisting> (CLOSE-DATABASE (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link>, DISCONNECT and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXDATABASE-GET-TYPE-SPECIFIER"/>DATABASE-GET-TYPE-SPECIFIER</title>
+<para>
+<programlisting> (DATABASE-GET-TYPE-SPECIFIER (TYPE (EQL 'INTEGER)) ARGS DATABASE (DB-TYPE (EQL SQLITE3))) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_format.htm">FORMAT</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXDATABASE-PKEY-CONSTRAINT"/>DATABASE-PKEY-CONSTRAINT</title>
+<para>
+<programlisting> (DATABASE-PKEY-CONSTRAINT (CLASS STANDARD-DB-CLASS) (DATABASE DATABASE)) [method]</programlisting>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXENTER-LINK"/>ENTER-LINK</title>
+<para>
+<programlisting> (ENTER-LINK (DBO TANUKI-DATABASE) &amp;KEY (URL NIL) (VISITED NIL) (FAILED NIL) (MANDATED NIL) (INTERNAL NIL)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(GET-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-DATABASE">GET-DATABASE</link>, <link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mk_ins.htm">MAKE-INSTANCE</ulink> and UPDATE-RECORDS-FROM-INSTANCE</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXENTER-META"/>ENTER-META</title>
+<para>
+<programlisting> (ENTER-META (DBO TANUKI-DATABASE) &amp;KEY (TARGET NIL) (NAME NIL)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_slt_va.htm">(SETF SLOT-VALUE)</ulink>, <link hovertext="(GET-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-DATABASE">GET-DATABASE</link>, <link hovertext="(GET-META (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-META">GET-META</link>, <link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mk_ins.htm">MAKE-INSTANCE</ulink> and UPDATE-RECORDS-FROM-INSTANCE</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-ALL-LINKS"/>GET-ALL-LINKS</title>
+<para>
+<programlisting> (GET-ALL-LINKS (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-BAD-LINK-COUNT"/>GET-BAD-LINK-COUNT</title>
+<para>
+<programlisting> (GET-BAD-LINK-COUNT (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-DATABASE"/>GET-DATABASE</title>
+<para>
+<programlisting> (GET-DATABASE (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-LINK-COUNT"/>GET-LINK-COUNT</title>
+<para>
+<programlisting> (GET-LINK-COUNT (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-LINK-URL"/>GET-LINK-URL</title>
+<para>
+<programlisting> (GET-LINK-URL (LINK LINK)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>URL and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-META"/>GET-META</title>
+<para>
+<programlisting> (GET-META (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(GET-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-DATABASE">GET-DATABASE</link> and SELECT</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-NAME"/>GET-NAME</title>
+<para>
+<programlisting> (GET-NAME (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(GET-META (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-META">GET-META</link> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_slt_va.htm">SLOT-VALUE</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-NTH-LINK"/>GET-NTH-LINK</title>
+<para>
+<programlisting> (GET-NTH-LINK (DBO TANUKI-DATABASE) N) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-NTH-UNVISITED-LINK"/>GET-NTH-UNVISITED-LINK</title>
+<para>
+<programlisting> (GET-NTH-UNVISITED-LINK (DBO TANUKI-DATABASE) N) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-TARGET"/>GET-TARGET</title>
+<para>
+<programlisting> (GET-TARGET (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(GET-META (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-META">GET-META</link> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_slt_va.htm">SLOT-VALUE</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-UNVISITED-LINK-COUNT"/>GET-UNVISITED-LINK-COUNT</title>
+<para>
+<programlisting> (GET-UNVISITED-LINK-COUNT (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-UNVISITED-LINKS"/>GET-UNVISITED-LINKS</title>
+<para>
+<programlisting> (GET-UNVISITED-LINKS (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXGET-VISITED-LINKS"/>GET-VISITED-LINKS</title>
+<para>
+<programlisting> (GET-VISITED-LINKS (DBO TANUKI-DATABASE)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXIN-LIST"/>IN-LIST</title>
+<para>
+<programlisting> (IN-LIST LIST &amp;OPTIONAL (FUNCT #'EVENP)) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Returns a sublist whose items meet some criteria relative to its
+position in the list; takes a single int arg function (e.g. evenp,
+oddp, etc.). Defaults to evenp.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_funcal.htm">FUNCALL</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_incf_.htm">INCF</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mapc_.htm">MAPCAN</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXINITIALIZE-DATABASE"/>INITIALIZE-DATABASE</title>
+<para>
+<programlisting> (INITIALIZE-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL) (TARGET NIL) (NAME NIL)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>CONNECT, CREATE-VIEW-FROM-CLASS, <link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link>, DROP-TABLE, <link hovertext="(ENTER-LINK (DBO TANUKI-DATABASE) &amp;KEY (URL NIL) (VISITED NIL) (FAILED NIL) (MANDATED NIL) (INTERNAL NIL)) [method]" linkend="methXTANUKI-DBXENTER-LINK">ENTER-LINK</link>, <link hovertext="(ENTER-META (DBO TANUKI-DATABASE) &amp;KEY (TARGET NIL) (NAME NIL)) [method]" linkend="methXTANUKI-DBXENTER-META">ENTER-META</link>, <link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXKEY-CHECK"/>KEY-CHECK</title>
+<para>
+<programlisting> (KEY-CHECK MESSAGE &amp;REST KEYS) [macro]</programlisting>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXLIST-EVEN-P"/>LIST-EVEN-P</title>
+<para>
+<programlisting> (LIST-EVEN-P LIST) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Is the length of the list even?</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_evenpc.htm">EVENP</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_length.htm">LENGTH</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXLIST-HAS-NO-KEYWORDS-P"/>LIST-HAS-NO-KEYWORDS-P</title>
+<para>
+<programlisting> (LIST-HAS-NO-KEYWORDS-P LIST) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Are none of the items in the list keywords?</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_everyc.htm">NOTANY</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXLIST-IS-ALL-KEYWORDS-P"/>LIST-IS-ALL-KEYWORDS-P</title>
+<para>
+<programlisting> (LIST-IS-ALL-KEYWORDS-P LIST) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Are all of the items in the list keywords?</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_everyc.htm">EVERY</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXMAKE-WHERE-CLAUSE"/>MAKE-WHERE-CLAUSE</title>
+<para>
+<programlisting> (MAKE-WHERE-CLAUSE PAIRS) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Turn a list of table name and bool pairs into appropriate CLSQL and
+expression.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>SQL-OPERATION</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXOPEN-DATABASE"/>OPEN-DATABASE</title>
+<para>
+<programlisting> (OPEN-DATABASE (DBO TANUKI-DATABASE) &amp;KEY (DBFILE NIL)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link>, <link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXPRINT-LINK"/>PRINT-LINK</title>
+<para>
+<programlisting> (PRINT-LINK LINK) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Pretty print a LINK (probably for debugging).</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_descri.htm">DESCRIBE</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_wr_pr.htm">PRINT</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXRSEQ"/>RSEQ</title>
+<para>
+<programlisting> (RSEQ NUM) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Returns a randomized sequence of the first num numbers.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(SHUFFLE SEQUENCE) [function]" linkend="methXTANUKI-DBXSHUFFLE">SHUFFLE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXRSEQ-IN-RANGE"/>RSEQ-IN-RANGE</title>
+<para>
+<programlisting> (RSEQ-IN-RANGE NUM RANGE) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return a random sequence of unique numbers within a range.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">=</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">&gt;</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/a_error.htm">ERROR</ulink> and <link hovertext="(RSEQ NUM) [function]" linkend="methXTANUKI-DBXRSEQ">RSEQ</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DBXSHUFFLE"/>SHUFFLE</title>
+<para>
+<programlisting> (SHUFFLE SEQUENCE) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Destructively shuffles a sequence.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/a_cons.htm">CONS</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_map.htm">MAP</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_map_in.htm">MAP-INTO</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_random.htm">RANDOM</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_sort_.htm">SORT</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXSQL-ENGINE"/>SQL-ENGINE</title>
+<para>
+<programlisting> (SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(DATABASE (OBJ TANUKI-DATABASE)) [accessor]" linkend="methXTANUKI-DATABASEXDATABASE">DATABASE</link>, LOCALLY-ENABLE-SQL-READER-SYNTAX, <link hovertext="(MAKE-WHERE-CLAUSE PAIRS) [function]" linkend="methXTANUKI-DBXMAKE-WHERE-CLAUSE">MAKE-WHERE-CLAUSE</link>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_push.htm">PUSH</ulink>, RESTORE-SQL-READER-SYNTAX-STATE, SELECT and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/m_w_slts.htm">WITH-SLOTS</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXUPDATE-LINK"/>UPDATE-LINK</title>
+<para>
+<programlisting> (UPDATE-LINK (DBO TANUKI-DATABASE) &amp;KEY (LINK NIL) (VISITED NIL) (FAILED NIL) (INTERNAL NIL) (URL NIL) (MANDATED NIL)) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_slt_va.htm">(SETF SLOT-VALUE)</ulink>, <link hovertext="(GET-DATABASE (DBO TANUKI-DATABASE)) [method]" linkend="methXTANUKI-DBXGET-DATABASE">GET-DATABASE</link>, <link hovertext="(KEY-CHECK MESSAGE &amp;REST KEYS) [macro]" linkend="methXTANUKI-DBXKEY-CHECK">KEY-CHECK</link> and UPDATE-RECORDS-FROM-INSTANCE</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DBXURL-IN-DB-P"/>URL-IN-DB-P</title>
+<para>
+<programlisting> (URL-IN-DB-P (DBO TANUKI-DATABASE) USTR) [method]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">=</ulink> and <link hovertext="(SQL-ENGINE DBO &amp;KEY (COUNT NIL) (LIMIT -1) (OFFSET -1) (MANDATED NIL) (FAILED NIL) (VISITED NIL) (URL &quot;&quot;)) [method]" linkend="methXTANUKI-DBXSQL-ENGINE">SQL-ENGINE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect2>
+<refsect2>
+<title class="contenttitle">Variables</title>
+ <formalpara>
+  <title><anchor id="varXTANUKI-DBXXCURRENT-DATABASEX"/>+CURRENT-DATABASE+  </title>
+  <para>
+<programlisting>variable +CURRENT-DATABASE+ is of type T [parameter]</programlisting>
+   <variablelist>
+    <title></title>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>db.lisp</simpara></listitem>
+</varlistentry>
+   </variablelist>
+  </para>
+ </formalpara>
+</refsect2>
+   </refsect1>
+ </refentry>

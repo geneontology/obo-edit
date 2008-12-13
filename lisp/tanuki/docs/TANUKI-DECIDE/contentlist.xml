@@ -1,0 +1,112 @@
+   <refsect1>
+    <title>Package Content</title>
+<refsect2>
+<title class="contenttitle">Methods</title>
+<formalpara>
+<title><anchor id="methXTANUKI-DECIDEXAVERAGE"/>AVERAGE</title>
+<para>
+<programlisting> (AVERAGE NUM-LIST) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return the average of a number list.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_apply.htm">APPLY</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_length.htm">LENGTH</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>decide.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DECIDEXAVERAGE-DISTANCE"/>AVERAGE-DISTANCE</title>
+<para>
+<programlisting> (AVERAGE-DISTANCE STR BACKGROUND) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return the maximum distance of str against the background list.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><link hovertext="(AVERAGE NUM-LIST) [function]" linkend="methXTANUKI-DECIDEXAVERAGE">AVERAGE</link></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>decide.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DECIDEXDECIDE"/>DECIDE</title>
+<para>
+<programlisting> (DECIDE SAMPLE BACKGROUND) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return a single string from the sample list that is most
+  &quot;different&quot; from the background list.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">&gt;</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_car_c.htm">CDAR</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_sort_.htm">SORT</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>decide.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-DECIDEXLEVENSHTEIN-DISTANCE"/>LEVENSHTEIN-DISTANCE</title>
+<para>
+<programlisting> (LEVENSHTEIN-DISTANCE S1 S2) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return the Levenshtein distance between two strings.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_aref.htm">(SETF AREF)</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_1pl_1_.htm">1+</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_1pl_1_.htm">1-</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_aref.htm">AREF</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_length.htm">LENGTH</ulink> and <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_mk_ar.htm">MAKE-ARRAY</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>decide.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DECIDEXMAX-DISTANCE"/>MAX-DISTANCE</title>
+<para>
+<programlisting> (MAX-DISTANCE STR BACKGROUND) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Return the maximum distance of str against the background list.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_apply.htm">APPLY</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>decide.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect2>
+   </refsect1>
