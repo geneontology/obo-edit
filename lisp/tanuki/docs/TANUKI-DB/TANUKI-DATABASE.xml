@@ -1,0 +1,68 @@
+<refentry class="defclass" id="classXTANUKI-DBXTANUKI-DATABASE">
+ <refnamediv>
+  <refname>TANUKI-DATABASE</refname>
+  <refpurpose class="contenttitle">class</refpurpose>
+ </refnamediv>
+<refsect1><title class="contenttitle">Class details</title>
+<programlisting>(defclass TANUKI-DATABASE ()(...))</programlisting>
+<informaltable role="classfacts" frame="sides" shortentry="0"><tgroup cols="2" colsep="3" rowsep="3"><tbody><row><entry>scope</entry>
+<entry>package <link hovertext="(defpackage TANUKI-DB ...)" linkend="packageXTANUKI-DB">TANUKI-DB</link></entry>
+</row>
+<row><entry>location</entry>
+<entry>db.lisp</entry>
+</row>
+<row><entry># variables</entry>
+<entry>1</entry>
+</row>
+<row><entry># methods</entry>
+<entry>2</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1>
+<title class="contenttitle">Methods</title>
+<formalpara>
+<title><anchor id="methXTANUKI-DATABASEXXSETFXDATABASEX"/>(SETF DATABASE)</title>
+<para>
+<programlisting> ((SETF DATABASE) (OBJ TANUKI-DATABASE)) [accessor]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>All the info will be in the DB.</simpara>
+</listitem></varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-DATABASEXDATABASE"/>DATABASE</title>
+<para>
+<programlisting> (DATABASE (OBJ TANUKI-DATABASE)) [accessor]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>All the info will be in the DB.</simpara>
+</listitem></varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect1>
+<refsect1>
+<title class="contenttitle">Slots</title>
+ <formalpara>
+  <title><anchor id="varXTANUKI-DATABASEXDATABASE"/>DATABASE  </title>
+  <para>
+<programlisting>slot DATABASE is of type T</programlisting>
+   <variablelist>
+    <title></title>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>All the info will be in the DB.</simpara>
+</listitem></varlistentry>
+   </variablelist>
+  </para>
+ </formalpara>
+</refsect1>
+</refentry>

@@ -1,0 +1,73 @@
+   <refsect1>
+    <title>Package Content</title>
+<refsect2>
+<title class="contenttitle">Methods</title>
+<formalpara>
+<title><anchor id="methXTANUKI-FILEXEXTRACT-STRING"/>EXTRACT-STRING</title>
+<para>
+<programlisting> (EXTRACT-STRING STR) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Grab the first nice-looking string on a line.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara>*URL-SCANNER*, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_eq_sle.htm">=</ulink>, <ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_length.htm">LENGTH</ulink>, MEAT, REGISTER-GROUPS-BIND and SCAN</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>file.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara class="exported">
+<title><anchor id="methXTANUKI-FILEXFILE-EXISTS-P"/>FILE-EXISTS-P</title>
+<para>
+<programlisting> (FILE-EXISTS-P PATHNAME) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Check for the existance of a file.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Calls</term>
+<listitem>
+<simpara><ulink type="clhs" url="http://www.lispworks.com/reference/HyperSpec/Body/f_probe_.htm">PROBE-FILE</ulink></simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>file.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+<formalpara>
+<title><anchor id="methXTANUKI-FILEXSLURP-FILE"/>SLURP-FILE</title>
+<para>
+<programlisting> (SLURP-FILE FILENAME) [function]</programlisting>
+<variablelist>
+<varlistentry>
+<term>Description</term>
+<listitem>
+<simpara>Slurp in a file and return URL looking thingies as a list of strings.</simpara>
+</listitem></varlistentry>
+<varlistentry>
+<term>Location</term>
+<listitem><simpara>file.lisp</simpara></listitem>
+</varlistentry>
+</variablelist>
+</para></formalpara>
+</refsect2>
+<refsect2>
+<title class="contenttitle">Variables</title>
+<para>
+<anchor id="varXTANUKI-FILEXXCOMMENT-SCANNERX"/><anchor id="varXTANUKI-FILEXXURL-SCANNERX"/><anchor id="varXTANUKI-FILEXXWS-SCANNERX"/><programlisting><property role="internal">variable *COMMENT-SCANNER* is of type T</property>
+<property role="internal">variable *URL-SCANNER* is of type T</property>
+<property role="internal">variable *WS-SCANNER* is of type T</property>
+</programlisting>
+</para>
+</refsect2>
+   </refsect1>
