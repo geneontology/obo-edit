@@ -391,15 +391,21 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		Set termSet = new HashSet();
 		while (it.hasNext()) {
 			Link tr = (Link) it.next();
+			//logger.debug("GraphvizCanvas: outputFile: tr = " + tr);
 			if (tr.getParent() != null) {
 				if (graphvizSettingsInstance.getFlipOver()) {
 					writer.println(convertID(tr.getParent().getID()) + " -> "
 							+ convertID(tr.getChild().getID()) + " ["
 							+ getOptions(tr) + "];");
+				//	logger.debug("GraphvizCanvas: outputFile: tr.getParent().getID() = " + tr.getParent().getID());
+				//	logger.debug("GraphvizCanvas: outputFile: tr.getChild().getID() = " +  tr.getChild().getID());
+
 				} else {
 					writer.println(convertID(tr.getChild().getID()) + " -> "
 							+ convertID(tr.getParent().getID()) + " ["
 							+ getOptions(tr) + "];");
+				
+					
 				}
 				termSet.add(tr.getParent());
 			}
