@@ -31,13 +31,19 @@ public class LinkListener implements HyperlinkListener {
 	
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			logger.debug("LinkListener: hyperlinkUpdate: e.getURL() = " + e.getURL() );
 			JEditorPane pane = (JEditorPane) e.getSource();
 			LinkedObject term = (LinkedObject) SessionManager.getManager().getSession().getObject(e.getURL().getPath());
+			
 			Collection<LinkedObject> v = new Vector();
 			Iterator<Link> it = term.getParents().iterator();
-			while (it.hasNext()) {
-				v.add(it.next().getParent());
-			}
+			
+			
+			// Removed so that when a term in the graphviz canvas is 
+			//clicked only the term clicked is shown in the OTE and not the parent. 
+//			while (it.hasNext()) {					
+//				v.add(it.next().getParent());  
+//			}
 			v.add(term);
 			SelectionManager.getManager().selectTerms(graphvizCanvas, v);
 		}
