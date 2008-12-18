@@ -56,14 +56,17 @@ id: develops_from
 
 [Term]
 id: X1
+name: X1
 is_a: X2
 is_a: X3 ! redundant
 
 [Term]
 id: X2
+name: X2
 is_a: X3
 
 [Term]
 id: X3
+name: X3
 is_a: X4
 
