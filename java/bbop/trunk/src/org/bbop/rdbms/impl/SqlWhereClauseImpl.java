@@ -89,6 +89,10 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		this.constraintSet.addConstraint("(" + colName + " LIKE '%" + in.trim() + "%')");
 	}
 	
+	public void addCaseInsensitiveRegexConstraint(String colName, String in){
+		this.constraintSet.addConstraint(colName + " ~* '.*" + in.trim() + ".*'");
+	}
+	
 	public void addContainsAnyConstraint(String colName,String in){
 		String[] parts = in.split("\\s");
 		
