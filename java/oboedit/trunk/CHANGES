@@ -1,12 +1,17 @@
 Changes in b52:
 Fixes:
-[ geneontology-Bugs-2384240 ] user defined dictionary
-[ geneontology-Bugs-2384194 ] Verification Manager checks
+- [ geneontology-Bugs-2384240 ] user defined dictionary
+- [ geneontology-Bugs-2384194 ] Verification Manager checks
 Provision to save vocabulary to a user-defined (user.dict) or the standard system (standard.dict i.e GO) dictionary.
 Users with existing domain-specific dictionaries can add it to their config folder and will have to follow the standard naming convention - "user.dict" (for now - I understand users would like freedom to name their dictionaries and maybe even load multiple dictionaries).
 Users without personal dictionaries will have the option to build one over the standard (GO) dictionary while editing.
 
 On a clean beta install or on getting rid of the entire config folder the Verification Manager will work right off the bat. On existing beta installations the dictionary files in the config folder will have to be updated through the Configuration Manager which will have the following new options "Update standard system dictionaries" and "Backup user-defined dictionary" which lets the user save their dictionary to a separate location.
+
+- TreeViewer displays one-way disjoints (in progress - display may be buggy as I'm investigating related rendering bugs).
+
+- Command line option to run obo2linkfile with release (Previouly included only with source distribution). 
+
 
 
 

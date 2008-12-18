@@ -53,7 +53,7 @@ import org.oboedit.util.PathUtil;
 
 /**
  * 
-  * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
+ * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
  * Docs by Jennifer Deegan and Nicolas Rodriguez.<br>
  *<br>
  *
@@ -80,7 +80,7 @@ public class TreeView extends AbstractGUIComponent {
 	public RestrictedJTree restrictedJTreeInstance;
 	protected BackgroundEventQueue eventQueue;
 
-	
+
 
 	/**
 	 * @param id
@@ -115,8 +115,8 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 
-	
-	
+
+
 	/**
 	 * 	  
 	 * Returns whether or not the component is set up to carry over multiple selection of terms from the Ontology Tree Editor.
@@ -136,7 +136,7 @@ public class TreeView extends AbstractGUIComponent {
 	 * Updates the Tree View to show the newly selected terms. 
 	 * 
 	 */
-	
+
 	protected SelectionListener selectionListener = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			//logger.debug("\n\n\nTreeView: SelectionChanged: SelectionEvent = " + e.getSelection());
@@ -144,8 +144,8 @@ public class TreeView extends AbstractGUIComponent {
 			update();
 		}
 	};
-	
-	
+
+
 	/**
 	 * Listens for undo or redo command that would require the Tree Viewer to reload to a different state.
 	 */
@@ -155,22 +155,15 @@ public class TreeView extends AbstractGUIComponent {
 		}
 	};
 
-	
 	/**
 	 * Declares a TreeModel variable pointing to a TreeModel that 
 	 * will hold information about the ontology tree that is selected.
 	 */
 	TreeModel model;
-	
-
-	
-	/**
-	 * 
-	 */
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			setToolTips();
-			//logger.debug("TreeView: configReloaded method.");
+			logger.debug("TreeView: configReloaded method.");
 		}
 	};
 
@@ -206,7 +199,7 @@ public class TreeView extends AbstractGUIComponent {
 	};
 
 
-	
+
 	/**
 	 * This sets up the GUI of the main display area of the component, where the 
 	 * tree will be shown. This is separate from the GUI of the config system, 
@@ -216,22 +209,22 @@ public class TreeView extends AbstractGUIComponent {
 		//logger.debug("TreeView: init Method.");
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
-		
+
 		//Enables the selection model to include selection of terms that are not in 
 		//the same branch. 
 		selectionModel
-				.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(200, 200));
 		setOpaque(true);
 		restrictedJTreeInstance = new RestrictedJTree(treeViewSettingsInstance);
 		restrictedJTreeInstance.setUI(getDefaultUI());
-		
-		
+
+
 		//Causes the terms names to be shown in the display as a JLabel in a coloured box. This is how the tree diagram is constructed.
 		restrictedJTreeInstance.setCellRenderer(new OBOCellRenderer());  
-		
-		
+
+
 		restrictedJTreeInstance.setSelectionModel(selectionModel);
 		restrictedJTreeInstance.putClientProperty("JTree.lineStyle", "Angled");
 		scrollPane = new JScrollPane(restrictedJTreeInstance);
@@ -254,18 +247,18 @@ public class TreeView extends AbstractGUIComponent {
 		restrictedJTreeInstance.setRootVisible(false);
 		restrictedJTreeInstance.setShowsRootHandles(true);
 		update();
-		
+
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		Preferences.getPreferences().addReconfigListener(reconfigListener);
 		GUIUtil.addReloadListener(historyListener);
 		restrictedJTreeInstance.addMouseListener(clickListener);
 		setToolTips();
 		doUpdate(); //This line gets rid of the default sports ontology on startup
-					// by including a check for selected terms.
-		
+		// by including a check for selected terms.
+
 	}
 
-	
+
 	/**
 	 * Provides the name of the component.
 	 * This doesn't seem to actually override anything. 
@@ -273,7 +266,6 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public String getName() {
 		//logger.debug("TreeView: getName method.");
-
 		return "Tree Viewer";
 	}
 
@@ -287,13 +279,13 @@ public class TreeView extends AbstractGUIComponent {
 		//logger.debug("TreeView: getConfigurationPanel()");
 
 		//logger.debug("TreeView: getConfiguration: treeViewInstance = " + this);
-		
+
 		if (treeViewConfigPanelInstance == null) {
 			treeViewConfigPanelInstance = new TreeViewConfigPanel(this);
 		}
 
 		return treeViewConfigPanelInstance;
-	
+
 	}
 
 	/**
@@ -307,7 +299,7 @@ public class TreeView extends AbstractGUIComponent {
 		else
 			ToolTipManager.sharedInstance().unregisterComponent(restrictedJTreeInstance);
 	}
-	
+
 	/**
 	 * Part of the standard OBO-Edit component configuration system. 
 	 * Calls the TreeViewSettings class, which returns a new treeViewSettingsInstance.
@@ -315,20 +307,20 @@ public class TreeView extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		//logger.debug("TreeView: getConfiguration method : multiSelect = " + treeViewSettingsInstance.getMultiSelect());
-		
+
 		//logger.debug("TreeView: getConfiguration method: treeViewSettingsInstance = " + treeViewSettingsInstance);
 		//logger.debug("TreeView: getConfiguration method: treeViewInstance = " + this);
-		
+
 		return treeViewSettingsInstance;
 	}
 
 
-/**
- * @param treeViewSettingsInstance
- * 
- * Sets the current treeViewSettings object to treeViewSettingsInstance for use in this class. 
- *
- */
+	/**
+	 * @param treeViewSettingsInstance
+	 * 
+	 * Sets the current treeViewSettings object to treeViewSettingsInstance for use in this class. 
+	 *
+	 */
 	public void setConfiguration(ComponentConfiguration treeViewSettingsInstance) {
 		//logger.debug("TreeView: setConfiguration method.");
 
@@ -354,7 +346,7 @@ public class TreeView extends AbstractGUIComponent {
 		GUIUtil.addReloadListener(historyListener);
 	}
 
-	
+
 	/**
 	 * Takes the full TreePath object that is the path to root, and the object listing the node(s) that have been selected
 	 * and populates an object with the list of terms and relationships that are between the root and the selected node(s)
@@ -387,7 +379,7 @@ public class TreeView extends AbstractGUIComponent {
 			return new TreePath(nodes);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param paths
@@ -436,22 +428,22 @@ public class TreeView extends AbstractGUIComponent {
 		validate();
 		repaint();
 	}
-	
+
 	public void expandAll(JTree tree) {
-	    int row = 0;
-	    while (row < tree.getRowCount()) {
-	      tree.expandRow(row);
-	      row++;
-	      }
-	    }
+		int row = 0;
+		while (row < tree.getRowCount()) {
+			tree.expandRow(row);
+			row++;
+		}
+	}
 
 
-	  public void expandToLast(JTree tree) {
-	    // expand to the last leaf from the root
-	    DefaultMutableTreeNode  root;
-	    root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-	    tree.scrollPathToVisible(new TreePath(root.getLastLeaf().getPath()));
-	    }
+	public void expandToLast(JTree tree) {
+		// expand to the last leaf from the root
+		DefaultMutableTreeNode  root;
+		root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		tree.scrollPathToVisible(new TreePath(root.getLastLeaf().getPath()));
+	}
 
 	/**
 	 * 
@@ -459,47 +451,41 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 */
 	protected void doUpdate() {
-		logger.debug("TreeView: doUpdate method.");
-
 		final PathTask task = new PathTask();
-		logger.debug("TreeView: doUpdate: new PathTask created.");
+
 		task.addPostExecuteRunnable(new Runnable() {
-
 			public void run() {
-				//logger.debug("TreeView: doUpdate.task.AddPostExecuteRunnable : run method.");
-
 				Collection<TreePath> pathc = task.getResults();
 				Iterator<TreePath> it = pathc.iterator();
-				logger.debug("TreeView: run: pathc = " + pathc);
+//				logger.debug("TreeView: run: pathc = " + pathc);
 				while(it.hasNext()) {
-					logger.debug("TreeView: doUpdate: it = " + it);
-					logger.debug("TreeView: run: it.hasNext");
+					TreePath path = (TreePath) it.next();
+//					logger.debug("TreeView.doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
+//					logger.debug("TreeView.doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
+//					logger.debug("TreeView.doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
+
+					// if  pathIsCircular(path) 
+					// OR
+					// Show non-transitive paths selected AND pathIsOneWayDisjoint(path) - TRUE if one of the two disjoint links exists 
+					// OR
+					// Show non-transitive paths is not selected AND non-transitive paths exist 
 					
-							TreePath path = (TreePath) it.next();
-							//logger.debug("TreeView: run: path = " + path); //this line prevents anything from showing in the the tree viewer.
-
-							logger.debug("TreeView: doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
-					logger.debug("TreeView: doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
-					logger.debug("TreeView: doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
-
-					if (PathUtil.pathIsCircular(path)
-							|| (treeViewSettingsInstance.getShowNonTransitive() == false && 
-									PathUtil.pathContainsNonTransitive(path))							
+//					if (PathUtil.pathIsCircular(path) || ( PathUtil.pathContainsNonTransitive(path) && treeViewSettingsInstance.getShowNonTransitive() && PathUtil.pathIsOneWayDisjoint(path))
+					if (PathUtil.pathIsCircular(path) || (!treeViewSettingsInstance.getShowNonTransitive() && PathUtil.pathContainsNonTransitive(path))							
 					) {  
-						logger.debug("TreeView: run: it = " + it);
-						it.remove();
-						logger.debug("TreeView: doUpdate: it.remove() run, it = " + it.toString());
-
+//						logger.debug("removing path: " + path);
+						pathc.remove(path);
 						
 					}
 				}
+
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
 				model = new PathTreeModel(paths);
 				restrictedJTreeInstance.setModel(model);
 				//restrictedJTreeInstance.refresh(true); //If this line is commented 
 				//out then the tree does not expand.
 				finishUpdate(paths);
-				
+
 			}			
 		});
 		task.setLinkDatabase(SessionManager.getManager()
@@ -509,7 +495,7 @@ public class TreeView extends AbstractGUIComponent {
 		//The line above makes an object that can contain a set of other objects. Since it is set to contain LinkedObjects 
 		//this time it is able to contain the set of linked terms that will show in the graph. 
 		// The set is called termSet.		
-		
+
 		if (multiTerm()) {
 			termSet
 			.addAll(SelectionManager.getGlobalSelection()
@@ -520,44 +506,45 @@ public class TreeView extends AbstractGUIComponent {
 		}
 		
 		task.setTerms(termSet);
+		
 		treeViewConfigPanelInstance.eventQueue.scheduleTask(task);
-	
+
 		//restrictedJTreeInstance.refresh(true); //Added this so the tree just redraws once at the end
-												//rather than continuously throughout.
+		//rather than continuously throughout.
 		//A new bug has appeared that mean that component cannot be started when
 		//a term is selected in the OTE unless this line is commented out.
 		//Once this line is commented out the old redraw bugs seem to have gone away.
 		//It is not clear what has caused this change. 
-		
-	
+
+
 	}
 
 //	protected void showConfigurationWindow() {
-//		logger.debug("TreeView: showConfigurationWindow method.");
-//
-//		JButton closeButton = new JButton("Close");
-//
-//		JPanel checkboxPanel = new JPanel();
-//		checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
-//		checkboxPanel.add(multiTermCheckbox);
-//		checkboxPanel.add(Box.createVerticalStrut(2));
-//		checkboxPanel.add(trimPathsCheckbox);
-//		checkboxPanel.add(Box.createVerticalStrut(2));
-//		checkboxPanel.add(showNonTransitiveCheckbox);
-//		checkboxPanel.add(Box.createVerticalStrut(10));
-//		checkboxPanel.add(closeButton);
-//
-//		final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
-//				true);
-//		closeButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				dialog.dispose();
-//			}
-//		});
-//
-//		dialog.setContentPane(checkboxPanel);
-//		dialog.pack();
-//		dialog.setVisible(true);
+//	logger.debug("TreeView: showConfigurationWindow method.");
+
+//	JButton closeButton = new JButton("Close");
+
+//	JPanel checkboxPanel = new JPanel();
+//	checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
+//	checkboxPanel.add(multiTermCheckbox);
+//	checkboxPanel.add(Box.createVerticalStrut(2));
+//	checkboxPanel.add(trimPathsCheckbox);
+//	checkboxPanel.add(Box.createVerticalStrut(2));
+//	checkboxPanel.add(showNonTransitiveCheckbox);
+//	checkboxPanel.add(Box.createVerticalStrut(10));
+//	checkboxPanel.add(closeButton);
+
+//	final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
+//	true);
+//	closeButton.addActionListener(new ActionListener() {
+//	public void actionPerformed(ActionEvent e) {
+//	dialog.dispose();
+//	}
+//	});
+
+//	dialog.setContentPane(checkboxPanel);
+//	dialog.pack();
+//	dialog.setVisible(true);
 //	}
 
 	/**
@@ -566,18 +553,14 @@ public class TreeView extends AbstractGUIComponent {
 	public void update() {
 		//logger.debug("TreeView: update method.");
 		//logger.debug("TreeView: update method: treeViewSettingsInstance = " + treeViewSettingsInstance);
-
 		treeViewConfigPanelInstance.eventQueue.cancelAll();
 		if (SelectionManager.getGlobalSelection().isEmpty()) {
 			if (!isAncestorOf(treeViewConfigPanelInstance.emptyLabel)) {
-
 				validate();
 				repaint();
 				//logger.debug("TreeView: update method, getGlobalSelection is empty and we have just validated.");
 			}
 		} else {
-
-			
 			doUpdate();
 			validate();
 			repaint();
@@ -586,7 +569,6 @@ public class TreeView extends AbstractGUIComponent {
 
 	protected DragFriendlyTreeUI getDefaultUI() {
 		//logger.debug("TreeView: getDefaultUI method.");
-
 		DragFriendlyTreeUI ui = new DragFriendlyTreeUI();
 		ui.setRightChildIndent(0);
 		return ui;
@@ -594,11 +576,11 @@ public class TreeView extends AbstractGUIComponent {
 
 
 //	public JComponent getComponent() {
-//		logger.debug("TreeView: getComponent method.");
-//		return this;
+//	logger.debug("TreeView: getComponent method.");
+//	return this;
 //	}
 
-	
+
 	/**
 	 * Allows asking whether XML is settable. Returns false. 
 	 * 

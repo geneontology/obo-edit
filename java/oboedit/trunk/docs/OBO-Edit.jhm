@@ -78,6 +78,7 @@
    <mapID target="Name_Redundancy_Check" url="html/Name_Redundancy_Check.htm"/>
    <mapID target="obo2flat" url="html/obo2flat.htm"/>
    <mapID target="obo2obo" url="html/obo2obo.htm"/>
+   <mapID target="obo2linkfile" url="html/obo2linkfile.htm"/>
    <mapID target="obodiff" url="html/obodiff.htm"/>
    <mapID target="OBO_Edit_Command_line_Options" url="html/OBO_Edit_Command_line_Options.htm"/>
    <mapID target="OBO_Edit_Specific_Variables" url="html/OBO_Edit_Specific_Variables.htm"/>

@@ -220,6 +220,7 @@
 		<tocitem text="obomerge" target="obomerge" />
 		<tocitem text="obo2flat" target="obo2flat" />
 		<tocitem text="obo2obo" target="obo2obo" />
+		<tocitem text="obo2linkfile" target="obo2linkfile" />
 		<tocitem text="Java Options on the Command-line"
 			target="Java_Options_on_the_Command_line" />
 	</tocitem>

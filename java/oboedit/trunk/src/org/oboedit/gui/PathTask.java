@@ -1,11 +1,14 @@
 package org.oboedit.gui;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.tree.TreePath;
 
@@ -32,7 +35,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	protected double progress;
 	protected int currentTermIndex;
 	protected Collection<LinkedObject> terms;
-
+	protected static Integer i = 0;
 	public void setTerms(Collection<LinkedObject> terms) {
 		this.terms = terms;
 	}
@@ -48,10 +51,12 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	@Override
 	public void execute() throws Exception {
 		Collection<TreePath> out = new LinkedList<TreePath>();
-		currentTermIndex = 0;
-		for (LinkedObject term : terms) {
+		Iterator it = terms.iterator();
+		while(it.hasNext()) {
+			LinkedObject term = (LinkedObject) it.next();
 			progress = 0;
 			setProgressString("Finding all paths to " + term);
+			
 			rootAlgorithm.setLinkDatabase(linkDatabase);
 
 			if (rootAlgorithm.isRoot(term)) {
@@ -74,28 +79,34 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 				for (Link tr : linkDatabase.getParents(term)) {
 					MultiMap<Link, TreePath> lookedAt = new MultiHashMap<Link, TreePath>();
 					Map lookedAtCount = new HashMap();
-					out.addAll(getPathsAsVector(incSize, tr, lookedAt,
-							lookedAtCount));
+					out.addAll(getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					if (isCancelled()) {
 						return;
 					}
 				}
 			}
-			currentTermIndex++;
 		}
+
 		setResults(out);
 	}
 
 	protected Collection<TreePath> getPathsAsVector(double incSize, Link link,
 			MultiMap<Link, TreePath> lookedAt, Map lookedAtCount) {
+
+//		logger.debug("PathTask.getPathsAsVector calls counter: " + i);
+		Collection out = new LinkedList();
+
 		if (isCancelled())
-			return Collections.emptyList();
+			return out;
 
 		Integer lookedAtNum = (Integer) lookedAtCount.get(link);
+//		logger.debug("lookedAtNum: " + lookedAtNum);
 		if (lookedAtNum == null) {
 			lookedAtNum = new Integer(0);
 		}
 		lookedAtNum = new Integer(lookedAtNum.intValue() + 1);
+//		logger.debug("lookedAtNum: " + lookedAtNum);
+
 		lookedAtCount.put(link, lookedAtNum);
 
 		if (link.getParent() == null) {
@@ -110,11 +121,12 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			else
 				os[1] = PathUtil.INSTANCES;
 			os[2] = link;
-			lookedAt.add(link, new TreePath(os));
+			out.add(new TreePath(os));
 			progress = progress + incSize;
-			setProgressValue((int) (progress / terms.size())
-					+ (100 * currentTermIndex / terms.size()));
-			return lookedAt.get(link);
+//			setProgressValue((int) (progress / terms.size())
+//					+ (100 * currentTermIndex / terms.size()));
+			lookedAt.put(link, out);
+			return out;
 		}
 		if (rootAlgorithm.isRoot(link.getParent())) {
 			Object[] os = new Object[3];
@@ -123,55 +135,79 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			os[2] = new OBORestrictionImpl(link.getParent());
 			TreePath path = new TreePath(os);
 			TreePath pathByAddingChild = path.pathByAddingChild(link);
+			out.add(pathByAddingChild);
 			progress = progress + incSize;
-			setProgressValue((int) (progress / terms.size())
-					+ (100 * currentTermIndex / terms.size()));
-
-			lookedAt.add(link, pathByAddingChild);
-			return lookedAt.get(link);
+//			setProgressValue((int) (progress / terms.size())
+//					+ (100 * currentTermIndex / terms.size()));
+			lookedAt.put(link, out);
+			return out;
 		}
-
 		if (lookedAt.containsKey(link)) {
+			out = (Collection) lookedAt.get(link);
 			progress = progress + incSize;
-			setProgressValue((int) (progress / terms.size())
-					+ (100 * currentTermIndex / terms.size()));
+//			setProgressValue((int) (progress / terms.size())
+//					+ (100 * currentTermIndex / terms.size()));
 			if (lookedAtNum.intValue() > 2)
 				return Collections.emptySet();
-			return lookedAt.get(link);
+			return out;
 		}
+		lookedAt.put(link, out);
 
-		Iterator it = linkDatabase.getParents(link.getParent()).iterator();
-		while (it.hasNext()) { 			//This goes into endless loop with disjoint rels in tree view.
-			
-			Link parentRel = (Link) it.next();
-			
-			
-			logger.debug("PathTask: Collection: parentRel = " + parentRel.getID());
-			
-	        // This line below is running over and over again, 
-			//and it never gets to the next while. Probably because of non-transitivity of disjoint 
-			//being wrongly handled. Or possible to do with symmetry. 
-			
+		Collection<Link> links = linkDatabase.getParents(link.getParent());
+		Collection<Link> filteredLinks = filterDisjointRels(links);
+		Iterator it = filteredLinks.iterator();
+		while (it.hasNext()) { 
+			Link parentRel = (Link) it.next(); 
 			Collection parentVector = getPathsAsVector(incSize
-						/ TermUtil.getParentCount(linkDatabase, link.getParent()),
-						parentRel, lookedAt, lookedAtCount);
-				
-//				logger.debug("PathTask: Collection: " + getPathsAsVector(incSize
-//						/ TermUtil.getParentCount(linkDatabase, link.getParent()),
-//						parentRel, lookedAt, lookedAtCount)); //This is sometimes empty with disjoint rels.
-				Iterator it2 = parentVector.iterator();
-			
-						
+					/ TermUtil.getParentCount(linkDatabase, link.getParent()), parentRel,
+					lookedAt, lookedAtCount);
+			Iterator it2 = parentVector.iterator();
 			while (it2.hasNext()) {
 				TreePath path = (TreePath) it2.next();
 				TreePath pathByAddingChild = path.pathByAddingChild(link);
-				if (!lookedAt.get(link).contains(pathByAddingChild))
-					lookedAt.add(link, pathByAddingChild);
+				if (!out.contains(pathByAddingChild))
+					out.add(pathByAddingChild);
 			}
-			
-
 		}
-		return lookedAt.get(link);
+		i++;
+		return out;
 	}
 
+	/**
+	 * Gets one-way disjoints: since disjoint_from relationships are symmetric the 
+	 * second occourrence of the same relation is filtered out
+	 * @param links
+	 * @return filteredlinks
+	 */
+	protected Collection<Link> filterDisjointRels(Collection<Link> links) {
+		Collection<Link> traversedLinks = new ArrayList<Link>();
+		Collection<Link> linksClone = links; 
+		Iterator it = links.iterator();
+		while (it.hasNext()){
+			Link parentRel = (Link) it.next();
+			if(parentRel.getType().getID().equals("disjoint_from")){
+//				logger.debug("disjoint_from link");
+				Link reverseLink = (Link) parentRel.clone();
+				reverseLink.setParent(parentRel.getChild());
+				reverseLink.setChild(parentRel.getParent());
+//				logger.debug("reverselink: " + reverseLink);
+
+				for (Iterator seenlinks = traversedLinks.iterator(); seenlinks.hasNext(); ) {
+					Link seenLink = (Link) seenlinks.next();
+//					logger.debug("seenLink: " + seenLink);
+					if(seenLink.equals(reverseLink)){
+//						logger.debug("seenLink.equals(reverseLink): " + seenLink.equals(reverseLink) + "removing: " + parentRel);
+						linksClone.remove(parentRel);
+					}			
+				}
+				traversedLinks.add(parentRel);
+			} // if disjoint
+		} // while links.hasNext()
+		return linksClone;
+	}
+
+
 }
+
+
+
