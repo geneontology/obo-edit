@@ -45,7 +45,6 @@ public class ScaledIcon implements Icon {
 		if (icon == null)
 			setDimension(0, 0);
 		else
-//			this.setDimension(icon.getIconWidth(), icon.getIconWidth());  // typo?
 			this.setDimension(icon.getIconWidth(), icon.getIconHeight());
 	}
 
@@ -64,6 +63,7 @@ public class ScaledIcon implements Icon {
 
 	public void setDimension(int width, int height) {
 		if (icon == null) {
+//			logger.debug("ScaledIcon.setDimension - NULL ICON");
 			widthScaleFactor = 0;
 			heightScaleFactor = 0;
 			this.width = 0;
@@ -74,8 +74,10 @@ public class ScaledIcon implements Icon {
 		heightScaleFactor = 1;
 		if (height > 0)
 			heightScaleFactor = (double) height / icon.getIconHeight();
+//		logger.debug("heightScaleFactor: " + heightScaleFactor);
 		if (width > 0) {
 			widthScaleFactor = (double) width / icon.getIconWidth();
+//			logger.debug("widthScaleFactor: " + widthScaleFactor);
 		}
 		if (width == -1) {
 			widthScaleFactor = heightScaleFactor;
@@ -84,6 +86,7 @@ public class ScaledIcon implements Icon {
 			heightScaleFactor = widthScaleFactor;
 		width = (int) (icon.getIconWidth() * widthScaleFactor);
 		height = (int) (icon.getIconHeight() * heightScaleFactor);
+//		logger.debug("icon: " + icon);
 		this.width = width;
 		this.height = height;
 	}
