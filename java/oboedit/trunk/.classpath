@@ -31,9 +31,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/macify-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/jlibeps.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svggen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/mysql-connector-java-5.1.5-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-api.jar"/>
@@ -60,5 +58,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-lang-2.3.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/BBOP"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OBO"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

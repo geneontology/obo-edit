@@ -103,7 +103,7 @@ public class PathUtil {
 		}
 		return true;
 	}
-	
+
 	public static TreePath reconstruct(TreePath current, TreeModel model) {
 		Object[] objects = current.getPath();
 		Object[] newObjects = new Object[objects.length];
@@ -284,7 +284,7 @@ public class PathUtil {
 			else
 				throw new RuntimeException(
 						"Could not determine type of object " + lo
-								+ ", class = " + lo.getClass());
+						+ ", class = " + lo.getClass());
 			os[2] = new OBORestrictionImpl(lo);
 			TreePath path = new TreePath(os);
 			return path;
@@ -373,8 +373,8 @@ public class PathUtil {
 			else
 				throw new RuntimeException(
 						"Could not determine type of link child "
-								+ link.getChild() + ", class = "
-								+ link.getChild().getClass());
+						+ link.getChild() + ", class = "
+						+ link.getChild().getClass());
 			os[2] = link;
 			TreePath out = new TreePath(os);
 			lookedAt.put(link, out);
@@ -410,7 +410,7 @@ public class PathUtil {
 
 			if (shortestPath != null
 					&& parentPath.getPathCount() + 1 >= shortestPath
-							.getPathCount())
+					.getPathCount())
 				continue;
 
 			// else, this is the new shortest path
@@ -464,7 +464,7 @@ public class PathUtil {
 				os[1] = PathUtil.OBSOLETE;
 			else if (TermUtil.isProperty(link.getChild())){
 				os[1] = PathUtil.TYPES;
-				}
+			}
 			else if (TermUtil.isClass(link.getChild()))
 				os[1] = PathUtil.CLASSES;
 			else
@@ -607,7 +607,7 @@ public class PathUtil {
 				LinkedObject parent = (LinkedObject) history.getObject(sr
 						.getParent());
 				OBOProperty type = (OBOProperty) history
-						.getObject(sr.getType());
+				.getObject(sr.getType());
 
 				if (child == null && sr.getChild() != null)
 					return null;
@@ -672,7 +672,7 @@ public class PathUtil {
 
 	public static boolean pathIsCircular(TreePath path) {
 		boolean out = PathUtil
-				.pathIsCircular(path, new HashSet<LinkedObject>());
+		.pathIsCircular(path, new HashSet<LinkedObject>());
 		return out;
 	}
 
@@ -684,14 +684,44 @@ public class PathUtil {
 				Link tr = (Link) obs[i];
 				// If we've already visited this child...
 				if (scratchSet.contains(tr.getChild())
-				    // ...and it's not a symmetric relation  [added by NH, 9/5/2008]
-				    && !(tr.getType().isSymmetric())) {
+						// ...and it's not a symmetric relation  [added by NH, 9/5/2008]
+						&& !(tr.getType().isSymmetric())) {
 					//logger.debug("PathUtil: pathIsCircular: " + tr.getType().isSymmetric());
 					return true;
 				}
 				scratchSet.add(tr.getChild());
 			}
 		}
+		return false;
+	}
+
+	/**
+	 * pathIsOneWayDisjoint - one way disjoint path exists already
+	 * TRUE - one of the disjoint paths is added and isContained in existingLinks
+	 * FLASE - no paths for this disjoint relation have been added 
+	 * so go ahead and add this transitive path
+	 * @param path
+	 * @return
+	 */
+	public static boolean pathIsOneWayDisjoint(TreePath path) {
+		boolean out = PathUtil
+		.pathIsOneWayDisjoint(path, new HashSet<LinkedObject>());
+		return out;
+	}
+
+	public static boolean pathIsOneWayDisjoint(TreePath path,
+			Set<LinkedObject> disjointLinks) {
+		Object o = path.getParentPath();
+//		Object o = path.getLastPathComponent();
+		Link link = (Link) o;
+		logger.debug("\nlink: " + link);
+		logger.debug("link.getType(): " + link.getType());
+
+		if (link.getType().getID().equals("disjoint_from")){
+			logger.debug("disjoint link -- return True");
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -708,7 +738,7 @@ public class PathUtil {
 		for (int i = 0; i < objects.length; i++) {
 			if (objects[i] instanceof PathCapable) {
 				objects[i] = TermUtil
-						.resolve(session, (PathCapable) objects[i]);
+				.resolve(session, (PathCapable) objects[i]);
 			}
 		}
 		TreePath newpath = new TreePath(objects);

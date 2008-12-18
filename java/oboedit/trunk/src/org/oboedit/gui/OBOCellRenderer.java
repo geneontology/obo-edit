@@ -216,7 +216,7 @@ ListCellRenderer {
 				return this;
 			} else
 				setForeground(Color.black);
-			
+
 			multiIcon.addIcon(linkIcon);
 			multiIcon.addIcon(scaledIcon);
 			linkIcon.setColor(Color.black);
@@ -240,10 +240,12 @@ ListCellRenderer {
 
 			RenderSpec spec;
 			if (tree instanceof FilteredRenderable) {
+//				logger.debug("OBOCellRenderer - if (tree instanceof FilteredRenderable)");
 				FilteredRenderable fr = (FilteredRenderable) tree;
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
 				LinkedObject lo = link.getChild();
 				String s = provider.getLabel(fr, lo);
+//				logger.debug("s: " +s);
 				setText(s);
 				spec = GUIUtil.getSpec(fr, link, FilterManager.getManager()
 						.getGlobalLinkRenderers(), fr.getLinkRenderers());
@@ -270,8 +272,6 @@ ListCellRenderer {
 				}
 
 			}
-
-
 			linkIcon.setLeaf(leaf);
 			linkIcon.setPath(tree.getPathForRow(row));
 
@@ -280,15 +280,17 @@ ListCellRenderer {
 			if (link.getType() != null) {
 				icon = Preferences.getPreferences().getIconForRelationshipType(
 						link.getType());
-			}
+			}	
+
 			scaledIcon.setIcon(icon);
 			Icon origIcon = icon;
 			setIcon(null);
-			// Don't scale TextIcons
-			if (origIcon instanceof TextIcon) {
+
+
+			if(origIcon instanceof TextIcon){
 				setIcon(multiIcon);
 			}
-			else {
+			else{
 				int newHeight = (int) getPreferredSize().getHeight() - 2;
 				setIcon(multiIcon);
 				scaledIcon.setDimension(newHeight);
@@ -303,7 +305,6 @@ ListCellRenderer {
 				} else if (tr.isInverseNecessarilyTrue()) {
 					multiIcon.addIcon(inv_icon);
 				}
-
 				if (tr.completes()) {
 					multiIcon.addIcon(completes_icon);
 				}
@@ -314,7 +315,8 @@ ListCellRenderer {
 			// Instead, color the "circular" nodes gray to discourage users from clicking on them.
 			TreePath path = tree.getPathForRow(row);
 			if (path != null && PathUtil.pathIsCircular(path)) {
-//				// 				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
+//				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
+//				logger.debug("circular path");
 				setForeground(circularLinkColor);
 				linkIcon.setDoubleHeaded(true);
 				linkIcon.setColor(circularLinkColor);
