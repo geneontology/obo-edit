@@ -153,6 +153,5 @@ public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
 			}
 			// open the folder icon) until mouse up.
 		}
-
 	}
 }

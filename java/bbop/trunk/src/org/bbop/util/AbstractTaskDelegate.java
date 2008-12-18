@@ -58,11 +58,15 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 		running = true;
 		try {
 			execute();
-		} catch (Throwable t) {
-			threwException = true;
-			exception = t; 
-			logger.error("Problem running task:", t);
+		} 
+		catch (Exception e){
+			e.printStackTrace();
 		}
+//		catch (Throwable t) {
+//			threwException = true;
+//			exception = t; 
+//			logger.error("Problem running task:", t);
+//		}
 		
 		if (isFailed()) {
 			for (Runnable r : failedRunnables) {
@@ -70,7 +74,9 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 					try {
 						SwingUtilities.invokeAndWait(r);
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 					} catch (InvocationTargetException e) {
+						e.printStackTrace();
 					}
 				} else
 					r.run();
@@ -95,7 +101,9 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 					try {
 						SwingUtilities.invokeAndWait(r);
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 					} catch (InvocationTargetException e) {
+						e.printStackTrace();
 					}
 				} else
 					r.run();

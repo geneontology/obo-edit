@@ -50,8 +50,9 @@ public class TableList<T> extends JComponent {
 	protected ListTableEditor<T> editor;
 	protected TableCellRenderer renderer = new HTMLTableRenderer();
 	protected List<T> data = new ArrayList<T>();
+	
+	// TextEditor commit listener for rendering table cells
 	protected ActionListener commitListener = new ActionListener() {
-
 		public void actionPerformed(ActionEvent e) {
 			ListTableCellEditor tce = (ListTableCellEditor) table
 					.getDefaultEditor(Object.class);
@@ -65,11 +66,12 @@ public class TableList<T> extends JComponent {
 	protected FocusHierarchyListener focusListener = new FocusHierarchyListener() {
 
 		public void focusGained(FocusEvent e) {
-
+			logger.debug(">>> TableList.focusGained");
 		}
 
 		public void focusLost(FocusEvent e) {
-			commitPendingEdits();
+//			commitPendingEdits();
+			logger.debug(">>> TableList.focusLost");
 		}
 
 	};
@@ -127,6 +129,7 @@ public class TableList<T> extends JComponent {
 
 		@Override
 		public boolean stopCellEditing() {
+			logger.debug("TableList.stopCellEditing");
 			completingEdit = true;
 			flushEdits();
 			completingEdit = false;
@@ -368,8 +371,10 @@ public class TableList<T> extends JComponent {
 	}
 
 	public void commitPendingEdits() {
+		logger.debug("TableList.commitPendingEdits");
 		ListTableCellEditor tce = (ListTableCellEditor) table
 				.getDefaultEditor(Object.class);
+		if (!isEditing())
 		tce.stopCellEditing();
 	}
 
@@ -432,6 +437,7 @@ public class TableList<T> extends JComponent {
 	}
 
 	public void cancelEditing() {
+		logger.debug("TableList.cancelEditing");
 		table.removeEditor();
 	}
 
@@ -454,6 +460,7 @@ public class TableList<T> extends JComponent {
 	}
 
 	public void setSelection(Collection<T> c) {
+		logger.debug("TableList.setSelection");
 		List<Integer> temp = new ArrayList<Integer>();
 		for (T t : c) {
 			int index = data.indexOf(t);
@@ -495,11 +502,11 @@ public class TableList<T> extends JComponent {
 
 	public void setData(Collection<T> data) {
 		if (isEditing()) {
-			cancelEditing();
+				cancelEditing();
 		}
 		this.data = new ArrayList<T>(data);
 		((ListTableModel) table.getModel()).fireTableDataChanged();
-		repaint();
+//		repaint();
 	}
 
 	public List<T> getData() {
