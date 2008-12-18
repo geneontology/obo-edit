@@ -58,7 +58,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-lang-2.3.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/BBOP"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OBO"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
