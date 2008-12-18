@@ -30,6 +30,7 @@ public interface WhereClause extends RelationalTerm {
 	 * @param in
 	 */
 	public void addLikeConstraint(String colName, String in);
+	public void addCaseInsensitiveRegexConstraint(String colName, String in);
 	
 	public void addConstraint(String constr);
 
