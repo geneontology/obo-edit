@@ -374,7 +374,6 @@ public class DefaultTermModel implements TermModel {
 		if (answerLeafHonestly) {
 			if (parent instanceof Relationship) {
 				OBOProperty relationshipType = ((Relationship)parent).getType();
-//				if (SHOW_DISJOINTS_AS_LEAVES && relationshipType != null && relationshipType.equals(OBOProperty.DISJOINT_FROM)) {
 				if (SHOW_SYMMETRIC_RELATIONS_AS_LEAVES && relationshipType != null && relationshipType.isSymmetric()) {
 					return true;
 				}
@@ -408,7 +407,6 @@ public class DefaultTermModel implements TermModel {
 		// I think this may be the reason that filters that are in place at load time don't go away
 		// when removed by the user:  it is going back to the session to get the original link database.
 		FilteredLinkDatabase filteredLinkDatabase = new FilteredLinkDatabase(
-//				SessionManager.getManager().getSession().getLinkDatabase());
 				SessionManager.getManager().getCurrentLinkDatabase());
 		if (SessionManager.getManager().getUseReasoner()) {
 			filteredLinkDatabase = new FilteredLinkDatabase(SessionManager
@@ -552,12 +550,8 @@ public class DefaultTermModel implements TermModel {
 				LinkedObject io = (LinkedObject) o;
 				link = new OBORestrictionImpl(io);
 			} else if (o instanceof Link) {
-				// We could keep the disjoint relations out of the OBOTermPanel this way...
-//				if (HIDE_DISJOINT && ((Link)o).getType() != null && ((Link)o).getType().equals(OBOProperty.DISJOINT_FROM)) {
-//				logger.debug("wrapSet: not adding " + o); // DEL
-//				continue;
-//				}
 				link = (Link) o;
+				logger.debug("DefaultTermModel.wrapSet: link: " + link);
 			}
 
 //			logger.debug("wrapSet: link = " + link); // DEL
