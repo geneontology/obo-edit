@@ -1145,10 +1145,6 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 								 RootAlgorithm.GREEDY, true);
 	}
 
-	// Note:  setSelectionPaths (a Swing operation) is very expensive on big selects, so I tried
-        // an optimization where it wouldn't do that if >200 terms were selected, but that didn't work
-	// well because it put you in this hybrid state where they were sort of all selected but didn't
-	// look selected in the tree.
 	public void select(Selection selection) {
 		long time = System.currentTimeMillis(); // DEL
 		Collection<LinkedObject> terms = selection.getTerms();
@@ -1311,7 +1307,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 			setLockedPath(null);
 
 		TreeModel model = getModel();
-		// I want to avoid doing unnecessary reloads, but this one seems necessary.
+
  		if (model instanceof TermModel)
 			((TermModel) model).reloadFilters();
 
@@ -1517,8 +1513,9 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		if (c instanceof OntologyEditorConfiguration) {
 			OntologyEditorConfiguration config = (OntologyEditorConfiguration) c;
 			setLive(config.isLive());
-//			setLinkFilter(config.getLinkFilter());
-//			setTermFilter(config.getTermFilter());
+//	    links that aren't transitive.  That excludes the regulates links.
+//		ObjectFilter istransitiveobjectfilter = new ObjectFilterImpl();
+//		istransitiveobjectfilter.setCriterion(new IsTransitiveCriterion
 			setFilters(config.getTermFilter(), config.getLinkFilter()); // calls reload()
 			setObjectRenderers(config.getObjectRenderers());
 			setLinkRenderers(config.getLinkRenderers());
