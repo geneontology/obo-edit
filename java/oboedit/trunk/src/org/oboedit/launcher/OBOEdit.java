@@ -1,19 +1,12 @@
 package org.oboedit.launcher;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
-import java.awt.Dimension;
 import javax.swing.SwingUtilities;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.bbop.dataadapter.CommandLineWidget;
@@ -26,8 +19,6 @@ import org.bbop.dataadapter.ParameterUI;
 import org.bbop.framework.CheckMemoryThread;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.IOManager;
-import org.bbop.swing.BackgroundImagePanel;
-import org.bbop.swing.SwingUtil;
 import org.bbop.util.CommandLineParser;
 import org.bbop.util.Tag;
 import org.bbop.util.TagSpec;
@@ -37,7 +28,6 @@ import org.obo.datamodel.OBOSession;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.tasks.DefaultGUIStartupTask;
-import org.oboedit.gui.widget.SplashScreen;
 
 public class OBOEdit {
 
@@ -204,7 +194,6 @@ public class OBOEdit {
 					String configDir = Preferences.getOBOEditPrefsDir().toString();
 					String logFile = configDir + "/log/OBOEdit_log4j.log";
 					Preferences.getPreferences().setLogfile(logFile);
-
 					Preferences.setBatchMode(false);  // we're running with a GUI, not in batch mode
 
 					// Start GUI
@@ -214,15 +203,6 @@ public class OBOEdit {
 
 					// Configure logging
 					Properties props = new Properties();
-					// not required - setting up properties in here.
-//					try {
-//					//InputStream configStream = getClass().getResourceAsStream("/log4j.properties");
-//					props.load(configStream);
-//					configStream.close();
-//					} catch(IOException e) {
-//					System.err.println("Error: Cannot load logger configuration file log4j.properties from jar. " + e.getMessage());
-//					Preferences.getPreferences().setLogfile("(Could not configure logging--log4j.properties not found)");  // there won't be a log file
-//					}
 					setupLog4j(props, logFile);
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
@@ -279,8 +259,19 @@ public class OBOEdit {
 		SwingUtilities.invokeAndWait(r);
 	}
 
+	/**
+	 * Static configuration of log system
+	 * 
+	 * Problem:
+	 * This settings will only effect the classes instantiated beyond 
+	 * that point. The package dependent log levels will lead to the same
+	 * behavior of the logging system 
+	 *
+	 * @param props
+	 * @param logFile
+	 */
 	private static void setupLog4j(Properties props, String logFile){
-		props.setProperty("log4j.rootLogger","DEBUG, A1, A2");
+		props.setProperty("log4j.rootLogger","WARN, A1, A2");
 		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
 		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
 		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
@@ -291,7 +282,12 @@ public class OBOEdit {
 		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
 		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
 		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%d [%t] %-5p %c - %m%n");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%m%n");
+		
+		// set logging to debug for OBO Edit related packages
+		props.setProperty("log4j.logger.org.bbop","DEBUG");
+		props.setProperty("log4j.logger.org.oboedit","DEBUG");
+		
 //		LogManager.resetConfiguration();
 		PropertyConfigurator.configure(props);
 	}
