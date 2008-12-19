@@ -28,6 +28,7 @@ import javax.swing.UIManager;
 
 import net.infonode.docking.View;
 
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapter;
 import org.bbop.expression.ExpressionException;
 import org.bbop.framework.AbstractApplicationStartupTask;
@@ -37,11 +38,11 @@ import org.bbop.framework.GUIComponentFactory;
 import org.bbop.framework.GUIManager;
 import org.bbop.framework.GUITask;
 import org.bbop.framework.HelpManager;
+import org.bbop.framework.LayoutMenu;
 import org.bbop.framework.PluginManager;
 import org.bbop.framework.ScreenLockTask;
 import org.bbop.framework.VetoableShutdownListener;
 import org.bbop.framework.ViewMenus;
-import org.bbop.framework.LayoutMenu;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.BitmapIcon;
 import org.bbop.framework.dock.idw.IDWDriver;
@@ -51,7 +52,6 @@ import org.bbop.swing.GhostImageController;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.MultiArrayListMap;
 import org.bbop.util.MultiMap;
-import org.bbop.util.OSUtil;
 import org.obo.dataadapter.GOFlatFileAdapter;
 import org.obo.dataadapter.GOStyleAnnotationFileAdapter;
 import org.obo.dataadapter.OBOFileAdapter;
@@ -67,7 +67,6 @@ import org.obo.identifier.IDGenerator;
 import org.obo.owl.dataadapter.OWLAdapter;
 import org.obo.util.FilterUtil;
 import org.obo.util.TermUtil;
-import org.obo.util.VersionNumber;
 import org.oboedit.controller.EditActionManager;
 import org.oboedit.controller.ExpressionManager;
 import org.oboedit.controller.FilterManager;
@@ -107,10 +106,11 @@ import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
 import org.oboedit.gui.components.imageplugin.factory.TermImageComponentFactory;
+import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
+import org.oboedit.gui.components.ontologyGeneration.factory.OntologyGenerationComponentFactory;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
-import org.oboedit.gui.factory.SubsetManagerFactory;
 import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
 import org.oboedit.gui.factory.CrossProductInfoFactory;
@@ -135,6 +135,7 @@ import org.oboedit.gui.factory.ReasonerManagerFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
 import org.oboedit.gui.factory.SemanticParserManagerFactory;
+import org.oboedit.gui.factory.SubsetManagerFactory;
 import org.oboedit.gui.factory.SynonymTypeManagerFactory;
 import org.oboedit.gui.factory.TableOfContentsFactory;
 import org.oboedit.gui.factory.TermPanelFactory;
@@ -147,10 +148,7 @@ import org.oboedit.gui.menu.EditMenu;
 import org.oboedit.gui.menu.FileMenu;
 import org.oboedit.gui.menu.OEHelpMenu;
 import org.oboedit.script.GUIScriptDelegate;
-import org.oboedit.util.GUIUtil;
-import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
 
-import org.apache.log4j.*;
 
 public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
@@ -239,7 +237,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ConfigurationManagerFactory(),
 				new VerificationManagerFactory(), new DockPanelFactory(),
 				new ConfigurableMessageComponentFactory(),
-				new SearchResultsComponentFactory()
+				new SearchResultsComponentFactory(),
+				new OntologyGenerationComponentFactory()
 		);
 	}
 
