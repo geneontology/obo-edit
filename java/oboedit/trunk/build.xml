@@ -390,4 +390,26 @@
 	  <chmod file="oe-command-line" perm="ugo+x" />
 	</target>
 
+	
+	<!-- BUILD Ontology Generation Plugin -->
+	<property name="ontogenjarfile" location="OboEdit-Ontology-Learning-Plugin.jar" />
+	<fileset id="ontogen_jar_contents" dir="${outputdir}" includes="org/oboedit/gui/components/ontologyGeneration/**" excludes="**/CVS/*" />
+	<property name="ontogen_jar_manifest" location="${outputdir}/org/oboedit/gui/components/ontologyGeneration/resources/jar_manifest_ontogen" />
+
+	<target name="jar-ontogen" depends="clean, classes, library_jars, checkjar" unless="main_jar_current" description="Generate jar for Ontology Generation Plugin">
+		<mkdir dir="${runtimedir}" />
+		<mkdir dir="lib/lib"/>
+		<echo message="plugins specific library dir = ${runtimedir}"/>
+		<copy todir="lib/lib">
+			<fileset dir="${runtimedir}">
+				<include name="gopubmed-ontology-generation-service-clients-jar-with-dependencies.jar" />
+				<include name="swinglabs*.jar" />
+			</fileset>			
+		</copy>
+		<jar destfile="${ontogenjarfile}" manifest="${ontogen_jar_manifest}">
+			<fileset refid="ontogen_jar_contents" />
+			<fileset dir="lib" includes="lib/*.jar" />
+		</jar>
+		<delete dir="lib/lib"/>
+	</target>
 </project>
