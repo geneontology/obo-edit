@@ -1,39 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/buildlibs/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/antlr-runtime-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/arq.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/aterm-java-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-anim.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-awt-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-bridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-css.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-gvt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-parser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-script.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svg-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svggen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-xml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/bounce.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-codec-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-lang-2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-logging-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/debug.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/gopubmed-ontology-generation-service-clients-jar-with-dependencies.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/hsqldb.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/idw-gpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/jazzy-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jena.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/jhall.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/jwf-1.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolo.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolox.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/tablelayout.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/buildlibs/xstream-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-bridge.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-gvt.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-script.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-util.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svg-dom.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-dom.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-css.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-ext.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis-ext.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-xml.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-parser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-anim.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-awt-util.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/macify-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/jlibeps.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/batik-svggen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/jwf-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/macify-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/mysql-connector-java-5.1.5-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-apibinding.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-change.jar"/>
@@ -53,12 +56,20 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlparser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-rdfxmlrenderer.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/owlapi-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/pellet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolo.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/piccolox.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/postgresql-8.2-506.jdbc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/relaxngDatatype.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/commons-lang-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/runlibs/gopubmed-ontology-generation-service-clients-jar-with-dependencies.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/resolver.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/serializer.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swinglabs-0.8.0.jar"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/swing-layout.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/tablelayout.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xercesImpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xml-apis-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/xsdlib-1.5.jar"/>
+	<classpathentry kind="output" path=""/>
 </classpath>

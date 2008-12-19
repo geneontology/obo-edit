@@ -79,8 +79,6 @@ ListCellRenderer {
 
 	protected JComponent renderComponent = this;
 
-	protected boolean DONT_SHOW_DISJOINT_FROM = true;
-
 	protected void createDefaultSpecs() {
 	}
 
@@ -197,7 +195,6 @@ ListCellRenderer {
 				return this;
 			} else if (value.equals(PathUtil.TYPES)) {
 				setText("Relations");  
-//				setText("User-specified Relations");
 				setForeground(Color.blue);
 				setBorder(null);
 				setBackground(null);
@@ -227,9 +224,7 @@ ListCellRenderer {
 				setText("Some unknown item " + value);
 				return this;
 			}
-
 			Relationship link = (Relationship) value;
-
 
 			if (link.getType() != null) {
 				Color c = Preferences.getPreferences()
@@ -245,7 +240,7 @@ ListCellRenderer {
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
 				LinkedObject lo = link.getChild();
 				String s = provider.getLabel(fr, lo);
-//				logger.debug("s: " +s);
+				logger.debug("s: " +s);
 				setText(s);
 				spec = GUIUtil.getSpec(fr, link, FilterManager.getManager()
 						.getGlobalLinkRenderers(), fr.getLinkRenderers());
@@ -315,14 +310,15 @@ ListCellRenderer {
 			// Instead, color the "circular" nodes gray to discourage users from clicking on them.
 			TreePath path = tree.getPathForRow(row);
 			if (path != null && PathUtil.pathIsCircular(path)) {
-//				setEnabled(false);  // Doesn't work--doesn't disable the +/- icon for opening/closing the node; just makes the link icon not show up and things go strange.
+				setEnabled(false);
 //				logger.debug("circular path");
-				setForeground(circularLinkColor);
-				linkIcon.setDoubleHeaded(true);
-				linkIcon.setColor(circularLinkColor);
+//				setForeground(circularLinkColor);
+//				linkIcon.setDoubleHeaded(true);
+//				linkIcon.setColor(circularLinkColor);
 			}
 			else
-				linkIcon.setDoubleHeaded(false);
+				setEnabled(true);
+//				linkIcon.setDoubleHeaded(false);
 
 			if (highlighted) {
 				setOpaque(true);
@@ -345,7 +341,7 @@ ListCellRenderer {
 					// is still a subselection.
 					// Both behaviors are slightly wrong; I decided the second was less wrong.
 					// I'm not sure how to fix it completely.
-					if (// link.getChild().equals(selection.getTermSubSelection()) ||
+					if (link.getChild().equals(selection.getTermSubSelection()) ||
 							ObjectUtil.equals(link, selection
 									.getLinkSubSelection())) {
 						// Use darker color (this is the subselection)
