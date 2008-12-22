@@ -1,8 +1,8 @@
 <module>
-	<inherits name='com.google.gwt.user.User'/>
-	<inherits name="com.google.gwt.i18n.I18N"/>
-	<entry-point class='org.bbop.client.RefGenomeTest'/>
-  	<servlet path="/GOService" class="org.bbop.server.GOServiceImpl"/>
- 	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl"/>
-	<stylesheet src='RefGenomeTest.css'/>
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.i18n.I18N" />
+	<entry-point class='org.bbop.client.RefGenomeTest' />
+	<servlet path="/GOService" class="org.bbop.server.GOServiceImpl" />
+	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl" />
+	<stylesheet src='RefGenomeTest.css' />
 </module>

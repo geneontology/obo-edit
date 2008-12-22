@@ -1,37 +1,35 @@
 .green {
-  color: green;
+	color: green;
 }
 
 .red {
-  color: red;
+	color: red;
 }
 
 .header {
-  background: #1E4176 url(images/bg/hd-bg.gif) repeat-x scroll 0pt;
-  border: 0pt none;
-  padding-left: 3px;
-  padding-top: 3px;
-  
+	background: #1E4176 url(images/bg/hd-bg.gif) repeat-x scroll 0pt;
+	border: 0pt none;
+	padding-left: 3px;
+	padding-top: 3px;
 }
 
 .header .title {
-  color: white;
-  font-family: tahoma, arial, sans-serif;
-  font-size: 16px;
-  font-size-adjust: none;
-  font-stretch: normal;
-  font-style: normal;
-  font-variant: normal;
-  font-weight: normal;
-  line-height: normal;
-  margin: 5px;
-  padding-bottom: 3px;
+	color: white;
+	font-family: tahoma, arial, sans-serif;
+	font-size: 16px;
+	font-size-adjust: none;
+	font-stretch: normal;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	line-height: normal;
+	margin: 5px;
+	padding-bottom: 3px;
 }
 
 .target-info {
 	background-color: #F0F0F0;
 	border: 2px groove silver;
-	
 }
 
 .target-label {
@@ -39,143 +37,143 @@
 	color: white;
 	font-weight: bold;
 	padding: 6px;
-	width:50%
-	
+	width: 50%
 }
 
 .target-value {
 	font-style: italic;
 	padding: 6px;
 	background-color: #CCFF99;
-	width:50%;
+	width: 50%;
 }
 
 .icon-add {
-  background: url(images/icons/add.gif) no-repeat;
+	background: url(images/icons/add.gif) no-repeat;
 }
 
 .icon-delete {
-  background: url(images/icons/delete.gif) no-repeat;
+	background: url(images/icons/delete.gif) no-repeat;
 }
 
 .icon-email {
-  background: url(images/icons/email.png) no-repeat;
+	background: url(images/icons/email.png) no-repeat;
 }
 
 .icon-email-add {
-  background: url(images/icons/email-add.png) no-repeat;
+	background: url(images/icons/email-add.png) no-repeat;
 }
 
 .icon-date-add {
-  background: url(images/icons/date-add.png) no-repeat;
+	background: url(images/icons/date-add.png) no-repeat;
 }
 
 .icon-contact {
-  background: url(images/icons/vcard.png) no-repeat;
+	background: url(images/icons/vcard.png) no-repeat;
 }
 
 .icon-contact-add {
-  background: url(images/icons/vcard_add.png) no-repeat;
+	background: url(images/icons/vcard_add.png) no-repeat;
 }
 
 .icon-shell {
-  background: url(images/icons/shell.gif) no-repeat;
+	background: url(images/icons/shell.gif) no-repeat;
 }
 
 .icon-accordian {
-  background-image: url(images/icons/accordian.gif) !important;
+	background-image: url(images/icons/accordian.gif) !important;
 }
 
 .icon-add {
-  background: url(images/icons/add.gif) no-repeat;
+	background: url(images/icons/add.gif) no-repeat;
 }
 
 .icon-page {
-  background: url(images/icons/document.gif) no-repeat;
+	background: url(images/icons/document.gif) no-repeat;
 }
 
 .icon-text {
-  background: url(images/icons/text.gif) no-repeat;
+	background: url(images/icons/text.gif) no-repeat;
 }
 
 .icon-add-disabled {
-  background: url(images/icons/add.gif) no-repeat -16px 0px;
+	background: url(images/icons/add.gif) no-repeat -16px 0px;
 }
 
 .text {
-  line-height: 135%;
+	line-height: 135%;
 }
 
 .text,.text p {
-  margin: 4 0px;
+	margin: 4 0px;
 }
 
 .icon-chart {
-  background-image: url(images/icons/chart.png);
+	background-image: url(images/icons/chart.png);
 }
 
 .icon-list {
-  background-image: url(images/icons/list.gif) !important;
+	background-image: url(images/icons/list.gif) !important;
 }
 
 .icon-feed {
-  background-image: url(images/icons/feed.gif);
+	background-image: url(images/icons/feed.gif);
 }
 
 .icon-info {
-  background-image: url(images/icons/information.png);
+	background-image: url(images/icons/information.png);
 }
 
 .icon-info-white {
-  background-image: url(images/icons/information-white.gif);
+	background-image: url(images/icons/information-white.gif);
 }
 
 .icon-music {
-  background-image: url(images/icons/music.png);
+	background-image: url(images/icons/music.png);
 }
 
 .icon-printer {
-  background: url(images/icons/printer.png) no-repeat 50% 50%;
+	background: url(images/icons/printer.png) no-repeat 50% 50%;
 }
 
 .icon-page-code {
-  background: url(images/icons/icons.png) no-repeat 0px -16px;
+	background: url(images/icons/icons.png) no-repeat 0px -16px;
 }
 
 .icon-widget {
-  background-image: url(images/icons/icons.png);
+	background-image: url(images/icons/icons.png);
 }
 
 .icon-widget-disabled {
-  background: url(images/icons/icons.png) no-repeat -16px 0px;
+	background: url(images/icons/icons.png) no-repeat -16px 0px;
 }
 
 .icon-tabs {
-  background-image: url(images/icons/tabs.gif);
+	background-image: url(images/icons/tabs.gif);
 }
 
 .icon-view {
-  background-image: url(images/icons/eye.png)  !important;
+	background-image: url(images/icons/eye.png) !important;
 }
 
 .icon-report-go {
-  background: url(images/icons/report_go.png) no-repeat 50% 50%;
+	background: url(images/icons/report_go.png) no-repeat 50% 50%;
 }
 
 .icon-report {
-  background-image: url(images/icons/report.png) !important;
+	background-image: url(images/icons/report.png) !important;
 }
 
 .icon-database-add {
-  background-image: url(images/icons/database_add.png) !important;
+	background-image: url(images/icons/database_add.png) !important;
 }
 
 .icon-database-delete {
-  background-image: url(images/icons/database_delete.png)  !important;
+	background-image: url(images/icons/database_delete.png) !important;
 }
 
 .icon-application-view-list {
-  background-image: url(images/icons/application_view_list.png) !important;
+	background-image: url(images/icons/application_view_list.png) !important
+		;
 }
 
 .icon-curation {

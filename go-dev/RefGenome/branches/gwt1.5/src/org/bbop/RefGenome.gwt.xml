@@ -1,6 +1,6 @@
 <module>
 	<inherits name="com.extjs.gxt.ui.GXT" />
-	<stylesheet src="RefGenomeGWT.css"/>
-	<entry-point class='org.bbop.client.RefGenome'/>
- 	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl"/>
+	<stylesheet src="RefGenomeGWT.css" />
+	<entry-point class='org.bbop.client.RefGenome' />
+	<servlet path="/RefGenomeService" class="org.bbop.server.RefGenomeServiceImpl" />
 </module>
