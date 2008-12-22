@@ -17,6 +17,12 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 	private RefGenomeView refgview ;
 	private RefGenomeServiceAsync refgservice;
 	
+
+
+	public RefGenomeServiceAsync getRefGenomeService() {
+		return refgservice;
+	}
+
 	
 	public RefGenomeServiceClientImpl (String url){
 		refgview = new RefGenomeView(this);
@@ -58,12 +64,14 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		refgservice.uploadFile(userId, filePath, fileType, new UploadFileCallback());
 		
 	}
-
+	
 	public void fetchTargets() {
 		FetchTargetNodesCallback callBack = new FetchTargetNodesCallback();
 		refgservice.fetchReferenceTargetNodes(callBack);
 		
 	}
+
+
 
 	public void fetchByNameAndTaxon(String name, String taxonId) {
 		refgservice.fetchNodesByNameAndTaxon(name, taxonId, new SearchByNameCallback());
@@ -136,6 +144,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		}
 		
 	}
+
 	
 	// TODO - merge with the above
 	private class FetchTargetNodesDetailCallback implements AsyncCallback {
@@ -233,6 +242,7 @@ public class RefGenomeServiceClientImpl implements RefGenomeViewListenerI {
 		}
 		
 	}
+
 
 	
 
