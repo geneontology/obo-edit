@@ -17,7 +17,9 @@ package org.bbop.client;
 
 
 
-import org.bbop.client.model.DateDTO;
+import org.bbop.client.model.*;
+
+import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -25,7 +27,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface RefGenomeServiceAsync  {
 	
-	public void fetchNodesByName(String searchTerm, AsyncCallback callback);
+	public void fetchNodeById(String id, AsyncCallback<NodeDTO> callback);
+	
+	public void fetchNodesByName(String searchTerm, AsyncCallback<NodeDTO[]> callback);
 	
 	public void fetchIdsByNameAndTaxon(String searchTerm, String taxonId, AsyncCallback callback);
 	public void fetchNodesByNameAndTaxon(String name, String taxonId, AsyncCallback callback);
@@ -43,7 +47,7 @@ public interface RefGenomeServiceAsync  {
 
 	public void fetchReferenceTargetNodes( AsyncCallback callback);
 	
-	public void fetchReferenceTargetNodesByName(String name, AsyncCallback callback);
+	public Request fetchReferenceTargetNodesByName(String name, AsyncCallback<NodeDTO[]> callback);
 	
 	public void getTaxonIdPrefix( AsyncCallback callback);
 	
@@ -67,7 +71,6 @@ public interface RefGenomeServiceAsync  {
 
 	public void fetchHomologyLinkStatementsByEntityId(String entityId, AsyncCallback callback);
 	
-	public void fetchNodeById(String id, AsyncCallback callback);
 	
 	public void getAllUsers(AsyncCallback callback);
 	

@@ -1,4 +1,4 @@
 <module>
-  <inherits name='com.extjs.gxt.ui.GXT'/>
-  <stylesheet src="RefGenomeGWT.css"/>
+	<inherits name='com.extjs.gxt.ui.GXT' />
+	<stylesheet src="RefGenomeGWT.css" />
 </module>
