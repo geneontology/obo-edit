@@ -6,7 +6,8 @@
 (defpackage :toolkit-num
   (:use :cl)
   (:export :integer-with-range
-	   :float-with-range))
+	   :float-with-range
+	   :shuffle))
 (in-package :toolkit-num)
 
 
@@ -29,6 +30,8 @@ data directory."
   nil)
 
 ;; TODO: figure out how this really works.
+; got this as snippet from somewhere...
+;; TODO: this should be called "shuffle!"
 (defun shuffle (sequence)
   "Destructively shuffles a sequence."
   (map-into sequence #'car
