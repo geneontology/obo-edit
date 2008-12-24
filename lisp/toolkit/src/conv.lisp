@@ -7,6 +7,7 @@
   (:export :plist-keys
 	   :mklist
 	   :flatten
+	   :filter
 	   :ccat))
 (in-package :toolkit-conv)
 
@@ -93,3 +94,18 @@ oddp, etc.). Defaults to evenp."
        for k in keywords
        for a in keyargs
        collect (list k a)))))
+
+;; (defmacro filter (list &rest keys)
+;;   ""
+;;   `(when (not (and ,@keys))
+;;      (error ,message)))
+(defun filter (list &rest funcs)
+  ""
+  (let ((funx (flatten funcs))) ; nested lists on recursion
+    (if (car funx)
+	(progn
+	  (filter (remove-if (car funx) list) (cdr funx)))
+	list)))
+
+(defun dig (&rest foo)
+  (print foo))
