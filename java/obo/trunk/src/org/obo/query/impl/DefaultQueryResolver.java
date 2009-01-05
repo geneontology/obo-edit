@@ -48,9 +48,11 @@ public class DefaultQueryResolver implements QueryResolver {
 	}
 
 	protected boolean queryAccepts(Query q, Class<?> c) {
+//		logger.debug("queryAccepts Class c: " + c);
 		Class<?> inputType = q.getInputType();
 		boolean isAssignable = inputType.isAssignableFrom(c);
 		// boolean isAssignable = c.isAssignableFrom(inputType);
+		logger.debug("returning isAssignable: " + isAssignable);
 		return isAssignable;
 	}
 
@@ -79,10 +81,12 @@ public class DefaultQueryResolver implements QueryResolver {
 						Collection<FieldPath> values = FieldPath.resolve(qpath,
 								linkDatabase);
 						for (FieldPath p : values) {
+//							logger.debug("queryAccepts(q, p.getLastValue().getClass()): " + queryAccepts(q, p.getLastValue().getClass()));
+//							logger.debug("p.getObject().isBuiltIn(): " + p.getObject().isBuiltIn());
 							if (queryAccepts(q, p.getLastValue().getClass())
 							    // Don't include built-ins like "xsd:date" or "obo:TERM"
 							    && !(p.getObject()).isBuiltIn()) {
-//							    logger.debug("DefaultQueryResolver.execute adding FieldPath " + p); // DEL
+							    logger.debug("DefaultQueryResolver.execute adding FieldPath " + p); // DEL
 								paths.add(p);
 							}
 						}

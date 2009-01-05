@@ -133,9 +133,13 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 		 * IdentifiedObject io = (IdentifiedObject) it.next(); if (termFilter ==
 		 * null || termFilter.satisfies(io)) out.add(io); } return out;
 		 */
-		if (termFilter == null)
+		if (termFilter == null){
+			logger.debug("term filter null");
 			return linkDatabase.getObjects();
+		}
+
 		else {
+			logger.debug("term filter not null");
 			return new Subset(termFilter, linkDatabase.getObjects());
 		}
 	}
