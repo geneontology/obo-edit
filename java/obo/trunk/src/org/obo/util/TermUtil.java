@@ -301,12 +301,23 @@ public class TermUtil {
 	public static void detectRoots(Collection<LinkedObject> outSet,
 			LinkDatabase linkDatabase, Collection<IdentifiedObject> objects,
 			RootAlgorithm algorithm) {
+		logger.debug("TermUtil.detectRoots");
 		algorithm.setLinkDatabase(linkDatabase);
 
 		for (IdentifiedObject io : objects) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
+//				logger.debug("TermUtil.detectRoots -- lo: " +lo);
+				if(lo.getName().equals("sequence_variant")){
+					logger.debug("sequence_variant");
+					
+				}
+				if(lo.getName().equals("sequence_feature")){
+					logger.debug("sequence_feature");
+					
+				}
 				if (algorithm.isRoot(lo)) {
+					logger.debug("Is Root.. adding io to outSet: " + io);
 					outSet.add((LinkedObject) io);
 				}
 			}
