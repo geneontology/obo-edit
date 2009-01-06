@@ -174,6 +174,11 @@ public class DatalogBackedMutableLinkDatabase extends AbstractLinkDatabase
 		new Query(rTerm);
 		return 0;
 	}
+
+	public Collection<OBOProperty> getProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	 
 
 

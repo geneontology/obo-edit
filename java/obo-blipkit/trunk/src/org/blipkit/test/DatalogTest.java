@@ -23,23 +23,13 @@ import junit.framework.*;
 
 public class DatalogTest extends AbstractOBOTest {
 
-	protected DatalogTest(String name) {
+	public DatalogTest(String name) {
 		super(name);
 	}
 
 	public Collection<String> getFilesToLoad() {
 		String[] files={"nucleus.obo"};
 		return Arrays.asList(files);
-	}
-	
-	public void setUpXXX() throws Exception {
-		System.out.println("Setting up: " + this);
-		ForwardChainingReasoner.checkRecache = false;
-		session = getSessionFromResources(getFilesToLoad());
-
-		// SessionManager.getManager().setSession(session);
-		linkDatabase = new DatalogBackedMutableLinkDatabase(session);
-
 	}
 
 	public void setUp() throws Exception {
@@ -74,6 +64,9 @@ public class DatalogTest extends AbstractOBOTest {
 		for (Hashtable h : new Query("ontol_db:subclassT(X,'GO:0005634')").allSolutions()) {
 			System.out.println(h.get("X"));
 		}
+		for (Hashtable h : new Query("ontol_db:subclassT(X,'GO:0005634'),ontol_db:class(X,XN)").allSolutions()) {
+			System.out.println(h.get("X")+" ! "+h.get("XN"));
+		}
 		assertTrue(true);
 	}
 	
@@ -100,18 +93,6 @@ public class DatalogTest extends AbstractOBOTest {
 		return 0;
 	}
 
-	public static Test suite() {
-		PrintStream audited = new AuditedPrintStream(System.err, 25, true);
-
-		System.setErr(audited);
-		TestSuite suite = new TestSuite();
-		addTests(suite);
-		return suite;
-	}
-
-	public static void addTests(TestSuite suite) {
-		suite.addTest(new DatalogTest("testHasLoaded"));
-	}
 }
 
 
