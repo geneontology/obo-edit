@@ -240,7 +240,7 @@ ListCellRenderer {
 				NodeLabelProvider provider = fr.getNodeLabelProvider();
 				LinkedObject lo = link.getChild();
 				String s = provider.getLabel(fr, lo);
-				logger.debug("s: " +s);
+//				logger.debug("OBOCellRenderer label s: " +s);
 				setText(s);
 				spec = GUIUtil.getSpec(fr, link, FilterManager.getManager()
 						.getGlobalLinkRenderers(), fr.getLinkRenderers());
