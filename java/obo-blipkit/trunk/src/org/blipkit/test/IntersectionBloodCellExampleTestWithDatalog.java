@@ -1,27 +1,26 @@
 package org.blipkit.test;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.blipkit.reasoner.impl.DatalogReasonerFactory;
 import org.obo.test.AbstractReasonerTest;
 import org.obo.test.IntersectionBloodCellExampleTest;
+import org.obo.test.IntersectionCamphorCatabolismExampleTest;
 
 
-public class IntersectionBloodCellExampleTestWithDatalog extends IntersectionBloodCellExampleTest {
+public class IntersectionBloodCellExampleTestWithDatalog extends TestCase {
 
-	protected IntersectionBloodCellExampleTestWithDatalog(String name) {
-		super(name);
-	}
+	public static Test suite() {
 
-	public void setUp() throws Exception {
 		AbstractReasonerTest.setReasonerFactory(new DatalogReasonerFactory());
-		//setReasonerFactory(new DatalogReasonerFactory());
-		super.setUp();
-	}
-	
-	public static void addTests(TestSuite suite) {
-		suite.addTest(new IntersectionBloodCellExampleTestWithDatalog("testAsserted"));
-		suite.addTest(new IntersectionBloodCellExampleTestWithDatalog("testSubsumed"));
+
+		TestSuite out = new TestSuite();
+
+		out.addTestSuite(IntersectionBloodCellExampleTest.class);
+
+		return out;
 	}
 
 }

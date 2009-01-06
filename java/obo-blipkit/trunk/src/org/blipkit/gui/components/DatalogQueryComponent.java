@@ -38,24 +38,30 @@ public class DatalogQueryComponent extends AbstractGUIComponent {
 		
 		update();
 	}
-	public JTextArea textArea;
+	public JTextArea queryTextArea;
+	public JTextArea resultsTextArea;
 	
 	DatalogReasoner datalog;
 	
 	protected void update() {
 		removeAll();
 		
-		textArea = new JTextArea();
+		queryTextArea = new JTextArea();
+		resultsTextArea = new JTextArea();
 		JPanel buttonPanel = new JPanel();
 		
 		ActionListener al = new QueryButtonActionListener();
 		addButton("Query",al,buttonPanel);
-		add(buttonPanel,"SOUTH");
-		JScrollPane sp = new JScrollPane(textArea,
+		JScrollPane querySP = new JScrollPane(queryTextArea,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane resultsSP = new JScrollPane(resultsTextArea,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//add(textArea,"NORTH");
-		add(sp,"CENTER");
+		add(buttonPanel,"SOUTH");
+		add(querySP,"NORTH");
+		add(resultsSP,"CENTER");
 		
 		validate();
 		repaint();
@@ -79,20 +85,26 @@ public class DatalogQueryComponent extends AbstractGUIComponent {
 				datalog.setLinkDatabase(SessionManager.getManager().getCurrentLinkDatabase());
 				datalog.recache();
 			}
-			String queryText = textArea.getText();
+			String queryText = queryTextArea.getText();
 			System.err.println("event: "+e);
 			System.err.println("qtext: "+queryText);
 			Query q = new jpl.Query(queryText);
 			System.err.println("q: "+q);
 			int n=0;
+			StringBuffer sb = new StringBuffer();
 			for (Hashtable h : q.allSolutions()) {
 				n++;
 				for (Object k : h.keySet()) {
 					Term val = (Term)h.get(k);
 					System.out.println(k+" = "+val);
+					sb.append(k+" = "+val+" // ");
 				}
+				sb.append("\n");
 			}
 			System.out.println("num sols="+n);
+			sb.append("---\nnum sols="+n+"\n");
+			resultsTextArea.setText(sb.toString());
+
 		}
 	}
 
