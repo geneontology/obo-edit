@@ -55,6 +55,8 @@
 		<tocitem text="The Graph Viewer" target="Graph_Viewer" />
 		<tocitem text="The GraphViz Viewer"
 			 target="The_GraphViz_Viewer" />
+		<tocitem text="Term Image Display Panel"
+			 target="Term_Image_Display_Panel" />
 	</tocitem>
 	<tocitem text="Filtering, Rendering &amp; Searching">
 		<tocitem text="Introduction to Filters" target="Filters" />
@@ -178,6 +180,10 @@
 		<tocitem text="User-Defined Checks"
 			target="User_Defined_Checks" />
 	</tocitem>
+    <tocitem text="Ontology Generation">
+		<tocitem text="Ontology Generation Tool"
+			target="Ontology_Generation_Tool" />
+	</tocitem>
 	<tocitem text="Cross Products">
 		<tocitem text="Introduction to Cross Products"
 			target="Introduction_to_Cross_Products" />
@@ -208,8 +214,6 @@
 			target="The_Extended_Info_Plugin" />
 		<tocitem text="Configurable Message"
 			target="Configurable_Message" />
-		<tocitem text="Term Image Display Panel"
-			target="Term_Image_Display_Panel" />
 		<tocitem text="Plugins"
 			target="Introduction_to_Plugins" />
 	</tocitem>
