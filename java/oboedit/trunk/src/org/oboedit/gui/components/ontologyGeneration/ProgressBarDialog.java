@@ -26,7 +26,7 @@ public class ProgressBarDialog extends JDialog
 		super();
 		setModal(true);
 		setAlwaysOnTop(true);
-		setTitle("Plugin is working");
+		setTitle("Working");
 		JPanel contentPane = new JPanel(new BorderLayout(7, 7));
 		setContentPane(contentPane);
 		JProgressBar progressBar = new JProgressBar();
