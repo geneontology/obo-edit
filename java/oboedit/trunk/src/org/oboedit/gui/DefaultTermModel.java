@@ -551,7 +551,7 @@ public class DefaultTermModel implements TermModel {
 				link = new OBORestrictionImpl(io);
 			} else if (o instanceof Link) {
 				link = (Link) o;
-				logger.debug("DefaultTermModel.wrapSet: link: " + link);
+//				logger.debug("DefaultTermModel.wrapSet: link: " + link);
 			}
 
 //			logger.debug("wrapSet: link = " + link); // DEL
