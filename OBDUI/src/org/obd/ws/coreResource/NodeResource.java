@@ -25,9 +25,11 @@ import org.obd.model.bridge.OBDJSONBridge;
 import org.obd.model.bridge.OBDXMLBridge;
 import org.obd.model.bridge.OBOBridge;
 import org.obd.model.bridge.OWLBridge;
+import org.obd.query.LinkQueryTerm;
 import org.obd.ws.coreResource.sorter.StatementHashComparator;
 import org.obd.ws.coreResource.utility.NodeTyper;
 import org.obd.ws.coreResource.utility.NodeTyper.Type;
+import org.purl.obo.vocab.RelationVocabulary;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -376,18 +378,34 @@ public class NodeResource extends OBDResource {
 
 		Collection<Statement> statements = new ArrayList<Statement>();
 		if (aspect.equals("about")){
+			for (Statement s : this.getShard(dataSource).getNonRedundantStatementsForNode(nodeId)){
+				if (!s.isAnnotation()){
+					statements.add(s);
+				}
+			}
+			// make sure asserted links are included, even if redundant
 			for (Statement s : this.getShard(dataSource).getStatementsForNode(nodeId,false)){
 				if (!s.isAnnotation()){
 					statements.add(s);
 				}
 			}
-
 		} else if (aspect.equals("to")){
+			// only asserted
 			for (Statement s : this.getShard(dataSource).getStatementsForTarget(nodeId,false)){
 				if (!s.isAnnotation()){
 					statements.add(s);
 				}
 			}
+			// include inferred with instance-of links
+			RelationVocabulary rv = new RelationVocabulary();
+			LinkQueryTerm qt = new LinkQueryTerm(rv.instance_of(), nodeId);
+			for (Statement s : this.getShard(dataSource).getLinkStatementsByQuery(qt)) {
+				if (!s.isAnnotation()){
+					statements.add(s);
+				}
+			}
+		
+			
 		} else if (aspect.equals("annotation")){
 			statements = this.getShard(dataSource).getAnnotationStatementsForNode(nodeId, null, null);
 			statements.addAll(this.getShard(dataSource).getAnnotationStatementsForAnnotatedEntity(nodeId, null, null));
@@ -438,6 +456,8 @@ public class NodeResource extends OBDResource {
 	protected SimpleHash hashifyStatement(Statement s, boolean populateProvenance, String format){
 
 		SimpleHash statementHash = new SimpleHash();
+		
+		//System.out.println("hashifying "+s);
 
 		if (format==null){
 			format="html";
@@ -451,11 +471,13 @@ public class NodeResource extends OBDResource {
 		if (s instanceof LinkStatement) {
 			SimpleHash objectHash =this.hashifyNode(s.getTargetId(), (hrefBase+Reference.encode(s.getTargetId())));
 			if (s.isIntersectionSemantics()) {
-				objectHash.put("nscondition", true);    			
+				statementHash.put("nscondition", true);    			
 			}
 			statementHash.put("object", objectHash);
 		} else if (s instanceof LiteralStatement) {
-			statementHash.put("object", this.hashifyNode(((LiteralStatement)s).getSValue(), null));
+			SimpleHash valHash = new SimpleHash();
+			valHash.put("label", ((LiteralStatement)s).getSValue());
+			statementHash.put("object", valHash);
 		}
 
 		if (s.isInferred()){
@@ -490,8 +512,10 @@ public class NodeResource extends OBDResource {
 			Node subjectNode = this.getShard(dataSource).getNode(cd.getGenus().getNodeId());
 			if (subjectNode != null && subjectNode.getLabel() != null){
 				nodeHash.put("subjectLabel", subjectNode.getLabel());
+				nodeHash.put("subjectURL", this.getNodeURL(subjectNode.getId()));
 			} else {
 				nodeHash.put("subjectLabel", cd.getGenus().getNodeId());
+				nodeHash.put("subjectURL", this.getNodeURL(cd.getGenus().getNodeId()));
 			}
 			nodeHash.put("args",this.decomposeArguments(cd.getDifferentiaArguments()));
 		} else if (cd.isAtomic()){
@@ -504,6 +528,7 @@ public class NodeResource extends OBDResource {
 			nodeHash.put("relationLabel", this.prettifyRelationshipTerm(cd.getRelationId()));
 			nodeHash.put("args", this.decomposeArguments(cd.getArguments()));
 		}
+		
 		return nodeHash;
 	}
 
@@ -555,19 +580,23 @@ public class NodeResource extends OBDResource {
 		return false;
 	}
 
-	protected String prettifyRelationshipTerm(String term){
+	protected String prettifyRelationshipTerm(String id){
+		Node n = getShard(this.dataSource).getNode(id);
+		if (n != null && n.getLabel() != null)
+			return n.getLabel();
+		
 		String formatted;
-		if (term.contains("OBO_REL:")||term.contains("OBOL:")||(term.contains("oboInOwl:"))||(term.contains("oboMetamodel:"))||(term.contains("dc:description"))){
-			formatted = term.substring(term.indexOf(":")+1).replace("_", " ");
+		if (id.contains("OBO_REL:")||id.contains("OBOL:")||(id.contains("oboInOwl:"))||(id.contains("oboMetamodel:"))||(id.contains("dc:description"))){
+			formatted = id.substring(id.indexOf(":")+1).replace("_", " ");
 		} else {
-			formatted  = term.replace("_", " ");
+			formatted  = id.replace("_", " ");
 		}
 
-		if (term.equals("part of")){
+		if (id.equals("part of")){
 			formatted = "that is part of";
 		}
 
-		if (term.equals("inheres in")){
+		if (id.equals("inheres in")){
 			formatted = "that inheres in";
 		}
 		return formatted;
@@ -606,13 +635,34 @@ public class NodeResource extends OBDResource {
 		}
 
 		if (nodeId.contains("^")){
-			CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, true);
-			if ((cd != null) && (cd.getArguments() != null)){
+			//System.out.println("getting CD for "+nodeId);
+			SimpleHash cdhash = getCDHash(nodeId);
+			if (cdhash != null) {
 				nodeHash.put("isComposed", true);
-				nodeHash.put("composedNode", this.decomposeNode(cd));
+				nodeHash.put("composedNode", cdhash);
 			}
 		}
 		return nodeHash;
+	}
+	
+	Map<String,SimpleHash> cdhMap = new HashMap<String,SimpleHash>();
+	/**
+	 * fetches a compositional description. uses a cache
+	 * @param nodeId
+	 * @return
+	 */
+	private SimpleHash getCDHash(String nodeId) {
+		// TODO - prevent map getting too full
+		if (cdhMap.containsKey(nodeId))
+			return cdhMap.get(nodeId);
+		SimpleHash cdhash = null;
+		CompositionalDescription cd = this.getShard(dataSource).getCompositionalDescription(nodeId, false);
+		if ((cd != null) && (cd.getArguments() != null)){
+			 cdhash = this.decomposeNode(cd);
+			cdhash.put("composedNodeURL", getNodeURL(nodeId));
+		}
+		cdhMap.put(nodeId, cdhash);
+		return cdhash;
 	}
 
 	/**
