@@ -52,7 +52,6 @@ public class DefaultQueryResolver implements QueryResolver {
 		Class<?> inputType = q.getInputType();
 		boolean isAssignable = inputType.isAssignableFrom(c);
 		// boolean isAssignable = c.isAssignableFrom(inputType);
-		logger.debug("returning isAssignable: " + isAssignable);
 		return isAssignable;
 	}
 

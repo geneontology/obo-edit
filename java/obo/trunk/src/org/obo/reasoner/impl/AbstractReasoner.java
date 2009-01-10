@@ -183,8 +183,9 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	public Collection<Link> getChildren(LinkedObject lo) {
 		if (!storeGivenLinks) {
 			Collection<Link> given = linkDatabase.getChildren(lo);
-			Collection<Link> impliedChildren = impliedLinkDatabase
-					.getChildren(lo);
+			Collection<Link> impliedChildren = impliedLinkDatabase.getChildren(lo);
+//			logger.debug("AbstractReasoner - given.size():" + given.size());
+//			logger.debug("AbstractReasoner - impliedChildren.size(): " + impliedChildren.size());
 			Collection<Link> out = new LinkedHashSet<Link>(given.size()
 					+ impliedChildren.size());
 			out.addAll(given);
