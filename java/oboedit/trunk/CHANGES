@@ -1,12 +1,14 @@
 Changes in b53:
-Fixed Bugs:
+
+Bug Fixes:
 - [ geneontology-Bugs-2386007 ] Sequence Ontology
 Fix in Root detection algorithm - Sequence Ontology was unuseable in OE2 due to missing terms - entire branches of terms w/ disjoint relations.
+- [ 2184288 ] filtered save fails when using descendant filter
+- [ 2412063 ] OTE display issue with multiple disjoint roots
 
 Features:
 - Ontology Generation Plugin
 
-TO DO: Docs for Ontology Generation
 
 
 
