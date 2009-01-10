@@ -4,11 +4,14 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.obd.model.LinkStatement;
 import org.obd.model.Statement;
 import org.obd.model.stats.SimilarityPair;
 import org.obd.query.LinkQueryTerm;
@@ -66,11 +69,20 @@ public class GeneResource extends NodeResource{
 		List<String> genotypeIds = NodeTyper.getGeneGenotypeIDs(this.getNodeId(),this.getShard(dataSource));
 		
 		int annotationStatementsCount = 0;
+		Map<String,Collection<LinkStatement>> gtAnnotMap = new HashMap<String,Collection<LinkStatement>>();
 		for (String genotypeId : genotypeIds){
 			SimpleHash genotype = this.hashifyNode(genotypeId, "/" + this.getContextName() + "/" + this.dataSource + "/html/node/" + Reference.encode(genotypeId));
 			SimpleHash genotypeHash = new SimpleHash();
 			genotypeHash.put("genotype", genotype);
-			Collection<SimpleHash> as = this.getHashifiedStatements("annotation","html");
+			Collection<Statement> stmts = getGraph("annotation",getNodeId()).getStatements();
+			Collection<LinkStatement> lstmts = new ArrayList<LinkStatement>();
+			for (Statement s : stmts) {
+				if (s instanceof LinkStatement)
+					lstmts.add((LinkStatement) s);
+			}
+			gtAnnotMap.put(genotypeId, lstmts);
+			Collection<SimpleHash> as = hashifyStatements(stmts, true,"html");
+			
 			annotationStatementsCount += as.size();
 			if (as.size()>0){
 				genotypeHash.put("annotationStatements", as);
@@ -86,13 +98,13 @@ public class GeneResource extends NodeResource{
 			for (int j=i;j<genotypeIds.size();j++){
 				if (i!=j){
 					System.out.println("Trying for similarity pair " + genotypeIds.get(j) + "\t" + genotypeIds.get(i));
-					SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(genotypeIds.get(j), genotypeIds.get(i));
+					//SimilarityPair sp = this.getShard(dataSource).compareAnnotationsByAnnotatedEntityPair(genotypeIds.get(j), genotypeIds.get(i));
+					SimilarityPair sp = this.getShard(dataSource).compareAnnotationSetPair(gtAnnotMap.get(j), gtAnnotMap.get(i), new LinkQueryTerm());
 					System.out.println("Metrics for: " + genotypeIds.get(i) + "\tvs\t" + genotypeIds.get(j)+":\t" + sp.getBasicSimilarityScore() + "\t" + sp.getInformationContentRatio() );
 					this.getShard(dataSource).calculateInformationContentMetrics(sp);
 					
 					genotypeScores[j][i] = sp.getBasicSimilarityScore();
 					genotypeScores[i][j] = sp.getInformationContentRatio();
-					
 					
 				} else {
 					genotypeScores[i][j] = -1;
