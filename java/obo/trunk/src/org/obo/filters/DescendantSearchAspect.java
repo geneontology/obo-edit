@@ -18,13 +18,16 @@ public class DescendantSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
-		if (reasoner != null) {
+		if (reasoner != null && o instanceof LinkedObject) {
+//			Collection<Link> reasonedChildren = reasoner.getChildren((LinkedObject) o);		
+//			logger.debug("DescendantreasonedChildren.size(): " + reasonedChildren.size());
 			for (Link link : reasoner.getChildren((LinkedObject) o)) {
 				if (traversalFilter == null || traversalFilter.satisfies(link)) {
 					c.add(link.getChild());
 				}
-			}
-		} else {
+			} 
+		}
+		else {
 			if (o instanceof LinkedObject)
 				c.addAll(TermUtil.getDescendants((LinkedObject) o, false));
 		}
@@ -40,7 +43,7 @@ public class DescendantSearchAspect implements SearchAspect {
 	public int hashCode() {
 		return getClass().hashCode();
 	}
-	
+
 	public String getID() {
 		return "descendant";
 	}
