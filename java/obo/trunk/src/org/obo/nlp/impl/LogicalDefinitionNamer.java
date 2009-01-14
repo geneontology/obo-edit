@@ -29,6 +29,8 @@ public class LogicalDefinitionNamer extends AbstractNamer implements Namer {
 		if (TermUtil.isIntersection(lo)) {
 			StringBuilder name = new StringBuilder();
 			for (Link dl : lo.getParents()) {
+				if (!TermUtil.isIntersection(dl))
+					continue;
 				if (name.length() > 0)
 					name.append(" -and-");
 				if (!dl.getType().equals(OBOProperty.IS_A)) {
@@ -56,7 +58,7 @@ public class LogicalDefinitionNamer extends AbstractNamer implements Namer {
 			names.add(name.toString());
 		}
 		else {
-
+			names.add(lo.getID());
 		}
 		return names;
 	}
@@ -66,9 +68,7 @@ public class LogicalDefinitionNamer extends AbstractNamer implements Namer {
 			return "?";
 		}
 		String name = lo.getName();
-		if (name != null && name.contains("OBI")) {
-			System.out.println(lo+" :: "+name);
-		}
+		
 		if (name == null) {
 			for (String sn : constructNames(lo)) {
 				name = sn;
