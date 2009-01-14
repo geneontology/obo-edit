@@ -229,22 +229,24 @@ public class RegulationTermParser implements SemanticParser {
 				else
 					relationName = "regulates";
 				LinkedObject genus = lookup("biological regulation");
+				
+				
 				if (TermUtil.hasIsAAncestor(lo,robpObj))
 					if (TermUtil.hasIsAAncestor(target, bpObj))
 						report("OK", lo, name, "in correct place");
 					else
-						report("HIERARCHY",lo,name,"should be in BP",target);
+						report("HIERARCHY",lo,name, "should be in BP",target);
 
 				if (TermUtil.hasIsAAncestor(lo,romfObj))
 					if (TermUtil.hasIsAAncestor(target, mfObj))
-						report("OK", lo, name, "in correct place");
+						report("OK", lo, name,  "in correct place");
 					else
-						report("HIERARCHY",lo,name,"should be in MF",target);
+						report("HIERARCHY",lo,name, "should be in MF",target);
 				if (TermUtil.hasIsAAncestor(lo,robqObj))
-					report("UNEXPECTED",lo,name,"biological quality found in GO",target);
+					report("UNEXPECTED",lo,name, "biological quality found in GO",target);
 
 				if (!TermUtil.hasIsAAncestor(lo,brObj))
-					report("MISSING_LINK",lo,name,"not under biological regulation, yet I can parse it");
+					report("MISSING_LINK",lo,name, "not under biological regulation, yet I can parse it");
 
 				String relID = relationName;
 				TermMacroHistoryItem item =
@@ -270,11 +272,20 @@ public class RegulationTermParser implements SemanticParser {
 	public void report(String categ, LinkedObject lo, String name, String message) {
 		report(categ,lo,name,message,null);
 	}
+	
 	public void report(String categ, LinkedObject lo, String name, String message, LinkedObject target) {
+		StringBuffer targetCode = new StringBuffer();
+		if (TermUtil.hasIsAAncestor(lo,robpObj))
+			targetCode.append("RoBP/");
+		if (TermUtil.hasIsAAncestor(lo,romfObj))
+			targetCode.append("RoMF/");
+		if (TermUtil.hasIsAAncestor(lo,robqObj))
+			targetCode.append("RoBQ/");
+
 		StringBuffer msg = new StringBuffer();
-		msg.append(categ + ": "+lo.getID()+" \""+name+"\" MSG: "+message);
+		msg.append(categ + "\t"+targetCode.toString()+"\t"+lo.getID()+"\t"+name+"\t" +message+"\t");
 		if (target != null)
-			msg.append(" TARGET: "+target);
+			msg.append(target);
 		reports.add(msg.toString());
 	}
 
