@@ -210,7 +210,7 @@ public abstract class DanglingAnnotatedObjectImpl extends
 	}
 
 	public Set<TermSubset> getSubsets() {
-		return null;
+		return Collections.emptySet();
 	}
 
 	public NestedValue getCategoryExtension(TermSubset category) {

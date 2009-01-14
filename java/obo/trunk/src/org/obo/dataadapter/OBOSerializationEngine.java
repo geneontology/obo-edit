@@ -65,9 +65,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 
 		// FCR does not appear to work with regulation examples...
-		protected ReasonerFactory reasonerFactory = new
-		LinkPileReasonerFactory();
-//		protected ReasonerFactory reasonerFactory = new ForwardChainingReasonerFactory();
+		protected ReasonerFactory reasonerFactory = new 	LinkPileReasonerFactory();
 
 		protected boolean discardUnusedCategories = false;
 
@@ -733,9 +731,11 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	/** Don't write out bogus objects (which would come out as "[null]" stanzas).
 	(Is this the right test?) */
 	protected boolean isRealObject(IdentifiedObject obj) {
-		if (TermUtil.isClass(obj) ||
+		if ((   TermUtil.isClass(obj) ||
 				TermUtil.isProperty(obj) ||
-				TermUtil.isInstance(obj))
+				TermUtil.isInstance(obj) 
+		) &&
+		!TermUtil.isDangling(obj)) 
 			return true;
 		else
 			return false;
@@ -921,12 +921,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					.getTransitiveExtension());
 		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.TRANSITIVE_OVER_TAG)) {
-			OBOProperty property = (OBOProperty) obj;
-			for (Link link : property.getParents()) {
-				if (link.getType().equals(OBOProperty.TRANSITIVE_OVER)) {
-					serializer.writeLinkTag(link, null);
-				}
-			}
+			// this is handled by generic link writing
 		} else if (obj instanceof OBOProperty
 				&& tagMapping.equals(OBOConstants.DISJOINT_OVER_TAG)) {
 			OBOProperty property = (OBOProperty) obj;
