@@ -32,6 +32,7 @@ import org.obo.annotation.datamodel.Annotation;
 import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
+import org.obo.datamodel.CommentedObject;
 import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.DanglingObject;
 import org.obo.datamodel.DatatypeValue;
@@ -932,18 +933,12 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			//			for (Link link : annot.getParents())
 			//			saveLink(link);
 		}
-		else if (lo instanceof DanglingObject || lo.getName() == null) {
-			if (lo instanceof OBOClass) {
-				iid =
-					callSqlFunc("store_class_node",
-							lo.getID());
+		else if ((lo instanceof DanglingObject || lo.getName() == null) && 
+				lo instanceof OBOClass) {
+			iid =
+				callSqlFunc("store_class_node",
+						lo.getID());
 
-			}
-			else {
-				iid =
-					callSqlFunc("store_node",
-							lo.getID());
-			}
 
 		}
 		else if (lo instanceof OBOClass) {
@@ -1015,7 +1010,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		if (lo instanceof MultiIDObject) {
 			for (String x : ((MultiIDObject) lo).getSecondaryIDs()) {
-				callSqlFunc("store_node_dbxref_i",iid,x);
+				callSqlFunc("store_node_alt_id_i",iid,x);
 			}
 		}
 		if (lo instanceof SynonymedObject) {
@@ -1026,10 +1021,18 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		if (lo instanceof DefinedObject) {
 			String def = ((DefinedObject) lo).getDefinition();
-			if (def != null) {
+			if (def != null && def != "") {
 				callSqlFunc("store_textdef_i",
 						iid,def);
 
+			}
+		}
+		if (lo instanceof CommentedObject) {
+			String cmt = ((CommentedObject) lo).getComment();
+			if (cmt != null && cmt != "") {
+				callSqlFunc("store_comment_i",
+						iid,
+						cmt);
 			}
 		}
 		savedObjects.add(lo); // redundant with obj2iid?

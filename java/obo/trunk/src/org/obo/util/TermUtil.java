@@ -1046,9 +1046,7 @@ public class TermUtil {
 	 * definition.
 	 */
 	public static boolean isIntersection(LinkedObject lo) {
-		Iterator it = lo.getParents().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for (Link link : lo.getParents()) {
 			if (isIntersection(link))
 				return true;
 		}

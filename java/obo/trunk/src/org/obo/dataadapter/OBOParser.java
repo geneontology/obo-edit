@@ -117,7 +117,7 @@ public interface OBOParser extends OBOSimpleParser {
 	public void readRelationship(String rel_type, String id, boolean necessary,
 			boolean inverseNecessary, boolean completes, boolean implied,
 			Integer minCardinality, Integer maxCardinality,
-			Integer cardinality, String ns, NestedValue val, List<String> args)
+			Integer cardinality, String ns, NestedValue val, List<String> args, boolean parentIsProperty)
 			throws OBOParseException;
 
 	public void readIsa(String id, String ns, boolean completes,
