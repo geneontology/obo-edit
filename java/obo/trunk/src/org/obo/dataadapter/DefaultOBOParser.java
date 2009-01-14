@@ -250,12 +250,14 @@ public class DefaultOBOParser implements OBOParser {
 
 		protected boolean implied = false;
 
+		public boolean parentIsProperty = false;
+
 		protected Integer minCardinality;
 
 		protected Integer maxCardinality;
 
 		protected Integer cardinality;
-		
+
 		protected List<String> args; // future expansion: n-ary relations
 
 		public int compareTo(Object b) {
@@ -291,7 +293,7 @@ public class DefaultOBOParser implements OBOParser {
 			this.nv = nv;
 			this.ns = ns;
 			this.args = args;
-			
+
 		}
 		/*
 		 * public RelStruct(String child, String parent, String type, int
@@ -383,7 +385,7 @@ public class DefaultOBOParser implements OBOParser {
 		public String getType() {
 			return type;
 		}
-		
+
 		public List<String> getArgs() {
 			return args;
 		}
@@ -572,7 +574,7 @@ public class DefaultOBOParser implements OBOParser {
 		// new SynonymCategoryImpl(id, name, scope);
 		session.addSynonymType(cat);
 	}
-	
+
 	public LinkedObject getLinkedObject(String id) {
 		LinkedObject lo = (LinkedObject) getObject(id);
 		if (lo == null) {
@@ -596,7 +598,7 @@ public class DefaultOBOParser implements OBOParser {
 	}
 
 	protected static boolean isBuiltInID(String id) {
-//		logger.debug("DefaultOBOParser.isBiuiltInID");
+		//		logger.debug("DefaultOBOParser.isBiuiltInID");
 		for (int i = 0; i < OBOProperty.BUILTIN_TYPES.length; i++) {
 			if (OBOProperty.BUILTIN_TYPES[i].getID().equals(id))
 				return true;
@@ -753,8 +755,16 @@ public class DefaultOBOParser implements OBOParser {
 					+ "object " + currentObject
 					+ " which does not support comments.", getCurrentPath(),
 					engine.getCurrentLine(), engine.getLineNum());
-		((CommentedObject) currentObject).setComment(comment);
-		((CommentedObject) currentObject).setCommentExtension(nv);
+		CommentedObject co = ((CommentedObject) currentObject);
+		String currCmt = co.getComment();
+		if (currCmt != null && currCmt != "") {
+			co.setComment(currCmt + "\n"+ comment);
+			logger.info("appending to existing comment: "+currCmt+" + "+comment);
+		}
+		else {
+			co.setComment(comment);
+		}
+		co.setCommentExtension(nv);
 	}
 
 	public void readInstanceOf(String termID, NestedValue nv)
@@ -898,7 +908,7 @@ public class DefaultOBOParser implements OBOParser {
 	public void readRelationship(String rel_type, String id, boolean necessary,
 			boolean inverseNecessary, boolean completes, boolean implied,
 			Integer minCardinality, Integer maxCardinality,
-			Integer cardinality, String ns, NestedValue nv, List<String> args)
+			Integer cardinality, String ns, NestedValue nv, List<String> args, boolean parentIsProperty)
 	throws OBOParseException {
 		if (!(currentObject instanceof LinkedObject))
 			throw new OBOParseException("Tried to specify relationship "
@@ -909,11 +919,13 @@ public class DefaultOBOParser implements OBOParser {
 			if (ns == null && this.getDefaultNamespace() != null)
 				ns = this.getDefaultNamespace().getID();
 
-		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+		RelStruct rs = new RelStruct(mapID(currentObject.getID()), mapID(id),
 				mapID(rel_type), getCurrentPath(), engine.getLineNum(), engine
 				.getCurrentLine(), necessary, inverseNecessary,
 				completes, implied, minCardinality, maxCardinality,
-				cardinality, ns, nv, args));
+				cardinality, ns, nv, args);
+		rs.parentIsProperty = parentIsProperty;
+		linkSet.add(rs);
 	}
 
 	public void readIsa(String id, String ns, boolean completes,
@@ -928,10 +940,13 @@ public class DefaultOBOParser implements OBOParser {
 			if (ns == null && this.getDefaultNamespace() != null)
 				ns = this.getDefaultNamespace().getID();
 
-		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+		RelStruct rs = new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.IS_A.getID(), getCurrentPath(),
 				engine.getLineNum(), engine.getCurrentLine(), true, false,
-				completes, implied, null, null, null, ns, nv));
+				completes, implied, null, null, null, ns, nv);
+		if (currentObject instanceof OBOProperty)
+			rs.parentIsProperty = true;
+		linkSet.add(rs);
 	}
 
 	public void readDisjoint(String id, String ns, boolean implied,
@@ -1000,10 +1015,12 @@ public class DefaultOBOParser implements OBOParser {
 				ns = this.getDefaultNamespace().getID();
 
 		//((OBOProperty) currentObject).setTransitiveOver(transitiveOver)
-		linkSet.add(new RelStruct(mapID(currentObject.getID()), mapID(id),
+		RelStruct rs = new RelStruct(mapID(currentObject.getID()), mapID(id),
 				OBOProperty.TRANSITIVE_OVER.getID(), getCurrentPath(), engine
 				.getLineNum(), engine.getCurrentLine(), true, false,
-				false, implied, null, null, null, ns, nv));
+				false, implied, null, null, null, ns, nv);
+		rs.parentIsProperty = true;
+		linkSet.add(rs);
 	}
 
 	public void readMetaRelation(String id, String ns, String metaRelationId, boolean implied,
@@ -1221,8 +1238,9 @@ public class DefaultOBOParser implements OBOParser {
 
 			if (parent == null) {
 				if (allowDanglingParents) {
+
 					parent = objectFactory.createDanglingObject(rs.getParent(),
-							false);
+							rs.parentIsProperty);
 					session.addObject(parent);
 					logger.info("No parent for " + child + "--added dangling object " + parent + " (id = " + parent.getID() + ", name = " + parent.getName() + ")");
 				} else {
@@ -1291,7 +1309,7 @@ public class DefaultOBOParser implements OBOParser {
 				tr.setAdditionalArguments(args);
 
 			}
-			
+
 
 			if (ns != null && !ns.equals(child.getNamespace())) {
 				tr.setNamespace(ns);
@@ -1378,7 +1396,7 @@ public class DefaultOBOParser implements OBOParser {
 
 					} else {
 						if (!(p instanceof OBOProperty))
-							throw new OBOParseException("Cannot use non-relation " + p
+							throw new OBOParseException("Cannot use non-relation " + p + " " + p.getClass()
 									+ " in chain.", null, null, -1);
 
 					}
