@@ -128,23 +128,7 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 
 	public void setTransitiveExtension(NestedValue nv) {}
 
-	public void addCategory(TermSubset category) {
-	}
-
-	public void addCategoryExtension(TermSubset category, NestedValue nv) {
-	}
-
-	public Set<TermSubset> getSubsets() {
-		return null;
-	}
-
-	public NestedValue getCategoryExtension(TermSubset category) {
-		return null;
-	}
-
-	public void removeCategory(TermSubset category) {
-	}
-
+	
 	public NestedValue getAlwaysImpliesInverseExtension() {
 		return null;
 	}

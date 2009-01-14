@@ -123,7 +123,11 @@ MutableLinkDatabase {
 		}
 		if (propertyLinkMap != null) {
 			OBOProperty prop = link.getType();
-			propertyLinkMap.get(prop).remove(link);
+			if (prop == null) {
+				logger.error("no property in link "+link);
+			}
+			else
+				propertyLinkMap.get(prop).remove(link);
 		}
 
 	}

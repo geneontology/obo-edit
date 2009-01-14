@@ -864,6 +864,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 			return true;
 		} else if (name.equals("transitive_over")) {
 			RelStruct relStruct = parseRelationship(value, nv, "transitive_over");
+			relStruct.parentIsProperty = true;
 			doReadRelationship(relStruct, (OBOParser) parser);
 			return true;
 		} else if (name.equals("disjoint_over")) {
@@ -997,6 +998,8 @@ public class OBOParseEngine extends AbstractParseEngine {
 		protected Integer card;
 
 		protected String ns;
+		
+		boolean parentIsProperty = false;
 		
 		protected List<String> args; // future expansion: n-ary relations
 
@@ -1139,7 +1142,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 					relStruct.getNec(), relStruct.getInvNec(), relStruct
 					.completes(), relStruct.isImplied(), relStruct
 					.getMinCard(), relStruct.getMaxCard(), relStruct
-					.getCard(), relStruct.getNS(), relStruct.getNV(), relStruct.getArgs());
+					.getCard(), relStruct.getNS(), relStruct.getNV(), relStruct.getArgs(), relStruct.parentIsProperty);
 	}
 
 	protected RelStruct parseRelationship(String value, NestedValue nv,
