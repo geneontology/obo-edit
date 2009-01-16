@@ -181,8 +181,8 @@
 			target="User_Defined_Checks" />
 	</tocitem>
     <tocitem text="Ontology Generation">
-		<tocitem text="Ontology Generation Tool"
-			target="Ontology_Generation_Tool" />
+		<tocitem text="Pubmed Ontology Generation Tool"
+			target="Pubmed_Ontology_Generation_Tool" />
 	</tocitem>
 	<tocitem text="Cross Products">
 		<tocitem text="Introduction to Cross Products"

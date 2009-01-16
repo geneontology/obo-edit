@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	protected ActionListener checkTask = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			// Could we maybe be more restrictive about doing timed text checks--only for certain events?
 			doTimedTextChecks(true, false);
 		}
 	};
@@ -484,7 +484,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	};
 
 	protected boolean runChecksAndCommit() {
-//		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
+		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
 		if (currentObject == null || !hasChanges())
 			return true;
 		PostcompUtil.getNameExpression(currentObject, true);
@@ -523,11 +523,17 @@ RootTextEditComponent, SelectionDrivenComponent {
 		} else {
 			if (Preferences.getPreferences().getAutoCommitTextEdits()) {
 				autocommit();
-			} else if (Preferences.getPreferences()
+			} 
+			/**  Fix for case when user is in manual commit mode and is using the Dbxref Library 
+			 * to add multiple dbxrefs and def dbxrefs to terms. In this case autocommit is forcefully enforced 
+			 * - required as the changes for all terms are not propagated w/o commit.
+			 * This is a temporary fix while investigating similar featue request*/
+			else if(this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
+				autocommit();
+			}
+			else if (Preferences.getPreferences()
 					.getWarnBeforeDiscardingEdits()
 					&& hasChanges()) {
-				// Should we change this to "Commit these edits?"  (yes=keep, no=discard)
-				// I'm worried that would confuse the experienced OBO-Editors.
 				int val = JOptionPane.showConfirmDialog(GUIManager.getManager()
 						.getFrame(), "There are uncommitted text edits.\n"
 						+ "Discard these edits?", "Pending edits",
@@ -538,7 +544,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		logger.info("Committed text edit(s) to " + currentObject.getName() + ".  There " +
 				(fatal ? "were" : "were no") +
 		" fatal errors.");
-		// Now can we release the clone?
+
 		clone = null;
 		return !fatal;
 	}
@@ -773,6 +779,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		return currentObject;
 	}
 
+	// Commit for Text Edits
 	public void commit() {
 		if (checkComponents()){
 			flushEdits();

@@ -198,7 +198,6 @@ public abstract class AbstractDbxrefEditorComponent extends
 				out.add(item);
 			}
 		}
-
 		return out;
 	}
 
