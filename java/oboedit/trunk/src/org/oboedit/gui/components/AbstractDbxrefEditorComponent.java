@@ -156,12 +156,19 @@ public abstract class AbstractDbxrefEditorComponent extends
 	protected abstract String getDbxrefTitle();
 
 	protected Collection<Dbxref> getEditedDbxrefs() {
+//		logger.debug("AbstractDbxrefEditorComponent.getEditedDbxrefs" );
+//		logger.debug("dbxrefList.getData().size(): " + dbxrefList.getData().size());
 		return dbxrefList.getData();
 	}
 
 	public List<HistoryItem> getChanges() {
 		Collection<Dbxref> editedDbxrefs = getEditedDbxrefs();
 		LinkedList<HistoryItem> out = new LinkedList<HistoryItem>();
+		while(editedDbxrefs.size()==0){
+//			logger.debug("no changes to dbxrefs");
+			return out;
+		}
+	
 		Iterator it = editedDbxrefs.iterator();
 		while (it.hasNext()) {
 			Dbxref ref = (Dbxref) it.next();

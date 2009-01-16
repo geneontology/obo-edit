@@ -5,9 +5,11 @@ Bug Fixes:
 Fix in Root detection algorithm - Sequence Ontology was unuseable in OE2 due to missing terms - entire branches of terms w/ disjoint relations.
 - [ 2184288 ] filtered save fails when using descendant filter
 - [ 2412063 ] OTE display issue with multiple disjoint roots
+- [ 2490376 ] dbxref library 'apply to all' bug?
+- TreeViewer selection and other display bugs. 
 
 Features:
-- Ontology Generation Plugin
+- Pubmed Ontology Generation Tool 
 
 
 

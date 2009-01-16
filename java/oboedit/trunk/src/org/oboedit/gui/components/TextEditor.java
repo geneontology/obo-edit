@@ -484,7 +484,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 	};
 
 	protected boolean runChecksAndCommit() {
-		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
+//		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
+
 		if (currentObject == null || !hasChanges())
 			return true;
 		PostcompUtil.getNameExpression(currentObject, true);
@@ -730,9 +731,11 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 
 	public List<HistoryItem> getChanges() {
+		logger.debug("TextEditor.getChanges()");
 		List<HistoryItem> out = new LinkedList<HistoryItem>();
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			//Collection<HistoryItem> changes = c.getChanges();
+			logger.debug("getting changes from component: " + c);
 			List<HistoryItem> changes = c.getChanges();
 			out.addAll(changes);
 		}
@@ -743,6 +746,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			if (c.hasChanges())
 				return true;
+		
 		}
 		return false;
 	}
