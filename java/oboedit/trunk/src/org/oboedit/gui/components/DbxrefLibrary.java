@@ -9,7 +9,6 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.components.GeneralDbxrefEditorComponent;
-import org.oboedit.gui.event.*;
 import org.oboedit.gui.widget.DbxrefListEditor;
 
 import javax.swing.*;
@@ -74,7 +73,7 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	}
 
 	public static class DbxrefLibraryConfiguration implements
-			ComponentConfiguration {
+	ComponentConfiguration {
 		protected Vector library;
 
 		public DbxrefLibraryConfiguration() {
@@ -100,8 +99,8 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 			dbxrefs = ((DbxrefLibraryConfiguration) config).getLibrary();
 			updateList();
 //			if (dbxrefs.size() > 0) {
-//			    useButton.setEnabled(true);
-//			    useAsDefButton.setEnabled(true);
+//			useButton.setEnabled(true);
+//			useAsDefButton.setEnabled(true);
 //			}
 		}
 	}
@@ -162,24 +161,26 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 			// Do for each selected term
 			for (LinkedObject lo : selected.getTerms()) {
 				Selection newSelection = SelectionManager.changeSubSelection(
-					SelectionManager.getGlobalSelection(), lo);
+						SelectionManager.getGlobalSelection(), lo);
 				SelectionManager.setGlobalSelection(newSelection);
 				GUIManager.getManager().fireUserEvent(
-					new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
-										    (isDef ? "gui.dbxref.def.add"
-										     : "gui.dbxref.general.add"), 
-										    refs.toArray(new Dbxref[0])));
+						new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
+								(isDef ? "gui.dbxref.def.add"
+										: "gui.dbxref.general.add"), 
+										refs.toArray(new Dbxref[0])));
 			}
+			
+
 			// Put selection back the way it was originally
 			SelectionManager.setGlobalSelection(
-				SelectionManager.changeSubSelection(SelectionManager.getGlobalSelection(), current));
+					SelectionManager.changeSubSelection(SelectionManager.getGlobalSelection(), current));
 		}
 		else
 			GUIManager.getManager().fireUserEvent(
-				new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
-										    (isDef ? "gui.dbxref.def.add"
-										     : "gui.dbxref.general.add"), 
-										    refs.toArray(new Dbxref[0])));
+					new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
+							(isDef ? "gui.dbxref.def.add"
+									: "gui.dbxref.general.add"), 
+									refs.toArray(new Dbxref[0])));
 	}
 
 	protected void saveConfiguration() {
@@ -202,16 +203,16 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 				sendUpdates(true, useForAll.isSelected());
 			}
 		});
-// 		useForAllButton.addActionListener(new ActionListener() {
-// 			public void actionPerformed(ActionEvent e) {
-// 				sendUpdates(false, true);
-// 			}
-// 		});
-// 		useAsDefForAllButton.addActionListener(new ActionListener() {
-// 			public void actionPerformed(ActionEvent e) {
-// 				sendUpdates(true, true);
-// 			}
-// 		});
+//		useForAllButton.addActionListener(new ActionListener() {
+//		public void actionPerformed(ActionEvent e) {
+//		sendUpdates(false, true);
+//		}
+//		});
+//		useAsDefForAllButton.addActionListener(new ActionListener() {
+//		public void actionPerformed(ActionEvent e) {
+//		sendUpdates(true, true);
+//		}
+//		});
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveConfiguration();
@@ -285,8 +286,8 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 						desc = line.substring(spaceIndex + 1, line.length());
 					}
 					Dbxref dbxref = SessionManager.getManager().getSession()
-							.getObjectFactory().createDbxref(db, id, desc,
-									Dbxref.ANALOG, null);
+					.getObjectFactory().createDbxref(db, id, desc,
+							Dbxref.ANALOG, null);
 					dbxrefs.add(dbxref);
 				}
 				Collections.sort(dbxrefs);
