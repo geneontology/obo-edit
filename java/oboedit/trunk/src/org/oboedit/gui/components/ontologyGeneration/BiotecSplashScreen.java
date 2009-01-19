@@ -37,7 +37,7 @@ public class BiotecSplashScreen extends JDialog
 	protected final static Logger logger = Logger.getLogger(BiotecSplashScreen.class);
 
 	private BackgroundImagePanel bip;
-	private final static String biotecSplashScreen = "/ontogenSplashScreen.png";
+	private final static String biotecSplashScreen = "resources/ontogenSplashScreen.png";
 
 	public BiotecSplashScreen(final Component parent)
 	{
@@ -104,7 +104,6 @@ public class BiotecSplashScreen extends JDialog
 		};
 
 		URL url = this.getClass().getResource(biotecSplashScreen);
-		System.out.println("load image from url: '"+url.getPath()+"'");
 		logger.debug("load image from url: '"+url.getPath()+"'");
 
 		BackgroundImagePanel backgroundImagePanel = new BackgroundImagePanel(url, false);
