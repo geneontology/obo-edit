@@ -581,6 +581,32 @@ public class ReasonerUtil {
 			}
 		}
 	}
+	
+	/**
+	 * single intersection links are illegal
+	 * 
+	 * @param lo
+	 * @param forceGenusDifferentia - if true, applies more stringent test, any xp must consist of one genus (and 1+ differentia)
+	 * @return true if this class has an intersection definition AND it is illegal
+	 */
+	public static boolean isIllegalIntersection(LinkedObject lo, boolean forceGenusDifferentia) {
+		Collection<Link> out = new LinkedList<Link>();
+				
+		for (Link link : lo.getParents()) {
+			if (TermUtil.isIntersection(link))
+				out.add(link);
+		}
+		if (out.size() == 0)
+			return false;
+		if (out.size() == 1)
+			return true;
+		if (forceGenusDifferentia) {
+			Collection<OBOClass> genae = getGenae((OBOClass)lo);
+			if (genae.size() != 1)
+				return true;			
+		}
+		return false;
+	}
 
 	public static Collection<OBOClass> getGenae(OBOClass oboClass) {
 		Collection<OBOClass> out = new LinkedList<OBOClass>();
