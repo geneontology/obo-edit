@@ -650,7 +650,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			chooser.addChoosableFileFilter(new ExtensionFilter(".xdot",
 			".xdot - GraphViz extended DOT format"));
 			chooser.addChoosableFileFilter(new ExtensionFilter(".gif",
-			".gif - GIF Format"));
+			".gif - GIF Format (not Mac OS X)"));
 
 			// Shows the dialog to the user and wait for is answer
 			int userChoice = chooser.showSaveDialog(this);
