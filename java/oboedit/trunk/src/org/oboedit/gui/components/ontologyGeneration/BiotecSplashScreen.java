@@ -104,7 +104,7 @@ public class BiotecSplashScreen extends JDialog
 		};
 
 		URL url = this.getClass().getResource(biotecSplashScreen);
-		logger.debug("load image from url: '"+url.getPath()+"'");
+		logger.debug("load image from url: '" + url.getPath() + "'");
 
 		BackgroundImagePanel backgroundImagePanel = new BackgroundImagePanel(url, false);
 		backgroundImagePanel.setLayout(null);
@@ -121,12 +121,14 @@ public class BiotecSplashScreen extends JDialog
 
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append("<html>");
-		stringBuffer.append("<h3><b>GoPubMed Ontology Generation plugin</b> for OBOEdit 2<small>, v 0.5 beta</small></h3>");
+		stringBuffer
+		    .append("<h3><b>GoPubMed Ontology Generation plugin</b> for OBOEdit 2<small>, v " + OntologyGenerationComponent.PLUGIN_VERSION + "a</small></h3>");
 		stringBuffer.append("<p>The plugin was developed by <b>Thomas Wächter</b> and <b>Atif Iqbal</b></p>");
 		stringBuffer.append("<p>Under the terms of the Artistic License, TU Dresden, (c)2007-" + year + "</p>");
 		stringBuffer.append("<br>");
 		stringBuffer.append("<p>");
-		stringBuffer.append("The plugin uses an ontology generation and a definition extraction web service developed by TU Dresden and Transinsight. Both services are hosted at TU Dresden. OBO Ontologies are queried using the EBI's Ontology Lookup Service.");
+		stringBuffer
+		    .append("The plugin uses an ontology generation and a definition extraction web service developed by TU Dresden and Transinsight. Both services are hosted at TU Dresden. OBO Ontologies are queried using the EBI's Ontology Lookup Service.");
 		stringBuffer.append("</p>");
 		stringBuffer.append("<p>");
 		stringBuffer.append("For commercial use of these services, please contact <b>info@transinsight.com</b>.");

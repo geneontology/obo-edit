@@ -142,7 +142,8 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
  */
 public class OntologyGenerationComponent extends AbstractGUIComponent implements PropertyChangeListener
 {
-	public static final String PLUGIN_VERSIONED_NAME = "OBOEdit-GoPubMed-Ontogen-Plugin-1.1.0";
+	public static final String PLUGIN_VERSION = "1.1.0";
+	public static final String PLUGIN_VERSIONED_NAME = "OBOEdit-GoPubMed-Ontogen-Plugin-"+PLUGIN_VERSION;
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
 
