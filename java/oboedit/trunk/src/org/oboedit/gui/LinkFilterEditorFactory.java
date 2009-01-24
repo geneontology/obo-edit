@@ -29,7 +29,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 	protected final static Logger logger = Logger.getLogger(LinkFilterEditorFactory.class);
 
 	protected static class LinkModel extends
-			AbstractSearchResultsTableModel<Link> {
+	AbstractSearchResultsTableModel<Link> {
 
 		/**
 		 * 
@@ -47,9 +47,13 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 
 		@Override
 		public Object getColumnVal(Object row, int column) {
+//			logger.debug("LinkFilterEditor.getColumnVal");
 			Link link = (Link) row;
-			if (column == 0)
+			if (column == 0){
+				if(link.getChild().getName() ==  null)
+					logger.error("ERROR: LinkfilterEditor.getColumnVal -- link.getChild().getName() == null for link: " + link);
 				return link.getChild().getName();
+			}
 			else if (column == 1)
 				return link.getChild().getID();
 			else if (column == 2)
@@ -60,6 +64,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 				return link.getParent().getID();
 			else
 				throw new IllegalArgumentException("column out of range");
+
 		}
 
 		@Override
@@ -168,7 +173,7 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 		Collection<SearchHit<?>> out = new ArrayList<SearchHit<?>>();
 		for (String id : ids) {
 			IdentifiedObject io = SessionManager.getManager().getSession()
-					.getObject(id);
+			.getObject(id);
 			if (io instanceof LinkLinkedObject) {
 				out.add(new BasicSearchHit<Link>(((LinkLinkedObject) io)
 						.getLink()));

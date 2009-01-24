@@ -29,7 +29,7 @@ public class SearchResultsTable extends JTable {
 	protected long maximumFormattingTime = 1000;
 
 	protected static class SearchResultsRenderer extends
-			DefaultTableCellRenderer {
+	DefaultTableCellRenderer {
 
 		String[] columnExpressions;
 		HTMLNodeLabelProvider provider = new HTMLNodeLabelProvider();
@@ -57,7 +57,7 @@ public class SearchResultsTable extends JTable {
 		setModel(searchModel);
 		if (IdentifiedObject.class.isAssignableFrom(model.getObjectType())) {
 			setDefaultRenderer(Object.class, new SearchResultsRenderer("$id$",
-					"$name$"));
+			"$name$"));
 		}
 		setSelectionModel(new ReselectListSelectionModel());
 		getSelectionModel().addListSelectionListener(
@@ -86,7 +86,7 @@ public class SearchResultsTable extends JTable {
 		JTableHeader header = table.getTableHeader();
 		TableColumnModel columnModel = header.getColumnModel();
 		SearchResultsTableModel<?> model = (SearchResultsTableModel<?>) table
-				.getModel();
+		.getModel();
 		long time = System.currentTimeMillis();
 		for (int i = 0; i < columnModel.getColumnCount(); i++) {
 			if (System.currentTimeMillis() - time >= maximumFormattingTime)
