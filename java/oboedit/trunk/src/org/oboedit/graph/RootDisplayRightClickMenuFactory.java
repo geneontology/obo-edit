@@ -434,9 +434,21 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 		JMenuItem showAllTransitiveAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
 				"All transitive ancestors", (OBOProperty) null, true, false,
 				selectionProvider, checkDelegate));
-
-		JMenu typesAncestorMenu = new ProviderMenu("Ancestors of type") {
-			@Override
+		
+// AA
+//		JMenu showAllAncestorsItem= new ProviderMenu("All Ancestors") {
+//			@Override
+//			public void updateEnabledStatus() {
+//				setEnabled(true);
+//				if (!checkDelegate.isEnabled(selectionProvider.getSelection())) {
+//					setEnabled(false);
+//					return;
+//				}
+//				super.updateEnabledStatus();
+//			}
+//		};
+		
+		JMenu typesAncestorMenu= new ProviderMenu("Ancestors of Type"){
 			public void updateEnabledStatus() {
 				if (!checkDelegate.isEnabled(selectionProvider.getSelection())) {
 					setEnabled(false);
@@ -454,6 +466,8 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 				super.updateEnabledStatus();
 			}
 		};
+
+
 
 		menu.add(showAllAncestorsItem);
 		menu.add(showAllNonTransitiveAncestorsItem);

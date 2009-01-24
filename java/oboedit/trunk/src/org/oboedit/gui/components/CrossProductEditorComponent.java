@@ -455,8 +455,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public Collection<Link> getRelationshipList() {
-//		logger.debug("CrossProductEditorComponent.getRelationshipList");
+		logger.debug("CrossProductEditorComponent.getRelationshipList");
 		LinkedList<Link> out = new LinkedList<Link>();
+		logger.debug("genusField.getValue(): " + genusField.getValue());
+		if(genusField.getValue() == null){
+//			logger.debug("CrossProductEditorComponent.getRelationshipList -- genusField.getValue()==null");
+		}
+		
 		if (genusField.getValue() != null
 				&& genusField.getValue() instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,
@@ -477,7 +482,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 						panel.getProperty(), panel.getParentTerm());
 				discLink.setCompletes(true);
 				out.add(discLink);
-//				logger.debug("CrossProductEditorComponent.getRelationshipList -- discLink: " + discLink);
+				logger.debug("CrossProductEditorComponent.getRelationshipList -- discLink: " + discLink);
 
 			}
 		}

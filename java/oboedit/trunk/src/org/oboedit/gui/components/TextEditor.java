@@ -166,6 +166,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	}
 
 	protected void doTimedTextChecks(boolean requireDirtyPaths, boolean onCommit) {
+//		logger.debug("TextEditor.doTimedTextChecks");
 		if (currentObject == null)
 			return;
 		if (requireDirtyPaths && 
@@ -173,15 +174,13 @@ RootTextEditComponent, SelectionDrivenComponent {
 			return;
 //		logger.debug("TextEditor.doTimedTextChecks: object = " + currentObject + ", requiredirty = " + requireDirtyPaths + ", onCommit = " + onCommit + ", " + dirtyPaths.size() + " dirtyPaths"); // DEL
 
-		// Why can't we just clear dirtyPaths rather than making a new one?  (Not yet tested)
-//		dirtyPaths.clear();
 		dirtyPaths = new LinkedList<FieldPath>();
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
 		for (ErrorDecorator decorator : decoratorMap.values()) {
 			decorator.clearWarnings();
 		}
-		// Why are these final?
+
 		final Collection<CheckWarning> warnings = VerificationManager
 		.getManager().runChecks(
 				SessionManager.getManager().getSession(),
@@ -529,7 +528,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 			 * to add multiple dbxrefs and def dbxrefs to terms. In this case autocommit is forcefully enforced 
 			 * - required as the changes for all terms are not propagated w/o commit.
 			 * This is a temporary fix while investigating similar featue request*/
-			else if(this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
+			else if(this.dirtyPaths.size() >0 && this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
 				autocommit();
 			}
 			else if (Preferences.getPreferences()
@@ -731,11 +730,11 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 
 	public List<HistoryItem> getChanges() {
-		logger.debug("TextEditor.getChanges()");
+//		logger.debug("TextEditor.getChanges()");
 		List<HistoryItem> out = new LinkedList<HistoryItem>();
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			//Collection<HistoryItem> changes = c.getChanges();
-			logger.debug("getting changes from component: " + c);
+//			logger.debug("getting changes from component: " + c);
 			List<HistoryItem> changes = c.getChanges();
 			out.addAll(changes);
 		}
@@ -746,7 +745,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			if (c.hasChanges())
 				return true;
-		
+
 		}
 		return false;
 	}
@@ -804,18 +803,20 @@ RootTextEditComponent, SelectionDrivenComponent {
 	}
 
 	public void flushEdits() {
+//		logger.debug("TextEditor.flushEdits");
 		// Trigger verification checks that should happen on text commit
 		doTimedTextChecks(false, true);
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Text edit");
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
 		}
+//		logger.debug("item.size: " +item.size());
+//		logger.debug("item: " + item);
+//		logger.debug("stop here");
 		if (item.size() > 0) {
 			GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 					SelectionManager.getGlobalSelection());
-
 			SessionManager.getManager().apply(item, false);
-
 		}
 	}
 }
