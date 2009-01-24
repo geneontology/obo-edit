@@ -245,7 +245,6 @@ public class SearchComponent extends AbstractGUIComponent {
 				src.setResults(task.getResults());
 				ComponentManager.getManager().focusComponent(src);
 			}
-
 		};
 		GUIManager.getManager().scheduleTask(
 				new SwingUpdateTask<Collection<SearchHit<?>>>(task, r), true);
