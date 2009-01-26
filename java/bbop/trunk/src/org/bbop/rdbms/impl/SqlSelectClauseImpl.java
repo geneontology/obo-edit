@@ -9,11 +9,11 @@ public class SqlSelectClauseImpl extends SqlColumnListClause implements SelectCl
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SqlSelectClauseImpl.class);
 
-	SqlSelectClauseImpl(String s) {
+	public SqlSelectClauseImpl(String s) {
 		super(s);
 		// TODO Auto-generated constructor stub
 	}
-	SqlSelectClauseImpl() {
+	public SqlSelectClauseImpl() {
 		super();
 	}
 
