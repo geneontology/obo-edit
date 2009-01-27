@@ -752,6 +752,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	public void populateFields(IdentifiedObject io) {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
+//			logger.debug("TextEditor populateFields for component: " + c);
 			c.populateFields(io);
 		}
 	}
@@ -810,9 +811,8 @@ RootTextEditComponent, SelectionDrivenComponent {
 		for (HistoryItem subItem : getChanges()) {
 			item.addItem(subItem);
 		}
-//		logger.debug("item.size: " +item.size());
-//		logger.debug("item: " + item);
-//		logger.debug("stop here");
+//		logger.debug("TextEditor.flushEdits -- item.size: " +item.size());
+//		logger.debug("TextEditor.flushEdits -- item: " + item);
 		if (item.size() > 0) {
 			GUIUtil.setSelections(item, SelectionManager.getGlobalSelection(),
 					SelectionManager.getGlobalSelection());
