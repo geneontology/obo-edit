@@ -137,7 +137,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-			logger.debug("OBOTermPanel.reloadListener.reload " + e); // DEL
+//			logger.debug("OBOTermPanel.reloadListener.reload " + e); // DEL
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
