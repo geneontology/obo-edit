@@ -27,7 +27,9 @@ public class TooltipBehavior implements ViewBehavior {
 	public static long DEFAULT_TOOLTIP_VISIBILITY_DELAY = 1000;
 
 	protected long tooltipVisibleDelay = DEFAULT_TOOLTIP_VISIBILITY_DELAY;
-
+	boolean tooltipFlareVisible;
+	boolean tooltipBubbleVisible;
+	
 	protected class TooltipEventHandler extends PBasicInputEventHandler {
 		protected PNode lastEntered;
 
@@ -36,6 +38,16 @@ public class TooltipBehavior implements ViewBehavior {
 		protected PNode currentTooltip;
 
 		protected WordBubbleNode tooltipHolder;
+
+		protected boolean tooltipFlareVisible;
+
+		public boolean isTooltipFlareVisible() {
+			return tooltipFlareVisible;
+		}
+
+		public void setTooltipFlareVisible(boolean tooltipFlareVisible) {
+			this.tooltipFlareVisible = tooltipFlareVisible;
+		}
 
 		protected Point2D lastMousePos;
 
@@ -58,15 +70,18 @@ public class TooltipBehavior implements ViewBehavior {
 			if (currentTooltip != null && lastMousePos != null) {
 				Point2D pointsAt = canvas.getCamera().viewToLocal(lastMousePos);
 				tooltipHolder = new WordBubbleNode();
+				System.out.println("TooltipBehavior: showToolTip(): tooltipFlareVisible = " + tooltipFlareVisible);
 				tooltipHolder.setContents(currentTooltip);
 				tooltipHolder.setPointsAt(pointsAt);
 				tooltipHolder.setBubbleOffset(new Point2D.Double(0, canvas
 						.getCamera().getHeight()
 						- tooltipHolder.getBubbleBounds().getHeight()));
+				tooltipHolder.setTooltipFlareVisible(tooltipFlareVisible);
 				canvas.getCamera().addChild(tooltipHolder);
 				final PActivity a = tooltipHolder
 						.animateScaleInFromPoint(getTooltipFadeInTime());
 				canvas.getCamera().addActivity(a);
+			
 			}
 		}
 
@@ -124,6 +139,8 @@ public class TooltipBehavior implements ViewBehavior {
 			popupTimer.stop();
 			hideTooltip(currentTooltip, tooltipHolder);
 		}
+		
+
 	}
 
 	protected TooltipEventHandler tooltipHandler = new TooltipEventHandler();
@@ -138,6 +155,28 @@ public class TooltipBehavior implements ViewBehavior {
 	};
 
 	protected LinkDatabaseCanvas canvas;
+
+	public boolean isTooltipFlareVisible() {
+		
+		return tooltipFlareVisible;
+	}
+
+	public void setTooltipFlareVisible(boolean tooltipFlareVisible) {
+		tooltipHandler.setTooltipFlareVisible(tooltipFlareVisible);
+		this.tooltipFlareVisible = tooltipFlareVisible;
+		System.out.println("TooltipBehavior: setTooltipFlareVisible: tooltipFlareVisible = " + tooltipFlareVisible);
+	}
+
+	
+//	public TooltipBehavior(boolean tooltipFlareVisible) {
+//		System.out.println("TooltipBehavior: Constructor with boolean argument");
+//		this.tooltipFlareVisible = tooltipFlareVisible;		
+//	}
+
+//	public TooltipBehavior() {
+//		System.out.println("TooltipBehavior: Constructor without boolean argument");
+//
+//	}
 
 	public void install(LinkDatabaseCanvas canvas) {
 		this.canvas = canvas;
@@ -169,5 +208,9 @@ public class TooltipBehavior implements ViewBehavior {
 	public void setTooltipVisibleDelay(long tooltipVisibleDelay) {
 		this.tooltipVisibleDelay = tooltipVisibleDelay;
 	}
+	
+
+
+	
 
 }
