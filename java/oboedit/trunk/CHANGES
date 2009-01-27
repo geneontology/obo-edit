@@ -5,7 +5,8 @@ Bug Fixes:
 [ 2184600 ] genus in XP tab of text editor often fails to commit
 [ 2523316 ] help guide search result selection
 
-
+[ 2513536 ] Load Ontologies/Import Terms are the same? 
+- Added documentation for Import Terms option.
 
 [ 2504803 ] graphviz viewer save image
 A note was added to the file format drop down menu to say that gifs do not work in Mac OS X.
