@@ -36,10 +36,10 @@
 	<!-- utility program paths -->
 	<property name="svnpath" value="/usr/local/bin/svn" />
 	<property name="antpath" value="ant" />
-	<!-- Note: to make javahelp_inders, you will need to install javahelp 
+	<!-- Note: to make javahelp_indxers, you will need to install javahelp 
 	     (see http://java.sun.com/products/javahelp/download_binary.html)
 	     and you may need to change the path below to point to where you've installed it. -->
-	<!-- property name="javahelp_indexer" location="/Applications/jh2.0/javahelp/bin/jhindexer" / -->
+	<property name="javahelp_indexer" location="/opt/jh2.0/javahelp/bin/jhindexer" />
 
 	<!-- test to see if optional regular expression targets are available -->
 	<available property="regexp_replace_available" classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
@@ -296,7 +296,7 @@
 		</move>
 
 		<!-- Run jhindexer -->
-		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="false" failifexecutionfails="true">
+		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="true" failifexecutionfails="true">
 			<arg value="." />
 			<arg value="-db" />
 			<arg value="JavaHelpSearch" />
@@ -314,9 +314,8 @@
 		</move>
 	</target>
 
-	<!-- target name="docindex" depends="-dojhindex" -->
-	<!-- jhindex is not required anymore -->
-	<target name="docindex">
+	<target name="docindex" depends="-dojhindex">
+	<!--target name="docindex"-->
 			<xslt out="docs/index.html" in="docs/OBO-EditTOC.xml" style="templates/toc_generator.xsl">
 
 			<param name="mapfile" expression="../docs/OBO-Edit.jhm" />
