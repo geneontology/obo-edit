@@ -406,10 +406,17 @@ public class AutocompleteBox<T> extends JComboBox {
 	}
 
 	public T getValue() {
-		if (getSelectedItem() == null)
+//		logger.debug("getSelectedItem(): " + getSelectedItem());
+//		logger.debug("getItemCount: " + this.getItemCount());
+		if (getSelectedItem() == null && this.getItemCount() == 0)
 			return null;
 		else {
 			Object selected = getSelectedItem();
+			//fix for commiting multiple items while editing cross-products in the TextEditor...
+			//getSelectedItem looks for items selected in the autocomplete JComboBox and returns null for genus as it picks up the second item while adding discriminating relations 
+			if (selected == null && getItemAt(0) != null){
+				selected = getItemAt(0);
+			}
 			if (allowNonModelValues) {
 				String s = ((JTextComponent) editor).getText();
 
@@ -869,6 +876,7 @@ public class AutocompleteBox<T> extends JComboBox {
 		}
 
 		public Object getElementAt(int index) {
+//			logger.debug("lastHits.get(index).getVal(): " +  lastHits.get(index).getVal());
 			return lastHits.get(index).getVal();
 		}
 
