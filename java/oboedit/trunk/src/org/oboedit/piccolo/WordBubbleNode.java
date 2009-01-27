@@ -8,6 +8,7 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
 import org.bbop.swing.ShapeUtil;
 
@@ -28,6 +29,8 @@ public class WordBubbleNode extends PComposite {
 	protected PNode contents;
 	protected Point2D pointsAt = new Point2D.Float();
 	protected float margins = 10;
+	protected boolean tooltipFlareVisible;
+	protected boolean tooltipBubbleVisible;
 
 	protected float bubbleTransparency;
 	protected Paint bubblePaint;
@@ -49,7 +52,9 @@ public class WordBubbleNode extends PComposite {
 		setBubblePaint(new Color(200, 200, 255));
 		flare.setStroke(null);
 		bubble.setStroke(null);
-	}
+		flare.setVisible(tooltipFlareVisible);
+//		bubble.setVisible(tooltipBubbleVisible);//This is not needed because if this was false then  
+	}											//this code would not be called. 
 
 	public void setContents(PNode contents) {
 		if (this.contents != null) {
@@ -198,4 +203,18 @@ public class WordBubbleNode extends PComposite {
 	public float getMargins() {
 		return margins;
 	}
+	
+	//Only the flare visibility is set as part of the WordBubbleNode
+	//Tooltips can be made invisible just by not adding tooltipBehavior at all. 
+	public void setTooltipFlareVisible(boolean tooltipFlareVisible){
+		flare.setVisible(tooltipFlareVisible);
+	}
+
+	public boolean getTooltipFlareVisible(){
+		return tooltipFlareVisible;
+	}
+
+
+	
+
 }
