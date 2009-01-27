@@ -1240,7 +1240,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 //				logger.debug("OBOSerializationEngine getObjects: " + io);
 				if (stanzaMapping.getStanzaClass().isInstance(io)
 						&& !io.isBuiltIn()) {
-					logger.debug("io: " + io);
 					objectList.add(io);
 				}
 			}
