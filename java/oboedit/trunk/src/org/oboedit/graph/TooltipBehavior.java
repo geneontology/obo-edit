@@ -70,7 +70,7 @@ public class TooltipBehavior implements ViewBehavior {
 			if (currentTooltip != null && lastMousePos != null) {
 				Point2D pointsAt = canvas.getCamera().viewToLocal(lastMousePos);
 				tooltipHolder = new WordBubbleNode();
-				System.out.println("TooltipBehavior: showToolTip(): tooltipFlareVisible = " + tooltipFlareVisible);
+				//logger.debug("TooltipBehavior: showToolTip(): tooltipFlareVisible = " + tooltipFlareVisible);
 				tooltipHolder.setContents(currentTooltip);
 				tooltipHolder.setPointsAt(pointsAt);
 				tooltipHolder.setBubbleOffset(new Point2D.Double(0, canvas
@@ -164,19 +164,8 @@ public class TooltipBehavior implements ViewBehavior {
 	public void setTooltipFlareVisible(boolean tooltipFlareVisible) {
 		tooltipHandler.setTooltipFlareVisible(tooltipFlareVisible);
 		this.tooltipFlareVisible = tooltipFlareVisible;
-		System.out.println("TooltipBehavior: setTooltipFlareVisible: tooltipFlareVisible = " + tooltipFlareVisible);
+		//logger.debug("TooltipBehavior: setTooltipFlareVisible: tooltipFlareVisible = " + tooltipFlareVisible);
 	}
-
-	
-//	public TooltipBehavior(boolean tooltipFlareVisible) {
-//		System.out.println("TooltipBehavior: Constructor with boolean argument");
-//		this.tooltipFlareVisible = tooltipFlareVisible;		
-//	}
-
-//	public TooltipBehavior() {
-//		System.out.println("TooltipBehavior: Constructor without boolean argument");
-//
-//	}
 
 	public void install(LinkDatabaseCanvas canvas) {
 		this.canvas = canvas;
