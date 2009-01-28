@@ -14,7 +14,8 @@ A note was added to the file format drop down menu to say that gifs do not work 
 Features:
 
 Graph editor can now be configured to have no tooltips on 
-terms, or to have tooltips without flare.
+terms, or to have tooltips without flare. This feature has 
+been fully tested in both Mac OS X and WinXP. 
 
 
 
