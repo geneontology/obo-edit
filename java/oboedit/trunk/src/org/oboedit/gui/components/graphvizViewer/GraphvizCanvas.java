@@ -150,9 +150,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 		saveButton.setBackground(Preferences.defaultButtonColor());
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.add(Box.createHorizontalGlue());
-		buttonBox.add(modeList);
+	//	buttonBox.add(modeList);							//This option has been hidden as it was never fully implemented.
 		buttonBox.add(Box.createHorizontalStrut(10));
-		buttonBox.add(primaryFiltersCheckbox);
+	//	buttonBox.add(primaryFiltersCheckbox);				////This option has been hidden as it was never fully implemented.
 		buttonBox.add(Box.createHorizontalStrut(10));
 		buttonBox.add(saveButton);
 		buttonBox.add(Box.createHorizontalGlue());
@@ -487,15 +487,16 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected void populateSet(Set relationshipSet) {
 		
 		//logger.debug("GraphvizCanvas: populateSet() method.");
-
 		
-		if (mode.equals(SELECTED_ONLY)) {
-			populateSelectedOnly(relationshipSet);
-		} else if (mode.equals(SELECTED_TO_ROOT)) {
+//		if (mode.equals(SELECTED_ONLY)) {
+//			populateSelectedOnly(relationshipSet);			//These options are commented out as they were never fully implemented. 
+//		} else if (mode.equals(SELECTED_TO_ROOT)) {
+		
 			populateSelectedToRoot(relationshipSet);
-		} else if (mode.equals(MINIMAL_SELECTION_GRAPH)) {
-			populateMinimalSelectionGraph(relationshipSet);
-		}
+			
+//		} else if (mode.equals(MINIMAL_SELECTION_GRAPH)) {
+//			populateMinimalSelectionGraph(relationshipSet);
+//		}
 	}
 
 	protected void reloadImage() {
