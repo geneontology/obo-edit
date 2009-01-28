@@ -14,6 +14,7 @@ public class CandidateDefinition
 	private final int index;
 	private final String cachedURL;
 	private String definition;
+	private String definitionHTMLFormatted;
 	private boolean isTicked;
 	private boolean isVisible;
 	private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
@@ -26,9 +27,9 @@ public class CandidateDefinition
 	 * @param index
 	 * @param def
 	 */
-	public CandidateDefinition(int index, String def)
+	public CandidateDefinition(int index, String def, String defFormatted)
 	{
-		this(index, def, null, null, 0, false);
+		this(index, def, defFormatted, null, null, 0, false);
 	}
 
 	/**
@@ -39,9 +40,9 @@ public class CandidateDefinition
 	 * @param ur
 	 * @param cachedUR
 	 */
-	public CandidateDefinition(int index, String def, String ur, String cachedUR)
+	public CandidateDefinition(int index, String def, String defFormatted, String ur, String cachedUR)
 	{
-		this(index, def, ur, cachedUR, 0, false);
+		this(index, def, defFormatted, ur, cachedUR, 0, false);
 	}
 
 	/**
@@ -54,10 +55,11 @@ public class CandidateDefinition
 	 * @param termCount
 	 * @param select
 	 */
-	public CandidateDefinition(int index, String def, String ur, String cachedUR, int termCount, boolean select)
+	public CandidateDefinition(int index, String def, String defFormatted, String ur, String cachedUR, int termCount, boolean select)
 	{
 		this.index = index;
 		this.definition = def;
+		this.definitionHTMLFormatted = defFormatted;
 		this.url = ur;
 		this.cachedURL = cachedUR;
 		this.parentTermCount = termCount;
@@ -199,4 +201,20 @@ public class CandidateDefinition
 		for (UpdateListener l : listeners)
 			l.update();
 	}
+
+	/**
+     * @param definitionHTMLFormatted the definitionHTMLFormatted to set
+     */
+    public void setDefinitionHTMLFormatted(String definitionHTMLFormatted)
+    {
+	    this.definitionHTMLFormatted = definitionHTMLFormatted;
+    }
+
+	/**
+     * @return the definitionHTMLFormatted
+     */
+    public String getDefinitionHTMLFormatted()
+    {
+	    return definitionHTMLFormatted;
+    }
 }

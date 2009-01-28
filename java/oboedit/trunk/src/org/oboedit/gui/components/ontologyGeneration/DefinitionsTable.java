@@ -1,8 +1,6 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JTable;
@@ -26,11 +24,11 @@ public class DefinitionsTable extends JTable
 	{
 		super(new DefinitionsTableModel());
 		setGridColor(Color.LIGHT_GRAY);
-		setRowHeight(getRowHeight() + 4);
+		setRowHeight(getRowHeight() + 30);
 		getColumnModel().getColumn(0).setMaxWidth(50);
 		getColumnModel().getColumn(0).setResizable(false);
 		getColumnModel().getColumn(2).setMaxWidth(30);
-		tableHeader.setReorderingAllowed(true);
+		tableHeader.setReorderingAllowed(false);
 	}
 
 	/**
@@ -84,47 +82,101 @@ public class DefinitionsTable extends JTable
 		return (DefinitionsTableModel) super.getModel();
 	}
 
-	@Override
-	public String getToolTipText(MouseEvent e)
-	{
-		String tip = null;
-		StringBuffer toolTipBuffer = new StringBuffer();
+	// @Override
+	// public String getToolTipText(MouseEvent e)
+	// {
+	// String tip = null;
+	// StringBuffer toolTipBuffer = new StringBuffer();
+	//
+	// java.awt.Point p = e.getPoint();
+	// int rowIndex = rowAtPoint(p);
+	// int colIndex = columnAtPoint(p);
+	// int realColumnIndex = convertColumnIndexToModel(colIndex);
+	//
+	// if (realColumnIndex == 2) {
+	// setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	// String tempTip = getModel().getDefinitionAt(rowIndex).getUrl();
+	//
+	// if (tempTip.length() > 100) {
+	// toolTipBuffer.append("<html>");
+	// toolTipBuffer.append(tempTip.substring(0, tempTip.length() / 2));
+	// toolTipBuffer.append("<br>");
+	// toolTipBuffer.append(tempTip.substring((tempTip.length() / 2) + 1, tempTip.length() - 1));
+	// toolTipBuffer.append("</html>");
+	//
+	// tip = toolTipBuffer.toString();
+	// }
+	// else
+	// tip = tempTip;
+	//
+	// }
+	// else if (realColumnIndex == 1) {
+	// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	// tip = getModel().getDefinitionAt(rowIndex).getDefinition();
+	//
+	// }
+	// else {
+	// /*
+	// * You can omit this part if you know you don't have any renderer that supply their own tool tips.
+	// */
+	// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	// tip = super.getToolTipText(e);
+	// }
+	//
+	// return tip;
+	// }
 
-		java.awt.Point p = e.getPoint();
-		int rowIndex = rowAtPoint(p);
-		int colIndex = columnAtPoint(p);
-		int realColumnIndex = convertColumnIndexToModel(colIndex);
+	// // Returns the preferred height of a row.
+	// // The result is equal to the tallest cell in the row.
+	// public int getPreferredRowHeight(JTable table, int rowIndex, int margin)
+	// {
+	// // Get the current default height for all rows
+	// int height = table.getRowHeight(rowIndex);
+	// table.setAlignmentY(TOP_ALIGNMENT);
+	//
+	// // Determine highest cell in the row
+	// for (int c = 1; c < table.getColumnCount()-1; c++) {
+	// TableCellRenderer renderer = table.getCellRenderer(rowIndex, c);
+	// Component comp = table.prepareRenderer(renderer, rowIndex, c);
+	// int h = comp.getPreferredSize().height * margin;
+	// height = Math.max(height, h);
+	// }
+	// return height;
+	// }
+	//
+	// // The height of each row is set to the preferred height of the
+	// // tallest cell in that row.
+	// public void packRows(JTable table, int margin)
+	// {
+	// packRows(table, 0, table.getRowCount(), margin);
+	// }
+	//
+	// // For each row >= start and < end, the height of a
+	// // row is set to the preferred height of the tallest cell
+	// // in that row.
+	// public void packRows(JTable table, int start, int end, int margin)
+	// {
+	// for (int r = start; r < table.getRowCount() && r < end; r++) {
+	// // Get the preferred height
+	// int h = getPreferredRowHeight(table, r, margin);
+	//
+	// // Now set the row height using the preferred height
+	// if (table.getRowHeight(r) != h) {
+	// table.setRowHeight(r, h);
+	// }
+	// }
+	// }
 
-		if (realColumnIndex == 2) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			String tempTip = getModel().getDefinitionAt(rowIndex).getUrl();
+	// /**
+	// * TODO describe me!
+	// *
+	// * @see javax.swing.JTable#updateUI()
+	// */
+	// @Override
+	// public void updateUI()
+	// {
+	// super.updateUI();
+	// packRows(this, 2);
+	// }
 
-			if (tempTip.length() > 100) {
-				toolTipBuffer.append("<html>");
-				toolTipBuffer.append(tempTip.substring(0, tempTip.length() / 2));
-				toolTipBuffer.append("<br>");
-				toolTipBuffer.append(tempTip.substring((tempTip.length() / 2) + 1, tempTip.length() - 1));
-				toolTipBuffer.append("</html>");
-
-				tip = toolTipBuffer.toString();
-			}
-			else
-				tip = tempTip;
-
-		}
-		else if (realColumnIndex == 1) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			tip = getModel().getDefinitionAt(rowIndex).getDefinition();
-
-		}
-		else {
-			/*
-			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
-			 */
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			tip = super.getToolTipText(e);
-		}
-
-		return tip;
-	}
 }
