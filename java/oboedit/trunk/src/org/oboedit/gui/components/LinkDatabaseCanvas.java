@@ -1184,6 +1184,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		isLayingOut = true;
 		dim();
 		if (getDisableAnimations()) {
+			
 			int width = getWidth();
 			int height = getHeight();
 			if (width < 1)
@@ -1191,10 +1192,11 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			if (height < 1)
 				height = 1;
 			((ExtensibleRoot) getRoot()).setDisableUpdates(true);
-			layoutCacheImage = new BufferedImage(width, height,
-					BufferedImage.TYPE_INT_ARGB);
-			paint(layoutCacheImage.getGraphics());
-			repaint();
+			//layoutCacheImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);	//Commenting out this line stops the 
+																								//image from flashing on redraw.
+										
+			//paint(layoutCacheImage.getGraphics());   //If this line is commented out then only the graph subset of the window flashes on redraw
+			repaint();							       // and the component still works normally.
 		}
 		if (relayoutActivity != null) {
 			relayoutActivity.terminate(PActivity.TERMINATE_WITHOUT_FINISHING);
@@ -1231,12 +1233,10 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				fireRelayoutCompleteEvent();
 				decorateNode(getRoot(), getLayer(), decorators, true, true);
 				undim();
-//				if (!getDisableAnimations())
-				// If we don't repaint with animations disabled, it doesn't redraw properly.
-				// However (Jen will hate this) repainting may be making it blink. Note later: in fact it still blinks without this repaint.
-					repaint(); // Seems to help with the redrawing issues
+				repaint(); // This line stops the graph from appearing in a small box at the bottom righthand corner.
 			}
-
+			
+			
 			public void activityStarted(PActivity activity) {
 				// Collections.sort(getLayer().getChildrenReference(),
 				// LAYOUT_ORDERING_COMPARATOR);
