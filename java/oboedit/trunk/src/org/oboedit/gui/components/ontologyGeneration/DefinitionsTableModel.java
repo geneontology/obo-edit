@@ -75,7 +75,7 @@ public class DefinitionsTableModel extends AbstractTableModel
 				return definition.isTicked();
 			}
 			else if (columnIndex == 1) {
-				return definition.getDefinition();
+				return definition.getDefinitionHTMLFormatted();
 			}
 		}
 		return null;
