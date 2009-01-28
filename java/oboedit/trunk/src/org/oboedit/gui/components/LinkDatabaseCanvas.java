@@ -1176,6 +1176,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 	}
 
 	public void relayout() {
+		//logger.debug("LinkDatabaseCanvas: relayout(): blinks occurs here with no animation.");
 		if (linkDatabase == null)
 			return;
 //		logger.debug("LinkDatabaseCanvas.relayout"); // DEL
@@ -1232,7 +1233,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 				undim();
 //				if (!getDisableAnimations())
 				// If we don't repaint with animations disabled, it doesn't redraw properly.
-				// However (Jen will hate this) repainting may be making it blink.
+				// However (Jen will hate this) repainting may be making it blink. Note later: in fact it still blinks without this repaint.
 					repaint(); // Seems to help with the redrawing issues
 			}
 
