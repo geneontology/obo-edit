@@ -12,6 +12,7 @@ Bug Fixes:
 A note was added to the file format drop down menu to say that gifs do not work in Mac OS X.
 
 [ 1944842 ] graph editor flashing
+[ 2506816 ] graphviz save image
 
 
 Features:
