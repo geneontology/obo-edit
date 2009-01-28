@@ -655,14 +655,19 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// Shows the dialog to the user and wait for is answer
 			int userChoice = chooser.showSaveDialog(this);
 
-			// check the user answer, is he press "ok" continue in the if block
+			// check the user answer, if he press "ok" continue in the if block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				// //logger.debug("DEBUG : GraphPlugin : storeImage : temp file
-				// name = " + textFile.getAbsolutePath());
+//				logger.debug("DEBUG : GraphPlugin : storeImage : temp file" +
+//				 " name = " + textFile.getAbsolutePath());
+//				
+				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
 
 				// Creating the .dot file for graphviz
 				outputFile(textFile);
+				
+				removeDisjoints(textFile, noDisjointTextFile);
+
 
 				// Getting the selected file extension
 				ExtensionFilter ef = (ExtensionFilter) chooser.getFileFilter();
@@ -675,13 +680,13 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 					outputFile += ef.getExt();
 				}
 
-				// //logger.debug(configuration.getDotPath() + " -T"
-				// + ef.getExtNoDot() + " -o " + outputFile + " -v "
-				// + textFile.getPath());
+//				logger.debug(graphvizSettingsInstance.getDotPath() + " -T"
+//				 + ef.getExtNoDot() + " -o " + outputFile + " -v "
+//				 + textFile.getPath());
 				Process p = Runtime.getRuntime().exec(
 						graphvizSettingsInstance.getDotPath() + " -T" + ef.getExtNoDot()
-						+ " -o  " + outputFile + "  -v "
-						+ textFile.getPath());
+						+ " -o  " + "\"" + outputFile + "\"" + "  -v "
+						+ noDisjointTextFile.getPath());
 				/*
 				 * 		 The bug has been fixed by putting escaped quotes round the
 				 *	 output file
@@ -694,8 +699,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				 *	 This only matters because the command is run on the cmd line.
 				 *
 				 */
-				p.waitFor();
-
+				//p.waitFor(); //This line is making the programme hang by maxing out the 
+								//memory. This happens on windows only. 
 				textFile.delete();
 			}
 		} catch (Exception ex) {
