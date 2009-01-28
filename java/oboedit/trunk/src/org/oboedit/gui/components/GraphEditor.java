@@ -90,26 +90,26 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		protected boolean tooltipBubbleVisible = true;
 
 		public boolean getTooltipFlareVisible() {
-			logger.debug("GraphEditorConfiguration: getTooltipFlareVisible: " +
-					"tooltipFlareVisible = " + tooltipFlareVisible);
+			//logger.debug("GraphEditorConfiguration: getTooltipFlareVisible: " +
+					//"tooltipFlareVisible = " + tooltipFlareVisible);
 			return tooltipFlareVisible;
 		}
 
 		public void setTooltipFlareVisible(boolean tooltipFlareVisible) {
-			logger.debug("GraphEditorConfiguration: setTooltipFlareVisible: " +
-					"tooltipFlareVisible = " + tooltipFlareVisible);
+			//logger.debug("GraphEditorConfiguration: setTooltipFlareVisible: " +
+					//"tooltipFlareVisible = " + tooltipFlareVisible);
 			this.tooltipFlareVisible = tooltipFlareVisible;
 		}
 
 		public boolean getTooltipBubbleVisible() {
-			logger.debug("GraphEditorConfiguration: getTooltipBubbleVisible: " +
-					"tooltipBubbleVisible = " + tooltipBubbleVisible);
+			//logger.debug("GraphEditorConfiguration: getTooltipBubbleVisible: " +
+					//"tooltipBubbleVisible = " + tooltipBubbleVisible);
 			return tooltipBubbleVisible;
 		}
 
 		public void setTooltipBubbleVisible(boolean tooltipBubbleVisible) {
-			logger.debug("GraphEditorConfiguration: setTooltipBubbleVisible: " +
-					"tooltipBubbleVisible = " + tooltipBubbleVisible);
+			//logger.debug("GraphEditorConfiguration: setTooltipBubbleVisible: " +
+					//"tooltipBubbleVisible = " + tooltipBubbleVisible);
 			this.tooltipBubbleVisible = tooltipBubbleVisible;
 		}
 
@@ -118,7 +118,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 				String basicHTML, boolean b, long l, int i, String string,
 				String handlerID, boolean c, boolean d, String algorithmStr,
 				boolean e) {
-			logger.debug("GraphEditorConfiguration: Constructor without arguments");
+			//logger.debug("GraphEditorConfiguration: Constructor without arguments");
 
 		}
 
@@ -143,7 +143,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			super(termFilter, linkFilter, objectRenderers, linkRenderers,
 					basicHTML, showToolbar, toolbarPosition, dragActionID,
 					revert, live, rootAlgorithm);
-			logger.debug("GraphEditorConfiguration: Constructor with arguments");
+			//logger.debug("GraphEditorConfiguration: Constructor with arguments");
 			this.tooltipBubbleVisible = tooltipBubbleVisible;
 			this.tooltipFlareVisible = tooltipFlareVisible;
 			this.disableAnimations = disableAnimations;
@@ -235,7 +235,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	protected boolean revertToDefaultAction = false;
 
 	public ConfigurationPanel getConfigurationPanel() {
-		logger.debug("GraphEditor: getConfigurationPanel()");
+		//logger.debug("GraphEditor: getConfigurationPanel()");
 		return new OntologyEditorConfigEditor() {
 			protected JCheckBox animationsBox;
 			protected JSpinner animationDurationSpinner;
@@ -246,7 +246,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 			@Override
 			protected JComponent createGUIConfigPanel() {
-				logger.debug("GraphEditor: createGUIConfigPanel");
+				//logger.debug("GraphEditor: createGUIConfigPanel");
 				animationDurationSpinner = new JSpinner(new SpinnerNumberModel(
 						//										1000, 1, null, 100));
 						500, 1, null, 100));
@@ -300,7 +300,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			 */
 			@Override
 			public void commitConfig(OntologyEditorConfiguration c) {
-				logger.debug("GraphEditor: commitConfig");
+				//logger.debug("GraphEditor: commitConfig");
 				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
 				config.setDisableAnimations(!animationsBox.isSelected());
 				// For some reason, this doesn't seem to work.  Keeps getting reset to 1000!
@@ -318,7 +318,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 				
 				for (ViewBehavior viewBehavior : listOfAddedBehaviors) {
 					if (viewBehavior instanceof TooltipBehavior){
-						logger.debug("GraphEditor: commitConfig: viewBehavior = " + viewBehavior);
+						//logger.debug("GraphEditor: commitConfig: viewBehavior = " + viewBehavior);
 						currentTooltipBehavior = (TooltipBehavior) viewBehavior;
 					}
 					
@@ -347,10 +347,10 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			 */
 			@Override
 			protected void initConfig(OntologyEditorConfiguration c) {
-				logger.debug("GraphEditor: initConfig");					
+				//logger.debug("GraphEditor: initConfig");					
 				GraphEditorConfiguration config = (GraphEditorConfiguration) c;
 				animationsBox.setSelected(!config.getDisableAnimations());
-				//				logger.debug("initConfig: setting value of spinner to " + config.getLayoutDuration());
+				//				//logger.debug("initConfig: setting value of spinner to " + config.getLayoutDuration());
 				animationDurationSpinner.setValue(config.getLayoutDuration());
 				expandSelectionPathsBox.setSelected(config.isExpandPaths());
 				tooltipBubbleVisibleCheckBox.setSelected(config.getTooltipBubbleVisible());
@@ -362,13 +362,13 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	public GraphEditor(String id) {
 		this(id, new HierarchicalGraphLayout());
-		logger.debug("GraphEditor: Constructor");
+		//logger.debug("GraphEditor: Constructor");
 	}
 
 	public GraphEditor(String id, GraphLayout graphLayout) {
 		super(graphLayout);
 		this.id = id;
-		logger.debug("GraphEditor: Constructor with layout argument");
+		//logger.debug("GraphEditor: Constructor with layout argument");
 
 	}
 
@@ -385,7 +385,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 
 	protected void addDefaultBehaviors() {
-		logger.debug("GraphEditor: addDefaultBehaviors");
+		//logger.debug("GraphEditor: addDefaultBehaviors");
 		dragDropBehavior = new DragDropEditBehavior();
 		addViewBehavior(dragDropBehavior);
 		addViewBehavior(getRightClickBehavior());
@@ -401,9 +401,9 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 		//make this conditional on tooltipBubbleVisible being true. 
 		if(this.tooltipBubbleVisible){
 
-			logger.debug("GraphEditor: AddDefaultBehaviors, " +
-					"this.tooltipBubbleVisible = " + this.tooltipBubbleVisible);
-			logger.debug("GraphEditor: AddDefaultBehaviors, tooltipBehavior added.");
+			//logger.debug("GraphEditor: AddDefaultBehaviors, " +
+					//"this.tooltipBubbleVisible = " + this.tooltipBubbleVisible);
+			//logger.debug("GraphEditor: AddDefaultBehaviors, tooltipBehavior added.");
 			TooltipBehavior tooltipBehaviorObject = new TooltipBehavior();
 			tooltipBehaviorObject.setTooltipFlareVisible(tooltipFlareVisible);
 			addViewBehavior(tooltipBehaviorObject); 
@@ -424,10 +424,10 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 
 	protected void removeDefaultBehaviors() {
-		logger.debug("GraphEditor: removeDefaultBehaviors");
+		//logger.debug("GraphEditor: removeDefaultBehaviors");
 		Collection<ViewBehavior> temp = new LinkedList<ViewBehavior>(viewBehaviors);
 		for (ViewBehavior behavior : temp) {
-			logger.debug(behavior);
+			//logger.debug(behavior);
 
 		}
 		//removeViewBehavior(behavior);
@@ -446,7 +446,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	}
 
 	public void init() {
-		logger.debug("GraphEditor: init");
+		//logger.debug("GraphEditor: init");
 		setDropTarget(dropTarget);
 
 		GUIUtil.addReloadListener(reloadListener);
@@ -466,7 +466,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	}
 
 	public void cleanup() {
-		logger.debug("GraphEditor: cleanup()");
+		//logger.debug("GraphEditor: cleanup()");
 		super.cleanup();
 		setDropTarget(null);
 
@@ -481,12 +481,12 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	}
 
 	public JComponent getComponent() {
-		logger.debug("GraphEditor: getComponent()");
+		//logger.debug("GraphEditor: getComponent()");
 		if (panel == null) {
 			panel = new JPanel();
 			panel.setLayout(new BorderLayout());
 			panel.add(this, "Center");
-			logger.debug("GraphEditor: getComponent");
+			//logger.debug("GraphEditor: getComponent");
 			toolbar = new EditActionToolbar(panel, getDragDropEditBehavior()
 					.getInputListener(), false);
 			toolbar.setToolbarPosition(BorderLayout.SOUTH);
@@ -498,7 +498,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	 * XML settings file or used to initialize the configuration panel. 
 	 */
 	public ComponentConfiguration getConfiguration() {
-		logger.debug("GraphEditor: getConfiguration()");
+		//logger.debug("GraphEditor: getConfiguration()");
 		String algorithmStr = null;
 		if (getRootAlgorithm() == RootAlgorithm.STRICT)
 			algorithmStr = "STRICT";
@@ -535,7 +535,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	 */
 	public void setConfiguration(ComponentConfiguration config) {
 		if (config instanceof GraphEditorConfiguration) {
-			logger.debug("GraphEditor: setConfiguration()");
+			//logger.debug("GraphEditor: setConfiguration()");
 			GraphEditorConfiguration gec = (GraphEditorConfiguration) config;
 			//			setLinkFilter(gec.getLinkFilter());
 			//			setTermFilter(gec.getTermFilter());
@@ -550,9 +550,9 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			setTooltipFlareVisible(gec.getTooltipFlareVisible());
 			
 			if (tooltipBubbleVisible){
-				logger.debug("GraphEditor: setConfiguration, " +
-						"tooltipBubbleVisible is true.");
-				logger.debug("GraphEditor: setConfiguration, tooltipBehavior added.");
+				//logger.debug("GraphEditor: setConfiguration, " +
+						//"tooltipBubbleVisible is true.");
+				//logger.debug("GraphEditor: setConfiguration, tooltipBehavior added.");
 				TooltipBehavior tooltipBehaviorObject = new TooltipBehavior();
 				tooltipBehaviorObject.setTooltipFlareVisible(tooltipFlareVisible);
 				addViewBehavior(tooltipBehaviorObject); 
@@ -570,35 +570,35 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 			}
 			setRevertToDefaultAction(gec.isRevertToDefaultAction());
 			toolbar.setShowToolbar(gec.getShowToolbar());
-			logger.debug("GraphEditor.setConfig: NOT calling relayout"); // DEL
+			//logger.debug("GraphEditor.setConfig: NOT calling relayout"); // DEL
 			//			relayout();    // !Need?  Or does the caller always end up calling relayout() sooner or later anyway?
 		}
 	}
 
 	private void setTooltipFlareVisible(boolean tooltipFlareVisible) {
-		logger.debug("GraphEditor: setTooltipFlareVisible," +
-				" tooltipFlareVisible = " + tooltipFlareVisible);
+		//logger.debug("GraphEditor: setTooltipFlareVisible," +
+				//" tooltipFlareVisible = " + tooltipFlareVisible);
 		this.tooltipFlareVisible = tooltipFlareVisible;
 
 	}
 
 	private void setTooltipBubbleVisible(boolean tooltipBubbleVisible) {
-		logger.debug("GraphEditor: setTooltipBubbleVisible," +
-				" tooltipBubbleVisible = " + tooltipBubbleVisible);
+		//logger.debug("GraphEditor: setTooltipBubbleVisible," +
+				//" tooltipBubbleVisible = " + tooltipBubbleVisible);
 		this.tooltipBubbleVisible = tooltipBubbleVisible;
 
 	}
 
 	private boolean getTooltipFlareVisible() {
-		logger.debug("GraphEditor: getTooltipFlareVisible," +
-				" tooltipFlareVisible = " + tooltipFlareVisible);
+		//logger.debug("GraphEditor: getTooltipFlareVisible," +
+				//" tooltipFlareVisible = " + tooltipFlareVisible);
 		return tooltipFlareVisible;
 
 	}
 
 	private boolean getTooltipBubbleVisible() {
-		logger.debug("GraphEditor: getTooltipBubbleVisible," +
-				" tooltipBubbleVisible = " + tooltipBubbleVisible);
+		//logger.debug("GraphEditor: getTooltipBubbleVisible," +
+				//" tooltipBubbleVisible = " + tooltipBubbleVisible);
 		return tooltipBubbleVisible;		
 	}
 
