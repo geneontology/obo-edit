@@ -115,9 +115,9 @@ import org.oboedit.gui.event.SelectionListener;
 import org.oboedit.util.GUIUtil;
 
 import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub;
-import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.Definitions;
-import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.GetDefinitionsFromWeb;
-import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.GetDefinitionsFromWebResponse;
+import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.DefinitionContainer;
+import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.GetDefinitions;
+import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.GetDefinitionsResponse;
 import de.tud.biotec.gopubmedOntologyLookupService.OntologyLookupManagerPortTypeProxy;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupResult;
@@ -1264,47 +1264,23 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					if (defAreaText.contains("----See Newly Generated Definition Below-----")) {
 						defString.append("\n");
 						defString.append(definition.getDefinition().trim());
-						defString.append("\n");
-						defString.append("  ");
-						defString.append("(");
-						defString.append(definition.getUrl());
-						defString.append(")");
-						defString.append("\n");
-
 					}
 					else {
 						defString.append("----See Newly Generated Definition Below-----");
 						defString.append("\n");
 						defString.append(definition.getDefinition().trim());
-						defString.append("\n");
-						defString.append("  ");
-						defString.append("(");
-						defString.append(definition.getUrl());
-						defString.append(")");
-						defString.append("\n");
 
 					}
 				}
 				else {
 					if (defAreaText.length() == 0) {
+						defString.append("\n");
 						defString.append(definition.getDefinition().trim());
-						defString.append("\n");
-						defString.append("  ");
-						defString.append("(");
-						defString.append(definition.getUrl());
-						defString.append(")");
-						defString.append("\n");
 					}
 					else {
 						defString.append(defAreaText.trim());
 						defString.append("\n");
 						defString.append(definition.getDefinition().trim());
-						defString.append("\n");
-						defString.append("  ");
-						defString.append("(");
-						defString.append(definition.getUrl());
-						defString.append(")");
-						defString.append("\n");
 					}
 				}
 				editDefArea.setText(defString.toString());
@@ -2674,7 +2650,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	/**
 	 * Worker to invoke the {@link GoPubMedDefinitionGeneratorStub} in a separate thread
 	 */
-	private class DefinitionGenerationServiceWorker extends SwingWorker<Definitions[], Void>
+	private class DefinitionGenerationServiceWorker extends SwingWorker<DefinitionContainer[], Void>
 	{
 		private String qTerm = new String();
 		private final String[] parents;
@@ -2702,20 +2678,20 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		}
 
 		@Override
-		public Definitions[] doInBackground()
+		public DefinitionContainer[] doInBackground()
 		{
 			// Reset the cursor in waite mode
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			this.setProgress(0);
-			Definitions[] defs = null;
+			DefinitionContainer[] defs = null;
 			try {
-				GetDefinitionsFromWeb query = new GoPubMedDefinitionGeneratorStub.GetDefinitionsFromWeb();
+				GetDefinitions query = new GoPubMedDefinitionGeneratorStub.GetDefinitions();
 				String[] termLabels = { qTerm };
 				query.setApplicationCode(PLUGIN_VERSIONED_NAME);
 				query.setTermLabels(termLabels);
 				query.setKnownTerms(parents);
-				GetDefinitionsFromWebResponse response = definitionGeneratorStub.getDefinitionsFromWeb(query);
+				GetDefinitionsResponse response = definitionGeneratorStub.getDefinitions(query);
 				defs = response.get_return();
 			}
 			catch (Exception exception) {
@@ -2731,7 +2707,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		public void done()
 		{
 			List<CandidateDefinition> defList = new ArrayList<CandidateDefinition>();
-			Definitions[] defs = null;
+			DefinitionContainer[] defs = null;
 			try {
 				defs = get();
 			}
@@ -2750,10 +2726,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 			if (defs != null) {
 				int index = 0;
-				for (final Definitions def : defs) {
+				for (final DefinitionContainer def : defs) {
 					if (def != null) {
 						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
-						    .getDefinition(), def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+						    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
 						index++;
 						candidateDefinition.addListener(new UpdateListener()
 						{
