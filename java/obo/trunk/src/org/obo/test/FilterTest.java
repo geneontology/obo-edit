@@ -11,6 +11,7 @@ import org.obo.filters.CategorySearchCriterion;
 import org.obo.filters.EqualsComparison;
 import org.obo.filters.Filter;
 import org.obo.filters.IsCompleteLinkCriterion;
+import org.obo.filters.IsImpliedLinkCriterion;
 import org.obo.filters.LinkFilter;
 import org.obo.filters.LinkFilterFactory;
 import org.obo.filters.ObjectFilter;
@@ -120,6 +121,21 @@ public class FilterTest extends AbstractOBOTest {
 		
 		// set both child and parent tags
 
+
+	}
+	
+	public void testIsImpliedFilter() {
+		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
+		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
+		ofilter = (ObjectFilter)off.createNewFilter();
+		ofilter.setCriterion(new IsImpliedLinkCriterion());
+		lfilter = (LinkFilter)lff.createNewFilter();
+		lfilter.setAspect(LinkFilter.SELF);
+		lfilter.setFilter(ofilter);
+		Collection<Link> matches = filterLinks(lfilter);
+		logger.info(lfilter+" N_matches: "+matches.size());
+
+		assertTrue(matches.size() == 2);
 
 	}
 
