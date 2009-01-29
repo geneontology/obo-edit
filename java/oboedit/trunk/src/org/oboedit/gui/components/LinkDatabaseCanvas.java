@@ -504,7 +504,8 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			remove(internalFrame);
 			internalFrame.dispose();
 			internalFrame = null;
-//			repaint();  // ! Need?
+			repaint();  // This repaint is needed so that dialog boxes containing lists of child terms close cleanly when the 'X' is pressed
+						// in non-animated mode in the Graph Editor.
 		}
 	}
 
@@ -1194,6 +1195,9 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 			((ExtensibleRoot) getRoot()).setDisableUpdates(true);
 			//layoutCacheImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);	//Commenting out this line stops the 
 																								//image from flashing on redraw.
+			
+			//Note: this flashing should be controlled by double buffering, but double buffering is apparently automatically added when
+			//a graphic is displayed as part of a swing component. http://www.iam.ubc.ca/guides/javatut99/2d/images/doublebuffering.html
 										
 			//paint(layoutCacheImage.getGraphics());   //If this line is commented out then only the graph subset of the window flashes on redraw
 			repaint();							       // and the component still works normally.
