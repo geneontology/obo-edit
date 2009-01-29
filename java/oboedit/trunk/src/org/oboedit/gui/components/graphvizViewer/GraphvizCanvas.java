@@ -680,29 +680,23 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				if (!outputFile.endsWith(ef.getExt())) {
 					outputFile += ef.getExt();
 				}
+				
+				//An array is used because if the path is presented as a string and there are spaces
+				// in directory names then windows assumes that the path ends at the first space.
+				String[] cmd ={graphvizSettingsInstance.getDotPath(),
+			               "-T", ef.getExtNoDot(),
+			               "-o", outputFile, "-v", noDisjointTextFile.getPath()};
+				
+				//for (int i = 0; i < cmd.length; i++) {
+				//	logger.debug(cmd[i]);
+				//}
+				
+				Process p = Runtime.getRuntime().exec(cmd);
 
-//				logger.debug(graphvizSettingsInstance.getDotPath() + " -T"
-//				 + ef.getExtNoDot() + " -o " + outputFile + " -v "
-//				 + textFile.getPath());
-				Process p = Runtime.getRuntime().exec(
-						graphvizSettingsInstance.getDotPath() + " -T" + ef.getExtNoDot()
-						+ " -o  " + "\"" + outputFile + "\"" + "  -v "
-						+ noDisjointTextFile.getPath());
-				/*
-				 * 		 The bug has been fixed by putting escaped quotes round the
-				 *	 output file
-				 *	 string because the 'Documents and Settings' path in
-				 *	 the save instructions was being confused by the spaces and
-				 *	 was saving to path/Documents which doesn't exist.
-				 *	 C:\Program Files\ATT\Graphviz\bin\dot.exe -Tjpg -o
-				 *	 C:\Documents and Settings\Jennifer Clark\Desktop\fish.jpg -v
-				 *	 C:\DOCUME~1\JENNIF~1\LOCALS~1\Temp\graphtext12278.txt
-				 *	 This only matters because the command is run on the cmd line.
-				 *
-				 */
 				//p.waitFor(); //This line is making the programme hang by maxing out the 
 								//memory. This happens on windows only. 
 				textFile.delete();
+				noDisjointTextFile.delete();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
