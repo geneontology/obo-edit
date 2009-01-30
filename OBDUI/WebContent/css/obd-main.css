@@ -357,6 +357,22 @@ table.genotypeScores td.blank{
     background-color:#acacac;
 }
 
+table.nodeList td.primaryHighlight{
+    //font-weight:bold;
+    background-color:#FF9999;
+}
+table.nodeList span.primaryHighlight{
+    //font-weight:bold;
+    background-color:#FF9999;
+}
+
+table.nodeList span.score {
+	font-size:9px;
+}
+table.nodeList span.exactMatch {
+	font-weight:bold;
+}
+
 table.genotypeScores td.primaryHighlight{
     padding:2px;
     width:40px;
@@ -384,7 +400,7 @@ table.intersectionPairTable th.set1{
     padding:10px;
     width:40px;
     background-color:#FFF6F6;
-    width:50%;
+    width:40%;
     font-size:12px;
 }
 
@@ -392,7 +408,7 @@ table.intersectionPairTable th.set2{
     padding:10px;
     width:40px;
     background-color:#F6F6FF;
-    width:50%;
+    width:40%;
     font-size:12px;
     border-left:1px dotted #AAAAAA;
 }
@@ -407,6 +423,7 @@ table.intersectionPairTable th.scoringSummary{
 table.intersectionPairTable td.common{
     padding:2px;
     background-color:#FFEEFF;
+    vertical-align:top;
     border: 1px dotted #AAAAAA;
     border-bottom:none;
 }
