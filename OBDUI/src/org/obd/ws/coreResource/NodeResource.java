@@ -507,7 +507,7 @@ public class NodeResource extends OBDResource {
 	protected SimpleHash decomposeNode(CompositionalDescription cd){
 		SimpleHash nodeHash = new SimpleHash();
 		//System.out.print("Trying to decompose: " + cd.toString() + ".....");
-		if (cd.isGenusDifferentia()){
+		if (cd.isGenusDifferentia() && cd.getGenus() != null){
 			//System.out.println("Is GD.");
 			Node subjectNode = this.getShard(dataSource).getNode(cd.getGenus().getNodeId());
 			if (subjectNode != null && subjectNode.getLabel() != null){
