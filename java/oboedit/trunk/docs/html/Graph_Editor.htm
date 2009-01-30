@@ -11,29 +11,129 @@
 graphical way to browse and edit your ontology.  The terms in your ontology are
 shown as nodes in the graph, and the relationships form the links.
 </p>
-<p><IMG hspace=0 src="../images/graph_editor.png" border=0></p>
-<p>[NEED MORE TEXT]</p>
-<p>[Mention detachable toolbar]</p>
+<p><IMG src="../images/graph_editor_whole_window.png"></p>
+<p>A small section of ontology appears as a series of boxes 
+representing terms, and lines representing relationships. If you mouse over a 
+term, then a number of small blue icons will appear in the corners, and a red 
+icon will appear at the bottom in the center. If you click the red icon that 
+term will no longer be shown in the view.</p>
+<p><IMG src="../images/graph_editor_term_controls.png"></p>
+<p>If you click on&nbsp;either of the blue icons in the top corners then a menu 
+will&nbsp;appear showing a list of all parent terms. If you check the box next 
+to the name of&nbsp; parent term then this term will be shown in the view. If 
+you click on either of the blue icons in the bottom corners then you will be 
+offered the list of child terms. If there blue corner icons are grayed out then 
+it means that there are no other children or parents. </p>
+<p><IMG src="../images/graph_editor_parent_or_child_menu.png"></p>
+<p>If you do not have the reasoner turned on, then opening a new child or parent 
+term will open only that term. The full path to the root will not be opened. This 
+applies both to implied and realized links. Even if the links are included in 
+your ontology file, the full path will not automatically be shown unless the 
+reasoner is on. </p>
+<p><IMG src="../images/graph_editor_expansion_without_reasoner.png"></p>
+<p>If you turn on the reasoner then the full path to the root will be shown. The 
+dashed lines indicate the relationships that have been filled in by the 
+reasoner. </p>
+<p><IMG src="../images/graph_editor_expansion_with_reasoner.png"></p>
+<p>&nbsp;</p>
+<p>If you do not wish to run the reasoner then you can just use the menus to 
+select all of the terms that are needed to work up the graph as far as the root. 
+</p>
+<p><IMG src="../images/graph_editor_full_manual_expansion.png"></p>
+<p>Right-clicking on one of the blue icons gives a menu of editing and display 
+options. <IMG src="../images/graph_editor_right_cick.png"></p>
+<p>&nbsp;</p>
+<p>There are a number of other controls and navigation aids available. All are 
+visible in the window below.</p>
+<p><IMG src="../images/graph_editor_whole_window.png"></p>
+<p><strong>Zooming</strong>: The blue vertical bar in the top left of the white 
+area is a zoom control. If you click at the top or bottom of this then graph 
+will zoom in or out.</p>
+<p><strong>Whole page view</strong>: The blue box in the bottom right of the 
+white window is a navigation aid that gives a view of the entire open graph. 
+This enables you find out where you are in the graph if you are viewing a very 
+large number of terms. This small window can be made larger by dragging the 
+small circles round the edges. </p>
+<p><strong>Toolbar</strong>: The 
+toolbar at the top of the component contains a number of editing controls. 
+Dragging the grey bar at the left of the toolbar will cause it 
+to become free-floating. From left to right the controls are:</p>
+<ul>
+  <li><strong>Drag and drop tool</strong> - Select terms or links. Selected terms are outlined in a broad 
+  light blue line, and selected links are shown with a broad light blue line.) Drag terms onto other terms to create new links, move terms or 
+  merge terms, or right-click for a popup menu of edits. Double-click or 
+  shift-double-click to modify the selection. Drag with the middle mouse button 
+  to rubber band select. 
+  <li><strong>Link creation tool</strong> - Click and drag 
+  to create new links between terms. If a group of terms is selected and the 
+  drag is initiated from one of the selected terms, links will be added between 
+  all selected terms and the target term. 
+  <li><strong>Node creation tool </strong>- Click an existing term to add a new 
+  is_a child. Click on empty space to create a new root term. 
+  <li><strong>Eraser tool</strong> - Click an existing term or link (or group of 
+  selected terms and links) to delete them. 
+  <li><strong>Clone tool</strong> - Click an existing term (or group of selected 
+  terms) to create clones of the target term(s).</li></ul>
+<h2>User interface configuration</h2>
+<p>The Graph Editor is configured via the wrench icon in the top right of the 
+component. </p>
+
+<p><IMG src="../images/graph_editor_gui_configuration.png"></p>
+<p>Many of the configuration options are similar to those 
+in the Ontology Tree Editor and will be covered elsewhere. However, the GUI 
+settings are specific to the Graph Editor. Briefly, the controls are as 
+follows:</p>
+<UL>
+  <li><strong>Show toolbar</strong>: 
+  Controls under what circumstances the hotkey menu will appear. 
+  <li><strong>Enable animations</strong>: Turns off and on the animation of graph rearrangements. 
+  <li><strong>Animation duration</strong>: Controls the speed at which animations occur. 
+  <li><strong>Expand full path</strong>: Causes the full path to root to be expanded when a new term is 
+  selected. 
+  <li><strong>Tooltips</strong>         
+   : Gives the option of showing or hiding tooltips, and of showing tooltips with 
+  or without the flare. The flare is the line from the cursor to the tooltip that makes the tooltip resemble a speech bubble. 
+  </li></UL>
+<H2>Tooltips for explanation</H2>
+<P>Hovering over one of the control icons on a term will cause a tooltip to 
+appear with information about the effect of the icon. This is show below, with 
+and without the flare option.</P>
+<P><IMG src="../images/graph_editor_tooltips_with_flare.png"></P>
+<p><IMG src="../images/graph_editor_tooltips_without_flare.png"></p>
+<P>&nbsp;</P>
+<H2>Explanation component versus Graph Editor tooltips</H2>
+<P>On hovering over&nbsp;a link, a tooltip will appear to show why the link is 
+there. Many links are added by curators, but some are added by the reasoner. 
+In&nbsp;the latter case the logic behind the addition will be shown. The same 
+information is also shown in the separate Explanation Component, giving a wider 
+range of viewing styles, and the option of cutting and pasting the explanations. 
+The explanation component is only available if the reasoner is running. </P>
+
+
+
+<p>&nbsp;</p>
+<P><IMG src="../images/explanation_options.png"></P>
 
 <h2>Tip: getting "regulates" links to show up</h2>
 <p>Users sometimes ask how to get regulates links to show up in the Graph Editor.  The answer is that earlier versions (pre-b34) of OBO-Edit2 came with a built-in link filter that showed only transitive links (which the "regulates" links are not).  Even if you have installed later versions of OBO-Edit2, that filter is stored in your user configuration.
 </p><p>
 To fix this, open the Global Filters component and select "Link filters".  If you have that transitive filter, you will see it:
 </p><p>
-<img src="../images/global-link-filter.png" border=0>
+<IMG src="../images/global-link-filter.png" border=0>
 </p><p>
 Use the "-" button to remove that filter and click "Save Changes".  You will then need to quit and restart OBO-Edit in order to see the regulates links.  (This is a bug--global filter changes should take effect immediately, but they don't always.)
 Once you remove that "is transitive" filter and restart, you should see the regulates links:
 </p><p>
-<img src="../images/regulates-links.png" border=0>
+<IMG src="../images/regulates-links.png" border=0>
 </p>
 <p>
-If you don't like the regulates icons or colors, you can change them in the "Icons & Colors" tab of the <a href="Configuration_Manager.htm#icons">Configuration Manager</a>.
+If you don't like the regulates icons or colors, you can change them in the "Icons &amp; Colors" tab of the <A href="Configuration_Manager.htm#icons">Configuration Manager</a>.
 </p>
 
 <div class="sidebar">
 <h1>Detangling the Graph Editor display by hiding disjoint_from links</h1>
 <hr>
+
 <p>
 If your ontology has a lot of "disjoint_from" links, the graph display can
 become rather tangled.  You can detangle it somewhat by adding a link filter
@@ -42,7 +142,7 @@ those links:  "Select links where Type that don't have a ID that equals the valu
 disjoint_from"
 or, in the syntax at the bottom of the link search panel, <code>link.type(id NOT equals "disjoint_from")</code>.
 </p>
-<P><IMG hspace=0 src="../images/disjoint-from-link-filter.png" border=0></P>
+<p><IMG hspace=0 src="../images/disjoint-from-link-filter.png" border=0></p>
 <p>The drawback of adding this link filter is that any time you perform an ontology
 edit (for example, using the Text Editor to change the wording of a definition
 or add a dbxref), OBO-Edit runs all the link filters, and this "disjoint_from"
@@ -52,7 +152,9 @@ ontology takes 13 seconds to commit.  We suggest that you use this filter only
 when necessary, and don't save it as a global link filter that will be applied
 every time you open OBO-Edit.
 </p>
-</div>
+</div></FONT></FONT>
+
+
 
 </body>
 </html>
