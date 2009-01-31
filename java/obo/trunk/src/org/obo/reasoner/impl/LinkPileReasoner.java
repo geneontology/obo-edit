@@ -250,6 +250,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 
 	@Override
 	protected void doAddLink(Link link) {
+		logger.debug("LinkPileReasoner.doAddLink");
 		linkPile.add(link);
 		if (storeGivenLinks) {
 			addExplanation(new GivenExplanation(link));

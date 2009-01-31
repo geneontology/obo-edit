@@ -33,8 +33,10 @@ public class DefaultLinkDatabase extends AbstractLinkDatabase implements LinkDat
 	public Collection<IdentifiedObject> getObjects() {
 		if (session == null)
 			return Collections.EMPTY_SET;
-		else
+		else{
 			return session.getObjects();
+		}
+			
 	}
 
 	public Collection<OBOProperty> getProperties() {

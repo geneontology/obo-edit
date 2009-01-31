@@ -16,6 +16,7 @@ import org.obo.history.TermSubsetHistoryItem;
 import org.obo.identifier.IDProfile;
 import org.obo.query.QueryResolver;
 import org.obo.query.impl.DefaultQueryResolver;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.TermUtil;
 
 public interface OBOSession extends IdentifiedObjectIndex, Serializable {
