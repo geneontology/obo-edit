@@ -1537,6 +1537,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		setCursor(Cursor.getDefaultCursor());
 	}
 
+	//AA
 	public void updateDatasources() {
 		LinkDatabase newLinkDB = SessionManager.getManager().getReasoner();
 		if (newLinkDB == null)
