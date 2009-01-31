@@ -241,8 +241,7 @@ public class FilterComponent extends JPanel {
 			}
 
 		});
-		// Not needed--called by addListeners
-//		SelectionManager.getManager().addSelectionListener(listener);
+
 		ActionListener actionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fireActionEvent(e);

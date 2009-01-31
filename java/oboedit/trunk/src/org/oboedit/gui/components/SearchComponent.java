@@ -25,11 +25,13 @@ import org.bbop.util.TaskDelegate;
 import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.filters.Filter;
 import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.QueryEngine;
 import org.obo.query.impl.FilterQuery;
 import org.obo.query.impl.SearchHit;
+import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.FilterComponent;
@@ -44,6 +46,7 @@ public class SearchComponent extends AbstractGUIComponent {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(SearchComponent.class);
+	protected FilteredLinkDatabase filteredLinkDatabase;
 
 	public static enum ResultLabelType {
 		RESULT_COUNT {
@@ -101,7 +104,7 @@ public class SearchComponent extends AbstractGUIComponent {
 			this.shortenResultsDesc = shortenResultsDesc;
 		}
 
-	        public String getLabelType() {
+		public String getLabelType() {
 			return labelType;
 		}
 
@@ -133,26 +136,26 @@ public class SearchComponent extends AbstractGUIComponent {
 					true);
 			protected JComboBox resultLabelDropdown = new JComboBox();
 
-			    {
+			{
 				for (ResultLabelType type : ResultLabelType.values()) {
 					resultLabelDropdown.addItem(type);
 				}
 				setLayout(new BorderLayout());
 				add(shortenResultsBox, "North");
 				resultLabelDropdown.setMaximumSize(
-				    new Dimension(Integer.MAX_VALUE, resultLabelDropdown.getPreferredSize().height));
+						new Dimension(Integer.MAX_VALUE, resultLabelDropdown.getPreferredSize().height));
 
 				Box resultPanel = Box.createHorizontalBox();
 				resultPanel.add(new JLabel(
-						"End title of search results panels with: "));
+				"End title of search results panels with: "));
 				resultPanel.add(resultLabelDropdown);
 				add(resultPanel, "Center");
-			    }
+			}
 
 			@Override
 			public void commit() {
 				SearchConfig config = (SearchConfig) getComponent()
-						.getConfiguration();
+				.getConfiguration();
 				config.setShortenResultsDesc(!shortenResultsBox.isSelected());
 				config.setLabelType(((ResultLabelType) resultLabelDropdown
 						.getSelectedItem()).name());
@@ -162,7 +165,7 @@ public class SearchComponent extends AbstractGUIComponent {
 			@Override
 			public void init() {
 				SearchConfig config = (SearchConfig) getComponent()
-						.getConfiguration();
+				.getConfiguration();
 				shortenResultsBox.setSelected(!config.isShortenResultsDesc());
 				resultLabelDropdown.setSelectedItem(config.getRealizedType());
 			}
@@ -173,7 +176,7 @@ public class SearchComponent extends AbstractGUIComponent {
 	@Override
 	public ComponentConfiguration getConfiguration() {
 		return new SearchConfig(isShortenResultsDesc(), getLabelType(),
-					component.getFilter());
+				component.getFilter());
 	}
 
 	public void setConfiguration(ComponentConfiguration config) {
@@ -215,8 +218,27 @@ public class SearchComponent extends AbstractGUIComponent {
 		QueryEngine engine = SessionManager.getManager().getQueryEngine();
 		final Filter filter = component.getFilter();
 		Class<?> resultType = factory.getResultType();
-		LinkDatabase linkDatabase = SessionManager.getManager()
-				.getCurrentLinkDatabase();
+		LinkDatabase linkDatabase = null;
+
+		if(filter.toString().equals("Link has Is implied")){
+//			logger.debug("Search component - IsImplied link search");
+			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
+
+/** 
+ * is_implied search fails to retrive ReasonedLinkDB.. fix is calling ReasonedDB in IsImpliedLinkCriterion.
+ * Leaving this in here to test some more.
+ * 			linkDatabase = SessionManager.getManager()
+			.getCurrentLinkDatabase();
+			linkDatabase = SessionManager.getManager().getCurrentFullLinkDatabase();
+			linkDatabase = new TrimmedLinkDatabase(linkDatabase);
+			filteredLinkDatabase.setLinkFilter(filter);
+			linkDatabase = new TrimmedLinkDatabase(filteredLinkDatabase);
+ * */			
+		}else {
+			linkDatabase = SessionManager.getManager()
+			.getCurrentLinkDatabase();
+		}
+
 		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(
 				linkDatabase, new FilterQuery(filter, resultType,
 						SessionManager.getManager()
@@ -226,7 +248,7 @@ public class SearchComponent extends AbstractGUIComponent {
 			public void run() {
 				String desc = "";
 				if (labelType.equals(ResultLabelType.QUERY_NAME))
-				    desc = " " + FilterUtil.getOBOFilterExpression(filter) +
+					desc = " " + FilterUtil.getOBOFilterExpression(filter) +
 					// By request, putting the # of matches back in the search results description
 					" (" + task.getResults().size() + " matches)";
 				else if (labelType.equals(ResultLabelType.RESULT_COUNT)) {
@@ -237,10 +259,10 @@ public class SearchComponent extends AbstractGUIComponent {
 						+ desc;
 				String id = ComponentManager.getManager().showComponent(
 						ComponentManager.getManager().getFactory(
-								"SEARCH_RESULTS"), SearchComponent.this, title,
+						"SEARCH_RESULTS"), SearchComponent.this, title,
 						false);
 				SearchResultsComponent src = (SearchResultsComponent) ComponentManager
-						.getManager().getActiveComponent(id);
+				.getManager().getActiveComponent(id);
 				src.setFactory(factory);
 				src.setResults(task.getResults());
 				ComponentManager.getManager().focusComponent(src);
