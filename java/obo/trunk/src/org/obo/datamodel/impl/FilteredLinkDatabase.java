@@ -178,6 +178,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 		this.termFilter = termFilter;
 	}
 
+	// getting objects for global filters
 	public IdentifiedObject getObject(String id) {
 		IdentifiedObject out = linkDatabase.getObject(id);
 		if (out == null)

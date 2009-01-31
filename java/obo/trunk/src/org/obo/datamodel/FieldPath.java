@@ -252,8 +252,14 @@ public class FieldPath {
 			LinkDatabase linkDatabase) {
 		List<IteratorFactory> factories = new LinkedList<IteratorFactory>();
 		factories.add(new FieldPathRootIteratorFactory(linkDatabase));
+//		logger.debug("FieldPath path.elements.size(): " + path.elements.size());
 		for (FieldPathElement elt : path.elements) {
-			factories.add(new FieldPathElementIteratorFactory(elt));
+			try{
+				factories.add(new FieldPathElementIteratorFactory(elt));
+			} catch(Exception e){
+				logger.debug("caught exception while adding new FieldPathElement: " + e);
+			}
+
 		}
 		return new SuperCollection<IdentifiedObject, FieldPath>(path
 				.getObject(), factories);
