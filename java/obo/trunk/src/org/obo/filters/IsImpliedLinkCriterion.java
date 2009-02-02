@@ -21,7 +21,7 @@ public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 	}
 
 	public ReasonedLinkDatabase getReasoner() {
-		logger.debug("reasoner: " + reasoner);
+//		logger.debug("reasoner: " + reasoner);
 		return reasoner;
 	}
 
@@ -33,7 +33,7 @@ public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 	 * Condition below forces a check on these links to see if they are inded not present in the ReasonedLinkDatabase. 
 	 * */
 	public boolean matches(Link o) {
-		if (o instanceof Link && !(o.isImplied())){
+		if (o instanceof Link && getReasoner() != null && !(o.isImplied())){
 			Link link = o;
 			for (OBOProperty oboProp : reasoner.getProperties()) {
 				Collection<Link> reasonerLinks = reasoner.getLinks(oboProp);
@@ -45,7 +45,7 @@ public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 			}
 			return false;
 		} else{
-			logger.debug("((Impliable) o).isImplied(): " + ((Impliable) o).isImplied());
+//			logger.debug("((Impliable) o).isImplied(): " + ((Impliable) o).isImplied());
 			return ((Impliable) o).isImplied();
 		}
 	}
