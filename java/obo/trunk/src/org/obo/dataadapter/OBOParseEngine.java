@@ -374,8 +374,14 @@ public class OBOParseEngine extends AbstractParseEngine {
 					getNestedValue(nv, trailing, 0);
 				} else
 					valueStopIndex = lineEnd;
+				String value = null;
+				try{
+					value = line.substring(pair.index + 1, valueStopIndex);
+				} catch (Throwable t){
+					throw new OBOParseException("Invalid string index",
+							getCurrentPath(), line, linenum);
+				}
 
-				String value = line.substring(pair.index + 1, valueStopIndex);
 				/*
 				 * if (nv != null) logger.info("nv = "+nv+", value =
 				 * |"+value+"|");

@@ -30,7 +30,7 @@ public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 	 * [AA] fix for is_implied search in LinkSearchPanel
 	 * ((Impliable) link).isImplied() returns true only when checking condition through global filters where the LinkDatabaseCanvas gets FilteredLinkDatabase which sets these as reasoner made links.
 	 * While searching for is_implied through the SearchComponent the OBORestrictionLinks have is_implied false (something weird going on with DefaultQueryResolver getting the LinkDatabase from the session..tried passing the ReasonedLinkDB there..implied still set to false on OBORestriction links )
-	 * Condition below forces a check on these links to see if they are inded not present in the ReasonedLinkDatabase. 
+	 * Condition below forces a check on these links to see if they are indeed not present in the ReasonedLinkDatabase. 
 	 * */
 	public boolean matches(Link o) {
 		if (o instanceof Link && getReasoner() != null && !(o.isImplied())){
