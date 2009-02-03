@@ -484,11 +484,10 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	protected boolean runChecksAndCommit() {
 //		logger.debug("runChecksAndCommit: object = " + currentObject + ", hasChanges = " + hasChanges()); // DEL
-
 		if (currentObject == null || !hasChanges())
 			return true;
 		PostcompUtil.getNameExpression(currentObject, true);
-		// Why do we have to clone it?  I guess in case the user decides not to commit?
+
 		IdentifiedObject clone = (IdentifiedObject) currentObject.clone();
 		populateFields(clone);
 		Collection<CheckWarning> warnings = VerificationManager.getManager()
@@ -527,19 +526,21 @@ RootTextEditComponent, SelectionDrivenComponent {
 			/**  Fix for case when user is in manual commit mode and is using the Dbxref Library 
 			 * to add multiple dbxrefs and def dbxrefs to terms. In this case autocommit is forcefully enforced 
 			 * - required as the changes for all terms are not propagated w/o commit.
-			 * This is a temporary fix while investigating similar featue request*/
-			else if(this.dirtyPaths.size() >0 && this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
-				autocommit();
+			 * This is a temporary fix while investigating similar feature request - ideally the items would be cached for multiple terms till the user decides to commit
+			 * although this keeps things simple at the moment.*/
+			else if(!Preferences.getPreferences().getAutoCommitTextEdits() && this.dirtyPaths.size() > 0){
+				if(this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[Definition dbxref]") || this.dirtyPaths.get(0).getSpec().toString().equalsIgnoreCase("[General dbxref]")){
+					installAutocommitListener();
+					autocommit();
+				}
 			}
-			else if (Preferences.getPreferences()
-					.getWarnBeforeDiscardingEdits()
-					&& hasChanges()) {
+			else if (Preferences.getPreferences().getWarnBeforeDiscardingEdits() && hasChanges()) {
 				int val = JOptionPane.showConfirmDialog(GUIManager.getManager()
 						.getFrame(), "There are uncommitted text edits.\n"
 						+ "Discard these edits?", "Pending edits",
 						JOptionPane.YES_NO_OPTION);
 				return val == JOptionPane.YES_OPTION;
-			}
+			}			
 		}
 		logger.info("Committed text edit(s) to " + currentObject.getName() + ".  There " +
 				(fatal ? "were" : "were no") +
@@ -743,9 +744,11 @@ RootTextEditComponent, SelectionDrivenComponent {
 
 	public boolean hasChanges() {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
-			if (c.hasChanges())
+			if (c.hasChanges()){
+//				logger.debug(" component c hasChanges: " + c);
 				return true;
-
+			}
+				
 		}
 		return false;
 	}
@@ -770,8 +773,6 @@ RootTextEditComponent, SelectionDrivenComponent {
 			c.setObject(io);
 		}
 
-		// Why can't we just clear dirtyPaths?  (Not yet tested)
-//		dirtyPaths.clear();
 		dirtyPaths = new LinkedList<FieldPath>();
 		warningMap.clear();
 		setWarningMap(warningMap);
@@ -783,7 +784,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 		return currentObject;
 	}
 
-	// Commit for Text Edits
+//	Commit for Text Edits
 	public void commit() {
 		if (checkComponents()){
 			flushEdits();
