@@ -33,6 +33,7 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	protected boolean reflexive;
 	protected boolean alwaysImpliesInverse;
 	protected boolean universallyQuantified;
+	protected boolean isMetadataTag;
 	
 	protected OBOProperty transitiveOver;
 	protected Collection<List<OBOProperty>> holdsOverChains;
@@ -65,6 +66,8 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	}
 	
 	public boolean isNonInheritable() {
+		if (isMetadataTag)
+			return true;
 		return false;
 	}
 
@@ -275,6 +278,15 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 	public void setUniversallyQuantified(boolean universallyQuantified) {
 		this.universallyQuantified = universallyQuantified;
 	}
+
+	public boolean isMetadataTag() {
+		return isMetadataTag;
+	}
+
+	public void setMetadataTag(boolean isMetadataTag) {
+		this.isMetadataTag = isMetadataTag;
+	}
+
 	
 
 }

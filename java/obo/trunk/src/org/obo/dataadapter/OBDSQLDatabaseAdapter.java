@@ -978,8 +978,8 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				callSqlFunc("set_node_is_transitive_i",iid,true);
 			if (prop.isSymmetric())
 				callSqlFunc("set_node_is_symmetric_i",iid,true);
-
-
+			if (prop.isNonInheritable())
+				callSqlFunc("set_node_is_metadata_i",iid,true);
 		}
 		else {
 			iid =

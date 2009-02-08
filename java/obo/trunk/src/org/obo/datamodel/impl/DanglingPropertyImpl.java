@@ -185,5 +185,15 @@ public class DanglingPropertyImpl extends DanglingAnnotatedObjectImpl implements
 		
 	}
 
+	public boolean isMetadataTag() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setMetadataTag(boolean isMetadataTag) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

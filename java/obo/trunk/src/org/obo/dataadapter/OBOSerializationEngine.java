@@ -999,7 +999,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				serializer.writeConsiderTag(replacement, oo
 						.getConsiderExtension(replacement));
 			}
-		} else if (tagMapping.equals(OBOConstants.UNRECOGNIZED_TAG)) {
+		} 
+		else if (tagMapping.equals(OBOConstants.IS_METADATA_TAG) && obj instanceof OBOProperty) {
+			serializer.writeIsMetadataTag(((OBOProperty)obj).isMetadataTag(), null);
+		}
+		else if (tagMapping.equals(OBOConstants.UNRECOGNIZED_TAG)) {
+		
 			Iterator it2 = obj.getPropertyValues().iterator();
 			while (it2.hasNext()) {
 				PropertyValue pv = (PropertyValue) it2.next();

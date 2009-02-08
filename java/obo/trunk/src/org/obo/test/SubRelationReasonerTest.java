@@ -8,6 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.bbop.io.AuditedPrintStream;
+import org.obo.datamodel.OBOProperty;
 
 
 import org.apache.log4j.*;
@@ -68,6 +69,12 @@ public class SubRelationReasonerTest extends AbstractReasonerTest {
 		//testForIsAInTrimmed("b","develops_from_c"); 
 	}
 	public void testTrim() throws Exception {
+		
+	}
+	public void testMetadata() throws Exception {
+		OBOProperty p = (OBOProperty) session.getObject("metadata_test_relation");
+		assertTrue(p.isMetadataTag());
+		assertTrue(p.isNonInheritable());
 		
 	}
 
