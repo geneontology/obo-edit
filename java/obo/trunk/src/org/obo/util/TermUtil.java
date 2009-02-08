@@ -1052,6 +1052,9 @@ public class TermUtil {
 		}
 		return false;
 	}
+	
+
+
 
 	/**
 	 * Returns whether the given link is a union link. That is, whether

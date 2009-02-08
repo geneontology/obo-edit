@@ -134,6 +134,7 @@ public interface OBOParser extends OBOSimpleParser {
 	public void readIsObsolete(NestedValue val) throws OBOParseException;
 
 	public void readIsAnonymous(NestedValue val) throws OBOParseException;
+	public void readIsMetadataTag(NestedValue val) throws OBOParseException;
 
 	public void readConsider(String id, NestedValue val)
 			throws OBOParseException;

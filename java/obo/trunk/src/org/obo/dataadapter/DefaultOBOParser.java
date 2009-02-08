@@ -1118,6 +1118,10 @@ public class DefaultOBOParser implements OBOParser {
 		currentObject.setAnonymousExtension(nv);
 	}
 
+	public void readIsMetadataTag(NestedValue nv) {
+		((OBOProperty)currentObject).setMetadataTag(true);
+	}
+
 	public void readIsObsolete(NestedValue nv) throws OBOParseException {
 		if (currentObject instanceof ObsoletableObject) {
 			((ObsoletableObject) currentObject).setObsolete(true);
@@ -1247,12 +1251,22 @@ public class DefaultOBOParser implements OBOParser {
 					danglingViolations.add(rs);
 					continue;
 				}
-			} else if (!(parent instanceof LinkedObject))
-				throw new OBOParseException("Tried to link to object "
-						+ rs.getParent() + " that does not "
-						+ "support linking.", rs.getPath(), rs.getLine(), rs
-						.getLineNum());
-
+			} else if (!(parent instanceof LinkedObject)) {
+				// links to xsd types; here we create a separate dangling object representing the type
+				if (allowDanglingParents) {
+					logger.info("Parent " + parent + "--not LinkedObject. adding as dangling");
+					parent = objectFactory.createDanglingObject(parent.getID(),
+							rs.parentIsProperty);
+					parent.setName(parent.getID());
+					session.addObject(parent);
+				} else {
+					throw new OBOParseException("Tried to link to object "
+							+ rs.getParent() + " that does not "
+							+ "support linking.", rs.getPath(), rs.getLine(), rs
+							.getLineNum());
+				}
+			}
+			
 			if (type == null) {
 				if (allowDanglingParents) {
 					type = (OBOProperty) objectFactory.createDanglingObject(rs

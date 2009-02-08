@@ -219,6 +219,9 @@ public class OBOConstants {
 
 	public static final TagMapping IS_ANONYMOUS_TAG = new TagMapping(
 			"is_anonymous", IdentifiedObject.class);
+	
+	public static final TagMapping IS_METADATA_TAG = new TagMapping(
+			"is_metadata_tag", IdentifiedObject.class);
 
 	public static final TagMapping NAME_TAG = new TagMapping("name",
 			IdentifiedObject.class);
@@ -357,5 +360,7 @@ public class OBOConstants {
 		_defaultTagOrder.add(CREATION_DATE_TAG);
 		_defaultTagOrder.add(MODIFIED_BY_TAG);
 		_defaultTagOrder.add(MODIFICATION_DATE_TAG);
+		_defaultTagOrder.add(IS_METADATA_TAG);
+
 	}
 }

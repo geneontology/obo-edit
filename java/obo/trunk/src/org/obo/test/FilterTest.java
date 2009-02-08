@@ -65,6 +65,7 @@ public class FilterTest extends AbstractOBOTest {
 		return matches;
 	}
 
+
 	public void testSubsetFilter() {
 		ObjectFilter filter = (ObjectFilter)off.createNewFilter();
 		CategorySearchCriterion c = new CategorySearchCriterion();
@@ -133,9 +134,9 @@ public class FilterTest extends AbstractOBOTest {
 		lfilter.setAspect(LinkFilter.SELF);
 		lfilter.setFilter(ofilter);
 		Collection<Link> matches = filterLinks(lfilter);
-		logger.info(lfilter+" N_matches: "+matches.size());
+		logger.info(lfilter+" N_implied_links: "+matches.size());
 
-		assertTrue(matches.size() == 2);
+		assertTrue(matches.size() > 0);
 
 	}
 
