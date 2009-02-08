@@ -240,6 +240,15 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			println();
 		}
 	}
+	
+	public void writeIsMetadataTag(boolean value, NestedValue nv)
+	throws IOException {
+		if (value || nv != null) {
+			print("is_metadata_tag: " + value);
+			writeNestedValue(nv);
+			println();
+		}
+	}
 
 	public void writeNameTag(String name, NestedValue nv) throws IOException {
 		if (name != null ) {

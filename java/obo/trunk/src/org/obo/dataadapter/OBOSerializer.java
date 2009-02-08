@@ -90,6 +90,9 @@ public interface OBOSerializer {
 
 	public void writeIsAnonymousTag(boolean value, NestedValue nv)
 			throws IOException;
+	
+	public void writeIsMetadataTag(boolean metadataTag, NestedValue nv)
+	throws IOException;
 
 	public void writeNameTag(String name, NestedValue nv) throws IOException;
 
@@ -171,4 +174,6 @@ public interface OBOSerializer {
 	public void writeHoldsOverChainTag(List<OBOProperty> chain) throws IOException;
 
 	public void writeGenericHeaderTag(String property, String value) throws IOException;
+
+
 }

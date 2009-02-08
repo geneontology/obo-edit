@@ -898,6 +898,10 @@ public class OBOParseEngine extends AbstractParseEngine {
 			if (value.trim().equalsIgnoreCase("true"))
 				((OBOParser) parser).readIsAnonymous(nv);
 			return true;
+		} else if (name.equals("is_metadata_tag")) {
+			if (value.trim().equalsIgnoreCase("true"))
+				((OBOParser) parser).readIsMetadataTag(nv);
+			return true;
 		} else if (name.equals("is_cyclic")) {
 			if (value.trim().equalsIgnoreCase("true"))
 				((OBOParser) parser).readIsCyclic(true, nv);

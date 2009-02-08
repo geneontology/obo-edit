@@ -273,6 +273,10 @@ public interface OBOProperty extends OBOObject {
 	public boolean isCyclic();
 	
 	public boolean isDummy();
+	
+	public boolean isMetadataTag();
+
+	public void setMetadataTag(boolean isMetadataTag);
 
 	public NestedValue getCyclicExtension();
 
