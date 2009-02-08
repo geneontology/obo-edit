@@ -46,7 +46,7 @@ public class NameUnnamedTermsAction implements ClickMenuAction {
 
 	protected Selection sources;
 
-	protected boolean isLegal = false;
+	protected boolean isLegal = true;
 	
 	
 	protected JPanel panel;
@@ -72,7 +72,8 @@ public class NameUnnamedTermsAction implements ClickMenuAction {
 	}
 
 	public void clickInit(Selection sources, GestureTarget destItem) {
-		isLegal = SessionManager.getManager().getUseReasoner();
+		//      DOES NOT REQUIRE REASONER!
+		//		isLegal = SessionManager.getManager().getUseReasoner();
 	}
 
 	public boolean isLegal() {
