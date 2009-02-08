@@ -266,6 +266,8 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String formatLabel(String name) {
 		//logger.debug("GraphvizCanvas: formatLabel() method.");
 
+		if (name == null)
+			name = "??";
 		StringBuffer out = new StringBuffer();
 		String spacerTokens = "-_, \t";
 		StringTokenizer tokenizer = new StringTokenizer(name, spacerTokens,
