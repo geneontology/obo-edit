@@ -125,7 +125,8 @@ public class SqlWhereClauseImpl extends AbstractRelationalTerm implements
 		placeHolderVals.addAll(subQuery.getPlaceHolderVals());
 	}
 	public void addEqualityConstraint(String col, Object val) {
-		this.constraintSet.addConstraint(col + " = ?");
+		String constraint = val.getClass().getSimpleName().equals("String")?col + " = '" + val +"'" : col + " = " + val;
+		this.constraintSet.addConstraint(constraint);
 		placeHolderVals.add(val);
 	}
 	
