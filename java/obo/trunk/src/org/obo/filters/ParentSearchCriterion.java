@@ -3,9 +3,6 @@ package org.obo.filters;
 import java.util.*;
 
 import org.obo.datamodel.*;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.util.TermUtil;
-
 import org.apache.log4j.*;
 
 public class ParentSearchCriterion extends
