@@ -360,7 +360,7 @@ public class TermUtil {
 	 * Returns all ancestors of the given term.
 	 * 
 	 * @param term
-	 *            the term whose ancestors most be found
+	 *            the term whose ancestors must be found
 	 * @param linkDatabase
 	 *            provides the parent links
 	 * @param includeSelf
@@ -368,7 +368,7 @@ public class TermUtil {
 	 *            output collection
 	 */
 	public static Collection<LinkedObject> getAncestors(LinkedObject term,
-			LinkDatabase linkDatabase, boolean includeSelf) {
+		LinkDatabase linkDatabase, boolean includeSelf) {
 		AncestorTask task = getAncestors(term, linkDatabase);
 		task.execute();
 		Collection<LinkedObject> out = task.getResults();
@@ -533,6 +533,14 @@ public class TermUtil {
 				parents.add(link.getParent());
 		}
 		return parents;
+	}
+	
+	public static Collection<LinkedObject> getChildren(LinkedObject lo) {
+		HashSet<LinkedObject> children = new HashSet<LinkedObject>();
+		for (Link link : lo.getChildren()) {
+				children.add(link.getParent());
+		}
+		return children;
 	}
 
 
