@@ -21,6 +21,7 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.controller.VerificationManager;
 import org.oboedit.gui.Preferences;
+import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.verify.*;
 
 import com.swabunga.spell.engine.SpellDictionary;
@@ -226,10 +227,10 @@ FieldCheck {
 		if (stdspellChecker == null) {
 			SpellDictionary dictionary = null;
 			try {
-				FileUtil.ensureExists(Preferences.getStandardDictionaryFile(),
-				"org/oboedit/resources/standard.dict");
+				FileUtil.ensureExists(Preferences.getStandardDictionaryFile(), "org/oboedit/resources/standard.dict");
 				dictionary = new SpellDictionaryHashMap(Preferences.getStandardDictionaryFile());
 			} catch (IOException e) {
+				logger.debug(e);
 			}
 			stdspellChecker = new SpellChecker(dictionary);
 		}
@@ -240,15 +241,13 @@ FieldCheck {
 //		logger.debug("user-defined dict spell check");
 		if (usrspellChecker == null) {
 			SpellDictionary dictionary = null;
-			String confDir = Preferences.getOBOEditPrefsDir().toString();
-			String userDictPath = confDir + "/" + "user.dict";
 			try {
-				//initializing the user-def dict with standard dict
-				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/standard.dict");
+				FileUtil.ensureExists(Preferences.getUserDefDictionaryFile(), "org/oboedit/resources/user.dict");
 				dictionary = new SpellDictionaryHashMap(Preferences.getUserDefDictionaryFile());
 			} catch (IOException e) {
+				logger.debug(e);
 			}
-				usrspellChecker = new SpellChecker(dictionary);
+			usrspellChecker = new SpellChecker(dictionary);
 		}
 		return usrspellChecker;
 	}
@@ -804,9 +803,11 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
+								//refresh Text Editor to reflect changes
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
-						
+
 						QuickFix fixAction2 = new AbstractImmediateQuickFix(
 								"Add \"" + arg0.getInvalidWord()
 								+ "\" to standard system dictionary") {
@@ -816,6 +817,8 @@ FieldCheck {
 										arg0.getInvalidWord());
 								// Add this word to the standard dictionary: standard.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
+//								refresh Text Editor to reflect changes
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 

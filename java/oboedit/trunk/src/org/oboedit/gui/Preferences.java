@@ -539,8 +539,8 @@ public class Preferences {
 					if (line.toLowerCase().trim().startsWith("-xmx")) {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
-//						String m = "got memory string " + mem + " from option file " + optionFile;
-//						logger.info(m);
+//						String m = "Got memory string " + mem + " from option file " + optionFile;
+//						logger.debug(m);
 //						JOptionPane.showMessageDialog(null, m); // DEL
 						break;
 					}
