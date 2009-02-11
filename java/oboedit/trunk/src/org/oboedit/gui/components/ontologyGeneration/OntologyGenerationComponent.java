@@ -2444,10 +2444,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 							List<OBOLookupRelation> allRelations = new ArrayList<OBOLookupRelation>();
 							if (candidateTerm.getExistingOntologyTerms().size() > 0) {
 								for (OBOLookupTerm term : candidateTerm.getExistingOntologyTerms()) {
-									logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
+//									logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
 									OBOLookupResult result = ontoLookupProxy.getChildren(term.getOboID(), 1);
-									logger
-									    .debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() + " DONE");
+//									logger.debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() + " DONE");
 									if (result != null) {
 										if (result.getTerms() != null) {
 											for (OBOLookupTerm childTerm : result.getTerms()) {
