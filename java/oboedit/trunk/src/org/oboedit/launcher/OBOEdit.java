@@ -192,7 +192,7 @@ public class OBOEdit {
 					// Figure out where logfile will go before starting GUI (so Configuration Manager can
 					// show the logfile path)
 					String configDir = Preferences.getOBOEditPrefsDir().toString();
-					String logFile = configDir + "/log/OBOEdit_log4j.log";
+					String logFile = configDir + "/log/oboedit.log";
 					Preferences.getPreferences().setLogfile(logFile);
 					Preferences.setBatchMode(false);  // we're running with a GUI, not in batch mode
 
