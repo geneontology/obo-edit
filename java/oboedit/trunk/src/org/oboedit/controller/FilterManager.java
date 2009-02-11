@@ -21,6 +21,7 @@ import org.bbop.framework.GUIManager;
 import org.obo.filters.AllTextFieldsCriterion;
 import org.obo.filters.AncestorSearchAspect;
 import org.obo.filters.CategorySearchCriterion;
+import org.obo.filters.ChildSearchAspect;
 import org.obo.filters.CommentSearchCriterion;
 import org.obo.filters.CompoundFilter;
 import org.obo.filters.CompoundFilterImpl;
@@ -224,6 +225,7 @@ public class FilterManager {
 		addAspect(new AncestorSearchAspect());
 		addAspect(new DescendantSearchAspect());
 		addAspect(new ParentSearchAspect());
+		addAspect(new ChildSearchAspect());
 
 		buildDefaultGlobalTermFilter();
 		buildDefaultGlobalLinkFilter();
