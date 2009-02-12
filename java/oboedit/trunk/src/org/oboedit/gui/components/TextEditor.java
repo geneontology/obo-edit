@@ -745,7 +745,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	public boolean hasChanges() {
 		for (OBOTextEditComponent c : getMyResolver().getRegisteredComponents()) {
 			if (c.hasChanges()){
-//				logger.debug(" component c hasChanges: " + c);
+				logger.debug(" component c hasChanges: " + c);
 				return true;
 			}
 				

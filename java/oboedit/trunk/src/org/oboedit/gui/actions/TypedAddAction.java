@@ -77,7 +77,7 @@ public class TypedAddAction extends AddAction {
 		String typeID = (isType ? OBOClass.OBO_PROPERTY.getID()
 				: OBOClass.OBO_CLASS.getID());
 		item.addItem(new CreateObjectHistoryItem(id, typeID));
-		item.addItem(new NameChangeHistoryItem("<new term>", id, id));
+		item.addItem(new NameChangeHistoryItem("<new relation>", id, id));
 
 		Namespace ns = SessionManager.getManager().getSession()
 				.getDefaultNamespace();
