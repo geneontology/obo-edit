@@ -48,8 +48,8 @@ public class OBO2OBO {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(OBO2OBO.class);
-	
-    protected final static ReasonerRegistry reasonerRegistry = ReasonerRegistry.getInstance();
+
+	protected final static ReasonerRegistry reasonerRegistry = ReasonerRegistry.getInstance();
 
 
 	protected static class DanglingWrapper {
@@ -117,14 +117,14 @@ public class OBO2OBO {
 			Collection<? extends HistoryItem> items = semanticParser.parseTerms();
 			for (HistoryItem item : items) {
 				//logger.info(item);
-				System.err.println("  change:"+item);
+				logger.error("  change:"+item);
 			}
 			semanticParser.apply(items);
 			if (semanticParser.getNamer() != null) {
 				semanticParser.apply(semanticParser.getNamer().generateSynonymChanges(session));
 				semanticParser.apply(semanticParser.getNamer().generateDefinitionChanges(session));
 			}
-				
+
 			logger.info("SEMANTIC PARSER REPORT:");
 			for (String report : semanticParser.getReports()) {
 				//logger.info(report);
@@ -145,7 +145,7 @@ public class OBO2OBO {
 	}
 
 	public static void runScript(OBOSession session, String script, List args)
-			throws ExpressionException {
+	throws ExpressionException {
 		JexlContext context = ExpressionManager.getManager().getContext();
 		context.setGlobalVariable("session", session, false);
 		context.setLocalVariable("args", args, true);
@@ -179,9 +179,9 @@ public class OBO2OBO {
 				if (brokenRef != null && metacycRef != null) {
 					if (brokenCount > 1 || metacycCount > 1) {
 						System.err
-								.println("*!!!!! Probable broken ref at "
-										+ io.getID()
-										+ " cannot be automatically repaired. There are too many pieces.");
+						.println("*!!!!! Probable broken ref at "
+								+ io.getID()
+								+ " cannot be automatically repaired. There are too many pieces.");
 						continue;
 					}
 					dfo.removeDefDbxref(metacycRef);
@@ -392,7 +392,7 @@ public class OBO2OBO {
 		List<ObsoletableObject> replacedBy = new LinkedList<ObsoletableObject>();
 		List<ObsoletableObject> consider = new LinkedList<ObsoletableObject>();
 		Iterator<ObsoletableObject> it = TermUtil.getObsoletes(session)
-				.iterator();
+		.iterator();
 		while (it.hasNext()) {
 			ObsoletableObject io = it.next();
 			if (io instanceof CommentedObject) {
@@ -424,7 +424,7 @@ public class OBO2OBO {
 		List<ObsoletableObject> replacedBy = new LinkedList<ObsoletableObject>();
 		List<ObsoletableObject> consider = new LinkedList<ObsoletableObject>();
 		Iterator<ObsoletableObject> it = TermUtil.getObsoletes(session)
-				.iterator();
+		.iterator();
 		while (it.hasNext()) {
 			ObsoletableObject io = it.next();
 			if (io instanceof CommentedObject) {
@@ -458,13 +458,13 @@ public class OBO2OBO {
 			boolean showWarnings) {
 		long time = System.currentTimeMillis();
 		int index = commented.getComment()
-				.lastIndexOf("To update annotations,");
+		.lastIndexOf("To update annotations,");
 		if (index == -1) {
 			if (showWarnings)
 				System.err
-						.println("Warning ("
-								+ commented.getID()
-								+ "): Found comment without appropriate obsolete info.");
+				.println("Warning ("
+						+ commented.getID()
+						+ "): Found comment without appropriate obsolete info.");
 			return;
 		}
 		String realComment = commented.getComment().substring(0, index).trim();
@@ -540,10 +540,10 @@ public class OBO2OBO {
 
 		parseCommentTime += System.currentTimeMillis() - time;
 	}
-	
+
 	public static void checkForSimilarDefs(OBOSession session) {
-		 LexUtil lex = new LexUtil(session);
-		 lex.findTermSetsWithSimilarDefinitions();
+		LexUtil lex = new LexUtil(session);
+		lex.findTermSetsWithSimilarDefinitions();
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -577,7 +577,7 @@ public class OBO2OBO {
 			} else if (args[i].equals("-parsecomments")) {
 				parseObsoleteComments = true;
 			} else if (args[i].equals("-allowdangling")) {
-			    logger.info("Please note: allowdangling is already set to true by default.");
+				logger.info("Please note: allowdangling is already set to true by default.");
 				readConfig.setAllowDangling(true);
 			} else if (args[i].equals("-fixdbxrefs")) {
 				fixDbxrefs = true;
@@ -648,7 +648,7 @@ public class OBO2OBO {
 					} else if (args[i].equals("-saveimpliedlinks")) {
 						path.setSaveImplied(true);
 						path
-								.setImpliedType(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
+						.setImpliedType(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
 					} else if (args[i].equals("-saveallimpliedlinks")) {
 						path.setSaveImplied(true);
 						path.setImpliedType(OBOSerializationEngine.SAVE_ALL);
@@ -691,65 +691,54 @@ public class OBO2OBO {
 		}
 		if (writeConfig.getSaveRecords().size() < 1) {
 			if (scripts.size() == 0) {
-				System.err
-						.println("You must specify at least one file to save.");
+				logger.error("You must specify at least one file to save.");
 				printUsage(1);
 			}
 		}
 		writeConfig.setSerializer(formatVersion);
 		OBOSession session =
 			convertFiles(readConfig, writeConfig, parseObsoleteComments,
-				writeObsoleteComments, fixDbxrefs, scripts);
+					writeObsoleteComments, fixDbxrefs, scripts);
 		if (checkForSimilarDefs)
 			checkForSimilarDefs(session);
 	}
 
 	protected static void printUsage(int exitCode) {
-		System.err
-				.println("obo2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
-						 + "             [-semanticparse [-addsynonyms]] \\\n"
-						 + "             [-parsecomments] [-writecomments] \\\n"
-					 + "             [-runscript <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
-					 + "             [-o [-reasonerfactory <class>] [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
-					 + "             [-o [-f <filterfileN.xml>] <outputfileN>]\n");
-		System.err
-				.println("  -?                         - Writes this page to stderr and exits.");
-		System.err
-		.println("  -semanticparse [-addsynonyms] - Does a semantic parse on term name/synonyms; optionally makes synonyms\n"
+		logger.error("obo2obo [-?] [-formatversion <versionid>] <filename 1> ... <filename N> \\\n"
+				+ "             [-semanticparse [-addsynonyms]] \\\n"
+				+ "             [-parsecomments] [-writecomments] \\\n"
+				+ "             [-runscript <scriptname> [arg1 arg2 ... argN] \\;] \\\n"
+				+ "             [-o [-reasonerfactory <class>] [-f <filterfile1.xml>] <outputfile1>] ... \\\n"
+				+ "             [-o [-f <filterfileN.xml>] <outputfileN>]\n");
+		logger.error("  -?                         - Writes this page to stderr and exits.");
+		logger.error("  -semanticparse [-addsynonyms] - Does a semantic parse on term name/synonyms; optionally makes synonyms\n"
 				+ "                               generates intersection_of definition (which can be reasoned over)\n"
 				+ "                               so far only implemented for regulation terms.");
-		System.err
-		.println("  -reasonerfactory            - When saving implied links, calls a non-default reasoner\n"
+		logger.error("  -reasonerfactory            - When saving implied links, calls a non-default reasoner\n"
 				+ "                               Options: ");
 		for ( ReasonerFactory rFac : ReasonerRegistry.getInstance().getRegisteredFactories()) {
-			System.err.println("                                    "+rFac.getClass().getCanonicalName());
+			logger.error("                                    " + rFac.getClass().getCanonicalName());
 		}
-		System.err
-		.println("  -parsecomments             - Parses comments in obsolete terms looking for\n"
+		logger.error("  -parsecomments             - Parses comments in obsolete terms looking for\n"
 				+ "                               GO-style formatted comments containing parseable\n"
 				+ "                               replacement and consider terms.");
-		System.err
-				.println("  -writecomments             - Writes replaced_by and consider tags into parseable\n"
-						+ "                               GO-style formatted comments.");
-		System.err
-				.println("  -formatversion <versionid> - The version of OBO to write. Allowed values are\n"
-						+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
-						+ "                               Optional.");
-		System.err
-				.println("  -runscript <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's\n"
-					 + "                               arguments MUST be followed by \\; so that obo2obo knows\n"
-					 + "                               where the script arguments stop and obo2obo arguments resume.");
-		System.err
-				.println("  <filenameN>                - An OBO file to load. Any number of OBO files may\n"
-					 + "                               be loaded.");
-		System.err
-				.println("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo>\n"
-						+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
-						+ "        filter file or a link filter file to apply to the output file before writing.\n"
-					        + "        -allowdangling is now the default and need not be specified.\n"
-						+ "        The optional -p flag specifies the ID of a property to use for \n"
-						+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
-						+ "        applies filters using strict root detection.");
+		logger.error("  -writecomments             - Writes replaced_by and consider tags into parseable\n"
+				+ "                               GO-style formatted comments.");
+		logger.error("  -formatversion <versionid> - The version of OBO to write. Allowed values are\n"
+				+ "                               OBO_1_0 and OBO_1_2. The default is OBO_1_2.\n"
+				+ "                               Optional.");
+		logger.error("  -runscript <scriptname> <args> \\; - Runs an OSL script on the ontology. A script tag's\n"
+				+ "                               arguments MUST be followed by \\; so that obo2obo knows\n"
+				+ "                               where the script arguments stop and obo2obo arguments resume.");
+		logger.error("  <filenameN>                - An OBO file to load. Any number of OBO files may\n"
+				+ "                               be loaded.");
+		logger.error("  -o [-f <objectfilterfile.xml>] [-lf <linkfilterfile.xml>] [-allowdangling] [-p <prefilter property id>] [-strictrootdetection] [-saveimpliedlinks|-saveallimpliedlinks] [-realizeimpliedlinks] <outputfile.obo>\n"
+				+ "        An output file to write. The optional -f and -lf flags may be used to specify a\n"
+				+ "        filter file or a link filter file to apply to the output file before writing.\n"
+				+ "        -allowdangling is now the default and need not be specified.\n"
+				+ "        The optional -p flag specifies the ID of a property to use for \n"
+				+ "        reasoner pre-filtering. The optional -strict-root-detection flag\n"
+				+ "        applies filters using strict root detection.");
 		System.exit(exitCode);
 	}
 }
