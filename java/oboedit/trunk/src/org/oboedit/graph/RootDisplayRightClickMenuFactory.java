@@ -19,13 +19,15 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.PathCapable;
 import org.obo.reasoner.ReasonedLinkDatabase;
+import org.obo.reasoner.impl.OnTheFlyReasoner;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
+import org.oboedit.graph.VisiblesProvider.EnabledCheckDelegate;
+import org.oboedit.graph.VisiblesProvider.SelectionProvider;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
-
 import edu.umd.cs.piccolo.event.PInputEvent;
-
+import org.oboedit.controller.SessionManager;
 import org.apache.log4j.*;
 
 public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
@@ -40,7 +42,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 	}
 
 	protected class ProviderMenu extends JMenu implements
-			EnabledStatusUpdatable {
+	EnabledStatusUpdatable {
 		public ProviderMenu(String label) {
 			super(label);
 		}
@@ -61,7 +63,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 	}
 
 	protected class ProviderMenuItem extends JMenuItem implements
-			EnabledStatusUpdatable {
+	EnabledStatusUpdatable {
 		protected VisiblesProvider provider;
 
 		public String toString() {
@@ -84,17 +86,16 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 					}
 					Selection selection = null;
 					if (provider.getSelectionProvider() != null)
-						selection = provider.getSelectionProvider()
-								.getSelection();
+						selection = provider.getSelectionProvider().getSelection();
 					if (selection == null)
 						selection = SelectionManager.createEmptySelection(null);
-//					logger.debug("Showing " + provider.getLabel() + " in Graph Editor"); // DEL
-					final Collection<? extends LinkedObject> shown = provider
-							.getShown(selection);
+					logger.debug("selection: " + selection);
+					logger.debug("Showing " + provider.getLabel() + " in Graph Editor"); 
+					final Collection<? extends LinkedObject> shown = provider.getShown(selection);
 					if (shown != null)
 						visibles.addAll(shown);
 					Collection<? extends LinkedObject> hidden = provider
-							.getHidden(selection);
+					.getHidden(selection);
 					if (hidden != null)
 						visibles.removeAll(hidden);
 					canvas.setVisibleObjects(visibles);
@@ -163,13 +164,15 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			super(label, true, selectionProvider, delegates);
 		}
 
-		@Override
+		// parentLink --> canvas.getLinkProviderDatabase().getParents(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
 			for (LinkedObject lo : selection.getTerms()) {
-				for (Link parentLink : canvas.getLinkProviderDatabase()
-						.getParents(lo))
+//				logger.debug("lo: " +lo);
+				for (Link parentLink : canvas.getLinkProviderDatabase().getParents(lo)){
 					out.add(parentLink.getParent());
+				}
+
 			}
 			return out;
 		}
@@ -187,9 +190,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 
 	protected class DescendantVisiblesProvider extends AbstractVisiblesProvider {
 		protected OBOProperty type;
-
 		protected boolean showTransitives;
-
 		protected boolean showIntransitives;
 
 		public DescendantVisiblesProvider(String label, OBOProperty type,
@@ -201,27 +202,31 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			this.type = type;
 			this.showTransitives = showTransitives;
 			this.showIntransitives = showIntransitives;
-
 		}
 
-		@Override
 		protected boolean isEnabled(Selection selection) {
 			return super.isEnabled(selection);
 		}
 
-		@Override
+		// parentLink --> reasoner.getChildren(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
-			ReasonedLinkDatabase reasoner = canvas.getReasoner();
+			ReasonedLinkDatabase reasoner = null;
+			reasoner = canvas.getReasoner();
+			if(reasoner == null)
+				reasoner = new OnTheFlyReasoner(SessionManager.getManager().getSession().getLinkDatabase()	);
 			for (LinkedObject lo : selection.getTerms()) {
-				for (Link parentLink : reasoner.getChildren(lo)) {
-					if (type == null
-							|| (parentLink.getType().isTransitive() && showTransitives)
-							|| (!parentLink.getType().isTransitive() && showIntransitives)
-							|| reasoner.isSubPropertyOf(parentLink.getType(),
-									type))
-						out.add(parentLink.getChild());
+				if(reasoner != null){
+					for (Link parentLink : reasoner.getChildren(lo)) {
+						if (type == null
+								|| (parentLink.getType().isTransitive() && showTransitives)
+								|| (!parentLink.getType().isTransitive() && showIntransitives)
+								|| reasoner.isSubPropertyOf(parentLink.getType(),
+										type))
+							out.add(parentLink.getChild());
+					}
 				}
+
 			}
 			return out;
 		}
@@ -229,17 +234,8 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 
 	protected class AncestorVisiblesProvider extends AbstractVisiblesProvider {
 		protected OBOProperty type;
-
 		protected boolean showTransitives;
-
 		protected boolean showIntransitives;
-
-	    // Trying this to prevent null pointer exception
-//		ReasonedLinkDatabase reasoner;
-//		if (SessionManager.getManager().getUseReasoner())
-//		    reasoner = canvas.getReasoner()
-//		else
-//			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
 
 		public AncestorVisiblesProvider(String label, OBOProperty type,
 				boolean showTransitives, boolean showIntransitives,
@@ -250,27 +246,29 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			this.type = type;
 			this.showTransitives = showTransitives;
 			this.showIntransitives = showIntransitives;
-
 		}
-
 		@Override
 		protected boolean isEnabled(Selection selection) {
 			boolean enabled = super.isEnabled(selection);
 			return enabled;
 		}
-
-		@Override
+		// parentLink --> reasoner.getParents(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
-			ReasonedLinkDatabase reasoner = canvas.getReasoner();
-			for (LinkedObject lo : selection.getTerms()) {
-				for (Link parentLink : reasoner.getParents(lo)) {
-					if (type == null
-							|| (parentLink.getType().isTransitive() && showTransitives)
-							|| (!parentLink.getType().isTransitive() && showIntransitives)
-							|| reasoner.isSubPropertyOf(parentLink.getType(),
-									type))
-						out.add(parentLink.getParent());
+			ReasonedLinkDatabase reasoner = null;
+			reasoner = canvas.getReasoner();
+			if(reasoner == null)
+				reasoner = new OnTheFlyReasoner(SessionManager.getManager().getSession().getLinkDatabase()	);
+			if(reasoner != null){
+				for (LinkedObject lo : selection.getTerms()) {
+					for (Link parentLink : reasoner.getParents(lo)) {
+						if (type == null
+								|| (parentLink.getType().isTransitive() && showTransitives)
+								|| (!parentLink.getType().isTransitive() && showIntransitives)
+								|| reasoner.isSubPropertyOf(parentLink.getType(),
+										type))
+							out.add(parentLink.getParent());
+					}
 				}
 			}
 			return out;
@@ -284,12 +282,11 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			super(label, true, selectionProvider, delegates);
 		}
 
-		@Override
+		//childLink --> canvas.getLinkProviderDatabase().getChildren(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
 			for (LinkedObject lo : selection.getTerms()) {
-				for (Link childLink : canvas.getLinkProviderDatabase()
-						.getChildren(lo))
+				for (Link childLink : canvas.getLinkProviderDatabase().getChildren(lo))
 					out.add(childLink.getChild());
 			}
 			return out;
@@ -302,8 +299,6 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 				EnabledCheckDelegate... delegates) {
 			super(label, true, selectionProvider, delegates);
 		}
-
-		@Override
 		public Collection<? extends LinkedObject> getHidden(Selection selection) {
 			return selection.getTerms();
 		}
@@ -315,8 +310,7 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 				EnabledCheckDelegate... delegates) {
 			super(label, true, selectionProvider, delegates);
 		}
-
-		@Override
+		// pc --> canvas.getVisibleObjects()
 		public Collection<? extends LinkedObject> getHidden(Selection selection) {
 			Collection<LinkedObject> out = new LinkedList<LinkedObject>();
 			for (PathCapable pc : canvas.getVisibleObjects()) {
@@ -330,33 +324,21 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 		}
 	}
 
+
 	public RootDisplayRightClickMenuFactory() {
 		menuItems.add(showMenu);
 		menuItems.add(hideMenu);
+		final VisiblesProvider.SelectionProvider selectionProvider = null;
+		final VisiblesProvider.EnabledCheckDelegate checkDelegate = null;
 
-		JMenuItem showRootsItem = createItemFromDisplayables(new AbstractVisiblesProvider(
-				"All roots") {
-			@Override
-			public Collection<? extends LinkedObject> getShown(
-					Selection selection) {
-				Collection<? extends LinkedObject> roots = TermUtil
-						.getRoots(canvas.getLinkDatabase());
-				return roots;
-			}
-		});
-		JMenuItem hideEverythingItem = createItemFromDisplayables(new AbstractVisiblesProvider(
-				"Everything") {
-			@Override
-			public Collection<? extends LinkedObject> getHidden(
-					Selection selection) {
+		JMenuItem hideEverythingItem = createItemFromDisplayables(new AbstractVisiblesProvider("Everything") {
+			public Collection<? extends LinkedObject> getHidden(Selection selection) {
 				return TermUtil.getTerms(canvas.getLinkDatabase());
 			}
 		});
-		JMenuItem showEverythingItem = createItemFromDisplayables(new AbstractVisiblesProvider(
-				"Everything") {
-			@Override
-			public Collection<? extends LinkedObject> getShown(
-					Selection selection) {
+
+		JMenuItem showEverythingItem = createItemFromDisplayables(new AbstractVisiblesProvider("Everything") {
+			public Collection<? extends LinkedObject> getShown(Selection selection) {
 				Collection<IdentifiedObject> objects = canvas.getLinkDatabase().getObjects();
 				if (objects.size() > TOO_MANY_TO_SHOW_ALL) {
 					// This grays out the menu item
@@ -367,18 +349,49 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 					return TermUtil.getTerms(canvas.getLinkDatabase());
 			}
 		});
+
+		// Show -> All 
 		JMenuItem showAllParentsItem = createItemFromDisplayables(new ParentVisiblesProvider(
-				"All parents", singlePickProvider, selectionCheckDelegate));
+				"- Parents", singlePickProvider, selectionCheckDelegate));
 		JMenuItem showAllParentsOfSelectionItem = createItemFromDisplayables(new ParentVisiblesProvider(
-				"All parents of selected terms", fullSelectionProvider,
+				"- Parents of selected terms", fullSelectionProvider,
 				selectionCheckDelegate));
-
 		JMenuItem showAllChildrenItem = createItemFromDisplayables(new ChildVisiblesProvider(
-				"All children", singlePickProvider, selectionCheckDelegate));
+				"- Children", singlePickProvider, selectionCheckDelegate));
 		JMenuItem showAllChildrenOfSelectionItem = createItemFromDisplayables(new ChildVisiblesProvider(
-				"All children of selected terms", fullSelectionProvider,
-				selectionCheckDelegate));
+				"- Children of selected terms", fullSelectionProvider, selectionCheckDelegate));
+		JMenuItem showAllRootsItem = createItemFromDisplayables(new AbstractVisiblesProvider("- Roots") {
+			public Collection<? extends LinkedObject> getShown(Selection selection) {
+				Collection<? extends LinkedObject> roots = TermUtil.getRoots(canvas.getLinkDatabase());
+				return roots;
+			}
+		});
+		showMenu.add("All");
+		showMenu.add(showAllParentsItem);
+		showMenu.add(showAllParentsOfSelectionItem);
+		showMenu.add(showAllChildrenItem);
+		showMenu.add(showAllChildrenOfSelectionItem);
+		showMenu.add(showAllRootsItem);
+		showMenu.addSeparator();
 
+		//Show -> Ancestors
+		showMenu.add("Ancestors");
+		showMenu.add(getAncestorMenu("Of current  term", 
+				singlePickProvider, selectionCheckDelegate));
+		showMenu.add(getAncestorMenu("Of current selection",
+				fullSelectionProvider, fullSelectionCheckDelegate));
+		showMenu.addSeparator();
+
+		//Show -> Descendants
+		showMenu.add("Descendants");
+		showMenu.add(getDescendantMenu("Of current term", 
+				singlePickProvider, selectionCheckDelegate));
+		showMenu.add(getDescendantMenu("Of current selection",
+				fullSelectionProvider, fullSelectionCheckDelegate));
+		showMenu.addSeparator();
+
+
+		// hide
 		JMenuItem hideCurrentItem = createItemFromDisplayables(new HideSelfProvider(
 				"Current term", singlePickProvider, selectionCheckDelegate));
 		JMenuItem hideSelectionItem = createItemFromDisplayables(new HideSelfProvider(
@@ -391,27 +404,6 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 				"Everything but selection", fullSelectionProvider,
 				selectionCheckDelegate));
 
-		showMenu.add(showAllParentsItem);
-		showMenu.add(showAllParentsOfSelectionItem);
-		showMenu.add(showAllChildrenItem);
-		showMenu.add(showAllChildrenOfSelectionItem);
-
-		JMenu ancestorMenu = new ProviderMenu("Show ancestors");
-		ancestorMenu.add(getAncestorMenu("Of current term", singlePickProvider,
-				selectionCheckDelegate));
-		ancestorMenu.add(getAncestorMenu("Of current selection",
-				fullSelectionProvider, fullSelectionCheckDelegate));
-
-		JMenu descendantMenu = new ProviderMenu("Show descendants");
-		descendantMenu.add(getDescendantMenu("Of current term",
-				singlePickProvider, selectionCheckDelegate));
-		descendantMenu.add(getDescendantMenu("Of current selection",
-				fullSelectionProvider, fullSelectionCheckDelegate));
-
-		showMenu.add(ancestorMenu);
-		showMenu.add(descendantMenu);
-
-		showMenu.add(showRootsItem);
 		showMenu.add(showEverythingItem);
 
 		hideMenu.add(hideSelectionItem);
@@ -424,97 +416,77 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 	protected JMenu getAncestorMenu(String label,
 			final VisiblesProvider.SelectionProvider selectionProvider,
 			final VisiblesProvider.EnabledCheckDelegate checkDelegate) {
-		JMenu menu = new ProviderMenu(label);
-		JMenuItem showAllAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
-				"All ancestors", (OBOProperty) null, true, true,
-				selectionProvider, checkDelegate));
-		JMenuItem showAllNonTransitiveAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
-				"All non-transitive ancestors", (OBOProperty) null, false,
-				true, selectionProvider, checkDelegate));
-		JMenuItem showAllTransitiveAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
-				"All transitive ancestors", (OBOProperty) null, true, false,
-				selectionProvider, checkDelegate));
-		
-// AA
-//		JMenu showAllAncestorsItem= new ProviderMenu("All Ancestors") {
-//			@Override
-//			public void updateEnabledStatus() {
-//				setEnabled(true);
-//				if (!checkDelegate.isEnabled(selectionProvider.getSelection())) {
-//					setEnabled(false);
-//					return;
-//				}
-//				super.updateEnabledStatus();
-//			}
-//		};
-		
-		JMenu typesAncestorMenu= new ProviderMenu("Ancestors of Type"){
+		JMenu ancestorMenu = new ProviderMenu(label){
 			public void updateEnabledStatus() {
 				if (!checkDelegate.isEnabled(selectionProvider.getSelection())) {
 					setEnabled(false);
 					return;
 				}
 				removeAll();
-				Collection<OBOProperty> types = TermUtil
-						.getRelationshipTypes(canvas.getLinkProviderDatabase());
+				JMenuItem showAllAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
+						"All ancestors", (OBOProperty) null, true, true,
+						selectionProvider, checkDelegate));
+				JMenuItem showAllNonTransitiveAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
+						"All non-transitive ancestors", (OBOProperty) null, false,true, 
+						selectionProvider, checkDelegate));
+				JMenuItem showAllTransitiveAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
+						"All transitive ancestors", (OBOProperty) null, true, false,
+						selectionProvider, checkDelegate));
+				JMenu typesAncestorMenu= new ProviderMenu("Ancestors of Type");
+
+				Collection<OBOProperty> types = TermUtil.getRelationshipTypes(canvas.getLinkProviderDatabase());
 				for (OBOProperty type : types) {
+//					logger.debug("type: " + type);
 					JMenuItem item = createItemFromDisplayables(new AncestorVisiblesProvider(
 							type.getName(), type, false, false,
 							selectionProvider, checkDelegate));
-					add(item);
+					typesAncestorMenu.add(item);
 				}
+				add(showAllAncestorsItem);
+				add(showAllNonTransitiveAncestorsItem);
+				add(showAllTransitiveAncestorsItem);
+				add(typesAncestorMenu);
 				super.updateEnabledStatus();
 			}
 		};
-
-
-
-		menu.add(showAllAncestorsItem);
-		menu.add(showAllNonTransitiveAncestorsItem);
-		menu.add(showAllTransitiveAncestorsItem);
-		menu.add(typesAncestorMenu);
-		return menu;
+		return ancestorMenu;
 	}
 
 	protected JMenu getDescendantMenu(String label,
 			final VisiblesProvider.SelectionProvider selectionProvider,
 			final VisiblesProvider.EnabledCheckDelegate checkDelegate) {
-		JMenu menu = new ProviderMenu(label);
-		JMenuItem showAllDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
-				"All descendants", (OBOProperty) null, true, true,
-				selectionProvider, checkDelegate));
-		JMenuItem showAllNonTransitiveDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
-				"All non-transitive descendants", (OBOProperty) null, false,
-				true, selectionProvider, checkDelegate));
-		JMenuItem showAllTransitiveDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
-				"All transitive descendants", (OBOProperty) null, true, false,
-				selectionProvider, checkDelegate));
-
-		JMenu typesDescendantMenu = new ProviderMenu("Descendants of type") {
-			@Override
+		JMenu descendantMenu = new ProviderMenu(label){
 			public void updateEnabledStatus() {
 				if (!checkDelegate.isEnabled(selectionProvider.getSelection())) {
 					setEnabled(false);
 					return;
 				}
 				removeAll();
-				Collection<OBOProperty> types = TermUtil
-						.getRelationshipTypes(canvas.getLinkProviderDatabase());
+				JMenuItem showAllDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
+						"All descendants", (OBOProperty) null, true, true,
+						selectionProvider, checkDelegate));
+				JMenuItem showAllNonTransitiveDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
+						"All non-transitive descendants", (OBOProperty) null, false, true, 
+						selectionProvider, checkDelegate));
+				JMenuItem showAllTransitiveDescendantsItem = createItemFromDisplayables(new DescendantVisiblesProvider(
+						"All transitive descendants", (OBOProperty) null, true, false,
+						selectionProvider, checkDelegate));
+				JMenu typesDescendantMenu= new ProviderMenu("Descendants of Type");
+				Collection<OBOProperty> types = TermUtil.getRelationshipTypes(canvas.getLinkProviderDatabase());
 				for (OBOProperty type : types) {
 					JMenuItem item = createItemFromDisplayables(new DescendantVisiblesProvider(
 							type.getName(), type, false, false,
 							selectionProvider, checkDelegate));
-					add(item);
+					typesDescendantMenu.add(item);
 				}
+				add(showAllDescendantsItem);
+				add(showAllNonTransitiveDescendantsItem);
+				add(showAllTransitiveDescendantsItem);
+				add(typesDescendantMenu);
 				super.updateEnabledStatus();
 			}
 		};
-
-		menu.add(showAllDescendantsItem);
-		menu.add(showAllNonTransitiveDescendantsItem);
-		menu.add(showAllTransitiveDescendantsItem);
-		menu.add(typesDescendantMenu);
-		return menu;
+		return descendantMenu;
 	}
 
 	protected JMenuItem createItemFromDisplayables(
@@ -529,7 +501,10 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			if (item instanceof JMenu) {
 				Component[] comps = ((JMenu) item).getMenuComponents();
 				for (Component c : ((JMenu) item).getMenuComponents()) {
-					updateMenuEnabledStatus((JMenuItem) c);
+//					logger.debug("c.getClass().getSimpleName(): " + c.getClass().getSimpleName());
+					if(!c.getClass().getSimpleName().equalsIgnoreCase("Separator")){
+						updateMenuEnabledStatus((JMenuItem) c);	
+					}		
 				}
 			}
 			esu.updateEnabledStatus();
@@ -546,8 +521,10 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			selection = SelectionManager.createEmptySelection(null);
 		singlePickProvider.setSelection(pickedAsSelection);
 		fullSelectionProvider.setSelection(selection);
-		for (JMenuItem item : menuItems)
+
+		for (JMenuItem item : menuItems) {
 			updateMenuEnabledStatus(item);
+		}
 		return menuItems;
 	}
 

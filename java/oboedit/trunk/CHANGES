@@ -1,10 +1,25 @@
 Changes in OBO-Edit2b55:
 
 Bug Fixes:
+- [ geneontology-Bugs-2585655 ] User dictionary not recognised
+Custom user dictionary was not detected when the user added it to their config folder.
+
+- Logging issues
+
+- [ geneontology-Bugs-2030690 ] "Show ancestors/descendants" right-menu items in Graph Editor
+
+- [ geneontology-Bugs-2507760 ] Graph Editor - show all ancestors option not active
+
+
 
 
 Features:
- 
+- Child Search Aspect in Search Panel
+
+TO DO:
+1) update documentation
+   - dictionaries
+   - Child Search Aspect
 
 
 
