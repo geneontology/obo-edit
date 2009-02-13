@@ -5,9 +5,8 @@ import org.apache.log4j.*;
 
 public class OBOPostcomp/*@bgen(jjtree)*/implements OBOPostcompTreeConstants, OBOPostcompConstants {/*@bgen(jjtree)*/
   protected JJTOBOPostcompState jjtree = new JJTOBOPostcompState();public static void main(String args[]) {
-//		initialize logger
-	Logger logger = Logger.getLogger(OBOPostcomp.class); 
-	logger.info("Reading from standard input...");
+    Logger logger = Logger.getLogger(OBOPostcomp.class);
+    logger.info("Reading from standard input...");
     OBOPostcomp t = new OBOPostcomp(System.in);
     try {
       SimpleNode n = t.PostcompExpression();
@@ -22,7 +21,7 @@ public class OBOPostcomp/*@bgen(jjtree)*/implements OBOPostcompTreeConstants, OB
   }
 
   public static void dump(SimpleNode node, String prefix) {
-	 Logger logger = Logger.getLogger(OBOPostcomp.class); 
+    Logger logger = Logger.getLogger(OBOPostcomp.class);
     if (node instanceof ASTIdentifier) {
       logger.info(prefix+"Identifier("+((ASTIdentifier) node).val+")");
     } else
@@ -270,33 +269,6 @@ void Identifier() : {}
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_4() {
-    if (jj_scan_token(8)) return true;
-    if (jj_3R_8()) return true;
-    if (jj_scan_token(9)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_2()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_3() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_1()) {
-    jj_scanpos = xsp;
-    if (jj_3R_7()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_9() {
     if (jj_3R_8()) return true;
     return false;
@@ -369,6 +341,33 @@ void Identifier() : {}
 
   final private boolean jj_3R_12() {
     if (jj_3R_3()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_4() {
+    if (jj_scan_token(8)) return true;
+    if (jj_3R_8()) return true;
+    if (jj_scan_token(9)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_2()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_3() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_1()) {
+    jj_scanpos = xsp;
+    if (jj_3R_7()) return true;
+    }
     return false;
   }
 
