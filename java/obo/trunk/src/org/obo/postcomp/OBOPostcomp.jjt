@@ -32,8 +32,11 @@ PARSER_BEGIN(OBOPostcomp)
 
 package org.obo.postcomp;
 
-class OBOPostcomp {
+import org.apache.log4j.*;
+
+public class OBOPostcomp {
   public static void main(String args[]) {
+    Logger logger = Logger.getLogger(OBOPostcomp.class); 
     logger.info("Reading from standard input...");
     OBOPostcomp t = new OBOPostcomp(System.in);
     try {
@@ -49,9 +52,10 @@ class OBOPostcomp {
   }
 
   public static void dump(SimpleNode node, String prefix) {
+    Logger logger = Logger.getLogger(OBOPostcomp.class); 
     if (node instanceof ASTIdentifier) {
       logger.info(prefix+"Identifier("+((ASTIdentifier) node).val+")");
-    } else  
+    } else 
       logger.info(node.toString(prefix)+", class="+node.getClass());
     if (node.children != null) {
       for (int i = 0; i < node.children.length; ++i) {
@@ -79,7 +83,7 @@ TOKEN : /* IDENTIFIERS */
 {
   < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
 |
-  < #LETTER: ["_","a"-"z","A"-"Z","-",":","#",">",".","/"] >
+  < #LETTER: ["_","a"-"z","A"-"Z","-",":","#",">",".","/","|"] >
 |
   < #DIGIT: ["0"-"9"] >
 }
