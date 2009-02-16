@@ -35,7 +35,7 @@ public class RestrictedJTree extends JTree {
 	public RestrictedJTree(TreeViewSettings treeViewSettingsInstance) {
 		super();
 		this.treeViewSettingsInstance = treeViewSettingsInstance;
-		//logger.debug("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
+		////logger.debug("RestrictedJTree constructor: treeViewSettingsInstance = " + treeViewSettingsInstance);
 	}
 
 	/**
@@ -43,14 +43,14 @@ public class RestrictedJTree extends JTree {
 	protected Runnable visibleRunnable = new Runnable() {
 		public void run() {
 			makeVisible(treePathInstance);
-			//logger.debug("RestrictedJTree: visibleRunnable: treePathInstance is " + treePathInstance);
+			////logger.debug("RestrictedJTree: visibleRunnable: treePathInstance is " + treePathInstance);
 		}
 	};
 
 
 	public void refresh() {
 		refresh(false);
-		//logger.debug("RestrictedJTree: refresh method.");	
+		////logger.debug("RestrictedJTree: refresh method.");	
 	}
 
 	boolean expandAllowed = true;
@@ -62,11 +62,11 @@ public class RestrictedJTree extends JTree {
 	 * 
 	 */
 	public void refresh(boolean fromThread) {
-		//logger.debug("RestrictedJTree: refresh method with " + fromThread + " arg.");
+		////logger.debug("RestrictedJTree: refresh method with " + fromThread + " arg.");
 
 		if (getModel() == null)
 			return;
-		//logger.debug("RestrictedJTree: refresh method : treeModelInstance != null.");
+		////logger.debug("RestrictedJTree: refresh method : treeModelInstance != null.");
 		expandAllowed = true;
 		expandPaths(fromThread);
 		expandAllowed = false;
@@ -79,7 +79,7 @@ public class RestrictedJTree extends JTree {
 	 *This seems to expand the paths to the term that has been selected. 
 	 */
 	protected void expandPaths(boolean fromThread) {
-		logger.debug("RestrictedJTree.expandPaths");
+		//logger.debug("RestrictedJTree.expandPaths");
 		Set<Object> seenem = new HashSet<Object>();
 		Object root = getModel().getRoot();
 		expandPaths(null, root, seenem, fromThread); // If this line is commented out then the tree does not expand.
@@ -94,13 +94,13 @@ public class RestrictedJTree extends JTree {
 	 */
 	protected void expandPaths(TreePath parentPath, Object o,
 			Set<Object> seenem, boolean fromThreads) {
-		//logger.debug("RestrictedJTree: expandPaths method with several args.");	
+		////logger.debug("RestrictedJTree: expandPaths method with several args.");	
 		if (o == null){
 			return;
 		}
 		//I changed trimPaths() to treeViewSettingsInstance.getTrimPaths()
 		if (treeViewSettingsInstance.getTrimPaths() && seenem.contains(o)) {
-			logger.debug("RestrictedJTree: expandPaths : recursion ended.");
+			//logger.debug("RestrictedJTree: expandPaths : recursion ended.");
 			return;
 		}
 		seenem.add(o);
@@ -134,7 +134,7 @@ public class RestrictedJTree extends JTree {
 		if (!(o instanceof Link))
 			return null;
 		LinkedObject child = ((Link) o).getChild();
-		//logger.debug("RestrictedJTree: getToolTipText method.");	
+		////logger.debug("RestrictedJTree: getToolTipText method.");	
 		return child.getID();
 	}
 
@@ -149,8 +149,8 @@ public class RestrictedJTree extends JTree {
 	 */
 	@Override
 	public void makeVisible(TreePath path) {
-		//logger.debug("RestrictedJTree: makeVisible method.");
-		//logger.debug("RestrictedJTree: makeVisible method: path = " + path);
+		////logger.debug("RestrictedJTree: makeVisible method.");
+		////logger.debug("RestrictedJTree: makeVisible method: path = " + path);
 		expandAllowed = true;		//If these two lines are commented out, then when I click a term in the OTE
 		super.makeVisible(path);	//it appears closed up in the TreeViewer, and I have to click the plus signs to see the children.  
 		expandAllowed = false;	//If this line is commented out it doesn't seem to make any difference.
