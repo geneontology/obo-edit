@@ -1,9 +1,12 @@
 package org.oboedit.gui;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
+import org.oboedit.gui.components.ConfigurationManager;
+import org.oboedit.util.GUIUtil;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
@@ -79,7 +82,21 @@ public class SearchResultsTable extends JTable {
 	public void setResults(Collection<SearchHit<?>> results) {
 		searchModel.setResults(results);
 		setDefaultColumnSizes(this);
+		setDefaultRowHeight(this);
 		validate();
+	}
+
+	/**
+	 * Sets the height of the rows in the table that is used to display the results of a search.
+	 * The height is set relative to the current font size so that if the font is made bigger or
+	 * smaller, the rows will change height to accommodate this. 
+	 * @param searchResultsTable
+	 */
+	private void setDefaultRowHeight(SearchResultsTable searchResultsTable) {
+		Font currentFont = Preferences.getPreferences().getFont();
+		int fontSize = currentFont.getSize();
+		int rowSize = (int) (fontSize*1.3);
+		searchResultsTable.setRowHeight(rowSize); //Set row height here.
 	}
 
 	protected void setDefaultColumnSizes(JTable table) {
