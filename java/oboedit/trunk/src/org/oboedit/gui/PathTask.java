@@ -189,7 +189,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			Link parentRel = (Link) it.next();
 			if(parentRel.getType().getID().equals("disjoint_from")){
 				//logger.debug("PathTask: filterDisjointRels: disjoint_from link");
-				linksClone.remove(parentRel);
+				it.remove();
 			} 
 		} 
 		return linksClone;
