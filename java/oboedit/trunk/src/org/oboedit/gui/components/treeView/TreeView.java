@@ -206,7 +206,7 @@ public class TreeView extends AbstractGUIComponent {
 	 * which is set up in TreeViewConfigPanel.  
 	 */
 	public void init() {
-		//logger.debug("TreeView: init Method.");
+		//logger.debug("TreeView: inidot Method.");
 		removeAll();
 		DefaultTreeSelectionModel selectionModel = new DefaultTreeSelectionModel();
 
@@ -451,40 +451,35 @@ public class TreeView extends AbstractGUIComponent {
 	 * 
 	 */
 	protected void doUpdate() {
-		final PathTask task = new PathTask();
-
+		final PathTask task = new PathTask(); //Removal of disjoint links happens here. 
 		task.addPostExecuteRunnable(new Runnable() {
 			public void run() {
-				Collection<TreePath> pathc = task.getResults();
+				Collection<TreePath> pathc = task.getResults();				
 				Iterator<TreePath> it = pathc.iterator();
-//				logger.debug("TreeView: run: pathc = " + pathc);
+				//logger.debug("TreeView: run: pathc = " + pathc);
 				while(it.hasNext()) {
 					TreePath path = (TreePath) it.next();
-//					logger.debug("TreeView.doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
-//					logger.debug("TreeView.doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
-//					logger.debug("TreeView.doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
+					//					logger.debug("TreeView.doUpdate: path = " + path);
+					//					logger.debug("TreeView.doUpdate: PathUtil.pathIsCircular(path) = " + PathUtil.pathIsCircular(path));
+					//					logger.debug("TreeView.doUpdate: treeViewSettingsInstance.getShowNonTransitive() = " + treeViewSettingsInstance.getShowNonTransitive());
+					//					logger.debug("TreeView.doUpdate: PathUtil.pathContainsNonTransitive(path) = " + PathUtil.pathContainsNonTransitive(path));
 
-					// if  pathIsCircular(path) 
-					// OR
-					// Show non-transitive paths selected AND pathIsOneWayDisjoint(path) - TRUE if one of the two disjoint links exists 
-					// OR
-					// Show non-transitive paths is not selected AND non-transitive paths exist 
-					
-//					if (PathUtil.pathIsCircular(path) || ( PathUtil.pathContainsNonTransitive(path) && treeViewSettingsInstance.getShowNonTransitive() && PathUtil.pathIsOneWayDisjoint(path))
-					if (PathUtil.pathIsCircular(path) || (!treeViewSettingsInstance.getShowNonTransitive() && PathUtil.pathContainsNonTransitive(path))							
-					) {  
-//						logger.debug("removing path: " + path);
-						pathc.remove(path);
-						
+					if (PathUtil.pathIsCircular(path) || 
+							(!treeViewSettingsInstance.getShowNonTransitive() && PathUtil.pathContainsNonTransitive(path))){  
+						System.out.println("removing path: " + path);		
+						//System.out.println("TreeView: doUpdate: path = " + path);		 
+						pathc.remove(path);	//This line removes the entire tree.						
 					}
 				}
-
 				TreePath [] paths = pathc.toArray(new TreePath[0]);
-				model = new PathTreeModel(paths);
-				restrictedJTreeInstance.setModel(model);
-				//restrictedJTreeInstance.refresh(true); //If this line is commented 
-				//out then the tree does not expand.
-				finishUpdate(paths);
+				model = new PathTreeModel(paths);			//Without these two lines the tree does
+				restrictedJTreeInstance.setModel(model);	//not display at all. 
+				restrictedJTreeInstance.refresh(true);  //If this line is commented 
+														//out then the tree does not expand.
+
+				finishUpdate(paths);  //commenting this line
+									  //stops the tree expanding.
+
 
 			}			
 		});
@@ -504,9 +499,9 @@ public class TreeView extends AbstractGUIComponent {
 			termSet.add(SelectionManager.getGlobalSelection()
 					.getTermSubSelection());
 		}
-		
+
 		task.setTerms(termSet);
-		
+
 		treeViewConfigPanelInstance.eventQueue.scheduleTask(task);
 
 		//restrictedJTreeInstance.refresh(true); //Added this so the tree just redraws once at the end
@@ -515,37 +510,35 @@ public class TreeView extends AbstractGUIComponent {
 		//a term is selected in the OTE unless this line is commented out.
 		//Once this line is commented out the old redraw bugs seem to have gone away.
 		//It is not clear what has caused this change. 
-
-
 	}
 
-//	protected void showConfigurationWindow() {
-//	logger.debug("TreeView: showConfigurationWindow method.");
+	//	protected void showConfigurationWindow() {
+	//	logger.debug("TreeView: showConfigurationWindow method.");
 
-//	JButton closeButton = new JButton("Close");
+	//	JButton closeButton = new JButton("Close");
 
-//	JPanel checkboxPanel = new JPanel();
-//	checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
-//	checkboxPanel.add(multiTermCheckbox);
-//	checkboxPanel.add(Box.createVerticalStrut(2));
-//	checkboxPanel.add(trimPathsCheckbox);
-//	checkboxPanel.add(Box.createVerticalStrut(2));
-//	checkboxPanel.add(showNonTransitiveCheckbox);
-//	checkboxPanel.add(Box.createVerticalStrut(10));
-//	checkboxPanel.add(closeButton);
+	//	JPanel checkboxPanel = new JPanel();
+	//	checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
+	//	checkboxPanel.add(multiTermCheckbox);
+	//	checkboxPanel.add(Box.createVerticalStrut(2));
+	//	checkboxPanel.add(trimPathsCheckbox);
+	//	checkboxPanel.add(Box.createVerticalStrut(2));
+	//	checkboxPanel.add(showNonTransitiveCheckbox);
+	//	checkboxPanel.add(Box.createVerticalStrut(10));
+	//	checkboxPanel.add(closeButton);
 
-//	final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
-//	true);
-//	closeButton.addActionListener(new ActionListener() {
-//	public void actionPerformed(ActionEvent e) {
-//	dialog.dispose();
-//	}
-//	});
+	//	final JDialog dialog = new JDialog(GUIManager.getManager().getFrame(),
+	//	true);
+	//	closeButton.addActionListener(new ActionListener() {
+	//	public void actionPerformed(ActionEvent e) {
+	//	dialog.dispose();
+	//	}
+	//	});
 
-//	dialog.setContentPane(checkboxPanel);
-//	dialog.pack();
-//	dialog.setVisible(true);
-//	}
+	//	dialog.setContentPane(checkboxPanel);
+	//	dialog.pack();
+	//	dialog.setVisible(true);
+	//	}
 
 	/**
 	 * Validates and repaints, but may also run doUpdate depending on the state of global selection. 
@@ -567,6 +560,7 @@ public class TreeView extends AbstractGUIComponent {
 		}
 	}
 
+
 	protected DragFriendlyTreeUI getDefaultUI() {
 		//logger.debug("TreeView: getDefaultUI method.");
 		DragFriendlyTreeUI ui = new DragFriendlyTreeUI();
@@ -575,10 +569,10 @@ public class TreeView extends AbstractGUIComponent {
 	}
 
 
-//	public JComponent getComponent() {
-//	logger.debug("TreeView: getComponent method.");
-//	return this;
-//	}
+	//	public JComponent getComponent() {
+	//	logger.debug("TreeView: getComponent method.");
+	//	return this;
+	//	}
 
 
 	/**
