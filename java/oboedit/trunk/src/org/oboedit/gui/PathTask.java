@@ -56,7 +56,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			LinkedObject term = (LinkedObject) it.next();
 			progress = 0;
 			setProgressString("Finding all paths to " + term);
-			
+			System.out.println("PathTask: execute: term = " + term);
 			rootAlgorithm.setLinkDatabase(linkDatabase);
 
 			if (rootAlgorithm.isRoot(term)) {
@@ -73,12 +73,16 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 				os[2] = new OBORestrictionImpl(term);
 				TreePath path = new TreePath(os);
 				out.add(path);
+				
 			} else {
 				double incSize = 100 / TermUtil.getParentCount(linkDatabase,
 						term);
 				for (Link tr : linkDatabase.getParents(term)) {
 					MultiMap<Link, TreePath> lookedAt = new MultiHashMap<Link, TreePath>();
 					Map lookedAtCount = new HashMap();
+					System.out.println("PathTask: execute: " +
+							"getPathsAsVector(incSize, tr, lookedAt, lookedAtCount)" 
+							+ getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					out.addAll(getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					if (isCancelled()) {
 						return;
@@ -88,6 +92,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 		}
 
 		setResults(out);
+		System.out.println("PathTask: execute: out = " + out); //We already have disjoints here. 
 	}
 
 	protected Collection<TreePath> getPathsAsVector(double incSize, Link link,
@@ -175,32 +180,39 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 
 	/**
 	 * Gets one-way disjoints: since disjoint_from relationships are symmetric the 
-	 * second occourrence of the same relation is filtered out
+	 * second occurrence of the same relation is filtered out
 	 * @param links
 	 * @return filteredlinks
 	 */
 	protected Collection<Link> filterDisjointRels(Collection<Link> links) {
-		Collection<Link> traversedLinks = new ArrayList<Link>();
+		//Collection<Link> traversedLinks = new ArrayList<Link>();
 		Collection<Link> linksClone = links; 
 		Iterator it = links.iterator();
 		while (it.hasNext()){
 			Link parentRel = (Link) it.next();
 			if(parentRel.getType().getID().equals("disjoint_from")){
-//				logger.debug("disjoint_from link");
-				Link reverseLink = (Link) parentRel.clone();
-				reverseLink.setParent(parentRel.getChild());
-				reverseLink.setChild(parentRel.getParent());
-//				logger.debug("reverselink: " + reverseLink);
-
-				for (Iterator seenlinks = traversedLinks.iterator(); seenlinks.hasNext(); ) {
-					Link seenLink = (Link) seenlinks.next();
+				logger.debug("PathTask: filterDisjointRels: disjoint_from link");
+				
+				//Link reverseLink = (Link) parentRel.clone();
+				//logger.debug("PathTask: filterDisjointRels: reverselink = " + reverseLink);
+				
+//				logger.debug("PathTask: filterDisjointRels: reverseLink.setParent(parentRel.getChild());");
+//				logger.debug("PathTask: filterDisjointRels: parentRel.getChild() = " + parentRel.getChild());
+//				reverseLink.setParent(parentRel.getChild());
+//	
+//				logger.debug("PathTask: filterDisjointRels: reverseLink.setChild(parentRel.getParent());");
+//				logger.debug("PathTask: filterDisjointRels: parentRel.getParent() = " + parentRel.getParent());
+//				reverseLink.setChild(parentRel.getParent());
+//		
+//				for (Iterator seenlinks = traversedLinks.iterator(); seenlinks.hasNext(); ) {
+//					Link seenLink = (Link) seenlinks.next();
 //					logger.debug("seenLink: " + seenLink);
-					if(seenLink.equals(reverseLink)){
+//					if(seenLink.equals(reverseLink)){
 //						logger.debug("seenLink.equals(reverseLink): " + seenLink.equals(reverseLink) + "removing: " + parentRel);
-						linksClone.remove(parentRel);
-					}			
-				}
-				traversedLinks.add(parentRel);
+//						linksClone.remove(parentRel);
+//					}			
+//				}
+				linksClone.remove(parentRel);
 			} // if disjoint
 		} // while links.hasNext()
 		return linksClone;
