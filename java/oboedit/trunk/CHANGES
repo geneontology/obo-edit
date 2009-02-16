@@ -10,7 +10,8 @@ Custom user dictionary was not detected when the user added it to their config f
 
 - [ geneontology-Bugs-2507760 ] Graph Editor - show all ancestors option not active
 
-
+[ 2207438 ] Tree Viewer - no disjoint
+This bug has now been fixed. Disjoint relationships are no longer displayed in the Tree Viewer. 
 
 
 Features:
