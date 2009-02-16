@@ -13,6 +13,8 @@ Custom user dictionary was not detected when the user added it to their config f
 [ 2207438 ] Tree Viewer - no disjoint
 This bug has now been fixed. Disjoint relationships are no longer displayed in the Tree Viewer. 
 
+[ 2605595 ]	Tree viewer occasional flakiness - Fixed.
+
 
 Features:
 - Child Search Aspect in Search Panel
