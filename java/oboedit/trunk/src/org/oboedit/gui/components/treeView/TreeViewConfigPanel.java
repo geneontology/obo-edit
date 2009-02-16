@@ -44,7 +44,8 @@ public class TreeViewConfigPanel  extends ConfigurationPanel {
 	protected JProgressBar progressBar = new JProgressBar();
 	JCheckBox multiTermCheckbox = new JCheckBox("Show paths to multiple selected terms");
 	JCheckBox trimPathsCheckbox = new JCheckBox("Collapse already shown paths");
-	JCheckBox showNonTransitiveCheckbox = new JCheckBox("Show non-transitive paths");
+	JCheckBox showNonTransitiveCheckbox = new JCheckBox("Show non-transitive paths. " +
+			"(Disjoint_from relationships are not shown.)");
 	JLabel multiTermLabel = new JLabel();
 	JLabel trimPathsLabel = new JLabel();
 	JLabel showNonTransitiveLabel = new JLabel();
