@@ -15,6 +15,7 @@ This bug has now been fixed. Disjoint relationships are no longer displayed in t
 
 [ 2605595 ]	Tree viewer occasional flakiness - Fixed.
 
+[ 2139976 ] large font in search results. - Fixed
 
 Features:
 - Child Search Aspect in Search Panel
