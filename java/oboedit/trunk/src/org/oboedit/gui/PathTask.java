@@ -56,7 +56,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 			LinkedObject term = (LinkedObject) it.next();
 			progress = 0;
 			setProgressString("Finding all paths to " + term);
-			System.out.println("PathTask: execute: term = " + term);
+			//logger.debug("PathTask: execute: term = " + term);
 			rootAlgorithm.setLinkDatabase(linkDatabase);
 
 			if (rootAlgorithm.isRoot(term)) {
@@ -80,9 +80,6 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 				for (Link tr : linkDatabase.getParents(term)) {
 					MultiMap<Link, TreePath> lookedAt = new MultiHashMap<Link, TreePath>();
 					Map lookedAtCount = new HashMap();
-					System.out.println("PathTask: execute: " +
-							"getPathsAsVector(incSize, tr, lookedAt, lookedAtCount)" 
-							+ getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					out.addAll(getPathsAsVector(incSize, tr, lookedAt, lookedAtCount));
 					if (isCancelled()) {
 						return;
@@ -92,7 +89,7 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 		}
 
 		setResults(out);
-		System.out.println("PathTask: execute: out = " + out); //We already have disjoints here. 
+		//logger.debug("PathTask: execute: out = " + out); 
 	}
 
 	protected Collection<TreePath> getPathsAsVector(double incSize, Link link,
@@ -191,15 +188,12 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 		while (it.hasNext()){
 			Link parentRel = (Link) it.next();
 			if(parentRel.getType().getID().equals("disjoint_from")){
-				logger.debug("PathTask: filterDisjointRels: disjoint_from link");
+				//logger.debug("PathTask: filterDisjointRels: disjoint_from link");
 				linksClone.remove(parentRel);
 			} 
 		} 
 		return linksClone;
 	}
 
-
 }
-
-
 
