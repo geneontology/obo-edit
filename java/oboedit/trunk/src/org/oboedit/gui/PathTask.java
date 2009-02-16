@@ -179,42 +179,22 @@ public class PathTask extends AbstractTaskDelegate<Collection<TreePath>> {
 	}
 
 	/**
-	 * Gets one-way disjoints: since disjoint_from relationships are symmetric the 
-	 * second occurrence of the same relation is filtered out
+	 * Looks at a collection containing a series of relationships like this:
+	 * "cell adhesion --OBO_REL:is_a--> biological adhesion"
+	 * and removes any that contain the relationship 'disjoint_from'.
 	 * @param links
-	 * @return filteredlinks
+	 * @return linksClone
 	 */
 	protected Collection<Link> filterDisjointRels(Collection<Link> links) {
-		//Collection<Link> traversedLinks = new ArrayList<Link>();
 		Collection<Link> linksClone = links; 
 		Iterator it = links.iterator();
 		while (it.hasNext()){
 			Link parentRel = (Link) it.next();
 			if(parentRel.getType().getID().equals("disjoint_from")){
 				logger.debug("PathTask: filterDisjointRels: disjoint_from link");
-				
-				//Link reverseLink = (Link) parentRel.clone();
-				//logger.debug("PathTask: filterDisjointRels: reverselink = " + reverseLink);
-				
-//				logger.debug("PathTask: filterDisjointRels: reverseLink.setParent(parentRel.getChild());");
-//				logger.debug("PathTask: filterDisjointRels: parentRel.getChild() = " + parentRel.getChild());
-//				reverseLink.setParent(parentRel.getChild());
-//	
-//				logger.debug("PathTask: filterDisjointRels: reverseLink.setChild(parentRel.getParent());");
-//				logger.debug("PathTask: filterDisjointRels: parentRel.getParent() = " + parentRel.getParent());
-//				reverseLink.setChild(parentRel.getParent());
-//		
-//				for (Iterator seenlinks = traversedLinks.iterator(); seenlinks.hasNext(); ) {
-//					Link seenLink = (Link) seenlinks.next();
-//					logger.debug("seenLink: " + seenLink);
-//					if(seenLink.equals(reverseLink)){
-//						logger.debug("seenLink.equals(reverseLink): " + seenLink.equals(reverseLink) + "removing: " + parentRel);
-//						linksClone.remove(parentRel);
-//					}			
-//				}
 				linksClone.remove(parentRel);
-			} // if disjoint
-		} // while links.hasNext()
+			} 
+		} 
 		return linksClone;
 	}
 
