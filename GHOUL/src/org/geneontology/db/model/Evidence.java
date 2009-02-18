@@ -4,11 +4,32 @@ import java.util.Set;
 
 
 /**
- * The GeneProduct class corresponds to the GO gene_product table.  
- * @author Robert Bruggner
+ * The Evidence class corresponds to the GO evidence table.  
+ * @author Suzi Lewis
  *
  */
 public class Evidence extends GOModel {
+		
+	public static final String [] [] evidence_codes = {
+		{"EXP", "Experimental data"},
+		{"IC", "Curator"},
+		{"IDA", "Direct Assay"},
+		{"IEA", "Electronic Analysis"},
+		{"IEP", "Expression Pattern"},
+		{"IGC", "Genomic Context"},
+		{"IGI", "Genetic Interaction"},
+		{"IMP", "Mutant Phenotype"},
+		{"IPI", "Physical Interaction"},
+		{"ISA", "Sequence Alignment"},
+		{"ISM", "Sequence Model Similarity"},
+		{"ISO", "Sequence Orthology"},
+		{"ISS", "Sequence or Structural Similarity"},
+		{"NAS", "Not-traceable Author Statement"},
+		{"ND", "No data available"},
+		{"NR", "Not Recorded"},
+		{"RCA", "Reviewed Computational Analysis"},
+		{"TAS", "Traceable Author Statement"},
+	};
 		
   	protected int evidence_id;
 
@@ -90,4 +111,12 @@ public class Evidence extends GOModel {
 		this.withs = withs;
 	}
 
+	public String getTip() {
+		String tip = null;
+		for (int i = 0; i < evidence_codes.length && tip == null; i++) {
+			if (evidence_codes[i][0].equals(code))
+				tip = evidence_codes[i][1];
+		}
+		return tip;
+	}
 }

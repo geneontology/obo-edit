@@ -18,5 +18,10 @@
 			<key column="association_id"/>
 			<one-to-many class="org.geneontology.db.model.Evidence"/>
 		</set>
+		<set name="qualifiers" table="association_qualifier">
+   		  <key column="association_id"/>
+    	  <many-to-many column="term_id" class="org.geneontology.db.model.Term"/>
+		</set>
+		
 	</class>
 </hibernate-mapping>

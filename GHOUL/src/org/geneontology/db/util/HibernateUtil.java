@@ -27,7 +27,6 @@ public class HibernateUtil {
 	 */
     public static SessionFactory buildSessionFactory(String filename) throws Exception{
     	try {
-    		 System.out.println("Trying to configure using " + filename);
     		 Configuration c = new Configuration().configure(filename);
     		 //Properties p = c.getProperties();
     		 //p.list(System.out);

@@ -9,9 +9,15 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-       <property name="connection.url">jdbc:mysql://mysql.ebi.ac.uk:4085/go_latest</property>
+        <!-- property name="connection.url">jdbc:mysql://mysql.ebi.ac.uk:4085/go_latest</property>
         <property name="connection.username">go_select</property>
-        <property name="connection.password">amigo</property>
+        <property name="connection.password">amigo</property -->
+       	<property name="connection.url">jdbc:mysql://localhost/go_latest_lite</property>
+        <property name="connection.username">suzi</property>
+        <property name="connection.password"></property>
+        <!-- property name="connection.url">jdbc:mysql://mysql.ebi.ac.uk:4085/go_latest</property -->
+        <!-- property name="connection.username">go_select</property -->
+        <!-- property name="connection.password">amigo</property -->
         <!-- property name="c3p0.min_size">2</property>
 		<property name="c3p0.max_size">3</property>
 		<property name="c3p0.timeout">1800</property>

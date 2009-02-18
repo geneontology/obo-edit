@@ -137,6 +137,10 @@ public class Term extends GOModel {
 		return is_obsolete;
 	}
 
+	public boolean isObsolete() {
+		return is_obsolete != 0;
+	}
+	
 	public void setIs_obsolete(Integer is_obsolete) {
 		this.is_obsolete = is_obsolete;
 	}
