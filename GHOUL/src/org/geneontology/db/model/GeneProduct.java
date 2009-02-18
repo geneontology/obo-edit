@@ -1,7 +1,8 @@
 package org.geneontology.db.model;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-
 
 /**
  * The GeneProduct class corresponds to the GO gene_product table.  
@@ -127,4 +128,22 @@ public class GeneProduct extends GOModel {
 		this.associations = associations;
 	}
 
+	public void addAssociation(Association assoc) {
+		if (this.associations == null)
+			this.associations = new HashSet<Association> ();
+		this.associations.add(assoc);
+		assoc.setGene_product(this);
+	}
+	
+	public Association removeAssociation(Term term) {
+		Association removal = null;
+		for (Iterator<Association> it = associations.iterator(); it.hasNext() && removal == null;) {
+			Association assoc = it.next();
+			if (assoc.getTerm() == term) {
+				removal = assoc;
+			}
+		}
+		associations.remove(removal);
+		return removal;
+	}
 }

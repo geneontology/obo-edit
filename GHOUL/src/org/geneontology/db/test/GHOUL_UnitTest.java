@@ -2,6 +2,7 @@ package org.geneontology.db.test;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -27,10 +28,10 @@ import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
 public class GHOUL_UnitTest extends TestCase{
-	
+
 	private SessionFactory sessionFactory;
 	protected final static Logger logger = Logger.getLogger(GHOUL_UnitTest.class);
-	
+
 	public GHOUL_UnitTest(){
 		try {
 			this.sessionFactory = HibernateUtil.buildSessionFactory("hibernate.cfg.xml");
@@ -46,50 +47,61 @@ public class GHOUL_UnitTest extends TestCase{
 	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
 	}
-	
+
 	public GOobjectFactory initSessionFactory() {
 		this.getSessionFactory().getCurrentSession().beginTransaction();
 		return (new GOobjectFactory(this.getSessionFactory()));
 	}
-	
+
 	public void testGP() {
 //		this.getSessionFactory().getCurrentSession().beginTransaction();
 //		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 252956);
 		GOobjectFactory factory = initSessionFactory();
-		GeneProduct gp = (GeneProduct) factory.getGPByName("myo6b");
+		GeneProduct gp = (GeneProduct) factory.getGPByName("clock");
 		Assert.assertTrue(gp != null);
 		if (gp != null) {
-			logger.assertLog(gp.getSymbol().equals("myo6b"), "Symbol matches myo6b");
+			logger.assertLog(gp.getSymbol().equals("myo6b"), "Symbol does not match myo6b");
 			Assert.assertEquals (gp.getSymbol(), "myo6b");
-			logger.assertLog(gp.getFull_name().equals("myosin VIb"), "Fullname matches myosin VIb");
+			logger.assertLog(gp.getFull_name().equals("myosin VIb"), "Fullname does not match myosin VIb");
 			Assert.assertEquals (gp.getFull_name(), "myosin VIb");
-			logger.assertLog(gp.getDbxref().getDb_name().equals("ZFIN"), "DB matches ZFIN");
+			logger.assertLog(gp.getDbxref().getDb_name().equals("ZFIN"), "DB does not match ZFIN");
 			Assert.assertEquals(gp.getDbxref().getDb_name(), "ZFIN");
-			logger.assertLog(gp.getDbxref().getAccession().equals("ZDB-GENE-030318-3"), "UID matches ZDB-GENE-030318-3");
+			logger.assertLog(gp.getDbxref().getAccession().equals("ZDB-GENE-030318-3"), "UID does not match ZDB-GENE-030318-3");
 			Assert.assertEquals(gp.getDbxref().getAccession(), "ZDB-GENE-030318-3");
-			logger.assertLog(gp.getSpecies().getNcbi_taxa_id() == 7955, "taxa_id matches 7955");
+			logger.assertLog(gp.getSpecies().getNcbi_taxa_id() == 7955, "taxa_id does not match 7955");
 			Assert.assertEquals(gp.getSpecies().getNcbi_taxa_id(), 7955);
-			logger.assertLog(gp.getSpecies().getCommon_name().equals("zebrafish"), "Common name matches zebrafish");
+			logger.assertLog(gp.getSpecies().getCommon_name().equals("zebrafish"), "Common name does not match zebrafish");
 			Assert.assertEquals(gp.getSpecies().getCommon_name(), "zebrafish");
-			logger.assertLog(gp.getSpecies().getGenus().equals("Danio"), "Genus name matches Danio");
+			logger.assertLog(gp.getSpecies().getGenus().equals("Danio"), "Genus name does not match Danio");
 			Assert.assertEquals(gp.getSpecies().getGenus(), "Danio");
-			logger.assertLog(gp.getSpecies().getSpecies().equals("rerio"), "species name matches rerio");
+			logger.assertLog(gp.getSpecies().getSpecies().equals("rerio"), "species name does not match rerio");
 			Assert.assertEquals(gp.getSpecies().getSpecies(), "rerio");
 			logger.info("\n" + prettyPrint(gp));
-			
-			gp = (GeneProduct) factory.getGPByDBXrefStr(gp.getDbxref().toString());
+
+			gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819");
 			Assert.assertTrue(gp != null);
-			
+
 			Iterator<Association> it = factory.getAssociationsIteratorByGP(gp);
 			Assert.assertTrue(it.hasNext());
 			while (it.hasNext()) {
 				Association assoc = it.next();
 				logger.info(" assoc: "+assoc);
 			}
-			
+
 		}
 	}
-	
+
+	public void testGPJoin() {
+		GOobjectFactory factory = initSessionFactory();
+		GeneProduct gp = (GeneProduct) factory.getGPByDBXref("RGD", "Q5M819");
+		Assert.assertTrue(gp != null);
+		if (gp == null) {
+			gp = (GeneProduct) factory.getGPByName("Psph");
+			Assert.assertTrue(gp != null);
+		}
+		logger.info(prettyPrint(gp));
+	}
+
 	public void testObsolete() {
 		this.getSessionFactory().getCurrentSession().beginTransaction();
 		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 23572);
@@ -98,7 +110,7 @@ public class GHOUL_UnitTest extends TestCase{
 			logger.info("\n\t" + prettyPrint(term));
 		}
 	}
-	
+
 	public void testTerm() {
 		this.getSessionFactory().getCurrentSession().beginTransaction();
 		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 24482);
@@ -109,17 +121,69 @@ public class GHOUL_UnitTest extends TestCase{
 				logger.assertLog(a.getSource_db().getName() != null, 
 						term.getAcc() + " has association (id=" + a.getAssoc_id() + ") with source_db_id null");
 				Assert.assertTrue(term.getAcc() + " has association with source_db_id null", 
-								a.getSource_db().getName() != null);
+						a.getSource_db().getName() != null);
 			}			
 			logger.info("\n\t" + prettyPrint(term));
 		}
 	}
+
+	public void testTermParents() {
+		Vector<String> gp_list = new Vector<String> ();
+		gp_list.add("MGI:98358");
+		gp_list.add("3735"); // RGD
+		gp_list.add("ZDB-GENE-011207-1");
+		GOobjectFactory factory = initSessionFactory();
+		Vector<Term> terms = (Vector<Term>) factory.getTermIntersectionByGP(gp_list);
+		if (terms != null) {
+			/** check for associations with foreign keys to DB table that don't exist in the DB table */
+			for (Iterator<Term> it = terms.iterator(); it.hasNext();) {
+				Term a = it.next();
+				logger.assertLog(a.getAcc() != null, 
+						"id=" + a.getAcc() + " is named " + a.getName());
+				Assert.assertTrue(a.getAcc() + " has name ", 
+						a.getName() != null);
+			}			
+		}
+
+	}
+
+	private GeneProduct testGetGP_byName() {
+		GOobjectFactory factory = initSessionFactory();
+		Iterator<GeneProduct> gps = factory.getGPByName("clock");
+		GeneProduct found = null;
+		while (gps.hasNext() && found == null) {
+			GeneProduct gp = gps.next();
+			found = (gp.getGp_id() == 244529 ? gp : null);
+		}
+		Assert.assertTrue(found != null);
+		return found;
+	}
+	
+	public void testAssocQualifier() {
+		GOobjectFactory factory = initSessionFactory();
+		GeneProduct gp = testGetGP_byName();
+		boolean found = false;
+		System.out.println("symbol = " + gp.getSymbol());
+		Set<Association> assoc = gp.getAssociations();
+		for (Iterator<Association> it = assoc.iterator(); it.hasNext(); ) {
+			Association a = it.next();
+			System.out.println("association id = " + a.getAssoc_id());
+			Set<Term> quals = a.getQualifiers();
+			for (Iterator<Term> t = quals.iterator(); t.hasNext(); ) {
+				Term term = t.next();
+				System.out.println("qualifier = " + term.getName());
+				found = true;
+			}
+		}
+		Assert.assertTrue(found);
+	}
+
 	/** for testing purposes */
 	public void prettyPrint(GOModel model) {
 		Assert.assertTrue((model != null));
 		logger.info(model);
 	}
-	
+
 	public String prettyPrint(GeneProduct gp) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("GENEP:\t" + gp.getSymbol() + " (" + gp.getFull_name() + ")\t" + 
@@ -138,14 +202,14 @@ public class GHOUL_UnitTest extends TestCase{
 		}
 		return buffer.toString();
 	}
-	
+
 	public String getString (Species sp) {
 		if (sp == null)
 			return "species=null";
 		else
 			return sp.getGenus() + " " + sp.getSpecies();
 	}
-	
+
 	public String prettyPrint (Sequence s, StringBuffer buffer) {
 		buffer.append("\tSEQ:\t" + s.getName() + "\t(lastmodified=" + s.getTimelastmodified() + ")");
 		buffer.append("\tmoltype=" + s.getMoltype() + "\tdescription=" + s.getDescription());
@@ -161,12 +225,12 @@ public class GHOUL_UnitTest extends TestCase{
 		StringBuffer buffer = new StringBuffer();
 		return prettyPrint(term, buffer);
 	}
-	
+
 	public String prettyPrint(Term term, StringBuffer buffer) {
 		buffer.append("TERM:\tCV=" + term.getCv() + "\tuid=" + term.getAcc() + "\tname=" + term.getName() + 
 				"\tobsolete=" + term.getIs_obsolete() + "\tis_root=" + term.getIs_root() + "\n");
 		buffer.append("\tTERM_DEF: " + term.getDefinition() + "\n");
-		
+
 		for (TermDBXref x : term.getTermDBXrefs()) {
 			if (x.getIs_for_definition() == 1)
 				prettyPrint (x.getDbxref(), buffer, "\tDEF_XREF");
@@ -174,7 +238,7 @@ public class GHOUL_UnitTest extends TestCase{
 				prettyPrint (x.getDbxref(), buffer, "\tTERM_XREF");
 		}
 		prettyPrintSyns(term, buffer);
-		
+
 		for (Association a : term.getAssociations()) {
 			prettyPrint (a, buffer);
 		}
@@ -184,13 +248,13 @@ public class GHOUL_UnitTest extends TestCase{
 		prettyPrintConsiderations (term.getConsiderations(), buffer);
 		return buffer.toString();
 	}
-	
+
 	protected void prettyPrintParents(Set<Relationship> rels, StringBuffer buffer) {
 		for (Relationship r : rels) {
 			buffer.append("\tPARENT:\t" + r.getType().getName() + "\t" + r.getObject().getName() + "\n");
 		}
 	}
-	
+
 	protected void prettyPrintChildren(Set<Relationship> rels, StringBuffer buffer) {
 		for (Relationship r : rels) {
 			buffer.append("\tCHILD:\t" + r.getType().getName() + "\t" + r.getSubject().getName() + "\n");
@@ -215,18 +279,18 @@ public class GHOUL_UnitTest extends TestCase{
 		}
 		return buffer.toString();
 	}
-	
+
 	private String validDBName(String db_name) {
 		GOobjectFactory goFactory = initSessionFactory();	
 		DB db = goFactory.getDBByName(db_name);
 		return (db == null ? "(not in db table)" : "");
 	}
-	
+
 	protected String prettyPrintSyns(Term term, StringBuffer buffer) {
 		for (TermSynonym tsyn : term.getSynonyms()){
 			buffer.append("\tSYN:\t" + tsyn.getSynonym() + "\ttype=" + tsyn.getSynonymType().getName() + 
-						"\tcategory=" + tsyn.getSynonymCategory() + "\talt_id=" + tsyn.getAlternateID() + "\n");
-			
+					"\tcategory=" + tsyn.getSynonymCategory() + "\talt_id=" + tsyn.getAlternateID() + "\n");
+
 		}
 		return buffer.toString();
 	}
@@ -256,7 +320,7 @@ public class GHOUL_UnitTest extends TestCase{
 		}
 		return buffer.toString();
 	}
-	
+
 	protected void prettyPrint(Association assoc, StringBuffer buffer) {
 		if (assoc == null) {
 			Assert.assertNotNull("Gene product without associations", assoc);
@@ -264,15 +328,15 @@ public class GHOUL_UnitTest extends TestCase{
 			buffer.append("\tASSOC:\tnone" + "\n");
 		} else {
 			buffer.append("\tASSOC:\tgp=" + assoc.getGene_product().getSymbol() + "\tterm=" + assoc.getTerm().getName() +
-				(assoc.getIs_not() == null ? "\t" : (assoc.getIs_not() == 0 ? "\t" : "\tNOT")) +
-				(assoc.getSource_db() == null ? "\tsource=null" : assoc.getSource_db().getName()) + 
-				"\tdate=" + assoc.getDate());
+					(assoc.getIs_not() == null ? "\t" : (assoc.getIs_not() == 0 ? "\t" : "\tNOT")) +
+					(assoc.getSource_db() == null ? "\tsource=null" : assoc.getSource_db().getName()) + 
+					"\tdate=" + assoc.getDate());
 			for (Evidence e : assoc.getEvidence()) {
 				prettyPrint(e, buffer);
 			}
 		}
 	}
-	
+
 	protected void prettyPrint (Evidence e, StringBuffer buffer) {
 		buffer.append("\n\t\tEVIDENCE:\t" + e.getCode() + "\txref=" + e.getDbxref().getDb_name() + ":" + e.getDbxref().getAccession());
 		for (DBXref x : e.getWiths()) {

@@ -1,8 +1,8 @@
 package org.geneontology.db.model;
 
 /**
- * The DB class corresponds to the Chado db table.
- * @author Robert Bruggner
+ * The DB class corresponds to the GO db table.
+ * @author Suzi Lewis
  *
  */
 public class DBXref extends GOModel {
