@@ -382,7 +382,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	public java.util.List getChanges() {
 		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
-		logger.debug("currentObject: " + currentObject.getClass().getSimpleName());
+//		logger.debug("currentObject: " + currentObject.getClass().getSimpleName());
 
 		if (currentObject instanceof LinkedObject && !(currentObject.getClass().getSimpleName().toString().equalsIgnoreCase("OBOPropertyImpl")) ) {
 			//get existing differentia
