@@ -1,7 +1,8 @@
 package org.geneontology.db.model;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-
 
 /**
  * The GeneProduct class corresponds to the GO gene_product table.  
@@ -45,6 +46,8 @@ public class Association extends GOModel {
   	 */
   	protected Set<Evidence> evidence;
   	
+  	protected Set<Term> qualifiers;
+  	
   	public Association(){
 		String[] uniqueConstraintFields = {"term", "gene_product"};
 		this.initUniqueConstraintFields(Association.class,uniqueConstraintFields);
@@ -82,6 +85,14 @@ public class Association extends GOModel {
 		this.is_not = is_not;
 	}
 
+	public boolean isNot() {
+		return is_not == 1;
+	}
+
+	public void setNot(boolean not) {
+		this.is_not = not ? 1 : 0;
+	}
+
 	public Integer getDate() {
 		return date;
 	}
@@ -106,8 +117,40 @@ public class Association extends GOModel {
 		this.evidence = evidence;
 	}
 	
+	public void addEvidence(Evidence evidence) {
+		if (this.evidence == null)
+			this.evidence = new HashSet<Evidence> ();
+		this.evidence.add(evidence);
+		evidence.setAssociation(this);
+	}
+	
 	public String toString() {
 		return getGene_product().toString()+" "+getTerm().toString();
 	}
 
+	public Set<Term> getQualifiers() {
+		return qualifiers;
+	}
+
+	public void setQualifiers(Set<Term> qualifiers) {
+		this.qualifiers = qualifiers;
+	}
+
+	public boolean contributesTo() {
+		return hasQualifier("contributes_to");
+	}
+	
+	public boolean colocalizes() {
+		return hasQualifier("colocalizes_with");
+	}
+	
+	private boolean hasQualifier(String qual) {
+		boolean has_qual = false;
+		for (Iterator<Term> it = qualifiers.iterator(); it.hasNext() && !has_qual;) {
+			Term term = it.next();
+			String name = term.getName();
+			has_qual = name.equals(qual);
+		}
+		return has_qual;
+	}
 }
