@@ -92,7 +92,7 @@ ListCellRenderer {
 
 		// Use preferred font for text
 		setFont(Preferences.getPreferences().getFont());
-		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
+//		logger.info("OBOCellRenderer.setFont: " + Preferences.getPreferences().getFont());  // DEL
 		setIcon(multiIcon);
 	}
 
