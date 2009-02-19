@@ -28,8 +28,18 @@ public class GOobjectFactory {
 		sf.getCurrentSession().beginTransaction();
 	}
 
+	
 	/** Graph factories for term class
 	 */
+
+	public SessionFactory getSessionFactory() {
+		return sf;
+	}
+	
+	public Session getSession() {
+		return sf.getCurrentSession();
+	}
+
 
 	/**
 	 * @param acc
