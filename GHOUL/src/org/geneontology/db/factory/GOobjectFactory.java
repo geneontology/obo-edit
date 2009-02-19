@@ -100,6 +100,16 @@ public class GOobjectFactory {
 		.setString(1, db_key).uniqueResult();
 		return gp;
 	}
+	
+	/**
+	 * As getGPByDBXref, but accepts a dbxref as a string (e.g. "FlyBase:FBgn00000001")
+	 * @param xrefStr
+	 * @return
+	 */
+	public GeneProduct getGPByDBXrefStr(String xrefStr) {
+		String[] parts = xrefStr.split(":", 2);
+		return getGPByDBXref(parts[0], parts[1]);
+	}
 
 	/**
 	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
