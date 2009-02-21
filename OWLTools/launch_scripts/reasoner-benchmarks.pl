@@ -5,9 +5,10 @@ use FileHandle;
 my $verbose = 1;
 
 #our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-Xss128m -Xms256m -Xmx4096m';
-our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-d64 -Xss256m -Xms512m -Xmx4096m';
+our $PELLET_OPTS = $ENV{PELLET_OPTS} || '-d64 -Xss256m -Xms4096m -Xmx4096m';
 our $PELLET = "java $PELLET_OPTS -jar $ENV{PELLET}/lib/pellet-cli.jar extract -s DirectSubClassOf ";
-our $HERMIT = "java  -mx2048m -jar /Users/cjm/OWLTools/runtime/HermiT.jar -c -v2 ";
+our $HERMIT = "java  -DentityExpansionLimit=256000 -mx2048m -jar /Users/cjm/OWLTools/runtime/HermiT.jar -c -v2 ";
+#our $HERMIT = "java -mx2048m -jar /Users/cjm/OWLTools/runtime/HermiT.jar -c -v2 ";
 #our $PELLET = "java $PELLET_OPTS -jar ".$ENV{HOME}.'/src/pellet/lib/pellet.jar';
 
 my $MAX_TIME = 3600;
@@ -34,11 +35,11 @@ my $reasoner_h =
         run_oboedit_reasoner($f, $benchf, "-reasonerfactory org.obo.reasoner.rbr.RuleBasedReasonerFactory");
     },
 
-    oboedit_pwr => sub {
-        my $f = shift;
-        my $benchf = shift;
-        run_oboedit_reasoner($f, $benchf, "-reasonerfactory org.obo.reasoner.impl.PelletWrappedReasonerFactory");
-    },
+#    oboedit_pwr => sub {
+#        my $f = shift;
+#        my $benchf = shift;
+#        run_oboedit_reasoner($f, $benchf, "-reasonerfactory org.obo.reasoner.impl.PelletWrappedReasonerFactory");
+#    },
 
     owlapi_pellet => sub {
         my $f = shift;
@@ -72,7 +73,7 @@ my $reasoner_h =
         my $f = shift;
         my $benchf = shift;
 	my $owlfile = genowl($f);
-        runcmd("$PELLET $owlfile >& $benchf");
+        runcmd("$PELLET $owlfile >& $benchf.tmp && head -1000 $benchf.tmp > $benchf");
     },
 
     hermit => sub {
@@ -183,6 +184,7 @@ if (%only) {
 }
 
 my $summaryf = "results.tab";
+my $dbf = "benchdb.tbl";
 my $summaryfh;
 if (keys %continue) {
     $summaryfh = FileHandle->new(">>$summaryf") || die $summaryf;
@@ -190,6 +192,8 @@ if (keys %continue) {
 else {
     $summaryfh = FileHandle->new(">$summaryf") || die $summaryf;
 }
+my $dbfh = FileHandle->new(">>$dbf") || die $summaryf;
+
 my @reasoners = keys %$reasoner_h;
 printf $summaryfh "ONT\t";
 printf $summaryfh (join("\t", @reasoners));
@@ -214,6 +218,7 @@ foreach my $f (@files) {
             logmsg("already have: $outf (running new-only)");
         }
         else {
+            # run the reasoner
             my $t1 = time;
             $reasoner_h->{$r}->($f,$outf);
             my $t2 = time;
@@ -222,19 +227,31 @@ foreach my $f (@files) {
             logmsg("totaltime: $f $r :: $td s");
         }
         my $rtime = parse_benchmarks($outf,$r);
+        my $ts = (stat($outf))[9];
+        
+        
         if (defined $rtime) {
             #$rtime = $rtime * 1000; # seconds
             $reasonertime_h->{$f}->{$r} = $rtime;
+            use POSIX 'strftime';
+            
+            #my $date_string = ctime(stat($outf)->mtime)->year;
+            my $date_string = strftime "%Y%m%d", localtime((stat($outf))[9]);
+
+            printf $dbfh "$date_string\t$f\t$r\t$reasonertime_h->{$f}->{$r}\n";
         }
         else {
             $rtime = "NULL";
         }
+
+
         logmsg("reasonertime: $f $r :: $rtime (seconds)");
 
     }
     printf $summaryfh "$f\t";
     printf $summaryfh join("\t", (map { $reasonertime_h->{$f}->{$_} } @reasoners));
     printf $summaryfh "\n";
+
 }
 
 $summaryfh->close();
@@ -257,7 +274,7 @@ sub run_owl_reasoner {
     my $argstr = shift || '';
     my $pwd = `pwd`;
     chomp $pwd;
-    runcmd("owlreasoner $argstr file://$pwd/$f >& $benchf");    
+    runcmd("owlreasoner $argstr file://$pwd/$f >& $benchf.tmp && head -1000 $benchf.tmp > $benchf");    
 }
 
 sub logmsg {
@@ -292,7 +309,9 @@ sub runcmd {
 sub genowl {
     my $f = shift;
     my $owlf = "$f.owl";
-    runcmd("test $owlf -nt $f || go2owl $f > $owlf");
+    #runcmd("test $owlf -nt $f || go2owl $f > $owlf");
+    #runcmd("test $owlf -nt $f || blip -f obo -i $f io-convert -to owl -o $owlf");
+    runcmd("test $owlf -nt $f || obo2owl -o file://`pwd`/$owlf $f");
     return $owlf;
 }
 
@@ -338,7 +357,7 @@ sub parse_benchmarks {
     my $fh = FileHandle->new($f);
     if (!$fh) {
         if (!$collect) {
-            die("assertion error: $f");
+            #die("assertion error: $f");
         }
         logmsg("no benchmarks for $f");
         return undef;
