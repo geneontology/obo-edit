@@ -572,7 +572,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			} catch (Exception ex) {
 				String failureHTML = "<html><center>Could not load GraphViz package.<br>"
 					+ "Make sure your properly obtained and installed GraphViz from<br>"
-					+ "<b>http://www.research.att.com/sw/tools/graphviz/download.html</b><br>"
+					+ "<b> http://www.graphviz.org/ </b><br>"
 					+ "and be sure that the correct path to the executable file<br>"
 					+ "is specified in the options window.</center></html>";
 				imageLabel.setIcon(null);
