@@ -73,11 +73,10 @@ public class GraphvizConfigPanel extends ConfigurationPanel {
 	JPanel obsoleteShapePanel = new JPanel();
 	JPanel typeShapePanel = new JPanel();
 	JTextArea messageArea = new JTextArea(
-			"This should contain the path to the \"dot\" or "
+			"Specify path to the \"dot\" or "
 			+ "\"dot.exe\" file included with the GraphViz "
 			+ "software package. The package can be obtained "
-			+ "from " + "http://www.research.att.com/sw/"
-			+ "tools/graphviz/download.html", 3, 20);
+			+ "from " + "http://www.graphviz.org/", 3, 20);
 	JPanel viewerFormatLine = new JPanel();
 	JLabel appLabel = new JLabel("Application path");
 	Box horzBox = new Box(BoxLayout.X_AXIS);
