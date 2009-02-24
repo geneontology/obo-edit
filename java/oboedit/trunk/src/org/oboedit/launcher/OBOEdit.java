@@ -203,6 +203,7 @@ public class OBOEdit {
 
 					// Configure logging
 					Properties props = new Properties();
+					setupLog4j(props, logFile);
 					logger.info("Starting " + getAppName() + " "
 							+ Preferences.getVersion() + ": " + (new Date()));
 
@@ -256,6 +257,39 @@ public class OBOEdit {
 
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", getAppName());
 		SwingUtilities.invokeAndWait(r);
+	}
+
+	/**
+	 * Static configuration of log system
+	 * 
+	 * Problem:
+	 * This settings will only effect the classes instantiated beyond 
+	 * that point. The package dependent log levels will lead to the same
+	 * behavior of the logging system 
+	 *
+	 * @param props
+	 * @param logFile
+	 */
+	private static void setupLog4j(Properties props, String logFile){
+		props.setProperty("log4j.rootLogger","WARN, A1, A2");
+		props.setProperty("log4j.appender.A1","org.apache.log4j.ConsoleAppender");
+		props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A1.layout.ConversionPattern","%m%n");
+
+		props.setProperty("log4j.appender.A2","org.apache.log4j.RollingFileAppender");
+		props.setProperty("log4j.appender.A2.file",logFile);
+		props.setProperty("log4j.appender.A2.append","true");
+		props.setProperty("log4j.appender.A2.MaxFileSize","1MB");
+		props.setProperty("log4j.appender.A2.MaxBackupIndex","10");
+		props.setProperty("log4j.appender.A2.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.A2.layout.ConversionPattern","%m%n");
+		
+		// set logging to debug for OBO Edit related packages
+		props.setProperty("log4j.logger.org.bbop","DEBUG");
+		props.setProperty("log4j.logger.org.oboedit","DEBUG");
+		
+//		LogManager.resetConfiguration();
+		PropertyConfigurator.configure(props);
 	}
 
 	public static void printUsage() {
