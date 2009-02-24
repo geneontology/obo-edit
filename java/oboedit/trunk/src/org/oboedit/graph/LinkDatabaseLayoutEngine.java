@@ -109,7 +109,12 @@ public class LinkDatabaseLayoutEngine {
 				for (Link link : linkDatabase.getParents((LinkedObject) io)) {
 					if (TermUtil.isIntersection(link))
 						continue;
-					graphLayout.addEdge(link.getChild(), link.getParent());
+					try{
+						graphLayout.addEdge(link.getChild(), link.getParent());
+					} catch(Exception e){
+						logger.error("LinkDatabaseLayoutEngine - Problem while adding edge. Check if term name is valid. " + e);
+					}
+
 				}
 			}
 		}
