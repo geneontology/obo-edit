@@ -1,0 +1,51 @@
+
+<project name="ghoul" basedir="." default="jar">
+
+	<property name="runtimedir_name" value="runtime" />
+	<property name="runtimedir" location="${runtimedir_name}" />
+	<property name="librarydir" location="lib" />
+	<property name="dest.dir" value="build" />
+	<property name="dest.dir.classes" value="${dest.dir}/classes" />
+	<property name="dest.dir.lib" value="${dest.dir}/lib" />
+	<property name="projectname" value="ghoul" />
+	<property name="jarfile" location="${librarydir}/runlibs/${projectname}.jar" />
+	<property name="main_jar_manifest" location="jar_manifest" />
+	<property name="outputdir" value="classes" />
+	<property name="sourcedir" value="src" />
+	<property name="apidoc_dest" location="docs" />
+	<property name="librarydir" location="lib" />
+	<property name="relaxdir" location="${sourcedir}/org/ghoul/model/doc-files" />
+	<property name="releasenotes" location="CHANGES" />
+	<property name="tagprefix" value="${projectname}-" />
+ 
+        <property name="build.dir" value="build"/>
+
+	<path id="classpath">
+		<fileset dir="hibernateLib">
+        		<include name="*.jar" />
+		</fileset>
+		<fileset dir="jars">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="apidocs" description="Build API documentation">
+		<javadoc 
+			sourcepath="${sourcedir}" 
+			classpathref="classpath" 
+			defaultexcludes="yes" 
+			destdir="${apidoc_dest}" 
+			packagenames="org.geneontology.*"
+			author="true" 
+			version="true" 
+			use="true" >
+		       <doctitle><![CDATA[<h1>${ant.project.name}</h1>]]></doctitle>
+		        <bottom>
+		            <![CDATA[<i>Copyright &#169; 2008 All Rights Reserved.</i>]]>
+		        </bottom>
+		        <tag name="todo" scope="all" description="To do:"/>
+			</javadoc>
+	</target>
+
+
+</project>

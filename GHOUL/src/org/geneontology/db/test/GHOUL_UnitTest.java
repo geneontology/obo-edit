@@ -26,10 +26,12 @@ import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
 import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
 
 public class GHOUL_UnitTest extends TestCase{
 
 	private SessionFactory sessionFactory;
+	private GOobjectFactory objFactory;
 	protected final static Logger logger = Logger.getLogger(GHOUL_UnitTest.class);
 
 	public GHOUL_UnitTest(){
@@ -43,6 +45,12 @@ public class GHOUL_UnitTest extends TestCase{
 	public SessionFactory getSessionFactory() {
 		return this.sessionFactory;
 	}
+	
+	public GOobjectFactory getObjFactory() {
+		if (objFactory == null)
+			return initSessionFactory();
+		return objFactory;
+	}
 
 	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
@@ -50,14 +58,15 @@ public class GHOUL_UnitTest extends TestCase{
 
 	public GOobjectFactory initSessionFactory() {
 		this.getSessionFactory().getCurrentSession().beginTransaction();
-		return (new GOobjectFactory(this.getSessionFactory()));
+		objFactory = new GOobjectFactory(this.getSessionFactory());
+		return objFactory;
 	}
 
 	public void testGP() {
 //		this.getSessionFactory().getCurrentSession().beginTransaction();
 //		GeneProduct gp = (GeneProduct) this.getSessionFactory().getCurrentSession().get(GeneProduct.class, 252956);
 		GOobjectFactory factory = initSessionFactory();
-		GeneProduct gp = (GeneProduct) factory.getGPByName("clock");
+		GeneProduct gp = (GeneProduct) factory.getGPByDBXrefStr("ZFIN:ZDB-GENE-030318-3");
 		Assert.assertTrue(gp != null);
 		if (gp != null) {
 			logger.assertLog(gp.getSymbol().equals("myo6b"), "Symbol does not match myo6b");
@@ -103,17 +112,16 @@ public class GHOUL_UnitTest extends TestCase{
 	}
 
 	public void testObsolete() {
-		this.getSessionFactory().getCurrentSession().beginTransaction();
-		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 23572);
+		Term term = (Term) getObjFactory().getTermByAcc("GO:0000005"); // ribosomal chaperone activity
 		Assert.assertTrue(term != null);
 		if (term != null) {
 			logger.info("\n\t" + prettyPrint(term));
 		}
+		Assert.assertTrue(term.isObsolete());
 	}
 
 	public void testTerm() {
-		this.getSessionFactory().getCurrentSession().beginTransaction();
-		Term term = (Term) this.getSessionFactory().getCurrentSession().get(Term.class, 24482);
+		Term term = (Term) getObjFactory().getTermByAcc("GO:0000011"); // vacuole inheritance
 		Assert.assertTrue(term != null);
 		if (term != null) {
 			/** check for associations with foreign keys to DB table that don't exist in the DB table */
