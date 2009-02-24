@@ -208,25 +208,26 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			return super.isEnabled(selection);
 		}
 
-		// parentLink --> reasoner.getChildren(lo)
+		// parentLink --> getChildren(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
 			ReasonedLinkDatabase reasoner = null;
 			reasoner = canvas.getReasoner();
-			if(reasoner == null)
-				reasoner = new OnTheFlyReasoner(SessionManager.getManager().getSession().getLinkDatabase()	);
-			for (LinkedObject lo : selection.getTerms()) {
-				if(reasoner != null){
-					for (Link parentLink : reasoner.getChildren(lo)) {
-						if (type == null
-								|| (parentLink.getType().isTransitive() && showTransitives)
-								|| (!parentLink.getType().isTransitive() && showIntransitives)
-								|| reasoner.isSubPropertyOf(parentLink.getType(),
-										type))
-							out.add(parentLink.getChild());
-					}
-				}
 
+			for (LinkedObject lo : selection.getTerms()) {
+				Collection<Link> allChildren;
+				if(reasoner != null)
+					allChildren = reasoner.getChildren(lo);
+				else 
+					allChildren = canvas.getLinkProviderDatabase().getChildren(lo);
+				for (Link parentLink : allChildren) {
+					if (type == null
+							|| (parentLink.getType().isTransitive() && showTransitives)
+							|| (!parentLink.getType().isTransitive() && showIntransitives)
+							|| reasoner.isSubPropertyOf(parentLink.getType(),
+									type))
+						out.add(parentLink.getChild());
+				}
 			}
 			return out;
 		}
@@ -252,23 +253,26 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 			boolean enabled = super.isEnabled(selection);
 			return enabled;
 		}
-		// parentLink --> reasoner.getParents(lo)
+		// parentLink --> getParents(lo)
 		public Collection<? extends LinkedObject> getShown(Selection selection) {
 			Collection<LinkedObject> out = new HashSet<LinkedObject>();
 			ReasonedLinkDatabase reasoner = null;
 			reasoner = canvas.getReasoner();
-			if(reasoner == null)
-				reasoner = new OnTheFlyReasoner(SessionManager.getManager().getSession().getLinkDatabase()	);
-			if(reasoner != null){
-				for (LinkedObject lo : selection.getTerms()) {
-					for (Link parentLink : reasoner.getParents(lo)) {
-						if (type == null
-								|| (parentLink.getType().isTransitive() && showTransitives)
-								|| (!parentLink.getType().isTransitive() && showIntransitives)
-								|| reasoner.isSubPropertyOf(parentLink.getType(),
-										type))
-							out.add(parentLink.getParent());
-					}
+
+			for (LinkedObject lo : selection.getTerms()) {
+				Collection<Link> allParents;
+				if(reasoner != null)
+					allParents = reasoner.getParents(lo);
+				else 
+					allParents = canvas.getLinkProviderDatabase().getParents(lo);
+
+				for (Link parentLink : allParents) {
+					if (type == null
+							|| (parentLink.getType().isTransitive() && showTransitives)
+							|| (!parentLink.getType().isTransitive() && showIntransitives)
+							|| reasoner.isSubPropertyOf(parentLink.getType(),
+									type))
+						out.add(parentLink.getParent());
 				}
 			}
 			return out;
