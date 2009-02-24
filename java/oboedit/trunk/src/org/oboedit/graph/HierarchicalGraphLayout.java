@@ -112,7 +112,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		protected int location;
 
 		protected boolean isDummy = false;
-		
+
 		protected int name;
 
 		public NodeObj(Object o, int name) {
@@ -160,7 +160,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			this.level = level;
 			if (level == null)
 				(new Exception("null level specified for " + getNode()))
-						.printStackTrace();
+				.printStackTrace();
 		}
 
 		public int getWidth() {
@@ -262,8 +262,8 @@ public class HierarchicalGraphLayout implements GraphLayout {
 					NodeObj b = (NodeObj) nodes.get(i);
 
 					int overlap = minLevelGap
-							+ (a.getLocation() + a.getLayoutWidth() / 2)
-							- (b.getLocation() - b.getLayoutWidth() / 2);
+					+ (a.getLocation() + a.getLayoutWidth() / 2)
+					- (b.getLocation() - b.getLayoutWidth() / 2);
 					if (overlap > 0) {
 						foundOverlap = true;
 						a.setLocation(a.getLocation() - overlap / 2 - 1);
@@ -291,7 +291,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			for (int i = 0; i < nodes.size(); i++) {
 				NodeObj node = (NodeObj) nodes.get(i);
 				((NodeObj) nodes.get(i))
-						.setLocation(node.getLocation() - delta);
+				.setLocation(node.getLocation() - delta);
 			}
 		}
 
@@ -347,7 +347,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		// Classcast exception if not NodeLayoutData
 		public int compare(Object o1, Object o2) {
 			int val = ((NodeObj) o1).getLocation()
-					- ((NodeObj) o2).getLocation();
+			- ((NodeObj) o2).getLocation();
 			if (val == 0 && o1 instanceof NodeObj && o2 instanceof NodeObj)
 				return objectComparator.compare((NodeObj) o1, (NodeObj) o2);
 			else
@@ -400,16 +400,16 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			Object oa = o1.getNode();
 			Object ob = o2.getNode();
 			if (oa instanceof IdentifiedObject
-			    && ob instanceof IdentifiedObject) {
+					&& ob instanceof IdentifiedObject) {
 				IdentifiedObject a = (IdentifiedObject) o1.getNode();
 				IdentifiedObject b = (IdentifiedObject) o2.getNode();
 				// Dangling objects have null names (Chris did it that way on purpose)
 				String aName = a.getName();
 				if (aName == null)
-				    return -1;
+					return -1;
 				String bName = b.getName();
 				if (bName == null)
-				    return 1;
+					return 1;
 				return aName.compareToIgnoreCase(bName);
 			} else if (ob instanceof IdentifiedObject)
 				return -1;
@@ -423,12 +423,12 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	public void setObjectComparator(Comparator<NodeObj> objectComparator) {
 		this.objectComparator = objectComparator;
 	}
-	
+
 	protected int nodeCount = 0;
 
 	public void doLayout() {
 //		logger.debug("HGL.doLayout: levels = " + levels.size() + ", time = " + System.currentTimeMillis()/1000);
-			     
+
 		levels.clear();
 
 		ArrayList<NodeObj> nodeList = new ArrayList<NodeObj>(nodes.values());
@@ -484,12 +484,12 @@ public class HierarchicalGraphLayout implements GraphLayout {
 						.getLocation());
 
 			offset.setLocation(offset.getX() - n.getWidth() / 2, 
-//					   offset.getY() - n.getHeight() / 2);
-					   // Put the icon box a bit lower on its link.
-					   // Problem:  what if subtracting 5 results in a number below 0??
-					   // I don't want to put a min or an if here because that could increase
-					   // the running time.
-					   offset.getY() - n.getHeight() / 2 - 5);
+//					offset.getY() - n.getHeight() / 2);
+					// Put the icon box a bit lower on its link.
+					// Problem:  what if subtracting 5 results in a number below 0??
+					// I don't want to put a min or an if here because that could increase
+					// the running time.
+					offset.getY() - n.getHeight() / 2 - 5);
 			Rectangle r = new Rectangle((int) offset.getX(), (int) offset
 					.getY(), n.getWidth(), n.getHeight());
 
@@ -506,15 +506,15 @@ public class HierarchicalGraphLayout implements GraphLayout {
 				NodeObj parent = edge.getLayoutParent();
 				NodeObj child = edge.getLayoutChild();
 				if (child == null)
-				    continue;
+					continue;
 
 				int parentLocation = parent.getLocation();
 				int childLocation = child.getLocation();
 
 				int levelParent = parent.getLevel().location
-						+ parent.getLevel().depth / 2;
+				+ parent.getLevel().depth / 2;
 				int levelChild = child.getLevel().location
-						- child.getLevel().depth / 2;
+				- child.getLevel().depth / 2;
 
 				int levelCentre = (levelParent + levelChild) / 2;
 
@@ -525,9 +525,9 @@ public class HierarchicalGraphLayout implements GraphLayout {
 					nodeChild = child.getLevel().location;
 				} else {
 					nodeParent = parent.getLevel().location
-							+ parent.getLayoutHeight() / 2;
+					+ parent.getLayoutHeight() / 2;
 					nodeChild = child.getLevel().location
-							- child.getLayoutHeight() / 2;
+					- child.getLayoutHeight() / 2;
 				}
 				if (orientation == PARENT_TOP || orientation == PARENT_BOTTOM) {
 					if (shape.getCurrentPoint() == null)
@@ -548,7 +548,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 					shape.lineTo(multiplier * levelParent, parentLocation);
 					shape.curveTo(multiplier * levelCentre, parentLocation,
 							multiplier * levelCentre, childLocation, multiplier
-									* levelChild, childLocation);
+							* levelChild, childLocation);
 					shape.lineTo(multiplier * nodeChild, childLocation);
 				}
 			}
@@ -720,8 +720,10 @@ public class HierarchicalGraphLayout implements GraphLayout {
 	public void addEdge(Object child, Object parent) {
 		NodeObj childNode = getNode(child);
 		NodeObj parentNode = getNode(parent);
-		DummyEdge edge = new DummyEdge(childNode, parentNode);
-		dummyEdges.add(edge);
+		if(childNode != null && parentNode != null){
+			DummyEdge edge = new DummyEdge(childNode, parentNode);
+			dummyEdges.add(edge);
+		}
 	}
 
 	public NodeObj getNode(Object o) {
@@ -809,13 +811,13 @@ public class HierarchicalGraphLayout implements GraphLayout {
 		}
 
 		public int hashCode() {
-//		    if (layoutChild == null && layoutParent == null)
+//			if (layoutChild == null && layoutParent == null)
 //			return 0; // ?
-//		    else if (layoutChild == null)
+//			else if (layoutChild == null)
 //			return 31 * layoutParent.hashCode();
-//		    else if (layoutParent == null) 
+//			else if (layoutParent == null) 
 //			return 31 * layoutChild.hashCode();
-//		    else
+//			else
 			return 31 * layoutChild.hashCode() + layoutParent.hashCode();
 		}
 
@@ -823,7 +825,7 @@ public class HierarchicalGraphLayout implements GraphLayout {
 			if (o instanceof DummyEdge) {
 				DummyEdge edge = (DummyEdge) o;
 				return edge.getLayoutChild().equals(layoutChild)
-						&& edge.getLayoutParent().equals(layoutParent);
+				&& edge.getLayoutParent().equals(layoutParent);
 			} else {
 				return false;
 			}
