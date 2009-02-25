@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="OBO-Edit" default="all">
 
-	<property name="developer_email" value="john.richter@aya.yale.edu" />
+	<property name="developer_email" value="aabdulla@berkeleybop.org" />
 
 	<!-- project variables -->
 	<property name="projectname" value="oboedit" />
@@ -174,8 +174,7 @@
 		<echo message="install4J version = ${install4j_formatted_version_number}" />
 		<install4j projectfile="install4j_config.install4j" release="${install4j_formatted_version_number}" />
 	</target>
-	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, install4j_installers" description="Build installers">
-	<!-- target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers" -->
+	<target name="installers" depends="clean, -releasenotes, textfiles, classes, jar, library_jars, docindex, apidocs, install4j_installers" description="Build installers">
 	</target>
 
 	<fileset dir="${obo_dest}/lib" id="obo_jars">
