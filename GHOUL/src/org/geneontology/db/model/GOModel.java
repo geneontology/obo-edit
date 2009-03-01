@@ -4,10 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Vector;
+
 import org.hibernate.proxy.HibernateProxy;
 
-
-public abstract class GOModel{
+public class GOModel {
 
 	private Vector<Field> uniqueConstraintFields = new Vector<Field>();
 
@@ -197,29 +197,5 @@ public abstract class GOModel{
 		}
 		return returnMethod;
 	}
-
-	/*
-	public Boolean proxyClassEquals(Class comparaClass){
-
-		System.out.println(this instanceof HibernateProxy);
-
-
-		System.out.println(this.getClass().getName() + "\t" + comparaClass.getName());
-
-		if (this.getClass().equals(comparaClass)){
-			return true;
-		}
-
-		Class<?> thisClass = this.getClass();
-
-		for (Class<?> c : thisClass.getInterfaces()){
-			if (c.equals(HibernateProxy.class)){
-				thisClass = ((HibernateProxy)this).getHibernateLazyInitializer().getPersistentClass();
-			}
-		}
-
-		return comparaClass.equals(thisClass);
-	}
-	 */
 
 }

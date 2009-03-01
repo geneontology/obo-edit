@@ -168,7 +168,6 @@ public class GHOUL_UnitTest extends TestCase{
 	}
 	
 	public void testAssocQualifier() {
-		GOobjectFactory factory = initSessionFactory();
 		GeneProduct gp = testGetGP_byName();
 		boolean found = false;
 		System.out.println("symbol = " + gp.getSymbol());

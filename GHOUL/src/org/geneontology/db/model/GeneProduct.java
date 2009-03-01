@@ -6,14 +6,14 @@ import java.util.Set;
 
 /**
  * The GeneProduct class corresponds to the GO gene_product table.  
- * @author Robert Bruggner
+ * @author Suzanna Lewis
  *
  */
 public class GeneProduct extends GOModel {
-		
+
 	/** The gene_product id */
 	protected int gp_id;
-	
+
 	/** concise label for this gene product */
 	protected String symbol;
 
@@ -25,24 +25,24 @@ public class GeneProduct extends GOModel {
 
 	/** gene_product type (eg gene, transcript, protein, complex) (column 13 in the gene-association file) */
 	protected Term SO_type;
-	
+
 	/** symbol is typically a concise label, full_name may be more textual (column 10 in the gene-association file) */
 	protected String full_name;
-	
+
 	/** alternate labels for the gene or gene product (column 11 in the gene-association file) */
 	protected Set<String> synonyms;
-		
+
 	protected Set<ProductSeq> seqs;
-	
+
 	protected HomolSet homol_set;
-	
+
 	/** 
 	 * An association is a link between a gene product record and an ontology term, 
 	 * with one or more pieces of evidence 
 	 * *** IMPORTANT: NOT all associations are positive: some posit negative links.
 	 */
 	protected Set<Association> associations;
-	
+
 	public GeneProduct(){
 		String[] uniqueConstraintFields = {"dbxref"};
 		this.initUniqueConstraintFields(GeneProduct.class,uniqueConstraintFields);
@@ -119,8 +119,11 @@ public class GeneProduct extends GOModel {
 	public void setHomol_set(HomolSet homol_set) {
 		this.homol_set = homol_set;
 	}
-	
+
 	public Set<Association> getAssociations() {
+		if (associations == null) {
+			associations = new HashSet<Association>();
+		}
 		return associations;
 	}
 
@@ -129,21 +132,21 @@ public class GeneProduct extends GOModel {
 	}
 
 	public void addAssociation(Association assoc) {
-		if (this.associations == null)
-			this.associations = new HashSet<Association> ();
-		this.associations.add(assoc);
 		assoc.setGene_product(this);
+		this.getAssociations().add(assoc);
 	}
-	
-	public Association removeAssociation(Term term) {
+
+	public Association removeAssociation(Term term, String from_db) {
 		Association removal = null;
 		for (Iterator<Association> it = associations.iterator(); it.hasNext() && removal == null;) {
 			Association assoc = it.next();
-			if (assoc.getTerm() == term) {
+			if (assoc.getTerm() == term && assoc.getSource_db().getName().equals(from_db)) {
 				removal = assoc;
 			}
 		}
-		associations.remove(removal);
+		if (removal != null) {
+			associations.remove(removal);
+		}
 		return removal;
 	}
 }

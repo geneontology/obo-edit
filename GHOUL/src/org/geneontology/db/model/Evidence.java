@@ -1,5 +1,6 @@
 package org.geneontology.db.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -103,12 +104,22 @@ public class Evidence extends GOModel {
 
 
 	public Set<DBXref> getWiths() {
+		if (withs == null) {
+			withs = new HashSet<DBXref> ();
+		}
 		return withs;
 	}
 
 
 	public void setWiths(Set<DBXref> withs) {
 		this.withs = withs;
+	}
+
+	public void addWith(DBXref with) {
+		if (withs == null) {
+			withs = new HashSet<DBXref> ();
+		}
+		this.withs.add(with);
 	}
 
 	public String getTip() {

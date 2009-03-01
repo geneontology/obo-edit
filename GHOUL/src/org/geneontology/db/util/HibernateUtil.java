@@ -1,7 +1,8 @@
 package org.geneontology.db.util;
 
-import org.hibernate.*;
-import org.hibernate.cfg.*;
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 /**
  * HibernateUtil is a class that creates a new Hibernate {@link SessionFactory}
