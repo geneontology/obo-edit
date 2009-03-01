@@ -10,45 +10,45 @@ import java.util.Set;
  *
  */
 public class Association extends GOModel {
-		
-  	protected int assoc_id;
 
-  	/** the (GO) term to which the gene_product is associated */
-  	protected Term term;
-  	
-  	/** the gene or gene_product to which the term is associated */
-  	protected GeneProduct gene_product;
-  	
-  	/** ** IMPORTANT ** when this field is non-zero, 
-  	 * the meaning of the annotation is that the gene_product does NOT have the role defined by the GO term 
-  	 * (column 4 = NOT in the gene-association file)
-  	 */
-  	protected Integer is_not;
-  	
-  	/**
-  	 * a date in YYYYMMDD format. This is the date the association was last checked the source db providers
-  	 * (column 14 in the gene-association file) 
-  	 */
-  	protected Integer date;
- 	
-  	/** 
-  	 * the source of the association; 
-  	 * for instance, the association file may come from SwissProt, 
-  	 * but the source of the association (Example: SGD) (Example: MGI) 
-  	 * (column 15 = NOT in the gene-association file) (docs: http://www.geneontology.org/cgi-bin/xrefs.cgi)
-  	 */
-  	protected DB source_db;
+	protected int assoc_id;
 
-  	/**
-  	 *  each association can have one or more pieces of evidence attached to it 
-  	 *  (the schema actually allows zero or more, but with GO all annotation have at least one piece of evidence) 
-  	 *  (doc: http://www.geneontology.org/GO.evidence.shtml)
-  	 */
-  	protected Set<Evidence> evidence;
-  	
-  	protected Set<Term> qualifiers;
-  	
-  	public Association(){
+	/** the (GO) term to which the gene_product is associated */
+	protected Term term;
+
+	/** the gene or gene_product to which the term is associated */
+	protected GeneProduct gene_product;
+
+	/** ** IMPORTANT ** when this field is non-zero, 
+	 * the meaning of the annotation is that the gene_product does NOT have the role defined by the GO term 
+	 * (column 4 = NOT in the gene-association file)
+	 */
+	protected Integer is_not;
+
+	/**
+	 * a date in YYYYMMDD format. This is the date the association was last checked the source db providers
+	 * (column 14 in the gene-association file) 
+	 */
+	protected Integer date;
+
+	/** 
+	 * the source of the association; 
+	 * for instance, the association file may come from SwissProt, 
+	 * but the source of the association (Example: SGD) (Example: MGI) 
+	 * (column 15 = NOT in the gene-association file) (docs: http://www.geneontology.org/cgi-bin/xrefs.cgi)
+	 */
+	protected DB source_db;
+
+	/**
+	 *  each association can have one or more pieces of evidence attached to it 
+	 *  (the schema actually allows zero or more, but with GO all annotation have at least one piece of evidence) 
+	 *  (doc: http://www.geneontology.org/GO.evidence.shtml)
+	 */
+	protected Set<Evidence> evidence;
+
+	protected Set<Term> qualifiers;
+
+	public Association(){
 		String[] uniqueConstraintFields = {"term", "gene_product"};
 		this.initUniqueConstraintFields(Association.class,uniqueConstraintFields);
 	}
@@ -86,7 +86,7 @@ public class Association extends GOModel {
 	}
 
 	public boolean isNot() {
-		return is_not == 1;
+		return (is_not != null && is_not == 1);
 	}
 
 	public void setNot(boolean not) {
@@ -116,14 +116,14 @@ public class Association extends GOModel {
 	public void setEvidence(Set<Evidence> evidence) {
 		this.evidence = evidence;
 	}
-	
+
 	public void addEvidence(Evidence evidence) {
 		if (this.evidence == null)
 			this.evidence = new HashSet<Evidence> ();
 		this.evidence.add(evidence);
 		evidence.setAssociation(this);
 	}
-	
+
 	public String toString() {
 		return getGene_product().toString()+" "+getTerm().toString();
 	}
@@ -139,17 +139,19 @@ public class Association extends GOModel {
 	public boolean contributesTo() {
 		return hasQualifier("contributes_to");
 	}
-	
+
 	public boolean colocalizes() {
 		return hasQualifier("colocalizes_with");
 	}
-	
+
 	private boolean hasQualifier(String qual) {
 		boolean has_qual = false;
-		for (Iterator<Term> it = qualifiers.iterator(); it.hasNext() && !has_qual;) {
-			Term term = it.next();
-			String name = term.getName();
-			has_qual = name.equals(qual);
+		if (qualifiers != null) {
+			for (Iterator<Term> it = qualifiers.iterator(); it.hasNext() && !has_qual;) {
+				Term term = it.next();
+				String name = term.getName();
+				has_qual = name.equals(qual);
+			}
 		}
 		return has_qual;
 	}

@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="hibernateLib/versioncheck.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/xerces-2.6.2.jar"/>
 	<classpathentry kind="lib" path="hibernateLib/xml-apis.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OBO"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

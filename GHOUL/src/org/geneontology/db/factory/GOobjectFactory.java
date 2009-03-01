@@ -17,29 +17,35 @@ import org.hibernate.SessionFactory;
 
 public class GOobjectFactory {
 	/** The local {@link SessionFactory} object used to retrieve data. */
-	private SessionFactory sf;
+	private static SessionFactory sf;
 
 	/**
 	 * Creates a new ChadoAdaptor that will retrieve data from the database configured in the supplied {@link SessionFactory} object.
 	 * @param sf a {@link SessionFactory} object with an active transaction. 
 	 */
-	public GOobjectFactory(SessionFactory sf){
-		this.sf = sf;
+	public GOobjectFactory(SessionFactory sessionFactory){
+		sf = sessionFactory;
 		sf.getCurrentSession().beginTransaction();
 	}
 
-	
-	/** Graph factories for term class
+	/**
+	 * 
+	 * @return {@link SessionFactory} object
 	 */
-
 	public SessionFactory getSessionFactory() {
 		return sf;
 	}
 	
+	/**
+	 * @return current Session
+	 */
 	public Session getSession() {
 		return sf.getCurrentSession();
 	}
 
+
+	/** Graph factories for term class
+	 */
 
 	/**
 	 * @param acc
