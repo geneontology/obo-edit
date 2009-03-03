@@ -259,6 +259,8 @@ public class DeleteAction implements ClickMenuAction {
 				}
 			}
 
+			//Uncomment this block to see the code working
+			
 //			if (lastInstanceCount > 0 && n==1) //This term is the last instance and is 
 //				//mentioned in consider or replaced_by tags
 //			{
