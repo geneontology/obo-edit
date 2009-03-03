@@ -6,6 +6,17 @@ import java.util.List;
 
 import org.obo.datamodel.impl.OBOPropertyImpl;
 
+/**
+ * An OBOProperty is an OBOObject that is used to type {@link Relationship}s. An OBOProperty is also known as a "relation" or "relationship type".
+ * The term "property" is derived from the OWL vocabulary, which includes DataProperties and ObjectProperties. In OBO Format, OBOProperties
+ * are represented using [Typedef] stanzas (the term "Typedef" is somewhat confusing, but we are stuck with it. In various places in this API, the
+ * OBOProperty is accessed using a type() method).
+ * 
+ * Examples of OBOProperties are: part_of, is_a, develops_from, regulates
+ * 
+ * See http://wiki.geneontology.org/index.php/Glossary
+ *
+ */
 public interface OBOProperty extends OBOObject {
 
 	public static final OBOProperty IS_A = new OBOPropertyImpl("OBO_REL:is_a",
