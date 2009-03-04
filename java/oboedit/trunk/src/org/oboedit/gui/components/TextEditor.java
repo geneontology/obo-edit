@@ -127,8 +127,7 @@ RootTextEditComponent, SelectionDrivenComponent {
 	};
 
 	public void setObjectSelector(ObjectSelector selector) {
-		if (this.selector != null)
-			selector.removeSelectionListener(selectionListener);
+		if (this.selector != null) this.selector.removeSelectionListener(selectionListener);
 
 		this.selector = selector;
 
