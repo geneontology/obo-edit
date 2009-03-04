@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.swing.KeyStroke;
 import org.bbop.framework.GUIManager;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
@@ -64,7 +66,7 @@ public class DeleteAction implements ClickMenuAction {
 	protected boolean legacyMode = false;
 
 	protected List<PathCapable> deleteThese = new ArrayList<PathCapable>();
-	
+
 	protected int lastInstanceCount = 0;
 
 	protected String instanceString = "";
@@ -72,7 +74,7 @@ public class DeleteAction implements ClickMenuAction {
 
 	LinkFilterFactory lff = new LinkFilterFactory();
 	ObjectFilterFactory off = new ObjectFilterFactory();
-	
+
 
 	protected Comparator<PathCapable> pcComparator = new Comparator<PathCapable>() {
 		public int compare(PathCapable o1, PathCapable o2) {
@@ -238,7 +240,8 @@ public class DeleteAction implements ClickMenuAction {
 				return null;
 		} else if (Preferences.getPreferences().getWarnBeforeDelete()) {
 			int n = 1; //Place marker to say in this case the term is mentioned in consider or replaced by tags.
-			if (lastInstanceCount > 0) {
+			if (lastInstanceCount > 0 //&& !(n==1) 
+					) {
 				String deleteQuestion = 
 					wontDelete +
 					((lastInstanceCount > 1) ?
@@ -259,8 +262,7 @@ public class DeleteAction implements ClickMenuAction {
 				}
 			}
 
-			//Uncomment this block to see the code working
-			
+
 //			if (lastInstanceCount > 0 && n==1) //This term is the last instance and is 
 //				//mentioned in consider or replaced_by tags
 //			{
@@ -287,7 +289,7 @@ public class DeleteAction implements ClickMenuAction {
 //					return null;
 //				}
 //			}
-		}
+	}
 
 		Collections.sort(deleteThese, pcComparator);
 		logger.info("Candidates for " + (shouldDestroy ? "destruction:" : "deletion: ") + deleteThese);
@@ -350,12 +352,12 @@ public class DeleteAction implements ClickMenuAction {
 	public HashMap<String, Collection> getObsoletesLinkedToThese() {
 
 		for (Iterator iterator = deleteThese.iterator(); iterator.hasNext();) {
-			
+
 			String objectType = iterator.next().getClass().getName();
 			//String iteratorString = iterator.toString();
-			
+
 			if (!objectType.equals("org.obo.datamodel.impl.OBOClassImpl")){ //If it is a link rather than a term name.
-			
+
 				System.out.println("DeleteAction: getObsoletesLinkedToThese: objectType = " + objectType);
 				//System.out.println("DeleteAction: getObsoletesLinkedToThese: iteratorString = " + iteratorString);
 				iterator.remove();
@@ -370,24 +372,26 @@ public class DeleteAction implements ClickMenuAction {
 
 			String termToBeObsoleted = iterator.next().toString();
 			System.out.println("DeleteAction: getObsoletesLinkedToThese: termToBeObsoleted = " + termToBeObsoleted);
-			
-			ObjectFilter ofilter = getLinkFilter(termToBeObsoleted);
-			
+
+			ObjectFilter ofilter = getObjectFilter(termToBeObsoleted);
+
 			System.out.println("DeleteAction: getObsoletesLinkedToThese: ofilter = " + ofilter);
-			
-			Collection<IdentifiedObject> obsoleteTermsLinkedToOneTerm = filterObjects(ofilter);
-			
+
+			Collection<Object> obsoleteTermsLinkedToOneTerm = filterLinks(ofilter);
+
 			System.out.println("DeleteAction: getObsoletesLinkedToThese: So far so good.");
-					
+
 			obsoleteTermsLinkedToAllTerms.put(termToBeObsoleted, obsoleteTermsLinkedToOneTerm);
 
 			//	logger.debug(DeleteAction: getObsoletesLinkedToThese: obsoleteTermsLinkedToAllTerms = " + obsoleteTermsLinkedToAllTerms");
-			
+
 		}
-		
+
 		System.out.println("DeleteAction: getObsoletesLinkedToThese: obsoleteTermsLinkedToAllTerms = " + obsoleteTermsLinkedToAllTerms.toString());
-	return obsoleteTermsLinkedToAllTerms;
+		return obsoleteTermsLinkedToAllTerms;
 	}
+
+
 
 	/*
 	 * Creates a custom filter object to find obsolete terms that are parents of the term or terms selected for obsoletion.
@@ -395,82 +399,53 @@ public class DeleteAction implements ClickMenuAction {
 	 * 
 	 * Filter produced looks like this: Link child has Any text field equals "[name of term to be obsoleted]"
 	 */
-	public ObjectFilter getLinkFilter(String id) {
-		
-		
+	public ObjectFilter getObjectFilter(String id) {
+
+
 		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
 		System.out.println("FilterTest: getLinkFilter: ofilter = " + ofilter);
-		
+
 		EqualsComparison c = new EqualsComparison();
 		System.out.println("FilterTest: getLinkFilter: c = " + c);
-		
+
 		ofilter.setComparison(c);
 		System.out.println("FilterTest: getLinkFilter: c = " + c);
-		
+
 		ofilter.setValue(id);
 		ofilter.setCriterion(new NameSearchCriterion());
-		
+
 		System.out.println("FilterTest: getLinkFilter: ofilter = " + ofilter);
-		//LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
-		//lfilter.setFilter(ofilter);
+		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
+		lfilter.setFilter(ofilter);
 		return ofilter;
-		
-//		LinkFilter lfilter = (LinkFilter)lff.createNewFilter();
-//		System.out.println("FilterTest: getLinkFilter: lfilter = " + lfilter);
-//		ObjectFilter ofilter = (ObjectFilter)off.createNewFilter();
-//		System.out.println("FilterTest: getLinkFilter: ofilter = " + ofilter);
-//		EqualsComparison c = new EqualsComparison();
-//		System.out.println("FilterTest: getLinkFilter: c = " + c);
-//		ofilter.setComparison(c);
-//		System.out.println("FilterTest: getLinkFilter: c = " + c);
-//
-//		System.out.println("FilterTest: getLinkFilter: ofilter = " + ofilter);
-//		ofilter.setValue(id);
-//		System.out.println("FilterTest: getLinkFilter: ofilter = " + ofilter);
-//		lfilter.setFilter(ofilter);
-//		System.out.println("FilterTest: getLinkFilter: lfilter = " + lfilter);
-//		lfilter.setAspect(aspect);
-//		System.out.println("FilterTest: getLinkFilter: lfilter = " + lfilter);
-//		return lfilter;
+
 	}
 
-	
- OBOSession session = SessionManager.getManager().getSession();
- 
-	/*
-	 * Takes the filter and searches the current OBOSession to see if the are any matches
-	 */
-	public Collection<Link> filterLinks(Filter filter) {
-		Collection<Link> matches = 
-			new LinkedList<Link>();
-		System.out.println("DeleteAction: filterLinks: So far so good.");
-		System.out.println("DeleteAction: filterLinks: filter = " + filter);
 
-		for (IdentifiedObject io : session.getObjects()) {        
-			System.out.println("DeleteAction: filterLinks: io = " + io);
-			if (io instanceof LinkedObject) {
-				System.out.println("DeleteAction: filterLinks: io instanceof LinkedObject.");
-				LinkedObject lo = (LinkedObject)io;
-				for (Link link : lo.getParents()) {
-					if (filter.satisfies(link))
-						matches.add(link);
+/* 
+ * Takes the filter set up in the calling method, which is 'Name equals "[name of term selected for obsoletion"'
+ * Calls the OBOSession link database and looks at all the links to see if the child term in any of the links
+ * matches that fiter. 
+ * 
+ * This is 
+ */
+	public Collection<Object> filterLinks(Filter filter) {
+
+		final Collection<Object> matches = new HashSet<Object>();
+		LinkDatabase ldb = SessionManager.getManager().getSession().getLinkDatabase();
+		Iterator<Link> it = TermUtil.getAllLinks(ldb);{
+
+			while (it.hasNext()) {
+
+				System.out.println("it is " + it);
+				Link link = (Link) it.next();
+				System.out.println("link is " + link);
+
+				if (filter.satisfies(link.getChild())){
+					matches.add(link.getParent());
 				}
 			}
 		}
-		return matches;
-	}
-	
-	public Collection<IdentifiedObject> filterObjects(ObjectFilter filter) {
-		Collection<IdentifiedObject> matches = 
-			new LinkedList<IdentifiedObject>();
-		System.out.println("DeleteAction: filterObjects: session.getObjects() = " + session.getObjects());
-		for (IdentifiedObject io : session.getObjects()) {
-			
-			if (filter.satisfies(io))
-				System.out.println("DeleteAction: filterObjects: io = " + io);
-				matches.add(io);
-		}
-		System.out.println(filter+" N_matches: "+ matches.size());
 		return matches;
 	}
 
