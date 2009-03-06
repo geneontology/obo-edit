@@ -138,14 +138,13 @@ public class DbxrefImpl implements Dbxref {
 
 	@Override
 	public boolean equals(Object in) {
-		if (in instanceof Dbxref) {
-			return ((Dbxref) in).getDatabase().equals(database)
-					&& ((Dbxref) in).getDatabaseID().equals(databaseid)
-					&& ((Dbxref) in).getType() == type
-					&& ObjectUtil.equals(((Dbxref) in).getSynonym(),
-							targetSynonym)
-					&& ObjectUtil.equals(((Dbxref) in).getDesc(), desc);
-		} else
+	    if (in instanceof Dbxref) {
+	        return ObjectUtil.equals(((Dbxref) in).getDatabase(), database)
+	                && ObjectUtil.equals(((Dbxref) in).getDatabaseID(), databaseid)
+	                && ((Dbxref) in).getType() == type
+	                && ObjectUtil.equals(((Dbxref) in).getSynonym(), targetSynonym)
+	                && ObjectUtil.equals(((Dbxref) in).getDesc(), desc);
+	    } else
 			return false;
 	}
 
