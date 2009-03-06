@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.*;
-
 public class TinySet<T> implements Set<T> {
 
 	//initialize logger
@@ -53,15 +51,11 @@ public class TinySet<T> implements Set<T> {
 	}
 
 	public boolean containsAll(Collection<?> c) {
-		if (list == null)
-			return c.size() == 0;
-		Iterator it = list.iterator();
-		while (it.hasNext()) {
-			Object o = it.next();
-			if (!list.contains(o))
-				return false;
-		}
-		return true;
+	    if (list == null) {
+	        return c.size() == 0;
+	    } else {
+	        return list.containsAll(c);
+	    }	   
 	}
 
 	public boolean isEmpty() {
@@ -168,4 +162,26 @@ public class TinySet<T> implements Set<T> {
 		else
 			return list.toString();
 	}
+	
+	public boolean equals(Object other) {
+	    if (other == this) return true;
+	    if (!(other instanceof Set)) return false;
+	    final Set<?> otherSet = (Set<?>)other;
+	    if (otherSet.size() != this.size()) {
+	        return false;
+	    } else {
+	        return this.containsAll(otherSet);
+	    }
+	}
+    
+	public int hashCode() {
+	    int hash = 0;
+	    Iterator<T> iterator = this.iterator();
+	    while (iterator.hasNext()) {
+	        final T item = iterator.next();
+	        if (item != null) hash += item.hashCode();
+	    }
+	    return hash;
+	}
+    
 }
