@@ -3,6 +3,7 @@ package org.obo.datamodel.impl;
 import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
+import org.bbop.util.ObjectUtil;
 
 public class SynonymTypeImpl implements SynonymType {
 
@@ -73,7 +74,7 @@ public class SynonymTypeImpl implements SynonymType {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof SynonymType) {
-			return ((SynonymType) o).getID().equals(id);
+			return ObjectUtil.equals(((SynonymType) o).getID(), id);
 		} else
 			return false;
 	}
