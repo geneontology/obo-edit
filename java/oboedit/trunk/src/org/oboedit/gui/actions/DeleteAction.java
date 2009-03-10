@@ -281,7 +281,7 @@ public class DeleteAction implements ClickMenuAction {
 			//about replced_by tags.
 			setUsedInReplacementTag(false);  //Reset boolean in case it was previously set to true by another obsoletion.
 			String replacedMessage = getObsoletesLinkedToThese().toString();
-			replacedMessage = replacedMessage.replace("{", "\n\n");
+			replacedMessage = replacedMessage.replace("{", "\n\n ");
 			replacedMessage = replacedMessage.replace("=[", ": ");
 			replacedMessage = replacedMessage.replace("]}", "\n");
 			replacedMessage = replacedMessage.replace(",", "\n");
