@@ -217,6 +217,7 @@ public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelecto
 		}
 	};
 
+	//AA
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			cellRenderer.setFont(Preferences.getPreferences().getFont());
