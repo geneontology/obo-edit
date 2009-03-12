@@ -38,7 +38,7 @@ import org.oboedit.gui.Preferences;
 import org.oboedit.gui.RootTextEditComponent;
 
 public abstract class AbstractDbxrefEditorComponent extends
-		AbstractTextEditComponent {
+AbstractTextEditComponent {
 
 	public static class DbxrefUpdateEvent extends UserEvent {
 		protected Dbxref[] addThese;
@@ -85,7 +85,7 @@ public abstract class AbstractDbxrefEditorComponent extends
 
 			public void valueChanged(ListSelectionEvent e) {
 				removeButton
-						.setEnabled(dbxrefList.getSelectedRows().length > 0);
+				.setEnabled(dbxrefList.getSelectedRows().length > 0);
 			}
 
 		});
@@ -164,44 +164,33 @@ public abstract class AbstractDbxrefEditorComponent extends
 	public List<HistoryItem> getChanges() {
 		Collection<Dbxref> editedDbxrefs = getEditedDbxrefs();
 		LinkedList<HistoryItem> out = new LinkedList<HistoryItem>();
-		while(editedDbxrefs.size()==0){
+		while(editedDbxrefs.size()<0){
 //			logger.debug("no changes to dbxrefs");
 			return out;
 		}
-	
-		Iterator it = editedDbxrefs.iterator();
-		while (it.hasNext()) {
-			Dbxref ref = (Dbxref) it.next();
+		for(Dbxref edited_ref : editedDbxrefs){
 			boolean found = false;
-			Collection<Dbxref> refs = getDbxrefs(currentObject);
-			Iterator it2 = refs.iterator();
-			while (it2.hasNext()) {
-				Dbxref eref = (Dbxref) it2.next();
-				if (ref.equals(eref)) {
+			for(Dbxref original_ref : getDbxrefs(currentObject)){
+				if (edited_ref.equals(original_ref)) {
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				HistoryItem item = getAddDbxrefItem(ref);
+				HistoryItem item = getAddDbxrefItem(edited_ref);
 				out.add(item);
 			}
 		}
-		it = getDbxrefs(currentObject).iterator();
-		while (it.hasNext()) {
-			Dbxref ref = (Dbxref) it.next();
+		for(Dbxref original_ref : getDbxrefs(currentObject)){
 			boolean found = false;
-			Iterator it2 = editedDbxrefs.iterator();
-			while (it2.hasNext()) {
-				Dbxref eref = (Dbxref) it2.next();
-				if (ref.equals(eref)) {
+			for(Dbxref edited_ref : editedDbxrefs){
+				if (original_ref.equals(edited_ref)) {
 					found = true;
 					break;
 				}
 			}
-
 			if (!found) {
-				HistoryItem item = getDelDbxrefItem(ref);
+				HistoryItem item = getDelDbxrefItem(original_ref);
 				out.add(item);
 			}
 		}

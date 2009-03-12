@@ -132,8 +132,7 @@ public class DeleteAction implements ClickMenuAction {
 	}
 
 	public void clickInit(Selection selection, GestureTarget destItem) {
-
-		logger.debug("DeleteAction: clickInit: selection = " + selection + ", destItem = " + destItem);
+//		logger.debug("DeleteAction: clickInit: selection = " + selection + ", destItem = " + destItem);
 		instanceString = "";
 		wontDelete = "";
 		lastInstanceCount = 0;

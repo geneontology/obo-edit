@@ -1,32 +1,15 @@
-Changes in OBO-Edit2b55:
+Changes in OBO-Edit2b56:
 
 Bug Fixes:
-- [ geneontology-Bugs-2585655 ] User dictionary not recognised
-Custom user dictionary was not detected when the user added it to their config folder.
+[ 2642262 ] can't delete term dbxref b55
 
-- Logging issues
-
-- [ geneontology-Bugs-2030690 ] "Show ancestors/descendants" right-menu items in Graph Editor
-
-- [ geneontology-Bugs-2507760 ] Graph Editor - show all ancestors option not active
-
-[ 2207438 ] Tree Viewer - no disjoint
-This bug has now been fixed. Disjoint relationships are no longer displayed in the Tree Viewer. 
-
-[ 2605595 ]	Tree viewer occasional flakiness - Fixed.
-
-[ 2139976 ] large font in search results. - Fixed
 
 Features:
-- Child Search Aspect in Search Panel
-
 [ 2065087 ] flag obsolete in replace/consider tag
 Any mention of a term to be obsoleted in a consider or replaced_by tag is now flagged.
 
 TO DO:
-1) update documentation
-   - dictionaries
-   - Child Search Aspect
+
 
 
 
