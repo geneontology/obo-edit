@@ -47,13 +47,18 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void reasoningStarted() {
-		    logger.debug("ReasonerManagerComponent: reasoningStarted"); // DEL
+		    logger.debug("ReasonerManagerComponent: reasoningStarted");
+		}
+		
+		public void reasoningCancelled() {
+		    logger.debug("ReasonerManagerComponent: reasoningCancelled");
+		    updateProgressPanel(sessionManager.getUseReasoner()); 
 		}
 	};
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem()); // DEL
+		    logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem());
 		    enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
@@ -93,16 +98,28 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	}
 
 	protected void enableReasoner(String reasonerChoice) {
-	    summaryField.setText("");
+		logger.debug("ReasonerManagerComponent.enableReasoner");
+	    summaryField.setText(" ");
+	    sessionManager.setReasonerName(reasonerChoice);
+	}
+	
+	protected void cancelReasoner(String reasonerChoice) {
+		logger.debug("ReasonerManagerComponent.cancelReasoner");
+	    summaryField.setText("Reasoning cancelled.. ");
 	    sessionManager.setReasonerName(reasonerChoice);
 	}
 	
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
 		String text = "";
+		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
 		if (enableReasoner) {
 			text += "<html><body>\n";
 			text += "Reasoning completed.";
+			text += "</body></html>";
+		} else{
+			text += "<html><body>\n";
+			text += "Reasoner off";
 			text += "</body></html>";
 		}
 		final String summaryText = text;

@@ -80,7 +80,7 @@ public class SessionManager {
 
 	public SessionManager() {
 //		logger.info("Session Manager: generating new session");
-		setSession(new OBOSessionImpl());  // I'm suspicious that these are then left around as dangling refs, causing a memory leak.
+		setSession(new OBOSessionImpl());
 		setUseReasoner(Preferences.getPreferences().getUseReasoner());
 		setReasonerName(Preferences.getPreferences().getReasonerName());
 	}
@@ -181,7 +181,8 @@ public class SessionManager {
 				initializeReasonerDatabase();
 				reasonerReqComponentsOn();
 			}
-			else { // Reasoner was just turned off
+			else { //reasoner turned off
+//				logger.debug("check here");
 				clearReasonerDatabase();
 				reasonerReqComponentsOff();
 				fireDone(); // Need to make sure listeners are informed when reasoner is turned OFF
@@ -315,6 +316,13 @@ public class SessionManager {
 				listener.reasoningStarted();
 			}
 		}
+		
+		public void reasoningCancelled() {
+
+			for (ReasonerListener listener : reasonerListeners) {
+				listener.reasoningCancelled();
+			}
+		}
 	};
 
 	protected void initializeReasonerDatabase() {
@@ -352,7 +360,7 @@ public class SessionManager {
 
 			@Override
 			public void cancel() {
-				reasoner.cancel();
+				reasoner.isCancelled();
 				super.cancel();
 				setUseReasoner(false);
 			}
@@ -479,6 +487,7 @@ public class SessionManager {
 	}
 
 	protected void fireReasonerStatusChange(ReasonerStatusEvent e) {
+		logger.debug("SessionManager.fireReasonerStatusChange");
 		for (ReasonerStatusListener listener : reasonerStatusListeners) {
 			listener.statusChanged(e);
 		}

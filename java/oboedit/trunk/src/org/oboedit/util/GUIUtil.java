@@ -109,6 +109,11 @@ public class GUIUtil {
 
 			public void reasoningStarted() {
 			}
+			
+			public void reasoningCancelled() {
+				listener.reload(new ReloadEvent(this, null, false, false, true,
+						false, false));
+			}
 		};
 		bundle.reasonerStatusListener = new ReasonerStatusListener() {
 			public void statusChanged(ReasonerStatusEvent e) {
