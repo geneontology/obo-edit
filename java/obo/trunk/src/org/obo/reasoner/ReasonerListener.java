@@ -6,4 +6,5 @@ public interface ReasonerListener extends AsynchronousListener {
 
 	public void reasoningStarted();
 	public void reasoningFinished();
+	public void reasoningCancelled();
 }

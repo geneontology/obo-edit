@@ -162,6 +162,12 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 			reasonerListener.reasoningStarted();
 		}
 	}
+	
+	protected void fireCancelled() {
+		for (ReasonerListener reasonerListener : reasonerListeners) {
+			reasonerListener.reasoningCancelled();
+		}
+	}
 
 	public void addReasonerListener(ReasonerListener listener) {
 		reasonerListeners.add(listener);
