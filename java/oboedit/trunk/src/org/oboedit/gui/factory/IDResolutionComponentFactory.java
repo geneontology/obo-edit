@@ -23,7 +23,7 @@ public class IDResolutionComponentFactory extends
 	}
 
 	public String getName() {
-		return "ID Fixer (beta--not yet working)";
+		return "ID Fixer";
 	}
 
 	public FactoryCategory getCategory() {

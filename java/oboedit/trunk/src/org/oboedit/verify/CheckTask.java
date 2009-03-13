@@ -254,7 +254,7 @@ public class CheckTask extends AbstractTaskDelegate<Collection<CheckWarning>> {
 	
 	@Override
 	public void cancel() {
-//	    logger.info("CheckTask.cancel"); // DEL
+	    logger.info("CheckTask.cancel"); // DEL
 		super.cancel();
 		if (currentCheck != null)
 			currentCheck.cancel();
