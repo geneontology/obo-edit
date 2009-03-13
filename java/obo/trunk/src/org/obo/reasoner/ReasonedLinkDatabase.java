@@ -145,7 +145,7 @@ public interface ReasonedLinkDatabase extends LinkDatabase, ProgressValued {
 	
 	public boolean isCancelled();
 	
-	public void cancel();
+//	public void cancel();
 	
 	public void addReasonerListener(ReasonerListener listener);
 
