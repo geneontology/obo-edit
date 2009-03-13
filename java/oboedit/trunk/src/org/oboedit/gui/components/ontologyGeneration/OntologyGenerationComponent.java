@@ -143,7 +143,7 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
 public class OntologyGenerationComponent extends AbstractGUIComponent implements PropertyChangeListener
 {
 	public static final String PLUGIN_VERSION = "1.1.0";
-	public static final String PLUGIN_VERSIONED_NAME = "OBOEdit-GoPubMed-Ontogen-Plugin-"+PLUGIN_VERSION;
+	public static final String PLUGIN_VERSIONED_NAME = "OBOEdit-GoPubMed-Ontogen-Plugin-" + PLUGIN_VERSION;
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
 
@@ -1769,7 +1769,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	 * 
 	 * @param children
 	 */
-    private void addAllDescendantsToOBOEdit(List<String> children)
+	private void addAllDescendantsToOBOEdit(List<String> children)
 	{
 		try {
 			HashMap<String, String> idToName = new HashMap<String, String>();
@@ -1914,9 +1914,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	}
 
 	/**
-	 * Add a new child to the OBO Ontology
-	 *
-	 * TODO find out, if it is necessary to take care of cycle detection
+	 * Add a new child to the OBO Ontology TODO find out, if it is necessary to take care of cycle detection
 	 * 
 	 * @param id, the id of the newly added term
 	 * @param parentLinkedObject, the parent {@link LinkedObject} for the newly added term
@@ -1974,6 +1972,27 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	{
 		return string.toLowerCase().contains(potentialSubString.toLowerCase());
 	}
+	
+	/**
+     * Replace invalid character  (prepare text to send with Axis)
+     *
+     * @param string
+     * @param builder
+     */
+    private static final String prepareTextReplaceInvalidCharacter(String string)
+    {
+		StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			if ((c < 0x001F || (c >= 0x007F && c <= 0x00A0)) && c != 0x000A) {
+				builder.append(' ');
+			}
+			else {
+				builder.append(c);
+			}
+		}
+		return builder.toString();
+    }
 
 	/**
 	 * Lays out the GUI
@@ -2502,7 +2521,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		 */
 		public TermGenerationServiceWorker(String inputData, TermsTable destinationTable, String textSourceName)
 		{
-			this.inputData = inputData;
+			this.inputData = prepareTextReplaceInvalidCharacter(inputData);
 			this.table = destinationTable;
 			this.source = textSourceName;
 			if (termGenerationServiceStub == null) {
@@ -2515,6 +2534,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 
 		}
+
+
 
 		@Override
 		public TextConceptRepresentation[] doInBackground()
@@ -2663,7 +2684,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		 */
 		public DefinitionGenerationServiceWorker(String term, String[] relatedTerms, DefinitionsTable destinationTable)
 		{
-			this.qTerm = term;
+			this.qTerm = prepareTextReplaceInvalidCharacter(term);
 			this.parents = relatedTerms;
 			this.table = destinationTable;
 			if (definitionGeneratorStub == null) {
@@ -2728,7 +2749,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				for (final DefinitionContainer def : defs) {
 					if (def != null) {
 						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
-						    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+						    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
+						    .getParentTermCount(), false);
 						index++;
 						candidateDefinition.addListener(new UpdateListener()
 						{
