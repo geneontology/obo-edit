@@ -42,7 +42,7 @@ B, A is a "subclass" of B. This means that all instances of type A are also
 instances of type B, and any object of type A implicitly inherits all the 
 characteristics of an object of type B.</p>
 <p>For example, a <em>sneaker</em> <strong>is_a</strong> <em>shoe</em>. That 
-means that any particular <em>sneaker</em> in the real world (ie any instance of 
+means that any particular <em>sneaker</em> in the real world (e.g., any instance of 
 the class <em>sneaker</em>) is also a <em>shoe</em>, by definition. All 
 <em>sneakers</em> have the characteristics of a general <em>shoe</em>, as well 
 as some special characterists that only sneakers have. These special 
@@ -62,13 +62,12 @@ application of that relation.</p>
 instance-level relationships that must exist when a class is instantiated. For 
 example, consider the class-level relationship <em>finger</em> 
 <strong>part_of</strong> <em>hand</em>. This means that for any particular finger in the 
-real world (ie John's left index finger) there must be a particular hand in 
-the real world (ie John's left hand) that the finger is part of. That 
+real world (e.g., John's left index finger) there must be a particular hand in 
+the real world (John's left hand) that the finger is part of. That 
 relationship between particulars (<u>johns_left_index_finger</u> 
 <strong>part_of</strong> <u>johns_left_hand</u>) is an instance-level 
 relationship.</p>
-<h3>  Attributes of 
-Relations</h3>
+<h3>  Attributes of Relations</h3>
 <h4>Directionality</h4>
 <p>Relations apply in a single direction (unless they are 
 marked "symmetrical", see <A href="#symmetry">Symmetry</a>           
@@ -144,9 +143,7 @@ users from relating relations to each other using user-defined relations.</p>
 <p>Like classes, relations can be sub-typed. If a relation A has an 
 <strong>is_a</strong> relationship to a another 
 relation B, A is a sub-relation of B. Any class-level or instance-level 
-relationship of type A is also a <br>           
-           relationship 
-of type B.</p>
+relationship of type A is also a relationship of type B.</p>
 <h3>Built-in Relations</h3>
 <p>             
          The 
@@ -227,11 +224,10 @@ give a literature reference for a term definition. A dbxref is formatted like an
 OBO identifier (&lt;database_name&gt;:&lt;identifier&gt;) to specify a 
 particular object in a given database or ontology.</p>
 <p>
-</p>Dbxrefs can also be used to indicate a relationship to another term in another
+Dbxrefs can also be used to indicate a relationship to another term in another
 ontology, under carefully specified
 circumstances.  Look <a href="http://obofoundry.org/wiki/index.php/Mappings">here</a>
-for more information about
-mappings and Dbxrefs.</p>
+for more information about mappings and Dbxrefs.</p>
 <h3>Definition</h3>
 <p>Objects can be given a lengthy text definition. Object 
 definitions in OBO must also have at least one dbxref that describes the source 
@@ -242,11 +238,11 @@ used. Synonyms specify alternate names for a term.</p>
 <h3>Comments</h3>
 <p>Comments are text annotations about an object in an 
 ontology. Comments can contain any free text information required.</p>
-<h3>Categories</h3>
+<h3>Subsets</h3>
 <p>An ontology may contain any number of user-defined 
-"categories". For example, the Gene Ontology defines a number of categories 
+"subsets". For example, the Gene Ontology defines a number of subsets 
 like "terms of interest to plant biologists" and "terms of interest to insect 
-biologists". A term may belong to any number of user-defined categories.</p>
+biologists". A term may belong to any number of user-defined subsets.</p>
 <h2>Namespaces</h2>
 <p>OBO files are designed to be easily merged and 
 separated. Most tools that use OBO files can load many OBO files at 

@@ -13,13 +13,12 @@ You can bring it up as a free-floating window with
 If you prefer it to be docked into the main OBO-Edit window, you can use the
   little downward-curving arrow to dock it.
 </p><p><IMG hspace=0 src="../images/configuration_manager.png" border=0></p>
-<p>When you are done adjusting your configuration options,
-click the "Save Configuration" button to accept your changes and 
-update the display. There are several different configuration tabs. The first tab is "General 
-GUI".</p>
+<p>When you are done adjusting your configuration options, click the
+"Save Configuration" button to accept your changes and update the
+display. There are several different configuration tabs. The first tab
+is "User Settings".</p>
 
 <h2>User Settings</h2>
-<p>
 <ul>
 <a name="config_dir"></a>
   <li><strong>Configuration directory</strong> - 
@@ -68,7 +67,7 @@ Application Data\OBO-Edit-beta in your home directory.  By default, Windows
   href="The_OBO_Adapter.htm">OBO adapter</a>.</li>
 </ul>
 
-<h3>Font</h3>
+<h2>Font</h2>
 <ul>
   <li><strong>Default font</strong> - These controls specify the font OBO-Edit 
   should use when displaying buttons, labels, dropdown menus, etc. The first 
@@ -116,6 +115,20 @@ As when you select a new icon, the OBO-Edit
 display will not automatically refresh.  You will see the new link color when you do
 something that changes the display (e.g., click open a node).</p>
 
+<h2>Autosave</h2>
+<ul>
+  <li><strong>Enable autosave</strong> - If this box is checked, autosave will 
+  be enabled. The ontology will be saved periodically in the autosave file
+  path (see next item).  The default is for autosave
+  to be enabled; you can turn this off if you prefer.
+  <li><strong>Autosave file path</strong> -&nbsp;This&nbsp;field specifies&nbsp;a directory where autosave 
+  files will be stored. 
+  <li><strong>Do autosave every</strong> - This field specifies the number of minutes between autosaves.
+  <li><strong>Autosave files expire in </strong>- The number of days old an 
+  autosave file must be before it is automatically deleted.</li>
+</ul>
+<h2><a name="textedit"></a>Text Editing</h2>
+
 <h2>Behavior</h2>
 <ul>
   <li><strong>Case sensitive term sorting</strong> - If this box is checked, the case of a term name will be 
@@ -149,19 +162,6 @@ something that changes the display (e.g., click open a node).</p>
   box is checked, OBO-Edit will ask for confirmation before exiting.</li></ul>
 </ul>
 
-<h2>Autosave</h2>
-<ul>
-  <li><strong>Enable autosave</strong> - If this box is checked, autosave will 
-  be enabled. The ontology will be saved periodically in the autosave file
-  path (see next item).  The default is for autosave
-  to be enabled; you can turn this off if you prefer.
-  <li><strong>Autosave file path</strong> -&nbsp;This&nbsp;field specifies&nbsp;a directory where autosave 
-  files will be stored. 
-  <li><strong>Do autosave every</strong> - This field specifies the number of minutes between autosaves.
-  <li><strong>Autosave files expire in </strong>- The number of days old an 
-  autosave file must be before it is automatically deleted.</li>
-</ul>
-<h2><a name="textedit"></a>Text Editing</h2>
 <ul>
   <li><strong>Auto commit text edits</strong> - If this box 
   is checked, OBO-Edit commits text edits as soon as a new term is selected or 

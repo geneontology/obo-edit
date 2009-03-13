@@ -158,30 +158,27 @@ conditional rule should be used.</p>
 used when this conditional rule applies.</p>
 <p>                
      &nbsp;</p>
-<h2>                
-    Worked example:</h2>
-<h2>         How to set up multiple profiles for 
-use in a single editing session</h2>
+<h2>Example: How to set up multiple profiles for use in a single editing session</h2>
 <P>This example shows how two profiles can be set up so that if a term is added 
 as a descendant of the term JD:1 then one set of IDs will be used, whilst if a 
 GO term from any of the three GO ontologies is added then another ID rule will 
 be followed. </P>
-<P>In the ID Manager interface two new profiles are made. 'GO terms' will hold 
-the rule for adding GO terms, and ''union terms' will hold the rule for adding 
+<P>In the ID Manager interface two new profiles are made. "GO terms" will hold 
+the rule for adding GO terms, and "union terms" will hold the rule for adding 
 terms that are descendants of JD:1.</P>
 <P><IMG hspace=0 src="../images/multiple_id_profiles.png" border=0></P>
 <P>In the GO terms profile (below)&nbsp;a filter is set up that will find only 
-terms that are descendants of terms that have the namespace 'molecular 
-function', biological process' or cellular component'. In the 'ID Rule' box at 
+terms that are descendants of terms that have the namespace "molecular 
+function", "biological process" or "cellular component". In the "ID Rule" box at 
 the bottom of the window a rule is added to show the kind of IDs that will be 
-creates when one of these terms is made. Note that the 'Default rule' box at the 
+creates when one of these terms is made. Note that the "Default rule" box at the 
 top of the window is left blank.</P>
 
 <p><IMG hspace=0 src="../images/id_for_go_terms.png" border=0></p>
-<P>In the 'union terms' profile (below)&nbsp;a filter is set up so that when a 
+<P>In the "union terms" profile (below)&nbsp;a filter is set up so that when a 
 new term is created as descendant of JD:1 the term's ID will follow the rule 
-shown in the 'ID Rule' box at the bottom of the window. Note that, again, the 
-'Default rule' box is left blank. </P>
+shown in the "ID Rule" box at the bottom of the window. Note that, again, the 
+"Default rule" box is left blank. </P>
 <P><IMG hspace=0 src="../images/id_for_non_go_terms.png" border=0></P>
 <P>Now that these two profiles have been set up, new terms can be created, and 
 the rules will be applied. A GO term will have an ID as below:</P>
