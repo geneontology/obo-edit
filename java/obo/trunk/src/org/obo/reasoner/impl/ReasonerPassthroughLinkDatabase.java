@@ -56,12 +56,7 @@ public class ReasonerPassthroughLinkDatabase extends AbstractLinkDatabase implem
 		}
 		this.reasoner = reasoner;
 	}
-	
-	public void cancel() {
-		if (reasoner != null)
-			reasoner.cancel();
-	}
-	
+
 	public boolean isRunning() {
 		if (reasoner != null)
 			return reasoner.isRunning();
