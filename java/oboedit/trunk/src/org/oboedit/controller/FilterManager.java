@@ -145,6 +145,10 @@ public class FilterManager {
 			public void reasoningFinished() {
 				updateReasoner();
 			}
+			
+			public void reasoningCancelled() {
+				updateReasoner();
+			}
 
 			public void reasoningStarted() {
 			}
