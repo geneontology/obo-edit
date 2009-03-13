@@ -61,7 +61,13 @@ public class GOobjectFactory {
 	 */
 	public Term getTermByName(String name){
 		Session session = sf.getCurrentSession();
-		return (Term)session.createQuery("from Term where name = ?").setString(0, name).uniqueResult();
+		Iterator<Term> results = session.createQuery("from Term where name = ?").setString(0, name).iterate();
+		Term term = null;
+		while (results.hasNext()) {
+			term = results.next();
+			System.out.println("Got term " + term.getCv() + ":" + term.getAcc() + " = " + term.getName());
+		}
+		return term;
 	}
 
 	/** General utility factories for DBXref and DB classes
@@ -101,6 +107,32 @@ public class GOobjectFactory {
 		return (DB)session.createQuery("from DB where name = ?").setString(0, name).uniqueResult();
 	}
 
+	/**
+	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
+	 * @param db_name the {@link org.geneontology.db.model.DBXref} db_name to fetch {@link GeneProduct} objects by. 
+	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
+	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
+	 */
+	public Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs) {
+		Session session = sf.getCurrentSession();
+		String query_str = "select g from GeneProduct as g inner join g.dbxref as xref where ";
+		String prefix = "";
+		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
+			String [] xref = xref_it.next();
+			query_str += prefix + "(xref.db_name = ? and xref.accession = ?)";
+			prefix = " or ";
+		}
+		Query query = session.createQuery(query_str);
+		int param_count = 0;
+		for (Iterator<String []> xref_it = xrefs.iterator(); xref_it.hasNext();) {
+			String [] xref = xref_it.next();
+			query.setString(param_count++, xref[0]);
+			query.setString(param_count++, xref[1]);
+		}
+		Iterator<GeneProduct> results = query.iterate();
+		return results;
+	}
+	
 	/**
 	 * Fetches a GeneProduct of {@link GeneProduct} with a {@link org.geneontology.db.model.GeneProduct} having the specified db_name and key.  
 	 * @param db_name the {@link org.geneontology.db.model.DBXref} db_name to fetch {@link GeneProduct} objects by. 
