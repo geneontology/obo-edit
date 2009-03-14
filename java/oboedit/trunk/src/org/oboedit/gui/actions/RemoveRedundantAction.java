@@ -18,6 +18,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.bbop.framework.GUIManager;
@@ -124,7 +125,12 @@ public class RemoveRedundantAction implements ClickMenuAction {
 						"North");
 		outerPanel.add(Box.createHorizontalStrut(20), "West");
 		outerPanel.add(panel, "Center");
-
+		
+		JScrollPane sp = new JScrollPane(panel,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		outerPanel.add(sp, "Center");
+		
 		SimpleWizard wizard = new SimpleWizard(outerPanel);
 		if (!wizard.isCancelled()) {
 			TermMacroHistoryItem item = new TermMacroHistoryItem(
