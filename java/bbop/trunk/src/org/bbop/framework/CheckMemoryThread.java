@@ -25,7 +25,9 @@ public class CheckMemoryThread extends Thread {
     // Complain if free memory goes below 10% of max memory
     minMemory = maxMemory/(long)10;
     setDaemon(true);
-    logger.info("CheckMemoryThread: max heap size = " + maxMemory + "; warn if available memory < " + minMemory);
+    //1 Megabyte = 1048576 Bytes
+    //changing the info statement to MB to make it more readable
+    logger.info("CheckMemoryThread: max heap size = " + maxMemory/1048576 + "MB; warn if available memory < " + minMemory/1048576 + "MB");
   }
 
   public void checkFreeMemory() {
@@ -35,17 +37,15 @@ public class CheckMemoryThread extends Thread {
 //      System.gc();  // DEL
     long memoryUsed = Runtime.getRuntime().totalMemory();
     long freeMemory = maxMemory - memoryUsed;
-    // Note: you might want to comment out this println; however, it can be helpful when trying to figure out
-    // why your application is running out of memory.
-//    logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
+//    logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + "MB, total memory used = " + memoryUsed/1048576 + "MB");
 
     if (freeMemory < minMemory) {
-      logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed + ".  Garbage collecting.");
+      logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + "MB, total memory used = " + memoryUsed/1048576 + "MB.  Garbage collecting.");
       // Try garbage collecting first and see if that helps.
       try {
 	System.gc();
 	sleep(2000);
-	// Do it twice because it seems to get more the second time.
+	// calling garbage collection twice because it seems to get more the second time.
 	System.gc();
 	sleep(2000);
       } catch (InterruptedException e) {}
@@ -54,10 +54,10 @@ public class CheckMemoryThread extends Thread {
       freeMemory = maxMemory - memoryUsed;
 //      logger.info("checkFreeMemory: After garbage collecting, free memory = " + freeMemory);
       if (freeMemory < minMemory) {
-	String m = "WARNING: you are almost out of memory (" + freeMemory + " bytes left).\nIf you run out of memory, this application could crash and you could lose your work.\nWe recommend saving now, then exiting the application and restarting.";
+	String m = "WARNING: you are almost out of memory (" + freeMemory/1048576 + " MB left).\nIf you run out of memory, this application could crash and you could lose your work.\nWe recommend saving now, then exiting the application and restarting.";
 	logger.info(m);
 	JOptionPane.showMessageDialog(null,m);
-	logger.info("checkFreeMemory: free memory = " + freeMemory + ", total memory used = " + memoryUsed);
+	logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + "MB, total memory used = " + memoryUsed/1048576 + "MB");
 	// We've warned once--don't warn again
 	this.halt();
       }
