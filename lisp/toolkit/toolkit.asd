@@ -22,13 +22,14 @@
                         :serial t
                         :components ((:file "conv")
                                      (:file "fs")
+                                     (:file "simple-db")
                                      (:file "io")
 				     (:file "num")
                                      (:file "repl")
+                                     (:file "shell")
                                      (:file "toolkit"))))
   :depends-on (:cl-ppcre
-	       :cl-fad
-	       :fiveam)
+	       :cl-fad) ;:fiveam)
 
   ;; And some stuff for Albert...
   :properties ((#:author-email . "sjcarbon@berkeleybop.org")

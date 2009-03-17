@@ -17,9 +17,9 @@
 
 
 (defun slurp (file-string &key (function #'(lambda (x) x)))
-  "Read in a file line by line, exectute a function on each line as as
-a string and collect the output into a list. The default function is
-to just collect the strings into a list."
+  "Read in a file line by line, exectute a function on each line as a
+string and collect the output into a list. The default function is to
+just collect the strings into a list."
   (with-open-file (stream file-string)
     (loop
        for line = (read-line stream nil)
