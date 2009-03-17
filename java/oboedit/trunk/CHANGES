@@ -9,6 +9,11 @@ Features:
 Any mention of a term to be obsoleted in a consider or replaced_by tag is now flagged.
 
 TO DO:
+Documentation:
+- user.dict usage and backup info
+
+Troubleshooting- add note about:
+https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
 
 
 
