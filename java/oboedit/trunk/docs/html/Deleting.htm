@@ -14,16 +14,42 @@
 required</p>
 <p><strong>Target requirement</strong>: No target required</p>
 </div>
-<p>The Delete operation removes a relationship from the 
-ontology. When a term has no parents, the menu item
-  will say "Delete term", and if you delete it, the term will become obsolete. If a term has children, it cannot be deleted; the children must be removed first.</p>
-<p>To delete one or more relationships, first select the relationships to be 
-deleted. Choose the "Delete relationship" option from the edit menu or right-click menu. The 
-relationships will be removed, and - if appropriate - orphaned terms will be 
-marked obsolete.</p>
-<p>The Delete operation can also be used to make a term with no children and
-  no parents (a singleton root) obsolete. To 
-obsolete a singleton term, select the term, and choose "Delete term" from the right-click 
-or edit menu.</p>
+
+<p>The Delete operation removes a relationship from the ontology. If a
+term has more than one parent, Delete removes one relationship at a
+time. If a term has only one parent, deleting the last relationship
+makes the term obsolete.</p>
+
+<p>To delete one or more relationships, first <a
+href="Working_with_Selections.htm">select</a> the relationship(s) to
+be deleted. Choose the "Delete relationship" option from the edit menu
+or right-click menu. You can use the Delete operation to delete more
+than one relationship at once: Delete affects all selected
+relationships, provided that they can all be deleted (see below for
+the exception).</p>
+
+<p> When a term has only one parent, the menu item will say "Delete term (make obsolete)", and if
+you delete it, a warning will appear:
+
+<p><img src="../images/delete_warning.png" border=0></p>
+
+<p>If you click "Yes" the term will become obsolete; if you click "No"
+no action is taken.</p>
+
+<p>Note that if a term has children, it cannot be made obsolete; the
+children must be removed (moved or deleted) first. If you select a
+term that has one parent and one or more children, the Delete menu
+item will not be available (it will be greyed out). If you select more
+than one term, and one of the selected terms has one parent and one or
+more children, a warning will appear indicating that the term with
+children will not be deleted:</p>
+
+<p><img src="../images/delete_children_warning.png" border=0></p>
+
+<p>If you click "Yes" the terms without children will be deleted (and
+made obsolete if they have no other parents, as in the figure); if you
+click "No" no action is taken. In either case the term with children
+is not deleted.</p>
+
 </body>
 </html>
