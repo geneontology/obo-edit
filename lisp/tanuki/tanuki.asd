@@ -23,6 +23,7 @@
                (:module :src
                         :serial t
                         :components ((:file "utils")
+                                     (:file "forms")
 				     (:file "file")
 				     (:file "db")
 				     (:file "decide")

@@ -17,11 +17,14 @@
 ;;;; copy-stream 
 ;;;;
 
+
 (defpackage :toolkit-fs
   (:use :cl
 	:cl-fad)
   (:export :pwd
-	   :cd))
+	   :cd
+	   :list-files
+	   :list-directories))
 (in-package :toolkit-fs)
 
 ;;;
@@ -37,7 +40,7 @@
 
 ;; Not really needed, just practice.
 ;;(defun cd (&optional (path "/home/sjcarbon" path-supplied-p))
-(defun cd (&optional (path "/home/sjcarbon"))
+(defun cd (&optional (path *default-pathname-defaults*))
 
   #+(or sbcl)
   ;;(if (path-supplied-p)
@@ -46,3 +49,15 @@
 
   #-(or sbcl)
   (error "get-cwd not implemented"))
+
+;;
+(defun list-files (dir)
+  "List all of the files in directory <dir>."
+  (toolkit-conv:filter (cl-fad:list-directory dir)
+		       #'(lambda (x) (cl-fad:directory-exists-p x))))
+
+;;
+(defun list-directories (dir)
+  "List all of the directories in directory <dir>."
+  (toolkit-conv:filter (cl-fad:list-directory dir)
+		       #'(lambda (x) (not (cl-fad:directory-exists-p x)))))
