@@ -8,13 +8,12 @@
 ;;;;
 
 ;;(clc:clc-require :s-http-client)
-(clc:clc-require :drakma)
-(clc:clc-require :puri)
-(clc:clc-require :closure-html)
-(clc:clc-require :fiveam)
+(require :drakma)
+(require :puri)
+(require :closure-html)
+(require :fiveam)
 (defpackage :tanuki-html
   (:use :cl
-	;;:s-http-client
 	:drakma
 	:puri
 	:closure-html

@@ -5,8 +5,8 @@
 ;;;; TODO: Separate tanuki-db into db and tanuki-store.
 ;;;;
 
-(clc:clc-require :clsql)
-(clc:clc-require :clsql-sqlite3)
+(require :clsql)
+(require :clsql-sqlite3)
 (defpackage :tanuki-db
   (:use :cl
 	:tanuki-utils
@@ -15,8 +15,8 @@
 	:clsql)
   (:export :meta
 	   :page
-	   :form
-	   :form-argument
+;;	   :form
+;;	   :form-argument
 
 	   :tanuki-database
 	   :initialize-tanuki-database
@@ -84,15 +84,15 @@
 ;; Class for containing the the meta info for the DB.
 (def-view-class meta ()
   ((version ; the starting URL
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initform 1
     :type integer)
    (target ; the starting URL
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :target
     :type (string 1024))
    (name ; the proper name for the webapp
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :name
     :type (string 1024))))
 
@@ -103,38 +103,38 @@
     :initform nil
     :type integer)
    (url ; the string URL.
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :url
     :type (string 1024))
    (referer ; ID of the refering page
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :referer
     :type (string 1024))
    (visited ; whether or not we've been here before.
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :visited
     :type boolean)
    ;; Whether or not taking the URL caused an error. May be null if
    ;; not yet visited.
    (failed
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :failed
     :type boolean)
    ;; Whether or not there was somthing...odd...about the page.
    (odd
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :odd
     :type boolean)
    ;; Whether or not this URL must be tested (probably read in from a
    ;; file for) compatability testing. A way of forcing attention.
    (mandated
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :mandated
     :type boolean)
    ;; Whether of not the URL is internal to the application. Should be
    ;; relative to the info in META.
    (internal
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :internal
     :type boolean)
    (comment ; surprise me!
@@ -150,7 +150,7 @@
     :initarg :time
     :type integer)
    (date
-    :db-constraints :not-null
+;;    :db-constraints :not-null
     :initarg :date
     :type integer)))
 
@@ -182,47 +182,47 @@
 ;;     :initarg :date
 ;;     :type integer)))
 
-(def-view-class form ()
-  ((id
-    :db-kind :key
-    :db-constraints :primary-key
-    :initform nil
-    :type integer)
-  (page-id
-    :db-constraints :not-null
-    :initarg :page-id
-    :type integer)
-  (target
-    :db-constraints :not-null
-    :initarg :target
-    :type (string 1024))
-  (type
-    :db-constraints :not-null
-    :initarg :type
-    :type (string 1024))))
+;; (def-view-class form ()
+;;   ((id
+;;     :db-kind :key
+;;     :db-constraints :primary-key
+;;     :initform nil
+;;     :type integer)
+;;   (page-id
+;;     :db-constraints :not-null
+;;     :initarg :page-id
+;;     :type integer)
+;;   (target
+;;     :db-constraints :not-null
+;;     :initarg :target
+;;     :type (string 1024))
+;;   (type
+;;     :db-constraints :not-null
+;;     :initarg :type
+;;     :type (string 1024))))
 
-(def-view-class form-argument ()
-  ((id
-    :db-kind :key
-    :db-constraints :primary-key
-    :initform nil
-    :type integer)
-  (form-id
-    :db-constraints :not-null
-    :initarg :form-id
-    :type integer)
-  (file
-    :db-constraints :not-null
-    :initarg :file
-    :type (string 1024))
-  (name
-    :db-constraints :not-null
-    :initarg :name
-    :type (string 1024))
-  (value
-    :db-constraints :not-null
-    :initarg :value
-    :type (string 1024))))
+;; (def-view-class form-argument ()
+;;   ((id
+;;     :db-kind :key
+;;     :db-constraints :primary-key
+;;     :initform nil
+;;     :type integer)
+;;   (form-id
+;;     :db-constraints :not-null
+;;     :initarg :form-id
+;;     :type integer)
+;;   (file
+;;     :db-constraints :not-null
+;;     :initarg :file
+;;     :type (string 1024))
+;;   (name
+;;     :db-constraints :not-null
+;;     :initarg :name
+;;     :type (string 1024))
+;;   (value
+;;     :db-constraints :not-null
+;;     :initarg :value
+;;     :type (string 1024))))
 
 ;;;
 ;;; A trivial class so we can juggle multiple databases. Most of the
@@ -258,13 +258,13 @@
     ;; If the tables exist, nuke 'em.
     (drop-table 'meta :database db :if-does-not-exist :ignore)
     (drop-table 'page :database db :if-does-not-exist :ignore)
-    (drop-table 'form :database db :if-does-not-exist :ignore)
-    (drop-table 'form-argument :database db :if-does-not-exist :ignore)
+;;    (drop-table 'form :database db :if-does-not-exist :ignore)
+;;    (drop-table 'form-argument :database db :if-does-not-exist :ignore)
     ;; Add the class views.
     (create-view-from-class 'meta :database db)
     (create-view-from-class 'page :database db)
-    (create-view-from-class 'form :database db)
-    (create-view-from-class 'form-argument :database db)
+;;    (create-view-from-class 'form :database db)
+;;    (create-view-from-class 'form-argument :database db)
     ;; Toss it out to the slot.
     (with-slots (database name) dbo (setf database db)))
   ;; Add the meta and seed.
