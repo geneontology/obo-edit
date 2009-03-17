@@ -539,8 +539,8 @@ public class Preferences {
 					if (line.toLowerCase().trim().startsWith("-xmx")) {
 						mem = s.substring(4).toUpperCase();
 						reader.close();
-//						String m = "Got memory string " + mem + " from option file " + optionFile;
-//						logger.debug(m);
+						String m = "Got memory string " + mem + " from option file " + optionFile;
+						logger.debug(m);
 //						JOptionPane.showMessageDialog(null, m); // DEL
 						break;
 					}
@@ -555,6 +555,12 @@ public class Preferences {
 			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
 			logger.info(warning);
 //			JOptionPane.showMessageDialog(null, warning); // DEL
+		}
+		String numMem = mem.substring(0, mem.indexOf("M"));
+	    int intMem = Integer.parseInt(numMem);
+		if(intMem >= 2000){
+			logger.debug("Allocated heap space greater than 2GB.. switching to default memory settings");
+			mem = DEFAULT_MEMORY_SETTING;
 		}
 		return mem;
 	}
