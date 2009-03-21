@@ -161,7 +161,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		while (e.hasMoreElements()) {
 			TermSubset tc = (TermSubset) e.nextElement();
 			Integer tcCount = (Integer) catHash.get(tc);
-			JLabel catLabel = new JLabel("Category " + tc.getDesc() + " has "
+			JLabel catLabel = new JLabel("Subset: " + tc.getDesc() + " has "
 					+ tcCount + " members");
 			catLabel.setFont(getFont());
 			labels.add(catLabel);
