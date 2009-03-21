@@ -88,8 +88,12 @@ public class BackgroundEventQueue {
 			List<TaskDelegate<?>> cancelUs = new LinkedList<TaskDelegate<?>>(l);
 			if (currentTask != null)
 				cancelUs.add(0, currentTask);
+			try{
 			for (TaskDelegate<?> t : cancelUs) {
-				t.cancel();
+					t.cancel();		
+				}
+			} catch(Exception e){
+				logger.debug("Exception while cancelling talk: " + e.getStackTrace());
 			}
 
 		}
