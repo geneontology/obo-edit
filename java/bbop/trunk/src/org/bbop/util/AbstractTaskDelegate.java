@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.bbop.dataadapter.DataAdapterException;
 
 public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 	
@@ -60,14 +61,17 @@ public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 			execute();
 		} 
 		catch (Exception e){
+			threwException = true;
 			e.printStackTrace();
+			this.exception = e;
 		}
-//		catch (Throwable t) {
-//			threwException = true;
-//			exception = t; 
-//			logger.error("Problem running task:", t);
-//		}
+		catch (Throwable t) {
+			threwException = true;
+			exception = t; 
+			logger.error("Problem running task:", t);
+		}
 		
+//		logger.debug("isFailed: " +  isFailed());
 		if (isFailed()) {
 			for (Runnable r : failedRunnables) {
 				if (isSwingFriendly) {

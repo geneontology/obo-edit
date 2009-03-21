@@ -16,7 +16,7 @@ import java.net.URL;
 import org.apache.log4j.*;
 
 public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
-	AdapterWidgetI {
+AdapterWidgetI {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphicalAdapterChooser.class);
@@ -27,7 +27,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 	private static final long serialVersionUID = -1304344582277871901L;
 
 	protected static final Class[] checkClasses = { Component.class,
-			GraphicalUI.class };
+		GraphicalUI.class };
 
 	protected static final Icon rightArrowIcon = new Icon() {
 		protected int height = 16;
@@ -90,12 +90,12 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 	};
 
 	protected final static URL rightArrowIconURL = ClassLoader
-			.getSystemClassLoader().getResource(
-					"org/geneontology/resources/blue_arrow.gif");
+	.getSystemClassLoader().getResource(
+			"org/geneontology/resources/blue_arrow.gif");
 
 	protected final static URL downArrowIconURL = ClassLoader
-			.getSystemClassLoader().getResource(
-					"org/geneontology/resources/blue_arrow_down.gif");
+	.getSystemClassLoader().getResource(
+			"org/geneontology/resources/blue_arrow_down.gif");
 
 	// protected static final Icon rightArrowIcon = new
 	// ImageIcon(rightArrowIconURL);
@@ -172,12 +172,12 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 
 	protected Font labelFont;
 
-	protected DataAdapterOperationTask<IN, OUT> task;
+	protected DataAdapterOperationTask<IN, OUT> loadtask;
 
 	protected BackgroundEventQueue queue;
 
 	protected JEditorPane exceptionEditorPane = new JEditorPane("text/html",
-			"<html></html>");
+	"<html></html>");
 
 	protected JScrollPane exceptionPanel = new JScrollPane(exceptionEditorPane,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -369,7 +369,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		setProfileListVisible(chooserConfig.getShowProfiles());
 		initProfiles();
 		String currentAdapterID = (String) chooserConfig
-				.getOperationToLastAdapterMap().get(op.getID());
+		.getOperationToLastAdapterMap().get(op.getID());
 
 		if (currentAdapterID != null) {
 			for (int i = 0; i < adapterList.getItemCount(); i++) {
@@ -501,12 +501,12 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		if (index >= profileListChooser.getItemCount() - 1) {
 			if (index > 1)
 				nextConfig = (NamedAdapterConfig) profileListChooser
-						.getItemAt(index - 1);
+				.getItemAt(index - 1);
 			else
 				nextConfig = null;
 		} else
 			nextConfig = (NamedAdapterConfig) profileListChooser
-					.getItemAt(index + 1);
+			.getItemAt(index + 1);
 		profileList.getProfiles().remove(currentConfig);
 		if (profileList.getDefaultConfig().equals(currentConfig)) {
 			profileList.setDefaultConfig(currentConfig);
@@ -552,8 +552,8 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 				}
 
 			} catch (Exception ex) {
-			    logger.info("GraphicalAdapterChooser.storeCurrentProfile: did not store current config!"); // DEL
-			    ex.getMessage(); // DEL
+				logger.info("GraphicalAdapterChooser.storeCurrentProfile: did not store current config!"); // DEL
+				ex.getMessage(); // DEL
 			}
 		}
 	}
@@ -578,7 +578,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 
 		profileList.getProfiles().add(createNamedConfig());
 		ProfileCollection pc = (ProfileCollection) chooserConfig
-				.getProfileMap().get(currentAdapter.getID());
+		.getProfileMap().get(currentAdapter.getID());
 		UIConfiguration uiConfig = null;
 		if (pc != null) {
 			profileList.setOperationToAdvancedMap(new HashMap(pc
@@ -643,7 +643,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 
 	protected void loadProfile() {
 		this.currentConfig = (NamedAdapterConfig) profileListChooser
-				.getSelectedItem();
+		.getSelectedItem();
 		if (currentConfig.getConfiguration() != null)
 			currentUI.setConfiguration(currentConfig.getConfiguration());
 		if (profileListChooser.getSelectedIndex() == 0)
@@ -799,7 +799,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		// exceptionEditorPane.setPreferredSize(new Dimension(300,300));
 		exceptionPanel.setPreferredSize(new Dimension(300, 300));
 		int prefHeight = (int) profileListChooser.getPreferredSize()
-				.getHeight();
+		.getHeight();
 		plusButton.setPreferredSize(new Dimension(prefHeight, prefHeight));
 		minusButton.setPreferredSize(new Dimension(prefHeight, prefHeight));
 
@@ -825,17 +825,17 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 
 		}
 		if (showAdvanced && currentUI.getAdvancedUI() != null) {
-		    setPreferredSize(new Dimension(800,550));
-		    setAdapterUI(currentUI.getAdvancedUI());
-		    // Didn't work right
-//		    setPreferredSize(currentUI.getPreferredSize());
-//		    System.out.println("GraphicalAdapterchooser: for advanced ui, setPreferredSize " + getPreferredSize()); // DEL
-		    // Would like to set the size depending on whether we're reading or writing, but
- 		    // BBOP doesn't know about OBO, so we can't do this
-//		    if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
-// 			setPreferredSize(new Dimension(700,500));
-//		    }
-//		    else
+			setPreferredSize(new Dimension(800,550));
+			setAdapterUI(currentUI.getAdvancedUI());
+			// Didn't work right
+//			setPreferredSize(currentUI.getPreferredSize());
+//			System.out.println("GraphicalAdapterchooser: for advanced ui, setPreferredSize " + getPreferredSize()); // DEL
+			// Would like to set the size depending on whether we're reading or writing, but
+			// BBOP doesn't know about OBO, so we can't do this
+//			if (op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
+//			setPreferredSize(new Dimension(700,500));
+//			}
+//			else
 //			setPreferredSize(new Dimension(700,300));
 		}
 		else if (!showAdvanced && currentUI.getSimpleUI() != null) {
@@ -863,22 +863,21 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 	protected void showExceptionGUI(Throwable exception) {
 		remove(okButtonPanel);
 		uiPanel.removeAll();
-
 		String html = "<html>" + "<body>" + "<b>"
-				+ StringUtil.escapeHTML(exception.getMessage()) + "</b><br>";
+		+ StringUtil.escapeHTML(exception.getMessage()) + "</b><br>";
+
 		if (exception.getCause() != null) {
 			if (exception.getCause().getMessage() != null)
 				html += "<i>"
-						+ StringUtil.escapeHTML(exception.getCause()
-								.getMessage()) + "</i><br>";
+					+ StringUtil.escapeHTML(exception.getCause()
+							.getMessage()) + "</i><br>";
 			html += "<ul>";
 			for (int i = 0; i < exception.getCause().getStackTrace().length; i++)
 				html += "<li>"
-						+ StringUtil.escapeHTML(exception.getCause()
-								.getStackTrace()[i].toString());
+					+ StringUtil.escapeHTML(exception.getCause()
+							.getStackTrace()[i].toString());
 			html += "</ul>";
 		}
-
 		html += "</body></html>";
 
 		exceptionEditorPane.setText(html);
@@ -894,7 +893,7 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 	}
 
 	public AdapterConfiguration getConfiguration()
-			throws DataAdapterUIException {
+	throws DataAdapterUIException {
 		return currentUI.getConfig(op, currentAdapter, input);
 	}
 
@@ -902,10 +901,9 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 		try {
 			currentUI.acceptComponentConfig(false);
 			AdapterConfiguration config = getConfiguration();
-			task = new DataAdapterOperationTask<IN, OUT>(currentAdapter, op,
-					config, input);
-			task.addPostExecuteRunnable(new Runnable() {
-
+			logger.debug("GraphicalAdapterChooser.commit -- loading files -- config: " + config);	
+			loadtask = new DataAdapterOperationTask<IN, OUT>(currentAdapter, op, config, input);
+			loadtask.addPostExecuteRunnable(new Runnable() {
 				public void run() {
 					committed = true;
 					chooserConfig.getOperationToLastAdapterMap().put(
@@ -917,21 +915,21 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 						dialog.dispose();
 					}
 				}
-
 			});
-			task.addFailedRunnable(new Runnable() {
+
+			loadtask.addFailedRunnable(new Runnable() {
 				public void run() {
-					showExceptionGUI(task.getException());
+					showExceptionGUI(loadtask.getException());
 				}
 			});
-			task.addCancelledRunnable(new Runnable() {
 
+			loadtask.addCancelledRunnable(new Runnable() {
 				public void run() {
 					restoreGUI();
 				}
-
 			});
-			queue.scheduleTask(task);
+
+			queue.scheduleTask(loadtask);
 		} catch (DataAdapterUIException ex) {
 			if (ex.showMessage())
 				showExceptionGUI(ex);
@@ -1003,13 +1001,13 @@ public class GraphicalAdapterChooser<IN, OUT> extends JPanel implements
 	}
 
 	public OUT getResult() throws DataAdapterException {
-		if (task.getException() != null) {
-			if (task.getException() instanceof DataAdapterException)
-				throw (DataAdapterException) task.getException();
+		if (loadtask.getException() != null) {
+			if (loadtask.getException() instanceof DataAdapterException)
+				throw (DataAdapterException) loadtask.getException();
 			else
-				throw new DataAdapterException(task.getException());
+				throw new DataAdapterException(loadtask.getException());
 		} else
-			return task.getResults();
+			return loadtask.getResults();
 	}
 
 	public boolean showDialog(String title, JFrame owner) {
