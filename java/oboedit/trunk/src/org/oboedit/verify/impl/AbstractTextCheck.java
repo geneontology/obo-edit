@@ -739,6 +739,7 @@ FieldCheck {
 			boolean allowNewlines, boolean allowBlank, boolean allowExtended,
 			boolean sentenceStructureChecks, final byte condition)
 	throws TooManyWarningsException {
+//		logger.debug("path: " + path);
 		if (!(path.getLastValue() instanceof String))
 			return new LinkedList();
 		final Collection<CheckWarning> out = new LinkedList<CheckWarning>();
@@ -788,7 +789,7 @@ FieldCheck {
 			}
 			// Why not do this check while looking for repeated words?
 			if (doSpellCheck(condition) && text.length() > 0) {
-				//				logger.debug("Doing spell check on " + text); // DEL
+				logger.debug("Doing spell check on " + text); // DEL
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
 				SpellCheckListener listener = new SpellCheckListener() {
 
@@ -804,7 +805,7 @@ FieldCheck {
 								// Add this word to the user defined dictionary: user.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getUserDefDictionaryFile());
 								//refresh Text Editor to reflect changes
-//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
@@ -818,7 +819,7 @@ FieldCheck {
 								// Add this word to the standard dictionary: standard.dict
 								saveWord(arg0.getInvalidWord(), Preferences.getStandardDictionaryFile());
 //								refresh Text Editor to reflect changes
-//								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
+								Preferences.getPreferences().fireReconfigEvent(new ReconfigEvent(this));
 							}
 						};
 
@@ -855,13 +856,17 @@ FieldCheck {
 				};
 				// standard system dictionary spell check
 				getSpellChecker().addSpellCheckListener(listener);
+//				logger.debug("tokenizer.getCurrentWordCount(): " + tokenizer.getCurrentWordCount() + " before std dict check" );
 				getSpellChecker().checkSpelling(tokenizer);
-				getSpellChecker().removeSpellCheckListener(listener);
+
 				// user-defined dictionary spell check
 				getUserDefSpellChecker().addSpellCheckListener(listener);
+//				logger.debug("tokenizer.getCurrentWordCount(): " + tokenizer.getCurrentWordCount() + " before usr dict check" );
 				getUserDefSpellChecker().checkSpelling(tokenizer);
-				getUserDefSpellChecker().removeSpellCheckListener(listener);
 
+
+				getSpellChecker().removeSpellCheckListener(listener);
+				getUserDefSpellChecker().removeSpellCheckListener(listener);
 			}
 			boolean foundNoCapSentences = false;
 			boolean foundNoSepSentences = false;
