@@ -427,6 +427,8 @@ public class RootDisplayRightClickMenuFactory implements RightClickMenuFactory {
 					return;
 				}
 				removeAll();
+//				AncestorVisiblesProvider(String label, OBOProperty type, boolean showTransitives, boolean showIntransitives,
+//				SelectionProvider selectionProvider, EnabledCheckDelegate... delegates) {
 				JMenuItem showAllAncestorsItem = createItemFromDisplayables(new AncestorVisiblesProvider(
 						"All ancestors", (OBOProperty) null, true, true,
 						selectionProvider, checkDelegate));

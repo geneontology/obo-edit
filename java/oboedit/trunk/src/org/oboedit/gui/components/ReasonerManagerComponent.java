@@ -104,6 +104,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	}
 	
 	protected void cancelReasoner(String reasonerChoice) {
+		logger.debug("reasonerChoice: " + reasonerChoice);
 		logger.debug("ReasonerManagerComponent.cancelReasoner");
 	    summaryField.setText("Reasoning cancelled.. ");
 	    sessionManager.setReasonerName(reasonerChoice);

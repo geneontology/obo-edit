@@ -20,7 +20,7 @@ import java.util.Map;
 import org.bbop.framework.GUIManager;
 import org.obo.filters.AllTextFieldsCriterion;
 import org.obo.filters.AncestorSearchAspect;
-import org.obo.filters.CategorySearchCriterion;
+import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.ChildSearchAspect;
 import org.obo.filters.CommentSearchCriterion;
 import org.obo.filters.CompoundFilter;
@@ -193,7 +193,7 @@ public class FilterManager {
 		addCriterion(new AllTextFieldsCriterion());
 		addCriterion(new NameSynonymSearchCriterion());
 		addCriterion(new IDSearchCriterion());
-		addCriterion(new CategorySearchCriterion());
+		addCriterion(new SubsetSearchCriterion());
 		addCriterion(new NameSearchCriterion());
 		addCriterion(new SynonymSearchCriterion());
 		addCriterion(new CommentSearchCriterion());
