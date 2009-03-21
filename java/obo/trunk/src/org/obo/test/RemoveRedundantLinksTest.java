@@ -11,7 +11,7 @@ import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBOObject;
-import org.obo.filters.CategorySearchCriterion;
+import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.EqualsComparison;
 import org.obo.filters.Filter;
 import org.obo.filters.IsCompleteLinkCriterion;

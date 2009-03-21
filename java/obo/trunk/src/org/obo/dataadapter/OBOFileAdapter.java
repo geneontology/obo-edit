@@ -29,7 +29,7 @@ public class OBOFileAdapter implements OBOAdapter {
 	protected StringBuffer buffer = new StringBuffer();
 
 	protected boolean cancelled = false;
-
+	
 	protected OBOMetaData metaData;
 
 	protected GraphicalUI advancedUI;
@@ -271,7 +271,7 @@ public class OBOFileAdapter implements OBOAdapter {
 						   + "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
 						   + "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
 				engine.parse();
-
+				logger.debug("Done parsing file");
 				OBOSession history = parser.getSession();
 				metaData = parser.getMetaData();
 				history.setLoadRemark(createLoadRemark());
@@ -282,7 +282,7 @@ public class OBOFileAdapter implements OBOAdapter {
 				if (cancelled)
 					throw new CancelledAdapterException();
 
-				throw new DataAdapterException(e, "Load error, line "
+				throw new DataAdapterException(e, "Load Error, line "
 						+ e.getLineNum());
 			} catch (Throwable e) {
 				e.printStackTrace();

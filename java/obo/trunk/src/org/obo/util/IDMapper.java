@@ -21,7 +21,7 @@ import org.obo.datamodel.OBOObject;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.TermSubset;
-import org.obo.filters.CategorySearchCriterion;
+import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.Filter;
 import org.obo.filters.ObjectFilter;
 import org.obo.filters.ObjectFilterImpl;
@@ -433,7 +433,7 @@ public class IDMapper extends SessionWrapper {
 		Collection<Filter<LinkedObject>> filters = new LinkedList<Filter<LinkedObject>>();
 		for (TermSubset cat : categories) {
 			ObjectFilter f = new ObjectFilterImpl();
-			f.setCriterion(new CategorySearchCriterion());
+			f.setCriterion(new SubsetSearchCriterion());
 			f.setValue(cat.getName());
 			filters.add(f);
 		}
