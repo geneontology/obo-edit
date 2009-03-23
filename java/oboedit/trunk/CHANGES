@@ -1,19 +1,17 @@
-Changes in OBO-Edit2b56:
+Changes in OBO-Edit2b57:
 
 Bug Fixes:
-[ geneontology-Bugs-2642262 ] can't delete term dbxref b55
-[ geneontology-Bugs-2692113 ] update components to reflect name changes
-[ geneontology-Bugs-2513220 ] b52 - load terms fails with no error message
-Load ontology window/panel displays error message.
-[ geneontology-Bugs-2588958 ] Search has hits but no hitlist (b52)
-[ geneontology-Bugs-2611032]OE exceptionally slow with new regulates links
-Pending bugs:
-1. user dictionary stuff
-2. incremental reasoning on/off switch
+
+- [2706065 ] b56 - OE not starting on Windows
+
+Bugs pending:
+- Itemized undo
+- Switch to turn off incremental reasoning
+- graph editor menu options
+- user dictionary refresh and incremental validation stuff
 
 Features:
-[ 2065087 ] flag obsolete in replace/consider tag
-Any mention of a term to be obsoleted in a consider or replaced_by tag is now flagged.
+
 
 TO DO:
 Documentation:
