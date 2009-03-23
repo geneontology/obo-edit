@@ -1,7 +1,10 @@
 package org.oboedit.gui.components.treeView;
 
+import java.awt.Font;
+
 import org.apache.log4j.Logger;
 import org.bbop.framework.ComponentConfiguration;
+import org.oboedit.gui.Preferences;
 
 /**
   * @author John Day-Richter, Jennifer Deegan, and Nicolas Rodriguez.<br>
@@ -16,7 +19,14 @@ public class TreeViewSettings implements ComponentConfiguration {
 
 	protected boolean trimPaths = false;
 
-	protected boolean showNonTransitive = false;
+	protected boolean showNonTransitive = true;
+
+	//protected Font font;
+	
+//	public Font getFont() {
+//		font = Preferences.getPreferences().getFont();
+//		return font;
+//	}
 
 	// initialize logger
 	protected final static Logger logger = Logger.getLogger(TreeViewConfigPanel.class);
