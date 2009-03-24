@@ -789,7 +789,7 @@ FieldCheck {
 			}
 			// Why not do this check while looking for repeated words?
 			if (doSpellCheck(condition) && text.length() > 0) {
-				logger.debug("Doing spell check on " + text); // DEL
+//				logger.debug("Doing spell check on " + text); // DEL
 				StringWordTokenizer tokenizer = new StringWordTokenizer(text, wordFinder);
 				SpellCheckListener listener = new SpellCheckListener() {
 

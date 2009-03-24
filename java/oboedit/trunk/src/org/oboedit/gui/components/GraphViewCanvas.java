@@ -1,7 +1,5 @@
 package org.oboedit.gui.components;
 
-/** This class used to be called DAGViewCanvas */
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -81,13 +79,13 @@ import org.oboedit.util.GUIUtil;
 import org.apache.log4j.*;
 
 public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
-	FilteredRenderable {
+FilteredRenderable {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(GraphViewCanvas.class);
 
 	public static class GraphViewConfiguration implements
-			ComponentConfiguration {
+	ComponentConfiguration {
 		protected boolean showAnimations = false;
 		protected boolean succinctDisplay = true;
 		protected boolean showPerType = true;
@@ -211,7 +209,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 	};
 
 	protected class ReloadTaskDelegate extends
-			AbstractTaskDelegate<Map<String, LinkDatabase>> {
+	AbstractTaskDelegate<Map<String, LinkDatabase>> {
 
 		public ReloadTaskDelegate() {
 			setSwingFriendly(true);
@@ -245,19 +243,28 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 			int currentProgress = 0;
 			if (config.isAllTypes()) {
 				Collection<Link> parents = new HashSet<Link>();
+//				logger.debug("terms: " + terms);
+//				logger.debug("reasoner: " + reasoner);
 				for (LinkedObject lo : terms) {
-					for (Link link : reasoner.getParents(lo)) {
-						if (config.isNonTransitive()
-								|| link.getType().isTransitive())
-							parents.add(link);
+					if(reasoner != null){
+						for (Link link : reasoner.getParents(lo)) {
+							if (config.isNonTransitive()
+									|| link.getType().isTransitive())
+								parents.add(link);
+						}
+					} else{
+						for (Link link : SessionManager.getManager().getCurrentLinkDatabase().getParents(lo)) {
+								parents.add(link);
+						}
 					}
+
 				}
 				setProgressValue(currentProgress++ * 100 / totalCount);
 				if (isCancelled())
 					return;
 				LinkDatabase linkDatabase = createLinkDatabase(null, parents,
 						false);
-				databases.put("All parents", linkDatabase);
+				databases.put("All", linkDatabase);
 			}
 
 			if (config.isShowPerType()) {
@@ -276,7 +283,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 			setProgressValue(100);
 			setResults(databases);
 //			logger.info("found paths in "
-//					+ (System.currentTimeMillis() - time));
+//			+ (System.currentTimeMillis() - time));
 		}
 
 	}
@@ -298,16 +305,16 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 		JPanel htmlPanel = new JPanel();
 		htmlPanel.setLayout(new BorderLayout());
 		htmlPanel
-				.add(
-						new JLabel(
-								"<html>Enter an expression below that will "
-										+ "determine what information is shown for each term. "
-										+ "To include specific term information, use search "
-										+ "criteria ids enclosed in $ characters. For example, "
-										+ "to display the term name on one line and the term "
-										+ "id in italics on the line below, use the expression "
-										+ "<b>&lt;center&gt;$name$&lt;br&gt;&lt;i&gt;&lt;font "
-										+ "size=-1&gt;$id$&lt;/font&gt;&lt;/i&gt;&lt;/center&gt;</b></html>"),
+		.add(
+				new JLabel(
+						"<html>Enter an expression below that will "
+						+ "determine what information is shown for each term. "
+						+ "To include specific term information, use search "
+						+ "criteria ids enclosed in $ characters. For example, "
+						+ "to display the term name on one line and the term "
+						+ "id in italics on the line below, use the expression "
+						+ "<b>&lt;center&gt;$name$&lt;br&gt;&lt;i&gt;&lt;font "
+						+ "size=-1&gt;$id$&lt;/font&gt;&lt;/i&gt;&lt;/center&gt;</b></html>"),
 						BorderLayout.NORTH);
 		htmlPanel.add(new JScrollPane(htmlArea,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -363,22 +370,21 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 	protected LinkDatabase createLinkDatabase(OBOProperty type,
 			Collection<Link> parents, boolean succinct) {
 		LinkDatabase linkDatabase;
+		// non succinct view
 		if (!succinct) {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
-
 			for (Link link : parents) {
-				if (TermUtil.isImplied(link)) {
-					Collection<Link> implied = ReasonerUtil
-							.getGivenSupportingLinks(
-									(ReasonedLinkDatabase) reasoner, link);
-					for (Link backingLink : implied) {
-						mutable.addParent(backingLink);
-					}
-				} else
-					mutable.addParent(link);
-			}
+					if (TermUtil.isImplied(link)) {
+						Collection<Link> implied = ReasonerUtil.getGivenSupportingLinks((ReasonedLinkDatabase) reasoner, link);
+						for (Link backingLink : implied) {
+							mutable.addParent(backingLink);
+						}
+					} else
+						mutable.addParent(link);
+				}
+
 			linkDatabase = mutable;
-		} else {
+		} else { // succinct view
 			FilteredLinkDatabase filtered = new FilteredLinkDatabase(reasoner);
 			filtered.setLinkFilter(new LinkFilterImpl(type));
 			MaskedLinkDatabase collapsible = new MaskedLinkDatabase(filtered);
@@ -391,8 +397,8 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 				if (reasoner.isSubPropertyOf(link.getType(), type)) {
 					if (TermUtil.isImplied(link)) {
 						Collection<Link> implied = ReasonerUtil
-								.getGivenSupportingLinks(
-										(ReasonedLinkDatabase) reasoner, link);
+						.getGivenSupportingLinks(
+								(ReasonedLinkDatabase) reasoner, link);
 						for (Link backingLink : implied) {
 							if (reasoner.isSubPropertyOf(backingLink.getType(), type))
 								objects.add(backingLink.getParent());
@@ -446,7 +452,7 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 		canvas.setDisableAnimations(!config.isShowAnimations());
 		if (canvas.getNodeLabelProvider() instanceof HTMLNodeLabelProvider) {
 			((HTMLNodeLabelProvider) canvas.getNodeLabelProvider())
-					.setHtmlExpression(config.getHTMLExpression());
+			.setHtmlExpression(config.getHTMLExpression());
 		}
 
 		// canvas.setLinkDatabase(reasoner);
@@ -579,8 +585,9 @@ public class GraphViewCanvas extends AbstractGUIComponent implements Filterable,
 		if (SessionManager.getManager().getUseReasoner())
 			reasoner = SessionManager.getManager().getReasoner();
 		else
-			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
-		setDataProviders(session, session.getLinkDatabase(), reasoner);
+//			reasoner = new OnTheFlyReasoner(session.getLinkDatabase());
+			reasoner = null;
+			setDataProviders(session, session.getLinkDatabase(), reasoner);
 		reload();
 	}
 

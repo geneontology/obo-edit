@@ -76,7 +76,7 @@ public class Preferences {
 	protected boolean onlyOneGlobalOTE = true;
 
 //	protected boolean autosaveEnabled = false;
-	protected boolean autosaveEnabled = true;  // Make this true by default.  --NH, 1/4/2008
+	protected boolean autosaveEnabled = true;
 
 	protected boolean caseSensitiveSort = false;
 
@@ -225,9 +225,6 @@ public class Preferences {
 //		iconURLIndex.put("has_component_in", "resource: ");		
 //		iconURLIndex.put("union of", "resource: ");
 
-
-
-
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", orange);
 		colorIndex.put("develops_from", Color.green.darker());
@@ -271,17 +268,15 @@ public class Preferences {
 		// New: OS-appropriate directory
 		File prefsDir = new File(OSUtil.getConfigDirectory(
 				getAppName() +
-				version.getMajorVersion() + 
-				(version.isBeta() ? "-beta" : "") + 
+				version.getMajorVersion() + (version.isRC() ? "-rc" : "") + 
 		"/"));
-//		logger.debug("prefsDir = " + prefsDir);
+		logger.debug("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
 		if (!prefsDir.exists() && !isBatchMode()) {
 			// Old: ~/.oboeditbeta
-			File oldPrefsDir = new File(System.getProperty("user.home") + "/.oboedit"
-					+ (version.isBeta() ? "beta" : "") + "/");
+			File oldPrefsDir = new File(System.getProperty("user.home") + "/.obo-edit" + (version.isRC() ? "rc" : "") + "/");
 			if (oldPrefsDir.exists())
 				GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
 		}
@@ -552,14 +547,14 @@ public class Preferences {
 		}
 		if (mem == null) {
 			mem = DEFAULT_MEMORY_SETTING;
-			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\nusing default memory setting of " + mem;
+			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\n using default memory setting of " + mem;
 			logger.info(warning);
 //			JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		String numMem = mem.substring(0, mem.indexOf("M"));
 	    int intMem = Integer.parseInt(numMem);
-		if(intMem >= 2000){
-			logger.debug("Allocated heap space greater than 2GB.. switching to default memory settings");
+		if(intMem >= 1500){
+			logger.debug("Allocated heap space greater than 1.5GB.. switching to default memory settings");
 			mem = DEFAULT_MEMORY_SETTING;
 		}
 		return mem;
