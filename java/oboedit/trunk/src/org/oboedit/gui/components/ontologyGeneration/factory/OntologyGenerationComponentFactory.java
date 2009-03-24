@@ -32,7 +32,7 @@ public class OntologyGenerationComponentFactory extends AbstractComponentFactory
 
 	public String getName()
 	{
-		return "Pubmed Ontology Generation Tool";
+		return "Ontology Generation Tool";
 	}
 
 	
