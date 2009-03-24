@@ -113,7 +113,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
 		String text = "";
-		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
+//		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
 		if (enableReasoner) {
 			text += "<html><body>\n";
 			text += "Reasoning completed.";

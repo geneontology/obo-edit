@@ -2,7 +2,7 @@ Changes in OBO-Edit2b57:
 
 Bug Fixes:
 
-- [2706065 ] b56 - OE not starting on Windows
+- [ geneontology-Bugs-2706065 ] b56 - OE not starting on Windows
 
 Bugs pending:
 - Itemized undo
