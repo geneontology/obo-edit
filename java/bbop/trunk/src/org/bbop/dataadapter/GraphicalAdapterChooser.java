@@ -901,7 +901,7 @@ AdapterWidgetI {
 		try {
 			currentUI.acceptComponentConfig(false);
 			AdapterConfiguration config = getConfiguration();
-			logger.debug("GraphicalAdapterChooser.commit -- loading files -- config: " + config);	
+//			logger.debug("GraphicalAdapterChooser.commit -- loading files -- config: " + config);	
 			loadtask = new DataAdapterOperationTask<IN, OUT>(currentAdapter, op, config, input);
 			loadtask.addPostExecuteRunnable(new Runnable() {
 				public void run() {
