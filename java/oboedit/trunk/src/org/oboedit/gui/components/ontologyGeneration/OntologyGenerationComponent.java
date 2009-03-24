@@ -212,7 +212,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private static GoPubMedDefinitionGeneratorStub definitionGeneratorStub;
 
 	private BiotecSplashScreen biotecSplashScreen;
-
+	
 	/*
 	 * Instanciate listeners to OBOEdit
 	 */
@@ -394,7 +394,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.openHelpPageButton.setPreferredSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMaximumSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMargin(new Insets(13, 0, 0, 0));
-
+		
 		this.setTitle("Ontology Generation view");
 	}
 
@@ -655,7 +655,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					return;
 				}
 				else if (column == 2) {
-					onClickOpenExternalDefinitionWebPage();
+					onClickOpenDefinitionsPopup();
 				}
 				else if (column == 0) {
 					onClickSelectDefinition(row, column);
@@ -1298,45 +1298,20 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	}
 
 	/**
-	 * Launches web browser to show the webpage definition is fetched from
+	 * Opens a popup showing the URLs for the definition and its similar definitons.
+	 * 
+	 * @author Goetz Fabian
 	 */
-	@SuppressWarnings("unchecked")
-	private void onClickOpenExternalDefinitionWebPage()
+	private void onClickOpenDefinitionsPopup()
 	{
-		int colNumber = OntologyGenerationComponent.this.definitionTable.getSelectedColumn();
 		int rowNumber = OntologyGenerationComponent.this.definitionTable.getSelectedRow();
-		String errMsg = "Error attempting to launch web browser";
-		if (colNumber == 2 && rowNumber >= 0) {
-			CandidateDefinition definition = definitionTable.getModel().getDefinitionAt(rowNumber);
-			String osName = System.getProperty("os.name");
-			String url = definition.getCachedURL();
-			try {
-				if (osName.startsWith("Mac OS")) {
-					Class fileMgr = Class.forName("com.apple.eio.FileManager");
-					Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
-					openURL.invoke(null, new Object[] { url });
-				}
-				else if (osName.startsWith("Windows")) {
-					Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-				}
-				else { // assume Unix or Linux
-					String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
-					String browser = null;
-					for (int count = 0; count < browsers.length && browser == null; count++)
-						if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
-							browser = browsers[count];
-					if (browser == null)
-						throw new Exception("Could not find web browser");
-					else
-						Runtime.getRuntime().exec(new String[] { browser, url });
-				}
-			}
-			catch (Exception exception) {
-				JOptionPane.showMessageDialog(null, errMsg + ":\n" + exception.getLocalizedMessage());
-			}
-		}
+		
+		DefinitionsPopup definitionsPopup = new DefinitionsPopup(this);
+		
+		definitionsPopup.initPopup(definitionTable.getModel().getDefinitionAt(rowNumber));
 	}
 
+	
 	/**
 	 * Displays term selected in the termsTable and updates all depending gui components
 	 * 
@@ -1660,6 +1635,32 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		LinkedObject[] parentArray = new LinkedObject[parents.size()];
 		parentArray = parents.toArray(parentArray);
 		oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(parentArray);
+	}
+	
+	/**
+	 * Adds the <code>definition</code>, which was selected in the 
+	 * <code>DefinitionsPopup</code> to the <code>editDefArea</code>.
+	 * 
+	 * @param definition the definition to be attached to the <code>editDefArea</code> text.
+	 * 
+	 * @author Goetz Fabian
+	 */
+	public void updateEditDefArea(String definition)
+	{
+		StringBuffer defString = new StringBuffer();
+
+		String defAreaText = editDefArea.getText();
+
+		if (defAreaText.length() == 0) {
+			defString.append("\n");
+			defString.append(definition.trim());
+		}
+		else {
+			defString.append(defAreaText.trim());
+			defString.append("\n");
+			defString.append(definition.trim());
+		}
+		editDefArea.setText(defString.toString());
 	}
 
 	/*
@@ -2748,18 +2749,71 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				int index = 0;
 				for (final DefinitionContainer def : defs) {
 					if (def != null) {
-						final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
-						    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
-						    .getParentTermCount(), false);
-						index++;
-						candidateDefinition.addListener(new UpdateListener()
-						{
-							public void update()
-							{
-								updateParentAsTermFromDefinition();
+						boolean duplicateDefinition = false;
+						
+						final int MIN_IDENT_CHARS = 50;
+						
+						for (CandidateDefinition candDef : defList) {
+							// If definition shorter than MIN_IDENT_CHARS, it must be identical to candDef
+							if (def.getDefinition().length() < MIN_IDENT_CHARS && candDef.getDefinition().equals(def.getDefinition())) {
+								duplicateDefinition = true;
+
+								// Therefore, add the URLs to candDef.
+								candDef.addURL(def.getUrl());
+								candDef.addCachedURL(def.getCachedURL());
 							}
-						});
-						defList.add(candidateDefinition);
+							// If definition is longer than MIN_IDENT_CHARS...
+							else if (def.getDefinition().length() >= MIN_IDENT_CHARS && candDef.getDefinition().length() >= MIN_IDENT_CHARS &&
+									(def.getDefinition().substring(0, MIN_IDENT_CHARS)).equals((candDef.getDefinition().substring(0, MIN_IDENT_CHARS)))) {
+								duplicateDefinition = true;
+								
+								// ... check if they are identical ...
+								if (def.getDefinition().equals(candDef.getDefinition())) {
+									candDef.addURL(def.getUrl());
+									candDef.addCachedURL(def.getCachedURL());
+								} 
+								
+								// or if the ends are different.
+								else {
+									boolean duplicateAlternativeDefinition = false;
+									if (candDef.getAlternativeDefinitions() != null) {
+										for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
+											// Try to find identical alternative definition.
+											if (definition.getDefinition().equals(def.getDefinition())) {
+												duplicateAlternativeDefinition = true;
+												
+												definition.addURL(def.getUrl());
+												definition.addCachedURL(def.getCachedURL());
+											}
+										}
+									}
+									
+									// If no identical alternative definition is found,
+									// add a new alternative definition.
+									if (! duplicateAlternativeDefinition) {
+										final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
+											    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
+											    .getParentTermCount(), false);
+										candDef.addAlternativeDefinition(candidateDefinition);
+									}
+								}
+							}
+						}
+						// Otherwise, add new definition to list.
+						if (!duplicateDefinition) {
+							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
+							    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
+							    .getParentTermCount(), false);
+							index++;
+							candidateDefinition.addListener(new UpdateListener()
+							{
+								public void update()
+								{
+									updateParentAsTermFromDefinition();
+								}
+							});
+							defList.add(candidateDefinition);
+						}
 					}
 					else {
 						logger.trace("A retrieved definition was null");

@@ -12,14 +12,15 @@ import java.util.List;
 public class CandidateDefinition
 {
 	private final int index;
-	private final String cachedURL;
+	private final List<String> cachedURL;
 	private String definition;
+	private List<CandidateDefinition> alternativeDefinitions;
 	private String definitionHTMLFormatted;
 	private boolean isTicked;
 	private boolean isVisible;
 	private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
 	private int parentTermCount;
-	private final String url;
+	private final List<String> url;
 
 	/**
 	 * Constructs a {@link CandidateDefinition}
@@ -57,11 +58,14 @@ public class CandidateDefinition
 	 */
 	public CandidateDefinition(int index, String def, String defFormatted, String ur, String cachedUR, int termCount, boolean select)
 	{
+		url = new ArrayList<String>();
+		cachedURL = new ArrayList<String>();
+		
 		this.index = index;
 		this.definition = def;
 		this.definitionHTMLFormatted = defFormatted;
-		this.url = ur;
-		this.cachedURL = cachedUR;
+		this.url.add(ur);
+		this.cachedURL.add(cachedUR);
 		this.parentTermCount = termCount;
 		this.isTicked = select;
 		this.isVisible = true;
@@ -83,7 +87,7 @@ public class CandidateDefinition
 	/**
 	 * @return the URL of the location where the definition was extracted from
 	 */
-	public String getUrl()
+	public List<String> getUrl()
 	{
 		return url;
 	}
@@ -91,7 +95,7 @@ public class CandidateDefinition
 	/**
 	 * @return the cached URL of the location where the definition was extracted from
 	 */
-	public String getCachedURL()
+	public List<String> getCachedURL()
 	{
 		return cachedURL;
 	}
@@ -148,6 +152,56 @@ public class CandidateDefinition
 		this.definition = definition;
 	}
 
+	public void addURL(String url) 
+	{
+		this.url.add(url);
+	}
+	
+	public void addCachedURL(String cachedURL)
+	{
+		this.cachedURL.add(cachedURL);
+	}
+	
+//	/**
+//	 * Adds another definition to this definition
+//	 * 
+//	 * @param definition the alternative definition (although it can be identical)
+//	 * @param cachedURL the URL to the alternative definition
+//	 * 
+//	 */
+//	public void addAlternativeDefinition(String defFormatted, String cachedURL)
+//	{
+//		List<String> urls;
+//		if (alternativeDefinitions.containsKey(defFormatted)) {
+//			urls = alternativeDefinitions.get(defFormatted);
+//			urls.add(cachedURL);
+//		} else {
+//			urls = new ArrayList<String>();
+//			urls.add(cachedURL);
+//		}
+//		alternativeDefinitions.put(defFormatted, urls);
+//		
+//	}
+//	
+//	public Map<String, List<String>> getAlternativeDefinitions() {
+//		return alternativeDefinitions;
+//	}
+	
+	public void addAlternativeDefinition(CandidateDefinition candidateDefinition)
+	{
+		if (alternativeDefinitions == null) {
+			alternativeDefinitions = new ArrayList<CandidateDefinition>();
+		}
+
+		if (! alternativeDefinitions.contains(candidateDefinition)) {
+			alternativeDefinitions.add(candidateDefinition);
+		}
+	}
+	
+	public List<CandidateDefinition> getAlternativeDefinitions() {
+		return alternativeDefinitions;
+	}
+	
 	/**
 	 * Set parent term count
 	 * 
