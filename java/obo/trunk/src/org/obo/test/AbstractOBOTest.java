@@ -93,7 +93,8 @@ public abstract class AbstractOBOTest extends TestCase {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(file.getAbsolutePath());
-		config.setAllowDangling(getAllowDangling());
+//		config.setAllowDangling(getAllowDangling());
+		config.setAllowDangling(true);
 		session = adapter.doOperation(OBOAdapter.READ_ONTOLOGY, config,
 				null);
 
