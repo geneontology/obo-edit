@@ -301,22 +301,26 @@ public class ParentEditor extends AbstractGUIComponent {
 			// That is unnecessary as well as slow.
 //			// This is the really expensive operation!
 //			final TreePath[] oldpaths = PathUtil.getPaths(t);
-			List<Link> v = new ArrayList<Link>();
+			List<Link> parentList = new ArrayList<Link>();
 			if (showImpliedCheckbox.isSelected()
 					&& SessionManager.getManager().getUseReasoner()) {
-				v.addAll(SessionManager.getManager().getReasoner()
+				parentList.addAll(SessionManager.getManager().getReasoner()
 						.getParents(t));
 			}
-			v.addAll(t.getParents());
+			parentList.addAll(t.getParents());
 
-			Collections.sort(v, parentComparator);
+			Collections.sort(parentList, parentComparator);
 			boolean first = true;
-			for (int i = 0; i < v.size(); i++) {
-				final OBORestriction tr = (OBORestriction) v.get(i);
+			for (int i = 0; i < parentList.size(); i++) {
+				final OBORestriction tr = (OBORestriction) parentList.get(i);
 				final LinkedObject parent = tr.getParent();
 
 				Font font = getFont();
 				boolean enabled = true;
+				
+				if(TermUtil.isIntersection(tr)){
+					logger.debug("IsIntersection link: " + tr);
+				}
 
 				if (TermUtil.isImplied(tr)) {
 					enabled = false;
@@ -398,9 +402,15 @@ public class ParentEditor extends AbstractGUIComponent {
 				JButton field = new JButton();
 				field.setOpaque(false);
 				field.setBorderPainted(false);
-				field.setText("<html>" + parent.getName() + "</html>");
+				
+				String intersectionMarker = " [Intersection]";
+				if(TermUtil.isIntersection(tr))
+					field.setText("<html>" + parent.getName() + intersectionMarker + "</html>");
+				 else
+					field.setText("<html>" + parent.getName() + "</html>");	
 				field.setToolTipText(parent.getName());
-				field.setFont(font);
+//				field.setFont(font);
+				field.setFont(new Font(Preferences.getPreferences().getFont().toString(),Font.BOLD, 12));
 				field.setMinimumSize(new Dimension(0, (int) field
 						.getMinimumSize().getHeight()));
 				panel.add(field, "Center");
