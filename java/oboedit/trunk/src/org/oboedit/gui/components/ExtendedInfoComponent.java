@@ -2,6 +2,7 @@ package org.oboedit.gui.components;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.obo.datamodel.*;
+import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.AnnotationUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SessionManager;
@@ -29,7 +30,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 			update();
 		}
 	};
-	
+
 	protected static final int MAX_PARENTAGE = 100;
 
 	protected HashMap scratch = new HashMap();
@@ -47,14 +48,14 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 	@Override
 	public String getName() {
-		return "Extended Info Plugin";
+		return "Extended Info";
 	}
 
 	public void update() {
 		removeAll();
 		scratch.clear();
 		OBOSession session = SessionManager.getManager().getSession();
-		
+
 		JLabel totalTermsLabel = new JLabel("Total terms = 00000000");
 		int totalTermCount = 0;
 		int definedTermCount = 0;
@@ -65,7 +66,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 
 		Hashtable catHash = new Hashtable();
 		Iterator it = SessionManager.getManager().getSession().getSubsets()
-				.iterator();
+		.iterator();
 		while (it.hasNext()) {
 			TermSubset ct = (TermSubset) it.next();
 			catHash.put(ct, new Integer(0));
@@ -127,7 +128,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 			int acc = 0;
 			for (; i >= 0; i--) {
 				int currentPercentage = (acc + parentCounts[i]) * 100
-						/ totalTermCount;
+				/ totalTermCount;
 				if (currentPercentage < 1)
 					acc += parentCounts[i];
 				else
@@ -142,15 +143,15 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 				else
 					percentStr = percent + "";
 				String str = "   terms with " + j + " parent"
-						+ (j == 1 ? "" : "s") + ": " + parentCounts[j] + " ("
-						+ percentStr + "%)";
+				+ (j == 1 ? "" : "s") + ": " + parentCounts[j] + " ("
+				+ percentStr + "%)";
 				JLabel label = new JLabel(str);
 				label.setFont(getFont());
 				labels.add(label);
 			}
 			if (acc > 0) {
 				String str = "   terms with > " + i + " parents: " + acc
-						+ " ( < 1%)";
+				+ " ( < 1%)";
 				JLabel label = new JLabel(str);
 				label.setFont(getFont());
 				labels.add(label);
@@ -183,18 +184,26 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 			labels.add(annotCountLabel);
 		}
 
-		int defPercent = (int) (100 * ((double) definedTermCount / (double) totalTermCount));
 
+		//terms with definitions
+		int defPercent = (int) (100 * ((double) definedTermCount / (double) totalTermCount));
 		JLabel defCountLabel = new JLabel(defPercent
 				+ "% of terms have definitions (" + definedTermCount + " of "
 				+ totalTermCount + ")");
 		defCountLabel.setFont(getFont());
 		labels.add(defCountLabel);
 
+
+		//reasoner status
+		String reasonerStatus = SessionManager.getManager().getReasonerName();
+		JLabel reasonerStatusLabel = new JLabel("Reasoner: " + reasonerStatus);
+		labels.add(reasonerStatusLabel);
+
+		// memory label 
 		int memPercent = (int) (100 * ((double) Runtime.getRuntime()
 				.freeMemory() / (double) Runtime.getRuntime().totalMemory()));
 
-		JLabel memoryLabel = new JLabel(memPercent + "% of memory free");
+		JLabel memoryLabel = new JLabel("Memory: " + memPercent + "% of memory free");
 		memoryLabel.setFont(getFont());
 		labels.add(memoryLabel);
 

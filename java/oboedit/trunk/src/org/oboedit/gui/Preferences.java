@@ -270,7 +270,7 @@ public class Preferences {
 				getAppName() +
 				version.getMajorVersion() + (version.isRC() ? "-rc" : "") + 
 		"/"));
-		logger.debug("prefsDir = " + prefsDir);
+//		logger.debug("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
