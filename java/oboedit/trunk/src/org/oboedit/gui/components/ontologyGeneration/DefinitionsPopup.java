@@ -85,7 +85,7 @@ public class DefinitionsPopup extends JDialog
 		 */
 		Container contentPane = getContentPane();
 		box = new Box(BoxLayout.Y_AXIS);
-		label = new JLabel("Available Definitions:");
+		label = new JLabel("Soure URLs for available definitions:");
 		table = new DefinitionPopupTable();
 		scrollPane = new JScrollPane(table);
 		closeButton = new JButton("Close");
@@ -113,7 +113,7 @@ public class DefinitionsPopup extends JDialog
 		
 		box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		
-		fullDefinition(definition);
+		//fullDefinition(definition);
 		
 		setSize(500, 400);
 		setVisible(true);		

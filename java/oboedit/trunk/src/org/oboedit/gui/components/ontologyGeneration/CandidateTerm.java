@@ -16,7 +16,8 @@ import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 public class CandidateTerm
 {
 	public static final String TYPE_GENERATED = "GENERATED";
-	public static final String TYPE_SYNONYM = "SYNONYM";
+	public static final String TYPE_SYNONYM = "Synonym";
+	public static final String TYPE_ABBREVIATION = "Abbreviation";
 	public static final String TYPE_OBO_TERM = "OBO_TERM";
 	public static final String TYPE_OBO_CHILD = "OBO_CHILD";
 	public static final String TYPE_OBO_DESCENDANT = "OBO_DESC";
