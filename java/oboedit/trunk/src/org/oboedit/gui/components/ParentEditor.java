@@ -5,14 +5,12 @@ import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.OBORestrictionImpl;
 import org.obo.history.*;
-import org.obo.util.HistoryUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.*;
 import org.oboedit.gui.event.*;
 import org.oboedit.util.GUIUtil;
-import org.oboedit.util.PathUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,7 +27,6 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,9 +60,6 @@ public class ParentEditor extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ParentEditor.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	protected SelectionListener selectionListener = new SelectionListener() {
@@ -83,10 +77,6 @@ public class ParentEditor extends AbstractGUIComponent {
 	};
 
 	protected class RowScrollPanel extends JPanel implements Scrollable {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public Dimension getPreferredScrollableViewportSize() {
@@ -132,7 +122,7 @@ public class ParentEditor extends AbstractGUIComponent {
 	protected Icon inv_icon;
 
 	protected static final String[] cardinalityChoices = { "Single value",
-			"Range" };
+	"Range" };
 
 	protected JTextField cardinalityField = new JTextField(3);
 
@@ -157,15 +147,15 @@ public class ParentEditor extends AbstractGUIComponent {
 			Selection s = DropUtil.getSelection(e);
 			// This would let you drop a term onto itself, making it its own parent!
 //			return s != null && s.getTerms().size() > 0;
- 			if (s == null || s.getTerms().size() == 0)
- 				return false;
+			if (s == null || s.getTerms().size() == 0)
+				return false;
 			// Make sure at least one of the dragged terms is not the same as the current object
 			for (LinkedObject parent : s.getTerms()) {
 				if (!parent.equals(currentObject)) {
 					return true;
 				}
- 			}
- 			return false; // user only dragged term itself--not valid
+			}
+			return false; // user only dragged term itself--not valid
 		}
 
 		public void dragEnter(DropTargetDragEvent e) {
@@ -190,25 +180,25 @@ public class ParentEditor extends AbstractGUIComponent {
 		public void drop(DropTargetDropEvent e) {
 			Selection s = DropUtil.getSelection(e);
 			LinkedObject target = SelectionManager.getManager().getSelection()
-					.getTermSubSelection();
+			.getTermSubSelection();
 
 			TermMacroHistoryItem item = new TermMacroHistoryItem(
-					"Added parents");
+			"Added parents");
 			Collection<Link> newLinks = new ArrayList<Link>();
 			for (LinkedObject parent : s.getTerms()) {
 				if (!parent.equals(currentObject)) {  // Don't add a parent that's the same as the term itself
 					CreateLinkHistoryItem citem = new CreateLinkHistoryItem(target,
-												OBOProperty.IS_A, parent);
+							OBOProperty.IS_A, parent);
 					OBORestriction link = new OBORestrictionImpl(target,
-										     OBOProperty.IS_A, parent);
+							OBOProperty.IS_A, parent);
 					newLinks.add(link);
 					item.addItem(citem);
 				}
 			}
 			GUIUtil.setSelections(item, SelectionManager.getManager()
 					.getSelection(), SelectionManager.createSelectionFromLinks(
-//					ParentEditor.this, newLinks, null, false));
-					ParentEditor.this, newLinks, null, true));
+//							ParentEditor.this, newLinks, null, false));
+							ParentEditor.this, newLinks, null, true));
 			e.dropComplete(true);
 			SessionManager.getManager().apply(item);
 		}
@@ -283,7 +273,7 @@ public class ParentEditor extends AbstractGUIComponent {
 		else {
 			// Put name and ID of currently selected term at top of Parent Editor
 			selectedTermLabel.setText(
-				(t.getName() == null) ? t.getID() : t.getName() + " (" + t.getID() + ")");
+					(t.getName() == null) ? t.getID() : t.getName() + " (" + t.getID() + ")");
 //			selectedTermLabel.setBackground(Color.white);  // doesn't do anything
 		}
 		if (SessionManager.getManager().getUseReasoner())
@@ -302,6 +292,8 @@ public class ParentEditor extends AbstractGUIComponent {
 //			// This is the really expensive operation!
 //			final TreePath[] oldpaths = PathUtil.getPaths(t);
 			List<Link> parentList = new ArrayList<Link>();
+			//sorting to display intersection links first
+			List<Link> sortedList = new ArrayList<Link>();
 			if (showImpliedCheckbox.isSelected()
 					&& SessionManager.getManager().getUseReasoner()) {
 				parentList.addAll(SessionManager.getManager().getReasoner()
@@ -310,14 +302,25 @@ public class ParentEditor extends AbstractGUIComponent {
 			parentList.addAll(t.getParents());
 
 			Collections.sort(parentList, parentComparator);
+
+			for(Link link: parentList){
+				if(TermUtil.isIntersection(link)){
+					sortedList.add(link);
+				}
+			}
+			for(Link link: parentList){
+				if(!sortedList.contains(link))
+					sortedList.add(link);
+			}
+
 			boolean first = true;
-			for (int i = 0; i < parentList.size(); i++) {
-				final OBORestriction tr = (OBORestriction) parentList.get(i);
+			for (int i = 0; i < sortedList.size(); i++) {
+				final OBORestriction tr = (OBORestriction) sortedList.get(i);
 				final LinkedObject parent = tr.getParent();
 
 				Font font = getFont();
 				boolean enabled = true;
-				
+
 				if(TermUtil.isIntersection(tr)){
 //					logger.debug("IsIntersection link: " + tr);
 				}
@@ -352,27 +355,27 @@ public class ParentEditor extends AbstractGUIComponent {
 				typeBox.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						OBOProperty type = (OBOProperty) typeBox
-								.getSelectedItem();
+						.getSelectedItem();
 						HistoryItem item = new LinkTypeHistoryItem(tr, type);
 						TreePath[] paths = SelectionManager
-								.getGlobalSelection().getPaths();
+						.getGlobalSelection().getPaths();
 						GUIUtil.setPreSelection(item, SelectionManager
 								.getGlobalSelection());
 						TreePath[] outpaths = new TreePath[paths.length];
 						for (int i = 0; i < outpaths.length; i++) {
 							OBORestriction tr2 = SessionManager.getManager()
-									.getSession().getObjectFactory()
-									.createOBORestriction(tr.getChild(), type,
-											parent, false);
+							.getSession().getObjectFactory()
+							.createOBORestriction(tr.getChild(), type,
+									parent, false);
 
 							outpaths[i] = paths[i].getParentPath()
-									.pathByAddingChild(tr2);
+							.pathByAddingChild(tr2);
 						}
 						GUIUtil.setPostSelection(item, SelectionManager
 								.createSelectionFromPaths(ParentEditor.this,
 										outpaths, null, SessionManager
-												.getManager()
-												.getCurrentLinkDatabase(),
+										.getManager()
+										.getCurrentLinkDatabase(),
 										RootAlgorithm.GREEDY, true));
 						SessionManager.getManager().apply(item);
 					}
@@ -399,22 +402,23 @@ public class ParentEditor extends AbstractGUIComponent {
 				idButton.setFont(font);
 				idButton.setOpaque(false);
 
-				JButton field = new JButton();
-				field.setOpaque(false);
-				field.setBorderPainted(false);
-				
-				String intersectionMarker = " [Intersection]";
-				if(TermUtil.isIntersection(tr))
-					field.setText("<html>" + parent.getName() + intersectionMarker + "</html>");
-				 else
-					field.setText("<html>" + parent.getName() + "</html>");	
-				field.setToolTipText(parent.getName());
-//				field.setFont(font);
-				field.setFont(new Font(Preferences.getPreferences().getFont().toString(),Font.BOLD, 12));
-				field.setMinimumSize(new Dimension(0, (int) field
-						.getMinimumSize().getHeight()));
-				panel.add(field, "Center");
-				
+				JLabel parentLabel = new JLabel();
+				JLabel intersectionLabel = new JLabel("[Intersection] ");
+
+				parentLabel.setText("<html>" + parent.getName() + "</html>");	
+				parentLabel.setToolTipText(parent.getName());
+
+				parentLabel.setFont(font);
+				intersectionLabel.setFont(new Font(Preferences.getPreferences().getFont().toString(),Font.BOLD, 12));
+
+				parentLabel.setMinimumSize(new Dimension(0, (int) parentLabel.getMinimumSize().getHeight()));
+				intersectionLabel.setMinimumSize(new Dimension(0, (int) parentLabel.getMinimumSize().getHeight()));
+				panel.add(parentLabel, BorderLayout.CENTER);
+				if(TermUtil.isIntersection(tr)){
+					panel.add(intersectionLabel, BorderLayout.EAST);
+				}
+
+
 				final JButton trashButton = new JButton(Preferences
 						.loadLibraryIcon("trashcan.gif"));
 				trashButton.setPreferredSize(new Dimension(20, 18));
@@ -428,18 +432,18 @@ public class ParentEditor extends AbstractGUIComponent {
 						// Getting oldpaths (above) is REALLY REALLY slow and not really necessary.
 //						List<TreePath> temp = new ArrayList<TreePath>();
 //						for (int i = 0; i < oldpaths.length; i++) {
-//							if (!oldpaths[i].getLastPathComponent().equals(tr)) {
-//								temp.add(oldpaths[i]);
-//							}
+//						if (!oldpaths[i].getLastPathComponent().equals(tr)) {
+//						temp.add(oldpaths[i]);
+//						}
 //						}
 //						TreePath[] paths = temp.toArray(new TreePath[temp.size()]);
-//
+
 //						GUIUtil.setPostSelection(ditem, SelectionManager
-//								.createSelectionFromPaths(ParentEditor.this,
-//										paths, null, SessionManager
-//												.getManager()
-//												.getCurrentLinkDatabase(),
-//										RootAlgorithm.GREEDY, true));
+//						.createSelectionFromPaths(ParentEditor.this,
+//						paths, null, SessionManager
+//						.getManager()
+//						.getCurrentLinkDatabase(),
+//						RootAlgorithm.GREEDY, true));
 						// Do the edit
 						SessionManager.getManager().apply(ditem);
 						// Just re-select currently selected term (not all instances of it, as with the paths thing)
@@ -455,7 +459,6 @@ public class ParentEditor extends AbstractGUIComponent {
 				topBox.add(Box.createHorizontalStrut(5));
 				topBox.add(idButton);
 				Box bottomBox = Box.createHorizontalBox();
-
 				controlsPanel.add(topBox);
 				if (!TermUtil.isProperty(parent)) {
 					JButton cardinalityButton = new JButton();
@@ -498,7 +501,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				namespaceBox.setFont(font);
 				namespaceBox.setEnabled(enabled);
 				it = SessionManager.getManager().getSession().getNamespaces()
-						.iterator();
+				.iterator();
 				namespaceBox.addItem("<no namespace>");
 				while (it.hasNext()) {
 					Namespace ns = (Namespace) it.next();
@@ -600,7 +603,7 @@ public class ParentEditor extends AbstractGUIComponent {
 					}
 					if (!ObjectUtil.equals(cardinality, tr.getCardinality())) {
 						changes
-								.add(new CardinalityHistoryItem(tr, cardinality));
+						.add(new CardinalityHistoryItem(tr, cardinality));
 					}
 					if (tr.getMinCardinality() != null)
 						changes.add(new MinCardinalityHistoryItem(tr, null));
@@ -699,7 +702,7 @@ public class ParentEditor extends AbstractGUIComponent {
 
 	protected void removeListeners() {
 		SelectionManager.getManager()
-				.removeSelectionListener(selectionListener);
+		.removeSelectionListener(selectionListener);
 		GUIUtil.removeReloadListener(reloadListener);
 	}
 
