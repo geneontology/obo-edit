@@ -319,7 +319,7 @@ public class ParentEditor extends AbstractGUIComponent {
 				boolean enabled = true;
 				
 				if(TermUtil.isIntersection(tr)){
-					logger.debug("IsIntersection link: " + tr);
+//					logger.debug("IsIntersection link: " + tr);
 				}
 
 				if (TermUtil.isImplied(tr)) {
