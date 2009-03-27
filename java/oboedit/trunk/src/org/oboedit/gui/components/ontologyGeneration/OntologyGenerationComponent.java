@@ -1367,12 +1367,12 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		List<CandidateTerm> synonymousOrChildTerms = new ArrayList<CandidateTerm>();
 		Iterable<String> userDefinedAbbreviations = selectedCandidateTerm.getAbbreviations();
 		for (String string : userDefinedAbbreviations) {
-			CandidateTerm synonymousTerm = new CandidateTerm();
-			synonymousTerm.setGeneratedLabel(string);
-			synonymousTerm.addLexicalRepresentation(string);
-			synonymousTerm.addType(CandidateTerm.TYPE_SYNONYM);
-			synonymousOrChildTerms.add(synonymousTerm);
-			synonymousTerm.setVisible(true);
+			CandidateTerm abbreviationTerm = new CandidateTerm();
+			abbreviationTerm.setGeneratedLabel(string);
+			abbreviationTerm.addLexicalRepresentation(string);
+			abbreviationTerm.addType(CandidateTerm.TYPE_ABBREVIATION);
+			synonymousOrChildTerms.add(abbreviationTerm);
+			abbreviationTerm.setVisible(true);
 		}
 		// update children
 		if (selectedCandidateTerm.getExistingChildTerms() == null) {
@@ -2183,7 +2183,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		JPanel editAbbrPanel = new JPanel();
 
 		editAbbrPanel.setLayout(new GridBagLayout());
-		editAbbrPanel.setBorder(new TitledBorder("Synonyms and known child term (OBO)"));
+		editAbbrPanel.setBorder(new TitledBorder("Abbreviations, synonyms and known child terms (OBO)"));
 
 		GridBagConstraints editDefAreaConstraints = new GridBagConstraints();
 		editDefAreaConstraints.fill = GridBagConstraints.BOTH;

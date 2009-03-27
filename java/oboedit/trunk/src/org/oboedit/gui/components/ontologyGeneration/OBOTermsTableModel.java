@@ -47,10 +47,10 @@ public class OBOTermsTableModel extends AbstractTableModel
 		{
 			{ termsSameAsCandidateTerm, "same as existing term", "identical" },
 			{ termsSelected, "selected term", null },
-			{ termsParentsOfSelectedLinkedObject, "parent of selected term", null },
 			{ termsPredictedParentsOfCandidateTerm, "predicted parent of candidate", "sub_class_of" },
 			{ termsFromUserDefinedDefinitions, "in definition (user-defined)", null },
 			{ termsFromTickedDefinitions, "in definition", null },
+			{ termsParentsOfSelectedLinkedObject, "parent of selected term", null },
 			{ termsSimilarToCandidateTerm, "similar term", null } };
 	private boolean showOnlyTicked;
 
