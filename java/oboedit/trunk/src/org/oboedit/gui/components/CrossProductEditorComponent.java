@@ -428,7 +428,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					// always created with completes=false by default
 					// we'll reset the completes flag in a moment
 					completeDefLink.setCompletes(false);
-					historyList.add(new CreateLinkHistoryItem(completeDefLink));
+					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 
 				if (matchLink == null || !TermUtil.isIntersection(matchLink)) {
