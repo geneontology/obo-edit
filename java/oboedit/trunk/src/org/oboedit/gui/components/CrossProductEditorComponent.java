@@ -431,12 +431,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
 
-				if (matchLink == null || !TermUtil.isIntersection(matchLink)) {
-					completeDefLink.setCompletes(false);
-					historyList.add(new CompletesHistoryItem(completeDefLink));
-				}
-				// reset the completes flag to true
-				completeDefLink.setCompletes(true);
 			}
 		}
 		return historyList;
