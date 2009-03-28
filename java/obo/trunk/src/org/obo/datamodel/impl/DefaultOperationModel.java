@@ -1538,6 +1538,48 @@ public class DefaultOperationModel implements OperationModel {
 
 		return null;
 	}
+	
+	public OperationWarning reverse(CreateIntersectionLinkHistoryItem item) {
+		LinkedObject target = getRealObject(item.getTarget());
+		if (target == null) {
+			return new OperationWarning("Could not remove parents to unknown "
+					+ "term " + item.getTarget());
+		}
+
+		StringRelationship sr = new StringRelationship(item.getTarget(), item
+				.getTypeID(), item.getParentID());
+		sr.setCompletes(true);
+		Link tr = getRealRel(sr);
+
+		if (tr.getParent() == null)
+			if (allowDangling) {
+				tr.setParent(session.getObjectFactory().createDanglingObject(
+						sr.getParent(), false));
+			} else
+				return new OperationWarning(
+						"Couldn't undo copy of unknown parent "
+								+ sr.getParent() + " to " + target
+								+ " with type " + sr.getType() + ".");
+		if (tr.getType() == null)
+			if (allowDangling) {
+				tr.setType((OBOProperty) session.getObjectFactory()
+						.createDanglingObject(sr.getType(), false));
+			} else
+				return new OperationWarning("Couldn't undo copy of "
+						+ sr.getChild() + " to " + target
+						+ " with unknown type " + sr.getType() + ".");
+
+		if (HistoryUtil.findParentRel(tr, target) == null) {
+			OperationWarning cwarning = new OperationWarning(
+					"Could not remove link " + tr + " because it doesn't exist");
+			return cwarning;
+		} else {
+			tr.getChild().removeParent(tr);
+		}
+
+		return null;
+	}
+
 
 	public OperationWarning apply(ObsoleteObjectHistoryItem item) {
 		IdentifiedObject io = session.getObject(item.getTarget());
