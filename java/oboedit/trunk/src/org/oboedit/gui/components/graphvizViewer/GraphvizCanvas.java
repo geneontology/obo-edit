@@ -327,10 +327,18 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected String getOptions(Link tr) {
 
 		//logger.debug("GraphvizCanvas: Link getOptions() method.");
+		
+		String style = "";
+		if (TermUtil.isImplied(tr)) {
+			style = "style=dotted,";
+		}
+		if (TermUtil.isIntersection(tr)) {
+			style = "style=dashed,";
+		}
 
-		return "label=\"" + formatLabel(tr.getType().getName()) + "\", "
+		return "label=\"" + (TermUtil.isIntersection(tr) ? "^" : "") + formatLabel(tr.getType().getName()) + "\", "
 		+ "dir=" + (graphvizSettingsInstance.getFlipOver() ? "back" : "forward")
-		+ ", " + (TermUtil.isImplied(tr) ? "style=dotted," : "")
+		+ ", " + style
 		+ "fontsize=" + graphvizSettingsInstance.getLabelFont().getSize()
 		+ ", fontname=\"" + graphvizSettingsInstance.getLabelFont().getFontName()
 		+ "\", " + "color=\"" + getColorString(getColor(tr).edge)
