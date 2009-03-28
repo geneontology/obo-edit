@@ -27,6 +27,8 @@ public class DefaultOperationModel implements OperationModel {
 			warning = apply((CreateObjectHistoryItem) item);
 		else if (item instanceof CreateLinkHistoryItem)
 			warning = apply((CreateLinkHistoryItem) item);
+		else if (item instanceof CreateIntersectionLinkHistoryItem)
+			warning = apply((CreateIntersectionLinkHistoryItem) item);
 		else if (item instanceof DeleteLinkHistoryItem)
 			warning = apply((DeleteLinkHistoryItem) item);
 		else if (item instanceof DestroyObjectHistoryItem)
@@ -1453,6 +1455,46 @@ public class DefaultOperationModel implements OperationModel {
 			tr.getChild().addParent(tr);
 		}
 
+		return null;
+	}
+	public OperationWarning apply(CreateIntersectionLinkHistoryItem item) {
+		LinkedObject target = getRealObject(item.getTarget());
+		if (target == null) {
+			return new OperationWarning("Could not add parents to unknown "
+					+ "term " + item.getTarget());
+		}
+
+		StringRelationship sr = new StringRelationship(item.getTarget(), item
+				.getTypeID(), item.getParentID());
+		sr.setCompletes(true);
+		Link tr = getRealRel(sr);
+
+		if (tr.getParent() == null)
+			if (allowDangling) {
+				tr.setParent(session.getObjectFactory().createDanglingObject(
+						sr.getParent(), false));
+			} else
+				return new OperationWarning(
+						"Couldn't do copy of unknown parent " + sr.getParent()
+								+ " to " + target + " with type "
+								+ sr.getType() + ".");
+		if (tr.getType() == null)
+			if (allowDangling) {
+				tr.setType((OBOProperty) session.getObjectFactory()
+						.createDanglingObject(sr.getType(), true));
+			} else
+				return new OperationWarning("Couldn't do copy of "
+						+ sr.getChild() + " to " + target
+						+ " with unknown type " + sr.getType() + ".");
+
+		if (HistoryUtil.findParentRel(tr, target) != null) {
+			OperationWarning cwarning = new OperationWarning(
+					"Could not create link " + tr
+							+ " because it already exists");
+			return cwarning;
+		} else {
+			tr.getChild().addParent(tr);
+		}
 		return null;
 	}
 
