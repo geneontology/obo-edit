@@ -212,7 +212,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private static GoPubMedDefinitionGeneratorStub definitionGeneratorStub;
 
 	private BiotecSplashScreen biotecSplashScreen;
-	
+
 	/*
 	 * Instanciate listeners to OBOEdit
 	 */
@@ -394,7 +394,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.openHelpPageButton.setPreferredSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMaximumSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMargin(new Insets(13, 0, 0, 0));
-		
+
 		this.setTitle("Ontology Generation view");
 	}
 
@@ -1305,13 +1305,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private void onClickOpenDefinitionsPopup()
 	{
 		int rowNumber = OntologyGenerationComponent.this.definitionTable.getSelectedRow();
-		
-		DefinitionsPopup definitionsPopup = new DefinitionsPopup(this);
-		
+
+		DefinitionsPopup definitionsPopup = new DefinitionsPopup(OntologyGenerationComponent.this);
 		definitionsPopup.initPopup(definitionTable.getModel().getDefinitionAt(rowNumber));
+
+		definitionsPopup.setVisible(true);
 	}
 
-	
 	/**
 	 * Displays term selected in the termsTable and updates all depending gui components
 	 * 
@@ -1636,13 +1636,12 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		parentArray = parents.toArray(parentArray);
 		oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(parentArray);
 	}
-	
+
 	/**
-	 * Adds the <code>definition</code>, which was selected in the 
-	 * <code>DefinitionsPopup</code> to the <code>editDefArea</code>.
+	 * Adds the <code>definition</code>, which was selected in the <code>DefinitionsPopup</code> to the
+	 * <code>editDefArea</code>.
 	 * 
 	 * @param definition the definition to be attached to the <code>editDefArea</code> text.
-	 * 
 	 * @author Goetz Fabian
 	 */
 	public void updateEditDefArea(String definition)
@@ -1973,17 +1972,17 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	{
 		return string.toLowerCase().contains(potentialSubString.toLowerCase());
 	}
-	
+
 	/**
-     * Replace invalid character  (prepare text to send with Axis)
-     *
-     * @param string
-     * @param builder
-     */
-    private static final String prepareTextReplaceInvalidCharacter(String string)
-    {
+	 * Replace invalid character (prepare text to send with Axis)
+	 * 
+	 * @param string
+	 * @param builder
+	 */
+	private static final String prepareTextReplaceInvalidCharacter(String string)
+	{
 		StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < string.length(); i++) {
+		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 			if ((c < 0x001F || (c >= 0x007F && c <= 0x00A0)) && c != 0x000A) {
 				builder.append(' ');
@@ -1993,7 +1992,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 		}
 		return builder.toString();
-    }
+	}
 
 	/**
 	 * Lays out the GUI
@@ -2255,7 +2254,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		definitionTable.setMinimumPreferedeScrollableViewportHeight(40);
 		definitionTable.setMaximumPreferedeScrollableViewportHeight(200);
 		definitionTable.setPreferredScrollableViewportSize(new Dimension(200, 40));
-
+		
 		definitonGenerationPanel.add(new JScrollPane(definitionTable), BorderLayout.NORTH);
 		definitonGenerationPanel.add(southDefPanel, BorderLayout.CENTER);
 
@@ -2464,9 +2463,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 							List<OBOLookupRelation> allRelations = new ArrayList<OBOLookupRelation>();
 							if (candidateTerm.getExistingOntologyTerms().size() > 0) {
 								for (OBOLookupTerm term : candidateTerm.getExistingOntologyTerms()) {
-//									logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
+									// logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
 									OBOLookupResult result = ontoLookupProxy.getChildren(term.getOboID(), 1);
-//									logger.debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() + " DONE");
+									// logger.debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() +
+									// " DONE");
 									if (result != null) {
 										if (result.getTerms() != null) {
 											for (OBOLookupTerm childTerm : result.getTerms()) {
@@ -2535,8 +2535,6 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 
 		}
-
-
 
 		@Override
 		public TextConceptRepresentation[] doInBackground()
@@ -2750,12 +2748,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				for (final DefinitionContainer def : defs) {
 					if (def != null) {
 						boolean duplicateDefinition = false;
-						
+
 						final int MIN_IDENT_CHARS = 50;
-						
+
 						for (CandidateDefinition candDef : defList) {
 							// If definition shorter than MIN_IDENT_CHARS, it must be identical to candDef
-							if (def.getDefinition().length() < MIN_IDENT_CHARS && candDef.getDefinition().equals(def.getDefinition())) {
+							if (def.getDefinition().length() < MIN_IDENT_CHARS && candDef.getDefinition().equals(
+							    def.getDefinition())) {
 								duplicateDefinition = true;
 
 								// Therefore, add the URLs to candDef.
@@ -2763,16 +2762,17 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 								candDef.addCachedURL(def.getCachedURL());
 							}
 							// If definition is longer than MIN_IDENT_CHARS...
-							else if (def.getDefinition().length() >= MIN_IDENT_CHARS && candDef.getDefinition().length() >= MIN_IDENT_CHARS &&
-									(def.getDefinition().substring(0, MIN_IDENT_CHARS)).equals((candDef.getDefinition().substring(0, MIN_IDENT_CHARS)))) {
+							else if (def.getDefinition().length() >= MIN_IDENT_CHARS && candDef.getDefinition()
+							    .length() >= MIN_IDENT_CHARS && (def.getDefinition().substring(0, MIN_IDENT_CHARS))
+							    .equals((candDef.getDefinition().substring(0, MIN_IDENT_CHARS)))) {
 								duplicateDefinition = true;
-								
+
 								// ... check if they are identical ...
 								if (def.getDefinition().equals(candDef.getDefinition())) {
 									candDef.addURL(def.getUrl());
 									candDef.addCachedURL(def.getCachedURL());
-								} 
-								
+								}
+
 								// or if the ends are different.
 								else {
 									boolean duplicateAlternativeDefinition = false;
@@ -2781,19 +2781,19 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 											// Try to find identical alternative definition.
 											if (definition.getDefinition().equals(def.getDefinition())) {
 												duplicateAlternativeDefinition = true;
-												
+
 												definition.addURL(def.getUrl());
 												definition.addCachedURL(def.getCachedURL());
 											}
 										}
 									}
-									
+
 									// If no identical alternative definition is found,
 									// add a new alternative definition.
-									if (! duplicateAlternativeDefinition) {
-										final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
-											    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
-											    .getParentTermCount(), false);
+									if (!duplicateAlternativeDefinition) {
+										final CandidateDefinition candidateDefinition = new CandidateDefinition(index,
+										    def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def
+										        .getCachedURL(), def.getParentTermCount(), false);
 										candDef.addAlternativeDefinition(candidateDefinition);
 									}
 								}
@@ -2837,12 +2837,27 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				JOptionPane.showMessageDialog(null, "No definitions found for term: \"" + selectedCandidateTerm
 				    .getGeneratedLabel() + "\"");
 			}
+
+			// start extension of definitions by parsing from web pages (only check the first 3 incomplete
+			int extendCount = 0;
+			for (Iterator<CandidateDefinition> iterator = defList.iterator(); iterator.hasNext();) {
+				CandidateDefinition candidateDefinition = iterator.next();
+				if (candidateDefinition.getDefinition().endsWith("...") || !candidateDefinition.getDefinition().endsWith(".")) {
+					DefinitionExtensionWorker worker = new DefinitionExtensionWorker(candidateDefinition, this.table);
+					worker.execute();
+					extendCount++;
+					if (extendCount % 3 == 0) {
+						break;
+					}
+				}
+			}
 			this.setProgress(100);
 
 			// Reset the cursor in normal mode
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-			this.table.updateUI();
+			this.table.repaint();
 		}
 	}
+
 }

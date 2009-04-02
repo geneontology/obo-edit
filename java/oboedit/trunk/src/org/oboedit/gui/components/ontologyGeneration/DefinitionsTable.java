@@ -1,9 +1,13 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.JToolTip;
 
 /**
  * JTable to show instances of {@link CandidateDefinition}.
@@ -14,8 +18,8 @@ import javax.swing.JTable;
 public class DefinitionsTable extends JTable
 {
 	private static final long serialVersionUID = -1511859431547268636L;
-	private int minScrollableViewPortHeight;
-	private int maxScrollableViewPortHeight;
+	private int minScrollableViewPortHeight = 40;
+	private int maxScrollableViewPortHeight = 200;
 
 	/**
 	 * Constructs a {@link DefinitionsTable}
@@ -24,10 +28,13 @@ public class DefinitionsTable extends JTable
 	{
 		super(new DefinitionsTableModel());
 		setGridColor(Color.LIGHT_GRAY);
-		setRowHeight(getRowHeight() + 30);
+		setRowHeight(getRowHeight() * 3);
+		setAlignmentY(TOP_ALIGNMENT);
+		setAlignmentX(LEFT_ALIGNMENT);
 		getColumnModel().getColumn(0).setMaxWidth(50);
 		getColumnModel().getColumn(0).setResizable(false);
 		getColumnModel().getColumn(2).setMaxWidth(30);
+		setPreferredScrollableViewportSize(new Dimension(minScrollableViewPortHeight, maxScrollableViewPortHeight));
 		tableHeader.setReorderingAllowed(false);
 	}
 
@@ -82,49 +89,30 @@ public class DefinitionsTable extends JTable
 		return (DefinitionsTableModel) super.getModel();
 	}
 
-	// @Override
-	// public String getToolTipText(MouseEvent e)
-	// {
-	// String tip = null;
-	// StringBuffer toolTipBuffer = new StringBuffer();
-	//
-	// java.awt.Point p = e.getPoint();
-	// int rowIndex = rowAtPoint(p);
-	// int colIndex = columnAtPoint(p);
-	// int realColumnIndex = convertColumnIndexToModel(colIndex);
-	//
-	// if (realColumnIndex == 2) {
-	// setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-	// String tempTip = getModel().getDefinitionAt(rowIndex).getUrl();
-	//
-	// if (tempTip.length() > 100) {
-	// toolTipBuffer.append("<html>");
-	// toolTipBuffer.append(tempTip.substring(0, tempTip.length() / 2));
-	// toolTipBuffer.append("<br>");
-	// toolTipBuffer.append(tempTip.substring((tempTip.length() / 2) + 1, tempTip.length() - 1));
-	// toolTipBuffer.append("</html>");
-	//
-	// tip = toolTipBuffer.toString();
-	// }
-	// else
-	// tip = tempTip;
-	//
-	// }
-	// else if (realColumnIndex == 1) {
-	// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	// tip = getModel().getDefinitionAt(rowIndex).getDefinition();
-	//
-	// }
-	// else {
-	// /*
-	// * You can omit this part if you know you don't have any renderer that supply their own tool tips.
-	// */
-	// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	// tip = super.getToolTipText(e);
-	// }
-	//
-	// return tip;
-	// }
+	@Override
+	public String getToolTipText(MouseEvent e)
+	{
+		String tip = null;
+		StringBuffer toolTipBuffer = new StringBuffer();
+
+		java.awt.Point p = e.getPoint();
+		int rowIndex = rowAtPoint(p);
+		int colIndex = columnAtPoint(p);
+		int realColumnIndex = convertColumnIndexToModel(colIndex);
+
+		if (realColumnIndex == 2) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			tip = "Click for more information on sources of the definitions";
+		}
+		else {
+			/*
+			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
+			 */
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			tip = super.getToolTipText(e);
+		}
+		return tip;
+	}
 
 	// // Returns the preferred height of a row.
 	// // The result is equal to the tallest cell in the row.
