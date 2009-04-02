@@ -12,7 +12,7 @@ import java.util.List;
 public class CandidateDefinition
 {
 	private final int index;
-	private final List<String> cachedURL;
+	private final List<String> cachedURLs;
 	private String definition;
 	private List<CandidateDefinition> alternativeDefinitions;
 	private String definitionHTMLFormatted;
@@ -20,7 +20,7 @@ public class CandidateDefinition
 	private boolean isVisible;
 	private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
 	private int parentTermCount;
-	private final List<String> url;
+	private final List<String> urls;
 
 	/**
 	 * Constructs a {@link CandidateDefinition}
@@ -58,14 +58,14 @@ public class CandidateDefinition
 	 */
 	public CandidateDefinition(int index, String def, String defFormatted, String ur, String cachedUR, int termCount, boolean select)
 	{
-		url = new ArrayList<String>();
-		cachedURL = new ArrayList<String>();
+		urls = new ArrayList<String>();
+		cachedURLs = new ArrayList<String>();
 		
 		this.index = index;
 		this.definition = def;
 		this.definitionHTMLFormatted = defFormatted;
-		this.url.add(ur);
-		this.cachedURL.add(cachedUR);
+		this.urls.add(ur);
+		this.cachedURLs.add(cachedUR);
 		this.parentTermCount = termCount;
 		this.isTicked = select;
 		this.isVisible = true;
@@ -89,7 +89,7 @@ public class CandidateDefinition
 	 */
 	public List<String> getUrl()
 	{
-		return url;
+		return urls;
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class CandidateDefinition
 	 */
 	public List<String> getCachedURL()
 	{
-		return cachedURL;
+		return cachedURLs;
 	}
 
 	/**
@@ -147,45 +147,28 @@ public class CandidateDefinition
 	 */
 	public void setDefinition(String definition)
 	{
-		if (definition != null && definition.equals(definition))
-			return;
 		this.definition = definition;
 	}
 
+	/**
+	 * Add an URL (source URL)
+	 *
+	 * @param url
+	 */
 	public void addURL(String url) 
 	{
-		this.url.add(url);
+		this.urls.add(url);
 	}
 	
+	/**
+	 * Add and cacheURL 
+	 *
+	 * @param cachedURL
+	 */
 	public void addCachedURL(String cachedURL)
 	{
-		this.cachedURL.add(cachedURL);
+		this.cachedURLs.add(cachedURL);
 	}
-	
-//	/**
-//	 * Adds another definition to this definition
-//	 * 
-//	 * @param definition the alternative definition (although it can be identical)
-//	 * @param cachedURL the URL to the alternative definition
-//	 * 
-//	 */
-//	public void addAlternativeDefinition(String defFormatted, String cachedURL)
-//	{
-//		List<String> urls;
-//		if (alternativeDefinitions.containsKey(defFormatted)) {
-//			urls = alternativeDefinitions.get(defFormatted);
-//			urls.add(cachedURL);
-//		} else {
-//			urls = new ArrayList<String>();
-//			urls.add(cachedURL);
-//		}
-//		alternativeDefinitions.put(defFormatted, urls);
-//		
-//	}
-//	
-//	public Map<String, List<String>> getAlternativeDefinitions() {
-//		return alternativeDefinitions;
-//	}
 	
 	public void addAlternativeDefinition(CandidateDefinition candidateDefinition)
 	{
