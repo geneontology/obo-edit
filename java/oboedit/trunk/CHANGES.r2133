@@ -1,0 +1,30 @@
+Changes in OBO-Edit2b57:
+
+Bug Fixes:
+
+- [ geneontology-Bugs-2706065 ] b56 - OE not starting on Windows
+- [ 2051721 ] OBOMerge losing replaced_by tags. 
+N.B. This bug is very difficult to fully test, so I have asked the 
+users to keep a close eye on these tags for the next few merges. 
+
+Bugs pending:
+- Itemized undo
+- Switch to turn off incremental reasoning
+- graph editor menu options
+- user dictionary refresh and incremental validation stuff
+
+Features:
+
+
+TO DO:
+Documentation:
+- user.dict usage and backup info
+
+Troubleshooting- add note about:
+https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
+
+
+
+
+
+
