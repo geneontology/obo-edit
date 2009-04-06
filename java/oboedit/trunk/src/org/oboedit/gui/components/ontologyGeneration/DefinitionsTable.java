@@ -1,13 +1,14 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Color;
-import java.awt.Cursor;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.JToolTip;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 /**
  * JTable to show instances of {@link CandidateDefinition}.
@@ -28,7 +29,7 @@ public class DefinitionsTable extends JTable
 	{
 		super(new DefinitionsTableModel());
 		setGridColor(Color.LIGHT_GRAY);
-		setRowHeight(getRowHeight() * 3);
+		setRowHeight(getRowHeight() + 4);
 		setAlignmentY(TOP_ALIGNMENT);
 		setAlignmentX(LEFT_ALIGNMENT);
 		getColumnModel().getColumn(0).setMaxWidth(50);
@@ -89,30 +90,108 @@ public class DefinitionsTable extends JTable
 		return (DefinitionsTableModel) super.getModel();
 	}
 
+//	@Override
+//	public String getToolTipText(MouseEvent e)
+//	{
+//		String tip = null;
+//		StringBuffer toolTipBuffer = new StringBuffer();
+//
+//		java.awt.Point p = e.getPoint();
+//		int rowIndex = rowAtPoint(p);
+//		int colIndex = columnAtPoint(p);
+//		int realColumnIndex = convertColumnIndexToModel(colIndex);
+//
+//		if (realColumnIndex == 2) {
+//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//			tip = "Click for more information on sources of the definitions";
+//		}
+//		else {
+//			/*
+//			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
+//			 */
+//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//			tip = super.getToolTipText(e);
+//		}
+//		return tip;
+//	}
+	
 	@Override
-	public String getToolTipText(MouseEvent e)
-	{
-		String tip = null;
-		StringBuffer toolTipBuffer = new StringBuffer();
+	public TableCellRenderer getCellRenderer(int row, int column)
+	{			
+		if (column == 1) {
+			return new DefaultTableCellRenderer()
+			{
+				private static final long serialVersionUID = -9109057959830836291L;
 
-		java.awt.Point p = e.getPoint();
-		int rowIndex = rowAtPoint(p);
-		int colIndex = columnAtPoint(p);
-		int realColumnIndex = convertColumnIndexToModel(colIndex);
-
-		if (realColumnIndex == 2) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			tip = "Click for more information on sources of the definitions";
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					    boolean hasFocus, int row, int column)
+				{
+					// Check if the row belongs to a definition
+					JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
+					    hasFocus, row, column);
+					
+					String htmlDefinition = (String)getModel().getValueAt(row, column);
+					
+					comp.setText(htmlDefinition);
+					
+					// add multi-line tooltip displaying the full HTML-formatted definition.
+					comp.setToolTipText(setToolTip(htmlDefinition));
+					
+					return comp;
+				}
+			};
+					
 		}
 		else {
-			/*
-			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
-			 */
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			tip = super.getToolTipText(e);
+			return super.getCellRenderer(row, column);
 		}
-		return tip;
 	}
+	
+	private String setToolTip(String htmlDefinition)
+	{
+		final int MAX_LINE_LENGTH = 40;
+		String toolTipText = "";
+		
+		int lineCount = 0;
+		// counts the number of characters outside HTML tags
+		int numberOfCharsRead = 0;
+		boolean openedTag = false;
+		for (int i = 0; i < htmlDefinition.length(); i++) {
+			if (!openedTag) {
+				if (htmlDefinition.charAt(i) == '<') {
+					openedTag = true;
+				} 
+				else {
+					numberOfCharsRead++;
+				}
+			} else {
+				if (htmlDefinition.charAt(i) == '>') {
+					openedTag = false;
+				}
+			}
+			// if the maximum line length is reached, start a new line by appending "<br/>"
+			if ((numberOfCharsRead % MAX_LINE_LENGTH) == 0 && !openedTag && htmlDefinition.charAt(i) != '>') {
+				if (numberOfCharsRead > 0) {
+					int nextSpace = htmlDefinition.indexOf(" ", i);
+					if (nextSpace != -1) {
+						toolTipText += htmlDefinition.substring(i, nextSpace);
+						i = nextSpace;
+						toolTipText += "<br/>";
+					}
+					else {
+						toolTipText += htmlDefinition.substring(i);
+					}
+					
+				}
+				lineCount++;
+			}
+			
+			toolTipText += htmlDefinition.charAt(i);
+		}
+		
+		return toolTipText;
+	}
+
 
 	// // Returns the preferred height of a row.
 	// // The result is equal to the tallest cell in the row.
