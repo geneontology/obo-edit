@@ -62,5 +62,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/swinglabs-0.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/PDFBox-0.7.3.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/FontBox-0.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/runlibs/checkstyle-all-4.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
