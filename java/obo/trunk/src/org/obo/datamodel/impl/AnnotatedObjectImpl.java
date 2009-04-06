@@ -122,6 +122,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 	}
 
 	public Set getReplacedBy() {
+		//System.out.println("AnnotatedObjectImpl: getReplacedBy(): replacements = " + replacements);
 		return replacements;
 	}
 
@@ -134,6 +135,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 	}
 
 	public Set getConsiderReplacements() {
+		//System.out.println("AnnotatedObjectImpl: getConsiderReplacements(): considerReplacements = " + considerReplacements);
 		return considerReplacements;
 	}
 
