@@ -148,26 +148,54 @@ public class HistoryGenerator implements Serializable {
 		it = newHistory.getObjects().iterator();
 		while (it.hasNext()) {
 			IdentifiedObject io = (IdentifiedObject) it.next();
+			if (io.getClass().getName() == "obo:TERM"){
+				//System.out.println("HistoryGenerator: getHistory: io = " + io.getName());
+			}
 			IdentifiedObject oldio = oldHistory.getObject(io.getID());
+			//System.out.println("HistoryGenerator: io.getID = " + io.getID());
+
+			if (oldio.getClass().getName() == "obo:TERM"){
+				//System.out.println("HistoryGenerator: getHistory: oldio = " + oldio.getName());
+			}
 			if (oldio == null) {
 				history.addItem(new CreateObjectHistoryItem(io.getID(), io
 						.getType().getID()));
+				//System.out.println("HistoryGenerator: io.getID = " + io.getID());
+				//System.out.println("HistoryGenerator: io added to newObjects");
 				newObjects.add(io);
+
 			}
 		}
 
+
+
+
+
 		it = newObjects.iterator();
+
+		//We never enter this while loop. 
 		while (it.hasNext()) {
+			//System.out.println("HistoryGenerator: newObjects Iterator: it = " + it); //this never prints
 			IdentifiedObject io = (IdentifiedObject) it.next();
+			//System.out.println("HistoryGenerator: newObjects:io = " + io);	
 			IdentifiedObject oldio = oldHistory.getObject(io.getID());
+			//System.out.println("HistoryGenerator: newObjects:oldio = " + oldio);
+
 			HistoryList creationList = new DefaultHistoryList();
 			if (io.getType() instanceof OBOClass) {
 				IdentifiedObject blankTerm = oldHistory.getObjectFactory()
-						.createObject(io.getID(), (OBOClass) io.getType(),
-								io.isAnonymous());
+				.createObject(io.getID(), (OBOClass) io.getType(),
+						io.isAnonymous());
 
+				//System.out.println("HistoryGenerator: getHistory: blankTerm = " + blankTerm); //this does not print
+				//System.out.println("HistoryGenerator: getHistory: io = " + io);
+				//System.out.println("HistoryGenerator: getHistory: creationList = " + creationList);
+				//System.out.println("HistoryGenerator: getHistory: warnings = " + warnings);
 				getTermTextChanges(blankTerm, io, creationList, warnings);
 				getParentageChanges(blankTerm, io, creationList, warnings);
+
+				//this point is never reached, but getObsoleteChanges is called. 
+				//Where is it called from?
 				getObsoleteChanges(blankTerm, io, creationList, warnings);
 				getNamespaceChanges(blankTerm, io, creationList, warnings);
 			}
@@ -196,11 +224,11 @@ public class HistoryGenerator implements Serializable {
 						Link link = (Link) it2.next();
 						history.addItem(new DeleteLinkHistoryItem(link));
 					}
-//					it2 = lo.getChildren().iterator();
-//					while (it2.hasNext()) {
-//						Link link = (Link) it2.next();
-//						history.addItem(new DeleteLinkHistoryItem(link));
-//					}
+					//					it2 = lo.getChildren().iterator();
+					//					while (it2.hasNext()) {
+					//						Link link = (Link) it2.next();
+					//						history.addItem(new DeleteLinkHistoryItem(link));
+					//					}
 				}
 				history.addItem(new DestroyObjectHistoryItem(io));
 				continue;
@@ -214,6 +242,8 @@ public class HistoryGenerator implements Serializable {
 
 			getParentageChanges(io, newio, history, warnings);
 
+			//This is where getObsoleteChanges is called from with the test files. 
+			//System.out.println("Reached here!");
 			getObsoleteChanges(io, newio, history, warnings);
 
 		}
@@ -229,6 +259,7 @@ public class HistoryGenerator implements Serializable {
 	public static void getChanges(IdentifiedObject io, IdentifiedObject newio,
 			HistoryList changes, Collection<String> warnings) {
 		getParentageChanges(io, newio, changes, warnings);
+		//System.out.println("Reached here too");
 		getObsoleteChanges(io, newio, changes, warnings);
 		getTermTextChanges(io, newio, changes, warnings);
 		getNamespaceChanges(io, newio, changes, warnings);
@@ -341,60 +372,123 @@ public class HistoryGenerator implements Serializable {
 									newLink, rlink.getMinCardinality()));
 						if (!rlink.isNecessarilyTrue())
 							history
-									.addItem(new NecessarilyTrueHistoryItem(
-											new StringRelationship(
-													newLink), true));
+							.addItem(new NecessarilyTrueHistoryItem(
+									new StringRelationship(
+											newLink), true));
 						if (rlink.isInverseNecessarilyTrue())
 							history
-									.addItem(new InverseNecHistoryItem(
-											new StringRelationship(
-													newLink), false));
+							.addItem(new InverseNecHistoryItem(
+									new StringRelationship(
+											newLink), false));
 						if (rlink.completes())
 							history
-									.addItem(new CompletesHistoryItem(
-											new StringRelationship(
-													newLink), false));
+							.addItem(new CompletesHistoryItem(
+									new StringRelationship(
+											newLink), false));
 					}
 				}
 			}
 		}
 	}
 
-	public static void getObsoleteChanges(IdentifiedObject io,
-			IdentifiedObject newio, HistoryList history,
+	public static void getObsoleteChanges(IdentifiedObject oldIO,
+			IdentifiedObject newIO, HistoryList history,
 			Collection<String> warnings) {
-		if (TermUtil.isObsolete(newio) && !TermUtil.isObsolete(io)) {
-			if (!(newio instanceof ObsoletableObject) && warnings != null)
-				warnings.add(newio + " is not an ObsoletableObject");
-			else
-				history.addItem(new ObsoleteObjectHistoryItem(io));
-		} else if (!TermUtil.isObsolete(newio) && TermUtil.isObsolete(io)
+		if (TermUtil.isObsolete(newIO) && !TermUtil.isObsolete(oldIO)) {
+			if (!(newIO instanceof ObsoletableObject) && warnings != null){
+				warnings.add(newIO + " is not an ObsoletableObject");
+			} else {
+				history.addItem(new ObsoleteObjectHistoryItem(oldIO));
+			}
+
+			//System.out.println("HistoryGenerator: getObsoleteChanges: io = " + oldIO);
+
+
+			//new: This solves the bug that prevented replaced_by tags from carrying over during merges.
+			//Code block copied from the third else in this method. 
+
+
+			ObsoletableObject obsoletableOldIO = (ObsoletableObject) oldIO;
+			//System.out.println("HistoryGenerator: getObsoleteChanges: oldIO = " + oldIO); //this does print
+			//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableOldIO = " + obsoletableOldIO);
+
+			ObsoletableObject obsoletableNewIO = (ObsoletableObject) newIO;
+			//System.out.println("HistoryGenerator: getObsoleteChanges: newIO = " + newIO);
+			//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableNewIO = " + obsoletableNewIO);
+
+			CollectionChanges<ObsoletableObject> considerchanges = CollectionUtil.getChanges(obsoletableOldIO.getConsiderReplacements(), obsoletableNewIO.getConsiderReplacements());
+
+			//logger.debug("HistoryGenerator: getObsoleteChanges: considerChanges = " + considerchanges);
+
+			for(ObsoletableObject oo : considerchanges.getAddedItems()) {
+				history.addItem(new AddConsiderHistoryItem(obsoletableOldIO, oo));
+			}
+			for(ObsoletableObject oo : considerchanges.getDeletedItems()) {
+				history.addItem(new RemoveConsiderHistoryItem(obsoletableOldIO, oo));
+			}
+
+
+			Set<ObsoletableObject> obsoletableOldIOReplacedBy = obsoletableOldIO.getReplacedBy();
+			Set<ObsoletableObject> obsoletableNewIOReplacedBy = obsoletableNewIO.getReplacedBy();
+
+			CollectionChanges<ObsoletableObject> replacementchanges = CollectionUtil.getChanges(obsoletableOldIOReplacedBy, obsoletableNewIOReplacedBy);
+			//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableOldIOReplacedBy = " + obsoletableOldIOReplacedBy);
+			//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableNewIOReplacedBy = " + obsoletableNewIOReplacedBy);
+
+			for(ObsoletableObject oo : replacementchanges.getAddedItems()) {
+				history.addItem(new AddReplacementHistoryItem(obsoletableOldIO, oo));
+			}
+			for(ObsoletableObject oo : replacementchanges.getDeletedItems()) {
+				history.addItem(new RemoveReplacementHistoryItem(obsoletableOldIO, oo));
+			}
+			//logger.debug("HistoryGenerator: getObsoleteChanges: replacementchanges = " + replacementchanges);
+
+			//new
+
+		} else if (!TermUtil.isObsolete(newIO) && TermUtil.isObsolete(oldIO)
 				&& warnings != null) {
-			warnings.add(newio + " was somehow unobsoleted!");
+			warnings.add(newIO + " was somehow unobsoleted!");
 		} else {
-			if (newio instanceof ObsoletableObject
-					&& io instanceof ObsoletableObject) {
-				ObsoletableObject oio = (ObsoletableObject) io;
-				ObsoletableObject onewio = (ObsoletableObject) newio;
-				CollectionChanges<ObsoletableObject> considerchanges = CollectionUtil
-						.getChanges(oio.getConsiderReplacements(), onewio
-								.getConsiderReplacements());
+			if (newIO instanceof ObsoletableObject
+					&& oldIO instanceof ObsoletableObject) {
+
+				//System.out.println("HistoryGenerator: GetObsoleteChanges: are both io and newio Obsolete?: "
+						//+ (TermUtil.isObsolete(newIO) && TermUtil.isObsolete(oldIO)));
+				
+				ObsoletableObject obsoletableOldIO = (ObsoletableObject) oldIO;
+				//System.out.println("HistoryGenerator: getObsoleteChanges: oldIO = " + oldIO); //this does print
+				//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableOldIO = " + obsoletableOldIO);
+
+				ObsoletableObject obsoletableNewIO = (ObsoletableObject) newIO;
+				//System.out.println("HistoryGenerator: getObsoleteChanges: newIO = " + newIO);
+				//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableNewIO = " + obsoletableNewIO);
+
+				CollectionChanges<ObsoletableObject> considerchanges = CollectionUtil.getChanges(obsoletableOldIO.getConsiderReplacements(), obsoletableNewIO.getConsiderReplacements());
+
+				//logger.debug("HistoryGenerator: getObsoleteChanges: considerChanges = " + considerchanges);
 
 				for(ObsoletableObject oo : considerchanges.getAddedItems()) {
-					history.addItem(new AddConsiderHistoryItem(oio, oo));
+					history.addItem(new AddConsiderHistoryItem(obsoletableOldIO, oo));
 				}
 				for(ObsoletableObject oo : considerchanges.getDeletedItems()) {
-					history.addItem(new RemoveConsiderHistoryItem(oio, oo));
+					history.addItem(new RemoveConsiderHistoryItem(obsoletableOldIO, oo));
 				}
 
-				CollectionChanges<ObsoletableObject> replacementchanges = CollectionUtil
-						.getChanges(oio.getReplacedBy(), onewio.getReplacedBy());
+
+				Set<ObsoletableObject> obsoletableOldIOReplacedBy = obsoletableOldIO.getReplacedBy();
+				Set<ObsoletableObject> obsoletableNewIOReplacedBy = obsoletableNewIO.getReplacedBy();
+
+				CollectionChanges<ObsoletableObject> replacementchanges = CollectionUtil.getChanges(obsoletableOldIOReplacedBy, obsoletableNewIOReplacedBy);
+				//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableOldIOReplacedBy = " + obsoletableOldIOReplacedBy);
+				//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableNewIOReplacedBy = " + obsoletableNewIOReplacedBy);
+
 				for(ObsoletableObject oo : replacementchanges.getAddedItems()) {
-					history.addItem(new AddReplacementHistoryItem(oio, oo));
+					history.addItem(new AddReplacementHistoryItem(obsoletableOldIO, oo));
 				}
 				for(ObsoletableObject oo : replacementchanges.getDeletedItems()) {
-					history.addItem(new RemoveReplacementHistoryItem(oio, oo));
+					history.addItem(new RemoveReplacementHistoryItem(obsoletableOldIO, oo));
 				}
+				//logger.debug("HistoryGenerator: getObsoleteChanges: replacementchanges = " + replacementchanges);
 
 			}
 		}
@@ -420,7 +514,7 @@ public class HistoryGenerator implements Serializable {
 
 		// check for text edits
 		if (io.getName() == null || newio.getName() == null ||
-		    !io.getName().equals(newio.getName()))
+				!io.getName().equals(newio.getName()))
 			history.addItem(new NameChangeHistoryItem(io, newio.getName()));
 
 		if (checkInterface(io, history, CommentedObject.class, warnings) != checkInterface(
@@ -525,7 +619,7 @@ public class HistoryGenerator implements Serializable {
 				newio, history, SubsetObject.class, warnings)
 				&& warnings != null) {
 			warnings
-					.add(io + " changed whether it is a " + "CategorizedObject");
+			.add(io + " changed whether it is a " + "CategorizedObject");
 		} else if (checkInterface(io, history, SubsetObject.class,
 				warnings)) {
 			SubsetObject cio = (SubsetObject) io;
@@ -650,8 +744,8 @@ public class HistoryGenerator implements Serializable {
 			OBOProperty newprop = (OBOProperty) newio;
 			if (!ObjectUtil.equals(prop.getDomain(), newprop.getDomain()))
 				history
-						.addItem(new DomainHistoryItem(prop, newprop
-								.getDomain()));
+				.addItem(new DomainHistoryItem(prop, newprop
+						.getDomain()));
 
 			if (!ObjectUtil.equals(prop.getRange(), newprop.getRange()))
 				history.addItem(new RangeHistoryItem(prop, newprop.getRange()));
