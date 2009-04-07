@@ -199,7 +199,7 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 
 	protected ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-			//		    logger.info("GraphEditor.reload: e = " + e); // DEL
+//					    logger.info("GraphEditor.reload: e = " + e); // DEL
 			if (e.isHistory() || e.isRoot() || e.isReasoner() || e.isOntologyReload()
 					|| e.isFilter()) {
 				updateDatasources();

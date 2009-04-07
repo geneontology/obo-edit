@@ -79,8 +79,8 @@ public class GlobalFilterManagerComponent extends AbstractGUIComponent {
 	}
 
 	public void commit() {
-//		logger.debug("GlobalFilterManagerComponent.commit: new link filter = " + linkFilterComponent.getFilter() + 
-//		", new term filter = " + termFilterComponent.getFilter()); // DEL
+		logger.debug("GlobalFilterManagerComponent.commit: new link filter = " + linkFilterComponent.getFilter() + 
+		", new term filter = " + termFilterComponent.getFilter()); // DEL
 		FilterManager.getManager().setGlobalFilters(
 				termFilterComponent.getFilter(),
 				linkFilterComponent.getFilter());

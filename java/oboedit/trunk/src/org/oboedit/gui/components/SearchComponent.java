@@ -31,6 +31,7 @@ import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.QueryEngine;
 import org.obo.query.impl.FilterQuery;
 import org.obo.query.impl.SearchHit;
+import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SessionManager;
@@ -221,28 +222,16 @@ public class SearchComponent extends AbstractGUIComponent {
 		LinkDatabase linkDatabase = null;
 
 		if(filter.toString().equals("Link has Is implied")){
-//			logger.debug("Search component - IsImplied link search");
-			linkDatabase = SessionManager.getManager().getSession().getLinkDatabase();
-
-/** 
- * is_implied search fails to retrive ReasonedLinkDB.. fix is calling ReasonedDB in IsImpliedLinkCriterion.
- * Leaving this in here to test some more.
- * 			linkDatabase = SessionManager.getManager()
-			.getCurrentLinkDatabase();
-			linkDatabase = SessionManager.getManager().getCurrentFullLinkDatabase();
-			linkDatabase = new TrimmedLinkDatabase(linkDatabase);
-			filteredLinkDatabase.setLinkFilter(filter);
-			linkDatabase = new TrimmedLinkDatabase(filteredLinkDatabase);
- * */			
+			logger.debug("Search component - IsImplied link search");
+			ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
+			linkDatabase = reasoner.getLinkDatabase();
+			
 		}else {
-			linkDatabase = SessionManager.getManager()
-			.getCurrentLinkDatabase();
+			linkDatabase = SessionManager.getManager().getCurrentLinkDatabase();
 		}
 
-		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(
-				linkDatabase, new FilterQuery(filter, resultType,
-						SessionManager.getManager()
-						.getReasoner()));
+		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(linkDatabase, 
+				new FilterQuery(filter, resultType, SessionManager.getManager().getReasoner()));
 		Runnable r = new Runnable() {
 
 			public void run() {

@@ -487,7 +487,7 @@ public class SessionManager {
 	}
 
 	protected void fireReasonerStatusChange(ReasonerStatusEvent e) {
-		logger.debug("SessionManager.fireReasonerStatusChange");
+//		logger.debug("SessionManager.fireReasonerStatusChange");
 		for (ReasonerStatusListener listener : reasonerStatusListeners) {
 			listener.statusChanged(e);
 		}
