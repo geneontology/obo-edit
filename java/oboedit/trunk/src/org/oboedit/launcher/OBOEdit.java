@@ -225,7 +225,7 @@ public class OBOEdit {
 					CheckMemoryThread cmt = new CheckMemoryThread();
 					cmt.start();
 //					splash.dispose();
-					logger.debug("Loading took " + (System.currentTimeMillis() - time) + " ms"); // DEL
+					logger.info("Loading took " + (System.currentTimeMillis() - time) + " ms"); // DEL
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}

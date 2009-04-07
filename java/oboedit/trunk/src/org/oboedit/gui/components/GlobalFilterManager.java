@@ -43,7 +43,7 @@ public class GlobalFilterManager extends AbstractGUIComponent {
 
 	protected JLabel noObjectLabel = new JLabel("Click a filter to edit it.");
 
-	protected JButton commitButton = new JButton("Save Changes");
+	protected JButton saveChangesButton = new JButton("Save Changes");
 
 	private class FilterEditor extends JPanel implements GenericEditorComponent {
 
@@ -166,10 +166,10 @@ public class GlobalFilterManager extends AbstractGUIComponent {
 
 		Box commitBox = new Box(BoxLayout.X_AXIS);
 		commitBox.add(Box.createHorizontalGlue());
-		commitBox.add(commitButton);
+		commitBox.add(saveChangesButton);
 		commitBox.add(Box.createHorizontalGlue());
 
-		commitButton.addActionListener(new ActionListener() {
+		saveChangesButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveFilters();
 			}

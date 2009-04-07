@@ -246,6 +246,7 @@ public class GUIUtil {
 	}
 
 	public static RenderSpec getSpec(FilteredRenderable fr, Object o, Collection<RenderedFilter>... fs) {
+//		logger.debug("GUIUtil.getSpec");
 		RenderSpec out = null;
 		ReasonedLinkDatabase r = SessionManager.getManager().getReasoner();
 		for (Collection<RenderedFilter> f : fs) {

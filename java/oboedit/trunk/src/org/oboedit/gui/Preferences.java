@@ -285,23 +285,23 @@ public class Preferences {
 	}
 
 	public static File getStandardDictionaryFile() {
-		return new File(getOBOEditPrefsDir(), "standard.dict");
+		return new File(getOBOEditPrefsDir()+"/dict", "standard.dict");
 	}
 	
 	public static File getUserDefDictionaryFile() {
-		return new File(getOBOEditPrefsDir(), "user.dict");
+		return new File(getOBOEditPrefsDir()+"/dict", "user.dict");
 	}
 
 	public static File getPeriodWordsFile() {
-		return new File(getOBOEditPrefsDir(), "periodwords.dict");
+		return new File(getOBOEditPrefsDir()+"/dict", "periodwords.dict");
 	}
 	
 	public static File getAlwaysLowercaseFile() {
-		return new File(getOBOEditPrefsDir(), "alwayslowercase.dict");
+		return new File(getOBOEditPrefsDir()+"/dict", "alwayslowercase.dict");
 	}
 	
 	public static File getAllowedRepeatsFile() {
-		return new File(getOBOEditPrefsDir(), "allowedrepeats.dict");
+		return new File(getOBOEditPrefsDir()+"/dict", "allowedrepeats.dict");
 	}
 	
 	public boolean getAutoCommitTextEdits() {
