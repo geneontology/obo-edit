@@ -162,6 +162,7 @@ public class TrimmedLinkDatabase extends AbstractLinkDatabase  implements LinkDa
 
 
 	public Collection<IdentifiedObject> getObjects() {
+		logger.debug("TrimmedLinkDatabase.getObjects");
 		if (linkDatabase == null){
 			logger.debug("TrimmedLinkDatabase.getObjects -- linkDatabase ==null");
 			return Collections.emptySet();
@@ -170,6 +171,7 @@ public class TrimmedLinkDatabase extends AbstractLinkDatabase  implements LinkDa
 	}
 
 	public IdentifiedObject getObject(String id) {
+		logger.debug("TrimmedLinkDatabase.getObject");
 		return linkDatabase.getObject(id);
 	}
 
