@@ -127,6 +127,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
+//		logger.debug("FilteredLinkDatabase.getObjects");
 		/*
 		 * Set out = new LinkedHashSet(); 
 		 * Iterator it = linkDatabase.getObjects().iterator(); 
@@ -180,6 +181,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	// getting objects for global filters
 	public IdentifiedObject getObject(String id) {
+//		logger.debug("FilteredLinkDatabase.getObject");
 		IdentifiedObject out = linkDatabase.getObject(id);
 		if (out == null)
 			return null;

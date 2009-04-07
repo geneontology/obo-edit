@@ -23,6 +23,7 @@ public class RootSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
+		logger.debug("RootSearchAspect.getObjects");
 		if (reasoner != null) {
 			for (Link link : reasoner.getParents((LinkedObject) o)) {
 				if ((traversalFilter == null || traversalFilter.satisfies(link))
