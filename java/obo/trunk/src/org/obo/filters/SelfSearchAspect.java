@@ -16,6 +16,7 @@ public class SelfSearchAspect implements SearchAspect {
 	}
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner, Filter traversalFilter, Object o) {
+//		logger.debug("SelfSearchAspect.getObjects");
 		c.add(o);
 		return c;
 	}
@@ -33,7 +34,7 @@ public class SelfSearchAspect implements SearchAspect {
 	public String getID() {
 		return "self";
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Self";

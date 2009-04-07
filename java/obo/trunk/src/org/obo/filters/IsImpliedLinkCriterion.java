@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import org.obo.datamodel.*;
 import org.obo.reasoner.ReasonedLinkDatabase;
-
+import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
@@ -32,7 +32,11 @@ public class IsImpliedLinkCriterion extends AbstractBooleanLinkCriterion {
 	 * While searching for is_implied through the SearchComponent the OBORestrictionLinks have is_implied false (something weird going on with DefaultQueryResolver getting the LinkDatabase from the session..tried passing the ReasonedLinkDB there..implied still set to false on OBORestriction links )
 	 * Condition below forces a check on these links to see if they are indeed not present in the ReasonedLinkDatabase. 
 	 * */
-	public boolean matches(Link o) {
+	public boolean matches(Link o) {	
+		if(o.isImplied()){
+//			logger.debug("IsImpliedLinkCriterion -- isImplied TRUE");
+		}
+
 		if(((Impliable) o).isImplied()) {
 			return true;
 		}
