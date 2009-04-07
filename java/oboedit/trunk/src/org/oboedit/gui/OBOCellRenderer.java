@@ -382,7 +382,7 @@ ListCellRenderer {
 			logger.info("getTreeCellRendererComponent: caught error.  Stack trace:");
 			t.printStackTrace();
 		}
-		validate();  // Need?
+		validate();
 		return this;
 	}
 }

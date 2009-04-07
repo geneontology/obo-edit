@@ -85,6 +85,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
+//		logger.debug("CollapsibleLinkDatabase.getObjects");
 		return visibleObjects;
 	}
 
@@ -256,6 +257,7 @@ public class CollapsibleLinkDatabase extends AbstractLinkDatabase {
 	}
 
 	public IdentifiedObject getObject(String id) {
+//		logger.debug("CollapsibleLinkDatabase.getObject");
 		IdentifiedObject out = linkDatabase.getObject(id);
 		if (visibleObjects.contains(out))
 			return out;

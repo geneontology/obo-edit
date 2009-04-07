@@ -121,6 +121,7 @@ public class LinkFilterEditor extends TermFilterEditor {
 		linkFilter.setFilter(filter);
 		linkFilter.setAspect(getValueForName((String) aspectBox
 				.getSelectedItem()));
+//		logger.debug("linkFilter: " + linkFilter);
 		return linkFilter;
 	}
 }
