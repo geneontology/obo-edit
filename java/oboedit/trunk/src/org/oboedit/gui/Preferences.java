@@ -276,7 +276,7 @@ public class Preferences {
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
 		if (!prefsDir.exists() && !isBatchMode()) {
 			// Old: ~/.oboeditbeta
-			File oldPrefsDir = new File(System.getProperty("user.home") + "/.obo-edit" + (version.isRC() ? "rc" : "") + "/");
+			File oldPrefsDir = new File(System.getProperty("user.home") + "/.obo-edit" + (version.isRC() ? "rc" : "")+ (version.isBeta() ? "beta" : "") + "/");
 			if (oldPrefsDir.exists())
 				GUIUtil.copyExistingConfigFiles(oldPrefsDir, prefsDir);
 		}
