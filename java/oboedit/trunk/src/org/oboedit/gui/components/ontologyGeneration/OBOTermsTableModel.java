@@ -367,6 +367,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 		 */
 		public int compare(String o1, String o2)
 		{
+			// test for null
+			if (o1 == null && o2 != null) {
+				return 1;
+			} else if (o1 != null && o2 == null){
+				return -1;
+			}
+			
 			// test identity
 			if (o1.equals(o2)) {
 				return 0;
