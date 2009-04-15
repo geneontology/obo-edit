@@ -8,8 +8,8 @@ import org.apache.log4j.*;
 
 public final class IOUtil {
 	public static void copyFile(File in, File out) throws IOException {
-	
-//		initialize logger
+
+		//		initialize logger
 		final Logger logger = Logger.getLogger(IOUtil.class);
 		FileInputStream fis = new FileInputStream(in);
 		FileOutputStream fos = new FileOutputStream(out);
@@ -21,7 +21,7 @@ public final class IOUtil {
 		fis.close();
 		fos.close();
 	}
-	
+
 	public static String readFileToPosition(String uri, int pos) {
 		try {
 			InputStream s = new BufferedInputStream(getStream(uri));
@@ -41,7 +41,7 @@ public final class IOUtil {
 			return null;
 		}
 	}
-	
+
 	public static String readFile(String uri) {
 		return readFileToPosition(uri, -1);
 	}
@@ -121,7 +121,7 @@ public final class IOUtil {
 	}
 
 	public static void dumpAndClose(InputStream istream, OutputStream ostream)
-			throws IOException {
+	throws IOException {
 		int read;
 		while ((read = istream.read()) != -1) {
 			ostream.write((byte) read);
@@ -130,8 +130,18 @@ public final class IOUtil {
 		ostream.close();
 	}
 
+	//Added for call of obodiff from obomerge. 15th April 2009
+	public static void dumpAndDoNotClose(InputStream istream, OutputStream ostream)
+	throws IOException {
+		int read;
+		while ((read = istream.read()) != -1) {
+			ostream.write((byte) read);
+		}
+	}
+
+
 	public static ProgressableInputStream getProgressableStream(String uri)
-			throws IOException {
+	throws IOException {
 		File file = new File(uri);
 		String pathStr = null;
 		InputStream stream;
@@ -206,16 +216,16 @@ public final class IOUtil {
 		}
 	}
 
-/**
- * This function will copy files or directories from one location to another.
- * note that the source and the destination must be mutually exclusive. This 
- * function can not be used to copy a directory to a sub directory of itself.
- * The function will also have problems if the destination files already exist.
- * From http://www.dreamincode.net/code/snippet1443.htm
- * @param src -- A File object that represents the source for the copy
- * @param dest -- A File object that represnts the destination for the copy.
- * @throws IOException if unable to copy.
- */
+	/**
+	 * This function will copy files or directories from one location to another.
+	 * note that the source and the destination must be mutually exclusive. This 
+	 * function can not be used to copy a directory to a sub directory of itself.
+	 * The function will also have problems if the destination files already exist.
+	 * From http://www.dreamincode.net/code/snippet1443.htm
+	 * @param src -- A File object that represents the source for the copy
+	 * @param dest -- A File object that represnts the destination for the copy.
+	 * @throws IOException if unable to copy.
+	 */
 	public static void copyFiles(File src, File dest) throws IOException {
 		//Check to ensure that the source is valid...
 		if (!src.exists()) {
@@ -247,7 +257,7 @@ public final class IOUtil {
 				copyFile(src, dest);
 			} catch (IOException e) { //Error copying file... 
 				IOException wrapper = new IOException("copyFiles: Unable to copy file: " + 
-								      src.getAbsolutePath() + "to" + dest.getAbsolutePath()+".");
+						src.getAbsolutePath() + "to" + dest.getAbsolutePath()+".");
 				wrapper.initCause(e);
 				wrapper.setStackTrace(e.getStackTrace());
 				throw wrapper;
