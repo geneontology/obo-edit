@@ -3,6 +3,8 @@ package org.oboedit.launcher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -23,7 +25,7 @@ public class OBODiff {
 	protected final static Logger logger = Logger.getLogger(OBODiff.class);
 
 	public static void main(String[] args) throws IOException,
-			DataAdapterException {
+	DataAdapterException {
 		Vector filelist = new Vector();
 		OBOAdapter historyAdapter = null;
 		String outPath = null;
@@ -56,6 +58,15 @@ public class OBODiff {
 			OBOSession a = getHistory((String) filelist.get(0));
 			OBOSession b = getHistory((String) filelist.get(1));
 			HistoryList changes = HistoryGenerator.getHistory(a, b, null);
+		
+			//Uncomment these for use with obomerge 15th April 2009
+			
+//			for (Iterator it = changes.getHistoryItems(); it.hasNext();) {
+//				Object object = (Object) it.next();
+//				
+//				System.out.println(object);				
+//			}			
+			
 			if (historyAdapter == null)
 				historyAdapter = new DefaultHistoryDumper();
 			boolean printResults = false;
@@ -71,14 +82,22 @@ public class OBODiff {
 					adapterConfig, changes);
 			if (printResults) {
 				FileInputStream fis = new FileInputStream(outFile);
-				IOUtil.dumpAndClose(fis, System.out);
-				outFile.delete();
+
+				//Uncomment these for use with obomerge 15th April 2009
+//				int x = 1;
+//				if(x == 1){ 
+//					IOUtil.dumpAndDoNotClose(fis, System.out);
+//					outFile.delete();
+//				} else {
+					IOUtil.dumpAndClose(fis, System.out);
+					outFile.delete();
+				//}
 			}
 		}
 	}
 
 	public static OBOSession getHistory(String path)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		OBOFileAdapter adapter = new OBOFileAdapter();
 		OBOFileAdapter.OBOAdapterConfiguration config = new OBOFileAdapter.OBOAdapterConfiguration();
 		config.getReadPaths().add(path);
