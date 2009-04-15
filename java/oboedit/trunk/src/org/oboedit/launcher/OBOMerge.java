@@ -31,6 +31,7 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.AnnotatedObjectImpl;
 import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.datamodel.impl.NestedValueImpl;
+import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.CreateObjectHistoryItem;
 import org.obo.history.HistoryGenerator;
@@ -114,6 +115,7 @@ public class OBOMerge {
 	public static final int POSSIBLE = 0;
 	public static final int LIKELY = 1;
 
+
 	protected static void applyChanges(OBOSession session, HistoryList changes) {
 		//System.out.println("Here!!!!!");
 		OperationModel model = new DefaultOperationModel();
@@ -124,36 +126,22 @@ public class OBOMerge {
 			OperationWarning warning = model.apply(item);
 			if (warning != null)
 				System.out.println("* warning: " + warning);
-				logger.info("* warning: " + warning);
+			logger.info("* warning: " + warning);
 
 		}
 	}
 
-	protected static Collection findClashes(OBOSession original,
-			OBOSession changea, OBOSession changeb, HistoryList changes,
+	protected static Collection findClashes(OBOSession parentSession,
+			OBOSession liveSession, OBOSession branchSession, HistoryList changes,
 			Collection clashesToIgnore) {		
-		
-//		Collection objects = new LinkedList();
-//		objects = changea.getObjects();
-//		for (Iterator iterator = objects.iterator(); iterator.hasNext();) {
-//			Object object = (Object) iterator.next();
-//			
-//			System.out.println("object " + object);
-//		
-//		if (object.toString().equals("live term to be obsoleted (now obsolete)")) {
-//			TermUtil.getDescendants(objec
-//			
-//		}
-//		}
-//		
-		
-		
-		
+
+
 		VectorFilter creationFilter = new VectorFilter() {
 			public boolean satisfies(Object o) {
 				return o instanceof CreateObjectHistoryItem;
 			}
 		};
+		
 		Map termCreationMap = new HashMap();
 		LinkedList clashes = new LinkedList();
 		Collection termCreations = HistoryUtil.findMatchingItems(changes,
@@ -165,15 +153,15 @@ public class OBOMerge {
 				termCreationMap.put(item.getObjectID(), item);
 		}
 
-		HistoryList changes2 = HistoryGenerator.getHistory(original, changeb,
+		HistoryList historyParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
 				null);
-		termCreations = HistoryUtil.findMatchingItems(changes2, creationFilter);
+		termCreations = HistoryUtil.findMatchingItems(historyParentToBranch, creationFilter);
 		it = termCreations.iterator();
 		while (it.hasNext()) {
 			CreateObjectHistoryItem item = (CreateObjectHistoryItem) it.next();
 			if (termCreationMap.containsKey(item.getObjectID())) {
-				IdentifiedObject obja = changea.getObject(item.getObjectID());
-				IdentifiedObject objb = changeb.getObject(item.getObjectID());
+				IdentifiedObject obja = liveSession.getObject(item.getObjectID());
+				IdentifiedObject objb = branchSession.getObject(item.getObjectID());
 
 				IDClash clash = new IDClash(item.getObjectID());
 				if (obja.getName().equals(objb.getName())) {
@@ -234,11 +222,11 @@ public class OBOMerge {
 		versionSig.addSignature(new FlagSpec("OBO_1_2"), false);
 
 		UnorderedArgumentSignature sig2 = new UnorderedArgumentSignature();
-//		sig2.addSignature(new TagSpec("-id-rule"), 0, 1);
+		//		sig2.addSignature(new TagSpec("-id-rule"), 0, 1);
 		sig2.addSignature(new TagSpec("-ignore-clash-on-id"), 0,
 				Integer.MAX_VALUE);
 
-//		sig2.addSignature(new TagSpec("-update-ids-when", updateIDsSig), 0, 1,
+		//		sig2.addSignature(new TagSpec("-update-ids-when", updateIDsSig), 0, 1,
 		sig2.addSignature(new TagSpec("-update-ids", updateIDsSig), 0, 1,
 				false);
 		sig2.addSignature(new TagSpec("-fail-on-clash", clashFailSig), 0, 1,
@@ -246,11 +234,11 @@ public class OBOMerge {
 
 		sig2.addSignature(new TagSpec("-version", versionSig), 0, 1, true);
 
-//		EnumArgumentSignature idGenEnum = new EnumArgumentSignature();
-//		idGenEnum.addSignature(new FlagSpec("-auto"));
-//		idGenEnum.addSignature(new TagSpec("-rule"));
-//		TagSpec idGenSpec = new TagSpec("-update-clashing-ids", idGenEnum);
-//		sig2.addSignature(idGenSpec);
+		//		EnumArgumentSignature idGenEnum = new EnumArgumentSignature();
+		//		idGenEnum.addSignature(new FlagSpec("-auto"));
+		//		idGenEnum.addSignature(new TagSpec("-rule"));
+		//		TagSpec idGenSpec = new TagSpec("-update-clashing-ids", idGenEnum);
+		//		sig2.addSignature(idGenSpec);
 
 		sig2.addSignature(new TagSpec("-original"), 1, 1, true);
 		sig2.addSignature(new TagSpec("-revision"), 2, 2, true);
@@ -345,20 +333,25 @@ public class OBOMerge {
 		}
 
 		OBOFileAdapter adapter = new OBOFileAdapter();
-		OBOSession parentFileSession = getSession(parentFile, adapter);
-		OBOSession liveFileSession = getSession(liveFile, adapter);
+		OBOSession parentSession = getSession(parentFile, adapter);
+		OBOSession liveSession = getSession(liveFile, adapter);
 
-		HistoryList historyParentToLive = HistoryGenerator.getHistory(parentFileSession, liveFileSession,
+		HistoryList historyParentToLive = HistoryGenerator.getHistory(parentSession, liveSession,
 				null);
 
 		Map mergeIDRemap = IDUtil.createIDRemapping(historyParentToLive);
 
-		OBOSession branchFileSession = getSession(branchFile, adapter);
+		OBOSession branchSession = getSession(branchFile, adapter);
+
+		//Uncomment for use of obodiff with obomerge to 
+		//find whole term edit clashes.
+		//getWholeTermConflict(parentFile, liveFile, branchFile);
+
 		boolean unresolvedClashes = false;
 		Collection clashes = null;
 		//	do {
 		if (!forceMode) {
-			clashes = findClashes(parentFileSession, liveFileSession, branchFileSession, historyParentToLive,
+			clashes = findClashes(parentSession, liveSession, branchSession, historyParentToLive,
 					clashesToIgnore);
 
 			boolean foundLikelyClashes = false;
@@ -388,8 +381,8 @@ public class OBOMerge {
 				unresolvedClashes = true;
 			if (unresolvedClashes) {
 				if (autoUpdate) {
-					Collection ids = DefaultIDGenerator.getIDs(liveFileSession);
-					ids.addAll(DefaultIDGenerator.getIDs(branchFileSession));
+					Collection ids = DefaultIDGenerator.getIDs(liveSession);
+					ids.addAll(DefaultIDGenerator.getIDs(branchSession));
 					DefaultIDGenerator generator = new DefaultIDGenerator();
 
 					it = clashes.iterator();
@@ -413,11 +406,11 @@ public class OBOMerge {
 						}
 						String newID = null;
 						try {
-							IdentifiedObject reassignMe = branchFileSession
+							IdentifiedObject reassignMe = branchSession
 							.getObject(clash.getID());
 							newID = generator.generateID(currentRule, null,
 									ids, false);
-							((OBOSessionImpl) branchFileSession)
+							((OBOSessionImpl) branchSession)
 							.changeID(
 									(AnnotatedObjectImpl) reassignMe,
 									newID);
@@ -446,13 +439,13 @@ public class OBOMerge {
 				}
 			}
 		}
-//		} while (!unresolvedClashes);
+		//		} while (!unresolvedClashes);
 
 		if (clashes != null) {
 			it = clashes.iterator();
 			while (it.hasNext()) {
 				IDClash clash = (IDClash) it.next();
-				IdentifiedObject reassignMe = branchFileSession.getObject(clash
+				IdentifiedObject reassignMe = branchSession.getObject(clash
 						.getReassignedID());
 				if (reassignMe == null)
 					continue;
@@ -468,7 +461,7 @@ public class OBOMerge {
 
 		OBOSession writeMe;
 		if (mergeIDRemap.size() > 0) {
-			SessionHistoryList historyParentToBranch = HistoryGenerator.getHistory(parentFileSession, branchFileSession,
+			SessionHistoryList historyParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
 					null);
 			it = mergeIDRemap.keySet().iterator();
 			while(it.hasNext()) {
@@ -479,13 +472,13 @@ public class OBOMerge {
 
 				historyParentToBranch.forwardID(id, ids);
 			}
-			applyChanges(parentFileSession, historyParentToLive);
-			applyChanges(parentFileSession, historyParentToBranch);
-			writeMe = parentFileSession;
+			applyChanges(parentSession, historyParentToLive);
+			applyChanges(parentSession, historyParentToBranch);
+			writeMe = parentSession;
 		} else {
 			//System.out.println("OBOMerge: main about to call applyChanges in second else");
-			applyChanges(branchFileSession, historyParentToLive);
-			writeMe = branchFileSession;
+			applyChanges(branchSession, historyParentToLive);
+			writeMe = branchSession;
 		}
 
 		historyParentToLive = null;
@@ -498,6 +491,47 @@ public class OBOMerge {
 		logger.info("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 
 	}
+
+	/**
+	 * Checks for situations in which any single term has been edited in both live and branch files.
+	 * This may include any kind of edit, so if a relationship has been deleted in one file and the definition has
+	 * been edited in the other file then the term will still be flagged. 
+	 * @throws DataAdapterException 
+	 * @throws IOException 
+	 * 
+	 * 
+	 * 
+	 */
+
+	public static void getWholeTermConflict(String parentFile, String liveFile, String branchFile) throws IOException, DataAdapterException{
+
+		//System.out.println("OBOMerge: getWholeTermConflict: parentFile, liveFile, branchFile = " + parentFile + liveFile + branchFile);
+
+		ArrayList<String> liveArrayList = new ArrayList<String>();
+		String[] liveArray = {parentFile, liveFile};
+		
+		for (int i = 0; i < liveArray.length; i++) {
+			System.out.println(liveArray[i]);
+		}
+		
+		org.oboedit.launcher.OBODiff.main(liveArray);
+	
+		System.out.println("Parent to live file obodiff finished.");
+		
+		String[] branchArray = {parentFile, branchFile};
+		
+		for (int i = 0; i < branchArray.length; i++) {
+			System.out.println(branchArray[i]);
+		}
+
+		
+		org.oboedit.launcher.OBODiff.main(branchArray);
+	
+		System.out.println("Parent to branch file obodiff finished.");
+
+		return;
+	}
+
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
 	throws DataAdapterException {
