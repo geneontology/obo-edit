@@ -10,7 +10,8 @@ sub add_synonyms {
     if (!$self->synonyms) {
         $self->synonyms([]);
     }
-    push(@{$self->synonyms},map { new OBO::Synonym(label=>$_) } @_);
+    push(@{$self->synonyms},
+         map { ref($_) ? $_ : new OBO::Synonym(label=>$_) } @_);
     return;
 }
 

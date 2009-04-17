@@ -38,5 +38,34 @@ sub printrow {
     return;
 }
 
+sub print {
+    my $self = shift;
+    my $fh = $self->fh;
+    print $fh @_;
+    return;
+}
+
+sub println {
+    my $self = shift;
+    my $fh = $self->fh;
+    print $fh @_,"\n";
+    return;
+}
+
+sub printf {
+    my $self = shift;
+    my $fmt = shift;
+    my $fh = $self->fh;
+    printf $fh $fmt, @_;
+    return;
+}
+
+sub nl {
+    my $self = shift;
+    my $fh = $self->fh;
+    print $fh "\n";
+    return;
+}
+
 
 1;
