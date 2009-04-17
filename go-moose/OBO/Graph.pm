@@ -1,7 +1,6 @@
 package OBO::Graph;
 use Moose;
 use strict;
-extends 'OBO::Statement';
 use OBO::Statement;
 use OBO::Annotation;
 use OBO::Node;
@@ -9,10 +8,24 @@ use OBO::TermNode;
 use OBO::RelationNode;
 use overload ('""' => 'as_string');
 
-has 'statements' => (is => 'rw', isa => 'ArrayRef[OBO::Statement]', default=>sub{[]});
+#has 'statements' => (is => 'rw', isa => 'ArrayRef[OBO::Statement]', default=>sub{[]});
+has 'relations' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
+has 'terms' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
 has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
 has 'annotations' => (is => 'rw', isa => 'ArrayRef[OBO::Annotation]', default=>sub{[]});
 has 'node_index' => (is => 'rw', isa => 'HashRef[OBO::Node]', default=>sub{{}});
+
+sub add_term {
+    my $self = shift;
+    push(@{$self->terms},@_);
+    return;
+}
+
+sub add_relation {
+    my $self = shift;
+    push(@{$self->relations},@_);
+    return;
+}
 
 sub noderef {
     my $self = shift;
@@ -48,12 +61,11 @@ sub relation_noderef {
 
 sub as_string {
     my $self = shift;
-    foreach (@{$self->statements}) {
-        print "S: $_\n";
-    }
-    foreach (@{$self->annotations}) {
-        print "S: $_\n";
-    }
+    return
+        join('',
+             (map { "$_\n" } @{$self->links}),
+             (map { "$_\n" } @{$self->annotations}),
+        );
 }
 
 1;
