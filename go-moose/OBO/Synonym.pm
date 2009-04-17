@@ -12,7 +12,7 @@ coerce 'OBO::Synonym'
 
 has label => (is=>'rw',isa=>'Str');
 has scope => (is=>'rw',isa=>'Str');
-has type => (is=>'rw',isa=>'OBO::Node');
+has type => (is=>'rw',isa=>'OBO::Node', coerce=>1);
 has lang => (is=>'rw',isa=>'Str');
 
 1;
