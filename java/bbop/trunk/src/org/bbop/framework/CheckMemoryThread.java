@@ -27,7 +27,7 @@ public class CheckMemoryThread extends Thread {
     setDaemon(true);
     //1 Megabyte = 1048576 Bytes
     //changing the info statement to MB to make it more readable
-    logger.info("CheckMemoryThread: max heap size = " + maxMemory/1048576 + "MB; warn if available memory < " + minMemory/1048576 + "MB");
+    logger.info("CheckMemoryThread: max heap size = " + maxMemory/1048576 + " MB; warn if available memory < " + minMemory/1048576 + " MB");
   }
 
   public void checkFreeMemory() {
@@ -37,7 +37,7 @@ public class CheckMemoryThread extends Thread {
 //      System.gc();  // DEL
     long memoryUsed = Runtime.getRuntime().totalMemory();
     long freeMemory = maxMemory - memoryUsed;
-//    logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + "MB, total memory used = " + memoryUsed/1048576 + "MB");
+//    logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + " MB, total memory used = " + memoryUsed/1048576 + " MB");
 
     if (freeMemory < minMemory) {
       logger.info("checkFreeMemory: free memory = " + freeMemory/1048576 + "MB, total memory used = " + memoryUsed/1048576 + "MB.  Garbage collecting.");
