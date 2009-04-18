@@ -5,3 +5,9 @@ extends 'OBO::ClassNode';
 with 'OBO::Definable';
 
 1;
+
+=head2 Documentation
+
+Core element in an ontology.
+
+=cut
