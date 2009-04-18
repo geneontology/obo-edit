@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
+import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -15,33 +16,40 @@ import javax.swing.table.TableColumnModel;
 
 import org.bbop.swing.ReselectListSelectionModel;
 import org.obo.datamodel.IdentifiedObject;
-import org.obo.query.impl.SearchHit;
+import org.obo.datamodel.Link;
 
 import org.apache.log4j.*;
 
-public class SearchResultsTable extends JTable {
+public class AssertLinksTable extends JTable {
 
 	//initialize logger
-	protected final static Logger logger = Logger.getLogger(SearchResultsTable.class);
+	protected final static Logger logger = Logger.getLogger(AssertLinksTable.class);
 
-	protected SearchResultsTableModel<?> searchModel;
+	protected AssertLinksTableModel<?> assertModel;
 	protected long maximumFormattingTime = 1000;
+	
+	JCheckBox checkBox = new JCheckBox();
 
-	protected static class SearchResultsRenderer extends
-	DefaultTableCellRenderer {
+	protected static class AssertResultsRenderer extends DefaultTableCellRenderer {
 
 		String[] columnExpressions;
 		HTMLNodeLabelProvider provider = new HTMLNodeLabelProvider();
 
-		public SearchResultsRenderer(String... expressions) {
+		public AssertResultsRenderer(String... expressions) {
 			columnExpressions = expressions;
 		}
 
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
+		public Component getTableCellRendererComponent(
+				JTable table,
+				Object value, 
+				boolean isSelected, 
+				boolean hasFocus, 
+				int row,
+				int column) {	
+			
+			logger.debug("AssertLinksTable.getTableCellRendererComponent");			
 			provider.setHtmlExpression(columnExpressions[column]);
-			IdentifiedObject io = ((SearchResultsTableModel<IdentifiedObject>) table
+			IdentifiedObject io = ((AssertLinksTableModel<IdentifiedObject>) table
 					.getModel()).getObjects().get(row);
 			Component c = super.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
@@ -50,17 +58,20 @@ public class SearchResultsTable extends JTable {
 		}
 	}
 
-	public SearchResultsTable(SearchResultsTableModel<?> model,
-			Collection<SearchHit<?>> results) {
-		this.searchModel = model;
-		setModel(searchModel);
+	
+	public AssertLinksTable(AssertLinksTableModel<?> model,
+			Collection<Link> results) {
+		
+		this.assertModel = model;
+		setModel(assertModel);
 		if (IdentifiedObject.class.isAssignableFrom(model.getObjectType())) {
-			setDefaultRenderer(Object.class, new SearchResultsRenderer("$id$",
+			setDefaultRenderer(Object.class, new AssertResultsRenderer("$id$",
 			"$name$"));
 		}
 		setSelectionModel(new ReselectListSelectionModel());
-		getSelectionModel().addListSelectionListener(
-				searchModel.getSelectionListener(this));
+		
+		getSelectionModel().addListSelectionListener(assertModel.getSelectionListener(this));
+		
 		final JTableHeader header = getTableHeader();
 		header.addMouseListener(new MouseAdapter() {
 			@Override
@@ -68,37 +79,37 @@ public class SearchResultsTable extends JTable {
 				TableColumnModel columnModel = header.getColumnModel();
 				int viewColumn = columnModel.getColumnIndexAtX(e.getX());
 				int column = columnModel.getColumn(viewColumn).getModelIndex();
-				((SearchResultsTableModel<?>) getModel()).setSortColumn(column);
+				((AssertLinksTableModel<?>) getModel()).setSortColumn(column);
 			}
 		});
 		if (results != null)
 			setResults(results);
 	}
 
-	public void setResults(Collection<SearchHit<?>> results) {
-		searchModel.setResults(results);
+	public void setResults(Collection<Link> results) {
+		assertModel.setResults(results);
 		setDefaultColumnSizes(this);
 		setDefaultRowHeight(this);
 		validate();
 	}
 
 	/**
-	 * Sets the height of the rows in the table that is used to display the results of a search.
+	 * Sets the height of the rows in the table that is used to display asserted links
 	 * The height is set relative to the current font size so that if the font is made bigger or
 	 * smaller, the rows will change height to accommodate this. 
-	 * @param searchResultsTable
+	 * @param assertLinksTable
 	 */
-	private void setDefaultRowHeight(SearchResultsTable searchResultsTable) {
+	private void setDefaultRowHeight(AssertLinksTable assertedLinksTable) {
 		Font currentFont = Preferences.getPreferences().getFont();
 		int fontSize = currentFont.getSize();
 		int rowSize = (int) (fontSize*1.3);
-		searchResultsTable.setRowHeight(rowSize); //Set row height here.
+		assertedLinksTable.setRowHeight(rowSize); //Set row height here.
 	}
 
 	protected void setDefaultColumnSizes(JTable table) {
 		JTableHeader header = table.getTableHeader();
-		TableColumnModel columnModel = header.getColumnModel();
-		SearchResultsTableModel<?> model = (SearchResultsTableModel<?>) table
+		TableColumnModel columnModel = header.getColumnModel();		
+		AssertLinksTableModel<?> model = (AssertLinksTableModel<?>) table
 		.getModel();
 		long time = System.currentTimeMillis();
 		for (int i = 0; i < columnModel.getColumnCount(); i++) {
@@ -108,11 +119,15 @@ public class SearchResultsTable extends JTable {
 			int width = 0;
 			for (int j = 0; j < table.getRowCount(); j++) {
 				Object o = model.getValueAt(j, i);
+				
 				TableCellRenderer renderer = table.getCellRenderer(j, i);
+				
 				Component c = renderer.getTableCellRendererComponent(table, o,
 						true, true, j, i);
+				
 				if ((int) c.getPreferredSize().getWidth() > width)
 					width = (int) c.getPreferredSize().getWidth();
+				
 				if (System.currentTimeMillis() - time >= maximumFormattingTime)
 					break;
 			}
@@ -123,7 +138,6 @@ public class SearchResultsTable extends JTable {
 //				tc.setMaxWidth(width + 10);
 			}
 			tc.setPreferredWidth(width + 10);
-
 		}
 	}
 
@@ -134,4 +148,5 @@ public class SearchResultsTable extends JTable {
 	public void setMaximumFormattingTime(long maximumFormattingTime) {
 		this.maximumFormattingTime = maximumFormattingTime;
 	}
+
 }
