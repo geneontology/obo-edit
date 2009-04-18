@@ -110,6 +110,7 @@ import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
 import org.oboedit.gui.components.ontologyGeneration.factory.OntologyGenerationComponentFactory;
 import org.oboedit.gui.event.ReconfigEvent;
 import org.oboedit.gui.event.ReconfigListener;
+import org.oboedit.gui.factory.AssertLinksComponentFactory;
 import org.oboedit.gui.factory.AnnotationSummaryComponentFactory;
 import org.oboedit.gui.factory.ConfigurableMessageComponentFactory;
 import org.oboedit.gui.factory.ConfigurationManagerFactory;
@@ -211,34 +212,43 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 	@Override
 	protected Collection<GUIComponentFactory<?>> getDefaultComponentFactories() {
-		return (Collection) CollectionUtil.list(new TermPanelFactory(),
+		return (Collection) CollectionUtil.list(
+				new TermPanelFactory(),
 				new TermImageComponentFactory(),
-				new GraphEditorFactory(), new TextEditorFactory(),
+				new GraphEditorFactory(), 
+				new TextEditorFactory(),
 				new TableOfContentsFactory(),
-				new IDResolutionComponentFactory(), new TreeViewFactory(),
-				new GraphViewFactory(), new SearchComponentFactory(),
+				new IDResolutionComponentFactory(), 
+				new TreeViewFactory(),
+				new GraphViewFactory(), 
+				new SearchComponentFactory(),
 				new LinkSearchComponentFactory(),
-				new IntersectionEditorFactory(), new SubsetManagerFactory(),
-				new GraphvizViewFactory(), new SynonymTypeManagerFactory(),
-				new CrossProductInfoFactory(), new DbxrefLibraryFactory(),
-				new ExtendedInfoFactory(), new HistoryBrowserFactory(),
-				new IDManagerFactory(), new ReasonerManagerFactory(),
+				new IntersectionEditorFactory(), 
+				new SubsetManagerFactory(),
+				new GraphvizViewFactory(), 
+				new SynonymTypeManagerFactory(),
+				new CrossProductInfoFactory(), 
+				new DbxrefLibraryFactory(),
+				new ExtendedInfoFactory(), 
+				new HistoryBrowserFactory(),
+				new IDManagerFactory(), 
+				new ReasonerManagerFactory(),
 				new SemanticParserManagerFactory(),
 				new NamespaceManagerFactory(),
 				new OBOMergeCanvasFactory(),
-				new OntologyChangeTrackerFactory(), new ParentEditorFactory(),
-
+				new OntologyChangeTrackerFactory(), 
+				new ParentEditorFactory(),
 				new CrossProductMatrixEditorFactory(),
-
 				new AnnotationSummaryComponentFactory(),
-
 				new GlobalFilterManagerFactory(),
 				new ExplanationComponentFactory(),
 				new ConfigurationManagerFactory(),
-				new VerificationManagerFactory(), new DockPanelFactory(),
+				new VerificationManagerFactory(), 
+				new DockPanelFactory(),
 				new ConfigurableMessageComponentFactory(),
 				new SearchResultsComponentFactory(),
-				new OntologyGenerationComponentFactory()
+				new OntologyGenerationComponentFactory(),
+				new AssertLinksComponentFactory()
 		);
 	}
 
@@ -579,11 +589,11 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
 		String[] advancedMenuItems = {"SemanticParser Manager", "Intersection Editor", "Cross-Product Matrix Editor"};
-		String reqReasonerMenuItem = "Explanations";
+		String[] reqReasonerMenuItems = { "Explanations", "Assert Implied Links Panel"};
 
 		for (JMenu m : viewMenus){
 			menus.add(m);
-			//logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
+//			logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
 			if(m.getText().toString().equalsIgnoreCase("Reasoner") || m.getText().toString().equalsIgnoreCase("Editors")){
 
 				//components that can be switched on through the Advanced configuration settings
@@ -598,8 +608,10 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				//components that require the reasoner to be on
 				if(!SessionManager.getManager().getUseReasoner()){
 					for (int i = 0; i < m.getItemCount(); i++) {
-						if(m.getItem(i).getText().equalsIgnoreCase(reqReasonerMenuItem)){
-							m.getItem(i).setEnabled(false);
+						for(String reqReasonerMenuItem : reqReasonerMenuItems){
+							if(m.getItem(i).getText().equalsIgnoreCase(reqReasonerMenuItem)){
+								m.getItem(i).setEnabled(false);
+							}
 						}
 					}
 				}

@@ -11,12 +11,10 @@ import javax.swing.JComponent;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkLinkedObject;
-import org.obo.datamodel.PathCapable;
 import org.obo.filters.Filter;
 import org.obo.query.impl.BasicSearchHit;
 import org.obo.query.impl.SearchHit;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.TermFilterEditorFactory.IdentifiedObjectModel;
 import org.oboedit.gui.event.GUIUpdateListener;
 import org.oboedit.gui.filter.RenderSpec;
 import org.oboedit.gui.widget.LinkSpecEditor;
@@ -30,10 +28,6 @@ public class LinkFilterEditorFactory implements SearchComponentFactory<Link> {
 
 	protected static class LinkModel extends
 	AbstractSearchResultsTableModel<Link> {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		public LinkModel() {

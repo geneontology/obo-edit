@@ -316,9 +316,8 @@
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
                   <void property="labelText">
-                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. OBO-Edit2 will crash if it needs more memory than the amount you have allocated.
-
-It is recommended that you allocate as much memory as possible. The installer has attempted to suggest a reasonable value for your system. This value may not be accurate on all platforms, so review the suggestion carefully. Due to limitations in Java itself, you must choose a value that is less than 2048 Mb, even if you are using a computer with more memory. The memory allocation settings can be changed at a later time by editing the OBO-Edit.vmoptions file located in the OBO-Edit installation directory.</string>
+                    <string>Because OBO-Edit2 is a Java application, it cannot use an arbitrary amount of system memory like a native application. Instead, you must set a fixed maximum amount of memory that OBO-Edit2 can use. OBO-Edit2 will crash if it needs more memory than the amount you have allocated or if you assign more than what the JVM can handle. 
+                    The memory settings suggested by the installer are editable. Due to limitations associated with the JVM, you must choose a value that is less than 1.86GB, even if you are using a computer with more memory. The memory allocation settings can be changed post installation by editing oboedit.vmoptions located in the OBO-Edit installation directory.</string>
                   </void>
                 </object>
               </java>
@@ -336,7 +335,7 @@ It is recommended that you allocate as much memory as possible. The installer ha
                     <string>Maximum Memory for OBO-Edit2 (in Mb)</string>
                   </void>
                   <void property="maxValue">
-                    <int>1024</int>
+                    <int>1860</int>
                   </void>
                   <void property="minValue">
                     <int>256</int>
@@ -354,7 +353,7 @@ It is recommended that you allocate as much memory as possible. The installer ha
 val = new Integer((int) Math.max(1024,
 (Math.round(SystemInfo.getPhysicalMemory() * 0.6 / 1024 / 1024) / 128) *
 	      128));
-val = Math.min(val, 1024);
+val = Math.min(val, 1860);
 configurationObject.setValue(val);</initScript>
           </formComponent>
         </formComponents>

@@ -163,7 +163,7 @@ public class AssertImpliedAction implements ClickMenuAction {
 					//logger.info("ignoring "+link+" as it spans ontologies");
 					continue;
 				}
-				//logger.debug("checking if this should be trimmed");
+//				logger.debug("checking if this should be trimmed");
 				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
 					!impliedLinks.contains(link) &&
 					(selectedRelation == null ||

@@ -5,11 +5,9 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -22,24 +20,17 @@ import org.bbop.framework.GUIManager;
 import org.bbop.util.EnumPersistenceDelegate;
 import org.bbop.util.SwingUpdateTask;
 import org.bbop.util.TaskDelegate;
-import org.obo.datamodel.FieldPathSpec;
 import org.obo.datamodel.LinkDatabase;
-import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.impl.FilteredLinkDatabase;
 import org.obo.filters.Filter;
-import org.obo.filters.ParentSearchCriterion;
 import org.obo.query.QueryEngine;
 import org.obo.query.impl.FilterQuery;
 import org.obo.query.impl.SearchHit;
 import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.impl.TrimmedLinkDatabase;
 import org.obo.util.FilterUtil;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.FilterComponent;
 import org.oboedit.gui.SearchComponentFactory;
-import org.oboedit.gui.SearchPanel;
-import org.oboedit.gui.TermFilterEditorFactory;
-import org.oboedit.gui.factory.SearchResultsComponentFactory;
 
 import org.apache.log4j.*;
 
@@ -225,7 +216,7 @@ public class SearchComponent extends AbstractGUIComponent {
 			logger.debug("Search component - IsImplied link search");
 			ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
 			linkDatabase = reasoner.getLinkDatabase();
-			
+
 		}else {
 			linkDatabase = SessionManager.getManager().getCurrentLinkDatabase();
 		}
