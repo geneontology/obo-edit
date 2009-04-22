@@ -1,6 +1,7 @@
 package org.obo.history;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
@@ -63,6 +64,11 @@ public class AddConsiderHistoryItem extends HistoryItem {
 		// this really shouldn't even be able to happen
 		// id forwards should not be possible with obsolete terms
 		return null;
+	}
+	
+	public Set getEditedNodes() {
+		edited.add(target);
+		return (Set) edited.clone();
 	}
 
 }
