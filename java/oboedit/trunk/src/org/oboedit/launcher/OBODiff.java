@@ -59,15 +59,7 @@ public class OBODiff {
 			OBOSession b = getHistory((String) filelist.get(1));
 			HistoryList changes = HistoryGenerator.getHistory(a, b, null);
 		
-			//Uncomment these for use with obomerge 15th April 2009
-			
-//			for (Iterator it = changes.getHistoryItems(); it.hasNext();) {
-//				Object object = (Object) it.next();
-//				
-//				System.out.println(object);				
-//			}			
-			
-			if (historyAdapter == null)
+						if (historyAdapter == null)
 				historyAdapter = new DefaultHistoryDumper();
 			boolean printResults = false;
 			if (outPath == null) {
@@ -82,16 +74,9 @@ public class OBODiff {
 					adapterConfig, changes);
 			if (printResults) {
 				FileInputStream fis = new FileInputStream(outFile);
-
-				//Uncomment these for use with obomerge 15th April 2009
-//				int x = 1;
-//				if(x == 1){ 
-//					IOUtil.dumpAndDoNotClose(fis, System.out);
-//					outFile.delete();
-//				} else {
 					IOUtil.dumpAndClose(fis, System.out);
 					outFile.delete();
-				//}
+				
 			}
 		}
 	}
