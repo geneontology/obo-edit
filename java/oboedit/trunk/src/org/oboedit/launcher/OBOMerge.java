@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,19 +33,19 @@ import org.obo.datamodel.OBOSession;
 import org.obo.datamodel.impl.AnnotatedObjectImpl;
 import org.obo.datamodel.impl.DefaultOperationModel;
 import org.obo.datamodel.impl.NestedValueImpl;
-import org.obo.datamodel.impl.OBOClassImpl;
 import org.obo.datamodel.impl.OBOSessionImpl;
 import org.obo.history.CreateObjectHistoryItem;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryItem;
 import org.obo.history.HistoryList;
 import org.obo.history.OperationModel;
+import org.obo.history.AddConsiderHistoryItem; 
+import org.obo.history.RemoveConsiderHistoryItem;
 import org.obo.history.OperationWarning;
 import org.obo.history.SessionHistoryList;
 import org.obo.identifier.DefaultIDGenerator;
 import org.obo.util.HistoryUtil;
 import org.obo.util.IDUtil;
-import org.obo.util.TermUtil;
 
 public class OBOMerge {
 
@@ -132,8 +134,8 @@ public class OBOMerge {
 	}
 
 	protected static Collection findClashes(OBOSession parentSession,
-			OBOSession liveSession, OBOSession branchSession, HistoryList changes,
-			Collection clashesToIgnore) {		
+			OBOSession liveSession, OBOSession branchSession, HistoryList historyParentToLive,
+			HistoryList historyParentToBranch, Collection clashesToIgnore) {		
 
 
 		VectorFilter creationFilter = new VectorFilter() {
@@ -141,10 +143,10 @@ public class OBOMerge {
 				return o instanceof CreateObjectHistoryItem;
 			}
 		};
-		
+
 		Map termCreationMap = new HashMap();
 		LinkedList clashes = new LinkedList();
-		Collection termCreations = HistoryUtil.findMatchingItems(changes,
+		Collection termCreations = HistoryUtil.findMatchingItems(historyParentToLive,
 				creationFilter);
 		Iterator it = termCreations.iterator();
 		while (it.hasNext()) {
@@ -153,8 +155,7 @@ public class OBOMerge {
 				termCreationMap.put(item.getObjectID(), item);
 		}
 
-		HistoryList historyParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
-				null);
+		
 		termCreations = HistoryUtil.findMatchingItems(historyParentToBranch, creationFilter);
 		it = termCreations.iterator();
 		while (it.hasNext()) {
@@ -204,6 +205,23 @@ public class OBOMerge {
 			}
 		}
 		return clashes;
+	}
+
+	private static TreeSet getEditedTermIDs(HistoryList historyParentToEdited) {
+
+		HistoryList aHistoryParentToEdited =  historyParentToEdited;
+		TreeSet editedTerms = new TreeSet();
+
+		for (Iterator historyParentToEditedIterator = aHistoryParentToEdited.getHistoryItems(); historyParentToEditedIterator.hasNext();) {
+			HistoryItem historyItem = (HistoryItem) historyParentToEditedIterator.next();
+
+			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.toString());
+			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getEditedNodes());		
+			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getClass());
+
+			editedTerms.addAll(historyItem.getEditedNodes());
+		}
+		return editedTerms ;
 	}
 
 	public static ArgumentSignature getArgumentSignature() {
@@ -333,25 +351,31 @@ public class OBOMerge {
 		}
 
 		OBOFileAdapter adapter = new OBOFileAdapter();
+		
+		//Read files into OBOSession objects
 		OBOSession parentSession = getSession(parentFile, adapter);
 		OBOSession liveSession = getSession(liveFile, adapter);
-
-		HistoryList historyParentToLive = HistoryGenerator.getHistory(parentSession, liveSession,
-				null);
+		OBOSession branchSession = getSession(branchFile, adapter);
+		
+		//Get HistoryList for the changes between the two pairs of files. 
+		HistoryList historyParentToLive = HistoryGenerator.getHistory(parentSession, liveSession, null);
+		HistoryList historyParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession, null);
 
 		Map mergeIDRemap = IDUtil.createIDRemapping(historyParentToLive);
 
-		OBOSession branchSession = getSession(branchFile, adapter);
-
-		//Uncomment for use of obodiff with obomerge to 
-		//find whole term edit clashes.
-		//getWholeTermConflict(parentFile, liveFile, branchFile);
+		//Create TreeSets that will contain just the GO:ids of the terms 
+		//that were found to be changed in the two pairs of files.
+		TreeSet historyParentToBranchTreeSet = new TreeSet();
+		historyParentToBranchTreeSet = getEditedTermIDs(historyParentToBranch);
+		TreeSet historyParentToLiveTreeSet = new TreeSet();
+		historyParentToLiveTreeSet = getEditedTermIDs(historyParentToLive);
 
 		boolean unresolvedClashes = false;
 		Collection clashes = null;
 		//	do {
 		if (!forceMode) {
-			clashes = findClashes(parentSession, liveSession, branchSession, historyParentToLive,
+			clashes = findClashes(parentSession, liveSession, branchSession, 
+					historyParentToLive, historyParentToBranch,
 					clashesToIgnore);
 
 			boolean foundLikelyClashes = false;
@@ -461,7 +485,7 @@ public class OBOMerge {
 
 		OBOSession writeMe;
 		if (mergeIDRemap.size() > 0) {
-			SessionHistoryList historyParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
+			SessionHistoryList sessionHistoryListParentToBranch = HistoryGenerator.getHistory(parentSession, branchSession,
 					null);
 			it = mergeIDRemap.keySet().iterator();
 			while(it.hasNext()) {
@@ -470,10 +494,10 @@ public class OBOMerge {
 				System.out.println("** Warning: Mapping edits that refer to secondary "+id+" in file "+branchFile+" to the following primary ids "+ids);
 				logger.info("** Warning: Mapping edits that refer to secondary "+id+" in file "+branchFile+" to the following primary ids "+ids);
 
-				historyParentToBranch.forwardID(id, ids);
+				sessionHistoryListParentToBranch.forwardID(id, ids);
 			}
 			applyChanges(parentSession, historyParentToLive);
-			applyChanges(parentSession, historyParentToBranch);
+			applyChanges(parentSession, sessionHistoryListParentToBranch);
 			writeMe = parentSession;
 		} else {
 			//System.out.println("OBOMerge: main about to call applyChanges in second else");
@@ -490,48 +514,20 @@ public class OBOMerge {
 		System.out.println("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 		logger.info("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 
+		getTermsEditedInLiveAndBranch(historyParentToBranchTreeSet, historyParentToLiveTreeSet);
+
 	}
 
-	/**
-	 * Checks for situations in which any single term has been edited in both live and branch files.
-	 * This may include any kind of edit, so if a relationship has been deleted in one file and the definition has
-	 * been edited in the other file then the term will still be flagged. 
-	 * @throws DataAdapterException 
-	 * @throws IOException 
-	 * 
-	 * 
-	 * 
-	 */
 
-	public static void getWholeTermConflict(String parentFile, String liveFile, String branchFile) throws IOException, DataAdapterException{
 
-		//System.out.println("OBOMerge: getWholeTermConflict: parentFile, liveFile, branchFile = " + parentFile + liveFile + branchFile);
-
-		ArrayList<String> liveArrayList = new ArrayList<String>();
-		String[] liveArray = {parentFile, liveFile};
+	private static void getTermsEditedInLiveAndBranch(
+			TreeSet historyParentToBranchTreeSet,
+			TreeSet historyParentToLiveTreeSet) {
 		
-		for (int i = 0; i < liveArray.length; i++) {
-			System.out.println(liveArray[i]);
-		}
+		historyParentToLiveTreeSet.retainAll(historyParentToBranchTreeSet);
 		
-		org.oboedit.launcher.OBODiff.main(liveArray);
-	
-		System.out.println("Parent to live file obodiff finished.");
-		
-		String[] branchArray = {parentFile, branchFile};
-		
-		for (int i = 0; i < branchArray.length; i++) {
-			System.out.println(branchArray[i]);
-		}
-
-		
-		org.oboedit.launcher.OBODiff.main(branchArray);
-	
-		System.out.println("Parent to branch file obodiff finished.");
-
-		return;
+		System.out.println("OBOMerge: getTermsEditedInLiveAndBranch Terms edited in both files are: " + historyParentToLiveTreeSet.toString());
 	}
-
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
 	throws DataAdapterException {
