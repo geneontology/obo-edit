@@ -1,6 +1,7 @@
 package org.obo.history;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
@@ -30,6 +31,12 @@ public class RemoveConsiderHistoryItem extends HistoryItem {
 	public RemoveConsiderHistoryItem(String target, String consider) {
 		this.target = target;
 		this.consider = consider;
+	}
+	
+	@Override
+	public Set getEditedNodes() {
+		edited.add(target);
+		return (Set) edited.clone();
 	}
 
 	public boolean equals(Object o) {
