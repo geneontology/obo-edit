@@ -1,6 +1,7 @@
 package org.obo.history;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 import org.obo.datamodel.*;
@@ -48,6 +49,12 @@ public class AddDbxrefHistoryItem extends HistoryItem {
 				+ newref + " to "
 				+ (synonym != null ? "synonym " + synonym + " of " : "")
 				+ target;
+	}
+	
+	@Override
+	public Set getEditedNodes() {
+		edited.add(target);
+		return super.getEditedNodes();
 	}
 
 	public Dbxref getDbxref() {
