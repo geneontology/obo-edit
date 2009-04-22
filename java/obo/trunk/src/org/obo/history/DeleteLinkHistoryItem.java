@@ -1,5 +1,7 @@
 package org.obo.history;
 
+import java.util.Set;
+
 import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
@@ -8,7 +10,7 @@ public class DeleteLinkHistoryItem extends LinkHistoryItem {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DeleteLinkHistoryItem.class);
-
+	String childID;
 	/**
 	 * 
 	 */
@@ -29,6 +31,12 @@ public class DeleteLinkHistoryItem extends LinkHistoryItem {
 		this.rel = new StringRelationship(childID, typeID, parentID, false, false, false, null, null, null, null);
 	}
 
+	@Override
+	public Set getEditedNodes() {
+		edited.add(rel.getChild());
+		return (Set) edited.clone();
+	}
+	
 	@Override
 	public String toString() {
 		return "Deleted " + rel;
