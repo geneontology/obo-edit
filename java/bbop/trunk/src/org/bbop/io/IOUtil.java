@@ -130,14 +130,7 @@ public final class IOUtil {
 		ostream.close();
 	}
 
-	//Added for call of obodiff from obomerge. 15th April 2009
-	public static void dumpAndDoNotClose(InputStream istream, OutputStream ostream)
-	throws IOException {
-		int read;
-		while ((read = istream.read()) != -1) {
-			ostream.write((byte) read);
-		}
-	}
+
 
 
 	public static ProgressableInputStream getProgressableStream(String uri)
