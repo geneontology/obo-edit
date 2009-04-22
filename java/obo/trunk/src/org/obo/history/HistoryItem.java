@@ -75,7 +75,7 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	public abstract String getShortName();
 
 	/**
-	 * Gets the list of terms that have changed between the two files being compare. 
+	 * Gets the list of terms that have changed between the two files being compared. 
 	 * @return set of edited terms. 
 	 */
 	public Set getEditedNodes() {
