@@ -1,6 +1,7 @@
 package org.obo.history;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.obo.datamodel.*;
 
@@ -59,5 +60,11 @@ public class AddSynonymHistoryItem extends HistoryItem {
 	@Override
 	public HistoryList forwardID(String oldID, Collection newIDs) {
 		return defaultForwardID(this, oldID, newIDs);
+	}
+	
+	@Override
+	public Set getEditedNodes() {
+	edited.add(target);
+		return super.getEditedNodes();
 	}
 }
