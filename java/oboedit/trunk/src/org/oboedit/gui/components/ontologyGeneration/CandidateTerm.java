@@ -1,9 +1,15 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.obo.datamodel.OBOClass;
+import org.obo.datamodel.Synonym;
+import org.obo.util.TermUtil;
+import org.oboedit.controller.SessionManager;
 
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
@@ -349,4 +355,27 @@ public class CandidateTerm
 	    	return generatedLabel;
 	    }
     }
+    
+    /**
+     * Checks if the term is already present in the current ontology (as a term or a synonym)
+     * 
+     * @return <code>true</code>, if the term is present, <code>false</code> otherwise
+     */
+    public boolean isPresentInOntology()
+    {
+    	SessionManager sessionManager = SessionManager.getManager();
+    	Collection<OBOClass> presentTerms = TermUtil.getTerms(sessionManager.getSession());
+    	for (OBOClass term : presentTerms) {
+    		if (term.getName().equals(this.getLabel())) {
+    			return true;
+    		}
+    		for (Synonym synonym : term.getSynonyms()) {
+    			if (synonym.getText().equals(this.getLabel())) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+
 }

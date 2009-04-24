@@ -28,6 +28,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -91,6 +93,8 @@ import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.PathCapable;
+import org.obo.datamodel.impl.DbxrefImpl;
+import org.obo.history.AddDbxrefHistoryItem;
 import org.obo.history.AddSynonymHistoryItem;
 import org.obo.history.ChangeSynScopeHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
@@ -107,6 +111,7 @@ import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
+import org.oboedit.gui.Preferences;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.gui.event.OntologyReloadListener;
@@ -140,12 +145,12 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
  * 
  * @author Atif Iqbal, 2008
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
- * @version 1.1.0, 10/12/2008
+ * @version 1.2, 24/04/2009
  */
 public class OntologyGenerationComponent extends AbstractGUIComponent implements PropertyChangeListener
 {
-	public static final String PLUGIN_VERSION = "1.1.0";
-	public static final String PLUGIN_VERSIONED_NAME = "OBOEdit-GoPubMed-Ontogen-Plugin-" + PLUGIN_VERSION;
+	public static final String PLUGIN_VERSION = "1.2";
+	public static final String PLUGIN_VERSIONED_NAME = "OBO-Edit-" + Preferences.getVersion().toString()+"_"+PLUGIN_VERSION;
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
 	private static final String SOURCE_FOLDER = "FOLDER";
@@ -174,6 +179,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private JButton generateTermsFromPubMedButton;
 	private JButton generateTermsFromTextButton;
 	private JButton generateTermsFormFolderButton;
+	private JButton generateManualDefinitionButton;
 	private JButton folderChooseButton;
 	private JButton showClipBoardButton;
 	private JButton clearClipBoardButton;
@@ -186,8 +192,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private JButton openHelpPageButton;
 	private JButton addToOntologyButton;
 	private JCheckBox checkboxShowTickedParents;
+	
+	private JCheckBox onlyShowExistingTerms = new JCheckBox();
 
 	private JLabel editSelectedTermLabel = new JLabel();
+    private JLabel manualDefInfo = new JLabel();
 
 	private JTextArea inputTextArea;
 	private JTextArea editDefArea;
@@ -197,6 +206,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private JTextField filterTermsTextField;
 	private JTextField searchTermsTextField;
 	private JTextField filterDefTextField;
+	private JTextField manualDefinitionField;
 	private JTextField editNameTextField = new JTextField(20);
 	private JTextField selectedLinkedObjectField = new JTextField(10);
 	private JTextField filterPotentialParentsTextField;
@@ -213,12 +223,12 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	// Web service related
 	private BlockingQueue<CandidateTerm> ontologyLookupQueue;
 	private BlockingQueue<CandidateTerm> ontologyLookupChildrenQueue;
-	private GoPubMedTermGenerationStub termGenerationServiceStub;
-	private OntologyLookupManagerPortTypeProxy ontoLookupProxy;
-	private GoPubMedDefinitionGeneratorStub definitionGeneratorStub;
+	private static GoPubMedTermGenerationStub termGenerationServiceStub;
+	private static OntologyLookupManagerPortTypeProxy ontoLookupProxy;
+	private static GoPubMedDefinitionGeneratorStub definitionGeneratorStub;
 
 	private BiotecSplashScreen biotecSplashScreen;
-
+	
 	/*
 	 * Instanciate listeners to OBOEdit
 	 */
@@ -300,7 +310,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	};
 	private JCheckBox checkboxIncludeChildren;
 	private JCheckBox checkboxIncludeBranch;
-
+	
+	private OntologyLookupServiceWorker lookupServiceWorker;
+	private OntologyLookupChildrenServiceWorker lookupChildrenServiceWorker;
+	
 	/**
 	 * Constructs a {@link OntologyGenerationComponent} instance
 	 * 
@@ -338,7 +351,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.termsTable.getColumnModel().getColumn(3).setPreferredWidth(18);
 		this.termsTable.getColumnModel().getColumn(3).setResizable(false);
 
-		TableCellImageRenderer definitionGenerationImageRenderer = new TableCellImageRenderer("resources/iconDefinitionGeneration.png");
+		TableCellImageRenderer definitionGenerationImageRenderer = new TableCellImageRenderer(
+		    "resources/iconDefinitionGeneration.png");
 		this.termsTable.getColumnModel().getColumn(2).setCellRenderer(definitionGenerationImageRenderer);
 
 		TableCellImageRenderer termInformationIconRenderer = new TableCellImageRenderer("resources/aboutIcon.png");
@@ -372,10 +386,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.inputFolderLocationField.setMaximumSize(new Dimension(1000, 25));
 		this.inputFolderLocationField.setPreferredSize(new Dimension(100, 25));
 		this.inputFolderLocationField.setEditable(false);
-
+		
 		this.generateTermsFromPubMedButton = new JButton("Generate");
 		this.generateTermsFromTextButton = new JButton("Generate");
 		this.generateTermsFormFolderButton = new JButton("Generate");
+		this.generateManualDefinitionButton = new JButton("Add Definition");
 		this.folderChooseButton = new JButton("Open");
 		this.showClipBoardButton = new JButton("Show");
 		this.clearClipBoardButton = new JButton("Clear");
@@ -406,7 +421,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.openHelpPageButton.setPreferredSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMaximumSize(new Dimension(43, 33));
 		this.openHelpPageButton.setMargin(new Insets(13, 0, 0, 0));
-
+		
 		this.setTitle("Ontology Generation view");
 	}
 
@@ -429,9 +444,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// start worker and services
 		ontoLookupProxy = new OntologyLookupManagerPortTypeProxy();
-		OntologyLookupServiceWorker lookupServiceWorker = new OntologyLookupServiceWorker();
+		lookupServiceWorker = new OntologyLookupServiceWorker();
 		lookupServiceWorker.execute();
-		OntologyLookupChildrenServiceWorker lookupChildrenServiceWorker = new OntologyLookupChildrenServiceWorker();
+		lookupChildrenServiceWorker = new OntologyLookupChildrenServiceWorker();
 		lookupChildrenServiceWorker.execute();
 
 		// update selelected term in OBOEdit
@@ -478,17 +493,26 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				}
 			}
 		});
-
+		
 		inputFolderLocationField.addKeyListener(new KeyAdapter()
 		{
 			@Override
-			public void keyPressed(KeyEvent event)
+			public void keyPressed(KeyEvent event) 
 			{
 				if (event.getKeyCode() == 10) {
 					onClickGenerateTerms(inputPubMedQueryField);
 				}
 			}
 		});
+
+        manualDefinitionField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if(event.getKeyCode() == 10) {
+                    onClickGenerateManualDefinition(manualDefinitionField);
+                }
+            }
+        });
 
 		generateTermsFromPubMedButton.addActionListener(new ActionListener()
 		{
@@ -507,24 +531,29 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				onClickGenerateTerms(inputTextArea);
 			}
 		});
-
-		folderChooseButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
+		
+		folderChooseButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
 				onClickOpenFileChooser(inputFolderLocationField);
 			}
 		});
-
+		
 		generateTermsFormFolderButton.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				onClickGenerateTerms(inputFolderLocationField);
 			}
-
+			
 		});
+		
+		generateManualDefinitionButton.addActionListener(new ActionListener(){
 
+			public void actionPerformed(ActionEvent e) {
+				onClickGenerateManualDefinition(manualDefinitionField);
+			}
+			
+		});
+		
 		showClipBoardButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -669,12 +698,20 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				}
 			}
 		});
-
+		
 		synonymTermsTable.getModel().addTableModelListener(new TableModelListener()
 		{
 			public void tableChanged(TableModelEvent e)
 			{
 				clipBoardTabPanel.setTitleAt(0, "Clipboard (" + clipboard.getSize() + ")");
+			}
+		});
+		
+		onlyShowExistingTerms.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e)
+			{
+					updateTermsTableWithExistingTerms(onlyShowExistingTerms.isSelected());
 			}
 		});
 
@@ -714,7 +751,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 				if (KeyEvent.VK_SPACE == e.getKeyChar()) {
 					int selectedRow = definitionTable.getSelectedRow();
-					CandidateDefinition candidateDefinition = selectedCandidateTerm.getGeneratedDefinitions().get(selectedRow);
+					CandidateDefinition candidateDefinition = selectedCandidateTerm.getGeneratedDefinitions().get(
+					    selectedRow);
 					if (candidateDefinition.isTicked()) {
 						candidateDefinition.setTicked(false);
 					}
@@ -780,7 +818,22 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				termsTable.findTerm(text);
 			}
 		});
+		
+		manualDefinitionField.addCaretListener(new CaretListener() {
 
+			public void caretUpdate(CaretEvent e) {
+                if(selectedCandidateTerm != null) {
+                    if(manualDefinitionField.getText().equals("")) {
+                        generateManualDefinitionButton.setEnabled(false);
+                    }
+                    else {
+                        generateManualDefinitionButton.setEnabled(true);
+                    }
+                }
+                manualDefInfo.setText("");
+			}
+		});
+		
 		filterDefTextField.addCaretListener(new CaretListener()
 		{
 			public void caretUpdate(CaretEvent evt)
@@ -798,15 +851,17 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				generateTermsFromPubMedButton.setEnabled(true);
 			}
 		});
-
-		// inputFolderLocationField.addCaretListener(new CaretListener()
-		// {
-		// public void caretUpdate(CaretEvent evt)
-		// {
-		// generateTermsFormFolderButton.setFocusable(true);
-		// generateTermsFormFolderButton.setEnabled(true);
-		// }
-		// });
+		
+//		inputFolderLocationField.addCaretListener(new CaretListener()
+//		{
+//			public void caretUpdate(CaretEvent evt)
+//			{
+//				generateTermsFormFolderButton.setFocusable(true);
+//				generateTermsFormFolderButton.setEnabled(true);
+//			}
+//		});
+		
+		
 
 		inputTextArea.addCaretListener(new CaretListener()
 		{
@@ -851,7 +906,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			{
 				boolean includeChildren = checkboxIncludeChildren.isSelected();
 				boolean includeBranch = checkboxIncludeBranch.isSelected();
-				addToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch);
+				addToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren,
+				    includeBranch);
 			}
 		});
 
@@ -889,54 +945,50 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	/**
 	 * Open a fileChooser to get a location for pdf files
 	 */
-	private void onClickOpenFileChooser(JTextComponent textComponent)
-	{
-		if (textComponent == null) {
+	private void onClickOpenFileChooser(JTextComponent textComponent) {
+		if(textComponent==null) {
 			return;
 		}
-
+		
 		JFileChooser fileChooser = new JFileChooser();
-
+		
 		String sfolder = textComponent.getText();
 		System.out.println("sFolder: " + sfolder);
-		if (!sfolder.trim().equals("")) {
+		if(!sfolder.trim().equals("")) {
 			File file = new File(sfolder);
-			if (file.isDirectory()) {
+			if(file.isDirectory()) {
 				fileChooser.setCurrentDirectory(file.getAbsoluteFile());
 			}
-			else if (file.isFile()) {
+			else if(file.isFile()){
 				fileChooser.setCurrentDirectory(file.getParentFile());
 			}
-
+			
 		}
-
-		class pdfFileFilter extends FileFilter
-		{
+		
+		class pdfFileFilter extends FileFilter {
 
 			@Override
-			public boolean accept(File file)
-			{
+			public boolean accept(File file) {
 				String filename = file.getName();
-				if (file.isDirectory()) {
+				if(file.isDirectory()) {
 					return true;
 				}
 				return filename.endsWith(".pdf");
 			}
 
 			@Override
-			public String getDescription()
-			{
+			public String getDescription() {
 				return "*.pdf";
 			}
 		}
-
+		
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fileChooser.addChoosableFileFilter(new pdfFileFilter());
-
-		if (fileChooser.showOpenDialog(new JFrame()) == JFileChooser.APPROVE_OPTION) {
+		
+		if(fileChooser.showOpenDialog(new JFrame()) == JFileChooser.APPROVE_OPTION) {
 			sfolder = fileChooser.getSelectedFile().getAbsolutePath();
 			textComponent.setText(sfolder);
-
+			
 			generateTermsFormFolderButton.setEnabled(true);
 			generateTermsFormFolderButton.setFocusable(true);
 		}
@@ -945,7 +997,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			generateTermsFormFolderButton.setFocusable(false);
 		}
 	}
-
+	
+	
 	/**
 	 * Shows the clip board in termsTable
 	 */
@@ -1188,7 +1241,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			source = SOURCE_TEXT;
 			logger.debug(String.format("Generate terms for Text (%s kB)", inputData.length() / 1024));
 		}
-		else if (textComponent.equals(inputFolderLocationField)) {
+		else if(textComponent.equals(inputFolderLocationField)) {
 			source = SOURCE_FOLDER;
 			logger.debug("Generate terms for folder...");
 		}
@@ -1203,6 +1256,29 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		worker.execute();
 
 		progressDlg.setVisible(true);
+	}
+	
+	/**
+	 * generated a new CandidateDefinition object 
+	 * @param definitionField
+	 */
+	private void onClickGenerateManualDefinition(JTextField definitionField)
+	{
+		int index=0;
+		String definition = definitionField.getText();
+		String htmlDefinition;
+		
+		htmlDefinition = "<html>" + definitionField.getText() + "</html>";
+		CandidateDefinition candidateDefinition = new CandidateDefinition(index, definition, htmlDefinition);
+		
+		List<CandidateDefinition> definitions = new ArrayList<CandidateDefinition>();
+        definitions.add(candidateDefinition);
+        definitions.addAll(selectedCandidateTerm.getGeneratedDefinitions());
+        selectedCandidateTerm.setGeneratedDefinitions(definitions);
+        definitionTable.getModel().setDefinitions(definitions);
+
+        definitionField.setText("");
+        manualDefInfo.setText("Definition added on top of the definition table.");
 	}
 
 	/**
@@ -1330,7 +1406,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			String label = selectedCandidateTerm.getGeneratedLabel();
 			logger.debug(String.format("Generate definitions for term '%s'", label));
 			// TODO give parent terms to influence ranking
-			DefinitionGenerationServiceWorker defworker = new DefinitionGenerationServiceWorker(label, null, definitionTable);
+			DefinitionGenerationServiceWorker defworker = new DefinitionGenerationServiceWorker(label, null,
+			    definitionTable);
 			defworker.addPropertyChangeListener(this);
 			defworker.execute();
 			this.progressDlg = new ProgressBarDialog(OntologyGenerationComponent.this);
@@ -1415,13 +1492,14 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private void onClickOpenDefinitionsPopup()
 	{
 		int rowNumber = OntologyGenerationComponent.this.definitionTable.getSelectedRow();
-
+		
 		DefinitionsPopup definitionsPopup = new DefinitionsPopup(OntologyGenerationComponent.this);
 		definitionsPopup.initPopup(definitionTable.getModel().getDefinitionAt(rowNumber));
-
+		
 		definitionsPopup.setVisible(true);
 	}
 
+	
 	/**
 	 * Displays term selected in the termsTable and updates all depending gui components
 	 * 
@@ -1452,7 +1530,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					editDefArea.setText(selectedCandidateTerm.getUserDefinedDefinition());
 				}
 			}
-			definitionTable.getColumnModel().getColumn(1).setHeaderValue("Definitions for \"" + selectedCandidateTerm.getGeneratedLabel() + "\"");
+			definitionTable.getColumnModel().getColumn(1).setHeaderValue(
+			    "Definitions for \"" + selectedCandidateTerm.getGeneratedLabel() + "\"");
 			definitionTable.getTableHeader().updateUI();
 
 			if (!editNameTextField.getText().equals(selectedCandidateTerm.getGeneratedLabel())) {
@@ -1496,7 +1575,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 			List<CandidateTerm> clipboardTerms = termsTable.getModel().getAllTerms();
 			for (CandidateTerm candidateTerm : clipboardTerms) {
-				if (termsTable.getModel().isInClipboard(candidateTerm) && !ontologyLookupChildrenQueue.contains(candidateTerm)) {
+				if (termsTable.getModel().isInClipboard(candidateTerm) && !ontologyLookupChildrenQueue
+				    .contains(candidateTerm)) {
 					logger.trace("ADD to queue clipboard term: " + candidateTerm);
 					if (ontologyLookupChildrenQueue.remainingCapacity() == 0) {
 						CandidateTerm remove = ontologyLookupChildrenQueue.remove();
@@ -1516,7 +1596,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				String oboRelationShipType = lookupRelation.getOboRelationShipType();
 				for (OBOLookupTerm childTerm : existingChildTerms) {
 					if (childTerm.getOboID().equals(oboChildTermID)) {
-						if (childTerm.getLabel() != null && !selectedCandidateTerm.getGeneratedLabel().equals(childTerm.getLabel())) {
+						if (childTerm.getLabel() != null && !selectedCandidateTerm.getGeneratedLabel().equals(
+						    childTerm.getLabel())) {
 							CandidateTerm oboCandidateTerm = new CandidateTerm();
 							oboCandidateTerm.setGeneratedLabel(childTerm.getLabel());
 							oboCandidateTerm.addLexicalRepresentation(childTerm.getLabel());
@@ -1575,7 +1656,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			if (candidateDefinition.isTicked()) {
 				for (IdentifiedObject identifiedObject : allIdentifiedObjects) {
 					if (contains(candidateDefinition.getDefinition(), identifiedObject.getName())) {
-						if (!objectsFromUserDefindedDef.contains(identifiedObject) && !objectsFromTickedDef.contains(identifiedObject)) {
+						if (!objectsFromUserDefindedDef.contains(identifiedObject) && !objectsFromTickedDef
+						    .contains(identifiedObject)) {
 							if (identifiedObject instanceof LinkedObject) {
 								LinkedObject linkedObject = (LinkedObject) identifiedObject;
 								oboTermsTable.getModel().addFromTickedDefinition(linkedObject);
@@ -1612,7 +1694,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					if (linkedObject.getName().equalsIgnoreCase(selectedTermLabel)) {
 						oboTermsTable.getModel().addSameAsCandidateTerm(linkedObject);
 					}
-					else if (contains(linkedObject.getName(), selectedTermLabel) || contains(selectedTermLabel, linkedObject.getName())) {
+					else if (contains(linkedObject.getName(), selectedTermLabel) || contains(selectedTermLabel,
+					    linkedObject.getName())) {
 						oboTermsTable.getModel().addSimilarToCandidateTerm(linkedObject);
 					}
 				}
@@ -1680,7 +1763,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	 */
 	private void updateParentAsAnyExistingLinkedObject(Collection<String> idsUndergoingChange)
 	{
-		logger.trace(String.format("UPDATE updateExistingLinkedObjects() for: %s + (%d)", selectedCandidateTerm, idsUndergoingChange.size()));
+		logger.trace(String.format("UPDATE updateExistingLinkedObjects() for: %s + (%d)", selectedCandidateTerm,
+		    idsUndergoingChange.size()));
 		LinkDatabase currentLinkDatabase = sessionManager.getCurrentLinkDatabase();
 		List<LinkedObject> linkedObjects = new ArrayList<LinkedObject>();
 		for (String id : idsUndergoingChange) {
@@ -1698,8 +1782,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		Rectangle visibleRect = pTermsTable.getVisibleRect();
 		int firstVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y));
 		int lastVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y + visibleRect.height - 1));
-		logger.trace(String.format("UPDATE updateTermsTableUsingOntologyLookup; FEED %s %s", firstVisibleRow, lastVisibleRow));
-		if (firstVisibleRow >= 0 && lastVisibleRow >= 0 && (termsTable.getCurrentFirstVisibleRow() != firstVisibleRow || termsTable.getCurrentLastVisibleRow() != lastVisibleRow)) {
+		logger.trace(String.format("UPDATE updateTermsTableUsingOntologyLookup; FEED %s %s", firstVisibleRow,
+		    lastVisibleRow));
+		if (firstVisibleRow >= 0 && lastVisibleRow >= 0 && (termsTable.getCurrentFirstVisibleRow() != firstVisibleRow || termsTable
+		    .getCurrentLastVisibleRow() != lastVisibleRow)) {
 			ontologyLookupQueue.clear();
 			for (int i = firstVisibleRow; i <= lastVisibleRow; i++) {
 				CandidateTerm candidateTerm = pTermsTable.getModel().getTermAt(i);
@@ -1708,6 +1794,29 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		}
 		termsTable.setCurrentFirstVisibleRow(firstVisibleRow);
 		termsTable.setCurrentLastVisibleRow(lastVisibleRow);
+	}
+	
+	private void updateTermsTableWithExistingTerms(boolean showExistingTerms) 
+	{
+		termsTable.onlyShowExistingTerms(showExistingTerms);
+
+		// Scroll and select
+		JTableHelper.scrollToTopAndSelectFirst(termsTable);
+
+		// Reset the cursor in normal mode
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+		// remove existing lookup queries
+		ontologyLookupQueue.clear();
+		ontologyLookupChildrenQueue.clear();
+		
+		// reinitialize visible table rows 
+		termsTable.setCurrentFirstVisibleRow(-1);
+		termsTable.setCurrentLastVisibleRow(-1);
+		
+		// restart ontology terms lookup
+		updateTermsTableUsingOntologyLookup(termsTable);
+
 	}
 
 	/**
@@ -1738,12 +1847,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		parentArray = parents.toArray(parentArray);
 		oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(parentArray);
 	}
-
+	
 	/**
-	 * Adds the <code>definition</code>, which was selected in the <code>DefinitionsPopup</code> to the
-	 * <code>editDefArea</code>.
+	 * Adds the <code>definition</code>, which was selected in the 
+	 * <code>DefinitionsPopup</code> to the <code>editDefArea</code>.
 	 * 
 	 * @param definition the definition to be attached to the <code>editDefArea</code> text.
+	 * 
 	 * @author Goetz Fabian
 	 */
 	public void updateEditDefArea(String definition)
@@ -1795,20 +1905,24 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	 * @param includeChildren
 	 * @param selectedObject LinkedObject to locate in ontology tree
 	 */
-	private void addToOntologyAsChildOfLinkedObject(Set<String> parentIds, boolean includeChildren, boolean includeBranch)
+	private void addToOntologyAsChildOfLinkedObject(Set<String> parentIds, boolean includeChildren,
+	    boolean includeBranch)
 	{
 		TermMacroHistoryItem changeItem = new TermMacroHistoryItem();
 		if (parentIds == null || parentIds.size() == 0) {
-			JOptionPane.showMessageDialog(null, "Please select a term to add children or add root edit/Add Root/Add Root");
+			JOptionPane.showMessageDialog(null,
+			    "Please select a term to add children or add root edit/Add Root/Add Root");
 			return;
 		}
 		else {
 			Iterator<String> selectedParentIdIterator = parentIds.iterator();
 			String selectedCandidateTermID = null;
-			List<IdentifiedObject> linkedObjectsIfExistLikeSelectedTerm = getLinkedObjectsIfExist(selectedCandidateTerm.getLabel());
+			List<IdentifiedObject> linkedObjectsIfExistLikeSelectedTerm = getLinkedObjectsIfExist(selectedCandidateTerm
+			    .getLabel());
 			if (selectedParentIdIterator.hasNext()) {
 				String parentId = selectedParentIdIterator.next();
-				LinkedObject parentLinkedObject = (LinkedObject) SessionManager.getManager().getCurrentLinkDatabase().getObject(parentId);
+				LinkedObject parentLinkedObject = (LinkedObject) SessionManager.getManager().getCurrentLinkDatabase()
+				    .getObject(parentId);
 				if (linkedObjectsIfExistLikeSelectedTerm == null) {
 					if (TermUtil.isProperty(parentLinkedObject))
 						selectedCandidateTermID = getTypeID();
@@ -1817,23 +1931,28 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					if (selectedCandidateTermID == null || selectedCandidateTermID.trim().length() == 0) {
 						System.err.println("Could not generate ID! " + "Action cancelled.");
 					}
-					TermMacroHistoryItem item = createTermInOBOEdit(selectedCandidateTermID, selectedCandidateTerm, parentLinkedObject);
+					TermMacroHistoryItem item = createTermInOBOEdit(selectedCandidateTermID, selectedCandidateTerm,
+					    parentLinkedObject);
 					changeItem.addItem(item);
-					TermMacroHistoryItem addTerm = addTermToOBOEdit(selectedCandidateTermID, parentId, OBOProperty.IS_A.getID());
+					TermMacroHistoryItem addTerm = addTermToOBOEdit(selectedCandidateTermID, parentId, OBOProperty.IS_A
+					    .getID());
 					changeItem.addItem(addTerm);
 
 				}
 				else if (linkedObjectsIfExistLikeSelectedTerm.size() == 1) {
-					TermMacroHistoryItem addTerm = addTermToOBOEdit(linkedObjectsIfExistLikeSelectedTerm.get(0).getID(), parentId, OBOProperty.IS_A.getID());
+					TermMacroHistoryItem addTerm = addTermToOBOEdit(
+					    linkedObjectsIfExistLikeSelectedTerm.get(0).getID(), parentId, OBOProperty.IS_A.getID());
 					changeItem.addItem(addTerm);
 					selectedCandidateTermID = linkedObjectsIfExistLikeSelectedTerm.get(0).getID();
 				}
 				else {
-					throw new RuntimeException(String.format("There exist already more than one term with name '%s'", selectedCandidateTerm.getLabel()));
+					throw new RuntimeException(String.format("There exist already more than one term with name '%s'",
+					    selectedCandidateTerm.getLabel()));
 				}
 			}
 			while (selectedParentIdIterator.hasNext()) {
-				TermMacroHistoryItem addTerm = addTermToOBOEdit(selectedCandidateTermID, selectedParentIdIterator.next(), OBOProperty.IS_A.getID());
+				TermMacroHistoryItem addTerm = addTermToOBOEdit(selectedCandidateTermID, selectedParentIdIterator
+				    .next(), OBOProperty.IS_A.getID());
 				changeItem.addItem(addTerm);
 			}
 			SessionManager.getManager().apply(changeItem, false);
@@ -1914,21 +2033,27 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			final String childLabel = idToName.get(relation.getOboChildTermID());
 			if (childLabel != null) {
 				final List<IdentifiedObject> linkedObjectsIfExist = getLinkedObjectsIfExist(childLabel);
-				final LinkedObject parentLinkedObject = (LinkedObject) SessionManager.getManager().getCurrentLinkDatabase().getObject(selectedCandidateTermID);
+				final LinkedObject parentLinkedObject = (LinkedObject) SessionManager.getManager()
+				    .getCurrentLinkDatabase().getObject(selectedCandidateTermID);
 				if (linkedObjectsIfExist == null) {
 					final String[] lexicalRepresentation = { childLabel };
-					final CandidateTerm childCandidateTerm = new CandidateTerm(childLabel, new String[0], lexicalRepresentation, Double.NaN, CandidateTerm.TYPE_OBO_TERM);
-					final TermMacroHistoryItem createTermItem = createTermInOBOEdit(relation.getOboChildTermID(), childCandidateTerm, parentLinkedObject);
+					final CandidateTerm childCandidateTerm = new CandidateTerm(childLabel, new String[0],
+					    lexicalRepresentation, Double.NaN, CandidateTerm.TYPE_OBO_TERM);
+					final TermMacroHistoryItem createTermItem = createTermInOBOEdit(relation.getOboChildTermID(),
+					    childCandidateTerm, parentLinkedObject);
 					changeItem.addItem(createTermItem);
-					final TermMacroHistoryItem addTermItem = addTermToOBOEdit(relation.getOboChildTermID(), parentLinkedObject.getID(), relation.getOboRelationShipType());
+					final TermMacroHistoryItem addTermItem = addTermToOBOEdit(relation.getOboChildTermID(),
+					    parentLinkedObject.getID(), relation.getOboRelationShipType());
 					changeItem.addItem(addTermItem);
 					// accumulate return value
 				}
 				else {
 					for (final IdentifiedObject identifiedObject : linkedObjectsIfExist) {
-						final Collection<Link> children = SessionManager.getManager().getCurrentLinkDatabase().getChildren(parentLinkedObject);
+						final Collection<Link> children = SessionManager.getManager().getCurrentLinkDatabase()
+						    .getChildren(parentLinkedObject);
 						if (!children.contains(identifiedObject)) {
-							final TermMacroHistoryItem addTermItem = addTermToOBOEdit(identifiedObject.getID(), parentLinkedObject.getID(), relation.getOboRelationShipType());
+							final TermMacroHistoryItem addTermItem = addTermToOBOEdit(identifiedObject.getID(),
+							    parentLinkedObject.getID(), relation.getOboRelationShipType());
 							changeItem.addItem(addTermItem);
 							// accumulate return value
 						}
@@ -1947,7 +2072,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	 * @param parentLinkedObject, the parent {@link LinkedObject} for the newly added term
 	 * @return
 	 */
-	private TermMacroHistoryItem createTermInOBOEdit(String id, CandidateTerm candidateTerm, LinkedObject parentLinkedObject)
+	private TermMacroHistoryItem createTermInOBOEdit(String id, CandidateTerm candidateTerm,
+	    LinkedObject parentLinkedObject)
 	{
 		TermMacroHistoryItem item = new TermMacroHistoryItem("Add and create child to " + parentLinkedObject);
 		String label = candidateTerm.getLabel();
@@ -1963,6 +2089,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		if (candidateTerm.getUserDefinedDefinition() != null) {
 			item.addItem(new DefinitionChangeHistoryItem(null, candidateTerm.getUserDefinedDefinition(), id));
+			for (CandidateDefinition candidateDef : candidateTerm.getGeneratedDefinitions()) {
+	            if (candidateDef.isTicked()) {
+					for (String url :candidateDef.getUrl()) {
+		    			item.addItem(new AddDbxrefHistoryItem(id,new DbxrefImpl("URL",url,DbxrefImpl.DEFINITION), true, null));
+		            }
+	            }
+            }
 		}
 
 		// add synonyms
@@ -2058,17 +2191,17 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	{
 		return string.toLowerCase().contains(potentialSubString.toLowerCase());
 	}
-
+	
 	/**
-	 * Replace invalid character (prepare text to send with Axis)
-	 * 
-	 * @param string
-	 * @param builder
-	 */
-	private static final String prepareTextReplaceInvalidCharacter(String string)
-	{
+     * Replace invalid character  (prepare text to send with Axis)
+     *
+     * @param string
+     * @param builder
+     */
+    private static final String prepareTextReplaceInvalidCharacter(String string)
+    {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < string.length(); i++) {
+        for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 			if ((c < 0x001F || (c >= 0x007F && c <= 0x00A0)) && c != 0x000A) {
 				builder.append(' ');
@@ -2078,7 +2211,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 		}
 		return builder.toString();
-	}
+    }
 
 	/**
 	 * Lays out the GUI
@@ -2098,7 +2231,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// Set the Border with Bold font face
 		TitledBorder titledBorderTermGenerationPanel = new TitledBorder("1. Term Generation");
-		titledBorderTermGenerationPanel.setTitleFont(new Font(titledBorderTermGenerationPanel.getTitleFont().getFontName(), Font.BOLD, 16));
+		titledBorderTermGenerationPanel.setTitleFont(new Font(titledBorderTermGenerationPanel.getTitleFont()
+		    .getFontName(), Font.BOLD, 16));
 		titledBorderTermGenerationPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		termGenerationPanel.setBorder(titledBorderTermGenerationPanel);
 
@@ -2134,7 +2268,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// add compnents
 		JLabel inputPubMedLabel = new JLabel("Query PubMed: ");
-		Dimension spacer = new Dimension(4, 0);
+		Dimension spacer = new Dimension(4, 4);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForPubMed.add(inputPubMedLabel);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
@@ -2160,10 +2294,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		primaryInputBoardPanelForText.add(generateTermsFromTextButton);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
 
+		
 		// primary input panel for Folder of pdf files
 		JPanel primaryInputBoardPanelForPdfFolder = new JPanel();
-		primaryInputBoardPanelForPdfFolder.setLayout(new BoxLayout(primaryInputBoardPanelForPdfFolder, BoxLayout.X_AXIS));
-
+		primaryInputBoardPanelForPdfFolder.setLayout(new BoxLayout(primaryInputBoardPanelForPdfFolder,BoxLayout.X_AXIS));
+		
 		JLabel inputFolderLabel = new JLabel("Folder/File: ");
 		primaryInputBoardPanelForPdfFolder.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForPdfFolder.add(inputFolderLabel);
@@ -2174,7 +2309,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		primaryInputBoardPanelForPdfFolder.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForPdfFolder.add(generateTermsFormFolderButton);
 		primaryInputBoardPanelForPdfFolder.add(Box.createRigidArea(spacer));
-
+		
+		
 		inputTabPanel.addTab("PubMed", primaryInputBoardPanelForPubMed);
 		inputTabPanel.addTab("Text", primaryInputBoardPanelForText);
 		inputTabPanel.addTab("PDF", primaryInputBoardPanelForPdfFolder);
@@ -2214,8 +2350,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		else {
 			generateTermsFromTextButton.setEnabled(true);
 		}
-
-		if (inputFolderLocationField.getText().trim().length() == 0) {
+		
+		if(inputFolderLocationField.getText().trim().length() == 0) {
 			generateTermsFormFolderButton.setEnabled(false);
 		}
 		else {
@@ -2225,25 +2361,34 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		// Filter Term Panel to be added to InputPanel containing regular
 		// expressions filtration
 		JPanel filterTermPanel = new JPanel();
-		filterTermPanel.setLayout(new BoxLayout(filterTermPanel, BoxLayout.X_AXIS));
-		filterTermPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		filterTermPanel.setLayout(new BoxLayout(filterTermPanel, BoxLayout.Y_AXIS));
+		filterTermPanel.setAlignmentX(Component.TOP_ALIGNMENT);
 
+		JPanel filterTermUpperPanel = new JPanel();
+		filterTermUpperPanel.setLayout(new BoxLayout(filterTermUpperPanel, BoxLayout.X_AXIS));
+		filterTermUpperPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		JLabel searchTermLabel = new JLabel("Search:");
-		filterTermPanel.add(searchTermLabel);
+		filterTermUpperPanel.add(searchTermLabel);
 		searchTermsTextField = new JTextField();
 		searchTermsTextField.setSize(200, 25);
 		searchTermsTextField.setMaximumSize(new Dimension(200, 25));
 		searchTermsTextField.setPreferredSize(new Dimension(150, 25));
-		filterTermPanel.add(searchTermsTextField);
+		filterTermUpperPanel.add(searchTermsTextField);
 
 		JLabel filterLabel = new JLabel(" Filter:");
-		filterTermPanel.add(filterLabel);
+		filterTermUpperPanel.add(filterLabel);
 		filterTermsTextField = new JTextField();
 		filterTermsTextField.setSize(200, 25);
 		filterTermsTextField.setMaximumSize(new Dimension(200, 25));
 		filterTermsTextField.setPreferredSize(new Dimension(150, 25));
-		filterTermPanel.add(filterTermsTextField);
-		JLabel filterExampleLabel = new JLabel("<html><font color=\"blue\">&nbsp; <b>Example</b>: starts or ends with <b>cell</b> type <b>\\Acell</b> or <b>cell$</b></font></html>");
+		filterTermUpperPanel.add(filterTermsTextField);
+		onlyShowExistingTerms.setText("Show existing terms only.");
+		filterTermUpperPanel.add(Box.createRigidArea(spacer));
+		filterTermUpperPanel.add(onlyShowExistingTerms);
+		JLabel filterExampleLabel = new JLabel(
+	    "<html><font color=\"blue\"><b>Search or Filter Example</b>: Show those starting or ending with <b>cell</b> by typing <b>\\Acell</b> or <b>cell$</b></font></html>");
+		filterTermPanel.add(filterTermUpperPanel);
+		filterTermPanel.add(Box.createRigidArea(spacer));
 		filterTermPanel.add(filterExampleLabel);
 
 		// Add the subPanels to the Term Generation Panel
@@ -2264,6 +2409,29 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		titledBorderDefPanel.setTitleFont(new Font(titledBorderDefPanel.getTitleFont().getFontName(), Font.BOLD, 16));
 		titledBorderDefPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		definitonGenerationPanel.setBorder(titledBorderDefPanel);
+
+		
+		JPanel manualDefGenerationPanel = new JPanel();
+		manualDefGenerationPanel.setLayout(new BoxLayout(manualDefGenerationPanel,BoxLayout.X_AXIS));
+//		manualDefGenerationPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+//		manualDefGenerationPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		
+		JLabel manualDefGenLabel = new JLabel("Manual Definition: ");
+//		manualDefGenLabel.setVisible(true);
+
+		manualDefinitionField = new JTextField();
+//		manualDefinitionField.setLayout(new BoxLayout(manualDefinitionField,BoxLayout.X_AXIS));
+		manualDefinitionField.setSize(200, 25);
+		manualDefinitionField.setMaximumSize(new Dimension(200, 25));
+		manualDefinitionField.setPreferredSize(new Dimension(200, 25));
+
+        generateManualDefinitionButton.setEnabled(false);
+        
+		manualDefGenerationPanel.add(manualDefGenLabel);
+		manualDefGenerationPanel.add(manualDefinitionField);
+		manualDefGenerationPanel.add(generateManualDefinitionButton);
+        manualDefGenerationPanel.add(manualDefInfo);
+		
 
 		//
 		// 2-Definition Generation sub panels
@@ -2362,14 +2530,16 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		definitionTable.setMaximumPreferedeScrollableViewportHeight(200);
 		definitionTable.setPreferredScrollableViewportSize(new Dimension(200, 40));
 
-		definitonGenerationPanel.add(new JScrollPane(definitionTable), BorderLayout.NORTH);
-		definitonGenerationPanel.add(southDefPanel, BorderLayout.CENTER);
+		definitonGenerationPanel.add(manualDefGenerationPanel, BorderLayout.NORTH);
+		definitonGenerationPanel.add(new JScrollPane(definitionTable), BorderLayout.CENTER);
+		definitonGenerationPanel.add(southDefPanel, BorderLayout.SOUTH);
 
 		//
 		// 3-Add child to ontology Panel and 3 sub panels
 		//
 		TitledBorder titledBorderAddToOntologyPanel = new TitledBorder("3. Add to Ontology");
-		titledBorderAddToOntologyPanel.setTitleFont(new Font(titledBorderAddToOntologyPanel.getTitleFont().getFontName(), Font.BOLD, 16));
+		titledBorderAddToOntologyPanel.setTitleFont(new Font(titledBorderAddToOntologyPanel.getTitleFont()
+		    .getFontName(), Font.BOLD, 16));
 		titledBorderAddToOntologyPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		JPanel addToOntologyPanel = new JPanel();
@@ -2431,7 +2601,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		filterPotentialParentsTextField.setMaximumSize(new Dimension(200, 25));
 		filterPotentialParentsTextField.setPreferredSize(new Dimension(150, 25));
 		filterPotentialParentTermsPanel.add(filterPotentialParentsTextField);
-		filterPotentialParentTermsPanel.add(new JLabel("<html><font color=\"blue\">&nbsp; <b>Example</b>: starts or ends with <b>cell</b> type <b>\\Acell</b> or <b>cell$</b></font></html>"));
+		filterPotentialParentTermsPanel
+		    .add(new JLabel(
+		        "<html><font color=\"blue\">&nbsp; <b>Example</b>: starts or ends with <b>cell</b> type <b>\\Acell</b> or <b>cell$</b></font></html>"));
 
 		addToOntologyPanel.add(candidateToAddPanel, BorderLayout.NORTH);
 		addToOntologyPanel.add(parentHeaderPanel, BorderLayout.NORTH);
@@ -2494,7 +2666,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 						else {
 							candidateTerm.setExistingOntologyTerms(Arrays.asList(existingOntologyTerms));
 							synchronized (OntologyGenerationComponent.class) {
-								for (int i = termsTable.getCurrentFirstVisibleRow(); i <= termsTable.getCurrentLastVisibleRow(); i++) {
+								for (int i = termsTable.getCurrentFirstVisibleRow(); i <= termsTable
+								    .getCurrentLastVisibleRow(); i++) {
 									// TODO destroys table witdh (BUG) / synchronize with resize and set terms
 									termsTable.getModel().fireTableCellUpdated(i, 1);
 								}
@@ -2548,7 +2721,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 						// update existing OBO terms
 						if (candidateTerm.getExistingOntologyTerms() == null) {
 							logger.trace("OBO Lookup: ");
-							final OBOLookupTerm[] existingOntologyTerms = ontoLookupProxy.lookupExactConcept(null, labels);
+							final OBOLookupTerm[] existingOntologyTerms = ontoLookupProxy.lookupExactConcept(null,
+							    labels);
 							logger.trace(candidateTerm.getGeneratedLabel());
 							if (existingOntologyTerms == null) {
 								candidateTerm.setExistingOntologyTerms(Collections.EMPTY_LIST);
@@ -2565,10 +2739,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 							List<OBOLookupRelation> allRelations = new ArrayList<OBOLookupRelation>();
 							if (candidateTerm.getExistingOntologyTerms().size() > 0) {
 								for (OBOLookupTerm term : candidateTerm.getExistingOntologyTerms()) {
-									// logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
+//									logger.trace("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel());
 									OBOLookupResult result = ontoLookupProxy.getChildren(term.getOboID(), 1);
-									// logger.debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() + "
-									// DONE");
+//									logger.debug("OBO ChildLookup: " + term.getOboID() + " " + term.getLabel() + " DONE");
 									if (result != null) {
 										if (result.getTerms() != null) {
 											for (OBOLookupTerm childTerm : result.getTerms()) {
@@ -2578,7 +2751,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 										if (result.getRelations() != null) {
 											for (OBOLookupRelation relation : result.getRelations()) {
 												allRelations.add(relation);
-												OBOLookupTerm childTerm = allChildrenMap.get(relation.getOboChildTermID());
+												OBOLookupTerm childTerm = allChildrenMap.get(relation
+												    .getOboChildTermID());
 												allChildren.add(childTerm);
 											}
 										}
@@ -2633,17 +2807,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				catch (AxisFault exception) {
 					throw new RuntimeException(exception);
 				}
+			}
 
-			}
-			else {
-				try {
-					termGenerationServiceStub.cleanup();
-				}
-				catch (AxisFault exception) {
-					throw new RuntimeException(exception);
-				}
-			}
 		}
+
+
 
 		@Override
 		public TextConceptRepresentation[] doInBackground()
@@ -2659,7 +2827,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					query.setMaxNumberOfTerms(1000);
 					query.setQueryString(inputData);
 					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-					GenerateConceptsFromPubMedQueryResponse response = termGenerationServiceStub.generateConceptsFromPubMedQuery(query);
+					GenerateConceptsFromPubMedQueryResponse response = termGenerationServiceStub
+					    .generateConceptsFromPubMedQuery(query);
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_TEXT)) {
@@ -2668,27 +2837,29 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					query.setMaxNumberOfTerms(1000);
 					query.setTexts(lines);
 					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
-					GenerateConceptsFromTextResponse response = termGenerationServiceStub.generateConceptsFromText(query);
+					GenerateConceptsFromTextResponse response = termGenerationServiceStub
+					    .generateConceptsFromText(query);
 					concepts = response.get_return();
 				}
-				if (source.equals(SOURCE_FOLDER)) {
+				if(source.equals(SOURCE_FOLDER)) {
 					File source = new File(inputData);
 					String data = "";
-
+					
 					PdfToTextExtraction pdfParser = new PdfToTextExtraction();
-					if (source.isDirectory()) {
+					if(source.isDirectory()) {
 						File[] fileArray = source.listFiles();
-
-						for (int i = 0; i < fileArray.length; i++) {
-							if (fileArray[i].isFile()) {
+						
+						for(int i=0 ; i<fileArray.length ; i++) {
+							if(fileArray[i].isFile()) {
 								data += pdfParser.fileExtraction(fileArray[i]);
 							}
 						}
 					}
-					else if (source.isFile()) {
+					else if(source.isFile()){
 						data += pdfParser.fileExtraction(source);
 					}
-
+						
+							
 					String[] pdfText = data.split("\n");
 					GenerateConceptsFromText query = new GoPubMedTermGenerationStub.GenerateConceptsFromText();
 					query.setMaxNumberOfTerms(1000);
@@ -2728,7 +2899,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 			if (concepts == null) {
 				this.setProgress(100);
-				JOptionPane.showMessageDialog(null, String.format("No candidate terms found for query '%s'", inputData));
+				JOptionPane
+				    .showMessageDialog(null, String.format("No candidate terms found for query '%s'", inputData));
 				// Reset the cursor in normal mode
 				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
@@ -2746,7 +2918,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
 						}
 						else {
-							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(), concept.getLexicalRepresentation(), concept.getScore(), CandidateTerm.TYPE_GENERATED);
+							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(),
+							    concept.getLexicalRepresentation(), concept.getScore(), CandidateTerm.TYPE_GENERATED);
 						}
 						termsFromService.add(candidateTerm);
 					}
@@ -2779,7 +2952,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		 * @param concept
 		 * @param candidateTerm
 		 */
-		private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept, CandidateTerm candidateTerm)
+		private CandidateTerm updateCandidateTermWithConcept(TextConceptRepresentation concept,
+		    CandidateTerm candidateTerm)
 		{
 			if (null != concept.getKnownAbbreviation()) {
 				for (String abbr : concept.getKnownAbbreviation()) {
@@ -2823,13 +2997,6 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				catch (AxisFault exception) {
 					throw new RuntimeException(exception);
 				}
-			} else {
-				try {
-	                definitionGeneratorStub.cleanup();
-                }
-                catch (AxisFault exception) {
-                	throw new RuntimeException(exception);
-                }
 			}
 		}
 
@@ -2864,6 +3031,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		{
 			List<CandidateDefinition> defList = new ArrayList<CandidateDefinition>();
 			DefinitionContainer[] defs = null;
+            // add manual generated definitions
+            if(table.getModel().getDefinitions()!=null) {
+                List<CandidateDefinition> manDefinitions = table.getModel().getDefinitions();
+                for(CandidateDefinition definition : manDefinitions) {
+                    defList.add(definition);
+                }
+            }
 			try {
 				defs = get();
 			}
@@ -2882,50 +3056,77 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 			if (defs != null) {
 				int index = 0;
+				
 				for (final DefinitionContainer def : defs) {
 					if (def != null) {
 						boolean duplicateDefinition = false;
+						
+						String defStr = def.getDefinition();
+						if (defStr.endsWith(" ...")) {
+							defStr = defStr.substring(0, defStr.length() - 4);
+						}
+						
+						for (int i = 0; i < defList.size(); i++) {
+							CandidateDefinition candDef = defList.get(i);
 
-						final int MIN_IDENT_CHARS = 50;
-
-						for (CandidateDefinition candDef : defList) {
-							// If definition shorter than MIN_IDENT_CHARS, it must be identical to candDef
-							if (def.getDefinition().length() < MIN_IDENT_CHARS && candDef.getDefinition().equals(def.getDefinition())) {
-								duplicateDefinition = true;
-
-								// Therefore, add the URLs to candDef.
+							String candDefStr = candDef.getDefinition();
+							if (candDefStr.endsWith(" ...")) {
+								candDefStr = candDefStr.substring(0, candDefStr.length() - 4);
+							}
+							
+							if (defStr.equals(candDefStr)) {
 								candDef.addURL(def.getUrl());
 								candDef.addCachedURL(def.getCachedURL());
-							}
-							// If definition is longer than MIN_IDENT_CHARS...
-							else if (def.getDefinition().length() >= MIN_IDENT_CHARS && candDef.getDefinition().length() >= MIN_IDENT_CHARS && (def.getDefinition().substring(0, MIN_IDENT_CHARS)).equals((candDef.getDefinition().substring(0, MIN_IDENT_CHARS)))) {
 								duplicateDefinition = true;
-
-								// ... check if they are identical ...
-								if (def.getDefinition().equals(candDef.getDefinition())) {
-									candDef.addURL(def.getUrl());
-									candDef.addCachedURL(def.getCachedURL());
-								}
-
-								// or if the ends are different.
-								else {
-									boolean duplicateAlternativeDefinition = false;
-									if (candDef.getAlternativeDefinitions() != null) {
-										for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
-											// Try to find identical alternative definition.
-											if (definition.getDefinition().equals(def.getDefinition())) {
-												duplicateAlternativeDefinition = true;
-
-												definition.addURL(def.getUrl());
-												definition.addCachedURL(def.getCachedURL());
-											}
+							}
+							else if (candDefStr.contains(defStr) || defStr.contains(candDefStr)) {
+								duplicateDefinition = true;
+								
+								boolean duplicateAlternativeDefinition = false;
+								if (candDef.getAlternativeDefinitions() != null) {
+									for (CandidateDefinition definition : candDef.getAlternativeDefinitions()) {
+										// Try to find identical alternative definition.
+										if (definition.getDefinition().equals(def.getDefinition())) {
+											duplicateAlternativeDefinition = true;
+											
+											definition.addURL(def.getUrl());
+											definition.addCachedURL(def.getCachedURL());
 										}
 									}
+								}
+								
+								// If no identical alternative definition is found,
+								// add a new alternative definition.
+								if (! duplicateAlternativeDefinition) {
+									final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
+											.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
+											.getParentTermCount(), false);
 
-									// If no identical alternative definition is found,
-									// add a new alternative definition.
-									if (!duplicateAlternativeDefinition) {
-										final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+									if (def.getDefinition().length() > candDef.getDefinition().length()) {
+										// swap candidateDefinition and alternative Definition
+										candidateDefinition.addAlternativeDefinition(candDef);
+										if (candDef.getAlternativeDefinitions() != null) {
+											for (CandidateDefinition candDefAltDef : candDef.getAlternativeDefinitions()) {
+												candidateDefinition.addAlternativeDefinition(candDefAltDef);
+											}
+											candDef.resetAlternativeDefinitions();
+										}
+										candDef.removeListeners();
+										int pos = defList.indexOf(candDef);
+										defList.remove(candDef);
+										
+										defList.add(pos, candidateDefinition);
+										
+										candidateDefinition.addListener(new UpdateListener()
+										{
+											public void update()
+											{
+												updateParentAsTermFromDefinition();
+											}
+										});
+										
+									}
+									else {
 										candDef.addAlternativeDefinition(candidateDefinition);
 									}
 								}
@@ -2933,7 +3134,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 						}
 						// Otherwise, add new definition to list.
 						if (!duplicateDefinition) {
-							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
+							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def
+							    .getDefinition(), def.getFormattedDefinition(), def.getUrl(), def.getCachedURL(), def
+							    .getParentTermCount(), false);
 							index++;
 							candidateDefinition.addListener(new UpdateListener()
 							{
@@ -2951,7 +3154,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				}
 				CandidateTerm termToDefine = selectedCandidateTerm;
 				if (termToDefine != null) {
-					this.table.getColumnModel().getColumn(1).setHeaderValue("Definitions for \"" + termToDefine.getGeneratedLabel() + "\"");
+					this.table.getColumnModel().getColumn(1).setHeaderValue(
+					    "Definitions for \"" + termToDefine.getGeneratedLabel() + "\"");
 					selectedCandidateTerm.setGeneratedDefinitions(defList);
 					if (defList.size() > 0) {
 						candidateTermCache.addTerm(selectedCandidateTerm);
@@ -2963,7 +3167,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				this.table.setDefinitions(defList);
 			}
 			else {
-				JOptionPane.showMessageDialog(null, "No definitions found for term: \"" + selectedCandidateTerm.getGeneratedLabel() + "\"");
+				JOptionPane.showMessageDialog(null, "No definitions found for term: \"" + selectedCandidateTerm
+				    .getGeneratedLabel() + "\"");
 			}
 
 			// start extension of definitions by parsing from web pages (only check the first 3 incomplete

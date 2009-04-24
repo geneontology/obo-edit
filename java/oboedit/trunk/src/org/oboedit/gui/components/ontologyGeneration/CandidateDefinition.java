@@ -9,7 +9,7 @@ import java.util.List;
  * @author Atif Iqbal, 2008
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public class CandidateDefinition
+public class CandidateDefinition implements Cloneable
 {
 	private final int index;
 	private final List<String> cachedURLs;
@@ -159,7 +159,7 @@ public class CandidateDefinition
 	{
 		this.urls.add(url);
 	}
-	
+		
 	/**
 	 * Add and cacheURL 
 	 *
@@ -176,9 +176,14 @@ public class CandidateDefinition
 			alternativeDefinitions = new ArrayList<CandidateDefinition>();
 		}
 
-		if (! alternativeDefinitions.contains(candidateDefinition)) {
+//		if (! alternativeDefinitions.contains(candidateDefinition)) {
 			alternativeDefinitions.add(candidateDefinition);
-		}
+//		}
+	}
+	
+	public void resetAlternativeDefinitions()
+	{
+		alternativeDefinitions = null;
 	}
 	
 	public List<CandidateDefinition> getAlternativeDefinitions() {
@@ -229,6 +234,16 @@ public class CandidateDefinition
 		if (listeners.size() > 1)
 			throw new RuntimeException();
 	}
+	
+	public void removeListeners() 
+	{
+		listeners.clear();
+	}
+	
+	public List<UpdateListener> getListeners()
+	{
+		return listeners;
+	}
 
 	/**
 	 * Notify all attached listeners
@@ -254,4 +269,17 @@ public class CandidateDefinition
     {
 	    return definitionHTMLFormatted;
     }
+    
+    @Override
+    public CandidateDefinition clone()
+    {
+    	try {
+			return (CandidateDefinition)super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    }
+    
 }
