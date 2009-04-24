@@ -27,7 +27,9 @@ public class TermsTableModel extends AbstractTableModel
 	private final int numberOfColumnsToShow;
 	private final CandidateTermCache clipboard;
 	private final boolean isMainTermsTable;
-
+	private boolean onlyShowExistingTerms;
+	private List<CandidateTerm> backupResults;
+	
 	/**
 	 * Constructs a {@link TermsTableModel}.
 	 * 
@@ -40,6 +42,8 @@ public class TermsTableModel extends AbstractTableModel
 		this.clipboard = clipboard;
 		this.isMainTermsTable = isMainTermsTable;
 		this.results = new ArrayList<CandidateTerm>();
+		this.backupResults = new ArrayList<CandidateTerm>();
+		this.onlyShowExistingTerms = false;
 	}
 
 	/*
@@ -75,6 +79,7 @@ public class TermsTableModel extends AbstractTableModel
 		List<CandidateTerm> visibleElements = getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			CandidateTerm term = visibleElements.get(rowIndex);
+
 			if (columnIndex == 0) {
 				return term.isTicked();
 			}
@@ -177,8 +182,18 @@ public class TermsTableModel extends AbstractTableModel
 	public void setTerms(List<CandidateTerm> list)
 	{
 		synchronized (this) {
+			if (results.isEmpty()) {
+				backupResults.addAll(list);
+			}
+			
 			this.results.clear();
-			this.results.addAll(list);
+			
+			for (CandidateTerm term : list) {
+				if (!onlyShowExistingTerms || (onlyShowExistingTerms && term.isPresentInOntology())) {
+					this.results.add(term);
+				}
+			}
+			//this.results.addAll(list);
 			fireTableDataChanged();
 		}
 	}
@@ -288,6 +303,10 @@ public class TermsTableModel extends AbstractTableModel
 		return clipboard.hasCandidateTerm(generatedTerm);
 	}
 	
+	public boolean isPresentInOntology(int rowIndex)
+	{
+		return this.getTermAt(rowIndex).isPresentInOntology();
+	}
 
 	/*
 	 * PRIVATE AND PROTECTED METHODS
@@ -331,6 +350,17 @@ public class TermsTableModel extends AbstractTableModel
 		term.setTicked(true);
 		clipboard.addTerm(term);
 	}
-
+	
+	public void setOnlyShowExistingTerms(boolean onlyShowExistingTerms) {
+		this.onlyShowExistingTerms = onlyShowExistingTerms;
+		if (! results.isEmpty()) {
+			if (onlyShowExistingTerms) {
+				// add all elements to backup list
+				backupResults.clear();
+				backupResults.addAll(results);
+			}
+			setTerms(backupResults);
+		}
+	}
 	
 }

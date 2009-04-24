@@ -1,14 +1,19 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 /**
  * {@link JTable} to display {@link List} of {@link CandidateTerm}.
@@ -181,4 +186,32 @@ public class TermsTable extends JTable
 
 	}
 
+	@Override 
+	public TableCellRenderer getCellRenderer(int row, int column)
+	{
+		if (column == 1 && getModel().getAllTerms().get(row).isPresentInOntology()) {
+			return new DefaultTableCellRenderer()
+			{
+				private static final long serialVersionUID = 1L;
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					    boolean hasFocus, int row, int column)
+					{
+						JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
+						    hasFocus, row, column);
+						comp.setText((String)getModel().getValueAt(row, column));
+						comp.setFont(table.getFont().deriveFont(Font.BOLD));
+						return comp;
+					}
+			};
+		}
+		else {
+			return super.getCellRenderer(row, column);
+		}
+	}
+
+	public void onlyShowExistingTerms(boolean onlyExistingTerms)
+	{
+		getModel().setOnlyShowExistingTerms(onlyExistingTerms);
+	}
+	
 }
