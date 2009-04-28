@@ -134,6 +134,8 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.GenerateConceptsFromPubMedQueryResponse;
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.GenerateConceptsFromText;
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.GenerateConceptsFromTextResponse;
+import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.GenerateConceptsFromWebQuery;
+import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.GenerateConceptsFromWebQueryResponse;
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.TextConceptRepresentation;
 
 /**
@@ -154,6 +156,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
 	private static final String SOURCE_FOLDER = "FOLDER";
+	private static final String SOURCE_WEB = "WEB";
 
 	private static final Logger logger = Logger.getLogger(OntologyGenerationComponent.class);
 	private static final long serialVersionUID = -8206973805283628422L;
@@ -177,6 +180,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	// private TermLabelOrSynonymAutoCompletionBox autoCompletionBox = new TermLabelOrSynonymAutoCompletionBox();
 
 	private JButton generateTermsFromPubMedButton;
+	private JButton generateTermsFromWebButton;
 	private JButton generateTermsFromTextButton;
 	private JButton generateTermsFormFolderButton;
 	private JButton generateManualDefinitionButton;
@@ -202,6 +206,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private JTextArea editDefArea;
 
 	private JTextField inputPubMedQueryField;
+	private JTextField inputWebQueryField;
 	private JTextField inputFolderLocationField;
 	private JTextField filterTermsTextField;
 	private JTextField searchTermsTextField;
@@ -375,19 +380,21 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		this.selectedLinkedObject = null;
 		this.selectedCandidateTerm = null;
 
-		// this.directParentTerms = new HashSet<LinkedObject>();
-
 		this.inputPubMedQueryField = new JTextField();
-		// this.inputPubMedQueryField.setSize(200, 25);
 		this.inputPubMedQueryField.setMaximumSize(new Dimension(1000, 25));
 		this.inputPubMedQueryField.setPreferredSize(new Dimension(100, 25));
 
+		this.inputWebQueryField = new JTextField();
+		this.inputWebQueryField.setMaximumSize(new Dimension(1000, 25));
+		this.inputWebQueryField.setPreferredSize(new Dimension(100, 25));
+		
 		this.inputFolderLocationField = new JTextField();
 		this.inputFolderLocationField.setMaximumSize(new Dimension(1000, 25));
 		this.inputFolderLocationField.setPreferredSize(new Dimension(100, 25));
 		this.inputFolderLocationField.setEditable(false);
 		
 		this.generateTermsFromPubMedButton = new JButton("Generate");
+		this.generateTermsFromWebButton = new JButton("Generate");
 		this.generateTermsFromTextButton = new JButton("Generate");
 		this.generateTermsFormFolderButton = new JButton("Generate");
 		this.generateManualDefinitionButton = new JButton("Add Definition");
@@ -494,13 +501,25 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 		});
 		
+		inputWebQueryField.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent event)
+			{
+				if (event.getKeyCode() == 10) {
+					// setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					onClickGenerateTerms(inputWebQueryField);
+				}
+			}
+		});
+
 		inputFolderLocationField.addKeyListener(new KeyAdapter()
 		{
 			@Override
 			public void keyPressed(KeyEvent event) 
 			{
 				if (event.getKeyCode() == 10) {
-					onClickGenerateTerms(inputPubMedQueryField);
+					onClickGenerateTerms(inputFolderLocationField);
 				}
 			}
 		});
@@ -523,6 +542,16 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 		});
 
+		generateTermsFromWebButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				// setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				onClickGenerateTerms(inputWebQueryField);
+			}
+		});
+
+		
 		generateTermsFromTextButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -851,6 +880,17 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				generateTermsFromPubMedButton.setEnabled(true);
 			}
 		});
+
+		
+		inputWebQueryField.addCaretListener(new CaretListener()
+		{
+			public void caretUpdate(CaretEvent evt)
+			{
+				generateTermsFromWebButton.setFocusable(true);
+				generateTermsFromWebButton.setEnabled(true);
+			}
+		});
+
 		
 //		inputFolderLocationField.addCaretListener(new CaretListener()
 //		{
@@ -1236,6 +1276,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		if (textComponent.equals(inputPubMedQueryField)) {
 			source = SOURCE_PUBMED;
 			logger.debug(String.format("Generate terms for Pubmed Query '%s'", inputData));
+		}
+		else if (textComponent.equals(inputWebQueryField)) {
+			source = SOURCE_WEB;
+			logger.debug(String.format("Generate terms for Web Query '%s'", inputData));
 		}
 		else if (textComponent.equals(inputTextArea)) {
 			source = SOURCE_TEXT;
@@ -2277,6 +2321,21 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		primaryInputBoardPanelForPubMed.add(generateTermsFromPubMedButton);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
 
+		
+		JPanel primaryInputBoardPanelForWeb = new JPanel();
+		primaryInputBoardPanelForWeb.setLayout(new BoxLayout(primaryInputBoardPanelForWeb, BoxLayout.X_AXIS));
+		
+		JLabel inputWebLabel = new JLabel("Query Web: ");
+		primaryInputBoardPanelForWeb.add(Box.createRigidArea(spacer));
+		primaryInputBoardPanelForWeb.add(inputWebLabel);
+		primaryInputBoardPanelForWeb.add(Box.createRigidArea(spacer));
+		primaryInputBoardPanelForWeb.add(inputWebQueryField);
+		primaryInputBoardPanelForWeb.add(Box.createRigidArea(spacer));
+		primaryInputBoardPanelForWeb.add(generateTermsFromWebButton);
+		primaryInputBoardPanelForWeb.add(Box.createRigidArea(spacer));
+
+		
+		
 		JPanel primaryInputBoardPanelForText = new JPanel();
 		primaryInputBoardPanelForText.setLayout(new BoxLayout(primaryInputBoardPanelForText, BoxLayout.X_AXIS));
 		// Set the Border with Bold font face
@@ -2284,7 +2343,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		// titledBorderPrimaryInputBoardPanelForText.setTitleFont(new
 		// Font(titledBorderTermGenerationPanel.getTitleFont().getFontName(), Font.PLAIN, 10));
 		// titledBorderPrimaryInputBoardPanelForText.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
+		
 		JLabel inputTextLabel = new JLabel("Paste Text: ");
 		primaryInputBoardPanelForText.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForText.add(inputTextLabel);
@@ -2312,6 +2371,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		
 		
 		inputTabPanel.addTab("PubMed", primaryInputBoardPanelForPubMed);
+		inputTabPanel.addTab("Web", primaryInputBoardPanelForWeb);
 		inputTabPanel.addTab("Text", primaryInputBoardPanelForText);
 		inputTabPanel.addTab("PDF", primaryInputBoardPanelForPdfFolder);
 		inputPanel.add(inputTabPanel);
@@ -2342,6 +2402,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		}
 		else {
 			generateTermsFromPubMedButton.setEnabled(true);
+		}
+		
+		if (inputWebQueryField.getText().trim().length() == 0) {
+			generateTermsFromWebButton.setEnabled(false);
+		}
+		else {
+			generateTermsFromWebButton.setEnabled(true);
 		}
 
 		if (inputTextArea.getText().trim().length() == 0) {
@@ -2829,6 +2896,15 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
 					GenerateConceptsFromPubMedQueryResponse response = termGenerationServiceStub
 					    .generateConceptsFromPubMedQuery(query);
+					concepts = response.get_return();
+				}
+				if (source.equals(SOURCE_WEB)) {
+					GenerateConceptsFromWebQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromWebQuery();
+					query.setMaxNumberOfTerms(1000);
+					query.setQueryString(inputData);
+					query.setApplicationCode(PLUGIN_VERSIONED_NAME);
+					GenerateConceptsFromWebQueryResponse response = termGenerationServiceStub
+					    .generateConceptsFromWebQuery(query);
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_TEXT)) {
