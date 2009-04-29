@@ -20,8 +20,7 @@ import javax.swing.table.TableCellRenderer;
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public class TermsTable extends JTable
-{
+public class TermsTable extends JTable {
 	private static final long serialVersionUID = 1184929335454420009L;
 	private String lastRegex = new String();
 	private int lastVisibleRow = -1;
@@ -33,46 +32,43 @@ public class TermsTable extends JTable
 	 * @param numberOfColumnsToShow
 	 * @param clipboard
 	 */
-	public TermsTable(CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
-	{
+	public TermsTable(CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable) {
 		super(new TermsTableModel(clipboard, numberOfColumnsToShow, isMainTermsTable));
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
-		getColumnModel().getSelectionModel().addListSelectionListener(this);
 	}
 
 	/**
-	 * Set the {@link List} of {@link CandidateTerm} to be contained in the {@link TermsTable} and resize table if
-	 * necessary.
+	 * Set the {@link List} of {@link CandidateTerm} to be contained in the
+	 * {@link TermsTable} and resize table if necessary.
 	 * 
 	 * @param results
 	 */
-	public void setTerms(List<CandidateTerm> results)
-	{
+	public void setTerms(List<CandidateTerm> results) {
 		getModel().setTerms(results);
 		setCurrentFirstVisibleRow(-1);
 		setCurrentLastVisibleRow(-1);
 	}
 
 	/**
-	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable} and resize table if necessary.
+	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable}
+	 * and resize table if necessary.
 	 * 
 	 * @param terms
 	 */
-	public void removeTerms(List<CandidateTerm> terms)
-	{
+	public void removeTerms(List<CandidateTerm> terms) {
 		getModel().removeAll(terms);
 		setCurrentFirstVisibleRow(-1);
 		setCurrentLastVisibleRow(-1);
 	}
 
 	/**
-	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable} and resize table if necessary.
+	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable}
+	 * and resize table if necessary.
 	 * 
 	 * @param terms
 	 */
-	public void removeAllTerms()
-	{
+	public void removeAllTerms() {
 		getModel().removeAll();
 		setCurrentFirstVisibleRow(-1);
 		setCurrentLastVisibleRow(-1);
@@ -83,14 +79,12 @@ public class TermsTable extends JTable
 	 */
 
 	@Override
-	public TermsTableModel getModel()
-	{
+	public TermsTableModel getModel() {
 		return (TermsTableModel) super.getModel();
 	}
 
 	@Override
-	public String getToolTipText(MouseEvent e)
-	{
+	public String getToolTipText(MouseEvent e) {
 		String tip = null;
 		java.awt.Point p = e.getPoint();
 		int rowIndex = rowAtPoint(p);
@@ -101,17 +95,15 @@ public class TermsTable extends JTable
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			tip = "Click to see GoPubMed(www.gopubmed.org) resutls for this term";
 
-		}
-		else if (realColumnIndex == 1) {
+		} else if (realColumnIndex == 1) {
 			tip = getModel().getValueAt(rowIndex, colIndex).toString();
-		}
-		else if (realColumnIndex == 2) {
+		} else if (realColumnIndex == 2) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			tip = "Click to get definitions for this term";
-		}
-		else {
+		} else {
 			/*
-			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
+			 * You can omit this part if you know you don't have any renderer
+			 * that supply their own tool tips.
 			 */
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			tip = super.getToolTipText(e);
@@ -125,8 +117,7 @@ public class TermsTable extends JTable
 	 * 
 	 * @param regex
 	 */
-	public void findTerm(String regex)
-	{
+	public void findTerm(String regex) {
 
 		if (regex != null && !lastRegex.equals(regex)) {
 			lastRegex = regex;
@@ -134,8 +125,7 @@ public class TermsTable extends JTable
 
 			try {
 				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
+			} catch (PatternSyntaxException exception) {
 				return;
 			}
 			Iterator<CandidateTerm> it = getModel().getAllTerms().iterator();
@@ -156,62 +146,56 @@ public class TermsTable extends JTable
 	/**
 	 * @return
 	 */
-	public int getCurrentLastVisibleRow()
-	{
+	public int getCurrentLastVisibleRow() {
 		return lastVisibleRow;
 	}
 
 	/**
 	 * @return
 	 */
-	public int getCurrentFirstVisibleRow()
-	{
+	public int getCurrentFirstVisibleRow() {
 		return firstVisibleRow;
 	}
 
 	/**
 	 * @param firstVisibleRow
 	 */
-	public void setCurrentFirstVisibleRow(int firstVisibleRow)
-	{
+	public void setCurrentFirstVisibleRow(int firstVisibleRow) {
 		this.firstVisibleRow = firstVisibleRow;
 	}
 
 	/**
 	 * @param lastVisibleRow
 	 */
-	public void setCurrentLastVisibleRow(int lastVisibleRow)
-	{
+	public void setCurrentLastVisibleRow(int lastVisibleRow) {
 		this.lastVisibleRow = lastVisibleRow;
 
 	}
 
-	@Override 
-	public TableCellRenderer getCellRenderer(int row, int column)
-	{
-		if (column == 1 && getModel().getAllTerms().get(row).isPresentInOntology()) {
-			return new DefaultTableCellRenderer()
-			{
+	@Override
+	public TableCellRenderer getCellRenderer(int row, int column) {
+		if (column == 1) {
+			return new DefaultTableCellRenderer() {
 				private static final long serialVersionUID = 1L;
+
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					    boolean hasFocus, int row, int column)
-					{
-						JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
-						    hasFocus, row, column);
-						comp.setText((String)getModel().getValueAt(row, column));
+						boolean hasFocus, int row, int column) {
+					JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+							column);
+					comp.setText((String) getModel().getValueAt(row, column));
+					if (getModel().isPresentInOntology(getModel().getTermAt(row))) {
 						comp.setFont(table.getFont().deriveFont(Font.BOLD));
-						return comp;
 					}
+					return comp;
+				}
 			};
-		}
-		else {
+		} else {
 			return super.getCellRenderer(row, column);
 		}
 	}
 
-	public void onlyShowExistingTerms(boolean onlyExistingTerms)
-	{
+	public void onlyShowExistingTerms(boolean onlyExistingTerms) {
 		getModel().setOnlyShowExistingTerms(onlyExistingTerms);
 	}
-	
+
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 
 import org.obo.datamodel.LinkedObject;
