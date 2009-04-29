@@ -368,8 +368,8 @@ public class TermsTableModel extends AbstractTableModel {
 					CandidateDefinition candidateDefinition = new CandidateDefinition(i, class1.getDefinition(),
 							"<html>" + class1.getDefinition() + "</html>");
 					candidateDefinition.setTicked(true);
-					if (candidateTerm.getUserDefinedDefinition() != null) {
-						candidateTerm.setUserDefinedDefinition(candidateTerm.getUserDefinedDefinition() + "/n-----/n"
+					if (candidateTerm.getUserDefinedDefinition() != null && !candidateTerm.getUserDefinedDefinition().equals(class1.getDefinition())) {
+						candidateTerm.setUserDefinedDefinition(candidateTerm.getUserDefinedDefinition() + "\n-----\n"
 								+ class1.getDefinition());
 					} else {
 						candidateTerm.setUserDefinedDefinition(class1.getDefinition());
