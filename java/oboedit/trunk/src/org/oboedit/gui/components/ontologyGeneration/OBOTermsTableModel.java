@@ -19,12 +19,12 @@ import javax.swing.table.TableModel;
 import org.obo.datamodel.LinkedObject;
 
 /**
- * {@link OBOTermsTableModel} to hold instances of {@link LinkedObject} for display in {@link JTable}
+ * {@link OBOTermsTableModel} to hold instances of {@link LinkedObject} for
+ * display in {@link JTable}
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public class OBOTermsTableModel extends AbstractTableModel
-{
+public class OBOTermsTableModel extends AbstractTableModel {
 	/**  */
 	private static final long serialVersionUID = 4146368118692966602L;
 	private int numberOfColumns = 4;
@@ -43,9 +43,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	private List<String> allTermsIDList;
 	private boolean sortingNeeded = true;
 	private List<Set<String>> rankingOrder;
-	private Object[][] order =
-		{
-			{ termsSameAsCandidateTerm, "same as existing term", "identical" },
+	private Object[][] order = { { termsSameAsCandidateTerm, "same as existing term", "identical" },
 			{ termsSelected, "selected term", null },
 			{ termsPredictedParentsOfCandidateTerm, "predicted parent of candidate", "sub_class_of" },
 			{ termsFromUserDefinedDefinitions, "in definition (user-defined)", null },
@@ -58,8 +56,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * Constructs a {@link OBOTermsTableModel}.
 	 */
 	@SuppressWarnings("unchecked")
-	public OBOTermsTableModel()
-	{
+	public OBOTermsTableModel() {
 		allTermsMap = new HashMap<String, LinkedObject>();
 		allTermsIDList = new ArrayList<String>();
 		rankingOrder = new ArrayList<Set<String>>(order.length);
@@ -76,8 +73,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @return
 	 * @see javax.swing.table.TableModel#getColumnCount()
 	 */
-	public int getColumnCount()
-	{
+	public int getColumnCount() {
 		return numberOfColumns;
 	}
 
@@ -85,8 +81,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @return
 	 * @see javax.swing.table.TableModel#getRowCount()
 	 */
-	public int getRowCount()
-	{
+	public int getRowCount() {
 		return this.getVisibleElements().size();
 	}
 
@@ -97,23 +92,20 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	@SuppressWarnings("unchecked")
-	public Object getValueAt(int rowIndex, int columnIndex)
-	{
+	public Object getValueAt(int rowIndex, int columnIndex) {
 		List<LinkedObject> visibleElements = this.getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			LinkedObject term = visibleElements.get(rowIndex);
 			if (columnIndex == 0) {
 				return ticked.contains(term.getID());
-			}
-			else if (columnIndex == 1) {
+			} else if (columnIndex == 1) {
 				StringBuffer buffer = new StringBuffer();
 				buffer.append(term.getName());
 				buffer.append(" (");
 				buffer.append(term.getID());
 				buffer.append(" )");
 				return buffer.toString();
-			}
-			else if (columnIndex == 2) {
+			} else if (columnIndex == 2) {
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
 					if (set.contains(term.getID())) {
@@ -121,8 +113,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 					}
 				}
 				return null;
-			}
-			else if (columnIndex == 3) {
+			} else if (columnIndex == 3) {
 				StringBuffer buffer = new StringBuffer();
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
@@ -147,8 +138,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 */
 
 	@Override
-	public Class<?> getColumnClass(int columnIndex)
-	{
+	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == 0) {
 			return Boolean.class;
 		}
@@ -156,34 +146,27 @@ public class OBOTermsTableModel extends AbstractTableModel
 	}
 
 	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex)
-	{
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return columnIndex == 0;
 	}
 
 	@Override
-	public String getColumnName(int column)
-	{
+	public String getColumnName(int column) {
 		if (column == 0) {
 			return "";
-		}
-		else if (column == 1) {
+		} else if (column == 1) {
 			return "Term";
-		}
-		else if (column == 2) {
+		} else if (column == 2) {
 			return "Relation";
-		}
-		else if (column == 3) {
+		} else if (column == 3) {
 			return "Comment";
-		}
-		else
+		} else
 			return "";
 
 	}
 
 	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-	{
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		LinkedObject term = this.getVisibleElements().get(rowIndex);
 		if (columnIndex == 0) {
 			if (aValue instanceof Boolean) {
@@ -209,8 +192,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @return tickedLinkedObjects, the list of ids which are ticked
 	 */
-	public Set<String> getTickedTerms()
-	{
+	public Set<String> getTickedTerms() {
 		return Collections.unmodifiableSet(ticked);
 	}
 
@@ -219,8 +201,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @return unmodifiable set of {@link LinkedObject}
 	 */
-	public List<LinkedObject> getAllTerms()
-	{
+	public List<LinkedObject> getAllTerms() {
 		List<LinkedObject> list = new ArrayList<LinkedObject>();
 		for (LinkedObject term : list) {
 			list.add(term);
@@ -234,8 +215,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @param rowIndex
 	 * @return LinkedObject, the {@link LinkedObject} at the displayed rowIndex
 	 */
-	public LinkedObject getTermAt(int rowIndex)
-	{
+	public LinkedObject getTermAt(int rowIndex) {
 		LinkedObject term = getVisibleElements().get(rowIndex);
 		return term;
 	}
@@ -245,8 +225,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @param regex
 	 */
-	public void applyFilter(String regex)
-	{
+	public void applyFilter(String regex) {
 		if (regex != null && !lastRegex.equals(regex)) {
 			visible.clear();
 			lastRegex = regex;
@@ -254,39 +233,37 @@ public class OBOTermsTableModel extends AbstractTableModel
 
 			try {
 				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
+			} catch (PatternSyntaxException exception) {
 				return;
 			}
 
 			for (String termID : this.allTermsIDList) {
 				LinkedObject term = allTermsMap.get(termID);
 				String name = term.getName();
-				if (regex.length() == 0) {
-					visible.add(term.getID());
-				}
-				else if (p.matcher(name).find()) {
-					visible.add(term.getID());
-				}
-				else {
-					visible.remove(term);
+				if (name != null) {
+					if (regex.length() == 0) {
+						visible.add(term.getID());
+					} else if (p.matcher(name).find()) {
+						visible.add(term.getID());
+					} else {
+						visible.remove(term);
+					}
 				}
 			}
 			fireTableDataChanged();
-		}
-		else if (regex == null) {
+		} else if (regex == null) {
 			visible.clear();
 			visible.addAll(allTermsIDList);
 		}
 	}
 
 	/**
-	 * Remove all instances of {@link LinkedObject} provided in terms from the {@link TableModel}
+	 * Remove all instances of {@link LinkedObject} provided in terms from the
+	 * {@link TableModel}
 	 * 
 	 * @param terms
 	 */
-	public void removeAll(Collection<LinkedObject> terms)
-	{
+	public void removeAll(Collection<LinkedObject> terms) {
 		for (LinkedObject object : terms) {
 			allTermsIDList.remove(object.getID());
 			allTermsMap.remove(object.getID());
@@ -299,8 +276,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	/**
 	 * Remove all instances of {@link LinkedObject} from the {@link TableModel}
 	 */
-	public void removeAll()
-	{
+	public void removeAll() {
 		allTermsMap.clear();
 		allTermsIDList.clear();
 		ticked.clear();
@@ -311,13 +287,11 @@ public class OBOTermsTableModel extends AbstractTableModel
 	/*
 	 * PRIVATE METHODS
 	 */
-	private void sortElements()
-	{
+	private void sortElements() {
 		Collections.sort(allTermsIDList, new AddToOntologyLinkedObjectComparator(rankingOrder));
 	}
 
-	private List<LinkedObject> getVisibleElements()
-	{
+	private List<LinkedObject> getVisibleElements() {
 		if (sortingNeeded) {
 			sortElements();
 			applyFilter(null);
@@ -329,8 +303,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 				if (visible.contains(termID) && ticked.contains(termID)) {
 					list.add(allTermsMap.get(termID));
 				}
-			}
-			else {
+			} else {
 				if (visible.contains(termID)) {
 					list.add(allTermsMap.get(termID));
 				}
@@ -346,14 +319,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 	/**
 	 * Comparator for LinkedObjectes displayed in step 3. Add to Ontology
 	 * 
-	 * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), Dec 11, 2008
+	 * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), Dec
+	 *         11, 2008
 	 */
-	private class AddToOntologyLinkedObjectComparator implements Comparator<String>
-	{
+	private class AddToOntologyLinkedObjectComparator implements Comparator<String> {
 		private List<Set<String>> idSetsOrdered;
 
-		protected AddToOntologyLinkedObjectComparator(List<Set<String>> idSetsOrdered)
-		{
+		protected AddToOntologyLinkedObjectComparator(List<Set<String>> idSetsOrdered) {
 			this.idSetsOrdered = idSetsOrdered;
 		}
 
@@ -365,15 +337,14 @@ public class OBOTermsTableModel extends AbstractTableModel
 		 * @return
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
-		public int compare(String o1, String o2)
-		{
+		public int compare(String o1, String o2) {
 			// test for null
 			if (o1 == null && o2 != null) {
 				return 1;
-			} else if (o1 != null && o2 == null){
+			} else if (o1 != null && o2 == null) {
 				return -1;
 			}
-			
+
 			// test identity
 			if (o1.equals(o2)) {
 				return 0;
@@ -408,6 +379,14 @@ public class OBOTermsTableModel extends AbstractTableModel
 			// compare by name
 			String name = allTermsMap.get(o1).getName();
 			String name2 = allTermsMap.get(o2).getName();
+
+			if (name == null && name2 != null) {
+				return 1;
+			} else if (name != null && name2 == null) {
+				return -1;
+			} else if (name == null && name2 == null) {
+				return 0;
+			}
 			return name.compareTo(name2);
 		}
 	}
@@ -416,8 +395,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @param linkedObject
 	 * @return
 	 */
-	protected boolean isTicked(LinkedObject linkedObject)
-	{
+	protected boolean isTicked(LinkedObject linkedObject) {
 		return ticked.contains(linkedObject);
 	}
 
@@ -425,12 +403,10 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * @param linkedObject
 	 * @param isTicked
 	 */
-	protected void setTicked(LinkedObject linkedObject, boolean isTicked)
-	{
+	protected void setTicked(LinkedObject linkedObject, boolean isTicked) {
 		if (isTicked == false) {
 			ticked.remove(linkedObject.getID());
-		}
-		else {
+		} else {
 			ticked.add(linkedObject.getID());
 		}
 	}
@@ -440,8 +416,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @param collection
 	 */
-	protected void setTerms(Collection<LinkedObject> collection)
-	{
+	protected void setTerms(Collection<LinkedObject> collection) {
 		this.allTermsMap.clear();
 		this.allTermsIDList.clear();
 		this.ticked.clear();
@@ -456,16 +431,14 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void clearTermsFromDefinitions()
-	{
+	protected void clearTermsFromDefinitions() {
 		termsFromUserDefinedDefinitions.clear();
 		termsFromTickedDefinitions.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addFromUserDefinedDefinition(LinkedObject... linkedObjects)
-	{
+	protected void addFromUserDefinedDefinition(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsFromUserDefinedDefinitions.add(linkedObject.getID());
 		}
@@ -473,8 +446,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void addFromTickedDefinition(LinkedObject... linkedObjects)
-	{
+	protected void addFromTickedDefinition(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsFromTickedDefinitions.add(linkedObject.getID());
 		}
@@ -485,15 +457,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 	/*
 	 * UPDATE PARENTS
 	 */
-	protected void clearSelectedLinkedObjects()
-	{
+	protected void clearSelectedLinkedObjects() {
 		termsSelected.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addSelectedLinkedObject(LinkedObject... linkedObjects)
-	{
+	protected void addSelectedLinkedObject(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsSelected.add(linkedObject.getID());
 		}
@@ -501,15 +471,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void clearParentsOfSelectedLinkedObject()
-	{
+	protected void clearParentsOfSelectedLinkedObject() {
 		termsParentsOfSelectedLinkedObject.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addParentsTermsOfSelectedLinkedObject(LinkedObject... linkedObjects)
-	{
+	protected void addParentsTermsOfSelectedLinkedObject(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsParentsOfSelectedLinkedObject.add(linkedObject.getID());
 		}
@@ -517,15 +485,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void clearPredictedParentsOfCandidateTerm()
-	{
+	protected void clearPredictedParentsOfCandidateTerm() {
 		termsPredictedParentsOfCandidateTerm.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addPredictedParentsOfCandidateTerm(LinkedObject... linkedObjects)
-	{
+	protected void addPredictedParentsOfCandidateTerm(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsPredictedParentsOfCandidateTerm.add(linkedObject.getID());
 		}
@@ -533,15 +499,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void clearSimiliarToCandidateTerm()
-	{
+	protected void clearSimiliarToCandidateTerm() {
 		termsSimilarToCandidateTerm.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addSimilarToCandidateTerm(LinkedObject... linkedObjects)
-	{
+	protected void addSimilarToCandidateTerm(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsSimilarToCandidateTerm.add(linkedObject.getID());
 		}
@@ -549,15 +513,13 @@ public class OBOTermsTableModel extends AbstractTableModel
 		fireTableDataChanged();
 	}
 
-	protected void clearSameAsCandidateTerms()
-	{
+	protected void clearSameAsCandidateTerms() {
 		termsSameAsCandidateTerm.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addSameAsCandidateTerm(LinkedObject... linkedObjects)
-	{
+	protected void addSameAsCandidateTerm(LinkedObject... linkedObjects) {
 		for (LinkedObject linkedObject : linkedObjects) {
 			termsSameAsCandidateTerm.add(linkedObject.getID());
 		}
@@ -570,8 +532,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @param linkedObjects
 	 */
-	public void updateTerms(List<LinkedObject> linkedObjects)
-	{
+	public void updateTerms(List<LinkedObject> linkedObjects) {
 		removeAll(linkedObjects);
 		for (LinkedObject linkedObject : linkedObjects) {
 			allTermsIDList.add(linkedObject.getID());
@@ -585,8 +546,7 @@ public class OBOTermsTableModel extends AbstractTableModel
 	 * 
 	 * @param b
 	 */
-	public void setShowOnlyTicked(boolean b)
-	{
+	public void setShowOnlyTicked(boolean b) {
 		this.showOnlyTicked = b;
 		fireTableDataChanged();
 	}
