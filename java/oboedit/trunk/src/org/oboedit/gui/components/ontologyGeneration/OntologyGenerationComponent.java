@@ -1,6 +1,7 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -55,6 +56,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -160,6 +162,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private static final String SOURCE_FOLDER = "FOLDER";
 	private static final String SOURCE_WEB = "WEB";
 
+	private  final Color COLOR_FILTER_FIELDS = new Color(255,255,180);
+	private  final Color COLOR_TERMS_TABLE = new Color(255,255,240);
+	private  final Color COLOR_DEF_TABLE = new Color(255,240,240);
+	private  final Color COLOR_OBOTERMS_TABLE = new Color(230,255,230);
+	
 	private static final Logger logger = Logger.getLogger(OntologyGenerationComponent.class);
 	private static final long serialVersionUID = -8206973805283628422L;
 
@@ -329,6 +336,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// TERMS TABLE
 		this.termsTable = new TermsTable(clipboard, 4, true);
+		this.termsTable.setBackground(COLOR_TERMS_TABLE);
 		this.termsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		this.termsTable.getColumnModel().getColumn(0).setMinWidth(50);
@@ -355,6 +363,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// SYNONYMS TABLE
 		this.synonymTermsTable = new TermsTable(clipboard, 2, false);
+		this.synonymTermsTable.setBackground(COLOR_TERMS_TABLE);
 		this.synonymTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.synonymTermsTable.getColumnModel().getColumn(0).setMinWidth(50);
 		this.synonymTermsTable.getColumnModel().getColumn(0).setMaxWidth(50);
@@ -363,6 +372,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// DEFINITIONS TABLE
 		this.definitionTable = new DefinitionsTable();
+		this.definitionTable.setBackground(COLOR_DEF_TABLE);
 		if (this.definitionTable.getColumnCount() > 2) {
 			this.definitionTable.getColumnModel().getColumn(2).setCellRenderer(termInformationIconRenderer);
 		}
@@ -2262,7 +2272,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		// Set the Border with Bold font face
 		TitledBorder titledBorderTermGenerationPanel = new TitledBorder("1. Term Generation");
 		titledBorderTermGenerationPanel.setTitleFont(new Font(titledBorderTermGenerationPanel.getTitleFont()
-				.getFontName(), Font.BOLD, 16));
+				.getFontName(), Font.BOLD, 18));
+		titledBorderTermGenerationPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderTermGenerationPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		termGenerationPanel.setBorder(titledBorderTermGenerationPanel);
 
@@ -2422,6 +2433,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		searchTermsTextField.setPreferredSize(new Dimension(150, 25));
 		filterTermUpperPanel.add(searchTermsTextField);
 
+
+		String tooltipTextRegex = "<html><font color=\"blue\"><b>Search or Filter Example</b>: Show those starting or ending with <b>cell</b> by typing <b>\\Acell</b> or <b>cell$</b></font></html>";
 		JLabel filterLabel = new JLabel(" Filter:");
 		filterTermUpperPanel.add(filterLabel);
 		filterTermsTextField = new JTextField();
@@ -2432,11 +2445,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		onlyShowExistingTerms.setText("Show existing terms only.");
 		filterTermUpperPanel.add(Box.createRigidArea(spacer));
 		filterTermUpperPanel.add(onlyShowExistingTerms);
-		JLabel filterExampleLabel = new JLabel(
-				"<html><font color=\"blue\"><b>Search or Filter Example</b>: Show those starting or ending with <b>cell</b> by typing <b>\\Acell</b> or <b>cell$</b></font></html>");
 		filterTermPanel.add(filterTermUpperPanel);
 		filterTermPanel.add(Box.createRigidArea(spacer));
-		filterTermPanel.add(filterExampleLabel);
+
+		filterTermsTextField.setToolTipText(tooltipTextRegex);
+		searchTermsTextField.setToolTipText(tooltipTextRegex);
+		filterTermsTextField.setBackground(COLOR_FILTER_FIELDS);
+		searchTermsTextField.setBackground(COLOR_FILTER_FIELDS);
 
 		// Add the subPanels to the Term Generation Panel
 		termGenerationPanel.add(inputPanel, BorderLayout.NORTH);
@@ -2453,7 +2468,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		JPanel definitonGenerationPanel = new JPanel(new BorderLayout(7, 7));
 		// set the Border with Bold font face
 		TitledBorder titledBorderDefPanel = new TitledBorder("2. Definition Generation");
-		titledBorderDefPanel.setTitleFont(new Font(titledBorderDefPanel.getTitleFont().getFontName(), Font.BOLD, 16));
+		titledBorderDefPanel.setTitleFont(new Font(titledBorderDefPanel.getTitleFont().getFontName(), Font.BOLD, 18));
+		titledBorderDefPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderDefPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		definitonGenerationPanel.setBorder(titledBorderDefPanel);
 
@@ -2483,6 +2499,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		filterDefTextField.setSize(200, 25);
 		filterDefTextField.setMaximumSize(new Dimension(200, 25));
 		filterDefTextField.setPreferredSize(new Dimension(200, 25));
+		filterDefTextField.setToolTipText(tooltipTextRegex);
+		filterDefTextField.setBackground(COLOR_FILTER_FIELDS);
 		filterDefPanel.add(filterDefTextField);
 
 		// editorPanel to contain editDef and editAbbr panels
@@ -2578,7 +2596,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		//
 		TitledBorder titledBorderAddToOntologyPanel = new TitledBorder("3. Add to Ontology");
 		titledBorderAddToOntologyPanel.setTitleFont(new Font(titledBorderAddToOntologyPanel.getTitleFont()
-				.getFontName(), Font.BOLD, 16));
+				.getFontName(), Font.BOLD, 18));
+		titledBorderAddToOntologyPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderAddToOntologyPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		JPanel addToOntologyPanel = new JPanel();
@@ -2614,6 +2633,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		JPanel potentialParentPanel = new JPanel();
 		potentialParentPanel.setLayout(new BoxLayout(potentialParentPanel, BoxLayout.X_AXIS));
 		this.oboTermsTable = new OBOTermsTable();
+		this.oboTermsTable.setBackground(COLOR_OBOTERMS_TABLE);
 		this.oboTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		this.oboTermsTable.setMinimumPreferedeScrollableViewportHeight(100);
 		this.oboTermsTable.setMaximumPreferedeScrollableViewportHeight(300);
@@ -2640,6 +2660,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		filterPotentialParentsTextField.setSize(200, 25);
 		filterPotentialParentsTextField.setMaximumSize(new Dimension(200, 25));
 		filterPotentialParentsTextField.setPreferredSize(new Dimension(150, 25));
+		filterPotentialParentsTextField.setBackground(COLOR_FILTER_FIELDS);
 		filterPotentialParentTermsPanel.add(filterPotentialParentsTextField);
 		filterPotentialParentTermsPanel
 				.add(new JLabel(
