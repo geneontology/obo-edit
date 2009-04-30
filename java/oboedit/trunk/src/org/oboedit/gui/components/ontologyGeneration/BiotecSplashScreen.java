@@ -2,6 +2,7 @@ package org.oboedit.gui.components.ontologyGeneration;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -20,6 +21,7 @@ import java.util.GregorianCalendar;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
@@ -36,7 +38,7 @@ public class BiotecSplashScreen extends JDialog
 	private static final long serialVersionUID = 6993432775310354679L;
 	protected final static Logger logger = Logger.getLogger(BiotecSplashScreen.class);
 
-	private BackgroundImagePanel bip;
+	private JPanel bip;
 	private final static String biotecSplashScreen = "resources/ontogenSplashScreen.png";
 
 	public BiotecSplashScreen(final Component parent)
@@ -88,7 +90,7 @@ public class BiotecSplashScreen extends JDialog
 		});
 	}
 
-	public BackgroundImagePanel getSplashPanel()
+	public static JPanel getSplashPanel()
 	{
 		JLabel textLabel = new JLabel()
 		{
@@ -103,7 +105,7 @@ public class BiotecSplashScreen extends JDialog
 			}
 		};
 
-		URL url = this.getClass().getResource(biotecSplashScreen);
+		URL url = BiotecSplashScreen.class.getResource(biotecSplashScreen);
 		logger.debug("load image from url: '" + url.getPath() + "'");
 
 		BackgroundImagePanel backgroundImagePanel = new BackgroundImagePanel(url, false);
@@ -123,8 +125,8 @@ public class BiotecSplashScreen extends JDialog
 		stringBuffer.append("<html>");
 		stringBuffer
 		    .append("<h3><b>GoPubMed Ontology Generation plugin</b> for OBOEdit 2<small>, v " + OntologyGenerationComponent.PLUGIN_VERSION + "a</small></h3>");
-		stringBuffer.append("<p>The plugin was created by <b>Thomas WÃ¤chter</b>.</p>");
-		stringBuffer.append("<p>Special thanks to: <b>Atif Iqbal</b>, <b>GÃ¶tz Fabian</b>, <b>Marcel Hanke</b>.</p>");
+		stringBuffer.append("<p>The plugin was created by <b>Thomas WŠchter</b>.</p>");
+		stringBuffer.append("<p>Special thanks to: <b>Atif Iqbal</b>, <b>Gštz Fabian</b>, <b>Marcel Hanke</b>.</p>");
 		stringBuffer.append("<p><i>Under the terms of the Artistic License, TU Dresden, (c)2007-" + year + "</i></p>");
 		stringBuffer.append("<br>");
 		stringBuffer.append("<p>");
@@ -136,7 +138,7 @@ public class BiotecSplashScreen extends JDialog
 		stringBuffer.append("</p>");
 		stringBuffer.append("<h5>Contact</h5>");
 		stringBuffer.append("<small>");
-		stringBuffer.append("Thomas WÃ¤chter, Dipl.-Inf.");
+		stringBuffer.append("Thomas WŠchter, Dipl.-Inf.");
 		stringBuffer.append("<br>");
 		stringBuffer.append("Bioinformatics Group (BIOTEC), TU Dresden");
 		stringBuffer.append("<br>");
@@ -154,6 +156,9 @@ public class BiotecSplashScreen extends JDialog
 		textLabel.setText(stringBuffer.toString());
 
 		backgroundImagePanel.setBorder(BorderFactory.createEtchedBorder());
+		backgroundImagePanel.setSize(new Dimension(500, 400));
+		backgroundImagePanel.setPreferredSize(new Dimension(500, 400));
+		backgroundImagePanel.setMinimumSize(new Dimension(500, 400));
 		return backgroundImagePanel;
 	}
 }
