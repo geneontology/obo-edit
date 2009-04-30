@@ -47,7 +47,7 @@ sub parse_body {
             $assocdate,
             $source_db,
             $annotxp,   # experimental! 
-            $geneprod
+            $geneproduct
             ) = @vals;
 
         my $geneid = "$genedb:$geneacc";
@@ -63,6 +63,10 @@ sub parse_body {
             $gene->type($g->noderef($genetype));
         }
         my $cnode = $g->term_noderef($termacc);
+        if (!$cnode->namespace) {
+            $cnode->namespace(_aspect2ns($aspect));
+        }
+
         my %qualh = map {lc($_)=>1} (split(/[\|]\s*/,$qualifier || ''));
         my $ev = new OBO::Evidence(type=>$g->term_noderef($evcode));
         # TODO: discriminate between pipes and commas
@@ -79,6 +83,9 @@ sub parse_body {
                                 source=>$g->noderef($source_db),
                                 date=>$assocdate,
             );
+        if ($geneproduct) {
+            $annot->specific_node($g->noderef($geneproduct));
+        }
         $annot->evidence($ev);
         if ($qualh{not}) {
             # TODO
@@ -89,5 +96,12 @@ sub parse_body {
     return;
 }
 
+# the following is specific to GO
+sub _aspect2ns {
+    my $aspect = shift;
+    return 'molecular_function' if $aspect eq 'F';
+    return 'biological_process' if $aspect eq 'P';
+    return 'cellular_component' if $aspect eq 'C';
+}
 
 1;

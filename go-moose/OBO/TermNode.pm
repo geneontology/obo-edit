@@ -8,6 +8,6 @@ with 'OBO::Definable';
 
 =head2 Documentation
 
-Core element in an ontology.
+Core element in an ontology. 
 
 =cut
