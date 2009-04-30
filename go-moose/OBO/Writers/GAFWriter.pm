@@ -20,6 +20,7 @@ sub write_body {
 
     foreach my $ann (@{$g->annotations}) {
         my $gene = $ann->node;
+        my $gene_product = $ann->specific_node;
         my @vals =
             (
              $gene->id_db,
@@ -37,7 +38,7 @@ sub write_body {
              $ann->date_compact,
              $ann->source->id,
              '',
-             '');
+             $gene_product ? $gene_product->id : '');
         $self->printrow(\@vals);
     }
     return;
