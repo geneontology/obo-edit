@@ -56,7 +56,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -162,11 +162,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private static final String SOURCE_FOLDER = "FOLDER";
 	private static final String SOURCE_WEB = "WEB";
 
-	private  final Color COLOR_FILTER_FIELDS = new Color(255,255,180);
-	private  final Color COLOR_TERMS_TABLE = new Color(255,255,240);
-	private  final Color COLOR_DEF_TABLE = new Color(255,240,240);
-	private  final Color COLOR_OBOTERMS_TABLE = new Color(230,255,230);
-	
+	private final Color COLOR_FILTER_FIELDS = new Color(255, 255, 180);
+	private final Color COLOR_TERMS_TABLE = new Color(255, 255, 240);
+	private final Color COLOR_DEF_TABLE = new Color(255, 240, 240);
+	private final Color COLOR_OBOTERMS_TABLE = new Color(230, 255, 230);
+
 	private static final Logger logger = Logger.getLogger(OntologyGenerationComponent.class);
 	private static final long serialVersionUID = -8206973805283628422L;
 
@@ -226,7 +226,6 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	private JTextField selectedLinkedObjectField = new JTextField(10);
 	private JTextField filterPotentialParentsTextField;
 
-	private JScrollPane scrollPane;
 	private JTabbedPane clipBoardTabPanel;
 	private JScrollPane scrollPaneForTermsTable;
 	private JScrollPane scrollPaneForSynonymTermsTable;
@@ -318,6 +317,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 	private OntologyLookupServiceWorker lookupServiceWorker;
 	private OntologyLookupChildrenServiceWorker lookupChildrenServiceWorker;
+	private JPanel termGenerationPanel;
+	private JPanel definitonGenerationPanel;
+	private JPanel addToOntologyPanel;
 
 	/**
 	 * Constructs a {@link OntologyGenerationComponent} instance
@@ -2145,7 +2147,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				if (candidateDef.isTicked()) {
 					for (String url : candidateDef.getUrl()) {
 						if (url != null) { // case for all which are generated
-											// and not taken from OBOEdit
+							// and not taken from OBOEdit
 							item.addItem(new AddDbxrefHistoryItem(id,
 									new DbxrefImpl("URL", url, DbxrefImpl.DEFINITION), true, null));
 						}
@@ -2267,15 +2269,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		//
 		// 1-Term Generation panel
 		//
-		JPanel termGenerationPanel = new JPanel(new BorderLayout(7, 7));
+		termGenerationPanel = new JPanel(new BorderLayout(7, 7));
 
 		// Set the Border with Bold font face
-		TitledBorder titledBorderTermGenerationPanel = new TitledBorder("1. Term Generation");
+		final TitledBorder titledBorderTermGenerationPanel = new TitledBorder("Step 1: Term Generation");
 		titledBorderTermGenerationPanel.setTitleFont(new Font(titledBorderTermGenerationPanel.getTitleFont()
 				.getFontName(), Font.BOLD, 18));
-		titledBorderTermGenerationPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderTermGenerationPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		termGenerationPanel.setBorder(titledBorderTermGenerationPanel);
 
 		// 1 sub panels
 		// Input Panel
@@ -2389,8 +2389,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		inputPanel.add(Box.createRigidArea(spacer));
 		inputPanel.add(clipBoardTabPanel);
-		inputPanel.add(openHelpPageButton);
-		inputPanel.add(openSplashScreenButton);
+		// inputPanel.add(openHelpPageButton);
+		// inputPanel.add(openSplashScreenButton);
 
 		if (inputPubMedQueryField.getText().trim().length() == 0) {
 			generateTermsFromPubMedButton.setEnabled(false);
@@ -2433,7 +2433,6 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		searchTermsTextField.setPreferredSize(new Dimension(150, 25));
 		filterTermUpperPanel.add(searchTermsTextField);
 
-
 		String tooltipTextRegex = "<html><font color=\"blue\"><b>Search or Filter Example</b>: Show those starting or ending with <b>cell</b> by typing <b>\\Acell</b> or <b>cell$</b></font></html>";
 		JLabel filterLabel = new JLabel(" Filter:");
 		filterTermUpperPanel.add(filterLabel);
@@ -2458,18 +2457,23 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		termsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		termsTable.setPreferredScrollableViewportSize(new Dimension(200, 200));
+
+		JPanel termsTableContainer = new JPanel();
+		termsTableContainer.setLayout(new BoxLayout(termsTableContainer, BoxLayout.X_AXIS));
+		termsTableContainer.add(Box.createRigidArea(new Dimension(7, 0)));
 		scrollPaneForTermsTable = new JScrollPane(termsTable);
-		termGenerationPanel.add(scrollPaneForTermsTable, BorderLayout.CENTER);
+		termsTableContainer.add(scrollPaneForTermsTable);
+		termsTableContainer.add(Box.createRigidArea(new Dimension(7, 0)));
+		termGenerationPanel.add(termsTableContainer, BorderLayout.CENTER);
 		termGenerationPanel.add(filterTermPanel, BorderLayout.SOUTH);
 
 		//
 		// 2 Definition Generation panel
 		//
-		JPanel definitonGenerationPanel = new JPanel(new BorderLayout(7, 7));
+		definitonGenerationPanel = new JPanel(new BorderLayout(7, 7));
 		// set the Border with Bold font face
-		TitledBorder titledBorderDefPanel = new TitledBorder("2. Definition Generation");
+		final TitledBorder titledBorderDefPanel = new TitledBorder("Step 2: Definition Generation");
 		titledBorderDefPanel.setTitleFont(new Font(titledBorderDefPanel.getTitleFont().getFontName(), Font.BOLD, 18));
-		titledBorderDefPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderDefPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		definitonGenerationPanel.setBorder(titledBorderDefPanel);
 
@@ -2482,6 +2486,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		inputDefinitionGenerationField.setMaximumSize(new Dimension(200, 25));
 		inputDefinitionGenerationField.setPreferredSize(new Dimension(200, 25));
 		generateManualDefinitionButton.setEnabled(false);
+		manualDefGenerationPanel.add(Box.createRigidArea(new Dimension(7, 0)));
 		manualDefGenerationPanel.add(manualDefGenLabel);
 		manualDefGenerationPanel.add(inputDefinitionGenerationField);
 		manualDefGenerationPanel.add(generateManualDefinitionButton);
@@ -2587,23 +2592,26 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		definitionTable.setMaximumPreferedeScrollableViewportHeight(200);
 		definitionTable.setPreferredScrollableViewportSize(new Dimension(200, 40));
 
+		JPanel definitionTableContainer = new JPanel();
+		definitionTableContainer.setLayout(new BoxLayout(definitionTableContainer, BoxLayout.X_AXIS));
+		definitionTableContainer.add(Box.createRigidArea(new Dimension(7, 0)));
+		JScrollPane scrollPaneForDefinitionsTable = new JScrollPane(definitionTable);
+		definitionTableContainer.add(scrollPaneForDefinitionsTable);
+		definitionTableContainer.add(Box.createRigidArea(new Dimension(7, 0)));
 		definitonGenerationPanel.add(manualDefGenerationPanel, BorderLayout.NORTH);
-		definitonGenerationPanel.add(new JScrollPane(definitionTable), BorderLayout.CENTER);
+		definitonGenerationPanel.add(definitionTableContainer, BorderLayout.CENTER);
 		definitonGenerationPanel.add(southDefPanel, BorderLayout.SOUTH);
 
 		//
 		// 3-Add child to ontology Panel and 3 sub panels
 		//
-		TitledBorder titledBorderAddToOntologyPanel = new TitledBorder("3. Add to Ontology");
+		final TitledBorder titledBorderAddToOntologyPanel = new TitledBorder("Step 3: Add to Ontology");
 		titledBorderAddToOntologyPanel.setTitleFont(new Font(titledBorderAddToOntologyPanel.getTitleFont()
 				.getFontName(), Font.BOLD, 18));
-		titledBorderAddToOntologyPanel.setTitleColor(Color.BLUE.darker());
 		titledBorderAddToOntologyPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		JPanel addToOntologyPanel = new JPanel();
+		addToOntologyPanel = new JPanel();
 		addToOntologyPanel.setLayout(new BoxLayout(addToOntologyPanel, BoxLayout.Y_AXIS));
-
-		addToOntologyPanel.setBorder(titledBorderAddToOntologyPanel);
 
 		JPanel candidateToAddPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JLabel label = new JLabel("Add Term:");
@@ -2620,37 +2628,37 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		// candidateToAddPanel.add(checkboxIncludeBranch);
 		// JLabel label3 = new JLabel("include sub-branch");
 		// candidateToAddPanel.add(label3);
-		JPanel parentHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel oboClassTableHeaderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		JLabel parentLabel = new JLabel("Potential parent terms (existing in OBO-Edit):");
 		parentLabel.setFont(boldFont);
-		parentHeaderPanel.add(parentLabel);
+		oboClassTableHeaderPanel.add(parentLabel);
 		checkboxShowTickedParents = new JCheckBox();
 		checkboxShowTickedParents.setEnabled(true);
-		parentHeaderPanel.add(checkboxShowTickedParents);
+		oboClassTableHeaderPanel.add(checkboxShowTickedParents);
 		JLabel label4 = new JLabel("show ticked parent terms only");
-		parentHeaderPanel.add(label4);
+		oboClassTableHeaderPanel.add(label4);
 
-		JPanel potentialParentPanel = new JPanel();
-		potentialParentPanel.setLayout(new BoxLayout(potentialParentPanel, BoxLayout.X_AXIS));
-		this.oboTermsTable = new OBOTermsTable();
-		this.oboTermsTable.setBackground(COLOR_OBOTERMS_TABLE);
-		this.oboTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		this.oboTermsTable.setMinimumPreferedeScrollableViewportHeight(100);
-		this.oboTermsTable.setMaximumPreferedeScrollableViewportHeight(300);
-		// this.oboTermsTable.setPreferredScrollableViewportSize(new
-		// Dimension(600, 100));
+		JPanel oboClassTablePanelContainer = new JPanel();
+		oboClassTablePanelContainer.setLayout(new BoxLayout(oboClassTablePanelContainer, BoxLayout.Y_AXIS));
+		JPanel oboClassTablePanel = new JPanel();
+		oboClassTablePanel.setLayout(new BoxLayout(oboClassTablePanel, BoxLayout.X_AXIS));
+		oboTermsTable = new OBOTermsTable();
+		oboTermsTable.setBackground(COLOR_OBOTERMS_TABLE);
+		oboTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		// oboTermsTable.setPreferredScrollableViewportSize(new Dimension(200,
+		// 200));
+		oboTermsTable.setMinimumPreferedeScrollableViewportHeight(100);
+		oboTermsTable.setMaximumPreferedeScrollableViewportHeight(300);
+
 		JScrollPane scrollPaneForPotentialParents = new JScrollPane(this.oboTermsTable);
-		// JLabel label4 = new JLabel("Parent term:");
-		// label4.setFont(boldFont);
-		// potentialParentPanel.add(label4);
-		potentialParentPanel.add(Box.createRigidArea(new Dimension(7, 0)));
-		potentialParentPanel.add(scrollPaneForPotentialParents);
+		oboClassTablePanel.add(Box.createRigidArea(new Dimension(7, 0)));
+		oboClassTablePanel.add(scrollPaneForPotentialParents);
 		addToOntologyButton = new JButton("<html><center>Add term<br>to<br>Ontology</center></html>");
 		addToOntologyButton.setMaximumSize(new Dimension(110, 330));
-		potentialParentPanel.add(Box.createRigidArea(new Dimension(7, 0)));
+		oboClassTablePanel.add(Box.createRigidArea(new Dimension(7, 0)));
 		addToOntologyButton.setFont(boldFont);
-		potentialParentPanel.add(this.addToOntologyButton);
-		potentialParentPanel.add(Box.createRigidArea(new Dimension(7, 0)));
+		oboClassTablePanel.add(this.addToOntologyButton);
+		oboClassTablePanel.add(Box.createRigidArea(new Dimension(7, 0)));
 
 		// Filter Term Panel to be added to InputPanel containing regular
 		// expressions filtration
@@ -2666,28 +2674,107 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				.add(new JLabel(
 						"<html><font color=\"blue\">&nbsp; <b>Example</b>: starts or ends with <b>cell</b> type <b>\\Acell</b> or <b>cell$</b></font></html>"));
 
+		oboClassTablePanelContainer.add(oboClassTableHeaderPanel);
+		oboClassTablePanelContainer.add(oboClassTablePanel);
+
 		addToOntologyPanel.add(candidateToAddPanel, BorderLayout.NORTH);
-		addToOntologyPanel.add(parentHeaderPanel, BorderLayout.NORTH);
-		addToOntologyPanel.add(potentialParentPanel, BorderLayout.CENTER);
+		addToOntologyPanel.add(oboClassTablePanelContainer, BorderLayout.CENTER);
 		addToOntologyPanel.add(filterPotentialParentTermsPanel, BorderLayout.SOUTH);
 
-		// ALL PANELS
-		// Add All panels to allStuffPanel and then add JscrollPane to it
-		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-		allStuffPanel.add(termGenerationPanel);
-		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-		allStuffPanel.add(definitonGenerationPanel);
-		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-		allStuffPanel.add(addToOntologyPanel);
-		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-		allStuffPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		final JPanel termGenerationPanelContainer = new JPanel();
+		termGenerationPanelContainer.setLayout(new BoxLayout(termGenerationPanelContainer, BoxLayout.Y_AXIS));
+		final JPanel definitonGenerationPanelContainer = new JPanel();
+		definitonGenerationPanelContainer.setLayout(new BoxLayout(definitonGenerationPanelContainer, BoxLayout.Y_AXIS));
+		final JPanel addToOntologyPanelContainer = new JPanel();
+		addToOntologyPanelContainer.setLayout(new BoxLayout(addToOntologyPanelContainer, BoxLayout.Y_AXIS));
+		final JPanel termGenerationPanelForSingle = new JPanel();
+		termGenerationPanelForSingle.setLayout(new BoxLayout(termGenerationPanelForSingle, BoxLayout.Y_AXIS));
+		final JPanel definitonGenerationPanelForSingle = new JPanel();
+		definitonGenerationPanelForSingle.setLayout(new BoxLayout(definitonGenerationPanelForSingle, BoxLayout.Y_AXIS));
+		final JPanel addToOntologyPanelForSingle = new JPanel();
+		addToOntologyPanelForSingle.setLayout(new BoxLayout(addToOntologyPanelForSingle, BoxLayout.Y_AXIS));
+
+		String url = "http://www.biotec.tu-dresden.de/~waechter/obo-edit-ontogen/";
+		JScrollPane scrollPaneForHelp = null;
+		try {
+			JEditorPane htmlPane = new JEditorPane(url);
+			htmlPane.setEditable(false);
+			scrollPaneForHelp = new JScrollPane(htmlPane);
+			scrollPaneForHelp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		} catch (IOException ioe) {
+			System.err.println("Error displaying " + url);
+		}
+		JPanel splashPanel = BiotecSplashScreen.getSplashPanel();
 
 		// TODO scrolling to slow, increase step size
-		scrollPane = new JScrollPane(allStuffPanel);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		add(scrollPane);
+		allStuffPanel.add(termGenerationPanelContainer);
+		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+		allStuffPanel.add(definitonGenerationPanelContainer);
+		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+		allStuffPanel.add(addToOntologyPanelContainer);
+
+		// create scroll panes
+		JScrollPane scrollPane1 = new JScrollPane(allStuffPanel);
+		scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane1.getVerticalScrollBar().setUnitIncrement(10);
+
+		JScrollPane scrollPane2 = new JScrollPane(termGenerationPanelForSingle);
+		scrollPane2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane2.getVerticalScrollBar().setUnitIncrement(10);
+
+		JScrollPane scrollPane3 = new JScrollPane(definitonGenerationPanelForSingle);
+		scrollPane3.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane3.getVerticalScrollBar().setUnitIncrement(10);
+
+		final JTabbedPane mainTabbedPane = new JTabbedPane();
+		mainTabbedPane.add("All Steps", scrollPane1);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);
+		mainTabbedPane.add("Terms Generation", scrollPane2);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);		
+		mainTabbedPane.add("Definition Generation", scrollPane3);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);
+		mainTabbedPane.add("Help", scrollPaneForHelp);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLACK);
+		mainTabbedPane.add("About", splashPanel);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLACK);
+	
+		// init for all panels in one tab
+		termGenerationPanelContainer.add(termGenerationPanel);
+		definitonGenerationPanelContainer.add(definitonGenerationPanel);
+		addToOntologyPanelContainer.add(addToOntologyPanel);
+
+		mainTabbedPane.addChangeListener(new ChangeListener() {
+
+			public void stateChanged(ChangeEvent e) {
+				termGenerationPanelContainer.removeAll();
+				termGenerationPanelForSingle.removeAll();
+				definitonGenerationPanelContainer.removeAll();
+				definitonGenerationPanelForSingle.removeAll();
+				addToOntologyPanelContainer.removeAll();
+				addToOntologyPanelForSingle.removeAll();
+
+				if (mainTabbedPane.getSelectedIndex() == 0) {
+					termGenerationPanelContainer.add(termGenerationPanel);
+					definitonGenerationPanelContainer.add(definitonGenerationPanel);
+					addToOntologyPanelContainer.add(addToOntologyPanel);
+					termGenerationPanel.setBorder(titledBorderTermGenerationPanel);
+					definitonGenerationPanel.setBorder(titledBorderDefPanel);
+					addToOntologyPanel.setBorder(titledBorderAddToOntologyPanel);
+				} else {
+					termGenerationPanel.setBorder(BorderFactory.createEmptyBorder());
+					definitonGenerationPanel.setBorder(BorderFactory.createEmptyBorder());
+					addToOntologyPanel.setBorder(BorderFactory.createEmptyBorder());
+					termGenerationPanelForSingle.add(termGenerationPanel);
+					definitonGenerationPanelForSingle.add(definitonGenerationPanel);
+					addToOntologyPanelForSingle.add(addToOntologyPanel);
+				}
+			}
+		});
+
+		JPanel mainTabbedPaneContainer = new JPanel();
+		mainTabbedPaneContainer.setLayout(new BoxLayout(mainTabbedPaneContainer, BoxLayout.Y_AXIS));
+		mainTabbedPaneContainer.add(mainTabbedPane);
+		add(mainTabbedPane);
 	}
 
 	private class OntologyLookupServiceWorker extends SwingWorker<Void, Void> {
