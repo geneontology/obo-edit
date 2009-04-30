@@ -125,8 +125,8 @@ public class BiotecSplashScreen extends JDialog
 		stringBuffer.append("<html>");
 		stringBuffer
 		    .append("<h3><b>GoPubMed Ontology Generation plugin</b> for OBOEdit 2<small>, v " + OntologyGenerationComponent.PLUGIN_VERSION + "a</small></h3>");
-		stringBuffer.append("<p>The plugin was created by <b>Thomas WŠchter</b>.</p>");
-		stringBuffer.append("<p>Special thanks to: <b>Atif Iqbal</b>, <b>Gštz Fabian</b>, <b>Marcel Hanke</b>.</p>");
+		stringBuffer.append("<p>The plugin was created by <b>Thomas W&auml;chter</b>.</p>");
+		stringBuffer.append("<p>Special thanks to: <b>Atif Iqbal</b>, <b>G&ouml;tz Fabian</b>, <b>Marcel Hanke</b>.</p>");
 		stringBuffer.append("<p><i>Under the terms of the Artistic License, TU Dresden, (c)2007-" + year + "</i></p>");
 		stringBuffer.append("<br>");
 		stringBuffer.append("<p>");
@@ -138,7 +138,7 @@ public class BiotecSplashScreen extends JDialog
 		stringBuffer.append("</p>");
 		stringBuffer.append("<h5>Contact</h5>");
 		stringBuffer.append("<small>");
-		stringBuffer.append("Thomas WŠchter, Dipl.-Inf.");
+		stringBuffer.append("Thomas W&auml;chter, Dipl.-Inf.");
 		stringBuffer.append("<br>");
 		stringBuffer.append("Bioinformatics Group (BIOTEC), TU Dresden");
 		stringBuffer.append("<br>");
