@@ -39,6 +39,16 @@ public class DefinitionsTable extends JTable
 		tableHeader.setReorderingAllowed(false);
 	}
 
+	@Override
+	public void setValueAt(Object value, int row, int column) {
+		super.setValueAt(value, row, column);
+ 		if (column == 0 ) {
+			CandidateDefinition definition = getModel().getDefinitionAt(row);
+ 			definition.setTicked((Boolean) value);
+			getModel().fireTableCellUpdated(row, column);
+		}
+	}
+
 	/**
 	 * Set the Collection of {@link CandidateDefinition} to be displayed by the {@link DefinitionsTable}.
 	 * 

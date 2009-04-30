@@ -627,21 +627,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					return;
 				}
 				Point p = e.getPoint();
-				int row = termsTable.rowAtPoint(p);
 				int column = termsTable.columnAtPoint(p);
-				// CandidateTerm term = termsTable.getModel().getTermAt(row);
-				// if (!term.equals(selectedCandidateTerm)) {
-				// // select if the selection listener was not faster
-				// selectedCandidateTerm = term;
-				// }
-				if ((column == -1) || (row == -1)) {
-					return;
-				} else if (column == 2) {
+
+				if (column == 2) {
 					onClickGenerateDefinitions();
 				} else if (column == 3) {
 					onClickOpenExternalGoPubMedPage();
 				}
-				// updatedAllDependedOnSelectedTerm();
 			}
 		});
 
@@ -649,16 +641,13 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			@Override
 			public void keyTyped(KeyEvent e) {
 				int row = termsTable.getSelectedRow();
+				// set selectedCandidateTerm
 				CandidateTerm term = termsTable.getModel().getTermAt(row);
 				selectedCandidateTerm = term;
+				// tick row
 				if (KeyEvent.VK_SPACE == e.getKeyChar()) {
-					e.consume();
-					if (selectedCandidateTerm.isTicked()) {
-						termsTable.getModel().removeTermFromClipboard(selectedCandidateTerm);
-					} else {
-						termsTable.getModel().addTermToClipboard(selectedCandidateTerm);
-					}
-					termsTable.getModel().fireTableCellUpdated(row, 0);
+					boolean b = !(Boolean) termsTable.getValueAt(row, 0);
+					termsTable.setValueAt(b, row, 0);
 				}
 			}
 		});
@@ -673,15 +662,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			@Override
 			public void keyTyped(KeyEvent e) {
 				int row = synonymTermsTable.getSelectedRow();
-				CandidateTerm term = synonymTermsTable.getModel().getTermAt(row);
 				if (KeyEvent.VK_SPACE == e.getKeyChar()) {
-					e.consume();
-					if (term.isTicked()) {
-						synonymTermsTable.getModel().removeTermFromClipboard(term);
-					} else {
-						synonymTermsTable.getModel().addTermToClipboard(term);
-					}
-					synonymTermsTable.getModel().fireTableCellUpdated(row, 0);
+					boolean b = !(Boolean) synonymTermsTable.getValueAt(row, 0);
+					synonymTermsTable.setValueAt(b, row, 0);
 				}
 			}
 		});
@@ -699,23 +682,30 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			}
 		});
 
+		definitionTable.getModel().addTableModelListener(new TableModelListener() {
+
+			public void tableChanged(TableModelEvent e) {
+				int column = e.getColumn();
+				int rowIndex = e.getFirstRow();
+				if (column == 0) {
+					updateOnDefinitionTickedChange(rowIndex);
+				}
+			}
+		});
+
 		definitionTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+
 				if (!SwingUtilities.isLeftMouseButton(e)) {
 					return;
 				}
 				Point p = e.getPoint();
-				int row = definitionTable.rowAtPoint(p);
 				int column = definitionTable.columnAtPoint(p);
 				// The autoscroller can generate drag events outside the Table's
 				// range.
-				if ((column == -1) || (row == -1)) {
-					return;
-				} else if (column == 2) {
+				if (column == 2) {
 					onClickOpenDefinitionsPopup();
-				} else if (column == 0) {
-					onClickSelectDefinition(row, column);
 				}
 			}
 		});
@@ -726,17 +716,10 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 				if (null == selectedCandidateTerm) {
 					throw new RuntimeException("No term selected");
 				}
-
+				int row = definitionTable.getSelectedRow();
 				if (KeyEvent.VK_SPACE == e.getKeyChar()) {
-					int selectedRow = definitionTable.getSelectedRow();
-					CandidateDefinition candidateDefinition = selectedCandidateTerm.getGeneratedDefinitions().get(
-							selectedRow);
-					if (candidateDefinition.isTicked()) {
-						candidateDefinition.setTicked(false);
-					} else {
-						candidateDefinition.setTicked(true);
-					}
-					definitionTable.getModel().fireTableCellUpdated(selectedRow, 0);
+					boolean b = !(Boolean) definitionTable.getValueAt(row, 0);
+					definitionTable.setValueAt(b, row, 0);
 				}
 			}
 		});
@@ -1376,22 +1359,15 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 	 * depended GUI components
 	 * 
 	 * @param rowIndex
-	 * @param colIndex
 	 */
-	private void onClickSelectDefinition(int rowIndex, int colIndex) {
+	private void updateOnDefinitionTickedChange(int rowIndex) {
+		logger.error("onClickSelectDefinition " + rowIndex);
 		if (null == selectedCandidateTerm) {
 			throw new RuntimeException("No term selected");
 		}
 
-		if (colIndex == 0 && rowIndex >= 0) {
+		if (rowIndex >= 0) {
 			CandidateDefinition definition = definitionTable.getModel().getDefinitionAt(rowIndex);
-			List<CandidateDefinition> definitions = selectedCandidateTerm.getGeneratedDefinitions();
-
-			for (CandidateDefinition candidateDefinition : definitions) {
-				if (candidateDefinition.equals(definition)) {
-					candidateDefinition.setTicked(definition.isTicked());
-				}
-			}
 			StringBuffer defString = new StringBuffer();
 
 			/*
@@ -2309,7 +2285,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 		// add compnents
 		JLabel inputPubMedLabel = new JLabel("Query PubMed: ");
-		Dimension spacer = new Dimension(4, 4);
+		Dimension spacer = new Dimension(3, 3);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForPubMed.add(inputPubMedLabel);
 		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
@@ -2347,7 +2323,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		primaryInputBoardPanelForText.add(inputTextScrollPane, inputTextAreaConstraints);
 		primaryInputBoardPanelForText.add(Box.createRigidArea(spacer));
 		primaryInputBoardPanelForText.add(generateTermsFromTextButton);
-		primaryInputBoardPanelForPubMed.add(Box.createRigidArea(spacer));
+		primaryInputBoardPanelForText.add(Box.createRigidArea(spacer));
 
 		// primary input panel for Folder of pdf files
 		JPanel primaryInputBoardPanelForPdfFolder = new JPanel();
@@ -2370,6 +2346,7 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		inputTabPanel.addTab("Text", primaryInputBoardPanelForText);
 		inputTabPanel.addTab("PDF", primaryInputBoardPanelForPdfFolder);
 		inputPanel.add(inputTabPanel);
+		inputPanel.setBorder(BorderFactory.createEmptyBorder(7,0,0,0));
 
 		// Clipboard panel
 		JPanel clipBoardPanel = new JPanel();
@@ -2598,6 +2575,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		JScrollPane scrollPaneForDefinitionsTable = new JScrollPane(definitionTable);
 		definitionTableContainer.add(scrollPaneForDefinitionsTable);
 		definitionTableContainer.add(Box.createRigidArea(new Dimension(7, 0)));
+		definitonGenerationPanel.add(Box.createRigidArea(new Dimension(0, 5)), BorderLayout.NORTH);
+		manualDefGenerationPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		definitonGenerationPanel.add(manualDefGenerationPanel, BorderLayout.NORTH);
 		definitonGenerationPanel.add(definitionTableContainer, BorderLayout.CENTER);
 		definitonGenerationPanel.add(southDefPanel, BorderLayout.SOUTH);
@@ -2687,12 +2666,14 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		definitonGenerationPanelContainer.setLayout(new BoxLayout(definitonGenerationPanelContainer, BoxLayout.Y_AXIS));
 		final JPanel addToOntologyPanelContainer = new JPanel();
 		addToOntologyPanelContainer.setLayout(new BoxLayout(addToOntologyPanelContainer, BoxLayout.Y_AXIS));
-		final JPanel termGenerationPanelForSingle = new JPanel();
-		termGenerationPanelForSingle.setLayout(new BoxLayout(termGenerationPanelForSingle, BoxLayout.Y_AXIS));
-		final JPanel definitonGenerationPanelForSingle = new JPanel();
-		definitonGenerationPanelForSingle.setLayout(new BoxLayout(definitonGenerationPanelForSingle, BoxLayout.Y_AXIS));
-		final JPanel addToOntologyPanelForSingle = new JPanel();
-		addToOntologyPanelForSingle.setLayout(new BoxLayout(addToOntologyPanelForSingle, BoxLayout.Y_AXIS));
+		final JPanel termGenerationPanelForTab = new JPanel();
+		termGenerationPanelForTab.setLayout(new BoxLayout(termGenerationPanelForTab, BoxLayout.Y_AXIS));
+		final JPanel definitonGenerationPanelForTab = new JPanel();
+		definitonGenerationPanelForTab.setLayout(new BoxLayout(definitonGenerationPanelForTab, BoxLayout.Y_AXIS));
+		final JPanel addToOntologyPanelForTab = new JPanel();
+		addToOntologyPanelForTab.setLayout(new BoxLayout(addToOntologyPanelForTab, BoxLayout.Y_AXIS));
+		final JPanel aboutPanelForTab = new JPanel();
+		aboutPanelForTab.setLayout(new FlowLayout());
 
 		String url = "http://www.biotec.tu-dresden.de/~waechter/obo-edit-ontogen/";
 		JScrollPane scrollPaneForHelp = null;
@@ -2705,7 +2686,8 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 			System.err.println("Error displaying " + url);
 		}
 		JPanel splashPanel = BiotecSplashScreen.getSplashPanel();
-
+		aboutPanelForTab.add(splashPanel);
+	
 		// TODO scrolling to slow, increase step size
 		allStuffPanel.add(termGenerationPanelContainer);
 		allStuffPanel.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -2718,26 +2700,26 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 		scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane1.getVerticalScrollBar().setUnitIncrement(10);
 
-		JScrollPane scrollPane2 = new JScrollPane(termGenerationPanelForSingle);
+		JScrollPane scrollPane2 = new JScrollPane(termGenerationPanelForTab);
 		scrollPane2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane2.getVerticalScrollBar().setUnitIncrement(10);
 
-		JScrollPane scrollPane3 = new JScrollPane(definitonGenerationPanelForSingle);
+		JScrollPane scrollPane3 = new JScrollPane(definitonGenerationPanelForTab);
 		scrollPane3.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane3.getVerticalScrollBar().setUnitIncrement(10);
 
 		final JTabbedPane mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.add("All Steps", scrollPane1);
-		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount() - 1, Color.BLACK);
 		mainTabbedPane.add("Terms Generation", scrollPane2);
-		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);		
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount() - 1, Color.BLACK);
 		mainTabbedPane.add("Definition Generation", scrollPane3);
-		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLUE);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount() - 1, Color.BLACK);
 		mainTabbedPane.add("Help", scrollPaneForHelp);
-		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLACK);
-		mainTabbedPane.add("About", splashPanel);
-		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount()-1, Color.BLACK);
-	
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount() - 1, Color.DARK_GRAY);
+		mainTabbedPane.add("About", aboutPanelForTab);
+		mainTabbedPane.setForegroundAt(mainTabbedPane.getComponentCount() - 1, Color.DARK_GRAY);
+
 		// init for all panels in one tab
 		termGenerationPanelContainer.add(termGenerationPanel);
 		definitonGenerationPanelContainer.add(definitonGenerationPanel);
@@ -2747,11 +2729,11 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 
 			public void stateChanged(ChangeEvent e) {
 				termGenerationPanelContainer.removeAll();
-				termGenerationPanelForSingle.removeAll();
+				termGenerationPanelForTab.removeAll();
 				definitonGenerationPanelContainer.removeAll();
-				definitonGenerationPanelForSingle.removeAll();
+				definitonGenerationPanelForTab.removeAll();
 				addToOntologyPanelContainer.removeAll();
-				addToOntologyPanelForSingle.removeAll();
+				addToOntologyPanelForTab.removeAll();
 
 				if (mainTabbedPane.getSelectedIndex() == 0) {
 					termGenerationPanelContainer.add(termGenerationPanel);
@@ -2764,9 +2746,9 @@ public class OntologyGenerationComponent extends AbstractGUIComponent implements
 					termGenerationPanel.setBorder(BorderFactory.createEmptyBorder());
 					definitonGenerationPanel.setBorder(BorderFactory.createEmptyBorder());
 					addToOntologyPanel.setBorder(BorderFactory.createEmptyBorder());
-					termGenerationPanelForSingle.add(termGenerationPanel);
-					definitonGenerationPanelForSingle.add(definitonGenerationPanel);
-					addToOntologyPanelForSingle.add(addToOntologyPanel);
+					termGenerationPanelForTab.add(termGenerationPanel);
+					definitonGenerationPanelForTab.add(definitonGenerationPanel);
+					addToOntologyPanelForTab.add(addToOntologyPanel);
 				}
 			}
 		});

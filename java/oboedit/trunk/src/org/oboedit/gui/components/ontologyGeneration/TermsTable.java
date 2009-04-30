@@ -84,6 +84,21 @@ public class TermsTable extends JTable {
 	}
 
 	@Override
+	public void setValueAt(Object value, int row, int column) {
+		super.setValueAt(value, row, column);
+ 		if (column == 0 ) {
+			CandidateTerm term = getModel().getTermAt(row);
+  			term.setTicked((Boolean) value);
+			if (term.isTicked()) {
+				getModel().addTermToClipboard(term);
+			} else {
+				getModel().removeTermFromClipboard(term);
+			}
+			getModel().fireTableCellUpdated(row, column);
+		}
+	}
+	
+	@Override
 	public String getToolTipText(MouseEvent e) {
 		String tip = null;
 		java.awt.Point p = e.getPoint();
