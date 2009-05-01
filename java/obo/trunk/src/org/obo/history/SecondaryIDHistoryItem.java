@@ -80,4 +80,15 @@ public class SecondaryIDHistoryItem extends HistoryItem {
 	public HistoryList forwardID(String oldID, Collection newIDs) {
 		return defaultForwardID(this, oldID, newIDs);
 	}
+	
+	/**
+	 * Adds the primary and secondary id of the merged term to editedTerms and 
+	 * returns the Set. 
+	 */
+	@Override
+	public Set getEditedTerms() {
+		editedTerms.add(secondary_id);
+		editedTerms.add(target);
+		return super.getEditedTerms();
+	}
 }
