@@ -2,6 +2,7 @@ package org.obo.history;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 
@@ -48,5 +49,10 @@ public abstract class LinkHistoryItem extends HistoryItem {
 	@Override
 	public int hashCode() {
 		return getHash(target) ^ getHash(rel);
+	}
+	
+	@Override
+	public Set getEditedTerms() {
+		return (Set) editedTerms.clone();
 	}
 }
