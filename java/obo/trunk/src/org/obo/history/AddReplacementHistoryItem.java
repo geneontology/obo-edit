@@ -63,9 +63,5 @@ public class AddReplacementHistoryItem extends HistoryItem {
 		return null;
 	}
 	
-	@Override
-	public Set getEditedNodes() {
-		edited.add(target);
-		return super.getEditedNodes();
-	}
+	
 }
