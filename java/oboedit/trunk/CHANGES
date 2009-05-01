@@ -1,5 +1,29 @@
-Changes in OBO-Edit 2.1
+Changes in OBO-Edit2b57:
 
+Bug Fixes:
+
+- [ geneontology-Bugs-2706065 ] b56 - OE not starting on Windows
+
+Bugs pending:
+- Itemized undo
+- Switch to turn off incremental reasoning
+- graph editor menu options
+- user dictionary refresh and incremental validation stuff
+
+Features:
+
+
+TO DO:
+Documentation:
+- user.dict usage and backup info
+
+Troubleshooting- add note about:
+https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
+
+Added new feature to OBOMerge so that it reports if any term has been edited in both the live and branch files. 
+This feature is quite difficult to comprehensively test, so I am having some trouble figuring out whether it is completely
+finished. However I have been setting up a large collection of test files that enabled me to test many 
+types of edit. The files are in GO cvs at \go\software\test_resources\OBO-Edit.
 
 
 
