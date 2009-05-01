@@ -316,4 +316,9 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 		throw new UnsupportedOperationException(
 				"setVersion() not supported for TermMacroHistoryItem");
 	}
+	
+	@Override
+	public Set getEditedTerms() {
+		return (Set) editedTerms.clone();
+	}
 }
