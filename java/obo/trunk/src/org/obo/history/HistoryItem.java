@@ -22,6 +22,7 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	protected String target;
 
 	protected HashSet edited = new HashSet();
+	protected HashSet editedTerms = new HashSet();
 
 	protected boolean isUndoable = true;
 	
@@ -107,4 +108,10 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	}
 
 	public abstract HistoryList forwardID(String oldID, Collection newIDs);
+
+	public Set getEditedTerms() {
+		editedTerms.add(target);
+		//System.out.println("HistoryItem: getEditedTerms: target = " + target);
+		return (Set) editedTerms.clone();
+	}
 }
