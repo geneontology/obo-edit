@@ -109,6 +109,19 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 
 	public abstract HistoryList forwardID(String oldID, Collection newIDs);
 
+	/**
+	 * Returns a Set of the GO:ids (read from "target" variable) of the terms that have been edited 
+	 * between the source and derived file that are being examined 
+	 * in the getHistory method.  
+	 * 
+	 * In this and all override methods the id of a GO term is only added to the editedTerms
+	 * collection if the ontology editing step being carried out would alter the content of the term stanza of the term
+	 * when it is saved out in OBO-Format. So, for example, if a term was being moved from being a child of
+	 * one term to be a child of another term then only the child term id would be added, and not the parent
+	 * ids, as this editing step would not alter the stanzas of the parent terms in OBO format. 
+	 * 
+	 * @return Set editedTerms
+	 */
 	public Set getEditedTerms() {
 		editedTerms.add(target);
 		//System.out.println("HistoryItem: getEditedTerms: target = " + target);
