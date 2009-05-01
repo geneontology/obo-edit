@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.bbop.util.ObjectUtil;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
+
 public abstract class LinkHistoryItem extends HistoryItem {
 
 	protected StringRelationship rel;
@@ -51,6 +53,14 @@ public abstract class LinkHistoryItem extends HistoryItem {
 		return getHash(target) ^ getHash(rel);
 	}
 	
+	/**
+	 * Returns an empty copy of the Set editedTerms. The parent
+	 * version of this method is overridden to return an empty set as 
+	 * many of these classes do not contain a variable that represents
+	 * the GO:id of a term that has been edited. 
+	 *
+	 * @return Set editedTerms
+	 */
 	@Override
 	public Set getEditedTerms() {
 		return (Set) editedTerms.clone();
