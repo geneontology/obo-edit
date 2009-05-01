@@ -317,6 +317,14 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 				"setVersion() not supported for TermMacroHistoryItem");
 	}
 	
+	/**
+	 * Returns an empty copy of the Set editedTerms. The parent
+	 * version of this method is overridden to return an empty set as 
+	 * the sub-class does not contain a variable that represents
+	 * the GO:id of a term that has been edited or would be useful to return. 
+	 *
+	 * @return Set editedTerms
+	 */
 	@Override
 	public Set getEditedTerms() {
 		return (Set) editedTerms.clone();
