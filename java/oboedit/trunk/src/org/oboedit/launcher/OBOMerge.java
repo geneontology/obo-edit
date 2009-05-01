@@ -210,18 +210,18 @@ public class OBOMerge {
 	private static TreeSet getEditedTermIDs(HistoryList historyParentToEdited) {
 
 		HistoryList aHistoryParentToEdited =  historyParentToEdited;
-		TreeSet editedTerms = new TreeSet();
+		TreeSet allEditedTerms = new TreeSet();
 
 		for (Iterator historyParentToEditedIterator = aHistoryParentToEdited.getHistoryItems(); historyParentToEditedIterator.hasNext();) {
 			HistoryItem historyItem = (HistoryItem) historyParentToEditedIterator.next();
 
-			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.toString());
-			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getEditedNodes());		
-			System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getClass());
+			//System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.toString());
+			//System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getEditedTerms());		
+			//System.out.println("OBOMerge: getWholeTermConflict: history item = " + historyItem.getClass());
 
-			editedTerms.addAll(historyItem.getEditedNodes());
+			allEditedTerms.addAll(historyItem.getEditedTerms());
 		}
-		return editedTerms ;
+		return allEditedTerms ;
 	}
 
 	public static ArgumentSignature getArgumentSignature() {
@@ -518,15 +518,18 @@ public class OBOMerge {
 
 	}
 
-
-
 	private static void getTermsEditedInLiveAndBranch(
 			TreeSet historyParentToBranchTreeSet,
 			TreeSet historyParentToLiveTreeSet) {
 		
+		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: historyParentToBranchTreeSet contains: " + historyParentToBranchTreeSet.toString());
+		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: historyParentToLiveTreeSet contains: " + historyParentToLiveTreeSet.toString());
+
 		historyParentToLiveTreeSet.retainAll(historyParentToBranchTreeSet);
 		
-		System.out.println("OBOMerge: getTermsEditedInLiveAndBranch Terms edited in both files are: " + historyParentToLiveTreeSet.toString());
+		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch Terms edited in both files are: " + historyParentToLiveTreeSet.toString());
+	System.out.println("The following terms were edited in both of the derived files: " + historyParentToLiveTreeSet.toString());
+	
 	}
 
 	public static OBOSession getSession(String path, OBOFileAdapter adapter)
