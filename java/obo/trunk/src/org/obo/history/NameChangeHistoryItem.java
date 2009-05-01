@@ -22,8 +22,6 @@ public class NameChangeHistoryItem extends HistoryItem {
 
 	protected String newText;
 
-	protected String target;
-
 	public NameChangeHistoryItem() {
 		this(null, null, null);
 	}
