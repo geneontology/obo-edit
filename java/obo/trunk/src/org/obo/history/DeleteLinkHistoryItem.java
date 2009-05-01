@@ -47,6 +47,13 @@ public class DeleteLinkHistoryItem extends LinkHistoryItem {
 		return "delete";
 	}
 	
+	/**
+	 * Returns a Set of the GO:ids of the terms that have been edited 
+	 * between the source and derived file that are being examined 
+	 * in the getHistory method.  
+	 * 
+	 * @return Set editedTerms
+	 */
 	@Override
 	public Set getEditedTerms() {
 		editedTerms.add(rel.getChild());
