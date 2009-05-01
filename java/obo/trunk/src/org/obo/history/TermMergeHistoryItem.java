@@ -226,4 +226,18 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 	public String toString() {
 		return "Merged " + slave + " into " + target;
 	}
+	
+	/**
+	 * Overridden to return both target and slave, as the stanzas of both terms will
+	 * have been edited in this step. 
+	 * 
+	 * @return Set editedTerms
+	 */
+	@Override
+	public Set getEditedTerms() {
+		editedTerms.add(target);
+		editedTerms.add(slave);
+		return super.getEditedTerms();
+	}
+	
 }
