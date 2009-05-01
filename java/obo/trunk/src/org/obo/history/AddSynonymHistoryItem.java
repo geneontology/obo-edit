@@ -62,9 +62,5 @@ public class AddSynonymHistoryItem extends HistoryItem {
 		return defaultForwardID(this, oldID, newIDs);
 	}
 	
-	@Override
-	public Set getEditedNodes() {
-	edited.add(target);
-		return super.getEditedNodes();
-	}
+	
 }
