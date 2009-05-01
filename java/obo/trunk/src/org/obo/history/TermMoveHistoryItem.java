@@ -90,4 +90,19 @@ public class TermMoveHistoryItem extends SubclassedMacroHistoryItem {
 		return "Moved " + rel.getChild() + " to " + target + " from "
 				+ rel.getParent();
 	}
+	
+	/**
+	 * Overridden to return the return value of rel.getChild().
+	 * This is the GO:id of the term that has moved to be a child of one term
+	 * from being a child of another term. The id of the parent terms
+	 * is not returned as this method is only intended to return the id
+	 * of terms whose stanzas would have been altered in the editing step. 
+	 * 
+	 * @return Set editedTerms
+	 */
+	@Override
+	public Set getEditedTerms() {
+		editedTerms.add(rel.getChild());
+		return super.getEditedTerms();
+	}
 }
