@@ -1,0 +1,4 @@
+# m h  dom mon dow   command
+00 00 * * * curl --silent --compressed http://go.berkeleybop.org/news4go/cron.php
+31 00 * * * /local/dumps/clone_drupal.pl -v -d /local/www/htdocs/news4go -t /local/dumps
+01 01 * * * /local/dumps/save_db.pl -v -s localhost -d drupal_news4go -t /local/dumps
