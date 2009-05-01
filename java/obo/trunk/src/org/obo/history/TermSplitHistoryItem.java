@@ -174,4 +174,16 @@ public class TermSplitHistoryItem extends SubclassedMacroHistoryItem {
 	public String toString() {
 		return "Split " + target + " to create " + result;
 	}
+	
+	/**
+	 * Overridden to return the GO:id of a term that has been split.  
+	 * 
+	 * @return Set editedTerms
+	 */
+	@Override
+	public Set getEditedTerms() {
+		editedTerms.add(target);
+		return super.getEditedTerms();
+	}
+	
 }
