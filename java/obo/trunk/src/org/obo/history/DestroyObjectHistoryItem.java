@@ -1,6 +1,7 @@
 package org.obo.history;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.obo.datamodel.*;
 
@@ -48,5 +49,17 @@ public class DestroyObjectHistoryItem extends HistoryItem {
 		if (!(o instanceof DestroyObjectHistoryItem))
 			return false;
 		return object.equals(((DestroyObjectHistoryItem) o).getObject());
+	}
+	
+	/**
+ 	 * Adds return value of object.getID() to editedTerms, rather than
+ 	 * contents of the "target" variable. 
+	 *
+	 * @return Set editedTerms
+	 */
+	@Override
+	public Set getEditedTerms() {
+		editedTerms.add(object.getID());
+		return super.getEditedTerms();
 	}
 }
