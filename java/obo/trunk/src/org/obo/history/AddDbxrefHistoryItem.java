@@ -51,11 +51,6 @@ public class AddDbxrefHistoryItem extends HistoryItem {
 				+ target;
 	}
 	
-	@Override
-	public Set getEditedNodes() {
-		edited.add(target);
-		return super.getEditedNodes();
-	}
 
 	public Dbxref getDbxref() {
 		return newref;
