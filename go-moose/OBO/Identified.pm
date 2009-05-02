@@ -41,5 +41,10 @@ sub get_db_local_id {
     return ('_',$id);
 }
 
+sub equals {
+    my $self = shift;
+    return $self->id eq shift->id;
+}
+
 1;
 

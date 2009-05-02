@@ -90,7 +90,10 @@ sub parse_body {
         if ($qualh{not}) {
             # TODO
         }
-        my $xp = OBO::ClassExpression->parse_idexpr($g,$annotxp);
+        if ($annotxp) {
+            my $xp = OBO::ClassExpression->parse_idexpr($g,$annotxp);
+            # TODO:
+        }
         push(@{$g->annotations},$annot);
     }
     return;
