@@ -101,16 +101,20 @@ sub parse_body {
             push(@{$g->links},$s);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
-            my $rn = $g->noderef($1);
+            my $rn = $g->relation_noderef($1);
             my $tn = $g->term_noderef($2);
             my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
             push(@{$g->links},$s);
         }
-        elsif (/^is_(\w+):\s(\w+)/) {
+        elsif (/^is_(\w+):\s*(\w+)/) {
             my $att = $1;
             my $val = $2 eq 'true';
             $n->$att($val); # TODO : check
             #$n->{$att} = $val; # TODO : check
+        }
+        elsif (/^transitive_over:\s*(\W+)/) {
+            my $rn = $g->relation_noderef($1);
+            $n->transitive_over($rn);
         }
         else {
             # ...

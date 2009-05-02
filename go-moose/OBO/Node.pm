@@ -25,6 +25,7 @@ sub as_string {
 }
 
 1;
+
 =head1 NAME
 
 OBO::Node

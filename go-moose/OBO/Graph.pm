@@ -8,7 +8,6 @@ use OBO::TermNode;
 use OBO::RelationNode;
 use overload ('""' => 'as_string');
 
-#has 'statements' => (is => 'rw', isa => 'ArrayRef[OBO::Statement]', default=>sub{[]});
 has 'relations' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
 has 'terms' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
 has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
@@ -24,6 +23,13 @@ sub add_term {
 sub add_relation {
     my $self = shift;
     push(@{$self->relations},@_);
+    return;
+}
+
+sub add_links {
+    my $self = shift;
+    my $links = shift;
+    push(@{$self->links}, @$links);
     return;
 }
 
@@ -58,6 +64,15 @@ sub relation_noderef {
     return $n;
 }
 
+sub get_target_links {
+    my $self = shift;
+    my $n = shift;
+    my $nid = $n->id;
+    # TODO: use an index
+    my @links =
+        grep { $_->node->id eq $nid } @{$self->links};
+    return \@links;
+}
 
 sub as_string {
     my $self = shift;

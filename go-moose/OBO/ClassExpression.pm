@@ -10,6 +10,7 @@ sub parse_idexpr {
     my $g = shift;
     my $expr = shift;
     return unless $expr;
+    print STDERR "Parsing: $expr\n";
     my @toks = split(/([\(\)\^\|])/,$expr);
     return _parse_idexpr_toks($g,\@toks);
 }
@@ -17,7 +18,7 @@ sub parse_idexpr {
 sub _parse_idexpr_toks {
     my $g = shift;
     my $toks = shift;
-    print STDERR "Parsing: @$toks\n";
+    print STDERR "Parsing tokens: @$toks\n";
     if (!@$toks) {
         return;
     }
