@@ -32,6 +32,26 @@ OBO::Node
 
 =head1 SYNOPSIS
 
+  printf '%s "%s"', $n->id, $n->label;
+
+=head1 DESCRIPTION
+
+ A unit in a graph. The Node class hierarchy:
+
+ * OBO::ClassNode 
+ ** OBO::TermNode 
+ ** OBO::ClassExpression
+ * OBO::RelationNode
+ * OBO::InstanceNode
+
+With a simple ontology graph, the core units are TermNodes.
+
+=back
+
+=head1 SEE ALSO
+
+OBO::Graph
+
 =cut
 
 
