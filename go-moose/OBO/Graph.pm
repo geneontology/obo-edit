@@ -86,3 +86,25 @@ sub as_string {
 1;
 
 
+=head1 NAME
+
+OBO::Graph
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A collection of inter-relation OBO::Node objects. With a simple
+ontology these are typically OBO::TermNode objects, although other
+graphs e.g. instance graphs are possible.
+
+This module deliberately omits any kind of graph traversal
+functionality. This is done by an OBO::InferenceEngine.
+
+=head1 SEE ALSO
+
+OBO::Node
+
+OBO::LinkStatement
+
+=cut

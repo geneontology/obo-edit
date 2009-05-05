@@ -11,9 +11,22 @@ coerce 'OBO::ClassNode'
 
 1;
 
-=head2 Documentation
+=head1 NAME
 
-A class is a collection of instances. Classes can either be explicitly named (OBO::TermNode) or they can be logical boolean expressions (OBO::ClassExpression)
+OBO::ClassNode
+
+=head1 SYNOPSIS
+
+  printf '%s "%s"', $n->id, $n->label;
+
+=head1 DESCRIPTION
+
+Formally, a class is a collection of instances. However, in many cases these are not instantiated in perl
+
+Classes can either be explicitly named (OBO::TermNode) or they can be logical boolean expressions (OBO::ClassExpression)
+
+=head1 SEE ALSO
+
+OBO::Graph
 
 =cut
-
