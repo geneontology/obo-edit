@@ -20,7 +20,9 @@ has reflexive => ( is=>'rw', isa=>'Bool' );
 has irreflexive => ( is=>'rw', isa=>'Bool' );
 has functional => ( is=>'rw', isa=>'Bool' );
 has inverse_functional => ( is=>'rw', isa=>'Bool' );
-has transitive_over => ( is=>'rw', isa=>'OBO::RelationNode' );
+has transitive_over => ( is=>'rw', isa=>'OBO::RelationNode');
+has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[OBO::RelationNode]]' );
+has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[OBO::RelationNode]' );
 
 sub post_init {
     my $self = shift;
@@ -42,5 +44,23 @@ sub is_subsumption {
 sub propagates_over_is_a {
     return 1; # by default all links propagate over is_a
 }
+
+=head1 NAME
+
+OBO::RelationNode
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+An OBO::Node that acts as a predicate in an OBO::Statement. Relations can have particular properties such as transitivity that are used by an OBO::InferenceEngine
+
+=head1 SEE ALSO
+
+http://www.geneontology.org/GO.format.obo-1_3.shtml
+
+http://obofoundry.org/ro
+
+=cut
 
 1;

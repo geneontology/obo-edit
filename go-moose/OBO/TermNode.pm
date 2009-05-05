@@ -6,8 +6,22 @@ with 'OBO::Definable';
 
 1;
 
-=head2 Documentation
+=head1 NAME
+
+OBO::TermNode
+
+=head1 SYNOPSIS
+
+  printf '%s "%s" def: "%s"', $n->id, $n->label, $n->definition;
+
+=head1 DESCRIPTION
 
 Core element in an ontology. 
 
+=head1 SEE ALSO
+
+OBO::Graph
+
 =cut
+
+
