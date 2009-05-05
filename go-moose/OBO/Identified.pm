@@ -1,3 +1,20 @@
+=head1 NAME
+
+OBO::Identified
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A role for any kind of entity that is identifiable. Provides standard
+metadata and paper-trail methods. Based on OBO-Format
+
+=head2 TBD
+
+Is this over-abstraction? This could be simply mixed in with Node
+
+=cut
+
 package OBO::Identified;
 use Moose::Role;
 

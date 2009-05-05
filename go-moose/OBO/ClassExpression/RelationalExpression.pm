@@ -20,8 +20,21 @@ sub as_string {
 
 1; 
 
-=head2 Documentation
+=head1 NAME
 
-Same as Class Restriction in OWL
+OBO::ClassExpression::RelationalExpression
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+An OBO::ClassExpression in which the members are constructed by
+applying a relation. For example, "the set of all things that are
+part_of an oocyte". In this expression, the relation is part_of and
+the target is oocyte.
+
+=head2 OWL Translation
+
+Same as a Class Restriction in OWL
 
 =cut

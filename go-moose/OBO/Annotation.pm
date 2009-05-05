@@ -29,7 +29,7 @@ An OBO::LinkStatement that has OBO::Evidence attached
 Annotations need not be stored in the main ontology OBO::Graph, but this is possible
 
 =head2 Use in GO
-
+ 
 In GO, annotations are also thought of as associations between genes
 and OBO::TermNode objects. The statement is 'about' a gene, i.e. geneG
 has_function termF, so the node points to a gene and the target points
