@@ -1,3 +1,23 @@
+=head1 NAME
+
+OBO::Labeled
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A role for any kind of entity that can have a human-readable label
+attached: both primary label and alternate labels (OBO::Synonym)
+
+For genes the primary label is a symbol. For OBO::TermNode objects
+(units in an ontology) it is the class name
+
+=head2 TBD
+
+Is this over-abstraction? This could be simply mixed in with Node
+
+=cut
+
 package OBO::Labeled;
 use Moose::Role;
 use OBO::Synonym;

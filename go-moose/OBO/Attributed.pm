@@ -1,3 +1,19 @@
+=head1 NAME
+
+OBO::Attribute
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A role for any kind of entity that can be attributed to some source (annotated). Here 'entity' includes OBO::Statement objects
+
+=head2 TBD
+
+Is this over-abstraction? This could be simply mixed in with Statement
+
+=cut
+
 package OBO::Attributed;
 use Moose::Role;
 use strict;

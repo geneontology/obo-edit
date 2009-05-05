@@ -1,3 +1,15 @@
+=head1 NAME
+
+OBO::Synonym
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+An alternate label for an OBO::Labeled object
+
+=cut
+
 package OBO::Synonym;
 use Moose;
 use strict;
