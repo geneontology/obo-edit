@@ -12,7 +12,7 @@ my $fh = new FileHandle("t/data/test-fb.gaf");
 my $parser = new OBO::Parsers::GAFParser(fh=>$fh);
 $parser->max_chunk(10);
 while ($parser->parse_chunk) {
-    print STDERR "Parsed chunk:\n";
+    print "Parsed chunk:\n";
 }
 
 print $parser->graph;

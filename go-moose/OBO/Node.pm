@@ -13,6 +13,7 @@ coerce 'OBO::Node'
 has 'source' => (is => 'rw', isa => 'OBO::Node');
 
 use overload ('""' => 'as_string');
+
 sub as_string {
     my $self = shift;
     if ($self->label) {
@@ -22,6 +23,11 @@ sub as_string {
         return $self->id;
     }
     return $self;
+}
+
+sub equals {
+    my $self = shift;
+    return shift->id eq $self->id;
 }
 
 1;

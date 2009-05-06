@@ -19,6 +19,7 @@ my $g = $parser->graph;
 
 my $ie = new OBO::InferenceEngine(graph=>$g);
 my $neuron = $g->noderef('CL:0000540');
+printf "neuron = $neuron\n";
 #my $links = $ie->backward_chain($neuron);
 my $links = $ie->get_inferred_target_links($neuron);
 foreach (@$links) {
