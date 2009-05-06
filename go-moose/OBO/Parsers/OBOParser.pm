@@ -106,6 +106,23 @@ sub parse_body {
             my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
             push(@{$g->links},$s);
         }
+        elsif (/^intersection_of:/) {
+            # TODO: generalize
+            if (/^intersection_of:\s*(\S+)\s+(\S+)/) {
+                my $rn = $g->relation_noderef($1);
+                my $tn = $g->term_noderef($2);
+                my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
+                push(@{$g->links},$s);
+            }
+            elsif (/^intersection_of:\s*(\S+)/) {
+                my $tn = $g->relation_noderef($1);
+                my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
+                push(@{$g->links},$s);
+            }
+            else {
+                $self->throw("badly formatted intersection: $_");
+            }
+        }
         elsif (/^is_(\w+):\s*(\w+)/) {
             my $att = $1;
             my $val = $2 eq 'true';
@@ -169,3 +186,53 @@ sub _parse_xrefs {
 }
 
 1;
+
+=head1 NAME
+
+OBO::Parsers::OBOParser
+
+=head1 SYNOPSIS
+
+  my $fh = new FileHandle("t/data/cell.obo");
+  my $parser = new OBO::Parsers::OBOParser(fh=>$fh);
+  $parser->parse;
+  print $parser->graph;
+
+  my $writer = new OBO::Writers::OBOWriter;
+  $writer->graph($parser->graph);
+  $writer->write();
+
+=head1 DESCRIPTION
+
+An OBO::Parsers::Parser that parses OBO Files.
+
+=head2 Term stanzas
+
+These are converted to OBO::TermNode objects
+
+=head2 Typedef stanzas
+
+These are converted to OBO::RelationNode objects
+
+=head2 Instance stanzas
+
+These are converted to OBO::InstanceNode objects
+
+=head2 Statements
+
+is_a and relationship tags are converted to OBO::LinkStatement objects and added to the graph
+
+=head2 intersection_of tags
+
+These are added to the graph as OBO::LinkStatement objects, with is_intersection=>1
+
+You can call 
+
+  $g->convert_intersection_links_to_logical_definitions
+
+To move these links from the graph to $term->logical_definition
+
+TBD: do this as the default?
+TBD: generalize for all links? sometimes it is convenient to have the links available in the Node object...?
+
+=cut
