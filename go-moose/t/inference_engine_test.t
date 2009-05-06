@@ -10,6 +10,7 @@ use OBO::Writers::OBOWriter;
 use OBO::InferenceEngine;
 use FileHandle;
 
+# NOT YET A TRUE TEST
 
 my $fh = new FileHandle("t/data/cell.obo");
 my $parser = new OBO::Parsers::OBOParser(fh=>$fh);

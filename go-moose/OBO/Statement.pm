@@ -12,6 +12,7 @@ has 'relation' => ( is=>'ro', isa=>'OBO::RelationNode', coerce=>1 );
 has 'target' => ( is=>'ro', isa=>'Item');
 has 'inferred' => ( is=>'ro', isa=>'Bool');
 has 'negated' => ( is=>'ro', isa=>'Bool');
+has 'is_intersection' => ( is=>'ro', isa=>'Bool');
 
 
 use overload ('""' => 'as_string');

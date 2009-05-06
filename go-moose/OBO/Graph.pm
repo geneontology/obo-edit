@@ -74,6 +74,47 @@ sub get_target_links {
     return \@links;
 }
 
+# logical definitions can be directly attached to TermNodes, or they can be
+# present in the graph as intersection links
+# TBD : move to utility class?
+use OBO::ClassExpression::RelationalExpression;
+use OBO::ClassExpression::Intersection;
+sub convert_intersection_links_to_logical_definitions {
+    my $self = shift;
+    my @xplinks = ();
+    my @nlinks = ();
+    my %xpnodeh = ();
+    foreach (@{$self->links}) {
+        if($_->is_intersection) {
+            push(@xplinks, $_);
+            push(@{$xpnodeh{$_->node->id}}, $_);
+        }
+        else {
+            push(@nlinks, $_);
+        }
+    }
+    if (@xplinks) {
+        $self->links(\@nlinks);
+        foreach my $nid (keys %xpnodeh) {
+            my $n = $self->noderef($nid);
+            my @exprs =
+                map {
+                    if ($_->relation->is_subsumption) {
+                        $_->target;
+                    }
+                    else {
+                        new OBO::ClassExpression::RelationalExpression(relation=>$_->relation, target=>$_->target);
+                    }
+            } @{$xpnodeh{$nid}};
+            if (@exprs < 2) {
+                $self->throw("invalid intersection links for $nid. Need at least 2, you have @exprs");
+            }
+            $n->logical_definition(new OBO::ClassExpression::Intersection(arguments=>\@exprs));
+        }
+    }
+    return;
+}
+
 sub as_string {
     my $self = shift;
     return
