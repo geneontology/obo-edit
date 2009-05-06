@@ -29,6 +29,7 @@ sub write_body {
 sub write_stanza {
     my $self = shift;
     my $node = shift;
+    my $g = $self->graph;
 
     $self->nl;
     my $stanzaclass = 'Instance';
@@ -54,9 +55,33 @@ sub write_stanza {
     $self->tagval('subset',$_->id) foreach @{$node->in_subsets || []};
     $self->ntagval('synonym',
         _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach @{$node->synonyms || []};
+
+    # xref
+
     if ($node->isa('OBO::RelationNode')) {
+        $self->tagval('domain', $node->domain);
+        $self->tagval('range', $node->range);
         foreach (OBO::RelationNode->unary_property_names) {
             $self->unary("is_$_") if $node->$_();
+        }
+    }
+
+    foreach (@{$g->get_target_links($node)}) {
+        if ($_->is_intersection) {
+            if ($_->relation->is_subsumption) {
+                $self->tagval(intersection_of => $_->target->id);
+            }
+            else {
+                $self->tagvals(intersection_of => ($_->relation->id, $_->target->id));
+            }
+        }
+        else {
+            if ($_->relation->is_subsumption) {
+                $self->tagval(is_a => $_->target->id);
+            }
+            else {
+                $self->tagvals(relationship => ($_->relation->id, $_->target->id));
+            }
         }
     }
     return;
@@ -80,7 +105,12 @@ sub tagval {
     my $val = shift;
     return unless defined $val;
     $self->printf("%s: %s\n",$tag,$val);
-        
+}
+
+sub tagvals {
+    my $self = shift;
+    my $tag = shift;
+    $self->printf("%s: %s\n",$tag,join(' ',@_));
 }
 
 sub _quote {

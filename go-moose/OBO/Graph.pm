@@ -1,16 +1,20 @@
 package OBO::Graph;
 use Moose;
+our $VERSION='0.01-pre';
 use strict;
 use OBO::Statement;
 use OBO::Annotation;
 use OBO::Node;
 use OBO::TermNode;
 use OBO::RelationNode;
+use OBO::Indexes::StatementIndex;
 use overload ('""' => 'as_string');
 
 has 'relations' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
 has 'terms' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
-has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
+#has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
+has 'link_ix' => (is => 'rw', isa => 'OBO::Indexes::StatementIndex', 
+                  default=>sub{ new OBO::Indexes::StatementIndex() });
 has 'annotations' => (is => 'rw', isa => 'ArrayRef[OBO::Annotation]', default=>sub{[]});
 has 'node_index' => (is => 'rw', isa => 'HashRef[OBO::Node]', default=>sub{{}});
 
@@ -26,7 +30,27 @@ sub add_relation {
     return;
 }
 
-sub add_links {
+sub links { shift->link_ix->statements(@_) }
+sub add_link { shift->link_ix->add_statement(@_) }
+sub add_links { shift->link_ix->add_statements(@_) }
+
+sub get_target_links {
+    my $self = shift;
+    my $n = shift;
+    return $self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n);
+}
+
+sub xxxget_target_links {
+    my $self = shift;
+    my $n = shift;
+    my $nid = $n->id;
+    # TODO: use an index
+    my @links =
+        grep { $_->node->id eq $nid } @{$self->links};
+    return \@links;
+}
+
+sub xxxadd_links {
     my $self = shift;
     my $links = shift;
     push(@{$self->links}, @$links);
@@ -64,15 +88,6 @@ sub relation_noderef {
     return $n;
 }
 
-sub get_target_links {
-    my $self = shift;
-    my $n = shift;
-    my $nid = $n->id;
-    # TODO: use an index
-    my @links =
-        grep { $_->node->id eq $nid } @{$self->links};
-    return \@links;
-}
 
 # logical definitions can be directly attached to TermNodes, or they can be
 # present in the graph as intersection links

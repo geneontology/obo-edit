@@ -98,13 +98,13 @@ sub parse_body {
         elsif (/^is_a:\s*(\S+)/) {
             my $tn = $g->term_noderef($1);
             my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
-            push(@{$g->links},$s);
+            $g->add_link($s);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
             my $tn = $g->term_noderef($2);
             my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
-            push(@{$g->links},$s);
+            $g->add_link($s);
         }
         elsif (/^intersection_of:/) {
             # TODO: generalize
@@ -112,12 +112,12 @@ sub parse_body {
                 my $rn = $g->relation_noderef($1);
                 my $tn = $g->term_noderef($2);
                 my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
-                push(@{$g->links},$s);
+                $g->add_link($s);
             }
             elsif (/^intersection_of:\s*(\S+)/) {
                 my $tn = $g->relation_noderef($1);
                 my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
-                push(@{$g->links},$s);
+                $g->add_link($s);
             }
             else {
                 $self->throw("badly formatted intersection: $_");
