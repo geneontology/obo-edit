@@ -1,5 +1,6 @@
 package org.oboedit.launcher;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -188,6 +189,20 @@ public class OBO2Database {
 				readConfig.getReadPaths().add(args[i]);
 			}
 		}
+		if (!Arrays.asList(args).contains("-u")) {
+		    //username wasn't given, check for username in postgres environment
+		    String pguser = System.getenv("PGUSER");
+		    if (pguser != null) {
+		        writeConfig.setDbUsername(pguser);
+		    }
+		}
+		if (!Arrays.asList(args).contains("-p")) {
+            //password wasn't given, check for password in postgres environment
+            String pgpassword = System.getenv("PGPASSWORD");
+            if (pgpassword != null) {
+                writeConfig.setDbPassword(pgpassword);
+            }
+        }
 		if (readConfig.getReadPaths().size() < 1) {
 			logger.info("You must specify at least one file to load.");
 			printUsage(1);
