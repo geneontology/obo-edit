@@ -1,0 +1,63 @@
+# $Id: robots.txt,v 1.9.2.1 2008/12/10 20:12:19 goba Exp $
+#
+# robots.txt
+#
+# This file is to prevent the crawling and indexing of certain parts
+# of your site by web crawlers and spiders run by sites like Yahoo!
+# and Google. By telling these "robots" where not to go on your site,
+# you save bandwidth and server resources.
+#
+# This file will be ignored unless it is at the root of your host:
+# Used:    http://example.com/robots.txt
+# Ignored: http://example.com/site/robots.txt
+#
+# For more information about the robots.txt standard, see:
+# http://www.robotstxt.org/wc/robots.html
+#
+# For syntax checking, see:
+# http://www.sxw.org.uk/computing/robots/check.html
+
+User-agent: *
+Crawl-delay: 10
+# Directories
+Disallow: /news4go/includes/
+Disallow: /news4go/misc/
+Disallow: /news4go/modules/
+Disallow: /news4go/profiles/
+Disallow: /news4go/scripts/
+Disallow: /news4go/sites/
+Disallow: /news4go/themes/
+# Files
+Disallow: /news4go/CHANGELOG.txt
+Disallow: /news4go/cron.php
+Disallow: /news4go/INSTALL.mysql.txt
+Disallow: /news4go/INSTALL.pgsql.txt
+Disallow: /news4go/install.php
+Disallow: /news4go/INSTALL.txt
+Disallow: /news4go/LICENSE.txt
+Disallow: /news4go/MAINTAINERS.txt
+Disallow: /news4go/update.php
+Disallow: /news4go/UPGRADE.txt
+Disallow: /news4go/xmlrpc.php
+# Paths (clean URLs)
+Disallow: /news4go/admin/
+Disallow: /news4go/comment/reply/
+Disallow: /news4go/contact/
+Disallow: /news4go/logout/
+Disallow: /news4go/node/add/
+Disallow: /news4go/search/
+Disallow: /news4go/user/register/
+Disallow: /news4go/user/password/
+Disallow: /news4go/user/login/
+# Paths (no clean URLs)
+Disallow: /news4go/?q=admin/
+Disallow: /news4go/?q=comment/reply/
+Disallow: /news4go/?q=contact/
+Disallow: /news4go/?q=logout/
+Disallow: /news4go/?q=node/add/
+Disallow: /news4go/?q=search/
+Disallow: /news4go/?q=user/password/
+Disallow: /news4go/?q=user/register/
+Disallow: /news4go/?q=user/login/
+# No GOOSE
+Disallow: /goose
