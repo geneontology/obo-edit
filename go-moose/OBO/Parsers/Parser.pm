@@ -94,3 +94,16 @@ sub unshift_line {
 }
 
 1;
+
+
+=head1 NAME
+
+OBO::Parsers::Parser
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+Base class for all parsers. Parsers take formats (e.g. OBO::Parsers::OBOParser) and generate objects, typically some combination of OBO::Node and OBO::Statement objects
+
+=cut
