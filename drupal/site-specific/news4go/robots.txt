@@ -61,3 +61,4 @@ Disallow: /news4go/?q=user/register/
 Disallow: /news4go/?q=user/login/
 # No GOOSE
 Disallow: /goose
+Disallow: /cgi-bin
