@@ -23,6 +23,8 @@ has inverse_functional => ( is=>'rw', isa=>'Bool' );
 has transitive_over => ( is=>'rw', isa=>'OBO::RelationNode');
 has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[OBO::RelationNode]]' );
 has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[OBO::RelationNode]' );
+has domain => ( is=>'rw', isa=>'OBO::ClassNode');
+has range => ( is=>'rw', isa=>'OBO::ClassNode');
 
 sub post_init {
     my $self = shift;
