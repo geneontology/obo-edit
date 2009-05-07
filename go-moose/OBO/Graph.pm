@@ -40,31 +40,18 @@ sub get_target_links {
     return $self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n);
 }
 
-sub xxxget_target_links {
-    my $self = shift;
-    my $n = shift;
-    my $nid = $n->id;
-    # TODO: use an index
-    my @links =
-        grep { $_->node->id eq $nid } @{$self->links};
-    return \@links;
-}
-
-sub xxxadd_links {
-    my $self = shift;
-    my $links = shift;
-    push(@{$self->links}, @$links);
-    return;
-}
-
 sub noderef {
     my $self = shift;
     #my $fac = shift || sub {new OBO::Node(id=>shift)};
     my $id = shift;
     my $ix = $self->node_index;
     if (!$ix->{$id}) {
+        #print STDERR "Adding node: $id\n";
         $ix->{$id} = new OBO::Node(id=>$id);
         #$ix->{$id} = $fac->($id);
+    }
+    else {
+        #print STDERR "Already have referenced node: $id\n";
     }
     return $ix->{$id};
 }

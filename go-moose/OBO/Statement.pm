@@ -32,6 +32,15 @@ sub equals {
     return 0;
 }
 
+sub matches {
+    my $self = shift;
+    my %h = @_;
+    foreach my $k (keys %h) {
+        my $v = $self->$k;
+        return 0 unless $v->id eq $h{$k};
+    }
+    return 1;
+}
 
 =head1 NAME
 
