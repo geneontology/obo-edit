@@ -11,6 +11,7 @@ coerce 'OBO::Node'
       => via { new OBO::Node(id=>$_) };
 
 has 'source' => (is => 'rw', isa => 'OBO::Node');
+has 'full_name' => (is => 'rw', isa => 'Str');  # e.g. for genes. TBD - make this wrap to synonyms?
 
 use overload ('""' => 'as_string');
 
