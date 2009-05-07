@@ -39,7 +39,7 @@ coerce 'Date'
 has source => ( is=>'rw', isa=>'OBO::Node', coerce=>1);
 has provenance => ( is=>'rw', isa=>'OBO::Node', coerce=>1);
 has date => ( is=>'rw', isa=>'Date', coerce=>1); # TODO -- coerce
-has xrefs => ( is=>'rw', isa=>'ArrayRef[Str]'); 
+has xrefs => ( is=>'rw', isa=>'ArrayRef[Str]'); # TODO -- make these nodes?
 has alt_ids => ( is=>'rw', isa=>'ArrayRef[Str]'); 
 has is_anonymous => ( is=>'rw', isa=>'Bool'); 
 has comment => ( is=>'rw', isa=>'Str');  # TODO - multivalued?

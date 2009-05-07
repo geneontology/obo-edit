@@ -28,7 +28,7 @@ sub write_body {
              $gene->label,
              '',         # qualifier
              $ann->target->id,
-             $ann->provenance->id,
+             join('|',map { $_ } (@{$ann->provenance->xrefs || []}, $ann->provenance->id)),
              $ann->evidence->type->id,
              $ann->evidence->with_str, # with,
              _aspect($ann->target), # aspect
