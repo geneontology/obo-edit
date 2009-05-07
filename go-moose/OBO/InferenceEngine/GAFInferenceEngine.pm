@@ -41,6 +41,16 @@ annotation to P, if it is possible to infer a F part_of P link AND the
 inferred annotation is not redundant with either existing annotations
 OR with another inference
 
+This tool should produce *sound* inferences: that is, an annotation
+should only be propagated over is_a and part_of. The output file
+should be *minimally redundant* : the only additional annotations
+produced should be inferred annotations in an ontology not identical
+to the ontology of the original asserted annotation. A further
+constraint is that the inferred annotation would not be redundant with
+any asserted annotations within the inferred ontology.
+
+Generated annotations would have code IC and be WITH the GO ID of the original asserted annotation.
+
 =cut
 
 sub infer_annotations {
