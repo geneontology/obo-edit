@@ -45,7 +45,7 @@ sub statements_by_node_id {
     # CALL DBIx::Class USING AMIGO HERE
 
     $schema = $self->schema;
-    my $rrs = $self->{SCHEMA}->resultset('Term2Term')->search({ 'term2.acc' => $x });
+    my $rrs = $schema->resultset('Term2Term')->search({ 'term2.acc' => $x });
     my @sl = map { $self->convert($_) } @$rrs;
     return \@sl;
 }
@@ -56,7 +56,7 @@ sub statements_by_target_id {
     # CALL DBIx::Class USING AMIGO HERE
 
     $schema = $self->schema;
-    my $rrs = $self->{SCHEMA}->resultset('Term2Term')->search({ 'term1.acc' => $x });
+    my $rrs = $schema->resultset('Term2Term')->search({ 'term1.acc' => $x });
     my @sl = map { $self->convert($_) } @$rrs;
     return \@sl;
 }
@@ -84,6 +84,8 @@ do not use this method directly
 
 =head1 DESCRIPTION
 
-Overrides OBO::Indexes::StatementIndex to provide direct DB connectivity to the AmiGO/GO Database
+Overrides OBO::Indexes::StatementIndex (as used in OBO::Graph) to
+provide direct DB connectivity to the AmiGO/GO Database. Uses the
+Amigo DBIx::Class layer
 
 =cut

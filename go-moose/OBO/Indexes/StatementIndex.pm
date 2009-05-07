@@ -87,11 +87,22 @@ do not use this method directly
 
 Stores a collection of OBO::Statement objects, optimized for fast
 access. In general you should not need to use this directly - use
-OBO::Graph instead
+OBO::Graph instead, which includes different indexes for links,
+annotations etc
 
-=head1 BINDING TO A DATABASE
+=head2 TODO
+
+Currently there are 2 indexes, by node (subject) and by target. There
+are a limited amount of query options.
+
+Eventually it should support any combination of S-R-T indexing, and
+any kind of S-R-T access
+
+We also want a NodeIndex
+
+=head2 Binding to a database
 
 This index is in-memory. It can be extended to be bound to a database
-(e.g. the GO Database)
+(e.g. the GO Database) by overriding the methods
 
 =cut
