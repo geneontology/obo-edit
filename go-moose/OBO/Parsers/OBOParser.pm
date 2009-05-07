@@ -63,6 +63,7 @@ sub parse_body {
             }
             else {
             }
+
             if (!$n) {
                 die "cannot parse: $_";
             }
@@ -115,7 +116,7 @@ sub parse_body {
                 $g->add_link($s);
             }
             elsif (/^intersection_of:\s*(\S+)/) {
-                my $tn = $g->relation_noderef($1);
+                my $tn = $g->term_noderef($1);
                 my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
                 $g->add_link($s);
             }

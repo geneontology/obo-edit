@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-
+use strict;
 use OBO::Graph;
 use OBO::Statement;
 use OBO::LinkStatement;
@@ -9,6 +9,7 @@ use OBO::Parsers::GAFParser;
 use OBO::Parsers::OBOParser;
 use OBO::Writers::GAFWriter;
 use OBO::InferenceEngine;
+use OBO::InferenceEngine::GAFInferenceEngine;
 use DateTime;
 use FileHandle;
 
@@ -41,72 +42,28 @@ if (!$ontf) {
 my $obo_parser = new OBO::Parsers::OBOParser(file=>$ontf);
 $obo_parser->parse;
 my $ontg = $obo_parser->graph;
-my $ie = new OBO::InferenceEngine(graph=>$ontg);
+my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 my %nodemap = ();
 
 # iterate through annotations writing new ICs
 my @ics = ();
-my $got_h = ();
 foreach my $f (@ARGV) {
-    my $parser = new OBO::Parsers::GAFParser(file=>$f);
+    my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
     # iterate through one chunk at a time
-    while ($parser->parse_chunk(10000)) {
-        push(@ics, infer_annotations($parser->graph->annotations));
-        $parser->graph(new OBO::Graph);
+    while ($gafparser->parse_chunk(10000)) {
+        push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
+        # clear
+        $gafparser->graph(new OBO::Graph);
     }
     my $icgraph = new OBO::Graph();
-    my @ic_anns =
-        map {
-            new OBO::Annotation(node => $_->[0],
-                                target => $ontg->term_noderef($_->[1]),
-                                provenance => $_->[2],
-                                evidence => new OBO::Evidence(type=>$ontg->term_noderef('IC'),
-                                                              supporting_entities => [$_->[1]]),
-                                source=>'GOC',
-                                date=>DateTime->today)
-    } @ics;
-    $icgraph->annotations(\@ic_anns);
+    $icgraph->annotations(\@ics);
     my $w = new OBO::Writers::GAFWriter;
     $w->graph($icgraph);
     $w->write;
 }
 exit 0;
 
-sub infer_annotations {
-    my $anns = shift;
-    my @ics = ();
-    foreach my $ann (@$anns) {
-        my $t = $ann->target;
-        my $tid = $t->id;
-        my $t_ns = $t->namespace;
-        my $gene = $ann->node;
-        if (!$nodemap{$tid}) {
-            print STDERR "building nodemap for $tid\n";
-            my $xlinks = $ie->get_inferred_target_links($t);
-            my %candidate_h = ();
-            foreach my $xlink (@$xlinks) {
-                next unless $xlink->relation->id eq 'part_of';
-                next unless $xlink->target->namespace ne $t_ns;
-                $candidate_h{$xlink->target->id} = 1;
-                print STDERR " xlink: $xlink\n";
-            }
-            printf STDERR " candidates for $tid: %s\n", join('; ', keys %candidate_h);
-            
-            $nodemap{$tid} =
-                $ie->get_nonredundant_set([keys %candidate_h]);
-        }
-        if (@{$nodemap{$tid}}) {
-            if (!$got_h{$gene}{$t}) {
-                push(@ics, map {[$gene,$_,$ann->provenance]} @{$nodemap{$tid}});
-                #printf STDERR "$gene $t\n";
-            }
-            $got_h{$gene}{$t} = 1;
-        }
-        
-    }
-    return @ics;
-}
 
 # find 
 sub calculate_inference_graph {
