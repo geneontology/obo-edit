@@ -7,7 +7,7 @@ use Moose::Util::TypeConstraints;
 
 coerce 'OBO::RelationNode'
     => from 'OBO::Node'
-    => via { new OBO::RelationNode(%$_) }
+    => via { bless $_, 'OBO::RelationNode' }
     => from 'Str'
     => via { my $rel = new OBO::RelationNode(id=>$_); $rel->post_init;return $rel; };  # TODO -- is there a more elegant way of doing this?
 
