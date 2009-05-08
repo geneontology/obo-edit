@@ -3,14 +3,21 @@ use Moose;
 use Carp;
 use strict;
 use OBO::Statement;
+use OBO::LinkStatement;
 use OBO::Node;
 use OBO::RelationNode;
 
 has ixN => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
 has ixT => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
 
-# TODO - use Set::Object
+sub create_statement {
+    my $self = shift;
+    my $s = OBO::LinkStatement->new(@_); # TODO - other types
+    $self->add_statement($s);
+    return $s;
+}
 
+# TODO - use Set::Object?
 sub add_statement {
     my $self = shift;
     $self->add_statements([@_]);
@@ -70,6 +77,27 @@ sub statements_by_target_id {
     my $self = shift;
     my $x = shift;
     return $self->ixT->{$x} || [];
+}
+
+sub statements_by_obj {
+    my $self = shift;
+    my $s = shift;
+    my $sl;
+    if ($s->node) {
+        $sl = $self->statements_by_node_id($s->node->id);
+    }
+    elsif ($s->target) {
+        $sl = $self->statements_by_target_id($s->target->id);
+    }
+    else {
+        $sl = $self->statements;
+    }
+
+    my $rel = $s->relation;
+    if ($rel) {
+        $sl = [grep {$_->relation && $_->relation->id eq $rel->id} @$sl];
+    }
+    return $sl;
 }
 
 1;

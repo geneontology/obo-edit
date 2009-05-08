@@ -6,7 +6,7 @@ use Moose::Util::TypeConstraints;
 
 coerce 'OBO::NegatedStatement'
     => from 'OBO::Statement'
-    => via { new OBO::NeagtedStatement(statement=>$_) };
+    => via { new OBO::NegatedStatement(statement=>$_) };
 
 has 'statement' => (is=>'ro', isa=>'OBO::Statement',handles=>qr/.*/);
 1;

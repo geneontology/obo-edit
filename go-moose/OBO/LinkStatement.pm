@@ -5,6 +5,7 @@ extends 'OBO::Statement';
 use OBO::Node;
 
 has 'target' => ( is=>'ro', isa=>'OBO::Node', coerce=>1 );
+has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
 
 =head1 NAME
 
