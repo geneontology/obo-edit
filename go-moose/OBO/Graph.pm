@@ -1,3 +1,26 @@
+=head1 NAME
+
+OBO::Graph
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A collection of inter-relation OBO::Node objects. With a simple
+ontology these are typically OBO::TermNode objects, although other
+graphs e.g. instance graphs are possible.
+
+This module deliberately omits any kind of graph traversal
+functionality. This is done by an OBO::InferenceEngine.
+
+=head1 SEE ALSO
+
+OBO::Node
+
+OBO::LinkStatement
+
+=cut
+
 package OBO::Graph;
 use Moose;
 our $VERSION='0.01-pre';
@@ -34,10 +57,24 @@ sub links { shift->link_ix->statements(@_) }
 sub add_link { shift->link_ix->add_statement(@_) }
 sub add_links { shift->link_ix->add_statements(@_) }
 
+=head2 get_target_links (subject OBO::Node, relation OBO::RelationNode OPTIONAL)
+
+given a subject (child), get target (parent) links
+
+if relation is specified, also filters results on relation
+
+=cut
+
 sub get_target_links {
     my $self = shift;
     my $n = shift;
-    return $self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n);
+    my $rel = shift;
+    my $sl = $self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n);
+    if ($rel) {
+        my $rid = ref($rel) ? $rel->id : $rel; 
+        return [grep {$_->relation->id eq $rid} @$sl];
+    }
+    return $sl;
 }
 
 sub noderef {
@@ -128,26 +165,3 @@ sub as_string {
 
 1;
 
-
-=head1 NAME
-
-OBO::Graph
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-A collection of inter-relation OBO::Node objects. With a simple
-ontology these are typically OBO::TermNode objects, although other
-graphs e.g. instance graphs are possible.
-
-This module deliberately omits any kind of graph traversal
-functionality. This is done by an OBO::InferenceEngine.
-
-=head1 SEE ALSO
-
-OBO::Node
-
-OBO::LinkStatement
-
-=cut
