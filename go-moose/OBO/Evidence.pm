@@ -10,4 +10,9 @@ sub with_str {
     return join('|',@{shift->supporting_entities || []});
 }
 
+sub as_string {
+    my $self = shift;
+    return $self->type . '-' . $self->with_str;
+}
+
 1;

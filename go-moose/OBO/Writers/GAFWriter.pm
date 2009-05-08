@@ -14,32 +14,40 @@ sub write_header {
     return;
 }
 
+sub write_annotation {
+    my $self = shift;
+    my $ann = shift;
+    
+    my $gene = $ann->node;
+    my $gene_product = $ann->specific_node;
+    my @vals =
+        (
+         $gene->id_db,
+         $gene->local_id,
+         $gene->label,
+         '',         # qualifier
+         $ann->target->id,
+         join('|',map { $_ } (@{$ann->provenance->xrefs || []}, $ann->provenance->id)),
+         $ann->evidence->type->id,
+         $ann->evidence->with_str, # with,
+         _aspect($ann->target), # aspect
+         '', # gene name
+         $gene->type->id, # 
+         $gene->taxon->id, #
+         $ann->date_compact,
+         $ann->source->id,
+         '',
+         $gene_product ? $gene_product->id : '');
+    $self->printrow(\@vals);
+    return;
+}
+
 sub write_body {
     my $self = shift;
     my $g = $self->graph;
 
     foreach my $ann (@{$g->annotations}) {
-        my $gene = $ann->node;
-        my $gene_product = $ann->specific_node;
-        my @vals =
-            (
-             $gene->id_db,
-             $gene->local_id,
-             $gene->label,
-             '',         # qualifier
-             $ann->target->id,
-             join('|',map { $_ } (@{$ann->provenance->xrefs || []}, $ann->provenance->id)),
-             $ann->evidence->type->id,
-             $ann->evidence->with_str, # with,
-             _aspect($ann->target), # aspect
-             '', # gene name
-             $gene->type->id, # 
-             $gene->taxon->id, #
-             $ann->date_compact,
-             $ann->source->id,
-             '',
-             $gene_product ? $gene_product->id : '');
-        $self->printrow(\@vals);
+        $self->write_annotation($ann);
     }
     return;
 }

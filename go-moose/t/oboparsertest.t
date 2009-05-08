@@ -1,5 +1,4 @@
-use Test;
-plan tests => 3;
+use Test::More tests => 4;
 use strict;
 
 use OBO::Graph;
@@ -38,6 +37,7 @@ my $writer = new OBO::Writers::OBOWriter;
 $writer->graph($parser->graph);
 $writer->write();
 
+ok(1);
 
 #use Moose::Autobox;
 # print 'Print squares from 1 to 10 : ';

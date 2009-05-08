@@ -4,7 +4,8 @@ use strict;
 use OBO::Graph;
 use FileHandle;
 
-has fh => (is=>'rw', isa=>'FileHandle');
+has fh => (is=>'rw', isa=>'FileHandle', default=>sub {new FileHandle(">-")} );
+#has fh => (is=>'rw', isa=>'FileHandle' );
 has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'OBO::Graph');
 
