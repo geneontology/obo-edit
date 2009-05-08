@@ -17,7 +17,7 @@ sub create_statement {
     return $s;
 }
 
-# TODO - use Set::Object?
+# TODO - use Set::Object? List::MoreUtils?
 sub add_statement {
     my $self = shift;
     $self->add_statements([@_]);
