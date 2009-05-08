@@ -1,0 +1,13 @@
+Alpha version of replacement for go-perl.
+
+Goals:
+
+- recapitulate capabilities of go-perl
+
+- interface with a variety of databases, primarily the GODB
+
+Current status:
+
+- parsers partially implemented
+- DB interface TODO
+- Export OBO-XML (to utilize xslts)
