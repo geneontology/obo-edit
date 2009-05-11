@@ -47,6 +47,10 @@ import org.obo.identifier.DefaultIDGenerator;
 import org.obo.util.HistoryUtil;
 import org.obo.util.IDUtil;
 
+/**
+ * @author Jennifer I Deegan
+ *
+ */
 public class OBOMerge {
 
 	//initialize logger
@@ -207,11 +211,20 @@ public class OBOMerge {
 		return clashes;
 	}
 
+	/**
+	 * Returns a TreeSet containing the ids of the terms that are listed as having been changed in the 
+	 * provided HistoryList.
+	 *  
+	 * @param historyParentToEdited
+	 * @return
+	 */
 	private static TreeSet getEditedTermIDs(HistoryList historyParentToEdited) {
 
 		HistoryList aHistoryParentToEdited =  historyParentToEdited;
 		TreeSet allEditedTerms = new TreeSet();
 
+		//Iterates through the history list and gets the ids from each term-change object.
+		//The ids are then added to a TreeSet called allEditedTerms. 
 		for (Iterator historyParentToEditedIterator = aHistoryParentToEdited.getHistoryItems(); historyParentToEditedIterator.hasNext();) {
 			HistoryItem historyItem = (HistoryItem) historyParentToEditedIterator.next();
 
@@ -514,21 +527,34 @@ public class OBOMerge {
 		System.out.println("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 		logger.info("Saved merged ontologies to " + writePath + " (OBO version " + oboVersion + ")");
 
+		//Gets and prints the list of terms that have been changed in both the live and branch files. 
 		getTermsEditedInLiveAndBranch(historyParentToBranchTreeSet, historyParentToLiveTreeSet);
 
 	}
 
+	/**
+	 * Takes two TreeSets containing the ids of the terms modified in the branch and live files, and
+	 * returns a TreeSet containing only the ids of terms that have been modified in both files. 
+	 * Prints the list as essential user feedback. 
+	 * 
+	 * @param historyParentToBranchTreeSet
+	 * @param historyParentToLiveTreeSet
+	 */
 	private static void getTermsEditedInLiveAndBranch(
 			TreeSet historyParentToBranchTreeSet,
 			TreeSet historyParentToLiveTreeSet) {
 		
-		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: historyParentToBranchTreeSet contains: " + historyParentToBranchTreeSet.toString());
-		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: historyParentToLiveTreeSet contains: " + historyParentToLiveTreeSet.toString());
+		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: 
+		//historyParentToBranchTreeSet contains: " + historyParentToBranchTreeSet.toString());
+		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch: 
+		//historyParentToLiveTreeSet contains: " + historyParentToLiveTreeSet.toString());
 
 		historyParentToLiveTreeSet.retainAll(historyParentToBranchTreeSet);
 		
 		//System.out.println("OBOMerge: getTermsEditedInLiveAndBranch Terms edited in both files are: " + historyParentToLiveTreeSet.toString());
-	System.out.println("The following terms were edited in both of the derived files: " + historyParentToLiveTreeSet.toString());
+	    
+		//This System.out.println command is a feature and should not be commented out or changed to a logger statement.  
+		System.out.println("The following terms were edited in both of the derived files: " + historyParentToLiveTreeSet.toString());
 	
 	}
 
