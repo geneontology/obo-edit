@@ -128,10 +128,18 @@ sub extend_link {
 sub get_nonredundant_set {
     my $self = shift;
     my $nodes = shift;
+    my $set2 = shift || [];
     #print STDERR "Finding NR set for @$nodes\n";
     my %nh = map { ($_ => $_) } @$nodes;
     foreach my $node (@$nodes) {
         my $targets = $self->get_inferred_target_nodes($node);
+        foreach (@$targets) {
+            delete $nh{$_->id};
+        }
+    }
+    foreach my $node (@$set2) {
+        my $targets = $self->get_inferred_target_nodes($node);
+        delete $nh{$node};
         foreach (@$targets) {
             delete $nh{$_->id};
         }
