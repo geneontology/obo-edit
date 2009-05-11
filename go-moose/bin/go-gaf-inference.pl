@@ -52,6 +52,7 @@ foreach my $f (@ARGV) {
     my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
     # iterate through one chunk at a time
     while ($gafparser->parse_chunk(10000)) {
+        $ontg->add_annotations($gafparser->graph->annotations);
         push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
         # clear
         $gafparser->graph(new OBO::Graph);

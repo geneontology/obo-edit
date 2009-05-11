@@ -49,7 +49,18 @@ has in_subsets => ( is=>'rw', isa=>'ArrayRef[OBO::Node]');
 sub add_xrefs {
     my $self = shift;
     $self->xrefs([]) unless $self->xrefs;
-    push(@{$self->xrefs},@_);
+    foreach (@_) {
+        push(@{$self->xrefs},ref($_) ? @$_ : $_);
+    }
+    $self->_make_xrefs_unique();
+    return;
+}
+
+sub _make_xrefs_unique {
+    my $self = shift;
+    my $xrefs = $self->xrefs;
+    my %xref_h = map { ($_ => $_) } @$xrefs;
+    $self->xrefs([values %xref_h]);
     return;
 }
 

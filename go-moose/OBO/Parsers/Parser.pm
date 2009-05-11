@@ -3,6 +3,7 @@ use Moose;
 use strict;
 use OBO::Graph;
 use FileHandle;
+use Carp;
 
 has fh => (is=>'rw', isa=>'FileHandle');
 has file => (is=>'rw', isa=>'Str');
@@ -27,10 +28,10 @@ sub init_fh {
             }
         }
         else {
-            die "no file";
+            confess "no file";
         }
         if (!$fh) {
-            die "no fh";
+            confess "no fh";
         }
         $self->fh($fh);
     }
