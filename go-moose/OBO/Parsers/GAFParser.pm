@@ -75,7 +75,7 @@ sub parse_body {
         $ev->supporting_entities(\@with_objs);
         my @refs = split(/\|/,$ref);
         my $provenance = $g->noderef(pop @refs); # last is usually PMID
-        $provenance->add_xrefs(@refs);
+        $provenance->add_xrefs([@refs]);
         my $annot = 
             new OBO::Annotation(node=>$gene,
                                 target=>$cnode,

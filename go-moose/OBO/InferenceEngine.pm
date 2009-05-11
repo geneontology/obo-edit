@@ -125,6 +125,15 @@ sub extend_link {
     return \@newlinks;
 }
 
+=head2 get_nonredundant_set (nodes ArrayRef[OBO::Node], OPTIONAL set2 ArrayRef[OBO::Node])
+
+TODO: allow specification of relations
+
+returns all nodes n in set1 such that there is no n' in (set1 U set2)
+such that no relationship nRn' can be inferred
+
+=cut
+
 sub get_nonredundant_set {
     my $self = shift;
     my $nodes = shift;
