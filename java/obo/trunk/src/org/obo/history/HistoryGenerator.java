@@ -56,6 +56,25 @@ public class HistoryGenerator implements Serializable {
 		return getHistory(oldHistory, newHistory, null);
 	}
 
+	/**
+	 * <p>Returns a list of the changes between two OBOSessions. 
+	 * </p><p>
+	 * This method is used to find the differences between two OBO files, for example in OBODiff or OBOMerge. 
+	 *  </p>
+	 * The returned SessionHistoryList is a collection
+	 * of objects where each object represents one change. 
+	 * The change objects are of different types depending on
+	 * the change that has occurred. So if a namespace has 
+	 * changed then a TermNamespaceHistoryItem is added to the collection
+	 * whereas if a synonym type has changed the a 
+	 * SynonymTypeHistoryItem object is added to the collection. To see what
+	 * each object contains look at the class definition for the object. 
+	 * </p>
+	 * @param oldSession
+	 * @param newSession
+	 * @param warnings
+	 * @return
+	 */
 	public static SessionHistoryList getHistory(OBOSession oldSession,
 			OBOSession newSession,
 			Collection<String> warnings) {
