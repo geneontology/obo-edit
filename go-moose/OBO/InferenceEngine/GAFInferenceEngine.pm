@@ -82,8 +82,11 @@ sub infer_annotations {
             foreach my $xlink (@{$self->graph->annotation_ix->statements_by_node_id($gene->id)}) {
                 $existing_h{$xlink->target->id} = 1;
             }
+            delete $existing_h{$tid};
+#            printf STDERR " candidates for $tid: %s\n", join('; ', keys %candidate_h);
+#            printf STDERR " existing annotations from $gene =: %s\n", join('; ', keys %existing_h);
             $nodemap->{$tid} =
-                $self->get_nonredundant_set([keys %candidate_h], [keys %existing_h]);
+               $self->get_nonredundant_set([keys %candidate_h], [keys %existing_h]);
         }
         if (@{$nodemap->{$tid}}) {
             if (!$got_h->{$gene}{$t}) {

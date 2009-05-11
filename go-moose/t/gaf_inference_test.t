@@ -12,17 +12,21 @@ use OBO::Writers::GAFWriter;
 use OBO::InferenceEngine::GAFInferenceEngine;
 use FileHandle;
 
+my $gaf = "t/data/128up.gaf";
+
 my $ontf = "t/data/gtp.obo";
 my $obo_parser = new OBO::Parsers::OBOParser(file=>$ontf);
-$obo_parser->parse;
 my $ontg = $obo_parser->graph;
+$obo_parser->parse;
 my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
-my $fh = new FileHandle("t/data/test-fb.gaf");
+#my $fh = new FileHandle("t/data/test-fb.gaf");
+my $fh = new FileHandle($gaf);
 my $gafparser = new OBO::Parsers::GAFParser(fh=>$fh);
 
 my @ics = ();
 while ($gafparser->parse_chunk(10000)) {
+    $ontg->add_annotations($gafparser->graph->annotations);
     printf "inferring annotations for %s\n", scalar(@{$gafparser->graph->annotations});
     push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
     # clear
@@ -46,18 +50,22 @@ ok($ic->source->id eq 'GOC');
 
 # now add it back in and attempt to do inference again..
 
-$fh = new FileHandle("t/data/test-fb.gaf");
+$fh = new FileHandle($gaf);
 $gafparser = new OBO::Parsers::GAFParser(fh=>$fh);
 my $agraph = $gafparser->graph;
 $gafparser->parse;
+$ontg->add_annotations($agraph->annotations);
 printf "num annots orig: %d\n", scalar(@{$agraph->annotations});
 print "Adding inferred annotation back:\n";
 $agraph->add_annotation($ic);
-printf "num annots orig: %d\n", scalar(@{$agraph->annotations});
+$ontg->add_annotation($ic);
+printf "num annots new: %d\n", scalar(@{$agraph->annotations});
+foreach my $xlink (@{$agraph->annotation_ix->statements_by_node_id('FB:FBgn0010339')}) {
+    printf "  128up :: $xlink\n";
+}
 
 print "Inferring ICs, second pass (expecting none):\n";
 $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
-$ontg->add_annotations($agraph->annotations);
 @ics = @{$ie->infer_annotations($gafparser->graph->annotations)};
 $icgraph = new OBO::Graph();
 $icgraph->annotations(\@ics);
