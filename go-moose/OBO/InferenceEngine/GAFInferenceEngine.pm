@@ -78,8 +78,12 @@ sub infer_annotations {
             #printf STDERR " candidates for $tid: %s\n", join('; ', keys %candidate_h);
             
             # TODO: throw in existing annotations for this gene..?
+            my %existing_h = ();
+            foreach my $xlink (@{$self->graph->annotation_ix->statements_by_node_id($gene->id)}) {
+                $existing_h{$xlink->target->id} = 1;
+            }
             $nodemap->{$tid} =
-                $self->get_nonredundant_set([keys %candidate_h]);
+                $self->get_nonredundant_set([keys %candidate_h], [keys %existing_h]);
         }
         if (@{$nodemap->{$tid}}) {
             if (!$got_h->{$gene}{$t}) {

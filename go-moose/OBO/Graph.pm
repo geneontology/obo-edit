@@ -6,7 +6,7 @@ OBO::Graph
 
 =head1 DESCRIPTION
 
-A collection of inter-relation OBO::Node objects. With a simple
+A collection of inter-related OBO::Node objects. With a simple
 ontology these are typically OBO::TermNode objects, although other
 graphs e.g. instance graphs are possible.
 
@@ -38,7 +38,9 @@ has 'terms' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
 #has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
 has 'link_ix' => (is => 'rw', isa => 'OBO::Indexes::StatementIndex', 
                   default=>sub{ new OBO::Indexes::StatementIndex() });
-has 'annotations' => (is => 'rw', isa => 'ArrayRef[OBO::Annotation]', default=>sub{[]});
+#has 'annotations' => (is => 'rw', isa => 'ArrayRef[OBO::Annotation]', default=>sub{[]});
+has 'annotation_ix' => (is => 'rw', isa => 'OBO::Indexes::StatementIndex', 
+                  default=>sub{ new OBO::Indexes::StatementIndex() });
 has 'node_index' => (is => 'rw', isa => 'HashRef[OBO::Node]', default=>sub{{}});
 
 sub add_term {
@@ -56,6 +58,12 @@ sub add_relation {
 sub links { shift->link_ix->statements(@_) }
 sub add_link { shift->link_ix->add_statement(@_) }
 sub add_links { shift->link_ix->add_statements(@_) }
+sub remove_link { shift->link_ix->remove_statements([@_]) }
+
+sub annotations { shift->annotation_ix->statements(@_) }
+sub add_annotation { shift->annotation_ix->add_statement(@_) }
+sub add_annotations { shift->annotation_ix->add_statements(@_) }
+sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
 
 =head2 get_target_links (subject OBO::Node, relation OBO::RelationNode OPTIONAL)
 

@@ -18,7 +18,7 @@ has 'is_intersection' => ( is=>'ro', isa=>'Bool');
 use overload ('""' => 'as_string');
 sub as_string {
     my $self = shift;
-    return sprintf("(%s --[%s]-->%s)",$self->node,$self->relation ? $self->relation : '?', $self->target);
+    return sprintf("(%s --[%s]-->%s)",$self->node || '?',$self->relation || '?', $self->target || '?' );
 }
 
 sub equals {
