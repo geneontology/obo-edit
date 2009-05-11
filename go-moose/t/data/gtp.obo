@@ -179,7 +179,7 @@ namespace: molecular_function
 def: "Interacting selectively with purine nucleotides, any compound consisting of a purine nucleoside esterified with (ortho)phosphate." [GOC:ai]
 subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0000166  ! nucleotide binding
-relationship: part_of GO:0046123  ! ** FOR TESTING PURPOSES ONLY **
+relationship: part_of GO:0046123  !  ** FOR TESTING PURPOSES ONLY ** purine deoxyribonucleoside biosynthetic process
 
 [Term]
 id: GO:0019001

@@ -10,6 +10,13 @@ use OBO::RelationNode;
 has ixN => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
 has ixT => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
 
+sub clear_all {
+    my $self = shift;
+    $self->ixN({});
+    $self->ixT({});
+    return;
+}
+
 sub create_statement {
     my $self = shift;
     my $s = OBO::LinkStatement->new(@_); # TODO - other types
@@ -60,7 +67,7 @@ sub statements {
     if (@_) {
         # SET
         $self->clear_all;
-        $self->add_statements([@_]);
+        $self->add_statements(@_);
     }
     # GET
     return [map { @$_ } values %{$self->ixN}];
@@ -79,7 +86,7 @@ sub statements_by_target_id {
     return $self->ixT->{$x} || [];
 }
 
-sub statements_by_obj {
+sub matching_statements {
     my $self = shift;
     my $s = shift;
     my $sl;

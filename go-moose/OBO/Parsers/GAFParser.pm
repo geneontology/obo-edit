@@ -94,7 +94,8 @@ sub parse_body {
             my $xp = OBO::ClassExpression->parse_idexpr($g,$annotxp);
             # TODO:
         }
-        push(@{$g->annotations},$annot);
+        $g->add_annotation($annot);
+        #push(@{$g->annotations},$annot);
     }
     return;
 }
