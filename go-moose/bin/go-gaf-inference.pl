@@ -15,6 +15,7 @@ use FileHandle;
 
 my $ontf;
 my %relh = ();
+my $per_file_ic=0;
 while ($ARGV[0] =~ /^\-/) {
     my $opt = shift @ARGV;
     if ($opt eq '-i' || $opt eq '--ontology') {
@@ -22,6 +23,9 @@ while ($ARGV[0] =~ /^\-/) {
     }
     elsif ($opt eq '-r' || $opt eq '--relation') {
         $relh{shift @ARGV} = 1;
+    }
+    elsif ($opt eq '--per-file') {
+        $per_file_ic = 1;
     }
     elsif ($opt eq '-h' || $opt eq '--help') {
         system("perldoc $0");
@@ -47,19 +51,31 @@ my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 my %nodemap = ();
 
 # iterate through annotations writing new ICs
-my @ics = ();
 foreach my $f (@ARGV) {
+    my @ics = ();
+    $ontg->annotations([]);
     my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
     # iterate through one chunk at a time
     while ($gafparser->parse_chunk(10000)) {
+        printf STDERR "processing %d annots in in $f\n", scalar(@{$gafparser->graph->annotations});
         $ontg->add_annotations($gafparser->graph->annotations);
+        printf STDERR "  ontg annots %d\n", scalar(@{$ontg->annotations});
         push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
         # clear
+        printf STDERR "  inferences %d\n", scalar(@ics);
         $gafparser->graph(new OBO::Graph);
     }
     my $icgraph = new OBO::Graph();
     $icgraph->annotations(\@ics);
     my $w = new OBO::Writers::GAFWriter;
+    if ($per_file_ic) {
+        my $of = $f;
+        $of =~ s/.*\///g;
+        $of =~ s/\.gz//;
+        $of .= ".ics.gaf";
+        $w->file($of);
+        $w->init_fh;
+    }
     $w->graph($icgraph);
     $w->write;
 }
