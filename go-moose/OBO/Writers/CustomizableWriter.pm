@@ -42,10 +42,11 @@ sub fmt_obj {
     }
     else {
         if ($obj->isa('OBO::Evidence')) {
-            return $obj;
+            return $obj->type .' '. join('|', map {$self->fmt_obj('with',$_)} @{$obj->supporting_entities || []});
         }
         if ($obj->isa('OBO::Node')) {
-            return sprintf('%s "%s"', $obj->id || '', $obj->label || '');
+            return $obj->label ?
+                sprintf('%s "%s"', $obj->id || '', $obj->label || '') : $obj->id;
         }
         else {
             return $obj;

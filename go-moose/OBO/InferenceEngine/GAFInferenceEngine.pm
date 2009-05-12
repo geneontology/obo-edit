@@ -92,7 +92,7 @@ sub infer_annotations {
             if (!$got_h->{$gene}{$t}) {
                 push(@ics, 
                      map {
-                         printf STDERR "inferred $tid --> %s\n", $ontg->term_noderef($_);
+                         printf STDERR "inferred $gene $tid --> %s\n", $ontg->term_noderef($_);
                          new OBO::Annotation(node => $gene,
                                              target => $ontg->term_noderef($_),
                                              provenance => $ann->provenance,

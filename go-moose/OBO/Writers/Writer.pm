@@ -6,7 +6,7 @@ use FileHandle;
 
 has fh => (is=>'rw', isa=>'FileHandle', default=>sub {new FileHandle(">-")} );
 #has fh => (is=>'rw', isa=>'FileHandle' );
-has file => (is=>'rw', isa=>'Str');
+#has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'OBO::Graph');
 
 sub init_fh {
@@ -22,6 +22,17 @@ sub init_fh {
         }
         $self->fh($fh);
     }
+}
+
+sub file {
+    my $self = shift;
+    if (@_) {
+        my ($f) = @_;
+        $self->{file} = $f;
+        $self->fh(FileHandle->new(">$f"));
+    }
+    
+    return $self->{file};
 }
 
 sub write {

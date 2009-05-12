@@ -50,10 +50,10 @@ if (!$ontf) {
     exit(1);
 }
 
-if (!@ids) {
-    print "Enter IDs:\n";
-    @ids = split(/\n/, <STDIN>);
-}
+#if (!@ids) {
+#    print "Enter IDs:\n";
+#    @ids = split(/\n/, <STDIN>);
+#}
 my $idset = new Set::Object;
 $idset->insert(@ids);
 
@@ -67,12 +67,19 @@ my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 my @ics = ();
 foreach my $f (@ARGV) {
     my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
+    $gafparser->graph($ontg);
+    $ontg->annotations([]);
     # iterate through one chunk at a time
     while ($gafparser->parse_chunk(10000)) {
         foreach my $ann (@{$gafparser->graph->annotations}) {
-            my $rset = new Set::Object;
-            $rset->insert(map {$_->id} @{$ie->get_inferred_target_nodes($ann->target)});
-            if ($rset->intersection($idset)->size) {
+            if (@ids) {
+                my $rset = new Set::Object;
+                $rset->insert(map {$_->id} @{$ie->get_inferred_target_nodes($ann->target)});
+                if ($rset->intersection($idset)->size) {
+                    show_ann($ann);
+                }
+            }
+            else {
                 show_ann($ann);
             }
         }
