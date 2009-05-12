@@ -231,7 +231,7 @@ public class RegulationTermParser implements SemanticParser {
 				LinkedObject genus = lookup("biological regulation");
 				
 				
-				if (TermUtil.hasIsAAncestor(lo,robpObj))
+				if (TermUtil.hasIsAAncestor(lo,robpObj) && !TermUtil.hasIsAAncestor(lo,romfObj))
 					if (TermUtil.hasIsAAncestor(target, bpObj))
 						report("OK", lo, name, "in correct place");
 					else
