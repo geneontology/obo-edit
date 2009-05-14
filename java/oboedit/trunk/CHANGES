@@ -25,6 +25,8 @@ This feature is quite difficult to comprehensively test, so I am having some tro
 finished. However I have been setting up a large collection of test files that enabled me to test many 
 types of edit. The files are in GO cvs at \go\software\test_resources\OBO-Edit.
 
+Added new feature to TermMergeHistoryItem, so it can update substitution tags that mention any term that
+is in the process of being subsumed in a merge. This fixes this bug: ID: 2790775
 
 
 
