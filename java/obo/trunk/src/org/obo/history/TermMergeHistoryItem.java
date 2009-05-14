@@ -41,6 +41,7 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 
 	@Override
 	public int hashCode() {
+		// ^ is bitwise exclusive OR
 		return getHash(target) ^ getHash(slave);
 	}
 
@@ -50,14 +51,14 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			return false;
 		TermMergeHistoryItem item = (TermMergeHistoryItem) o;
 		return ObjectUtil.equals(target, item.getTarget())
-				&& ObjectUtil.equals(slave, item.getSlave());
+		&& ObjectUtil.equals(slave, item.getSlave());
 	}
 
 	@Override
 	protected OperationWarning getItems(OBOSession history, List out) {
 		IdentifiedObject m = history.getObject(target);
 		IdentifiedObject sio = history.getObject(slave);
-		
+
 		if (m == null) {
 			return new OperationWarning("Could not merge unrecognized node "
 					+ target);
@@ -71,12 +72,17 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		if (!(sio instanceof OBOClass))
 			return new OperationWarning("Could not merge non-class node "
 					+ slave);
-		
+
 		OBOClass masterNode = (OBOClass) m;
 		OBOClass slaveNode = (OBOClass) sio;
 
+		//Check if the term to be subsumed is mentioned in the substitution tags of any obsolete terms, and 
+		//update appropriately. 
+		checkSubstitutionTags(out, slaveNode, masterNode, history);
+
+
 		Collection targetDescendants = TermUtil
-				.getDescendants(masterNode, true);
+		.getDescendants(masterNode, true);
 		Collection targetAncestors = TermUtil.getAncestors(masterNode, true);
 
 		// remove the slave node as parents of slave node's children,
@@ -127,9 +133,8 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		out.add(new DestroyObjectHistoryItem(slaveNode));
 
 		// add a secondary id
-		out
-				.add(new SecondaryIDHistoryItem(masterNode, slaveNode.getID(),
-						false));
+		out.add(new SecondaryIDHistoryItem(masterNode, slaveNode.getID(),
+				false));
 		it = slaveNode.getSecondaryIDs().iterator();
 		while (it.hasNext()) {
 			String id = (String) it.next();
@@ -172,9 +177,9 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			out.add(new AddSynonymHistoryItem(masterNode.getID(), slaveNode
 					.getName()));
 			out
-					.add(new ChangeSynScopeHistoryItem(masterNode.getID(),
-							slaveNode.getName(), Synonym.RELATED_SYNONYM,
-							Synonym.EXACT_SYNONYM));
+			.add(new ChangeSynScopeHistoryItem(masterNode.getID(),
+					slaveNode.getName(), Synonym.RELATED_SYNONYM,
+					Synonym.EXACT_SYNONYM));
 		}
 		String newDef;
 		String newComment;
@@ -185,9 +190,9 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			newDef = masterNode.getDefinition();
 		} else {
 			newDef = "MERGED DEFINITION:\n" + "TARGET DEFINITION: "
-					+ masterNode.getDefinition() + "\n"
-					+ "--------------------\n" + "SOURCE DEFINITION: "
-					+ slaveNode.getDefinition();
+			+ masterNode.getDefinition() + "\n"
+			+ "--------------------\n" + "SOURCE DEFINITION: "
+			+ slaveNode.getDefinition();
 		}
 
 		if (masterNode.getComment().length() == 0) {
@@ -196,13 +201,124 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			newComment = masterNode.getComment();
 		} else {
 			newComment = "MERGED COMMENT:\n" + "TARGET COMMENT: "
-					+ masterNode.getComment() + "\n" + "--------------------\n"
-					+ "SOURCE COMMENT: " + slaveNode.getComment();
+			+ masterNode.getComment() + "\n" + "--------------------\n"
+			+ "SOURCE COMMENT: " + slaveNode.getComment();
 		}
 		out.add(new DefinitionChangeHistoryItem(masterNode, newDef));
 		out.add(new CommentChangeHistoryItem(masterNode, newComment));
 
+
 		return null;
+	}
+
+
+
+
+/**
+ * Checks the obsolete terms to see if the term being subsumed in a merge is being used in any substitution tags.
+ * If it is, then methods are called with the effect that the substitution tag is removed and replaced with a substitution tag pointing 
+ * to the subsuming term in the merge. 
+ * 
+ * @param out
+ * @param slaveNode
+ * @param masterNode
+ * @param history
+ */
+	private void checkSubstitutionTags(List out, OBOClass slaveNode,
+			OBOClass masterNode, OBOSession history) {
+
+		//Get the obsoletes in the whole ontology.
+		LinkDatabase ldb = history.getLinkDatabase();
+		Collection<ObsoletableObject> obsoletes = TermUtil.getObsoletes(ldb);
+		//Iterate through them. 
+		for (Iterator obsoletesIterator = obsoletes.iterator(); obsoletesIterator.hasNext();) {
+			ObsoletableObject object = (ObsoletableObject) obsoletesIterator.next();
+
+			//For each obsolete, get the collection of its consider terms. 
+			Collection considerTerms = object.getConsiderReplacements();
+			//Iterate through the collection of consider terms for each obsolete in the file
+			for (Iterator obsoleteTermConsiderTagsIterator = considerTerms.iterator(); obsoleteTermConsiderTagsIterator.hasNext();) {
+				ObsoletableObject considerTerm = (ObsoletableObject) obsoleteTermConsiderTagsIterator.next();
+
+				System.out.println("TermMergeHistoryItem: obsoletes section: " +
+						"considerTerm = " + considerTerm +
+						" slaveNode = " + slaveNode);		
+
+				//If the term that is being subsumed in the merge is mentioned in the collection
+				// of consider terms for the obsolete term currently being examined, then call this method. 
+				if (slaveNode == considerTerm){
+					updateConsiderReplacementOnMerge(out, object, slaveNode, masterNode);
+				}
+			}
+
+			Collection replacementTerms =  object.getReplacedBy();
+			//Iterate through the collection of replaced_by terms for each obsolete in the file
+			for (Iterator iterator2 = replacementTerms.iterator(); iterator2.hasNext();) {
+				ObsoletableObject replacementTerm = (ObsoletableObject) iterator2.next();
+
+				System.out.println("TermMergeHistoryItem: obsoletes section: " +
+						"replacementTerm = " + replacementTerm +
+						" slaveNode = " + slaveNode);
+			
+				//If the term that is being subsumed in the merge is mentioned in the collection
+				// of replaced_by terms for the obsolete term currently being examined, then call this method. 
+				if (slaveNode.toString() == object.getReplacedBy().toString()){
+					updateReplacedByOnMerge(out, object, slaveNode, masterNode);
+				}
+			}
+
+		}
+	}
+	/**
+	 * <p>Used to change over the consider target on an obsolete term in a situation where the 
+	 * current consider tag target has been subsumed in a merge. The masterNode is the term that subsumes
+	 * the slaveNode in the merge. The obsoleteTerm is the obsolete node that has the consider term. The out
+	 * List is a list of HistoryItems showing the edits being carried out. 
+	 * </p><p>
+	 * This method adds to 'out' two new HistoryItems. One of these removes the old consider tag that pointed
+	 * to the term being subsumed in the merge, the other adds a new consider tag pointing to the 
+	 * master term in the merge. 
+	 * 
+	 * @param out
+	 * @param obsoleteTerm
+	 * @param slaveNode
+	 * @param masterNode
+	 * @return
+	 */
+	private List updateConsiderReplacementOnMerge(List out, ObsoletableObject obsoleteTerm,
+			OBOClass slaveNode, OBOClass masterNode) {
+		//System.out.println("TermmergeHistoryItem: updateConsiderReplacementOnMerge: object = " + obsoleteTerm +
+				//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
+		out.add(new AddConsiderHistoryItem(obsoleteTerm, masterNode));
+		out.add(new RemoveConsiderHistoryItem(obsoleteTerm, slaveNode));
+
+		return out;
+	}
+
+	/**
+	 * <p>Used to change over the replaced_by target on an obsolete term in a situation where the 
+	 * current replaced_by tag target has been subsumed in a merge. The masterNode is the term that subsumes
+	 * the slaveNode in the merge. The obsoleteTerm is the obsolete node that has the replaced_by term. The out
+	 * List is a list of HistoryItems showing the edits being carried out. 
+	 * </p><p>
+	 * This method adds to 'out' two new HistoryItems. One of these removes the old replaced_by tag that pointed
+	 * to the term being subsumed in the merge, the other adds a new replaced_by tag pointing to the 
+	 * master term in the merge. 
+	 * 
+	 * @param out
+	 * @param obsoleteTerm
+	 * @param slaveNode
+	 * @param masterNode
+	 * @return
+	 */
+	private List updateReplacedByOnMerge(List out, ObsoletableObject obsoleteTerm,
+			OBOClass slaveNode, OBOClass masterNode) {
+		//System.out.println("TermmergeHistoryItem: updateReplacedByOnMerge: object = " + obsoleteTerm +
+				//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
+		out.add(new RemoveReplacementHistoryItem(obsoleteTerm.toString(), slaveNode.toString()));
+		out.add(new AddReplacementHistoryItem(obsoleteTerm.toString(), masterNode.toString()));
+
+		return out;
 	}
 
 	@Override
@@ -226,7 +342,7 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 	public String toString() {
 		return "Merged " + slave + " into " + target;
 	}
-	
+
 	/**
 	 * Overridden to return both target and slave, as the stanzas of both terms will
 	 * have been edited in this step. 
@@ -239,5 +355,5 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		editedTerms.add(slave);
 		return super.getEditedTerms();
 	}
-	
+
 }
