@@ -232,10 +232,10 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		Collection<ObsoletableObject> obsoletes = TermUtil.getObsoletes(ldb);
 		//Iterate through them. 
 		for (Iterator obsoletesIterator = obsoletes.iterator(); obsoletesIterator.hasNext();) {
-			ObsoletableObject object = (ObsoletableObject) obsoletesIterator.next();
+			ObsoletableObject obsoleteTerm = (ObsoletableObject) obsoletesIterator.next();
 
 			//For each obsolete, get the collection of its consider terms. 
-			Collection considerTerms = object.getConsiderReplacements();
+			Collection considerTerms = obsoleteTerm.getConsiderReplacements();
 			//Iterate through the collection of consider terms for each obsolete in the file
 			for (Iterator obsoleteTermConsiderTagsIterator = considerTerms.iterator(); obsoleteTermConsiderTagsIterator.hasNext();) {
 				ObsoletableObject considerTerm = (ObsoletableObject) obsoleteTermConsiderTagsIterator.next();
@@ -247,14 +247,14 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 				//If the term that is being subsumed in the merge is mentioned in the collection
 				// of consider terms for the obsolete term currently being examined, then call this method. 
 				if (slaveNode == considerTerm){
-					updateConsiderReplacementOnMerge(out, object, slaveNode, masterNode);
+					updateConsiderReplacementOnMerge(out, obsoleteTerm, slaveNode, masterNode);
 				}
 			}
 
-			Collection replacementTerms =  object.getReplacedBy();
+			Collection replacementTerms =  obsoleteTerm.getReplacedBy();
 			//Iterate through the collection of replaced_by terms for each obsolete in the file
-			for (Iterator iterator2 = replacementTerms.iterator(); iterator2.hasNext();) {
-				ObsoletableObject replacementTerm = (ObsoletableObject) iterator2.next();
+			for (Iterator obsoleteTermReplacedByIterator = replacementTerms.iterator(); obsoleteTermReplacedByIterator.hasNext();) {
+				ObsoletableObject replacementTerm = (ObsoletableObject) obsoleteTermReplacedByIterator.next();
 
 				System.out.println("TermMergeHistoryItem: obsoletes section: " +
 						"replacementTerm = " + replacementTerm +
@@ -262,8 +262,8 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			
 				//If the term that is being subsumed in the merge is mentioned in the collection
 				// of replaced_by terms for the obsolete term currently being examined, then call this method. 
-				if (slaveNode.toString() == object.getReplacedBy().toString()){
-					updateReplacedByOnMerge(out, object, slaveNode, masterNode);
+				if (slaveNode == replacementTerm){
+					updateReplacedByOnMerge(out, obsoleteTerm, slaveNode, masterNode);
 				}
 			}
 
@@ -315,8 +315,8 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			OBOClass slaveNode, OBOClass masterNode) {
 		//System.out.println("TermmergeHistoryItem: updateReplacedByOnMerge: object = " + obsoleteTerm +
 				//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
-		out.add(new RemoveReplacementHistoryItem(obsoleteTerm.toString(), slaveNode.toString()));
-		out.add(new AddReplacementHistoryItem(obsoleteTerm.toString(), masterNode.toString()));
+		out.add(new RemoveReplacementHistoryItem(obsoleteTerm, slaveNode));
+		out.add(new AddReplacementHistoryItem(obsoleteTerm, masterNode));
 
 		return out;
 	}
