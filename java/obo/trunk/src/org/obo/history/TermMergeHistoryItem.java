@@ -214,16 +214,16 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 
 
 
-/**
- * Checks the obsolete terms to see if the term being subsumed in a merge is being used in any substitution tags.
- * If it is, then methods are called with the effect that the substitution tag is removed and replaced with a substitution tag pointing 
- * to the subsuming term in the merge. 
- * 
- * @param out
- * @param slaveNode
- * @param masterNode
- * @param history
- */
+	/**
+	 * Checks the obsolete terms to see if the term being subsumed in a merge is being used in any substitution tags.
+	 * If it is, then methods are called with the effect that the substitution tag is removed and replaced with a substitution tag pointing 
+	 * to the subsuming term in the merge. 
+	 * 
+	 * @param out List of HistoryItems.
+	 * @param slaveNode The term being subsumed.
+	 * @param masterNode The term subsuming. 
+	 * @param history The OBOSession. 
+	 */
 	private void checkSubstitutionTags(List out, OBOClass slaveNode,
 			OBOClass masterNode, OBOSession history) {
 
@@ -259,7 +259,7 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 				System.out.println("TermMergeHistoryItem: obsoletes section: " +
 						"replacementTerm = " + replacementTerm +
 						" slaveNode = " + slaveNode);
-			
+
 				//If the term that is being subsumed in the merge is mentioned in the collection
 				// of replaced_by terms for the obsolete term currently being examined, then call this method. 
 				if (slaveNode == replacementTerm){
@@ -279,16 +279,16 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 	 * to the term being subsumed in the merge, the other adds a new consider tag pointing to the 
 	 * master term in the merge. 
 	 * 
-	 * @param out
-	 * @param obsoleteTerm
-	 * @param slaveNode
-	 * @param masterNode
+	 * @param obsoleteTerm The obsolete term that has the consider tag.
+	 * @param out List of HistoryItems.
+	 * @param slaveNode The term being subsumed.
+	 * @param masterNode The term subsuming. 
 	 * @return
 	 */
 	private List updateConsiderReplacementOnMerge(List out, ObsoletableObject obsoleteTerm,
 			OBOClass slaveNode, OBOClass masterNode) {
 		//System.out.println("TermmergeHistoryItem: updateConsiderReplacementOnMerge: object = " + obsoleteTerm +
-				//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
+		//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
 		out.add(new AddConsiderHistoryItem(obsoleteTerm, masterNode));
 		out.add(new RemoveConsiderHistoryItem(obsoleteTerm, slaveNode));
 
@@ -305,16 +305,16 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 	 * to the term being subsumed in the merge, the other adds a new replaced_by tag pointing to the 
 	 * master term in the merge. 
 	 * 
-	 * @param out
-	 * @param obsoleteTerm
-	 * @param slaveNode
-	 * @param masterNode
+	 * @param obsoleteTerm The obsolete term that has the consider tag.
+	 * @param out List of HistoryItems.
+	 * @param slaveNode The term being subsumed.
+	 * @param masterNode The term subsuming. 
 	 * @return
 	 */
 	private List updateReplacedByOnMerge(List out, ObsoletableObject obsoleteTerm,
 			OBOClass slaveNode, OBOClass masterNode) {
 		//System.out.println("TermmergeHistoryItem: updateReplacedByOnMerge: object = " + obsoleteTerm +
-				//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
+		//" slaveNode = " + slaveNode + " masterNode = " + masterNode);
 		out.add(new RemoveReplacementHistoryItem(obsoleteTerm, slaveNode));
 		out.add(new AddReplacementHistoryItem(obsoleteTerm, masterNode));
 
