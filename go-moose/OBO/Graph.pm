@@ -55,6 +55,11 @@ sub add_relation {
     return;
 }
 
+sub nodes {
+    my $self = shift;
+    return [values %{$self->node_index}];
+}
+
 sub links { shift->link_ix->statements(@_) }
 sub add_link { shift->link_ix->add_statement(@_) }
 sub add_links { shift->link_ix->add_statements(@_) }

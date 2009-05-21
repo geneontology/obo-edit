@@ -32,6 +32,7 @@ sub write_annotation {
          $ann->evidence->with_str, # with,
          _aspect($ann->target), # aspect
          '', # gene name
+         '', # gene syn
          $gene->type->id, # 
          $gene->taxon->id, #
          $ann->date_compact,
