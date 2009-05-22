@@ -1,9 +1,9 @@
-package OBO::Writers::OBOWriter;
+package GOBO::Writers::OBOWriter;
 use Moose;
 use strict;
-extends 'OBO::Writers::Writer';
-use OBO::Node;
-use OBO::LinkStatement;
+extends 'GOBO::Writers::Writer';
+use GOBO::Node;
+use GOBO::LinkStatement;
 
 sub write_header {
     my $self = shift;
@@ -33,13 +33,13 @@ sub write_stanza {
 
     $self->nl;
     my $stanzaclass = 'Instance';
-    if ($node->isa('OBO::TermNode')) {
+    if ($node->isa('GOBO::TermNode')) {
         $stanzaclass = 'Term';
     }
-    elsif ($node->isa('OBO::RelationNode')) {
+    elsif ($node->isa('GOBO::RelationNode')) {
         $stanzaclass = 'Typedef';
     }
-    elsif ($node->isa('OBO::Annotation')) {
+    elsif ($node->isa('GOBO::Annotation')) {
         # TODO
     }
     
@@ -58,10 +58,10 @@ sub write_stanza {
 
     # xref
 
-    if ($node->isa('OBO::RelationNode')) {
+    if ($node->isa('GOBO::RelationNode')) {
         $self->tagval('domain', $node->domain);
         $self->tagval('range', $node->range);
-        foreach (OBO::RelationNode->unary_property_names) {
+        foreach (GOBO::RelationNode->unary_property_names) {
             $self->unary("is_$_") if $node->$_();
         }
     }

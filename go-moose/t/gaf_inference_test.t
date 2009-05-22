@@ -1,28 +1,28 @@
 use Test;
 plan tests => 6;
 use strict;
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::OBOParser;
-use OBO::Parsers::GAFParser;
-use OBO::Writers::GAFWriter;
-use OBO::InferenceEngine::GAFInferenceEngine;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::OBOParser;
+use GOBO::Parsers::GAFParser;
+use GOBO::Writers::GAFWriter;
+use GOBO::InferenceEngine::GAFInferenceEngine;
 use FileHandle;
 
 my $gaf = "t/data/128up.gaf";
 
 my $ontf = "t/data/gtp.obo";
-my $obo_parser = new OBO::Parsers::OBOParser(file=>$ontf);
+my $obo_parser = new GOBO::Parsers::OBOParser(file=>$ontf);
 my $ontg = $obo_parser->graph;
 $obo_parser->parse;
-my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
+my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 #my $fh = new FileHandle("t/data/test-fb.gaf");
 my $fh = new FileHandle($gaf);
-my $gafparser = new OBO::Parsers::GAFParser(fh=>$fh);
+my $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
 
 my @ics = ();
 while ($gafparser->parse_chunk(10000)) {
@@ -30,13 +30,13 @@ while ($gafparser->parse_chunk(10000)) {
     printf "inferring annotations for %s\n", scalar(@{$gafparser->graph->annotations});
     push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
     # clear
-    $gafparser->graph(new OBO::Graph);
+    $gafparser->graph(new GOBO::Graph);
 }
 
 print "Inferred ICs:\n";
-my $icgraph = new OBO::Graph();
+my $icgraph = new GOBO::Graph();
 $icgraph->annotations(\@ics);
-my $w = new OBO::Writers::GAFWriter;
+my $w = new GOBO::Writers::GAFWriter;
 $w->graph($icgraph);
 $w->write;
 
@@ -51,7 +51,7 @@ ok($ic->source->id eq 'GOC');
 # now add it back in and attempt to do inference again..
 
 $fh = new FileHandle($gaf);
-$gafparser = new OBO::Parsers::GAFParser(fh=>$fh);
+$gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
 my $agraph = $gafparser->graph;
 $gafparser->parse;
 $ontg->add_annotations($agraph->annotations);
@@ -65,11 +65,11 @@ foreach my $xlink (@{$agraph->annotation_ix->statements_by_node_id('FB:FBgn00103
 }
 
 print "Inferring ICs, second pass (expecting none):\n";
-$ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
+$ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 @ics = @{$ie->infer_annotations($gafparser->graph->annotations)};
-$icgraph = new OBO::Graph();
+$icgraph = new GOBO::Graph();
 $icgraph->annotations(\@ics);
-my $w = new OBO::Writers::GAFWriter;
+my $w = new GOBO::Writers::GAFWriter;
 $w->graph($icgraph);
 $w->write;
 ok(@ics == 0);

@@ -1,19 +1,19 @@
-package OBO::ClassExpression::Union;
+package GOBO::ClassExpression::Union;
 use Moose;
 use strict;
-extends 'OBO::ClassExpression::BooleanExpression';
+extends 'GOBO::ClassExpression::BooleanExpression';
 
 sub operator { ' OR ' }
 
 =head1 NAME
 
-OBO::Union
+GOBO::Union
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-An OBO::ClassExpression::BooleanExpression in which the set operator is one of union.
+An GOBO::ClassExpression::BooleanExpression in which the set operator is one of union.
 
 =cut
 

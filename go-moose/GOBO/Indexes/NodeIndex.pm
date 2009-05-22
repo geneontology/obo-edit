@@ -1,18 +1,18 @@
-package OBO::Indexes::NodeIndex;
+package GOBO::Indexes::NodeIndex;
 use Moose;
 use Carp;
 use strict;
-use OBO::Node;
-use OBO::Node;
-use OBO::Node;
-use OBO::RelationNode;
+use GOBO::Node;
+use GOBO::Node;
+use GOBO::Node;
+use GOBO::RelationNode;
 
-has ixN => (is => 'rw', isa => 'HashRef[OBO::Node]', default=>sub{{}});
-has ixLabel => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::Node]]', default=>sub{{}});
+has ixN => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
+has ixLabel => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::Node]]', default=>sub{{}});
 
 sub create_node {
     my $self = shift;
-    my $n = OBO::Node->new(@_); # TODO - other types
+    my $n = GOBO::Node->new(@_); # TODO - other types
     $self->add_node($s);
     return $s;
 }
@@ -77,7 +77,7 @@ sub nodes_by_label {
 
 =head1 NAME
 
-OBO::Indexes::NodeIndex
+GOBO::Indexes::NodeIndex
 
 =head1 SYNOPSIS
 
@@ -85,9 +85,9 @@ do not use this method directly
 
 =head1 DESCRIPTION
 
-Stores a collection of OBO::Node objects, optimized for fast
+Stores a collection of GOBO::Node objects, optimized for fast
 access. In general you should not need to use this directly - use
-OBO::Graph instead, which includes different indexes for links,
+GOBO::Graph instead, which includes different indexes for links,
 annotations etc
 
 =head2 TODO

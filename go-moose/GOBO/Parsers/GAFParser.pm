@@ -1,12 +1,12 @@
-package OBO::Parsers::GAFParser;
+package GOBO::Parsers::GAFParser;
 use Moose;
 use strict;
-extends 'OBO::Parsers::Parser';
-use OBO::Node;
-use OBO::Gene;
-use OBO::Evidence;
-use OBO::Annotation;
-use OBO::ClassExpression;
+extends 'GOBO::Parsers::Parser';
+use GOBO::Node;
+use GOBO::Gene;
+use GOBO::Evidence;
+use GOBO::Annotation;
+use GOBO::ClassExpression;
 
 sub parse_header {
     my $self = shift;
@@ -55,7 +55,7 @@ sub parse_body {
         my @taxa = split(/[\|\;]/,$genetaxa);
         my $taxon = shift @taxa;
         if (!$gene->label) {
-            bless $gene, 'OBO::Gene';
+            bless $gene, 'GOBO::Gene';
             $gene->label($genesymbol);
             $gene->add_synonyms(split(/\|/,$genesyn));
             # TODO; split
@@ -68,7 +68,7 @@ sub parse_body {
         }
 
         my %qualh = map {lc($_)=>1} (split(/[\|]\s*/,$qualifier || ''));
-        my $ev = new OBO::Evidence(type=>$g->term_noderef($evcode));
+        my $ev = new GOBO::Evidence(type=>$g->term_noderef($evcode));
         # TODO: discriminate between pipes and commas
         # (semicolon is there for legacy reasons - check if this can be removed)
         my @with_objs = map {$g->noderef($_)} split(/\s*[\|\;\,]\s*/, $with);
@@ -77,7 +77,7 @@ sub parse_body {
         my $provenance = $g->noderef(pop @refs); # last is usually PMID
         $provenance->add_xrefs([@refs]);
         my $annot = 
-            new OBO::Annotation(node=>$gene,
+            new GOBO::Annotation(node=>$gene,
                                 target=>$cnode,
                                 provenance=>$provenance,
                                 source=>$g->noderef($source_db),
@@ -91,7 +91,7 @@ sub parse_body {
             # TODO
         }
         if ($annotxp) {
-            my $xp = OBO::ClassExpression->parse_idexpr($g,$annotxp);
+            my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
             # TODO:
         }
         $g->add_annotation($annot);

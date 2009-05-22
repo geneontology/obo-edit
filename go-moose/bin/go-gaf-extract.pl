@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 use strict;
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::Annotation;
-use OBO::Node;
-use OBO::Parsers::GAFParser;
-use OBO::Parsers::OBOParser;
-use OBO::Writers::GAFWriter;
-use OBO::Writers::CustomizableWriter;
-use OBO::InferenceEngine;
-use OBO::InferenceEngine::GAFInferenceEngine;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::Annotation;
+use GOBO::Node;
+use GOBO::Parsers::GAFParser;
+use GOBO::Parsers::OBOParser;
+use GOBO::Writers::GAFWriter;
+use GOBO::Writers::CustomizableWriter;
+use GOBO::InferenceEngine;
+use GOBO::InferenceEngine::GAFInferenceEngine;
 use List::MoreUtils;
 use Set::Object;
 use DateTime;
@@ -19,7 +19,7 @@ use FileHandle;
 my $ontf;
 my %relh = ();
 my @ids = ();
-my $writer = new OBO::Writers::CustomizableWriter;
+my $writer = new GOBO::Writers::CustomizableWriter;
 while ($ARGV[0] =~ /^\-/) {
     my $opt = shift @ARGV;
     if ($opt eq '-i' || $opt eq '--ontology') {
@@ -36,7 +36,7 @@ while ($ARGV[0] =~ /^\-/) {
         exit(0);
     }
     elsif ($opt eq '--gaf') {
-        bless $writer, 'OBO::Writers::GAFWriter';
+        bless $writer, 'GOBO::Writers::GAFWriter';
     }
     else {
         die "no such opt: $opt";
@@ -57,16 +57,16 @@ if (!$ontf) {
 my $idset = new Set::Object;
 $idset->insert(@ids);
 
-my $obo_parser = new OBO::Parsers::OBOParser(file=>$ontf);
+my $obo_parser = new GOBO::Parsers::OBOParser(file=>$ontf);
 $obo_parser->parse;
 my $ontg = $obo_parser->graph;
-my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
+my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 
 # iterate through annotations writing new ICs
 my @ics = ();
 foreach my $f (@ARGV) {
-    my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
+    my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
     $gafparser->graph($ontg);
     $ontg->annotations([]);
     # iterate through one chunk at a time
@@ -84,7 +84,7 @@ foreach my $f (@ARGV) {
             }
         }
         # clear
-        $gafparser->graph(new OBO::Graph);
+        $gafparser->graph(new GOBO::Graph);
     }
 }
 exit 0;

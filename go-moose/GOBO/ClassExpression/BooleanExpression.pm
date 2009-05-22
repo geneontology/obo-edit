@@ -1,9 +1,9 @@
-package OBO::ClassExpression::BooleanExpression;
+package GOBO::ClassExpression::BooleanExpression;
 use Moose;
 use strict;
-extends 'OBO::ClassExpression';
+extends 'GOBO::ClassExpression';
 
-has 'arguments' => (is=>'rw', isa=>'ArrayRef[OBO::Node]');
+has 'arguments' => (is=>'rw', isa=>'ArrayRef[GOBO::Node]');
 
 sub operator { " ? " }
 
@@ -15,15 +15,15 @@ sub as_string {
 
 =head1 NAME
 
-OBO::ClassExpression::BooleanExpression
+GOBO::ClassExpression::BooleanExpression
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-An OBO::ClassExpression in which the members are constructed via a
-boolean operation. These are AND, OR, NOT - or in set terms, OBO::ClassExpression::Intersection, OBO::ClassExpression::Union
-or OBO::ClassExpression::Complement)
+An GOBO::ClassExpression in which the members are constructed via a
+boolean operation. These are AND, OR, NOT - or in set terms, GOBO::ClassExpression::Intersection, GOBO::ClassExpression::Union
+or GOBO::ClassExpression::Complement)
 
 =cut
 

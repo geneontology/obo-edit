@@ -1,10 +1,10 @@
-package OBO::Parsers::OBOParser;
+package GOBO::Parsers::OBOParser;
 use Moose;
 use strict;
-extends 'OBO::Parsers::Parser';
-use OBO::Node;
-use OBO::Synonym;
-use OBO::LinkStatement;
+extends 'GOBO::Parsers::Parser';
+use GOBO::Node;
+use GOBO::Synonym;
+use GOBO::LinkStatement;
 
 has default_namespace => (is=>'rw', isa=>'Str');
 
@@ -84,7 +84,7 @@ sub parse_body {
         }
         elsif (/^synonym:\s*(.*)/) {
             _parse_vals($1,$vals);
-            my $syn = new OBO::Synonym(label=>shift @$vals);
+            my $syn = new GOBO::Synonym(label=>shift @$vals);
             $n->add_synonym($syn);
             $syn->scope(shift @$vals);
             if ($vals->[0] && !ref($vals->[0])) {
@@ -98,13 +98,13 @@ sub parse_body {
         }
         elsif (/^is_a:\s*(\S+)/) {
             my $tn = $g->term_noderef($1);
-            my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
+            my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
             $g->add_link($s);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
             my $tn = $g->term_noderef($2);
-            my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
+            my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
             $g->add_link($s);
         }
         elsif (/^intersection_of:/) {
@@ -112,12 +112,12 @@ sub parse_body {
             if (/^intersection_of:\s*(\S+)\s+(\S+)/) {
                 my $rn = $g->relation_noderef($1);
                 my $tn = $g->term_noderef($2);
-                my $s = new OBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
+                my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
                 $g->add_link($s);
             }
             elsif (/^intersection_of:\s*(\S+)/) {
                 my $tn = $g->term_noderef($1);
-                my $s = new OBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
+                my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
                 $g->add_link($s);
             }
             else {
@@ -190,42 +190,42 @@ sub _parse_xrefs {
 
 =head1 NAME
 
-OBO::Parsers::OBOParser
+GOBO::Parsers::OBOParser
 
 =head1 SYNOPSIS
 
   my $fh = new FileHandle("t/data/cell.obo");
-  my $parser = new OBO::Parsers::OBOParser(fh=>$fh);
+  my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
   $parser->parse;
   print $parser->graph;
 
-  my $writer = new OBO::Writers::OBOWriter;
+  my $writer = new GOBO::Writers::OBOWriter;
   $writer->graph($parser->graph);
   $writer->write();
 
 =head1 DESCRIPTION
 
-An OBO::Parsers::Parser that parses OBO Files.
+An GOBO::Parsers::Parser that parses GOBO Files.
 
 =head2 Term stanzas
 
-These are converted to OBO::TermNode objects
+These are converted to GOBO::TermNode objects
 
 =head2 Typedef stanzas
 
-These are converted to OBO::RelationNode objects
+These are converted to GOBO::RelationNode objects
 
 =head2 Instance stanzas
 
-These are converted to OBO::InstanceNode objects
+These are converted to GOBO::InstanceNode objects
 
 =head2 Statements
 
-is_a and relationship tags are converted to OBO::LinkStatement objects and added to the graph
+is_a and relationship tags are converted to GOBO::LinkStatement objects and added to the graph
 
 =head2 intersection_of tags
 
-These are added to the graph as OBO::LinkStatement objects, with is_intersection=>1
+These are added to the graph as GOBO::LinkStatement objects, with is_intersection=>1
 
 You can call 
 

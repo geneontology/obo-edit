@@ -1,19 +1,19 @@
-package OBO::ClassExpression::Intersection;
+package GOBO::ClassExpression::Intersection;
 use Moose;
 use strict;
-extends 'OBO::ClassExpression::BooleanExpression';
+extends 'GOBO::ClassExpression::BooleanExpression';
 
 sub operator { ' AND ' }
 
 =head1 NAME
 
-OBO::Intersection
+GOBO::Intersection
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-An OBO::ClassExpression::BooleanExpression in which the set operator is one of intersection.
+An GOBO::ClassExpression::BooleanExpression in which the set operator is one of intersection.
 
 =cut
 

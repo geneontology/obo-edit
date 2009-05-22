@@ -1,12 +1,12 @@
-package OBO::SimpleRDF::Indexes::SimpleRDFStatementIndex;
+package GOBO::SimpleRDF::Indexes::SimpleRDFStatementIndex;
 use Moose;
-extends 'OBO::Indexes::StatementIndex';
-with 'OBO::SimpleRDF::Indexes::SimpleRDFWrapper';
+extends 'GOBO::Indexes::StatementIndex';
+with 'GOBO::SimpleRDF::Indexes::SimpleRDFWrapper';
 use Carp;
 use strict;
-use OBO::Statement;
-use OBO::Node;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Node;
+use GOBO::RelationNode;
 use AmiGO::Model::Graph;
 
 sub add_statements {
@@ -42,7 +42,7 @@ sub statements {
         $self->add_statements([@_]);
     }
     # GET
-    my $qs = new OBO::LinkStatement;
+    my $qs = new GOBO::LinkStatement;
     my $rs = $self->to_rdf($qs);
     return $self->matching_statements($rs);
     
@@ -75,7 +75,7 @@ sub matching_statements {
 
 =head1 NAME
 
-OBO::SimpleRDF::Indexes::StatementIndex
+GOBO::SimpleRDF::Indexes::StatementIndex
 
 =head1 SYNOPSIS
 
@@ -83,7 +83,7 @@ do not use this method directly
 
 =head1 DESCRIPTION
 
-Overrides OBO::Indexes::StatementIndex (as used in OBO::Graph) to
+Overrides GOBO::Indexes::StatementIndex (as used in GOBO::Graph) to
 provide direct DB connectivity to the AmiGO/GO Database. Uses the
 SimpleRDF DBIx::Class layer
 

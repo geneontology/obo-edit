@@ -1,20 +1,20 @@
 =head1 NAME
 
-OBO::ClassExpression
+GOBO::ClassExpression
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-A class expression is an OBO::ClassNode whose members are identified
+A class expression is an GOBO::ClassNode whose members are identified
 by a boolean or relational expression. For example, the class 'nuclei
 of cardiac cells' is expressed as the intersection (an
-OBO::ClassExpression::Intersection) between the set 'nucleus' (an
-OBO::TermNode) and the set of all things that stand in the part_of
-relation to 'class node' (a OBO::ClassExpression::RelationalExpression).
+GOBO::ClassExpression::Intersection) between the set 'nucleus' (an
+GOBO::TermNode) and the set of all things that stand in the part_of
+relation to 'class node' (a GOBO::ClassExpression::RelationalExpression).
 
-An OBO::TermNode can be formally and logically defined by stating
-equivalence to a OBO::ClassExpression
+An GOBO::TermNode can be formally and logically defined by stating
+equivalence to a GOBO::ClassExpression
 
   [Term]
   id: GO:new
@@ -34,12 +34,12 @@ Description Logics
 
 =cut
 
-package OBO::ClassExpression;
+package GOBO::ClassExpression;
 use Moose;
 use strict;
-extends 'OBO::ClassNode';
-use OBO::ClassExpression::RelationalExpression;
-use OBO::ClassExpression::Intersection;
+extends 'GOBO::ClassNode';
+use GOBO::ClassExpression::RelationalExpression;
+use GOBO::ClassExpression::Intersection;
 
 # abstract class - no accessors
 
@@ -58,15 +58,15 @@ The set of all cytoplasms that are part of some oocyte
 
 The grammar is
 
-  OBO::ClassExpression = OBO::BooleanExpression | OBO::RelationalExpression | OBO::TermNode
-  OBO::BooleanExpression = OBO::Intersection | OBO::Union
-  OBO::Intersection = OBO::ClassExpression '^' OBO::ClassExpression
-  OBO::Union = OBO::ClassExpression '|' OBO::ClassExpression
-  OBO::RelationalExpression = OBO::RelationNode '(' OBO::ClassExpression ')'
+  GOBO::ClassExpression = GOBO::BooleanExpression | GOBO::RelationalExpression | GOBO::TermNode
+  GOBO::BooleanExpression = GOBO::Intersection | GOBO::Union
+  GOBO::Intersection = GOBO::ClassExpression '^' GOBO::ClassExpression
+  GOBO::Union = GOBO::ClassExpression '|' GOBO::ClassExpression
+  GOBO::RelationalExpression = GOBO::RelationNode '(' GOBO::ClassExpression ')'
 
 =head3 parse_idexpr
 
-Generates a OBO::ClassExpression based on an ID expression string
+Generates a GOBO::ClassExpression based on an ID expression string
 
 =cut
 
@@ -98,7 +98,7 @@ sub _parse_idexpr_toks {
         # relational expression
         shift @$toks;
         my $filler = _parse_idexpr_toks($g,$toks);
-        $this = new OBO::ClassExpression::RelationalExpression(relation=>$tok,target=>$filler);
+        $this = new GOBO::ClassExpression::RelationalExpression(relation=>$tok,target=>$filler);
         printf STDERR "relexpr $tok $filler ==> $this\n";
     }
     else {
@@ -111,7 +111,7 @@ sub _parse_idexpr_toks {
         my $next = _parse_idexpr_toks($g,$toks);
         if ($op eq '^') {
             printf STDERR "intersection: $this $next\n";
-            $combo = new OBO::ClassExpression::Intersection(arguments=>[$this,$next]);
+            $combo = new GOBO::ClassExpression::Intersection(arguments=>[$this,$next]);
         }
         elsif ($op eq '|') {
         }

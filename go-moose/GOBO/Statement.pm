@@ -1,14 +1,14 @@
-package OBO::Statement;
+package GOBO::Statement;
 use Moose;
 use strict;
-with 'OBO::Attributed';
-with 'OBO::Identified';
+with 'GOBO::Attributed';
+with 'GOBO::Identified';
 
-use OBO::Node;
-use OBO::RelationNode;
+use GOBO::Node;
+use GOBO::RelationNode;
 
-has 'node' => ( is=>'ro', isa=>'OBO::Node', coerce=>1 );
-has 'relation' => ( is=>'ro', isa=>'OBO::RelationNode', coerce=>1 );
+has 'node' => ( is=>'ro', isa=>'GOBO::Node', coerce=>1 );
+has 'relation' => ( is=>'ro', isa=>'GOBO::RelationNode', coerce=>1 );
 has 'target' => ( is=>'ro', isa=>'Item');
 has 'inferred' => ( is=>'ro', isa=>'Bool');
 has 'negated' => ( is=>'ro', isa=>'Bool');
@@ -44,7 +44,7 @@ sub matches {
 
 =head1 NAME
 
-OBO::Statement
+GOBO::Statement
 
 =head1 SYNOPSIS
 
@@ -52,19 +52,19 @@ OBO::Statement
 
 =head1 DESCRIPTION
 
-A type of OBO::Statement that connects an OBO::Node object to another
-entity via a OBO::RelationNode object. This can be thought of as a
+A type of GOBO::Statement that connects an GOBO::Node object to another
+entity via a GOBO::RelationNode object. This can be thought of as a
 sentence or statement about a node.
 
 In RDF and Chado terminology, the node can be thought of as the
 "subject", and the target the "object". The terms "subject" and
 "object" are avoided due to being overloaded.
 
-The two subtypes are OBO::LinkStatement (edges) or
-OBO::LiteralStatement (tag-values). For most bio-ontologies, the
+The two subtypes are GOBO::LinkStatement (edges) or
+GOBO::LiteralStatement (tag-values). For most bio-ontologies, the
 Statements will be LinkStatements.
 
-Statements have the roles OBO::Attributed and OBO::Identified. This
+Statements have the roles GOBO::Attributed and GOBO::Identified. This
 means they can have metadata attached. For example, who made the
 statement and when.
 

@@ -1,13 +1,13 @@
-package OBO::Subset;
+package GOBO::Subset;
 use Moose;
 use strict;
-extends 'OBO::Node';
+extends 'GOBO::Node';
 
 1;
 
 =head1 NAME
 
-OBO::Subset
+GOBO::Subset
 
 =head1 SYNOPSIS
 

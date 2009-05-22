@@ -1,11 +1,11 @@
-package OBO::Writers::GAFWriter;
+package GOBO::Writers::GAFWriter;
 use Moose;
 use strict;
-extends 'OBO::Writers::Writer';
-use OBO::Node;
-use OBO::Gene;
-use OBO::Evidence;
-use OBO::Annotation;
+extends 'GOBO::Writers::Writer';
+use GOBO::Node;
+use GOBO::Gene;
+use GOBO::Evidence;
+use GOBO::Annotation;
 
 sub write_header {
     my $self = shift;
