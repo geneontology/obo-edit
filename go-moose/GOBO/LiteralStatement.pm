@@ -1,8 +1,8 @@
-package OBO::LiteralStatement;
+package GOBO::LiteralStatement;
 use Moose;
 use strict;
-extends 'OBO::Statement';
-use OBO::Node;
+extends 'GOBO::Statement';
+use GOBO::Node;
 
 has 'target' => ( is=>'ro', isa=>'Value');
 
@@ -10,7 +10,7 @@ has 'target' => ( is=>'ro', isa=>'Value');
 
 =head1 NAME
 
-OBO::LiteralStatement
+GOBO::LiteralStatement
 
 =head1 SYNOPSIS
 
@@ -19,14 +19,14 @@ OBO::LiteralStatement
 =head1 DESCRIPTION
 
 LiteralStatements are one of two basic types of
-OBO::Statement. Whereas an OBO::LinkStatement will connect a node to
+GOBO::Statement. Whereas an GOBO::LinkStatement will connect a node to
 another node, a literal statement connects a node to a "literal", or
 Value which can be a a string, number of other kind of moose Value.
 
 =head2 What's this for?
 
-LiteralStatements inherit the roles OBO::Attributed and
-OBO::Identified (via OBO::Statement). This means they can have
+LiteralStatements inherit the roles GOBO::Attributed and
+GOBO::Identified (via GOBO::Statement). This means they can have
 metadata attached, in the same way as edges in a graph. This stands in
 contrast to implementing the tag-values as accessors on the node
 itself. The difference between these styles is sometimes called

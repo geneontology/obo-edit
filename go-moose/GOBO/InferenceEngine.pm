@@ -1,15 +1,15 @@
-package OBO::InferenceEngine;
+package GOBO::InferenceEngine;
 use Moose;
 use strict;
-use OBO::Statement;
-use OBO::Annotation;
-use OBO::Graph;
-use OBO::Node;
-use OBO::TermNode;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Annotation;
+use GOBO::Graph;
+use GOBO::Node;
+use GOBO::TermNode;
+use GOBO::RelationNode;
 
-has graph => (is=>'rw', isa=> 'OBO::Graph');
-has inferred_graph => (is=>'rw', isa=> 'OBO::Graph', default=>sub{new OBO::Graph});
+has graph => (is=>'rw', isa=> 'GOBO::Graph');
+has inferred_graph => (is=>'rw', isa=> 'GOBO::Graph', default=>sub{new GOBO::Graph});
 
 sub backward_chain {
     my $self = shift;
@@ -39,7 +39,7 @@ sub backward_chain {
     return [keys %outlink_h];
 }
 
-=head2 get_inferred_target_links (subject OBO::Node, relation OBO::RelationNode OPTIONAL)
+=head2 get_inferred_target_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
 given a subject (child), get inferred target (parent) links
 
@@ -85,7 +85,7 @@ sub get_inferred_target_links {
     return [values %outlink_h];
 }
 
-=head2 get_inferred_target_nodes (subject OBO::Node, relation OBO::RelationNode OPTIONAL)
+=head2 get_inferred_target_nodes (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
 given a subject (child), get inferred target (parent) nodes
 
@@ -115,7 +115,7 @@ sub extend_link {
         my $rel = $self->relation_composition($rel_1, $rel_2);
         #printf STDERR "  RC: $rel\n";
         if ($rel) {
-            my $newlink = new OBO::LinkStatement(node=>$link->node,
+            my $newlink = new GOBO::LinkStatement(node=>$link->node,
                                                  relation=>$rel,
                                                  target=>$xlink->target);
             # todo - provenance/evidence of link
@@ -125,7 +125,7 @@ sub extend_link {
     return \@newlinks;
 }
 
-=head2 get_nonredundant_set (nodes ArrayRef[OBO::Node], OPTIONAL set2 ArrayRef[OBO::Node])
+=head2 get_nonredundant_set (nodes ArrayRef[GOBO::Node], OPTIONAL set2 ArrayRef[GOBO::Node])
 
 TODO: allow specification of relations
 
@@ -180,7 +180,7 @@ sub relation_composition {
 sub forward_chain {
     my $self = shift;
     my $g = $self->graph;
-    my $ig = new OBO::Graph;
+    my $ig = new GOBO::Graph;
     $ig->copy_from($g);
     $self->inferred_graph($ig);
     $self->calculate_deductive_closure;
@@ -200,21 +200,21 @@ sub calculate_deductive_closure {
 
 sub subsumed_by {
     my $self = shift;
-    my $parent = shift; # OBO::Class
-    my $child = shift;  # OBO::Class
+    my $parent = shift; # GOBO::Class
+    my $child = shift;  # GOBO::Class
 
     my $subsumes = 0;
 
-    if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new OBO::RelationNode(id=>'is_a'))}) {
+    if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
         return 1;
     }
 
-    if ($parent->isa('OBO::ClassExpression')) {
-        if ($parent->isa('OBO::ClassExpression::RelationalExpression')) {
+    if ($parent->isa('GOBO::ClassExpression')) {
+        if ($parent->isa('GOBO::ClassExpression::RelationalExpression')) {
         }
-        elsif ($parent->isa('OBO::ClassExpression::BooleanExpression')) {
+        elsif ($parent->isa('GOBO::ClassExpression::BooleanExpression')) {
             my $args = $parent->arguments;
-            if ($parent->isa('OBO::ClassExpression::Intersection')) {
+            if ($parent->isa('GOBO::ClassExpression::Intersection')) {
                 $subsumes = 1;
                 foreach my $arg (@$args) {
                     if (!$self->subsumed_by($child, $arg)) {
@@ -223,7 +223,7 @@ sub subsumed_by {
                     }
                 }
             }
-            elsif ($parent->isa('OBO::ClassExpression::Union')) {
+            elsif ($parent->isa('GOBO::ClassExpression::Union')) {
                 foreach my $arg (@$args) {
                     if ($self->subsumed_by($child, $arg)) {
                         $subsumes = 1;
@@ -244,7 +244,7 @@ sub subsumed_by {
 
 =head1 NAME
 
-OBO::InferenceEngine
+GOBO::InferenceEngine
 
 =head1 SYNOPSIS
 
@@ -252,7 +252,7 @@ NOT FULLY IMPLEMENTED
 
 =head1 DESCRIPTION
 
-An OBO::Graph is a collection of OBO::Statements. These statements can
+An GOBO::Graph is a collection of GOBO::Statements. These statements can
 be either 'asserted' or 'inferred'. Inferred statements are created by
 an Inference Engine. An InferenceEngine object provides two accessors,
 'graph' for the source graph and 'inferred_graph' for the set of
@@ -261,7 +261,7 @@ take into account properties of the relations in the statements.
 
 The notion of transitive closure in a graph can be expressed in terms
 of the deductive closure of a graph of links in which each
-OBO::RelationNode has the property 'transitive'. The notion of
+GOBO::RelationNode has the property 'transitive'. The notion of
 ancestry in a graph can be thought of as the inferred links where the
 relations are transitive.
 
@@ -271,7 +271,7 @@ Rules are horn rules with sets of statements in the antecedent and
 typically a single statement in the consequent.
 
 In the notation below, subject and target nodes are indicated with
-lower case variables (x, y, z, ...) and relations (OBO::RelationNode)
+lower case variables (x, y, z, ...) and relations (GOBO::RelationNode)
 are indicated with upper case (R, R1, R2, ...). Each statement is
 written in this order:
 
@@ -312,7 +312,7 @@ Note that the type level adjacenct_to relation is not transitive
 
 Note that the type level part_of relation is not the inverse of has_part
 
-=head3 Inference over OBO::ClassExpressions
+=head3 Inference over GOBO::ClassExpressions
 
 class expressions define sets of entities. We can infer the existing
 of subset/subsumption relationships between these sets.

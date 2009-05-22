@@ -1,12 +1,12 @@
 =head1 NAME
 
-OBO::Attribute
+GOBO::Attribute
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-A role for any kind of entity that can be attributed to some source (annotated). Here 'entity' includes OBO::Statement objects
+A role for any kind of entity that can be attributed to some source (annotated). Here 'entity' includes GOBO::Statement objects
 
 =head2 TBD
 
@@ -14,7 +14,7 @@ Is this over-abstraction? This could be simply mixed in with Statement
 
 =cut
 
-package OBO::Attributed;
+package GOBO::Attributed;
 use Moose::Role;
 use strict;
 
@@ -36,14 +36,14 @@ coerce 'Date'
         }
 };
 
-has source => ( is=>'rw', isa=>'OBO::Node', coerce=>1);
-has provenance => ( is=>'rw', isa=>'OBO::Node', coerce=>1);
+has source => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
+has provenance => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has date => ( is=>'rw', isa=>'Date', coerce=>1); # TODO -- coerce
 has xrefs => ( is=>'rw', isa=>'ArrayRef[Str]'); # TODO -- make these nodes?
 has alt_ids => ( is=>'rw', isa=>'ArrayRef[Str]'); 
 has is_anonymous => ( is=>'rw', isa=>'Bool'); 
 has comment => ( is=>'rw', isa=>'Str');  # TODO - multivalued?
-has in_subsets => ( is=>'rw', isa=>'ArrayRef[OBO::Node]'); 
+has in_subsets => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]'); 
 
 
 sub add_xrefs {

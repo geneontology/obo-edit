@@ -1,14 +1,14 @@
-package OBO::Phylo::Branch;
+package GOBO::Phylo::Branch;
 use Moose;
 use strict;
-extends 'OBO::LinkStatement';
-use OBO::Evidence;
+extends 'GOBO::LinkStatement';
+use GOBO::Evidence;
 
 has distance => ( is=>'rw', isa=>'float');
 
 =head1 NAME
 
-OBO::Phylo::Branch
+GOBO::Phylo::Branch
 
 =head1 SYNOPSIS
 
@@ -16,7 +16,7 @@ OBO::Phylo::Branch
 
 =head1 DESCRIPTION
 
-An edge in a Phylogenetic tree. Extends OBO::LinkStatement with distances
+An edge in a Phylogenetic tree. Extends GOBO::LinkStatement with distances
 
 =cut
 

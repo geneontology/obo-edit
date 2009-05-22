@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 use strict;
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::Annotation;
-use OBO::Node;
-use OBO::Parsers::GAFParser;
-use OBO::Parsers::OBOParser;
-use OBO::Writers::GAFWriter;
-use OBO::InferenceEngine;
-use OBO::InferenceEngine::GAFInferenceEngine;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::Annotation;
+use GOBO::Node;
+use GOBO::Parsers::GAFParser;
+use GOBO::Parsers::OBOParser;
+use GOBO::Writers::GAFWriter;
+use GOBO::InferenceEngine;
+use GOBO::InferenceEngine::GAFInferenceEngine;
 use DateTime;
 use FileHandle;
 
@@ -43,10 +43,10 @@ if (!$ontf) {
     exit(1);
 }
 
-my $obo_parser = new OBO::Parsers::OBOParser(file=>$ontf);
+my $obo_parser = new GOBO::Parsers::OBOParser(file=>$ontf);
 $obo_parser->parse;
 my $ontg = $obo_parser->graph;
-my $ie = new OBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
+my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
 my %nodemap = ();
 
@@ -54,7 +54,7 @@ my %nodemap = ();
 foreach my $f (@ARGV) {
     my @ics = ();
     $ontg->annotations([]);
-    my $gafparser = new OBO::Parsers::GAFParser(file=>$f);
+    my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
     # iterate through one chunk at a time
     while ($gafparser->parse_chunk(10000)) {
         printf STDERR "processing %d annots in in $f\n", scalar(@{$gafparser->graph->annotations});
@@ -63,11 +63,11 @@ foreach my $f (@ARGV) {
         push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
         # clear
         printf STDERR "  inferences %d\n", scalar(@ics);
-        $gafparser->graph(new OBO::Graph);
+        $gafparser->graph(new GOBO::Graph);
     }
-    my $icgraph = new OBO::Graph();
+    my $icgraph = new GOBO::Graph();
     $icgraph->annotations(\@ics);
-    my $w = new OBO::Writers::GAFWriter;
+    my $w = new GOBO::Writers::GAFWriter;
     if ($per_file_ic) {
         my $of = $f;
         $of =~ s/.*\///g;
@@ -85,7 +85,7 @@ exit 0;
 # find 
 sub calculate_inference_graph {
     my $graph = shift;
-    my $igraph = new OBO::Graph;
+    my $igraph = new GOBO::Graph;
     
 }
 

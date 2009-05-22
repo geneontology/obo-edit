@@ -1,34 +1,34 @@
 =head1 NAME
 
-OBO::InferenceEngine::GAFInferenceEngine
+GOBO::InferenceEngine::GAFInferenceEngine
 
 =head1 SYNOPSIS
 
 
 =head1 DESCRIPTION
 
-An OBO::InferenceEngine for making inferences over a GAF (Gene Association File).
+An GOBO::InferenceEngine for making inferences over a GAF (Gene Association File).
 
 =head2 Rules
 
 
 =cut
 
-package OBO::InferenceEngine::GAFInferenceEngine;
+package GOBO::InferenceEngine::GAFInferenceEngine;
 use Moose;
-extends 'OBO::InferenceEngine';
+extends 'GOBO::InferenceEngine';
 use strict;
-use OBO::Statement;
-use OBO::Annotation;
-use OBO::Graph;
-use OBO::Node;
-use OBO::TermNode;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Annotation;
+use GOBO::Graph;
+use GOBO::Node;
+use GOBO::TermNode;
+use GOBO::RelationNode;
 
-has nodemap => (is=>'rw', isa=>'HashRef[OBO::Node]', default=>sub{{}});
-has got_h => (is=>'rw', isa=>'HashRef[OBO::Node]', default=>sub{{}});
+has nodemap => (is=>'rw', isa=>'HashRef[GOBO::Node]', default=>sub{{}});
+has got_h => (is=>'rw', isa=>'HashRef[GOBO::Node]', default=>sub{{}});
 
-=head2 infer_annotations(ArrayRef[OBO::Annotation])
+=head2 infer_annotations(ArrayRef[GOBO::Annotation])
 
 In the future this will be configurable.
 
@@ -36,7 +36,7 @@ For now there is only one kind of GAF inference:
 
 =head3 Cross-ontology promotion
 
-Given an annotation to an OBO::TermNode F, this will generate an IC
+Given an annotation to an GOBO::TermNode F, this will generate an IC
 annotation to P, if it is possible to infer a F part_of P link AND the
 inferred annotation is not redundant with either existing annotations
 OR with another inference
@@ -93,10 +93,10 @@ sub infer_annotations {
                 push(@ics, 
                      map {
                          printf STDERR "inferred $gene $tid --> %s\n", $ontg->term_noderef($_);
-                         new OBO::Annotation(node => $gene,
+                         new GOBO::Annotation(node => $gene,
                                              target => $ontg->term_noderef($_),
                                              provenance => $ann->provenance,
-                                             evidence => new OBO::Evidence(type=>$ontg->term_noderef('IC'),
+                                             evidence => new GOBO::Evidence(type=>$ontg->term_noderef('IC'),
                                                                            supporting_entities => [$t]),
                                              
                                              source=>'GOC',

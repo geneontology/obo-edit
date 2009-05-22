@@ -1,28 +1,28 @@
-package OBO::Phylo::PhyloNode;
+package GOBO::Phylo::PhyloNode;
 use Moose;
 use strict;
-extends 'OBO::Node';
+extends 'GOBO::Node';
 
 use Moose::Util::TypeConstraints;
 
-coerce 'OBO::Phylo::PhyloNode'
-    => from 'OBO::Node'
-    => via { new OBO::Phylo::PhyloNode(represents=>$_) };
+coerce 'GOBO::Phylo::PhyloNode'
+    => from 'GOBO::Node'
+    => via { new GOBO::Phylo::PhyloNode(represents=>$_) };
 
-#has 'represents' => (is=>'ro', isa=>'OBO::Statement',handles=>qr/.*/);
-has 'represents' => (is=>'ro', isa=>'OBO::Statement');
-has 'parent' => (is=>'ro', isa=>'OBO::Phylo::PhyloNode');
-has 'tree' => (is=>'ro', isa=>'OBO::Phylo::PhyloTree');
+#has 'represents' => (is=>'ro', isa=>'GOBO::Statement',handles=>qr/.*/);
+has 'represents' => (is=>'ro', isa=>'GOBO::Statement');
+has 'parent' => (is=>'ro', isa=>'GOBO::Phylo::PhyloNode');
+has 'tree' => (is=>'ro', isa=>'GOBO::Phylo::PhyloTree');
 
-coerce 'OBO::PhyloNode'
+coerce 'GOBO::PhyloNode'
       => from 'Str'
-      => via { new OBO::PhyloNode(id=>$_) };
+      => via { new GOBO::PhyloNode(id=>$_) };
 
 1;
 
 =head1 NAME
 
-OBO::Phylo::PhyloNode
+GOBO::Phylo::PhyloNode
 
 =head1 SYNOPSIS
 
@@ -30,10 +30,10 @@ OBO::Phylo::PhyloNode
 
 =head1 DESCRIPTION
 
-An OBO::Node in a phylogenetic tree that represents some kind of evolvable entity
+An GOBO::Node in a phylogenetic tree that represents some kind of evolvable entity
 
 Note that the same entity (e.g. gene, species) can be present in
-multiple OBO::Phylo::PhyloTree. It may have different parents in each.
+multiple GOBO::Phylo::PhyloTree. It may have different parents in each.
 
 This necessitates having a separate object to represent both (a) the
 node in the tree, together with its hypothetical placements and (b)

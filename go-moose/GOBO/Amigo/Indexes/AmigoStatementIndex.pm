@@ -1,12 +1,12 @@
-package OBO::Amigo::Indexes::AmigoStatementIndex;
+package GOBO::Amigo::Indexes::AmigoStatementIndex;
 use Moose;
-extends 'OBO::Indexes::StatementIndex';
-with 'OBO::Amigo::Indexes::AmigoWrapper';
+extends 'GOBO::Indexes::StatementIndex';
+with 'GOBO::Amigo::Indexes::AmigoWrapper';
 use Carp;
 use strict;
-use OBO::Statement;
-use OBO::Node;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Node;
+use GOBO::RelationNode;
 use AmiGO::Model::Graph;
 
 sub add_statements {
@@ -64,9 +64,9 @@ sub statements_by_target_id {
 sub convert {
     my $self = shift;
     my $rs = shift;
-    # TODO: use a factory to create OBO::Statement objs
+    # TODO: use a factory to create GOBO::Statement objs
     return new 
-      OBO::Statement(node=>$rs->subject->acc,
+      GOBO::Statement(node=>$rs->subject->acc,
                      relation=>$rs->relation->acc,
                      target=>$rs->object->acc);
 }
@@ -76,7 +76,7 @@ sub convert {
 
 =head1 NAME
 
-OBO::Amigo::Indexes::StatementIndex
+GOBO::Amigo::Indexes::StatementIndex
 
 =head1 SYNOPSIS
 
@@ -84,7 +84,7 @@ do not use this method directly
 
 =head1 DESCRIPTION
 
-Overrides OBO::Indexes::StatementIndex (as used in OBO::Graph) to
+Overrides GOBO::Indexes::StatementIndex (as used in GOBO::Graph) to
 provide direct DB connectivity to the AmiGO/GO Database. Uses the
 Amigo DBIx::Class layer
 

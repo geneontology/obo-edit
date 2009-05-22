@@ -1,15 +1,15 @@
-package OBO::RelationNode;
+package GOBO::RelationNode;
 use Moose;
 use strict;
-extends 'OBO::Node';
-with 'OBO::Definable';
+extends 'GOBO::Node';
+with 'GOBO::Definable';
 use Moose::Util::TypeConstraints;
 
-coerce 'OBO::RelationNode'
-    => from 'OBO::Node'
-    => via { bless $_, 'OBO::RelationNode' }
+coerce 'GOBO::RelationNode'
+    => from 'GOBO::Node'
+    => via { bless $_, 'GOBO::RelationNode' }
     => from 'Str'
-    => via { my $rel = new OBO::RelationNode(id=>$_); $rel->post_init;return $rel; };  # TODO -- is there a more elegant way of doing this?
+    => via { my $rel = new GOBO::RelationNode(id=>$_); $rel->post_init;return $rel; };  # TODO -- is there a more elegant way of doing this?
 
 has transitive => ( is=>'rw', isa=>'Bool' );
 has symmetric => ( is=>'rw', isa=>'Bool' );
@@ -20,11 +20,11 @@ has reflexive => ( is=>'rw', isa=>'Bool' );
 has irreflexive => ( is=>'rw', isa=>'Bool' );
 has functional => ( is=>'rw', isa=>'Bool' );
 has inverse_functional => ( is=>'rw', isa=>'Bool' );
-has transitive_over => ( is=>'rw', isa=>'OBO::RelationNode');
-has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[OBO::RelationNode]]' );
-has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[OBO::RelationNode]' );
-has domain => ( is=>'rw', isa=>'OBO::ClassNode');
-has range => ( is=>'rw', isa=>'OBO::ClassNode');
+has transitive_over => ( is=>'rw', isa=>'GOBO::RelationNode');
+has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
+has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
+has domain => ( is=>'rw', isa=>'GOBO::ClassNode');
+has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 
 sub post_init {
     my $self = shift;
@@ -49,13 +49,13 @@ sub propagates_over_is_a {
 
 =head1 NAME
 
-OBO::RelationNode
+GOBO::RelationNode
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-An OBO::Node that acts as a predicate in an OBO::Statement. Relations can have particular properties such as transitivity that are used by an OBO::InferenceEngine
+An GOBO::Node that acts as a predicate in an GOBO::Statement. Relations can have particular properties such as transitivity that are used by an GOBO::InferenceEngine
 
 =head1 SEE ALSO
 

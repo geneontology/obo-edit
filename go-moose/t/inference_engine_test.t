@@ -1,22 +1,22 @@
 use Test;
 plan tests => 4;
 use strict;
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::OBOParser;
-use OBO::Writers::OBOWriter;
-use OBO::InferenceEngine;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::OBOParser;
+use GOBO::Writers::OBOWriter;
+use GOBO::InferenceEngine;
 use FileHandle;
 
 my $fh = new FileHandle("t/data/cell.obo");
-my $parser = new OBO::Parsers::OBOParser(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 my $g = $parser->graph;
 
-my $ie = new OBO::InferenceEngine(graph=>$g);
+my $ie = new GOBO::InferenceEngine(graph=>$g);
 my $neuron = $g->noderef('CL:0000540');
 
 printf "neuron = $neuron\n";
@@ -31,7 +31,7 @@ ok($ie->relation_composition($develops_from, $develops_from)->equals($develops_f
 
 my $xlinks = 
     $ie->extend_link(
-        new OBO::LinkStatement(node=>'CL:0000540',
+        new GOBO::LinkStatement(node=>'CL:0000540',
                                relation=>$develops_from,
                                target=>'CL:0000047'));
 

@@ -1,13 +1,13 @@
-package OBO::Parsers::Parser;
+package GOBO::Parsers::Parser;
 use Moose;
 use strict;
-use OBO::Graph;
+use GOBO::Graph;
 use FileHandle;
 use Carp;
 
 has fh => (is=>'rw', isa=>'FileHandle');
 has file => (is=>'rw', isa=>'Str');
-has graph => (is=>'rw', isa=>'OBO::Graph', default=>sub{new OBO::Graph});
+has graph => (is=>'rw', isa=>'GOBO::Graph', default=>sub{new GOBO::Graph});
 has lines => (is=>'rw', isa=>'ArrayRef',default=>sub{[]});
 has max_chunk => (is=>'rw', isa=>'Int');
 has line_no => (is=>'rw', isa=>'Int', default=>sub{0});
@@ -99,12 +99,12 @@ sub unshift_line {
 
 =head1 NAME
 
-OBO::Parsers::Parser
+GOBO::Parsers::Parser
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-Base class for all parsers. Parsers take formats (e.g. OBO::Parsers::OBOParser) and generate objects, typically some combination of OBO::Node and OBO::Statement objects
+Base class for all parsers. Parsers take formats (e.g. GOBO::Parsers::OBOParser) and generate objects, typically some combination of GOBO::Node and GOBO::Statement objects
 
 =cut

@@ -1,20 +1,20 @@
 use Test;
 plan tests => 1;
 use strict;
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::OBOParser;
-use OBO::Writers::OBOWriter;
-use OBO::InferenceEngine;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::OBOParser;
+use GOBO::Writers::OBOWriter;
+use GOBO::InferenceEngine;
 use FileHandle;
 
 # NOT YET A TRUE TEST
 
 my $fh = new FileHandle("t/data/so-xp.obo");
-my $parser = new OBO::Parsers::OBOParser(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 my $g = $parser->graph;
 

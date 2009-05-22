@@ -1,14 +1,14 @@
-package OBO::Indexes::StatementIndex;
+package GOBO::Indexes::StatementIndex;
 use Moose;
 use Carp;
 use strict;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::Node;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::Node;
+use GOBO::RelationNode;
 
-has ixN => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
-has ixT => (is => 'rw', isa => 'HashRef[ArrayRef[OBO::LinkStatement]]', default=>sub{{}});
+has ixN => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::LinkStatement]]', default=>sub{{}});
+has ixT => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::LinkStatement]]', default=>sub{{}});
 
 sub clear_all {
     my $self = shift;
@@ -19,7 +19,7 @@ sub clear_all {
 
 sub create_statement {
     my $self = shift;
-    my $s = OBO::LinkStatement->new(@_); # TODO - other types
+    my $s = GOBO::LinkStatement->new(@_); # TODO - other types
     $self->add_statement($s);
     return $s;
 }
@@ -37,7 +37,7 @@ sub add_statements {
     foreach my $s (@$sl) {
         my $nid = $s->node->id;
         push(@{$self->ixN->{$nid}}, $s);
-        if ($s->isa("OBO::LinkStatement")) {
+        if ($s->isa("GOBO::LinkStatement")) {
             my $tid = $s->target->id;
             push(@{$self->ixT->{$tid}}, $s);
         }
@@ -53,7 +53,7 @@ sub remove_statements {
         # TODO - Set::Object?
         my $arr = $self->ixN->{$nid};
         @$arr = grep {!$s->equals($_)} @$arr;
-        if ($s->isa("OBO::LinkStatement")) {
+        if ($s->isa("GOBO::LinkStatement")) {
             my $tid = $s->target->id;
             my $arr = $self->ixT->{$tid};
             @$arr = grep {!$s->equals($_)} @$arr;
@@ -112,7 +112,7 @@ sub matching_statements {
 
 =head1 NAME
 
-OBO::Indexes::StatementIndex
+GOBO::Indexes::StatementIndex
 
 =head1 SYNOPSIS
 
@@ -120,9 +120,9 @@ do not use this method directly
 
 =head1 DESCRIPTION
 
-Stores a collection of OBO::Statement objects, optimized for fast
+Stores a collection of GOBO::Statement objects, optimized for fast
 access. In general you should not need to use this directly - use
-OBO::Graph instead, which includes different indexes for links,
+GOBO::Graph instead, which includes different indexes for links,
 annotations etc
 
 =head2 TODO

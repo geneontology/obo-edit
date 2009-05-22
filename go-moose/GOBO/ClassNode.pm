@@ -1,19 +1,19 @@
-package OBO::ClassNode;
+package GOBO::ClassNode;
 use Moose;
 use strict;
-extends 'OBO::Node';
+extends 'GOBO::Node';
 
 use Moose::Util::TypeConstraints;
 
-coerce 'OBO::ClassNode'
+coerce 'GOBO::ClassNode'
       => from 'Str'
-      => via { new OBO::ClassNode(id=>$_) };
+      => via { new GOBO::ClassNode(id=>$_) };
 
 1;
 
 =head1 NAME
 
-OBO::ClassNode
+GOBO::ClassNode
 
 =head1 SYNOPSIS
 
@@ -23,7 +23,7 @@ OBO::ClassNode
 
 Formally, a class is a collection of instances. However, in many cases these are not instantiated in perl.
 
-ClassNodes can either be explicitly named (OBO::TermNode) or they can be logical boolean expressions (OBO::ClassExpression)
+ClassNodes can either be explicitly named (GOBO::TermNode) or they can be logical boolean expressions (GOBO::ClassExpression)
 
 =head2 Terminological note
 
@@ -40,6 +40,6 @@ of the perl object model.
 
 =head1 SEE ALSO
 
-OBO::Graph
+GOBO::Graph
 
 =cut

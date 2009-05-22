@@ -1,14 +1,14 @@
-package OBO::TermNode;
+package GOBO::TermNode;
 use Moose;
 use strict;
-extends 'OBO::ClassNode';
-with 'OBO::Definable';
+extends 'GOBO::ClassNode';
+with 'GOBO::Definable';
 
 1;
 
 =head1 NAME
 
-OBO::TermNode
+GOBO::TermNode
 
 =head1 SYNOPSIS
 
@@ -20,7 +20,7 @@ Core element in an ontology.
 
 =head1 SEE ALSO
 
-OBO::Graph
+GOBO::Graph
 
 =cut
 

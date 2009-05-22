@@ -1,47 +1,47 @@
 =head1 NAME
 
-OBO::Graph
+GOBO::Graph
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-A collection of inter-related OBO::Node objects. With a simple
-ontology these are typically OBO::TermNode objects, although other
+A collection of inter-related GOBO::Node objects. With a simple
+ontology these are typically GOBO::TermNode objects, although other
 graphs e.g. instance graphs are possible.
 
 This module deliberately omits any kind of graph traversal
-functionality. This is done by an OBO::InferenceEngine.
+functionality. This is done by an GOBO::InferenceEngine.
 
 =head1 SEE ALSO
 
-OBO::Node
+GOBO::Node
 
-OBO::LinkStatement
+GOBO::LinkStatement
 
 =cut
 
-package OBO::Graph;
+package GOBO::Graph;
 use Moose;
 our $VERSION='0.01-pre';
 use strict;
-use OBO::Statement;
-use OBO::Annotation;
-use OBO::Node;
-use OBO::TermNode;
-use OBO::RelationNode;
-use OBO::Indexes::StatementIndex;
+use GOBO::Statement;
+use GOBO::Annotation;
+use GOBO::Node;
+use GOBO::TermNode;
+use GOBO::RelationNode;
+use GOBO::Indexes::StatementIndex;
 use overload ('""' => 'as_string');
 
-has 'relations' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
-has 'terms' => (is => 'rw', isa => 'ArrayRef[OBO::TermNode]', default=>sub{[]});
-#has 'links' => (is => 'rw', isa => 'ArrayRef[OBO::LinkStatement]', default=>sub{[]});
-has 'link_ix' => (is => 'rw', isa => 'OBO::Indexes::StatementIndex', 
-                  default=>sub{ new OBO::Indexes::StatementIndex() });
-#has 'annotations' => (is => 'rw', isa => 'ArrayRef[OBO::Annotation]', default=>sub{[]});
-has 'annotation_ix' => (is => 'rw', isa => 'OBO::Indexes::StatementIndex', 
-                  default=>sub{ new OBO::Indexes::StatementIndex() });
-has 'node_index' => (is => 'rw', isa => 'HashRef[OBO::Node]', default=>sub{{}});
+has 'relations' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
+has 'terms' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
+#has 'links' => (is => 'rw', isa => 'ArrayRef[GOBO::LinkStatement]', default=>sub{[]});
+has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
+                  default=>sub{ new GOBO::Indexes::StatementIndex() });
+#has 'annotations' => (is => 'rw', isa => 'ArrayRef[GOBO::Annotation]', default=>sub{[]});
+has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
+                  default=>sub{ new GOBO::Indexes::StatementIndex() });
+has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
 
 sub add_term {
     my $self = shift;
@@ -70,7 +70,7 @@ sub add_annotation { shift->annotation_ix->add_statement(@_) }
 sub add_annotations { shift->annotation_ix->add_statements(@_) }
 sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
 
-=head2 get_target_links (subject OBO::Node, relation OBO::RelationNode OPTIONAL)
+=head2 get_target_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
 given a subject (child), get target (parent) links
 
@@ -92,12 +92,12 @@ sub get_target_links {
 
 sub noderef {
     my $self = shift;
-    #my $fac = shift || sub {new OBO::Node(id=>shift)};
+    #my $fac = shift || sub {new GOBO::Node(id=>shift)};
     my $id = shift;
     my $ix = $self->node_index;
     if (!$ix->{$id}) {
         #print STDERR "Adding node: $id\n";
-        $ix->{$id} = new OBO::Node(id=>$id);
+        $ix->{$id} = new GOBO::Node(id=>$id);
         #$ix->{$id} = $fac->($id);
     }
     else {
@@ -109,9 +109,9 @@ sub noderef {
 sub term_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
-    if (!$n->isa('OBO::TermNode')) {
-        #$n = new OBO::ClassNode(%$n); # TODO - re-bless?
-        bless $n, 'OBO::TermNode';
+    if (!$n->isa('GOBO::TermNode')) {
+        #$n = new GOBO::ClassNode(%$n); # TODO - re-bless?
+        bless $n, 'GOBO::TermNode';
     }
     return $n;
 }
@@ -119,8 +119,8 @@ sub term_noderef {
 sub relation_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
-    if (!$n->isa('OBO::RelationNode')) {
-        bless $n, 'OBO::RelationNode';
+    if (!$n->isa('GOBO::RelationNode')) {
+        bless $n, 'GOBO::RelationNode';
     }
     return $n;
 }
@@ -129,8 +129,8 @@ sub relation_noderef {
 # logical definitions can be directly attached to TermNodes, or they can be
 # present in the graph as intersection links
 # TBD : move to utility class?
-use OBO::ClassExpression::RelationalExpression;
-use OBO::ClassExpression::Intersection;
+use GOBO::ClassExpression::RelationalExpression;
+use GOBO::ClassExpression::Intersection;
 sub convert_intersection_links_to_logical_definitions {
     my $self = shift;
     my @xplinks = ();
@@ -155,13 +155,13 @@ sub convert_intersection_links_to_logical_definitions {
                         $_->target;
                     }
                     else {
-                        new OBO::ClassExpression::RelationalExpression(relation=>$_->relation, target=>$_->target);
+                        new GOBO::ClassExpression::RelationalExpression(relation=>$_->relation, target=>$_->target);
                     }
             } @{$xpnodeh{$nid}};
             if (@exprs < 2) {
                 $self->throw("invalid intersection links for $nid. Need at least 2, you have @exprs");
             }
-            $n->logical_definition(new OBO::ClassExpression::Intersection(arguments=>\@exprs));
+            $n->logical_definition(new GOBO::ClassExpression::Intersection(arguments=>\@exprs));
         }
     }
     return;

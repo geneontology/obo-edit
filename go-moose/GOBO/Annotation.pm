@@ -1,13 +1,13 @@
-package OBO::Annotation;
+package GOBO::Annotation;
 use Moose;
 use strict;
-extends 'OBO::LinkStatement';
-use OBO::Evidence;
+extends 'GOBO::LinkStatement';
+use GOBO::Evidence;
 
 # cardinality?
-has evidence => ( is=>'rw', isa=>'OBO::Evidence');
-has specific_node => ( is=>'rw', isa=>'OBO::Node');
-has target_differentium_list => ( is=>'rw', isa=>'ArrayRef[OBO::LinkStatement]');
+has evidence => ( is=>'rw', isa=>'GOBO::Evidence');
+has specific_node => ( is=>'rw', isa=>'GOBO::Node');
+has target_differentium_list => ( is=>'rw', isa=>'ArrayRef[GOBO::LinkStatement]');
 
 # alias. TBD - keep?
 sub gene {
@@ -16,7 +16,7 @@ sub gene {
 
 =head1 NAME
 
-OBO::Annotation
+GOBO::Annotation
 
 =head1 SYNOPSIS
 
@@ -24,16 +24,16 @@ OBO::Annotation
 
 =head1 DESCRIPTION
 
-An OBO::LinkStatement that has OBO::Evidence attached
+An GOBO::LinkStatement that has GOBO::Evidence attached
 
-Annotations need not be stored in the main ontology OBO::Graph, but this is possible
+Annotations need not be stored in the main ontology GOBO::Graph, but this is possible
 
 =head2 Use in GO
  
 In GO, annotations are also thought of as associations between genes
-and OBO::TermNode objects. The statement is 'about' a gene, i.e. geneG
+and GOBO::TermNode objects. The statement is 'about' a gene, i.e. geneG
 has_function termF, so the node points to a gene and the target points
-to a OBO::TermNode
+to a GOBO::TermNode
 
 The relation may be unassigned
 
