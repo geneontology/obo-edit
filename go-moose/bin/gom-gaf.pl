@@ -1,18 +1,18 @@
 #!/usr/bin/perl
 
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::GAFParser;
-use OBO::Writers::GAFWriter;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::GAFParser;
+use GOBO::Writers::GAFWriter;
 use FileHandle;
 
 my $f = shift;
 #my $fh = new FileHandle("gzip -dc $f|");
-my $parser = new OBO::Parsers::GAFParser(file=>$f);
+my $parser = new GOBO::Parsers::GAFParser(file=>$f);
 $parser->parse;
 #print $parser->graph;
-my $writer = new OBO::Writers::GAFWriter(graph=>$parser->graph);
+my $writer = new GOBO::Writers::GAFWriter(graph=>$parser->graph);
 $writer->write;

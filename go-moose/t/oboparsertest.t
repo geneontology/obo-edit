@@ -1,18 +1,18 @@
 use Test::More tests => 4;
 use strict;
 
-use OBO::Graph;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::OBOParser;
-use OBO::Writers::OBOWriter;
+use GOBO::Graph;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::OBOParser;
+use GOBO::Writers::OBOWriter;
 use FileHandle;
 
 
 my $fh = new FileHandle("t/data/cell.obo");
-my $parser = new OBO::Parsers::OBOParser(fh=>$fh);
+my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 
 $parser->parse;
 
@@ -33,7 +33,7 @@ my $pls = $g->get_target_links($neuron);
 print "pls=@$pls\n";
 ok(@$pls>1);
 
-my $writer = new OBO::Writers::OBOWriter;
+my $writer = new GOBO::Writers::OBOWriter;
 $writer->graph($parser->graph);
 $writer->write();
 

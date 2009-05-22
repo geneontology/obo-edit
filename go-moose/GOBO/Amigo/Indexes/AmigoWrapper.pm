@@ -1,4 +1,4 @@
-package OBO::Amigo::Indexes::StatementIndex;
+package GOBO::Amigo::Indexes::StatementIndex;
 use Moose::Role;
 use AmiGO::Model::Schema;
 
@@ -10,7 +10,7 @@ has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
 
 =head1 NAME
 
-OBO::Amigo::Indexes::AmigoWrapper
+GOBO::Amigo::Indexes::AmigoWrapper
 
 =head1 SYNOPSIS
 

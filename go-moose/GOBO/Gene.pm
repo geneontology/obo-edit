@@ -1,17 +1,17 @@
-package OBO::Gene;
+package GOBO::Gene;
 use Moose;
 use strict;
-extends 'OBO::Node';
-use OBO::Node;
+extends 'GOBO::Node';
+use GOBO::Node;
 
-has type => (is=>'rw', isa=>'OBO::Node', coerce=>1);
-has taxon => (is=>'rw', isa=>'OBO::Node', coerce=>1);
+has type => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
+has taxon => (is=>'rw', isa=>'GOBO::Node', coerce=>1);
 
 1;
 
 =head1 NAME
 
-OBO::Gene
+GOBO::Gene
 
 =head1 SYNOPSIS
 
@@ -19,9 +19,9 @@ OBO::Gene
 
 =head1 DESCRIPTION
 
-An OBO::Node that corresponds to a specific SO:gene
+An GOBO::Node that corresponds to a specific SO:gene
 
-In GO, genes are the subject of OBO::Annotation statements
+In GO, genes are the subject of GOBO::Annotation statements
 
 =head2 TBD
 

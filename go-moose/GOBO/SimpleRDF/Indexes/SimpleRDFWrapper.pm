@@ -1,4 +1,4 @@
-package OBO::SimpleRDF::Indexes::SimpleRDFWrapper;
+package GOBO::SimpleRDF::Indexes::SimpleRDFWrapper;
 use Moose::Role;
 use strict;
 use RDF::Redland;
@@ -56,18 +56,18 @@ sub to_rdf {
     my $self = shift;
     my $x;
     if (@_ > 1 || scalar(@_) == 0) {
-        $x = new OBO::LinkStatement(@_);
+        $x = new GOBO::LinkStatement(@_);
     }
     else {
         $x = shift;
     }
     return undef unless defined $x;
     #confess("no_arg to to_rdf") unless defined $x;
-    if ($x->isa('OBO::Statement')) {
+    if ($x->isa('GOBO::Statement')) {
         my $rs = new RDF::Redland::Statement(map {$self->to_rdf($_)} ($x->node,$x->relation,$x->target));
         return $rs;
     }
-    elsif ($x->isa('OBO::Node')) {
+    elsif ($x->isa('GOBO::Node')) {
         my $uri = $x->id;
         if ($uri =~ /^http/) {
         }
@@ -91,7 +91,7 @@ sub from_rdf {
     my $self = shift;
     my $x = shift;
     if ($x->isa('RDF::Redland::Statement')) {
-        my $rs = new OBO::LinkStatement(node=>$self->from_rdf($x->subject),
+        my $rs = new GOBO::LinkStatement(node=>$self->from_rdf($x->subject),
                                         relation=>$self->from_rdf($x->predicate),
                                         target=>$self->from_rdf($x->object));
         return $rs;
@@ -127,7 +127,7 @@ sub get_uriprefix {
 
 =head1 NAME
 
-OBO::SimpleRDF::Indexes::SimpleRDFWrapper
+GOBO::SimpleRDF::Indexes::SimpleRDFWrapper
 
 =head1 SYNOPSIS
 

@@ -1,15 +1,15 @@
-package OBO::LinkStatement;
+package GOBO::LinkStatement;
 use Moose;
 use strict;
-extends 'OBO::Statement';
-use OBO::Node;
+extends 'GOBO::Statement';
+use GOBO::Node;
 
-has 'target' => ( is=>'ro', isa=>'OBO::Node', coerce=>1 );
+has 'target' => ( is=>'ro', isa=>'GOBO::Node', coerce=>1 );
 has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
 
 =head1 NAME
 
-OBO::LinkStatement
+GOBO::LinkStatement
 
 =head1 SYNOPSIS
 
@@ -17,17 +17,17 @@ OBO::LinkStatement
 
 =head1 DESCRIPTION
 
-A type of OBO::Statement that connects two OBO::Node objects via a OBO::RelationNode object.
+A type of GOBO::Statement that connects two GOBO::Node objects via a GOBO::RelationNode object.
 
-Can also be thought of as an "edge" in an OBO::Graph
+Can also be thought of as an "edge" in an GOBO::Graph
 
-LiteralStatements inherit the roles OBO::Attributed and
-OBO::Identified (via OBO::Statement). This means they can have
+LiteralStatements inherit the roles GOBO::Attributed and
+GOBO::Identified (via GOBO::Statement). This means they can have
 metadata attached. For example, who created the edge, when and why.
 
 =head2 Subtypes
 
-An important subtype of this class is OBO::Annotation, which attaches
+An important subtype of this class is GOBO::Annotation, which attaches
 evidence to edges.
 
 This class could conceivably be extended to add accessors for distance

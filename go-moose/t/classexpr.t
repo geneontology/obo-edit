@@ -1,14 +1,14 @@
 use Test;
 
-use OBO::ClassExpression;
-use OBO::Statement;
-use OBO::LinkStatement;
-use OBO::NegatedStatement;
-use OBO::Node;
-use OBO::Parsers::GAFParser;
-use OBO::Graph;
+use GOBO::ClassExpression;
+use GOBO::Statement;
+use GOBO::LinkStatement;
+use GOBO::NegatedStatement;
+use GOBO::Node;
+use GOBO::Parsers::GAFParser;
+use GOBO::Graph;
 use FileHandle;
 
-my $g = new OBO::Graph;
-my $x = OBO::ClassExpression->parse_idexpr($g, 'a^foo(bar)');
+my $g = new GOBO::Graph;
+my $x = GOBO::ClassExpression->parse_idexpr($g, 'a^foo(bar)');
 print "x=$x\n";

@@ -1,16 +1,16 @@
-package OBO::Node;
+package GOBO::Node;
 use Moose;
 use strict;
-with 'OBO::Identified';
-with 'OBO::Labeled';
-with 'OBO::Attributed';
+with 'GOBO::Identified';
+with 'GOBO::Labeled';
+with 'GOBO::Attributed';
 use Moose::Util::TypeConstraints;
 
-coerce 'OBO::Node'
+coerce 'GOBO::Node'
       => from 'Str'
-      => via { new OBO::Node(id=>$_) };
+      => via { new GOBO::Node(id=>$_) };
 
-has 'source' => (is => 'rw', isa => 'OBO::Node');
+has 'source' => (is => 'rw', isa => 'GOBO::Node');
 has 'full_name' => (is => 'rw', isa => 'Str');  # e.g. for genes. TBD - make this wrap to synonyms?
 
 use overload ('""' => 'as_string');
@@ -35,7 +35,7 @@ sub equals {
 
 =head1 NAME
 
-OBO::Node
+GOBO::Node
 
 =head1 SYNOPSIS
 
@@ -45,11 +45,11 @@ OBO::Node
 
  A unit in a graph. The Node class hierarchy:
 
- * OBO::ClassNode 
- ** OBO::TermNode 
- ** OBO::ClassExpression
- * OBO::RelationNode
- * OBO::InstanceNode
+ * GOBO::ClassNode 
+ ** GOBO::TermNode 
+ ** GOBO::ClassExpression
+ * GOBO::RelationNode
+ * GOBO::InstanceNode
 
 With a simple ontology graph, the core units are TermNodes.
 
@@ -57,7 +57,7 @@ With a simple ontology graph, the core units are TermNodes.
 
 =head1 SEE ALSO
 
-OBO::Graph
+GOBO::Graph
 
 =cut
 

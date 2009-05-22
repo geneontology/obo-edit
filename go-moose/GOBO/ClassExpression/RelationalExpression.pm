@@ -1,16 +1,16 @@
-package OBO::ClassExpression::RelationalExpression;
+package GOBO::ClassExpression::RelationalExpression;
 use Moose;
 use strict;
-extends 'OBO::ClassExpression::BooleanExpression';
-use OBO::Statement;
-use OBO::RelationNode;
-use OBO::Node;
+extends 'GOBO::ClassExpression::BooleanExpression';
+use GOBO::Statement;
+use GOBO::RelationNode;
+use GOBO::Node;
 
 ##delegation+constructors don't play well
-##has 'statement' => (is=>'ro', isa=>'OBO::Statement',handles=>['relation','target']);
+##has 'statement' => (is=>'ro', isa=>'GOBO::Statement',handles=>['relation','target']);
 
-has relation => (is=>'ro', isa=>'OBO::RelationNode', coerce=>1);
-has target => (is=>'ro', isa=>'OBO::Node', coerce=>1);
+has relation => (is=>'ro', isa=>'GOBO::RelationNode', coerce=>1);
+has target => (is=>'ro', isa=>'GOBO::Node', coerce=>1);
 
 use overload ('""' => 'as_string');
 sub as_string {
@@ -22,13 +22,13 @@ sub as_string {
 
 =head1 NAME
 
-OBO::ClassExpression::RelationalExpression
+GOBO::ClassExpression::RelationalExpression
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-An OBO::ClassExpression in which the members are constructed by
+An GOBO::ClassExpression in which the members are constructed by
 applying a relation. For example, "the set of all things that are
 part_of an oocyte". In this expression, the relation is part_of and
 the target is oocyte.

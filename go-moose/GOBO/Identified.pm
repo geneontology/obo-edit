@@ -1,13 +1,13 @@
 =head1 NAME
 
-OBO::Identified
+GOBO::Identified
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
 A role for any kind of entity that is identifiable. Provides standard
-metadata and paper-trail methods. Based on OBO-Format
+metadata and paper-trail methods. Based on GOBO-Format
 
 =head2 TBD
 
@@ -15,15 +15,15 @@ Is this over-abstraction? This could be simply mixed in with Node
 
 =cut
 
-package OBO::Identified;
+package GOBO::Identified;
 use Moose::Role;
 
 has id => (is => 'rw', isa => 'Str');
 has namespace => (is => 'rw', isa => 'Str');
 has obsolete => (is => 'rw', isa=> 'Bool');
 has deprecated => (is => 'rw', isa=> 'Bool');
-has replaced_by => (is => 'rw', isa=>'ArrayRef[OBO::Node]');
-has consider => (is => 'rw', isa=>'ArrayRef[OBO::Node]');
+has replaced_by => (is => 'rw', isa=>'ArrayRef[GOBO::Node]');
+has consider => (is => 'rw', isa=>'ArrayRef[GOBO::Node]');
 
 =head2 status
 

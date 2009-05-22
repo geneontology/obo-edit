@@ -1,6 +1,6 @@
 =head1 NAME
 
-OBO::Analysis::AnalysisEngine
+GOBO::Analysis::AnalysisEngine
 
 =head1 SYNOPSIS
 
@@ -13,16 +13,16 @@ OBO::Analysis::AnalysisEngine
 
 =cut
 
-package OBO::Analysis::AnalysisEngine;
+package GOBO::Analysis::AnalysisEngine;
 use Moose;
-extends 'OBO::InferenceEngine::GAFInferenceEngine';
+extends 'GOBO::InferenceEngine::GAFInferenceEngine';
 use strict;
-use OBO::Statement;
-use OBO::Annotation;
-use OBO::Graph;
-use OBO::Node;
-use OBO::TermNode;
-use OBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Annotation;
+use GOBO::Graph;
+use GOBO::Node;
+use GOBO::TermNode;
+use GOBO::RelationNode;
 use Math::GSL;
 
 has feature_index_map => (is=>'rw', isa=> 'HashRef[Int]', default=>sub{{}});

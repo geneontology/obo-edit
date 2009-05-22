@@ -1,11 +1,11 @@
-package OBO::Writers::CustomizableWriter;
+package GOBO::Writers::CustomizableWriter;
 use Moose;
 use strict;
-extends 'OBO::Writers::Writer';
-use OBO::Node;
-use OBO::Gene;
-use OBO::Evidence;
-use OBO::Annotation;
+extends 'GOBO::Writers::Writer';
+use GOBO::Node;
+use GOBO::Gene;
+use GOBO::Evidence;
+use GOBO::Annotation;
 
 has delimiter => ( is=>'rw', isa=>'Str', default=>sub{"\t"});
 has column_writer_index => ( is=>'rw', isa=>'HashRef', 
@@ -41,10 +41,10 @@ sub fmt_obj {
         return $w->($obj);
     }
     else {
-        if ($obj->isa('OBO::Evidence')) {
+        if ($obj->isa('GOBO::Evidence')) {
             return $obj->type .' '. join('|', map {$self->fmt_obj('with',$_)} @{$obj->supporting_entities || []});
         }
-        if ($obj->isa('OBO::Node')) {
+        if ($obj->isa('GOBO::Node')) {
             return $obj->label ?
                 sprintf('%s "%s"', $obj->id || '', $obj->label || '') : $obj->id;
         }

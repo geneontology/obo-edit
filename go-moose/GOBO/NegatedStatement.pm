@@ -1,12 +1,12 @@
-package OBO::NegatedStatement;
+package GOBO::NegatedStatement;
 use Moose;
 use strict;
-use OBO::Statement;
+use GOBO::Statement;
 use Moose::Util::TypeConstraints;
 
-coerce 'OBO::NegatedStatement'
-    => from 'OBO::Statement'
-    => via { new OBO::NegatedStatement(statement=>$_) };
+coerce 'GOBO::NegatedStatement'
+    => from 'GOBO::Statement'
+    => via { new GOBO::NegatedStatement(statement=>$_) };
 
-has 'statement' => (is=>'ro', isa=>'OBO::Statement',handles=>qr/.*/);
+has 'statement' => (is=>'ro', isa=>'GOBO::Statement',handles=>qr/.*/);
 1;
