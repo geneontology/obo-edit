@@ -70,7 +70,14 @@ public class HTMLHistoryDumper implements HistoryDumper {
 		else
 			return id;
 	}
-
+	
+	public String getLinkFromIDWithName(OBOSession history, String id, String name) {
+		if (generateLink)
+			return "<a href='file:" + id + "'>" + name + " (" + id + ")" + "</a>";
+		else
+			return id;
+	}
+	
 	public String getItemDesc(HistoryItem item, OBOSession history) {
 		if (item instanceof CreateObjectHistoryItem) {
 			return "Created object "
@@ -82,11 +89,11 @@ public class HTMLHistoryDumper implements HistoryDumper {
 			StringBuffer out = new StringBuffer("");
 			out.append("Copied ");
 
-			out.append(getLinkFromID(history, citem.getTarget()) + " (as "
+			out.append(getLinkFromIDWithName(history, citem.getTarget(),  history.getObject(citem.getTarget()).getName()) + " (as "
 					+ citem.getTypeID() + "), ");
 
 			out.append(" to ");
-			out.append(getLinkFromID(history, citem.getParentID()));
+			out.append(getLinkFromIDWithName(history, citem.getParentID(),  history.getObject(citem.getParentID()).getName()));
 			return out.toString();
 		} else if (item instanceof TermMoveHistoryItem) {
 			StringBuffer out = new StringBuffer("");
@@ -95,20 +102,20 @@ public class HTMLHistoryDumper implements HistoryDumper {
 			StringRelationship tr = ((TermMoveHistoryItem) item)
 					.getRelationship();
 
-			out.append(getLinkFromID(history, tr.getChild()) + " (as "
+			out.append(getLinkFromIDWithName(history, tr.getChild(), history.getObject(tr.getChild()).getName()) + " (as "
 					+ tr.getType() + "), ");
 			out.append(" to ");
-			out.append(getLinkFromID(history, item.getTarget()));
+			out.append(getLinkFromIDWithName(history, item.getTarget(), history.getObject(item.getTarget()).getName()));
 			out.append(" from ");
-			out.append(getLinkFromID(history, tr.getParent()));
+			out.append(getLinkFromIDWithName(history, tr.getParent(), history.getObject(tr.getParent()).getName()));
 			out.append("</body></html>");
 			return out.toString();
 		} else if (item instanceof DeleteLinkHistoryItem) {
 			StringBuffer out = new StringBuffer("");
 			StringRelationship tr = ((DeleteLinkHistoryItem) item)
 					.getRel();
-			out.append("Deleted " + getLinkFromID(history, tr.getChild())
-					+ " from " + getLinkFromID(history, tr.getParent())
+			out.append("Deleted " + getLinkFromIDWithName(history, tr.getChild(), history.getObject(tr.getChild()).getName())
+					+ " from " + getLinkFromIDWithName(history, tr.getParent(), history.getObject(tr.getParent()).getName())
 					+ " with " + tr.getType());
 			return out.toString();
 		} else
