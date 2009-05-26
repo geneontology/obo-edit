@@ -38,7 +38,9 @@ public class OBOTermsTableModel extends AbstractTableModel {
 	private Set<String> termsPredictedParentsOfCandidateTerm = new HashSet<String>();
 	private Set<String> termsFromUserDefinedDefinitions = new HashSet<String>();
 	private Set<String> termsFromTickedDefinitions = new HashSet<String>();
+	private Set<String> termsFromCandidateDefinitions = new HashSet<String>();
 	private Set<String> termsSimilarToCandidateTerm = new HashSet<String>();
+	private Map<String, Integer> termsPositionInDefinitions = new HashMap<String, Integer>();
 	private Map<String, LinkedObject> allTermsMap;
 	private List<String> allTermsIDList;
 	private boolean sortingNeeded = true;
@@ -48,6 +50,7 @@ public class OBOTermsTableModel extends AbstractTableModel {
 			{ termsPredictedParentsOfCandidateTerm, "predicted parent of candidate", "sub_class_of" },
 			{ termsFromUserDefinedDefinitions, "in definition (user-defined)", null },
 			{ termsFromTickedDefinitions, "in definition", null },
+			{ termsFromCandidateDefinitions, "in definition", null },
 			{ termsParentsOfSelectedLinkedObject, "parent of selected term", null },
 			{ termsSimilarToCandidateTerm, "similar term", null } };
 	private boolean showOnlyTicked;
@@ -339,7 +342,9 @@ public class OBOTermsTableModel extends AbstractTableModel {
 		 */
 		public int compare(String o1, String o2) {
 			// test for null
-			if (o1 == null && o2 != null) {
+			if (o1 == null && o2 == null) {
+				return 0;
+			} else if (o1 == null && o2 != null) {
 				return 1;
 			} else if (o1 != null && o2 == null) {
 				return -1;
@@ -374,6 +379,15 @@ public class OBOTermsTableModel extends AbstractTableModel {
 			}
 			if (cnt1 > cnt2) {
 				return 1;
+			}
+
+			// compare by index
+			Integer integer = termsPositionInDefinitions.get(o1);
+			Integer integer2 = termsPositionInDefinitions.get(o2);
+			if (integer != null && integer2 != null) {
+				if (!integer.equals(integer2)) {
+					return integer.compareTo(integer2);
+				}
 			}
 
 			// compare by name
@@ -434,24 +448,37 @@ public class OBOTermsTableModel extends AbstractTableModel {
 	protected void clearTermsFromDefinitions() {
 		termsFromUserDefinedDefinitions.clear();
 		termsFromTickedDefinitions.clear();
+		termsPositionInDefinitions.clear();
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addFromUserDefinedDefinition(LinkedObject... linkedObjects) {
-		for (LinkedObject linkedObject : linkedObjects) {
-			termsFromUserDefinedDefinitions.add(linkedObject.getID());
-		}
+	protected void addFromUserDefinedDefinition(LinkedObject linkedObject, int index) {
+		termsFromUserDefinedDefinitions.add(linkedObject.getID());
+		addTermsPosition(linkedObject, index);
 		sortingNeeded = true;
 		fireTableDataChanged();
 	}
 
-	protected void addFromTickedDefinition(LinkedObject... linkedObjects) {
-		for (LinkedObject linkedObject : linkedObjects) {
-			termsFromTickedDefinitions.add(linkedObject.getID());
-		}
+	protected void addFromTickedDefinition(LinkedObject linkedObject, int index) {
+		termsFromTickedDefinitions.add(linkedObject.getID());
+		addTermsPosition(linkedObject, index);
 		sortingNeeded = true;
 		fireTableDataChanged();
+	}
+
+	protected void addFromCandidateDefinition(LinkedObject linkedObject, int index) {
+		termsFromCandidateDefinitions.add(linkedObject.getID());
+		addTermsPosition(linkedObject, index);
+		sortingNeeded = true;
+		fireTableDataChanged();
+	}
+
+	private void addTermsPosition(LinkedObject linkedObject, int index) {
+		if (!termsPositionInDefinitions.containsKey(linkedObject.getID())
+				|| termsPositionInDefinitions.get(linkedObject.getID()) > index) {
+			termsPositionInDefinitions.put(linkedObject.getID(), index);
+		}
 	}
 
 	/*

@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -40,7 +41,7 @@ public class DefinitionsPopup extends JDialog
 	private static final long serialVersionUID = -9159196480683973991L;
 	protected final static Logger logger = Logger.getLogger(DefinitionsPopup.class);
 
-	private Component parent;
+	private OBOOntologyGenerationGUIComponent parent;
 
 	private CandidateDefinition originalDefinition;
 	private List<DefPosPair> candidateDefinitionList;
@@ -51,7 +52,7 @@ public class DefinitionsPopup extends JDialog
 	private JButton closeButton;
 	private int numberOfCallsToSummarizeDefinition;
 
-	public DefinitionsPopup(final Component parent)
+	public DefinitionsPopup(final OBOOntologyGenerationGUIComponent parent)
 	{
 		this.parent = parent;
 		this.setModal(true);
@@ -250,13 +251,13 @@ public class DefinitionsPopup extends JDialog
 			this.setGridColor(Color.LIGHT_GRAY);
 			this.setRowHeight(this.getRowHeight() + 4);
 			initPopupTable();
-
 		}
 
 		public void initPopupTable()
 		{
 			getColumnModel().getColumn(0).setMaxWidth(50);
 			getColumnModel().getColumn(0).setResizable(false);
+			getColumnModel().getColumn(0).setCellEditor(new ButtonEditor(new JCheckBox()));
 			getColumnModel().getColumn(2).setMaxWidth(30);
 			this.tableHeader.setReorderingAllowed(false);
 
@@ -309,6 +310,10 @@ public class DefinitionsPopup extends JDialog
 				return new TableCellImageRenderer("resources/aboutIcon.png");
 			}
 			else if (column == 0) {
+				if (candidateDefinitionList.get(row).isDef()) {
+					return new ButtonRenderer();
+				}
+				else 
 				return new DefaultTableCellRenderer()
 				{
 					private static final long serialVersionUID = -4293679914935943300L;
@@ -316,15 +321,10 @@ public class DefinitionsPopup extends JDialog
 					public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					    boolean hasFocus, int row, int column)
 					{
-						// Check if the row belongs to a URL (=> don't display a checkBox)
-						if (candidateDefinitionList.get(row).isURL()) {
-							JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
-							    hasFocus, row, column);
-							comp.setText(null);
-							return comp;
-						}
-						return table.getDefaultRenderer(table.getColumnClass(column)).getTableCellRendererComponent(
-						    table, value, isSelected, hasFocus, row, column);
+						JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
+						    hasFocus, row, column);
+						comp.setText(null);
+						return comp;
 					}
 				};
 			}
@@ -448,11 +448,8 @@ public class DefinitionsPopup extends JDialog
 		 */
 		private void onClickAddDefinition(int rowIndex, int columnIndex)
 		{
-			if (candidateDefinitionList.get(rowIndex).def.isTicked()) {
-				String definition = candidateDefinitionList.get(rowIndex).def.getDefinition();
-
-				((OntologyGenerationComponent) (parent)).updateEditDefArea(definition);
-			}
+			String definition = candidateDefinitionList.get(rowIndex).def.getDefinition();
+				parent.updateEditDefArea(definition);
 		}
 
 	}
@@ -476,13 +473,7 @@ public class DefinitionsPopup extends JDialog
 		public Object getValueAt(int rowIndex, int columnIndex)
 		{
 			DefPosPair defPosPair = candidateDefinitionList.get(rowIndex);
-			switch (columnIndex) {
-			case 0:
-				if (defPosPair.isDef()) {
-					return defPosPair.def.isTicked();
-				}
-				break;
-			case 1:
+			if (columnIndex == 1) {
 				// Row contains definition
 				if (defPosPair.isDef()) {
 					String fullDef = defPosPair.def.getDefinitionHTMLFormatted();
@@ -521,30 +512,10 @@ public class DefinitionsPopup extends JDialog
 		{
 
 			if (columnIndex == 0) {
-				return Boolean.class;
+				return JButton.class;
 			}
 			else {
 				return super.getColumnClass(columnIndex);
-			}
-
-		}
-
-		@Override
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-		{
-			if (columnIndex == 0) {
-				CandidateDefinition def = candidateDefinitionList.get(rowIndex).def;
-				if (((Boolean) aValue) == true) {
-					def.setTicked(true);
-				}
-				else {
-					def.setTicked(false);
-					super.setValueAt(aValue, rowIndex, columnIndex);
-				}
-
-			}
-			if ((columnIndex == 1) && (aValue != null) && (aValue instanceof CandidateDefinition)) {
-				candidateDefinitionList.set(rowIndex, new DefPosPair((CandidateDefinition) aValue, 0));
 			}
 
 		}
@@ -553,7 +524,7 @@ public class DefinitionsPopup extends JDialog
 		{
 			return candidateDefinitionList.get(rowIndex);
 		}
-	}
+	}	
 
 	/**
 	 * DefPosPair describes a pair of a definition and the position of the needed (cached-)URL in the definition

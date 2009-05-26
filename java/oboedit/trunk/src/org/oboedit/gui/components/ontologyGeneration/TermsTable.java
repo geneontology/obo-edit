@@ -36,6 +36,7 @@ public class TermsTable extends JTable {
 		super(new TermsTableModel(clipboard, numberOfColumnsToShow, isMainTermsTable));
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
+		tableHeader.setReorderingAllowed(false);
 	}
 
 	/**
