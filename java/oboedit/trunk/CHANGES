@@ -5,6 +5,8 @@ Bug Fixes:
 - [ geneontology-Bugs-2706065 ] b56 - OE not starting on Windows
 - Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
+- Fixed the history browser html message so it shows 'name (id)' rather then 'id (id)'.
+(Part of OE2.0 - history browser minor bugs - ID: 2507044)
 
 
 Bugs pending:
