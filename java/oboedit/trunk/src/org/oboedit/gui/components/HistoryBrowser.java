@@ -182,8 +182,10 @@ public class HistoryBrowser extends AbstractGUIComponent {
 		if (sessionList.getSelectionPath() != null) {
 			lastGUI = getComponentForItem(sessionList.getSelectionPath());
 			add(lastGUI, "South");
-		} else
+		} else {
 			lastGUI = null;
+		}
+		validate();
 		repaint();
 	}
 
