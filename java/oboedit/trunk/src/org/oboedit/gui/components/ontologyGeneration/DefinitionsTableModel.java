@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.swing.JButton;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -71,10 +72,7 @@ public class DefinitionsTableModel extends AbstractTableModel
 		List<CandidateDefinition> visibleElements = getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			CandidateDefinition definition = visibleElements.get(rowIndex);
-			if (columnIndex == 0) {
-				return definition.isTicked();
-			}
-			else if (columnIndex == 1) {
+			if (columnIndex == 1) {
 				return definition.getDefinitionHTMLFormatted();
 			}
 		}
@@ -100,31 +98,19 @@ public class DefinitionsTableModel extends AbstractTableModel
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
-
 		if (columnIndex == 0) {
-			return Boolean.class;
-		}
-		else
-			return super.getColumnClass(columnIndex);
-
-	}
-
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
-	{
-		CandidateDefinition def = getVisibleElements().get(rowIndex);
-		if (((Boolean) aValue) == true) {
-			def.setTicked(true);
+			return JButton.class;
 		}
 		else {
-			def.setTicked(false);
+			return super.getColumnClass(columnIndex);
 		}
+
 	}
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
-		return columnIndex == 0;
+		return (columnIndex == 0);
 	}
 
 	/*
@@ -243,8 +229,4 @@ public class DefinitionsTableModel extends AbstractTableModel
 		}
 		return Collections.unmodifiableList(list);
 	}
-
-    
-    
-
 }

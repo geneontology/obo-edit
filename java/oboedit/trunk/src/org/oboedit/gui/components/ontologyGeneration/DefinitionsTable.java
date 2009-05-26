@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -35,18 +36,9 @@ public class DefinitionsTable extends JTable
 		getColumnModel().getColumn(0).setMaxWidth(50);
 		getColumnModel().getColumn(0).setResizable(false);
 		getColumnModel().getColumn(2).setMaxWidth(30);
+		getColumnModel().getColumn(0).setCellEditor(new ButtonEditor(new JCheckBox()));
 		setPreferredScrollableViewportSize(new Dimension(minScrollableViewPortHeight, maxScrollableViewPortHeight));
 		tableHeader.setReorderingAllowed(false);
-	}
-
-	@Override
-	public void setValueAt(Object value, int row, int column) {
-		super.setValueAt(value, row, column);
- 		if (column == 0 ) {
-			CandidateDefinition definition = getModel().getDefinitionAt(row);
- 			definition.setTicked((Boolean) value);
-			getModel().fireTableCellUpdated(row, column);
-		}
 	}
 
 	/**
@@ -127,8 +119,11 @@ public class DefinitionsTable extends JTable
 	
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int column)
-	{			
-		if (column == 1) {
+	{
+		if (column == 0) {
+			return new ButtonRenderer();
+		}
+		else if (column == 1) {
 			return new DefaultTableCellRenderer()
 			{
 				private static final long serialVersionUID = -9109057959830836291L;
