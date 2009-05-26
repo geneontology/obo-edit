@@ -49,6 +49,8 @@ public class OBOTermsTable extends JTable
 		getColumnModel().getColumn(3).setMaxWidth(130);
 		getColumnModel().getColumn(3).setResizable(false);
 		getColumnModel().getSelectionModel().addListSelectionListener(this);
+		
+		tableHeader.setReorderingAllowed(false);
 	}
 
 	/**

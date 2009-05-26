@@ -347,15 +347,19 @@ public class TermsTableModel extends AbstractTableModel {
 	 * TODO use proper index
 	 * 
 	 * @param candidateTermList
+	 * TODO in den adapter
 	 */
 	public void updatePresentInOntology(List<CandidateTerm> candidateTermList) {
-
+		// a clear() is maybe a bit hard here, but when a term is deleted in the 
+		// ontology, this change should be reflected in termPresentInOntology
+		termsPresentInOntology.clear();
+		
 		// check terms against ontology labels and add to lookup list
 		for (CandidateTerm candidateTerm : candidateTermList) {
 			HashSet<OBOClass> oboClasses = new HashSet<OBOClass>(1);
 			for (String lex : candidateTerm.getLexicalRepresentations()) {
-				if (OntologyGenerationComponent.temporaryOBOTermLookupMap.containsKey(lex)) {
-					Set<OBOClass> set = OntologyGenerationComponent.temporaryOBOTermLookupMap.get(lex);
+				if (OBOOntologyModelAdapter.temporaryOBOTermLookupMap.containsKey(lex)) {
+					Set<OBOClass> set = OBOOntologyModelAdapter.temporaryOBOTermLookupMap.get(lex);
 					if (set != null) {
 						oboClasses.addAll(set);
 					}
