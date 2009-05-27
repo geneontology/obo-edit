@@ -84,6 +84,16 @@ sub write_stanza {
             }
         }
     }
+    my $union = $node->union_definition;
+    if ($union) {
+        my $ul = $union->arguments;
+        if (@$ul > 1) {
+            $self->tagvals(union_of => $_->id) foreach @$ul;
+        }
+        else {
+            $self->throw("illegal union term: $union in $node");
+        }
+    }
     return;
 }
 

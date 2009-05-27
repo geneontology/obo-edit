@@ -131,6 +131,7 @@ sub relation_noderef {
 # TBD : move to utility class?
 use GOBO::ClassExpression::RelationalExpression;
 use GOBO::ClassExpression::Intersection;
+use GOBO::ClassExpression::Union;
 sub convert_intersection_links_to_logical_definitions {
     my $self = shift;
     my @xplinks = ();

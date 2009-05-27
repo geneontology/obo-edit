@@ -3,9 +3,15 @@ use Moose;
 use strict;
 extends 'GOBO::ClassExpression';
 
-has 'arguments' => (is=>'rw', isa=>'ArrayRef[GOBO::Node]');
+has 'arguments' => (is=>'rw', isa=>'ArrayRef[GOBO::Node]',default=>sub{[]});
 
-sub operator { " ? " }
+sub operator { undef }
+
+sub add_argument {
+    my $self = shift;
+    my $c = shift;
+    push(@{$self->arguments},$c);
+}
 
 use overload ('""' => 'as_string');
 sub as_string {

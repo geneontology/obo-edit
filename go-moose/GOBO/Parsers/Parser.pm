@@ -39,6 +39,15 @@ sub init_fh {
 
 sub parse {
     my $self = shift;
+    my $f = shift;
+    if ($f) {
+        if (ref($f)) {
+            $self->fh($f);
+        }
+        else {
+            $self->file($f);
+        }
+    }
     $self->init_fh;
     $self->parse_header;
     $self->parsed_header(1);

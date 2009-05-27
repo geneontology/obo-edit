@@ -5,11 +5,11 @@ require 5.6.0;
 
 
 WriteMakefile(
-    'NAME'         => "OBO",
-    'DISTNAME'         => "obo-perl",
+    'NAME'         => "GOBO",
+    'DISTNAME'         => "gobo",
     'ABSTRACT'     => 'OBO Perl',
     'AUTHOR'       => 'Chris Mungall <cjm@fruitfly.org>',
-    'VERSION_FROM' => "OBO/Graph.pm",
+    'VERSION_FROM' => "GOBO/Graph.pm",
     'PREREQ_PM'    => {
         'Moose'           => 0,
     },
