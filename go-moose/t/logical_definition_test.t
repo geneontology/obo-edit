@@ -11,7 +11,6 @@ use GOBO::Writers::OBOWriter;
 use GOBO::InferenceEngine;
 use FileHandle;
 
-# NOT YET A TRUE TEST
 
 my $fh = new FileHandle("t/data/so-xp.obo");
 my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
@@ -33,3 +32,6 @@ ok($n == 193);
 #use Moose::Autobox;
 # print 'Print squares from 1 to 10 : ';
 #  print [ 1 .. 10 ]->map(sub { $_ * $_ })->join(', ');
+
+
+$parser->parse("t/data/UnionTerms.obo");

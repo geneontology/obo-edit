@@ -30,6 +30,7 @@ has definition => (is=>'rw', isa=>'Str');
 has definition_xrefs => (is=>'rw', isa=>'ArrayRef[GOBO::Node]');
 has logical_definition => (is=>'rw', isa=>'GOBO::ClassExpression');
 has logical_definition_xrefs => (is=>'rw', isa=>'ArrayRef[GOBO::Node]'); # not yet in obo-format
+has union_definition => (is=>'rw', isa=>'GOBO::ClassExpression::Union');
 
 1;
 

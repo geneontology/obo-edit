@@ -5,6 +5,8 @@ extends 'GOBO::Parsers::Parser';
 use GOBO::Node;
 use GOBO::Synonym;
 use GOBO::LinkStatement;
+use GOBO::ClassExpression;
+use GOBO::ClassExpression::Union;
 
 has default_namespace => (is=>'rw', isa=>'Str');
 
@@ -36,6 +38,7 @@ sub parse_body {
     my $stanzaclass;
     my $id;
     my $n;
+    my %union_h = ();
     while($_ = $self->next_line) {
         chomp;
         s/\!.*//; # TODO
@@ -123,6 +126,15 @@ sub parse_body {
             else {
                 $self->throw("badly formatted intersection: $_");
             }
+        }
+        elsif (/^union_of:\s*(\S+)/) {
+            my $u = $g->term_noderef($1);
+            my $ud = $n->union_definition;
+            if (!$ud) {
+                $ud = new GOBO::ClassExpression::Union;
+                $n->union_definition($ud);
+            }
+            $ud->add_argument($u);
         }
         elsif (/^is_(\w+):\s*(\w+)/) {
             my $att = $1;

@@ -11,6 +11,9 @@ use GOBO::Node;
 
 has relation => (is=>'ro', isa=>'GOBO::RelationNode', coerce=>1);
 has target => (is=>'ro', isa=>'GOBO::Node', coerce=>1);
+has cardinality => (is=>'ro', isa=>'Int');
+has max_cardinality => (is=>'ro', isa=>'Int');
+has min_cardinality => (is=>'ro', isa=>'Int');
 
 use overload ('""' => 'as_string');
 sub as_string {
