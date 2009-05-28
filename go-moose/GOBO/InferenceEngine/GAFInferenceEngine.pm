@@ -120,6 +120,10 @@ sub validate_annotations {
     foreach my $ann (@$anns) {
         my $g = $ann->gene;
         my $taxon = $g->taxon;
+# TODO - something with unknown taxon
+#        if (!$ontg->noderef($taxon)->label) {
+#            next;
+#        }
         my $t = $ann->target;
         my $links = $self->get_inferred_target_links($t);
         foreach my $link (@$links) {

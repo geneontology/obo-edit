@@ -4,6 +4,7 @@ use strict;
 extends 'GOBO::ClassExpression::BooleanExpression';
 
 sub operator { ' NOT ' }
+sub operator_symbol { '-' }
 
 =head1 NAME
 

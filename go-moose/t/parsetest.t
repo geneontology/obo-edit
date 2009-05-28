@@ -1,5 +1,5 @@
 use Test;
-
+plan tests => 1;
 use GOBO::Graph;
 use GOBO::Statement;
 use GOBO::LinkStatement;
@@ -16,3 +16,4 @@ $parser = new GOBO::Parsers::OBOParser(fh=>new FileHandle("t/data/gene_ontology_
 $parser->graph($g);
 $parser->parse;
 print $parser->graph;
+ok(1);

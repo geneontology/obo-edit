@@ -82,12 +82,24 @@ sub get_target_links {
     my $self = shift;
     my $n = shift;
     my $rel = shift;
-    my $sl = $self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n);
-    if ($rel) {
-        my $rid = ref($rel) ? $rel->id : $rel; 
-        return [grep {$_->relation->id eq $rid} @$sl];
+    my @sl = @{$self->link_ix->statements_by_node_id(ref($n) ? $n->id : $n) || []};
+    # if x = a AND r(b), then x r b
+    if (ref($n) && $n->isa('GOBO::ClassExpression::Intersection')) {
+        foreach (@{$n->arguments}) {
+            if ($_->isa('GOBO::ClassExpression::RelationalExpression')) {
+                push(@sl, new GOBO::LinkStatement(node=>$n,relation=>$_->relation,target=>$_->target));
+            }
+            else {
+                push(@sl, new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$_));
+            }
+        }
     }
-    return $sl;
+    if ($rel) {
+        # TODO: use indexes to make this faster
+        my $rid = ref($rel) ? $rel->id : $rel; 
+        @sl = grep {$_->relation->id eq $rid} @sl;
+    }
+    return \@sl;
 }
 
 sub noderef {
