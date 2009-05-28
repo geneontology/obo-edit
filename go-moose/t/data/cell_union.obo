@@ -1,0 +1,5 @@
+
+[Term]
+id: neuron_or_lymphocyte
+union_of: CL:0000540 ! neuron
+union_of: CL:0000542 ! lymphocyte
