@@ -29,3 +29,13 @@ ok($ie->subsumed_by($an,$n));
 ok($ie->subsumed_by($an,$u->union_definition));
 ok($ie->subsumed_by($n,$u->union_definition));
 ok($ie->subsumed_by($l,$u));
+
+foreach my $link (@{$ie->get_inferred_target_links('foo2')}) {
+    printf "link: $link\n";
+}
+foreach my $link (@{$ie->get_inferred_target_links('foo2','only_in')}) {
+    printf "link: $link\n";
+}
+foreach my $link (@{$ie->get_inferred_target_nodes('foo2', 'only_in')}) {
+    printf "link: $link\n";
+}
