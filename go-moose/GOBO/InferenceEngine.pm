@@ -200,17 +200,36 @@ sub calculate_deductive_closure {
 
 sub subsumed_by {
     my $self = shift;
-    my $parent = shift; # GOBO::Class
     my $child = shift;  # GOBO::Class
+    my $parent = shift; # GOBO::Class
 
     my $subsumes = 0;
 
-    if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
+    # reflexivity of subsumption relation
+    if ($child->equals($parent)) {
         return 1;
     }
 
+    if ($parent->isa('GOBO::TermNode')) {
+        # TODO: equiv test for roles?
+        if ( $parent->logical_definition) {
+            return $self->subsumed_by($child,$parent->logical_definition);
+        }
+        if ( $parent->union_definition) {
+            return $self->subsumed_by($child,$parent->union_definition);
+        }
+
+        if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
+            return 1;
+        }
+    }
+
+    # class subsumption over boolean expressions
     if ($parent->isa('GOBO::ClassExpression')) {
         if ($parent->isa('GOBO::ClassExpression::RelationalExpression')) {
+            if (grep {$_->id eq $parent->target} @{$self->get_inferred_target_links($child, $parent->relation)}) {
+                return 1;
+            }
         }
         elsif ($parent->isa('GOBO::ClassExpression::BooleanExpression')) {
             my $args = $parent->arguments;
