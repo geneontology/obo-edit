@@ -101,8 +101,12 @@ foreach my $f (@ARGV) {
         $w->write;
     }
     if (@invalid) {
+        my $w = new GOBO::Writers::GAFWriter;
         foreach my $i (@invalid) {
-            printf "$i->[2] only_in $i->[1] annotation: $i->[0]\n";
+            my $term_id = $i->[2];
+            my $term = $ontg->noderef($term_id);
+            printf '%s only_in %s :: ', $term || $term_id, $i->[1];
+            $w->write_annotation($i->[0]);
         }
     }
 }
