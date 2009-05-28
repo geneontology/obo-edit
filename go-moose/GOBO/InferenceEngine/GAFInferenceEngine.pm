@@ -121,12 +121,14 @@ sub validate_annotations {
         my $g = $ann->gene;
         my $taxon = $g->taxon;
         my $t = $ann->target;
-        my $links = $self->get_inferred_target_nodes($t);
+        my $links = $self->get_inferred_target_links($t);
         foreach my $link (@$links) {
             next unless $link->relation->id eq 'only_in_taxon';
             my $vt = $link->target;
-            unless ($t->subsumed_by($vt)) {
-                push(@invalid_annots, $ann);
+            # this is quite inefficient
+            unless ($self->subsumed_by($taxon,$vt)) {
+                printf STDERR "$taxon is not subsumed by $vt, therefore annotation is invalid: $ann\n";
+                push(@invalid_annots, [$ann,$vt,$t]);
                 last;
             }
         }
