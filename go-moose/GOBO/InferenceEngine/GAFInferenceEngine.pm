@@ -111,6 +111,29 @@ sub infer_annotations {
     return [@ics];
 }
 
+sub validate_annotations {
+    my $self = shift;
+
+    my $anns = shift;
+    my $ontg = $self->graph;
+    my @invalid_annots = ();
+    foreach my $ann (@$anns) {
+        my $g = $ann->gene;
+        my $taxon = $g->taxon;
+        my $t = $ann->target;
+        my $links = $self->get_inferred_target_nodes($t);
+        foreach my $link (@$links) {
+            next unless $link->relation->id eq 'only_in_taxon';
+            my $vt = $link->target;
+            unless ($t->subsumed_by($vt)) {
+                push(@invalid_annots, $ann);
+                last;
+            }
+        }
+    }    
+    return \@invalid_annots;
+}
+
 1;
 
 =head1 SEE ALSO

@@ -13,19 +13,27 @@ use GOBO::InferenceEngine::GAFInferenceEngine;
 use DateTime;
 use FileHandle;
 
-my $ontf;
+my @ontfiles;
 my %relh = ();
 my $per_file_ic=0;
+my $validate = 0;
+my $infer = 0;
 while ($ARGV[0] =~ /^\-/) {
     my $opt = shift @ARGV;
     if ($opt eq '-i' || $opt eq '--ontology') {
-        $ontf = shift;
+        push(@ontfiles, shift @ARGV);
     }
     elsif ($opt eq '-r' || $opt eq '--relation') {
         $relh{shift @ARGV} = 1;
     }
     elsif ($opt eq '--per-file') {
         $per_file_ic = 1;
+    }
+    elsif ($opt eq '--validate') {
+        $validate = 1;
+    }
+    elsif ($opt eq '--infer') {
+        $infer = 1;
     }
     elsif ($opt eq '-h' || $opt eq '--help') {
         system("perldoc $0");
@@ -35,16 +43,20 @@ while ($ARGV[0] =~ /^\-/) {
         die "no such opt: $opt";
     }
 }
-if (!$ontf) {
-    $ontf = shift;
+if (!@ontfiles) {
+    push(@ontfiles, shift);
 }
-if (!$ontf) {
+if (!@ontfiles) {
     system("perldoc $0");
     exit(1);
 }
+if (!$validate && !$infer) {
+    printf STDERR "You must pass either/both --validate or --infer flags\n";
+    exit 1;
+}
 
-my $obo_parser = new GOBO::Parsers::OBOParser(file=>$ontf);
-$obo_parser->parse;
+my $obo_parser = new GOBO::Parsers::OBOParser();
+$obo_parser->parse($_) foreach @ontfiles;
 my $ontg = $obo_parser->graph;
 my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
@@ -53,6 +65,7 @@ my %nodemap = ();
 # iterate through annotations writing new ICs
 foreach my $f (@ARGV) {
     my @ics = ();
+    my @invalid = ();
     $ontg->annotations([]);
     my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
     # iterate through one chunk at a time
@@ -60,24 +73,47 @@ foreach my $f (@ARGV) {
         printf STDERR "processing %d annots in in $f\n", scalar(@{$gafparser->graph->annotations});
         $ontg->add_annotations($gafparser->graph->annotations);
         printf STDERR "  ontg annots %d\n", scalar(@{$ontg->annotations});
-        push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
+        if ($infer) {
+            push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
+        }
+        if ($validate) {
+            push(@invalid, @{$ie->validate_annotations($gafparser->graph->annotations)});
+        }
+        
         # clear
         printf STDERR "  inferences %d\n", scalar(@ics);
         $gafparser->graph(new GOBO::Graph);
     }
-    my $icgraph = new GOBO::Graph();
-    $icgraph->annotations(\@ics);
-    my $w = new GOBO::Writers::GAFWriter;
-    if ($per_file_ic) {
-        my $of = $f;
-        $of =~ s/.*\///g;
-        $of =~ s/\.gz//;
-        $of .= ".ics.gaf";
-        $w->file($of);
-        $w->init_fh;
+    if (@ics) {
+        my $icgraph = new GOBO::Graph();
+        $icgraph->annotations(\@ics);
+        my $w = new GOBO::Writers::GAFWriter;
+        if ($per_file_ic) {
+            my $of = $f;
+            $of =~ s/.*\///g;
+            $of =~ s/\.gz//;
+            $of .= ".ics.gaf";
+            $w->file($of);
+            $w->init_fh;
+        }
+        $w->graph($icgraph);
+        $w->write;
     }
-    $w->graph($icgraph);
-    $w->write;
+    if (@invalid) {
+        my $icgraph = new GOBO::Graph();
+        $icgraph->annotations(\@invalid);
+        my $w = new GOBO::Writers::GAFWriter;
+        if ($per_file_ic) {
+            my $of = $f;
+            $of =~ s/.*\///g;
+            $of =~ s/\.gz//;
+            $of .= ".invalid.gaf";
+            $w->file($of);
+            $w->init_fh;
+        }
+        $w->graph($icgraph);
+        $w->write;
+    }
 }
 exit 0;
 
@@ -98,10 +134,35 @@ go-gaf-inference.pl
 
 =head1 SYNOPSIS
 
- go-gaf-inference.pl go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association.sgd.gz
+ go-gaf-inference.pl --infer go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association.sgd.gz
+ go-gaf-inference.pl --infer --per-file go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association*.gz
 
 =head1 DESCRIPTION
 
 Performs inference upon a GAF (Gene Association File), generating ICs based on configurable criteria
+
+=head2 INFERENCE
+
+Pass in --infer on the command line
+
+=head3 Inter-ontology part_of inference
+
+TO BE DOCUMENTED
+
+=head3 Other types of inference
+
+NOT YET IMPLEMENTED
+
+=head2 VALIDATION
+
+Pass in --validate on the command line
+
+=head3 Taxon validation
+
+http://wiki.geneontology.org/index.php/Category:Taxon
+
+=head3 Other types of validation
+
+NOT YET IMPLEMENTED
 
 =cut
