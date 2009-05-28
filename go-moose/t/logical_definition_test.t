@@ -1,5 +1,5 @@
 use Test;
-plan tests => 1;
+plan tests => 8;
 use strict;
 use GOBO::Graph;
 use GOBO::Statement;
@@ -19,6 +19,8 @@ my $g = $parser->graph;
 
 $g->convert_intersection_links_to_logical_definitions();
 
+my $c = $g->noderef('SO:0000111');
+ok($c->label eq "transposable_element_gene");
 my $n = 0;
 foreach my $term (@{$g->terms}) {
     if ($term->logical_definition) {
@@ -35,3 +37,14 @@ ok($n == 193);
 
 
 $parser->parse("t/data/UnionTerms.obo");
+
+
+$c = $g->noderef('JD:0000002');
+printf "c=$c\n";
+ok($c);
+ok($c->label eq 'Viridiplantae and Cyanobacteria');
+my $u = $c->union_definition;
+ok($u);
+ok(@{$u->arguments} == 2);
+ok(grep {$_->id eq 'NCBITaxon:1117'} @{$u->arguments});
+ok(grep {$_->id eq 'NCBITaxon:33090'} @{$u->arguments});

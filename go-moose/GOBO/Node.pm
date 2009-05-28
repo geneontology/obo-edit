@@ -28,7 +28,9 @@ sub as_string {
 
 sub equals {
     my $self = shift;
-    return shift->id eq $self->id;
+    my $n = shift;
+    return 0 unless $n->id;
+    return $n->id eq $self->id;
 }
 
 1;

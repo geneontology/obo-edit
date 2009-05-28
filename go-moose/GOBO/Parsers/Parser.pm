@@ -5,7 +5,7 @@ use GOBO::Graph;
 use FileHandle;
 use Carp;
 
-has fh => (is=>'rw', isa=>'FileHandle');
+has fh => (is=>'rw', isa=>'Maybe[FileHandle]', clearer=>'clear_fh', predicate=>'has_fh');
 has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'GOBO::Graph', default=>sub{new GOBO::Graph});
 has lines => (is=>'rw', isa=>'ArrayRef',default=>sub{[]});
@@ -46,6 +46,7 @@ sub parse {
         }
         else {
             $self->file($f);
+            $self->clear_fh;
         }
     }
     $self->init_fh;
