@@ -82,6 +82,7 @@ foreach my $f (@ARGV) {
         
         # clear
         printf STDERR "  inferences %d\n", scalar(@ics);
+        printf STDERR "  invalid annots %d\n", scalar(@invalid );
         $gafparser->graph(new GOBO::Graph);
     }
     if (@ics) {
@@ -100,19 +101,9 @@ foreach my $f (@ARGV) {
         $w->write;
     }
     if (@invalid) {
-        my $icgraph = new GOBO::Graph();
-        $icgraph->annotations(\@invalid);
-        my $w = new GOBO::Writers::GAFWriter;
-        if ($per_file_ic) {
-            my $of = $f;
-            $of =~ s/.*\///g;
-            $of =~ s/\.gz//;
-            $of .= ".invalid.gaf";
-            $w->file($of);
-            $w->init_fh;
+        foreach my $i (@invalid) {
+            printf "$i->[2] only_in $i->[1] annotation: $i->[0]\n";
         }
-        $w->graph($icgraph);
-        $w->write;
     }
 }
 exit 0;
@@ -135,7 +126,6 @@ go-gaf-inference.pl
 =head1 SYNOPSIS
 
  go-gaf-inference.pl --infer go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association.sgd.gz
- go-gaf-inference.pl --infer --per-file go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association*.gz
 
 =head1 DESCRIPTION
 
@@ -146,6 +136,12 @@ Performs inference upon a GAF (Gene Association File), generating ICs based on c
 Pass in --infer on the command line
 
 =head3 Inter-ontology part_of inference
+
+Example:
+
+ go-gaf-inference.pl --infer --per-file go/ontology/obo_format_1_2/gene_ontology_ext.obo go/gene-associations/gene_association*.gz
+
+generates IC BP annotations for MF annotations where a part_of link is asserted or can be inferred
 
 TO BE DOCUMENTED
 
@@ -160,6 +156,10 @@ Pass in --validate on the command line
 =head3 Taxon validation
 
 http://wiki.geneontology.org/index.php/Category:Taxon
+
+  go-gaf-inference.pl --validate -i scratch/go-taxon/TaxonGOLinksFile.obo -i scratch/go-taxon/ncbitax-slim.obo -i scratch/go-taxon/UnionTerms.obo -i ontology/editors/gene_ontology_write.obo gene-associations/gene_association.goa_chicken.gz
+
+Writes out taxonomically invalid annotations. Uses the correct semantics for union terms.
 
 =head3 Other types of validation
 
