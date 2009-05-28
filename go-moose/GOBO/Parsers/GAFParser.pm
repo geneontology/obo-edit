@@ -7,6 +7,7 @@ use GOBO::Gene;
 use GOBO::Evidence;
 use GOBO::Annotation;
 use GOBO::ClassExpression;
+use Carp;
 
 sub parse_header {
     my $self = shift;
@@ -49,6 +50,10 @@ sub parse_body {
             $annotxp,   # experimental! 
             $geneproduct
             ) = @vals;
+
+        if (!$genesymbol) {
+            confess("No symbol in line: $_");
+        }
 
         my $geneid = "$genedb:$geneacc";
         my $gene = $g->noderef($geneid);

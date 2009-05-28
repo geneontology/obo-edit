@@ -20,6 +20,7 @@ has reflexive => ( is=>'rw', isa=>'Bool' );
 has irreflexive => ( is=>'rw', isa=>'Bool' );
 has functional => ( is=>'rw', isa=>'Bool' );
 has inverse_functional => ( is=>'rw', isa=>'Bool' );
+has metadata_tag => ( is=>'rw', isa=>'Bool' );
 has transitive_over => ( is=>'rw', isa=>'GOBO::RelationNode');
 has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
 has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
