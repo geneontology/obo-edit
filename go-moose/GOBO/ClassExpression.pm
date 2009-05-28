@@ -40,6 +40,7 @@ use strict;
 extends 'GOBO::ClassNode';
 use GOBO::ClassExpression::RelationalExpression;
 use GOBO::ClassExpression::Intersection;
+use GOBO::ClassExpression::Union;
 
 # abstract class - no accessors
 
@@ -75,23 +76,27 @@ sub parse_idexpr {
     my $g = shift;
     my $expr = shift;
     return unless $expr;
-    print STDERR "Parsing: $expr\n";
+    #print STDERR "Parsing: $expr\n";
     my @toks = split(/([\(\)\^\|])/,$expr);
-    return _parse_idexpr_toks($g,\@toks);
+    my $x = _parse_idexpr_toks($g,\@toks);
+    $x->normalize if $x->can('normalize');
+    return $x;
 }
 
 sub _parse_idexpr_toks {
     my $g = shift;
     my $toks = shift;
-    print STDERR "Parsing tokens: @$toks\n";
+    #print STDERR "Parsing tokens: @$toks\n";
     if (!@$toks) {
         return;
     }
     my $tok = shift @$toks;
+
+    # RETURN: atom
     if (!@$toks) {
-        # atom
-        printf STDERR "atom: $tok\n";
-        return $tok;
+        #printf STDERR "atom: $tok\n";
+        #return $tok;
+        return $g->noderef($tok);
     }
     my $this;
     if ($toks->[0] eq '(') {
@@ -99,12 +104,13 @@ sub _parse_idexpr_toks {
         shift @$toks;
         my $filler = _parse_idexpr_toks($g,$toks);
         $this = new GOBO::ClassExpression::RelationalExpression(relation=>$tok,target=>$filler);
-        printf STDERR "relexpr $tok $filler ==> $this\n";
+        #printf STDERR "relexpr $tok $filler ==> $this\n";
     }
     else {
-        printf STDERR "atom: $tok\n";
+        #printf STDERR "atom: $tok\n";
         $this = $g->noderef($tok);
     }
+
     if (@$toks) {
         my $combo;
         my $op = shift @$toks;
@@ -114,18 +120,33 @@ sub _parse_idexpr_toks {
             $combo = new GOBO::ClassExpression::Intersection(arguments=>[$this,$next]);
         }
         elsif ($op eq '|') {
+            printf STDERR "union: $this $next\n";
+            $combo = new GOBO::ClassExpression::Union(arguments=>[$this,$next]);
         }
         elsif ($op eq ')') {
             # TODO: check balance
-            printf STDERR "end-brace: $this\n";
+            #printf STDERR "end-brace: $this\n";
             return $this;
         }
         else {
         }
         return $combo; # TODO -- DNF
     }
-    printf STDERR "return: $this\n";
+    #printf STDERR "return: $this\n";
     return $this;
+}
+
+=head2 normalize 
+
+A or (B or C) ==> A or B or C
+A and (B and C) ==> A and B and C
+
+
+=cut
+
+sub normalize {
+    my $self = shift;
+    return;
 }
 
 1;
