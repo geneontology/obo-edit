@@ -30,6 +30,10 @@ sub parse_body {
     my $g = $self->graph;
 
     while($_ = $self->next_line) {
+        if (/^\!/) {
+            print STDERR "Warning! header in unexpected location: $_\n";
+            next;
+        }
         chomp;
         my @vals = split(/\t/);
         my ($genedb,

@@ -1,7 +1,7 @@
 package GOBO::ClassExpression::RelationalExpression;
 use Moose;
 use strict;
-extends 'GOBO::ClassExpression::BooleanExpression';
+extends 'GOBO::ClassExpression';
 use GOBO::Statement;
 use GOBO::RelationNode;
 use GOBO::Node;

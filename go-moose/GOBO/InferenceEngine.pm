@@ -198,6 +198,34 @@ sub calculate_deductive_closure {
     }
 }
 
+=head2 subsumed_by
+
+c1 subsumed_by c2 if any only if every member of c1 is a member of c2
+
+The following rules are used in the decision procedure:
+
+=head3 Relation Composition
+
+=head3 Intersections
+
+See GOBO::ClassExpression::Intersection
+
+if c2 = a ∩ b AND c1 is subsumed by a AND c1 is subsumed by b THEN c1 is subsumed by c2
+
+=head3 Unions
+
+See GOBO::ClassExpression::Union
+
+if c2 = a ∪ b AND (c1 is subsumed by a OR c1 is subsumed by b) THEN c1 is subsumed by c2
+
+=head3 Relational Expressions
+
+See GOBO::ClassExpression::RelationalExpression
+
+if c2 = <r y> AND c1 r y THEN c1 is subsumed by c2
+
+=cut
+
 sub subsumed_by {
     my $self = shift;
     my $child = shift;  # GOBO::Class
@@ -219,9 +247,9 @@ sub subsumed_by {
             return $self->subsumed_by($child,$parent->union_definition);
         }
 
-        if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
-            return 1;
-        }
+    }
+    if (grep {$_->id eq $parent->id} @{$self->get_inferred_target_nodes($child, new GOBO::RelationNode(id=>'is_a'))}) {
+        return 1;
     }
 
     # class subsumption over boolean expressions

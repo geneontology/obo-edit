@@ -1,4 +1,6 @@
-use Test::More tests => 4;
+use Test;
+
+plan tests => 4;
 use strict;
 
 use GOBO::Graph;
@@ -36,7 +38,7 @@ ok(@$pls>1);
 my $writer = new GOBO::Writers::OBOWriter;
 $writer->graph($parser->graph);
 $writer->write();
-
+print "\n\n";
 ok(1);
 
 #use Moose::Autobox;

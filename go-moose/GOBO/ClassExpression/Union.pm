@@ -4,6 +4,7 @@ use strict;
 extends 'GOBO::ClassExpression::BooleanExpression';
 
 sub operator { ' OR ' }
+sub operator_symbol { '|' }
 
 =head1 NAME
 
