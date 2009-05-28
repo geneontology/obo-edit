@@ -53,6 +53,7 @@ sub parse_body {
         my $geneid = "$genedb:$geneacc";
         my $gene = $g->noderef($geneid);
         my @taxa = split(/[\|\;]/,$genetaxa);
+        @taxa = map {s/^taxon:/NCBITaxon:/;$_} @taxa;
         my $taxon = shift @taxa;
         if (!$gene->label) {
             bless $gene, 'GOBO::Gene';
