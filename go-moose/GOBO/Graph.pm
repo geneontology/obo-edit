@@ -35,10 +35,8 @@ use overload ('""' => 'as_string');
 
 has 'relations' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
 has 'terms' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
-#has 'links' => (is => 'rw', isa => 'ArrayRef[GOBO::LinkStatement]', default=>sub{[]});
 has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
-#has 'annotations' => (is => 'rw', isa => 'ArrayRef[GOBO::Annotation]', default=>sub{[]});
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
 has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
@@ -69,6 +67,7 @@ sub annotations { shift->annotation_ix->statements(@_) }
 sub add_annotation { shift->annotation_ix->add_statement(@_) }
 sub add_annotations { shift->annotation_ix->add_statements(@_) }
 sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
+sub annotated_entities { shift->annotation_ix->referenced_nodes }
 
 =head2 get_target_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 

@@ -12,7 +12,12 @@ use GOBO::InferenceEngine;
 use FileHandle;
 
 my $g = new GOBO::Graph;
-bless $g->link_ix, 'GOBO::Amigo::Indexes::AmigoStatementIndex';
+my $dbh; # connect to a test db TODO
+#bless $g->link_ix, 'GOBO::Amigo::Indexes::AmigoStatementIndex';
+bless $g, 'GOBO::Amigo::Indexes::AmigoStatementIndex';
 $g->link_ix->schema( new Amigo::Model::Schema($dbh) );
+
+
+
 
 # TODO...
