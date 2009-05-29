@@ -107,6 +107,18 @@ sub matching_statements {
     return $sl;
 }
 
+sub referenced_nodes {
+    my $self = shift;
+    my @nids = keys %{$self->ixN};
+    # ixN maps node IDs to lists of statements;
+    # take the distinct node IDs, the return the
+    # node object from the first statement in each
+    return 
+        [map {
+            $self->ixN->{$_}->[0]->node;
+         } @nids];
+}
+
 1;
 
 

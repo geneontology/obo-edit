@@ -23,35 +23,41 @@ use GOBO::Graph;
 use GOBO::Node;
 use GOBO::TermNode;
 use GOBO::RelationNode;
-use Math::GSL;
+use Set::Object;
 
-has feature_index_map => (is=>'rw', isa=> 'HashRef[Int]', default=>sub{{}});
-has attribute_index_map => (is=>'rw', isa=> 'HashRef[Int]', default=>sub{{}});
+has feature_attribute_vector_map => (is=>'rw', isa=> 'HashRef[Set::Object]', default=>sub{{}});
 
-sub init_attribute_index_map {
+sub index_annotations {
     my $self = shift;
-    my $amap = $self->attribute_index_map;
-    my $inc = 0;
-    my %nidh = ();
+    my %fvmap = ();
     foreach my $ann (@{$self->graph->annotations}) {
-        foreach my $n ($self->get_inferred_target_nodes($ann->target)) {
-            $nidh{$n->id} = 1;
+        my $feat = $ann->node;
+        my $fid = $feat->id;
+        my $fv = $fvmap{$fid};
+        if (!$fv) {
+            $fv = new Set::Object;
+            $fvmap{$fid} = $fv;
         }
+        foreach my $n (@{$self->get_inferred_target_nodes($ann->target)}) {
+            $fv->insert($n->id);
+        }
+        $fv->insert($ann->target); # TODO - reflexivity
     }
-    foreach my $nid (keys %nidh) {
-        $amap->{$nid} = $inc++;
-    }
+    $self->feature_attribute_vector_map(\%fvmap);
     return;
 }
 
-sub init_feature_index_map {
+sub calculate_simJ {
     my $self = shift;
-    my $amap = $self->feature_index_map;
-    my $incnode->id = 0;
-    foreach my $node (@{$self->graph->annotated_entities}) {
-        $amap->{$node->id} = $inc++;
-    }
-    return;
+    my $f1 = shift;
+    my $f2 = shift;
+    
+    my $av1 = $self->feature_attribute_vector_map->{$f1};
+    my $av2 = $self->feature_attribute_vector_map->{$f2};
+    my $iv = $av1 * $av2;
+    my $uv = $av1 + $av2;
+
+    return $iv->size / $uv->size;
 }
 
 
