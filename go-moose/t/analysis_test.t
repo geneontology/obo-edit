@@ -30,10 +30,11 @@ $ontg->add_annotations($gafparser->graph->annotations);
 $ae->graph($ontg);
 $ae->index_annotations;
 
-compare('FB:FBgn0010339','FB:FBgn0039946');
+ok(compare('FB:FBgn0010339','FB:FBgn0039946') > 0);
 
 sub compare {
     my ($f1,$f2) = @_;
     my $simJ = $ae->calculate_simJ($f1,$f2);
     printf "%s vs %s = %s\n", $f1, $f2, $simJ;
+    return $simJ;
 }
