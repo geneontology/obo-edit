@@ -615,8 +615,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				}
 				else
 				{
-					//The file is created but empty so this must be the problem.
-					//print statements do not print to the file either, though the file is made.
+					
 					noDisjointPrintWriter.println(graphvizTextFileLine);
 
 				}
