@@ -357,12 +357,33 @@ public class SelectionManager implements ObjectSelector {
 						.getLinkSubSelection(), newSubSelection);
 	}
 
+	/**
+	 * Takes the list of selected terms in one component and propagates 
+	 * the list so that all other components that listen
+	 * to selection events will also show these terms.
+	 * 
+	 * @param selection
+	 */
 	public static void setGlobalSelection(Selection selection) {
 //		logger.debug("SelectionManager -- setGlobalSelection -- selection: " + selection);
 		if (selection == null)
 			selectNone(null);
 		else
 			getManager().select(selection);
+	}
+	/**
+	 * Takes the list of selected terms in one component and propagates 
+	 * the list so that all other components that listen
+	 * to selection events will also show these terms. The second parameter determines whether the 
+	 * entire user interface will redraw with each change in selection.
+	 * 
+	 * @param newSelection
+	 */
+	public static void setGlobalSelection(Selection selection, String option) {
+		if (selection == null)
+			selectNone(null);
+		else
+			getManager().select(selection, option);
 	}
 
 	public static void selectNone() {
@@ -373,6 +394,14 @@ public class SelectionManager implements ObjectSelector {
 		getManager().select(createEmptySelection(source));
 	}
 
+	/**
+	 * First function is to set the selection and propagate it to all other components that are registered for 
+	 * the selection event. 
+	 * 
+	 * Also keeps a list of the selection events that have occurred so that selection can back track if an undo command
+	 * is given. The list is of a defined maximum length and if this is exceded then this method ensures that the
+	 * oldest selection event is removed to make space for the newest one. 
+	 */
 	public void select(Selection selection) {
 		if (doPreSelectValidation(selection)) {
 			selectionStack.add(selection);
@@ -380,6 +409,29 @@ public class SelectionManager implements ObjectSelector {
 				selectionStack.removeFirst();
 			forwardSelections.clear();
 			notifyListeners();
+			checkedPreSelection = null;
+		}
+	}
+	
+	/**
+	 * First function is to set the selection and propagate it to all other components that are registered for 
+	 * the selection event. 
+	 * 
+	 * Also keeps a list of the selection events that have occurred so that selection can back track if an undo command
+	 * is given. The list is of a defined maximum length and if this is exceded then this method ensures that the
+	 * oldest selection event is removed to make space for the newest one. 
+	 *
+	 * @param selection
+	 * @param option determines whether the selection event will trigger reload of the GUIs of the components that are
+	 * registered. 
+	 */
+	public void select(Selection selection, String option) {
+		if (doPreSelectValidation(selection)) {
+			selectionStack.add(selection);
+			if (selectionStack.size() > maxSelectionStackSize)
+				selectionStack.removeFirst();
+			forwardSelections.clear();
+			notifyListeners(option);
 			checkedPreSelection = null;
 		}
 	}
@@ -424,6 +476,10 @@ public class SelectionManager implements ObjectSelector {
 		selectionListeners.remove(listener);
 	}
 
+	/**
+	 * Notifies the listener of a new selection. 
+	 * 
+	 */
 	protected void notifyListeners() {
 		Selection current = getSelection();
 		Object source;
@@ -434,6 +490,23 @@ public class SelectionManager implements ObjectSelector {
 		fireSelectionEvent(new SelectionEvent(source, current));
 	}
 
+	/**
+	 * Notifies the listener of a new selection and passes the option that determines whether the GUIs
+	 * of all registered components will reload. 
+	 * 
+	 * @param option determines whether the GUIs of all registered components will reload. 
+	 */
+	protected void notifyListeners(String option) {
+		logger.debug("SelectionManager: notifyListeners: option = " + option);
+		Selection current = getSelection();
+		Object source;
+		if (current.getComponent() == null)
+			source = this;
+		else
+			source = current.getComponent();
+		fireSelectionEvent(new SelectionEvent(source, current, option));
+	}
+	
 	public Selection getSelection() {
 		if (selectionStack.size() == 0)
 			return createEmptySelection(null);
@@ -653,4 +726,6 @@ public class SelectionManager implements ObjectSelector {
 	public void removeExpansionListener(ExpandCollapseListener listener) {
 		// do nothing		
 	}
+
+
 }
