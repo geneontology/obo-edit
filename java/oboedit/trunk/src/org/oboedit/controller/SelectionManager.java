@@ -497,7 +497,7 @@ public class SelectionManager implements ObjectSelector {
 	 * @param option determines whether the GUIs of all registered components will reload. 
 	 */
 	protected void notifyListeners(String option) {
-		logger.debug("SelectionManager: notifyListeners: option = " + option);
+		//logger.debug("SelectionManager: notifyListeners: option = " + option);
 		Selection current = getSelection();
 		Object source;
 		if (current.getComponent() == null)
