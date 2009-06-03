@@ -43,6 +43,12 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 	JButton configureButton;
 	JButton importButton;
 	JButton exportButton;
+	
+	/**
+	 * The option to stop a change in the term selection in the Ontology Tree Editor from triggering reloads of other 
+	 * component interfaces. 
+	 */
+	static String noGUIReloadOnSelection = "noGUIReloadOnSelection";
 
 	Vector dbxrefs = new Vector();
 
@@ -162,7 +168,9 @@ public class DbxrefLibrary extends AbstractGUIComponent {
 			for (LinkedObject lo : selected.getTerms()) {
 				Selection newSelection = SelectionManager.changeSubSelection(
 						SelectionManager.getGlobalSelection(), lo);
-				SelectionManager.setGlobalSelection(newSelection);
+				
+				SelectionManager.setGlobalSelection(newSelection, noGUIReloadOnSelection);
+				
 				GUIManager.getManager().fireUserEvent(
 						new AbstractDbxrefEditorComponent.DbxrefUpdateEvent(this,
 								(isDef ? "gui.dbxref.def.add"
