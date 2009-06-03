@@ -123,10 +123,22 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 	protected LinkDatabase linkDatabase;
 	protected SelectionListener selectionListener = new SelectionListener() {
 
+		/**
+		 * Listens for a change in term selection in any other component that is set to global selection mode. If 
+		 * an 'option' variable on 'e' contains the string "noGUIReloadOnSelection" then the Graphviz component 
+		 * will not reload to display the newly selected term. Otherwise the the reload will occur and the newly 
+		 * selected term will show in the Graphviz component. 
+		 */
 		public void selectionChanged(SelectionEvent e) {
+			
+			if (e.getOption() != null 
+					&& e.getOption().equalsIgnoreCase("noGUIReloadOnSelection")) {
+				//logger.debug("GraphvizCanvas: selectionChanged: option = " + e.getOption());
+				return;
+			} 
 			update();
 			reloadImage();
-			//logger.debug("now updating selection.");
+			logger.debug("GraphvizCanvas: selectionChanged: now updating selection. option = " + e.getOption());
 		}
 	};
 	JComboBox formatBox = new JComboBox(formatList);
@@ -536,9 +548,9 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ graphvizSettingsInstance.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 
-				// //logger.debug(configuration.getDotPath() + " -T"
-				// + configuration.getViewerFormat() + " -o "
-				// + imageFile.getPath() + " " + textFile.getPath());
+				logger.debug(graphvizSettingsInstance.getDotPath() + " -T"
+				 + graphvizSettingsInstance.getViewerFormat() + " -o "
+				 + imageFile.getPath() + " " + textFile.getPath());
 
 				p.waitFor();
 
