@@ -26,6 +26,8 @@ public class RemoveConsiderHistoryItem extends HistoryItem {
 	public RemoveConsiderHistoryItem(ObsoletableObject target,
 			ObsoletableObject consider) {
 		this(target.getID(), consider.getID());
+		//System.out.printf("RemoveConsiderHistoryItem: constructor: target.getID(), consider.getID()" + target.getID() + consider.getID());
+
 	}
 
 	public RemoveConsiderHistoryItem(String target, String consider) {
