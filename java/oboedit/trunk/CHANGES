@@ -7,7 +7,9 @@ Bug Fixes:
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
 - Fixed the history browser html message so it shows 'name (id)' rather then 'id (id)'.
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
-
+- Graphviz uses a lot of memory when you assign dbxrefs: ID: 2057452
+The Graphviz interface redraws have been removed for the bulk addition of dbxrefs. 
+Now there is only one redraw at the end of the bulk process.
 
 Bugs pending:
 - Itemized undo
