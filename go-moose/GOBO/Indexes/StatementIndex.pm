@@ -35,6 +35,7 @@ sub add_statements {
     my $self = shift;
     my $sl = shift;
     foreach my $s (@$sl) {
+        confess("no subject in $s") unless $s->node;
         my $nid = $s->node->id;
         push(@{$self->ixN->{$nid}}, $s);
         if ($s->isa("GOBO::LinkStatement")) {

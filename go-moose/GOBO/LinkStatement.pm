@@ -4,7 +4,7 @@ use strict;
 extends 'GOBO::Statement';
 use GOBO::Node;
 
-has 'target' => ( is=>'ro', isa=>'GOBO::Node', coerce=>1 );
+has 'target' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
 
 =head1 NAME

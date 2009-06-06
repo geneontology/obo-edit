@@ -47,6 +47,18 @@ sub index_annotations {
     return;
 }
 
+=head2
+
+Jacard similarity coefficient between two features,
+based on their attribute vectors:
+
+ | A1 ∩ A2| / | A1 ∪ A2|
+
+where A1 and A2 are the sets of positive attributes
+in F1 and F2 respectively
+
+=cut
+
 sub calculate_simJ {
     my $self = shift;
     my $f1 = shift;
@@ -59,8 +71,6 @@ sub calculate_simJ {
 
     return $iv->size / $uv->size;
 }
-
-
 
 1;
 
