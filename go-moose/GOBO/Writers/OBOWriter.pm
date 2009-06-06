@@ -22,6 +22,9 @@ sub write_body {
     foreach my $relation (@{$g->relations}) {
         $self->write_stanza($relation);
     }
+    foreach my $ann (@{$g->annotations}) {
+        $self->write_annotation_stanza($ann);
+    }
     # TODO: instances
     return;
 }
@@ -64,6 +67,8 @@ sub write_stanza {
         foreach (GOBO::RelationNode->unary_property_names) {
             $self->unary("is_$_") if $node->$_();
         }
+        $self->tagval('holds_over_chain', _chain($_)) foreach @{$node->holds_over_chain_list || []};
+        $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
     foreach (@{$g->get_target_links($node)}) {
@@ -94,6 +99,30 @@ sub write_stanza {
             $self->throw("illegal union term: $union in $node");
         }
     }
+    return;
+}
+
+sub _chain {
+    my $arr = shift;
+    return join(' ',map {$_->id} @$arr);
+}
+
+sub write_annotation_stanza {
+    my $self = shift;
+    my $ann = shift;
+    my $g = $self->graph;
+
+    $self->nl;
+    my $stanzaclass = 'Annotation';
+    
+    $self->open_stanza($stanzaclass);
+    $self->tagval('id',$ann->id) if $ann->id;  # annotations need not have an ID
+    $self->tagval(subject=>$ann->node->id);
+    $self->tagval(relation=>$ann->relation->id);
+    $self->tagval(object=>$ann->target->id);
+    $self->tagval(description=>$ann->description);
+    $self->tagval(source=>$ann->provenance->id) if $ann->provenance;
+    $self->tagval(assigned_by=>$ann->source->id) if $ann->source;
     return;
 }
 

@@ -39,6 +39,7 @@ sub parse_body {
     my $id;
     my $n;
     my %union_h = ();
+    my @anns = ();
     while($_ = $self->next_line) {
         chomp;
         s/\!.*//; # TODO
@@ -46,6 +47,10 @@ sub parse_body {
         my $vals = [];
         if (/^\[(\S+)\]/) {
             $stanzaclass = lc($1);
+            if ($stanzaclass eq 'annotation') {
+                $n = new GOBO::Annotation;
+                push(@anns, $n);
+            }
         }
         elsif (/^id:\s*(.*)/) {
             $id = $1;
@@ -100,13 +105,16 @@ sub parse_body {
             $n->add_xrefs($1);
         }
         elsif (/^is_a:\s*(\S+)/) {
-            my $tn = $g->term_noderef($1);
+            #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
+            my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
             $g->add_link($s);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
-            my $tn = $g->term_noderef($2);
+            #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);
+            my $tn = $self->getnode($2, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            #my $tn = $g->term_noderef($2);
             my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
             $g->add_link($s);
         }
@@ -114,12 +122,16 @@ sub parse_body {
             # TODO: generalize
             if (/^intersection_of:\s*(\S+)\s+(\S+)/) {
                 my $rn = $g->relation_noderef($1);
-                my $tn = $g->term_noderef($2);
+                #my $tn = $g->term_noderef($2);
+                my $tn = $self->getnode($2, $stanzaclass eq 'typedef' ? 'r' : 'c');
+                #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);
                 my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn, is_intersection=>1);
                 $g->add_link($s);
             }
             elsif (/^intersection_of:\s*(\S+)/) {
-                my $tn = $g->term_noderef($1);
+                #my $tn = $g->term_noderef($1);
+                #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
+                my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
                 my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn, is_intersection=>1);
                 $g->add_link($s);
             }
@@ -128,7 +140,9 @@ sub parse_body {
             }
         }
         elsif (/^union_of:\s*(\S+)/) {
-            my $u = $g->term_noderef($1);
+            #my $u = $g->term_noderef($1);
+            my $u = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            #my $u = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
             my $ud = $n->union_definition;
             if (!$ud) {
                 $ud = new GOBO::ClassExpression::Union;
@@ -146,11 +160,59 @@ sub parse_body {
             my $rn = $g->relation_noderef($1);
             $n->transitive_over($rn);
         }
+        elsif (/^(holds_over_chain|equivalent_to_chain):\s*(.*)/) {
+            my $ct = $1;
+            my @rels  = map { $self->getnode($_,'r') } split(' ',$2);
+            $ct eq 'holds_over_chain' ? $n->add_holds_over_chain(\@rels) : $n->add_equivalent_to_chain(\@rels);
+        }
+        # following for annotation stanzas only
+        elsif (/^subject:\s*(.*)/) {
+            $n->node($self->getnode($1));
+        }
+        elsif (/^relation:\s*(.*)/) {
+            $n->relation($self->getnode($1,'r'));
+        }
+        elsif (/^object:\s*(.*)/) {
+            $n->target($self->getnode($1));
+        }
+        elsif (/^description:\s*(.*)/) {
+            $n->description($1);
+        }
+        elsif (/^source:\s*(.*)/) {
+            $n->provenance($self->getnode($1));
+        }
+        elsif (/^assigned_by:\s*(.*)/) {
+            $n->source($self->getnode($1));
+        }
         else {
             # ...
         }
     }
+    if (@anns) {
+        $g->add_annotations(\@anns);
+    }
     return;
+}
+
+sub getnode {
+    my $self = shift;
+    my $id = shift;
+    my $metatype = shift || '';
+    my $g = $self->graph;
+    my $n;
+    if ($metatype eq 'c') {
+        $n = $g->term_noderef($id);
+    }
+    elsif ($metatype eq 'r') {
+        $n = $g->relation_noderef($id);
+    }
+    elsif ($metatype eq 'i') {
+        $n = $g->instance_noderef($id);
+    }
+    else {
+        $n = $g->noderef($id);
+    }
+    return $n;
 }
 
 sub _parse_vals {

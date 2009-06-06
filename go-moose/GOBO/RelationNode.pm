@@ -23,9 +23,13 @@ has inverse_functional => ( is=>'rw', isa=>'Bool' );
 has metadata_tag => ( is=>'rw', isa=>'Bool' );
 has transitive_over => ( is=>'rw', isa=>'GOBO::RelationNode');
 has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
-has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
+has equivalent_to_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
+has inverse_of => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has domain => ( is=>'rw', isa=>'GOBO::ClassNode');
 has range => ( is=>'rw', isa=>'GOBO::ClassNode');
+
+has symmetric_on_instance_level => ( is=>'rw', isa=>'Bool' );
+has inverse_of_on_instance_level => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 
 sub post_init {
     my $self = shift;
@@ -46,6 +50,22 @@ sub is_subsumption {
 
 sub propagates_over_is_a {
     return 1; # by default all links propagate over is_a
+}
+
+sub add_holds_over_chain {
+    my $self = shift;
+    if (!$self->holds_over_chain_list) {
+        $self->holds_over_chain_list([]);
+    }
+    push(@{$self->holds_over_chain_list},@_);
+}
+
+sub add_equivalent_to_chain {
+    my $self = shift;
+    if (!$self->equivalent_to_chain_list) {
+        $self->equivalent_to_chain_list([]);
+    }
+    push(@{$self->equivalent_to_chain_list},@_);
 }
 
 =head1 NAME

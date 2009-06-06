@@ -7,13 +7,13 @@ with 'GOBO::Identified';
 use GOBO::Node;
 use GOBO::RelationNode;
 
-has 'node' => ( is=>'ro', isa=>'GOBO::Node', coerce=>1 );
-has 'relation' => ( is=>'ro', isa=>'GOBO::RelationNode', coerce=>1 );
-has 'target' => ( is=>'ro', isa=>'Item');
-has 'inferred' => ( is=>'ro', isa=>'Bool');
-has 'negated' => ( is=>'ro', isa=>'Bool');
-has 'is_intersection' => ( is=>'ro', isa=>'Bool');
-has 'is_union' => ( is=>'ro', isa=>'Bool');
+has 'node' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
+has 'relation' => ( is=>'rw', isa=>'GOBO::RelationNode', coerce=>1 );
+has 'target' => ( is=>'rw', isa=>'Item');
+has 'inferred' => ( is=>'rw', isa=>'Bool');
+has 'negated' => ( is=>'rw', isa=>'Bool');
+has 'is_intersection' => ( is=>'rw', isa=>'Bool');
+has 'is_union' => ( is=>'rw', isa=>'Bool');
 
 
 use overload ('""' => 'as_string');
