@@ -8,6 +8,7 @@ use GOBO::Evidence;
 has evidence => ( is=>'rw', isa=>'GOBO::Evidence');
 has specific_node => ( is=>'rw', isa=>'GOBO::Node');
 has target_differentium_list => ( is=>'rw', isa=>'ArrayRef[GOBO::LinkStatement]');
+has description => (is => 'rw', isa => 'Str');  # TODO : use role?
 
 # alias. TBD - keep?
 sub gene {

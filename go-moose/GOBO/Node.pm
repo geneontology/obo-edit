@@ -1,6 +1,7 @@
 package GOBO::Node;
 use Moose;
 use strict;
+extends 'GOBO::Base';
 with 'GOBO::Identified';
 with 'GOBO::Labeled';
 with 'GOBO::Attributed';

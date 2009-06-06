@@ -23,6 +23,7 @@ use Moose::Role;
 use GOBO::Synonym;
 
 has label => (is => 'rw', isa => 'Str'); # TODO -- delegate to primary synonym?
+has description => (is => 'rw', isa => 'Str');
 has synonyms => ( is=>'rw', isa=>'ArrayRef[GOBO::Synonym]');
 
 sub add_synonyms {
