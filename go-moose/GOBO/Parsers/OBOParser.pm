@@ -94,11 +94,16 @@ sub parse_body {
             _parse_vals($1,$vals);
             my $syn = new GOBO::Synonym(label=>shift @$vals);
             $n->add_synonym($syn);
-            $syn->scope(shift @$vals);
+            my $xrefs = pop @$vals;
+            if (@$vals) {
+                $syn->scope(shift @$vals);
+            }
+            else {
+                warn "no scope specified: $_";
+            }
             if ($vals->[0] && !ref($vals->[0])) {
                 $syn->type(shift @$vals);
             }
-            my $xrefs = shift @$vals;
             $syn->xrefs($xrefs);
         }
         elsif (/^xref:\s*(\S+)/) {
