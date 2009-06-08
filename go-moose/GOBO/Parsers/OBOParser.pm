@@ -5,6 +5,7 @@ extends 'GOBO::Parsers::Parser';
 use GOBO::Node;
 use GOBO::Synonym;
 use GOBO::LinkStatement;
+use GOBO::LiteralStatement;
 use GOBO::ClassExpression;
 use GOBO::ClassExpression::Union;
 
@@ -109,11 +110,16 @@ sub parse_body {
         elsif (/^xref:\s*(\S+)/) {
             $n->add_xrefs($1);
         }
-        elsif (/^is_a:\s*(\S+)/) {
+        elsif (/^is_a:\s*(\S+)(.*)/) {
             #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
             my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
+            $self->add_metadata($s,$2);
             $g->add_link($s);
+        }
+        elsif (/^complement_of:\s*(\S+)/) {
+            my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            $n->complement_of($tn);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
@@ -145,9 +151,7 @@ sub parse_body {
             }
         }
         elsif (/^union_of:\s*(\S+)/) {
-            #my $u = $g->term_noderef($1);
             my $u = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
-            #my $u = $stanzaclass eq 'typedef' ? $g->relation_noderef($1) : $g->term_noderef($1);
             my $ud = $n->union_definition;
             if (!$ud) {
                 $ud = new GOBO::ClassExpression::Union;
@@ -218,6 +222,46 @@ sub getnode {
         $n = $g->noderef($id);
     }
     return $n;
+}
+
+sub add_metadata {
+    my $self = shift;
+    my $s = shift;
+    my $v = shift;
+    if ($v =~ /^\s*\{(.*)\}/) {
+        my $tq = $1;
+        my @tvs = ();
+        while ($tq) {
+            if ($tq =~ /(\w+)=\"([^\"]*)\"(.*)/) {
+                push(@tvs,[$1,$2]);
+                $tq = $3;
+            }
+            elsif ($tq =~ /(\w+)=(\w+)(.*)/) {
+                push(@tvs,[$1,$2]);
+                $tq = $3;
+            }
+            else {
+                $self->throw($v);
+            }
+            if ($tq =~ /^s*\,\s*(.*)/) {
+                $tq = $1;
+            }
+            elsif ($tq =~ /^\s*$/) {
+                # ok
+            }
+            else {
+                $self->throw($v);
+            }
+        }
+        my @sub_statements = ();
+        foreach (@tvs) {
+            my ($t,$v) = @$_;
+            my $ss = new GOBO::LiteralStatement(relation=>$t,target=>$v);
+            push(@sub_statements,$ss);
+        }
+        $s->sub_statements(\@sub_statements);
+    }
+    return;
 }
 
 sub _parse_vals {

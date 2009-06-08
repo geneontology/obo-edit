@@ -74,18 +74,18 @@ sub write_stanza {
     foreach (@{$g->get_target_links($node)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {
-                $self->tagval(intersection_of => $_->target->id);
+                $self->tagval(intersection_of => $_->target);
             }
             else {
-                $self->tagvals(intersection_of => ($_->relation->id, $_->target->id));
+                $self->tagvals(intersection_of => ($_->relation, $_->target));
             }
         }
         else {
             if ($_->relation->is_subsumption) {
-                $self->tagval(is_a => $_->target->id);
+                $self->tagval(is_a => $_->target, $_);
             }
             else {
-                $self->tagvals(relationship => ($_->relation->id, $_->target->id));
+                $self->tagvals(relationship => ($_->relation, $_->target));
             }
         }
     }
@@ -93,7 +93,7 @@ sub write_stanza {
     if ($union) {
         my $ul = $union->arguments;
         if (@$ul > 1) {
-            $self->tagvals(union_of => $_->id) foreach @$ul;
+            $self->tagvals(union_of => $_) foreach @$ul;
         }
         else {
             $self->throw("illegal union term: $union in $node");
@@ -142,14 +142,42 @@ sub tagval {
     my $self = shift;
     my $tag = shift;
     my $val = shift;
+    my $s = shift;
     return unless defined $val;
-    $self->printf("%s: %s\n",$tag,$val);
+    if (ref($val)) {
+        $self->printf("%s: %s",$tag,$val->id);
+    }
+    else {
+        $self->printf("%s: %s",$tag,$val);
+    }
+
+    if ($s && scalar(@{$s->sub_statements || []})) {
+        $self->printf(" {%s}",
+                      join(', ',
+                           map {
+                               sprintf('%s="%s"', $_->relation->id, $_->target);
+                           } @{$s->sub_statements}));
+    }
+    
+    if (ref($val) && $val->label) {
+        $self->printf(" ! %s\n",$val->label);
+    }
+    else {
+        $self->printf("\n");
+    }
+
 }
 
 sub tagvals {
     my $self = shift;
     my $tag = shift;
-    $self->printf("%s: %s\n",$tag,join(' ',@_));
+    $self->printf("%s: %s",$tag,join(' ', map {ref($_) ? $_->id : $_ } @_));
+    my @labels = map {ref($_) && $_->label && $_->label ne $_->id ? $_->label : () } @_;
+    if (@labels) {
+        $self->print(" ! @labels");
+    }
+    $self->print("\n");
+    return;
 }
 
 sub _quote {
