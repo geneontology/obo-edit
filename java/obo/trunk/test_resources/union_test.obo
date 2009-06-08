@@ -1,0 +1,11 @@
+[Term]
+id: x
+union_of: a
+union_of: b
+
+[Term]
+id: a
+
+[Term]
+id: b
+
