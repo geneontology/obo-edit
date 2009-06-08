@@ -14,7 +14,7 @@ has 'inferred' => ( is=>'rw', isa=>'Bool');
 has 'negated' => ( is=>'rw', isa=>'Bool');
 has 'is_intersection' => ( is=>'rw', isa=>'Bool');
 has 'is_union' => ( is=>'rw', isa=>'Bool');
-
+has 'sub_statements' => ( is=>'rw', isa=>'ArrayRef[GOBO::Statement]');
 
 use overload ('""' => 'as_string');
 sub as_string {
