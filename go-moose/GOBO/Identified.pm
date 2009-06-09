@@ -21,6 +21,7 @@ use Moose::Role;
 has id => (is => 'rw', isa => 'Str');
 has namespace => (is => 'rw', isa => 'Str');
 has obsolete => (is => 'rw', isa=> 'Bool');
+has anonymous => (is => 'rw', isa=> 'Bool');
 has deprecated => (is => 'rw', isa=> 'Bool');
 has replaced_by => (is => 'rw', isa=>'ArrayRef[GOBO::Node]');
 has consider => (is => 'rw', isa=>'ArrayRef[GOBO::Node]');

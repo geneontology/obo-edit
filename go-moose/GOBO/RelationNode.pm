@@ -14,7 +14,7 @@ coerce 'GOBO::RelationNode'
 has transitive => ( is=>'rw', isa=>'Bool' );
 has symmetric => ( is=>'rw', isa=>'Bool' );
 has asymmetric => ( is=>'rw', isa=>'Bool' );
-has antisymmetric => ( is=>'rw', isa=>'Bool' );
+has anti_symmetric => ( is=>'rw', isa=>'Bool' );
 has cyclic => ( is=>'rw', isa=>'Bool' );
 has reflexive => ( is=>'rw', isa=>'Bool' );
 has irreflexive => ( is=>'rw', isa=>'Bool' );
@@ -36,12 +36,12 @@ sub post_init {
     if ($self->is_subsumption) {
         $self->transitive(1);
         $self->reflexive(1);
-        $self->antisymmetric(1);
+        $self->anti_symmetric(1);
     }
 }
 
 sub unary_property_names { 
-    return qw(has transitive symmetric asymmetric cyclic reflexive irreflexive functional inverse_functional);
+    return qw(has transitive symmetric anti_symmetric asymmetric cyclic reflexive irreflexive functional inverse_functional);
 }
 
 sub is_subsumption {
