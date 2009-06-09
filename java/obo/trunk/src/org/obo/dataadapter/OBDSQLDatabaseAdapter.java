@@ -780,7 +780,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 
 		// TODO: use metadata ontology
-		if (pid.equals("oboMetaModel:inSubset")) {
+		if (pid.equals("oboInOwl:inSubset")) {
 			//logger.info("subset "+link+"//"+p);
 			TermUtil.castToClass(lo);
 			TermSubset category = session.getCategory(p.getID());
@@ -790,7 +790,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 			TermUtil.castToClass(lo).addCategory(category);
 		}
-		else if (pid.equals("oboMetaModel:xref")) {
+		else if (pid.equals("oboInOwl:hasDbXref")) {
 			OBOClass oboClass = 
 				TermUtil.castToClass(lo);
 			if (oboClass == null) {
@@ -801,7 +801,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		}
 		else if (pid.equals("OBO_REL:instance_of")) {
 
-			if (p.getID().equals("subsetdef")) {
+			if (p.getID().equals("oboInOwl:Subset")) {
 				TermSubset cat = objectFactory.createSubset(lo.getID(), lo.getName());
 				session.addSubset(cat);
 				// TODO: remove this at the end; still required as object of subset links
@@ -847,7 +847,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 				saveCategory(cat);
 			}
 			for (IdentifiedObject io : session.getObjects()) {
-				if (io.isBuiltIn()) {
+				if (io.isBuiltIn() && !io.equals(OBOProperty.IS_A)) {
 
 				}
 				else {
@@ -994,9 +994,9 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			ObsoletableObject olo = (ObsoletableObject)lo;
 			callSqlFunc("set_node_is_obsolete_i",iid,olo.isObsolete());
 			for (IdentifiedObject x : olo.getConsiderReplacements())
-				callSqlFunc("store_link_si",iid,"oboMetaModel:consider",x.getID(),"",false);
+				callSqlFunc("store_link_si",iid,"oboInOwl:consider",x.getID(),"",false);
 			for (IdentifiedObject x : olo.getReplacedBy())
-				callSqlFunc("store_link_si",iid,"oboMetaModel:replaced_by",x.getID(),"",false);
+				callSqlFunc("store_link_si",iid,"oboInOwl:replacedBy",x.getID(),"",false);
 		}
 		if (lo instanceof DbxrefedObject) {
 			for (Dbxref x : ((DbxrefedObject) lo).getDbxrefs()) {
@@ -1121,7 +1121,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		String type = rs.getString("type_uid");
 		if (!rs.wasNull()) {
 			String label = rs.getString("label");
-			if (type.equals("definition")) {
+			if (type.equals("oboInOwl:hasDefinition")) {
 				//logger.info(io+" def: "+label);
 				if (io instanceof DefinedObject)
 					((DefinedObject)io).setDefinition(label);
