@@ -1,7 +1,7 @@
-package GOBO::Amigo::Indexes::AmigoStatementIndex;
+package GOBO::AmiGO::Indexes::AmiGOStatementIndex;
 use Moose;
 extends 'GOBO::Indexes::StatementIndex';
-with 'GOBO::Amigo::Indexes::AmigoWrapper';
+with 'GOBO::AmiGO::Indexes::AmiGOWrapper';
 use Carp;
 use strict;
 use GOBO::Statement;
@@ -76,7 +76,7 @@ sub convert {
 
 =head1 NAME
 
-GOBO::Amigo::Indexes::StatementIndex
+GOBO::AmiGO::Indexes::StatementIndex
 
 =head1 SYNOPSIS
 
@@ -86,6 +86,6 @@ do not use this method directly
 
 Overrides GOBO::Indexes::StatementIndex (as used in GOBO::Graph) to
 provide direct DB connectivity to the AmiGO/GO Database. Uses the
-Amigo DBIx::Class layer
+AmiGO DBIx::Class layer
 
 =cut
