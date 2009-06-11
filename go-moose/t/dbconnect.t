@@ -13,9 +13,9 @@ use FileHandle;
 
 my $g = new GOBO::Graph;
 my $dbh; # connect to a test db TODO
-#bless $g->link_ix, 'GOBO::Amigo::Indexes::AmigoStatementIndex';
-bless $g, 'GOBO::Amigo::Indexes::AmigoStatementIndex';
-$g->link_ix->schema( new Amigo::Model::Schema($dbh) );
+#bless $g->link_ix, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
+bless $g, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
+$g->link_ix->schema( new AmiGO::Model::Schema($dbh) );
 
 
 
