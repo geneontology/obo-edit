@@ -14,6 +14,20 @@ has line_no => (is=>'rw', isa=>'Int', default=>sub{0});
 has parsed_header => (is=>'rw', isa=>'Bool');
 has stalled => (is=>'rw', isa=>'Bool');
 
+sub create {
+    my $proto = shift;
+    my %argh = @_;
+    my $fmt = $argh{format};
+    if ($fmt) {
+        my $pc;
+        if ($fmt eq 'obo') {
+            $pc = 'GOBO::Parsers::OBOParser';
+        }
+        #require $pc;
+        return $pc->new(%argh);
+    }
+}
+
 sub init_fh {
     my $self = shift;
     if (!$self->fh) {

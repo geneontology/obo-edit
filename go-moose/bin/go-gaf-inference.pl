@@ -102,6 +102,7 @@ foreach my $f (@ARGV) {
     }
     if (@invalid) {
         my $w = new GOBO::Writers::GAFWriter;
+        $w->init_fh;
         foreach my $i (@invalid) {
             my $term_id = $i->[2];
             my $term = $ontg->noderef($term_id);

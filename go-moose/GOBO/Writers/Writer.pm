@@ -4,10 +4,24 @@ use strict;
 use GOBO::Graph;
 use FileHandle;
 
-has fh => (is=>'rw', isa=>'FileHandle', default=>sub {new FileHandle(">-")} );
+has fh => (is=>'rw', isa=>'Maybe[FileHandle]', clearer=>'clear_fh', predicate=>'has_fh');
 #has fh => (is=>'rw', isa=>'FileHandle' );
-#has file => (is=>'rw', isa=>'Str');
+has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'GOBO::Graph');
+
+sub create {
+    my $proto = shift;
+    my %argh = @_;
+    my $fmt = $argh{format};
+    if ($fmt) {
+        my $pc;
+        if ($fmt eq 'obo') {
+            $pc = 'GOBO::Writers::OBOWriter';
+        }
+#        require $pc;
+        return $pc->new(%argh);
+    }
+}
 
 sub init_fh {
     my $self = shift;
@@ -24,7 +38,7 @@ sub init_fh {
     }
 }
 
-sub file {
+sub xxxfile {
     my $self = shift;
     if (@_) {
         my ($f) = @_;
@@ -37,6 +51,11 @@ sub file {
 
 sub write {
     my $self = shift;
+
+    my %ah = @_;
+    if ($ah{graph}) {
+        $self->graph($ah{graph});
+    }
     $self->init_fh;
     $self->write_header;
     $self->write_body;

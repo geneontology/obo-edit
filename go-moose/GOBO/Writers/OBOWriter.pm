@@ -22,6 +22,9 @@ sub write_body {
     foreach my $relation (@{$g->relations}) {
         $self->write_stanza($relation);
     }
+    foreach my $instance (@{$g->instances}) {
+        $self->write_stanza($instance);
+    }
     foreach my $ann (@{$g->annotations}) {
         $self->write_annotation_stanza($ann);
     }
@@ -51,7 +54,7 @@ sub write_stanza {
     $self->tagval('name',$node->label);
     $self->tagval('namespace',$node->namespace);
     $self->tagval('alt_id',$_) foreach @{$node->alt_ids || []};
-    if ($node->definition) {
+    if ($node->can('definition') && $node->definition) {
         $self->ntagval('def', _quote($node->definition), $node->definition_xrefs || [])
     }
     $self->tagval('comment',$node->comment);
@@ -89,14 +92,16 @@ sub write_stanza {
             }
         }
     }
-    my $union = $node->union_definition;
-    if ($union) {
-        my $ul = $union->arguments;
-        if (@$ul > 1) {
-            $self->tagvals(union_of => $_) foreach @$ul;
-        }
-        else {
-            $self->throw("illegal union term: $union in $node");
+    if ($self->can('union_definition')) {
+        my $union = $node->union_definition;
+        if ($union) {
+            my $ul = $union->arguments;
+            if (@$ul > 1) {
+                $self->tagvals(union_of => $_) foreach @$ul;
+            }
+            else {
+                $self->throw("illegal union term: $union in $node");
+            }
         }
     }
     return;

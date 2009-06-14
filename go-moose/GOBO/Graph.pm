@@ -35,6 +35,7 @@ use overload ('""' => 'as_string');
 
 has 'relations' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
 has 'terms' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
+has 'instances' => (is => 'rw', isa => 'ArrayRef[GOBO::InstanceNode]', default=>sub{[]});
 has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
@@ -50,6 +51,12 @@ sub add_term {
 sub add_relation {
     my $self = shift;
     push(@{$self->relations},@_);
+    return;
+}
+
+sub add_instance {
+    my $self = shift;
+    push(@{$self->instances},@_);
     return;
 }
 
@@ -132,6 +139,15 @@ sub relation_noderef {
     my $n = $self->noderef(@_);
     if (!$n->isa('GOBO::RelationNode')) {
         bless $n, 'GOBO::RelationNode';
+    }
+    return $n;
+}
+
+sub instance_noderef {
+    my $self = shift;
+    my $n = $self->noderef(@_);
+    if (!$n->isa('GOBO::InstanceNode')) {
+        bless $n, 'GOBO::InstanceNode';
     }
     return $n;
 }
