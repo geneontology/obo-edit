@@ -3,6 +3,7 @@ use Moose;
 use strict;
 extends 'GOBO::Parsers::Parser';
 use GOBO::Node;
+use GOBO::InstanceNode;
 use GOBO::Synonym;
 use GOBO::LinkStatement;
 use GOBO::LiteralStatement;
