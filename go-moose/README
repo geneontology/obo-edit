@@ -11,3 +11,6 @@ Current status:
 - parsers partially implemented
 - DB interface TODO
 - Export OBO-XML (to utilize xslts)
+
+See:
+http://wiki.geneontology.org/index.php/GO_Moose
