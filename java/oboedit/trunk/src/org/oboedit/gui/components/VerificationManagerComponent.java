@@ -60,7 +60,7 @@ public class VerificationManagerComponent extends AbstractGUIComponent {
 	protected JProgressBar progressBar = new JProgressBar();
 
 	protected JPanel progressPanel = new JPanel();
-
+				
 	protected java.util.List checkList = new ArrayList();
 
 	protected VerificationListener verificationListener = new VerificationListener() {

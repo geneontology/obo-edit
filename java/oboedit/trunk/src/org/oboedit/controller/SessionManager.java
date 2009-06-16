@@ -167,6 +167,25 @@ public class SessionManager {
 		this.session = session;
 		reloadSession();
 	}
+	
+	public boolean getStepIncrementalReasoningStatus() {
+		logger.debug("SessionManager.getStepIncrementalReasoningStatus");
+		return Preferences.getPreferences().getStepIncrementalReasoningStatus();
+	}
+	//partial incremental reasoning where the reasonedlink database is topped off after completion of a task
+	public void setStepIncrementalReasoningStatus(final boolean isStepIncrementalOn){
+		logger.debug("SessionManager.setStepIncrementalReasoningStatus");
+	}
+	
+	
+	public boolean getIncrementalReasoningStatus() {
+		logger.debug("SessionManager.getIncrementalReasoningStatus");
+		return Preferences.getPreferences().getIncrementalReasoningStatus();
+	}
+	//continuous incremental reasoning
+	public void setIncrementalReasoningStatus(final boolean isIncrementalOn){
+		logger.debug("SessionManager.setIncrementalReasoningStatus");
+	}
 
 	public boolean getUseReasoner() {
 		return Preferences.getPreferences().getUseReasoner();

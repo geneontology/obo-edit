@@ -365,7 +365,7 @@ public class SelectionManager implements ObjectSelector {
 	 * @param selection
 	 */
 	public static void setGlobalSelection(Selection selection) {
-//		logger.debug("SelectionManager -- setGlobalSelection -- selection: " + selection);
+		logger.debug("SelectionManager - setGlobalSelection - selection: " + selection);
 		if (selection == null)
 			selectNone(null);
 		else
@@ -522,6 +522,7 @@ public class SelectionManager implements ObjectSelector {
 		Collection<SelectionListener> selectionListeners = new LinkedList<SelectionListener>(
 				this.selectionListeners);
 		for (SelectionListener listener : selectionListeners) {
+//			logger.debug("listener: " + listener);
 			listener.selectionChanged(event);
 		}
 	}

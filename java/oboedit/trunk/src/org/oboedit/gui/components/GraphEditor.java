@@ -576,29 +576,29 @@ public class GraphEditor extends LinkDatabaseCanvas implements GUIComponent {
 	}
 
 	private void setTooltipFlareVisible(boolean tooltipFlareVisible) {
-		//logger.debug("GraphEditor: setTooltipFlareVisible," +
-				//" tooltipFlareVisible = " + tooltipFlareVisible);
+//		logger.debug("GraphEditor: setTooltipFlareVisible," +
+//				" tooltipFlareVisible = " + tooltipFlareVisible);
 		this.tooltipFlareVisible = tooltipFlareVisible;
 
 	}
 
 	private void setTooltipBubbleVisible(boolean tooltipBubbleVisible) {
-		//logger.debug("GraphEditor: setTooltipBubbleVisible," +
-				//" tooltipBubbleVisible = " + tooltipBubbleVisible);
+//		logger.debug("GraphEditor: setTooltipBubbleVisible," +
+//				" tooltipBubbleVisible = " + tooltipBubbleVisible);
 		this.tooltipBubbleVisible = tooltipBubbleVisible;
 
 	}
 
 	private boolean getTooltipFlareVisible() {
-		//logger.debug("GraphEditor: getTooltipFlareVisible," +
-				//" tooltipFlareVisible = " + tooltipFlareVisible);
+//		logger.debug("GraphEditor: getTooltipFlareVisible," +
+//				" tooltipFlareVisible = " + tooltipFlareVisible);
 		return tooltipFlareVisible;
 
 	}
 
 	private boolean getTooltipBubbleVisible() {
-		//logger.debug("GraphEditor: getTooltipBubbleVisible," +
-				//" tooltipBubbleVisible = " + tooltipBubbleVisible);
+//		logger.debug("GraphEditor: getTooltipBubbleVisible," +
+//				" tooltipBubbleVisible = " + tooltipBubbleVisible);
 		return tooltipBubbleVisible;		
 	}
 
