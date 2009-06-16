@@ -255,7 +255,7 @@ public class LinkDatabaseCanvas extends ExtensibleCanvas implements
 		}
 	};
 
-	// Is this really needed?
+
 	protected SelectionListener globalSelectionNotifier = new SelectionListener() {
 		public void selectionChanged(SelectionEvent e) {
 			if (isLive()) {

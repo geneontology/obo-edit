@@ -58,6 +58,7 @@ public class CrossProductInfoComponent extends AbstractGUIComponent {
 	};
 
 	public void selectTerm(URL url, OBOSession history) {
+		logger.debug("CrossProductInfoComponent.selectTerm");
 		String id = url.getPath();
 		OBOClass t = (OBOClass) history.getObject(id);
 		List<LinkedObject> terms = new LinkedList<LinkedObject>();
