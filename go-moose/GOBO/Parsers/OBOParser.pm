@@ -329,7 +329,13 @@ GOBO::Parsers::OBOParser
 
 =head1 DESCRIPTION
 
-An GOBO::Parsers::Parser that parses GOBO Files.
+An GOBO::Parsers::Parser that parses OBO Files.
+
+The goal is to be obof1.3 compliant:
+
+http://www.geneontology.org/GO.format.obo-1_3.shtml
+
+however, obof1.2 and obof1.0 are also supported
 
 =head2 Term stanzas
 

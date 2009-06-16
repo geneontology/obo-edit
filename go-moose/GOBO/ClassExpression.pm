@@ -4,6 +4,8 @@ GOBO::ClassExpression
 
 =head1 SYNOPSIS
 
+  my $xp = GOBO::ClassExpression->parse_idexpr('GO:0005737^part_of(CL:0000023)');
+
 =head1 DESCRIPTION
 
 A class expression is an GOBO::ClassNode whose members are identified
@@ -12,6 +14,9 @@ of cardiac cells' is expressed as the intersection (an
 GOBO::ClassExpression::Intersection) between the set 'nucleus' (an
 GOBO::TermNode) and the set of all things that stand in the part_of
 relation to 'class node' (a GOBO::ClassExpression::RelationalExpression).
+
+Simple ontologies do not include class expressions. They can often be
+ignored for many purposes.
 
 An GOBO::TermNode can be formally and logically defined by stating
 equivalence to a GOBO::ClassExpression
@@ -25,12 +30,46 @@ equivalence to a GOBO::ClassExpression
 This can also be thought of as necessary and sufficient conditions for
 membership of a class.
 
-Simple ontologies do not include class expressions. They can often be
-ignored for many purposes.
+On parsing the above using GOBO::Parsers::OBOParer, the following should hold
+
+  $t->label eq 'oocyte cytoplasm';
+  $t->logical_definition->isa('GOBO::ClassExpression');
+
+=head2 Example files
+
+The xp version of SO includes intersection-based class expressions.
+See http://sequenceontology.org
+
+The extended version of GO will soon include these for regulation terms. See also
+
+http://wiki.geneontology.org/index.php/Category:Cross_Products
+
+=head2 Mapping to OWL
 
 The notion of ClassExpression here is largely borrowed from OWL and
-Description Logics
+Description Logics. See
 
+http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Class_Expressions
+
+Note that not everything in OWL is expressable in OBO format or the
+GOBO model.
+
+Conversely, this model and OBO format can express things not in OWL,
+such as relation expressions involving intersection and union.
+
+=head2 Mapping to the GO Database schema
+
+Currently the GO database is not able to store the full range of class
+expressions. It can only store logical definitions to
+GOBO::ClassExpression::Intersection objects. See the POD docs for this
+class for details.
+
+=head2 Mapping to the Chado schema
+
+Currently the GO database is not able to store the full range of class
+expressions. It can only store logical definitions to
+GOBO::ClassExpression::Intersection objects. See the POD docs for this
+class for details.
 
 =cut
 
@@ -55,9 +94,16 @@ http://www.geneontology.org/GO.format.obo-1_3.shtml#S.1.6
 For example:
   GO:0005737^part_of(CL:0000023) 
 
-The set of all cytoplasms that are part of some oocyte
+The set of all cytoplasm (GO:0005737) instances that are part_of some oocyte (CL:0000023)
 
-The grammar is
+
+=head3 parse_idexpr
+
+Generates a GOBO::ClassExpression based on an ID expression string
+
+  Usage - $xp = GOBO::ClassExpression->parse_idexpr('GO:0005737^part_of(CL:0000023)');
+
+The grammar for ID expressions is:
 
   GOBO::ClassExpression = GOBO::BooleanExpression | GOBO::RelationalExpression | GOBO::TermNode
   GOBO::BooleanExpression = GOBO::Intersection | GOBO::Union
@@ -65,9 +111,6 @@ The grammar is
   GOBO::Union = GOBO::ClassExpression '|' GOBO::ClassExpression
   GOBO::RelationalExpression = GOBO::RelationNode '(' GOBO::ClassExpression ')'
 
-=head3 parse_idexpr
-
-Generates a GOBO::ClassExpression based on an ID expression string
 
 =cut
 
