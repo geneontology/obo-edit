@@ -36,6 +36,14 @@ applying a relation. For example, "the set of all things that are
 part_of an oocyte". In this expression, the relation is part_of and
 the target is oocyte.
 
+=head2 Syntax
+
+ REL(TARGET)
+
+For example:
+
+  part_of(CL:0001234)
+
 =head2 OWL Translation
 
 Same as a Class Restriction in OWL
