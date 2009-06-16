@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -79,8 +81,22 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		summaryField.setContentType("text/html");
 		summaryField.setEditable(false);
 
-		add(new JLabel("Reasoner"),BorderLayout.WEST);
+		add(new JLabel("Reasoner: "),BorderLayout.WEST);
 		add(reasonerChoice,BorderLayout.EAST);
+		
+		//partial reasoning in steps
+		// for example while asserting implied links.. there will be mass deletion of links, mass addition and then reasoner runs again..
+		// instead of reasoning after each link addition
+		add(new JCheckBox("partial/step resoning"), BorderLayout.CENTER);
+		add(new JButton("top-up results"), BorderLayout.CENTER);
+		
+		// continuous incremental reasoning option
+		add(new JCheckBox("Activate incremental reasoning"), BorderLayout.CENTER);
+		
+		// basically what this reasones over the complete linkdatabase again - same effect as switching the reasoner off and then on again
+		// this will be used when the continuous incremental reasoning is off
+		add(new JButton("reset/refresh results"), BorderLayout.SOUTH);
+		
 		add(summaryField,BorderLayout.SOUTH);
 		
 		reasonerChoice.addItem("OFF");

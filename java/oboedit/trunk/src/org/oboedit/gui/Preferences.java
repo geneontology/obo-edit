@@ -6,6 +6,7 @@ import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -68,6 +69,12 @@ public class Preferences {
 
 	protected boolean useReasoner = false;
 	protected String reasonerName = "OFF";
+	
+	// continuous incremental reasoning
+	protected boolean isIncrementalOn = false;
+	
+	//partial incremental reasoning in steps where the reasonedlink database is topped off after completion of a task 
+	protected boolean isStepIncrementalOn = false;
 
 	protected boolean showComplete = false;
 
@@ -75,7 +82,7 @@ public class Preferences {
 
 	protected boolean onlyOneGlobalOTE = true;
 
-//	protected boolean autosaveEnabled = false;
+	//	protected boolean autosaveEnabled = false;
 	protected boolean autosaveEnabled = true;
 
 	protected boolean caseSensitiveSort = false;
@@ -106,7 +113,7 @@ public class Preferences {
 
 	protected int selectionBatchSize = 100;
 
-//	protected boolean autoCommitTextEdits = true;
+	//	protected boolean autoCommitTextEdits = true;
 	protected boolean autoCommitTextEdits = false;
 
 	protected boolean warnBeforeDiscardingEdits = true;
@@ -221,9 +228,9 @@ public class Preferences {
 		iconURLIndex.put("positive_regulator_of", "resource:positive_regulator_of.svg");		
 		iconURLIndex.put("negative_regulator_of", "resource:negative_regulator_of");
 
-//		iconURLIndex.put("has_function_in", "resource: ");	
-//		iconURLIndex.put("has_component_in", "resource: ");		
-//		iconURLIndex.put("union of", "resource: ");
+		//		iconURLIndex.put("has_function_in", "resource: ");	
+		//		iconURLIndex.put("has_component_in", "resource: ");		
+		//		iconURLIndex.put("union of", "resource: ");
 
 		colorIndex.put(OBOProperty.IS_A.getID(), Color.blue);
 		colorIndex.put("part_of", orange);
@@ -270,7 +277,7 @@ public class Preferences {
 				getAppName() +
 				version.getMajorVersion() + (version.isRC() ? "-rc" : "") + 
 		"/"));
-//		logger.debug("prefsDir = " + prefsDir);
+		//		logger.debug("prefsDir = " + prefsDir);
 
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
@@ -287,7 +294,7 @@ public class Preferences {
 	public static File getStandardDictionaryFile() {
 		return new File(getOBOEditPrefsDir()+"/dict", "standard.dict");
 	}
-	
+
 	public static File getUserDefDictionaryFile() {
 		return new File(getOBOEditPrefsDir()+"/dict", "user.dict");
 	}
@@ -295,15 +302,15 @@ public class Preferences {
 	public static File getPeriodWordsFile() {
 		return new File(getOBOEditPrefsDir()+"/dict", "periodwords.dict");
 	}
-	
+
 	public static File getAlwaysLowercaseFile() {
 		return new File(getOBOEditPrefsDir()+"/dict", "alwayslowercase.dict");
 	}
-	
+
 	public static File getAllowedRepeatsFile() {
 		return new File(getOBOEditPrefsDir()+"/dict", "allowedrepeats.dict");
 	}
-	
+
 	public boolean getAutoCommitTextEdits() {
 		return autoCommitTextEdits;
 	}
@@ -536,7 +543,7 @@ public class Preferences {
 						reader.close();
 						String m = "Got memory string " + mem + " from option file " + optionFile;
 						logger.debug(m);
-//						JOptionPane.showMessageDialog(null, m); // DEL
+						//						JOptionPane.showMessageDialog(null, m); // DEL
 						break;
 					}
 				}
@@ -549,11 +556,11 @@ public class Preferences {
 			mem = DEFAULT_MEMORY_SETTING;
 			String warning = "Warning: couldn't read memory setting from optionFile " + optionFile + ";\n using default memory setting of " + mem;
 			logger.info(warning);
-//			JOptionPane.showMessageDialog(null, warning); // DEL
+			//			JOptionPane.showMessageDialog(null, warning); // DEL
 		}
 		String numMem = mem.substring(0, mem.indexOf("M"));
-	    int intMem = Integer.parseInt(numMem);
-		if(intMem >= 1500){
+		int intMem = Integer.parseInt(numMem);
+		if(intMem >= 1800){
 			logger.debug("Allocated heap space greater than 1.5GB.. switching to default memory settings");
 			mem = DEFAULT_MEMORY_SETTING;
 		}
@@ -569,6 +576,47 @@ public class Preferences {
 
 	public void setMemoryValue(String mem) {
 		this.mem = mem;
+		//update vmoptions
+		String diskmem = readMemStringFromDisk();
+		if (!mem.equals(diskmem)){
+			updateDiskMemValue(mem);
+		}
+	}
+
+	//update OBOEdit.vmoptions when memory settings have been updated through the config manager
+	public static void updateDiskMemValue(String mem) {
+		File optionFile = new File(getInstallationDirectory(), 
+				getLauncherName() + ".vmoptions");
+		String newmemValue = "-Xmx"+ mem;
+//		logger.debug("newmemValue: " + newmemValue);
+
+		if (optionFile.exists()) {
+			File tempFile = new File(optionFile.getAbsolutePath() + ".tmp");
+			try {		
+				BufferedReader reader = new BufferedReader(new FileReader(optionFile));
+				PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+
+				String line;
+				while ((line = reader.readLine()) != null) {
+					logger.debug(" Updating OBOEdit.vmoptions to: " + newmemValue);
+					pw.println(newmemValue);
+					pw.flush();
+				}
+				pw.close();
+				reader.close();
+
+				//Delete the original file
+				if (!optionFile.delete()) {
+					logger.error("ERROR - Could not delete file");
+				}
+
+				//Rename the new file to the filename the original file had.
+				if (!tempFile.renameTo(optionFile))
+					logger.error("Could not rename file");
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	public boolean getUseReasoner() {
@@ -579,6 +627,25 @@ public class Preferences {
 		logger.debug("Prefs.setUseReasoner " + useReasoner);
 		this.useReasoner = useReasoner;
 	}
+	
+	//partial incremental reasoning
+	public boolean getStepIncrementalReasoningStatus() {
+		return isStepIncrementalOn;
+	}
+	public void setStepIncrementalReasoningStatus(boolean isStepIncrementalOn) {
+		logger.debug("Preferences.setStepIncrementalReasoningStatus: " + isStepIncrementalOn);
+		this.isStepIncrementalOn = isStepIncrementalOn;
+	}
+	
+	//continuous incremental reasoning
+	public boolean getIncrementalReasoningStatus() {
+		return isIncrementalOn;
+	}
+	public void setIncrementalReasoningStatus(boolean isIncrementalOn) {
+		logger.debug("Preferences.setIncrementalReasoningStatus: " + isIncrementalOn);
+		this.isIncrementalOn = isIncrementalOn;
+	}
+	
 
 	public String getReasonerName() {
 		return reasonerName;
@@ -627,7 +694,7 @@ public class Preferences {
 	public Color getLightSelectionColor() {
 		if (lightSelectionColor == null)
 			lightSelectionColor = new Color(230, 230, 255);  // pale lavender-blue
-//		lightSelectionColor = Color.yellow;  // for testing
+		//		lightSelectionColor = Color.yellow;  // for testing
 		return lightSelectionColor;
 	}
 
@@ -638,10 +705,10 @@ public class Preferences {
 	// Color for the subselection (darker)
 	public Color getSelectionColor() {
 		if (selectionColor == null)
-//			selectionColor = new Color(204, 204, 255);
+			//			selectionColor = new Color(204, 204, 255);
 			// Slightly darker blue than before
 			selectionColor = new Color(180, 190, 255);
-//		selectionColor = Color.orange;  // for testing
+		//		selectionColor = Color.orange;  // for testing
 		return selectionColor;
 	}
 
@@ -762,7 +829,7 @@ public class Preferences {
 	}
 
 	public static String getLauncherName() {
-//		return System.getProperty("launcherName", "oboedit");
+		//		return System.getProperty("launcherName", "oboedit");
 		return System.getProperty("launcherName", getAppName());
 	}
 
@@ -878,9 +945,9 @@ public class Preferences {
 	}
 
 	// No longer used--replaced by log4j logging
-//	public static File getStderrFile() {
-//	return new File(getOBOEditPrefsDir(), "stderr");
-//	}
+	//	public static File getStderrFile() {
+	//	return new File(getOBOEditPrefsDir(), "stderr");
+	//	}
 
 	public static File getPrefsXMLFile() {
 		return new File(getOBOEditPrefsDir(), "config.xml");
@@ -897,7 +964,7 @@ public class Preferences {
 	public String getLogfile() {
 		return getPreferences().logFile;
 	}
-	
+
 	//system dictionary files that will be updated with "Update system dictionary files"
 	public static List<String> getSystemDictFilenames() {
 		return CollectionUtil.list("allowedrepeats.dict", "alwayslowercase.dict", "standard.dict", "periodwords.dict");
@@ -980,7 +1047,7 @@ public class Preferences {
 	public Color getColorForRelationshipType(String id) {
 		Color out = colorIndex.get(id);
 		if (out == null)
-//			out = Color.black;
+			//			out = Color.black;
 			out = Color.lightGray;
 		return out;
 	}
@@ -991,7 +1058,7 @@ public class Preferences {
 
 	public Icon getIconForRelationshipType(String id, String name) {
 		Icon out = (Icon) iconIndex.get(id);
-//		logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
+		//		logger.info("getIconForRelationshipType: id = " + id + ", name = " + name + ", out = " + out); // DEL
 		if (out == null) {
 			String iconURL = iconURLIndex.get(id);
 			if (iconURL != null) {

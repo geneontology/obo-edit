@@ -28,6 +28,8 @@ public class OntologyEditorConfiguration implements ComponentConfiguration {
 	protected String dragActionID;
 	protected String rootAlgorithm = null;
 	protected boolean live = true;
+	//OTE Lock View disabled by default
+	protected boolean locked = false;
 	protected boolean revertToDefaultAction = true;
 	protected String basicHTML = "$name$";
 
@@ -76,6 +78,14 @@ public class OntologyEditorConfiguration implements ComponentConfiguration {
 
 	public void setLive(boolean live) {
 		this.live = live;
+	}
+	
+	public boolean isLocked(){
+		return locked;
+	}
+	
+	public void setLocked(boolean locked){
+		this.locked = locked;
 	}
 
 	public String getRootAlgorithm() {

@@ -1,293 +1,372 @@
 package org.oboedit.gui.components;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.List;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
-import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.table.TableCellEditor;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import org.bbop.framework.AbstractGUIComponent;
 
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
+import org.obo.history.CreateLinkHistoryItem;
+import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
 
+import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
-import org.oboedit.gui.AbstractAssertLinksTableModel;
-import org.oboedit.gui.AssertLinksTable;
 import org.oboedit.gui.Preferences;
-import org.oboedit.gui.SearchComponentFactory;
 
 import org.apache.log4j.Logger;
 
-public class AssertLinksComponent extends AbstractGUIComponent {
 
+public class AssertLinksComponent extends AbstractGUIComponent implements ListSelectionListener {
 	//	initialize logger
 	protected final static Logger logger = Logger.getLogger(AssertLinksComponent.class);
 
 	protected JPanel panel = new JPanel();
 	protected Box northPanel = Box.createHorizontalBox();
 	protected Box southPanel = Box.createHorizontalBox();
+	protected static ImageIcon expIcon = (ImageIcon) Preferences.loadLibraryIcon("info_icon.gif");
 	protected JButton assertButton = new JButton("Assert");
-	protected JButton selectAllButton = new JButton("Select All");
-	protected JButton clearButton = new JButton("Clear");
-
 
 	protected Collection<Link> allLinks = null;
 	protected Collection<Link> impliedLinks = null;
 
-	protected SearchComponentFactory factory;
+	protected JTable table;
+	private AssertedLinksModel model;
+	protected CheckBoxHeader selectAll;
+	protected MyItemListener it;
+	protected boolean selectFlags[];
+	protected List<Integer> selectedIx = new ArrayList<Integer>();
+	private final int COLUMN_COUNT = 4;
 
-	public AssertLinksComponent(String id) {
+
+	public AssertLinksComponent(final String id) {
 		super(id);
 		setLayout(new BorderLayout());
 		northPanel.add(Box.createVerticalGlue());
 		southPanel.add(Box.createGlue());
 
-//		JLabel introText = new JLabel(
-//		"The links below are implied and should be asserted "
-//		+ "(unless implied links are to be asserted at the time of ontology publishing). ");
 		impliedLinks = getImpliedLinks();
-
-		displayResults(impliedLinks);
+		displayResults();
 
 		assertButton.setToolTipText("Assert selected links");	
 		assertButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(final ActionEvent e){
 				assertLinks();
 			}
 		});
 
-
-		southPanel.add(selectAllButton);
-		southPanel.add(clearButton);
 		southPanel.add(assertButton);
-
 		add(northPanel,"Center");
 		add(southPanel, "South");
-
-//		add(introText, "North");
 		revalidate();
 	}
 
-	protected void assertLinks(){
-		logger.debug("AssertLinksComponent.assertLinks");
-		// get selected rows from table
 
-		//assert
+	protected void assertLinks(){
+		final List<Link> links = new ArrayList<Link>(impliedLinks);
+		final Collection<Link> assertLinks = new ArrayList<Link>();
+		logger.debug("==> impliedLinks size before asserting... " + impliedLinks.size());
+		logger.debug("Asserting " + selectedIx.size() + " links...");
+		for(int i=0; i<selectedIx.size(); i++){
+			//			logger.debug("Assert selectedIx[" + i + "]: " + selectedIx.get(i));
+			//			logger.debug("which is link: " + links.get(selectedIx.get(i)));
+			assertLinks.add((Link) links.get(selectedIx.get(i)));
+			impliedLinks.remove(links.get(selectedIx.get(i)));
+
+		}
+		for (final Link link : assertLinks) {
+			final TermMacroHistoryItem item = new TermMacroHistoryItem(
+					"Assert "+ assertLinks.size() +" implied links");
+			item.addItem(new CreateLinkHistoryItem(link));
+			if (item != null)
+				SessionManager.getManager().apply(item);
+		}
+		logger.debug("==> impliedLinks size after asserting... " + impliedLinks.size());
+		//update table
+		updateResults();
+
 	}
 
 	protected Collection<Link> getImpliedLinks(){
-		ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
-
-		Iterator<Link> it = TermUtil.getAllLinks(reasoner);
+		final ReasonedLinkDatabase reasoner = SessionManager.getManager().getReasoner();
+		final Iterator<Link> it = TermUtil.getAllLinks(reasoner);
 		allLinks = new LinkedHashSet<Link>();
-		impliedLinks = new LinkedList<Link>();
+		impliedLinks = new LinkedHashSet<Link>();
 		while (it.hasNext()) {
 			final Link link = it.next();
 			if (TermUtil.isImplied(link)) {
-//				logger.info("link: "+link);
+				//logger.info("link: "+link);
 				allLinks.add(link);
-				Namespace subjNS = link.getChild().getNamespace();
-				Namespace objNS = link.getParent().getNamespace();
-//				logger.info("ns -- subNS " + subjNS + " -- objNS " +objNS);
+				final Namespace subjNS = link.getChild().getNamespace();
+				final Namespace objNS = link.getParent().getNamespace();
+				//logger.info("ns -- subNS " + subjNS + " -- objNS " +objNS);
 				if (subjNS != null && !subjNS.equals(objNS)) {
 					continue;
 				}
 				if (!ReasonerUtil.shouldBeTrimmed(reasoner, link) &&
 						!impliedLinks.contains(link)) {
-					logger.debug("Proposed new link: " + link);
+					//logger.debug("Proposed new link: " + link);
 					impliedLinks.add(link);
 				}
 			}
 		}
-//		logger.debug("> impliedLinks size: " +  impliedLinks.size());
 		return impliedLinks;		
 	}
 
-
-
-	protected static class AssertedLinksModel extends
-	AbstractAssertLinksTableModel<Link> {
+	class AssertedLinksModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
+		private final String[] columnNames = {"Select","Child Name","Parent Name", "Explanation"};
+		private final List data;
 
-		public AssertedLinksModel() {
-			super(Link.class);
+		public AssertedLinksModel(final List data) {
+			this.data = data;
 		}
+
 		public int getColumnCount() {
-			return 4;
-		}
-		@Override
-		public Object getColumnVal(Object row, int column) {
-//			logger.debug("AssertLinksComponent.getColumnVal");
-			Link link = (Link) row;
-
-			if (column == 0){
-				if(link.getChild().getName() ==  null)
-					logger.error("ERROR - AssertLinksComponent.getColumnVal -- link.getChild().getName() == null for link: " + link);
-				return link.getChild().getName();
-			}
-			else if (column == 1)
-				return link.getParent().getName();
-			//checkbox
-			else if (column == 2)
-				return new Boolean(false);
-			//explanation button
-			else if (column == 3)
-				return new Object[]{"expButton"};
-			else
-				throw new IllegalArgumentException("column out of range");
+			return columnNames.length;
 		}
 
-
-		/*
-		 * JTable uses this method to determine the default renderer/
-		 * editor for each cell.  If we didn't implement this method,
-		 * then the explnation column would contain text ("true"/"false"),
-		 * rather than a check box.
-		 */
-		public Class getColumnClass(int column) {
-//			logger.debug(getValueAt(0, column).getClass());
-			return getValueAt(0, column).getClass();
+		public int getRowCount() {
+			return data == null ? 0 : data.size();
 		}
 
-		@Override
-		public boolean columnHasMaxWidth(int column) {
-			if (column == 0 || column == 1)
+		public String getColumnName(final int col) {
+			return columnNames[col];
+		}
+
+		public void setValueAt(final Object value, final int rowIndex, final int columnIndex) {
+			getRecord(rowIndex)[columnIndex] = value;
+			super.fireTableCellUpdated(rowIndex, columnIndex);
+		}
+
+		public Object getValueAt(final int rowIndex, final int columnIndex) {
+			return getRecord(rowIndex)[columnIndex];
+		}
+
+		private Object[] getRecord(final int rowIndex) {
+			return (Object[]) data.get(rowIndex);
+		}
+
+		public boolean isCellEditable(final int rowIndex, final int columnIndex) {
+			if(columnIndex ==0)
 				return true;
 			else
 				return false;
 		}
-		@Override
-		public String getColumnName(int index) {
-			if (index == 0)
-				return "Child name";
-			else if (index == 1)
-				return "Parent name";
-			else if (index == 2)
-				return "Select";
-			else if (index == 3)
-				return "Explanation";
-			else
-				return "?!";
+		public Class getColumnClass(final int columnIndex) {
+			if (data == null || data.size() == 0) {
+				return Object.class;
+			}
+			final Object o = getValueAt(0, columnIndex);
+			return o == null ? Object.class : o.getClass();
 		}
 
-		// only allow the column with checkboxes (#2) to be editable
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			return (columnIndex == 2);
+	}
+
+	public void valueChanged(final ListSelectionEvent e) {
+		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
+			logger.debug("\n>> selected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "] ");
+			//Select action for Child name and Parent name columns  
+			//selects term in all components corresponding to the column in focus
+			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
+				logger.debug("value in selected column:  " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+				final Object colobj = table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());					
+				SelectionManager.selectTerm(table, (LinkedObject) colobj);
+			}
+			//Select link and show explanation component
+			if(table.getSelectedColumn() ==3){
+				Link rowobj = (Link) table.getValueAt(table.getSelectedRow(), 3);
+				SelectionManager.selectLink(table, rowobj, false);
+			}
 		}
 	}
 
-	public void displayResults(Collection<Link> impliedLinks){
-		logger.debug("displayResults -- impliedLinks.size(): " + impliedLinks.size());
-		JTable table = new AssertLinksTable(new AssertedLinksModel(), impliedLinks);
+	public void displayResults(){
+		final List<Object[]> data = new ArrayList<Object[]>();
+		for(final Link link: impliedLinks){
+			final Object record[] = new Object[COLUMN_COUNT];
+			record[0] = Boolean.FALSE;
+			record[1] = link.getChild();
+			record[2] = link.getParent();
+			record[3] = expIcon;
+			data.add(record);
+		}
+		model = new AssertedLinksModel(data);
+		table = new JTable(model);
 
-		table.getColumnModel().getColumn(2).setCellEditor(new CheckBoxCellEditor());
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.getSelectionModel().addListSelectionListener (this);
+		table.setDragEnabled(false);
+		table.setCellSelectionEnabled(true);
 
-		table.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-		table.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
+		final TableColumn tc = table.getColumnModel().getColumn(0);  
+		tc.setCellEditor(table.getDefaultEditor(Boolean.class));  
+		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
+		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+		table.addMouseListener(new MyMouseListener());
 
 		northPanel.add(new JScrollPane(table));
-		repaint();
+	}
+	
+	public void updateResults(){
+		final List<Object[]> data = new ArrayList<Object[]>();
+		logger.debug("updateResuts impliedLinks size: " + impliedLinks.size());
+		for(final Link link: impliedLinks){
+			final Object record[] = new Object[COLUMN_COUNT];
+			record[0] = Boolean.FALSE;
+			record[1] = link.getChild();
+			record[2] = link.getParent();
+			record[3] = expIcon;
+			data.add(record);
+		}
+		model = new AssertedLinksModel(data);
+		table.setModel(model);	
+		final TableColumn tc = table.getColumnModel().getColumn(0);  
+		tc.setCellEditor(table.getDefaultEditor(Boolean.class));  
+		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
+		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+	}
+
+
+	class MyItemListener implements ItemListener{   
+		public void itemStateChanged(final ItemEvent e){  
+			final boolean checked = e.getStateChange() == ItemEvent.SELECTED;   
+			for(int x = 0, y = table.getRowCount(); x < y; x++){   
+				table.setValueAt(new Boolean(checked),x,0);  
+			}
+		}   
+	}
+
+	class MyMouseListener extends MouseAdapter{  
+		public void mouseClicked(final MouseEvent mouseEvent) {
+			int checkedCount = 0;  
+			selectAll.removeItemListener(it);  
+			if (selectAll instanceof JCheckBox) {  
+				selectFlags = new boolean[table.getRowCount()];  
+				for (int i = 0; i < table.getRowCount(); i++) {  
+					selectFlags[i] = ((Boolean) table.getValueAt(i, 0)).booleanValue();
+					//					logger.debug("Flag[" + i + "]: " + selectFlags[i]);
+					if(selectFlags[i]){  
+						checkedCount++;  
+					}  
+				}
+
+				for(int i=0; i<selectFlags.length;i++){
+					if(!selectedIx.contains(i) && selectFlags[i] == true){
+						selectedIx.add(i);
+					}
+				}
+				if(checkedCount== table.getRowCount()){  
+					selectAll.setSelected(true);                 
+				}  
+				if(checkedCount!= table.getRowCount()){  
+					selectAll.setSelected(false);      
+				}  
+			}  
+			selectAll.addItemListener(it);  
+			table.getTableHeader().repaint();  
+		}  
+	}  
+
+	class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener {   
+		private static final long serialVersionUID = 1L;
+		protected int column;   
+		protected boolean mousePressed = false;  
+		ItemListener it1; 
+		public CheckBoxHeader(final ItemListener itemListener) {   
+			setSelectAllComponent(this);
+			this.it1 = itemListener;
+			selectAll.addItemListener(it1);
+		}	  
+		public Component getTableCellRendererComponent(final JTable table, final Object value,final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+			if (table != null) {   
+				final JTableHeader header = table.getTableHeader();  
+				if (header != null) {  
+					selectAll.setForeground(header.getForeground());   
+					selectAll.setBackground(header.getBackground());   
+					selectAll.setFont(header.getFont());
+					header.addMouseListener(selectAll);  
+				}   
+			}
+			setColumn(column);
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));   
+			return selectAll;   
+		}   
+		protected void setColumn(final int column) {   
+			this.column = column;   
+		}   
+		public int getColumn() {   
+			return column;   
+		}   
+		protected void handleClickEvent(final MouseEvent e) {   
+			if (mousePressed) {   
+				mousePressed=false; 	      
+				final JTableHeader header = (JTableHeader)(e.getSource());   
+				final JTable tableView = header.getTable();   
+				final TableColumnModel columnModel = tableView.getColumnModel();
+				final int viewColumn = columnModel.getColumnIndexAtX(e.getX());   
+				final int column = tableView.convertColumnIndexToModel(viewColumn);
+				if (viewColumn == this.column && e.getClickCount() == 1 && column != -1) {  
+					doClick();
+				} 
+			}   
+		}   
+		public void mouseClicked(final MouseEvent e) {
+			handleClickEvent(e);   
+			((JTableHeader)e.getSource()).repaint();   
+		}   
+		public void mousePressed(final MouseEvent e) {   
+			mousePressed = true;	
+		}   
+		public void mouseReleased(final MouseEvent e) {   
+		}   
+		public void mouseEntered(final MouseEvent e) {   
+		}   
+		public void mouseExited(final MouseEvent e) {   
+		} 
+	}
+
+	public void setSelectAllComponent(final CheckBoxHeader selectAll) {
+		selectAll.setText("Select");
+		this.selectAll = selectAll;
 	}
 
 	public String getName() {
 		return "Assert Implied Links Panel";
-	}
-
-	private class ButtonRenderer extends JButton implements TableCellRenderer {
-		public ButtonRenderer() {
-			setOpaque(true);
-		}
-		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus, int row, int column) {
-			if (isSelected) {
-				setForeground(table.getSelectionForeground());
-				setBackground(table.getSelectionBackground());
-			} else{
-				setForeground(table.getForeground());
-				setBackground(UIManager.getColor("Button.background"));
-			}
-			return this;
-		}
-	}
-
-	private class ButtonEditor extends DefaultCellEditor {
-		protected JButton expButton;
-		private boolean isPushed;
-
-		public ButtonEditor(JCheckBox checkBox) {
-			super(checkBox);
-//			expButton = new JButton("expButton");
-			expButton = new JButton(Preferences.loadLibraryIcon("info_icon.png"));
-			expButton.setToolTipText("Assert selected links");
-			expButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
-					logger.debug(">> expButton action listener");	
-				}
-			});
-		}
-
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-			if (isSelected) {
-				expButton.setForeground(table.getSelectionForeground());
-				expButton.setBackground(table.getSelectionBackground());
-			} else{
-				expButton.setForeground(table.getForeground());
-				expButton.setBackground(table.getBackground());
-			}
-			isPushed = true;
-			return expButton;
-		}
-		public Object getCellEditorValue() {
-			if (isPushed)  {
-				JOptionPane.showMessageDialog(expButton, ">> "  + ": expButton active");
-			}
-			isPushed = false;
-			return new String("expButton not active");
-		}
-	}
-
-	private class CheckBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
-		protected JCheckBox checkBox;
-		public CheckBoxCellEditor() {
-			checkBox = new JCheckBox();
-			checkBox.setHorizontalAlignment(SwingConstants.CENTER);
-			checkBox.setBackground( Color.white);
-		}
-
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-			checkBox.setSelected(((Boolean) value).booleanValue());
-			Component c = table.getDefaultRenderer(String.class).getTableCellRendererComponent(table, value, isSelected, false, row, column);
-			if (c != null) {
-				checkBox.setBackground(c.getBackground());
-			}
-			return checkBox;
-		}
-		public Object getCellEditorValue() {
-			return Boolean.valueOf(checkBox.isSelected());
-		}
 	}
 
 }
