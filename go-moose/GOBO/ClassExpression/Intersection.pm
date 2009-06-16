@@ -52,6 +52,49 @@ The "" operator is overloaded, so the logical defition is written out as
 
 Same as intersectionOf description expressions in OWL
 
+See:
+http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Intersection_of_Class_Expressions
+
+=head2 Mapping to the GO Database schema
+
+Any link in the GO database that has the 'completes' tag set to 1 is an intersection link
+
+http://www.geneontology.org/GO.database.schema.shtml#go-graph.table.term2term
+
+For example, the following term:
+
+  [Term]
+  id: GO:0043005 ! neuron projection
+  intersection_of: GO:0042995 ! cell projection
+  intersection_of: part_of CL:0000540 ! neuron
+
+is stored as 2 links:
+
+    term2=GO:0043005 term1=GO:0042995 relationship_type=is_a completes=1
+    term2=GO:0043005 term1=CL:0000540 relationship_type=part_of completes=1
+
+Historical note on the terminology: 'completes' comes from early
+versions of OWL, in which sets of conditions were marked 'complete' if
+they formed a set of necessary and sufficient conditions. The oboedit
+model also uses the tag 'completes'
+
+=head2 Mapping to the Chado schema
+
+The current proposed mapping is rather complex as it is based on how
+OWL class expressions are layered on a simple RDF graph model. This
+results in a lot of anonymous classes (bNodes in RDF terminology).
+
+A better solution would be to follow the GODB model and introduce
+either a boolean field for intersection links. Or this could be
+generalized, as it is done in the OBD schema
+
+=head2 Mapping to the OBD schema
+
+This generalizes the GODB schema to allow for other kinds of boolean operators
+
+The combinator flag is used and set to 'I' if the link is an
+intersection link
+
 =cut
 
 1; 
