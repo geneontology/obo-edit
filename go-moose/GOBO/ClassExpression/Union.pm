@@ -12,6 +12,8 @@ GOBO::ClassExpression::Union
 
 =head1 SYNOPSIS
 
+  $prok = GOBO::ClassExpression->parse_idexpr('bacteria|archaea');
+
 =head1 DESCRIPTION
 
 An GOBO::ClassExpression::BooleanExpression in which the set operator is one of union.
@@ -32,7 +34,7 @@ In OBO Format:
 
 Formally:
 
-  prok(x) <-> bacteria(x) | archae(x)
+  forall x : prok(x) <-> bacteria(x) | archaea(x)
 
 The union expression can also be written as:
 
@@ -48,6 +50,13 @@ In the above example the following all hold if $prok is the class with the above
   grep { $_->id eq 'archaea' } @{$prok->logical_definion->arguments};
 
 unions could also be used in defining GO slims  
+
+=head2 OWL Translation
+
+Same as unionOf description expressions in OWL
+
+http://www.w3.org/TR/2008/WD-owl2-syntax-20081202/#Union_of_Class_Expressions
+
 
 =cut
 
