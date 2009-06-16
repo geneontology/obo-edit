@@ -96,13 +96,24 @@ sub parse_body {
         if ($geneproduct) {
             $annot->specific_node($g->noderef($geneproduct));
         }
+        # if >1 taxon supplied, additional taxon specifies target species
+        if (@taxa) {
+            my $xp = 
+                GOBO::ClassExpression::RelationalExpression->new(relation=>'target_taxon',
+                                                                 target=>$g->noderef($taxon));
+            $annot->add_target_differentia($xp);
+            
+        }
         $annot->evidence($ev);
+        foreach my $qk (keys %qualh) {
+            $annot->add_qualifier($g->noderef($qk));
+        }
         if ($qualh{not}) {
-            # TODO
+            $annot->negated(1);
         }
         if ($annotxp) {
             my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
-            # TODO:
+            $annot->add_target_differentia($xp);
         }
         $g->add_annotation($annot);
         #push(@{$g->annotations},$annot);
