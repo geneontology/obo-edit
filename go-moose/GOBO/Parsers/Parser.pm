@@ -128,6 +128,10 @@ GOBO::Parsers::Parser
 
 =head1 SYNOPSIS
 
+  my $p = GOBO::Parser->new;
+  $p->parse($file);
+  $g = $p->graph;
+
 =head1 DESCRIPTION
 
 Base class for all parsers. Parsers take formats (e.g. GOBO::Parsers::OBOParser) and generate objects, typically some combination of GOBO::Node and GOBO::Statement objects

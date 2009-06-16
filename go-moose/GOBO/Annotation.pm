@@ -7,12 +7,33 @@ use GOBO::Evidence;
 # cardinality?
 has evidence => ( is=>'rw', isa=>'GOBO::Evidence');
 has specific_node => ( is=>'rw', isa=>'GOBO::Node');
-has target_differentium_list => ( is=>'rw', isa=>'ArrayRef[GOBO::LinkStatement]');
+has qualifier_list => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]');
+has target_differentia_list => ( is=>'rw', isa=>'ArrayRef[GOBO::ClassExpression]');
 has description => (is => 'rw', isa => 'Str');  # TODO : use role?
 
 # alias. TBD - keep?
 sub gene {
     shift->node(@_);
+}
+
+sub add_target_differentia {
+    my $self = shift;
+    my $xp = shift;
+    if ($self->target_differentia_list) {
+        $self->target_differentia_list([]);
+    }
+    push(@{$self->target_differentia_list}, $xp);
+    return;
+}
+
+sub add_qualifier {
+    my $self = shift;
+    my $xp = shift;
+    if ($self->qualifier_list) {
+        $self->qualifier_list([]);
+    }
+    push(@{$self->qualifier_list}, $xp);
+    return;
 }
 
 =head1 NAME
@@ -50,12 +71,15 @@ function. This is handled here via the specific_node accessor: e.g.
 
   printf 'gene: %s gene_product:%s has_function/location: %s', $a->node, $a->specific_node, $a->target;
 
-=head3 target_differentium_list
+=head3 target_differentia_list
 
 In the GO GAF2.0 specification it's possible to enhance a gene
-annotation by refining the target term using a list of relationships. See:
+annotation by refining the target term using a list of relational
+expressions. See:
 
 http://wiki.geneontology.org/index.php/Annotation_Cross_Products
+
+Dual taxa also go here
 
 =cut
 

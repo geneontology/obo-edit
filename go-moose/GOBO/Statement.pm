@@ -11,7 +11,7 @@ has 'node' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'relation' => ( is=>'rw', isa=>'GOBO::RelationNode', coerce=>1 );
 has 'target' => ( is=>'rw', isa=>'Item');
 has 'inferred' => ( is=>'rw', isa=>'Bool');
-has 'negated' => ( is=>'rw', isa=>'Bool');
+has 'negated' => ( is=>'rw', isa=>'Bool'); # TODO: use this or NegatedStatement?
 has 'is_intersection' => ( is=>'rw', isa=>'Bool');
 has 'is_union' => ( is=>'rw', isa=>'Bool');
 has 'sub_statements' => ( is=>'rw', isa=>'ArrayRef[GOBO::Statement]');
