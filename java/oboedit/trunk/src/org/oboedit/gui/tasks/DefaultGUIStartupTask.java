@@ -2,8 +2,10 @@ package org.oboedit.gui.tasks;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.tree.TreePath;
 
 import net.infonode.docking.View;
 
@@ -105,6 +108,7 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
+import org.oboedit.gui.components.OBOTermPanel;
 import org.oboedit.gui.components.imageplugin.factory.TermImageComponentFactory;
 import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
 import org.oboedit.gui.components.ontologyGeneration.factory.OntologyGenerationComponentFactory;
@@ -319,17 +323,21 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 			// Note: if any of these icons is missing from the jar, it causes a weird exception later.
 			// Should handle that better (but non-trivial, because the image loading happens in a
 			// separate thread).
-			protected Icon globeIcon = new BitmapIcon(Preferences
-					.loadLibraryImage("tiny_globe_icon.gif"));
+			protected Icon globalModeIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("tiny_blue_globe_icon.gif"));
 
-			protected Icon houseIcon = new BitmapIcon(Preferences
-					.loadLibraryImage("tiny_house_icon.gif"));
+			protected Icon localModeIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("tiny_green_house_icon.gif"));
+
+			// scroll lock for OTE
+			protected Icon lockViewIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("locked_black.gif"));	
+			protected Icon unlockViewIcon = new BitmapIcon(Preferences
+					.loadLibraryImage("unlocked_black.gif"));
 
 			protected Icon filterIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_filter_icon.gif"));
 
-			protected Icon filterInvIcon = new BitmapIcon(Preferences
-					.loadLibraryImage("tiny_filter_icon.gif"));
 
 			protected Icon cameraIcon = new BitmapIcon(Preferences
 					.loadLibraryImage("tiny_camera_icon.gif"));
@@ -340,11 +348,11 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				if (c instanceof Filterable) {
 					final JButton filterButton = IDWUtil
 					.createFlatHighlightButton(filterIcon,
-							"Quick filtering", 0, null);
+							"Quick Filtering", 0, null);
 					filterButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							JPopupMenu menu = new JPopupMenu();
-							JLabel label = new JLabel("Quick filtering");
+							JLabel label = new JLabel("Quick Filtering");
 							label
 							.setFont(label.getFont().deriveFont(
 									Font.BOLD));
@@ -412,40 +420,74 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 					});
 					compMap.add(c, filterButton);
 				}
+
+				// Local and Global mode buttons for OTE and Graph Editor
+				// and lock/unlock view modes for OTE
 				if (c instanceof ObjectSelector) {
-					final JToggleButton liveButton = IDWUtil.createFlatHighlightToggleButton(
-							globeIcon,
-							"Switch to local selection mode",
+					final JToggleButton globalModeButton = IDWUtil.createFlatHighlightToggleButton(
+							globalModeIcon, "Global Mode Set - Select to Switch to Local Mode",
 							0, null);
-					if (c instanceof OntologyEditor)
-						((OntologyEditor) c).setLiveButton(liveButton);
-					liveButton.setSelected(((ObjectSelector) c).isLive());
+
+					if (c instanceof OntologyEditor){
+						((OntologyEditor) c).setLiveButton(globalModeButton);
+
+//						// lock/unlock buttons for OTE top panel button panel
+//						final JToggleButton lockViewButton = IDWUtil.createFlatHighlightToggleButton(
+//								lockViewIcon, "Lock OTE",0, null);
+//
+//						lockViewButton.addActionListener(new ActionListener() {
+//							public void actionPerformed(ActionEvent e) {
+//								//if OTE is locked - unlock
+//								if(GUIManager.getManager().getOTELockStatus()){
+//									GUIManager.getManager().setOTELockStatus(false);
+//									lockViewButton.setIcon(lockViewIcon);
+//									lockViewButton.setToolTipText("Unlock OTE");
+////									setLockedPath(null);					
+//								} 
+//								else {
+//									//lock
+//									GUIManager.getManager().setOTELockStatus(true);
+//									lockViewButton.setIcon(unlockViewIcon);
+//									lockViewButton.setToolTipText("Lock OTE");
+////									if(selectedPaths.length >0){
+////										setLockedPath(selectedPaths[0]);
+////									}
+//								}//else
+//							}
+//
+//						});
+//						compMap.add(c, lockViewButton);
+					}// c instance of OntologyEditor
+
+					
+					// local/ global setup
+					globalModeButton.setSelected(((ObjectSelector) c).isLive());
 					if (!((ObjectSelector) c).isLive()) {
-						liveButton.setIcon(houseIcon);
+						globalModeButton.setIcon(localModeIcon);
 					}
-					liveButton.addActionListener(new AbstractAction() {
+					globalModeButton.addActionListener(new AbstractAction() {
 						public void actionPerformed(ActionEvent e) {
-							((ObjectSelector) c).setLive(liveButton.isSelected());
+//							logger.debug("ObjectSelector c: " + c);
+							((ObjectSelector) c).setLive(globalModeButton.isSelected());
 						}
 					});
-					liveButton.addActionListener(new ActionListener() {
-
+					globalModeButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							if (liveButton.isSelected()) {
-								liveButton.setIcon(globeIcon);
-								liveButton.setToolTipText("Switch to local selection mode");
+							if (globalModeButton.isSelected()) {
+								globalModeButton.setIcon(globalModeIcon);
+								globalModeButton.setToolTipText("Global Mode Set - Select to Switch to Local Mode");
 							} else {
-								liveButton.setIcon(houseIcon);
-								liveButton.setToolTipText("Switch to global selection mode");
+								globalModeButton.setIcon(localModeIcon);
+								globalModeButton.setToolTipText("Local Mode Set - Select to Switch to Global Mode");
 							}
 						}
 					});
-					compMap.add(c, liveButton);
+					compMap.add(c, globalModeButton);
 				}
-
+				
 				// Add camera icon to list of icons to add to titlebars
 				final JButton cameraButton = IDWUtil.createFlatHighlightButton(
-						cameraIcon, "Click to save an image file of this component", 0,
+						cameraIcon, "Save Image", 0,
 						null);
 				compMap.add(c, cameraButton);
 				cameraButton.addActionListener(new ActionListener() {
@@ -453,7 +495,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 						InstallTask.saveImage(c);
 					}
 				});
-				cameraButton.setToolTipText("Save an image file of this component");
+				cameraButton.setToolTipText("Save Image");
 
 				// Add icons to titlebars
 				for (JComponent bc : compMap.get(c)) {
@@ -559,11 +601,9 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new MultiAddAction());
 		EditActionManager.getManager().addEditAction(new DeleteAction(false));
 		EditActionManager.getManager().addEditAction(new DeleteAction(true));
-		EditActionManager.getManager().addEditAction(
-				new RemoveRedundantAction());
+		EditActionManager.getManager().addEditAction(new RemoveRedundantAction());
 		EditActionManager.getManager().addEditAction(new AssertImpliedAction());
 		EditActionManager.getManager().addEditAction(new NameUnnamedTermsAction());
-
 		EditActionManager.getManager().addEditAction(new CloneAction());
 		EditActionManager.getManager().addEditAction(new AddRootAction());
 		EditActionManager.getManager().addEditAction(new RerootAction());
@@ -571,16 +611,14 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new NecessaryAction());
 		EditActionManager.getManager().addEditAction(new InvNecessaryAction());
 		EditActionManager.getManager().addEditAction(new CompletesAction());
-		EditActionManager.getManager()
-		.addEditAction(new RemoveConsiderAction());
-		EditActionManager.getManager().addEditAction(
-				new RemoveReplacementAction());
+		EditActionManager.getManager().addEditAction(new RemoveConsiderAction());
+		EditActionManager.getManager().addEditAction(new RemoveReplacementAction());
 	}
 
 	@Override
 	protected Collection<? extends JMenuItem> getDefaultMenus() {
-//		return CollectionUtil.list(new FileMenu(), new EditMenu(),
-//		new ViewMenu(), new LayoutMenu(), new OEHelpMenu());
+		//		return CollectionUtil.list(new FileMenu(), new EditMenu(),
+		//		new ViewMenu(), new LayoutMenu(), new OEHelpMenu());
 		// New menu organization
 		List<JMenuItem> menus = new ArrayList<JMenuItem>();
 		menus.add(new FileMenu());
@@ -593,7 +631,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 		for (JMenu m : viewMenus){
 			menus.add(m);
-//			logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
+			//			logger.debug("menu: " + m.getText().toString() + " # items: " + m.getItemCount());
 			if(m.getText().toString().equalsIgnoreCase("Reasoner") || m.getText().toString().equalsIgnoreCase("Editors")){
 
 				//components that can be switched on through the Advanced configuration settings
