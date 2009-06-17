@@ -315,7 +315,9 @@ sub new {
     die "that type is not yet implemented";
   }
 
-  $self->{SCHEMA} = GOBO::DBIC::GODBModel::Schema->connect(@{$self->{CONNECT_INFO}});
+  ## Defined in super now...
+  # $self->{SCHEMA} =
+  #   GOBO::DBIC::GODBModel::Schema->connect($self->connect_info);
 
   ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
   ## TODO
