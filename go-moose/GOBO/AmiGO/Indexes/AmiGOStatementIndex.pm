@@ -7,7 +7,6 @@ use strict;
 use GOBO::Statement;
 use GOBO::Node;
 use GOBO::RelationNode;
-use AmiGO::Model::Graph;
 
 sub add_statements {
     my $self = shift;
@@ -42,22 +41,30 @@ sub statements {
 sub statements_by_node_id {
     my $self = shift;
     my $x = shift;
-    # CALL DBIx::Class USING AMIGO HERE
+    my $q = $self->query;
 
-    $schema = $self->schema;
-    my $rrs = $schema->resultset('Term2Term')->search({ 'term2.acc' => $x });
-    my @sl = map { $self->convert($_) } @$rrs;
+    my $schema = $q->{SCHEMA};
+    my $it = $schema->resultset('Term2Term')->search(
+        { 'subject.acc' => $x },
+        {join => ['subject',
+                  'object',
+                  'relationship']});
+    my @sl = map { $self->convert($_) } $it->all;
     return \@sl;
 }
 
 sub statements_by_target_id {
     my $self = shift;
     my $x = shift;
-    # CALL DBIx::Class USING AMIGO HERE
+    my $q = $self->query;
 
-    $schema = $self->schema;
-    my $rrs = $schema->resultset('Term2Term')->search({ 'term1.acc' => $x });
-    my @sl = map { $self->convert($_) } @$rrs;
+    my $schema = $q->{SCHEMA};
+    my $it = $schema->resultset('Term2Term')->search(
+        { 'object.acc' => $x },
+        {join => ['subject',
+                  'object',
+                  'relationship']});
+    my @sl = map { $self->convert($_) } $it->all;
     return \@sl;
 }
 
@@ -67,8 +74,8 @@ sub convert {
     # TODO: use a factory to create GOBO::Statement objs
     return new 
       GOBO::Statement(node=>$rs->subject->acc,
-                     relation=>$rs->relation->acc,
-                     target=>$rs->object->acc);
+                      relation=>$rs->relationship->acc,
+                      target=>$rs->object->acc);
 }
 
 1;
