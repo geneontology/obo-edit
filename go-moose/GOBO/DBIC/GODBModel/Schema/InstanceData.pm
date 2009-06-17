@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::InstanceData
+=head1 GOBO::DBIC::GODBModel::Schema::InstanceData
 
 DB unique instance data.
 
@@ -7,10 +7,10 @@ DB unique instance data.
 use utf8;
 use strict;
 
-package GODBModel::Schema::InstanceData;
+package GOBO::DBIC::GODBModel::Schema::InstanceData;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##

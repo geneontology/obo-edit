@@ -1,4 +1,4 @@
-=head1 GODBModel::Graph
+=head1 GOBO::DBIC::GODBModel::Graph
 
 This graph should probably be sub-classed as an ontology, and the
 connecting and abstract bits should be shifted around.
@@ -10,13 +10,13 @@ NOTE: This uses graph_path as the primary engine.
 use utf8;
 use strict;
 
-package GODBModel::Graph;
+package GOBO::DBIC::GODBModel::Graph;
 
-use base 'GODBModel';
+use base 'GOBO::DBIC::GODBModel';
 use utf8;
 use strict;
-use GODBModel::Schema;
-use GODBModel::Query;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
 use Graph::Directed;
 use Graph::TransitiveClosure;
 
@@ -30,11 +30,11 @@ sub new {
   my $args = shift || {};
   my $self  = $class->SUPER::new($args);
 
-  $self->{SCHEMA} = GODBModel::Schema->connect($self->{CONNECT_INFO});
+  $self->{SCHEMA} = GOBO::DBIC::GODBModel::Schema->connect($self->{CONNECT_INFO});
   $self->{GRAPH_Q} =
-    GODBModel::Query->new({type=>'term2term_over_graph_path'});
+    GOBO::DBIC::GODBModel::Query->new({type=>'term2term_over_graph_path'});
 
-  ## We'll borrow SUCCESS and ERROR_MESSAGE from GODBModel.
+  ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
 
   ### Nodes are defined as terms (keyed by acc) and edges are defined
   ### as two terms, a relationship, and a completeness (keyed
@@ -128,7 +128,7 @@ sub get_children {
   foreach my $t2t (@$all){
     if( ! $t2t->subject->is_obsolete ){
       push @$ret, $t2t->subject;
-      $self->kvetch("GODBModel::Graph::get_children: kid: " .
+      $self->kvetch("GOBO::DBIC::GODBModel::Graph::get_children: kid: " .
 		    $t2t->subject->acc);
     }
   }

@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::TermSynonym
+=head1 GOBO::DBIC::GODBModel::Schema::TermSynonym
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::TermSynonym;
+package GOBO::DBIC::GODBModel::Schema::TermSynonym;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -65,7 +65,7 @@ __PACKAGE__->add_columns(
 #__PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->belongs_to('term' =>
-			'GODBModel::Schema::Term', 'term_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
 
 ##
 #__PACKAGE__->add_unique_constraint("t0", ["id"]);

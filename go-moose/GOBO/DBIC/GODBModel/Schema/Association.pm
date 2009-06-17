@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Association
+=head1 GOBO::DBIC::GODBModel::Schema::Association
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Association;
+package GOBO::DBIC::GODBModel::Schema::Association;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -82,17 +82,17 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 __PACKAGE__->has_many('evidence' =>
-		      'GODBModel::Schema::Evidence',
+		      'GOBO::DBIC::GODBModel::Schema::Evidence',
 		      'association_id');
 __PACKAGE__->belongs_to('term' =>
-			'GODBModel::Schema::Term', 'term_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term_id');
 __PACKAGE__->has_many('graph_path_relations' =>
-		      'GODBModel::Schema::GraphPath',
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath',
 		      {'foreign.term2_id' => 'self.term_id'});
 __PACKAGE__->belongs_to('gene_product' =>
-			'GODBModel::Schema::GeneProduct', 'gene_product_id');
+			'GOBO::DBIC::GODBModel::Schema::GeneProduct', 'gene_product_id');
 __PACKAGE__->belongs_to('db' =>
-			'GODBModel::Schema::DB', 'source_db_id');
+			'GOBO::DBIC::GODBModel::Schema::DB', 'source_db_id');
 
 ##
 __PACKAGE__->add_unique_constraint("a0", ["id"]);

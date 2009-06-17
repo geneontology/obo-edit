@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Homolset
+=head1 GOBO::DBIC::GODBModel::Schema::Homolset
 
 I believe that this one is done correctly.
 
@@ -7,10 +7,10 @@ I believe that this one is done correctly.
 use utf8;
 use strict;
 
-package GODBModel::Schema::Homolset;
+package GOBO::DBIC::GODBModel::Schema::Homolset;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -82,13 +82,13 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->belongs_to('gene_product' =>
-                        'GODBModel::Schema::GeneProduct',
+                        'GOBO::DBIC::GODBModel::Schema::GeneProduct',
 			'target_gene_product_id');
 __PACKAGE__->belongs_to('dbxref' =>
-                        'GODBModel::Schema::DBXRef',
+                        'GOBO::DBIC::GODBModel::Schema::DBXRef',
 			'dbxref_id');
 __PACKAGE__->has_many('gene_product_homolset' =>
-		      'GODBModel::Schema::GeneProductHomolset', 'homolset_id');
+		      'GOBO::DBIC::GODBModel::Schema::GeneProductHomolset', 'homolset_id');
 
 __PACKAGE__->add_unique_constraint("dbxref_id", ["dbxref_id"]);
 #__PACKAGE__->add_unique_constraint("h0", ["id"]);

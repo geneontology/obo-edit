@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::SeqDBXRef
+=head1 GOBO::DBIC::GODBModel::Schema::SeqDBXRef
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::SeqDBXRef;
+package GOBO::DBIC::GODBModel::Schema::SeqDBXRef;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -41,9 +41,9 @@ __PACKAGE__->set_primary_key('seq_id');
 __PACKAGE__->set_primary_key('dbxref_id');
 
 __PACKAGE__->belongs_to('seq' =>
-                        'GODBModel::Schema::Seq', 'seq_id');
+                        'GOBO::DBIC::GODBModel::Schema::Seq', 'seq_id');
 __PACKAGE__->belongs_to('dbxref' =>
-                        'GODBModel::Schema::DBXRef', 'dbxref_id');
+                        'GOBO::DBIC::GODBModel::Schema::DBXRef', 'dbxref_id');
 
 #__PACKAGE__->add_unique_constraint("g0", ["id"]);
 

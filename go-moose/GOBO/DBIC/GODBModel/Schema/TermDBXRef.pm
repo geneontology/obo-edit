@@ -1,14 +1,14 @@
-=head1 GODBModel::Schema::TermDBXRef
+=head1 GOBO::DBIC::GODBModel::Schema::TermDBXRef
 
 =cut
 
 use utf8;
 use strict;
 
-package GODBModel::Schema::TermDBXRef;
+package GOBO::DBIC::GODBModel::Schema::TermDBXRef;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -50,10 +50,10 @@ __PACKAGE__->set_primary_key('is_for_definition');
 
 ##
 __PACKAGE__->belongs_to('term' =>
-			'GODBModel::Schema::Term',
+			'GOBO::DBIC::GODBModel::Schema::Term',
 			'term_id');
 __PACKAGE__->belongs_to('dbxref' =>
-			'GODBModel::Schema::DBXRef',
+			'GOBO::DBIC::GODBModel::Schema::DBXRef',
 			'dbxref_id');
 
 ##

@@ -1,14 +1,14 @@
-=head1 GODBModel::Schema::GeneProductCount
+=head1 GOBO::DBIC::GODBModel::Schema::GeneProductCount
 
 =cut
 
 use utf8;
 use strict;
 
-package GODBModel::Schema::GeneProductCount;
+package GOBO::DBIC::GODBModel::Schema::GeneProductCount;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -66,10 +66,10 @@ __PACKAGE__->add_columns(
 
 ##
 __PACKAGE__->belongs_to('term' =>
-			'GODBModel::Schema::Term',
+			'GOBO::DBIC::GODBModel::Schema::Term',
 			'term_id');
 __PACKAGE__->might_have('species' =>
-			'GODBModel::Schema::Species',
+			'GOBO::DBIC::GODBModel::Schema::Species',
 			{'foreign.id' => 'self.species_id'});
 
 ##

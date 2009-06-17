@@ -1,9 +1,9 @@
-=head1 GODBModel::Resolver
+=head1 GOBO::DBIC::GODBModel::Resolver
 
 Converts strings, identifiers, etc. into usable objects. This should
 be a heavy lifter for session handling and such in the new framework.
 
-This should be the only stop for turning things into GODBModel internal
+This should be the only stop for turning things into GOBO::DBIC::GODBModel internal
 canonical form.
 
 TODO: heavy speed checking.
@@ -16,13 +16,13 @@ the DB it would be *smoking* fast.
 use utf8;
 use strict;
 
-package GODBModel::Resolver;
+package GOBO::DBIC::GODBModel::Resolver;
 
-use base 'GODBModel';
+use base 'GOBO::DBIC::GODBModel';
 use utf8;
 use strict;
-use GODBModel::Schema;
-use GODBModel::Query;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
 
 
 =item new
@@ -35,11 +35,11 @@ sub new {
   my $self  = $class->SUPER::new();
 
   ## We'll use lazys where we can can't we don't plan on going very deep.
-  $self->{GP_Q} = GODBModel::Query->new({type=>'gene_product_lazy'});
-  $self->{GP_SYN_Q} = GODBModel::Query->new({type=>'gene_product_synonym'});
-  $self->{DBXREF_Q} = GODBModel::Query->new({type=>'dbxref'});
-  $self->{TERM_Q} = GODBModel::Query->new({type=>'term_lazy'});
-  $self->{TERM_SYN_Q} = GODBModel::Query->new({type=>'term_synonym'});
+  $self->{GP_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_lazy'});
+  $self->{GP_SYN_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'gene_product_synonym'});
+  $self->{DBXREF_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'dbxref'});
+  $self->{TERM_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'term_lazy'});
+  $self->{TERM_SYN_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'term_synonym'});
 
   bless $self, $class;
   return $self;

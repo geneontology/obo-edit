@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Evidence
+=head1 GOBO::DBIC::GODBModel::Schema::Evidence
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Evidence;
+package GOBO::DBIC::GODBModel::Schema::Evidence;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -66,16 +66,16 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 __PACKAGE__->belongs_to('association' =>
-			'GODBModel::Schema::Association',
+			'GOBO::DBIC::GODBModel::Schema::Association',
 			'association_id');
 __PACKAGE__->belongs_to('dbxref' =>
-		      'GODBModel::Schema::DBXRef',
+		      'GOBO::DBIC::GODBModel::Schema::DBXRef',
 		      'dbxref_id');
 #__PACKAGE__->belongs_to('evidence_dbxref' =>
-#			'GODBModel::Schema::EvidenceDBXRef',
+#			'GOBO::DBIC::GODBModel::Schema::EvidenceDBXRef',
 #			'evidence_id');
 __PACKAGE__->has_many('evidence_dbxref' =>
-		      'GODBModel::Schema::EvidenceDBXRef',
+		      'GOBO::DBIC::GODBModel::Schema::EvidenceDBXRef',
 		      'evidence_id');
 
 ## TODO: need an index?

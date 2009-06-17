@@ -1,9 +1,9 @@
-=head1 GODBModel::Extension
+=head1 GOBO::DBIC::GODBModel::Extension
 
 
 =cut
 
-package GODBModel::Extension;
+package GOBO::DBIC::GODBModel::Extension;
 
 use base 'DBIx::Class';
 use utf8;
