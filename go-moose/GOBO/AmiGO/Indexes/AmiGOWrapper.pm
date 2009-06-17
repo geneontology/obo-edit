@@ -1,9 +1,9 @@
 package GOBO::AmiGO::Indexes::AmiGOWrapper;
 use Moose::Role;
-use GODBModel::Query;
+use GOBO::DBIC::GODBModel::Query;
 
 #has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
-has query => (is=>'rw', isa=>'GODBModel::Query');
+has query => (is=>'rw', isa=>'GOBO::DBIC::GODBModel::Query');
 
 
 1;
