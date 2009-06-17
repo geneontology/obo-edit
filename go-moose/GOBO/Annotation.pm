@@ -19,7 +19,7 @@ sub gene {
 sub add_target_differentia {
     my $self = shift;
     my $xp = shift;
-    if ($self->target_differentia_list) {
+    if (!$self->target_differentia_list) {
         $self->target_differentia_list([]);
     }
     push(@{$self->target_differentia_list}, $xp);
@@ -29,7 +29,7 @@ sub add_target_differentia {
 sub add_qualifier {
     my $self = shift;
     my $xp = shift;
-    if ($self->qualifier_list) {
+    if (!$self->qualifier_list) {
         $self->qualifier_list([]);
     }
     push(@{$self->qualifier_list}, $xp);
