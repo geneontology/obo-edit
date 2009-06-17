@@ -30,9 +30,11 @@ sub new {
   my $args = shift || {};
   my $self  = $class->SUPER::new($args);
 
-  $self->{SCHEMA} = GOBO::DBIC::GODBModel::Schema->connect($self->{CONNECT_INFO});
-  $self->{GRAPH_Q} =
-    GOBO::DBIC::GODBModel::Query->new({type=>'term2term_over_graph_path'});
+  ## Defined in super now...
+  #   $self->{SCHEMA} =
+  #     GOBO::DBIC::GODBModel::Schema->connect($self->{CONNECT_INFO});
+  $args->{type} = 'term2term_over_graph_path';
+  $self->{GRAPH_Q} = GOBO::DBIC::GODBModel::Query->new($args);
 
   ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
 

@@ -83,15 +83,30 @@ sub new {
   my $retref = [];
   push @$retref, $dsn;
 
-  ## Credentials and add them to the return.
+  ## Credentials after connection dsn--add them to the return.
   # $ENV{GO_DBPASS};
   push @$retref, $args->{user};
   push @$retref, $args->{auth};
 
   $self->{CONNECT_INFO} = $retref;
+  $self->{SCHEMA} =
+    GOBO::DBIC::GODBModel::Schema->connect(@{$self->{CONNECT_INFO}});
 
   bless $self, $class;
   return $self;
+}
+
+
+=item connection_info
+
+Arguments: n/a
+Returns: array ref for DBIC Schema connection.
+
+=cut
+sub connection_info {
+
+  my $self = shift;
+  return @{$self->{CONNECT_INFO}};
 }
 
 

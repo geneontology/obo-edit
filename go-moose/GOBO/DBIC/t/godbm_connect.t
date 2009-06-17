@@ -5,7 +5,8 @@ use strict;
 #use Test::More tests => 1;
 use Test::More 'no_plan';
 
-use GOBO::DBIC::GODBModel::Graph;
+#use GOBO::DBIC::GODBModel::Graph;
+use GOBO::DBIC::GODBModel::Query;
 
 
 ## BUG: This is just mine for now as I get this sorted with the AmiGO
