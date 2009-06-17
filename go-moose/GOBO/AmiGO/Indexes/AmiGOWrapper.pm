@@ -1,8 +1,9 @@
-package GOBO::AmiGO::Indexes::StatementIndex;
+package GOBO::AmiGO::Indexes::AmiGOWrapper;
 use Moose::Role;
-use AmiGO::Model::Schema;
+use GODBModel::Query;
 
-has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
+#has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
+has query => (is=>'rw', isa=>'GODBModel::Query');
 
 
 1;
@@ -10,7 +11,7 @@ has schema => (is=>'rw', isa=>'AmiGO::Model::Schema');
 
 =head1 NAME
 
-GOBO::AmiGO::Indexes::AmiGOWrapper
+GOBO::AmiGO::Indexes::AmigoWrapper
 
 =head1 SYNOPSIS
 
