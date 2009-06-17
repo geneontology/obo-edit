@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Term
+=head1 GOBO::DBIC::GODBModel::Schema::Term
 
 
 =cut
@@ -6,15 +6,15 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Term;
+package GOBO::DBIC::GODBModel::Schema::Term;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
 __PACKAGE__->load_components(qw/ PK::Auto Core
-				 +GODBModel::Extension /);
+				 +GOBO::DBIC::GODBModel::Extension /);
 
 __PACKAGE__->table('term');
 
@@ -75,25 +75,25 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 __PACKAGE__->has_many('association' =>
-		      'GODBModel::Schema::Association', 'term_id');
+		      'GOBO::DBIC::GODBModel::Schema::Association', 'term_id');
 __PACKAGE__->has_many('term_dbxref' =>
-		      'GODBModel::Schema::TermDBXRef', 'term_id');
+		      'GOBO::DBIC::GODBModel::Schema::TermDBXRef', 'term_id');
 __PACKAGE__->has_many('term_synonym' =>
-		      'GODBModel::Schema::TermSynonym', 'term_id');
+		      'GOBO::DBIC::GODBModel::Schema::TermSynonym', 'term_id');
 __PACKAGE__->has_many('gene_product_count' =>
-		      'GODBModel::Schema::GeneProductCount', 'term_id');
+		      'GOBO::DBIC::GODBModel::Schema::GeneProductCount', 'term_id');
 
 ## term2term
 __PACKAGE__->has_many('parent_relations' =>
-		      'GODBModel::Schema::Term2Term', 'term2_id');
+		      'GOBO::DBIC::GODBModel::Schema::Term2Term', 'term2_id');
 __PACKAGE__->has_many('child_relations' =>
-		      'GODBModel::Schema::Term2Term', 'term1_id');
+		      'GOBO::DBIC::GODBModel::Schema::Term2Term', 'term1_id');
 
 ## graph_path
 __PACKAGE__->has_many('ancestors' =>
-		      'GODBModel::Schema::GraphPath', 'term2_id');
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath', 'term2_id');
 __PACKAGE__->has_many('descendents' =>
-		      'GODBModel::Schema::GraphPath', 'term1_id');
+		      'GOBO::DBIC::GODBModel::Schema::GraphPath', 'term1_id');
 
 ## Direct GP bridge--not apparently a "real" relationship (e.g. can't
 ## be used for templates).

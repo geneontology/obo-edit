@@ -1,4 +1,4 @@
-=head1 GODBModel::Query
+=head1 GOBO::DBIC::GODBModel::Query
 
 The idea is to build a simple query engine on top of the Schema. It
 will center around a gp type and a term type.
@@ -18,12 +18,12 @@ don't use it and traverse a many relationship, it looks like ->all.
 use utf8;
 use strict;
 
-package GODBModel::Query;
+package GOBO::DBIC::GODBModel::Query;
 
-use base 'GODBModel';
+use base 'GOBO::DBIC::GODBModel';
 use utf8;
 use strict;
-use GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Schema;
 #use Data::Page;
 
 
@@ -315,9 +315,9 @@ sub new {
     die "that type is not yet implemented";
   }
 
-  $self->{SCHEMA} = GODBModel::Schema->connect(@{$self->{CONNECT_INFO}});
+  $self->{SCHEMA} = GOBO::DBIC::GODBModel::Schema->connect(@{$self->{CONNECT_INFO}});
 
-  ## We'll borrow SUCCESS and ERROR_MESSAGE from GODBModel.
+  ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
   ## TODO
 
   bless $self, $class;

@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::DB
+=head1 GOBO::DBIC::GODBModel::Schema::DB
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::DB;
+package GOBO::DBIC::GODBModel::Schema::DB;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##

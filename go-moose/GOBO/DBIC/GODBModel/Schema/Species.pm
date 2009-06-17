@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Species
+=head1 GOBO::DBIC::GODBModel::Schema::Species
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Species;
+package GOBO::DBIC::GODBModel::Schema::Species;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -102,10 +102,10 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 __PACKAGE__->has_many('gene_product' =>
-		      'GODBModel::Schema::GeneProduct',
+		      'GOBO::DBIC::GODBModel::Schema::GeneProduct',
 		      'species_id');
 #__PACKAGE__->belongs_to('dbxref' =>
-#			'GODBModel::Schema::DBXRef',
+#			'GOBO::DBIC::GODBModel::Schema::DBXRef',
 #			'dbxref_id');
 
 ##

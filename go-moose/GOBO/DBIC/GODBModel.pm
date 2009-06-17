@@ -1,12 +1,15 @@
-=head1 GODBModel
+=head1 GOBO::DBIC::GODBModel
 
-This is the core GODBModel class. It is responsible for environment
+This is the core GOBO::DBIC::GODBModel class. It is responsible for environment
 and getting in all of the install-time DB meta data. Most other tasks
 should be left to subclasses.
 
+Testing for now:
+perl -I /home/sjcarbon/local/src/svn/geneontology/go-moose t/connect.t
+
 =cut
 
-package GODBModel;
+package GOBO::DBIC::GODBModel;
 
 ##
 BEGIN {
@@ -63,7 +66,7 @@ sub new {
       ## Make it logically false otherwise.
       $args->{$env} = '';
     }
-    #print STDERR "GODBModel::db_conestor::$env: ".$env.' is '.$args->{$env} . "\n";
+    #print STDERR "GOBO::DBIC::GODBModel::db_conestor::$env: ".$env.' is '.$args->{$env} . "\n";
   }
 
   ## Create the data necessary for the MySQL connection.
@@ -74,7 +77,7 @@ sub new {
   if( my $var = $args->{port} ){ push @mbuf, 'port=' . $var; }
   my $dsn ='dbi:mysql:' . join(';', @mbuf);
 
-  #print STDERR "GODBModel::db_conestor::dsn: " . $dsn . "\n";
+  #print STDERR "GOBO::DBIC::GODBModel::db_conestor::dsn: " . $dsn . "\n";
 
   ##
   my $retref = [];
