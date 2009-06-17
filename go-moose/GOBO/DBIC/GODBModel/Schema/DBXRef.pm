@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::DBXRef
+=head1 GOBO::DBIC::GODBModel::Schema::DBXRef
 
 I believe that this one is done correctly.
 
@@ -7,10 +7,10 @@ I believe that this one is done correctly.
 use utf8;
 use strict;
 
-package GODBModel::Schema::DBXRef;
+package GOBO::DBIC::GODBModel::Schema::DBXRef;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -62,24 +62,24 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->has_one('gene_product' =>
-		     'GODBModel::Schema::GeneProduct',
+		     'GOBO::DBIC::GODBModel::Schema::GeneProduct',
 		     'dbxref_id');
 __PACKAGE__->has_one('evidence_dbxref' =>
-		     'GODBModel::Schema::EvidenceDBXRef',
+		     'GOBO::DBIC::GODBModel::Schema::EvidenceDBXRef',
 		     'dbxref_id');
 __PACKAGE__->has_one('term_dbxref' =>
-		     'GODBModel::Schema::TermDBXRef',
+		     'GOBO::DBIC::GODBModel::Schema::TermDBXRef',
 		     'dbxref_id');
 __PACKAGE__->has_one('seq_dbxref' =>
-		     'GODBModel::Schema::SeqDBXRef',
+		     'GOBO::DBIC::GODBModel::Schema::SeqDBXRef',
 		     'dbxref_id');
 __PACKAGE__->has_one('homolset' =>
-		     'GODBModel::Schema::Homolset',
+		     'GOBO::DBIC::GODBModel::Schema::Homolset',
 		     'dbxref_id');
 ## DEPRECATED: This is just here temporarily to enable a hack in
 ## HomolsetEvidence.pm.
 __PACKAGE__->has_one('seq_hack' =>
-		     'GODBModel::Schema::Seq',
+		     'GOBO::DBIC::GODBModel::Schema::Seq',
 		     {'foreign.display_id' => 'self.xref_key'});
 
 #__PACKAGE__->add_unique_constraint("g0", ["id"]);

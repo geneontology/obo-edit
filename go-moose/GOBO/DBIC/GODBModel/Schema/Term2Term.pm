@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Term2Term
+=head1 GOBO::DBIC::GODBModel::Schema::Term2Term
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Term2Term;
+package GOBO::DBIC::GODBModel::Schema::Term2Term;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -66,22 +66,22 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 #__PACKAGE__->belongs_to('term' =>
-#			'GODBModel::Schema::Term', 'term1_id');
+#			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 #__PACKAGE__->belongs_to('term' =>
-#			'GODBModel::Schema::Term', 'term2_id');
+#			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('term1' =>
-			'GODBModel::Schema::Term', 'term1_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('term2' =>
-			'GODBModel::Schema::Term', 'term2_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('object' =>
-			'GODBModel::Schema::Term', 'term1_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('subject' =>
-			'GODBModel::Schema::Term', 'term2_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('relationship' =>
-			'GODBModel::Schema::Term', 'relationship_type_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'relationship_type_id');
 ## ...?
 __PACKAGE__->belongs_to('graph_path' =>
-			'GODBModel::Schema::GraphPath',
+			'GOBO::DBIC::GODBModel::Schema::GraphPath',
 			{'foreign.term1_id' => 'self.term1_id',
 			 'foreign.term2_id' => 'self.term2_id'});
 

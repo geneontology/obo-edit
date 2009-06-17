@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::Seq
+=head1 GOBO::DBIC::GODBModel::Schema::Seq
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::Seq;
+package GOBO::DBIC::GODBModel::Schema::Seq;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -84,22 +84,22 @@ __PACKAGE__->set_primary_key('id');
 
 ##
 __PACKAGE__->has_many('seq_dbxref' =>
- 		      'GODBModel::Schema::SeqDBXRef',
+ 		      'GOBO::DBIC::GODBModel::Schema::SeqDBXRef',
  		      'dbxref_id');
 __PACKAGE__->has_many('gene_product_seq' =>
- 		      'GODBModel::Schema::GeneProductSeq',
+ 		      'GOBO::DBIC::GODBModel::Schema::GeneProductSeq',
  		      'seq_id');
 # __PACKAGE__->has_many('gene_product_synonym' =>
-# 		      'GODBModel::Schema::GeneProductSynonym',
+# 		      'GOBO::DBIC::GODBModel::Schema::GeneProductSynonym',
 # 		      'gene_product_id');
 # __PACKAGE__->might_have('gene_product_homolset' =>
-# 		      'GODBModel::Schema::GeneProductHomolset',
+# 		      'GOBO::DBIC::GODBModel::Schema::GeneProductHomolset',
 # 		      'gene_product_id');
 # __PACKAGE__->belongs_to('dbxref' =>
-# 			'GODBModel::Schema::DBXRef',
+# 			'GOBO::DBIC::GODBModel::Schema::DBXRef',
 # 			'dbxref_id');
 # __PACKAGE__->belongs_to('species' =>
-# 			'GODBModel::Schema::Species',
+# 			'GOBO::DBIC::GODBModel::Schema::Species',
 # 			'species_id');
 
 ##

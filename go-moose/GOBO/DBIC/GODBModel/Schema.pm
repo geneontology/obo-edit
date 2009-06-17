@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema
+=head1 GOBO::DBIC::GODBModel::Schema
 
 
 =cut
@@ -6,11 +6,11 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema;
+package GOBO::DBIC::GODBModel::Schema;
 
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class::Schema/;
 
 ## Get all of the classes in our namespace automatically.
@@ -50,7 +50,7 @@ __PACKAGE__->load_classes( qw/
 #   ##
 #   my $class = shift;
 #   my $self  = $class->SUPER::new();
-#   ## We'll borrow SUCCESS and ERROR_MESSAGE from GODBModel.
+#   ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
 #   bless $self, $class;
 #   return $self;
 # }

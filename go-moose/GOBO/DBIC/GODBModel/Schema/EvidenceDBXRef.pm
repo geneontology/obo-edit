@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::EvidenceDBXRef
+=head1 GOBO::DBIC::GODBModel::Schema::EvidenceDBXRef
 
 BUG: hrm...something wrong here...can't link out from here. JOIN
 issues? use seq_acc instead
@@ -8,10 +8,10 @@ issues? use seq_acc instead
 use utf8;
 use strict;
 
-package GODBModel::Schema::EvidenceDBXRef;
+package GOBO::DBIC::GODBModel::Schema::EvidenceDBXRef;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -43,10 +43,10 @@ __PACKAGE__->add_columns(
 
 ##
 __PACKAGE__->belongs_to('evidence' =>
-			'GODBModel::Schema::Evidence',
+			'GOBO::DBIC::GODBModel::Schema::Evidence',
 			'evidence_id');
 __PACKAGE__->belongs_to('dbxref' =>
-			'GODBModel::Schema::DBXRef',
+			'GOBO::DBIC::GODBModel::Schema::DBXRef',
 			'dbxref_id');
 
 ##

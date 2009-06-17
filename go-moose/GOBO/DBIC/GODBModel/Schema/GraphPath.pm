@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::GraphPath
+=head1 GOBO::DBIC::GODBModel::Schema::GraphPath
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::GraphPath;
+package GOBO::DBIC::GODBModel::Schema::GraphPath;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -57,17 +57,17 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->belongs_to('term1' =>
-			'GODBModel::Schema::Term', 'term1_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('term2' =>
-			'GODBModel::Schema::Term', 'term2_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('object' =>
-			'GODBModel::Schema::Term', 'term1_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('subject' =>
-			'GODBModel::Schema::Term', 'term2_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 __PACKAGE__->belongs_to('graph_object' =>
-			'GODBModel::Schema::Term', 'term1_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term1_id');
 __PACKAGE__->belongs_to('graph_subject' =>
-			'GODBModel::Schema::Term', 'term2_id');
+			'GOBO::DBIC::GODBModel::Schema::Term', 'term2_id');
 
 ##
 #__PACKAGE__->add_unique_constraint("t0", ["id"]);

@@ -5,14 +5,14 @@ use strict;
 #use Test::More tests => 1;
 use Test::More 'no_plan';
 
-use GODBModel::Graph;
+use GOBO::DBIC::GODBModel::Graph;
 
 
 ## BUG: This is just mine for now as I get this sorted with the AmiGO
 ## stuff... -SJC
 
 ## Constructor.
-my $q = GODBModel::Query->new({
+my $q = GOBO::DBIC::GODBModel::Query->new({
 			       host => 'localhost',
 			       #name => 'go_latest_lite',
 			       name => 'go',

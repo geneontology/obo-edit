@@ -1,4 +1,4 @@
-=head1 GODBModel::GraphT2T
+=head1 GOBO::DBIC::GODBModel::GraphT2T
 
 This graph should probably be sub-classed as an ontology, and the
 connecting and abstract bits should be shifted around.
@@ -11,13 +11,13 @@ considered deprecated.
 use utf8;
 use strict;
 
-package GODBModel::GraphT2T;
+package GOBO::DBIC::GODBModel::GraphT2T;
 
-use base 'GODBModel';
+use base 'GOBO::DBIC::GODBModel';
 use utf8;
 use strict;
-use GODBModel::Schema;
-use GODBModel::Query;
+use GOBO::DBIC::GODBModel::Schema;
+use GOBO::DBIC::GODBModel::Query;
 use Graph::Directed;
 use Graph::TransitiveClosure;
 
@@ -30,10 +30,10 @@ sub new {
   my $class = shift;
   my $self  = $class->SUPER::new();
 
-  $self->{SCHEMA} = GODBModel::Schema->connect($self->db_connector());
-  $self->{REL_Q} = GODBModel::Query->new({type=>'term2term'});
+  $self->{SCHEMA} = GOBO::DBIC::GODBModel::Schema->connect($self->db_connector());
+  $self->{REL_Q} = GOBO::DBIC::GODBModel::Query->new({type=>'term2term'});
 
-  ## We'll borrow SUCCESS and ERROR_MESSAGE from GODBModel.
+  ## We'll borrow SUCCESS and ERROR_MESSAGE from GOBO::DBIC::GODBModel.
 
   ### Nodes are defined as terms (keyed by acc) and edges are defined
   ### as two terms, a relationship, and a completeness (keyed

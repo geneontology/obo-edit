@@ -1,4 +1,4 @@
-=head1 GODBModel::Schema::GeneProductSeq
+=head1 GOBO::DBIC::GODBModel::Schema::GeneProductSeq
 
 
 =cut
@@ -6,10 +6,10 @@
 use utf8;
 use strict;
 
-package GODBModel::Schema::GeneProductSeq;
+package GOBO::DBIC::GODBModel::Schema::GeneProductSeq;
 
-## TODO: Make sure that GODBModel
-#use base ("GODBModel");
+## TODO: Make sure that GOBO::DBIC::GODBModel
+#use base ("GOBO::DBIC::GODBModel");
 use base qw/DBIx::Class/;
 
 ##
@@ -49,9 +49,9 @@ __PACKAGE__->add_columns(
 #__PACKAGE__->set_primary_key('product_synonym');
 
 __PACKAGE__->belongs_to('gene_product' =>
-                        'GODBModel::Schema::GeneProduct', 'gene_product_id');
+                        'GOBO::DBIC::GODBModel::Schema::GeneProduct', 'gene_product_id');
 __PACKAGE__->belongs_to('seq' =>
-                        'GODBModel::Schema::Seq', 'seq_id');
+                        'GOBO::DBIC::GODBModel::Schema::Seq', 'seq_id');
 
 #__PACKAGE__->add_unique_constraint("g0", ["id"]);
 
