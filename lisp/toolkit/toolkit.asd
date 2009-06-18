@@ -29,7 +29,9 @@
                                      (:file "shell")
                                      (:file "toolkit"))))
   :depends-on (:cl-ppcre
-	       :cl-fad) ;:fiveam)
+	       :cl-fad
+	       :clsql
+	       :clsql-sqlite3) ;:fiveam)
 
   ;; And some stuff for Albert...
   :properties ((#:author-email . "sjcarbon@berkeleybop.org")

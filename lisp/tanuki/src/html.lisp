@@ -6,8 +6,22 @@
 ;;;; TODO: need to have my own 'safe-parse-uri' function to catch the
 ;;;; nasty pages made by people who like to break the web
 ;;;;
+;;;; BUG:
+;;;; (fetch-doc "http://biocyc.org/META/substring-search?type=NIL&object=PARATHION-DEGRADATION-PWY")
+;;;;
+;;;; BUG:
+;;;; (fetch-doc "http://flybase.bio.indiana.edu/reports/FBgn0003471.html")
+;;;;
+;;;; BUG:
+;;;; (FETCH-DOC "http://mips.gsf.de/cgi-bin/proj/funcatDB/search_advanced.pl?action=2&wert=01.05.01.01.05")
+;;;;
+;;;; BUG: (DRAKMA:HTTP-REQUEST "http://prodes.toulouse.inra.fr/prodom/current/cgi-bin/request.pl?question=DBEN&amp;query=PD000001")
+;;;;
+;;;; BUG: (DRAKMA:HTTP-REQUEST "http://prodes.toulouse.inra.fr/prodom/current/cgi-bin/request.pl?question=DBEN&amp;query=PD000001")
+;;;;
+;;;; BUG: (DRAKMA:HTTP-REQUEST "http://www.wormbase.org/db/searches/basic?class=Any&query=WBPhenotype:0000643")
+;;;;
 
-;;(clc:clc-require :s-http-client)
 (require :drakma)
 (require :puri)
 (require :closure-html)
@@ -62,7 +76,7 @@ a integer or a string."
    (progn
      (sb-ext:with-timeout 600
       (multiple-value-bind (doc code struct puri dunno)
-	  (http-request url-str)
+	  (http-request url-str :redirect 100) ; see http://common-lisp.net/~loliveira/ediware/drakma/request.lisp for full arguments...
 	(cond
 	 ;; BUG? Don't deal with images.
 	 ((search "png" (cdr (assoc :CONTENT-TYPE struct))) "")
@@ -83,7 +97,9 @@ a integer or a string."
    (USOCKET:TIMEOUT-ERROR (ute) nil)
    (USOCKET:HOST-UNREACHABLE-ERROR (hue) nil)
    (USOCKET:CONNECTION-REFUSED-ERROR (cre) nil)
-   (SB-BSD-SOCKETS::no-address-error (nae) nil)
+   (CHUNGA:SYNTAX-ERROR (se) nil)
+   (SB-BSD-SOCKETS::NO-ADDRESS-ERROR (nae) nil)
+   (SB-BSD-SOCKETS:NAME-SERVICE-ERROR (nse) nil)
    (SB-KERNEL:CASE-FAILURE (cf) nil)))
 
 ;; This in an internal function and it therefore capable of working
