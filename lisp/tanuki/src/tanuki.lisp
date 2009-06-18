@@ -37,15 +37,6 @@
 ;;;; Looks like the parsing in drakma is croaking. But the page must be OK?
 ;;;; But that solution only works when working with externals.
 ;;;;
-;;;; BUG:
-;;;; (fetch-doc "http://biocyc.org/META/substring-search?type=NIL&object=PARATHION-DEGRADATION-PWY")
-;;;;
-;;;; BUG:
-;;;; (fetch-doc "http://flybase.bio.indiana.edu/reports/FBgn0003471.html")
-;;;;
-;;;; BUG:
-;;;; (FETCH-DOC "http://mips.gsf.de/cgi-bin/proj/funcatDB/search_advanced.pl?action=2&wert=01.05.01.01.05")
-;;;;
 
 (defpackage :tanuki
   (:use :cl
@@ -226,12 +217,19 @@ them in no particular order."
 (defun all-failed-pages ()
   ""
   ;; Check to see that there are unvisted URLs.
+  ;;(mapcar #'get-url (sql-engine +tanuki-db+ :failed t)))
   (sql-engine +tanuki-db+ :failed t))
 
 (defun all-odd-pages ()
   ""
   ;; Check to see that there are unvisted URLs.
+  ;;(mapcar #'get-url (sql-engine +tanuki-db+ :odd t)))
   (sql-engine +tanuki-db+ :odd t))
+
+(defun all-mandated-pages ()
+  ""
+  ;;(mapcar #'get-url (sql-engine +tanuki-db+ :mandated t)))
+  (sql-engine +tanuki-db+ :mandated t))
 
 (defun mandate-failed ()
   "Changes failed pages (that aren't odd) to unvisited mandated pages."

@@ -35,6 +35,7 @@
 				     (:file "engine")
 				     (:file "model")
 				     (:file "graph")
+				     (:file "irc")
 				     ;;(:file "web")
 				     ;;(:file "shell")
 				     )))
