@@ -64,5 +64,23 @@ sub equals {
     return $self->id eq shift->id;
 }
 
+sub add_considers {
+    my $self = shift;
+    $self->consider([]) unless $self->consider;
+    foreach (@_) {
+        push(@{$self->consider},ref($_) && ref($_) eq 'ARRAY' ? @$_ : $_);
+    }
+    return;
+}
+
+sub add_replaced_bys {
+    my $self = shift;
+    $self->replaced_by([]) unless $self->replaced_by;
+    foreach (@_) {
+        push(@{$self->replaced_by},ref($_) && ref($_) eq 'ARRAY' ? @$_ : $_);
+    }
+    return;
+}
+
 1;
 
