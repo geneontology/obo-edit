@@ -81,6 +81,15 @@ sub add_subsets {
     return;
 }
 
+sub add_alt_ids {
+    my $self = shift;
+    $self->alt_ids([]) unless $self->alt_ids;
+    foreach (@_) {
+        push(@{$self->alt_ids},ref($_) && ref($_) eq 'ARRAY' ? @$_ : $_);
+    }
+    return;
+}
+
 
 1;
 
