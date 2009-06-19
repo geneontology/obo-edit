@@ -58,7 +58,7 @@ sub write_stanza {
         $self->ntagval('def', _quote($node->definition), $node->definition_xrefs || [])
     }
     $self->tagval('comment',$node->comment);
-    $self->tagval('subset',$_->id) foreach @{$node->in_subsets || []};
+    $self->tagval('subset',$_->id) foreach @{$node->subsets || []};
     $self->ntagval('synonym',
         _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach @{$node->synonyms || []};
 

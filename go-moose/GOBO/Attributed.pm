@@ -43,7 +43,7 @@ has xrefs => ( is=>'rw', isa=>'ArrayRef[Str]'); # TODO -- make these nodes?
 has alt_ids => ( is=>'rw', isa=>'ArrayRef[Str]'); 
 has is_anonymous => ( is=>'rw', isa=>'Bool'); 
 has comment => ( is=>'rw', isa=>'Str');  # TODO - multivalued?
-has in_subsets => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]'); 
+has subsets => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]'); 
 
 
 sub add_xrefs {
@@ -71,6 +71,16 @@ sub date_compact {
         return sprintf("%04d%02d%02d",$date->year(),$date->month(),$date->day());
     }
 }
+
+sub add_subsets {
+    my $self = shift;
+    $self->subsets([]) unless $self->subsets;
+    foreach (@_) {
+        push(@{$self->subsets},ref($_) && ref($_) eq 'ARRAY' ? @$_ : $_);
+    }
+    return;
+}
+
 
 1;
 

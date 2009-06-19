@@ -5,6 +5,7 @@ extends 'GOBO::Parsers::Parser';
 use GOBO::Node;
 use GOBO::InstanceNode;
 use GOBO::Synonym;
+use GOBO::Subset;
 use GOBO::LinkStatement;
 use GOBO::LiteralStatement;
 use GOBO::ClassExpression;
@@ -24,8 +25,21 @@ sub parse_header {
         }
         chomp;
         if (/^(\S+):\s*(.*)/) {
+            my ($t,$v) = ($1,$2);
             if ($1 eq 'default-namespace') {
                 $self->default_namespace($2);
+            }
+            if ($t eq 'subsetdef') {
+                # subsetdef: gosubset_prok "Prokaryotic GO subset"
+                if ($v =~ /^(\S+)\s+\"(.*)\"/) {
+                    my ($id,$label) = ($1,$2);
+                    my $ss = new GOBO::Subset(id=>$id,
+                                              label=>$label);
+                    $g->subset_index->{$id} = $ss;
+                }
+                else {
+                    warn $v;
+                }
             }
         }
     }
@@ -91,6 +105,10 @@ sub parse_body {
         elsif (/^def:\s*(.*)/) {
             _parse_vals($1,$vals);
             $n->definition($vals->[0]); # TODO
+        }
+        elsif (/^subset:\s*(\S+)/) {
+            my $ss = $g->subset_noderef($1);
+            $n->add_subsets($ss);
         }
         elsif (/^synonym:\s*(.*)/) {
             _parse_vals($1,$vals);
