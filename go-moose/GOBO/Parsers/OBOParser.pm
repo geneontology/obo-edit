@@ -109,9 +109,18 @@ sub parse_body {
             _parse_vals($1,$vals);
             $n->definition($vals->[0]); # TODO
         }
+        elsif (/^comment:\s*(.*)/) {
+            $n->comment($1);
+        }
         elsif (/^subset:\s*(\S+)/) {
             my $ss = $g->subset_noderef($1);
             $n->add_subsets($ss);
+        }
+        elsif (/^consider:\s*(\S+)/) {
+            $n->add_considers($1);
+        }
+        elsif (/^replaced_by:\s*(\S+)/) {
+            $n->add_replaced_bys($1);
         }
         elsif (/^synonym:\s*(.*)/) {
             _parse_vals($1,$vals);
