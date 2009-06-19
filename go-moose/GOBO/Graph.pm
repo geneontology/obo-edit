@@ -28,6 +28,7 @@ use strict;
 use GOBO::Statement;
 use GOBO::Annotation;
 use GOBO::Node;
+use GOBO::Subset;
 use GOBO::TermNode;
 use GOBO::RelationNode;
 use GOBO::Indexes::StatementIndex;
@@ -41,6 +42,8 @@ has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
 has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
+
+has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 
 sub add_term {
     my $self = shift;
@@ -148,6 +151,22 @@ sub instance_noderef {
     my $n = $self->noderef(@_);
     if (!$n->isa('GOBO::InstanceNode')) {
         bless $n, 'GOBO::InstanceNode';
+    }
+    return $n;
+}
+
+sub subset_noderef {
+    my $self = shift;
+    my $ssid = shift;
+    my $n = $self->subset_index->{$ssid};
+    if (!$n) {
+        # TODO: fail?
+        warn "creating subset $ssid";
+        $n = new GOBO::Subset(id=>$ssid);
+        $self->subset_index->{$ssid} = $n;
+    }
+    if (!$n->isa('GOBO::Subset')) {
+        bless $n, 'GOBO::Subset';
     }
     return $n;
 }
