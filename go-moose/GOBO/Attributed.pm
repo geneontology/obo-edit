@@ -31,11 +31,15 @@ coerce 'Date'
         if (/(\d\d\d\d)(\d\d)(\d\d)/) {
             DateTime->new(year=>$1,month=>$2,day=>$3);
         }
+        elsif (/(\d\d):(\d\d):(\d\d\d\d)/) {
+            DateTime->new(year=>$3,month=>$2,day=>$1);
+        }
         else {
             undef;
         }
 };
 
+has version => ( is=>'rw', isa=>'Str', coerce=>1);
 has source => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has provenance => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has date => ( is=>'rw', isa=>'Date', coerce=>1); # TODO -- coerce
@@ -44,6 +48,7 @@ has alt_ids => ( is=>'rw', isa=>'ArrayRef[Str]');
 has is_anonymous => ( is=>'rw', isa=>'Bool'); 
 has comment => ( is=>'rw', isa=>'Str');  # TODO - multivalued?
 has subsets => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]'); 
+has property_value_map => ( is=>'rw', isa=>'HashRef'); 
 
 
 sub add_xrefs {
@@ -90,6 +95,20 @@ sub add_alt_ids {
     return;
 }
 
+sub set_property_value {
+    my $self = shift;
+    my ($p,$v) = @_;
+    $self->property_value_map({}) unless $self->property_value_map;
+    $self->property_value_map->{$p} = $v;
+    return;
+}
+
+sub get_property_value {
+    my $self = shift;
+    my ($p) = @_;
+    my $map = $self->property_value_map || {};
+    return $map->{$p};
+}
 
 1;
 

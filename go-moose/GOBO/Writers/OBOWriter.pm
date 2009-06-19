@@ -9,6 +9,11 @@ sub write_header {
     my $self = shift;
     my $g = $self->graph;
     $self->tagval('format-version','1.2');
+    $self->tagval(date=>$g->date->dmy(':')) if $g->date;
+    my $pvm = $g->property_value_map || {};
+    $self->tagval($_ => $pvm->{$_}) foreach keys %$pvm;
+    $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach @{$g->subsets || []};
+    $self->tagval(remark=> $g->comment);
     return;
 }
 
@@ -150,7 +155,9 @@ sub tagval {
     my $s = shift;
     return unless defined $val;
     if (ref($val)) {
-        $self->printf("%s: %s",$tag,$val->id);
+        if ($val->can('id')) {
+            $self->printf("%s: %s",$tag,$val->id);
+        }
     }
     else {
         $self->printf("%s: %s",$tag,$val);
@@ -164,7 +171,7 @@ sub tagval {
                            } @{$s->sub_statements}));
     }
     
-    if (ref($val) && $val->label) {
+    if (ref($val) && $val->can('label')) {
         $self->printf(" ! %s\n",$val->label);
     }
     else {

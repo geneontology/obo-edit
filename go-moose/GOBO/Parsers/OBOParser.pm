@@ -29,7 +29,7 @@ sub parse_header {
             if ($1 eq 'default-namespace') {
                 $self->default_namespace($2);
             }
-            if ($t eq 'subsetdef') {
+            elsif ($t eq 'subsetdef') {
                 # subsetdef: gosubset_prok "Prokaryotic GO subset"
                 if ($v =~ /^(\S+)\s+\"(.*)\"/) {
                     my ($id,$label) = ($1,$2);
@@ -40,6 +40,15 @@ sub parse_header {
                 else {
                     warn $v;
                 }
+            }
+            elsif ($t eq 'date') {
+                $g->date($v);
+            }
+            elsif ($t eq 'remark') {
+                $g->comment($v);
+            }
+            else {
+                $g->set_property_value($t,$v);
             }
         }
     }
