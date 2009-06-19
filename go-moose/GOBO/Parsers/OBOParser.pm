@@ -102,6 +102,9 @@ sub parse_body {
         elsif (/^namespace:\s*(.*)/) {
             $n->namespace($1);
         }
+        elsif (/^alt_id:\s*(.*)/) {
+            $n->add_alt_ids($1);
+        }
         elsif (/^def:\s*(.*)/) {
             _parse_vals($1,$vals);
             $n->definition($vals->[0]); # TODO
