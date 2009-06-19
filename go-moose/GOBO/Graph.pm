@@ -23,6 +23,7 @@ GOBO::LinkStatement
 
 package GOBO::Graph;
 use Moose;
+with 'GOBO::Attributed';
 our $VERSION='0.01-pre';
 use strict;
 use GOBO::Statement;
