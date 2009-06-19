@@ -57,7 +57,7 @@ sub write_stanza {
                        map {_dbxref($_)} @{$node->definition_xrefs || []});
     }
     $self->tagval('comment',$node->comment);
-    $self->tagval('subset',$_->id) foreach @{$node->in_subsets || []};
+    $self->tagval('subset',$_->id) foreach @{$node->subsets || []};
     foreach my $s (@{$node->synonyms || []}) {
         $self->ntagval('synonym',[scope=>$s->scope],
                        [synonym_text=>$s->label],
