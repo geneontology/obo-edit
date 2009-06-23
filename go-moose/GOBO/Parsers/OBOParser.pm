@@ -80,12 +80,12 @@ sub parse_body {
         elsif (/^id:\s*(.*)/) {
             $id = $1;
             if ($stanzaclass eq 'term') {
-                $n = $g->term_noderef($id);
-                $g->add_term($n);
+                #$n = $g->term_noderef($id);
+                $n = $g->add_term($id);
             }
             elsif ($stanzaclass eq 'typedef') {
-                $n = $g->relation_noderef($id);
-                $g->add_relation($n);
+                #$n = $g->relation_noderef($id);
+                $n = $g->add_relation($id);
             }
             elsif ($stanzaclass eq 'instance') {
                 $n = $g->instance_noderef($id);
