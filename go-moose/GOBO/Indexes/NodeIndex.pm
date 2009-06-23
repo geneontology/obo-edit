@@ -13,8 +13,8 @@ has ixLabel => (is => 'rw', isa => 'HashRef[ArrayRef[GOBO::Node]]', default=>sub
 sub create_node {
     my $self = shift;
     my $n = GOBO::Node->new(@_); # TODO - other types
-    $self->add_node($s);
-    return $s;
+    $self->add_node($n);
+    return $n;
 }
 
 # TODO - use Set::Object? List::MoreUtils?
@@ -30,7 +30,7 @@ sub add_nodes {
     foreach my $n (@$nl) {
         my $nid = $n->id;
         $self->ixN->{$n->id} = $n;
-        push(@{$self->ixLabel->{$n->label}}, $n);
+        push(@{$self->ixLabel->{$n->label}}, $n) if $n->label;
     }
     return;
 }
@@ -39,7 +39,7 @@ sub remove_nodes {
     my $self = shift;
     my $nl = shift;
     foreach my $n (@$nl) {
-        my $nid = $s->node->id;
+        my $nid = $n->id;
         delete $self->ixN->{$nid};
         my $arr = $self->ixT->{$n->label};
         @$arr = grep {!$n->equals($_)} @$arr;
@@ -55,7 +55,7 @@ sub nodes {
         $self->add_nodes([@_]);
     }
     # GET
-    return [map { @$_ } values %{$self->ixN}];
+    return [values %{$self->ixN}];
 }
 
 sub node_by_id {
@@ -69,6 +69,29 @@ sub nodes_by_label {
     my $self = shift;
     my $x = shift;
     return $self->ixLabel->{$x} || [];
+}
+
+sub nodes_by_metaclass {
+    my $self = shift;
+    my $c = shift;
+    if (lc($c) eq 'class') {
+        $c = 'GOBO::ClassNode';
+    }
+    elsif (lc($c) eq 'term') {
+        $c = 'GOBO::TermNode';
+    }
+    elsif (lc($c) eq 'relation') {
+        $c = 'GOBO::RelationNode';
+    }
+    elsif (lc($c) eq 'instance') {
+        $c = 'GOBO::InstanceNode';
+    }
+    else {
+        # ok
+    }
+    return [grep { $_->isa($c) } 
+            @{$self->nodes}];
+    
 }
 
 

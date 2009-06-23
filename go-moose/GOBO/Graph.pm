@@ -33,40 +33,65 @@ use GOBO::Subset;
 use GOBO::TermNode;
 use GOBO::RelationNode;
 use GOBO::Indexes::StatementIndex;
+use GOBO::Indexes::NodeIndex;
 use overload ('""' => 'as_string');
 
-has 'relations' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
-has 'terms' => (is => 'rw', isa => 'ArrayRef[GOBO::TermNode]', default=>sub{[]});
-has 'instances' => (is => 'rw', isa => 'ArrayRef[GOBO::InstanceNode]', default=>sub{[]});
+has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
+has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
+has 'instance_h' => (is => 'rw', isa => 'HashRef[GOBO::InstanceNode]', default=>sub{{}});
 has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
-has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
+#has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
+has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex', 
+                  default=>sub{ new GOBO::Indexes::NodeIndex() });
 
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 
+sub terms {
+    my $self = shift;
+    #$self->node_index->nodes_by_metaclass('term');
+    return [values %{$self->term_h}];
+}
+
+sub relations {
+    my $self = shift;
+    #$self->node_index->nodes_by_metaclass('relation');
+    return [values %{$self->relation_h}];
+}
+
+sub instances {
+    my $self = shift;
+    #$self->node_index->nodes_by_metaclass('instance');
+    return [values %{$self->instance_h}];
+}
+
 sub add_term {
     my $self = shift;
-    push(@{$self->terms},@_);
+    my $n = $self->term_noderef(@_);
+    $self->term_h->{$n->id} = $n;
     return;
 }
 
+
 sub add_relation {
     my $self = shift;
-    push(@{$self->relations},@_);
+    my $n = $self->relation_noderef(@_);
+    $self->relation_h->{$n->id} = $n;
     return;
 }
 
 sub add_instance {
     my $self = shift;
-    push(@{$self->instances},@_);
+    my $n = $self->instance_noderef(@_);
+    $self->instance_h->{$n->id} = $n;
     return;
 }
 
 sub nodes {
     my $self = shift;
-    return [values %{$self->node_index}];
+    return $self->node_index->nodes;
 }
 
 sub links { shift->link_ix->statements(@_) }
@@ -112,27 +137,25 @@ sub get_target_links {
     return \@sl;
 }
 
+
 sub noderef {
     my $self = shift;
-    #my $fac = shift || sub {new GOBO::Node(id=>shift)};
     my $id = shift;
     my $ix = $self->node_index;
-    if (!$ix->{$id}) {
-        #print STDERR "Adding node: $id\n";
-        $ix->{$id} = new GOBO::Node(id=>$id);
-        #$ix->{$id} = $fac->($id);
+    my $n = $ix->node_by_id($id);
+    if (!$n) {
+        $n = new GOBO::Node(id=>$id);
+        $ix->add_node( $n );
     }
     else {
-        #print STDERR "Already have referenced node: $id\n";
     }
-    return $ix->{$id};
+    return $n;
 }
 
 sub term_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
     if (!$n->isa('GOBO::TermNode')) {
-        #$n = new GOBO::ClassNode(%$n); # TODO - re-bless?
         bless $n, 'GOBO::TermNode';
     }
     return $n;
