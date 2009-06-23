@@ -109,6 +109,9 @@ sub write_stanza {
             }
         }
     }
+    $self->tagval('replaced_by',$_) foreach @{$node->replaced_by || []};
+    $self->tagval('consider',$_) foreach @{$node->consider || []};
+    
     return;
 }
 
