@@ -76,6 +76,25 @@ has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
 
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 
+=head2 declared_subsets
+
+ - returns ArrayRef[GOBO::Subset]
+
+returns the subsets declared in this graph.
+
+See also: GOBO::TermNode->subsets() - this returns the subsets a term belongs to
+
+=cut
+
+# @Override
+sub declared_subsets {
+    my $self = shift;
+    if (@_) {
+        my $ssl = shift;
+        $self->subset_index->{$$_->id} = $_ foreach @$ssl;
+    }
+    return [values %{$self->subset_index()}];
+}
 
 sub terms {
     my $self = shift;

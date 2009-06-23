@@ -12,7 +12,7 @@ sub write_header {
     $self->tagval(date=>$g->date->dmy(':')) if $g->date;
     my $pvm = $g->property_value_map || {};
     $self->tagval($_ => $pvm->{$_}) foreach keys %$pvm;
-    $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach @{$g->subsets || []};
+    $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach @{$g->declared_subsets || []};
     $self->tagval(remark=> $g->comment);
     return;
 }
