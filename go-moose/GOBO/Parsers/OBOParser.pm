@@ -12,6 +12,7 @@ use GOBO::ClassExpression;
 use GOBO::ClassExpression::Union;
 
 has default_namespace => (is=>'rw', isa=>'Str');
+has format_version => (is=>'rw', isa=>'Str');
 
 sub parse_header {
     my $self = shift;
@@ -46,6 +47,9 @@ sub parse_header {
             }
             elsif ($t eq 'remark') {
                 $g->comment($v);
+            }
+            elsif ($t eq 'format-version') {
+                $self->format_version($v);
             }
             else {
                 $g->set_property_value($t,$v);
