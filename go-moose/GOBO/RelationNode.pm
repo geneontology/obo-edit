@@ -41,7 +41,7 @@ sub post_init {
 }
 
 sub unary_property_names { 
-    return qw(has transitive symmetric anti_symmetric asymmetric cyclic reflexive irreflexive functional inverse_functional);
+    return qw(transitive symmetric anti_symmetric asymmetric cyclic reflexive irreflexive functional inverse_functional);
 }
 
 sub is_subsumption {
