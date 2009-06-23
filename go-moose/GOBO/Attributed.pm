@@ -31,6 +31,10 @@ coerce 'Date'
         if (/(\d\d\d\d)(\d\d)(\d\d)/) {
             DateTime->new(year=>$1,month=>$2,day=>$3);
         }
+        elsif (/(\d\d):(\d\d):(\d\d\d\d)\s+(\d\d):(\d\d+)/) {
+            # date tags in obo headers follow this convention
+            DateTime->new(year=>$3,month=>$2,day=>$1,hour=>$4,minute=>$5);
+        }
         elsif (/(\d\d):(\d\d):(\d\d\d\d)/) {
             DateTime->new(year=>$3,month=>$2,day=>$1);
         }

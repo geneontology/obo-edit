@@ -1,6 +1,6 @@
 use Test;
 
-plan tests => 4;
+plan tests => 8;
 use strict;
 
 use GOBO::Graph;
@@ -19,8 +19,19 @@ my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
 $parser->parse;
 
 my $g = $parser->graph;
+foreach my $ss (@{$g->declared_subsets}) {
+    printf "declares: $ss\n";
+}
+ok( @{$g->declared_subsets} == 1 );
+ok( $g->declared_subsets->[0]->id eq 'test' );
+
 my $neuron = $g->noderef('CL:0000540');
 ok($neuron->label eq 'neuron');
+foreach my $ss (@{$neuron->subsets}) {
+    printf "$neuron in $ss\n";
+}
+ok(@{$neuron->subsets} == 1);
+ok($neuron->subsets->[0]->id eq 'test');
 
 my $n_links = scalar(@{$g->links});
 print "links: $n_links\n";
