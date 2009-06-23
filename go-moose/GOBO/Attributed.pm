@@ -43,7 +43,7 @@ coerce 'Date'
         }
 };
 
-has version => ( is=>'rw', isa=>'Str', coerce=>1);
+has version => ( is=>'rw', isa=>'Str');
 has source => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has provenance => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has date => ( is=>'rw', isa=>'Date', coerce=>1); # TODO -- coerce

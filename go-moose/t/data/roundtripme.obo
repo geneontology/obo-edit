@@ -6,7 +6,7 @@ auto-generated-by: foo
 subsetdef: ss1 "ss1 desc"
 subsetdef: ss2 "ss2 desc"
 subsetdef: relslim "relslim"
-import: foo.obo
+import: round_import.obo
 synonymtypedef: st1 "synonym type 1"
 synonymtypedef: st2 "synonym type 2" EXACT
 idspace: X http://x.org/
