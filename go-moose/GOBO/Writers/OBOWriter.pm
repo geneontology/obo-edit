@@ -18,17 +18,22 @@ sub write_header {
     return;
 }
 
+sub _order_by_id {
+    my @nodes = @_;
+    return sort {$a->id cmp $b->id} @nodes;
+}
+
 sub write_body {
     my $self = shift;
     my $g = $self->graph;
 
-    foreach my $term (@{$g->terms}) {
+    foreach my $term (_order_by_id(@{$g->terms})) {
         $self->write_stanza($term);
     }
-    foreach my $relation (@{$g->relations}) {
+    foreach my $relation (_order_by_id(@{$g->relations})) {
         $self->write_stanza($relation);
     }
-    foreach my $instance (@{$g->instances}) {
+    foreach my $instance (_order_by_id(@{$g->instances})) {
         $self->write_stanza($instance);
     }
     foreach my $ann (@{$g->annotations}) {
