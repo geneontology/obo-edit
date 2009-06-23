@@ -13,6 +13,33 @@ graphs e.g. instance graphs are possible.
 This module deliberately omits any kind of graph traversal
 functionality. This is done by an GOBO::InferenceEngine.
 
+=head2 DETAILS
+
+A GOBO::Graph consists of two collections: a node collection and a
+link collection. Both types of collection are handled behind the
+scenes using indexes (in future these can be transparently mapped to
+databases).
+
+A graph keeps a reference of all nodes declared or referenced. We draw
+a distinction here: a graph can reference a node that is not declared
+in that graph. For example, consider an obo file with two stanzas:
+
+ id: x
+ is_a: y
+
+ id: y
+ is_a: z
+
+Here there are only two nodes declared (x and y) but there are a total
+of three references.
+
+The noderef method can be used to access the full list of nodes that
+are either declared or referenced. This is useful to avoid
+instantiating multiple copies of the same object.
+
+Methods such as terms, relations and instances return only those nodes
+declared to be in the graph
+
 =head1 SEE ALSO
 
 GOBO::Node
@@ -49,6 +76,7 @@ has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
 
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 
+
 sub terms {
     my $self = shift;
     #$self->node_index->nodes_by_metaclass('term');
@@ -71,7 +99,7 @@ sub add_term {
     my $self = shift;
     my $n = $self->term_noderef(@_);
     $self->term_h->{$n->id} = $n;
-    return;
+    return $n;
 }
 
 
@@ -79,14 +107,14 @@ sub add_relation {
     my $self = shift;
     my $n = $self->relation_noderef(@_);
     $self->relation_h->{$n->id} = $n;
-    return;
+    return $n;
 }
 
 sub add_instance {
     my $self = shift;
     my $n = $self->instance_noderef(@_);
     $self->instance_h->{$n->id} = $n;
-    return;
+    return $n;
 }
 
 sub nodes {
@@ -141,6 +169,10 @@ sub get_target_links {
 sub noderef {
     my $self = shift;
     my $id = shift;
+    if (ref($id)) {
+        # $id is actually a GOBO::Node
+        $id = $id->id;
+    }
     my $ix = $self->node_index;
     my $n = $ix->node_by_id($id);
     if (!$n) {
