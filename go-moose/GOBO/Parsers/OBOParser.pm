@@ -51,6 +51,9 @@ sub parse_header {
             elsif ($t eq 'format-version') {
                 $self->format_version($v);
             }
+            elsif ($t eq 'data-version') {
+                $g->version($v);
+            }
             else {
                 $g->set_property_value($t,$v);
             }

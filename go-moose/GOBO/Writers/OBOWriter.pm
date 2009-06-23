@@ -9,7 +9,8 @@ sub write_header {
     my $self = shift;
     my $g = $self->graph;
     $self->tagval('format-version','1.2');
-    $self->tagval(date=>$g->date->dmy(':')) if $g->date;
+    $self->tagval(data_version => $g->version) if $g->version;
+    $self->tagval(date=>sprintf("%s %02d:%02d",$g->date->dmy(':'),$g->date->hour,$g->date->minute)) if $g->date;
     my $pvm = $g->property_value_map || {};
     $self->tagval($_ => $pvm->{$_}) foreach keys %$pvm;
     $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach @{$g->declared_subsets || []};
@@ -109,6 +110,7 @@ sub write_stanza {
             }
         }
     }
+    $self->unary("is_obsolete") if $node->obsolete;
     $self->tagval('replaced_by',$_) foreach @{$node->replaced_by || []};
     $self->tagval('consider',$_) foreach @{$node->consider || []};
     
