@@ -61,17 +61,20 @@ use GOBO::TermNode;
 use GOBO::RelationNode;
 use GOBO::Indexes::StatementIndex;
 use GOBO::Indexes::NodeIndex;
+
+use Data::Dumper;
+
 use overload ('""' => 'as_string');
 
 has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
 has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
 has 'instance_h' => (is => 'rw', isa => 'HashRef[GOBO::InstanceNode]', default=>sub{{}});
-has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
+has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
-has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex', 
+has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
                   default=>sub{ new GOBO::Indexes::StatementIndex() });
 #has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
-has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex', 
+has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
                   default=>sub{ new GOBO::Indexes::NodeIndex() });
 
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
@@ -91,7 +94,7 @@ sub declared_subsets {
     my $self = shift;
     if (@_) {
         my $ssl = shift;
-        $self->subset_index->{$$_->id} = $_ foreach @$ssl;
+        $self->subset_index->{$_->id} = $_ foreach @$ssl;
     }
     return [values %{$self->subset_index()}];
 }
@@ -178,7 +181,7 @@ sub get_target_links {
     }
     if ($rel) {
         # TODO: use indexes to make this faster
-        my $rid = ref($rel) ? $rel->id : $rel; 
+        my $rid = ref($rel) ? $rel->id : $rel;
         @sl = grep {$_->relation->id eq $rid} @sl;
     }
     return \@sl;
@@ -188,19 +191,25 @@ sub get_target_links {
 sub noderef {
     my $self = shift;
     my $id = shift;
+    my $ix = $self->node_index;
+
+    my $n_obj;
     if (ref($id)) {
         # $id is actually a GOBO::Node
+        $n_obj = $id;
         $id = $id->id;
     }
-    my $ix = $self->node_index;
-    my $n = $ix->node_by_id($id);
-    if (!$n) {
-        $n = new GOBO::Node(id=>$id);
-        $ix->add_node( $n );
+    if ($ix->node_by_id($id))
+    {   # already in the index
+        $n_obj = $ix->node_by_id($id);
     }
-    else {
+    else
+    {   if (! $n_obj)
+        {	$n_obj = new GOBO::Node(id=>$id);
+        }
+        $ix->add_node( $n_obj );
     }
-    return $n;
+    return $n_obj;
 }
 
 sub term_noderef {
