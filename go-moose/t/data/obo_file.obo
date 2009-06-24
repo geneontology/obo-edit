@@ -1,0 +1,240 @@
+format-version: 1.2
+date: 29:09:2008 11:38
+saved-by: tanyaberardini
+auto-generated-by: OBO-Edit 1.101
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_generic "Generic GO slim"
+subsetdef: goslim_goa "GOA and proteome slim"
+subsetdef: goslim_pir "PIR GO slim"
+subsetdef: goslim_plant "Plant GO slim"
+subsetdef: goslim_yeast "Yeast GO slim"
+subsetdef: gosubset_prok "Prokaryotic GO subset"
+subsetdef: goslim_test "Test GO slim"
+synonymtypedef: systematic_synonym "Systematic synonym" EXACT
+default-namespace: test_ontology
+remark: cvs version: $Revision: 1.239 $
+
+[Term]
+id: GO:0000001
+name: test term GO:0000001
+namespace: test_ontology
+def: "The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:11389764]
+synonym: "mitochondrial inheritance" EXACT []
+subset: goslim_test
+is_a: GO:0000008 ! 
+relationship: regulates GO:0000008
+relationship: part_of GO:0000008
+
+[Term]
+id: GO:0000002
+name: test term GO:0000002
+namespace: test_ontology
+def: "The maintenance of the structure and integrity of the mitochondrial genome; includes replication and segregation of the mitochondrial chromosome." [GOC:ai, GOC:vw]
+subset: goslim_test
+is_a: GO:0000006 ! 
+relationship: part_of GO:0000007 ! 
+
+[Term]
+id: GO:0000003
+name: test term GO:0000003
+namespace: test_ontology
+alt_id: GO:0019952
+alt_id: GO:0050876
+def: "The production by an organism of new individuals that contain some portion of their genetic material inherited from that organism." [GOC:go_curators, GOC:isa_complete, ISBN:0198506732 "Oxford Dictionary of Biochemistry and Molecular Biology"]
+subset: goslim_generic
+subset: goslim_pir
+subset: goslim_test
+subset: gosubset_prok
+synonym: "reproductive physiological process" EXACT []
+relationship: part_of GO:0000007 ! 
+
+[Term]
+id: GO:0000004
+name: test term GO:0000004
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+subset: goslim_test
+is_a: GO:0000012 ! 
+relationship: part_of GO:0000015
+relationship: regulates GO:0000016
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000005
+name: test term GO:0000005
+namespace: test_ontology
+def: "Assists in the correct assembly of ribosomes or ribosomal subunits in vivo, but is not a component of the assembled ribosome when performing its normal biological function." [GOC:jl, PMID:12150913]
+comment: This term was made obsolete because it refers to a class of gene products and a biological process rather than a molecular function.
+subset: goslim_test
+relationship: regulates GO:0000008
+
+[Term]
+id: GO:0000006
+name: test term GO:0000006
+namespace: test_ontology
+def: "Catalysis of the transfer of a solute or solutes from one side of a membrane to the other according to the reaction: Zn2+(out) = Zn2+(in), probably powered by proton motive force. In high affinity transport the transporter is able to bind the solute even if it is only present at very low concentrations." [TC:2.A.5.1.1]
+subset: goslim_test
+is_a: GO:0000009 ! 
+
+[Term]
+id: GO:0000007
+name: test term GO:0000007
+namespace: test_ontology
+def: "Catalysis of the transfer of a solute or solutes from one side of a membrane to the other according to the reaction: Zn2+ = Zn2+, probably powered by proton motive force. In low affinity transport the transporter is able to bind the solute only if it is present at very high concentrations." [GOC:mtg_transport, ISBN:0815340729]
+subset: goslim_test
+is_a: GO:0000011 ! 
+
+[Term]
+id: GO:0000008
+name: test term GO:0000008
+namespace: test_ontology
+alt_id: GO:0000013
+def: "A small disulfide-containing redox protein that serves as a general protein disulfide oxidoreductase. Interacts with a broad range of proteins by a redox mechanism, based on the reversible oxidation of 2 cysteine thiol groups to a disulfide, accompanied by the transfer of 2 electrons and 2 protons. The net result is the covalent interconversion of a disulfide and a dithiol." [GOC:kd]
+comment: This term was made obsolete because it represents gene products.
+relationship: negatively_regulates GO:0000010 ! 
+
+[Term]
+id: GO:0000009
+name: test term GO:0000009
+namespace: test_ontology
+def: "Catalysis of the transfer of a mannose residue from GDP-mannose to an oligosaccharide, forming an alpha-1,6-linkage." [GOC:mcc, PMID:2644248]
+xref: EC:2.4.1.-
+subset: goslim_test
+is_a: GO:0000010 ! 
+
+[Term]
+id: GO:0000010
+name: test term GO:0000010
+namespace: test_ontology
+def: "Catalysis of the reaction: all-trans-hexaprenyl diphosphate + isopentenyl diphosphate = diphosphate + all-trans-heptaprenyl diphosphate." [EC:2.5.1.30]
+subset: gosubset_prok
+synonym: "all-trans-heptaprenyl-diphosphate synthase activity" EXACT [EC:2.5.1.30]
+synonym: "all-trans-hexaprenyl-diphosphate:isopentenyl-diphosphate hexaprenyltranstransferase activity" EXACT [EC:2.5.1.30]
+synonym: "heptaprenyl diphosphate synthase activity" EXACT [EC:2.5.1.30]
+synonym: "heptaprenyl pyrophosphate synthase activity" EXACT [EC:2.5.1.30]
+synonym: "heptaprenyl pyrophosphate synthetase activity" EXACT [EC:2.5.1.30]
+xref: EC:2.5.1.30
+xref: MetaCyc:TRANS-HEXAPRENYLTRANSTRANSFERASE-RXN
+subset: goslim_test
+is_a: GO:0000018 ! 
+
+[Term]
+id: GO:0000011
+name: test term GO:0000011
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+is_a: GO:0000010 ! 
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000012
+name: test term GO:0000012
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+is_a: GO:0000013 ! 
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000013
+name: test term GO:0000013
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+is_a: GO:0000014 ! 
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000014
+name: test term GO:0000014
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+subset: goslim_test
+is_a: GO:0000018 ! 
+
+[Term]
+id: GO:0000015
+name: test term GO:0000015
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+xref: Reactome:4119
+xref: Reactome:4119
+xref: Reactome:4119
+xref: Reactome:4119
+relationship: part_of GO:0000014 ! 
+
+[Term]
+id: GO:0000016
+name: test term GO:0000016
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+is_a: GO:0000014 ! 
+
+[Term]
+id: GO:0000017
+name: test term GO:0000017
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+is_a: GO:0000019 ! 
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000018
+name: test term GO:0000018
+namespace: test_ontology
+def: "The distribution of vacuoles into daughter cells after mitosis or meiosis, mediated by interactions between vacuoles and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:14616069]
+xref: Reactome:1887
+is_a: GO:0000019 ! 
+! is_a: GO:00000-- ! 
+
+[Term]
+id: GO:0000019
+name: test_ontology
+namespace: test_ontology
+alt_id: GO:0000004
+alt_id: GO:0007582
+def: "Any process specifically pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms. A process is a collection of molecular events with a defined beginning and end." [GOC:go_curators, GOC:isa_complete]
+comment: Note that, in addition to forming the root of the biological process ontology, this term is recommended for use for the annotation of gene products whose biological process is unknown. Note that when this term is used for annotation, it indicates that no information was available about the biological process of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.
+subset: goslim_candida
+subset: goslim_generic
+subset: goslim_goa
+subset: goslim_pir
+subset: goslim_plant
+subset: goslim_test
+subset: gosubset_prok
+synonym: "biological process" EXACT []
+synonym: "biological process unknown" NARROW []
+synonym: "physiological process" EXACT []
+xref: Wikipedia:Biological_process
+
+[Term]
+id: GO:0000020
+name: test term GO:0000020
+namespace: test_ontology
+def: "OBSOLETE. Any process that stops, prevents or reduces the frequency, rate or extent of genetic recombination within the DNA of the genes coding for ribosomal RNA." [GOC:go_curators, ISBN:0198506732 "Oxford Dictionary of Biochemistry and Molecular Biology"]
+comment: This term was made obsolete because it describes a substrate-specific process.
+subset: goslim_test
+is_obsolete: true
+consider: GO:0045950
+
+[Typedef]
+id: negatively_regulates
+name: negatively_regulates
+is_a: regulates ! regulates
+transitive_over: part_of
+
+[Typedef]
+id: part_of
+name: part_of
+xref: OBO_REL:part_of
+is_transitive: true
+
+[Typedef]
+id: positively_regulates
+name: positively_regulates
+is_a: regulates ! regulates
+transitive_over: part_of
+
+[Typedef]
+id: regulates
+name: regulates
+transitive_over: part_of
+
