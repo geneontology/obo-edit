@@ -1,10 +1,13 @@
 package org.oboedit.gui.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -14,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -22,8 +26,11 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +42,7 @@ import java.awt.event.MouseListener;
 
 import org.bbop.framework.AbstractGUIComponent;
 
+import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
@@ -51,7 +59,10 @@ import org.oboedit.gui.Preferences;
 import org.apache.log4j.Logger;
 
 
+
 public class AssertLinksComponent extends AbstractGUIComponent implements ListSelectionListener {
+	private static final long serialVersionUID = 1L;
+
 	//	initialize logger
 	protected final static Logger logger = Logger.getLogger(AssertLinksComponent.class);
 
@@ -60,9 +71,11 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	protected Box southPanel = Box.createHorizontalBox();
 	protected static ImageIcon expIcon = (ImageIcon) Preferences.loadLibraryIcon("info_icon.gif");
 	protected JButton assertButton = new JButton("Assert");
+	protected JScrollPane sp = null;
 
 	protected Collection<Link> allLinks = null;
 	protected Collection<Link> impliedLinks = null;
+	protected List<Link> links;
 
 	protected JTable table;
 	private AssertedLinksModel model;
@@ -71,6 +84,10 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	protected boolean selectFlags[];
 	protected List<Integer> selectedIx = new ArrayList<Integer>();
 	private final int COLUMN_COUNT = 4;
+	/** Light blue color. */
+	public static final Color LIGHT_BLUE = new Color(153, 188, 236);
+
+
 
 
 	public AssertLinksComponent(final String id) {
@@ -80,6 +97,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		southPanel.add(Box.createGlue());
 
 		impliedLinks = getImpliedLinks();
+		links = new ArrayList<Link>(impliedLinks);
 		displayResults();
 
 		assertButton.setToolTipText("Assert selected links");	
@@ -97,7 +115,6 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 
 	protected void assertLinks(){
-		final List<Link> links = new ArrayList<Link>(impliedLinks);
 		final Collection<Link> assertLinks = new ArrayList<Link>();
 		logger.debug("==> impliedLinks size before asserting... " + impliedLinks.size());
 		logger.debug("Asserting " + selectedIx.size() + " links...");
@@ -115,9 +132,9 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			if (item != null)
 				SessionManager.getManager().apply(item);
 		}
-		logger.debug("==> impliedLinks size after asserting... " + impliedLinks.size());
+		logger.debug("impliedLinks size after asserting... " + impliedLinks.size());
 		//update table
-		updateResults();
+		displayResults();
 
 	}
 
@@ -150,9 +167,9 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	class AssertedLinksModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		private final String[] columnNames = {"Select","Child Name","Parent Name", "Explanation"};
-		private final List data;
+		private Object[][] data;
 
-		public AssertedLinksModel(final List data) {
+		public AssertedLinksModel(Object[][] data) {
 			this.data = data;
 		}
 
@@ -161,24 +178,36 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		}
 
 		public int getRowCount() {
-			return data == null ? 0 : data.size();
+			return data == null ? 0 : data.length;
 		}
 
-		public String getColumnName(final int col) {
+		public String getColumnName(int col) {
 			return columnNames[col];
 		}
 
-		public void setValueAt(final Object value, final int rowIndex, final int columnIndex) {
-			getRecord(rowIndex)[columnIndex] = value;
+		/**
+		 * setValueAt
+		 * @param Object value
+		 * @param int rowIndex
+		 * @param int columnIndex
+		 * */
+		public void setValueAt(Object value, int rowIndex, int columnIndex) {
+			data[rowIndex][columnIndex] = value;
 			super.fireTableCellUpdated(rowIndex, columnIndex);
 		}
 
+		/**
+		 * getValueAt
+		 * @param int rowIndex
+		 * @param int columnIndex
+		 * */
 		public Object getValueAt(final int rowIndex, final int columnIndex) {
-			return getRecord(rowIndex)[columnIndex];
-		}
-
-		private Object[] getRecord(final int rowIndex) {
-			return (Object[]) data.get(rowIndex);
+			if (rowIndex < 0 || rowIndex >= getRowCount())
+				return "";
+			if(columnIndex > 3){
+				return "";
+			}
+			return data[rowIndex][columnIndex];
 		}
 
 		public boolean isCellEditable(final int rowIndex, final int columnIndex) {
@@ -187,8 +216,9 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			else
 				return false;
 		}
+
 		public Class getColumnClass(final int columnIndex) {
-			if (data == null || data.size() == 0) {
+			if (data == null || data.length == 0) {
 				return Object.class;
 			}
 			final Object o = getValueAt(0, columnIndex);
@@ -199,7 +229,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 	public void valueChanged(final ListSelectionEvent e) {
 		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
-			logger.debug("\n>> selected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "] ");
+			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "] ");
 			//Select action for Child name and Parent name columns  
 			//selects term in all components corresponding to the column in focus
 			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
@@ -209,25 +239,70 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			}
 			//Select link and show explanation component
 			if(table.getSelectedColumn() ==3){
-				Link rowobj = (Link) table.getValueAt(table.getSelectedRow(), 3);
+				logger.debug(">> getting link at: " + table.getSelectedRow() + " --> link: " + table.getSelectedRow());
+				Link rowobj = links.get(table.getSelectedRow());
 				SelectionManager.selectLink(table, rowobj, false);
 			}
 		}
 	}
 
 	public void displayResults(){
-		final List<Object[]> data = new ArrayList<Object[]>();
-		for(final Link link: impliedLinks){
-			final Object record[] = new Object[COLUMN_COUNT];
-			record[0] = Boolean.FALSE;
-			record[1] = link.getChild();
-			record[2] = link.getParent();
-			record[3] = expIcon;
-			data.add(record);
+		Object[][] data = new Object[impliedLinks.size()][COLUMN_COUNT];		
+		int i=0;
+		for(Link link : impliedLinks){
+			data[i][0]= Boolean.FALSE;
+			data[i][1]= link.getChild();
+			data[i][2]= link.getParent();
+			data[i][3] = expIcon;
+			i++;
 		}
-		model = new AssertedLinksModel(data);
-		table = new JTable(model);
+		final String[] columnToolTips = {
+				"Select Links to Assert",
+				"Sort table alphabetically on Child Name",
+				"Sort table alphabetically on Parent Name", 
+				"Load Explanation Component to view additional information",
+		};
 
+		model = new AssertedLinksModel(data);
+		if(table == null){
+			table = new JTable(model){
+				//alternate row coloring 
+				public Component prepareRenderer
+				(TableCellRenderer renderer,int Index_row, int Index_col) {
+					Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+					//even index, selected or not selected
+					if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+						comp.setBackground(LIGHT_BLUE);
+						comp.setForeground(Color.black);
+					} 
+					else {
+						comp.setBackground(Color.white);
+						comp.setForeground(Color.black);
+					}
+					return comp;
+				}
+
+				//table header tool tips
+				protected JTableHeader createDefaultTableHeader() {
+					return new JTableHeader(columnModel) {
+						public String getToolTipText(MouseEvent e) {
+							String tip = null;
+							java.awt.Point p = e.getPoint();
+							int index = columnModel.getColumnIndexAtX(p.x);
+							int realIndex = 
+								columnModel.getColumn(index).getModelIndex();
+							return columnToolTips[realIndex];
+						}
+					};
+				}
+			};			
+		} 
+		else {
+			table.setModel(model);
+		}
+
+		RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+		table.setRowSorter(sorter);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener (this);
 		table.setDragEnabled(false);
@@ -238,28 +313,38 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
 		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
 		table.addMouseListener(new MyMouseListener());
-
-		northPanel.add(new JScrollPane(table));
-	}
-	
-	public void updateResults(){
-		final List<Object[]> data = new ArrayList<Object[]>();
-		logger.debug("updateResuts impliedLinks size: " + impliedLinks.size());
-		for(final Link link: impliedLinks){
-			final Object record[] = new Object[COLUMN_COUNT];
-			record[0] = Boolean.FALSE;
-			record[1] = link.getChild();
-			record[2] = link.getParent();
-			record[3] = expIcon;
-			data.add(record);
+		
+		
+		if(sp == null){
+			sp = new JScrollPane();
+			sp.getViewport().add(table);
+			northPanel.add(sp, BorderLayout.CENTER);
 		}
-		model = new AssertedLinksModel(data);
-		table.setModel(model);	
-		final TableColumn tc = table.getColumnModel().getColumn(0);  
-		tc.setCellEditor(table.getDefaultEditor(Boolean.class));  
-		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
-		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+		else
+			table.repaint();
 	}
+
+//	// update table after assert
+//	public void updateResults(){
+//		final List<Object[]> data = new ArrayList<Object[]>();
+//		logger.debug("updateResuts impliedLinks size: " + impliedLinks.size());
+//		for(final Link link: impliedLinks){
+//			final Object record[] = new Object[COLUMN_COUNT];
+//			record[0] = Boolean.FALSE;
+//			record[1] = link.getChild();
+//			record[2] = link.getParent();
+//			record[3] = expIcon;
+//			data.add(record);
+//		}
+//
+//		//		model = new AssertedLinksModel(data);
+//		table.setModel(model);	
+//
+//		final TableColumn tc = table.getColumnModel().getColumn(0);  
+//		tc.setCellEditor(table.getDefaultEditor(Boolean.class));  
+//		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
+//		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+//	}
 
 
 	class MyItemListener implements ItemListener{   

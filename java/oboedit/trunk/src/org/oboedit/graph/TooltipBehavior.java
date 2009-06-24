@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.Timer;
 
+import org.obo.datamodel.Link;
 import org.oboedit.graph.TooltipFactory;
 import org.oboedit.gui.components.LinkDatabaseCanvas;
 import org.oboedit.piccolo.WordBubbleNode;
@@ -29,7 +30,7 @@ public class TooltipBehavior implements ViewBehavior {
 	protected long tooltipVisibleDelay = DEFAULT_TOOLTIP_VISIBILITY_DELAY;
 	boolean tooltipFlareVisible;
 	boolean tooltipBubbleVisible;
-	
+
 	protected class TooltipEventHandler extends PBasicInputEventHandler {
 		protected PNode lastEntered;
 
@@ -79,9 +80,9 @@ public class TooltipBehavior implements ViewBehavior {
 				tooltipHolder.setTooltipFlareVisible(tooltipFlareVisible);
 				canvas.getCamera().addChild(tooltipHolder);
 				final PActivity a = tooltipHolder
-						.animateScaleInFromPoint(getTooltipFadeInTime());
+				.animateScaleInFromPoint(getTooltipFadeInTime());
 				canvas.getCamera().addActivity(a);
-			
+
 			}
 		}
 
@@ -120,7 +121,7 @@ public class TooltipBehavior implements ViewBehavior {
 			for (int i = path.getNodeStackReference().size() - 1; i >= 0; i--) {
 				PNode node = (PNode) path.getNodeStackReference().get(i);
 				TooltipFactory tf = (TooltipFactory) node
-						.getAttribute(TooltipFactory.KEY);
+				.getAttribute(TooltipFactory.KEY);
 				if (tf != null) {
 					lastEntered = node;
 					lastTooltipFactory = tf;
@@ -139,7 +140,7 @@ public class TooltipBehavior implements ViewBehavior {
 			popupTimer.stop();
 			hideTooltip(currentTooltip, tooltipHolder);
 		}
-		
+
 
 	}
 
@@ -157,14 +158,14 @@ public class TooltipBehavior implements ViewBehavior {
 	protected LinkDatabaseCanvas canvas;
 
 	public boolean isTooltipFlareVisible() {
-		
+
 		return tooltipFlareVisible;
 	}
 
 	public void setTooltipFlareVisible(boolean tooltipFlareVisible) {
 		tooltipHandler.setTooltipFlareVisible(tooltipFlareVisible);
 		this.tooltipFlareVisible = tooltipFlareVisible;
-		//logger.debug("TooltipBehavior: setTooltipFlareVisible: tooltipFlareVisible = " + tooltipFlareVisible);
+//		logger.debug("TooltipBehavior: setTooltipFlareVisible: tooltipFlareVisible = " + tooltipFlareVisible);
 	}
 
 	public void install(LinkDatabaseCanvas canvas) {
@@ -197,9 +198,9 @@ public class TooltipBehavior implements ViewBehavior {
 	public void setTooltipVisibleDelay(long tooltipVisibleDelay) {
 		this.tooltipVisibleDelay = tooltipVisibleDelay;
 	}
-	
 
 
-	
+
+
 
 }
