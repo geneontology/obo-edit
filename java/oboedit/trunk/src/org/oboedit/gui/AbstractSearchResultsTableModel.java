@@ -73,6 +73,7 @@ extends AbstractTableModel implements SearchResultsTableModel<T> {
 			if (t != null)
 				itemList.add(t);
 		}
+		logger.debug("getSortColumn: " + getSortColumn());
 		setSortColumn(getSortColumn(), true);
 	}
 

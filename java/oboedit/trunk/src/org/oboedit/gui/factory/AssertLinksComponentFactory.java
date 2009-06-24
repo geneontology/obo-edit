@@ -22,7 +22,7 @@ AbstractComponentFactory<AssertLinksComponent>{
 	}
 
 	public String getName() {
-		return "Assert Implied Links Panel - Work In Progress";
+		return "Assert Implied Links Panel";
 	}
 
 	public FactoryCategory getCategory() {

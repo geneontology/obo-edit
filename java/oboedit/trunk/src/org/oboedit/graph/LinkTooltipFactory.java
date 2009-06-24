@@ -19,6 +19,7 @@ public class LinkTooltipFactory extends AbstractTooltipFactory {
 
 	public PNode getTooltip(LinkDatabaseCanvas canvas, PNode node) {
 		if (node instanceof OELink && canvas.getReasoner() != null) {
+			logger.debug("LinkTooltipFactory.getTooltip");
 			Link link = ((OELink) node).getLink();
 			if (link != null) {
 				String html = "<html>\n" + "<body>\n";
