@@ -35,16 +35,24 @@ sub add_nodes {
     return;
 }
 
+# note that this removes nodes only from the node index;
+# links must be removed separately
 sub remove_nodes {
     my $self = shift;
     my $nl = shift;
+    my $num =  0;
     foreach my $n (@$nl) {
-        my $nid = $n->id;
+        my $nid = ref($n) ? $n->id : $n;
         delete $self->ixN->{$nid};
-        my $arr = $self->ixT->{$n->label};
-        @$arr = grep {!$n->equals($_)} @$arr;
+        $num++;
     }
-    return;
+    return $num;
+}
+
+sub remove_node {
+    my $self = shift;
+    my $n = shift;
+    return $self->remove_nodes([$n]);
 }
 
 sub nodes {

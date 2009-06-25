@@ -9,7 +9,7 @@ use GOBO::RelationNode;
 
 has 'node' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'relation' => ( is=>'rw', isa=>'GOBO::RelationNode', coerce=>1 );
-has 'target' => ( is=>'rw', isa=>'Item');
+#has 'target' => ( is=>'rw', isa=>'Item');
 has 'inferred' => ( is=>'rw', isa=>'Bool');
 has 'negated' => ( is=>'rw', isa=>'Bool'); # TODO: use this or NegatedStatement?
 has 'is_intersection' => ( is=>'rw', isa=>'Bool');
@@ -22,16 +22,7 @@ sub as_string {
     return sprintf("(%s --[%s]-->%s)",$self->node || '?',$self->relation || '?', $self->target || '?' );
 }
 
-sub equals {
-    my $self = shift;
-    my $s = shift;
-    if ($self->node->id eq $s->node->id &&
-        ($self->relation && $s->relation && $self->relation->id eq $s->relation->id) && 
-        $self->target eq $s->target) {
-        return $self->is_intersection && $s->is_intersection;
-    }
-    return 0;
-}
+
 
 sub matches {
     my $self = shift;

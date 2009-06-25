@@ -1,5 +1,5 @@
 use Test;
-plan tests => 0;
+plan tests => 5;
 use strict;
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
@@ -22,13 +22,25 @@ my $g = $parser->graph;
 $Data::Dumper::Maxdepth = 2;
 print STDERR
 "node index: " . Dumper( $g->node_index )
-. "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_target_links("GO:0000004")}) . "\n\nRemoving GO:0000004...\n\n\n";
+. "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_outgoing_links("GO:0000004")}) . "\n\nRemoving GO:0000004...\n\n\n";
 
-$g->node_index->remove_node( $g->noderef("GO:0000004") );
+ok ( $g->get_term("GO:0000004") );
+
+#$g->node_index->remove_node( $g->noderef("GO:0000004") );
+$g->remove_node( $g->noderef("GO:0000004")); # NO CASCADE
 
 print STDERR
 "node index now: " . Dumper( $g->node_index )
-. "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_target_links("GO:0000004")}) . "\nnode index after getting links for GO:0000004: " . Dumper( $g->node_index )
+. "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_outgoing_links("GO:0000004")}) . "\nnode index after getting links for GO:0000004: " . Dumper( $g->node_index )
 . "\n";
 
-exit(0);
+ok ( ! $g->get_term("GO:0000004") );
+
+ok ( scalar(@{$g->get_outgoing_links("GO:0000004")}) == 3);
+
+$g->remove_node( $g->noderef("GO:0000007"), 1); # WITH CASCADE
+
+ok ( ! $g->get_term("GO:0000007") );
+
+ok ( scalar(@{$g->get_outgoing_links("GO:0000007")}) == 0);
+
