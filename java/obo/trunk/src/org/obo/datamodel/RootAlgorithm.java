@@ -27,9 +27,12 @@ public interface RootAlgorithm {
 				}
 
 				if (link instanceof Link)
-					if (TermUtil.isObsolete(((Link) link).getParent())
-							|| TermUtil.isObsolete(((Link) link).getType()))
+					if (TermUtil.isObsolete(((Link) link).getParent()) || TermUtil.isObsolete(((Link) link).getType()))
 						continue;
+				
+				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
+					continue;
+				}
 
 				return false;
 			}
