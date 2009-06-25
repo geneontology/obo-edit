@@ -1,9 +1,9 @@
 /** 
- * @author (Atif Iqbal), Thomas Waechter
+ * @author Thomas Waechter
  * 
- * The Ontology Generation package. The Ontology Generation Plugin gives support for 
+ * The Ontology Generation package. The Ontology Generation Tool gives support for 
  * automatic terminology recognition, definition extraction and placing new defined 
- * terms in the ontology structure. 
+ * terms in the ontology structure.
  * 
  */ 
 package org.oboedit.gui.components.ontologyGeneration;

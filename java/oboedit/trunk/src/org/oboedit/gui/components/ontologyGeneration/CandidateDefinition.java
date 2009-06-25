@@ -2,6 +2,8 @@ package org.oboedit.gui.components.ontologyGeneration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Internal representation of a definition
@@ -21,6 +23,7 @@ public class CandidateDefinition implements Cloneable
 	private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
 	private int parentTermCount;
 	private final List<String> urls;
+	private static Pattern pattern = Pattern.compile("<font color=blue>(.+)</font>");
 
 	/**
 	 * Constructs a {@link CandidateDefinition}
@@ -59,8 +62,7 @@ public class CandidateDefinition implements Cloneable
 	public CandidateDefinition(int index, String def, String defFormatted, String ur, String cachedUR, int termCount, boolean select)
 	{
 		urls = new ArrayList<String>();
-		cachedURLs = new ArrayList<String>();
-		
+		cachedURLs = new ArrayList<String>();	
 		this.index = index;
 		this.definition = def;
 		this.definitionHTMLFormatted = defFormatted;
@@ -85,6 +87,27 @@ public class CandidateDefinition implements Cloneable
 	}
 
 	/**
+	 * @return the definitional context string parents should be searched in
+	 */
+	public String getDefinitionalContext(){
+//		String htmlString = getDefinitionHTMLFormatted().substring(this.startOfDefinitionalContext);
+//		String replaced = htmlString.replaceAll("\\<.*?>","");
+		Matcher matcher = pattern.matcher(getDefinitionHTMLFormatted());
+		if (matcher.find()) {
+			String match = matcher.group(1);
+			Matcher matcher2 = pattern.matcher(match);
+			if (matcher2.find()) {
+				// sometimes server sense nested font tags
+				return matcher2.group(1);
+			} else {
+				return matcher.group(1);
+			}
+		}
+		return null;
+	}
+
+	
+	/**>
 	 * @return the URL of the location where the definition was extracted from
 	 */
 	public List<String> getUrl()

@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  *
  */
 public abstract class DataExtraction {
-	public final static Logger logger = Logger.getLogger(DataExtraction.class);
+	private final static Logger logger = Logger.getLogger(DataExtraction.class);
 	
 	public abstract boolean definitionExtraction(CandidateDefinition definition);
 	public abstract String fileExtraction(File file);

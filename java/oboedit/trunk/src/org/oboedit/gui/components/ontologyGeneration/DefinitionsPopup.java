@@ -307,7 +307,9 @@ public class DefinitionsPopup extends JDialog
 			 * column, Otherwise (row contains definition), use standard cell renderer.
 			 */
 			if (column == 2 && candidateDefinitionList.get(row).isURL()) {
-				return new TableCellImageRenderer("resources/aboutIcon.png");
+				TableCellImageRenderer tableCellImageRenderer = new TableCellImageRenderer("resources/aboutIcon.png");
+				tableCellImageRenderer.setToolTipText(Messages.getString("DefinitionsPopup.ExternalBrowserIcon")); //$NON-NLS-1$
+				return tableCellImageRenderer;
 			}
 			else if (column == 0) {
 				if (candidateDefinitionList.get(row).isDef()) {
@@ -318,7 +320,8 @@ public class DefinitionsPopup extends JDialog
 				{
 					private static final long serialVersionUID = -4293679914935943300L;
 
-					public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					@Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 					    boolean hasFocus, int row, int column)
 					{
 						JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
@@ -335,7 +338,8 @@ public class DefinitionsPopup extends JDialog
 					
 					private static final int MAX_LINE_LENGTH = 40;
 					
-					public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					@Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 						    boolean hasFocus, int row, int column)
 						{
 							// Check if the row belongs to a definition
@@ -345,7 +349,7 @@ public class DefinitionsPopup extends JDialog
 								comp.setText((String)getModel().getValueAt(row, column));
 								
 								// add multi-line tooltip displaying the full HTML-formatted definition.
-								String htmlDef = (String)getModel().getDefinitionForRow(row).def.getDefinitionHTMLFormatted();
+								String htmlDef = getModel().getDefinitionForRow(row).def.getDefinitionHTMLFormatted();
 								
 								String toolTipText = "";
 								
@@ -436,7 +440,7 @@ public class DefinitionsPopup extends JDialog
 				}
 			}
 			catch (Exception exception) {
-				JOptionPane.showMessageDialog(null, errMsg + ":\n" + exception.getLocalizedMessage());
+				JOptionPane.showMessageDialog(parent, errMsg + ":\n" + exception.getLocalizedMessage());
 			}
 		}
 

@@ -18,13 +18,15 @@ public class FilterTextField extends JPanel
 		this.setLayout(borderLayout);
     	textField = new JTextField(5);
     	if (needsFilterIcon)
-    		label = new JLabel(new ImageIcon(getClass().getResource("resources/filterIcon.png")));
+    		label = new JLabel(new ImageIcon(getClass().getResource("resources/filterIcon.png"))); 
     	else
-    		label = new JLabel(new ImageIcon(getClass().getResource("resources/searchIcon.png")));
+    		label = new JLabel(new ImageIcon(getClass().getResource("resources/searchIcon.png"))); 
 	    label.setOpaque(true);  
 	    label.setBackground(textField.getBackground());
 	    this.setBorder(textField.getBorder());
 	    textField.setBorder(null);
+		textField.setToolTipText(Messages.getString("FilterTextField.ToolTip")); //$NON-NLS-1$
+
 	    this.setBackground(textField.getBackground());
 	    this.add(label, BorderLayout.WEST);
 	    this.add(textField, BorderLayout.CENTER);

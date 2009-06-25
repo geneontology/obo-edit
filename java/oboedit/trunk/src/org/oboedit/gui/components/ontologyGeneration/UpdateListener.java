@@ -9,5 +9,4 @@ package org.oboedit.gui.components.ontologyGeneration;
 public interface UpdateListener
 {
 	public void update();
-
 }

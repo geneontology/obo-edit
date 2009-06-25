@@ -25,6 +25,8 @@ public class TermsTable extends JTable {
 	private String lastRegex = new String();
 	private int lastVisibleRow = -1;
 	private int firstVisibleRow = -1;
+	
+	private TermsTableCellRenderer termsTableCellRenderer;
 
 	/**
 	 * Constructs a {@link TermsTable}
@@ -37,6 +39,7 @@ public class TermsTable extends JTable {
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
 		tableHeader.setReorderingAllowed(false);
+		termsTableCellRenderer = new TermsTableCellRenderer();
 	}
 
 	/**
@@ -50,6 +53,15 @@ public class TermsTable extends JTable {
 		setCurrentFirstVisibleRow(-1);
 		setCurrentLastVisibleRow(-1);
 	}
+
+	/**
+     * Set whether only existing loaded terms should be displayed
+     *
+     * @param onlyExistingTerms
+     */
+    public void setOnlyShowExistingTerms(boolean onlyExistingTerms) {
+    	getModel().setOnlyShowExistingTerms(onlyExistingTerms);
+    }
 
 	/**
 	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable}
@@ -109,13 +121,13 @@ public class TermsTable extends JTable {
 
 		if (realColumnIndex == 3) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			tip = "Click to see GoPubMed(www.gopubmed.org) resutls for this term";
+			tip = Messages.getString("TermsTable.OpenGoPubMedResultsButton"); //$NON-NLS-1$
 
 		} else if (realColumnIndex == 1) {
 			tip = getModel().getValueAt(rowIndex, colIndex).toString();
 		} else if (realColumnIndex == 2) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			tip = "Click to get definitions for this term";
+			tip = Messages.getString("OntologyGenerationComponent.GenerateDefinitionsButton"); //$NON-NLS-1$
 		} else {
 			/*
 			 * You can omit this part if you know you don't have any renderer
@@ -188,30 +200,33 @@ public class TermsTable extends JTable {
 
 	}
 
+	/**
+	 * @see javax.swing.JTable#getCellRenderer(int, int)
+	 */
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int column) {
-		if (column == 1) {
-			return new DefaultTableCellRenderer() {
-				private static final long serialVersionUID = 1L;
-
-				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-						boolean hasFocus, int row, int column) {
-					JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-							column);
-					comp.setText((String) getModel().getValueAt(row, column));
-					if (getModel().isPresentInOntology(getModel().getTermAt(row))) {
-						comp.setFont(table.getFont().deriveFont(Font.BOLD));
-					}
-					return comp;
-				}
-			};
-		} else {
+		if (column == 1)
+			return termsTableCellRenderer;
+		else
 			return super.getCellRenderer(row, column);
-		}
 	}
 
-	public void onlyShowExistingTerms(boolean onlyExistingTerms) {
-		getModel().setOnlyShowExistingTerms(onlyExistingTerms);
+	private class TermsTableCellRenderer extends DefaultTableCellRenderer {
+		private static final long serialVersionUID = 5435653832511917987L;
+
+		@Override
+        public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+				JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+						column);
+				comp.setText((String) getModel().getValueAt(row, column));
+				if (getModel().getTermAt(row).isInLoadedOntology()) {
+					comp.setFont(table.getFont().deriveFont(Font.BOLD));
+				}
+				return comp;
+		}
+		
 	}
 
 }

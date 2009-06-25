@@ -22,7 +22,8 @@ public class OBOTermsTable extends JTable
 	private static final long serialVersionUID = -5517462579527283469L;
 	private int minScrollableViewPortHeight;
 	private int maxScrollableViewPortHeight;
-//	private JComboBox relationTypeComboBox;
+	// private JComboBox relationTypeComboBox;
+	private String lastRegex = new String();
 
 	/**
 	 * Constructs a {@link OBOTermsTable}
@@ -38,18 +39,18 @@ public class OBOTermsTable extends JTable
 		getColumnModel().getColumn(2).setMinWidth(80);
 		getColumnModel().getColumn(2).setMaxWidth(80);
 		getColumnModel().getColumn(2).setResizable(false);
-		// TODO Add a editable combobox with known relationship types and select the one predicted/known 
-		//		relationTypeComboBox = new JComboBox();
-		//		relationTypeComboBox.addItem("is_a"); // TODO
-		//		relationTypeComboBox.addItem("part_of");
-		//		relationTypeComboBox.addItem("have_fun");
-		//		getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(relationTypeComboBox));
-		
+		// TODO Add a editable combobox with known relationship types and select the one predicted/known
+		// relationTypeComboBox = new JComboBox();
+		// relationTypeComboBox.addItem("is_a"); // TODO
+		// relationTypeComboBox.addItem("part_of");
+		// relationTypeComboBox.addItem("have_fun");
+		// getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(relationTypeComboBox));
+
 		getColumnModel().getColumn(3).setMinWidth(130);
 		getColumnModel().getColumn(3).setMaxWidth(130);
 		getColumnModel().getColumn(3).setResizable(false);
 		getColumnModel().getSelectionModel().addListSelectionListener(this);
-		
+
 		tableHeader.setReorderingAllowed(false);
 	}
 
@@ -107,6 +108,38 @@ public class OBOTermsTable extends JTable
 		this.maxScrollableViewPortHeight = maxHeight;
 	}
 
+	/**
+	 * Update displayed candidate terms. Filter by regex provided.
+	 * 
+	 * @param regex
+	 */
+	public void findTerm(String regex)
+	{
+		if (regex != null && !lastRegex.equals(regex)) {
+			lastRegex = regex;
+			Pattern p = null;
+
+			try {
+				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+			}
+			catch (PatternSyntaxException exception) {
+				return;
+			}
+			Iterator<LinkedObject> it = getModel().getAllTerms().iterator();
+			int index = 0;
+			while (it.hasNext()) {
+				LinkedObject term = it.next();
+				String name = term.getName();
+				if (p.matcher(name).find()) {
+					getSelectionModel().setSelectionInterval(index, index);
+					JTableHelper.scrollToCenter(this, index, 2);
+					return;
+				}
+				index++;
+			}
+		}
+	}
+
 	/*
 	 * OVERRIDDEN METHODS
 	 */
@@ -149,39 +182,5 @@ public class OBOTermsTable extends JTable
 		// }
 
 		return tip;
-	}
-
-	private String lastRegex = new String();
-
-	/**
-	 * Update displayed candidate terms. Filter by regex provided.
-	 * 
-	 * @param regex
-	 */
-	public void findTerm(String regex)
-	{
-		if (regex != null && !lastRegex.equals(regex)) {
-			lastRegex = regex;
-			Pattern p = null;
-
-			try {
-				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
-				return;
-			}
-			Iterator<LinkedObject> it = getModel().getAllTerms().iterator();
-			int index = 0;
-			while (it.hasNext()) {
-				LinkedObject term = it.next();
-				String name = term.getName();
-				if (p.matcher(name).find()) {
-					getSelectionModel().setSelectionInterval(index, index);
-					JTableHelper.scrollToCenter(this, index, 2);
-					return;
-				}
-				index++;
-			}
-		}
 	}
 }
