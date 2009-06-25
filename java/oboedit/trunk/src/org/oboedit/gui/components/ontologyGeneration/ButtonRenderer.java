@@ -19,6 +19,8 @@ public class ButtonRenderer extends JButton implements TableCellRenderer
 	{
 		setOpaque(true);
 		this.setText("+");
+		this.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
+		this.setFont(this.getFont().deriveFont(12.0f));
 		this.setMargin(new Insets(1,1,1,1));
 	}
 	
@@ -38,6 +40,8 @@ class ButtonEditor extends DefaultCellEditor
 	public ButtonEditor(JCheckBox checkBox) {
 		super(checkBox);
 		button = new JButton("+");
+		button.setToolTipText(Messages.getString("ButtonRenderer.AddDefinitionButton")); //$NON-NLS-1$
+		button.setFont(button.getFont().deriveFont(12.0f));
 		button.setMargin(new Insets(1, 1, 1, 1));
 		button.setOpaque(true);
 		button.addActionListener(new ActionListener() {
@@ -47,19 +51,23 @@ class ButtonEditor extends DefaultCellEditor
 		});
 	}
 
-	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+	@Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		return button;
 	}
 
-	public Object getCellEditorValue() {
+	@Override
+    public Object getCellEditorValue() {
 		return new String("+");
 	}
 
-	public boolean stopCellEditing() {
+	@Override
+    public boolean stopCellEditing() {
 		return super.stopCellEditing();
 	}
 
-	protected void fireEditingStopped() {
+	@Override
+    protected void fireEditingStopped() {
 		super.fireEditingStopped();
 	} 
 }

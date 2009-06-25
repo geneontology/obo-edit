@@ -31,4 +31,10 @@ public class TableCellImageRenderer extends DefaultTableCellRenderer
 		lbl.setIcon(icon);
 		return lbl;
 	}
+	
+	@Override
+	public void setToolTipText(String text)
+	{
+		lbl.setToolTipText(text);
+	}
 }

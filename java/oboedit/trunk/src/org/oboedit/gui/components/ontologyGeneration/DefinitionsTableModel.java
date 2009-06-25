@@ -223,7 +223,7 @@ public class DefinitionsTableModel extends AbstractTableModel
 	private List<CandidateDefinition> getVisibleElements()
 	{
 		List<CandidateDefinition> list = new ArrayList<CandidateDefinition>();
-		for (CandidateDefinition definition : definitions) {
+		for (CandidateDefinition definition : getDefinitions()) {
 			if (definition.isVisible())
 				list.add(definition);
 		}

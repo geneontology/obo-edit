@@ -6,16 +6,13 @@ import org.bbop.framework.AbstractGUIComponent;
 
 public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6424353594539158432L;
 	final OntologyGenerationComponent innerComponent;
-	final OBOOntologyModelAdapterInterface adapter;
-	
+	final OntologyModelAdapterInterface adapter;
+
 	public OBOOntologyGenerationGUIComponent(String id) {
 		super(id);
-		adapter = new OBOOntologyModelAdapter();
+		adapter = OBOOntologyModelAdapter.getInstance();
 		innerComponent = new OntologyGenerationComponent(adapter, this);
 		adapter.setService(innerComponent);
 		this.setTitle("Ontology Generation view");
@@ -30,12 +27,12 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent {
 		adapter.getTermsFromOntologyModel();
 		adapter.updateSelectedLinkedObjectAndParents();
 	}
-	
+
 	@Override
 	public void cleanup() {
 		adapter.removeListeners();
 	}
-	
+
 	@Override
 	public void setCursor(Cursor cursor) {
 		super.setCursor(cursor);

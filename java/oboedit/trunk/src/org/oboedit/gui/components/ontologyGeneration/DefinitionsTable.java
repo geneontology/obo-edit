@@ -23,6 +23,9 @@ public class DefinitionsTable extends JTable
 	private int minScrollableViewPortHeight = 40;
 	private int maxScrollableViewPortHeight = 200;
 
+	private ButtonRenderer buttonRenderer;
+	private DefinitionsTableCellRenderer definitionsTableCellRenderer;
+	
 	/**
 	 * Constructs a {@link DefinitionsTable}
 	 */
@@ -39,6 +42,9 @@ public class DefinitionsTable extends JTable
 		getColumnModel().getColumn(0).setCellEditor(new ButtonEditor(new JCheckBox()));
 		setPreferredScrollableViewportSize(new Dimension(minScrollableViewPortHeight, maxScrollableViewPortHeight));
 		tableHeader.setReorderingAllowed(false);
+		
+		buttonRenderer = new ButtonRenderer();
+		definitionsTableCellRenderer = new DefinitionsTableCellRenderer();
 	}
 
 	/**
@@ -121,31 +127,10 @@ public class DefinitionsTable extends JTable
 	public TableCellRenderer getCellRenderer(int row, int column)
 	{
 		if (column == 0) {
-			return new ButtonRenderer();
+			return buttonRenderer;
 		}
 		else if (column == 1) {
-			return new DefaultTableCellRenderer()
-			{
-				private static final long serialVersionUID = -9109057959830836291L;
-
-				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					    boolean hasFocus, int row, int column)
-				{
-					// Check if the row belongs to a definition
-					JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
-					    hasFocus, row, column);
-					
-					String htmlDefinition = (String)getModel().getValueAt(row, column);
-					
-					comp.setText(htmlDefinition);
-					
-					// add multi-line tooltip displaying the full HTML-formatted definition.
-					comp.setToolTipText(setToolTip(htmlDefinition));
-					
-					return comp;
-				}
-			};
-					
+			return definitionsTableCellRenderer;
 		}
 		else {
 			return super.getCellRenderer(row, column);
@@ -198,57 +183,26 @@ public class DefinitionsTable extends JTable
 	}
 
 
-	// // Returns the preferred height of a row.
-	// // The result is equal to the tallest cell in the row.
-	// public int getPreferredRowHeight(JTable table, int rowIndex, int margin)
-	// {
-	// // Get the current default height for all rows
-	// int height = table.getRowHeight(rowIndex);
-	// table.setAlignmentY(TOP_ALIGNMENT);
-	//
-	// // Determine highest cell in the row
-	// for (int c = 1; c < table.getColumnCount()-1; c++) {
-	// TableCellRenderer renderer = table.getCellRenderer(rowIndex, c);
-	// Component comp = table.prepareRenderer(renderer, rowIndex, c);
-	// int h = comp.getPreferredSize().height * margin;
-	// height = Math.max(height, h);
-	// }
-	// return height;
-	// }
-	//
-	// // The height of each row is set to the preferred height of the
-	// // tallest cell in that row.
-	// public void packRows(JTable table, int margin)
-	// {
-	// packRows(table, 0, table.getRowCount(), margin);
-	// }
-	//
-	// // For each row >= start and < end, the height of a
-	// // row is set to the preferred height of the tallest cell
-	// // in that row.
-	// public void packRows(JTable table, int start, int end, int margin)
-	// {
-	// for (int r = start; r < table.getRowCount() && r < end; r++) {
-	// // Get the preferred height
-	// int h = getPreferredRowHeight(table, r, margin);
-	//
-	// // Now set the row height using the preferred height
-	// if (table.getRowHeight(r) != h) {
-	// table.setRowHeight(r, h);
-	// }
-	// }
-	// }
+	private class DefinitionsTableCellRenderer extends DefaultTableCellRenderer {
 
-	// /**
-	// * TODO describe me!
-	// *
-	// * @see javax.swing.JTable#updateUI()
-	// */
-	// @Override
-	// public void updateUI()
-	// {
-	// super.updateUI();
-	// packRows(this, 2);
-	// }
+		private static final long serialVersionUID = -8655538136483302823L;
 
+		@Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+			    boolean hasFocus, int row, int column)
+		{
+			// Check if the row belongs to a definition
+			JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected,
+			    hasFocus, row, column);
+			
+			String htmlDefinition = (String)getModel().getValueAt(row, column);
+			
+			comp.setText(htmlDefinition);
+			
+			// add multi-line tooltip displaying the full HTML-formatted definition.
+			comp.setToolTipText(setToolTip(htmlDefinition));
+			
+			return comp;
+		}
+	}
 }
