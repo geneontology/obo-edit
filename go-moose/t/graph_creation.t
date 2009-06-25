@@ -19,7 +19,7 @@ use GOBO::Writers::OBOWriter;
 use FileHandle;
 
 
-my $parser = new GOBO::Parsers::OBOParser(file=>"data/obo_file.obo");
+my $parser = new GOBO::Parsers::OBOParser(file=>"t/data/obo_file.obo");
 
 $parser->parse;
 

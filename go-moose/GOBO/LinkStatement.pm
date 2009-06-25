@@ -7,6 +7,26 @@ use GOBO::Node;
 has 'target' => ( is=>'rw', isa=>'GOBO::Node', coerce=>1 );
 has 'distance_index' => ( is=>'rw', isa=>'HashRef[Number]', coerce=>1 );
 
+sub equals {
+    my $self = shift;
+    my $s = shift;
+    my $neq = $self->node->id() eq $s->node->id();
+    return 0 unless $neq;
+
+    return 0 unless $self->relation();
+    return 0 unless $s->relation();
+    my $req =  $self->relation->id() eq $s->relation->id();
+    return 0 unless $req;
+
+    my $teq =  $self->target->id() eq $s->target->id();
+    return 0 unless $teq;
+
+    return $self->is_intersection() if $s->is_intersection();
+    return $s->is_intersection() if $self->is_intersection();
+
+    return 1;
+}
+
 =head1 NAME
 
 GOBO::LinkStatement

@@ -99,11 +99,63 @@ sub declared_subsets {
     return [values %{$self->subset_index()}];
 }
 
+=head2 terms
+
+ - Returns: ArrayRef[GOBO::TermNode], where each member is a term belonging to this graph
+
+=cut
+
 sub terms {
     my $self = shift;
     #$self->node_index->nodes_by_metaclass('term');
     return [values %{$self->term_h}];
 }
+
+=head2 get_term
+
+ - Argument: id Str
+ - Returns: GOBO::TermNode, if term is declared in this graph
+
+=cut
+
+sub get_term {
+    my $self = shift;
+    my $id = shift;
+    return $self->term_h->{$id};
+}
+
+=head2 get_relation
+
+ - Argument: id Str
+ - Returns: GOBO::RelationNode, if relation is declared in this graph
+
+=cut
+
+sub get_relation {
+    my $self = shift;
+    my $id = shift;
+    return $self->relation_h->{$id};
+}
+
+=head2 get_instance
+
+ - Argument: id Str
+ - Returns: GOBO::InstanceNode, if instance is declared in this graph
+
+=cut
+
+sub get_instance {
+    my $self = shift;
+    my $id = shift;
+    return $self->instance_h->{$id};
+}
+
+
+=head2 terms
+
+ - Returns: ArrayRef[GOBO::RelationNode], where each member is a relation belonging to this graph
+
+=cut
 
 sub relations {
     my $self = shift;
@@ -111,11 +163,25 @@ sub relations {
     return [values %{$self->relation_h}];
 }
 
+=head2 instances
+
+ - Returns: ArrayRef[GOBO::InstanceNode], where each member is an instance belonging to this graph
+
+=cut
+
 sub instances {
     my $self = shift;
     #$self->node_index->nodes_by_metaclass('instance');
     return [values %{$self->instance_h}];
 }
+
+=head2 add_term
+
+ - Arguments: Str or GOBO::Node
+ - Returns: GOBO::TermNode
+ - Side effects: adds the object to the list of terms referenced in this graph. Forces the class to be GOBO::TermNode
+
+=cut
 
 sub add_term {
     my $self = shift;
@@ -124,6 +190,13 @@ sub add_term {
     return $n;
 }
 
+=head2 add_relation
+
+ - Arguments: Str or GOBO::Node
+ - Returns: GOBO::RelationNode
+ - Side effects: adds the object to the list of relations referenced in this graph. Forces the class to be GOBO::RelationNode
+
+=cut
 
 sub add_relation {
     my $self = shift;
@@ -132,11 +205,56 @@ sub add_relation {
     return $n;
 }
 
+=head2 add_instance
+
+ - Arguments: Str or GOBO::Node
+ - Returns: GOBO::InstanceNode
+
+adds the object to the list of instances referenced in this
+graph. Forces the class to be GOBO::InstanceNode
+
+=cut
+
 sub add_instance {
     my $self = shift;
     my $n = $self->instance_noderef(@_);
     $self->instance_h->{$n->id} = $n;
     return $n;
+}
+
+=head2 remove_node
+
+ - Arguments: node Str or GOBO::Node, cascade Bool[OPT]
+
+unlinks the node from this graph
+
+If cascade is 0 or undef, any links to or from this node will remain as dangling links.
+
+If cascade is set, then links to and from this node will also be deleted
+
+=cut
+
+sub remove_node {
+    my $self = shift;
+    my $n = shift;
+    my $cascade = shift;
+    my $id = ref($n) ? $n->id : $n;
+
+    if ($self->term_h->{$id}) {
+        delete $self->term_h->{$id};
+    }
+    if ($self->instance_h->{$id}) {
+        delete $self->instance_h->{$id};
+    }
+    if ($self->relation_h->{$id}) {
+        delete $self->relation_h->{$id};
+    }
+    if ($cascade) {
+        $self->remove_link($_) foreach @{$self->get_outgoing_links($n)};
+        $self->remove_link($_) foreach @{$self->get_incoming_links($n)};
+    }
+
+    return $self->node_index->remove_nodes([$id]);
 }
 
 sub nodes {
@@ -155,7 +273,7 @@ sub add_annotations { shift->annotation_ix->add_statements(@_) }
 sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
 sub annotated_entities { shift->annotation_ix->referenced_nodes }
 
-=head2 get_target_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
+=head2 get_outgoing_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
 given a subject (child), get target (parent) links
 
@@ -163,7 +281,7 @@ if relation is specified, also filters results on relation
 
 =cut
 
-sub get_target_links {
+sub get_outgoing_links {
     my $self = shift;
     my $n = shift;
     my $rel = shift;
@@ -187,10 +305,36 @@ sub get_target_links {
     return \@sl;
 }
 
+# @Deprecated
+*get_target_links = \&get_outgoing_links;
 
+=head2 get_incoming_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
+
+given a subject (child), get target (parent) links
+
+if relation is specified, also filters results on relation
+
+=cut
+
+sub get_incoming_links {
+    my $self = shift;
+    my $n = shift;
+    my $rel = shift;
+    my @sl = @{$self->link_ix->statements_by_target_id(ref($n) ? $n->id : $n) || []};
+    if ($rel) {
+        # TODO: use indexes to make this faster
+        my $rid = ref($rel) ? $rel->id : $rel;
+        @sl = grep {$_->relation->id eq $rid} @sl;
+    }
+    return \@sl;
+}
+
+
+# given a node ID or a node object, returns the corresponding
+# node in the graph. If no such node exists, one will be created.
 sub noderef {
     my $self = shift;
-    my $id = shift;
+    my $id = shift; # Str or GOBO::Node
     my $ix = $self->node_index;
 
     my $n_obj;
@@ -212,6 +356,9 @@ sub noderef {
     return $n_obj;
 }
 
+# given a node ID or a node object, returns the corresponding
+# node in the graph. If no such node exists, one will be created.
+# Forces the resulting object to be a TermNode.
 sub term_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
@@ -221,6 +368,9 @@ sub term_noderef {
     return $n;
 }
 
+# given a node ID or a node object, returns the corresponding
+# node in the graph. If no such node exists, one will be created.
+# Forces the resulting object to be a RelationNode.
 sub relation_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
@@ -230,6 +380,9 @@ sub relation_noderef {
     return $n;
 }
 
+# given a node ID or a node object, returns the corresponding
+# node in the graph. If no such node exists, one will be created.
+# Forces the resulting object to be an InstanceNode.
 sub instance_noderef {
     my $self = shift;
     my $n = $self->noderef(@_);
@@ -239,6 +392,9 @@ sub instance_noderef {
     return $n;
 }
 
+# given a node ID or a node object, returns the corresponding
+# node in the graph. If no such node exists, one will be created.
+# Forces the resulting object to be a Subset.
 sub subset_noderef {
     my $self = shift;
     my $ssid = shift;
