@@ -16,17 +16,13 @@ public interface RootAlgorithm {
 		public boolean isRoot(LinkedObject lo) {
 			if (lo instanceof Instance)
 				return true;
-
-			Iterator it = lo.getParents().iterator();
-
-			while (it.hasNext()) {
-				Relationship link = (Relationship) it.next();
+			for(Object parent : lo.getParents()){
+				Relationship link = (Relationship) parent;
 				if (link instanceof Link
 						&& ((Link) link).getParent() instanceof DanglingObject)
 					continue;
 
-				if (link instanceof ValueLink
-						&& !(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
+				if (link instanceof ValueLink && !(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
 					continue;
 				}
 
@@ -37,7 +33,6 @@ public interface RootAlgorithm {
 
 				return false;
 			}
-
 			return GREEDY.isRoot(lo);
 		}
 
@@ -48,18 +43,12 @@ public interface RootAlgorithm {
 
 	public static final RootAlgorithm GREEDY = new AbstractRootAlgorithm() {
 		public boolean isRoot(LinkedObject lo) {
-//			logger.debug("RootAlgorithm isRoot -- checking: " + lo);		
-
 			if (lo instanceof Instance)
 				return true;
-			Collection parents = linkDatabase.getParents(lo);
-			Iterator it = parents.iterator();
 
-			while (it.hasNext()) {
-				Relationship link = (Relationship) it.next();
-//				logger.debug("link: " + link);
-				if (link instanceof Link
-						&& ((Link) link).getParent() instanceof DanglingObject)
+			for(Object parent : linkDatabase.getParents(lo)){
+				Relationship link = (Relationship) parent;
+				if (link instanceof Link && ((Link) link).getParent() instanceof DanglingObject)
 					continue;
 
 				if (link instanceof Link)
@@ -70,10 +59,11 @@ public interface RootAlgorithm {
 				if (link instanceof ValueLink && !(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
 					continue;
 				}
-				
-				if (link.getType().isTransitive()){
-					return false;
+
+				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
+					continue;
 				}
+				return false;
 			}
 			return true;
 		}
@@ -90,13 +80,11 @@ public interface RootAlgorithm {
 		public void setLinkDatabase(LinkDatabase linkDatabase) {
 			this.linkDatabase = linkDatabase;
 		}
-
 		public void setSources(Iterator sourceSet) {
 			this.sourceSet = sourceSet;
 		}
 	}
 
 	public boolean isRoot(LinkedObject lo);
-
 	public void setLinkDatabase(LinkDatabase linkDatabase);
 }
