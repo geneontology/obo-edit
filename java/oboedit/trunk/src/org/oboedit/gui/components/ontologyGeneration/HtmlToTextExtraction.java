@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 public class HtmlToTextExtraction extends DataExtraction {
 	private HTMLDocument doc;
 	
-	protected final static Logger logger = Logger.getLogger(HtmlToTextExtraction.class);
+	private final static Logger logger = Logger.getLogger(HtmlToTextExtraction.class);
 	
 	/**
 	 * Tries to extend an existing definition by looking up its source html content. If no extension could be found,
@@ -35,7 +35,8 @@ public class HtmlToTextExtraction extends DataExtraction {
 	 * 
 	 * @return true if extended, false otherwise
 	 */
-	public boolean definitionExtraction(CandidateDefinition definition)
+	@Override
+    public boolean definitionExtraction(CandidateDefinition definition)
 	{
 		if(definition == null || definition.getCachedURL() == null || definition.getCachedURL().isEmpty()) {
    			return false;	

@@ -22,7 +22,8 @@ import org.pdfbox.util.PDFTextStripper;
  */
 public class PdfToTextExtraction extends DataExtraction{
 	
-	protected final static Logger logger = Logger.getLogger(PdfToTextExtraction.class);
+	private final static Logger logger = Logger.getLogger(PdfToTextExtraction.class);
+	public static final String ERROR = "Error while file parsing";
 	
 	PDFParser parser;
 	PDDocument pdDocument;
@@ -63,17 +64,18 @@ public class PdfToTextExtraction extends DataExtraction{
 		return true;
 	}
 	
-	public String fileExtraction(File file) {
+	@Override
+    public String fileExtraction(File file) {
 		if(!file.isFile() || !file.canRead()) {
-			return "";
+			return ERROR;
 		}
 		
 		if(!load(file)) {
-			return "";
+			return ERROR;
 		}
 		
 		if(!parse()) {
-			return "";
+			return ERROR;
 		}
 		
 		return getText();
@@ -130,34 +132,39 @@ public class PdfToTextExtraction extends DataExtraction{
 			pdfText = pdfText.replaceAll("\n", " ");
 			pdfText = pdfText.replaceAll("\\.\\ ", "\\.\n");
 			sw.close();
+			pdDocument.close();
+			cosDocument.close();
 			return true;
 			
 		} catch (IOException e) {
 			logger.debug("Error occur during extracting information.");
-				try {
-					if(pdDocument !=null) {
-						pdDocument.close();
-					}
-					if(cosDocument != null) {
-						cosDocument.close();
-					}
-					return false;
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
 			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.debug("Error occur during extracting information.");
+			try {
+				if(pdDocument != null) {
+					pdDocument.close();
+				}
+				if(cosDocument != null) {
+					cosDocument.close();
+				}
+				return false;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			t.printStackTrace();
 		}
 		
 		try {
-			if(pdDocument !=null) {
+			if(pdDocument != null) {
 				pdDocument.close();
 			}
 			if(cosDocument != null) {
 				cosDocument.close();
 			}
 			return false;
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

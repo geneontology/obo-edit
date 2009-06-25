@@ -1,5 +1,6 @@
 package org.oboedit.gui.components.ontologyGeneration;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,10 +27,10 @@ public class CandidateTerm
 
 	private Set<String> types;
 	private Set<String> abbreviations;
-	private List<CandidateDefinition> generatedDefinitions;
 	private List<OBOLookupTerm> existingOntologyTerms;
 	private List<OBOLookupTerm> existingChildTerms;
 	private List<OBOLookupRelation> existingChildRelations;
+	private String existingIdOfLoadedTerm;
 
 	private String generatedLabel;
 	private boolean isTicked;
@@ -70,7 +71,6 @@ public class CandidateTerm
 		this.types = new HashSet<String>();
 		this.types.add(type);
 		this.userDefinedDefinition = null;
-		this.generatedDefinitions = null;
 		this.score = scr;
 		this.isVisible = true;
 	}
@@ -122,7 +122,7 @@ public class CandidateTerm
 	 */
 	public Set<String> getTypes()
 	{
-		return this.types;
+		return Collections.unmodifiableSet(this.types);
 	}
 
 	/**
@@ -130,7 +130,8 @@ public class CandidateTerm
 	 */
 	public void setTypes(Set<String> types)
 	{
-		this.types = types;
+		this.types = new HashSet<String>(types.size());
+		this.types.addAll(types);
 	}
 
 	/**
@@ -149,7 +150,8 @@ public class CandidateTerm
 	 */
 	public void setAbbreviations(Set<String> abbreviations)
 	{
-		this.abbreviations = abbreviations;
+		this.abbreviations = new HashSet<String>(abbreviations.size());
+		this.abbreviations.addAll(abbreviations);
 	}
 
 	/**
@@ -157,10 +159,16 @@ public class CandidateTerm
 	 */
 	public List<CandidateDefinition> getGeneratedDefinitions()
 	{
-		if (this.generatedDefinitions == null) {
-			return Collections.emptyList();
+		List<CandidateDefinition> list = new ArrayList<CandidateDefinition>();
+		if (this.isInLoadedOntology()) {
+			OntologyModelAdapterInterface adapter = OBOOntologyModelAdapter.getInstance();
+			CandidateDefinition existingDefinition = adapter.getExistingDefinitionIfExists(this);
+			if (existingDefinition != null) {
+				list.add(existingDefinition);
+				this.setGeneratedDefinitions(list);
+			}
 		}
-		return this.generatedDefinitions;
+		return list;
 	}
 
 	/**
@@ -168,7 +176,7 @@ public class CandidateTerm
 	 */
 	public void setGeneratedDefinitions(List<CandidateDefinition> generatedDefinitions)
 	{
-		this.generatedDefinitions = generatedDefinitions;
+		new ArrayList<CandidateDefinition>(generatedDefinitions);
 	}
 
 	/**
@@ -176,7 +184,10 @@ public class CandidateTerm
 	 */
 	public List<OBOLookupTerm> getExistingOntologyTerms()
 	{
-		return this.existingOntologyTerms;
+		if (this.existingOntologyTerms != null) {
+			return Collections.unmodifiableList(this.existingOntologyTerms);
+		}
+		return null;
 	}
 
 	/**
@@ -184,7 +195,7 @@ public class CandidateTerm
 	 */
 	public void setExistingOntologyTerms(List<OBOLookupTerm> existingOntologyTerms)
 	{
-		this.existingOntologyTerms = existingOntologyTerms;
+		this.existingOntologyTerms = new ArrayList<OBOLookupTerm>(existingOntologyTerms); 
 	}
 
 	/**
@@ -192,7 +203,10 @@ public class CandidateTerm
 	 */
 	public List<OBOLookupTerm> getExistingChildTerms()
 	{
-		return this.existingChildTerms;
+		if (this.existingChildTerms != null) {
+			return Collections.unmodifiableList(this.existingChildTerms);
+		}
+		return null;
 	}
 
 	/**
@@ -200,7 +214,7 @@ public class CandidateTerm
 	 */
 	public void setExistingChildTerms(List<OBOLookupTerm> existingChildTerms)
 	{
-		this.existingChildTerms = existingChildTerms;
+		this.existingChildTerms = new ArrayList<OBOLookupTerm>(existingChildTerms);
 	}
 
 	/**
@@ -208,7 +222,10 @@ public class CandidateTerm
 	 */
 	public List<OBOLookupRelation> getExistingChildRelations()
 	{
-		return this.existingChildRelations;
+		if (this.existingChildRelations != null) {
+			return Collections.unmodifiableList(this.existingChildRelations);
+		}
+		return null;
 	}
 
 	/**
@@ -216,7 +233,7 @@ public class CandidateTerm
 	 */
 	public void setExistingChildRelations(List<OBOLookupRelation> existingChildRelations)
 	{
-		this.existingChildRelations = existingChildRelations;
+		this.existingChildRelations = new ArrayList<OBOLookupRelation>(existingChildRelations);
 	}
 
 	/**
@@ -251,7 +268,7 @@ public class CandidateTerm
 	 */
 	public void setLexicalRepresentations(Set<String> lexicalRepresentations)
 	{
-		this.lexicalRepresentations = lexicalRepresentations;
+		this.lexicalRepresentations = new HashSet<String>(lexicalRepresentations);
 	}
 
 	/**
@@ -345,10 +362,48 @@ public class CandidateTerm
      */
     public String getLabel()
     {
+    	String label = null;
 	    if (userDefinedLabel != null) {
-	    	return userDefinedLabel;
-	    } else {
-	    	return generatedLabel;
+	    	label = userDefinedLabel;
+	    } else if (isInLoadedOntology()) {
+	    	label = OBOOntologyModelAdapter.getInstance().getLabelForExistingTermIfExists(this);
 	    }
+	    if (label == null) {
+	    	label = generatedLabel;
+	    }
+    	return label;	
+    }
+
+	/**
+     * Remove all id of term exist in the loaded ontology which match this candidate terms
+     */
+    public void clearTermIdInLoadedOntology()
+    {
+    	this.setExistingIdOfLoadedTerm(null);
+    }
+
+	/**
+     * Returns true if the candidate term could be found in the loaded ontology
+     * @return
+     */
+    public boolean isInLoadedOntology()
+    {
+	    return (this.getExistingIdOfLoadedTerm() != null);
+    }
+
+	/**
+     * @param existingIdOfLoadedTerm the existingIdOfLoadedTerm to set
+     */
+    public void setExistingIdOfLoadedTerm(String existingIdOfLoadedTerm)
+    {
+	    this.existingIdOfLoadedTerm = existingIdOfLoadedTerm;
+    }
+
+	/**
+     * @return the existingIdOfLoadedTerm
+     */
+    public String getExistingIdOfLoadedTerm()
+    {
+	    return existingIdOfLoadedTerm;
     }
 }
