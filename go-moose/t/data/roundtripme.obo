@@ -97,6 +97,8 @@ is_metadata_tag: false
 is_a: r1-p1  
 intersection_of: r1i1
 intersection_of: r1i2
+union_of: r1u1
+union_of: r1u2
 inverse_of: r1inv
 inverse_of_on_instance_level: r1inv_i
 transitive_over: r1to
@@ -109,6 +111,7 @@ relatonship: meta-r r2
 equivalent_to: r1-eq
 is_obsolete: false
 formula: "r1(x,y) <-> ω(x) < j" Prover9 []
+complement_of: r1neg
 
 [Instance]
 id: i1

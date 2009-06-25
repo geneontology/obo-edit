@@ -103,7 +103,7 @@ sub write_stanza {
             }
         }
     }
-    if ($self->can('union_definition')) {
+    if ($node->can('union_definition')) {
         my $union = $node->union_definition;
         if ($union) {
             my $ul = $union->arguments;
@@ -113,6 +113,11 @@ sub write_stanza {
             else {
                 $self->throw("illegal union term: $union in $node");
             }
+        }
+    }
+    if ($node->can("disjoint_from_list")) {
+        foreach my $x (@{$node->disjoint_from_list || []}) {
+            $self->tagval(disjoint_from => $x);
         }
     }
     $self->unary("is_obsolete") if $node->obsolete;
