@@ -224,7 +224,7 @@ sub add_instance {
 
 =head2 remove_node
 
- - Arguments: node Str or GOBO::Node, cascade Bool[OPT]
+ - Arguments: node GOBO::Node, cascade Bool[OPT]
 
 unlinks the node from this graph
 
@@ -238,7 +238,8 @@ sub remove_node {
     my $self = shift;
     my $n = shift;
     my $cascade = shift;
-    my $id = ref($n) ? $n->id : $n;
+    #my $id = ref($n) ? $n->id : $n;
+    my $id = $n->id;
 
     if ($self->term_h->{$id}) {
         delete $self->term_h->{$id};
@@ -254,7 +255,7 @@ sub remove_node {
         $self->remove_link($_) foreach @{$self->get_incoming_links($n)};
     }
 
-    return $self->node_index->remove_nodes([$id]);
+    return $self->node_index->remove_node($n);
 }
 
 sub nodes {
@@ -329,6 +330,41 @@ sub get_incoming_links {
     return \@sl;
 }
 
+=head2 get_is_a_roots
+
+ - Argument: none
+ - Returns: ArrayRef[GOBO::TermNode]
+
+returns terms that lack an is_a parent
+
+=cut
+
+sub get_is_a_roots {
+    my $self = shift;
+    return $self->get_roots('is_a');
+}
+
+=head2 get_roots
+
+ - Argument: relation Str or OBO::RelationNode [OPTIONAL]
+ - Returns: ArrayRef[GOBO::TermNode]
+
+returns terms that lack a parent by the given relation. If no relation
+specified, then returns terms that lack a parent by any relation
+
+=cut
+
+sub get_roots {
+    my $self = shift;
+    my $rel = shift;
+    my @roots = ();
+    foreach my $term (@{$self->terms || []}) {
+        if (!{@$self->get_outgoing_links($term, $rel)}) {
+            push(@roots,$term);
+        }
+    }
+    return \@roots;
+}
 
 # given a node ID or a node object, returns the corresponding
 # node in the graph. If no such node exists, one will be created.

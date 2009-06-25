@@ -30,7 +30,12 @@ sub add_nodes {
     foreach my $n (@$nl) {
         my $nid = $n->id;
         $self->ixN->{$n->id} = $n;
-        push(@{$self->ixLabel->{$n->label}}, $n) if $n->label;
+    }
+    if ($self->ixLabel) {
+        foreach my $n (@$nl) {
+            my $nid = $n->id;
+            push(@{$self->ixLabel->{$n->label}}, $n) if $n->label;
+        }
     }
     return;
 }
@@ -45,6 +50,15 @@ sub remove_nodes {
         my $nid = ref($n) ? $n->id : $n;
         delete $self->ixN->{$nid};
         $num++;
+    }
+    if ($self->ixLabel) {
+        foreach my $n (@$nl) {
+            my $label = $n->label;
+            if ($label) {
+                my $unodes = $self->ixLabel->{$label} || [];
+                @$unodes = grep {$_->id ne $_->n->id} @$unodes;
+            }
+        }
     }
     return $num;
 }
