@@ -6,6 +6,25 @@ use GOBO::Node;
 
 has 'target' => ( is=>'ro', isa=>'Value');
 
+sub equals {
+    my $self = shift;
+    my $s = shift;
+    my $neq = $self->node->id() eq $s->node->id();
+    return 0 unless $neq;
+
+    return 0 unless $self->relation();
+    return 0 unless $s->relation();
+    my $req =  $self->relation->id() eq $s->relation->id();
+    return 0 unless $req;
+
+    my $teq =  $self->target() eq $s->target();
+    return 0 unless $teq;
+
+    return $self->is_intersection() == $s->is_intersection();
+
+    return 0;
+}
+
 # TODO -- use this or use frame-style? both
 
 =head1 NAME
