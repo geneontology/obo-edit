@@ -105,15 +105,14 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.TextConceptRepresentation;
 
 /**
- * Ontology Generation Plugin for OBOEdit which supports the automatic generation of candidate terms and candidate
+ * Ontology Generation Component which supports the automatic generation of candidate terms and candidate
  * definitions to create candidate to be added to the loaded ontologies.
  * <p>
  * Developed at the Bioinformatics Group, BIOTEC, TU Dresden, Dresden, Germany
  * </p>
  * 
- * @author Atif Iqbal, 2008
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
- * @version 1.3, 29/04/2009
+ * @version 2.0, 25/06/2009
  */
 public class OntologyGenerationComponent implements PropertyChangeListener, OntologyGenerationComponentService
 {
