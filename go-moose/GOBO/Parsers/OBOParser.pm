@@ -168,6 +168,10 @@ sub parse_body {
             my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             $n->complement_of($tn);
         }
+        elsif (/^disjoint_from:\s*(\S+)/) {
+            my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            $n->add_disjoint_from($tn);
+        }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
             #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);

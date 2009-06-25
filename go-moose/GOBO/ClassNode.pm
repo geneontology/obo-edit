@@ -9,7 +9,16 @@ coerce 'GOBO::ClassNode'
       => from 'Str'
       => via { new GOBO::ClassNode(id=>$_) };
 
+has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::ClassNode]');
+
+sub add_disjoint_from {
+    my $self = shift;
+    $self->disjoint_from_list([]) unless $self->disjoint_from_list([]);
+    push(@{$self->disjoint_from_list},@_);
+}
+
 1;
+
 
 =head1 NAME
 
@@ -24,6 +33,14 @@ GOBO::ClassNode
 Formally, a class is a collection of instances. However, in many cases these are not instantiated in perl.
 
 ClassNodes can either be explicitly named (GOBO::TermNode) or they can be logical boolean expressions (GOBO::ClassExpression)
+
+          +--- InstanceNode
+          |                 +--- ClassExpression
+          |                 |
+  Node ---+--- ClassNode ---+
+          |                 |
+          |                 +--- TermNode
+          +--- RelationNode
 
 =head2 Terminological note
 
