@@ -31,6 +31,8 @@ has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 has symmetric_on_instance_level => ( is=>'rw', isa=>'Bool' );
 has inverse_of_on_instance_level => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 
+has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
+
 sub post_init {
     my $self = shift;
     if ($self->is_subsumption) {
@@ -67,6 +69,12 @@ sub add_equivalent_to_chain {
         $self->equivalent_to_chain_list([]);
     }
     push(@{$self->equivalent_to_chain_list},@_);
+}
+
+sub add_disjoint_from {
+    my $self = shift;
+    $self->disjoint_from_list([]) unless $self->disjoint_from_list([]);
+    push(@{$self->disjoint_from_list},@_);
 }
 
 =head1 NAME
