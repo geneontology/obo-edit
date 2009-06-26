@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/BBOP"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OBO"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/buildlibs/junit.jar"/>
@@ -65,9 +63,10 @@
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/PDFBox-0.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/FontBox-0.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/runlibs/checkstyle-all-4.2.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/lucene-core-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/lucene-snowball-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/bbop.jar"/>
-	<classpathentry kind="lib" path="lib/runlibs/obo.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/lucene-core-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/lucene-snowball-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/antlr-runtime-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/bbop.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/runlibs/obo.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
