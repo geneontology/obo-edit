@@ -1,28 +1,61 @@
-Changes in OBO-Edit2b57:
+Changes in OBO-Edit2.1:
 
-Bug Fixes:
+BUG FIXES:
+- [ geneontology-Bugs-2750699 ] config manager memory settings option out of sync
+- [ geneontology-Bugs-2785074 ] OBO-Edit2-rc still present
+- [ geneontology-Bugs-2787869 ] very minor bug with saving filters
+- [ geneontology-Bugs-2812189 ] GAZ.obo not displayed correctly in OBOEdit2.0
+-
+-
 
-- [ geneontology-Bugs-2706065 ] b56 - OE not starting on Windows
 - Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
+
 - Fixed the history browser html message so it shows 'name (id)' rather then 'id (id)'.
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
+
 - Graphviz uses a lot of memory when you assign dbxrefs: ID: 2057452
 The Graphviz interface redraws have been removed for the bulk addition of dbxrefs. 
 Now there is only one redraw at the end of the bulk process.
 
+FIXES:
+* Config directory
+* Logging
+
+
+
+FEATURES:
+* Assert Implied Links Component
+** Displays impled links table and asserts selected links.
+** Row sorting enabled (ascending and descending) for Child and Parent name columns
+** Clicking the more info icon brings up the explanation for the reasoner made link in the Explanation Component and highlights the link in the Graph Editor
+
+* New Reasoner Modes
+** Two new options that represent step-wise and continuous incremental reasoning
+** Activate incremental reasoning by selecting the "Avtivate Incremental Reasoning" checkbox through the Reasoner Manager
+** Users have a choice between activating continuous incremental reasoning or partial/step reasoning modes. If neither of these options are selected incremental reasoning is off by default.
+
+* Lock/Unlock Layout option
+** Locking the layout freezes current application layout and prevents addition/removal of components.
+ 
+* Scroll Lock for the Ontology Tree Editor
+** Select any term in the OTE; right-click for Lock View option which enforces a scroll lock on the path currently displayed.
+
+
+TO DO:
+=======
 Bugs pending:
 - Itemized undo
 - Switch to turn off incremental reasoning
 - graph editor menu options
 - user dictionary refresh and incremental validation stuff
 
-Features:
 
-
-TO DO:
 Documentation:
 - user.dict usage and backup info
+- Assert Implied Links Component Documentaion
+
+
 
 Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
