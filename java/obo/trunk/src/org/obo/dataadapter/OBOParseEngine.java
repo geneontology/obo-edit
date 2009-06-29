@@ -282,7 +282,7 @@ public class OBOParseEngine extends AbstractParseEngine {
 		if (reader == null) {
 			BufferedInputStream is = new BufferedInputStream(IOUtil
 					.getProgressableStream(path));
-			reader = new BufferedReader(new InputStreamReader(is));
+			reader = new BufferedReader(new InputStreamReader(is, OBOConstants.DEFAULT_CHARACTER_ENCODING));
 		}
 		URL url = IOUtil.getURL(path);
 		totalSize += url.openConnection().getContentLength();

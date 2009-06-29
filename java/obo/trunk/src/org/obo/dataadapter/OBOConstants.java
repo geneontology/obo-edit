@@ -363,4 +363,7 @@ public class OBOConstants {
 		_defaultTagOrder.add(IS_METADATA_TAG);
 
 	}
+	
+	public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
+	
 }

@@ -425,8 +425,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				SafeFileOutputStream sfos = new SafeFileOutputStream(
 						filteredPath.getPath());
 				streams.add(sfos);
-				PrintStream stream = new PrintStream(new BufferedOutputStream(
-						sfos));
+				PrintStream stream = new PrintStream(new BufferedOutputStream(sfos), false, OBOConstants.DEFAULT_CHARACTER_ENCODING);
 				closingStreams.add(stream);
 
 				Filter linkFilter = filteredPath.getLinkFilter();
