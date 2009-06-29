@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -45,7 +44,6 @@ public class OBOOntologyIndexManager
 	private QueryParser queryParser;
 	private int docCount = 0;
 	private static OBOOntologyIndexManager theInstance;
-	private static Pattern luceneQuerySyntaxPattern = Pattern.compile("[\"|+|-|(|)|!|%|\\[|\\]]+");
 	private static boolean isIndexInitializedOnce = false;
 
 	/**
@@ -161,7 +159,7 @@ public class OBOOntologyIndexManager
 		Set<String> testSet = new HashSet<String>();
 		for (String string : list) {
 			try {
-				string = luceneQuerySyntaxPattern.matcher(string).replaceAll("");
+				string = QueryParser.escape(string);
 				Query parsedQuery = queryParser.parse("\"" + string + "\"");
 				queries.add(parsedQuery);
 			}
@@ -221,7 +219,7 @@ public class OBOOntologyIndexManager
 		for (String string : list) {
 			BooleanQuery query = new BooleanQuery();
 			try {
-				string = luceneQuerySyntaxPattern.matcher(string).replaceAll("");
+				string = QueryParser.escape(string);
 				if (string.length() != 0) {
 					Query parseQuery = queryParser.parse(string);
 					if (!querySet.contains(parseQuery)) {
