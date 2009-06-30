@@ -379,6 +379,12 @@ sub noderef {
         $n_obj = $id;
         $id = $id->id;
     }
+    else {
+        if ($id =~ /\s/) {
+            confess("attempted to noderef '$id' -- no whitespace allowed in ID.");
+        }
+    }
+
     if ($ix->node_by_id($id))
     {   # already in the index
         $n_obj = $ix->node_by_id($id);
