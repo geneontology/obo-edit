@@ -216,7 +216,7 @@ sub parse_body {
             $n->$att($val); # TODO : check
             #$n->{$att} = $val; # TODO : check
         }
-        elsif (/^transitive_over:\s*(\W+)/) {
+        elsif (/^transitive_over:\s*(\w+)/) {
             my $rn = $g->relation_noderef($1);
             $n->transitive_over($rn);
         }
