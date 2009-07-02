@@ -1,7 +1,7 @@
 package org.oboedit.gui.components;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,11 +26,9 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(ReasonerManagerComponent.class);
 
-    private static SessionManager sessionManager = SessionManager.getManager();
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
+	private static SessionManager sessionManager = SessionManager.getManager();
 
 	protected JComboBox reasonerChoice = new JComboBox();
 
@@ -40,7 +38,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
+	protected ReasonerRegistry registry = ReasonerRegistry.getInstance();
 
 	protected ReasonerListener reasonerActionListener = new ReasonerListener() {
 
@@ -49,87 +47,82 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		}
 
 		public void reasoningStarted() {
-		    logger.debug("ReasonerManagerComponent: reasoningStarted");
+			logger.debug("ReasonerManagerComponent: reasoningStarted");
 		}
-		
+
 		public void reasoningCancelled() {
-		    logger.debug("ReasonerManagerComponent: reasoningCancelled");
-		    updateProgressPanel(sessionManager.getUseReasoner()); 
+			logger.debug("ReasonerManagerComponent: reasoningCancelled");
+			updateProgressPanel(sessionManager.getUseReasoner()); 
 		}
 	};
 
 	protected ActionListener reasonerListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-		    logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem());
-		    enableReasoner((String)reasonerChoice.getSelectedItem());
+			logger.debug("calling enableReasoner " + reasonerChoice.getSelectedItem());
+			enableReasoner((String)reasonerChoice.getSelectedItem());
 		}
 	};
-
-	/*
-	 * protected ProgressListener progressListener = new ProgressListener() {
-	 * public void progressMade(ProgressEvent e) { if (e instanceof
-	 * ReusableProgressEvent) { barUpdater.setEvent((ReusableProgressEvent) e);
-	 * SwingUtilities.invokeLater(barUpdater); } } };
-	 */
 
 	public ReasonerManagerComponent(String id) {		
 		super(id);
 		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());	
-		setPreferredSize(new Dimension(450,100));
-		summaryField.setPreferredSize(new Dimension(400, 25));
+		panel.setLayout(new FlowLayout());	
+		setPreferredSize(new Dimension(450,200));
+		summaryField.setPreferredSize(new Dimension(400, 20));
 		summaryField.setContentType("text/html");
 		summaryField.setEditable(false);
 
-		add(new JLabel("Reasoner: "),BorderLayout.WEST);
-		add(reasonerChoice,BorderLayout.EAST);
+		add(new JLabel("Reasoner: "));
+		add(reasonerChoice);
 		
 		//partial reasoning in steps
 		// for example while asserting implied links.. there will be mass deletion of links, mass addition and then reasoner runs again..
 		// instead of reasoning after each link addition
-		add(new JCheckBox("partial/step resoning"), BorderLayout.CENTER);
-		add(new JButton("top-up results"), BorderLayout.CENTER);
-		
+		JCheckBox partialCheck = new JCheckBox("Partial/Step Reasoning"); 
+		JButton topupButton = new JButton("Top-Up Results");
+		add(partialCheck);
+		add(topupButton);
+
 		// continuous incremental reasoning option
-		add(new JCheckBox("Activate incremental reasoning"), BorderLayout.CENTER);
-		
+		JCheckBox incrementalCheck =  new JCheckBox("Activate Incremental Reasoning");
+
 		// basically what this reasones over the complete linkdatabase again - same effect as switching the reasoner off and then on again
 		// this will be used when the continuous incremental reasoning is off
-		add(new JButton("reset/refresh results"), BorderLayout.SOUTH);
+		JButton refreshButton = new JButton("Reset/Refresh Results");
+		add(incrementalCheck);
+		add(refreshButton);
 		
-		add(summaryField,BorderLayout.SOUTH);
-		
+		add(summaryField);
+
 		reasonerChoice.addItem("OFF");
 		// Get reasoner names from registry
 		ReasonerRegistry registry = ReasonerRegistry.getInstance();
-		logger.debug("Registered reasoners: " + registry.getRegisteredNames()); // DEL
+//		logger.debug("Registered reasoners: " + registry.getRegisteredNames()); 
 		for (String registryName : registry.getRegisteredNames()) 
-		    reasonerChoice.addItem(registryName);
+			reasonerChoice.addItem(registryName);
 
-		reasonerChoice.setMaximumSize(
-		    new Dimension(Integer.MAX_VALUE, reasonerChoice.getPreferredSize().height));
-
+		reasonerChoice.setMaximumSize(new Dimension(Integer.MAX_VALUE, reasonerChoice.getPreferredSize().height));
 		reasonerChoice.setSelectedItem(sessionManager.getReasonerName());
-		
+
 	}
 
 	protected void enableReasoner(String reasonerChoice) {
 		logger.debug("ReasonerManagerComponent.enableReasoner");
-	    summaryField.setText(" ");
-	    sessionManager.setReasonerName(reasonerChoice);
+		summaryField.setText(" ");
+		sessionManager.setReasonerName(reasonerChoice);
 	}
-	
+
 	protected void cancelReasoner(String reasonerChoice) {
 		logger.debug("reasonerChoice: " + reasonerChoice);
 		logger.debug("ReasonerManagerComponent.cancelReasoner");
-	    summaryField.setText("Reasoning cancelled.. ");
-	    sessionManager.setReasonerName(reasonerChoice);
+		summaryField.setText("Reasoning cancelled.. ");
+		sessionManager.setReasonerName(reasonerChoice);
 	}
-	
+
 
 	protected void updateProgressPanel(final boolean enableReasoner) {
 		String text = "";
-//		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
+		//		logger.debug("ReasonerManagerComponent -- updateProgressPanel: " + enableReasoner);
 		if (enableReasoner) {
 			text += "<html><body>\n";
 			text += "Reasoning completed.";
@@ -143,7 +136,7 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 
 		Runnable screenUpdate = new Runnable() {
 			public void run() {
-			    summaryField.setText("");
+				summaryField.setText("");
 				if (enableReasoner)
 					add(summaryScroller, "South");
 				else

@@ -177,7 +177,6 @@ public class SessionManager {
 		logger.debug("SessionManager.setStepIncrementalReasoningStatus");
 	}
 	
-	
 	public boolean getIncrementalReasoningStatus() {
 		logger.debug("SessionManager.getIncrementalReasoningStatus");
 		return Preferences.getPreferences().getIncrementalReasoningStatus();
@@ -456,10 +455,7 @@ public class SessionManager {
 	}
 
 	public void applyList(HistoryList list) {
-		Iterator it = list.getHistoryItems();
-		HistoryItem item = null;
-		while (it.hasNext()) {
-			item = (HistoryItem) it.next();
+		for(HistoryItem item : list.getHistoryItems()){
 			session.getCurrentHistory().addItem(item);
 			OperationWarning warning = getOperationModel().apply(item);
 			if (getUseReasoner()) {
@@ -472,9 +468,9 @@ public class SessionManager {
 				logger.warn("Warning message while trying to apply history item " + item + ": " + warning);
 			}
 			fireHistoryApplied(new HistoryAppliedEvent(this, item));
+			SelectionManager.setGlobalSelection(GUIUtil.getPostSelection(item));
 		}
 
-		SelectionManager.setGlobalSelection(GUIUtil.getPostSelection(item));
 	}
 
 	public OperationModel getOperationModel() {
