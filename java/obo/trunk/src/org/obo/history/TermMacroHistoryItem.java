@@ -38,7 +38,7 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 		this.description = description;
 		rels = new Vector();
 	}
-	
+
 	public TermMacroHistoryItem(List<HistoryItem> changes) {
 		this(null, changes);
 	}	
@@ -49,12 +49,11 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 			addItem(item);
 		}
 	}
-	
+
 	public TermMacroHistoryItem(String description, HistoryList historyList) {
 		this((String) null);
-		Iterator it = historyList.getHistoryItems();
-		while(it.hasNext()) {
-			addItem((HistoryItem) it.next());
+		for(HistoryItem item : historyList.getHistoryItems()){
+			addItem(item);
 		}
 	}
 
@@ -167,7 +166,7 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 			HistoryItem item = (HistoryItem) historyItems.get(i);
 			if (item instanceof TermMacroHistoryItem) {
 				OperationWarning ow = ((TermMacroHistoryItem) item)
-						.lock(history);
+				.lock(history);
 				if (ow != null) {
 					failure = true;
 					warning.addWarning(ow);
@@ -201,9 +200,7 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 	}
 
 	public void setHistoryList(HistoryList list) {
-		Iterator it = list.getHistoryItems();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
+		for(HistoryItem item : list.getHistoryItems()){
 			addItem(item);
 		}
 	}
@@ -224,9 +221,9 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 
 	@Override
 	public String toString() {
-//		return (description != null ? description + " (macro)"
-//				: "unnamed macro");
-	    return historyItems.toString();
+		//		return (description != null ? description + " (macro)"
+		//				: "unnamed macro");
+		return historyItems.toString();
 	}
 
 	@Override
@@ -245,9 +242,8 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 					for (int j = 0; j < i; j++)
 						out.addItem((HistoryItem) historyItems.get(j));
 				}
-				Iterator it2 = itemList.getHistoryItems();
-				while (it2.hasNext()) {
-					out.addItem((HistoryItem) it2.next());
+				for(HistoryItem hi : itemList.getHistoryItems()){
+					out.addItem(hi);
 				}
 			}
 		}
@@ -256,16 +252,16 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 
 	public String getComment() {
 		throw new UnsupportedOperationException(
-				"getComment() not supported for TermMacroHistoryItem");
+		"getComment() not supported for TermMacroHistoryItem");
 	}
 
 	public Date getDate() {
 		throw new UnsupportedOperationException(
-				"getDate() not supported for TermMacroHistoryItem");
+		"getDate() not supported for TermMacroHistoryItem");
 	}
 
-	public Iterator getHistoryItems() {
-		return historyItems.iterator();
+	public Collection<HistoryItem> getHistoryItems() {
+		return historyItems;
 	}
 
 	public int getIndex(HistoryItem item) {
@@ -274,49 +270,49 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 
 	public String getTitle() {
 		throw new UnsupportedOperationException(
-				"getDate() not supported for TermMacroHistoryItem");
+		"getDate() not supported for TermMacroHistoryItem");
 	}
 
 	public String getUser() {
 		throw new UnsupportedOperationException(
-				"getDate() not supported for TermMacroHistoryItem");
+		"getDate() not supported for TermMacroHistoryItem");
 	}
 
 	public String getVersion() {
 		throw new UnsupportedOperationException(
-				"getDate() not supported for TermMacroHistoryItem");
+		"getDate() not supported for TermMacroHistoryItem");
 	}
 
 	public List getWarnings() {
 		throw new UnsupportedOperationException(
-				"getWarnings() not supported for TermMacroHistoryItem");
+		"getWarnings() not supported for TermMacroHistoryItem");
 	}
 
 	public void setComment(String comment) {
 		throw new UnsupportedOperationException(
-				"setComment() not supported for TermMacroHistoryItem");
+		"setComment() not supported for TermMacroHistoryItem");
 	}
 
 	public void setDate(Date date) {
 		throw new UnsupportedOperationException(
-				"setDate() not supported for TermMacroHistoryItem");
+		"setDate() not supported for TermMacroHistoryItem");
 	}
 
 	public void setTitle(String title) {
 		throw new UnsupportedOperationException(
-				"setTitle() not supported for TermMacroHistoryItem");
+		"setTitle() not supported for TermMacroHistoryItem");
 	}
 
 	public void setUser(String user) {
 		throw new UnsupportedOperationException(
-				"setUser() not supported for TermMacroHistoryItem");
+		"setUser() not supported for TermMacroHistoryItem");
 	}
 
 	public void setVersion(String version) {
 		throw new UnsupportedOperationException(
-				"setVersion() not supported for TermMacroHistoryItem");
+		"setVersion() not supported for TermMacroHistoryItem");
 	}
-	
+
 	/**
 	 * Returns an empty copy of the Set editedTerms. The parent
 	 * version of this method is overridden to return an empty set as 

@@ -189,18 +189,19 @@ public class DefaultHistoryDumper implements OBOAdapter, HistoryDumper {
 		dumpHistory(stream, list.getHistoryItems(), 0);
 	}
 
-	protected void dumpHistory(PrintStream stream, Iterator iterator,
+	protected void dumpHistory(PrintStream stream, Collection<HistoryItem> historyItems,
 			int indentLevel) {
-		// for(int i=0; i < historyList.size(); i++) {
-		while (iterator.hasNext() && !cancelled) {
-			HistoryItem item = (HistoryItem) iterator.next();
-			for (int j = 0; j < SPACEPADDING * indentLevel; j++)
-				stream.print(" ");
-			stream.println("* " + getItemDesc(item, history));
-			if (item instanceof TermMacroHistoryItem)
-				dumpHistory(stream, (TermMacroHistoryItem) item,
-						indentLevel + 1);
+		for(HistoryItem item : historyItems){
+			while (!cancelled) {
+				for (int j = 0; j < SPACEPADDING * indentLevel; j++)
+					stream.print(" ");
+				stream.println("* " + getItemDesc(item, history));
+				if (item instanceof TermMacroHistoryItem)
+					dumpHistory(stream, (TermMacroHistoryItem) item,
+							indentLevel + 1);
+			}
 		}
+
 	}
 
 	protected void dumpHistory(PrintStream stream, TermMacroHistoryItem mitem,

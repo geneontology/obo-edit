@@ -58,17 +58,13 @@ public class HistoryUtil {
 	 * @param filter
 	 * @return a list of {@link HistoryItem}s that match the filter
 	 */
-	public static Collection findMatchingItems(HistoryList list,
-			VectorFilter filter) {
-		LinkedList out = new LinkedList();
-		Iterator it = list.getHistoryItems();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
+	public static Collection findMatchingItems(HistoryList list, VectorFilter filter) {
+		LinkedList<HistoryItem> out = new LinkedList<HistoryItem>();
+		for(HistoryItem item : list.getHistoryItems()){
 			if (filter.satisfies(item))
 				out.add(item);
 			if (item instanceof TermMacroHistoryItem) {
-				out.addAll(findMatchingItems((TermMacroHistoryItem) item,
-						filter));
+				out.addAll(findMatchingItems((TermMacroHistoryItem) item, filter));
 			}
 		}
 		return out;

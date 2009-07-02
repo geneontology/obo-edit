@@ -9,7 +9,7 @@ public interface IDProfile extends Serializable {
 
 	public void setRules(List rules);
 
-	public List getRules();
+	public List<IDRule> getRules();
 
 	public String getDefaultRule();
 

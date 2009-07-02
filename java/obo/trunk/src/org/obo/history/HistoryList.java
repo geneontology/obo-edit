@@ -14,9 +14,9 @@ import java.util.*;
 public interface HistoryList extends Serializable, Cloneable {
 
 	/**
-	 * Returns an iterator for the history items in this HistoryList
+	 * Returns a collection of history items in this HistoryList
 	 */
-	public Iterator getHistoryItems();
+	public Collection<HistoryItem> getHistoryItems();
 
 	/**
 	 * Returns the history item at the given index
