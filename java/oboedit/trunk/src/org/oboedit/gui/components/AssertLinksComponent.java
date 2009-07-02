@@ -285,8 +285,8 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		else {
 			table.setModel(model);
 		}
-		RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-		table.setRowSorter(sorter);
+//		RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//		table.setRowSorter(sorter);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener (this);
 		table.setDragEnabled(false);
