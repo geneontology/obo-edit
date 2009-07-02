@@ -5,7 +5,7 @@ BUG FIXES:
 - [ geneontology-Bugs-2785074 ] OBO-Edit2-rc still present
 - [ geneontology-Bugs-2787869 ] very minor bug with saving filters
 - [ geneontology-Bugs-2812189 ] GAZ.obo not displayed correctly in OBOEdit2.0
--
+- OBOMerge
 -
 
 - Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
@@ -21,6 +21,7 @@ Now there is only one redraw at the end of the bulk process.
 FIXES:
 * Config directory
 * Logging
+* OBOMerge
 
 
 
@@ -41,7 +42,7 @@ FEATURES:
 * Scroll Lock for the Ontology Tree Editor
 ** Select any term in the OTE; right-click for Lock View option which enforces a scroll lock on the path currently displayed.
 
-
+* NEW Configuration directory location: users home directory/oboedit_config
 TO DO:
 =======
 Bugs pending:

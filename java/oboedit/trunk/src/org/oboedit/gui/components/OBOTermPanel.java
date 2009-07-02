@@ -132,7 +132,7 @@ RightClickMenuProvider, Autoscroll {
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-			//			logger.debug("OBOTermPanel.reloadListener.reload " + e); // DEL
+//			logger.debug("OBOTermPanel.reloadListener.reload " + e);
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
@@ -212,7 +212,6 @@ RightClickMenuProvider, Autoscroll {
 		}
 	};
 
-	//AA
 	ReconfigListener reconfigListener = new ReconfigListener() {
 		public void configReloaded(ReconfigEvent e) {
 			cellRenderer.setFont(Preferences.getPreferences().getFont());
@@ -1559,14 +1558,12 @@ RightClickMenuProvider, Autoscroll {
 	protected OBOCellRenderer cellRenderer;
 
 	public void init() {
-		selectionTransferHandler = SelectionTransferHandler
-		.installHandler(this);
+		selectionTransferHandler = SelectionTransferHandler.installHandler(this);
 		setDropTarget(dropTarget);
 		attachListeners();
 		setToolTips();
 		cellRenderer = new OBOCellRenderer();
 		setCellRenderer(cellRenderer);
-
 		toolbar.updateGestureList();
 	}
 

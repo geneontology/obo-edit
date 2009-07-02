@@ -107,9 +107,7 @@ public class CloneAction implements ClickMenuAction {
 			HistoryGenerator.getObsoleteChanges(clone, io, historyList, null);
 
 			TermMacroHistoryItem cloneItem = new TermMacroHistoryItem("Clone");
-			Iterator it2 = historyList.getHistoryItems();
-			while (it2.hasNext()) {
-				HistoryItem item = (HistoryItem) it2.next();
+			for(HistoryItem item : historyList.getHistoryItems()){
 				cloneItem.addItem(item);
 			}
 			itemList.add(cloneItem);
