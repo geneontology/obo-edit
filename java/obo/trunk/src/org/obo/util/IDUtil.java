@@ -154,14 +154,15 @@ public class IDUtil {
 	 * {@link Collection}s of ids to which they should be remapped
 	 */
 	public static Map createIDRemapping(HistoryList list) {
-		Map out = new HashMap();
+		Map<String, Collection> out = new HashMap<String, Collection>();
 		VectorFilter destroyFilter = new VectorFilter() {
 			public boolean satisfies(Object o) {
 				return o instanceof DestroyObjectHistoryItem;
 			}
 		};
-		final Collection destroyedIDs = new HashSet();
-		Collection matches = HistoryUtil.findMatchingItems(list, destroyFilter);
+		final Collection<String> destroyedIDs = new HashSet<String>();
+		Collection<?> matches = HistoryUtil.findMatchingItems(list, destroyFilter);
+
 		Iterator it = matches.iterator();
 		while (it.hasNext()) {
 			DestroyObjectHistoryItem item = (DestroyObjectHistoryItem) it
@@ -212,7 +213,7 @@ public class IDUtil {
 		return IDUtil.fetchID(idGen, session, parent, null);
 	}
 
-	public static String fetchID(IDGenerator idGen, OBOSession session,
+	protected static String fetchID(IDGenerator idGen, OBOSession session,
 			LinkedObject parent, Collection<String> reservedIDs) {
 		return IDUtil.fetchID(idGen, session, parent, reservedIDs, false);
 	}
@@ -232,7 +233,6 @@ public class IDUtil {
 	}
 
 	public static boolean equals(IDProfile a, IDProfile b) {
-
 		boolean failed = false;
 		if (a == b)
 			return true;
@@ -243,15 +243,10 @@ public class IDUtil {
 					&& a.getRules().size() != 0) {
 				failed = true;
 			} else {
-				Iterator it = a.getRules().iterator();
-				while (it.hasNext()) {
-					IDRule rule = (IDRule) it.next();
-
+				for(IDRule rule : a.getRules()){
 					boolean found = false;
 
-					Iterator it2 = b.getRules().iterator();
-					while (it2.hasNext()) {
-						IDRule rule2 = (IDRule) it2.next();
+					for(IDRule rule2 : b.getRules()){
 						if (rule.equals(rule2)) {
 							found = true;
 							break;

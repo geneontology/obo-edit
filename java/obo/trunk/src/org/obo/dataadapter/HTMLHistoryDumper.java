@@ -10,7 +10,6 @@ import java.util.*;
 import org.apache.log4j.*;
 
 public class HTMLHistoryDumper implements HistoryDumper {
-
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(HTMLHistoryDumper.class);
 
@@ -30,11 +29,10 @@ public class HTMLHistoryDumper implements HistoryDumper {
 		stream.println("</body></html>");
 	}
 
-	protected void dumpHistory(PrintStream stream, Iterator iterator,
+	protected void dumpHistory(PrintStream stream, Collection<HistoryItem> historyItems,
 			int indentLevel) {
 		stream.println("<ul>");
-		while (iterator.hasNext()) {
-			HistoryItem item = (HistoryItem) iterator.next();
+		for(HistoryItem item : historyItems){
 			for (int j = 0; j < SPACEPADDING * indentLevel; j++)
 				stream.print(" ");
 			if (item instanceof TermMacroHistoryItem) {

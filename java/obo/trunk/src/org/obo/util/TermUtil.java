@@ -302,15 +302,12 @@ public class TermUtil {
 	public static void detectRoots(Collection<LinkedObject> outSet,
 			LinkDatabase linkDatabase, Collection<IdentifiedObject> objects,
 			RootAlgorithm algorithm) {
-//		logger.debug("TermUtil.detectRoots");
 		algorithm.setLinkDatabase(linkDatabase);
 
 		for (IdentifiedObject io : objects) {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
-
 				if (algorithm.isRoot(lo)) {
-//					logger.debug("Is Root.. adding io to outSet: " + io);
 					outSet.add((LinkedObject) io);
 				}
 			}
@@ -369,7 +366,7 @@ public class TermUtil {
 	 *            output collection
 	 */
 	public static Collection<LinkedObject> getAncestors(LinkedObject term,
-		LinkDatabase linkDatabase, boolean includeSelf) {
+			LinkDatabase linkDatabase, boolean includeSelf) {
 		AncestorTask task = getAncestors(term, linkDatabase);
 		task.execute();
 		Collection<LinkedObject> out = task.getResults();
@@ -527,19 +524,19 @@ public class TermUtil {
 		}
 		return parents;
 	}
-	
+
 	public static Collection<LinkedObject> getParents(LinkedObject lo) {
 		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
 		for (Link link : lo.getParents()) {
-				parents.add(link.getParent());
+			parents.add(link.getParent());
 		}
 		return parents;
 	}
-	
+
 	public static Collection<LinkedObject> getChildren(LinkedObject lo) {
 		HashSet<LinkedObject> children = new HashSet<LinkedObject>();
 		for (Link link : lo.getChildren()) {
-				children.add(link.getParent());
+			children.add(link.getParent());
 		}
 		return children;
 	}
@@ -627,7 +624,7 @@ public class TermUtil {
 	 */
 	public static Collection<OBOProperty> getRelationshipTypes(
 			LinkDatabase linkDatabase) {
-//		logger.debug("TermUtil.getRelationshipTypes");
+		//		logger.debug("TermUtil.getRelationshipTypes");
 		Collection<OBOProperty> out = new LinkedList<OBOProperty>();
 		for (IdentifiedObject io : linkDatabase.getObjects()) {
 			if (isProperty(io) && !isObsolete(io)){
@@ -1063,7 +1060,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-	
+
 
 
 
