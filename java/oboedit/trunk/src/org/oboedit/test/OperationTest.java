@@ -90,7 +90,6 @@ public abstract class OperationTest extends TestCase {
 
 	public void doBundleTest(TestBundle testBundle) throws Exception {
 		Iterator it;
-
 		// get the history generator version of the changes
 		HistoryList allChanges = new DefaultHistoryList();
 		it = testBundle.getObjectPairs().iterator();
@@ -120,7 +119,7 @@ public abstract class OperationTest extends TestCase {
 			// NOTICE: We need special handling for term generation
 
 			IdentifiedObject modifiedObject = session
-					.getObject(op.getOriginal().getID());
+			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {
 				HistoryList changes = HistoryGenerator.getChanges(op
 						.getResult(), modifiedObject);
@@ -138,7 +137,7 @@ public abstract class OperationTest extends TestCase {
 		while (it.hasNext()) {
 			ObjectPair op = (ObjectPair) it.next();
 			IdentifiedObject modifiedObject = session
-					.getObject(op.getOriginal().getID());
+			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {
 				HistoryList changes = HistoryGenerator.getChanges(op
 						.getOriginal(), modifiedObject);
@@ -149,9 +148,7 @@ public abstract class OperationTest extends TestCase {
 		}
 
 		// apply the history generator version of the changes
-		it = allChanges.getHistoryItems();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
+		for(HistoryItem item : allChanges.getHistoryItems()){
 			testUtil.apply(item);
 		}
 
@@ -162,7 +159,7 @@ public abstract class OperationTest extends TestCase {
 			// NOTICE: We need special handling for term generation
 
 			IdentifiedObject modifiedObject = session
-					.getObject(op.getOriginal().getID());
+			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {
 				HistoryList changes = HistoryGenerator.getChanges(op
 						.getResult(), modifiedObject);
@@ -175,9 +172,8 @@ public abstract class OperationTest extends TestCase {
 
 		// reverse history generator version of the changes
 		List allChangesList = new ArrayList();
-		Iterator it2 = allChanges.getHistoryItems();
-		while(it2.hasNext()) {
-			allChangesList.add(it2.next());
+		for(HistoryItem hi : allChanges.getHistoryItems()){
+			allChangesList.add(hi);
 		}
 		Collections.reverse(allChangesList);
 		it = allChangesList.iterator();
@@ -191,7 +187,7 @@ public abstract class OperationTest extends TestCase {
 		while (it.hasNext()) {
 			ObjectPair op = (ObjectPair) it.next();
 			IdentifiedObject modifiedObject = session
-					.getObject(op.getOriginal().getID());
+			.getObject(op.getOriginal().getID());
 			if (modifiedObject != null && op.getResult() != null) {
 				HistoryList changes = HistoryGenerator.getChanges(op
 						.getOriginal(), modifiedObject);

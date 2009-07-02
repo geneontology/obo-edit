@@ -66,10 +66,7 @@ public class TestUtil extends TestCase {
 	}
 
 	public void apply(HistoryList historyList) {
-		Iterator it = historyList.getHistoryItems();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
-
+		for(HistoryItem item : historyList.getHistoryItems()){
 			OperationWarning warning = apply(item);
 			assertNull("No operation should generate a warning. Got " + warning
 					+ " from " + item, warning);

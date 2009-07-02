@@ -137,7 +137,6 @@ public class HistoryBrowser extends AbstractGUIComponent {
 	}
 
 	private void attachListeners() {
-
 		rootListener = new RootChangeListener() {
 			public void changeRoot(RootChangeEvent e) {
 				layoutPlugin();

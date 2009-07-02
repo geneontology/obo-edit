@@ -44,7 +44,7 @@ public class Preferences {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(Preferences.class);
 
-	protected static String DEFAULT_MEMORY_SETTING = "1024M";  // Was 512M
+	protected static String DEFAULT_MEMORY_SETTING = "1024M"; 
 
 	protected Font font;
 
@@ -56,7 +56,7 @@ public class Preferences {
 
 	protected Color lightSelectionColor = null;
 
-	protected Color orange = new Color(255, 153, 0); // a nice orangey orange
+	protected Color orange = new Color(255, 153, 0);
 	protected Color purple = new Color(102, 0, 204);
 
 	protected boolean confirmOnExit = true;
@@ -69,10 +69,10 @@ public class Preferences {
 
 	protected boolean useReasoner = false;
 	protected String reasonerName = "OFF";
-	
+
 	// continuous incremental reasoning
 	protected boolean isIncrementalOn = false;
-	
+
 	//partial incremental reasoning in steps where the reasonedlink database is topped off after completion of a task 
 	protected boolean isStepIncrementalOn = false;
 
@@ -272,13 +272,9 @@ public class Preferences {
 
 	public static File getOBOEditPrefsDir() {
 		VersionNumber version = Preferences.getVersion();
-		// New: OS-appropriate directory
-		File prefsDir = new File(OSUtil.getConfigDirectory(
-				getAppName() +
-				version.getMajorVersion() + (version.isRC() ? "-rc" : "") + 
-		"/"));
-		//		logger.debug("prefsDir = " + prefsDir);
-
+		File prefsDir = new File(System.getProperty("user.home") + "/" + "oboedit_config");
+		//File prefsDir = new File(OSUtil.getConfigDirectory(getAppName() + version.getMajorVersion() + "/"));
+		//logger.debug("prefsDir = " + prefsDir);
 		// If the directory is being newly created, offer to copy files from ~/.oboeditbeta
 		// for (temporary) backwards compatibility.  (Only do if we're not running in batch mode.)
 		if (!prefsDir.exists() && !isBatchMode()) {
@@ -588,7 +584,7 @@ public class Preferences {
 		File optionFile = new File(getInstallationDirectory(), 
 				getLauncherName() + ".vmoptions");
 		String newmemValue = "-Xmx"+ mem;
-//		logger.debug("newmemValue: " + newmemValue);
+		//		logger.debug("newmemValue: " + newmemValue);
 
 		if (optionFile.exists()) {
 			File tempFile = new File(optionFile.getAbsolutePath() + ".tmp");
@@ -627,16 +623,17 @@ public class Preferences {
 		logger.debug("Prefs.setUseReasoner " + useReasoner);
 		this.useReasoner = useReasoner;
 	}
-	
+
 	//partial incremental reasoning
 	public boolean getStepIncrementalReasoningStatus() {
 		return isStepIncrementalOn;
 	}
+
 	public void setStepIncrementalReasoningStatus(boolean isStepIncrementalOn) {
 		logger.debug("Preferences.setStepIncrementalReasoningStatus: " + isStepIncrementalOn);
 		this.isStepIncrementalOn = isStepIncrementalOn;
 	}
-	
+
 	//continuous incremental reasoning
 	public boolean getIncrementalReasoningStatus() {
 		return isIncrementalOn;
@@ -645,7 +642,7 @@ public class Preferences {
 		logger.debug("Preferences.setIncrementalReasoningStatus: " + isIncrementalOn);
 		this.isIncrementalOn = isIncrementalOn;
 	}
-	
+
 
 	public String getReasonerName() {
 		return reasonerName;
@@ -944,10 +941,6 @@ public class Preferences {
 		return installationDir;
 	}
 
-	// No longer used--replaced by log4j logging
-	//	public static File getStderrFile() {
-	//	return new File(getOBOEditPrefsDir(), "stderr");
-	//	}
 
 	public static File getPrefsXMLFile() {
 		return new File(getOBOEditPrefsDir(), "config.xml");

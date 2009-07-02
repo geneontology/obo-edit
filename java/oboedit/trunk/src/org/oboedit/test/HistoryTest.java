@@ -274,9 +274,7 @@ public class HistoryTest extends TestCase {
 				changed);
 
 		NecessarilyTrueHistoryItem nec_item = null;
-		it = generatedList.getHistoryItems();
-		while (it.hasNext()) {
-			HistoryItem item = (HistoryItem) it.next();
+		for(HistoryItem item : generatedList.getHistoryItems()){
 			if (item instanceof NecessarilyTrueHistoryItem) {
 				nec_item = (NecessarilyTrueHistoryItem) item;
 				break;
