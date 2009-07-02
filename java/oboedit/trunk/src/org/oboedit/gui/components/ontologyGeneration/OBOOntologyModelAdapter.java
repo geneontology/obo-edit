@@ -175,9 +175,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		{
 			if (historyItem instanceof TermMacroHistoryItem) {
 				TermMacroHistoryItem termMacroHistoryItem = (TermMacroHistoryItem) historyItem;
-				Iterator<HistoryItem> iter = termMacroHistoryItem.getHistoryItems();
-				while (iter.hasNext()) {
-					HistoryItem hi = iter.next();
+				for(HistoryItem hi : termMacroHistoryItem.getHistoryItems()){
 					String targetID = hi.getTarget();
 					if (targetID != null) {
 						if (hi instanceof NameChangeHistoryItem //
