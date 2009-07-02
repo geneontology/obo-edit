@@ -33,6 +33,7 @@ import org.obo.annotation.datamodel.AnnotationOntology;
 import org.obo.annotation.datamodel.impl.AnnotationImpl;
 import org.obo.dataadapter.OBOSerializationEngine.FilteredPath;
 import org.obo.datamodel.CommentedObject;
+import org.obo.datamodel.PropertyValue;
 import org.obo.datamodel.SubsetObject;
 import org.obo.datamodel.DanglingObject;
 import org.obo.datamodel.DatatypeValue;
@@ -1038,6 +1039,25 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 		savedObjects.add(lo); // redundant with obj2iid?
 		obj2iid.put(lo, iid);
 
+		/* Property values for RANK are handled here - Cartik [070209] */
+		if(lo.getID().startsWith("TTO")){
+			for(PropertyValue pv : lo.getPropertyValues()){
+				 if(pv.getValue().contains("has_rank")){
+					 String propValue = pv.getValue();
+					 if(propValue != null && propValue != ""){
+						 String[] propValueComponents = propValue.split("\\s");
+						 if(propValueComponents.length == 2){
+							 callSqlFunc("store_link",
+									 lo.getID(),
+									 propValueComponents[0],
+									 propValueComponents[1], 
+									 "");
+						 }
+					 }
+				 }
+			}
+		}
+		
 		if (false) {
 			//			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
 			for (Link link : ((LinkedObject) lo).getParents()) {
