@@ -946,7 +946,6 @@ public class XMLHistoryAdapter implements OBOAdapter {
 			HistoryList historyList, int indentLevel) {
 		if (historyList.size() == 0)
 			return;
-		Iterator it = historyList.getHistoryItems();
 		printLine(stream, indentLevel, "<list>");
 		printLine(stream, indentLevel + 2, "<head>");
 		for (int i = 0; i < historyList.size(); i++) {

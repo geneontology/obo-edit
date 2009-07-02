@@ -3,11 +3,15 @@ package org.obo.history;
 import java.util.*;
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
 import org.bbop.util.*;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.OBORestriction;
 
 public abstract class HistoryItem implements Serializable, Cloneable {
+	
+	//initialize logger
+	protected final static Logger logger = Logger.getLogger(HistoryItem.class);
 
 	public static StringRelationship createStringRelationship(Link link) {
 		if (link instanceof OBORestriction)
@@ -20,7 +24,6 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	}
 
 	protected String target;
-
 	protected HashSet edited = new HashSet();
 	protected HashSet editedTerms = new HashSet();
 
@@ -92,12 +95,10 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	}
 
 	public static HistoryList defaultForwardID(HistoryItem item, String oldID,
-			Collection newIDs) {
+			Collection<String> newIDs) {
 		if (ObjectUtil.equals(item.getTarget(), oldID)) {
 			HistoryList out = new DefaultHistoryList();
-			Iterator it = newIDs.iterator();
-			while (it.hasNext()) {
-				String id = it.next().toString();
+			for(String id : newIDs){
 				HistoryItem newitem = (HistoryItem) item.clone();
 				newitem.setTarget(id);
 				out.addItem(newitem);
@@ -123,8 +124,9 @@ public abstract class HistoryItem implements Serializable, Cloneable {
 	 * @return Set editedTerms
 	 */
 	public Set getEditedTerms() {
+		if(target!=null)
 		editedTerms.add(target);
-		//System.out.println("HistoryItem: getEditedTerms: target = " + target);
+//		logger.debug("HistoryItem.getEditedTerms -- target:" + target);
 		return (Set) editedTerms.clone();
 	}
 }

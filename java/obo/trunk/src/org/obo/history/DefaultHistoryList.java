@@ -77,8 +77,8 @@ public class DefaultHistoryList implements SessionHistoryList {
 		this.comment = comment;
 	}
 
-	public Iterator getHistoryItems() {
-		return historyList.iterator();
+	public Collection<HistoryItem> getHistoryItems() {
+		return historyList;
 	}
 
 	public HistoryItem getItemAt(int index) {
@@ -139,9 +139,8 @@ public class DefaultHistoryList implements SessionHistoryList {
 					for (int j = 0; j < i; j++)
 						out.addItem((HistoryItem) historyList.get(j));
 				}
-				Iterator it2 = itemList.getHistoryItems();
-				while (it2.hasNext()) {
-					out.addItem((HistoryItem) it2.next());
+				for(HistoryItem hi : itemList.getHistoryItems()){
+					out.addItem(hi);
 				}
 			}
 		}

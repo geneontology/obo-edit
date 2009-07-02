@@ -78,36 +78,27 @@ public class HistoryGenerator implements Serializable {
 	public static SessionHistoryList getHistory(OBOSession oldSession,
 			OBOSession newSession,
 			Collection<String> warnings) {
-		Iterator it;
 
 		SessionHistoryList history = new DefaultHistoryList();
 
 		// find namespace collection changes
-		it = oldSession.getNamespaces().iterator();
-		while (it.hasNext()) {
-			Namespace n = (Namespace) it.next();
+		for(Namespace n : oldSession.getNamespaces()){
 			Namespace newn = HistoryUtil.findNamespace(n, newSession);
 			if (newn == null) {
-				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(n
-						.getID(), null, false, true);
+				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(n.getID(), null, false, true);
 				history.addItem(item);
 			}
 		}
-		it = newSession.getNamespaces().iterator();
-		while (it.hasNext()) {
-			Namespace namespace = (Namespace) it.next();
-			Namespace oldNamespace = HistoryUtil.findNamespace(namespace, oldSession);
+		for(Namespace n : newSession.getNamespaces()){
+			Namespace oldNamespace = HistoryUtil.findNamespace(n, oldSession);
 			if (oldNamespace == null) {
-				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(
-						null, namespace.getID(), true, false);
+				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(null, n.getID(), true, false);
 				history.addItem(item);
 			}
 		}
 
-		// find category collection changes
-		it = oldSession.getSubsets().iterator();
-		while (it.hasNext()) {
-			TermSubset oldTermSubset = (TermSubset) it.next();
+		// find subset collection changes
+		for(TermSubset oldTermSubset : oldSession.getSubsets()){
 			if (!newSession.getSubsets().contains(oldTermSubset)) {
 				TermSubsetHistoryItem item = new TermSubsetHistoryItem(oldTermSubset,
 						null, false, true);
@@ -121,9 +112,7 @@ public class HistoryGenerator implements Serializable {
 				}
 			}
 		}
-		it = newSession.getSubsets().iterator();
-		while (it.hasNext()) {
-			TermSubset newTermSubset = (TermSubset) it.next();
+		for (TermSubset newTermSubset : newSession.getSubsets()){
 			if (!oldSession.getSubsets().contains(newTermSubset)) {
 				TermSubsetHistoryItem item = new TermSubsetHistoryItem(
 						null, newTermSubset, true, false);
@@ -132,9 +121,7 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		// find synonym category collection changes
-		it = oldSession.getSynonymTypes().iterator();
-		while (it.hasNext()) {
-			SynonymType oldTermSynonymType = (SynonymType) it.next();
+		for(SynonymType oldTermSynonymType : oldSession.getSynonymTypes()) {
 			if (!newSession.getSynonymTypes().contains(oldTermSynonymType)) {
 				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						oldTermSynonymType, null, false, true);
@@ -150,9 +137,7 @@ public class HistoryGenerator implements Serializable {
 				}
 			}
 		}
-		it = newSession.getSynonymTypes().iterator();
-		while (it.hasNext()) {
-			SynonymType newTermSynonymType = (SynonymType) it.next();
+		for(SynonymType newTermSynonymType : newSession.getSynonymTypes()){
 			if (!oldSession.getSynonymTypes().contains(newTermSynonymType)) {
 				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						null, newTermSynonymType, true, false);
@@ -160,83 +145,63 @@ public class HistoryGenerator implements Serializable {
 			}
 		}
 
-		List newObjects = new LinkedList();
+		List<IdentifiedObject> newObjects = new LinkedList<IdentifiedObject>();
 
-		// if an object is in the new history, but not in the old history,
-		// it has been added
-		it = newSession.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject newSessionIdentifiedObject = (IdentifiedObject) it.next();
-			if (newSessionIdentifiedObject.getClass().getName() == "obo:TERM"){
-				//System.out.println("HistoryGenerator: getHistory: io = " + io.getName());
-			}
-			IdentifiedObject oldSessionIdentifiedObject = oldSession.getObject(newSessionIdentifiedObject.getID());
-			//System.out.println("HistoryGenerator: io.getID = " + io.getID());
-
-			if (oldSessionIdentifiedObject.getClass().getName() == "obo:TERM"){
-				//System.out.println("HistoryGenerator: getHistory: oldio = " + oldio.getName());
-			}
-			if (oldSessionIdentifiedObject == null) {
-				history.addItem(new CreateObjectHistoryItem(newSessionIdentifiedObject.getID(), newSessionIdentifiedObject
-						.getType().getID()));
-				//System.out.println("HistoryGenerator: io.getID = " + io.getID());
-				//System.out.println("HistoryGenerator: io added to newObjects");
-				newObjects.add(newSessionIdentifiedObject);
-
+		// if an object is in the new history, but not in the old history, it has been added
+		for(IdentifiedObject newio : newSession.getObjects()){
+			//logger.debug("HistoryGenerator: getHistory: newio = " + newio);
+			//if (newIO.getClass().getName() == "obo:TERM"){
+			//
+			//}
+			IdentifiedObject oldio = oldSession.getObject(newio.getID());
+			//logger.debug("HistoryGenerator: oldio = " + oldio);
+			//if (oldIO.getClass().getName() == "obo:TERM"){
+			//System.out.println("HistoryGenerator: getHistory: oldio = " + oldio.getName());
+			//}
+			if (oldio == null) {
+				history.addItem(new CreateObjectHistoryItem(newio.getID(), newio.getType().getID()));
+				//logger.debug("HistoryGenerator: io.getID = " + io.getID());
+				//logger.debug("HistoryGenerator: io added to newObjects");
+				newObjects.add(newio);
 			}
 		}
 
-
-
-
-
-		it = newObjects.iterator();
-
-		while (it.hasNext()) {
-			//System.out.println("HistoryGenerator: newObjects Iterator: it = " + it); //this never prints
-			IdentifiedObject newSessionIdentifiedObject = (IdentifiedObject) it.next();
+		for(IdentifiedObject newSessionIO : newObjects){
 			//System.out.println("HistoryGenerator: newObjects:newSessionIdentifiedObject = " + newSessionIdentifiedObject);	
-			IdentifiedObject oldSessionIdentifiedObject = oldSession.getObject(newSessionIdentifiedObject.getID());
+			IdentifiedObject oldSessionIO = oldSession.getObject(newSessionIO.getID());
 			//System.out.println("HistoryGenerator: newObjects:oldSessionIdentifiedObject = " + oldSessionIdentifiedObject);
 
 			HistoryList creationList = new DefaultHistoryList();
-			if (newSessionIdentifiedObject.getType() instanceof OBOClass) {
+			if (newSessionIO.getType() instanceof OBOClass) {
 				IdentifiedObject blankTerm = oldSession.getObjectFactory()
-				.createObject(newSessionIdentifiedObject.getID(), (OBOClass) newSessionIdentifiedObject.getType(),
-						newSessionIdentifiedObject.isAnonymous());
+				.createObject(newSessionIO.getID(), (OBOClass) newSessionIO.getType(),newSessionIO.isAnonymous());
 
 				//System.out.println("HistoryGenerator: getHistory: blankTerm = " + blankTerm); 
 				//System.out.println("HistoryGenerator: getHistory: newSessionIdentifiedObject = " + newSessionIdentifiedObject);
 				//System.out.println("HistoryGenerator: getHistory: creationList = " + creationList);
 				//System.out.println("HistoryGenerator: getHistory: warnings = " + warnings);
-				getTermTextChanges(blankTerm, newSessionIdentifiedObject, creationList, warnings);
-				getParentageChanges(blankTerm, newSessionIdentifiedObject, creationList, warnings);
-				getObsoleteChanges(blankTerm, newSessionIdentifiedObject, creationList, warnings);
-				getNamespaceChanges(blankTerm, newSessionIdentifiedObject, creationList, warnings);
+				getTermTextChanges(blankTerm, newSessionIO, creationList, warnings);
+				getParentageChanges(blankTerm, newSessionIO, creationList, warnings);
+				getObsoleteChanges(blankTerm, newSessionIO, creationList, warnings);
+				getNamespaceChanges(blankTerm, newSessionIO, creationList, warnings);
 			}
 
 			if (creationList.size() > 1) {
-				TermMacroHistoryItem item = new TermMacroHistoryItem(
-						"Populated new object " + newSessionIdentifiedObject.getID());
+				TermMacroHistoryItem item = new TermMacroHistoryItem("Populated new object " + newSessionIO.getID());
 				item.setHistoryList(creationList);
 				history.addItem(item);
 			} else
 				history.addItem(creationList.getItemAt(0));
 		}
 
-		it = oldSession.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		for(IdentifiedObject io : oldSession.getObjects()){
 			IdentifiedObject newio = newSession.getObject(io.getID());
 
-			// if an object is in the old history, but not in the new history,
-			// it has been destroyed
+			// if an object is in the old history, but not in the new history, it has been destroyed
 			if (newio == null) {
 				if (io instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) io;
-					Iterator it2 = lo.getParents().iterator();
-					while (it2.hasNext()) {
-						Link link = (Link) it2.next();
+					for(Link link: lo.getParents()){
 						history.addItem(new DeleteLinkHistoryItem(link));
 					}
 					//					it2 = lo.getChildren().iterator();
@@ -250,8 +215,7 @@ public class HistoryGenerator implements Serializable {
 			}
 
 			if (!io.getType().equals(newio.getType()) && warnings != null)
-				warnings.add(io
-						+ " changed type between versions of this file!");
+				warnings.add(io + " changed type between versions of this file!");
 
 			getTermTextChanges(io, newio, history, warnings);
 			getParentageChanges(io, newio, history, warnings);
@@ -297,9 +261,7 @@ public class HistoryGenerator implements Serializable {
 			LinkedObject lnewio = (LinkedObject) newio;
 
 			// checked for removed & changed parents
-			Iterator it2 = lio.getParents().iterator();
-			while (it2.hasNext()) {
-				Link link = (Link) it2.next();
+			for(Link link: lio.getParents()){
 				//Link foundLink = HistoryUtil.findParentRelNoIntersection(link,lnewio);
 				Link foundLink = HistoryUtil.findParentRel(link,lnewio);
 				if (foundLink == null) {
@@ -352,11 +314,8 @@ public class HistoryGenerator implements Serializable {
 			}
 
 			// check for added parents
-			it2 = lnewio.getParents().iterator();
-			while (it2.hasNext()) {
-				Link link = (Link) it2.next();
-				Link foundLink = HistoryUtil.findParentRelNoIntersection(link,
-						lio);
+			for(Link link: lnewio.getParents()){
+				Link foundLink = HistoryUtil.findParentRelNoIntersection(link,lio);
 				// if a parent is in the new term, but not in the old,
 				// it has been added
 				if (foundLink == null) {
@@ -463,8 +422,8 @@ public class HistoryGenerator implements Serializable {
 					&& oldIO instanceof ObsoletableObject) {
 
 				//System.out.println("HistoryGenerator: GetObsoleteChanges: are both io and newio Obsolete?: "
-						//+ (TermUtil.isObsolete(newIO) && TermUtil.isObsolete(oldIO)));
-				
+				//+ (TermUtil.isObsolete(newIO) && TermUtil.isObsolete(oldIO)));
+
 				ObsoletableObject obsoletableOldIO = (ObsoletableObject) oldIO;
 				//System.out.println("HistoryGenerator: getObsoleteChanges: oldIO = " + oldIO); //this does print
 				//System.out.println("HistoryGenerator: getObsoleteChanges: obsoletableOldIO = " + obsoletableOldIO);
