@@ -230,31 +230,36 @@ public class BackgroundImagePanel extends JPanel implements ImageObserver {
 	}
     }
 
-    public void setSize(int width, int height) {
+    @Override
+	public void setSize(int width, int height) {
 	super.setSize(width, height);
 	if (scaleImage)
 	    resizeImage();
     }
 
-    public void setSize(Dimension d) {
+    @Override
+	public void setSize(Dimension d) {
 	super.setSize(d);
 	if (scaleImage)
 	    resizeImage();
     }
 
-    public void setBounds(Rectangle r) {
+    @Override
+	public void setBounds(Rectangle r) {
 	super.setBounds(r);
 	if (scaleImage)
 	    resizeImage();
     }
 
-    public void setBounds(int x, int y, int width, int height) {
+    @Override
+	public void setBounds(int x, int y, int width, int height) {
 	super.setBounds(x,y,width,height);
 	if (scaleImage)
 	    resizeImage();
     }
 
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
 	if (g != null) {
 	    if (backgroundImage != null) {
 		int x = 0;

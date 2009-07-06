@@ -3,11 +3,6 @@ package org.bbop.swing;
 import java.awt.Component;
 import java.awt.MenuComponent;
 import java.awt.PopupMenu;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

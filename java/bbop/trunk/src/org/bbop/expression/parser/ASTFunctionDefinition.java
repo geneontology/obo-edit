@@ -22,7 +22,8 @@ public class ASTFunctionDefinition extends SimpleNode {
 		super(p, i);
 	}
 	
-    public Object value(JexlContext jc) throws Exception {
+    @Override
+	public Object value(JexlContext jc) throws Exception {
         /* first child is the function name */
     	int nameIndex = 0;
     	boolean isGlobal = false;

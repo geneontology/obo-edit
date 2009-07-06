@@ -19,7 +19,8 @@ public class FreezableViewport extends JViewport {
 	this.frozen = frozen;
     }
     
-    public void setViewPosition(Point p) {
+    @Override
+	public void setViewPosition(Point p) {
 	if (!frozen)
 	    super.setViewPosition(p);
     }

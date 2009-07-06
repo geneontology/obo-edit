@@ -34,7 +34,8 @@ public class MultiProperties extends Properties {
 	return out;
     }
 
-    public Object setProperty(String key, String value) {
+    @Override
+	public Object setProperty(String key, String value) {
 	Object out = super.put(key, value);
 	if (parent != null) {
 	    parent.setProperty(myKey+DELIM+key, value);

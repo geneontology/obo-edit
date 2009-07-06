@@ -41,11 +41,13 @@ public class NonNegativeInteger extends Number
 	    return 0;
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 	return value;
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
 	if (o instanceof NonNegativeInteger)
 	    return value == ((NonNegativeInteger) o).intValue();
 	else if (o instanceof Integer)
@@ -54,27 +56,33 @@ public class NonNegativeInteger extends Number
 	    return false;
     }
 
-    public int intValue() {
+    @Override
+	public int intValue() {
 	return value;
     }
 
-    public byte byteValue() {
+    @Override
+	public byte byteValue() {
 	return (byte) value;
     }
 
-    public float floatValue() {
+    @Override
+	public float floatValue() {
 	return value;
     }
 
-    public double doubleValue() {
+    @Override
+	public double doubleValue() {
 	return value;
     }
 
-    public long longValue() {
+    @Override
+	public long longValue() {
 	return value;
     }
 
-    public short shortValue() {
+    @Override
+	public short shortValue() {
 	return (short) value;
     }
 

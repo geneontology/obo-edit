@@ -15,8 +15,6 @@
  */
 package org.bbop.expression;
 
-import java.util.Map;
-
 /**
  * Holds a Map of variables which are referenced in a JEXL expression.
  *

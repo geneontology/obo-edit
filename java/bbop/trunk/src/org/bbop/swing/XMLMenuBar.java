@@ -148,7 +148,8 @@ public class XMLMenuBar extends JMenuBar {
 	return menu;
     }
 
-    public void setFont(Font font) {
+    @Override
+	public void setFont(Font font) {
 	super.setFont(font);
 	if (root != null)
 	    reload(root);
@@ -214,11 +215,13 @@ public class XMLMenuBar extends JMenuBar {
 	}
 
 	// Parser calls this once at the beginning of a document
+	@Override
 	public void startDocument() throws SAXException {
 	    stack = new Vector();
 	}
 
 	// Parser calls this for each element in a document
+	@Override
 	public void startElement(String namespaceURI, String localName,
 				 String rawName, Attributes atts)
 	    throws SAXException
@@ -250,6 +253,7 @@ public class XMLMenuBar extends JMenuBar {
 		root = (MenubarElement) item;
 	}
 
+	@Override
 	public void endElement(java.lang.String uri,
 			       java.lang.String localName,
 			       java.lang.String qName) {
@@ -262,6 +266,7 @@ public class XMLMenuBar extends JMenuBar {
 	}
 	
 	// Parser calls this once after parsing a document
+	@Override
 	public void endDocument() throws SAXException {
 
 	}

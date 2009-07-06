@@ -12,7 +12,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -206,6 +205,7 @@ public abstract class AbstractIconView extends View {
 	 *            the allocated region to render into
 	 * @see View#paint
 	 */
+	@Override
 	public void paint(Graphics g, Shape a) {
 		setPropertiesFromAttributes();
 		Rectangle rect = (a instanceof Rectangle) ? (Rectangle) a : a
@@ -353,6 +353,7 @@ public abstract class AbstractIconView extends View {
 	 *                in the associated document
 	 * @see View#modelToView
 	 */
+	@Override
 	public Shape modelToView(int pos, Shape a, Position.Bias b)
 			throws BadLocationException {
 		int p0 = getStartOffset();
@@ -382,6 +383,7 @@ public abstract class AbstractIconView extends View {
 	 *         point of view
 	 * @see View#viewToModel
 	 */
+	@Override
 	public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
 		Rectangle alloc = (Rectangle) a;
 		if (x < alloc.x + alloc.width) {

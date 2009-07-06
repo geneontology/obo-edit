@@ -70,12 +70,14 @@ public class ASTJexlScript extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext jc) throws ExpressionException {
+    @Override
+	public Object value(JexlContext jc) throws ExpressionException {
         int numChildren = jjtGetNumChildren();
         Object result = null;
         for (int i = 0; i < numChildren; i++) {
@@ -95,7 +97,8 @@ public class ASTJexlScript extends SimpleNode {
         return result;
     }
     
-    public void jjtClose() {
+    @Override
+	public void jjtClose() {
     	
     }
 }

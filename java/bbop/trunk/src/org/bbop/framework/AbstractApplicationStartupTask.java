@@ -4,16 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.apache.log4j.*;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -25,12 +18,9 @@ import javax.swing.UIManager;
 import org.bbop.dataadapter.DataAdapter;
 import org.bbop.framework.dock.LayoutDriver;
 import org.bbop.framework.dock.idw.IDWDriver;
-import org.bbop.io.LoggerStream;
-import org.bbop.io.MultiOutputStream;
 import org.bbop.swing.SwingUtil;
 import org.bbop.util.CollectionUtil;
 import org.bbop.util.ExceptionLogger;
-import org.bbop.util.OSUtil;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -42,8 +32,9 @@ AbstractSingleActionTask {
 	protected VetoableShutdownListener vetoableShutdownListener = new VetoableShutdownListener() {
 
 		public boolean willShutdown() {
+			GUIManager.getManager();
 			if (GUIManager.getManager().getFrame() != null
-					&& GUIManager.getManager().isConfirmOnExit()) {
+					&& GUIManager.isConfirmOnExit()) {
 				return JOptionPane.showConfirmDialog(GUIManager.getManager()
 						.getFrame(), "Really quit?", "Exit?",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;

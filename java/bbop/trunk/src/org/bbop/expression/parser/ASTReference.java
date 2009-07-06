@@ -52,17 +52,20 @@ public class ASTReference extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext jc) throws Exception {
+    @Override
+	public Object value(JexlContext jc) throws Exception {
         return execute(null, jc);
     }
 
     /** Store the first child as {@link ASTReference#root root}. */
-    public void jjtClose() {
+    @Override
+	public void jjtClose() {
         root = (SimpleNode) jjtGetChild(0);
     }
 
@@ -77,7 +80,8 @@ public class ASTReference extends SimpleNode {
      * @return the value of the array expression.
      * @throws Exception on any error
      */
-    public Object execute(Object obj, JexlContext jc) throws Exception {
+    @Override
+	public Object execute(Object obj, JexlContext jc) throws Exception {
         Object o = root.value(jc);
 
         /*

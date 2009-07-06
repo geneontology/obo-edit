@@ -47,6 +47,7 @@ public class Perspective {
 		this.id = id;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Perspective) {
 			return ((Perspective) o).getID().equals(id);
@@ -54,10 +55,12 @@ public class Perspective {
 			return false;
 	}
 	
+	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 	
+	@Override
 	public String toString() {
 		return name;
 	}

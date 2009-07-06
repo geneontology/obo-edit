@@ -12,7 +12,8 @@ public class StringValue implements ArgumentValue {
 	this.value = value;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return value;
     }
 }

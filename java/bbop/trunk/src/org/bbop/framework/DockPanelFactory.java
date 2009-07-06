@@ -2,8 +2,6 @@ package org.bbop.framework;
 
 import org.bbop.framework.ComponentManager;
 import org.bbop.framework.GUIComponent;
-import org.bbop.framework.dock.idw.IDWDriver;
-
 import org.apache.log4j.*;
 
 public class DockPanelFactory extends
@@ -25,6 +23,7 @@ public class DockPanelFactory extends
 		return "DOCK_PANEL";
 	}
 
+	@Override
 	public GUIComponent doCreateComponent(String id) {
 		GUIComponent out = ComponentManager.getManager().getDriver()
 				.createMainPanel(id);
@@ -35,6 +34,7 @@ public class DockPanelFactory extends
 		return "main";
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
@@ -43,6 +43,7 @@ public class DockPanelFactory extends
 		return "Dock Panel";
 	}
 
+	@Override
 	public boolean showInMenus() {
 		return false;
 	}

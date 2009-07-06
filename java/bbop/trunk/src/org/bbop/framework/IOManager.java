@@ -1,14 +1,10 @@
 package org.bbop.framework;
 
-import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 import org.bbop.dataadapter.DataAdapter;
 import org.bbop.dataadapter.DataAdapterException;
@@ -20,8 +16,6 @@ import org.bbop.io.FileUtil;
 import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.swing.BackgroundUtil;
 import org.bbop.util.AbstractTaskDelegate;
-
-import org.apache.log4j.*;
 
 import org.apache.log4j.*;
 

@@ -44,7 +44,8 @@ public class CachedPanel extends JPanel {
 	return cacheDim;
     }
     
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
 	if (useCache) {
 	    clipBounds = g.getClipBounds(clipBounds);
 	    int sectorx = clipBounds.x / cacheDim.width;
@@ -163,6 +164,7 @@ public class CachedPanel extends JPanel {
 		 */
 		private static final long serialVersionUID = -2668631913940388574L;
 	Rectangle clipRect = new Rectangle();
+	@Override
 	public void doPaint(Graphics  g) {
 	    clipRect = g.getClipBounds(clipRect);
 	    g.setColor(Color.white);

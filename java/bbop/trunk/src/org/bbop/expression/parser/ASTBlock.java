@@ -50,7 +50,8 @@ public class ASTBlock extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
@@ -60,7 +61,8 @@ public class ASTBlock extends SimpleNode {
      * @param context the {@link JexlContext} to execute against.
      * @throws Exception on any error.
      */
-    public Object value(JexlContext context) throws Exception {
+    @Override
+	public Object value(JexlContext context) throws Exception {
         int numChildren = jjtGetNumChildren();
         Object result = null;
         for (int i = 0; i < numChildren; i++) {

@@ -45,45 +45,54 @@ public abstract class ProgressableInputStream extends InputStream implements
 		this.progressMessage = message;
 	}
 
+	@Override
 	public int read() throws IOException {
 		currentPos = currentPos + 1;
 		return stream.read();
 	}
 
+	@Override
 	public int read(byte[] bytes) throws IOException {
 		int amtread = stream.read(bytes);
 		currentPos += amtread;
 		return amtread;
 	}
 
+	@Override
 	public int read(byte[] bytes, int off, int len) throws IOException {
 		int amtread = stream.read(bytes, off, len);
 		currentPos += amtread;
 		return amtread;
 	}
 
+	@Override
 	public long skip(long amt) throws IOException {
 		long amtskipped = stream.skip(amt);
 		currentPos += amtskipped;
 		return amtskipped;
 	}
 
+	@Override
 	public int available() throws IOException {
 		return stream.available();
 	}
 
+	@Override
 	public void close() throws IOException {
 		stream.close();
 	}
 
+	@Override
 	public void mark(int readLimit) {
 		stream.mark(readLimit);
 	}
 
+	@Override
 	public void reset() throws IOException {
 		stream.reset();
 	}
 
+	@Override
 	public boolean markSupported() {
 		return stream.markSupported();
 	}

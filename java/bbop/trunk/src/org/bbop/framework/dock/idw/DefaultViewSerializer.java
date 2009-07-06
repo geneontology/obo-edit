@@ -1,12 +1,8 @@
 package org.bbop.framework.dock.idw;
 
-import java.awt.Component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
 
 import org.bbop.framework.AbstractGUIComponent;
 import org.bbop.framework.ComponentManager;
@@ -16,8 +12,6 @@ import org.bbop.framework.GUIComponentFactory;
 import net.infonode.docking.View;
 import net.infonode.docking.ViewSerializer;
 import net.infonode.docking.util.StringViewMap;
-import net.infonode.docking.util.ViewMap;
-
 import org.apache.log4j.*;
 
 public class DefaultViewSerializer implements ViewSerializer {
@@ -65,7 +59,7 @@ public class DefaultViewSerializer implements ViewSerializer {
 			if (v != null)
 				driver.addView(v);
 		} else
-			driver.fireCreatedView(v, driver.getComponent(v));
+			driver.fireCreatedView(v, IDWDriver.getComponent(v));
 		return v;
 	}
 

@@ -1,22 +1,15 @@
 package org.bbop.swing;
 
 import java.awt.AWTEvent;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Event;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.swing.CellRendererPane;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.*;
@@ -99,13 +92,13 @@ public class ScalingComponent extends JComponent {
 	}
 
 	protected double internalGetXScale() {
-		return (double) getWidth()
-				/ (double) scaleMe.getPreferredSize().getWidth();
+		return getWidth()
+				/ scaleMe.getPreferredSize().getWidth();
 	}
 
 	protected double internalGetYScale() {
-		return (double) getHeight()
-				/ (double) scaleMe.getPreferredSize().getHeight();
+		return getHeight()
+				/ scaleMe.getPreferredSize().getHeight();
 	}
 
 	protected double getXScale() {

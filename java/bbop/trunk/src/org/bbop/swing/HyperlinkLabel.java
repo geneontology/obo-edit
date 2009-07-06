@@ -2,11 +2,7 @@ package org.bbop.swing;
 
 import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.event.HyperlinkListener;
-
-import org.bbop.util.MultiHashMap;
-import org.bbop.util.MultiMap;
 
 import org.apache.log4j.*;
 

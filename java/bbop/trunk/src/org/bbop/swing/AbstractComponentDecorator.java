@@ -337,7 +337,8 @@ public abstract class AbstractComponentDecorator {
      */
     public abstract void paint(Graphics g);
     
-    public String toString() {
+    @Override
+	public String toString() {
         return super.toString() + " on " + getComponent();
     }
     
@@ -377,7 +378,8 @@ public abstract class AbstractComponentDecorator {
             return layerOffset < 0; 
         }
         /** Set the cursor to something else. */
-        public void setCursor(Cursor cursor) {
+        @Override
+		public void setCursor(Cursor cursor) {
             Cursor oldCursor = getCursor();
             // Make sure the cursor actually changed, otherwise
             // we get cursor flicker (notably on w32 title bars)
@@ -391,13 +393,15 @@ public abstract class AbstractComponentDecorator {
         /** Returns the cursor of the decorated component, or the last
          * cursor set by {@link #setCursor}. 
          */
-        public Cursor getCursor() {
+        @Override
+		public Cursor getCursor() {
             return cursor != null ? cursor : component.getCursor();
         }
 
         /** Delegate to the containing decorator to perform the paint.
          */
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
             if (!component.isShowing())
                 return;
             Graphics g2 = g.create();
@@ -414,10 +418,12 @@ public abstract class AbstractComponentDecorator {
         /** Provide a decorator-specific tooltip, shown when within the
          * decorator's bounds. 
          */
-        public String getToolTipText(MouseEvent e) {
+        @Override
+		public String getToolTipText(MouseEvent e) {
             return AbstractComponentDecorator.this.getToolTipText(e);
         }
-        public String toString() {
+        @Override
+		public String toString() {
             return "Painter for " + AbstractComponentDecorator.this;
         }
     }
@@ -534,7 +540,8 @@ public abstract class AbstractComponentDecorator {
         }
         
         /** Walk the list of "background" decorators and paint them. */
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
 
             JLayeredPane lp = (JLayeredPane)getComponent();
             Component[] kids = lp.getComponents();
@@ -577,11 +584,13 @@ public abstract class AbstractComponentDecorator {
                 paintForeground(g.create(c.getX(), c.getY(), c.getWidth(), c.getHeight()), c);
             }
         }
-        public void dispose() {
+        @Override
+		public void dispose() {
             getComponent().putClientProperty(key, null);
             super.dispose();
         }
-        public String toString() {
+        @Override
+		public String toString() {
             return key + " on " + getComponent();
         }
     }
@@ -599,20 +608,24 @@ public abstract class AbstractComponentDecorator {
                 attach();
             }
         }
-        public void componentMoved(ComponentEvent e) {
+        @Override
+		public void componentMoved(ComponentEvent e) {
             // FIXME figure out why attach works and synch doesn't
             // when painting a selection marquee over a decorated background
             attach();
         }
-        public void componentResized(ComponentEvent e) {
+        @Override
+		public void componentResized(ComponentEvent e) {
             // FIXME figure out why attach works and synch doesn't
             // when painting a selection marquee over a decorated background
             attach();
         }
-        public void componentHidden(ComponentEvent e) {
+        @Override
+		public void componentHidden(ComponentEvent e) {
             setVisible(false);
         }
-        public void componentShown(ComponentEvent e) {
+        @Override
+		public void componentShown(ComponentEvent e) {
             setVisible(true);
         }
     }

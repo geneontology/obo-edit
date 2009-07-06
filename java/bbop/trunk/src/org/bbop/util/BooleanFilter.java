@@ -46,7 +46,8 @@ public class BooleanFilter implements VectorFilter {
 	filters.clear();
     }
 
-    public Object clone() {
+    @Override
+	public Object clone() {
 	try {
 	    return super.clone();
 	} catch (Exception e) {

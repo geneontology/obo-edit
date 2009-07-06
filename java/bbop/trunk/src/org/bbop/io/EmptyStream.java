@@ -12,7 +12,8 @@ public class EmptyStream extends OutputStream {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(EmptyStream.class);
-    public void write(int b) {
+    @Override
+	public void write(int b) {
 	// do nothing
     }
 }

@@ -1,12 +1,7 @@
 package org.bbop.expression;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bbop.expression.context.HashMapContext;
 
 import org.apache.log4j.*;

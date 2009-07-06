@@ -1,6 +1,5 @@
 package org.bbop.framework;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,19 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
-import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-//import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-
-import org.bbop.framework.dock.Perspective;
-import org.bbop.framework.GUIComponent;
-import org.bbop.swing.AbstractDynamicMenuItem;
-import org.bbop.swing.DynamicMenu;
-import org.bbop.util.ObjectUtil;
-
 import org.apache.log4j.*;
 
 public class ViewMenus {

@@ -70,6 +70,7 @@ public class MultiFileChooser extends JPanel {
 	    setLeafIcon(icon);
 	}
 
+	@Override
 	public Component getTreeCellRendererComponent(JTree tree,
 						      Object value,
 						      boolean sel,
@@ -238,8 +239,8 @@ public class MultiFileChooser extends JPanel {
 
 	pane =
 	    new JScrollPane(tree,
-			    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-			    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+			    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 	fileNameLabel.setText(root.toString());
 
@@ -341,7 +342,8 @@ public class MultiFileChooser extends JPanel {
 							dialog));
     }
 
-    public void setFont(Font font) {
+    @Override
+	public void setFont(Font font) {
 	super.setFont(font);
 	if (tree != null)
 	    tree.setFont(font);

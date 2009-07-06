@@ -7,10 +7,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.beans.PropertyChangeEvent;
-import java.io.Reader;
 import java.io.StringReader;
-import java.net.URL;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicHTML;
@@ -18,13 +15,11 @@ import javax.swing.plaf.basic.BasicLabelUI;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.ImageView;
 import javax.swing.text.html.StyleSheet;
 
@@ -64,6 +59,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * are no attributes. If an attribute is resolved up the view hierarchy
 		 * this is the end of the line.
 		 */
+		@Override
 		public AttributeSet getAttributes() {
 			return null;
 		}
@@ -78,6 +74,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *         although there is no guarantee. The parent may choose to
 		 *         resize or break the view.
 		 */
+		@Override
 		public float getPreferredSpan(int axis) {
 			if (axis == X_AXIS) {
 				// width currently laid out to
@@ -96,6 +93,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *         although there is no guarantee. The parent may choose to
 		 *         resize or break the view.
 		 */
+		@Override
 		public float getMinimumSpan(int axis) {
 			return view.getMinimumSpan(axis);
 		}
@@ -110,6 +108,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *         although there is no guarantee. The parent may choose to
 		 *         resize or break the view.
 		 */
+		@Override
 		public float getMaximumSpan(int axis) {
 			return Integer.MAX_VALUE;
 		}
@@ -133,6 +132,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @param height
 		 *            true if the height preference has changed
 		 */
+		@Override
 		public void preferenceChanged(View child, boolean width, boolean height) {
 			host.revalidate();
 			host.repaint();
@@ -146,6 +146,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @return the desired alignment, where 0.0 indicates the origin and 1.0
 		 *         the full span away from the origin
 		 */
+		@Override
 		public float getAlignment(int axis) {
 			return view.getAlignment(axis);
 		}
@@ -158,6 +159,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @param allocation
 		 *            the region to render into
 		 */
+		@Override
 		public void paint(Graphics g, Shape allocation) {
 			Rectangle alloc = allocation.getBounds();
 			view.setSize(alloc.width, alloc.height);
@@ -170,6 +172,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @param parent
 		 *            the parent view
 		 */
+		@Override
 		public void setParent(View parent) {
 			throw new Error("Can't set parent on root view");
 		}
@@ -181,6 +184,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @return the number of views
 		 * @see #getView
 		 */
+		@Override
 		public int getViewCount() {
 			return 1;
 		}
@@ -192,6 +196,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *            the number of the view to get
 		 * @return the view
 		 */
+		@Override
 		public View getView(int n) {
 			return view;
 		}
@@ -206,6 +211,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *            the allocated region to render into
 		 * @return the bounding box of the given position
 		 */
+		@Override
 		public Shape modelToView(int pos, Shape a, Position.Bias b)
 				throws BadLocationException {
 			return view.modelToView(pos, a, b);
@@ -237,6 +243,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 *                for an invalid bias argument
 		 * @see View#viewToModel
 		 */
+		@Override
 		public Shape modelToView(int p0, Position.Bias b0, int p1,
 				Position.Bias b1, Shape a) throws BadLocationException {
 			return view.modelToView(p0, b0, p1, b1, a);
@@ -255,6 +262,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @return the location within the model that best represents the given
 		 *         point in the view
 		 */
+		@Override
 		public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
 			return view.viewToModel(x, y, a, bias);
 		}
@@ -264,6 +272,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the model
 		 */
+		@Override
 		public Document getDocument() {
 			return view.getDocument();
 		}
@@ -273,6 +282,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the starting offset
 		 */
+		@Override
 		public int getStartOffset() {
 			return view.getStartOffset();
 		}
@@ -282,6 +292,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the ending offset
 		 */
+		@Override
 		public int getEndOffset() {
 			return view.getEndOffset();
 		}
@@ -291,6 +302,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the view
 		 */
+		@Override
 		public Element getElement() {
 			return view.getElement();
 		}
@@ -303,6 +315,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * @param height
 		 *            the height
 		 */
+		@Override
 		public void setSize(float width, float height) {
 			this.width = (int) width;
 			view.setSize(width, height);
@@ -316,6 +329,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the container
 		 */
+		@Override
 		public Container getContainer() {
 			return host;
 		}
@@ -329,6 +343,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * 
 		 * @return the factory
 		 */
+		@Override
 		public ViewFactory getViewFactory() {
 			return factory;
 		}
@@ -400,6 +415,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		private static StyleSheet defaultStyles;
 
 		protected class BasicHTMLViewFactory extends PluggableImageHTMLFactory {
+			@Override
 			public View create(Element elem) {
 				View view = super.create(elem);
 
@@ -413,6 +429,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		/**
 		 * Overriden to return our own slimmed down style sheet.
 		 */
+		@Override
 		public StyleSheet getStyleSheet() {
 			if (defaultStyles == null) {
 				defaultStyles = new StyleSheet();
@@ -447,6 +464,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		 * Returns the ViewFactory that is used to make sure the Views don't
 		 * load in the background.
 		 */
+		@Override
 		public ViewFactory getViewFactory() {
 			return new BasicHTMLViewFactory();
 		}
@@ -477,6 +495,7 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		IconFactoryRegistry.removeListener(registryListener);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String name = e.getPropertyName();
 		if (name == "text" || "font" == name || "foreground" == name) {
@@ -491,11 +510,13 @@ public class ExtensibleLabelUI extends BasicLabelUI {
 		}
 	}
 
+	@Override
 	protected void installComponents(JLabel c) {
 		updateRenderer(c, c.getText());
 		c.setInheritsPopupMenu(true);
 	}
 
+	@Override
 	protected void uninstallComponents(JLabel c) {
 		updateRenderer(c, "");
 	}

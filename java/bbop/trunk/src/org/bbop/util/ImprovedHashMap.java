@@ -208,7 +208,8 @@ public class ImprovedHashMap<K,V>
      *
      * @return the number of key-value mappings in this map.
      */
-    public int size() {
+    @Override
+	public int size() {
         return size;
     }
   
@@ -217,7 +218,8 @@ public class ImprovedHashMap<K,V>
      *
      * @return <tt>true</tt> if this map contains no key-value mappings.
      */
-    public boolean isEmpty() {
+    @Override
+	public boolean isEmpty() {
         return size == 0;
     }
 
@@ -234,7 +236,8 @@ public class ImprovedHashMap<K,V>
      *          <tt>null</tt> if the map contains no mapping for this key.
      * @see #put(Object, Object)
      */
-    public V get(Object key) {
+    @Override
+	public V get(Object key) {
         Object k = maskNull(key);
         int hash = hash(k);
         int i = indexFor(hash, table.length);
@@ -261,7 +264,8 @@ public class ImprovedHashMap<K,V>
      * @return <tt>true</tt> if this map contains a mapping for the specified
      * key.
      */
-    public boolean containsKey(Object key) {
+    @Override
+	public boolean containsKey(Object key) {
         Object k = maskNull(key);
         int hash = hash(k);
         int i = indexFor(hash, table.length);
@@ -301,7 +305,8 @@ public class ImprovedHashMap<K,V>
      *	       also indicate that the ImprovedHashMap previously associated
      *	       <tt>null</tt> with the specified key.
      */
-    public V put(K key, V value) {
+    @Override
+	public V put(K key, V value) {
 	K k = maskNull(key);
         int hash = hash(k);
         int i = indexFor(hash, table.length);
@@ -410,7 +415,8 @@ public class ImprovedHashMap<K,V>
      * @param m mappings to be stored in this map.
      * @throws NullPointerException if the specified map is null.
      */
-    public void putAll(Map<? extends K, ? extends V> m) {
+    @Override
+	public void putAll(Map<? extends K, ? extends V> m) {
         int numKeysToBeAdded = m.size();
         if (numKeysToBeAdded == 0)
             return;
@@ -450,7 +456,8 @@ public class ImprovedHashMap<K,V>
      *	       also indicate that the map previously associated <tt>null</tt>
      *	       with the specified key.
      */
-    public V remove(Object key) {
+    @Override
+	public V remove(Object key) {
         Entry<K,V> e = removeEntryForKey(key);
         return (e == null ? null : e.value);
     }
@@ -522,7 +529,8 @@ public class ImprovedHashMap<K,V>
     /**
      * Removes all mappings from this map.
      */
-    public void clear() {
+    @Override
+	public void clear() {
         modCount++;
         Entry[] tab = table;
         for (int i = 0; i < tab.length; i++) 
@@ -538,7 +546,8 @@ public class ImprovedHashMap<K,V>
      * @return <tt>true</tt> if this map maps one or more keys to the
      *         specified value.
      */
-    public boolean containsValue(Object value) {
+    @Override
+	public boolean containsValue(Object value) {
 	if (value == null) 
             return containsNullValue();
 
@@ -568,7 +577,8 @@ public class ImprovedHashMap<K,V>
      *
      * @return a shallow copy of this map.
      */
-    public Object clone() {
+    @Override
+	public Object clone() {
         ImprovedHashMap<K,V> result = null;
 	try { 
 	    result = (ImprovedHashMap<K,V>)super.clone();
@@ -615,7 +625,8 @@ public class ImprovedHashMap<K,V>
             return oldValue;
         }
     
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry e = (Map.Entry)o;
@@ -630,12 +641,14 @@ public class ImprovedHashMap<K,V>
             return false;
         }
     
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             return (key==NULL_KEY ? 0 : key.hashCode()) ^
                    (value==null   ? 0 : value.hashCode());
         }
     
-        public String toString() {
+        @Override
+		public String toString() {
             return getKey() + "=" + getValue();
         }
 
@@ -783,25 +796,31 @@ public class ImprovedHashMap<K,V>
      *
      * @return a set view of the keys contained in this map.
      */
-    public Set<K> keySet() {
+    @Override
+	public Set<K> keySet() {
         Set<K> ks = keySet;
         return (ks != null ? ks : (keySet = new KeySet()));
     }
 
     private class KeySet extends AbstractSet<K> {
-        public Iterator<K> iterator() {
+        @Override
+		public Iterator<K> iterator() {
             return newKeyIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsKey(o);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return ImprovedHashMap.this.removeEntryForKey(o) != null;
         }
-        public void clear() {
+        @Override
+		public void clear() {
             ImprovedHashMap.this.clear();
         }
     }
@@ -817,22 +836,27 @@ public class ImprovedHashMap<K,V>
      *
      * @return a collection view of the values contained in this map.
      */
-    public Collection<V> values() {
+    @Override
+	public Collection<V> values() {
         Collection<V> vs = values;
         return (vs != null ? vs : (values = new Values()));
     }
 
     private class Values extends AbstractCollection<V> {
-        public Iterator<V> iterator() {
+        @Override
+		public Iterator<V> iterator() {
             return newValueIterator();
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             return containsValue(o);
         }
-        public void clear() {
+        @Override
+		public void clear() {
             ImprovedHashMap.this.clear();
         }
     }
@@ -850,29 +874,35 @@ public class ImprovedHashMap<K,V>
      * @return a collection view of the mappings contained in this map.
      * @see Map.Entry
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    @Override
+	public Set<Map.Entry<K,V>> entrySet() {
         Set<Map.Entry<K,V>> es = entrySet;
-        return (es != null ? es : (entrySet = (Set<Map.Entry<K,V>>) (Set) new EntrySet()));
+        return (es != null ? es : (entrySet = new EntrySet()));
     }
 
     private class EntrySet extends AbstractSet/*<Map.Entry<K,V>>*/ {
-        public Iterator/*<Map.Entry<K,V>>*/ iterator() {
+        @Override
+		public Iterator/*<Map.Entry<K,V>>*/ iterator() {
             return newEntryIterator();
         }
-        public boolean contains(Object o) {
+        @Override
+		public boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry<K,V> e = (Map.Entry<K,V>) o;
             Entry<K,V> candidate = getEntry(e.getKey());
             return candidate != null && candidate.equals(e);
         }
-        public boolean remove(Object o) {
+        @Override
+		public boolean remove(Object o) {
             return removeMapping(o) != null;
         }
-        public int size() {
+        @Override
+		public int size() {
             return size;
         }
-        public void clear() {
+        @Override
+		public void clear() {
             ImprovedHashMap.this.clear();
         }
     }

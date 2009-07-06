@@ -26,113 +26,137 @@ public class FastTranslatedGraphics extends Graphics {
 	ty = y;
     }
 
-    public void translate(int x, int y) {
+    @Override
+	public void translate(int x, int y) {
 	g.translate(x,y);
     }
 
-    public void clearRect(int x, int y, int width, int height) {
+    @Override
+	public void clearRect(int x, int y, int width, int height) {
 	g.clearRect(x+tx,y+ty,width,height);
     }
 
-    public void clipRect(int x, int y, int width, int height) {
+    @Override
+	public void clipRect(int x, int y, int width, int height) {
 	g.clipRect(x+tx,y+ty,width,height);
     }
 
-    public void copyArea(int x, int y, int width, int height,
+    @Override
+	public void copyArea(int x, int y, int width, int height,
             int dx, int dy) {
 	g.copyArea(x+tx,y+ty,width,height,dx,dy);
     }
 
-    public Graphics create() {
+    @Override
+	public Graphics create() {
 	return g.create();
     }
 
-    public Graphics create(int x, int y, int width, int height) {
+    @Override
+	public Graphics create(int x, int y, int width, int height) {
 	return g.create(x+tx,y+ty,width,height);
     }
 
-    public void dispose() {
+    @Override
+	public void dispose() {
 	g.dispose();
     }
 
-    public void draw3DRect(int x, int y, int width, int height,
+    @Override
+	public void draw3DRect(int x, int y, int width, int height,
             boolean raised) {
 	g.draw3DRect(x+tx,y+ty,width,height,raised);
     }
 
-    public void drawArc(int x, int y, int width, int height,
+    @Override
+	public void drawArc(int x, int y, int width, int height,
             int startAngle, int arcAngle){
 	g.drawArc(x+tx,y+ty,width,height,startAngle,arcAngle);
     }
-    public void drawBytes(byte[] data, int offset, int length,
+    @Override
+	public void drawBytes(byte[] data, int offset, int length,
             int x, int y) {
 	g.drawBytes(data,offset,length,x+tx,y+ty);
     }
-    public void drawChars(char[] data, int offset, int length,
+    @Override
+	public void drawChars(char[] data, int offset, int length,
             int x, int y) {
 	g.drawChars(data,offset,length,x+tx,y+ty);
     }
-    public boolean drawImage(Image img, int x, int y,
+    @Override
+	public boolean drawImage(Image img, int x, int y,
             Color bgcolor, ImageObserver observer){
 	return g.drawImage(img, x+tx,y+ty,bgcolor,observer); 
     }
 
-    public boolean drawImage(Image img, int x, int y,
+    @Override
+	public boolean drawImage(Image img, int x, int y,
             ImageObserver observer){
 	return g.drawImage(img, x+tx,y+ty,observer); 
     }
 
-    public boolean drawImage(Image img, int x, int y,int width,int height,
+    @Override
+	public boolean drawImage(Image img, int x, int y,int width,int height,
             Color bgcolor, ImageObserver observer){
 	return g.drawImage(img, x+tx,y+ty,width,height,bgcolor,observer);
     }
 
-    public boolean drawImage(Image img, int x, int y,int width,int height,
+    @Override
+	public boolean drawImage(Image img, int x, int y,int width,int height,
             ImageObserver observer){
 	return g.drawImage(img, x+tx,y+ty,width,height,observer);
     }
 
-    public boolean drawImage(Image img, int dx1, int dy1, int dx2,
+    @Override
+	public boolean drawImage(Image img, int dx1, int dy1, int dx2,
 			     int dy2, int sx1, int sy1, int sx2, int sy2,
 			     Color bgcolor, ImageObserver observer) {
 	return g.drawImage(img, dx1+tx, dy1+ty, dx2+tx, dy2+ty,
 			   sx1, sy1, sx2, sy2, bgcolor, observer);
     }
 
-    public boolean drawImage(Image img, int dx1, int dy1, int dx2,
+    @Override
+	public boolean drawImage(Image img, int dx1, int dy1, int dx2,
 			     int dy2, int sx1, int sy1, int sx2, int sy2,
 			     ImageObserver observer) {
 	return g.drawImage(img, dx1+tx, dy1+ty, dx2+tx, dy2+ty,
 			   sx1, sy1, sx2, sy2, observer);
     }
 
-    public void drawLine(int x1, int y1, int x2, int y2) {
+    @Override
+	public void drawLine(int x1, int y1, int x2, int y2) {
 	g.drawLine(x1+tx, y1+ty, x2+tx, y2+ty);
     }
 
-    public void drawOval(int x, int y, int width, int height){
+    @Override
+	public void drawOval(int x, int y, int width, int height){
 	g.drawOval(x+tx, y+ty, width, height);
     }
 
-    public void drawPolygon(int[] xPoints, int[] yPoints,
+    @Override
+	public void drawPolygon(int[] xPoints, int[] yPoints,
             int nPoints) {
 	// do nothing
     }
 
-    public void drawPolygon(Polygon p) {
+    @Override
+	public void drawPolygon(Polygon p) {
 	// do nothing
     }
 
-    public void drawPolyline(int[] xPoints, int[] yPoints,
+    @Override
+	public void drawPolyline(int[] xPoints, int[] yPoints,
             int nPoints) {
 	// do nothing
     }
 
-    public void drawRect(int x, int y, int width, int height) {
+    @Override
+	public void drawRect(int x, int y, int width, int height) {
 	g.drawRect(x+tx, y+ty, width, height);
     }
 
-    public void drawRoundRect(int x, int y, int width,
+    @Override
+	public void drawRoundRect(int x, int y, int width,
             int height, int arcWidth, int arcHeight) {
 	g.drawRoundRect(x+tx, y+ty, width, height, arcWidth, arcHeight);
     }
@@ -145,62 +169,75 @@ public class FastTranslatedGraphics extends Graphics {
 
    NOTE: The method is NON functional
 */
-    public void drawString(AttributedCharacterIterator iterator,
+    @Override
+	public void drawString(AttributedCharacterIterator iterator,
             int x, int y) {
        // does nothing
        // g.drawString(iterator, x+tx, y+ty);
     }
 
-    public void drawString(String str, int x, int y) {
+    @Override
+	public void drawString(String str, int x, int y) {
 	g.drawString(str, x+tx, y+ty);
     }
 
-    public void fill3DRect(int x, int y, int width, int height,
+    @Override
+	public void fill3DRect(int x, int y, int width, int height,
             boolean raised) {
 	g.fill3DRect(x+tx, y+ty, width, height, raised);
     }
 
-    public void fillArc(int x, int y, int width, int height,
+    @Override
+	public void fillArc(int x, int y, int width, int height,
             int startAngle, int arcAngle) {
 	g.fillArc(x+tx, y+ty, width, height, startAngle, arcAngle);
     }
 
-    public void fillOval(int x, int y, int width, int height) {
+    @Override
+	public void fillOval(int x, int y, int width, int height) {
 	g.fillOval(x+tx, y+ty, width, height);
     }
 
-    public void fillPolygon(int[] xPoints, int[] yPoints,
+    @Override
+	public void fillPolygon(int[] xPoints, int[] yPoints,
             int nPoints) {
 	// do nothing
     }
 
-    public void fillPolygon(Polygon p) {
+    @Override
+	public void fillPolygon(Polygon p) {
 	// do nothing
     }
 
-    public void fillRect(int x, int y, int width, int height){
+    @Override
+	public void fillRect(int x, int y, int width, int height){
 	g.fillRect(x+tx, y+ty, width, height);
     }
 
-    public void fillRoundRect(int x, int y, int width,
+    @Override
+	public void fillRoundRect(int x, int y, int width,
             int height, int arcWidth, int arcHeight) {
 	g.fillRoundRect(x+tx, y+ty, width, height, arcWidth, arcHeight);
     }
 
-    public void finalize() {
+    @Override
+	public void finalize() {
 	g.finalize();
 	super.finalize();
     }
 
-    public Shape getClip() {
+    @Override
+	public Shape getClip() {
 	return g.getClip();
     }
 
-    public Rectangle getClipBounds() {
+    @Override
+	public Rectangle getClipBounds() {
 	return g.getClipBounds();
     }
 
-    public Rectangle getClipBounds(Rectangle r) {
+    @Override
+	public Rectangle getClipBounds(Rectangle r) {
         Rectangle clipRect = g.getClipBounds();
         r.x = clipRect.x;
         r.y = clipRect.y;
@@ -212,55 +249,69 @@ public class FastTranslatedGraphics extends Graphics {
     /**
      * @deprecated As of JDK 1.2
      */
-    public Rectangle getClipRect() {
+    @Deprecated
+	@Override
+	public Rectangle getClipRect() {
 	return g.getClipBounds();
     }
 
-    public Color getColor() {
+    @Override
+	public Color getColor() {
 	return g.getColor();
     }
 
-    public Font getFont() {
+    @Override
+	public Font getFont() {
 	return g.getFont();
     }
 
-    public FontMetrics getFontMetrics() {
+    @Override
+	public FontMetrics getFontMetrics() {
 	return g.getFontMetrics();
     }
 
-    public FontMetrics getFontMetrics(Font f) {
+    @Override
+	public FontMetrics getFontMetrics(Font f) {
 	return g.getFontMetrics(f);
     }
 
-    public boolean hitClip(int x, int y, int width, int height) {
+    @Override
+	public boolean hitClip(int x, int y, int width, int height) {
         return new Rectangle(x,y,width,height).intersects(g.getClipBounds());
     }
 
-    public void setClip(int x, int y, int width, int height) {
+    @Override
+	public void setClip(int x, int y, int width, int height) {
 	g.setClip(x+tx,y+ty,width,height);
     }
 
-    public void setClip(Shape clip) {
+    @Override
+	public void setClip(Shape clip) {
 	// do nothing
     }
 
-    public void setColor(Color c) {
+    @Override
+	public void setColor(Color c) {
 	g.setColor(c);
     }
 
-    public void setFont(Font f) {
+    @Override
+	public void setFont(Font f) {
 	g.setFont(f);
     }
 
-    public void setPaintMode() {
+    @Override
+	public void setPaintMode() {
 	g.setPaintMode();
     }
 
-    public void setXORMode(Color c1) {
+    @Override
+	public void setXORMode(Color c1) {
 	g.setXORMode(c1);
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return g.toString()+" [wrapped tranlation "+tx+", "+ty+"]";
     }
 }

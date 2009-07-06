@@ -1,7 +1,6 @@
 package org.bbop.util;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -176,7 +175,7 @@ public class ClassUtil {
 
 		for (Enumeration<JarEntry> entries = jarConnection.getJarFile()
 				.entries(); entries.hasMoreElements();) {
-			JarEntry entry = (JarEntry) entries.nextElement();
+			JarEntry entry = entries.nextElement();
 			resources.add(new URL(jarUrl, entry.getName()));
 		}
 	}

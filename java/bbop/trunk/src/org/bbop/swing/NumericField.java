@@ -26,7 +26,8 @@ public NumericField(int cols)
       super(cols);
     }
 
-  protected Document createDefaultModel()
+  @Override
+protected Document createDefaultModel()
     {
       return new NumericDocument();
     }
@@ -38,6 +39,7 @@ public NumericField(int cols)
 	 */
 	private static final long serialVersionUID = -6202634288406182851L;
 
+	@Override
 	public void insertString(int offs, String str, AttributeSet a) 
       throws BadLocationException
       {

@@ -13,6 +13,7 @@ public class BindException extends ExpressionException {
 		super(msg, null, line, c);
 	}
 	
+	@Override
 	public String getMessage() {
 		return getLineNumber()+": "+super.getMessage();
 	}

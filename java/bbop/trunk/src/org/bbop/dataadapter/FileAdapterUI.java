@@ -113,6 +113,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		writeField.setBackground(background);
 	}
 
+	@Override
 	public void setFont(Font font) {
 		setLabelFont(font);
 		setButtonFont(font);
@@ -194,6 +195,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		readLabel.setText(multiSelectEnabled ? "Load files" : "Load file");
 	}
 
+	@Override
 	public void setUIConfiguration(UIConfiguration uiConfig) {
 		super.setUIConfiguration(uiConfig);
 		if (uiConfig == null)
@@ -221,6 +223,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 			writeField.setSelectedIndex(0);
 	}
 
+	@Override
 	public UIConfiguration getUIConfiguration() {
 		FileUIConfig config = (FileUIConfig) uiConfig;
 
@@ -261,6 +264,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		return super.getUIConfiguration();
 	}
 
+	@Override
 	public void setConfiguration(AdapterConfiguration c) {
 		if (!(c instanceof FileAdapterConfiguration))
 			throw new IllegalArgumentException("File adapter UIs can only "
@@ -365,6 +369,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		return new FileAdapterConfiguration();
 	}
 
+	@Override
 	public void init(AdapterWidgetI widget, IOOperation op,
 			DataAdapter adapter, Object input) {
 		super.init(widget, op, adapter, input);
@@ -458,6 +463,7 @@ public class FileAdapterUI extends AbstractGraphicalUI implements ParameterUI {
 		}
 	}
 
+	@Override
 	public void cleanup() {
 	}
 }

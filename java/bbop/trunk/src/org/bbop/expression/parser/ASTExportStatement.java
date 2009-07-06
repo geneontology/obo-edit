@@ -2,12 +2,8 @@
 
 package org.bbop.expression.parser;
 
-import java.util.Iterator;
-
 import org.bbop.expression.ExpressionException;
 import org.bbop.expression.JexlContext;
-import org.bbop.expression.util.Introspector;
-
 import org.apache.log4j.*;
 
 public class ASTExportStatement extends SimpleNode {
@@ -24,12 +20,14 @@ public class ASTExportStatement extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public Object jjtAccept(ParserVisitor visitor, Object data) {
+  @Override
+public Object jjtAccept(ParserVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
   
   /** {@inheritDoc} */
-  public Object value(JexlContext jc) throws Exception {
+  @Override
+public Object value(JexlContext jc) throws Exception {
       ASTIdentifier v = (ASTIdentifier) jjtGetChild(0);
       try {
     	  jc.exportLocalVariable(v.val);

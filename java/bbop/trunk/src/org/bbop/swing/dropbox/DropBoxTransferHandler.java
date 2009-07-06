@@ -60,6 +60,7 @@ public class DropBoxTransferHandler extends TransferHandler {
 		return selectorDragHandler;
 	}
 
+	@Override
 	public boolean importData(JComponent c, Transferable t) {
 		if (!(c instanceof DropBoxPanel))
 			return false;
@@ -79,14 +80,17 @@ public class DropBoxTransferHandler extends TransferHandler {
 		return false;
 	}
 
+	@Override
 	protected Transferable createTransferable(JComponent c) {
 		return new DropBoxContentsTransferable(sourceSelector);
 	}
 
+	@Override
 	public int getSourceActions(JComponent c) {
 		return COPY_OR_MOVE;
 	}
 
+	@Override
 	public boolean canImport(JComponent c, DataFlavor[] flavors) {
 		for (int i = 0; i < flavors.length; i++) {
 			if (DropBoxContentsTransferable.DROP_BOX_CONTENTS_FLAVOR.equals(flavors[i])) {

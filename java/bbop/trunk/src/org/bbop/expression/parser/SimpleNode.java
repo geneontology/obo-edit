@@ -162,7 +162,8 @@ public class SimpleNode implements Node {
      * Gets a string representation of the node.
      * @return the node name.
      */
-    public String toString() {
+    @Override
+	public String toString() {
         return ParserTreeConstants.jjtNodeName[id];
     }
 

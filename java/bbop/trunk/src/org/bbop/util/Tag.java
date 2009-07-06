@@ -31,7 +31,8 @@ public class Tag {
 	return arguments;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return name+": "+arguments;
     }
 }

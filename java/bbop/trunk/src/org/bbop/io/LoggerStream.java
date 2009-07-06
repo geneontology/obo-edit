@@ -14,7 +14,7 @@ public class LoggerStream extends AbstractExtendedPrintStream {
 	
 	public LoggerStream(Logger logger, Level level) {
 		super();
-		this.logger = logger;
+		LoggerStream.logger = logger;
 		this.level = level;
 	}
 	

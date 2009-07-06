@@ -25,11 +25,12 @@ public class HotkeyedMenuItem extends JMenuItem {
 	super.setAccelerator(KeyStroke.getKeyStroke(key));
     }
     
-    public Component getComponent() {
+    @Override
+	public Component getComponent() {
 	if (hotkeyDesc != null) {
 	    Box out = Box.createHorizontalBox();
 	    JLabel hotkeyLabel = new JLabel(hotkeyDesc);
-	    hotkeyLabel.setHorizontalAlignment(JLabel.LEFT);
+	    hotkeyLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    out.add(super.getComponent());
 	    out.add(Box.createHorizontalGlue());
 	    out.add(hotkeyLabel);

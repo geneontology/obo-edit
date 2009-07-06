@@ -19,6 +19,7 @@ public class PathOp {
 			this.coords = new float[0];
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer out = new StringBuffer();
 		if (op == PathIterator.SEG_CLOSE)

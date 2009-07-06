@@ -1,10 +1,9 @@
 package org.bbop.swing;
 
+import java.text.CharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.GlyphView;
 import javax.swing.text.Segment;
@@ -14,8 +13,6 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.InlineView;
-import javax.swing.text.html.HTMLEditorKit.HTMLFactory;
-
 import org.apache.log4j.*;
 
 public class CustomLinebreakHTMLEditorKit extends HTMLEditorKit {
@@ -129,6 +126,7 @@ public class CustomLinebreakHTMLEditorKit extends HTMLEditorKit {
 			super(elem);
 		}
 
+		@Override
 		public View breakView(int axis, int p0, float pos, float len) {
 			if (axis == View.X_AXIS) {
 				checkPainter();
@@ -154,7 +152,7 @@ public class CustomLinebreakHTMLEditorKit extends HTMLEditorKit {
 		protected int getBreakSpot(int p0, int p1) {
 			Segment s = getText(p0, p1);
 
-			for (char ch = s.last(); ch != Segment.DONE; ch = s.previous()) {
+			for (char ch = s.last(); ch != CharacterIterator.DONE; ch = s.previous()) {
 				if (isBreakCharacter(ch)) {
 					// found whitespace
 					return s.getIndex() - s.getBeginIndex() + 1 + p0;
@@ -170,6 +168,7 @@ public class CustomLinebreakHTMLEditorKit extends HTMLEditorKit {
 
 	protected ViewFactory defaultFactory = new CustomHTMLFactory();
 
+	@Override
 	public ViewFactory getViewFactory() {
 		return defaultFactory;
 	}

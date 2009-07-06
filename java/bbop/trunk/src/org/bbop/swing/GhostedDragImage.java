@@ -120,14 +120,16 @@ public class GhostedDragImage extends AbstractComponentDecorator {
     /** Ensure the decorator cursor matches the drag cursor, or we get
      * cursor flicker when autoscrolling.
      */
-    public void setCursor(Cursor cursor) {
+    @Override
+	public void setCursor(Cursor cursor) {
         super.setCursor(cursor);
         for(GhostedDragImage slave : ghosts) {
             slave.setCursor(cursor);
         }
     }
     /** Make all ghosted images go away. */
-    public void dispose() {
+    @Override
+	public void dispose() {
         location = origin;
         super.dispose();
         for(GhostedDragImage slave : ghosts) {
@@ -152,7 +154,8 @@ public class GhostedDragImage extends AbstractComponentDecorator {
     /** Adjust the bounds of the painting component to allow some buffer
      * to avoid cursor flicker when moving.
      */
-    protected Rectangle clipDecorationBounds(Rectangle decorated) {
+    @Override
+	protected Rectangle clipDecorationBounds(Rectangle decorated) {
         decorated.x -= CURSOR_SIZE;
         decorated.y -= CURSOR_SIZE;
         decorated.width += CURSOR_SIZE*2;
@@ -173,7 +176,8 @@ public class GhostedDragImage extends AbstractComponentDecorator {
         }
     }
     /** Paint the supplied image with transparency. */
-    public void paint(Graphics graphics) {
+    @Override
+	public void paint(Graphics graphics) {
         Rectangle r = getDecorationBounds();
         Graphics2D g = (Graphics2D)graphics.create();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, ghostAlpha));

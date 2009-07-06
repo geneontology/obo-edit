@@ -474,6 +474,7 @@ public class AutocompleteBox<T> extends JComboBox {
 	protected JList createList() {
 		if (list == null) {
 			list = new JList(getModel()) {
+				@Override
 				public void processMouseEvent(MouseEvent e) {
 					if (e.isControlDown()) {
 						// Fix for 4234053. Filter out the Control Key from the
@@ -526,6 +527,7 @@ public class AutocompleteBox<T> extends JComboBox {
 						return AutocompleteBox.this.createList();
 					}
 
+					@Override
 					public void show(Component invoker, int x, int y) {
 						if (poppingUp)
 							return;
@@ -543,7 +545,7 @@ public class AutocompleteBox<T> extends JComboBox {
 								task.run();
 							}
 						}
-						setPopupSize((int) AutocompleteBox.this.getWidth(),
+						setPopupSize(AutocompleteBox.this.getWidth(),
 								getPopupHeightForRowCount(getMaximumRowCount()));
 						super.show(invoker, x, y);
 						poppingUp = false;
@@ -557,6 +559,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				return super.createArrowButton();
 			}
 
+			@Override
 			public void configureArrowButton() {
 				super.configureArrowButton();
 				if (arrowButton != null) {
@@ -565,6 +568,7 @@ public class AutocompleteBox<T> extends JComboBox {
 				}
 			}
 
+			@Override
 			public void unconfigureArrowButton() {
 				super.unconfigureArrowButton();
 				if (arrowButton != null) {
@@ -615,6 +619,7 @@ public class AutocompleteBox<T> extends JComboBox {
 			 * 
 			 * @see #addEditor
 			 */
+			@Override
 			public void configureEditor() {
 				super.configureEditor();
 				editor.removeFocusListener(super.createFocusListener());

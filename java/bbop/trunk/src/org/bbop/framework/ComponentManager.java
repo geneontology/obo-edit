@@ -5,12 +5,10 @@ import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -420,12 +418,9 @@ public class ComponentManager {
 		comp.setConfiguration(config);
 		comp.init();
 		for (GUIComponentListener listener : componentListeners) {
-			listener.componentShown(new GUIComponentEvent(this, comp, true,
-					false));
+			listener.componentShown(new GUIComponentEvent(this, comp, true,false));
 		}
 	}
-
-
 
 	public void removeActiveComponent(GUIComponent comp) {
 		activeComponents.remove(comp.getID());

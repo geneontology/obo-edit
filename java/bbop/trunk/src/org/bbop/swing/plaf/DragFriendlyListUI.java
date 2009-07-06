@@ -16,7 +16,8 @@ public class DragFriendlyListUI extends javax.swing.plaf.basic.BasicListUI
 
     protected boolean dragging = false;
 
-    protected MouseInputListener createMouseInputListener() {
+    @Override
+	protected MouseInputListener createMouseInputListener() {
         return new MouseFriendlyInputHandler();
     }
 
