@@ -85,6 +85,7 @@ public class ProcessCommunicator extends Thread {
 		stderrBuffer = new StringBuffer();
 	}
 
+	@Override
 	public void run() {
 		try {
 			p.waitFor();
@@ -110,6 +111,7 @@ public class ProcessCommunicator extends Thread {
 		isRunning = true;
 	}
 
+	@Override
 	public void start() {
 		try {
 			setupThread();
@@ -268,6 +270,7 @@ public class ProcessCommunicator extends Thread {
 		return out;
 	}
 
+	@Override
 	public void finalize() {
 		p.destroy();
 	}

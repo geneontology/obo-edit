@@ -54,12 +54,14 @@ public class ASTLTNode extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext jc) throws Exception {
+    @Override
+	public Object value(JexlContext jc) throws Exception {
         /*
          * now get the values
          */

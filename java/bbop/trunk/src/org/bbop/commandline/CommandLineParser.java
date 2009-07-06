@@ -21,6 +21,7 @@ public class CommandLineParser implements Cloneable {
 		return idgen++;
 	}
 
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();

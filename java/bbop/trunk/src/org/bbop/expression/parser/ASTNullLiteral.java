@@ -49,12 +49,14 @@ public class ASTNullLiteral extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext context) {
+    @Override
+	public Object value(JexlContext context) {
         return null;
     }
 }

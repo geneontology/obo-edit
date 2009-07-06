@@ -47,6 +47,7 @@ public class BitmapIcon extends AbstractButtonIcon {
 		init(image, Color.black, size);
 	}
 
+	@Override
 	protected void paintIcon(Component c, Graphics g, int x1, int y1, int x2,
 			int y2) {
 		Icon icon = iconMap.get(g.getColor());

@@ -62,6 +62,7 @@ public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
 
 	protected int id = ++idgen;
 
+	@Override
 	public String toString() {
 		return "DragFriendlyTreeUI " + id;
 	}
@@ -91,6 +92,7 @@ public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
 		super.setRightChildIndent(newAmount);
 	}
 
+	@Override
 	protected void updateSize() {
 		validCachedPreferredSize = false;
 		if (tree != null)
@@ -107,6 +109,7 @@ public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
 		this.dragging = dragging;
 	}
 
+	@Override
 	protected MouseListener createMouseListener() {
 		return new DragFriendlyMouseHandler();
 	}
@@ -116,6 +119,7 @@ public class DragFriendlyTreeUI extends BasicTreeUI implements DragFriendlyUI {
 	 */
 	public class DragFriendlyMouseHandler extends MouseAdapter {
 
+		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (dragging || e.isConsumed()) {
 				return;

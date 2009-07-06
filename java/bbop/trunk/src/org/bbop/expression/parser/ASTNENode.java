@@ -50,12 +50,14 @@ public class ASTNENode extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext pc) throws Exception {
+    @Override
+	public Object value(JexlContext pc) throws Exception {
         Object left = ((SimpleNode) jjtGetChild(0)).value(pc);
         Object right = ((SimpleNode) jjtGetChild(1)).value(pc);
 

@@ -119,6 +119,7 @@ public class IDWDriver implements LayoutDriver {
 	private boolean saveLayoutOnExit = true;
 
 	protected DockingWindowListener floatingWindowCloseListener = new DockingWindowAdapter() {
+		@Override
 		public void windowClosed(DockingWindow window) {
 			View v = SwingUtil.getDescendantOfType(window, View.class);
 			if (v != null)
@@ -160,7 +161,7 @@ public class IDWDriver implements LayoutDriver {
 				}
 			}
 			if (child != null && child instanceof View)
-			lastComponent = (View) child;
+			lastComponent = child;
 		}
 
 		public void windowClosed(DockingWindow d) {
@@ -295,7 +296,7 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
-  /** cleanup is called on exitin and changing layout managers (though there currently
+  /** cleanup is called on exit and changing layout managers (though there currently
       is only 1 layout mgt - this - and saves all perspectives,
       unless saveLayoutOnExit is set to false (default true) */
 	public void cleanup() {
@@ -496,8 +497,6 @@ public class IDWDriver implements LayoutDriver {
 		}
 	}
 
-  private static final Logger LOG =  Logger.getLogger("org.bbop.framework.dock.idw");
-
   /** check if resource/persepctive is findable from class loader in perspective
       resource dir. try 3 different classloaders, system class loader,
       class.getResource, and class.getClassLoader.getResource which can give different
@@ -682,7 +681,7 @@ public class IDWDriver implements LayoutDriver {
 		if (label == null)
 			label = c.getTitle();
 		final String flabel = label;
-		final View v = new View(label, null, (JComponent) card);
+		final View v = new View(label, null, card);
 		v.addListener(masterDockingListener);
 		v.addListener(new DockingWindowAdapter() {
 
@@ -696,7 +695,7 @@ public class IDWDriver implements LayoutDriver {
 		DefaultButtonFactories.getCloseButtonFactory();
 		final JToggleButton configButton = IDWUtil
 				.createFlatHighlightToggleButton(wrenchIcon,
-						"Configure this component", 0, null);
+						"Configure Component", 0, null);
 		updateConfigButton(configButton);
 		configButton.addActionListener(new AbstractAction() {
 
@@ -716,8 +715,7 @@ public class IDWDriver implements LayoutDriver {
 			try {
 				if (HelpManager.getManager().isEnabled()) {
 					final JToggleButton helpButton = IDWUtil
-							.createFlatHighlightToggleButton(questionIcon,
-									"Display help for this component", 0, null);
+							.createFlatHighlightToggleButton(questionIcon,"Display Help", 0, null);
 					helpButton.addActionListener(new ActionListener() {
 
 						public void actionPerformed(ActionEvent e) {
@@ -839,7 +837,7 @@ public class IDWDriver implements LayoutDriver {
 					.setToolTipText("Complete configuration and display component");
 		} else {
 			configButton.setIcon(wrenchIcon);
-			configButton.setToolTipText("Configure this component");
+			configButton.setToolTipText("Configure Component");
 		}
 	}
 
@@ -1202,5 +1200,19 @@ public class IDWDriver implements LayoutDriver {
     	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMinimizeEnabled(true);
     	rootWindow.getRootWindowProperties().getDockingWindowProperties().setMaximizeEnabled(true);
     }
+    
+    public void lockOTE(){
+//    	logger.debug("IDWDriver.lockOTE");
+    	
+    	
+    	
+    }
+    
+    public void unlockOTE(){
+//    logger.debug("IDWDriver.unlockOTE");	
+
+   
+    }
+    
 	
 }

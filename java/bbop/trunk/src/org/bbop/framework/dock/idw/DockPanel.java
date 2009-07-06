@@ -21,30 +21,37 @@ public class DockPanel extends AbstractGUIComponent {
 		this.driver = driver;
 	}
 
+	@Override
 	public void cleanup() {
 		remove(driver.getRootWindow());
 	}
 
+	@Override
 	public JComponent getComponent() {
 		return this;
 	}
 
+	@Override
 	public ComponentConfiguration getConfiguration() {
 		return null;
 	}
 
+	@Override
 	public void init() {
 		setLayout(new BorderLayout(1, 1));
 		removeAll();
 		add(driver.getRootWindow(), "Center");
 	}
 
+	@Override
 	public void setConfiguration(ComponentConfiguration config) {
 	}
 
+	@Override
 	public void setXML(String xml) {
 	}
 
+	@Override
 	public boolean isXMLSettable() {
 		return false;
 	}

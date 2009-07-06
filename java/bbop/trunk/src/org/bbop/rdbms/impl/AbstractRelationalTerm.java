@@ -6,6 +6,7 @@ import org.bbop.rdbms.RelationalTerm;
 
 public abstract class AbstractRelationalTerm implements RelationalTerm {
 	
+	@Override
 	public String toString() {
 		return toSQL();
 	}

@@ -24,8 +24,6 @@ import org.bbop.io.IOUtil;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
 
-import org.apache.log4j.*;
-
 public class PluginManager {
 
 //	initialize logger

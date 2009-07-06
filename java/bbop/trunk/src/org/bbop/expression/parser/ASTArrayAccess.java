@@ -63,7 +63,8 @@ public class ASTArrayAccess extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
@@ -78,7 +79,8 @@ public class ASTArrayAccess extends SimpleNode {
      * @return the value of the array expression.
      * @throws Exception on any error
      */
-    public Object execute(Object obj, JexlContext jc) throws Exception {
+    @Override
+	public Object execute(Object obj, JexlContext jc) throws Exception {
         ASTIdentifier base = (ASTIdentifier) jjtGetChild(0);
 
         Object result = base.execute(obj, jc);
@@ -100,7 +102,8 @@ public class ASTArrayAccess extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext jc) throws Exception {
+    @Override
+	public Object value(JexlContext jc) throws Exception {
         /*
          * get the base ASTIdentifier
          */

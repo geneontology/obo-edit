@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.bbop.swing.EnhancedMenuBar;

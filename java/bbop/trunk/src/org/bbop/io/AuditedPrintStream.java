@@ -25,113 +25,138 @@ public class AuditedPrintStream extends PrintStream {
 	this.suppressStackTraces = suppressStackTraces;
     }
 
-    public boolean checkError() {
+    @Override
+	public boolean checkError() {
 	return stream.checkError();
     }
 
-    public void close() {
+    @Override
+	public void close() {
 	stream.close();
     }
 
-    public void flush() {
+    @Override
+	public void flush() {
 	stream.flush();
     }
 
-    public void print(boolean b) {
+    @Override
+	public void print(boolean b) {
 	stream.print(b);
     }
 
-    public void print(char c) {
+    @Override
+	public void print(char c) {
 	stream.print(c);
     }
 
-    public void print(char[] s) {
+    @Override
+	public void print(char[] s) {
 	stream.print(s);
     }
 
-    public void print(double d) {
+    @Override
+	public void print(double d) {
 	stream.print(d);
     }
 
-    public void print(float f) {
+    @Override
+	public void print(float f) {
 	stream.print(f);
     }
 
-    public void print(int i) {
+    @Override
+	public void print(int i) {
 	stream.print(i);
     }
 
-    public void print(long l) {
+    @Override
+	public void print(long l) {
 	stream.print(l);
     }
 
-    public void print(Object obj) {
+    @Override
+	public void print(Object obj) {
 	stream.print(obj);
     }
 
-    public void print(String s) {
+    @Override
+	public void print(String s) {
 	stream.print(s);
     }
 
-    public void println() {
+    @Override
+	public void println() {
 	printLeader();
 	stream.println();
     }
 
-    public void println(boolean x) {
+    @Override
+	public void println(boolean x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(char x) {
+    @Override
+	public void println(char x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(char[] x) {
+    @Override
+	public void println(char[] x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(double x) {
+    @Override
+	public void println(double x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(float x) {
+    @Override
+	public void println(float x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(int x) {
+    @Override
+	public void println(int x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(long x) {
+    @Override
+	public void println(long x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(Object x) {
+    @Override
+	public void println(Object x) {
 	printLeader();
 	stream.println(x);
     }
 
-    public void println(String x) {
+    @Override
+	public void println(String x) {
 	printLeader();
 	stream.println(x);
     }
 
-    protected void setError() {
+    @Override
+	protected void setError() {
 //	stream.setError();
     }
 
-    public void write(byte[] buf, int off, int len) {
+    @Override
+	public void write(byte[] buf, int off, int len) {
 	stream.write(buf, off, len);
     }
     
-    public void write(int b) {
+    @Override
+	public void write(int b) {
 	stream.write(b);
     }
 

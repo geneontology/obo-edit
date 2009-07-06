@@ -40,7 +40,8 @@ public class StringEditorComponent extends JTextArea implements GenericEditorCom
     public void load(Object in) {
 	setText(in.toString());
     }
-    public void setEditable(boolean in) {
+    @Override
+	public void setEditable(boolean in) {
 	super.setEditable(in);
     }
 }

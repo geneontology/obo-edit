@@ -18,14 +18,16 @@ public class OrderedArgumentSignature implements ArgumentSignature {
 	return id;
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
 	if (o instanceof ArgumentSignature)
 	    return ((ArgumentSignature) o).getID() == id;
 	else
 	    return false;
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 	return id;
     }
 
@@ -82,7 +84,8 @@ public class OrderedArgumentSignature implements ArgumentSignature {
 	}
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return super.toString();
     }
 

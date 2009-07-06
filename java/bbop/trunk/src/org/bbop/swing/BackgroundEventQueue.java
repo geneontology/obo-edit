@@ -1,7 +1,6 @@
 package org.bbop.swing;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +33,7 @@ public class BackgroundEventQueue {
 		public void execute() {
 		}
 
+		@Override
 		public void cancel() {
 			super.cancel();
 			for (TaskDelegate<?> t : getTasks()) {
@@ -63,6 +63,7 @@ public class BackgroundEventQueue {
 			interrupt();
 		}
 
+		@Override
 		public void run() {
 			while (!kill) {
 				try {

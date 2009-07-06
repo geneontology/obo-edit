@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -15,7 +13,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +69,7 @@ public class DropBoxPanel extends JPanel {
 
 			public void dragExit(DropTargetEvent dte) {
 				remove(dropGhost);
-				SwingUtil.masterValidate((Component) DropBoxPanel.this);
+				SwingUtil.masterValidate(DropBoxPanel.this);
 			}
 
 			public void dragOver(DropTargetDragEvent dtde) {
@@ -115,7 +112,7 @@ public class DropBoxPanel extends JPanel {
 					else
 						dropPos = index + 1;
 					add(dropGhost, dropPos);
-					SwingUtil.masterValidate((Component) DropBoxPanel.this);
+					SwingUtil.masterValidate(DropBoxPanel.this);
 					dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
 				} else {
 					remove(dropGhost);
@@ -126,7 +123,7 @@ public class DropBoxPanel extends JPanel {
 				logger.info("dropPos = " + dropPos);
 				if (dropPos == -1) {
 					remove(dropGhost);
-					SwingUtil.masterValidate((Component) DropBoxPanel.this);
+					SwingUtil.masterValidate(DropBoxPanel.this);
 					dtde.rejectDrop();
 					return;
 				}

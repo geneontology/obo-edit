@@ -99,6 +99,7 @@ public class KeyRecorder implements KeyEventDispatcher {
 	    halt = true;
 	}
 
+	@Override
 	public void run() {
 	    while(!halt) {
 		try {

@@ -7,7 +7,6 @@ import java.io.File;
 import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.help.Popup;
 import javax.help.SecondaryWindow;
 
 import org.apache.log4j.*;

@@ -32,7 +32,8 @@ public class FreezableScrollPane extends JScrollPane {
 	super(vsbPolicy, hsbPolicy);
     }
 
-    protected JViewport createViewport() {
+    @Override
+	protected JViewport createViewport() {
 	return new FreezableViewport();
     }
 
@@ -44,7 +45,8 @@ public class FreezableScrollPane extends JScrollPane {
 	    ((FreezableViewport) getViewport()).setFrozen(frozen);
     }
 
-    public void setViewport(JViewport viewport) {
+    @Override
+	public void setViewport(JViewport viewport) {
 	super.setViewport(viewport);
 	if (viewport instanceof FreezableViewport)
 	    ((FreezableViewport) viewport).setFrozen(frozen);

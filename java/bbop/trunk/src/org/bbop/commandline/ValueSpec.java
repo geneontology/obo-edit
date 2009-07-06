@@ -21,6 +21,7 @@ public class ValueSpec implements ArgumentSignature {
 		return id;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ArgumentSignature)
 			return ((ArgumentSignature) o).getID() == id;
@@ -28,6 +29,7 @@ public class ValueSpec implements ArgumentSignature {
 			return false;
 	}
 
+	@Override
 	public int hashCode() {
 		return id;
 	}
@@ -57,6 +59,7 @@ public class ValueSpec implements ArgumentSignature {
 	protected ValueSpec(boolean internal) {
 	}
 
+	@Override
 	public String toString() {
 		return "ValueSpec"
 				+ id

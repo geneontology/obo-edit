@@ -65,10 +65,15 @@ public interface LayoutDriver {
 	 */
 	public void restoreComponent(GUIComponent c);
 	
-	//lock down all components so they can't be moved
+	//Layout lock
   public void lockDockingPanels();
   
   public void unlockDockingPanels(); 
+  
+  // OTE view/scroll lock
+  public void lockOTE();
+  
+  public void unlockOTE();
   
   /** Whether to save layout on exit - default true */
   public void setSaveLayoutOnExit(boolean saveLayout);

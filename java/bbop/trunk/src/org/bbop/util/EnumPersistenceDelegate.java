@@ -24,14 +24,16 @@ public class EnumPersistenceDelegate extends DefaultPersistenceDelegate {
     }
   }
 
-  protected Expression instantiate(Object oldInstance, Encoder out) {
+  @Override
+protected Expression instantiate(Object oldInstance, Encoder out) {
     return new Expression(Enum.class,
                           "valueOf",
                           new Object[] { oldInstance.getClass(),
                                          ((Enum) oldInstance).name() });
   }
 
-  protected boolean mutatesTo(Object oldInstance, Object newInstance) {
+  @Override
+protected boolean mutatesTo(Object oldInstance, Object newInstance) {
     return oldInstance == newInstance;
   }
 }

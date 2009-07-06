@@ -59,7 +59,8 @@ public class MultiheightTable extends JTable
 	setUI( new MultiheightTableUI() );
     }
     
-    public int rowAtPoint(Point point) {
+    @Override
+	public int rowAtPoint(Point point) {
 	int y = point.y;
 	if( y < 0 ) return -1;
 	
@@ -75,7 +76,8 @@ public class MultiheightTable extends JTable
 	return -1;
     }
     
-    public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
+    @Override
+	public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
 	int index = 0;
 	Rectangle cellFrame;
 	int columnMargin = getColumnModel().getColumnMargin();
@@ -114,7 +116,8 @@ public class MultiheightTable extends JTable
 	return cellFrame;
     }
     
-    public void tableChanged(TableModelEvent e) {
+    @Override
+	public void tableChanged(TableModelEvent e) {
 	if (e == null || e.getFirstRow() == TableModelEvent.HEADER_ROW) {
 	    // The whole thing changed
 	    clearSelection();
@@ -263,14 +266,16 @@ public class MultiheightTable extends JTable
 	// repaint(drawRect);
     }
     
-    public int getRowHeight( int row )
+    @Override
+	public int getRowHeight( int row )
     {
 	Object o = rowHeights.get( new Integer(row) );
 	if( o == null ) return getRowHeight(false);
 	return ((Integer)o).intValue();
     }
 
-    public int getRowHeight() {
+    @Override
+	public int getRowHeight() {
 	double totalHeight = 0.0;
 	double rows;
 	for(rows = 0; rows < dataModel.getRowCount(); rows++) {
@@ -286,7 +291,8 @@ public class MultiheightTable extends JTable
 	    return super.getRowHeight();
     }
     
-    public void setRowHeight( int row, int height )
+    @Override
+	public void setRowHeight( int row, int height )
     {
 	rowHeights.put( new Integer( row ), new Integer( height ) );
 	revalidate();

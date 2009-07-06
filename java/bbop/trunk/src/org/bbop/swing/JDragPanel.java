@@ -49,7 +49,8 @@ public class JDragPanel extends JPanel implements DragContainer {
 	repaint(scratchRect);
     }
 
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
 	super.paint(g);
 	paintDragImage(g);
     }

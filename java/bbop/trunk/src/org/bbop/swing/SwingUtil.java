@@ -126,16 +126,30 @@ public class SwingUtil {
 	public static <T> T getAncestorOfClass(Class<T> c, Component comp) {
 		if (comp == null || c == null)
 			return null;
-
 		Container parent = comp.getParent();
 		while (parent != null && !(c.isInstance(parent)))
 			parent = parent.getParent();
 		return (T) parent;
 	}
 
+	/**
+	 * Convenience method for searching above <code>comp</code> in the
+	 * component hierarchy and returns the parent of class <code>c</code>. 
+	 * Can return null, if a class <code>c</code> cannot be found.
+	 */
+	public static Container getParentOfClass(Class<?> c, Component comp)
+	{
+		if(comp == null || c == null)
+			return null;
+		Container parent = comp.getParent();
+		while(parent != null && !(c.isInstance(parent)))
+			logger.debug("parent: " + parent);
+		return parent;
+	}
+
 	public static Image getImage(Component c) {
 		GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		.getLocalGraphicsEnvironment();
 		GraphicsDevice gd = ge.getDefaultScreenDevice();
 		GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
@@ -209,8 +223,8 @@ public class SwingUtil {
 					seen);
 		}
 	}
-	
-	
+
+
 	/*
 	 * Returns the bounding rectangle for the component text.
 	 */
@@ -233,20 +247,20 @@ public class SwingUtil {
 		paintViewR.x = paintViewInsets.left;
 		paintViewR.y = paintViewInsets.top;
 		paintViewR.width = label.getWidth()
-				- (paintViewInsets.left + paintViewInsets.right);
+		- (paintViewInsets.left + paintViewInsets.right);
 		paintViewR.height = label.getHeight()
-				- (paintViewInsets.top + paintViewInsets.bottom);
+		- (paintViewInsets.top + paintViewInsets.bottom);
 
 		Graphics g = label.getGraphics();
 		if (g == null) {
 			return null;
 		}
 		String clippedText = SwingUtilities.layoutCompoundLabel(
-				(JComponent) label, g.getFontMetrics(), text, icon, label
-						.getVerticalAlignment(),
+				label, g.getFontMetrics(), text, icon, label
+				.getVerticalAlignment(),
 				label.getHorizontalAlignment(),
 				label.getVerticalTextPosition(), label
-						.getHorizontalTextPosition(), paintViewR, paintIconR,
+				.getHorizontalTextPosition(), paintViewR, paintIconR,
 				paintTextR, label.getIconTextGap());
 
 		return paintTextR;
@@ -268,9 +282,9 @@ public class SwingUtil {
 
 	public static void center(Window relativeToMe, Window centerMe) {
 		int x = relativeToMe.getX()
-				+ (relativeToMe.getWidth() - centerMe.getWidth()) / 2;
+		+ (relativeToMe.getWidth() - centerMe.getWidth()) / 2;
 		int y = relativeToMe.getY()
-				+ (relativeToMe.getHeight() - centerMe.getHeight()) / 2;
+		+ (relativeToMe.getHeight() - centerMe.getHeight()) / 2;
 		centerMe.setLocation(x, y);
 	}
 
@@ -319,9 +333,11 @@ public class SwingUtil {
 	 *            the image being loaded
 	 * @deprecated Use a java.awt.MediaTracker to watch your image loading
 	 */
+	@Deprecated
 	public static void blockUntilImagePrepared(Image in) {
 		while (!Toolkit.getDefaultToolkit().prepareImage(in, -1, -1, null)) {
-			Thread.currentThread().yield();
+			Thread.currentThread();
+			Thread.yield();
 		}
 	}
 
@@ -574,7 +590,7 @@ public class SwingUtil {
 			layout = (SpringLayout) parent.getLayout();
 		} catch (ClassCastException exc) {
 			System.err
-					.println("The first argument to makeCompactGrid must use SpringLayout.");
+			.println("The first argument to makeCompactGrid must use SpringLayout.");
 			return;
 		}
 

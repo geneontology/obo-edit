@@ -3,15 +3,11 @@ package org.bbop.swing;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.LayoutManager;
-import java.lang.reflect.InvocationTargetException;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
 import org.bbop.util.TaskDelegate;
 
 import org.apache.log4j.*;

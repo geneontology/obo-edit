@@ -151,7 +151,8 @@ class ExpressionImpl implements Expression {
      *
      * @return the expression or blank if it's null.
      */
-    public String toString() {
+    @Override
+	public String toString() {
         String expr = getExpression();
         return expr == null ? "" : expr;
     }

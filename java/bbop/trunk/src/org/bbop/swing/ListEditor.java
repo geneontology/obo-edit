@@ -55,7 +55,8 @@ public class ListEditor extends JPanel {
 
     protected Vector listeners;
 
-    public void setEnabled(boolean enabled) {
+    @Override
+	public void setEnabled(boolean enabled) {
 	super.setEnabled(enabled);
 //	valueList.setEnabled(enabled);
 	addButton.setEnabled(enabled);
@@ -146,7 +147,8 @@ public class ListEditor extends JPanel {
 	}
     }
 
-    public void setBackground(Color color) {
+    @Override
+	public void setBackground(Color color) {
 	super.setBackground(color);
 	if (listPanel != null)
 	    listPanel.setBackground(color);
@@ -185,7 +187,8 @@ public class ListEditor extends JPanel {
 	return label;
     }
 
-    public void setFont(Font in) {
+    @Override
+	public void setFont(Font in) {
 	super.setFont(in);
 	fontify();
     }

@@ -263,7 +263,8 @@ public class DockingWindowsExample {
 
     // Add a listener which shows dialogs when a window is closing or closed.
     rootWindow.addListener(new DockingWindowAdapter() {
-      public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow) {
+      @Override
+	public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow) {
         updateViews(addedWindow, true);
 
         // If the added window is a floating window, then update it
@@ -271,23 +272,27 @@ public class DockingWindowsExample {
           updateFloatingWindow((FloatingWindow) addedWindow);
       }
 
-      public void windowRemoved(DockingWindow removedFromWindow, DockingWindow removedWindow) {
+      @Override
+	public void windowRemoved(DockingWindow removedFromWindow, DockingWindow removedWindow) {
         updateViews(removedWindow, false);
       }
 
-      public void windowClosing(DockingWindow window) throws OperationAbortedException {
+      @Override
+	public void windowClosing(DockingWindow window) throws OperationAbortedException {
         // Confirm close operation
         if (JOptionPane.showConfirmDialog(frame, "Really close window '" + window + "'?") != JOptionPane.YES_OPTION)
           throw new OperationAbortedException("Window close was aborted!");
       }
 
-      public void windowDocking(DockingWindow window) throws OperationAbortedException {
+      @Override
+	public void windowDocking(DockingWindow window) throws OperationAbortedException {
         // Confirm dock operation
         if (JOptionPane.showConfirmDialog(frame, "Really dock window '" + window + "'?") != JOptionPane.YES_OPTION)
           throw new OperationAbortedException("Window dock was aborted!");
       }
 
-      public void windowUndocking(DockingWindow window) throws OperationAbortedException {
+      @Override
+	public void windowUndocking(DockingWindow window) throws OperationAbortedException {
         // Confirm undock operation 
         if (JOptionPane.showConfirmDialog(frame, "Really undock window '" + window + "'?") != JOptionPane.YES_OPTION)
           throw new OperationAbortedException("Window undock was aborted!");

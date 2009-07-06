@@ -36,7 +36,8 @@ public class SafeFileOutputStream extends OutputStream {
 	this.file = file;
     }
 
-    public void flush() throws IOException {
+    @Override
+	public void flush() throws IOException {
 	try {
 	    stream.flush();
 	} catch (IOException ex) {
@@ -58,11 +59,13 @@ public class SafeFileOutputStream extends OutputStream {
 	return tempFile;
     }
 
-    public void finalize() throws IOException {
+    @Override
+	public void finalize() throws IOException {
 	fail();
     }
 
-    public void write(byte[] b) throws IOException {
+    @Override
+	public void write(byte[] b) throws IOException {
 	try {
 	    stream.write(b);
 	} catch (IOException ex) {
@@ -74,7 +77,8 @@ public class SafeFileOutputStream extends OutputStream {
 	}
     }
 
-    public void write(byte[] b, int off, int len) throws IOException {
+    @Override
+	public void write(byte[] b, int off, int len) throws IOException {
 	try {
 	    stream.write(b, off, len);
 	} catch (IOException ex) {
@@ -86,7 +90,8 @@ public class SafeFileOutputStream extends OutputStream {
 	}
     }
 
-    public void write(int b) throws IOException {
+    @Override
+	public void write(int b) throws IOException {
 	try {
 	    stream.write(b);
 	} catch (IOException ex) {
@@ -98,7 +103,8 @@ public class SafeFileOutputStream extends OutputStream {
 	}
     }
 
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
 	try {
 	    stream.close();
 	    file.delete();

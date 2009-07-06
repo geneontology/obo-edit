@@ -270,6 +270,7 @@ public class TableList<T> extends JComponent {
 				editor.notifyActive();
 		}
 
+		@Override
 		public void columnMarginChanged(ChangeEvent e) {
 			marginAdjust = true;
 			super.columnMarginChanged(e);
@@ -517,7 +518,7 @@ public class TableList<T> extends JComponent {
 	protected void flushEdits() {
 		if (table.isEditing()) {
 			((ListTableModel) table.getModel()).setValueAt(table
-					.getEditingRow(), (T) editor.getValue(), false);
+					.getEditingRow(), editor.getValue(), false);
 			table.repaint();
 		}
 	}

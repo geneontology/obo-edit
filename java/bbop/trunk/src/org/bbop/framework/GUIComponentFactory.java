@@ -1,8 +1,5 @@
 package org.bbop.framework;
 
-import java.util.Collection;
-import java.util.Properties;
-
 import org.bbop.util.StringUtil;
 
 public interface GUIComponentFactory<T extends GUIComponent> {
@@ -12,6 +9,7 @@ public interface GUIComponentFactory<T extends GUIComponent> {
 		TOOLBARS, ONTOLOGY, ANNOTATION, EDITORS, VIEWERS, SEARCH, TOOLS, METADATA, INFO, REASONER, HISTORY, SUMMARY, CONFIG, MISC;
 
 
+		@Override
 		public String toString() {
 			return StringUtil.toTitleCase(name().toLowerCase());
 		}

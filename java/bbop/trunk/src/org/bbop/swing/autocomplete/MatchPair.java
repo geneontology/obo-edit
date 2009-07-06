@@ -48,6 +48,7 @@ public class MatchPair<DISPLAY_TYPE> {
 		return match;
 	}
 	
+	@Override
 	public String toString() {
 		return "Matched "+str+" with "+val+" with score of "+score;
 	}

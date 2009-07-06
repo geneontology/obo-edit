@@ -7,7 +7,6 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.bbop.dataadapter.DataAdapterException;
 
 public abstract class AbstractTaskDelegate<T> implements TaskDelegate<T> {
 	

@@ -49,7 +49,8 @@ public class JDBCAdapterConfiguration implements AdapterConfiguration {
 	return writePath;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
     	return "readPaths = " + readPath;
     }
     

@@ -40,6 +40,7 @@ public class ReferenceQueueCleanupThread<T> extends Thread implements Cloneable 
 		}
 	}
 	
+	@Override
 	public Object clone() {
 		ReferenceQueueCleanupThread<T> out = new ReferenceQueueCleanupThread<T>(queue);
 		if (listeners != null) {
@@ -50,6 +51,7 @@ public class ReferenceQueueCleanupThread<T> extends Thread implements Cloneable 
 		return out;
 	}
 	
+	@Override
 	public void run() {
 		logger.info("starting cleanup thread...");
 		halt = false;

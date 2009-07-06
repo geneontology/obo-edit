@@ -13,8 +13,6 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.ImageView;
-
 import org.bbop.util.ObjectUtil;
 
 import org.apache.log4j.*;
@@ -27,6 +25,7 @@ public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 	protected Map<String, IconFactory> iconFactoryMap = new HashMap<String, IconFactory>();
 
 	protected class PluggableImageHTMLFactory extends HTMLFactory {
+		@Override
 		public View create(Element elem) {
 			Object o = elem.getAttributes().getAttribute(
 					StyleConstants.NameAttribute);
@@ -64,6 +63,7 @@ public class PluggableImageHTMLEditorKit extends HTMLEditorKit {
 			iconFactoryMap.remove(suffix);
 	}
 
+	@Override
 	public ViewFactory getViewFactory() {
 		return new PluggableImageHTMLFactory();
 	}

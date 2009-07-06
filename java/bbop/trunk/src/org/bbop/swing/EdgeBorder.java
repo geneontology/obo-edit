@@ -32,7 +32,8 @@ public class EdgeBorder extends LineBorder {
      * Returns the insets of the border.
      * @param c the component for which this border insets value applies
      */
-    public Insets getBorderInsets(Component c)       {
+    @Override
+	public Insets getBorderInsets(Component c)       {
         return getBorderInsets(c, new Insets(0,0,0,0));
     }
 
@@ -41,7 +42,8 @@ public class EdgeBorder extends LineBorder {
      * @param c the component for which this border insets value applies
      * @param insets the object to be reinitialized
      */
-    public Insets getBorderInsets(Component c, Insets insets) {
+    @Override
+	public Insets getBorderInsets(Component c, Insets insets) {
 	if (north)
 	    insets.top = thickness;
 	if (south)
@@ -53,7 +55,8 @@ public class EdgeBorder extends LineBorder {
         return insets;
     }
 
-    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+    @Override
+	public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Color oldColor = g.getColor();
         int i;
 

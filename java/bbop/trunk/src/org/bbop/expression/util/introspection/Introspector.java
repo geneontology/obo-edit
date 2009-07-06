@@ -81,7 +81,8 @@ public class Introspector extends IntrospectorBase {
      * @return The desired Method object.
      * @throws Exception if the superclass does.
      */
-    public Method getMethod(Class c, String name, Object[] params) throws Exception {
+    @Override
+	public Method getMethod(Class c, String name, Object[] params) throws Exception {
         /*
          *  just delegate to the base class
          */
@@ -115,7 +116,8 @@ public class Introspector extends IntrospectorBase {
      * Clears the classmap and classname
      * caches, and logs that we did so.
      */
-    protected void clearCache() {
+    @Override
+	protected void clearCache() {
         super.clearCache();
     }
 }

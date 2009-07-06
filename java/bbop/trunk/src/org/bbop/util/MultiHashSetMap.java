@@ -10,6 +10,7 @@ public class MultiHashSetMap<K,V> extends MultiHashMap<K,V> {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(MultiHashSetMap.class);
 
+	@Override
 	protected Collection<V> createCollection() {
 		return new HashSet<V>();
 	}

@@ -158,6 +158,7 @@ public class IDWUtil {
 	public static JButton createFlatHighlightButton(Icon icon,
 			String tooltipText, int padding, ActionListener action) {
 		final JButton b = new JButton(icon) {
+			@Override
 			public void setUI(ButtonUI ui) {
 				super.setUI(new FlatIconButtonUI());
 			}
@@ -179,6 +180,7 @@ public class IDWUtil {
 	public static JToggleButton createFlatHighlightToggleButton(Icon icon,
 			String tooltipText, int padding, ActionListener action) {
 		final JToggleButton b = new JToggleButton(icon) {
+			@Override
 			public void setUI(ButtonUI ui) {
 				super.setUI(new FlatIconButtonUI());
 			}

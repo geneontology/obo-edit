@@ -57,7 +57,8 @@ public class BooleanPropertyExecutor extends PropertyExecutor {
      * @param clazz The class being analyzed.
      * @param property Name of boolean property.
      */
-    protected void discover(Class clazz, String property) {
+    @Override
+	protected void discover(Class clazz, String property) {
         try {
             char c;
             StringBuffer sb;
