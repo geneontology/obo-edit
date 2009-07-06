@@ -20,6 +20,7 @@ public class FileSystemTreeModel extends AbstractTreeModel {
 	    this.name = name;
 	}
 
+	@Override
 	public String toString() {
 	    return name;
 	}
@@ -175,7 +176,8 @@ public class FileSystemTreeModel extends AbstractTreeModel {
 	return out;
     }
 
-    public void reload() {
+    @Override
+	public void reload() {
 	childCache.clear();
 	super.reload();
     }
@@ -217,5 +219,6 @@ public class FileSystemTreeModel extends AbstractTreeModel {
 	return getChildren(parent).indexOf(child);
     }
 
-    public void valueForPathChanged(TreePath path, Object o) {}
+    @Override
+	public void valueForPathChanged(TreePath path, Object o) {}
 }

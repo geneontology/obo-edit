@@ -64,6 +64,7 @@ public final class IOUtil {
 
 	public static void deltreeOnExit(final File file) throws IOException {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
 			public void run() {
 				try {
 					deltree(file);

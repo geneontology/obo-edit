@@ -68,7 +68,8 @@ public class ExtensionFilenameFilter implements FilenameFilter {
 	return out.toString();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	if (desc == null)
 	    return getExtensionDesc();
 	else

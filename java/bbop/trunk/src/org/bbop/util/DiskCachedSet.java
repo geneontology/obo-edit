@@ -166,7 +166,7 @@ public class DiskCachedSet<E> extends AbstractSet<E> implements Set<E> {
 			while (it.hasNext()) {
 				E item = it.next();
 				if (hasher.equals(item, o)) {
-					return (E) item;
+					return item;
 				}
 			}
 		} catch (Exception ex) {

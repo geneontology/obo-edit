@@ -27,12 +27,8 @@ import net.infonode.docking.util.PropertiesUtil;
 import net.infonode.gui.colorprovider.ColorBlender;
 import net.infonode.gui.colorprovider.ColorProvider;
 import net.infonode.gui.colorprovider.FixedColorProvider;
-import net.infonode.gui.componentpainter.ComponentPainter;
 import net.infonode.gui.componentpainter.SolidColorComponentPainter;
-import net.infonode.gui.laf.InfoNodeLookAndFeel;
-import net.infonode.gui.shaped.border.FixedInsetsShapedBorder;
 import net.infonode.gui.shaped.border.RoundedCornerBorder;
-import net.infonode.gui.shaped.border.ShapedBorder;
 import net.infonode.tabbedpanel.TabAreaProperties;
 
 import java.awt.*;
@@ -157,10 +153,12 @@ public class BBOPDockingTheme extends DockingWindowsTheme {
 
 	}
 
+	@Override
 	public String getName() {
 		return "Default BBOP Docking Theme";
 	}
 
+	@Override
 	public RootWindowProperties getRootWindowProperties() {
 		return rootWindowProperties;
 	}

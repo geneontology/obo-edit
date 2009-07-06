@@ -2,13 +2,10 @@ package org.bbop.swing;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import javax.swing.JFrame;
 
 import org.bbop.expression.ExpressionException;
 

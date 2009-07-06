@@ -60,10 +60,12 @@ public class ASTMethod extends SimpleNode {
 	}
 
 	/** {@inheritDoc} */
+	@Override
 	public Object jjtAccept(ParserVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Object value(JexlContext jc) throws Exception {
 		return execute(null, jc);
 	}
@@ -81,6 +83,7 @@ public class ASTMethod extends SimpleNode {
 	 * @throws Exception
 	 *             on any error
 	 */
+	@Override
 	public Object execute(Object obj, JexlContext jc) throws Exception {
 		String methodName = ((ASTIdentifier) jjtGetChild(0)).val;
 

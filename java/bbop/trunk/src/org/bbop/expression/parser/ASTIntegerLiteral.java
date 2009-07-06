@@ -52,7 +52,8 @@ public class ASTIntegerLiteral extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
@@ -66,12 +67,14 @@ public class ASTIntegerLiteral extends SimpleNode {
      * @return the resulting value.
      * @see ASTArrayAccess#evaluateExpr(Object, Object)
      */
-    public Object execute(Object obj, JexlContext ctx) throws Exception {
+    @Override
+	public Object execute(Object obj, JexlContext ctx) throws Exception {
         return ASTArrayAccess.evaluateExpr(obj, val, this);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext jc) throws Exception {
+    @Override
+	public Object value(JexlContext jc) throws Exception {
         return val;
     }
 }

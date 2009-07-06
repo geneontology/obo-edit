@@ -8,7 +8,6 @@ package org.bbop.swing;
  */
 
 import javax.swing.*;
-import java.io.*;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Dialog;
@@ -17,14 +16,12 @@ import java.awt.Component;
 import java.awt.Container;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.awt.event.WindowListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.text.*;
 import java.util.Locale;
 import javax.accessibility.*;
 import javax.swing.event.*;
@@ -139,6 +136,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 					BlockingProgressMonitor.this.cancelOption, null);
 		}
 
+		@Override
 		public int getMaxCharactersPerLineCount() {
 			return 60;
 		}
@@ -147,6 +145,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		// but create a modeless dialog.
 		// This is necessary because the Solaris implementation doesn't
 		// support Dialog.setModal yet.
+		@Override
 		public JDialog createDialog(Component parentComponent, String title) {
 			final JDialog dialog;
 
@@ -166,10 +165,12 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 			dialog.addWindowListener(new WindowAdapter() {
 				boolean gotFocus = false;
 
+				@Override
 				public void windowClosing(WindowEvent we) {
 					setValue(cancelOption[0]);
 				}
 
+				@Override
 				public void windowActivated(WindowEvent we) {
 					// Once window gets focus, set initial focus
 					if (!gotFocus) {
@@ -206,6 +207,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return the AccessibleContext for the ProgressOptionPane
 		 * @since 1.5
 		 */
+		@Override
 		public AccessibleContext getAccessibleContext() {
 			return BlockingProgressMonitor.this.getAccessibleContext();
 		}
@@ -241,7 +243,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 				if (dT >= millisToDecideToPopup) {
 					int predictedCompletionTime;
 					if (nv > min) {
-						predictedCompletionTime = (int) ((long) dT
+						predictedCompletionTime = (int) (dT
 								* (max - min) / (nv - min));
 					} else {
 						predictedCompletionTime = millisToPopup;
@@ -566,6 +568,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * 
 		 * @see #setAccessibleName
 		 */
+		@Override
 		public String getAccessibleName() {
 			if (accessibleName != null) { // defined in AccessibleContext
 				return accessibleName;
@@ -588,6 +591,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * 
 		 * @see #setAccessibleDescription
 		 */
+		@Override
 		public String getAccessibleDescription() {
 			if (accessibleDescription != null) { // defined in
 													// AccessibleContext
@@ -619,6 +623,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 *         object
 		 * @see AccessibleRole
 		 */
+		@Override
 		public AccessibleRole getAccessibleRole() {
 			return AccessibleRole.PROGRESS_MONITOR;
 		}
@@ -635,6 +640,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @see AccessibleState
 		 * @see #addPropertyChangeListener
 		 */
+		@Override
 		public AccessibleStateSet getAccessibleStateSet() {
 			if (accessibleJOptionPane != null) {
 				// delegate to the AccessibleJOptionPane
@@ -649,9 +655,10 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return the Accessible parent of this object; null if this object
 		 *         does not have an Accessible parent
 		 */
+		@Override
 		public Accessible getAccessibleParent() {
 			if (dialog != null) {
-				return (Accessible) dialog;
+				return dialog;
 			}
 			return null;
 		}
@@ -676,6 +683,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @see #getAccessibleChildrenCount
 		 * @see #getAccessibleChild
 		 */
+		@Override
 		public int getAccessibleIndexInParent() {
 			if (accessibleJOptionPane != null) {
 				// delegate to the AccessibleJOptionPane
@@ -689,6 +697,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * 
 		 * @return the number of accessible children of the object.
 		 */
+		@Override
 		public int getAccessibleChildrenCount() {
 			// return the number of children in the JPanel containing
 			// the message, note label and progress bar
@@ -710,6 +719,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return the Accessible child of the object
 		 * @see #getAccessibleChildrenCount
 		 */
+		@Override
 		public Accessible getAccessibleChild(int i) {
 			// return a child in the JPanel containing the message, note label
 			// and progress bar
@@ -747,6 +757,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 *                that the locale can be determined from the containing
 		 *                parent.
 		 */
+		@Override
 		public Locale getLocale() throws IllegalComponentStateException {
 			if (accessibleJOptionPane != null) {
 				// delegate to the AccessibleJOptionPane
@@ -764,6 +775,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return AccessibleComponent if supported by object; else return null
 		 * @see AccessibleComponent
 		 */
+		@Override
 		public AccessibleComponent getAccessibleComponent() {
 			if (accessibleJOptionPane != null) {
 				// delegate to the AccessibleJOptionPane
@@ -779,6 +791,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return AccessibleValue if supported by object; else return null
 		 * @see AccessibleValue
 		 */
+		@Override
 		public AccessibleValue getAccessibleValue() {
 			if (myBar != null) {
 				// delegate to the AccessibleJProgressBar
@@ -794,6 +807,7 @@ public class BlockingProgressMonitor extends Object implements Accessible {
 		 * @return AccessibleText if supported by object; else return null
 		 * @see AccessibleText
 		 */
+		@Override
 		public AccessibleText getAccessibleText() {
 			if (getNoteLabelAccessibleText() != null) {
 				return this;

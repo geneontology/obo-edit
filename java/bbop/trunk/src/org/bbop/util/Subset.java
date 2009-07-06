@@ -58,6 +58,7 @@ public class Subset<T> extends AbstractSet<T> implements Serializable {
 		}
 	}
 
+	@Override
 	public Iterator iterator() {
 		if (cacheSize)
 			return new CachedSubsetIterator();
@@ -66,6 +67,7 @@ public class Subset<T> extends AbstractSet<T> implements Serializable {
 		}
 	}
 
+	@Override
 	public boolean remove(Object o) {
 		if (filter.satisfies((T) o))
 			return set.remove(o);
@@ -87,6 +89,7 @@ public class Subset<T> extends AbstractSet<T> implements Serializable {
 		}
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		Iterator<T> it = set.iterator();
 		while(it.hasNext()) {
@@ -104,6 +107,7 @@ public class Subset<T> extends AbstractSet<T> implements Serializable {
 		this.set = set;
 	}
 
+	@Override
 	public boolean add(T o) {
 		if (filter.satisfies(o))
 			return set.add(o);
@@ -134,16 +138,19 @@ public class Subset<T> extends AbstractSet<T> implements Serializable {
 		this.size = size;
 	}
 
+	@Override
 	public int size() {
 		if (!cacheSize)
 			cacheSize();
 		return size;
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		return filter.satisfies((T) o) && set.contains(o);
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o == Subset.this;
 	}

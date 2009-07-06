@@ -28,6 +28,7 @@ public class TagSpec extends OrderedArgumentSignature {
 		addSignature(signature);
 	}
 
+	@Override
 	public String getShortDocumentation() {
 		StringBuffer out = new StringBuffer();
 		out.append(primaryName);
@@ -38,6 +39,7 @@ public class TagSpec extends OrderedArgumentSignature {
 		return out.toString();
 	}
 
+	@Override
 	public String toString() {
 		return "TagSpec('" + primaryName + "'):" + id;
 	}
@@ -46,10 +48,12 @@ public class TagSpec extends OrderedArgumentSignature {
 		nameSig.addSignature(new ValueSpec(name));
 	}
 
+	@Override
 	protected OrderedArgumentSignature createCopyObject() {
 		return new TagSpec();
 	}
 
+	@Override
 	public ArgumentSignature copy() {
 		TagSpec out = (TagSpec) super.copy();
 		out.primaryName = primaryName;
@@ -58,6 +62,7 @@ public class TagSpec extends OrderedArgumentSignature {
 		return out;
 	}
 
+	@Override
 	public List getValues() throws UnfullfilledException {
 		Tag out = new Tag(primaryName);
 		Iterator it = signature.getValues().iterator();

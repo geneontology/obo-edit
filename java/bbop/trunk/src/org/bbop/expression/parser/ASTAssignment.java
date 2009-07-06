@@ -51,12 +51,14 @@ public class ASTAssignment extends SimpleNode {
     }
 
     /** {@inheritDoc} */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** {@inheritDoc} */
-    public Object value(JexlContext context) throws Exception {
+    @Override
+	public Object value(JexlContext context) throws Exception {
         // left should be the variable (reference) to assign to
         SimpleNode left = (SimpleNode) jjtGetChild(0);
         // right should be the expression to evaluate

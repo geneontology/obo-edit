@@ -19,10 +19,12 @@ public class DragHandler extends MouseInputAdapter {
 		this.contents = contents;
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		firstMouseEvent = e;
 	}
 
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (firstMouseEvent != null) {
 			JComponent c = (JComponent) e.getComponent();
@@ -34,6 +36,7 @@ public class DragHandler extends MouseInputAdapter {
 		}
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		firstMouseEvent = null;
 	}

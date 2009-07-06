@@ -48,6 +48,7 @@ public class UnorderedArgumentSignature implements ArgumentSignature {
 			return canDefault;
 		}
 
+		@Override
 		public String toString() {
 			return sig + ":" + index;
 		}
@@ -63,6 +64,7 @@ public class UnorderedArgumentSignature implements ArgumentSignature {
 		return id;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ArgumentSignature)
 			return ((ArgumentSignature) o).getID() == id;
@@ -70,6 +72,7 @@ public class UnorderedArgumentSignature implements ArgumentSignature {
 			return false;
 	}
 
+	@Override
 	public int hashCode() {
 		return id;
 	}
@@ -78,6 +81,7 @@ public class UnorderedArgumentSignature implements ArgumentSignature {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		if (shortDesc != null)
 			return shortDesc;

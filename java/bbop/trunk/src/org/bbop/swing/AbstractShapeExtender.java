@@ -3,8 +3,6 @@ package org.bbop.swing;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
-import java.util.List;
 
 public abstract class AbstractShapeExtender implements ShapeExtender {
 

@@ -40,7 +40,8 @@ public class MultiheightTableUI extends BasicTableUI
      * The minimum width is the sum of the minimum widths of each column 
      * (plus inter-cell spacing).
      */
-    public Dimension getMinimumSize(JComponent c) {
+    @Override
+	public Dimension getMinimumSize(JComponent c) {
 	long width = 0;
 	Enumeration enumeration = table.getColumnModel().getColumns();
 	while (enumeration.hasMoreElements()) {
@@ -56,7 +57,8 @@ public class MultiheightTableUI extends BasicTableUI
      * The preferred width is the sum of the preferred widths of each column 
      * (plus inter-cell spacing).
      */
-    public Dimension getPreferredSize(JComponent c) {
+    @Override
+	public Dimension getPreferredSize(JComponent c) {
 	long width = 0;
 	Enumeration enumeration = table.getColumnModel().getColumns();
 	while (enumeration.hasMoreElements()) {
@@ -72,7 +74,8 @@ public class MultiheightTableUI extends BasicTableUI
      * The maximum width is the sum of the maximum widths of each column 
      * (plus inter-cell spacing).
      */
-    public Dimension getMaximumSize(JComponent c) {
+    @Override
+	public Dimension getMaximumSize(JComponent c) {
 	long width = 0;
 	Enumeration enumeration = table.getColumnModel().getColumns();
 	while (enumeration.hasMoreElements()) {
@@ -82,7 +85,8 @@ public class MultiheightTableUI extends BasicTableUI
 	return createTableSize(width);
     }
     
-    public void paint(Graphics g, JComponent c) {
+    @Override
+	public void paint(Graphics g, JComponent c) {
 	Rectangle oldClipBounds = g.getClipBounds();
 	Rectangle clipBounds = new Rectangle(oldClipBounds);
 	int tableWidth = table.getColumnModel().getTotalColumnWidth();

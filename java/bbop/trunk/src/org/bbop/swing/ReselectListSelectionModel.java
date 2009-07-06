@@ -12,7 +12,6 @@ import java.util.BitSet;
 import java.io.Serializable;
 
 import javax.swing.DefaultListSelectionModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.*;
 
 /**
@@ -47,16 +46,19 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	protected boolean leadAnchorNotificationEnabled = true;
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public int getMinSelectionIndex() {
 		return isSelectionEmpty() ? -1 : minIndex;
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public int getMaxSelectionIndex() {
 		return maxIndex;
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public boolean getValueIsAdjusting() {
 		return isAdjusting;
 	}
@@ -73,6 +75,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 *         </ul>
 	 * @see #getSelectionMode
 	 */
+	@Override
 	public int getSelectionMode() {
 		return selectionMode;
 	}
@@ -93,6 +96,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 *                values shown above
 	 * @see #setSelectionMode
 	 */
+	@Override
 	public void setSelectionMode(int selectionMode) {
 		switch (selectionMode) {
 		case SINGLE_SELECTION:
@@ -106,22 +110,26 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public boolean isSelectedIndex(int index) {
 		return ((index < minIndex) || (index > maxIndex)) ? false : value
 				.get(index);
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public boolean isSelectionEmpty() {
 		return (minIndex > maxIndex);
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void addListSelectionListener(ListSelectionListener l) {
 		listenerList.add(ListSelectionListener.class, l);
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void removeListSelectionListener(ListSelectionListener l) {
 		listenerList.remove(ListSelectionListener.class, l);
 	}
@@ -139,14 +147,16 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * 
 	 * @since 1.4
 	 */
+	@Override
 	public ListSelectionListener[] getListSelectionListeners() {
-		return (ListSelectionListener[]) listenerList
+		return listenerList
 				.getListeners(ListSelectionListener.class);
 	}
 
 	/**
 	 * Notifies listeners that we have ended a series of adjustments.
 	 */
+	@Override
 	protected void fireValueChanged(boolean isAdjusting) {
 		if (lastChangedIndex == MIN) {
 			return;
@@ -167,6 +177,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * selection, in the closed interval <code>firstIndex</code>,
 	 * <code>lastIndex</code>, has changed.
 	 */
+	@Override
 	protected void fireValueChanged(int firstIndex, int lastIndex) {
 		fireValueChanged(firstIndex, lastIndex, getValueIsAdjusting());
 	}
@@ -180,6 +191,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 *            true if this is the final change in a series of adjustments
 	 * @see EventListenerList
 	 */
+	@Override
 	protected void fireValueChanged(int firstIndex, int lastIndex,
 			boolean isAdjusting) {
 		Object[] listeners = listenerList.getListenerList();
@@ -261,6 +273,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * 
 	 * @since 1.3
 	 */
+	@Override
 	public <T extends EventListener> T[] getListeners(Class<T> listenerType) {
 		return listenerList.getListeners(listenerType);
 	}
@@ -346,6 +359,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * 
 	 * @see #isLeadAnchorNotificationEnabled()
 	 */
+	@Override
 	public void setLeadAnchorNotificationEnabled(boolean flag) {
 		leadAnchorNotificationEnabled = flag;
 	}
@@ -369,6 +383,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 *         flag
 	 * @see #setLeadAnchorNotificationEnabled(boolean)
 	 */
+	@Override
 	public boolean isLeadAnchorNotificationEnabled() {
 		return leadAnchorNotificationEnabled;
 	}
@@ -435,11 +450,13 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void clearSelection() {
 		removeSelectionIntervalImpl(minIndex, maxIndex, false);
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void setSelectionInterval(int index0, int index1) {
 		if (index0 == -1 || index1 == -1) {
 			return;
@@ -459,6 +476,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void addSelectionInterval(int index0, int index1) {
 		if (index0 == -1 || index1 == -1) {
 			return;
@@ -492,6 +510,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void removeSelectionInterval(int index0, int index1) {
 		removeSelectionIntervalImpl(index0, index1, true);
 	}
@@ -539,6 +558,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * unselected. This method is typically called to sync the selection model
 	 * with a corresponding change in the data model.
 	 */
+	@Override
 	public void insertIndexInterval(int index, int length, boolean before) {
 		/*
 		 * The first new index will appear at insMinIndex and the last one will
@@ -585,6 +605,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * width a corresponding change in the data model. Note that (as always)
 	 * index0 need not be <= index1.
 	 */
+	@Override
 	public void removeIndexInterval(int index0, int index1) {
 		int rmMinIndex = Math.min(index0, index1);
 		int rmMaxIndex = Math.max(index0, index1);
@@ -623,6 +644,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public void setValueIsAdjusting(boolean isAdjusting) {
 		if (isAdjusting != this.isAdjusting) {
 			this.isAdjusting = isAdjusting;
@@ -638,6 +660,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * 
 	 * @return a <code>String</code> representation of this object
 	 */
+	@Override
 	public String toString() {
 		String s = ((getValueIsAdjusting()) ? "~" : "=") + value.toString();
 		return getClass().getName() + " " + Integer.toString(hashCode()) + " "
@@ -653,6 +676,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 *                Cloneable interface and (b) define a <code>clone</code>
 	 *                method.
 	 */
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		ReselectListSelectionModel clone = (ReselectListSelectionModel) super
 				.clone();
@@ -662,11 +686,13 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public int getAnchorSelectionIndex() {
 		return anchorIndex;
 	}
 
 	// implements javax.swing.ListSelectionModel
+	@Override
 	public int getLeadSelectionIndex() {
 		return leadIndex;
 	}
@@ -679,6 +705,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * @see #getAnchorSelectionIndex
 	 * @see #setLeadSelectionIndex
 	 */
+	@Override
 	public void setAnchorSelectionIndex(int anchorIndex) {
 		updateLeadAnchorIndices(anchorIndex, this.leadIndex);
 		fireValueChanged();
@@ -698,6 +725,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * 
 	 * @since 1.5
 	 */
+	@Override
 	public void moveLeadSelectionIndex(int leadIndex) {
 		// disallow a -1 lead unless the anchor is already -1
 		if (leadIndex == -1) {
@@ -751,6 +779,7 @@ public class ReselectListSelectionModel extends DefaultListSelectionModel implem
 	 * @see #getLeadSelectionIndex
 	 * @see #setAnchorSelectionIndex
 	 */
+	@Override
 	public void setLeadSelectionIndex(int leadIndex) {
 		int anchorIndex = this.anchorIndex;
 

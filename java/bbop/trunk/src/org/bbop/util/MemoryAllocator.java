@@ -136,6 +136,7 @@ public class MemoryAllocator {
 		 */
 	}
 
+	@Override
 	public void finalize() {
 		report();
 	}

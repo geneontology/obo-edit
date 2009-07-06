@@ -1,9 +1,6 @@
 package org.bbop.dataadapter;
 
-import org.bbop.swing.BackgroundEventQueue;
 import org.bbop.util.AbstractTaskDelegate;
-import org.bbop.util.TaskDelegate;
-
 /**
  * A {@link TaskDelegate} that wraps a call to
  * {@link DataAdapter#doOperation(IOOperation, AdapterConfiguration, Object)}. This

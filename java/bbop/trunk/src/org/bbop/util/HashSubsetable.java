@@ -137,7 +137,8 @@ public class HashSubsetable extends LinkedHashSet implements Subsetable,
 	return subsets.remove(set);
     }
 
-    public void clear() {
+    @Override
+	public void clear() {
 	super.clear();
 	Iterator it = subsets.iterator();
 	while(it.hasNext()) {
@@ -146,7 +147,8 @@ public class HashSubsetable extends LinkedHashSet implements Subsetable,
 	}
     }
 
-    public boolean add(Object o) {
+    @Override
+	public boolean add(Object o) {
 	boolean add = super.add(o);
 	if (add) {
 	    Iterator it = subsets.iterator();
@@ -158,7 +160,8 @@ public class HashSubsetable extends LinkedHashSet implements Subsetable,
 	return add;
     }
 
-    public boolean remove(Object o) {
+    @Override
+	public boolean remove(Object o) {
 	boolean remove = super.remove(o);
 	if (remove) {
 	    Iterator it = subsets.iterator();

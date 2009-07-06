@@ -58,9 +58,13 @@ public class GUIManager {
 	
 
 	protected static File prefsDir;
+	
+	//Layout lock
+	protected boolean lockDoc;
 
-	protected boolean lockDoc; //used to determine if the GUI componenets should be locked down
-
+	// OTE View/Scroll Lock
+	protected boolean OTElock;
+	
 	public BackgroundEventQueue getScreenLockQueue() {
 		return screenLockQueue;
 	}
@@ -107,6 +111,7 @@ public class GUIManager {
 		screenLockQueue = BackgroundEventQueue.getGlobalQueue();
 		backgroundQueue = new BackgroundEventQueue();
 		lockDoc = false;
+		OTElock = false;
 	}
 
 	public static GUIManager getManager() {
@@ -204,7 +209,19 @@ public class GUIManager {
 	public boolean getDocLockStatus() {
 		return lockDoc;
 	}
+	
+	public void setOTELockStatus(boolean lock) {
+		OTElock = lock;
+		if (OTElock)
+			ComponentManager.getManager().getDriver().lockOTE();
+		else
+			ComponentManager.getManager().getDriver().unlockOTE();
+		return;
+	}
 
+	public boolean getOTELockStatus(){
+		return OTElock;
+	}
 
 	public void start() {
 		addShutdownHook(new Runnable() {

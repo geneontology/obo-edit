@@ -27,20 +27,15 @@ import net.infonode.gui.colorprovider.FixedColorProvider;
 import net.infonode.gui.componentpainter.ComponentPainter;
 import net.infonode.gui.componentpainter.FixedTransformComponentPainter;
 import net.infonode.gui.componentpainter.GradientComponentPainter;
-import net.infonode.gui.hover.HoverListener;
 import net.infonode.gui.shaped.border.RoundedCornerBorder;
 import net.infonode.properties.base.Property;
 import net.infonode.properties.gui.util.ComponentProperties;
 import net.infonode.tabbedpanel.TabbedPanelProperties;
-import net.infonode.tabbedpanel.hover.TitledTabHoverAction;
 import net.infonode.tabbedpanel.theme.TabbedPanelTitledTabTheme;
 import net.infonode.tabbedpanel.titledtab.TitledTabProperties;
-import net.infonode.util.ColorUtil;
 import net.infonode.util.Direction;
 
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 
 /**
@@ -186,14 +181,17 @@ public class BBOPTabTheme extends TabbedPanelTitledTabTheme {
 	    configureLook(darkColor, lightColor, font);
 	}
 
+	@Override
 	public String getName() {
 		return "Default BBOP Tab Theme";
 	}
 
+	@Override
 	public TabbedPanelProperties getTabbedPanelProperties() {
 		return tabbedPanelProperties;
 	}
 
+	@Override
 	public TitledTabProperties getTitledTabProperties() {
 		return titledTabProperties;
 	}

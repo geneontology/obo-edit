@@ -74,7 +74,8 @@ public class Memer {
   /**
    * @return a string representation of this object.
    */
-  public String toString() {
+  @Override
+public String toString() {
     calcMem();
     return " free: " + currFreeMem + 
            "   total: " + currTotalMem + 

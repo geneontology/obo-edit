@@ -46,6 +46,7 @@ public class DefaultIOOperation<IN, OUT> implements IOOperation<IN, OUT> {
 		return name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof IOOperation) {
 			IOOperation op = (IOOperation) o;
@@ -54,6 +55,7 @@ public class DefaultIOOperation<IN, OUT> implements IOOperation<IN, OUT> {
 			return false;
 	}
 
+	@Override
 	public int hashCode() {
 		return getID().hashCode();
 	}

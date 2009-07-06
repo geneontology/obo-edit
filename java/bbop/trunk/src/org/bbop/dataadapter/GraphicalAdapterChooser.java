@@ -180,8 +180,8 @@ AdapterWidgetI {
 	"<html></html>");
 
 	protected JScrollPane exceptionPanel = new JScrollPane(exceptionEditorPane,
-			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 	protected ActionListener profileChooserListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -196,6 +196,7 @@ AdapterWidgetI {
 		 */
 		private static final long serialVersionUID = 6595990724197125690L;
 
+		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			if (value instanceof DataAdapter) {
@@ -211,6 +212,7 @@ AdapterWidgetI {
 	protected class NamedConfigEditor extends BasicComboBoxEditor {
 		protected Object oldValue;
 
+		@Override
 		public void setItem(Object anObject) {
 			if (anObject != null && anObject instanceof NamedAdapterConfig) {
 				NamedAdapterConfig nc = (NamedAdapterConfig) anObject;
@@ -221,6 +223,7 @@ AdapterWidgetI {
 			}
 		}
 
+		@Override
 		public Object getItem() {
 			NamedAdapterConfig nc = (NamedAdapterConfig) oldValue;
 			nc.setName(editor.getText());
@@ -340,10 +343,12 @@ AdapterWidgetI {
 			this.configuration = configuration;
 		}
 
+		@Override
 		public String toString() {
 			return getName();
 		}
 
+		@Override
 		public boolean equals(Object o) {
 			if (o instanceof NamedAdapterConfig) {
 				return ((NamedAdapterConfig) o).getName().equals(name);
@@ -406,6 +411,7 @@ AdapterWidgetI {
 		this.throwExceptions = throwExceptions;
 	}
 
+	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
 		setButtonFont(font);

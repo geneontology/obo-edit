@@ -23,7 +23,8 @@ public class EditableString implements StateEditable {
 	value = in;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return value;
     }
 
@@ -36,7 +37,8 @@ public class EditableString implements StateEditable {
 	    value = (String) in.get("strvalue");
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
 	if (o == null && value == null)
 	    return true;
 	if (o == null || value == null)

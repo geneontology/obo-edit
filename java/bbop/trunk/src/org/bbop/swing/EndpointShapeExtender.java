@@ -1,7 +1,5 @@
 package org.bbop.swing;
 
-import java.awt.geom.PathIterator;
-
 import org.apache.log4j.*;
 
 public class EndpointShapeExtender extends AbstractShapeExtender {
@@ -9,6 +7,7 @@ public class EndpointShapeExtender extends AbstractShapeExtender {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(EndpointShapeExtender.class);
 
+	@Override
 	protected void addPoints(PathOpList source, int startSourceIndex,
 			int endSourceIndex, PathOpList target, int startTargetIndex,
 			int endTargetIndex) {

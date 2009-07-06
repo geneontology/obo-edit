@@ -3,8 +3,6 @@ package org.bbop.framework;
 import javax.swing.JOptionPane;
 import org.apache.log4j.*;
 
-import org.apache.log4j.*;
-
 public class CheckMemoryThread extends Thread {
 
 	//initialize logger
@@ -23,7 +21,7 @@ public class CheckMemoryThread extends Thread {
   public CheckMemoryThread() {
     maxMemory = Runtime.getRuntime().maxMemory();
     // Complain if free memory goes below 10% of max memory
-    minMemory = maxMemory/(long)10;
+    minMemory = maxMemory/10;
     setDaemon(true);
     //1 Megabyte = 1048576 Bytes
     //changing the info statement to MB to make it more readable
@@ -69,7 +67,8 @@ public class CheckMemoryThread extends Thread {
     interrupt();
   }
 
-  public void run() {
+  @Override
+public void run() {
     while(!halt) {
       try {
         sleep(interval);

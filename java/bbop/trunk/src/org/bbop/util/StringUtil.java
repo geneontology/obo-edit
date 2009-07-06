@@ -3,8 +3,6 @@ package org.bbop.util;
 import java.text.CollationElementIterator;
 import java.text.Collator;
 import java.text.RuleBasedCollator;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,17 +60,17 @@ public class StringUtil {
 			while (true) {
 				do {
 					sc = stringIterator.next();
-				} while (stringIterator.primaryOrder(sc) == 0
-						&& stringIterator.secondaryOrder(sc) > 1);
+				} while (CollationElementIterator.primaryOrder(sc) == 0
+						&& CollationElementIterator.secondaryOrder(sc) > 1);
 				do {
 					fc = findmeIterator.next();
-				} while (findmeIterator.primaryOrder(fc) == 0
-						&& findmeIterator.secondaryOrder(fc) > 1);
+				} while (CollationElementIterator.primaryOrder(fc) == 0
+						&& CollationElementIterator.secondaryOrder(fc) > 1);
 				if (fc == -1)
 					return startOffset;
 				if (sc == -1)
 					return -1;
-				if (findmeIterator.primaryOrder(fc) != stringIterator
+				if (CollationElementIterator.primaryOrder(fc) != CollationElementIterator
 						.primaryOrder(sc)) {
 					break;
 				}
@@ -390,7 +388,7 @@ public class StringUtil {
 	}
 
 	public static String createRandomString(int maxLength) {
-		int length = (int) (Math.random() * (double) maxLength) + 1;
+		int length = (int) (Math.random() * maxLength) + 1;
 		StringBuffer out = new StringBuffer();
 		for (int i = 0; i < length; i++) {
 			char c = (char) (97 + (int) (Math.random() * 26d));

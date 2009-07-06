@@ -8,7 +8,6 @@ import java.awt.Shape;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
-import javax.swing.plaf.basic.BasicTextUI;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -17,8 +16,6 @@ import javax.swing.text.Element;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
-import javax.swing.text.Position.Bias;
-
 /**
  * Root view that acts as a gateway between the component
  * and the View hierarchy.
@@ -65,7 +62,8 @@ public class RootView extends View {
  * level there are no attributes.  If an attribute is resolved
  * up the view hierarchy this is the end of the line.
  */
-    public AttributeSet getAttributes() {
+    @Override
+	public AttributeSet getAttributes() {
     return null;
 }
 
@@ -78,7 +76,8 @@ public class RootView extends View {
      *         that is returned, although there is no guarantee.
      *         The parent may choose to resize or break the view.
      */
-    public float getPreferredSpan(int axis) {
+    @Override
+	public float getPreferredSpan(int axis) {
         if (view != null) {
             return view.getPreferredSpan(axis);
         }
@@ -94,7 +93,8 @@ public class RootView extends View {
      *         that is returned, although there is no guarantee.
      *         The parent may choose to resize or break the view.
      */
-    public float getMinimumSpan(int axis) {
+    @Override
+	public float getMinimumSpan(int axis) {
         if (view != null) {
             return view.getMinimumSpan(axis);
         }
@@ -110,7 +110,8 @@ public class RootView extends View {
      *         that is returned, although there is no guarantee.
      *         The parent may choose to resize or break the view.
      */
-    public float getMaximumSpan(int axis) {
+    @Override
+	public float getMaximumSpan(int axis) {
     return Integer.MAX_VALUE;
     }
 
@@ -132,7 +133,8 @@ public class RootView extends View {
      * @param width true if the width preference has changed
      * @param height true if the height preference has changed
      */ 
-    public void preferenceChanged(View child, boolean width, boolean height) {
+    @Override
+	public void preferenceChanged(View child, boolean width, boolean height) {
     	if (container != null)
     		container.revalidate();
     }
@@ -144,7 +146,8 @@ public class RootView extends View {
      * @return the desired alignment, where 0.0 indicates the origin
      *     and 1.0 the full span away from the origin
      */
-    public float getAlignment(int axis) {
+    @Override
+	public float getAlignment(int axis) {
         if (view != null) {
             return view.getAlignment(axis);
         }
@@ -157,7 +160,8 @@ public class RootView extends View {
      * @param g the graphics context
      * @param allocation the region to render into
      */
-    public void paint(Graphics g, Shape allocation) {
+    @Override
+	public void paint(Graphics g, Shape allocation) {
         if (view != null) {
             Rectangle alloc = (allocation instanceof Rectangle) ?
 	          (Rectangle)allocation : allocation.getBounds();
@@ -171,7 +175,8 @@ public class RootView extends View {
      *
      * @param parent the parent view
      */
-    public void setParent(View parent) {
+    @Override
+	public void setParent(View parent) {
         throw new Error("Can't set parent on root view");
     }
 
@@ -183,7 +188,8 @@ public class RootView extends View {
      * @return the number of views
      * @see #getView
      */
-    public int getViewCount() {
+    @Override
+	public int getViewCount() {
         return 1;
     }
 
@@ -193,7 +199,8 @@ public class RootView extends View {
      * @param n the number of the view to get
      * @return the view
      */
-    public View getView(int n) {
+    @Override
+	public View getView(int n) {
         return view;
     }
 
@@ -207,7 +214,8 @@ public class RootView extends View {
  *   -1 if no view represents that position
  * @since 1.3
  */
-    public int getViewIndex(int pos, Position.Bias b) {
+    @Override
+	public int getViewIndex(int pos, Position.Bias b) {
     return 0;
 }
 
@@ -223,7 +231,8 @@ public class RootView extends View {
      * @param a  the allocation to this view.
      * @return the allocation to the child
      */
-    public Shape getChildAllocation(int index, Shape a) {
+    @Override
+	public Shape getChildAllocation(int index, Shape a) {
         return a;
     }
 
@@ -235,7 +244,8 @@ public class RootView extends View {
      * @param a the allocated region to render into
      * @return the bounding box of the given position
      */
-    public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
+    @Override
+	public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
         if (view != null) {
             return view.modelToView(pos, a, b);
         }
@@ -261,6 +271,7 @@ public class RootView extends View {
  * @exception IllegalArgumentException for an invalid bias argument
  * @see View#viewToModel
  */
+@Override
 public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Shape a) throws BadLocationException {
     if (view != null) {
 	return view.modelToView(p0, b0, p1, b1, a);
@@ -278,7 +289,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @return the location within the model that best represents the
      *    given point in the view
      */
-    public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
+    @Override
+	public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
         if (view != null) {
             int retValue = view.viewToModel(x, y, a, bias);
 	return retValue;
@@ -303,7 +315,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @exception BadLocationException
      * @exception IllegalArgumentException for an invalid direction
      */
-    public int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a, 
+    @Override
+	public int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a, 
                                          int direction,
                                          Position.Bias[] biasRet) 
         throws BadLocationException {
@@ -328,7 +341,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @param a the current allocation of the view
      * @param f the factory to use to rebuild if the view has children
      */
-    public void insertUpdate(DocumentEvent e, Shape a, ViewFactory f) {
+    @Override
+	public void insertUpdate(DocumentEvent e, Shape a, ViewFactory f) {
         if (view != null) {
             view.insertUpdate(e, a, f);
         }
@@ -342,7 +356,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @param a the current allocation of the view
      * @param f the factory to use to rebuild if the view has children
      */
-    public void removeUpdate(DocumentEvent e, Shape a, ViewFactory f) {
+    @Override
+	public void removeUpdate(DocumentEvent e, Shape a, ViewFactory f) {
         if (view != null) {
             view.removeUpdate(e, a, f);
         }
@@ -356,7 +371,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @param a the current allocation of the view
      * @param f the factory to use to rebuild if the view has children
      */
-    public void changedUpdate(DocumentEvent e, Shape a, ViewFactory f) {
+    @Override
+	public void changedUpdate(DocumentEvent e, Shape a, ViewFactory f) {
         if (view != null) {
             view.changedUpdate(e, a, f);
         }
@@ -367,7 +383,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the model
      */
-    public Document getDocument() {
+    @Override
+	public Document getDocument() {
     	if (view != null)
     		return view.getDocument();
     	else
@@ -379,7 +396,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the starting offset
      */
-    public int getStartOffset() {
+    @Override
+	public int getStartOffset() {
         if (view != null) {
             return view.getStartOffset();
         }
@@ -391,7 +409,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the ending offset
      */
-    public int getEndOffset() {
+    @Override
+	public int getEndOffset() {
         if (view != null) {
             return view.getEndOffset();
         }
@@ -403,7 +422,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the view
      */
-    public Element getElement() {
+    @Override
+	public Element getElement() {
         if (view != null) {
             return view.getElement();
         }
@@ -430,7 +450,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @param axis may be either X_AXIS or Y_AXIS
      * @return the weight
      */
-    public int getResizeWeight(int axis) {
+    @Override
+	public int getResizeWeight(int axis) {
         if (view != null) {
             return view.getResizeWeight(axis);
         }
@@ -443,7 +464,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      * @param width the width
      * @param height the height
      */
-    public void setSize(float width, float height) {
+    @Override
+	public void setSize(float width, float height) {
         if (view != null) {
             view.setSize(width, height);
         }
@@ -457,7 +479,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the container
      */
-    public Container getContainer() {
+    @Override
+	public Container getContainer() {
         return container;
     }
     
@@ -474,7 +497,8 @@ public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Sha
      *
      * @return the factory
      */
-    public ViewFactory getViewFactory() {
+    @Override
+	public ViewFactory getViewFactory() {
         return editorKit.getViewFactory();
     }
 

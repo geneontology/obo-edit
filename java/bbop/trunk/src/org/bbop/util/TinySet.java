@@ -156,6 +156,7 @@ public class TinySet<T> implements Set<T> {
 		return a;
 	}
 
+	@Override
 	public String toString() {
 		if (list == null)
 			return "[]";
@@ -163,6 +164,7 @@ public class TinySet<T> implements Set<T> {
 			return list.toString();
 	}
 	
+	@Override
 	public boolean equals(Object other) {
 	    if (other == this) return true;
 	    if (!(other instanceof Set)) return false;
@@ -174,6 +176,7 @@ public class TinySet<T> implements Set<T> {
 	    }
 	}
     
+	@Override
 	public int hashCode() {
 	    int hash = 0;
 	    Iterator<T> iterator = this.iterator();

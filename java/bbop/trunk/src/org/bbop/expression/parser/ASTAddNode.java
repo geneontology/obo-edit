@@ -54,14 +54,16 @@ public class ASTAddNode extends SimpleNode {
     /** 
      * {@inheritDoc}
      */
-    public Object jjtAccept(ParserVisitor visitor, Object data) {
+    @Override
+	public Object jjtAccept(ParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /**
      * {@inheritDoc} 
      */
-    public Object value(JexlContext context) throws Exception {
+    @Override
+	public Object value(JexlContext context) throws Exception {
         Object left = ((SimpleNode) jjtGetChild(0)).value(context);
         Object right = ((SimpleNode) jjtGetChild(1)).value(context);
 

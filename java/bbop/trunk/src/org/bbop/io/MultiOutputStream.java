@@ -24,35 +24,40 @@ public class MultiOutputStream extends OutputStream {
 	streamList.removeElement(stream);
     }
 
-    public void write(int b) throws IOException {
+    @Override
+	public void write(int b) throws IOException {
 	for(int i=0; i < streamList.size(); i++) {
 	    OutputStream stream = (OutputStream) streamList.elementAt(i);
 	    stream.write(b);
 	}
     }
 
-    public void write(byte[] b) throws IOException {
+    @Override
+	public void write(byte[] b) throws IOException {
 	for(int i=0; i < streamList.size(); i++) {
 	    OutputStream stream = (OutputStream) streamList.elementAt(i);
 	    stream.write(b);
 	}
     }
 
-    public void write(byte[] b, int off, int len) throws IOException {
+    @Override
+	public void write(byte[] b, int off, int len) throws IOException {
 	for(int i=0; i < streamList.size(); i++) {
 	    OutputStream stream = (OutputStream) streamList.elementAt(i);
 	    stream.write(b, off, len);
 	}
     }
 
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
 	for(int i=0; i < streamList.size(); i++) {
 	    OutputStream stream = (OutputStream) streamList.elementAt(i);
 	    stream.close();
 	}
     }
 
-    public void flush() throws IOException {
+    @Override
+	public void flush() throws IOException {
 	for(int i=0; i < streamList.size(); i++) {
 	    OutputStream stream = (OutputStream) streamList.elementAt(i);
 	    stream.flush();

@@ -83,9 +83,11 @@ public class SimpleTreeModel extends AbstractTreeModel {
 	return v == null || v.size() == 0;
     }
 
-    public void valueForPathChanged(TreePath path, Object newValue) {}
+    @Override
+	public void valueForPathChanged(TreePath path, Object newValue) {}
 
-    public String toString() {
+    @Override
+	public String toString() {
 	StringBuffer buffer = new StringBuffer();
 	Enumeration e = parentage.keys();
 	while(e.hasMoreElements()) {

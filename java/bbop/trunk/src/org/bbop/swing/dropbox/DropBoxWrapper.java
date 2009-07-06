@@ -1,7 +1,6 @@
 package org.bbop.swing.dropbox;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -9,7 +8,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
@@ -21,7 +19,6 @@ import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.InvalidDnDOperationException;
-import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.Icon;
@@ -29,9 +26,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.TransferHandler;
-import javax.swing.event.MouseInputAdapter;
-
 import org.bbop.swing.DragImageGenerator;
 import org.bbop.swing.SwingUtil;
 

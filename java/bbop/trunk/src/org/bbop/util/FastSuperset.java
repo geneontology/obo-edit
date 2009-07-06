@@ -74,10 +74,12 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 		}
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return new SupersetIterator();
 	}
 
+	@Override
 	public boolean add(T o) {
 		if (modifyMe == null)
 			throw new UnsupportedOperationException(
@@ -88,6 +90,7 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 			return false;
 	}
 
+	@Override
 	public boolean remove(Object o) {
 		if (modifyMe == null)
 			throw new UnsupportedOperationException(
@@ -96,6 +99,7 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 			return modifyMe.remove(o);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		Iterator<Collection<? extends T>> it = subsets.iterator();
 		while (it.hasNext()) {
@@ -106,6 +110,7 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 		return true;
 	}
 
+	@Override
 	public void clear() {
 		if (modifyMe != null && subsets.size() == 1)
 			modifyMe.clear();
@@ -114,6 +119,7 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 					+ "unmodifiable subsets, and cannot be cleared");
 	}
 
+	@Override
 	public boolean contains(Object o) {
 		Iterator it = subsets.iterator();
 		while (it.hasNext()) {
@@ -163,6 +169,7 @@ public class FastSuperset<T> extends AbstractCollection<T> implements
 		modifyMe = (Collection<T>) set;
 	}
 
+	@Override
 	public int size() {
 		int size = 0;
 		Iterator<Collection<? extends T>> it = subsets.iterator();

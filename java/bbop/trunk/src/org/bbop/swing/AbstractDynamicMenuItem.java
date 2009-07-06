@@ -4,25 +4,15 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.MenuComponent;
 import java.awt.PopupMenu;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.ButtonModel;
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
-import javax.swing.MenuElement;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -102,7 +92,7 @@ public abstract class AbstractDynamicMenuItem extends JMenu implements
 				addSep = false;
 			}
 
-			super.add((Component) o);
+			super.add(o);
 		} else
 			throw new RuntimeException();
 	}

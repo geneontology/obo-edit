@@ -47,6 +47,7 @@ public class MultiHashMap<K,V> implements MultiMap<K,V> {
 		return map.entrySet();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return map.equals(o);
 	}
@@ -59,6 +60,7 @@ public class MultiHashMap<K,V> implements MultiMap<K,V> {
 	}
 
 
+	@Override
 	public int hashCode() {
 		return map.hashCode();
 	}

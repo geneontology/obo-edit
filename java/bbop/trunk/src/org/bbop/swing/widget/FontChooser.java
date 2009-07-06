@@ -43,6 +43,7 @@ public class FontChooser extends JPanel {
 		 */
 		private static final long serialVersionUID = 2779389008687649515L;
 
+		@Override
 		public Component
 	    getListCellRendererComponent(JList list,
 					 Object value,
@@ -233,7 +234,8 @@ public class FontChooser extends JPanel {
 			
     }
 
-    public void setFont(Font font) {
+    @Override
+	public void setFont(Font font) {
 	super.setFont(font);
 	if (sizeList != null)
 	    sizeList.setFont(font);

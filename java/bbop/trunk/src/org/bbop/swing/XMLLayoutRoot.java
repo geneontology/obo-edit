@@ -2,8 +2,6 @@ package org.bbop.swing;
 
 import java.awt.Window;
 
-import org.bbop.expression.ExpressionException;
-
 public interface XMLLayoutRoot extends XMLLayoutComponent {
 
     /**

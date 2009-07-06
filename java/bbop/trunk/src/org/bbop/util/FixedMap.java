@@ -136,11 +136,13 @@ public class FixedMap implements Map {
 	return map.entrySet();
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
 	return map.equals(o);
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 	return map.hashCode();
     }
 }

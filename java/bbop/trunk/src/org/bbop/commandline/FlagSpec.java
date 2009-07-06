@@ -1,9 +1,5 @@
 package org.bbop.commandline;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.log4j.*;
 
 public class FlagSpec extends TagSpec {
@@ -18,6 +14,7 @@ public class FlagSpec extends TagSpec {
 		super(name, new OrderedArgumentSignature());
 	}
 	
+	@Override
 	public ArgumentSignature copy() {
 		FlagSpec out = new FlagSpec();
 		out.primaryName = primaryName;

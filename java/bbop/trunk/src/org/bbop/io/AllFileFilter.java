@@ -13,7 +13,8 @@ public class AllFileFilter implements FilenameFilter {
 	return true;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
 	return "All files (*.*)";
     }
 }

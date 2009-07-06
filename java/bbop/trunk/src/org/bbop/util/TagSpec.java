@@ -38,7 +38,8 @@ public class TagSpec implements Cloneable {
 	return out;
     }
 
-    public Object clone() {
+    @Override
+	public Object clone() {
 	try {
 	    return super.clone();
 	} catch (Exception ex) {
@@ -114,7 +115,8 @@ public class TagSpec implements Cloneable {
 	}
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
 	return getName();
     }
 }

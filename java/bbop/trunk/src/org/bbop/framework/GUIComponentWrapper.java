@@ -1,10 +1,6 @@
 package org.bbop.framework;
 
-import java.util.List;
-
 import javax.swing.JComponent;
-
-import org.bbop.util.CollectionUtil;
 
 import org.apache.log4j.*;
 

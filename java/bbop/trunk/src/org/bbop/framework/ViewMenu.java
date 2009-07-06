@@ -41,7 +41,8 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 	public List<Component> getItems() {
 	    List<Component> out = new ArrayList<Component>();
 	    DynamicMenu perspectivesMenu = new DynamicMenu("Layouts") {
-	        public List<Component> getItems() {
+	        @Override
+			public List<Component> getItems() {
 	            ButtonGroup group = new ButtonGroup();
 	            List<Component> out = new LinkedList<Component>();
 	            for (final Perspective perspective : ComponentManager
@@ -108,7 +109,8 @@ public class ViewMenu extends AbstractDynamicMenuItem {
 	    };
 
 	    DynamicMenu showMenu = new DynamicMenu("Show") {
-	        public List<Component> getItems() {
+	        @Override
+			public List<Component> getItems() {
 	            List<Component> out = new LinkedList<Component>();
 	            Map<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>> factoryMap = new HashMap<GUIComponentFactory.FactoryCategory, List<GUIComponentFactory>>();
 	            Collection<GUIComponentFactory<?>> f = ComponentManager
