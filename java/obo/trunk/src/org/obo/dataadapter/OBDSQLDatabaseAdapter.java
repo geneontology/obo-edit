@@ -1058,6 +1058,20 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 			}
 		}
 		
+		/* Property values for EXTINCT species are handled here - Cartik [070709] */
+		if(lo.getID().startsWith("TTO")){
+			for(PropertyValue pv : lo.getPropertyValues()){
+				 if(pv.getValue().contains("is_extinct")){
+					 callSqlFunc("store_tagval",
+							 lo.getID(), 
+							 "is_extinct",
+							 "true", 
+							 "",
+							 lo.getNamespace().toString());
+				 }
+			}
+		}
+		
 		if (false) {
 			//			for (Link link : linkDatabase.getParents((LinkedObject) lo)) {
 			for (Link link : ((LinkedObject) lo).getParents()) {
