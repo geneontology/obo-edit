@@ -89,7 +89,7 @@
       (:html (:head
 
 	      ;; CSS.
-	      (:style ".draggable{background:pink;width:100px;height:100px;border-style:solid;border-width:1px;border-color:red;position:absolute;top:200pm;left:200px;}")
+	      (:style ".draggable{background:pink;width:100px;height:100px;border-style:solid;border-width:1px;border-color:red;position:absolute;top:200px;left:200px;}")
 	      ;; JS includes.
 	      (:script :type "text/javascript"
 		       :src (ccat ubase "jquery-1.3.2.min.js"))
@@ -99,22 +99,67 @@
 		       :src "http://localhost:4242/godot.js"))
 
 	     (:body
-	      (:div "GODOT")
+	      (:h2 "GODOT")
 	      (:div :id "godot")
 	          
 	      (:div :id "location" "current div location")
 	      (:div :id "snap" "snap to")
+	      (:div :id "new-term" (:a :href "#" "new term"))
+	      (:div :id "new-association" (:a :href "#" "new association"))
+	      (:div :id "new-gp" (:a :href "#" "new gene product"))
 
 	      (:div :id "zoo")
 	      
-	      ;(:div :id "gp_0" :class "draggable gp" "gene product")
-	      ;(:div :id "term_0" :class "draggable term" "term")
-	      ;(:div :id "assoc_0" :class "draggable assoc" "association")
 	      )))))
 
 
 ;;
 (setf parenscript:*js-string-delimiter* #\")
+
+;;;
+;;; Add some macros to the environment.
+;;;
+
+;; Generates itself into the document.
+(defpsmacro entity-generator (type)
+  
+  (let* ((s-type (string-downcase (symbol-name type)))
+	 (f-type (ccat "*" s-type "-entity")))
+
+  `(defun ,(intern f-type) ()
+
+     (var my-id ((slot-value gen-uid 'uid)))
+
+     ;; Create new div.
+     (var new-div ((slot-value document 'create-element) "div")) 
+     ((slot-value new-div 'set-attribute) "id" my-id)
+     ((slot-value new-div 'set-attribute) "class" (+ "draggable" " " ,s-type))
+     (setf (slot-value new-div 'inner-h-t-m-l) (+ ,s-type " " my-id))
+
+     ;; Set internal properties.
+     (setf (slot-value this 'id) my-id)
+     (setf (slot-value this 'div) new-div)
+     (setf (slot-value this 'type) ,s-type)
+
+     ;; Add to object-list.
+     (setf (slot-value *object-list* my-id) this)
+
+     ;; Add to "zoo".
+     (var the-zoo ((slot-value document 'get-element-by-id) "zoo"))
+     ((slot-value the-zoo 'append-child) new-div)
+
+     ((slot-value (j-query new-div) 'draggable)
+      (create :start (lambda (e ui)
+		       ;;(print-div-location e)
+		       )
+	      :drag (lambda (e ui)
+		      ;;(print-div-location e)
+		      )
+	      :stop (lambda (e ui)
+		      (let ((eid (slot-value (slot-value e 'target) 'id)))
+			(snap-to eid))))))))
+
+
 ;;(defun godot-js (foo)
 (defun godot-js ()
   (ps
@@ -144,24 +189,42 @@
 
    (defvar gen-uid (new (*generator)))
 
-   (defun *term ()
+   ;; Generates itself into the document.
+   (entity-generator term)
+   (entity-generator association)
+   (entity-generator gp)
+;;    (defun *term-entity ()
 
-     (var my-id ((slot-value gen-uid 'uid)))
+;;      (var my-id ((slot-value gen-uid 'uid)))
 
-     ;; Create new div.
-     (var new-div ((slot-value document 'create-element) "div")) 
-     ((slot-value new-div 'set-attribute) "id" my-id)
-     ((slot-value new-div 'set-attribute) "class" (+ "draggable" " " "term"))
-     (setf (slot-value new-div 'inner-h-t-m-l) (+ "term" " " my-id))
-     ;; Set internal properties.
-     (setf (slot-value this 'id) my-id)
-     (setf (slot-value this 'div) new-div)
-     (setf (slot-value this 'type) "term")
-     ;; Add to object-list.
-     (setf (slot-value *object-list* my-id) this)
-     ;; Add to "zoo".
-     (var the-zoo ((slot-value document 'get-element-by-id) "zoo"))
-     ((slot-value the-zoo 'append-child) new-div))
+;;      ;; Create new div.
+;;      (var new-div ((slot-value document 'create-element) "div")) 
+;;      ((slot-value new-div 'set-attribute) "id" my-id)
+;;      ((slot-value new-div 'set-attribute) "class" (+ "draggable" " " "term"))
+;;      (setf (slot-value new-div 'inner-h-t-m-l) (+ "term" " " my-id))
+
+;;      ;; Set internal properties.
+;;      (setf (slot-value this 'id) my-id)
+;;      (setf (slot-value this 'div) new-div)
+;;      (setf (slot-value this 'type) "term")
+
+;;      ;; Add to object-list.
+;;      (setf (slot-value *object-list* my-id) this)
+
+;;      ;; Add to "zoo".
+;;      (var the-zoo ((slot-value document 'get-element-by-id) "zoo"))
+;;      ((slot-value the-zoo 'append-child) new-div)
+
+;;      ((slot-value (j-query new-div) 'draggable)
+;;       (create :start (lambda (e ui)
+;; 		       ;;(print-div-location e)
+;; 		       )
+;; 	      :drag (lambda (e ui)
+;; 		      ;;(print-div-location e)
+;; 		      )
+;; 	      :stop (lambda (e ui)
+;; 		      (let ((eid (slot-value (slot-value e 'target) 'id)))
+;; 			(snap-to eid))))))
 
 ;;;
 ;;; UI handling.
@@ -211,22 +274,22 @@
    ((slot-value (j-query) 'ready)
     (lambda ()
 
-      (new (*term))
-      (new (*term))
-      (new (*term))
-   
+      ;; Generate new terms on click.
+      ((slot-value (j-query "#new-term") 'click)
+       (lambda (e)
+	 (new (*term-entity))))
+
+      ;; Generate new assocs on click.
+      ((slot-value (j-query "#new-association") 'click)
+       (lambda (e)
+	 (new (*association-entity))))
+
+      ;; Generate new assocs on click.
+      ((slot-value (j-query "#new-gp") 'click)
+       (lambda (e)
+	 (new (*gp-entity))))
+
       ;; (dump "so...here we are...")
-      
-      ((slot-value (j-query ".draggable") 'draggable)
-       (create :start (lambda (e ui)
-			;;(print-div-location e)
-			)
-	       :drag (lambda (e ui)
-		       ;;(print-div-location e)
-		       )
-	       :stop (lambda (e ui)
-		       (let ((eid (slot-value (slot-value e 'target) 'id)))
-			 (snap-to eid)))))))
    
 ;;;
 ;;; Object table: provides the graph model to UI pieces for
@@ -241,4 +304,24 @@
    ;; TODO: use graph positions and r/p table to determine the graph
    ;; to send back
    
-   ))
+   ))))
+
+;;;
+;;; PS macro work and advanced PS features.
+;;;
+
+;; Nothing special.
+(defun t1 ()
+  (ps (alert)))
+
+;; Defined PS macro.
+(defpsmacro 1- (form)
+  `(- ,form 1))
+
+;; Use PS macro.
+(defun t2 ()
+  (ps (alert (1- 5))))
+
+;; Grab lisp variable.
+(defun t3 (x)
+  (ps (alert (1- (lisp x)))))
