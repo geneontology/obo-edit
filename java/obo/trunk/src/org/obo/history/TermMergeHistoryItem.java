@@ -81,20 +81,14 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		checkSubstitutionTags(out, slaveNode, masterNode, history);
 
 
-		Collection targetDescendants = TermUtil
-		.getDescendants(masterNode, true);
-		Collection targetAncestors = TermUtil.getAncestors(masterNode, true);
+		Collection targetDescendants = TermUtil.getDescendants(masterNode, true, null);
+		Collection targetAncestors = TermUtil.getAncestors(masterNode, true, null);
 
 		// remove the slave node as parents of slave node's children,
 		// and add them to the master node
-		Iterator it = slaveNode.getChildren().iterator();
-		while (it.hasNext()) {
-			Link tr = (Link) it.next();
-
+		for(Link tr : slaveNode.getChildren()){
 			LinkedObject slaveChild = tr.getChild();
-
-			Link newtr = new OBORestrictionImpl(tr.getParent(), tr.getType(),
-					slaveChild);
+			Link newtr = new OBORestrictionImpl(tr.getParent(), tr.getType(),slaveChild);
 
 			out.add(new DeleteLinkHistoryItem(tr));
 
@@ -133,17 +127,13 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 		out.add(new DestroyObjectHistoryItem(slaveNode));
 
 		// add a secondary id
-		out.add(new SecondaryIDHistoryItem(masterNode, slaveNode.getID(),
-				false));
-		it = slaveNode.getSecondaryIDs().iterator();
-		while (it.hasNext()) {
-			String id = (String) it.next();
+		out.add(new SecondaryIDHistoryItem(masterNode, slaveNode.getID(),false));
+		
+		for(String id : slaveNode.getSecondaryIDs()){
 			out.add(new SecondaryIDHistoryItem(masterNode, id, false));
 		}
 
-		it = slaveNode.getSynonyms().iterator();
-		while (it.hasNext()) {
-			Synonym s = (Synonym) it.next();
+		for(Synonym s : slaveNode.getSynonyms()){
 			Synonym masters = HistoryUtil.findSynonym(masterNode, s.getText());
 			if (masters == null) {
 				out.add(new AddSynonymHistoryItem(masterNode.getID(), s
@@ -153,9 +143,7 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 				masters = DefaultObjectFactory.getFactory().createSynonym(
 						s.getText(), Synonym.RELATED_SYNONYM);
 			}
-			Iterator it2 = s.getXrefs().iterator();
-			while (it2.hasNext()) {
-				Dbxref ref = (Dbxref) it2.next();
+			for(Dbxref ref : s.getXrefs()){
 				if (!masters.getXrefs().contains(ref)) {
 					out.add(new AddDbxrefHistoryItem(masterNode.getID(), ref,
 							false, masters.getText()));
@@ -163,9 +151,7 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 			}
 		}
 
-		it = slaveNode.getDbxrefs().iterator();
-		while (it.hasNext()) {
-			Dbxref ref = (Dbxref) it.next();
+		for(Dbxref ref : slaveNode.getDbxrefs()){
 			if (!masterNode.getDbxrefs().contains(ref)) {
 				out.add(new AddDbxrefHistoryItem(masterNode.getID(), ref,
 						false, null));
@@ -174,10 +160,8 @@ public class TermMergeHistoryItem extends SubclassedMacroHistoryItem {
 
 		Synonym s = HistoryUtil.findSynonym(masterNode, slaveNode.getName());
 		if (s == null) {
-			out.add(new AddSynonymHistoryItem(masterNode.getID(), slaveNode
-					.getName()));
-			out
-			.add(new ChangeSynScopeHistoryItem(masterNode.getID(),
+			out.add(new AddSynonymHistoryItem(masterNode.getID(), slaveNode.getName()));
+			out.add(new ChangeSynScopeHistoryItem(masterNode.getID(),
 					slaveNode.getName(), Synonym.RELATED_SYNONYM,
 					Synonym.EXACT_SYNONYM));
 		}
