@@ -109,10 +109,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 			criterion.setReasoner(getReasoner());
 			boolean matches = negate;
 
-			Iterator it = os.iterator();
-			while (it.hasNext()) {
-				Object o = it.next();
-
+			for(Object o : os){
 				if (criterion instanceof BooleanCriterion) {
 					if (((BooleanCriterion) criterion).matches(o)) {
 						matches = !negate;
@@ -125,8 +122,7 @@ public class ObjectFilterImpl implements ObjectFilter {
 				boolean b = false;
 				Collection values;
 				if (criterion instanceof AbstractNumberCriterion)
-					values = ((AbstractNumberCriterion) criterion)
-							.getValues(c, o);
+					values = ((AbstractNumberCriterion) criterion).getValues(c, o);
 				else
 					values = wrappedCriterion.getValues(c, o);
 

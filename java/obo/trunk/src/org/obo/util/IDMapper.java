@@ -329,7 +329,7 @@ public class IDMapper extends SessionWrapper {
 			}
 			return pobjs;
 		}
-		return TermUtil.getAncestors(object);
+		return TermUtil.getAncestors(object,null);
 	}
 
 	/**

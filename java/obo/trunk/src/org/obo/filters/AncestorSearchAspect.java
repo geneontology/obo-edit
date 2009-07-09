@@ -20,21 +20,20 @@ public class AncestorSearchAspect implements SearchAspect {
 	public AncestorSearchAspect() {
 	}
 
-	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
+	public Collection<LinkedObject> getObjects(Collection<LinkedObject> c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
 		if (reasoner != null && o instanceof LinkedObject) {
 			for (Link link : reasoner.getParents((LinkedObject) o)) {
-				if (traversalFilter == null || traversalFilter.satisfies(link)) {
+				if (traversalFilter == null || traversalFilter.satisfies(link))
 					c.add(link.getParent());
-				}
+
 			}
-		} else {
-			if (o instanceof LinkedObject)
-				c.addAll(TermUtil.getAncestors((LinkedObject) o, false));
+		} else if(o instanceof LinkedObject) {
+			c.addAll(TermUtil.getAncestors((LinkedObject) o, false, (LinkFilter) traversalFilter));
 		}
 		return c;
 	}
-	
+
 	public String getID() {
 		return "ancestor";
 	}
