@@ -1,6 +1,5 @@
 package org.oboedit.script;
 
-import java.util.Collection;
 
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkedObject;
@@ -33,10 +32,5 @@ public class TermUtilScriptDelegate {
 	
 	public static LinkedObject getRoot(LinkedObject lo) {
 		return TermUtil.getRoot(lo);
-	}
-	
-	public static Collection getDescendants(LinkedObject lo,
-			boolean includeSelf) {
-		return TermUtil.getDescendants(lo, includeSelf);
 	}
 }

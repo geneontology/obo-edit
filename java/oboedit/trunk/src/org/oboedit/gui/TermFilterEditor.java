@@ -358,8 +358,7 @@ public class TermFilterEditor extends JPanel {
 		out.setNegate(notBox.getSelectedIndex() == 1);
 		out.setComparison((SearchComparison) comparisonBox.getSelectedItem());
 		if (aspectVisible) {
-				out.setAspect((SearchAspect) aspectBox.getSelectedItem());
-	
+			out.setAspect((SearchAspect) aspectBox.getSelectedItem());
 			if (typeBox.getSelectedIndex() > 0) {
 				OBOProperty p = (OBOProperty) typeBox.getSelectedItem();
 				LinkFilter linkFilter = new LinkFilterImpl(p);
@@ -368,8 +367,7 @@ public class TermFilterEditor extends JPanel {
 		}
 		if (out instanceof PathCapableFilter) {
 			if (SessionManager.getManager().getUseReasoner())
-				((PathCapableFilter) out).setReasoner(SessionManager
-						.getManager().getReasoner());
+				((PathCapableFilter) out).setReasoner(SessionManager.getManager().getReasoner());
 		}
 		return out;
 	}

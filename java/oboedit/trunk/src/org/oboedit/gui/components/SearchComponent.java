@@ -224,7 +224,6 @@ public class SearchComponent extends AbstractGUIComponent {
 		final TaskDelegate<Collection<SearchHit<?>>> task = engine.query(linkDatabase, 
 				new FilterQuery(filter, resultType, SessionManager.getManager().getReasoner()));
 		Runnable r = new Runnable() {
-
 			public void run() {
 				String desc = "";
 				if (labelType.equals(ResultLabelType.QUERY_NAME))
