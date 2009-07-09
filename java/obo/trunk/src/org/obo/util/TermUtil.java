@@ -79,10 +79,11 @@ public class TermUtil {
 		protected LinkFilter linkFilter;
 
 		public AncestorTask(LinkDatabase linkDatabase, LinkedObject term,
-				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
 			this.linkDatabase = linkDatabase;
 			this.term = term;
 			this.memoizeTable = memoizeTable;
+			this.linkFilter = linkFilter;
 		}
 
 		@Override
@@ -94,19 +95,9 @@ public class TermUtil {
 			setResults(getAncestors(100, linkDatabase, term, memoizeTable));
 		}
 
-
-		public LinkFilter getLinkFilter() {
-			return linkFilter;
-		}
-
-		public void setLinkFilter(LinkFilter linkFilter) {
-			this.linkFilter = linkFilter;
-		}
-
 		protected Collection<LinkedObject> getAncestors(double incSize,
 				LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
-			logger.debug("TermUtil.getAncestors");
 			if (linkDatabase == null)
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
@@ -118,9 +109,8 @@ public class TermUtil {
 			out = new HashSet<LinkedObject>();
 			memoizeTable.put(term, out);
 			for (Link tr : linkDatabase.getParents(term)) {
-				if (linkFilter != null && !linkFilter.satisfies(tr))
-					continue;
-				out.add(tr.getParent());
+				if(linkFilter == null || !linkFilter.satisfies(tr))
+					out.add(tr.getParent());
 				out.addAll(getAncestors(incSize / term.getParents().size(),
 						linkDatabase, tr.getParent(), memoizeTable));
 			}
@@ -134,30 +124,29 @@ public class TermUtil {
 	public static class DescendantTask extends
 	AbstractTaskDelegate<Collection<LinkedObject>> {
 		protected Map<LinkedObject, Collection<LinkedObject>> memoizeTable;
-
 		protected LinkedObject term;
-
 		protected LinkDatabase linkDatabase;
+		protected LinkFilter linkFilter;
 
 		public DescendantTask(LinkDatabase linkDatabase, LinkedObject term,
-				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
 			this.linkDatabase = linkDatabase;
 			this.term = term;
 			this.memoizeTable = memoizeTable;
+			this.linkFilter = linkFilter;
 		}
 
-		@Override
 		public void execute() {
 			setProgressString("Finding descendants");
 			if (memoizeTable == null)
 				memoizeTable = new MultiHashMap<LinkedObject, LinkedObject>();
 			progress = 0;
-			setResults(getDescendants(100, linkDatabase, term, memoizeTable));
+			setResults(getDescendants(100, linkDatabase, term, memoizeTable, linkFilter));
 		}
 
 		protected Collection<LinkedObject> getDescendants(double incSize,
 				LinkDatabase linkDatabase, LinkedObject term,
-				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
 			if (linkDatabase == null)
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
@@ -169,19 +158,63 @@ public class TermUtil {
 			out = new HashSet<LinkedObject>();
 			memoizeTable.put(term, out);
 
-			Iterator it = linkDatabase.getChildren(term).iterator();
-			while (it.hasNext()) {
-				Link tr = (Link) it.next();
-				out.add(tr.getChild());
-			}
-
-			it = linkDatabase.getChildren(term).iterator();
-			while (it.hasNext()) {
-				Link tr = (Link) it.next();
+			for(Link tr : linkDatabase.getChildren(term)){
+				if(linkFilter == null || !linkFilter.satisfies(tr))
+					out.add(tr.getChild());
 				out.addAll(getDescendants(incSize / term.getChildren().size(),
-						linkDatabase, tr.getChild(), memoizeTable));
+						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
 			}
 			if (term.getChildren().size() == 0) {
+				progress += (int) incSize;
+			}
+			return out;
+		}
+	}
+
+	public static class ParentTask extends
+	AbstractTaskDelegate<Collection<LinkedObject>> {
+		protected Map<LinkedObject, Collection<LinkedObject>> memoizeTable;
+		protected LinkedObject term;
+		protected LinkDatabase linkDatabase;
+		protected LinkFilter linkFilter;
+
+		public ParentTask(LinkDatabase linkDatabase, LinkedObject term,
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
+			this.linkDatabase = linkDatabase;
+			this.term = term;
+			this.memoizeTable = memoizeTable;
+			this.linkFilter = linkFilter;
+		}
+
+		public void execute() {
+			setProgressString("Finding parents");
+			if (memoizeTable == null)
+				memoizeTable = new MultiHashMap<LinkedObject, LinkedObject>();
+			progress = 0;
+			setResults(getParents(100, linkDatabase, term, memoizeTable, linkFilter));
+		}
+
+		protected Collection<LinkedObject> getParents(double incSize,
+				LinkDatabase linkDatabase, LinkedObject term,
+				Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter linkFilter) {
+			if (linkDatabase == null)
+				linkDatabase = DefaultLinkDatabase.getDefault();
+
+			Collection<LinkedObject> out = memoizeTable.get(term);
+			if (memoizeTable.containsKey(term)) {
+				progress += (int) incSize;
+				return out;
+			}
+			out = new HashSet<LinkedObject>();
+			memoizeTable.put(term, out);
+
+			for(Link tr : linkDatabase.getParents(term)){
+				if(linkFilter == null || linkFilter.satisfies(tr))
+				out.add(tr.getParent());
+				out.addAll(getParents(incSize / term.getChildren().size(),
+						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
+			}
+			if (term.getParents().size() == 0) {
 				progress += (int) incSize;
 			}
 			return out;
@@ -206,11 +239,11 @@ public class TermUtil {
 		if (term.getParents().size() == 0)
 			return term;
 		OBOClass newRoot = null;
-		Iterator it = getAncestors(term).iterator();
 		Map<LinkedObject, LinkedObject> newTermHash = new HashMap<LinkedObject, LinkedObject>();
 		Map<LinkedObject, LinkedObject> oldTermHash = new HashMap<LinkedObject, LinkedObject>();
-		while (it.hasNext()) {
-			OBOClass originalTerm = (OBOClass) it.next();
+
+		for(LinkedObject o: getAncestors(term,null)){
+			OBOClass originalTerm = (OBOClass) o;
 			OBOClass newTerm = (OBOClass) originalTerm.clone();
 
 			if (originalTerm.getID().equals(term.getID())) {
@@ -223,17 +256,14 @@ public class TermUtil {
 		}
 		// This is NOT redundant. This has to be done in two passes to
 		// guarantee that the newTermHash is fully populated
-		it = newTermHash.keySet().iterator();
-		while (it.hasNext()) {
-			OBOClass newTerm = (OBOClass) it.next();
-
+		for(LinkedObject o : newTermHash.keySet()){
+			OBOClass newTerm = (OBOClass) o;
 			OBOClass originalTerm = (OBOClass) newTermHash.get(newTerm);
 
 			newTerm.getParents().clear();
 			newTerm.getChildren().clear();
-			Iterator it2 = originalTerm.getChildren().iterator();
-			while (it2.hasNext()) {
-				Link tr = (Link) it2.next();
+
+			for(Link tr : originalTerm.getChildren()){
 				OBOClass newChild = (OBOClass) oldTermHash.get(tr.getChild());
 				if (newChild != null) {
 					Link trNew = new OBORestrictionImpl(newChild, newTerm, tr
@@ -245,9 +275,7 @@ public class TermUtil {
 					newTerm.atomicAddChild(trNew);
 				}
 			}
-			it2 = originalTerm.getParents().iterator();
-			while (it2.hasNext()) {
-				Link tr = (Link) it2.next();
+			for(Link tr : originalTerm.getParents()){
 				OBOClass newParent = (OBOClass) oldTermHash.get(tr.getParent());
 				Link trNew = new OBORestrictionImpl(newTerm, newParent, tr
 						.getType());
@@ -335,8 +363,8 @@ public class TermUtil {
 	/**
 	 * Returns all ancestors of the given term.
 	 */
-	public static Collection<LinkedObject> getAncestors(LinkedObject term) {
-		return getAncestors(term, false);
+	public static Collection<LinkedObject> getAncestors(LinkedObject term, LinkFilter lf) {
+		return getAncestors(term, false, lf);
 	}
 
 	/**
@@ -349,9 +377,8 @@ public class TermUtil {
 	 *            whether or not the given term should be included in the output
 	 *            collection
 	 */
-	public static Collection<LinkedObject> getAncestors(LinkedObject term,
-			boolean includeSelf) {
-		return getAncestors(term, null, includeSelf);
+	public static Collection<LinkedObject> getAncestors(LinkedObject term, boolean includeSelf, LinkFilter lf) {
+		return getAncestors(term, null, includeSelf, lf);
 	}
 
 	/**
@@ -366,8 +393,8 @@ public class TermUtil {
 	 *            output collection
 	 */
 	public static Collection<LinkedObject> getAncestors(LinkedObject term,
-			LinkDatabase linkDatabase, boolean includeSelf) {
-		AncestorTask task = getAncestors(term, linkDatabase);
+			LinkDatabase linkDatabase, boolean includeSelf, LinkFilter lf) {
+		AncestorTask task = getAncestors(term, linkDatabase, lf);
 		task.execute();
 		Collection<LinkedObject> out = task.getResults();
 
@@ -385,22 +412,22 @@ public class TermUtil {
 	 *            the term whose ancestors should be searched
 	 * @param linkDatabase
 	 *            provides the parent links
+	 * @param linkFilter
 	 * @return
 	 */
-	public static AncestorTask getAncestors(LinkedObject term,
-			LinkDatabase linkDatabase) {
-		return new AncestorTask(linkDatabase, term, null);
+	public static AncestorTask getAncestors(LinkedObject term, LinkDatabase linkDatabase, LinkFilter lf) {
+		return new AncestorTask(linkDatabase, term, null, lf);
 	}
 
 	public static boolean isAncestor(LinkedObject term, LinkedObject ancestor,
-			LinkDatabase linkDatabase) {
-		return getAncestors(term, linkDatabase, true).contains(ancestor);
+			LinkDatabase linkDatabase, LinkFilter lf) {
+		return getAncestors(term, linkDatabase, true,lf).contains(ancestor);
 	}
 
 	protected static AncestorTask getAncestors(LinkedObject term,
 			LinkDatabase linkDatabase,
-			Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
-		return new AncestorTask(linkDatabase, term, memoizeTable);
+			Map<LinkedObject, Collection<LinkedObject>> memoizeTable, LinkFilter lf) {
+		return new AncestorTask(linkDatabase, term, memoizeTable,lf);
 	}
 
 	/**
@@ -419,8 +446,8 @@ public class TermUtil {
 	/**
 	 * Returns the descendants of the given term.
 	 */
-	public static Collection<LinkedObject> getDescendants(LinkedObject term) {
-		return getDescendants(term, false);
+	public static Collection<LinkedObject> getDescendants(LinkedObject term, LinkFilter lf) {
+		return getDescendants(term, lf);
 	}
 
 	/**
@@ -431,9 +458,8 @@ public class TermUtil {
 	 * @param includeSelf
 	 *            whether to include the term itself in the results
 	 */
-	public static Collection<LinkedObject> getDescendants(LinkedObject term,
-			boolean includeSelf) {
-		return getDescendants(term, null, includeSelf);
+	public static Collection<LinkedObject> getDescendants(LinkedObject term, boolean includeSelf, LinkFilter lf) {
+		return getDescendants(term, null, includeSelf, lf);
 	}
 
 	/**
@@ -447,8 +473,48 @@ public class TermUtil {
 	 *            whether to include the term itself in the results
 	 */
 	public static Collection<LinkedObject> getDescendants(LinkedObject term,
-			LinkDatabase linkDatabase, boolean includeSelf) {
-		DescendantTask task = new DescendantTask(linkDatabase, term, null);
+			LinkDatabase linkDatabase, boolean includeSelf, LinkFilter lf) {
+		DescendantTask task = new DescendantTask(linkDatabase, term, null, lf);
+		task.execute();
+		Collection<LinkedObject> out = task.getResults();
+		if (includeSelf)
+			out.add(term);
+		return out;
+	}
+	
+////////////
+	/**
+	 * Returns the parents of the given term.
+	 */
+	public static Collection<LinkedObject> getParents(LinkedObject term, LinkFilter lf) {
+		return getParents(term, lf);
+	}
+
+	/**
+	 * Returns the parents of the given term.
+	 * 
+	 * @param term
+	 *            the term to search
+	 * @param includeSelf
+	 *            whether to include the term itself in the results
+	 */
+	public static Collection<LinkedObject> getParents(LinkedObject term, boolean includeSelf, LinkFilter lf) {
+		return getParents(term, null, includeSelf, lf);
+	}
+
+	/**
+	 * Returns the parents of the given term.
+	 * 
+	 * @param term
+	 *            the term to search
+	 * @param linkDatabase
+	 *            provides the child links
+	 * @param includeSelf
+	 *            whether to include the term itself in the results
+	 */
+	public static Collection<LinkedObject> getParents(LinkedObject term,
+			LinkDatabase linkDatabase, boolean includeSelf, LinkFilter lf) {
+		ParentTask task = new ParentTask(linkDatabase, term, null, lf);
 		task.execute();
 		Collection<LinkedObject> out = task.getResults();
 		if (includeSelf)
@@ -521,14 +587,6 @@ public class TermUtil {
 			if (link.getType().equals(type)) {
 				parents.add(link.getParent());
 			}
-		}
-		return parents;
-	}
-
-	public static Collection<LinkedObject> getParents(LinkedObject lo) {
-		HashSet<LinkedObject> parents = new HashSet<LinkedObject>();
-		for (Link link : lo.getParents()) {
-			parents.add(link.getParent());
 		}
 		return parents;
 	}
@@ -1004,7 +1062,7 @@ public class TermUtil {
 	 * @return
 	 */
 	public static boolean isDescendant(LinkedObject parent, LinkedObject desc) {
-		return getDescendants(parent).contains(desc);
+		return getDescendants(parent,null).contains(desc);
 	}
 
 	/**

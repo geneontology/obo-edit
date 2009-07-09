@@ -49,10 +49,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	protected boolean hideDownstream = true;
 
 	protected static OBOProperty FAILED_TYPE = new OBOPropertyImpl(
-			"goflatfile:failed");
+	"goflatfile:failed");
 
 	protected static OBOProperty UNKNOWN_TYPE = new OBOPropertyImpl("UNKNOWN",
-			"unknown");
+	"unknown");
 
 	protected static final Map RESERVED_SYMBOLS = new HashMap();
 
@@ -145,7 +145,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	public static class GOFlatFileConfiguration extends
-			FileAdapterConfiguration {
+	FileAdapterConfiguration {
 		protected String defFilename;
 
 		protected String comment;
@@ -344,10 +344,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			int filecount = 1;
 			if (config != null)
 				filecount = config.getReadPaths().size()
-						+ (config.getDefFilename() != null ? 1 : 0);
+				+ (config.getDefFilename() != null ? 1 : 0);
 
 			int newval = (currentStream.getProgressValue().intValue() + readfileindex * 100)
-					/ filecount;
+			/ filecount;
 			return newval;
 		} else
 			return progressValue;
@@ -581,7 +581,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	public String[] getIDs(OBOSession history, OBOClass term, String prefix,
 			int min, int max, int length, int count)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		throw new DataAdapterException("Not supported");
 	}
 
@@ -612,8 +612,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					if (config.getDefFilename() != null) {
 						String pathStr = (String) readField.getSelectedItem();
 						pathStr += " '"
-								+ escapePath(config.getDefFilename(), true)
-								+ "'";
+							+ escapePath(config.getDefFilename(), true)
+							+ "'";
 						readField.setSelectedItem(pathStr);
 					}
 				}
@@ -621,14 +621,14 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 			@Override
 			public void acceptComponentConfig(boolean storeonly)
-					throws DataAdapterUIException {
+			throws DataAdapterUIException {
 				super.acceptComponentConfig(storeonly);
 				if (storeonly)
 					return;
 
 				readerCache.clear();
 				Iterator it = ((FileAdapterConfiguration) config)
-						.getReadPaths().iterator();
+				.getReadPaths().iterator();
 				boolean foundDefFile = false;
 				while (it.hasNext()) {
 					String s = (String) it.next();
@@ -636,7 +636,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 						if (foundDefFile)
 							throw new DataAdapterUIException(
 									"More than one definition "
-											+ "file was specified.");
+									+ "file was specified.");
 						it.remove();
 						((GOFlatFileConfiguration) config).setDefFilename(s);
 						foundDefFile = true;
@@ -714,7 +714,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	public void populateDefinitions(Map allterms, String filename)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		try {
 			BufferedReader reader = openReader(filename);
 
@@ -780,10 +780,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 						def += " " + line;
 					else {
 						defExceptions
-								.addException(new GOFlatFileParseException(
-										"No type field found, and line is not a "
-												+ "continuation of definition text.",
-										filename, line, lineNumber, 0));
+						.addException(new GOFlatFileParseException(
+								"No type field found, and line is not a "
+								+ "continuation of definition text.",
+								filename, line, lineNumber, 0));
 					}
 				} else {
 					String key = line.substring(0, start - 2);
@@ -794,18 +794,18 @@ public class GOFlatFileAdapter implements OBOAdapter {
 							def = value;
 						} else
 							defExceptions
-									.addException(new GOFlatFileParseException(
-											"Multiple definition fields for one entry.",
-											filename, line, lineNumber, 0));
+							.addException(new GOFlatFileParseException(
+									"Multiple definition fields for one entry.",
+									filename, line, lineNumber, 0));
 					} else if (key.equals("comment")) {
 						inDefinition = false;
 						if (comment == null) {
 							comment = value;
 						} else
 							defExceptions
-									.addException(new GOFlatFileParseException(
-											"Multiple comment fields for one entry.",
-											filename, line, lineNumber, 0));
+							.addException(new GOFlatFileParseException(
+									"Multiple comment fields for one entry.",
+									filename, line, lineNumber, 0));
 					} else if (key.equals("goid") || key.equals("id")) {
 						inDefinition = false;
 						if (goid == null) {
@@ -825,18 +825,18 @@ public class GOFlatFileAdapter implements OBOAdapter {
 							}
 						} else
 							defExceptions
-									.addException(new GOFlatFileParseException(
-											"Multiple ID fields for one entry.",
-											filename, line, lineNumber, 0));
+							.addException(new GOFlatFileParseException(
+									"Multiple ID fields for one entry.",
+									filename, line, lineNumber, 0));
 					} else if (key.equals("term")) {
 						inDefinition = false;
 						if (term == null) {
 							term = value;
 						} else
 							defExceptions
-									.addException(new GOFlatFileParseException(
-											"Multiple term name fields for one entry.",
-											filename, line, lineNumber, 0));
+							.addException(new GOFlatFileParseException(
+									"Multiple term name fields for one entry.",
+									filename, line, lineNumber, 0));
 					} else if (key.equals("definition_reference")) {
 						inDefinition = false;
 
@@ -857,10 +857,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 							references.addElement(ref);
 					} else {
 						defExceptions
-								.addException(new GOFlatFileParseException(
-										"Unrecognized type field \"" + key
-												+ "\"", filename, line,
-										lineNumber, 0));
+						.addException(new GOFlatFileParseException(
+								"Unrecognized type field \"" + key
+								+ "\"", filename, line,
+								lineNumber, 0));
 					}
 				}
 			}
@@ -907,13 +907,13 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	 * getURLForPath(defFilename); else this.defFilename = null; }
 	 */
 	public OBOClass importTerms(OBOClass root, boolean stripIds)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		OBOClass term;
 		if (stripIds) {
 			term = getRoot(new HashMap());
 			wipeOutIDs(term);
 		} else {
-			Map map = TermUtil.createIDMap(TermUtil.getDescendants(root, true));
+			Map map = TermUtil.createIDMap(TermUtil.getDescendants(root, true,null));
 			term = getRoot(map);
 		}
 		return term;
@@ -1003,9 +1003,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		tokenizer.addKeeperTokenChar(',');
 		tokenizer.addKeeperTokenChar(':');
 		// go through the type mappings here
-		Iterator it = config.getTypeMappings().iterator();
-		while (it.hasNext()) {
-			CharTypeMapping ctm = (CharTypeMapping) it.next();
+		for( Object o : config.getTypeMappings()){
+			CharTypeMapping ctm = (CharTypeMapping) o;
 			addTypeMapping(ctm);
 		}
 
@@ -1018,9 +1017,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 		history.setDefaultNamespace(root.getNamespace());
 
-		it = TermUtil.getDescendants(root, true).iterator();
-		while (it.hasNext()) {
-			history.addObject((IdentifiedObject) it.next());
+		for(IdentifiedObject io : TermUtil.getDescendants(root, true,null)){
+			history.addObject(io);
 		}
 
 		history.getCurrentHistory().setUser(System.getProperty("user.name"));
@@ -1028,9 +1026,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		history.getCurrentHistory().setComment(config.getComment());
 		history.getSubsets().addAll(getTermCategories());
 
-		it = nsHash.values().iterator();
-		while (it.hasNext()) {
-			Namespace ns = (Namespace) it.next();
+		for(Object o : nsHash.values()){
+			Namespace ns = (Namespace) o;
 			history.addNamespace(ns);
 		}
 
@@ -1040,10 +1037,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	protected String createLoadRemark() {
 		StringBuffer out = new StringBuffer();
-		Iterator it = config.getReadPaths().iterator();
 		boolean first = true;
-		while (it.hasNext()) {
-			String filename = (String) it.next();
+		for(String filename : config.getReadPaths()){
 			if (!first)
 				out.append(", ");
 			first = true;
@@ -1057,7 +1052,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	public synchronized OBOClass getRoot(Map allterms)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		OBOClass root = null;
 		String rootfile = null;
 		Iterator it = config.getReadPaths().iterator();
@@ -1135,15 +1130,15 @@ public class GOFlatFileAdapter implements OBOAdapter {
 				if (trs.size() != 0) {
 					if (strictParentage) {
 						parentageErrors
-								.addException(new GOFlatFileParseException(
-										ph.parentid
-												+ " is listed as parent of "
-												+ ph.childID + ", " + "but "
-												+ ph.childID
-												+ " does not appear in "
-												+ "the file as a child of "
-												+ ph.parentid, filename,
-										ph.line, ph.lineNumber, ph.colNumber));
+						.addException(new GOFlatFileParseException(
+								ph.parentid
+								+ " is listed as parent of "
+								+ ph.childID + ", " + "but "
+								+ ph.childID
+								+ " does not appear in "
+								+ "the file as a child of "
+								+ ph.parentid, filename,
+								ph.line, ph.lineNumber, ph.colNumber));
 					} else {
 						Link tr = new OBORestrictionImpl(term, parent, type);
 						// if (!relationshipTypes.contains(type))
@@ -1244,7 +1239,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	// make put term in hash function too
 
 	public OBOClass getTerms(Map allterms, String filename)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		OBOClass oldTerm = null;
 		root = null;
 		termStack = new Stack();
@@ -1304,7 +1299,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 								while (stringTokenizer.hasMoreTokens()) {
 									if (!first) {
 										typeDesc = typeDesc + " "
-												+ stringTokenizer.nextToken();
+										+ stringTokenizer.nextToken();
 									} else {
 										first = false;
 										typeDesc = stringTokenizer.nextToken();
@@ -1346,15 +1341,15 @@ public class GOFlatFileAdapter implements OBOAdapter {
 				if (root == null && currentDepth > 0) {
 					GOFlatFileParseException ex = new GOFlatFileParseException(
 							"Bad indentation. The first line of a file must "
-									+ "not be indented. root = " + root
-									+ ", currentDepth = " + currentDepth,
+							+ "not be indented. root = " + root
+							+ ", currentDepth = " + currentDepth,
 							filename, currentLine, lineNumber, 1);
 					exceptionHolder.addException(ex);
 					throw exceptionHolder;
 				} else if (root == null && !currentType.equals("$")) {
 					GOFlatFileParseException ex = new GOFlatFileParseException(
 							"Bad root symbol. The root term must always be "
-									+ "listed with the $ symbol.", filename,
+							+ "listed with the $ symbol.", filename,
 							currentLine, lineNumber, 1);
 					exceptionHolder.addException(ex);
 					throw exceptionHolder;
@@ -1371,10 +1366,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					if (!found.getName().equals(term.getName())) {
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Misspelled term name or illegal reuse of a"
-										+ " GO ID. This term was previously defined with "
-										+ "the name \"" + found.getName()
-										+ "\", but new name is \""
-										+ term.getName() + "\".", filename,
+								+ " GO ID. This term was previously defined with "
+								+ "the name \"" + found.getName()
+								+ "\", but new name is \""
+								+ term.getName() + "\".", filename,
 								currentLine, lineNumber, 1);
 						exceptionHolder.addException(ex);
 					}
@@ -1392,7 +1387,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					if (currentDepth - oldDepth != 1) {
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Bad indentation. No line may be greater than 1 "
-										+ "space deeper than its parent.",
+								+ "space deeper than its parent.",
 								filename, currentLine, lineNumber, 1);
 						exceptionHolder.addException(ex);
 						throw exceptionHolder;
@@ -1406,11 +1401,11 @@ public class GOFlatFileAdapter implements OBOAdapter {
 							&& TermUtil.hasAncestor(parent, term)) {
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Attempt to make "
-										+ term.getID()
-										+ " an "
-										+ "ancestor of itself. This could be a "
-										+ "structural error, or it could be caused "
-										+ "by the improper reuse of a go id.",
+								+ term.getID()
+								+ " an "
+								+ "ancestor of itself. This could be a "
+								+ "structural error, or it could be caused "
+								+ "by the improper reuse of a go id.",
 								filename, currentLine, lineNumber, 1);
 						exceptionHolder.addException(ex);
 						throw exceptionHolder;
@@ -1421,7 +1416,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 						relType = FAILED_TYPE;
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Unrecognized type character \"" + currentType
-										+ "\"", filename, currentLine,
+								+ "\"", filename, currentLine,
 								lineNumber, 1);
 						exceptionHolder.addException(ex);
 					}
@@ -1474,7 +1469,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		} catch (NoSuchElementException e) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Unexpected end of line during term definition."
-							+ " (There may be other errors after this one).",
+					+ " (There may be other errors after this one).",
 					filename, currentLine, lineNumber, currentLine.length());
 			exceptionHolder.addException(ex);
 			throw exceptionHolder;
@@ -1505,7 +1500,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	protected OBOClass getTermFromTokens(Queue tokens, String filename,
 			String line, int lineNum, Map allterms)
-			throws GOFlatFileParseException {
+	throws GOFlatFileParseException {
 		currentType = pullOffType(tokens);
 
 		if (tokens.size() == 0) {
@@ -1529,10 +1524,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		if (!semicolonToken.getToken().equals(";")) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Expected \";\" instead of " + "\""
-							+ semicolonToken.getToken() + "\"", semicolonToken
-							.getFilename(), semicolonToken.getLine(),
+					+ semicolonToken.getToken() + "\"", semicolonToken
+					.getFilename(), semicolonToken.getLine(),
 					semicolonToken.getLineNumber(), semicolonToken
-							.getColNumber());
+					.getColNumber());
 			exceptionHolder.addException(ex);
 		}
 
@@ -1561,9 +1556,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					if (!token.getToken().equals(":")) {
 						GOFlatFileParseException ex = new GOFlatFileParseException(
 								"Unexpected seperator \"" + token.getToken()
-										+ "\" found. Expected \":\"", token
-										.getFilename(), token.getLine(), token
-										.getLineNumber(), token.getColNumber());
+								+ "\" found. Expected \":\"", token
+								.getFilename(), token.getLine(), token
+								.getLineNumber(), token.getColNumber());
 						exceptionHolder.addException(ex);
 					}
 
@@ -1584,8 +1579,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 				} else {
 					GOFlatFileParseException ex = new GOFlatFileParseException(
 							"Unexpected character " + token.getToken(), token
-									.getFilename(), token.getLine(), token
-									.getLineNumber(), token.getColNumber());
+							.getFilename(), token.getLine(), token
+							.getLineNumber(), token.getColNumber());
 					exceptionHolder.addException(ex);
 				}
 			}
@@ -1601,7 +1596,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	protected Dbxref decodeDbxref(GOToken keyToken, String dbxrefString)
-			throws GOFlatFileParseException {
+	throws GOFlatFileParseException {
 		int colonloc = dbxrefString.indexOf(":");
 		if (colonloc == -1) {
 			throw new GOFlatFileParseException("Expected : in dbxref "
@@ -1625,7 +1620,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 		String key = dbxrefString.substring(0, colonloc).trim();
 		String val = dbxrefString.substring(colonloc + 1, startQuote - 1)
-				.trim();
+		.trim();
 		String desc = dbxrefString.substring(startQuote + 1, endQuote).trim();
 		String typeStr = dbxrefString.substring(endQuote + 1,
 				dbxrefString.length()).trim();
@@ -1678,7 +1673,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Expected ; ", typeToken.getFilename(),
 					typeToken.getLine(), typeToken.getLineNumber(), typeToken
-							.getColNumber());
+					.getColNumber());
 			exceptionHolder.addException(ex);
 			return;
 		}
@@ -1686,8 +1681,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		if (!token.getToken().equals(";")) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Expected ; instead of " + token.getToken(), token
-							.getFilename(), token.getLine(), token
-							.getLineNumber(), token.getColNumber());
+					.getFilename(), token.getLine(), token
+					.getLineNumber(), token.getColNumber());
 			exceptionHolder.addException(ex);
 		} else {
 			// get id and record it
@@ -1705,7 +1700,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	protected Vector pullOffIDList(Queue tokens)
-			throws GOFlatFileParseException {
+	throws GOFlatFileParseException {
 		Vector ids = new Vector();
 		while (!tokens.isEmpty()
 				&& ((GOToken) tokens.peek()).getToken().equals(",")) {
@@ -1722,9 +1717,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		if (!(type.equals("$") || convertCharToType(type) != null)) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Unrecognized type character '" + type
-							+ "' found. condition 1", token.getFilename(),
+					+ "' found. condition 1", token.getFilename(),
 					token.getLine(), token.getLineNumber(), token
-							.getColNumber());
+					.getColNumber());
 			exceptionHolder.addException(ex);
 			type = "";
 		}
@@ -1786,7 +1781,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	protected IDWrapper pullOffID(Queue tokens,
 			CompoundGOFlatFileParseException exList)
-			throws GOFlatFileParseException {
+	throws GOFlatFileParseException {
 
 		GOToken token;
 
@@ -1798,9 +1793,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		if (!token.getToken().equals(":")) {
 			GOFlatFileParseException ex = new GOFlatFileParseException(
 					"Unexpected GO ID seperator " + token.getToken()
-							+ " found. Expected :", token.getFilename(), token
-							.getLine(), token.getLineNumber(), token
-							.getColNumber());
+					+ " found. Expected :", token.getFilename(), token
+					.getLine(), token.getLineNumber(), token
+					.getColNumber());
 			exList.addException(ex);
 		}
 
@@ -1896,8 +1891,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 				term = root;
 			} else
 				term = (OBOClass) TermUtil
-						.cloneParentTree((LinkedObject) history.getObject(sr
-								.getID()));
+				.cloneParentTree((LinkedObject) history.getObject(sr
+						.getID()));
 			roots.add(term);
 			Vector relationshipTypes = new Vector(TermUtil
 					.getRelationshipTypes(history));
@@ -1919,7 +1914,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 					throw new CancelledAdapterException();
 				else
 					throw new DataAdapterException(
-							"Failed while trying to close file");
+					"Failed while trying to close file");
 			}
 		}
 		/*
@@ -1936,11 +1931,10 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	public void write(String filename, String defFilename, OBOClass root,
 			Vector relationshipTypes, Vector categories, OBOProperty defaultType)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		writeRoot = root;
 		try {
-			Collection<LinkedObject> terms = TermUtil
-					.getDescendants(root, true);
+			Collection<LinkedObject> terms = TermUtil.getDescendants(root, true, null);
 			if (filename != null) {
 				Map h = TermUtil.createIDMap(terms);
 				int termCount = h.size();
@@ -1978,10 +1972,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	public void writeDefinitions(Vector roots) throws DataAdapterException {
 		Set set = new HashSet();
 		for (int i = 0; i < roots.size(); i++) {
-			Iterator e = TermUtil.getDescendants(((OBOClass) roots.get(i)),
-					true).iterator();
-			while (e.hasNext()) {
-				OBOClass term = (OBOClass) e.next();
+			for(LinkedObject lo : TermUtil.getDescendants(((OBOClass) roots.get(i)),true,null)){
+				OBOClass term = (OBOClass) lo;
 				set.add(term);
 			}
 		}
@@ -1989,12 +1981,12 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	public void writeDefinitionsForTerms(Collection t)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		writeDefinitionsForTerms(t, config.getSaveDefFilename());
 	}
 
 	public void writeDefinitionsForTerms(Collection t, String defFilename)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		try {
 			if (defFilename != null && defFilename.length() > 0) {
 				OutputStream rawstream = new SafeFileOutputStream(defFilename);
@@ -2031,7 +2023,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	protected void writeDefs(String filename, PrintStream stream, Vector terms)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		Collections.sort(terms);
 		/*
 		 * Vector terms = new Vector(); for(int i=0; i < roots.size(); i++) {
@@ -2136,7 +2128,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	protected void writeHeader(OBOClass root, Vector relationshipTypes,
 			Vector categories, OBOProperty defaultType, PrintStream stream)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		String comment = config.getComment();
 		if (comment == null)
 			comment = root.getComment();
@@ -2174,7 +2166,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 	}
 
 	public void writeTypeLine(OBOProperty trt, PrintStream stream)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		if (trt.isBuiltIn() && !TermUtil.isUsed(history, trt))
 			return;
 		String propid = trt.getID();
@@ -2221,7 +2213,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			else
 				throw new DataAdapterException(
 						"File contains a cycle! OBOClass " + term + " (ID = "
-								+ term.getID() + ") is its own parent!");
+						+ term.getID() + ") is its own parent!");
 		} else if (!treatAsRoot) {
 			setProgressValue(100 * lookedAt.size() / termCount);
 			lookedAt.put(term, term);
@@ -2251,9 +2243,9 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		if (treatAsRoot)
 			leaderChar = "$";
 		String output = getNChars(spaceDepth, ' ') + leaderChar
-				+ getTermString(term) + getSecondaryIDString(term)
-				+ getDbxrefString(term) + getSynonymString(term)
-				+ (treatAsRoot ? "" : getParentString(term, currentParent));
+		+ getTermString(term) + getSecondaryIDString(term)
+		+ getDbxrefString(term) + getSynonymString(term)
+		+ (treatAsRoot ? "" : getParentString(term, currentParent));
 		println(stream, output);
 	}
 
@@ -2305,7 +2297,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			Link tr = (Link) scratchVector.get(i);
 			// someday, we should memoize the ancestor search
 			if (!tr.getParent().getID().equals(parent.getID()) &&
-			// !tr.getParent().isNonTriviallyObsolete() &&
+					// !tr.getParent().isNonTriviallyObsolete() &&
 					(TermUtil.hasAncestor(tr.getParent(), writeRoot) || tr
 							.getParent().equals(writeRoot)))
 				out.append(" " + getCharForRelationship(tr) + " "
@@ -2360,7 +2352,7 @@ public class GOFlatFileAdapter implements OBOAdapter {
 			// this solution sucks
 			// do something better
 			(new Exception("unexpected condition encountered!"))
-					.printStackTrace();
+			.printStackTrace();
 			/*
 			 * try { String [] ids = idAdapter.getIDs(history, term, "GO", 7,
 			 * 1); if (ids.length > 0) term.setID(ids[0]); } catch (Exception e) {

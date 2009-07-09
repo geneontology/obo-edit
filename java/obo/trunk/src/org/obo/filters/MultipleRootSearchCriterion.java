@@ -42,7 +42,7 @@ public class MultipleRootSearchCriterion extends AbstractBooleanCriterion {
 
 				}
 			} else {
-				parents = TermUtil.getAncestors((LinkedObject) o);
+				parents = TermUtil.getAncestors((LinkedObject) o,null);
 				int rootCount = 0;
 				LinkDatabase linkDB = new DefaultLinkDatabase(null);
 				RootAlgorithm.GREEDY.setLinkDatabase(linkDB);

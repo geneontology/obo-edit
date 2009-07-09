@@ -16,7 +16,7 @@ public class DescendantSearchAspect implements SearchAspect {
 	public DescendantSearchAspect() {
 	}
 
-	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
+	public Collection<LinkedObject> getObjects(Collection<LinkedObject> c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
 		logger.debug("DescendantSearchAspect.getObjects");
 		if (reasoner != null && o instanceof LinkedObject) {
@@ -30,7 +30,7 @@ public class DescendantSearchAspect implements SearchAspect {
 		}
 		else {
 			if (o instanceof LinkedObject)
-				c.addAll(TermUtil.getDescendants((LinkedObject) o, false));
+				c.addAll(TermUtil.getDescendants((LinkedObject) o, false, (LinkFilter) traversalFilter));
 		}
 		return c;
 	}

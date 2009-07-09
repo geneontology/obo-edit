@@ -21,15 +21,14 @@ public class ParentSearchAspect implements SearchAspect {
 
 	public Collection getObjects(Collection c, ReasonedLinkDatabase reasoner,
 			Filter traversalFilter, Object o) {
-		if (reasoner != null) {
-//			for (Link link : reasoner.getParents((LinkedObject) o)) 
-//				c.add(link.getParent());
+		if (reasoner != null && o instanceof LinkedObject) {
 			LinkDatabase trimmedReasoner = new TrimmedLinkDatabase(reasoner);
-			for (Link link : trimmedReasoner.getParents((LinkedObject) o)) 
+			for (Link link : trimmedReasoner.getParents((LinkedObject) o))
+				if(traversalFilter == null || traversalFilter.satisfies(link))
 			c.add(link.getParent());
 
-		} else {
-			c.addAll(TermUtil.getParents((LinkedObject) o));
+		} else if(o instanceof LinkedObject) {
+			c.addAll(TermUtil.getParents((LinkedObject) o, false, (LinkFilter) traversalFilter));
 		}
 		return c;
 	}

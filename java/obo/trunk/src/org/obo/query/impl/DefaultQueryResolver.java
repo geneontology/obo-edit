@@ -58,7 +58,6 @@ public class DefaultQueryResolver implements QueryResolver {
 	public <T, V> TaskDelegate<Collection<V>> query(final LinkDatabase linkDatabase,
 			final Query<T, V> q) {
 		TaskDelegate<Collection<V>> out = new AbstractTaskDelegate<Collection<V>>() {
-
 			@Override
 			public void execute() {
 				try {
