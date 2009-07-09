@@ -338,7 +338,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 					//logger.info("  direct annotation to:"+obj.getID()+" :: "+obj);
 					if (obj == null)
 						continue;
-					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true);
+					Collection<LinkedObject> ancs = TermUtil.getAncestors(obj,true,null);
 					objsWithAncs.addAll(ancs);
 				}
 				objSet = objsWithAncs;
@@ -353,7 +353,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 
 				// build annotation mapping; eg Phenotype to Genotype
 				for (Annotation annot : annots)
-					for (LinkedObject obj : TermUtil.getAncestors(annot.getObject()))
+					for (LinkedObject obj : TermUtil.getAncestors(annot.getObject(),null))
 						if (obj2subj.containsKey(obj))
 							obj2subj.get(obj).add(annot.getSubject());
 						else
@@ -441,7 +441,7 @@ public class AnnotationSummaryComponent extends AbstractGUIComponent {
 				//logger.info("  setting cell " + row + ","+col);
 
 				if (checkBoxUseTransitive.isSelected()) {
-					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true)) {
+					for (LinkedObject objAnc : TermUtil.getAncestors(annotatedWithObject, true,null)) {
 						//logger.info("  T:"+row+" "+objAnc.getID()+" :: "+objAnc);
 						if (hdr2rownum.containsKey(objAnc)) {
 							row = hdr2rownum.get(objAnc);
