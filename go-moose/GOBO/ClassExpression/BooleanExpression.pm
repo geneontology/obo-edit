@@ -61,7 +61,10 @@ sub as_string {
     my $self = shift;
     return join($self->operator, 
                 map { 
-                    if ($_->isa('GOBO::ClassExpression::BooleanExpression')) {
+                    if (!defined($_)) {
+                        '';
+                    }
+                    elsif ($_->isa('GOBO::ClassExpression::BooleanExpression')) {
                         "($_)"
                     }
                     else {

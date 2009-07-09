@@ -24,14 +24,15 @@ has metadata_tag => ( is=>'rw', isa=>'Bool' );
 has transitive_over => ( is=>'rw', isa=>'GOBO::RelationNode');
 has holds_over_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
 has equivalent_to_chain_list => ( is=>'rw', isa=>'ArrayRef[ArrayRef[GOBO::RelationNode]]' );
-has inverse_of => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has domain => ( is=>'rw', isa=>'GOBO::ClassNode');
 has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 
 has symmetric_on_instance_level => ( is=>'rw', isa=>'Bool' );
 has inverse_of_on_instance_level => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 
+has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
+has disjoint_over_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
 
 sub post_init {
     my $self = shift;
@@ -75,6 +76,18 @@ sub add_disjoint_from {
     my $self = shift;
     $self->disjoint_from_list([]) unless $self->disjoint_from_list([]);
     push(@{$self->disjoint_from_list},@_);
+}
+
+sub add_disjoint_over {
+    my $self = shift;
+    $self->disjoint_over_list([]) unless $self->disjoint_over_list([]);
+    push(@{$self->disjoint_over_list},@_);
+}
+
+sub add_inverse_of {
+    my $self = shift;
+    $self->inverse_of_list([]) unless $self->inverse_of_list([]);
+    push(@{$self->inverse_of_list},@_);
 }
 
 =head1 NAME

@@ -385,13 +385,12 @@ sub noderef {
         }
     }
 
-    if ($ix->node_by_id($id))
-    {   # already in the index
+    if ($ix->node_by_id($id)) {   # already in the index
         $n_obj = $ix->node_by_id($id);
     }
-    else
-    {   if (! $n_obj)
-        {	$n_obj = new GOBO::Node(id=>$id);
+    else {   
+        if (! $n_obj) {	
+            $n_obj = new GOBO::Node(id=>$id);
         }
         $ix->add_node( $n_obj );
     }
@@ -453,6 +452,32 @@ sub subset_noderef {
     return $n;
 }
 
+sub referenced_nodes {
+    my $self = shift;
+    return $self->node_index->nodes;
+}
+
+sub parse_idexprs {
+    my $self = shift;
+    my @nodes = @{$self->node_index->nodes};
+    my %done = ();
+    while (my $n = shift @nodes) {
+        next if $done{$n->id};
+        if ($n->id =~ /\^/) {
+            my $ce = new GOBO::ClassExpression->parse_idexpr($self,$n->id);
+            #printf STDERR "$n => $ce\n";
+            if (!$n->can('logical_definition')) {
+                bless $n, 'GOBO::Term';
+            }
+            $n->logical_definition($ce);
+            foreach my $arg (@{$ce->arguments}) {
+                push(@nodes,$n);
+                printf STDERR "n=$n\n";
+            }
+        }
+        $done{$n->id} = 1;
+    }
+}
 
 # logical definitions can be directly attached to TermNodes, or they can be
 # present in the graph as intersection links
