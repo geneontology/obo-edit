@@ -53,6 +53,7 @@ use Moose;
 with 'GOBO::Attributed';
 our $VERSION='0.01-pre';
 use strict;
+use GOBO::Formula;
 use GOBO::Statement;
 use GOBO::Annotation;
 use GOBO::Node;
@@ -78,6 +79,7 @@ has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
                   default=>sub{ new GOBO::Indexes::NodeIndex() });
 
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
+has 'formulae' => (is => 'rw', isa => 'ArrayRef[GOBO::Formula]', default=>sub{[]});
 
 =head2 declared_subsets
 
@@ -273,6 +275,8 @@ sub add_annotation { shift->annotation_ix->add_statement(@_) }
 sub add_annotations { shift->annotation_ix->add_statements(@_) }
 sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
 sub annotated_entities { shift->annotation_ix->referenced_nodes }
+
+sub add_formula { my $self = shift; push(@{$self->formulae},@_) }
 
 =head2 get_outgoing_links (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
