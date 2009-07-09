@@ -114,7 +114,7 @@ public class ExtendedInfoComponent extends AbstractGUIComponent {
 		for (OBOClass term : roots) {
 			if (term.isBuiltIn())
 				continue;
-			Collection<LinkedObject> s = TermUtil.getDescendants(term);
+			Collection<LinkedObject> s = TermUtil.getDescendants(term,null);
 			JLabel label = new JLabel("   " + term + " (" + term.getID()
 					+ ") has " + s.size() + " descendants");
 			label.setFont(getFont());
