@@ -34,7 +34,7 @@ sub convert {
 
 sub nodiff {
     my ($f1,$f2) = @_;
-    my $diff = `diff $f1 $f2`;
+    my $diff = `diff -b $f1 $f2`;
     print STDERR $diff;
     return !$diff;
 }

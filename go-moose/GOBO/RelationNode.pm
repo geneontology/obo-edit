@@ -28,7 +28,7 @@ has domain => ( is=>'rw', isa=>'GOBO::ClassNode');
 has range => ( is=>'rw', isa=>'GOBO::ClassNode');
 
 has symmetric_on_instance_level => ( is=>'rw', isa=>'Bool' );
-has inverse_of_on_instance_level => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
+has inverse_of_on_instance_level_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 
 has inverse_of_list => ( is=>'rw', isa=>'ArrayRef[GOBO::RelationNode]' );
 has disjoint_from_list => (is => 'rw', isa => 'ArrayRef[GOBO::RelationNode]');
@@ -88,6 +88,12 @@ sub add_inverse_of {
     my $self = shift;
     $self->inverse_of_list([]) unless $self->inverse_of_list([]);
     push(@{$self->inverse_of_list},@_);
+}
+
+sub add_inverse_of_on_instance_level {
+    my $self = shift;
+    $self->inverse_of_on_instance_level_list([]) unless $self->inverse_of_on_instance_level_list([]);
+    push(@{$self->inverse_of_on_instance_level_list},@_);
 }
 
 =head1 NAME

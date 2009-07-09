@@ -6,6 +6,7 @@ use GOBO::Node;
 use GOBO::InstanceNode;
 use GOBO::Synonym;
 use GOBO::Subset;
+use GOBO::Formula;
 use GOBO::LinkStatement;
 use GOBO::LiteralStatement;
 use GOBO::ClassExpression;
@@ -171,6 +172,15 @@ sub parse_body {
             $self->add_metadata($s,$2);
             $g->add_link($s);
         }
+        elsif (/^relationship:\s*(\S+)\s+(\S+)(.*)/) {
+            my $rn = $g->relation_noderef($1);
+            #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);
+            my $tn = $self->getnode($2, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            #my $tn = $g->term_noderef($2);
+            my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
+            $self->add_metadata($s,$3);
+            $g->add_link($s);
+        }
         elsif (/^complement_of:\s*(\S+)/) {
             my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             $n->complement_of($tn);
@@ -195,6 +205,10 @@ sub parse_body {
             my $tn = $self->getnode($1, 'r');
             $n->add_inverse_of($tn);
         }
+        elsif (/^inverse_of_on_instance_level:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'r');
+            $n->add_inverse_of_on_instance_level($tn);
+        }
         elsif (/^instance_of:\s*(\S+)/) {
             my $tn = $self->getnode($1, 'c');
             $n->add_type($tn);
@@ -202,14 +216,6 @@ sub parse_body {
         elsif (/^equivalent_to:\s*(\S+)/) {
             my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             $n->add_equivalent_to($tn);
-        }
-        elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
-            my $rn = $g->relation_noderef($1);
-            #my $tn = $stanzaclass eq 'typedef' ? $g->relation_noderef($2) : $g->term_noderef($2);
-            my $tn = $self->getnode($2, $stanzaclass eq 'typedef' ? 'r' : 'c');
-            #my $tn = $g->term_noderef($2);
-            my $s = new GOBO::LinkStatement(node=>$n,relation=>$rn,target=>$tn);
-            $g->add_link($s);
         }
         elsif (/^intersection_of:/) {
             # TODO: generalize
@@ -274,6 +280,13 @@ sub parse_body {
         }
         elsif (/^assigned_by:\s*(.*)/) {
             $n->source($self->getnode($1));
+        }
+        elsif (/^formula:\s*(.*)/) {
+            _parse_vals($1,$vals);
+            my $f = new GOBO::Formula(text=>$vals->[0],
+                                      language=>$vals->[1]);
+            $f->associated_with($n);
+            $g->add_formula($f);
         }
         else {
             warn "ignored: $_";
