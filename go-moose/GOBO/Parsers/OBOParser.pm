@@ -112,6 +112,9 @@ sub parse_body {
                 if (!$n->namespace &&
                     $self->default_namespace);
         }
+        elsif (/^\s*$/) {
+            next;
+        }
         elsif (/^name:\s*(.*)/) {
             $n->label($1);
         }
@@ -124,6 +127,10 @@ sub parse_body {
         elsif (/^def:\s*(.*)/) {
             _parse_vals($1,$vals);
             $n->definition($vals->[0]); # TODO
+        }
+        elsif (/^property_value:\s*(.*)/) {
+            _parse_vals($1,$vals);
+            $n->add_property_value($vals->[0], $vals->[1]); # TODO
         }
         elsif (/^comment:\s*(.*)/) {
             $n->comment($1);
@@ -171,6 +178,30 @@ sub parse_body {
         elsif (/^disjoint_from:\s*(\S+)/) {
             my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
             $n->add_disjoint_from($tn);
+        }
+        elsif (/^domain:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'c');
+            $n->domain($tn);
+        }
+        elsif (/^range:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'c');
+            $n->range($tn);
+        }
+        elsif (/^disjoint_over:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'r');
+            $n->add_disjoint_over($tn);
+        }
+        elsif (/^inverse_of:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'r');
+            $n->add_inverse_of($tn);
+        }
+        elsif (/^instance_of:\s*(\S+)/) {
+            my $tn = $self->getnode($1, 'c');
+            $n->add_type($tn);
+        }
+        elsif (/^equivalent_to:\s*(\S+)/) {
+            my $tn = $self->getnode($1, $stanzaclass eq 'typedef' ? 'r' : 'c');
+            $n->add_equivalent_to($tn);
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)/) {
             my $rn = $g->relation_noderef($1);
@@ -245,6 +276,7 @@ sub parse_body {
             $n->source($self->getnode($1));
         }
         else {
+            warn "ignored: $_";
             # ...
         }
     }

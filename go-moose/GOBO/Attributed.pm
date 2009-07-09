@@ -107,6 +107,14 @@ sub set_property_value {
     return;
 }
 
+sub add_property_value {
+    my $self = shift;
+    my ($p,$v) = @_;
+    $self->property_value_map({}) unless $self->property_value_map;
+    push(@{$self->property_value_map->{$p}}, $v);
+    return;
+}
+
 sub get_property_value {
     my $self = shift;
     my ($p) = @_;
