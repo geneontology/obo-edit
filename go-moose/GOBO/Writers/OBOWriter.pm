@@ -115,6 +115,25 @@ sub write_stanza {
             }
         }
     }
+    if ($node->can('logical_definition')) { # rely on expanded links for now
+        my $intersection = $node->logical_definition;
+        if ($intersection && $intersection->isa('GOBO::ClassExpression::Intersection')) {
+            my $ul = $intersection->arguments;
+            if (@$ul > 1) {
+                foreach (@$ul) {
+                    if ($_->isa('GOBO::ClassExpression::RelationalExpression')) {
+                        $self->tagvals(intersection_of => ($_->relation, $_->target) );
+                    }
+                    else {
+                        $self->tagvals(intersection_of => $_);
+                    }
+                }
+            }
+            else {
+                $self->throw("illegal intersection term: $intersection in $node");
+            }
+        }
+    }
     if ($node->can("disjoint_from_list")) {
         foreach my $x (@{$node->disjoint_from_list || []}) {
             $self->tagval(disjoint_from => $x);
@@ -173,6 +192,7 @@ sub tagval {
         if ($val->can('id')) {
             $self->printf("%s: %s",$tag,$val->id);
         }
+        #$self->set_referenced($val);
     }
     else {
         $self->printf("%s: %s",$tag,$val);
@@ -186,7 +206,7 @@ sub tagval {
                            } @{$s->sub_statements}));
     }
     
-    if (ref($val) && $val->can('label')) {
+    if (ref($val) && $val->can('label') && $val->label) {
         $self->printf(" ! %s\n",$val->label);
     }
     else {
@@ -199,11 +219,22 @@ sub tagvals {
     my $self = shift;
     my $tag = shift;
     $self->printf("%s: %s",$tag,join(' ', map {ref($_) ? $_->id : $_ } @_));
+    #$self->set_referenced(@_);
     my @labels = map {ref($_) && $_->label && $_->label ne $_->id ? $_->label : () } @_;
     if (@labels) {
         $self->print(" ! @labels");
     }
     $self->print("\n");
+    return;
+}
+
+sub set_referenced {
+    my $self = shift;
+    foreach (@_) {
+        if (ref($_) && $_->isa('GOBO::ClassExpression')) {
+            # TODO
+        }
+    }
     return;
 }
 

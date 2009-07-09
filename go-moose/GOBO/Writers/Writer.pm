@@ -87,6 +87,9 @@ sub printf {
     my $self = shift;
     my $fmt = shift;
     my $fh = $self->fh;
+    #if (grep {!defined($_)} @_) {
+    #    confess "undefined value in @_";
+    #}
     printf $fh $fmt, @_;
     return;
 }

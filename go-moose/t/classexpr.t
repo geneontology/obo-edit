@@ -1,5 +1,5 @@
 use Test;
-plan tests => 21;
+plan tests => 29;
 use GOBO::ClassExpression;
 use GOBO::Statement;
 use GOBO::LinkStatement;
@@ -59,3 +59,29 @@ ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a^b'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a'));
 ok $ie->subsumed_by(GOBO::ClassExpression->parse_idexpr($g, 'a^b^c'),
                     GOBO::ClassExpression->parse_idexpr($g, 'a^b'));
+
+$x = GOBO::ClassExpression->parse_idexpr($g, 'a^part_of(b^part_of(c))');
+#$x = GOBO::ClassExpression->parse_idexpr($g, 'x:a^r:part_of(x:b^r:part_of(x:c))');
+ok($x->isa('GOBO::ClassExpression::Intersection'));
+ok scalar(@{$x->arguments}) == 2;
+ok grep { $_->id eq 'a' } @{$x->arguments};
+ok grep { $_->isa('GOBO::ClassExpression::RelationalExpression') &&
+             $_->relation->id eq 'part_of' &&
+             $_->target->isa('GOBO::ClassExpression::Intersection') &&
+             scalar(@{$_->target->arguments}==2)
+             } @{$x->arguments};
+
+
+$x = GOBO::ClassExpression->parse_idexpr($g, 'part_of(b)^part_of(c)');
+print "x=$x\n";
+ok($x->isa('GOBO::ClassExpression::Intersection'));
+ok scalar(@{$x->arguments}) == 2;
+ok grep { $_->isa('GOBO::ClassExpression::RelationalExpression') &&
+             $_->relation->id eq 'part_of' &&
+             $_->target->id eq 'b'
+             } @{$x->arguments};
+ok grep { $_->isa('GOBO::ClassExpression::RelationalExpression') &&
+             $_->relation->id eq 'part_of' &&
+             $_->target->id eq 'c'
+             } @{$x->arguments};
+

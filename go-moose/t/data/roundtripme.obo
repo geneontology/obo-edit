@@ -107,7 +107,7 @@ holds_over_chain: r1x2 r1y2
 equivalent_to_chain: r1x r1y
 equivalent_to_chain: r1x2 r1y2
 disjoint_over: r1disc
-relatonship: meta-r r2
+relationship: meta-r r2
 equivalent_to: r1-eq
 is_obsolete: false
 formula: "r1(x,y) <-> ω(x) < j" Prover9 []

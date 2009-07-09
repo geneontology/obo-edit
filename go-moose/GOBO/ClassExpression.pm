@@ -121,6 +121,7 @@ sub parse_idexpr {
     return unless $expr;
     #print STDERR "Parsing: $expr\n";
     my @toks = split(/([\(\)\^\|])/,$expr);
+    @toks = grep {$_} @toks;
     my $x = _parse_idexpr_toks($g,\@toks);
     $x->normalize if $x->can('normalize');
     return $x;
@@ -129,11 +130,16 @@ sub parse_idexpr {
 sub _parse_idexpr_toks {
     my $g = shift;
     my $toks = shift;
-    #print STDERR "Parsing tokens: @$toks\n";
+    #printf STDERR "Parsing tokens: %s\n", join(',',@$toks);
     if (!@$toks) {
         return;
     }
     my $tok = shift @$toks;
+    while (@$toks && !$tok) {
+        # process null tokens
+        $tok = shift @$toks;
+    }
+    #print STDERR "tok: $tok;; rest=@$toks\n";
 
     # RETURN: atom
     if (!@$toks) {
@@ -145,9 +151,10 @@ sub _parse_idexpr_toks {
     if ($toks->[0] eq '(') {
         # relational expression
         shift @$toks;
+        #printf STDERR "parsing relational expr from @$toks\n";
         my $filler = _parse_idexpr_toks($g,$toks);
         $this = new GOBO::ClassExpression::RelationalExpression(relation=>$tok,target=>$filler);
-        #printf STDERR "relexpr $tok $filler ==> $this\n";
+        #printf STDERR "relexpr $tok $filler ==> $this ;; remaining = @$toks\n";
     }
     else {
         #printf STDERR "atom: $tok\n";
@@ -157,19 +164,22 @@ sub _parse_idexpr_toks {
     if (@$toks) {
         my $combo;
         my $op = shift @$toks;
-        my $next = _parse_idexpr_toks($g,$toks);
-        if ($op eq '^') {
-            printf STDERR "intersection: $this $next\n";
-            $combo = new GOBO::ClassExpression::Intersection(arguments=>[$this,$next]);
-        }
-        elsif ($op eq '|') {
-            printf STDERR "union: $this $next\n";
-            $combo = new GOBO::ClassExpression::Union(arguments=>[$this,$next]);
-        }
-        elsif ($op eq ')') {
+        #printf STDERR "op: '$op';; rest=@$toks\n";
+
+        if ($op eq ')') {
             # TODO: check balance
             #printf STDERR "end-brace: $this\n";
             return $this;
+        }
+
+        my $next = _parse_idexpr_toks($g,$toks);
+        if ($op eq '^') {
+            #printf STDERR "intersection: $this $next\n";
+            $combo = new GOBO::ClassExpression::Intersection(arguments=>[$this,$next]);
+        }
+        elsif ($op eq '|') {
+            #printf STDERR "union: $this $next\n";
+            $combo = new GOBO::ClassExpression::Union(arguments=>[$this,$next]);
         }
         else {
         }
