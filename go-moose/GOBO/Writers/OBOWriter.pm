@@ -73,7 +73,7 @@ sub write_stanza {
     $self->ntagval('synonym',
         _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach @{$node->synonyms || []};
 
-    # xref
+    $self->tagval('xref',$_) foreach (sort @{$node->xrefs || []});
 
     if ($node->isa('GOBO::RelationNode')) {
         $self->tagval('domain', $node->domain);
@@ -99,7 +99,7 @@ sub write_stanza {
                 $self->tagval(is_a => $_->target, $_);
             }
             else {
-                $self->tagvals(relationship => ($_->relation, $_->target));
+                $self->tagvals(relationship => ($_->relation, $_->target, {statement=>$_}));
             }
         }
     }
@@ -137,6 +137,11 @@ sub write_stanza {
     if ($node->can("disjoint_from_list")) {
         foreach my $x (@{$node->disjoint_from_list || []}) {
             $self->tagval(disjoint_from => $x);
+        }
+    }
+    if ($node->can("equivalent_to_list")) {
+        foreach my $x (@{$node->equivalent_to_list || []}) {
+            $self->tagval(equivalent_to => $x);
         }
     }
     $self->unary("is_obsolete") if $node->obsolete;
@@ -198,13 +203,7 @@ sub tagval {
         $self->printf("%s: %s",$tag,$val);
     }
 
-    if ($s && scalar(@{$s->sub_statements || []})) {
-        $self->printf(" {%s}",
-                      join(', ',
-                           map {
-                               sprintf('%s="%s"', $_->relation->id, $_->target);
-                           } @{$s->sub_statements}));
-    }
+    $self->trailing_qualifiers($s);
     
     if (ref($val) && $val->can('label') && $val->label) {
         $self->printf(" ! %s\n",$val->label);
@@ -212,19 +211,39 @@ sub tagval {
     else {
         $self->printf("\n");
     }
-
 }
 
 sub tagvals {
     my $self = shift;
     my $tag = shift;
+    my $s;
+    if (ref($_[-1]) eq 'HASH') {
+        my $h = pop @_;
+        $s = $h->{statement};
+    }
     $self->printf("%s: %s",$tag,join(' ', map {ref($_) ? $_->id : $_ } @_));
     #$self->set_referenced(@_);
+
+    $self->trailing_qualifiers($s);
+
     my @labels = map {ref($_) && $_->label && $_->label ne $_->id ? $_->label : () } @_;
     if (@labels) {
         $self->print(" ! @labels");
     }
     $self->print("\n");
+    return;
+}
+
+sub trailing_qualifiers {
+    my $self = shift;
+    my $s = shift;
+    if ($s && scalar(@{$s->sub_statements || []})) {
+        $self->printf(" {%s}",
+                      join(', ',
+                           map {
+                               sprintf('%s="%s"', $_->relation->id, $_->target);
+                           } @{$s->sub_statements}));
+    }
     return;
 }
 
