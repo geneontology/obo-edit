@@ -49,6 +49,8 @@ relationship: part_of id-y
 relationship: develops_from id-z {implied="true"}
 equivalent_to: a^b^rel(c)
 formula: "" KIF []
+created_by: someone
+creation_date: 2009-04-28T04:41:16Z
 
 [Term]
 id: id-y
