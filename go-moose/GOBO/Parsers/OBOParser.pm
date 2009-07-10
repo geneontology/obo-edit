@@ -146,6 +146,12 @@ sub parse_body {
         elsif (/^replaced_by:\s*(\S+)/) {
             $n->add_replaced_bys($1);
         }
+        elsif (/^created_by:\s*(\S+)/) {
+            $n->created_by($1);
+        }
+        elsif (/^creation_date:\s*(\S+)/) {
+            $n->creation_date($1);
+        }
         elsif (/^synonym:\s*(.*)/) {
             _parse_vals($1,$vals);
             my $syn = new GOBO::Synonym(label=>shift @$vals);

@@ -12,6 +12,7 @@ WriteMakefile(
     'VERSION_FROM' => "GOBO/Graph.pm",
     'PREREQ_PM'    => {
         'Moose'           => 0,
+        'DateTime::Format::ISO8601' => 0,
     },
     'EXE_FILES'    => [
         qw(

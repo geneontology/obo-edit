@@ -15,6 +15,7 @@ Is this over-abstraction? This could be simply mixed in with Statement
 =cut
 
 package GOBO::Attributed;
+use DateTime::Format::ISO8601;
 use Moose::Role;
 use strict;
 
@@ -38,6 +39,9 @@ coerce 'Date'
         elsif (/(\d\d):(\d\d):(\d\d\d\d)/) {
             DateTime->new(year=>$3,month=>$2,day=>$1);
         }
+        elsif (/\d\d\d\d\-/) {
+            DateTime::Format::ISO8601->parse_datetime( $_ );
+        }
         else {
             undef;
         }
@@ -46,13 +50,15 @@ coerce 'Date'
 has version => ( is=>'rw', isa=>'Str');
 has source => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
 has provenance => ( is=>'rw', isa=>'GOBO::Node', coerce=>1);
-has date => ( is=>'rw', isa=>'Date', coerce=>1); # TODO -- coerce
+has date => ( is=>'rw', isa=>'Date', coerce=>1); 
 has xrefs => ( is=>'rw', isa=>'ArrayRef[Str]'); # TODO -- make these nodes?
 has alt_ids => ( is=>'rw', isa=>'ArrayRef[Str]'); 
 has is_anonymous => ( is=>'rw', isa=>'Bool'); 
 has comment => ( is=>'rw', isa=>'Str');  # TODO - multivalued?
 has subsets => ( is=>'rw', isa=>'ArrayRef[GOBO::Node]'); 
 has property_value_map => ( is=>'rw', isa=>'HashRef'); 
+has created_by => ( is=>'rw', isa=>'Str'); 
+has creation_date => ( is=>'rw', isa=>'Date', coerce=>1); 
 
 
 sub add_xrefs {
