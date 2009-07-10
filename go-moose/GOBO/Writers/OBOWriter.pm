@@ -147,6 +147,9 @@ sub write_stanza {
     $self->unary("is_obsolete") if $node->obsolete;
     $self->tagval('replaced_by',$_) foreach @{$node->replaced_by || []};
     $self->tagval('consider',$_) foreach @{$node->consider || []};
+    $self->tagval('created_by',$node->created_by);
+    #$self->tagval('creation_date',$node->creation_date->format_cldr('yyyy-MM-ddTHH:mm:ss.SSSZ')) if $node->creation_date;
+    $self->tagval('creation_date',$node->creation_date->iso8601 . 'Z') if $node->creation_date;
     
     return;
 }
