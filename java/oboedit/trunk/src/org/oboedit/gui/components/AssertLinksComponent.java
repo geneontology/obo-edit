@@ -1,7 +1,9 @@
 package org.oboedit.gui.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,17 +17,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-//import javax.swing.RowSorter;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-//import javax.swing.table.TableModel;
-//import javax.swing.table.TableRowSorter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -53,8 +53,6 @@ import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.Logger;
 
-
-
 public class AssertLinksComponent extends AbstractGUIComponent implements ListSelectionListener {
 	private static final long serialVersionUID = 1L;
 
@@ -81,7 +79,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	private final int COLUMN_COUNT = 4;
 	/** Light blue color. */
 	public static final Color LIGHT_BLUE = new Color(210,220,240);
-	
+
 
 	public AssertLinksComponent(final String id) {
 		super(id);
@@ -157,6 +155,9 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		private static final long serialVersionUID = 1L;
 		private final String[] columnNames = {"Select","Child Name","Parent Name", "Explanation"};
 		private Object[][] data;
+		protected int sortCol = 1;
+		protected boolean ascending = true;
+
 		public AssertedLinksModel(Object[][] data) {
 			this.data = data;
 		}
@@ -213,6 +214,29 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			final Object o = getValueAt(0, columnIndex);
 			return o == null ? Object.class : o.getClass();
 		}
+
+		class ColumnListener extends MouseAdapter {
+			protected JTable table;
+			public ColumnListener(JTable t) {
+				table = t;
+			}
+			public void mouseClicked(MouseEvent e) {
+				TableColumnModel columnModel = table.getColumnModel();
+				int viewColumn = columnModel.getColumnIndexAtX(e.getX());
+				int column = columnModel.getColumn(viewColumn).getModelIndex();
+
+				if (column < 0)
+					return;
+				if (sortCol == column)
+					ascending = !ascending;
+				else
+					sortCol = column;
+				Arrays.sort(data, new ColumnSorter(sortCol, ascending));
+				table.tableChanged(new TableModelEvent(AssertedLinksModel.this));
+				table.repaint();
+			}
+		}
+
 	}
 
 	public void valueChanged(final ListSelectionEvent e) {
@@ -251,6 +275,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		};
 
 		model = new AssertedLinksModel(data);
+
 		if(table == null){
 			table = new JTable(model){
 				//alternate row coloring 
@@ -285,16 +310,24 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		else {
 			table.setModel(model);
 		}
-//		RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-//		table.setRowSorter(sorter);
+
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener (this);
 		table.setDragEnabled(false);
 		table.setCellSelectionEnabled(true);
-		final TableColumn tc = table.getColumnModel().getColumn(0);  
-		tc.setCellEditor(table.getDefaultEditor(Boolean.class));  
-		tc.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
-		tc.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+
+		//sort columns by clicking on header
+		JTableHeader header = table.getTableHeader();
+		header.setUpdateTableInRealTime(true);
+		header.addMouseListener(model.new ColumnListener(table));
+		header.setReorderingAllowed(true);
+
+		//clicking on header for Select column does a SelectAll 
+		final TableColumn tc0 = table.getColumnModel().getColumn(0);  
+		tc0.setCellEditor(table.getDefaultEditor(Boolean.class));  
+		tc0.setCellRenderer(table.getDefaultRenderer(Boolean.class));  
+		tc0.setHeaderRenderer(new CheckBoxHeader(new MyItemListener()));
+
 		table.addMouseListener(new MyMouseListener());
 		if(sp == null){
 			sp = new JScrollPane();
@@ -303,6 +336,58 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		}
 		else
 			table.repaint();
+	}
+
+	//	private void sortAllRowsBy(Object[][] tableData, AssertedLinksModel model, int colIndex, boolean ascending) {
+	//		Arrays.sort(tableData, new ColumnSorter(colIndex, ascending));
+	//		model.fireTableStructureChanged();
+	//	}
+
+	// object comparator
+	class ColumnSorter implements Comparator {
+		int colIndex;
+		boolean ascending;
+		ColumnSorter(int colIndex, boolean ascending) {
+			this.colIndex = colIndex;
+			this.ascending = ascending;
+		}
+		public int compare(Object o1, Object o2) {
+			Object[] v1 = (Object[]) o1;
+			Object[] v2 = (Object[]) o2;
+
+			Object compVal1 = v1[colIndex];
+			Object compVal2 = v2[colIndex];
+
+			// Treat empty strains like nulls
+			if (compVal1 instanceof String && ((String)compVal1).length() == 0) {
+				compVal1 = null;
+			}
+			if (compVal2 instanceof String && ((String)compVal2).length() == 0) {
+				compVal2 = null;
+			}
+
+			// Sort nulls so they appear last, regardless
+			// of sort order
+			if (compVal1 == null && compVal2 == null) {
+				return 0;
+			} else if (compVal1 == null) {
+				return 1;
+			} else if (compVal2 == null) {
+				return -1;
+			} else if (compVal1 instanceof Comparable) {
+				if (ascending) {
+					return ((Comparable)compVal1).compareTo(compVal2);
+				} else {
+					return ((Comparable)compVal2).compareTo(compVal1);
+				}
+			} else {
+				if (ascending) {
+					return compVal1.toString().compareTo(compVal2.toString());
+				} else {
+					return compVal2.toString().compareTo(compVal1.toString());
+				}
+			}
+		}
 	}
 
 	class MyItemListener implements ItemListener{   
@@ -402,6 +487,9 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		} 
 	}
 
+
+
+
 	public void setSelectAllComponent(final CheckBoxHeader selectAll) {
 		selectAll.setText("Select");
 		this.selectAll = selectAll;
@@ -412,3 +500,5 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 	}
 
 }
+
+
