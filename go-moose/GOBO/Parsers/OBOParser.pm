@@ -128,6 +128,9 @@ sub parse_body {
         elsif (/^def:\s*(.*)/) {
             _parse_vals($1,$vals);
             $n->definition($vals->[0]); # TODO
+				if ($vals->[1] && @{$vals->[1]}) {
+					$n->definition_xrefs( [ map { $_ = new GOBO::Node({ id => $_ }) } @{$vals->[1]} ]);
+				}
         }
         elsif (/^property_value:\s*(.*)/) {
             _parse_vals($1,$vals);
@@ -404,7 +407,7 @@ sub _parse_xrefs {
     my $vals = shift;
     if ($s =~ /^\[(([^\]\\]|\\.)*)\]\s*(.*)/) {
         $s = $2;
-        push(@$vals, [split(/,/,$1)]); # TODO
+        push(@$vals, [split(/,\s*/,$1)]); # TODO
     }
     else {
         die "$s";

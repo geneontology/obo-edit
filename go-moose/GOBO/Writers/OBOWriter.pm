@@ -12,8 +12,8 @@ sub write_header {
     $self->tagval(data_version => $g->version) if $g->version;
     $self->tagval(date=>sprintf("%s %02d:%02d",$g->date->dmy(':'),$g->date->hour,$g->date->minute)) if $g->date;
     my $pvm = $g->property_value_map || {};
-    $self->tagval($_ => $pvm->{$_}) foreach keys %$pvm;
-    $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach @{$g->declared_subsets || []};
+    $self->tagval($_ => $pvm->{$_}) foreach sort keys %$pvm;
+    $self->tagval(subsetdef => sprintf('%s "%s"',$_->id, $_->label)) foreach sort { $a->id cmp $b->id || $a->label cmp $b->label } @{$g->declared_subsets || []};
     $self->tagval(remark=> $g->comment);
     return;
 }
@@ -64,14 +64,14 @@ sub write_stanza {
     $self->tagval('id',$node->id);
     $self->tagval('name',$node->label);
     $self->tagval('namespace',$node->namespace);
-    $self->tagval('alt_id',$_) foreach @{$node->alt_ids || []};
+    $self->tagval('alt_id',$_) foreach sort @{$node->alt_ids || []};
     if ($node->can('definition') && $node->definition) {
         $self->ntagval('def', _quote($node->definition), $node->definition_xrefs || [])
     }
     $self->tagval('comment',$node->comment);
-    $self->tagval('subset',$_->id) foreach @{$node->subsets || []};
+    $self->tagval('subset',$_->id) foreach sort { $a->id cmp $b->id || $a->label cmp $b->label } @{$node->subsets || []};
     $self->ntagval('synonym',
-        _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach @{$node->synonyms || []};
+        _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach sort { $a->label cmp $b->label } @{$node->synonyms || []};
 
     $self->tagval('xref',$_) foreach (sort @{$node->xrefs || []});
 
@@ -145,8 +145,8 @@ sub write_stanza {
         }
     }
     $self->unary("is_obsolete") if $node->obsolete;
-    $self->tagval('replaced_by',$_) foreach @{$node->replaced_by || []};
-    $self->tagval('consider',$_) foreach @{$node->consider || []};
+    $self->tagval('replaced_by',$_) foreach sort @{$node->replaced_by || []};
+    $self->tagval('consider',$_) foreach sort @{$node->consider || []};
     $self->tagval('created_by',$node->created_by);
     #$self->tagval('creation_date',$node->creation_date->format_cldr('yyyy-MM-ddTHH:mm:ss.SSSZ')) if $node->creation_date;
     $self->tagval('creation_date',$node->creation_date->iso8601 . 'Z') if $node->creation_date;
