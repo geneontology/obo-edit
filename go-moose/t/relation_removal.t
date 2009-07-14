@@ -16,6 +16,10 @@ use GOBO::Parsers::OBOParser;
 use GOBO::InferenceEngine;
 use GOBO::Writers::OBOWriter;
 
+use Test;
+plan tests => 1;
+
+
 my $verbose = $ENV{GO_VERBOSE} || 1;
 
 my $parser = new GOBO::Parsers::OBOParser(file=>"t/data/obo_file.obo");
@@ -149,9 +153,7 @@ $Data::Dumper::Indent = 1;
 	{	$new_graph->add_relation($graph->noderef($_)) unless $_->id eq 'is_a';
 		if ($graph->get_target_links($_))
 		{	foreach (@{$graph->get_target_links($_)})
-			{	print STDERR "link: " . Dumper($_);
-				
-				$new_graph->add_link( new GOBO::LinkStatement( node => $graph->noderef($_->node),
+			{	$new_graph->add_link( new GOBO::LinkStatement( node => $graph->noderef($_->node),
 					relation => $graph->noderef($_->relation),
 					target => $graph->noderef($_->target) ) );
 			}
@@ -263,22 +265,25 @@ foreach ( sort { $a->node->id cmp $b->node->id
 	{	delete $r_hash->{ $_->node->id . $_->relation->id . $_->target->id };
 	}
 	else 
-	{	print STDERR "unexpected relationship: " . $_->node->id . " " . $_->relation->id . " " . $_->target->id . "\n";
+	{	print STDERR "unexpected relationship: " . $_->node->id . " " . $_->relation->id . " " . $_->target->id . "\n" if $verbose;
 	}
 }
 
 if (keys %$r_hash)
-{	print STDERR "rels not found: " . Dumper($r_hash);
+{	print STDERR "rels not found: " . Dumper($r_hash) if $verbose;
 }
 else
-{	print STDERR "Found all relations - HURRAH!\n\n";
+{	ok(scalar keys %$r_hash == 0, 1, "Checking we have all relations" );
+	print STDERR "Found all relations - HURRAH!\n\n" if $verbose;
 }
-	foreach my $attrib qw( version source date comment declared_subsets property_value_map )
-	{	$new_graph->$attrib( $graph->$attrib ) if $graph->$attrib;
-	}
+
+
+#	foreach my $attrib qw( version source date comment declared_subsets property_value_map )
+#	{	$new_graph->$attrib( $graph->$attrib ) if $graph->$attrib;
+#	}
 #	print STDERR "new graph: " . Dumper($new_graph) if $verbose;
 
 
-my $writer = GOBO::Writers::OBOWriter->create(file=>'slimfile.obo', format=>'obo');
-$writer->graph($new_graph);
-$writer->write();
+#my $writer = GOBO::Writers::OBOWriter->create(file=>'slimfile.obo', format=>'obo');
+#$writer->graph($new_graph);
+#$writer->write();
