@@ -104,22 +104,31 @@ sub get_inferred_target_nodes {
     return [values %tn];
 }
 
+sub get_subrelation_reflexive_closure {
+    my $self = shift;
+    my $rel = shift;
+    return [$rel,@{$self->get_inferred_target_nodes($rel,'is_a')}];
+}
+
 sub extend_link {
     my $self = shift;
     my $link = shift;
-    my $rel_1 = $link->relation;
     my @newlinks = ();
-    foreach my $xlink (@{$self->graph->get_target_links($link->target)}) {
-        #printf STDERR "  XLINK: $xlink\n";
-        my $rel_2 = $xlink->relation;
-        my $rel = $self->relation_composition($rel_1, $rel_2);
-        #printf STDERR "  RC: $rel\n";
-        if ($rel) {
-            my $newlink = new GOBO::LinkStatement(node=>$link->node,
-                                                 relation=>$rel,
-                                                 target=>$xlink->target);
-            # todo - provenance/evidence of link
-            push(@newlinks, $newlink);
+    foreach my $rel_1 (@{$self->get_subrelation_reflexive_closure($link->relation)} ) {
+        foreach my $xlink (@{$self->graph->get_target_links($link->target)}) {
+            #printf STDERR "  XLINK: $xlink\n";
+            my $rel_2 = $xlink->relation;
+            my @rels = $self->relation_composition($rel_1, $rel_2);
+            
+            # R1 subrelation_of R2, x R1 y => x R2 y
+            @rels = map { @{$self->get_subrelation_reflexive_closure($_)} } @rels;
+            foreach my $rel (@rels) {
+                my $newlink = new GOBO::LinkStatement(node=>$link->node,
+                                                      relation=>$rel,
+                                                      target=>$xlink->target);
+                # todo - provenance/evidence of link
+                push(@newlinks, $newlink);
+            }
         }
     }
     return \@newlinks;
@@ -162,19 +171,19 @@ sub relation_composition {
     my $r1 = shift;
     my $r2 = shift;
     if ($r1->equals($r2) && $r1->transitive) {
-        return $r1;
+        return ($r1);
     }
     if ($r1->is_subsumption && $r2->propagates_over_is_a) {
-        return $r2;
+        return ($r2);
     }
     if ($r2->is_subsumption && $r1->propagates_over_is_a) {
-        return $r1;
+        return ($r1);
     }
     if ($r1->transitive_over && $r1->transitive_over->equals($r2)) {
-        return $r1;
+        return ($r1);
     }
     # TODO: arbitrary chains
-    return undef;
+    return ();
 }
 
 sub forward_chain {
@@ -288,6 +297,12 @@ sub subsumed_by {
     }
     return $subsumes;
 }
+
+# TODO
+#sub disjoint_from_violations {
+#    my $self = shift;
+#    
+#}
 
 =head1 NAME
 

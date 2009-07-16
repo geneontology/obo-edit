@@ -180,6 +180,9 @@ sub parse_body {
             my $s = new GOBO::LinkStatement(node=>$n,relation=>'is_a',target=>$tn);
             $self->add_metadata($s,$2);
             $g->add_link($s);
+            if ($stanzaclass eq 'typedef') {
+                $n->add_subrelation_of($tn);
+            }
         }
         elsif (/^relationship:\s*(\S+)\s+(\S+)(.*)/) {
             my $rn = $g->relation_noderef($1);
