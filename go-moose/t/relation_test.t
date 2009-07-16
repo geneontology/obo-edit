@@ -80,16 +80,21 @@ my $answers = {
 };	
 
 foreach my $t (@{$g->terms})
-{	foreach (@{ $ie->get_inferred_target_links($t) })
+{	my @links = @{ $ie->get_inferred_target_links($t) };
+        foreach (@links)
 	{	next unless $_->target->id eq 'GO:0000000';
 		if ($answers->{$_->node->id})
-		{	is($_->relation->id, $answers->{$_->node->id}, "Checking inferred relation");
-			delete $answers->{$_->node->id};
-		}
-		else
-		{	ok(! defined $answers->{$_->node->id}, "Checking inferred relation " . $_->relation->id);
+		{	if ($_->relation->id eq $answers->{$_->node->id}) 
+                        {
+                            delete $answers->{$_->node->id};
+                            ok(1);
+                        }
 		}
 	}
+        if ($answers->{$t}) {
+            printf "expected: $t => $answers->{$t}\n";
+            ok(0);
+        }
 }
 
 ok(! keys %$answers, "Checking we have no results left");
