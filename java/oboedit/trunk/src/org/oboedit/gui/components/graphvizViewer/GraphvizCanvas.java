@@ -548,7 +548,7 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 						+ graphvizSettingsInstance.getViewerFormat() + " -o "
 						+ imageFile.getPath() + " " + noDisjointTextFile.getPath());
 
-				logger.debug(graphvizSettingsInstance.getDotPath() + " -T"
+				logger.info(graphvizSettingsInstance.getDotPath() + " -T"
 				 + graphvizSettingsInstance.getViewerFormat() + " -o "
 				 + imageFile.getPath() + " " + textFile.getPath());
 
@@ -683,9 +683,12 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 			// check the user answer, if he press "ok" continue in the if block
 			if (userChoice == JFileChooser.APPROVE_OPTION) {
 				File textFile = File.createTempFile("graphtext", ".txt");
-				//				logger.debug("DEBUG : GraphPlugin : storeImage : temp file" +
-				//				 " name = " + textFile.getAbsolutePath());
-				//				
+								logger.debug("DEBUG : Graphviz : storeImage : temp file" +
+								 " name = " + textFile.getAbsolutePath());
+				
+								System.out.println("GraphvizCanvas: StoreImage");
+								
+								//				
 				File noDisjointTextFile = File.createTempFile("graphtextNoDisjoint", ".txt");
 
 				// Creating the .dot file for graphviz
@@ -710,20 +713,23 @@ public class GraphvizCanvas extends AbstractGUIComponent {
 				String[] cmd ={graphvizSettingsInstance.getDotPath(),
 						"-T", ef.getExtNoDot(),
 						"-o", outputFile, "-v", noDisjointTextFile.getPath()};
-
-				//for (int i = 0; i < cmd.length; i++) {
-				//	logger.debug(cmd[i]);
-				//}
-
+				
+				logger.info("Graphviz command is " + graphvizSettingsInstance.getDotPath() + " -T " + 
+						ef.getExtNoDot() + " -o " + outputFile + " -v " + noDisjointTextFile.getPath());
+				
+				
 				Process p = Runtime.getRuntime().exec(cmd);
 
-				p.wait(1000); //This is here because p.waitFor() causes problems in 
+				//I have commented this out to try to troubleshoot a bug
+				//Harold is seeing. The delete commands were never working anyway, so 
+				//will probably not be missed.
+				//p.wait(1000); //This is here because p.waitFor() causes problems in 
 				//windows with hanging the
 				//memory. StringWorker may be a better solution but
 				//will be easier to implement once to we switch to java 6.
 
-				textFile.delete();
-				noDisjointTextFile.delete();
+				//textFile.delete();
+				//noDisjointTextFile.delete();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
