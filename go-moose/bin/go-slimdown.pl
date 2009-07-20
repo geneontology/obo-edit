@@ -24,33 +24,81 @@ while (@ARGV && $ARGV[0] =~ /^\-/) {
 	my $opt = shift @ARGV;
 	if ($opt eq '-i' || $opt eq '--ontology') {
 		$options->{file} = shift;
+		if (! -e $options->{file})
+		{	die "Error: the file " . $options->{file} . " could not be found.\n";
+		}
 	}
 	elsif ($opt eq '-s' || $opt eq '--subset') {
-		$options->{subset} = shift;
+		my $s = shift;
+		if ($options->{subset})
+		{	push @{$options->{subset}}, $s if ! grep { $_ eq $s } @{$options->{subset}};
+		}
+		else
+		{	push @{$options->{subset}}, $s;
+		}
 	}
 	elsif ($opt eq '-o' || $opt eq '--output') {
 		$options->{output} = shift;
 	}
+	elsif ($opt eq '-b' || $opt eq '--basename') {
+		my $b = shift;
+		if ($b !~ /SLIM_NAME/)
+		{	die "Error: please supply a valid basename (containing SLIM_NAME) for the output files\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+		}
+		$options->{basename} = $b;
+	}
+	elsif ($opt eq '-c' || $opt eq '--combined') {
+		## use a combination of more than one subset terms
+		$options->{combined} = 1;
+	}
 	elsif ($opt eq '-h' || $opt eq '--help') {
-		system("perldoc $0");
+		system("perldoc", $0);
 		exit(0);
 	}
+	elsif ($opt eq '-v' || $opt eq '--verbose') {
+		$verbose = 1;
+	}
 	else {
-		die "no such opt: $opt";
+		die "Error: no such option: $opt\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
 	}
 }
 
-if (!$options || !$options->{file}|| !$options->{subset} || !$options->{output})
-{	system("perldoc $0");
-	exit(1);
+if (!$options || !$options->{file}|| !$options->{subset} || !@{$options->{subset}} || !($options->{output} || $options->{basename}))
+{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+}
+
+if (scalar @{$options->{subset}} > 1)
+{	## if we have more than one subset, make sure that we have specified a base name for the file
+	if (!$options->{combined} && !$options->{basename})
+	{	die "Error: please supply a valid basename (containing SLIM_NAME) for the output files\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+	}
+	elsif ($options->{combined})
+	{	# only one output file if we're combining subsets
+		if (!$options->{output})
+		{	die "Error: there should only be a single output file specified if subsets are to be combined.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+		}
+	}
 }
 
 
+if ($options->{output} && $options->{basename})
+{	if (scalar @{$options->{subset}} > 1)
+	{	warn "Using file path specified by the '-b' / '--basename' option\n";
+	}
+	else
+	{	warn "Using file path specified by the '-o' / '--output' option\n";
+		delete $options->{basename};
+	}
+}
+
+my $data;
 my $parser = new GOBO::Parsers::OBOParser(file=>$options->{file});
 $parser->parse;
-my $subset = $options->{subset};
-my $data;
+
+die "Error: parser could not find a graph in " . $options->{file} . "!\n" unless $parser->graph;
+
 my $graph = $parser->graph;
+
 my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
 ## get all terms that are in a subset
@@ -59,50 +107,39 @@ foreach ( @{$graph->terms} )
 	## if it's in a subset, save the mofo.
 	my $n = $_;
 	if ($n->subsets)
-	{	foreach (@{$n->subsets})
-		{	$data->{subset}{$_->id}{$n->id}++ if $_->id eq $subset;
+	{	foreach my $s (@{$n->subsets})
+		{	$data->{subset}{$s->id}{$n->id}++ if grep { $s->id eq $_ } @{$options->{subset}};
 		}
 	}
 	# make sure that we have all the root nodes
 	elsif (!@{$graph->get_outgoing_links($n)}) {
-		$data->{terms}{roots}{$n->id}++;
+		$data->{roots}{$n->id}++;
 	}
 }
 
-# no terms in subset
-if (! $data->{subset}{$subset} )
-{	die "No terms found in subset $options->{subset}! Dying";
-}
-
-# get all the links between terms in the subset or subset terms and root
-foreach my $t (sort keys %{$data->{subset}{$subset}})
-{	
-	## asserted links
-	foreach (@{ $graph->get_outgoing_links($t) })
-	{	
-		# skip it unless the target is a root or in the subset
-		next unless $data->{subset}{$subset}{$_->target->id} || $data->{terms}{roots}{$_->target->id} ;
-
-		$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
+#	check that we have terms in our subsets
+if (scalar @{$options->{subset}} > 1)
+{	my $no_terms;
+	foreach (@{$options->{subset}})
+	{	if (! $data->{subset}{$_})
+		{	push @$no_terms, $_;
+		}
 	}
-
-	foreach (@{ $ie->get_inferred_target_links($t) })
-	{	
-		# skip it unless the target is a root or in the subset
-		next unless $data->{subset}{$subset}{$_->target->id} || $data->{terms}{roots}{$_->target->id} ;
-
-		# skip it if we already have this link
-		next if defined #$data->{terms}{graph}{$t}{$_->target->id} &&
-		$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id};
-
-		## add to a list of inferred entries
-		$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 2;
+	if ($no_terms && @$no_terms)
+	{	if (scalar @$no_terms == scalar @{$options->{subset}})
+		{	die "Error: no terms were found in any of the subsets specified. Dying";
+		}
+		else
+		{	warn "Error: no terms were found for the following subset(s): " . join(", ", @$no_terms) . "\n";
+		}
 	}
 }
-
-## populate the look up hashes
-populate_lookup_hashes($data->{terms});
-
+else
+{	# no terms in subset
+	if (! $data->{subset}{ $options->{subset}[0] } )
+	{	die "Error: no terms were found in subset " . $options->{subset}[0] . "! Dying";
+	}
+}
 
 # get the relations and see how they relate to each other...
 foreach (@{$graph->relations})
@@ -113,37 +150,81 @@ foreach (@{$graph->relations})
 	}
 }
 
-if (defined $data->{relations}{graph})
-{	populate_lookup_hashes($data->{relations});
+# merge the subsets into one if we want combined results
+if ($options->{combined})
+{	foreach my $s (keys %{$data->{subset}})
+	{	map { $data->{combined}{$_} = 1 } keys %{$data->{subset}{$s}};
+	}
+	$data->{subset} = { combined => $data->{combined} };
+	$options->{subset} = [ 'combined' ];
+}
 
-	my $slimmed = go_slimmer($data->{relations});
-
-	populate_lookup_hashes($slimmed);
-
-	## slim down the relationships
-	## get rid of redundant relations
-	# these are the closest to the root
-	foreach my $r (keys %{$slimmed->{target_node_rel}})
-	{	foreach my $r2 (keys %{$slimmed->{target_node_rel}{$r}})
-		{	# if both exist...
-			if ($data->{terms}{rel_node_target}{$r} && $data->{terms}{rel_node_target}{$r2})
-			{	
-				# delete anything where we have the same term pairs with both relations
-				foreach my $n (keys %{$data->{terms}{rel_node_target}{$r2}})
-				{	if (defined $data->{terms}{graph}{$n}{$r})
-				#	if ($data->{terms}{rel_node_target}{$r}{$n})
-					{
-						foreach my $t (keys %{$data->{terms}{rel_node_target}{$r2}{$n}})
-						{	if (defined $data->{terms}{graph}{$n}{$r}{$t})
-							{	
-								delete $data->{terms}{graph}{$n}{$r}{$t};
-								if (! values %{$data->{terms}{graph}{$n}{$r}})
-								{	delete $data->{terms}{graph}{$n}{$r};
-									if (! values %{$data->{terms}{graph}{$n}})
-									{	delete $data->{terms}{graph}{$n};
+foreach my $subset (@{$options->{subset}})
+{	
+	# get rid of any existing data
+	delete $data->{terms};
+	
+	# get all the links between terms in the subset or subset terms and root
+	foreach my $t (sort keys %{$data->{subset}{$subset}})
+	{	
+		## asserted links
+		foreach (@{ $graph->get_outgoing_links($t) })
+		{	
+			# skip it unless the target is a root or in the subset
+			next unless $data->{subset}{$subset}{$_->target->id} || $data->{roots}{$_->target->id} ;
+	
+			$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
+		}
+	
+		foreach (@{ $ie->get_inferred_target_links($t) })
+		{	
+			# skip it unless the target is a root or in the subset
+			next unless $data->{subset}{$subset}{$_->target->id} || $data->{roots}{$_->target->id} ;
+	
+			# skip it if we already have this link
+			next if defined #$data->{terms}{graph}{$t}{$_->target->id} &&
+			$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id};
+	
+			## add to a list of inferred entries
+			$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 2;
+		}
+	}
+	
+	## populate the look up hashes
+	populate_lookup_hashes($data->{terms});
+	
+	if (defined $data->{relations}{graph})
+	{	populate_lookup_hashes($data->{relations});
+	
+		my $slimmed = go_slimmer($data->{relations});
+	
+		populate_lookup_hashes($slimmed);
+	
+		## slim down the relationships
+		## get rid of redundant relations
+		# these are the closest to the root
+		foreach my $r (keys %{$slimmed->{target_node_rel}})
+		{	foreach my $r2 (keys %{$slimmed->{target_node_rel}{$r}})
+			{	# if both exist...
+				if ($data->{terms}{rel_node_target}{$r} && $data->{terms}{rel_node_target}{$r2})
+				{	
+					# delete anything where we have the same term pairs with both relations
+					foreach my $n (keys %{$data->{terms}{rel_node_target}{$r2}})
+					{	if (defined $data->{terms}{graph}{$n}{$r})
+					#	if ($data->{terms}{rel_node_target}{$r}{$n})
+						{
+							foreach my $t (keys %{$data->{terms}{rel_node_target}{$r2}{$n}})
+							{	if (defined $data->{terms}{graph}{$n}{$r}{$t})
+								{	
+									delete $data->{terms}{graph}{$n}{$r}{$t};
+									if (! values %{$data->{terms}{graph}{$n}{$r}})
+									{	delete $data->{terms}{graph}{$n}{$r};
+										if (! values %{$data->{terms}{graph}{$n}})
+										{	delete $data->{terms}{graph}{$n};
+										}
 									}
+	
 								}
-
 							}
 						}
 					}
@@ -151,39 +232,43 @@ if (defined $data->{relations}{graph})
 			}
 		}
 	}
-}
-
-populate_lookup_hashes($data->{terms});
-
-my $slimmed = go_slimmer($data->{terms});
-
-my $new_graph = new GOBO::Graph;
-
-add_all_relations_to_graph($graph, $new_graph);
-add_extra_stuff_to_graph($graph, $new_graph);
-
-# add the terms to the graph
-
-foreach my $n ( keys %{$slimmed->{graph}} )
-{	# add the nodes to the graph
-	$new_graph->add_term( $graph->noderef( $n ) ) if ! $new_graph->get_term($n);
-
-	foreach my $r ( keys %{$slimmed->{graph}{$n}} )
-	{	foreach my $t ( keys %{$slimmed->{graph}{$n}{$r}} )
-		{	$new_graph->add_term( $graph->noderef( $t ) ) if ! $new_graph->get_term($t);
-			$new_graph->add_link( new GOBO::LinkStatement(
-				node => $new_graph->noderef($n),
-				relation => $new_graph->noderef($r),
-				target => $new_graph->noderef($t) 
-			) );
+	
+	populate_lookup_hashes($data->{terms});
+	
+	my $slimmed = go_slimmer($data->{terms});
+	
+	my $new_graph = new GOBO::Graph;
+	
+	add_all_relations_to_graph($graph, $new_graph);
+	add_extra_stuff_to_graph($graph, $new_graph);
+	
+	# add the terms to the graph
+	
+	foreach my $n ( keys %{$slimmed->{graph}} )
+	{	# add the nodes to the graph
+		$new_graph->add_term( $graph->noderef( $n ) ) if ! $new_graph->get_term($n);
+	
+		foreach my $r ( keys %{$slimmed->{graph}{$n}} )
+		{	foreach my $t ( keys %{$slimmed->{graph}{$n}{$r}} )
+			{	$new_graph->add_term( $graph->noderef( $t ) ) if ! $new_graph->get_term($t);
+				$new_graph->add_link( new GOBO::LinkStatement(
+					node => $new_graph->noderef($n),
+					relation => $new_graph->noderef($r),
+					target => $new_graph->noderef($t) 
+				) );
+			}
 		}
 	}
+	
+	if ($options->{basename})
+	{	($options->{output} = $options->{basename}) =~ s/SLIM_NAME/$subset/;
+	}
+
+	my $writer = GOBO::Writers::OBOWriter->create(file=>$options->{output}, format=>'obo');
+	$writer->graph($new_graph);
+	$writer->write();
+
 }
-
-
-my $writer = GOBO::Writers::OBOWriter->create(file=>$options->{output}, format=>'obo');
-$writer->graph($new_graph);
-$writer->write();
 
 exit(0);
 
@@ -307,14 +392,31 @@ go-slimdown.pl
 
 =head1 SYNOPSIS
 
-	go-slimdown.pl -i go/ontology/gene_ontology.obo -s goslim_generic -o slimmed.obo
+ go-slimdown.pl -i go/ontology/gene_ontology.obo -s goslim_generic -o slimmed.obo
 
 =head1 DESCRIPTION
 
-	# must supply these arguments... or else!
-	-i || --ontology <file_name>   input file (ontology file)
-	-o || --output <file_name>     output file
-	-s || --subset <subset_name>   name of the subset to extract
+# must supply these arguments... or else!
+ -i || --ontology /path/to/<file_name>   input file (ontology file) with path
+ -s || --subset <subset_name>            name of the subset to extract
+
+ -o || --output /path/to/<file_name>     output file with path
+  or
+ -b || --basename /path/to/<file_name_containing_SLIM_NAME>
+
+      specify a file name containing the text "SLIM_NAME", which will be
+      substituted with the name of the subset
+      e.g. -s goslim_goa -s goslim_yeast -b /temp/gene_ontology.SLIM_NAME.obo 
+      would produce two files,
+      /temp/gene_ontology.goslim_goa.obo and /temp/gene_ontology.goslim_yeast.obo
+
+
+# optional args
+ -c || --combined                         if more than one subset is specified,
+                                          create a slim using terms from all
+                                          of the subsets specified
+                                          
+ -v || --verbose                          prints various messages
 
 	Given a file where certain terms are specified as being in subset S, this
 	script will 'slim down' the file by removing terms not in the subset.
