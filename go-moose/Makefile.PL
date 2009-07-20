@@ -6,8 +6,8 @@ require 5.6.0;
 
 WriteMakefile(
     'NAME'         => "GOBO",
-    'DISTNAME'         => "gobo",
-    'ABSTRACT'     => 'OBO Perl',
+    'DISTNAME'         => "GOBO",
+    'ABSTRACT'     => 'Perl library for GO and OBO',
     'AUTHOR'       => 'Chris Mungall <cjm@fruitfly.org>',
     'VERSION_FROM' => "GOBO/Graph.pm",
     'PREREQ_PM'    => {
@@ -17,6 +17,8 @@ WriteMakefile(
     'EXE_FILES'    => [
         qw(
                                     bin/go-gaf-inference.pl
+                                    bin/go-slimdown.pl
+                                    bin/gobo-make-lucene-index.pl
                                    )
     ],
     'dist'         => { 
@@ -25,6 +27,16 @@ WriteMakefile(
         'COMPRESS'     => "gzip -9f" 
     },
     clean => {
-        FILES => 'go-perl-$(VERSION).tar.gz',
+        FILES => 'GOBO-$(VERSION).tar.gz',
     },
     );
+
+sub MY::postamble {
+  qq{
+
+MANIFEST : \
+	svn list -R > MANIFEST
+ };
+}
+
+
