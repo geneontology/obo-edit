@@ -51,7 +51,7 @@ GOBO::LinkStatement
 package GOBO::Graph;
 use Moose;
 with 'GOBO::Attributed';
-our $VERSION='0.01-pre';
+our $VERSION='0.01';
 use strict;
 use GOBO::Formula;
 use GOBO::Statement;
