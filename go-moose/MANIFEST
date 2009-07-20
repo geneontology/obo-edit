@@ -115,6 +115,7 @@ t/
 t/analysis_test.t
 t/classexpr.t
 t/data/
+t/data/128up.gaf
 t/data/AT1G49810.gaf
 t/data/UnionTerms.obo
 t/data/cell.obo
