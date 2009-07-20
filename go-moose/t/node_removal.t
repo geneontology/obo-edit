@@ -20,7 +20,7 @@ $parser->parse;
 my $g = $parser->graph;
 
 $Data::Dumper::Maxdepth = 2;
-print STDERR
+print 
 "node index: " . Dumper( $g->node_index )
 . "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_outgoing_links("GO:0000004")}) . "\n\nRemoving GO:0000004...\n\n\n";
 
@@ -29,7 +29,7 @@ ok ( $g->get_term("GO:0000004") );
 #$g->node_index->remove_node( $g->noderef("GO:0000004") );
 $g->remove_node( $g->noderef("GO:0000004")); # NO CASCADE
 
-print STDERR
+print 
 "node index now: " . Dumper( $g->node_index )
 . "\nnode links for GO:0000004:\n" . join("\n", @{$g->get_outgoing_links("GO:0000004")}) . "\nnode index after getting links for GO:0000004: " . Dumper( $g->node_index )
 . "\n";

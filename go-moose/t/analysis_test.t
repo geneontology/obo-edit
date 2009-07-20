@@ -1,5 +1,5 @@
 use Test;
-plan tests => 6;
+plan tests => 1;
 use strict;
 use GOBO::Graph;
 use GOBO::Statement;

@@ -49,8 +49,8 @@ foreach ( @{$graph->terms} )
 }
 
 
-print STDERR "terms in subset: ".join(", ", keys %{$data->{subset}{goslim_test}})."\n" if $verbose;
-print STDERR "root nodes: " . join(", ", keys %{$data->{terms}{roots}} ) . "\n" if $verbose;
+print "terms in subset: ".join(", ", keys %{$data->{subset}{goslim_test}})."\n" if $verbose;
+print "root nodes: " . join(", ", keys %{$data->{terms}{roots}} ) . "\n" if $verbose;
 
 # get all the links between terms in the subset or subset terms and root
 foreach my $t (sort keys %{$data->{subset}{$subset}})
@@ -63,7 +63,7 @@ foreach my $t (sort keys %{$data->{subset}{$subset}})
 
 		$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
 
-#		print STDERR "ASS relation: $t -- " . $_->relation->id . " -- " . $_->target->id . "\n" if $verbose;
+#		print "ASS relation: $t -- " . $_->relation->id . " -- " . $_->target->id . "\n" if $verbose;
 	}
 
 	foreach (@{ $ie->get_inferred_target_links($t) })
@@ -77,7 +77,7 @@ foreach my $t (sort keys %{$data->{subset}{$subset}})
 
 		## add to a list of inferred entries
 		$data->{terms}{graph}{$t}{$_->relation->id}{$_->target->id} = 2;
-		#print STDERR "INF relation: $t -- " . $_->relation->id . " -- " . $_->target->id . "\n" if $verbose;
+		#print "INF relation: $t -- " . $_->relation->id . " -- " . $_->target->id . "\n" if $verbose;
 	}
 }
 
@@ -100,24 +100,24 @@ if (defined $data->{relations}{graph})
 
 	my $slimmed = go_slimmer($data->{relations});
 
-#	print STDERR "slimmed: " . Dumper($slimmed);
-#	print STDERR "data->{relations}: " . Dumper($data->{relations});
+#	print "slimmed: " . Dumper($slimmed);
+#	print "data->{relations}: " . Dumper($data->{relations});
 	populate_lookup_hashes($slimmed);
 
 	## slim down the relationships
 	## get rid of redundant relations
 	# these are the closest to the root
 	foreach my $r (keys %{$slimmed->{target_node_rel}})
-	{	print STDERR "r: $r\n".Dumper($slimmed->{target_node_rel}{$r});
+	{	print "r: $r\n".Dumper($slimmed->{target_node_rel}{$r});
 		foreach my $r2 (keys %{$slimmed->{target_node_rel}{$r}})
-		{	print STDERR "r2: $r2\n";
+		{	print "r2: $r2\n";
 		
-			print STDERR "looking at $r and $r2...\n" if $verbose;
+			print "looking at $r and $r2...\n" if $verbose;
 			# if both exist...
 			if ($data->{terms}{rel_node_target}{$r} && $data->{terms}{rel_node_target}{$r2})
 			{	
-	#			print STDERR "Found both $r and $r2 in our graph!\n" if $verbose;
-	#			print STDERR "rel_outgoing $r: " . Dumper($data->{rel_node_target}{$r}) .
+	#			print "Found both $r and $r2 in our graph!\n" if $verbose;
+	#			print "rel_outgoing $r: " . Dumper($data->{rel_node_target}{$r}) .
 	#			"rel_outgoing $r2: " . Dumper($data->{rel_node_target}{$r2})."\n" if $verbose;
 	
 				# delete anything where we have the same term pairs with both relations
@@ -125,7 +125,7 @@ if (defined $data->{relations}{graph})
 				{	if (defined $data->{terms}{graph}{$n}{$r})
 				#	if ($data->{terms}{rel_node_target}{$r}{$n})
 					{
-	#					print STDERR "Found $n...\n" if $verbose;
+	#					print "Found $n...\n" if $verbose;
 						foreach my $t (keys %{$data->{terms}{rel_node_target}{$r2}{$n}})
 						{	if (defined $data->{terms}{graph}{$n}{$r}{$t})
 							{	#$data->{terms} = 
@@ -150,22 +150,22 @@ if (defined $data->{relations}{graph})
 
 populate_lookup_hashes($data->{terms});
 
-print STDERR "data graph: " . Dumper($data->{terms}{graph});
+print "data graph: " . Dumper($data->{terms}{graph});
 $Data::Dumper::Maxdepth = 4;
 $Data::Dumper::Indent = 1;
-#	print STDERR "graph: " . Dumper($graph);
+#	print "graph: " . Dumper($graph);
 my $new_graph = new GOBO::Graph;
 
 
 my $slimmed = go_slimmer($data->{terms});
 
-print STDERR "slimmed: ".Dumper($slimmed);
+print "slimmed: ".Dumper($slimmed);
 
-#print STDERR "done: " . Dumper($data->{done});
-#print STDERR "rel_done: " . Dumper($data->{rel_done});
+#print "done: " . Dumper($data->{done});
+#print "rel_done: " . Dumper($data->{rel_done});
 $data->{done} = $slimmed;
 
-#	print STDERR "old graph: " . Dumper($graph) if $verbose;
+#	print "old graph: " . Dumper($graph) if $verbose;
 
 my $new_rel_graph = new GOBO::Graph;
 
@@ -189,7 +189,7 @@ foreach my $n (keys %{$data->{done}{graph}})
 }
 
 
-#	print STDERR "graph: " . Dumper($new_graph) if $verbose;
+#	print "graph: " . Dumper($new_graph) if $verbose;
 
 	undef $graph;
 
@@ -251,23 +251,23 @@ sub go_slimmer {
 				next;
 			}
 
-			print STDERR "\n\n$id $rel ancestors: " . join(", ", @list_by_rel) . "\n" if $verbose;
+			print "\n\n$id $rel ancestors: " . join(", ", @list_by_rel) . "\n" if $verbose;
 			REL_SLIMDOWN_LOOP:
 			while (@list_by_rel)
 			{	my $a = pop @list_by_rel;
 	
-				print STDERR "  a: $a\n" if $verbose;
+				print "  a: $a\n" if $verbose;
 	
 				my @list2_by_rel = ();
 				while (@list_by_rel)
 				{	my $b = pop @list_by_rel;
 	
-					print STDERR "  Looking at b: $b\n" if $verbose;
+					print "  Looking at b: $b\n" if $verbose;
 	
 					if ($data->{target_node_rel}{$a}{$b})
 					{	
 
-						print STDERR "  TO LEAF: $b --x--> $a = ".join(", ", keys %{$data->{target_node_rel}{$a}{$b}})."\n" if $verbose;
+						print "  TO LEAF: $b --x--> $a = ".join(", ", keys %{$data->{target_node_rel}{$a}{$b}})."\n" if $verbose;
 
 						#	b is node, a is target
 						#	forget about a, go on to the next list item
@@ -277,14 +277,14 @@ sub go_slimmer {
 					}
 					elsif ($data->{node_target_rel}{$a}{$b})
 					{	
-						print STDERR "  TO ROOT: $a --x--> $b = ".join(", ", keys %{$data->{node_target_rel}{$a}{$b}})."\n" if $verbose;
+						print "  TO ROOT: $a --x--> $b = ".join(", ", keys %{$data->{node_target_rel}{$a}{$b}})."\n" if $verbose;
 
 						#	a is node, b is target
 						#	forget about b, look at the next in the list
 						next;
 					}
 					else
-					{	print STDERR "  $a and $b are not connected by $rel.\n" if $verbose;
+					{	print "  $a and $b are not connected by $rel.\n" if $verbose;
 						#a and b aren't related
 						#	keep b
 						push @list2_by_rel, $b;
@@ -294,7 +294,7 @@ sub go_slimmer {
 				#	if a is still around, it must be a descendent of
 				#	all the terms we've looked at, so it can go on our
 				#	descendent list
-				print STDERR "  $a is a descendent of all the other terms!\n" if $verbose;
+				print "  $a is a descendent of all the other terms!\n" if $verbose;
 				$data->{rel_done}{$id}{$rel}{$a} = $data->{node_rel_target}{$id}{$rel}{$a};
 				$new_data->{graph}{$id}{$rel}{$a} = $data->{node_rel_target}{$id}{$rel}{$a};
 	
@@ -451,11 +451,11 @@ plan tests => 17;
 	{	#my @links = @{ $infeng->get_inferred_target_links($t) };
 		my @links = @{ $g->get_outgoing_links($t) };
 		
-#		print STDERR "links for " . $t->id . ": " . Dumper( \@links );
+#		print "links for " . $t->id . ": " . Dumper( \@links );
 		
 		foreach (sort { $a->target->id cmp $b->target->id } @links)
 		{	
-			print STDERR "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
+			print "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
 	
 			if ($answers->{$_->node->id}
 				&& $answers->{$_->node->id}{$_->relation->id}
@@ -463,7 +463,7 @@ plan tests => 17;
 			{	# found the correct answer :D
 				ok(1, "Checking ". $_->node->id . " " . $_->relation->id . " " . $_->target->id);
 	
-				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
+				print $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
 
 				delete $answers->{$_->node->id}{$_->relation->id}{$_->target->id};
 
@@ -477,7 +477,7 @@ plan tests => 17;
 			}
 			else
 			{	# shouldn't have found a relation
-				print STDERR $_->node->id .": found " . $_->relation->id . " " . $_->target->id . ", incorrect!\n" if $verbose;
+				print $_->node->id .": found " . $_->relation->id . " " . $_->target->id . ", incorrect!\n" if $verbose;
 				ok(0, $_->node->id .": incorrectly inferred relation " . $_->relation->id . " (none expected)");
 				$summary->{$_->node->id}{$_->relation->id}{$_->target->id}++;
 			}
@@ -489,10 +489,10 @@ plan tests => 17;
 #	if ($verbose)
 #	{	
 		if (keys %$answers)
-		{	print STDERR "Missing the following inferences:\n" . Dumper($answers);
+		{	print "Missing the following inferences:\n" . Dumper($answers);
 		}
 		if (keys %$summary)
-		{	print STDERR "Made the following incorrect inferences:\n" . Dumper($summary);
+		{	print "Made the following incorrect inferences:\n" . Dumper($summary);
 		}
 #	}
 }

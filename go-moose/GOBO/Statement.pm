@@ -19,7 +19,7 @@ has 'sub_statements' => ( is=>'rw', isa=>'ArrayRef[GOBO::Statement]');
 use overload ('""' => 'as_string');
 sub as_string {
     my $self = shift;
-    return sprintf("(%s --[%s]-->%s)",$self->node || '?',$self->relation || '?', $self->target || '?' );
+    return sprintf("(%s --[%s]-->%s)",$self->node || '?',$self->relation || '?', $self->can('target') ? $self->target : '?' );
 }
 
 
