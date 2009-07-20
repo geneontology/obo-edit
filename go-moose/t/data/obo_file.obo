@@ -7,7 +7,7 @@ subsetdef: goslim_goa "GOA and proteome slim"
 subsetdef: goslim_pir "PIR GO slim"
 subsetdef: goslim_plant "Plant GO slim"
 subsetdef: goslim_test "Test GO slim"
-subsetdef: goslim_yeast "Yeast GO slim"
+subsetdef: goslim_next_test "Second test set"
 subsetdef: gosubset_prok "Prokaryotic GO subset"
 synonymtypedef: systematic_synonym "Systematic synonym" EXACT
 default-namespace: test_ontology
@@ -17,6 +17,7 @@ remark: cvs version: $Revision: 1.239 $
 id: GO:0000001
 name: test term GO:0000001
 subset: goslim_test
+subset: goslim_next_test
 is_a: GO:0000008 ! test term GO:0000008
 relationship: part_of GO:0000008 ! test term GO:0000008
 relationship: regulates GO:0000008 ! test term GO:0000008
@@ -25,6 +26,7 @@ relationship: regulates GO:0000008 ! test term GO:0000008
 id: GO:0000002
 name: test term GO:0000002
 subset: goslim_test
+subset: goslim_next_test
 is_a: GO:0000006 ! test term GO:0000006
 is_a: GO:0000007 ! test term GO:0000007
 
@@ -35,6 +37,7 @@ subset: goslim_generic
 subset: goslim_pir
 subset: goslim_test
 subset: gosubset_prok
+subset: goslim_next_test
 relationship: part_of GO:0000007 ! test term GO:0000007
 
 [Term]
@@ -49,6 +52,7 @@ relationship: negatively_regulates GO:0000016 ! test term GO:0000016
 id: GO:0000005
 name: test term GO:0000005
 subset: goslim_test
+subset: goslim_next_test
 relationship: regulates GO:0000008 ! test term GO:0000008
 
 [Term]
@@ -66,6 +70,7 @@ relationship: part_of GO:0000011 ! test term GO:0000011
 [Term]
 id: GO:0000008
 name: test term GO:0000008
+subset: goslim_next_test
 relationship: negatively_regulates GO:0000010 ! test term GO:0000010
 
 [Term]
@@ -93,6 +98,7 @@ is_a: GO:0000013 ! test term GO:0000013
 [Term]
 id: GO:0000013
 name: test term GO:0000013
+subset: goslim_next_test
 is_a: GO:0000014 ! test term GO:0000014
 
 [Term]
@@ -135,6 +141,7 @@ is_obsolete: true
 [Term]
 id: GO:0000021
 name: test term GO:0000021
+subset: goslim_next_test
 is_a: GO:0000019
 
 [Term]
