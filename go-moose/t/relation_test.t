@@ -86,7 +86,7 @@ my $answers = {
 if ($verbose)
 {	foreach my $r (@{$g->relations})
 	{	if ($r->id ne 'is_a')
-		{	print STDERR $r->id . ": " . Dumper($r);
+		{	print  $r->id . ": " . Dumper($r);
 		}
 	}
 }
@@ -99,14 +99,14 @@ foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
 	foreach (sort { $a->target->id cmp $b->target->id } @links)
 	{	next unless $_->target->id eq 'GO:0000000';
 
-		print STDERR "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
+		print  "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
 
 		if ($answers->{$_->node->id})
 		{	if ($answers->{$_->node->id}{$_->relation->id})
 			{	# found the correct answer :D
 				ok(1, "Checking ". $_->node->id . " " . $_->relation->id);
 
-				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
+				print  $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
 
 				delete $answers->{$_->node->id}{$_->relation->id};
 
@@ -115,7 +115,7 @@ foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
 			{	# found a relation, but it was wrong. Sob!
 				ok(0, "Checking ". $_->node->id . " " . $_->relation->id);
 
-				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
+				print  $_->node->id .": looking for ". join(" or ", keys %{$answers->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
 				$summary->{$_->node->id}{$_->relation->id}++;
 			}
 			if (! keys %{$answers->{$_->node->id}})
@@ -124,7 +124,7 @@ foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
 		}
 		else
 		{	# shouldn't have found a relation
-			print STDERR $_->node->id .": found " . $_->relation->id . ", should not be one\n" if $verbose;
+			print  $_->node->id .": found " . $_->relation->id . ", should not be one\n" if $verbose;
 			ok(0, $_->node->id .": incorrectly inferred relation " . $_->relation->id . " (none expected)");
 			$summary->{$_->node->id}{$_->relation->id}++;
 		}
@@ -135,9 +135,9 @@ ok(! keys %$answers, "Checking we have no results left");
 
 if ($verbose)
 {	if (keys %$answers)
-	{	print STDERR "Missing the following inferences:\n" . Dumper($answers);
+	{	print  "Missing the following inferences:\n" . Dumper($answers);
 	}
 	if (keys %$summary)
-	{	print STDERR "Made the following incorrect inferences:\n" . Dumper($summary);
+	{	print  "Made the following incorrect inferences:\n" . Dumper($summary);
 	}
 }
