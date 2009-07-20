@@ -2,8 +2,7 @@
 use Test::More;
 use Test::Deep;
 
-plan tests => 11;
-#plan tests => 4;
+plan tests => 12;
 use strict;
 use Data::Dumper;
 $Data::Dumper::Indent = 1;
@@ -25,7 +24,7 @@ $parser->parse;
 
 my $g = $parser->graph;
 
-print STDERR "Mystery node: " . Dumper($g->noderef(" "));
+#print "Mystery node: " . Dumper($g->noderef(" "));
 
 ## create a new graph and check that we can add terms 'n' links 'n' stuff to it
 my $new_g = new GOBO::Graph;
@@ -50,7 +49,7 @@ foreach my $attrib qw( version source provenance date xrefs alt_ids is_anonymous
 
 ## HACKS!
 # add mystery term
-$new_g->{node_index}{ixN}{" "} = $g->noderef(" ");
+#$new_g->{node_index}{ixN}{" "} = $g->noderef(" ");
 # delete ixLabel
 $new_g->{node_index}{ixLabel} = {};
 # sort the term relationships in link_ix
@@ -65,7 +64,7 @@ ok( $new_g->isa('GOBO::Graph'), "Checking new_g is a graph" );
 
 foreach (keys %$g)
 {	if (! cmp_deeply($g->{$_}, $new_g->{$_}, "Checking $_ graph structures..."))
-	{	print STDERR "non-matching structures: graph: " . Dumper($g->{$_}) . "\nnew_g: " . Dumper($new_g->{$_});
+	{	print "non-matching structures: graph: " . Dumper($g->{$_}) . "\nnew_g: " . Dumper($new_g->{$_});
 	}
 }
 

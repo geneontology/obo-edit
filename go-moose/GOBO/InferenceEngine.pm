@@ -56,6 +56,7 @@ sub get_inferred_target_links {
     my $ig = $self->inferred_graph;
     my $tlinks = $ig->get_target_links($n);
     if (@$tlinks) {
+        # cached
         return $tlinks;
     }
     
@@ -65,20 +66,26 @@ sub get_inferred_target_links {
     #printf STDERR "target $n => @links\n";
 
     my %outlink_h = ();
-    my %link_closure_h = ();
+    #my %link_closure_h = ();
     while (@links) {
        my $link = shift @links;
        next if $outlink_h{$link};
        $outlink_h{$link} = $link;
        my $r = $link->relation;
        my $t = $link->target;
-       #my @extlinks = @{$g->linkset->about($t)};
        my $extlinks = $self->extend_link($link);
-       #printf STDERR "extending $link => @$extlinks\n";
+
+       foreach my $srel (@{$self->get_subrelation_closure($link->relation)}) {
+           my $newlink = new GOBO::LinkStatement(node=>$link->node,
+                                                 relation=>$srel,
+                                                 target=>$link->target);
+           push(@links,$newlink);
+       }
+       
        if (@$extlinks) {
            push(@links,@$extlinks);
            #push(@outlinks,@$extlinks);
-           map {$link_closure_h{$_}=1} @$extlinks;
+           #map {$link_closure_h{$_}=1} @$extlinks;
        }
     }
     $ig->add_links([values %outlink_h]);
@@ -108,6 +115,12 @@ sub get_subrelation_reflexive_closure {
     my $self = shift;
     my $rel = shift;
     return [$rel,@{$self->get_inferred_target_nodes($rel,'is_a')}];
+}
+
+sub get_subrelation_closure {
+    my $self = shift;
+    my $rel = shift;
+    return $self->get_inferred_target_nodes($rel,'is_a');
 }
 
 sub extend_link {
@@ -165,6 +178,31 @@ sub get_nonredundant_set {
     # TODO
     return [values %nh];
 }
+
+=head2 relation_composition
+
+ Arguments: GOBO::RelationNode r1 GOBO::RelationNode r2
+ Returns: ArrayRef[GOBO::RelationNode]
+
+Given two relations r1 and r2, returns the list of relations that hold
+true between x and z where x r1 y and y r2 z holds
+
+Formal definition:
+
+  (R1 o R2 -> R3) implies ( x R1 y, y R2 z -> x R3 z)
+
+Examples:
+
+  part_of o part_of -> part_of (if part_of is declared transitive)
+  regulates o part_of -> regulates (if regulates is declared transitive_over part_of)
+
+See also:
+
+http://geneontology.org/GO.ontology-ext.relations.shtml
+
+http://wiki.geneontology.org/index.php/Relation_composition
+
+=cut
 
 sub relation_composition {
     my $self = shift;
