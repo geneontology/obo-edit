@@ -17,30 +17,34 @@ use GOBO::Writers::OBOWriter;
 
 
 use Test::More;
-plan tests => 15;
+plan tests => 44;
 
 my $verbose = $ENV{GO_VERBOSE} || 0;
 
 my $status;
-#
+# 1
 $status = `perl bin/go-slimdown.pl -i t/data/obofile.obo -s goslim_test -o t/slimmer_test_results.obo 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid input");
 
+# 2
 $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with no output");
 
+# 3
 $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -o t/slimmer_test_results.obo 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with no slim");
 
+# 4
 $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test -b t/data/myslimfile 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with incorrectly specified output");
 
 
 # goslim not in file
+# 5
 $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_monster -o t/slimmer_test_results.obo 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid subset");
 
-
+# 6
 $status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test -o t/slimmer_test_results.obo) );
 ok($status == 0, "Checking go-slimdown.pl with valid args");
 
@@ -50,11 +54,13 @@ die "go-slimdown.pl exited funny: $?" unless $status == 0;
 my $parser = new GOBO::Parsers::OBOParser(file=>"t/slimmer_test_results.obo");
 $parser->parse;
 
+# 7
 cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimdown results");
 system("rm", "t/slimmer_test_results.obo");
 
 die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_test_results.obo";
 
+# 8
 # OK, let's try a different slim now...
 $status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_next_test -o t/slimmer_test_results.obo) );
 ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -s goslim_next_test -o t/slimmer_test_results.obo");
@@ -66,53 +72,79 @@ undef $parser;
 $parser = new GOBO::Parsers::OBOParser(file=>"t/slimmer_test_results.obo");
 $parser->parse;
 
+# 9
 cmp_ok(testme($parser->graph, 2), "==", 1, "Checking slimdown results");
 system("rm", "t/slimmer_test_results.obo");
 
 die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_test_results.obo";
 
+my $args = {
+1 => [ qw(-s goslim_next_test -s goslim_test) ],
+2 => [ qw(-s goslim_next_test goslim_test) ],
+3 => [ '-a' ],
+4 => [ qw(-r test) ],
+5 => [ qw(-r goslim.+test) ],
+};
 
-# now both
-$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_next_test -s goslim_test -b t/obo_file_SLIM_NAME.obo) );
-ok($status == 0, "Checking go-slimdown.pl with args -i t/data/obo_file.obo -s goslim_next_test -s goslim_test -b t/obo_file_SLIM_NAME.obo");
+# 10 - 44
+# 7 tests per arg
+foreach my $a (values %$args)
+{	my $cmd;
+	# invalid inputs
+	# xxx, combined, no output
+	$cmd = 'perl bin/go-slimdown.pl -i t/data/obo_file.obo ' . join(" ", @$a) . " --combined -b t/obo_file_SLIM_NAME.obo 2>&1 1>/dev/null";
+	$status = `$cmd`;
 
-die "go-slimdown.pl exited funny: $?" unless $status == 0;
+	like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid params");
 
-## read in the graph, check it is ok
-undef $parser;
-$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_test.obo");
-$parser->parse;
-cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimdown results");
+	# xxx, not combined, no basefile
+	$cmd = 'perl bin/go-slimdown.pl -i t/data/obo_file.obo ' . join(" ", @$a) . " -o t/slimmer_test_results.obo 2>&1 1>/dev/null";
+	$status = `$cmd`;
 
-## read in the graph, check it is ok
-undef $parser;
-$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_next_test.obo");
-$parser->parse;
-cmp_ok(testme($parser->graph, 2), "==", 1, "Checking slimdown results");
+	like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid params");
 
-system("rm", "t/obo_file_goslim_test.obo");
-system("rm", "t/obo_file_goslim_next_test.obo");
+	# valid inputs
+	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -b t/obo_file_SLIM_NAME.obo), @$a );
 
-# now both... at the same time!!!
-$status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_next_test -s goslim_test -b t/obo_file_SLIM_NAME.obo --combined 2>&1 1>/dev/null`;
-like( $status, qr/Error: /, "Checking combined subsets with invalid output file");
+	ok($status == 0, "Checking go-slimdown.pl with args -i t/data/obo_file.obo -b t/obo_file_SLIM_NAME.obo " . join(" ", @$a) );
 
-print STDERR "\n\n\n";
+	die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
-$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_next_test -s goslim_test -o t/slimmer_test_results.obo --combined) );
-ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -s goslim_next_test -s goslim_test -o t/slimmer_test_results.obo --combined");
+	## read in the graph, check it is ok
+	undef $parser;
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_test.obo");
+	$parser->parse;
 
-die "go-slimdown.pl exited funny: $?" unless $status == 0;
+	cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimdown results");
 
-## read in the graph, check it is ok
-undef $parser;
-$parser = new GOBO::Parsers::OBOParser(file=>"t/slimmer_test_results.obo");
-$parser->parse;
+	## read in the graph, check it is ok
+	undef $parser;
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_next_test.obo");
+	$parser->parse;
 
-cmp_ok(testme($parser->graph, 3), "==", 1, "Checking slimdown results");
-system("rm", "t/slimmer_test_results.obo");
+	cmp_ok(testme($parser->graph, 2), "==", 1, "Checking slimdown results");
 
-die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_test_results.obo";
+	system("rm", "t/obo_file_goslim_test.obo");
+	system("rm", "t/obo_file_goslim_next_test.obo");
+
+	# now test a combination of slims
+	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -o t/slimmer_test_results.obo --combined) , @$a );
+
+	ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -o t/slimmer_test_results.obo --combined" . join(" ", @$a) );
+
+	die "go-slimdown.pl exited funny: $?" unless $status == 0;
+
+	## read in the graph, check it is ok
+	undef $parser;
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/slimmer_test_results.obo");
+	$parser->parse;
+
+	cmp_ok(testme($parser->graph, 3), "==", 1, "Checking slimdown results");
+
+	system("rm", "t/slimmer_test_results.obo");
+	die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_test_results.obo";
+
+}
 
 exit(0);
 
@@ -152,7 +184,7 @@ GO:0000025 part_of GO:0000019
 negatively_regulates is_a regulates
 positively_regulates is_a regulates
 
-GS terms: 
+GS terms:
 GO:0000001
 GO:0000002
 GO:0000003
@@ -260,32 +292,32 @@ $answers->{3}{"GO:0000025"}{part_of}{"GO:0000019"} = 1;
 
 	my $summary;
 	my $ans;
-	map { 
+	map {
 		my $t = $_;
-		map { 
+		map {
 			my $r = $_;
-			map { 
+			map {
 				$ans->{$t}{$r}{$_} = 1
 				} keys %{$answers->{$n}{$t}{$r}};
 			} keys %{$answers->{$n}{$t}};
 		} keys %{$answers->{$n}};
-		
+
 	foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
 	{	#my @links = @{ $infeng->get_inferred_target_links($t) };
 		my @links = @{ $g->get_outgoing_links($t) };
-		
+
 #		print STDERR "links for " . $t->id . ": " . Dumper( \@links );
-		
+
 		foreach (sort { $a->target->id cmp $b->target->id } @links)
-		{	
+		{
 			print STDERR "\nnode: " . $_->node->id . ", target: " . $_->target->id . "\n" if $verbose;
-	
+
 			if ($ans->{$_->node->id}
 				&& $ans->{$_->node->id}{$_->relation->id}
 				&& $ans->{$_->node->id}{$_->relation->id}{$_->target->id} )
 			{	# found the correct answer :D
 			#	ok(1, "Checking ". $_->node->id . " " . $_->relation->id . " " . $_->target->id);
-	
+
 				print STDERR $_->node->id .": looking for ". join(" or ", keys %{$ans->{$_->node->id}} ) . ", found " . $_->relation->id . "\n" if $verbose;
 
 				delete $ans->{$_->node->id}{$_->relation->id}{$_->target->id};
@@ -306,7 +338,7 @@ $answers->{3}{"GO:0000025"}{part_of}{"GO:0000019"} = 1;
 			}
 		}
 	}
-	
+
 #	ok(! keys %{$ans->}, "Checking we have no results left");
 
 #	if ($verbose)
