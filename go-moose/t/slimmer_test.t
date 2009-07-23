@@ -6,15 +6,7 @@ use FileHandle;
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
-use GOBO::Graph;
-use GOBO::Statement;
-use GOBO::LinkStatement;
-use GOBO::NegatedStatement;
-use GOBO::Node;
 use GOBO::Parsers::OBOParser;
-use GOBO::InferenceEngine;
-use GOBO::Writers::OBOWriter;
-
 
 use Test::More;
 plan tests => 44;
@@ -23,11 +15,11 @@ my $verbose = $ENV{GO_VERBOSE} || 0;
 
 my $status;
 # 1
-$status = `perl bin/go-slimdown.pl -i t/data/obofile.obo -s goslim_test -o t/slimmer_test_results.obo 2>&1 1>/dev/null`;
+$status = `perl bin/go-slimdown.pl -i t/data/obofile.obo -s test_goslim -o t/slimmer_test_results.obo 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid input");
 
 # 2
-$status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test 2>&1 1>/dev/null`;
+$status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s test_goslim 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with no output");
 
 # 3
@@ -35,7 +27,7 @@ $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -o t/slimmer_test_resu
 like( $status, qr/Error: /, "Checking go-slimdown.pl with no slim");
 
 # 4
-$status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test -b t/data/myslimfile 2>&1 1>/dev/null`;
+$status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s test_goslim -b t/data/myslimfile 2>&1 1>/dev/null`;
 like( $status, qr/Error: /, "Checking go-slimdown.pl with incorrectly specified output");
 
 
@@ -45,7 +37,7 @@ $status = `perl bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_monster -o t
 like( $status, qr/Error: /, "Checking go-slimdown.pl with invalid subset");
 
 # 6
-$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_test -o t/slimmer_test_results.obo) );
+$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s test_goslim -o t/slimmer_test_results.obo) );
 ok($status == 0, "Checking go-slimdown.pl with valid args");
 
 die "go-slimdown.pl exited funny: $?" unless $status == 0;
@@ -62,8 +54,8 @@ die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_tes
 
 # 8
 # OK, let's try a different slim now...
-$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s goslim_next_test -o t/slimmer_test_results.obo) );
-ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -s goslim_next_test -o t/slimmer_test_results.obo");
+$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -s test_next_goslim -o t/slimmer_test_results.obo) );
+ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -s test_next_goslim -o t/slimmer_test_results.obo");
 
 die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
@@ -79,11 +71,11 @@ system("rm", "t/slimmer_test_results.obo");
 die ("Did not remove t/slimmer_test_results.obo properly!") if -e "t/slimmer_test_results.obo";
 
 my $args = {
-1 => [ qw(-s goslim_next_test -s goslim_test) ],
-2 => [ qw(-s goslim_next_test goslim_test) ],
+1 => [ qw(-s test_next_goslim -s test_goslim) ],
+2 => [ qw(-s test_next_goslim test_goslim) ],
 3 => [ '-a' ],
 4 => [ qw(-r test) ],
-5 => [ qw(-r goslim.+test) ],
+5 => [ qw(-r test.+goslim) ],
 };
 
 # 10 - 44
@@ -112,25 +104,25 @@ foreach my $a (values %$args)
 
 	## read in the graph, check it is ok
 	undef $parser;
-	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_test.obo");
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_test_goslim.obo");
 	$parser->parse;
 
 	cmp_ok(testme($parser->graph, 1), "==", 1, "Checking slimdown results");
 
 	## read in the graph, check it is ok
 	undef $parser;
-	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_goslim_next_test.obo");
+	$parser = new GOBO::Parsers::OBOParser(file=>"t/obo_file_test_next_goslim.obo");
 	$parser->parse;
 
 	cmp_ok(testme($parser->graph, 2), "==", 1, "Checking slimdown results");
 
-	system("rm", "t/obo_file_goslim_test.obo");
-	system("rm", "t/obo_file_goslim_next_test.obo");
+	system("rm", "t/obo_file_test_goslim.obo");
+	system("rm", "t/obo_file_test_next_goslim.obo");
 
 	# now test a combination of slims
 	$status = system("perl", qw( bin/go-slimdown.pl -i t/data/obo_file.obo -o t/slimmer_test_results.obo --combined) , @$a );
 
-	ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -o t/slimmer_test_results.obo --combined" . join(" ", @$a) );
+	ok($status == 0, "Checking go-slimdown.pl with valid args -i t/data/obo_file.obo -o t/slimmer_test_results.obo --combined " . join(" ", @$a) );
 
 	die "go-slimdown.pl exited funny: $?" unless $status == 0;
 
