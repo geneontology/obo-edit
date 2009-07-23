@@ -17,8 +17,10 @@ my $fn = "t/data/roundtripme.obo";
 
 my $fn2 = $fn.'-2';
 convert($fn=>$fn2,obo=>'obo');
-#ok(nodiff($fn,$fn2));
 ok(1); # TODO
+#ok(nodiff($fn,$fn2));
+
+system("rm", "$fn2");
 
 exit 0;
 
