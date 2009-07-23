@@ -30,30 +30,7 @@ sub create {
 
 sub init_fh {
     my $self = shift;
-    if (!$self->fh) {
-        my $f = $self->file;
-        my $fh;
-        if ($f) {
-            if ($f =~ /\.gz$/) {
-                $fh = FileHandle->new("gzip -dc $f|");
-            }
-            else {
-                $fh = FileHandle->new($f);
-            }
-        }
-        else {
-            confess "no file";
-        }
-        if (!$fh) {
-            confess "no fh";
-        }
-        $self->fh($fh);
-    }
-}
-
-sub parse {
-    my $self = shift;
-    my $f = shift;
+    my $f = shift || $self->file || undef;
     if ($f) {
         if (ref($f)) {
             $self->fh($f);
@@ -61,9 +38,27 @@ sub parse {
         else {
             $self->file($f);
             $self->clear_fh;
+            my $fh;
+            if ($f =~ /\.gz$/) {
+                $fh = FileHandle->new("gzip -dc $f|");
+            }
+            else {
+                $fh = FileHandle->new($f);
+            }
+            $self->fh($fh);
         }
     }
-    $self->init_fh;
+    else {
+        if (! $self->fh ) {
+            confess "no file or fh";
+        }
+        # we're OK, we have an fh
+    }
+}
+
+sub parse {
+    my $self = shift;
+    $self->init_fh(@_);
     $self->parse_header;
     $self->parsed_header(1);
     $self->parse_body;
