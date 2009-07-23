@@ -447,7 +447,7 @@ public class TermUtil {
 	 * Returns the descendants of the given term.
 	 */
 	public static Collection<LinkedObject> getDescendants(LinkedObject term, LinkFilter lf) {
-		return getDescendants(term, lf);
+		return getDescendants(term,false,lf);
 	}
 
 	/**
