@@ -20,7 +20,7 @@ convert($fn=>$fn2,obo=>'obo');
 ok(1); # TODO
 #ok(nodiff($fn,$fn2));
 
-system("rm", "$fn2");
+unlink($fn2);
 
 exit 0;
 
