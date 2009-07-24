@@ -170,7 +170,7 @@ sub get_subset_nodes {
 	my $graph = $args->{graph};
 	my $options = $args->{options};
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
 
 	my $data_h;
 
@@ -205,7 +205,7 @@ sub get_subset_nodes {
 		};
 	}
 	
-	foreach ( @{$graph->nodes} )
+	foreach ( @{$graph->terms} )
 	{	next if $_->obsolete;
 		my $n = $_;
 		# make sure that we have all the root nodes
@@ -279,7 +279,7 @@ sub get_graph_relations {
 	my $graph = $args->{graph};
 	my $options = $args->{options};
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
 	my $rel_h;
 
 	# get the relations specified in the graph and see how they relate to each other...
@@ -318,8 +318,7 @@ sub get_graph_links {
 	my $graph = $args->{graph};
 	my $ie = $args->{inf_eng} || new GOBO::InferenceEngine(graph => $graph);
 
-	die( (caller(0))[3] . "get_graph_links: missing required arguments" ) unless $roots && $subset && $input && $graph && $ie;
-
+	confess( (caller(0))[3] . "get_graph_links: missing required arguments" ) unless $roots && $subset && $input && $graph && $ie;
 
 	# get rid of any existing data
 	my $node_data;
@@ -389,7 +388,7 @@ sub remove_redundant_relationships {
 	{	$rel_data = get_graph_relations({ graph => $graph, options => $options });
 	}
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $node_data && $rel_data && $graph;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $node_data && $rel_data && $graph;
 
 	if (defined $rel_data->{graph})
 	{	populate_lookup_hashes({ graph_data => $rel_data });
@@ -455,7 +454,7 @@ sub trim_graph {
 	my $new_d;      # new data hash - woohoo!
 	my $options = $args->{options};
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$d->{graph}};
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$d->{graph}};
 
 	if (! $d->{node_rel_target} || ! $d->{target_node_rel} )
 	{	populate_lookup_hashes({ graph_data => $d });
@@ -568,7 +567,7 @@ sub add_extra_stuff_to_graph {
 
 	$new_g = new GOBO::Graph if ! $new_g;
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $old_g && defined $new_g;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $old_g && defined $new_g;
 
 	foreach my $attrib qw( version source date comment declared_subsets property_value_map )
 	{	$new_g->$attrib( $old_g->$attrib ) if $old_g->$attrib;
@@ -597,7 +596,7 @@ sub add_nodes_and_links_to_graph {
 
 	$new_g = new GOBO::Graph if ! $new_g;
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $old_g && defined $new_g && $graph_data;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $old_g && defined $new_g && $graph_data;
 
 	## add the relations to the graph if absent
 	if (! $new_g->relations )
@@ -642,7 +641,7 @@ sub populate_lookup_hashes {
 	my $args = shift;
 	my $hash = $args->{graph_data};
 	
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$hash->{graph}};
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$hash->{graph}};
 
 	foreach my $k qw(node_target_rel target_node_rel node_rel_target target_rel_node rel_node_target rel_target_node)
 	{	delete $hash->{$k};
@@ -680,7 +679,7 @@ sub write_graph_to_file {
 	my $subset = $args->{subset};
 	my $options = $args->{options};
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $subset && $options;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $subset && $options;
 
 	if ($options->{basename})
 	{	($options->{output} = $options->{basename}) =~ s/SLIM_NAME/$subset/;
@@ -697,6 +696,7 @@ sub write_graph_to_file {
 
 input:  graph_data => data hash with nodes and relations specified as
                {graph}{ node_id }{ relation_id }{ target_id }
+               nb: must already have had all that reasoning stuff done
           plus various rearrangements, with a hash key specifying the ordering
           e.g. {node_target_rel}
                {target_node_rel}
@@ -715,11 +715,11 @@ sub get_closest_ancestral_nodes {
 	my $args = shift;
 	my $d = $args->{graph_data};
 	my $id = $args->{id};
-	my $rel = $args->{relation} || undef;
+	my $rel_wanted = $args->{relation} || undef;
 	my $options = $args->{options};
 
 
-	die( (caller(0))[3] . ": missing required arguments. Dying" ) unless $id && values %{$d->{graph}};
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $id && values %{$d->{graph}};
 
 	# if there are no links whatsoever involving this term, report and return undef
 	if (! $d->{graph}{$id} )
@@ -727,16 +727,16 @@ sub get_closest_ancestral_nodes {
 		return undef;
 	}
 
-	if ( $rel )
+	if ( $rel_wanted )
 	{	# if a relation is specified, but there are no relations involving this term
 		# that match, return undef
-		if ( ! values %{$d->{graph}{$id}{$rel}} )
-		{	print STDERR "No $rel links from $id\n" if $options->{verbose};
+		if ( ! values %{$d->{graph}{$id}{$rel_wanted}} )
+		{	print STDERR "No $rel_wanted links from $id\n" if $options->{verbose};
 			return undef;
 		}
 		# if it is only connected to one node by the relation, it must be the closest!
-		elsif (scalar keys %{$d->{graph}{$id}{$rel}} == 1)
-		{	return [ map { { node => $id, rel => $rel, target => $_ } } keys %{$d->{graph}{$id}{$rel}} ];
+		elsif (scalar keys %{$d->{graph}{$id}{$rel_wanted}} == 1)
+		{	return [ map { { node => $id, rel => $rel_wanted, target => $_ } } keys %{$d->{graph}{$id}{$rel_wanted}} ];
 		}
 	}
 
@@ -748,8 +748,8 @@ sub get_closest_ancestral_nodes {
 	# only connected to one node: must be the closest!
 	if (scalar keys %{$d->{node_target_rel}{$id}} == 1)
 	{	# we specified a relation
-		if ($rel)
-		{	return [ map { { node => $id, rel => $rel, target => $_ } } keys %{$d->{node_target_rel}{$id}} ];
+		if ($rel_wanted)
+		{	return [ map { { node => $id, rel => $rel_wanted, target => $_ } } keys %{$d->{node_target_rel}{$id}} ];
 		}
 		else
 		{	my $target = (keys %{$d->{node_target_rel}{$id}})[0];
@@ -758,8 +758,8 @@ sub get_closest_ancestral_nodes {
 	}
 
 	my $new_d;
-	foreach my $r (keys %{$d->{node_rel_target}{$id}})
-	{	next if $rel && $r ne $rel;
+	foreach my $rel (keys %{$d->{node_rel_target}{$id}})
+	{	next if $rel_wanted && $rel ne $rel_wanted;
 
 		#	list_by_rel contains all the nodes between it and the root(s) of $id
 		my @list_by_rel = keys %{$d->{node_rel_target}{$id}{$rel}};
@@ -802,5 +802,132 @@ sub get_closest_ancestral_nodes {
 
 	return $new_d;
 }
+
+
+
+=head2 get_furthest_ancestral_nodes
+
+input:  graph_data => data hash with nodes and relations specified as
+               {graph}{ node_id }{ relation_id }{ target_id }
+               nb: must already have had all that reasoning stuff done
+          plus various rearrangements, with a hash key specifying the ordering
+          e.g. {node_target_rel}
+               {target_node_rel}
+        id        => id of node to find the closest ancestral node of
+        relation  => relation id, if wanted
+        options => option_h
+
+output: new data hash, slimmed down, with relations specified as
+               {graph}{ node_id }{ relation_id }{ target_id }
+
+For a given term, finds the furthest node[s]
+
+=cut
+
+sub get_furthest_ancestral_nodes {
+	my $args = shift;
+	my $d = $args->{graph_data};
+	my $id = $args->{id};
+	my $rel_wanted = $args->{relation} || undef;
+	my $options = $args->{options};
+
+
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $id && values %{$d->{graph}};
+
+	# if there are no links whatsoever involving this term, report and return undef
+	if (! $d->{graph}{$id} )
+	{	print STDERR "No links from $id\n" if $options->{verbose};
+		return undef;
+	}
+
+	if ( $rel_wanted )
+	{	# if a relation is specified, but there are no relations involving this term
+		# that match, return undef
+		if ( ! values %{$d->{graph}{$id}{$rel_wanted}} )
+		{	print STDERR "No $rel_wanted links from $id\n" if $options->{verbose};
+			return undef;
+		}
+		# if it is only connected to one node by the relation, it must be the closest!
+		elsif (scalar keys %{$d->{graph}{$id}{$rel_wanted}} == 1)
+		{	return [ map { { node => $id, rel => $rel_wanted, target => $_ } } keys %{$d->{graph}{$id}{$rel_wanted}} ];
+		}
+	}
+
+	# make sure the look up hashes are populated
+	if (! $d->{node_rel_target} || ! $d->{target_node_rel} )
+	{	populate_lookup_hashes({ graph_data => $d });
+	}
+	
+	# only connected to one node: must be the closest!
+	if (scalar keys %{$d->{node_target_rel}{$id}} == 1)
+	{	# we specified a relation
+		if ($rel_wanted)
+		{	return [ map { { node => $id, rel => $rel_wanted, target => $_ } } keys %{$d->{node_target_rel}{$id}} ];
+		}
+		else
+		{	my $target = (keys %{$d->{node_target_rel}{$id}})[0];
+			return [ map { { node => $id, rel => $_, target => $target } } keys %{$d->{node_target_rel}{$id}{$target}} ];
+		}
+	}
+
+	#TODO: add in a check for the root nodes
+
+
+	my $new_d;
+	foreach my $rel (keys %{$d->{node_rel_target}{$id}})
+	{	next if $rel_wanted && $rel ne $rel_wanted;
+
+		#	list_by_rel contains all the nodes between it and the root(s) of $id
+		my @list_by_rel = keys %{$d->{node_rel_target}{$id}{$rel}};
+
+		REL_SLIMDOWN_LOOP:
+		while (@list_by_rel)
+		{	my $a = pop @list_by_rel;
+			my @list2_by_rel = ();
+			while (@list_by_rel)
+			{	my $b = pop @list_by_rel;
+				if ($d->{target_node_rel}{$a}{$b})
+				{	#	b is node, a is target
+					#	forget about b, look at the next in the list
+					next;
+=cut
+					#	forget about a, go on to the next list item
+					push @list_by_rel, $b;
+					push @list_by_rel, @list2_by_rel if @list2_by_rel;
+					next REL_SLIMDOWN_LOOP;
+=cut
+				}
+				elsif ($d->{node_target_rel}{$a}{$b})
+				{	#	a is node, b is target
+					#	forget about a, go on to the next list item
+					push @list_by_rel, $b;
+					push @list_by_rel, @list2_by_rel if @list2_by_rel;
+					next REL_SLIMDOWN_LOOP;
+=cut
+					#	forget about b, look at the next in the list
+					next;
+=cut
+				}
+				else
+				{	#a and b aren't related
+					#	keep b
+					push @list2_by_rel, $b;
+					next;
+				}
+			}
+			#	if a is still around, it must be a descendent of
+			#	all the nodes we've looked at, so it can go on our
+			#	descendent list
+			push @$new_d, { node => $id, rel => $rel, target => $a };
+#			$new_d->{graph}{$id}{$rel}{$a} = $d->{node_rel_target}{$id}{$rel}{$a};
+
+			#	if we have a list2_by_rel, transfer it back to @list_by_rel
+			push @list_by_rel, @list2_by_rel if @list2_by_rel;
+		}
+	}
+
+	return $new_d;
+}
+
 
 1;
