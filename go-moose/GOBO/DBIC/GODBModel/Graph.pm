@@ -46,8 +46,18 @@ sub new {
 
   ## TODO/BUG: the below would be preferable if the GO wasn't borked.
   #my $rrs = $schema->resultset('Term')->search({is_root => 1});
+
+  ## Try and guess which term id the "bad" root.
+  my $all_db_id = 1;
+  my $tmp_rs = $self->{SCHEMA}->resultset('Term')->search({ is_root => 1 });
+  my $possible_root_term = $tmp_rs->next;
+  if( $possible_root_term && $possible_root_term->acc eq 'all' ){
+    $all_db_id = $possible_root_term->id;
+  }
+
   $self->{ROOTS} = {};
-  my $rrs = $self->{SCHEMA}->resultset('Term2Term')->search({ term1_id => 1 });
+  my $rrs =
+    $self->{SCHEMA}->resultset('Term2Term')->search({ term1_id => $all_db_id });
   while( my $possible_root_rel = $rrs->next ){
     my $term = $possible_root_rel->subject;
     if( ! $term->is_obsolete && $term->name ne 'all' ){
