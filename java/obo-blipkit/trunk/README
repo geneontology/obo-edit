@@ -1,0 +1,11 @@
+First add the jar to the plugins directory for OE:
+
+cd ~/oboedit_config
+mkdir extensions
+cd extensions
+ln -s /Users/cjm/Eclipse/workspace/OBO-Blipkit/runtime/obo-blipkit.jar
+
+Execute from Eclipse by adding this to VMoptions:
+
+-Xmx2048m -Djava.library.path=/users/cjm/lib/swipl-i386
+
