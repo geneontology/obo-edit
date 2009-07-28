@@ -1,6 +1,7 @@
+
 =head1 NAME
 
-GOBO::Defined
+GOBO::Definable
 
 =head1 SYNOPSIS
 
