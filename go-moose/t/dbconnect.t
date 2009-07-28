@@ -13,6 +13,8 @@ use GOBO::DBIC::GODBModel::Query;
 use GOBO::AmiGO::Indexes::AmiGOStatementIndex;
 use FileHandle;
 
+exit 0;
+
 ## Constructor.
 my $q = GOBO::DBIC::GODBModel::Query->new({
     host => '127.0.0.1',

@@ -1,5 +1,7 @@
 package GOBO;
 
+our $VERSION='0.02';
+
 # no code here, only POD docs.
 # best read on CPAN
 # http://search.cpan.org/~cmungall/GOBO/GOBO.pm
