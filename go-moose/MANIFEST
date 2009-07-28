@@ -93,6 +93,7 @@ GOBO/Subset.pm
 GOBO/Synonym.pm
 GOBO/TermNode.pm
 GOBO/Util/
+GOBO/Util/GraphFunctions.pm
 GOBO/Util/LuceneIndexer.pm
 GOBO/Writers/
 GOBO/Writers/CustomizableWriter.pm
@@ -100,6 +101,7 @@ GOBO/Writers/GAFWriter.pm
 GOBO/Writers/OBOWriter.pm
 GOBO/Writers/OBOXMLWriter.pm
 GOBO/Writers/Writer.pm
+MANIFEST
 Makefile.PL
 README
 bin/
@@ -142,7 +144,7 @@ t/logical_definition_test.t
 t/node_removal.t
 t/oboparsertest.t
 t/parsetest.t
-t/relation_removal.t
 t/relation_test.t
 t/roundtrip.t
+t/slimmer_test.t
 t/union_inference_test.t
