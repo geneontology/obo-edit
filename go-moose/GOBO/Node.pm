@@ -48,11 +48,11 @@ GOBO::Node
 
  A unit in a graph. The Node class hierarchy:
 
- * GOBO::ClassNode 
- ** GOBO::TermNode 
- ** GOBO::ClassExpression
- * GOBO::RelationNode
- * GOBO::InstanceNode
+ * L<GOBO::ClassNode>
+ ** L<GOBO::TermNode>
+ ** L<GOBO::ClassExpression>
+ * L<GOBO::RelationNode>
+ * L<GOBO::InstanceNode>
 
 With a simple ontology graph, the core units are TermNodes.
 
@@ -60,7 +60,7 @@ With a simple ontology graph, the core units are TermNodes.
 
 =head1 SEE ALSO
 
-GOBO::Graph
+L<GOBO::Graph>
 
 =cut
 
