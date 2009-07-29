@@ -32,6 +32,12 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 		    out +=  ": " + loadRemark;
 		if (SessionManager.getManager().getUseReasoner())
 		    out +=  " (REASONER ON)";
+		if(SessionManager.getManager().getIncrementalReasoningStatus())
+			out += "*";
+		if(SessionManager.getManager().getStepIncrementalReasoningStatus())
+			out += "^";
+		
+		logger.debug("FrameNameUpdateTask - " + out);
 		return out;
 	}
 }

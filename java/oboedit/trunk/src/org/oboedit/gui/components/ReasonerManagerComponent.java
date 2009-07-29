@@ -78,19 +78,19 @@ public class ReasonerManagerComponent extends AbstractGUIComponent {
 		//partial reasoning in steps
 		// for example while asserting implied links.. there will be mass deletion of links, mass addition and then reasoner runs again..
 		// instead of reasoning after each link addition
-		JCheckBox partialCheck = new JCheckBox("Partial/Step Reasoning"); 
-		JButton topupButton = new JButton("Top-Up Results");
-		add(partialCheck);
-		add(topupButton);
+//		JCheckBox partialCheck = new JCheckBox("Partial/Step Reasoning"); 
+//		JButton topupButton = new JButton("Top-Up Results");
+//		add(partialCheck);
+//		add(topupButton);
 
-		// continuous incremental reasoning option
-		JCheckBox incrementalCheck =  new JCheckBox("Activate Incremental Reasoning");
-
-		// basically what this reasones over the complete linkdatabase again - same effect as switching the reasoner off and then on again
-		// this will be used when the continuous incremental reasoning is off
-		JButton refreshButton = new JButton("Reset/Refresh Results");
-		add(incrementalCheck);
-		add(refreshButton);
+//		// continuous incremental reasoning option
+//		JCheckBox incrementalCheck =  new JCheckBox("Activate Incremental Reasoning");
+//
+//		// basically what this reasones over the complete linkdatabase again - same effect as switching the reasoner off and then on again
+//		// this will be used when the continuous incremental reasoning is off
+//		JButton refreshButton = new JButton("Reset/Refresh Results");
+//		add(incrementalCheck);
+//		add(refreshButton);
 		
 		add(summaryField);
 
