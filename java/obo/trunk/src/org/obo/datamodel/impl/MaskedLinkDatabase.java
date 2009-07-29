@@ -25,6 +25,12 @@ public class MaskedLinkDatabase extends AbstractLinkDatabase {
 			return visibleObjects.contains(((Link) in).getParent());
 		}
 	};
+	
+	protected VectorFilter ancestorFilter = new VectorFilter() {
+		public boolean satisfies(Object in) {
+			return visibleObjects.contains(((Link) in).getAncestor());
+		}
+	};
 
 	protected VectorFilter childFilter = new VectorFilter() {
 		public boolean satisfies(Object in) {

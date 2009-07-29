@@ -70,27 +70,27 @@ public class HistoryGenerator implements Serializable {
 	 * SynonymTypeHistoryItem object is added to the collection. To see what
 	 * each object contains look at the class definition for the object. 
 	 * </p>
-	 * @param oldSession
-	 * @param newSession
+	 * @param oldHistory
+	 * @param newHistory
 	 * @param warnings
 	 * @return
 	 */
-	public static SessionHistoryList getHistory(OBOSession oldSession,
-			OBOSession newSession,
+	public static SessionHistoryList getHistory(OBOSession oldHistory,
+			OBOSession newHistory,
 			Collection<String> warnings) {
 
 		SessionHistoryList history = new DefaultHistoryList();
 
 		// find namespace collection changes
-		for(Namespace n : oldSession.getNamespaces()){
-			Namespace newn = HistoryUtil.findNamespace(n, newSession);
+		for(Namespace n : oldHistory.getNamespaces()){
+			Namespace newn = HistoryUtil.findNamespace(n, newHistory);
 			if (newn == null) {
 				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(n.getID(), null, false, true);
 				history.addItem(item);
 			}
 		}
-		for(Namespace n : newSession.getNamespaces()){
-			Namespace oldNamespace = HistoryUtil.findNamespace(n, oldSession);
+		for(Namespace n : newHistory.getNamespaces()){
+			Namespace oldNamespace = HistoryUtil.findNamespace(n, oldHistory);
 			if (oldNamespace == null) {
 				TermNamespaceHistoryItem item = new TermNamespaceHistoryItem(null, n.getID(), true, false);
 				history.addItem(item);
@@ -98,13 +98,13 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		// find subset collection changes
-		for(TermSubset oldTermSubset : oldSession.getSubsets()){
-			if (!newSession.getSubsets().contains(oldTermSubset)) {
+		for(TermSubset oldTermSubset : oldHistory.getSubsets()){
+			if (!newHistory.getSubsets().contains(oldTermSubset)) {
 				TermSubsetHistoryItem item = new TermSubsetHistoryItem(oldTermSubset,
 						null, false, true);
 				history.addItem(item);
 			} else {
-				TermSubset newTermSubset = HistoryUtil.findCategory(oldTermSubset, newSession);
+				TermSubset newTermSubset = HistoryUtil.findCategory(oldTermSubset, newHistory);
 				if (!oldTermSubset.getDesc().equals(newTermSubset.getDesc())) {
 					TermSubsetHistoryItem item = new TermSubsetHistoryItem(
 							oldTermSubset, newTermSubset, false, false);
@@ -112,8 +112,8 @@ public class HistoryGenerator implements Serializable {
 				}
 			}
 		}
-		for (TermSubset newTermSubset : newSession.getSubsets()){
-			if (!oldSession.getSubsets().contains(newTermSubset)) {
+		for (TermSubset newTermSubset : newHistory.getSubsets()){
+			if (!oldHistory.getSubsets().contains(newTermSubset)) {
 				TermSubsetHistoryItem item = new TermSubsetHistoryItem(
 						null, newTermSubset, true, false);
 				history.addItem(item);
@@ -121,14 +121,14 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		// find synonym category collection changes
-		for(SynonymType oldTermSynonymType : oldSession.getSynonymTypes()) {
-			if (!newSession.getSynonymTypes().contains(oldTermSynonymType)) {
+		for(SynonymType oldTermSynonymType : oldHistory.getSynonymTypes()) {
+			if (!newHistory.getSynonymTypes().contains(oldTermSynonymType)) {
 				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						oldTermSynonymType, null, false, true);
 				history.addItem(item);
 			} else {
 				SynonymType newTermSynonymType = HistoryUtil.findSynonymCategory(oldTermSynonymType,
-						newSession);
+						newHistory);
 				if (!oldTermSynonymType.getName().equals(newTermSynonymType.getName())
 						|| oldTermSynonymType.getScope() != newTermSynonymType.getScope()) {
 					SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
@@ -137,8 +137,8 @@ public class HistoryGenerator implements Serializable {
 				}
 			}
 		}
-		for(SynonymType newTermSynonymType : newSession.getSynonymTypes()){
-			if (!oldSession.getSynonymTypes().contains(newTermSynonymType)) {
+		for(SynonymType newTermSynonymType : newHistory.getSynonymTypes()){
+			if (!oldHistory.getSynonymTypes().contains(newTermSynonymType)) {
 				SynonymTypeHistoryItem item = new SynonymTypeHistoryItem(
 						null, newTermSynonymType, true, false);
 				history.addItem(item);
@@ -148,16 +148,8 @@ public class HistoryGenerator implements Serializable {
 		List<IdentifiedObject> newObjects = new LinkedList<IdentifiedObject>();
 
 		// if an object is in the new history, but not in the old history, it has been added
-		for(IdentifiedObject newio : newSession.getObjects()){
-			//logger.debug("HistoryGenerator: getHistory: newio = " + newio);
-			//if (newIO.getClass().getName() == "obo:TERM"){
-			//
-			//}
-			IdentifiedObject oldio = oldSession.getObject(newio.getID());
-			//logger.debug("HistoryGenerator: oldio = " + oldio);
-			//if (oldIO.getClass().getName() == "obo:TERM"){
-			//System.out.println("HistoryGenerator: getHistory: oldio = " + oldio.getName());
-			//}
+		for(IdentifiedObject newio : newHistory.getObjects()){
+			IdentifiedObject oldio = oldHistory.getObject(newio.getID());
 			if (oldio == null) {
 				history.addItem(new CreateObjectHistoryItem(newio.getID(), newio.getType().getID()));
 				//logger.debug("HistoryGenerator: io.getID = " + io.getID());
@@ -167,19 +159,15 @@ public class HistoryGenerator implements Serializable {
 		}
 
 		for(IdentifiedObject newSessionIO : newObjects){
-			//System.out.println("HistoryGenerator: newObjects:newSessionIdentifiedObject = " + newSessionIdentifiedObject);	
-			IdentifiedObject oldSessionIO = oldSession.getObject(newSessionIO.getID());
+			logger.debug("HistoryGenerator: newObjects:newSessionIdentifiedObject = " + newSessionIO);	
+			IdentifiedObject oldSessionIO = oldHistory.getObject(newSessionIO.getID());
 			//System.out.println("HistoryGenerator: newObjects:oldSessionIdentifiedObject = " + oldSessionIdentifiedObject);
 
 			HistoryList creationList = new DefaultHistoryList();
 			if (newSessionIO.getType() instanceof OBOClass) {
-				IdentifiedObject blankTerm = oldSession.getObjectFactory()
+				IdentifiedObject blankTerm = oldHistory.getObjectFactory()
 				.createObject(newSessionIO.getID(), (OBOClass) newSessionIO.getType(),newSessionIO.isAnonymous());
 
-				//System.out.println("HistoryGenerator: getHistory: blankTerm = " + blankTerm); 
-				//System.out.println("HistoryGenerator: getHistory: newSessionIdentifiedObject = " + newSessionIdentifiedObject);
-				//System.out.println("HistoryGenerator: getHistory: creationList = " + creationList);
-				//System.out.println("HistoryGenerator: getHistory: warnings = " + warnings);
 				getTermTextChanges(blankTerm, newSessionIO, creationList, warnings);
 				getParentageChanges(blankTerm, newSessionIO, creationList, warnings);
 				getObsoleteChanges(blankTerm, newSessionIO, creationList, warnings);
@@ -194,21 +182,16 @@ public class HistoryGenerator implements Serializable {
 				history.addItem(creationList.getItemAt(0));
 		}
 
-		for(IdentifiedObject io : oldSession.getObjects()){
-			IdentifiedObject newio = newSession.getObject(io.getID());
+		for(IdentifiedObject io : oldHistory.getObjects()){
+			IdentifiedObject newio = newHistory.getObject(io.getID());
 
 			// if an object is in the old history, but not in the new history, it has been destroyed
 			if (newio == null) {
 				if (io instanceof LinkedObject) {
 					LinkedObject lo = (LinkedObject) io;
-					for(Link link: lo.getParents()){
+						for(Link link: lo.getChildren()){
 						history.addItem(new DeleteLinkHistoryItem(link));
 					}
-					//					it2 = lo.getChildren().iterator();
-					//					while (it2.hasNext()) {
-					//						Link link = (Link) it2.next();
-					//						history.addItem(new DeleteLinkHistoryItem(link));
-					//					}
 				}
 				history.addItem(new DestroyObjectHistoryItem(io));
 				continue;
@@ -458,7 +441,6 @@ public class HistoryGenerator implements Serializable {
 					history.addItem(new RemoveReplacementHistoryItem(obsoletableOldIO, oo));
 				}
 				//logger.debug("HistoryGenerator: getObsoleteChanges: replacementchanges = " + replacementchanges);
-
 			}
 		}
 	}

@@ -217,7 +217,7 @@ public class OBDSQLDatabaseAdapter extends AbstractProgressValued implements OBO
 
 		protected String serializer = "OBDSQL";
 
-		protected String impliedType = "Save for presentation";
+		protected String impliedType = "Save trimmed links";
 
 		public OBDSQLDatabaseAdapterConfiguration() {
 		}

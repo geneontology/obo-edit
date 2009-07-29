@@ -57,12 +57,12 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	public String toString() {
 		return majorVersion + "."
 				+ StringUtil.pad(minorVersion + "", '0', 1, true)
-				+ (isRC() ? "-rc" +rcVersion : "");
-//				+ (isBeta() ? "-beta" + betaVersion : "");
+				+ (isRC() ? "-rc" +rcVersion : "")
+				+ (isBeta() ? "-beta" + betaVersion : "");
 	}
 
 	public static void main(String[] args) throws Exception {
-		logger.info(new VersionNumber("2.0-rc1"));
+		logger.info(new VersionNumber("2.1-beta"));
 //		logger.info(new VersionNumber("3.008"));
 	}
 

@@ -75,6 +75,10 @@ public class LinkLinkedObject implements LinkedObject {
 	public Collection<Link> getParents() {
 		return Collections.emptySet();
 	}
+	
+	public Collection<Link> getAncestors() {
+		return Collections.emptySet();
+	}
 
 	public boolean isRoot() {
 		return false;
@@ -187,4 +191,5 @@ public class LinkLinkedObject implements LinkedObject {
 	public String toString() {
 		return link.toString();
 	}
+
 }

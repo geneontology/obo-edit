@@ -192,7 +192,7 @@ public class DefaultHistoryDumper implements OBOAdapter, HistoryDumper {
 	protected void dumpHistory(PrintStream stream, Collection<HistoryItem> historyItems,
 			int indentLevel) {
 		for(HistoryItem item : historyItems){
-			while (!cancelled) {
+			if (!cancelled) {
 				for (int j = 0; j < SPACEPADDING * indentLevel; j++)
 					stream.print(" ");
 				stream.println("* " + getItemDesc(item, history));
