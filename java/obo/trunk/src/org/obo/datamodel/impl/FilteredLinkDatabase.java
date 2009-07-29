@@ -22,6 +22,7 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	protected LinkDatabase linkDatabase;
 	protected boolean allowDangling = false;
+	protected boolean closeDangling = false;
 
 	public FilteredLinkDatabase(LinkDatabase linkDatabase) {
 		this.linkDatabase = linkDatabase;
@@ -37,6 +38,14 @@ public class FilteredLinkDatabase extends AbstractLinkDatabase {
 
 	public boolean getAllowDangling() {
 		return allowDangling;
+	}
+	
+	public void setCloseDangling(boolean closeDangling) {
+		this.closeDangling = closeDangling;
+	}
+
+	public boolean getCloseDangling() {
+		return closeDangling;
 	}
 
 	protected final VectorFilter childFilter = new VectorFilter() {

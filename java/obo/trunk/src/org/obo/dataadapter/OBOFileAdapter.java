@@ -20,7 +20,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 	protected OBOAdapterConfiguration ioprofile;
 
-	protected java.util.List progressListeners = new LinkedList();
+	protected List progressListeners = new LinkedList();
 
 	protected ParseEngine engine;
 
@@ -29,7 +29,7 @@ public class OBOFileAdapter implements OBOAdapter {
 	protected StringBuffer buffer = new StringBuffer();
 
 	protected boolean cancelled = false;
-	
+
 	protected OBOMetaData metaData;
 
 	protected GraphicalUI advancedUI;
@@ -44,33 +44,32 @@ public class OBOFileAdapter implements OBOAdapter {
 	}
 
 	public static class OBOAdapterConfiguration extends
-			FileAdapterConfiguration {
+	FileAdapterConfiguration {
+
+		protected boolean allowDangling = false;
 		
-		// WARNING: you need to set this AND basicSave=false. --CJM
-//		protected boolean allowDangling = false;
-	        // Changed to true because of users' request.  --NH, 4/11/08
-	        protected boolean allowDangling = true;
-	        
-	  protected boolean followImports = true;
+		protected boolean closeDangling = false;
+
+		protected boolean followImports = true;
 
 		protected boolean failFast = false;
 
 		protected boolean saveImplied;
 
-		protected java.util.List saveRecords = new ArrayList();
-	    
-	    // If we make this false, it gets made true anyway in doOperation
-	    // and if we comment that out, save doesn't work at all!
+		protected List saveRecords = new ArrayList();
+
+		// If we make this false, it gets made true anyway in doOperation
+		// and if we comment that out, save doesn't work at all!
 		protected boolean basicSave = true;
 
-	        protected String serializer = "OBO_1_2";  // new default
+		protected String serializer = "OBO_1_2";  // new default
 
-		protected String impliedType = "Save for presentation";
-		
+		protected String impliedType = "Save trimmed links";
+
 		protected SemanticParser semanticParser;
-		
+
 		protected boolean includeExplanations = false;
-		
+
 		protected boolean includeNames = false;
 
 
@@ -101,14 +100,14 @@ public class OBOFileAdapter implements OBOAdapter {
 			this.basicSave = basicSave;
 		}
 
-		public java.util.List getSaveRecords() {
+		public List getSaveRecords() {
 			return saveRecords;
 		}
 
-		public void setSaveRecords(java.util.List saveRecords) {
+		public void setSaveRecords(List saveRecords) {
 			if (saveRecords.contains(null))
 				(new Exception("Null save record added to profile"))
-						.printStackTrace();
+				.printStackTrace();
 			this.saveRecords = saveRecords;
 		}
 
@@ -119,6 +118,14 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setAllowDangling(boolean allowDangling) {
 			this.allowDangling = allowDangling;
 		}
+		
+		public boolean getClosureforDangling() {
+			return allowDangling;
+		}
+
+		public void setClosureforDangling(boolean closeDangling) {
+			this.closeDangling = closeDangling;
+		}
 
 		public boolean getFollowImports() {
 			return followImports;
@@ -128,7 +135,7 @@ public class OBOFileAdapter implements OBOAdapter {
 			this.followImports = followImports;
 		}
 
-		
+
 		public SemanticParser getSemanticParser() {
 			return semanticParser;
 		}
@@ -150,7 +157,7 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setIncludeExplanations(boolean includeExplanations) {
 			this.includeExplanations = includeExplanations;
 		}
-		
+
 		public boolean isIncludeNames() {
 			return includeNames;
 		}
@@ -158,17 +165,11 @@ public class OBOFileAdapter implements OBOAdapter {
 		public void setIncludeNames(boolean includeNames) {
 			this.includeNames = includeNames;
 		}
-
-		
 	}
 
 	public DataAdapterUI getPreferredUI() {
 
 		FileAdapterUI ui = new FileAdapterUI() {
-
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 8709597443707849569L;
 
 			@Override
@@ -178,7 +179,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 			@Override
 			public void acceptComponentConfig(boolean storeonly)
-					throws DataAdapterUIException {
+			throws DataAdapterUIException {
 				super.acceptComponentConfig(storeonly);
 				// ?
 				((OBOAdapterConfiguration) config).setBasicSave(true);
@@ -243,7 +244,7 @@ public class OBOFileAdapter implements OBOAdapter {
 	public <INPUT_TYPE, OUTPUT_TYPE> OUTPUT_TYPE doOperation(
 			IOOperation<INPUT_TYPE, OUTPUT_TYPE> op,
 			AdapterConfiguration configuration, INPUT_TYPE input)
-			throws DataAdapterException {
+	throws DataAdapterException {
 		if (!(configuration instanceof OBOAdapterConfiguration)) {
 			throw new DataAdapterException("Invalid configuration; this "
 					+ "adapter requires an "
@@ -257,19 +258,15 @@ public class OBOFileAdapter implements OBOAdapter {
 				DefaultOBOParser parser = new DefaultOBOParser();
 				// CJM: Not sure I understand the following logic
 				// be careful - setting allowdangling is not enough
-				parser.setAllowDanglingParents(ioprofile.getAllowDangling()
-							       // Why does getBasicSave have to return false?
-							       // If it does, then saving doesn't work at all!  --NH
-//						&& !ioprofile.getBasicSave());
-				    );
+				parser.setAllowDanglingParents(ioprofile.getAllowDangling());
 				parser.setFailFast(ioprofile.getFailFast());
 				parser.setFollowImports(ioprofile.getFollowImports());
 				engine = new OBOParseEngine(parser);
 
 				engine.setPaths(ioprofile.getReadPaths());
 				logger.info("Reading " +	ioprofile.getReadPaths()
-						   + "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
-						   + "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
+						+ "\n\t (allowDangling = " + ioprofile.getAllowDangling() + ")"
+						+ "\n\t (followImports = " + ioprofile.getFollowImports() + ")"); // DEL this part
 				engine.parse();
 				logger.debug("Done parsing file");
 				OBOSession history = parser.getSession();
@@ -310,22 +307,18 @@ public class OBOFileAdapter implements OBOAdapter {
 				serializeEngine.setAutogenString(getAutogenString());
 				serializeEngine.setCurrentProfile(getIDProfile());
 
-				java.util.List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
+				List<FilteredPath> filteredPaths = new LinkedList<FilteredPath>();
 
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
 							null, null, ioprofile.getWritePath()));
 				} else {
-				    // This doesn't seem to work--it saves nothing (but doesn't complain)
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
 				logger.info("Writing " +	filteredPaths
-					    + " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
+						+ " (serializer = " + ioprofile.getSerializer() + ", basicSave = " + ioprofile.getBasicSave() + ")");
 
-				Iterator it = progressListeners.iterator();
-
-				serializeEngine.serialize((OBOSession) input, serializer,
-						filteredPaths);
+				serializeEngine.serialize((OBOSession) input, serializer,filteredPaths);
 
 				return (OUTPUT_TYPE) input;
 				/*

@@ -219,6 +219,18 @@ public class FixedCacheMutableLinkDatabase extends AbstractLinkDatabase implemen
 		}
 		return parents;
 	}
+	
+	public synchronized Collection<Link> getAncestors(LinkedObject lo) {
+		Collection<Link> ancestors = cacheDatabase.getAncestors(lo);
+		if (ancestors == null) {
+			ancestors = storeDatabase.getParents(lo);
+			for (Link link : ancestors) {
+				cacheDatabase.addParent(link);
+			}
+			flushIfNecessary();
+		}
+		return ancestors;
+	}
 
 	public IdentifiedObject getObject(String id) {
 		return cacheDatabase.getObject(id);

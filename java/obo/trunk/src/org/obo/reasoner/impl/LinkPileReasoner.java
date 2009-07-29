@@ -7,10 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
@@ -61,6 +59,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 
 		protected LinkedObject child;
 		protected LinkedObject parent;
+		protected LinkedObject ancestor;
 		protected OBOProperty type;
 		protected boolean lookedAt;
 		// el - changed to HashSet to prevent duplicates
@@ -157,6 +156,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 		public LinkedObject getParent() {
 			return parent;
 		}
+		
+		public LinkedObject getAncestor() {
+			return ancestor;
+		}
 
 		public void setParent(LinkedObject parent) {
 			throw new UnsupportedOperationException();
@@ -218,7 +221,7 @@ public class LinkPileReasoner extends AbstractReasoner {
 		for (ReasonerRule rule : rules) {
 			rule.init(this);
 		}
-		setProgressString("Initializing reasoner...");
+		setProgressString("Initializing LinkPile Reasoner...");
 		linkPile = new LinkedHashSet<Link>();
 		// linkPile = new LinkedList<Link>();
 		Iterator<Link> it = TermUtil.getAllLinks(linkDatabase);
@@ -514,5 +517,10 @@ public class LinkPileReasoner extends AbstractReasoner {
 					.addExplanation((AbstractExplanation) explanation);
 		}
 		// if not a ReasonerLink then it is presumably a given (asserted) link
+	}
+
+	public Collection<Link> getAncestors(LinkedObject lo) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

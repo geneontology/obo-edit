@@ -319,4 +319,9 @@ public class SQLBackedMutableLinkDatabase extends AbstractLinkDatabase
 		}
 	}
 
+	public Collection<Link> getAncestors(LinkedObject lo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

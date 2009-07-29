@@ -185,7 +185,7 @@ public class SimpleLinkFileAdapter extends AbstractProgressValued implements OBO
 				stream.print(col);
 			}
 			LinkDatabase ldb = fullReasoner;
-			if (filteredPath.getImpliedType() == OBOSerializationEngine.SAVE_FOR_PRESENTATION) {
+			if (filteredPath.getImpliedType() == OBOSerializationEngine.SAVE_TRIMMED_LINKS) {
 				logger.info("using trimmed link db");
 				ldb = new TrimmedLinkDatabase(fullReasoner);
 			}

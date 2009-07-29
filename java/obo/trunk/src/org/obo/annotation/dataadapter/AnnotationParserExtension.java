@@ -43,6 +43,7 @@ import org.obo.util.IDUtil;
 import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
+import org.bbop.dataadapter.CancelledAdapterException;
 
 public class AnnotationParserExtension implements ParserExtension,
 	OBOSerializerExtension {
@@ -412,7 +413,7 @@ public class AnnotationParserExtension implements ParserExtension,
 	}
 
 	public boolean writeTag(TagMapping mapping, IdentifiedObject io,
-			LinkDatabase linkDatabase) throws IOException {
+			LinkDatabase linkDatabase) throws IOException, CancelledAdapterException {
 		if (currentAnnotation != null) {
 			if (mapping.equals(ASSIGNED_BY_TAG)) {
 				LinkedObject assignedBy = currentAnnotation.getAssignedBy();
@@ -482,7 +483,7 @@ public class AnnotationParserExtension implements ParserExtension,
 							}
 							else {
 								if (mapping.equals(OBOConstants.LINK_TAG))
-									sengine.writeLink(serializer, l);
+									sengine.writeLink(serializer, l, null);
 							}
 //						}
 //						else {

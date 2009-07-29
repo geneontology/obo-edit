@@ -590,6 +590,7 @@ public class TermUtil {
 		}
 		return parents;
 	}
+	
 
 	public static Collection<LinkedObject> getChildren(LinkedObject lo) {
 		HashSet<LinkedObject> children = new HashSet<LinkedObject>();
