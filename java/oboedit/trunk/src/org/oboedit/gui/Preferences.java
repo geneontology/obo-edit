@@ -918,10 +918,10 @@ public class Preferences {
 	public static VersionNumber getVersion() {
 		if (version == null) {
 			try {
-				URL url = getExtensionLoader().getResource(
-				"org/oboedit/resources/VERSION");
+				URL url = getExtensionLoader().getResource("org/oboedit/resources/VERSION");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(url.openStream()));
+				
 				version = new VersionNumber(reader.readLine());
 				reader.close();
 			} catch (Exception e) {
