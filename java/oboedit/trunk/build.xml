@@ -25,7 +25,7 @@
 	<!-- install4j specific properties; these can be deleted if you don't intend to create install4j installers -->
 	<!--property name="install4j_installation_path" location="/Applications/install4j 4" / -->
 	<!-- change install path for linux -->
-	<property name="install4j_installation_path" location="/opt/install4j" />
+	<property name="install4j_installation_path" location="/Applications/install4j 4" />
 	<property name="install4j_ant_library_path" location="${install4j_installation_path}/bin/ant.jar" />
 	<property name="install4j_api_library_path" location="${install4j_installation_path}/resource/i4jruntime.jar" />
 
@@ -284,7 +284,7 @@
 		<delete dir="docs/JavaHelpSearch" />
 		<!-- Move docs/html/.svn, docs/.svn, and docs/api out of the
 		way so the files in them don't get indexed -->
-		<move todir="htmlsvntmp">
+		<!-- move todir="htmlsvntmp">
 		  <fileset dir="docs/html/.svn" />
 		</move>
 		<move todir="docssvntmp">
@@ -292,7 +292,7 @@
 		</move>
 		<move todir="apitmp" failonerror="false">
 		  <fileset dir="docs/api" />
-		</move>
+		</move -->
 
 		<!-- Run jhindexer -->
 		<exec dir="docs" searchpath="true" executable="${javahelp_indexer}" failonerror="true" failifexecutionfails="true">
@@ -302,7 +302,7 @@
 		</exec >
 
 		<!-- Restore directories that were moved out of the way -->
-		<move todir="docs/html/.svn">
+		<!-- move todir="docs/html/.svn">
 		  <fileset dir="htmlsvntmp" />
 		</move>
 		<move todir="docs/.svn">
@@ -310,7 +310,7 @@
 		</move>
 		<move todir="docs/api" failonerror="false">
 		  <fileset dir="apitmp" />
-		</move>
+		</move -->
 	</target>
 
 	<target name="docindex" depends="-dojhindex">
