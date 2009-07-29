@@ -5,8 +5,20 @@ BUG FIXES:
 - [ geneontology-Bugs-2785074 ] OBO-Edit2-rc still present
 - [ geneontology-Bugs-2787869 ] very minor bug with saving filters
 - [ geneontology-Bugs-2812189 ] GAZ.obo not displayed correctly in OBOEdit2.0
-- OBOMerge
--
+- [ geneontology-Bugs-2824732 ] obodiff is broken!
+- [ geneontology-Bugs-2818616] stop panel changes if click on top
+- [ geneontology-Bugs-2814791] OBO merge doesn't work!
+- [ geneontology-Bugs-2805373] Assert implied links - color table rows
+- [ geneontology-Bugs-2818549] parent search ignores relationship type
+- [ geneontology-Bugs-2815689] change tracker save 
+- [ geneontology-Bugs-2805371] Assert implied links - resize
+- [ geneontology-Bugs-2801684] OBO-Merge generates null-pointer exception
+- [ geneontology-Bugs-2790372] Mac version 2 does not generate log files
+- [ geneontology-Bugs-2749070] reasoner active even in OFF mode
+- [ geneontology-Bugs-2722323] assert implied links pop-up hogs focus and halts editing
+- [ geneontology-Bugs-2787869] very minor bug with saving filters
+- [ geneontology-Bugs-2815829] Simplify 'save implied links'
+- [ geneontology-Bugs-2722318] OTE local mode indication not intuitive
 
 - Fixed bug that stopped the box at the bottom of the history browser from appearing unless another component was clicked on. 
 (Part of OE2.0 - history browser minor bugs - ID: 2507044)
@@ -18,11 +30,8 @@ BUG FIXES:
 The Graphviz interface redraws have been removed for the bulk addition of dbxrefs. 
 Now there is only one redraw at the end of the bulk process.
 
-FIXES:
-* Config directory
-* Logging
-* OBOMerge
-
+NOTES:
+* Config directory - now located in the users home directory and called oboedit_config
 
 
 FEATURES:
@@ -31,7 +40,7 @@ FEATURES:
 ** Row sorting enabled (ascending and descending) for Child and Parent name columns
 ** Clicking the more info icon brings up the explanation for the reasoner made link in the Explanation Component and highlights the link in the Graph Editor
 
-* New Reasoner Modes
+* New Reasoner Modes (IN PROGRESS - WILL BE AVAILABLE in 2.1)
 ** Two new options that represent step-wise and continuous incremental reasoning
 ** Activate incremental reasoning by selecting the "Avtivate Incremental Reasoning" checkbox through the Reasoner Manager
 ** Users have a choice between activating continuous incremental reasoning or partial/step reasoning modes. If neither of these options are selected incremental reasoning is off by default.
@@ -45,18 +54,10 @@ FEATURES:
 * NEW Configuration directory location: users home directory/oboedit_config
 TO DO:
 =======
-Bugs pending:
-- Itemized undo
-- Switch to turn off incremental reasoning
-- graph editor menu options
-- user dictionary refresh and incremental validation stuff
-
 
 Documentation:
 - user.dict usage and backup info
 - Assert Implied Links Component Documentaion
-
-
 
 Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
