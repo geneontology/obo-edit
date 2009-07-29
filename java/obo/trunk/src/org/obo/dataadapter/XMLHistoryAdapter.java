@@ -912,7 +912,9 @@ public class XMLHistoryAdapter implements OBOAdapter {
 				out.append("&amp;");
 			else
 				out.append(text.charAt(i));
+	
 		}
+		logger.debug("out: " + out);
 		return out.toString();
 	}
 

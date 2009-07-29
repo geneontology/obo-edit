@@ -424,6 +424,11 @@ public class WriteCachedOBOSession implements OBOSession {
 			oboClass.setModifiedByExtension(nv);
 		}
 
+		public Collection<Link> getAncestors() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	}
 
 	protected SessionHistoryList currentHistory;
@@ -495,6 +500,11 @@ public class WriteCachedOBOSession implements OBOSession {
 
 		public IdentifiedObject getObject(String id) {
 			return WriteCachedOBOSession.this.getUnwrappedObject(id);
+		}
+
+		public Collection<Link> getAncestors(LinkedObject lo) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	};

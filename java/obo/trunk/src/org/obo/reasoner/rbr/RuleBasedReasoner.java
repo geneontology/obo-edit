@@ -7,16 +7,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
-import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Instance;
 import org.obo.datamodel.Link;
-import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.NestedValue;
@@ -24,25 +20,16 @@ import org.obo.datamodel.OBOClass;
 import org.obo.datamodel.OBOProperty;
 import org.obo.datamodel.PathCapable;
 import org.obo.datamodel.ValueLink;
-import org.obo.datamodel.impl.AbstractLinkDatabase;
 import org.obo.reasoner.Explanation;
 import org.obo.reasoner.ExplanationType;
-import org.obo.reasoner.ReasonedLinkDatabase;
-import org.obo.reasoner.ReasonerListener;
 import org.obo.reasoner.impl.AbstractReasoner;
-import org.obo.reasoner.impl.AbstractReasonerRule;
 import org.obo.reasoner.impl.GivenExplanation;
-import org.obo.reasoner.impl.ReasonerRule;
 import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 import org.bbop.util.MultiHashSetMap;
-import org.bbop.util.MultiMap;
 
-/**
- *
- */
-//public class RuleBasedReasoner extends AbstractLinkDatabase implements ReasonedLinkDatabase  {
+
 public class RuleBasedReasoner extends AbstractReasoner {
 
 	//initialize logger
@@ -70,6 +57,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 		protected LinkedObject child;
 		protected LinkedObject parent;
+		protected LinkedObject ancestor;
 		protected OBOProperty type;
 		protected boolean lookedAt;
 		// el - changed to HashSet to prevent duplicates
@@ -170,6 +158,14 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		public void setParent(LinkedObject parent) {
 			throw new UnsupportedOperationException();
 		}
+		
+		public LinkedObject getAncestor() {
+			return ancestor;
+		}
+
+		public void setAncestor(LinkedObject ancestor) {
+			throw new UnsupportedOperationException();
+		}
 
 		public OBOProperty getType() {
 			return type;
@@ -205,14 +201,10 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		addRule(new IntersectionRule());
 
 	}
-	
-	// TODO: 
+
 	public boolean hasDelayedIncrementalMode() {
 		return true;
 	}
-	
-	
-
 
 	public RelationCompositionTable getRelationCompositionTable() {
 		return rct;
@@ -257,15 +249,12 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	}
 
 
-	//	@Override
 	protected void doReasoning() {
-
 		long initTime = System.nanoTime();
-
 		for (Rule rule : rules) {
 			rule.init(this);
 		}
-		setProgressString("Initializing reasoner...");
+		setProgressString("Initializing Rule Based Reasoner...");
 
 		setProgressString("Reasoning...");
 		boolean isExhausted = false;

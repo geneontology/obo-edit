@@ -18,8 +18,7 @@ MutableLinkDatabase {
 	 * 
 	 */
 	private static final long serialVersionUID = 3770486191021916503L;
-	protected Map<LinkedObject, Collection<Link>> parentLinkMap = new LinkedHashMap<LinkedObject, Collection<Link>>(
-			100, .75f, true);
+	protected Map<LinkedObject, Collection<Link>> parentLinkMap = new LinkedHashMap<LinkedObject, Collection<Link>>(100, .75f, true);
 	protected Map<LinkedObject, Collection<Link>> childLinkMap;
 	protected Map<OBOProperty, Collection<Link>> propertyLinkMap;
 	protected Map<String, IdentifiedObject> objects;
@@ -55,6 +54,13 @@ MutableLinkDatabase {
 	}
 
 	public Collection<Link> getParents(LinkedObject lo) {
+		Collection<Link> s = parentLinkMap.get(lo);
+		if (s == null && !returnNulls)
+			s = Collections.emptySet();
+		return s;
+	}
+	
+	public Collection<Link> getAncestors(LinkedObject lo) {
 		Collection<Link> s = parentLinkMap.get(lo);
 		if (s == null && !returnNulls)
 			s = Collections.emptySet();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
+import org.bbop.dataadapter.CancelledAdapterException;
 import org.obo.dataadapter.OBOConstants.TagMapping;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.LinkDatabase;
@@ -34,7 +35,7 @@ public interface OBOSerializerExtension {
 	public boolean endStanza(IdentifiedObject obj) throws IOException;
 
 	public boolean writeTag(TagMapping mapping, IdentifiedObject object,
-			LinkDatabase linkDatabase) throws IOException;
+			LinkDatabase linkDatabase) throws IOException, CancelledAdapterException;
 
 	public boolean writeObject(LinkDatabase linkDatabase, IdentifiedObject obj)
 			throws IOException;

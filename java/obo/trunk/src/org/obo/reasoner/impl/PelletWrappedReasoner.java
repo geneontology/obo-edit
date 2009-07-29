@@ -436,5 +436,10 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 		
 	}
 
+	public Collection<Link> getAncestors(LinkedObject lo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

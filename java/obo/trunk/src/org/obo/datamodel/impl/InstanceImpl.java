@@ -105,4 +105,10 @@ public class InstanceImpl extends LinkedAnnotatedObjectImpl implements
 		}
 		return properties;
 	}
+
+	public Collection<Link> getAncestors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

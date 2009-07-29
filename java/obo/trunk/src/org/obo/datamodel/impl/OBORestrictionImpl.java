@@ -353,5 +353,10 @@ public class OBORestrictionImpl implements OBORestriction {
 		((ArrayList)additionalArguments).ensureCapacity(index+1);
 		 additionalArguments.set(index, lo);
 	}
+
+	public LinkedObject getAncestor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

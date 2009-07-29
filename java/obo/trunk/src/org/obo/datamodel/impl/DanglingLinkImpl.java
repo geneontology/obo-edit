@@ -15,6 +15,7 @@ public class DanglingLinkImpl implements Link {
 	
 	protected String childID;
 	protected String parentID;
+	protected String ancestorID;
 	protected String typeID;
 	
 	public DanglingLinkImpl(String childID, String typeID, String parentID) {
@@ -32,6 +33,10 @@ public class DanglingLinkImpl implements Link {
 	}
 
 	public LinkedObject getParent() {
+		return new DanglingObjectImpl(parentID);
+	}
+	
+	public LinkedObject getAncestor() {
 		return new DanglingObjectImpl(parentID);
 	}
 

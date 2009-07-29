@@ -1,5 +1,7 @@
 package org.obo.datamodel.impl;
 
+import java.util.Collection;
+
 import org.obo.datamodel.*;
 
 import org.apache.log4j.*;
@@ -77,5 +79,10 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 		} else {
 			return toString().compareToIgnoreCase(in.toString());
 		}
+	}
+
+	public Collection<Link> getAncestors() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -43,7 +43,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected static int WRITE_CURRENT_ID_RULES = 2;
 
-	public static final String SAVE_FOR_PRESENTATION = "Save for presentation";
+	public static final String SAVE_TRIMMED_LINKS = "Save trimmed links";
 
 	public static final String SAVE_ALL = "Save all links";
 
@@ -59,7 +59,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		protected boolean allowDangling = true;  // Default is now true!
+		protected boolean allowDangling = false;
+
+		protected boolean closeDangling = false;
 
 		protected boolean saveImplied = false;
 
@@ -73,7 +75,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected int idRuleMode = DONT_WRITE_ID_RULES;
 
-		protected String impliedType = SAVE_FOR_PRESENTATION;
+		protected String impliedType = SAVE_TRIMMED_LINKS;
 
 		protected String path;
 
@@ -81,7 +83,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected String rootAlgorithm = "GREEDY";
 
-		protected boolean realizeImpliedLinks = false;
+		protected boolean assertImpliedLinks = false;
 
 		protected boolean saveTypes;
 
@@ -144,6 +146,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return allowDangling;
 		}
 
+		public void setCloseDangling(boolean closeDangling) {
+			this.closeDangling = closeDangling;
+		}
+
+		public boolean getCloseDangling() {
+			return closeDangling;
+		}
+
 		public void setSaveImplied(boolean saveImplied) {
 			this.saveImplied = saveImplied;
 		}
@@ -189,12 +199,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return path;
 		}
 
-		public boolean getRealizeImpliedLinks() {
-			return realizeImpliedLinks;
+		public boolean getAssertImpliedLinks() {
+			return assertImpliedLinks;
 		}
 
-		public void setRealizeImpliedLinks(boolean realizeImpliedLinks) {
-			this.realizeImpliedLinks = realizeImpliedLinks;
+		public void setAssertImpliedLinks(boolean assertImpliedLinks) {
+			this.assertImpliedLinks = assertImpliedLinks;
 		}
 
 		public boolean getSaveTypes() {
@@ -260,11 +270,13 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected boolean allowDangling;
 
+	protected boolean closeDangling;
+
 	protected boolean saveImplied;
 
 	protected ReasonerFactory reasonerFactory;
 
-	protected boolean realizeImplied;
+	protected boolean assertImplied;
 
 	protected List<TagMapping> tagOrdering;
 
@@ -385,9 +397,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	public void cancel() {
 		cancelled = true;
-		Iterator it = streams.iterator();
-		while (it.hasNext()) {
-			SafeFileOutputStream sfos = (SafeFileOutputStream) it.next();
+		for(Object o : streams){
+			SafeFileOutputStream sfos = (SafeFileOutputStream) o;
 			try {
 				sfos.fail();
 			} catch (IOException ex) {
@@ -407,10 +418,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		setSerializer(serializer);
 		streams.clear();
 		cancelled = false;
-		Iterator<FilteredPath> it = filteredPaths.iterator();
-
-		while (it.hasNext()) {
-			FilteredPath filteredPath = it.next();
+		for(FilteredPath filteredPath : filteredPaths){
 			try {
 				// First make sure we can actually write to this path
 				// (SafeFileOutputStream won't tell us, because it first writes to a temp file)
@@ -422,8 +430,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					logger.warn("Can't write to output file " + filteredPath.getPath());
 					throw new DataAdapterException("Can't write to output file " + filteredPath.getPath());
 				}
-				SafeFileOutputStream sfos = new SafeFileOutputStream(
-						filteredPath.getPath());
+				SafeFileOutputStream sfos = new SafeFileOutputStream(filteredPath.getPath());
 				streams.add(sfos);
 				PrintStream stream = new PrintStream(new BufferedOutputStream(sfos), false, OBOConstants.DEFAULT_CHARACTER_ENCODING);
 				closingStreams.add(stream);
@@ -452,9 +459,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				throw new DataAdapterException("Write error", ex);
 			}
 		}
-		Iterator it2 = closingStreams.iterator();
-		while (it2.hasNext()) {
-			OutputStream os = (OutputStream) it2.next();
+		for(Object o : closingStreams){
+			OutputStream os = (OutputStream) o;
 			try {
 				os.close();
 			} catch (IOException ex) {
@@ -487,9 +493,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		if (headerTagOrdering == null)
 			headerTagOrdering = OBOConstants.DEFAULT_HEADER_TAG_ORDER;
 
-		Iterator it = headerTagOrdering.iterator();
-		while (it.hasNext()) {
-			Object tagSpec = it.next();
+		for(Object tagSpec : headerTagOrdering){
 			if (tagSpec.equals(OBOConstants.FORMAT_VERSION_HEADER_TAG)) {
 				serializer.writeFormatVersionHeaderTag();
 			} else if (tagSpec.equals(OBOConstants.DATA_VERSION_HEADER_TAG)) {
@@ -520,9 +524,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				scratchList.clear();
 				if (filteredPath.getDiscardUnusedCategories()) {
 					Set usedCategories = new HashSet();
-					Iterator it2 = linkDatabase.getObjects().iterator();
-					while (it2.hasNext()) {
-						IdentifiedObject io = (IdentifiedObject) it2.next();
+					for(IdentifiedObject io : linkDatabase.getObjects()){
 						if (io instanceof SubsetObject) {
 							SubsetObject co = (SubsetObject) io;
 							usedCategories.addAll(co.getSubsets());
@@ -532,9 +534,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				} else
 					scratchList.addAll(session.getSubsets());
 				Collections.sort(scratchList, comparator);
-				Iterator it2 = scratchList.iterator();
-				while (it2.hasNext()) {
-					Object o = it2.next();
+				for(Object o: scratchList){
 					TermSubset cat = (TermSubset) o;
 					serializer.writeSubsetDefHeaderTag(cat);
 				}
@@ -547,14 +547,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				scratchList.clear();
 				if (filteredPath.getDiscardUnusedCategories()) {
 					Set usedCategories = new HashSet();
-					Iterator it2 = linkDatabase.getObjects().iterator();
-					while (it2.hasNext()) {
-						IdentifiedObject io = (IdentifiedObject) it2.next();
+					for(IdentifiedObject io : linkDatabase.getObjects()){
 						if (io instanceof SynonymedObject) {
 							SynonymedObject so = (SynonymedObject) io;
-							Iterator it3 = so.getSynonyms().iterator();
-							while (it3.hasNext()) {
-								Synonym s = (Synonym) it3.next();
+							for(Synonym s : so.getSynonyms()){
 								if (s.getSynonymType() != null)
 									usedCategories.add(s.getSynonymType());
 							}
@@ -564,9 +560,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				} else
 					scratchList.addAll(session.getSynonymTypes());
 				Collections.sort(scratchList, comparator);
-				Iterator it2 = scratchList.iterator();
-				while (it2.hasNext()) {
-					SynonymType cat = (SynonymType) it2.next();
+				for(Object o : scratchList){
+					SynonymType cat = (SynonymType) o;
 					serializer.writeSynonymTypeDefHeaderTag(cat);
 				}
 			} else if (tagSpec
@@ -590,9 +585,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 								.getDefaultRule());
 						Map nsMap = new HashMap();
 						List nsList = new ArrayList();
-						Iterator it2 = profile.getRules().iterator();
-						while (it2.hasNext()) {
-							IDRule rule = (IDRule) it2.next();
+						for(IDRule rule : profile.getRules()){
 							Filter filter = rule.getFilter();
 							if (rule.getFilter() instanceof CompoundFilter) {
 								CompoundFilter cf = (CompoundFilter) rule
@@ -614,9 +607,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 							}
 						}
 						Collections.sort(nsList);
-						it2 = nsList.iterator();
-						while (it2.hasNext()) {
-							String ns = (String) it2.next();
+						for(Object o : nsList){
+							String ns = (String) o;
 							serializer.writeNamespaceIDRuleHeaderTag(ns,
 									(String) nsMap.get(ns));
 						}
@@ -677,20 +669,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void writeObject(IdentifiedObject obj, LinkDatabase linkDatabase,
 			OBOSerializer serializer) throws IOException,
 			CancelledAdapterException {
-		/*
-		 * boolean writeNonRels = linkDatabase.getObjects().contains(obj);
-		 * 
-		 * 
-		 * if (obj instanceof LinkedObject) { LinkedObject lo = (LinkedObject)
-		 * obj;
-		 * 
-		 * scratchList.clear(); scratchList.addAll(linkDatabase.getParents(lo));
-		 * Collections.sort(scratchList, linkComparator);
-		 * linkList.addAll(scratchList); }
-		 * 
-		 * if (!writeNonRels && linkList.size() == 0) {
-		 * TermUtil.freeList(linkList); return; }
-		 */
 		boolean written = false;
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.startStanza(obj)) {
@@ -709,10 +687,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			}
 		}
 
-		Iterator it = tagOrdering.iterator();
-		while (it.hasNext()) {
-			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) it
-			.next();
+		for(Object o: tagOrdering){
+			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
 			writeTag(tagMapping, obj, linkDatabase, serializer);
 		}
 
@@ -742,15 +718,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer)
-	throws IOException {
-		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling,
-				realizeImplied, writeModificationData);
+	throws IOException, CancelledAdapterException {
+		writeTag(tagMapping, obj, linkDatabase, serializer, allowDangling,closeDangling,
+				assertImplied, writeModificationData);
 	}
 
 	protected void writeTag(TagMapping tagMapping, IdentifiedObject obj,
 			LinkDatabase linkDatabase, OBOSerializer serializer,
-			boolean allowDangling, boolean realizeImpliedLinks,
-			boolean writeModificationData) throws IOException {
+			boolean allowDangling, boolean closeDangling, 
+			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
+		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
 				return;
@@ -772,9 +749,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(((MultiIDObject) obj).getSecondaryIDs());
 			Collections.sort(scratchList, getIDComparator(serializer));
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				String id = (String) it2.next();
+			for(Object o : scratchList){
+				String id = (String) o;
 				NestedValue nv = ((MultiIDObject) obj)
 				.getSecondaryIDExtension(id);
 				serializer.writeAltIDTag(id, nv);
@@ -826,9 +802,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(((SubsetObject) obj).getSubsets());
 			Collections.sort(scratchList, getCategoryComparator(serializer));
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				TermSubset category = (TermSubset) it2.next();
+			for(Object o : scratchList){
+				TermSubset category = (TermSubset) o;
 				NestedValue nv = ((SubsetObject) obj)
 				.getCategoryExtension(category);
 				serializer.writeSubsetTag(category, nv);
@@ -839,9 +814,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(((SynonymedObject) obj).getSynonyms());
 			Collections.sort(scratchList, getSynonymComparator(serializer));
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				Synonym synonym = (Synonym) it2.next();
+			for(Object o : scratchList){
+				Synonym synonym = (Synonym) o;
 				serializer.writeSynonymTag(synonym, synonym.getNestedValue());
 			}
 		} else if (obj instanceof DbxrefedObject
@@ -849,9 +823,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(((DbxrefedObject) obj).getDbxrefs());
 			Collections.sort(scratchList, getDbxrefComparator(serializer));
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				Dbxref dbxref = (Dbxref) it2.next();
+			for(Object o : scratchList){
+				Dbxref dbxref = (Dbxref) o;
 				serializer.writeXrefTag(dbxref);
 			}
 		} else if (obj instanceof Instance
@@ -867,9 +840,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				List linkList = new LinkedList();
 				linkList.addAll(linkDatabase.getParents(lo));
 				Collections.sort(linkList, getLinkComparator(serializer));
-				Iterator it2 = linkList.iterator();
-				while (it2.hasNext()) {
-					Link link = (Link) it2.next();
+				for(Object o : linkList){
+					Link link = (Link) o;
 					if (link instanceof ValueLink)
 						serializer.writeValueLinkTag((ValueLink) link, link
 								.getNestedValue());
@@ -926,6 +898,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			OBOProperty property = (OBOProperty) obj;
 			for (Link link : property.getParents()) {
 				if (link.getType().equals(OBOProperty.DISJOINT_OVER)) {
+					// >>>
 					serializer.writeLinkTag(link, null);
 				}
 			}
@@ -956,14 +929,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				for (Link link : linkList) {
 					// CJM: I added this defensive test
 					if (!(link instanceof ValueLink))
-						writeLink(serializer, link);
+						writeLink(serializer, link, linkDatabase);
 				}
-				// Iterator it2 = linkList.iterator();
-				// while (it2.hasNext()) {
-				// Link link = (Link) it2.next();
-				// if (link instanceof OBORestriction)
-				// writeLink(serializer, link);
-				// }
 			}
 		} else if (obj instanceof ObsoletableObject
 				&& tagMapping.equals(OBOConstants.IS_OBSOLETE_TAG)) {
@@ -977,10 +944,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(oo.getReplacedBy());
 			Collections.sort(scratchList, getObsoleteComparator(serializer));
-
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				ObsoletableObject replacement = (ObsoletableObject) it2.next();
+			for(Object o : scratchList){
+				ObsoletableObject replacement = (ObsoletableObject) o;
 				serializer.writeReplacedByTag(replacement, oo
 						.getReplacedByExtension(replacement));
 			}
@@ -991,10 +956,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			List scratchList = new LinkedList();
 			scratchList.addAll(oo.getConsiderReplacements());
 			Collections.sort(scratchList, getObsoleteComparator(serializer));
-
-			Iterator it2 = scratchList.iterator();
-			while (it2.hasNext()) {
-				ObsoletableObject replacement = (ObsoletableObject) it2.next();
+			for(Object o : scratchList){
+				ObsoletableObject replacement = (ObsoletableObject) o;
 				serializer.writeConsiderTag(replacement, oo
 						.getConsiderExtension(replacement));
 			}
@@ -1003,22 +966,23 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			serializer.writeIsMetadataTag(((OBOProperty)obj).isMetadataTag(), null);
 		}
 		else if (tagMapping.equals(OBOConstants.UNRECOGNIZED_TAG)) {
-		
-			Iterator it2 = obj.getPropertyValues().iterator();
-			while (it2.hasNext()) {
-				PropertyValue pv = (PropertyValue) it2.next();
+			for(PropertyValue pv : obj.getPropertyValues()){
 				serializer.writeUnrecognizedTag(pv);
 			}
 		}
 	}
 
-	public void writeLink(OBOSerializer serializer, Link link)
-	throws IOException {
+	public void writeLink(OBOSerializer serializer, Link link, LinkDatabase database)
+	throws IOException, CancelledAdapterException {
+		if (closeDangling && !(link.getParent() instanceof DanglingObject)) {
+			writeObjectsforDanglingLink(serializer, link, database);
+		}
+
 		if (allowDangling || !(link.getParent() instanceof DanglingObject)) {
 			if (TermUtil.isImplied(link)) {
 				if (saveImplied) {
-					if (realizeImplied)
-						link = realizeLink(link);
+					if (assertImplied)
+						link = assertLink(link);
 					serializer.writeLinkTag(link, link.getNestedValue());
 				}
 			} else
@@ -1026,7 +990,52 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		}
 	}
 
-	protected OBORestriction realizeLink(Link l) {
+	/*
+	 * is_a closure for cross-referenced terms
+	 * @param serializer
+	 * @param link
+	 * @param database
+	 * */
+	public void writeObjectsforDanglingLink(OBOSerializer serializer, Link link, LinkDatabase database) throws CancelledAdapterException, IOException{
+//		logger.debug("OBOSerializeEngine -- writeLink");
+//		logger.debug("link: " + link);
+//		logger.debug("child: " + link.getChild());
+//		logger.debug("parent: " + link.getParent());
+		//get relations of child and parent upto root 
+		Collection parentAncestors = TermUtil.getAncestors(link.getParent(), null);
+		Collection childAncestors = TermUtil.getAncestors(link.getChild(), null);
+
+		Collection<Link> parentLinksofChildTerm = database.getParents(link.getChild());
+		Collection<Link> parentLinksofParentTerm = database.getParents(link.getParent());
+		
+		for(Object o : parentAncestors){
+			Object obj = (LinkedObject)o;
+
+			IdentifiedObject parentAncestorObject = (IdentifiedObject) o;			
+			writeObject(parentAncestorObject,database,serializer);
+
+		}
+		if(parentLinksofChildTerm != null){
+		for(Link pclink : parentLinksofChildTerm){
+			serializer.writeLinkTag(pclink, pclink.getNestedValue());
+		}
+		}
+
+		for(Object o : childAncestors){
+			IdentifiedObject childAncestorObject = (IdentifiedObject) o;
+			writeObject(childAncestorObject,database,serializer);
+		}
+		if(parentLinksofParentTerm != null){
+			for(Link pplink : parentLinksofParentTerm){
+				serializer.writeLinkTag(pplink, pplink.getNestedValue());
+			}
+		}
+
+
+
+	}
+
+	protected OBORestriction assertLink(Link l) {
 		OBORestriction out = new OBORestrictionImpl(l);
 		if (l instanceof OBORestriction) {
 			OBORestriction link = (OBORestriction) l;
@@ -1074,8 +1083,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			CancelledAdapterException {
 		String path = filteredPath.getPath();
 		allowDangling = filteredPath.getAllowDangling();
+		closeDangling = filteredPath.getCloseDangling();
 		saveImplied = filteredPath.getSaveImplied();
-		realizeImplied = filteredPath.getSaveImplied();
+		assertImplied = filteredPath.getSaveImplied();
 		writeModificationData = filteredPath.getWriteModificationData();
 		String impliedType = filteredPath.getImpliedType();
 		reasonerFactory = filteredPath.getReasonerFactory();
@@ -1098,12 +1108,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		}
 
 		boolean saveAll = impliedType.equals(SAVE_ALL);
-		
-		
-//		LinkDatabase database = new DefaultLinkDatabase(session);
-		
+
+
+		//		LinkDatabase database = new DefaultLinkDatabase(session);
+
 		LinkDatabase database = session.getLinkDatabase();
-		
+
 		if (saveImplied || prefilterProperty != null) {
 			ReasonedLinkDatabase fullReasoner;
 			if (filteredPath.getUseSessionReasoner() && getReasoner() != null) {
@@ -1130,9 +1140,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 					trimFiltered
 					.setFilterMethod(FilteredLinkDatabase.REUSABLE_ITERATOR);
 					trimFiltered.setLinkFilter(new Filter() {
-						/**
-						 * 
-						 */
+
 						private static final long serialVersionUID = 1L;
 
 						public boolean satisfies(Object o) {
@@ -1177,6 +1185,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			((FilteredLinkDatabase) database).setLinkFilter(linkFilter);
 			((FilteredLinkDatabase) database).setTermFilter(objectFilter);
 			((FilteredLinkDatabase) database).setAllowDangling(allowDangling);
+			((FilteredLinkDatabase) database).setCloseDangling(closeDangling);
 		}
 
 		if (rootAlgorithm.equals("STRICT")) {
@@ -1231,19 +1240,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		Comparator objectComparator = serializer.getObjectComparator();
 		if (objectComparator == null)
 			objectComparator = OBOConstants.DEFAULT_OBJECT_COMPARATOR;
-
-		Iterator it = stanzaOrdering.iterator();
-		while (it.hasNext()) {
-			OBOConstants.StanzaMapping stanzaMapping = (OBOConstants.StanzaMapping) it
-			.next();
+		for(Object o : stanzaOrdering){
+			OBOConstants.StanzaMapping stanzaMapping = (OBOConstants.StanzaMapping) o;
+			//this is where we get the objects to write to file
 			List objectList = new ArrayList();
-
-			Iterator it2 = database.getObjects().iterator();
-			while (it2.hasNext()) {
-				IdentifiedObject io = (IdentifiedObject) it2.next();
-//				logger.debug("OBOSerializationEngine getObjects: " + io);
-				if (stanzaMapping.getStanzaClass().isInstance(io)
-						&& !io.isBuiltIn()) {
+			for(IdentifiedObject io : database.getObjects()){
+								logger.debug("OBOSerializationEngine getObjects: " + io);
+								logger.debug(">> " + stanzaMapping.getStanzaClass());
+				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
 					objectList.add(io);
 				}
 			}
@@ -1251,11 +1255,11 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			Collections.sort(objectList, objectComparator);
 
 			setProgressString("Writing objects : " + path);
-			it2 = objectList.iterator();
+
+			Iterator it2 = objectList.iterator();
 			for (int i = 0; it2.hasNext(); i++) {
 				if (cancelled)
 					doHalt();
-
 				IdentifiedObject io = (IdentifiedObject) it2.next();
 				int percent = (100 * i) / objectList.size();
 				setProgressValue(percent);
@@ -1266,6 +1270,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 						break;
 					}
 				}
+				//add to database if it hasn't already been picked
 				if (!picked)
 					writeObject(io, database, serializer);
 			}
