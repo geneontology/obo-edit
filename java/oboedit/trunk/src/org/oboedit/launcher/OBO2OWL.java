@@ -617,12 +617,12 @@ public class OBO2OWL {
 					} else if (args[i].equals("-saveimpliedlinks")) {
 						path.setSaveImplied(true);
 						path
-								.setImpliedType(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
+								.setImpliedType(OBOSerializationEngine.SAVE_TRIMMED_LINKS);
 					} else if (args[i].equals("-saveallimpliedlinks")) {
 						path.setSaveImplied(true);
 						path.setImpliedType(OBOSerializationEngine.SAVE_ALL);
 					} else if (args[i].equals("-realizeimpliedlinks")) {
-						path.setRealizeImpliedLinks(true);
+						path.setAssertImpliedLinks(true);
 					} else if (args[i].equals("-p")) {
 						if (i >= args.length - 1)
 							printUsage(1);

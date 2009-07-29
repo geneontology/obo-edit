@@ -207,8 +207,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 		protected JCheckBox linkFilterBox = new JCheckBox("Filter links");
 
-		protected JCheckBox allowDanglingBox = new JCheckBox(
-				"Allow dangling parents");
+		protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling parents");
 
 		protected JCheckBox allowLossyBox = new JCheckBox(
 		"Allow lossy transformation");
@@ -229,8 +228,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 
 		protected JComboBox impliedTypeBox = new JComboBox();
 
-		protected JCheckBox realizeImpliedBox = new JCheckBox(
-				"Realize implied links");
+		protected JCheckBox assertImpliedBox = new JCheckBox("Assert implied links");
 
 		protected JComboBox idRuleSelector = new JComboBox();
 
@@ -243,7 +241,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			setLayout(new BorderLayout());
 
 			impliedTypeBox
-					.addItem(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
+					.addItem(OBOSerializationEngine.SAVE_TRIMMED_LINKS);
 			impliedTypeBox.addItem(OBOSerializationEngine.SAVE_ALL);
 
 			idRuleSelector.addItem("Don't write ID rules");
@@ -276,7 +274,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			allowLossyBox.setOpaque(false);
 			writeModificationBox.setOpaque(false);
 			saveImpliedBox.setOpaque(false);
-			realizeImpliedBox.setOpaque(false);
+			assertImpliedBox.setOpaque(false);
 
 			TitledBorder linkBorder = new TitledBorder("Link filtering");
 			TitledBorder objectBorder = new TitledBorder("Object filtering");
@@ -363,7 +361,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
 			checkboxPanelB.add(impliedTypeBox);
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
-			checkboxPanelB.add(realizeImpliedBox);
+			checkboxPanelB.add(assertImpliedBox);
 			checkboxPanelC.add(Box.createHorizontalGlue());
 			checkboxPanelC.add(idRuleSelector);
 			checkboxPanelC.add(Box.createHorizontalGlue());
@@ -401,7 +399,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			saveImpliedBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					impliedTypeBox.setEnabled(saveImpliedBox.isSelected());
-					realizeImpliedBox.setEnabled(saveImpliedBox.isSelected());
+					assertImpliedBox.setEnabled(saveImpliedBox.isSelected());
 				}
 			});
 
@@ -429,7 +427,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			categoryBox.setEnabled(rootAlgorithmControlsEnabled);
 
 			impliedTypeBox.setEnabled(saveImpliedBox.isSelected());
-			realizeImpliedBox.setEnabled(saveImpliedBox.isSelected());
+			assertImpliedBox.setEnabled(saveImpliedBox.isSelected());
 			prefilterTypeChooser.setEnabled(prefilterBox.isSelected());
 			filterTypesBox.setEnabled(filterBox.isSelected());
 
@@ -470,7 +468,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			writeModificationBox.setSelected(profile.getWriteModificationData());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
-			realizeImpliedBox.setSelected(profile.getRealizeImpliedLinks());
+			assertImpliedBox.setSelected(profile.getAssertImpliedLinks());
 
 			prefilterBox.setSelected(profile.getPrefilterProperty() != null);
 			if (profile.getPrefilterProperty() != null) {
@@ -521,7 +519,7 @@ public class AdvancedOWLUI extends JPanel implements GraphicalUI {
 			profile.setWriteModificationData(writeModificationBox.isSelected());
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
-			profile.setRealizeImpliedLinks(realizeImpliedBox.isSelected());
+			profile.setAssertImpliedLinks(assertImpliedBox.isSelected());
 			profile.setDoFilter(filterBox.isSelected());
 			profile.setSaveTypes(filterTypesBox.isSelected());
 			profile.setDoLinkFilter(linkFilterBox.isSelected());
