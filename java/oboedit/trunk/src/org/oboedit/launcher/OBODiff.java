@@ -58,8 +58,8 @@ public class OBODiff {
 			OBOSession a = getHistory((String) filelist.get(0));
 			OBOSession b = getHistory((String) filelist.get(1));
 			HistoryList changes = HistoryGenerator.getHistory(a, b, null);
-		
-						if (historyAdapter == null)
+
+			if (historyAdapter == null)
 				historyAdapter = new DefaultHistoryDumper();
 			boolean printResults = false;
 			if (outPath == null) {
@@ -74,9 +74,9 @@ public class OBODiff {
 					adapterConfig, changes);
 			if (printResults) {
 				FileInputStream fis = new FileInputStream(outFile);
-					IOUtil.dumpAndClose(fis, System.out);
-					outFile.delete();
-				
+				IOUtil.dumpAndClose(fis, System.out);
+				outFile.delete();
+
 			}
 		}
 	}

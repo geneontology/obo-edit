@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import org.bbop.dataadapter.*;
 import org.bbop.swing.*;
@@ -55,8 +56,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	protected JCheckBox importExternalRefsBox = new JCheckBox(
 			"Import external references");
 
-	protected JCheckBox allowDanglingBox = new JCheckBox(
-			"Allow dangling references");
+	protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling references");
+	
+	protected JCheckBox closureforDanglingBox = new JCheckBox("Perform is_a closure for cross-references terms");
 
 	protected JTextField pathField = new JTextField(30);
 
@@ -119,11 +121,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			throws DataAdapterUIException {
 		collectParams();
 		if (!storeonly && op.equals(OBOAdapter.WRITE_ONTOLOGY)) {
-			java.util.List overwrite = new LinkedList();
-			Iterator it = currentProfile.getSaveRecords().iterator();
-			while (it.hasNext()) {
-				Object o = it.next();
-
+			List overwrite = new LinkedList();
+			
+			for(Object o : currentProfile.getSaveRecords()){
 				OBOSerializationEngine.FilteredPath path = (OBOSerializationEngine.FilteredPath) o;
 				if (path.getPath().length() == 0) {
 					throw new DataAdapterUIException("Cannot save to empty path.");
@@ -134,9 +134,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			if (overwrite.size() > 0) {
 				StringBuffer out = new StringBuffer();
 				out.append("The following file(s) already exist:\n");
-				it = overwrite.iterator();
-				while (it.hasNext()) {
-					String s = (String) it.next();
+				for(Object o : overwrite){
+					String s = (String) o;
 					out.append("   * " + s + "\n");
 				}
 				out.append("Overwrite these files?");
@@ -205,11 +204,12 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JCheckBox linkFilterBox = new JCheckBox("Filter links");
 
-		protected JCheckBox allowDanglingBox = new JCheckBox(
-				"Allow dangling parents");
+		protected JCheckBox allowDanglingBox = new JCheckBox("Allow dangling parents");
+		
+		//is_a closure for cross-referenced terms
+		protected JCheckBox closureforDanglingBox = new JCheckBox("Perform is_a closure for cross-referenced terms"); 
 
-		protected JCheckBox writeModificationBox = new JCheckBox(
-				"Write modification info");
+		protected JCheckBox writeModificationBox = new JCheckBox("Write modification info");
 
 		protected JCheckBox prefilterBox = new JCheckBox("Do type prefiltering");
 
@@ -224,8 +224,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 		protected JComboBox impliedTypeBox = new JComboBox();
 
-		protected JCheckBox realizeImpliedBox = new JCheckBox(
-				"Realize implied links");
+		protected JCheckBox assertImpliedBox = new JCheckBox("Assert implied links");
 
 		protected JComboBox idRuleSelector = new JComboBox();
 
@@ -238,7 +237,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			setLayout(new BorderLayout());
 
 			impliedTypeBox
-					.addItem(OBOSerializationEngine.SAVE_FOR_PRESENTATION);
+					.addItem(OBOSerializationEngine.SAVE_TRIMMED_LINKS);
 			impliedTypeBox.addItem(OBOSerializationEngine.SAVE_ALL);
 
 			idRuleSelector.addItem("Don't write ID rules");
@@ -268,9 +267,10 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			prefilterBox.setOpaque(false);
 
 			allowDanglingBox.setOpaque(false);
+			closureforDanglingBox.setOpaque(false);
 			writeModificationBox.setOpaque(false);
 			saveImpliedBox.setOpaque(false);
-			realizeImpliedBox.setOpaque(false);
+			assertImpliedBox.setOpaque(false);
 
 			TitledBorder linkBorder = new TitledBorder("Link filtering");
 			TitledBorder objectBorder = new TitledBorder("Object filtering");
@@ -347,6 +347,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelA.add(Box.createHorizontalStrut(10));
 			checkboxPanelA.add(allowDanglingBox);
 //			checkboxPanelA.add(Box.createHorizontalStrut(10));
+			
+			checkboxPanelA1.add(closureforDanglingBox);
+			checkboxPanelA1.add(Box.createHorizontalGlue());
 
 			checkboxPanelA1.add(writeModificationBox);
 			checkboxPanelA1.add(Box.createHorizontalGlue());
@@ -366,7 +369,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
 			checkboxPanelB.add(impliedTypeBox);
 			checkboxPanelB.add(Box.createHorizontalStrut(10));
-			checkboxPanelB.add(realizeImpliedBox);
+			checkboxPanelB.add(assertImpliedBox);
 
 //			checkboxPanelC.add(Box.createHorizontalGlue());
 			checkboxPanelC.add(new JLabel("ID rules"));
@@ -420,7 +423,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			saveImpliedBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					impliedTypeBox.setEnabled(saveImpliedBox.isSelected());
-					realizeImpliedBox.setEnabled(saveImpliedBox.isSelected());
+					assertImpliedBox.setEnabled(saveImpliedBox.isSelected());
 				}
 			});
 
@@ -448,7 +451,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			categoryBox.setEnabled(rootAlgorithmControlsEnabled);
 
 			impliedTypeBox.setEnabled(saveImpliedBox.isSelected());
-			realizeImpliedBox.setEnabled(saveImpliedBox.isSelected());
+			assertImpliedBox.setEnabled(saveImpliedBox.isSelected());
 			prefilterTypeChooser.setEnabled(prefilterBox.isSelected());
 			filterTypesBox.setEnabled(filterBox.isSelected());
 
@@ -478,10 +481,11 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			linkFilterEditor.setFilter(profile.getLinkFilter());
 
 			allowDanglingBox.setSelected(profile.getAllowDangling());
+			closureforDanglingBox.setSelected(profile.getCloseDangling());
 			writeModificationBox.setSelected(profile.getWriteModificationData());
 			saveImpliedBox.setSelected(profile.getSaveImplied());
 			impliedTypeBox.setSelectedItem(profile.getImpliedType());
-			realizeImpliedBox.setSelected(profile.getRealizeImpliedLinks());
+			assertImpliedBox.setSelected(profile.getAssertImpliedLinks());
 
 			prefilterBox.setSelected(profile.getPrefilterProperty() != null);
 			if (profile.getPrefilterProperty() != null) {
@@ -517,26 +521,25 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			profile.setIDRuleMode(idRuleSelector.getSelectedIndex());
 
 			if (remarkField.getText().trim().length() > 0)
-				profile.setRemark(remarkField.getText().trim());
+			profile.setRemark(remarkField.getText().trim());
 
 			profile.setAllowDangling(allowDanglingBox.isSelected());
+			profile.setCloseDangling(closureforDanglingBox.isSelected());
 			profile.setWriteModificationData(writeModificationBox.isSelected());
 			profile.setSaveImplied(saveImpliedBox.isSelected());
 			profile.setImpliedType((String) impliedTypeBox.getSelectedItem());
-			profile.setRealizeImpliedLinks(realizeImpliedBox.isSelected());
+			profile.setAssertImpliedLinks(assertImpliedBox.isSelected());
 			profile.setDoFilter(filterBox.isSelected());
 			profile.setSaveTypes(filterTypesBox.isSelected());
 			profile.setDoLinkFilter(linkFilterBox.isSelected());
 			if (prefilterBox.isSelected()) {
-				profile
-						.setPrefilterProperty(((OBOProperty) prefilterTypeChooser
+				profile.setPrefilterProperty(((OBOProperty) prefilterTypeChooser
 								.getSelectedItem()).getID());
 			}
 			profile.setDiscardUnusedCategories((prefilterBox.isSelected()
 					|| filterBox.isSelected() || linkFilterBox.isSelected())
 					&& categoryBox.isSelected());
-			profile.setRootAlgorithm((String) rootAlgorithmChooser
-					.getSelectedItem());
+			profile.setRootAlgorithm((String) rootAlgorithmChooser.getSelectedItem());
 
 			if (filterBox.isSelected())
 				profile.setObjectFilter(objectFilterEditor.getFilter());
@@ -711,12 +714,12 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 	}
 
 	protected void storeProfile(OBOFileAdapter.OBOAdapterConfiguration profile) {
-
 		profile.getReadPaths().clear();
 		Vector temp = pathList.getData();
 		for (int i = 0; i < temp.size(); i++)
 			profile.getReadPaths().add(temp.get(i).toString());
 		profile.setAllowDangling(allowDanglingBox.isSelected());
+		profile.setClosureforDangling(closureforDanglingBox.isSelected());
 		// Options in serializerBox are OBO_1_0 and OBO_1_2
 		profile.setSerializer((String) serializerBox.getSelectedItem());
 		profile.setSaveRecords(namespaceList.getData());
@@ -727,13 +730,13 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		OBOFileAdapter.OBOAdapterConfiguration profile = (OBOFileAdapter.OBOAdapterConfiguration) config;
 		currentProfile = profile;
 		Vector out = new Vector();
-		Iterator it = profile.getReadPaths().iterator();
-		while (it.hasNext()) {
-			out.add(new EditableString((String) it.next()));
+		for(String s : profile.getReadPaths()){
+			out.add(new EditableString(s));
 		}
 
 		pathList.setData(out);
 		allowDanglingBox.setSelected(profile.getAllowDangling());
+		closureforDanglingBox.setSelected(profile.getClosureforDangling());
 //		System.err
 //				.println("setConfiguration called, allowDanglingBox.setSelected("
 //						+ profile.getAllowDangling() + ")");
@@ -810,6 +813,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 			serializerLabel.setFont(font);
 		if (allowDanglingBox != null)
 			allowDanglingBox.setFont(font);
+		if (closureforDanglingBox != null)
+			closureforDanglingBox.setFont(font);
 		if (addSaveButton != null)
 			addSaveButton.setFont(font);
 		if (delSaveButton != null)
