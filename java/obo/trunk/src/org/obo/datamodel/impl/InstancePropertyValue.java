@@ -130,17 +130,6 @@ public class InstancePropertyValue implements ValueLink {
 	public void setParent(LinkedObject parent) {
 		setValue(parent);
 	}
-	
-	public LinkedObject getAncestor() {
-		if (value instanceof LinkedObject)
-			return (LinkedObject) value;
-		else
-			return null;
-	}
-
-	public void setAncestor(LinkedObject ancestor) {
-		setValue(ancestor);
-	}
 
 	public String getID() {
 		char sepChar = '-';

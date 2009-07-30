@@ -287,11 +287,4 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 		this.isMetadataTag = isMetadataTag;
 	}
 
-	public Collection<Link> getAncestors() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-
 }
