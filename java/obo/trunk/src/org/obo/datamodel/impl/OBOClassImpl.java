@@ -81,8 +81,4 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 		}
 	}
 
-	public Collection<Link> getAncestors() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
