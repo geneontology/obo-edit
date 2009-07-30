@@ -154,11 +154,6 @@ public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLi
 		public void setLookedAt(boolean lookedAt) {
 			this.lookedAt = lookedAt;
 		}
-
-		public LinkedObject getAncestor() {
-			// TODO Auto-generated method stub
-			return ancestor;
-		}
 	}
 
 	protected LinkDatabase linkDatabase;
@@ -354,11 +349,6 @@ public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLi
 	}
 
 	public Number getProgressValue() {
-		return null;
-	}
-
-	public Collection<Link> getAncestors(LinkedObject lo) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -59,13 +59,6 @@ MutableLinkDatabase {
 			s = Collections.emptySet();
 		return s;
 	}
-	
-	public Collection<Link> getAncestors(LinkedObject lo) {
-		Collection<Link> s = parentLinkMap.get(lo);
-		if (s == null && !returnNulls)
-			s = Collections.emptySet();
-		return s;
-	}
 
 	public Collection<Link> getChildren(LinkedObject lo) {
 		if (childLinkMap != null) {
