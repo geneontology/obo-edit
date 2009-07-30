@@ -35,10 +35,6 @@ public class DanglingLinkImpl implements Link {
 	public LinkedObject getParent() {
 		return new DanglingObjectImpl(parentID);
 	}
-	
-	public LinkedObject getAncestor() {
-		return new DanglingObjectImpl(parentID);
-	}
 
 	public LinkedObject getChild() {
 		return new DanglingObjectImpl(childID);

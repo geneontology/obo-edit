@@ -156,10 +156,6 @@ public class LinkPileReasoner extends AbstractReasoner {
 		public LinkedObject getParent() {
 			return parent;
 		}
-		
-		public LinkedObject getAncestor() {
-			return ancestor;
-		}
 
 		public void setParent(LinkedObject parent) {
 			throw new UnsupportedOperationException();
@@ -519,8 +515,4 @@ public class LinkPileReasoner extends AbstractReasoner {
 		// if not a ReasonerLink then it is presumably a given (asserted) link
 	}
 
-	public Collection<Link> getAncestors(LinkedObject lo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
