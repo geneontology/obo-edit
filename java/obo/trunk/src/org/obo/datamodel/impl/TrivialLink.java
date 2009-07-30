@@ -75,9 +75,4 @@ public class TrivialLink implements Link {
 	public void setNestedValue(NestedValue nv) {
 		throw new UnsupportedOperationException("TrivialLinks are read-only");
 	}
-
-	public LinkedObject getAncestor() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
