@@ -26,27 +26,23 @@ if (! $options->{verbose})
 
 check_options($options);
 
-# parse the input file and check we get a graph
-my $parser = new GOBO::Parsers::OBOParser(file => $options->{input});
-$parser->parse;
-die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
-print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
+my $graph = GOBO::Util::GraphFunctions::get_graph({ options => $options });
 
 # get the nodes matching our subset criteria
-my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $parser->graph, options => $options });
+my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
 # get the relations from the graph
-$data->{relations} = GOBO::Util::GraphFunctions::get_graph_relations({ graph => $parser->graph, options => $options });
+$data->{relations} = GOBO::Util::GraphFunctions::get_graph_relations({ graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_relations!\n" if $options->{verbose};
 
-my $ie = new GOBO::InferenceEngine(graph => $parser->graph);
+my $ie = new GOBO::InferenceEngine(graph => $graph);
 
 foreach my $s (keys %{$data->{subset}})
 {	# in these cases, the input set is the same as the mapping set. Copy 'em remorselessly!
 
 	# get the links between the nodes
-	$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, input => $data->{subset}{$s}, subset => $data->{subset}{$s}, roots => $data->{roots}, graph => $parser->graph, options => $options });
+	$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, input => $data->{subset}{$s}, subset => $data->{subset}{$s}, roots => $data->{roots}, graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_links!\n" if $options->{verbose};
 
 	# populate the node look up hashes
@@ -54,7 +50,7 @@ foreach my $s (keys %{$data->{subset}})
 	print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
 
 	# remove redundant relationships between nodes
-	GOBO::Util::GraphFunctions::remove_redundant_relationships({ node_data => $data->{nodes}, rel_data => $data->{relations}, graph => $parser->graph, options => $options });
+	GOBO::Util::GraphFunctions::remove_redundant_relationships({ node_data => $data->{nodes}, rel_data => $data->{relations}, graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::remove_redundant_relationships!\n" if $options->{verbose};
 
 	# repopulate the node look up hashes
@@ -67,14 +63,11 @@ foreach my $s (keys %{$data->{subset}})
 
 	my $new_graph = new GOBO::Graph;
 
-	$new_graph = GOBO::Util::GraphFunctions::add_all_relations_to_graph({ old_g => $parser->graph, new_g => $new_graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::add_all_relations_to_graph!\n" if $options->{verbose};
-
-	$new_graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph({ old_g => $parser->graph, new_g => $new_graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::add_extra_stuff_to_graph!\n" if $options->{verbose};
-
-	$new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph({ old_g => $parser->graph, new_g => $new_graph, graph_data => $slimmed->{graph}, options => $options });
+	$new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph({ old_g => $graph, new_g => $new_graph, graph_data => $slimmed->{graph}, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph!\n" if $options->{verbose};
+
+	$new_graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph({ old_g => $graph, new_g => $new_graph, options => $options });
+	print STDERR "Done GOBO::Util::GraphFunctions::add_extra_stuff_to_graph!\n" if $options->{verbose};
 
 	GOBO::Util::GraphFunctions::write_graph_to_file({ graph => $new_graph, subset => $s, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::write_graph_to_file!\n" if $options->{verbose};

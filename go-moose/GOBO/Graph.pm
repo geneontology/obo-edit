@@ -59,10 +59,9 @@ use GOBO::Node;
 use GOBO::Subset;
 use GOBO::TermNode;
 use GOBO::RelationNode;
+use GOBO::InstanceNode;
 use GOBO::Indexes::StatementIndex;
 use GOBO::Indexes::NodeIndex;
-
-use Data::Dumper;
 
 use overload ('""' => 'as_string');
 
@@ -70,15 +69,92 @@ has 'relation_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{
 has 'term_h' => (is => 'rw', isa => 'HashRef[GOBO::TermNode]', default=>sub{{}});
 has 'instance_h' => (is => 'rw', isa => 'HashRef[GOBO::InstanceNode]', default=>sub{{}});
 has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
-                  default=>sub{ new GOBO::Indexes::StatementIndex() });
+                  default=>sub{ new GOBO::Indexes::StatementIndex() },
+                  handles => { links => 'statements', add_link => 'add_statement', add_links => 'add_statements', remove_links => 'remove_statements', remove_link => 'remove_statement' },
+                  );
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
-                  default=>sub{ new GOBO::Indexes::StatementIndex() });
+                  default=>sub{ new GOBO::Indexes::StatementIndex() },
+                 # handles => { annotations => 'statements', add_annotation => 'add_statement', add_annotations => 'add_statements', annotated_entities => 'referenced_nodes', remove_annotations => 'remove_statements', remove_annotation => 'remove_statement' },
+                 );
 #has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
 has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
-                  default=>sub{ new GOBO::Indexes::NodeIndex() });
-
+                  default=>sub{ new GOBO::Indexes::NodeIndex() }, 
+                  handles => [ 'nodes' ],
+                  );
 has 'subset_index' => (is => 'rw', isa => 'HashRef[GOBO::Subset]', default=>sub{{}});
 has 'formulae' => (is => 'rw', isa => 'ArrayRef[GOBO::Formula]', default=>sub{[]});
+
+
+#sub nodes {
+#    my $self = shift;
+#    return $self->node_index->nodes;
+#}
+
+sub referenced_nodes {
+    my $self = shift;
+    return $self->node_index->nodes;
+}
+
+#sub links { shift->link_ix->statements(@_) }
+#sub add_link { shift->link_ix->add_statement(@_) }
+#sub add_links { shift->link_ix->add_statements(@_) }
+#sub remove_link { shift->link_ix->remove_statements([@_]) }
+
+sub annotations { shift->annotation_ix->statements(@_) }
+sub add_annotation { shift->annotation_ix->add_statement(@_) }
+sub add_annotations { shift->annotation_ix->add_statements(@_) }
+sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
+sub annotated_entities { shift->annotation_ix->referenced_nodes }
+
+sub has_terms {
+    my $self = shift;
+    return 1 if scalar @{$self->terms};
+    return undef;
+}
+
+sub has_relations {
+    my $self = shift;
+    return 1 if scalar @{$self->relations};
+    return undef;
+}
+
+sub has_instances {
+    my $self = shift;
+    return 1 if scalar @{$self->instances};
+    return undef;
+}
+
+sub has_subsets {
+    my $self = shift;
+    return 1 if scalar @{$self->declared_subsets};
+    return undef;
+}
+
+sub has_formulae {
+    my $self = shift;
+    return 1 if scalar @{$self->formulae};
+    return undef;
+}
+
+sub has_links {
+    my $self = shift;
+    return 1 if scalar @{$self->links};
+    return undef;
+}
+
+sub has_annotations {
+    my $self = shift;
+    return 1 if scalar @{$self->annotations};
+    return undef;
+}
+
+sub has_nodes {
+    my $self = shift;
+    return 1 if scalar @{$self->nodes};
+    return undef;
+}
+
+
 
 =head2 declared_subsets
 
@@ -152,7 +228,7 @@ sub get_instance {
 }
 
 
-=head2 terms
+=head2 relations
 
  - Returns: ArrayRef[GOBO::RelationNode], where each member is a relation belonging to this graph
 
@@ -258,22 +334,6 @@ sub remove_node {
 
     return $self->node_index->remove_node($n);
 }
-
-sub nodes {
-    my $self = shift;
-    return $self->node_index->nodes;
-}
-
-sub links { shift->link_ix->statements(@_) }
-sub add_link { shift->link_ix->add_statement(@_) }
-sub add_links { shift->link_ix->add_statements(@_) }
-sub remove_link { shift->link_ix->remove_statements([@_]) }
-
-sub annotations { shift->annotation_ix->statements(@_) }
-sub add_annotation { shift->annotation_ix->add_statement(@_) }
-sub add_annotations { shift->annotation_ix->add_statements(@_) }
-sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
-sub annotated_entities { shift->annotation_ix->referenced_nodes }
 
 sub add_formula { my $self = shift; push(@{$self->formulae},@_) }
 
@@ -453,11 +513,6 @@ sub subset_noderef {
         bless $n, 'GOBO::Subset';
     }
     return $n;
-}
-
-sub referenced_nodes {
-    my $self = shift;
-    return $self->node_index->nodes;
 }
 
 sub parse_idexprs {

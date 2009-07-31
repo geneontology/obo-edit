@@ -94,7 +94,8 @@ if ($verbose)
 my $summary;
 
 foreach my $t (sort { $a->id cmp $b->id } @{$g->terms})
-{	my @links = @{ $ie->get_inferred_target_links($t) };
+{	next if $t->id =~ /GO:PAD/;
+	my @links = @{ $ie->get_inferred_target_links($t) };
 	
 	foreach (sort { $a->target->id cmp $b->target->id } @links)
 	{	next unless $_->target->id eq 'GO:0000000';
