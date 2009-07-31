@@ -13,8 +13,7 @@ GOBO
 
 =head1 SYNOPSIS
 
-  my $fh = new FileHandle("t/data/cell.obo");
-  my $parser = new GOBO::Parsers::OBOParser(fh=>$fh);
+  my $parser = new GOBO::Parsers::OBOParser(file => "t/data/cell.obo");
   $parser->parse;
   my $g =  $parser->graph;
 
