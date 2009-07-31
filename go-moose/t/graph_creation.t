@@ -24,6 +24,8 @@ $parser->parse;
 
 my $g = $parser->graph;
 
+print STDERR "graph: " . Dumper($g);
+
 #print "Mystery node: " . Dumper($g->noderef(" "));
 
 ## create a new graph and check that we can add terms 'n' links 'n' stuff to it

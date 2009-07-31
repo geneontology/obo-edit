@@ -2,6 +2,8 @@ package GOBO::Parsers::GAFParser;
 use Moose;
 use strict;
 extends 'GOBO::Parsers::Parser';
+with 'GOBO::Parsers::GraphParser';
+
 use GOBO::Node;
 use GOBO::Gene;
 use GOBO::Evidence;
@@ -18,6 +20,8 @@ sub parse_header {
         }
         else {
             $self->unshift_line($_);
+            # set the parse_header to 1
+            $self->parsed_header(1);
             return;
         }
     }

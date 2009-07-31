@@ -46,6 +46,11 @@ sub add_statements {
     return;
 }
 
+sub remove_statement {
+    my $self = shift;
+    $self->remove_statements([@_]);
+}
+
 sub remove_statements {
     my $self = shift;
     my $sl = shift;
