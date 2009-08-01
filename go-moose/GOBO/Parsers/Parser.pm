@@ -14,18 +14,21 @@ coerce 'GOBO::Parsers::Parser::ProtoFileHandle'
 		=> via { $_ };
 
 has data => (is=>'rw', isa => 'HashRef', clearer => 'clear_data');
-has fh => (is=>'rw', isa=>'GOBO::Parsers::Parser::ProtoFileHandle', clearer=>'clear_fh', predicate=>'has_fh', writer=>'_set_fh', coerce => 1, init_arg => 'file');
+
+has fh => (is=>'rw', isa=>'GOBO::Parsers::Parser::ProtoFileHandle', clearer=>'clear_fh', predicate=>'has_fh', writer=>'_set_fh', coerce => 1, init_arg => 'file', trigger => \&reset_temporary_variables );
 has lines => (is=>'rw', isa=>'ArrayRef',default=>sub{[]});
-has max_chunk => (is=>'rw', isa=>'Int', init_arg => 'size');
 has line_no => (is=>'rw', isa=>'Int', default=>sub{0});
 has parsed_header => (is=>'rw', isa=>'Bool');
 has stalled => (is=>'rw', isa=>'Bool');
 
-has options => (is => 'rw', isa => 'HashRef', clearer => 'clear_all_options' );
+has max_chunk => (is=>'rw', isa=>'Int', init_arg => 'size', clearer=>'clear_max_chunk');
+
+has options => (is => 'rw', isa => 'HashRef', clearer => 'clear_all_options', trigger => \&reset_checked_options );
 has checked_options => (is => 'rw', isa => 'Bool');
 has header_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_header_parser_options', predicate => 'has_header_parser_options', writer => 'set_header_parser_options');
 has body_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_body_parser_options', predicate => 'has_body_parser_options', writer => 'set_body_parser_options');
 
+has liberal_mode => (is=>'rw', isa=>'Bool',default=>sub{1});
 
 sub BUILDARGS {
 	my $class = shift;
@@ -155,8 +158,13 @@ sub _parse {
 	
 	# make sure we've checked our parser options
 	$self->check_options;
-#	print STDERR "parser: " . $self->dump(2) . "\n";
-	$self->parse_header unless $self->parsed_header;
+	if ($self->parsed_header)
+	{	print STDERR "Header has been parsed!\n";
+		print STDERR "parser: " . $self->dump(2) . "\n";
+	}
+	else
+	{	$self->parse_header;
+	}
 	$self->parse_body;
 
 	# close the file handle
@@ -389,6 +397,9 @@ sub check_options {
 	$self->checked_options(1);
 }
 
+sub reset_checked_options {
+	shift->checked_options(0);
+}
 
 =head2 reset_parser
 
@@ -403,7 +414,27 @@ sub reset_parser {
 	$self->clear_fh;
 	$self->clear_all_options;
 	$self->clear_data;
+	$self->clear_max_chunk;
+	$self->reset_temporary_variables;
 }
+
+
+=head2 reset_temporary_variables
+
+$self->reset_temporary_variables
+
+These variables should be reset every time the parser is used on a new file
+
+=cut
+
+sub reset_temporary_variables {
+	my $self = shift;
+	$self->parsed_header(0);
+	$self->stalled(0);
+	$self->line_no(0);
+	$self->checked_options(0);
+}
+
 
 1;
 
