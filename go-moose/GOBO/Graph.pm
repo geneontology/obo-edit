@@ -52,16 +52,21 @@ package GOBO::Graph;
 use Moose;
 with 'GOBO::Attributed';
 use strict;
-use GOBO::Formula;
-use GOBO::Statement;
 use GOBO::Annotation;
-use GOBO::Node;
-use GOBO::Subset;
-use GOBO::TermNode;
-use GOBO::RelationNode;
-use GOBO::InstanceNode;
-use GOBO::Indexes::StatementIndex;
+use GOBO::ClassExpression::Union;
+use GOBO::ClassExpression;
+use GOBO::Formula;
 use GOBO::Indexes::NodeIndex;
+use GOBO::Indexes::StatementIndex;
+use GOBO::InstanceNode;
+use GOBO::LinkStatement;
+use GOBO::LiteralStatement;
+#use GOBO::Node;
+use GOBO::RelationNode;
+use GOBO::Statement;
+use GOBO::Subset;
+use GOBO::Synonym;
+use GOBO::TermNode;
 
 use overload ('""' => 'as_string');
 
@@ -74,7 +79,7 @@ has 'link_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
                   );
 has 'annotation_ix' => (is => 'rw', isa => 'GOBO::Indexes::StatementIndex',
                   default=>sub{ new GOBO::Indexes::StatementIndex() },
-                 # handles => { annotations => 'statements', add_annotation => 'add_statement', add_annotations => 'add_statements', annotated_entities => 'referenced_nodes', remove_annotations => 'remove_statements', remove_annotation => 'remove_statement' },
+                 handles => { annotations => 'statements', add_annotation => 'add_statement', add_annotations => 'add_statements', annotated_entities => 'referenced_nodes', remove_annotations => 'remove_statements', remove_annotation => 'remove_statement' },
                  );
 #has 'node_index' => (is => 'rw', isa => 'HashRef[GOBO::Node]', default=>sub{{}});
 has 'node_index' => (is => 'rw', isa => 'GOBO::Indexes::NodeIndex',
@@ -100,11 +105,11 @@ sub referenced_nodes {
 #sub add_links { shift->link_ix->add_statements(@_) }
 #sub remove_link { shift->link_ix->remove_statements([@_]) }
 
-sub annotations { shift->annotation_ix->statements(@_) }
-sub add_annotation { shift->annotation_ix->add_statement(@_) }
-sub add_annotations { shift->annotation_ix->add_statements(@_) }
-sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
-sub annotated_entities { shift->annotation_ix->referenced_nodes }
+#sub annotations { shift->annotation_ix->statements(@_) }
+#sub add_annotation { shift->annotation_ix->add_statement(@_) }
+#sub add_annotations { shift->annotation_ix->add_statements(@_) }
+#sub remove_annotation { shift->annotation_ix->remove_statements([@_]) }
+#sub annotated_entities { shift->annotation_ix->referenced_nodes }
 
 sub has_terms {
     my $self = shift;
@@ -129,6 +134,7 @@ sub has_subsets {
     return 1 if scalar @{$self->declared_subsets};
     return undef;
 }
+*has_declared_subsets = \&has_subsets;
 
 sub has_formulae {
     my $self = shift;
@@ -505,7 +511,7 @@ sub subset_noderef {
     my $n = $self->subset_index->{$ssid};
     if (!$n) {
         # TODO: fail?
-        warn "creating subset $ssid";
+#        warn "creating subset $ssid";
         $n = new GOBO::Subset(id=>$ssid);
         $self->subset_index->{$ssid} = $n;
     }

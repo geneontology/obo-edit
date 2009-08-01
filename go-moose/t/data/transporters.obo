@@ -340,6 +340,13 @@ subset: gosubset_prok  ! Prokaryotic GO subset
 synonym: "heavy metal ion transport" NARROW []
 is_a: GO:0006812  ! cation transport
 
+[Typedef]
+id: part_of
+name: part_of
+namespace: gene_ontology
+is_transitive: true
+xref: OBO_REL:part_of
+
 [Term]
 id: GO:0046873
 name: metal ion transmembrane transporter activity
@@ -377,11 +384,4 @@ subset: goslim_pir  ! PIR GO slim
 subset: gosubset_prok  ! Prokaryotic GO subset
 is_a: GO:0008150  ! biological_process
 relationship: part_of GO:0051179 ! localization
-
-[Typedef]
-id: part_of
-name: part_of
-namespace: gene_ontology
-is_transitive: true
-xref: OBO_REL:part_of
 

@@ -24,13 +24,11 @@ has format_version => (is=>'rw', isa=>'Str');
 sub parse_header {
 	my $self = shift;
 	my $g = $self->graph;
-
 	my $header_check = sub { return 1; };
 
 	if ($self->has_header_parser_options)
 	{	if ($self->header_parser_options->{ignore_all})
-		{	print STDERR "Don't have to parse the header - woohoo! :D\n";
-			$header_check = sub {
+		{	$header_check = sub {
 				return undef;
 			};
 		}
@@ -55,9 +53,9 @@ sub parse_header {
 	$/ = "\n";
 	while($_ = $self->next_line) {
 		next unless /\S/;
+
 		if (/^\[/) {
 			$self->unshift_line($_);
-			
 			# set the parse_header to 1
 			$self->parsed_header(1);
 			return;
@@ -98,7 +96,6 @@ sub parse_header {
 			}
 		}
 	}
-	# odd..
 	return;
 }
 
@@ -113,39 +110,48 @@ sub parse_body {
 	{	if ($self->body_parser_options->{ignore_all})
 		{	# ignore the whole thing
 			# no more body parsing required
-			warn "Found that I don't have to parse the body. Returning!";
+		#	warn "Found that I don't have to parse the body. Returning!";
 			return;
 		}
 		elsif ($self->body_parser_options->{ignore})
 		{	my $h = $self->body_parser_options->{ignore};
 			
-			# ignore this stanza if the stanza type exists in the ignore set
-			$stanza_check = sub {
-				my $s_type = shift;
-				return 1 if ! $h->{$s_type};
-				$self->next_stanza;
-				return undef;
-			};
+			my @ignore_all = grep { $h->{$_}[0] eq '*' } keys %$h;
+			
+			if (@ignore_all)
+			{	# ignore this stanza if the stanza type exists in the ignore all set
+				$stanza_check = sub {
+					my $s_type = shift;
+					if (grep { $s_type eq $_ } @ignore_all)
+					{	$self->next_stanza(\@ignore_all, 'ignore');
+						return undef;
+					}
+					return 1;
+				};
+			}
 
 			# ignore the stanza if the stanza type exists in the ignore set
 			# skip the line if the line type exists or the full stanza is to be ignored
 			$tag_check = sub {
-				my $t = shift;
-				my $s_type = shift;
+				my ($s_type, $t) = @_;
+#				print STDERR "\n$s_type $t";
 				return 1 if ! $h->{$s_type};
-				return undef if ( $h->{$s_type}[0] eq '*' || grep { $t eq $_ } @{$h->{$s_type}} );
+				return undef if ( $h->{$s_type}[0] eq '*' || grep { /^$t$/i } @{$h->{$s_type}} );
+#				print STDERR "=> OK\n";
 				return 1;
 			};
 		}
 		elsif ($self->body_parser_options->{parse_only})
 		{	my $h = $self->body_parser_options->{parse_only};
 
+		#	print STDERR "h: " . Dumper($h) . "\n";
+
 			# parse this stanza if the stanza type exists in the parse_only set
 			# otherwise, go to the next stanza
 			$stanza_check = sub {
 				my $s_type = shift;
 				return 1 if $h->{$s_type};
-				$self->next_stanza;
+				$self->next_stanza([ keys %$h ]);
 				return undef;
 			};
 
@@ -161,14 +167,11 @@ sub parse_body {
 				}
 				# we should have already caught incorrect stanzas, but n'mind...
 				warn "Incorrect stanza type!\n";
-				$self->next_stanza;
+				$self->next_stanza([ keys %$h ]);
 				return undef;
 			};
 		}
 	}
-
-	$stanza_check = sub { return 1; };
-	$tag_check = sub { return 1; }; 
 
 	my $stanzaclass;
 	my $id;
@@ -183,23 +186,18 @@ sub parse_body {
 		if (/^\[(\S+)\]/) {
 			$stanzaclass = lc($1);
 			next unless &$stanza_check( $stanzaclass );
-			
+#			print STDERR "passed the stanza check!\n";
 			if ($stanzaclass eq 'annotation') {
 				$n = new GOBO::Annotation;
 				push(@anns, $n);
 			}
-			
-#			if ($allowed && ! $allowed->{$stanzaclass})
-#			{	# we aren't collecting these stanzas
-#				# skip down to the next stanza declaration
-#				$self->next_stanza( $options->{body} );
-#			}
 			next;
 		}
 		
 		
 		if (/^(.*?):\s*/) {
 			next unless &$tag_check( $stanzaclass, $1 );
+#			print STDERR "passed the tag check!\n";
 		}
 
 		if (/^id:\s*(.*)\s*$/) {
@@ -262,6 +260,11 @@ sub parse_body {
 		elsif (/^subset:\s*(\S+)/) {
 			my $ss = $g->subset_noderef($1);
 			$n->add_subsets($ss);
+
+			if ($self->liberal_mode && ! $g->subset_index->{$ss->id})
+			{	print STDERR "$1 was not in the subset index. Crap!\n";
+				$g->subset_index->{$1} = $ss;
+			}
 		}
 		elsif (/^consider:\s*(\S+)/) {
 			$n->add_considers($1);
@@ -421,7 +424,7 @@ sub parse_body {
 			$g->add_formula($f);
 		}
 		else {
-			warn "ignored: $_";
+#			warn "ignored: $_";
 			# ...
 		}
 	}
@@ -543,9 +546,6 @@ sub _parse_xrefs {
 sub check_options {
 	my $self = shift;
 	my $options = $self->options;
-
-	print STDERR "Running check options...\n";
-
 	if ($options && values %$options)
 	{	# get rid of any existing options
 		$self->clear_header_parser_options;
@@ -602,9 +602,8 @@ sub check_options {
 						}
 					}
 					
-					print STDERR "b hash: " . Dumper($b_hash);
+#					print STDERR "b hash: " . Dumper($b_hash);
 					$self->set_body_parser_options({ parse_only => $b_hash }) if $b_hash;
-#					$self->set_body_parser_options({ parse_only => $b_hash }) if $b_hash;
 				}
 				else
 				{	warn "wrong body options format";
@@ -651,12 +650,24 @@ matches one of those in the hash ref
 sub next_stanza {
 	my $self = shift;
 	my $s_types = shift;
+	my $ignore = shift || undef;
 
 	if ($s_types)
-	{	while($_ = $self->next_line) {
-			next unless $_ =~ /^\[(\S+)\]/ && exists $s_types->{ lc $1 };
-			$self->unshift_line($_);
-			return;
+	{	if ($ignore)
+		{	while($_ = $self->next_line)
+			{	if ($_ =~ /^\[(\S+)\]/ && ! grep { lc($1) eq $_ } @$s_types)
+				{	$self->unshift_line($_);
+					return;
+				}
+				next;
+			}
+		}
+		else
+		{	while($_ = $self->next_line)
+			{	next unless $_ =~ /^\[(\S+)\]/ && grep { lc($1) eq $_ } @$s_types;
+				$self->unshift_line($_);
+				return;
+			}
 		}
 	}
 	else

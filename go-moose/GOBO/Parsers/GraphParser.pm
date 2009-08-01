@@ -14,7 +14,7 @@ sub clear_graph {
 	my $self = shift;
 	$self->_clear_graph;
 	
-	my $g =  new GOBO::Graph;
+	my $g = new GOBO::Graph;
 	$self->graph( $g );
 	return;
 }
