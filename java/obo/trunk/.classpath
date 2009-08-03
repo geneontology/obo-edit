@@ -17,7 +17,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/postgresql-8.2-506.jdbc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/owlapi-mansyntaxparser.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bbop.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/relaxngDatatype.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/resolver.jar"/>
@@ -26,5 +25,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xsdlib-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BBOP"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
