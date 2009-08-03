@@ -1,16 +1,17 @@
 package org.bbop.swing;
 
-import javax.swing.tree.*;
-import java.util.*;
+import java.util.Vector;
 
-import org.apache.log4j.*;
+import javax.swing.tree.TreePath;
+
+import org.apache.log4j.Logger;
 
 public class PathTreeModel extends SimpleTreeModel {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(PathTreeModel.class);
 
-	protected Vector paths = new Vector();
+	protected Vector<TreePath> paths = new Vector<TreePath>();
 
 	public PathTreeModel() {
 	}
@@ -19,7 +20,7 @@ public class PathTreeModel extends SimpleTreeModel {
 		setPaths(paths);
 	}
 
-	public Vector getPaths() {
+	public Vector<TreePath> getPaths() {
 		return paths;
 	}
 
@@ -48,11 +49,11 @@ public class PathTreeModel extends SimpleTreeModel {
 			addPath(paths[i]);
 	}
 
-	public void setPaths(Vector paths) {
+	public void setPaths(Vector<TreePath> paths) {
 		parentage.clear();
 		this.paths.removeAllElements();
 		for(int i=0; i < paths.size(); i++)
-			addPath((TreePath) paths.elementAt(i));
+			addPath(paths.elementAt(i));
 	}
 }
 
