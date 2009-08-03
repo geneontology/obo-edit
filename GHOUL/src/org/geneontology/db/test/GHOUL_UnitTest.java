@@ -26,7 +26,6 @@ import org.geneontology.db.model.TermDBXref;
 import org.geneontology.db.model.TermSynonym;
 import org.geneontology.db.util.HibernateUtil;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 
 public class GHOUL_UnitTest extends TestCase{
 
