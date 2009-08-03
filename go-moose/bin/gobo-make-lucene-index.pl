@@ -19,7 +19,7 @@ use FileHandle;
 
 
 my $loo = new GOBO::Util::LuceneIndexer();
-$loo->target_dir('lucene_index');
+$loo->target_dir('lucene');
 $loo->open();
 
 ## Do many files.
