@@ -16,7 +16,7 @@ has base_url => (is=>'rw',isa=>'Str', default=>sub{"http://obofoundry.org/obo/"}
 has custom_hardwired_fields => (is=>'rw',isa=>'HashRef', default=>sub{{}});
 has target_dir => (is=>'rw',isa=>'Str', default=>sub{"."});
 
-sub init {
+sub open {
     my $self = shift;
 
     ## Same analyzer for everybody.
@@ -34,7 +34,7 @@ sub init {
 sub index_terms {
     my $self = shift;
     my $terms = shift || [];
-    
+
     my $writer = $self->index_writer;
     my $base_url = $self->base_url;
     my $fh = $self->custom_hardwired_fields || {};
@@ -72,6 +72,14 @@ sub index_terms {
         $writer->addDocument($doc);
     }
 
+}
+
+sub close {
+    my $self = shift;
+    my $writer = $self->index_writer;
+
+    $writer->optimize;
+    $writer->close;
 }
 
 
