@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.bbop.dataadapter.DataAdapterException;
 import org.bbop.util.AbstractTaskDelegate;
 import org.bbop.util.EmptyIterator;
@@ -49,7 +50,6 @@ import org.obo.history.CompletesHistoryItem;
 import org.obo.history.CreateLinkHistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
-import org.apache.log4j.*;
 
 /**
  * A library of methods for working with {@link LinkedObject}s,
@@ -98,6 +98,7 @@ public class TermUtil {
 		protected Collection<LinkedObject> getAncestors(double incSize,
 				LinkDatabase linkDatabase, LinkedObject term,
 				Map<LinkedObject, Collection<LinkedObject>> memoizeTable) {
+
 			if (linkDatabase == null)
 				linkDatabase = DefaultLinkDatabase.getDefault();
 
