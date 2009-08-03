@@ -22,10 +22,9 @@ import javax.swing.text.View;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 
+import org.apache.log4j.Logger;
 import org.bbop.util.MultiHashMap;
 import org.bbop.util.MultiMap;
-
-import org.apache.log4j.*;
 
 public class LabelMouseHyperlinkBridge implements MouseListener,
 	MouseMotionListener {
@@ -40,8 +39,6 @@ public class LabelMouseHyperlinkBridge implements MouseListener,
 	protected Collection<StringLinkListener> stringListeners = new ArrayList<StringLinkListener>();
 
 	protected MultiMap<String, ActionListener> actionMap = new MultiHashMap<String, ActionListener>();
-
-	protected ExtensibleLabelUI.BasicEditorKit editorKit;
 
 	public LabelMouseHyperlinkBridge(JLabel label) {
 		this.label = label;
