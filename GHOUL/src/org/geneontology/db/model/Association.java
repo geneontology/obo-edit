@@ -1,8 +1,10 @@
 package org.geneontology.db.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * The GeneProduct class corresponds to the GO gene_product table.  
@@ -48,6 +50,13 @@ public class Association extends GOModel {
 
 	protected Set<Term> qualifiers;
 
+	/**
+	 * This field is not yet in the database, but I think it needs to be
+	 * It indicates that this particular association of gene to term has
+	 * inherited from an ancestral protein
+	 */
+	protected boolean is_inherited;
+	
 	public Association(){
 		String[] uniqueConstraintFields = {"term", "gene_product"};
 		this.initUniqueConstraintFields(Association.class,uniqueConstraintFields);
@@ -136,23 +145,21 @@ public class Association extends GOModel {
 		this.qualifiers = qualifiers;
 	}
 
-	public boolean contributesTo() {
-		return hasQualifier("contributes_to");
+	public void setDate() {
+		long timestamp = System.currentTimeMillis();
+		/* Date appears to be fixed?? */
+  		Date when = new Date(timestamp);
+  		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+  		sdf.setTimeZone(TimeZone.getDefault()); // local time
+  		String date_str = sdf.format(when);
+  		setDate(Integer.valueOf(date_str));
 	}
 
-	public boolean colocalizes() {
-		return hasQualifier("colocalizes_with");
+	public boolean isInherited() {
+		return is_inherited;
 	}
 
-	private boolean hasQualifier(String qual) {
-		boolean has_qual = false;
-		if (qualifiers != null) {
-			for (Iterator<Term> it = qualifiers.iterator(); it.hasNext() && !has_qual;) {
-				Term term = it.next();
-				String name = term.getName();
-				has_qual = name.equals(qual);
-			}
-		}
-		return has_qual;
+	public void setInherited(boolean is_inherited) {
+		this.is_inherited = is_inherited;
 	}
 }

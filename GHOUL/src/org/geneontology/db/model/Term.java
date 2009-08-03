@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * The CVTerm class corresponds to the GO term table.  
+ * The Term class corresponds to the GO term table.  
  * @author Suzi Lewis
  *
  */
