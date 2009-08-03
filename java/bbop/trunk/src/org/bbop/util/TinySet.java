@@ -1,11 +1,12 @@
 package org.bbop.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class TinySet<T> implements Set<T> {
+public class TinySet<T> implements Set<T>, Serializable {
 
 	//initialize logger
 //	protected final static Logger logger = Logger.getLogger(TinySet.class);
