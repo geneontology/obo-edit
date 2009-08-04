@@ -155,7 +155,8 @@ sub action {
   ## Is it an OBO file?
   my $file = $File::Find::name;
 
-  if( -f $file ){
+  if( -f $file &&
+      $file =~ /\.obo$/ ){
 
     ##
     kvetch('Processing file: ' . $file);
