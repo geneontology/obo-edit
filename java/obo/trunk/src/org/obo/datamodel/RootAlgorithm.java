@@ -33,6 +33,9 @@ public interface RootAlgorithm {
 				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
 					continue;
 				}
+				if(link.getType().equals(OBOProperty.UNION_OF)){
+					continue;
+				}
 
 				return false;
 			}
@@ -64,6 +67,9 @@ public interface RootAlgorithm {
 				}
 
 				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
+					continue;
+				}
+				if(link.getType().equals(OBOProperty.UNION_OF)){
 					continue;
 				}
 				return false;
