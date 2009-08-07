@@ -20,11 +20,13 @@
   :components ((:static-file "toolkit.asd")
                (:module :src
                         :serial t
-                        :components ((:file "conv")
-                                     (:file "fs")
+                        :components ((:file "num")
+                                     (:file "url")
+                                     (:file "string")
+                                     (:file "list")
                                      (:file "simple-db")
                                      (:file "io")
-				     (:file "num")
+				     (:file "fs")
                                      (:file "repl")
                                      (:file "shell")
                                      (:file "toolkit"))))

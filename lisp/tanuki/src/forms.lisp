@@ -5,7 +5,7 @@
 (require :toolkit)
 (defpackage :tanuki-forms
   (:use :cl)
-  (:export))
+;;  (:export))
 (in-package :tanuki-forms)
 
 ;;;
@@ -17,34 +17,34 @@
 ;;; subset: 
 ;;;
 
-(defun p/or (&rest body-list)
-  ""
-  (nth (random (length body-list)) body-list))
-
-(defun p/and (&rest body-list)
-  ""
-  body-list)
-
-(defun p/maybe (stmnt)
-  ""
-  (if (evenp (random 2)) stmnt))
-
-;; (defun p/subset (&rest body-list)
+;; (defun p/or (&rest body-list)
 ;;   ""
-;;   )
+;;   (nth (random (length body-list)) body-list))
 
-;;;
-;;; Functions to pull from the filesystems
-;;;
+;; (defun p/and (&rest body-list)
+;;   ""
+;;   body-list)
 
-(defun f/random-file-from-directory (dir)
-    ""
-    (nth (random (length (toolkit-fs:list-files dir)))
-	 (toolkit-fs:list-files dir)))
+;; (defun p/maybe (stmnt)
+;;   ""
+;;   (if (evenp (random 2)) stmnt))
 
-;;;
-;;; Fuzz generators. 
-;;;
+;; ;; (defun p/subset (&rest body-list)
+;; ;;   ""
+;; ;;   )
 
-;; TODO: use toolkit-num
+;; ;;;
+;; ;;; Functions to pull from the filesystems
+;; ;;;
+
+;; (defun f/random-file-from-directory (dir)
+;;     ""
+;;     (nth (random (length (toolkit-fs:list-files dir)))
+;; 	 (toolkit-fs:list-files dir)))
+
+;; ;;;
+;; ;;; Fuzz generators. 
+;; ;;;
+
+;; ;; TODO: use toolkit-num
 

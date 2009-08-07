@@ -53,11 +53,11 @@
 ;;
 (defun list-files (dir)
   "List all of the files in directory <dir>."
-  (toolkit-conv:filter (cl-fad:list-directory dir)
+  (toolkit-list:filter (cl-fad:list-directory dir)
 		       #'(lambda (x) (cl-fad:directory-exists-p x))))
 
 ;;
 (defun list-directories (dir)
   "List all of the directories in directory <dir>."
-  (toolkit-conv:filter (cl-fad:list-directory dir)
+  (toolkit-list:filter (cl-fad:list-directory dir)
 		       #'(lambda (x) (not (cl-fad:directory-exists-p x)))))
