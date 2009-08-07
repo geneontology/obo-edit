@@ -76,11 +76,11 @@
 (defun spin-up ()
   ""
   (set-store)
-  (if (probe-store :id "a_1_6")
-      (reconnect-store :id "a_1_6")
-    (create-store :id "a_1_6"
+  (if (probe-store :id "a_1_7")
+      (reconnect-store :id "a_1_7")
+    (create-store :id "a_1_7"
 		  :target
-		  "http://localhost/cgi-bin/amigo/go.cgi"))
+		  "http://localhost/cgi-bin/amigo/go"))
   (start))
 
 (defun spin-down ()
