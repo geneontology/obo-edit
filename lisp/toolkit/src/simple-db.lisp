@@ -53,7 +53,7 @@
   (make-instance 'simple-db
 		 :name name
 		 :dir dir
-		 :path (merge-pathnames (toolkit-conv:ccat dir "/" name))))
+		 :path (merge-pathnames (toolkit-string:ccat dir "/" name))))
 
 ;;
 
@@ -62,7 +62,7 @@
 
 (defmethod location-db ((db simple-db))
   ""
-  (toolkit-conv:ccat (dir db) "/" (name db)))
+  (toolkit-string:ccat (dir db) "/" (name db)))
 
 
 
