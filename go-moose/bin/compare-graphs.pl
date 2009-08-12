@@ -240,7 +240,7 @@ if ($ss)
 		my $count;
 		if (! $data->{g1_subset}{subset}{$ss}{$t})
 		{	# $t is a new subset term in f2
-			print STDERR "$t is a new subset term in g2\n";
+#			print STDERR "$t is a new subset term in g2\n";
 			push @{$data->{new_in_g2_subset}}, $t;
 		}
 		else
@@ -251,7 +251,7 @@ if ($ss)
 				}
 			}
 			else
-			{	warn "No links in f1 involving subset term $t";
+			{	warn "No links in f1 involving subset term $t" if $options->{verbose};
 			}
 		}
 		
@@ -262,7 +262,7 @@ if ($ss)
 			}
 		}
 		else
-		{	warn "No links in f2 involving subset term $t";
+		{	warn "No links in f2 involving subset term $t" if $options->{verbose};
 		}
 	
 		foreach my $e (keys %$count) {
@@ -283,7 +283,7 @@ if ($ss)
 	foreach my $t (keys %{ $data->{g1_subset}{subset}{ $ss }})
 	{	if (! $data->{g2_subset}{subset}{$ss}{$t})
 		{	# $t is no longer a subset term
-			print STDERR "$t is no longer a subset term in g2\n";
+		#	print STDERR "$t is no longer a subset term in g2\n";
 			push @{$data->{removed_from_g2_subset}}, $t;
 		}
 	}
@@ -327,9 +327,9 @@ print_new_merges($output_fh, $data);
 
 print_term_name_changes($output_fh, $data);
 
-print_term_changes($output_fh, $data);
-
 print_subset_changes($output_fh, $data);
+
+print_term_changes($output_fh, $data);
 
 print_errors($output_fh, $data);
 
@@ -544,7 +544,7 @@ sub print_stats {
 	my $fh = shift;
 	my $data = shift;
 	
-	print $fh "\nFile Stats\n==========\n" . 
+	print $fh "\nFile Stats (for the new file)\n==========\n" . 
 		join("\n", map { "$_: " . $data->{f2_stats}{total}{$_} . " terms ("
 		. ( $data->{f2_stats}{n_defined}{$_} || '0') . " defined; "
 		. ( $data->{f2_stats}{is_obsolete}{$_} || '0' ) . " obsolete)" } sort keys %{$data->{f2_stats}{total}}).
@@ -568,66 +568,9 @@ sub print_stats {
 
 	print $fh "\ntotals: " . 
 		$grand_total->{total} . " terms ("
-		. $grand_total->{n_defined} . "/" . $grand_total->{n_defined_percent} . " defined; "
-		. $grand_total->{is_obsolete} . "/" . $grand_total->{is_obsolete_percent} . " obsolete)"
+		. $grand_total->{n_defined} . "/" . $grand_total->{n_defined_percent} . "% defined; "
+		. $grand_total->{is_obsolete} . "/" . $grand_total->{is_obsolete_percent} . "% obsolete)"
 		. "\n";
-}
-
-
-=head2 block_to_sorted_array
-
-input:  a multi-line block of text (preferably an OBO format stanza!)
-output: ref to an array with the following removed
-        - empty lines
-        - lines starting with "id: ", "[", and "...]"
-        - trailing whitespace
-
-        the array is sorted
-
-=cut
-
-sub block_to_sorted_array {
-	my $block = shift;
-	my $arr;
-	foreach ( split( "\n", $block ) )
-	{	next unless /\S/;
-		next if /^(id: \S+|\[|\S+\])\s*$/;
-		$_ =~ s/^(is_a:|relationship:)\s*(.+)\s*!\s.*$/$1 $2/;
-		$_ =~ s/\s*$//;
-		push @$arr, $_;
-	}
-	
-	return [ sort @$arr ] || undef;
-}
-
-
-=head2 tag_val_arr_to_hash
-
-input:  array ref containing ": " separated tag-value pairs
-output: lines in the array split up by ": " and put into a hash
-        of the form key-[array of values]
-
-=cut
-
-sub tag_val_arr_to_hash {
-	my $arr = shift;
-	if ($arr && ! ref $arr && $_[0])
-	{	my @array = ( $arr, @_ );
-		$arr = \@array;
-	}
-
-	return undef unless $arr && @$arr;
-	my $h;
-	foreach (@$arr)
-	{	my ($k, $v) = split(": ", $_, 2);
-		if (! $k || ! $v)
-		{	print STDERR "line: $_\n";
-		}
-		else
-		{	push @{$h->{$k}}, $v;
-		}
-	}
-	return $h;
 }
 
 
@@ -643,6 +586,7 @@ sub print_new_terms {
 #	print STDERR "diffs: " . Dumper($data->{diffs}{Term}) . "\n\n\n";
 	
 	print $fh "New terms\n=========\n";
+	print $fh "KEY:columns are separated by tabs\nID\tname\tnamespace\tnearest GO slim parent terms\n\n";
 
 	if ( $data->{diffs}{Term}{f2_only} && keys %{$data->{diffs}{Term}{f2_only}})
 	{	foreach ( sort keys %{$data->{diffs}{Term}{f2_only}} )
@@ -651,7 +595,7 @@ sub print_new_terms {
 			. print_term_name($data, $_, 'f2', 1) . "\t" 
 			. $data->{f2_hash}{Term}{$_}{namespace}[0] . "\t";
 			if ($data->{f2_hash}{Term}{$_}{is_obsolete})
-			{	print $fh "OBS\t";
+			{	print $fh "obsolete\t";
 			}
 			else
 			{	# print the GS parents...
@@ -805,7 +749,7 @@ sub print_term_changes {
 	replaced_by
 	consider);
 
-	print STDERR "all tags used: " . Dumper($data->{diffs}{Term}{all_tags_used}) . "\n";
+#	print STDERR "all tags used: " . Dumper($data->{diffs}{Term}{all_tags_used}) . "\n";
 
 	my @single_attribs = qw(comment def namespace is_anonymous name is_obsolete);
 
@@ -820,6 +764,7 @@ sub print_term_changes {
 		print $fh "None\n\n\n";
 		return;
 	}
+	print $fh "KEY:  '+' : added, '-' : removed, '*' : changed\n\n";
 
 	foreach my $t (sort keys %{$data->{diffs}{Term}{both}})
 	{	my $line;
@@ -828,42 +773,41 @@ sub print_term_changes {
 			{	if (grep { /^$c$/ } @single_attribs)
 				{	if ($data->{diffs}{Term}{both}{$t}{$c}{f1} && $data->{diffs}{Term}{both}{$t}{$c}{f2})
 					{	# changed
-						$line .= "* $c";
+						push @$line, "*$c";
 					}
 					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f2})
-					{	$line .= "+ $c";
+					{	push @$line, "+$c";
 					}
 					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f1})
-					{	$line .= "- $c";
+					{	push @$line, "-$c";
 					}
 				}
 				else # multiple attributes
-				{	#$line .= "$c: ";
+				{	#push @$line, "$c: ";
 					if ($data->{diffs}{Term}{both}{$t}{$c}{f1} && $data->{diffs}{Term}{both}{$t}{$c}{f2})
 					{	my $net = $data->{diffs}{Term}{both}{$t}{$c}{f2} - $data->{diffs}{Term}{both}{$t}{$c}{f1};
 						if ($net == 0)
-						{	$line .= "*" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+						{	push @$line, "*" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "(s)"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
 						}
 						elsif ($net < 0)
 						{	$net = 0 - $net;
-							$line .= "*" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . ", -$net" . " $c" . "s"; # [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+							push @$line, "*" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . ", -$net" . " $c" . "(s)"; # [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
 						}
 						elsif ($net > 1)
-						{	$line .= "+$net, *" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+						{	push @$line, "+$net, *" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "(s)"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
 						}
 					}
 					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f1})
-					{	$line .= "-" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s";
+					{	push @$line, "-" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "(s)";
 					}
 					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f2})
-					{	$line .= "+" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . " $c" . "s";
+					{	push @$line, "+" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . " $c" . "(s)";
 					}
 				}
 			}
-			$line .= "\t";
 		}
-		if ($line =~ /\S/)
-		{	print $fh print_term_name($data, $t) . "\n$line\n";
+		if ($line)
+		{	print $fh print_term_name($data, $t) . "\n" . join("; ", @$line) . "\n";
 			#print STDERR print_term_name($data, $t) . "\n$line\n";
 		}
 	}
@@ -878,9 +822,10 @@ sub print_subset_changes {
 print $fh "Subset Changes\n==============\n";
 
 
-	print $fh "Subset term alterations\n-----------------------\n";
+	print $fh "\nSubset term alterations\n";
 	if ($data->{new_in_g2_subset} || $data->{removed_from_g2_subset})
-	{	if ($data->{new_in_g2_subset})
+	{	print $fh "\n";
+		if ($data->{new_in_g2_subset})
 		{	print $fh
 			join("\n", map { "+ " . print_term_name($data, $_) } sort @{$data->{new_in_g2_subset}} ) . "\n";
 		}
@@ -888,14 +833,11 @@ print $fh "Subset Changes\n==============\n";
 		{	print $fh
 			join("\n", map { "- " . print_term_name($data, $_) } sort @{$data->{removed_from_g2_subset}} ) . "\n";
 		}
-		print $fh "\n";
 	}
 	else
 	{	print $fh "None\n";
 	}
-	print $fh "\n";
-
-	print $fh "Term movement between subsets\n-----------------------------\n";
+	print $fh "\nTerm movement between subsets\n";
 
 	if (! $data->{subset_movements})
 	{	print $fh "None\n";
@@ -985,6 +927,63 @@ sub print_term_name {
 		return "unrecognized term" if $no_id;
 		return "$t_id, unrecognized term";
 	}
-
-
 }
+
+
+
+=head2 block_to_sorted_array
+
+input:  a multi-line block of text (preferably an OBO format stanza!)
+output: ref to an array with the following removed
+        - empty lines
+        - lines starting with "id: ", "[", and "...]"
+        - trailing whitespace
+
+        the array is sorted
+
+=cut
+
+sub block_to_sorted_array {
+	my $block = shift;
+	my $arr;
+	foreach ( split( "\n", $block ) )
+	{	next unless /\S/;
+		next if /^(id: \S+|\[|\S+\])\s*$/;
+		$_ =~ s/^(is_a:|relationship:)\s*(.+)\s*!\s.*$/$1 $2/;
+		$_ =~ s/\s*$//;
+		push @$arr, $_;
+	}
+	
+	return [ sort @$arr ] || undef;
+}
+
+
+=head2 tag_val_arr_to_hash
+
+input:  array ref containing ": " separated tag-value pairs
+output: lines in the array split up by ": " and put into a hash
+        of the form key-[array of values]
+
+=cut
+
+sub tag_val_arr_to_hash {
+	my $arr = shift;
+	if ($arr && ! ref $arr && $_[0])
+	{	my @array = ( $arr, @_ );
+		$arr = \@array;
+	}
+
+	return undef unless $arr && @$arr;
+	my $h;
+	foreach (@$arr)
+	{	my ($k, $v) = split(": ", $_, 2);
+		if (! $k || ! $v)
+		{	print STDERR "line: $_\n";
+		}
+		else
+		{	push @{$h->{$k}}, $v;
+		}
+	}
+	return $h;
+}
+
