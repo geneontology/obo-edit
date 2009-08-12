@@ -40,9 +40,6 @@ $Data::Dumper::Sortkeys = 1;
 use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::InferenceEngine;
-#use Test::Deep;
-use Test::Deep::NoTest;
-
 use GOBO::Util::GraphFunctions;
 
 my $options = parse_options(\@ARGV);
@@ -56,10 +53,16 @@ my $data;
 my $parser;
 my $ss = $options->{subset};
 my @tags_to_parse = qw(name is_a relationship subset);
+my $regex = '^(' . join("|", @tags_to_parse) . '):\s*';
+$regex = qr/$regex/;
+
 my $output_fh = new FileHandle($options->{output}, "w");
 if (! defined $output_fh)
 {	die "Could not create the file " . $options->{output} . ": $!";
 }
+
+#use Time::HiRes qw(gettimeofday);
+#my $start_time = gettimeofday;
 
 foreach my $f ('f1', 'f2')
 {	
@@ -67,8 +70,6 @@ foreach my $f ('f1', 'f2')
 	local $/ = "\n[";
 	$parser = new GOBO::Parsers::OBOParserDispatchHash;
 	
-	#foreach my $f ('f1', 'f2')
-#	my $f = 'f1';
 	print STDERR "Ready to read in $f!\n";
 	open(FH, "<" . $options->{$f}) or die("Could not open " . $options->{$f} . "! $!");
 
@@ -78,7 +79,7 @@ foreach my $f ('f1', 'f2')
 	$data->{$f}{graph} = $parser->parse_header_from_array({ array => [@arr] });
 
 	print STDERR "Parsed $f header; starting body\n";
-
+	my @lines;
 	while (<FH>)
 	{	if (/^(\S+)\]\s*.*?^id:\s*(\S+)/sm)
 		{	# store the data as a sorted array indexed by stanza type and id
@@ -106,10 +107,10 @@ foreach my $f ('f1', 'f2')
 			next if $data->{$f . "_hash"}{$1}{$2}{is_obsolete};
 #			if ($f eq 'f2') {
 			if ($1 eq 'Term')
-			{	#$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ ( "[$1]", "id: $2", grep { my $x = $_; 1 if grep { $x =~ /^$_: / } @tags_to_parse } @{$data->{$f}{$1}{$2}} ) ] });
+			{	push @lines, ( "[$1]", "id: $2", grep { /$regex/ } @{$data->{$f}{$1}{$2}} );
 			}
 			elsif ($1 eq 'Typedef')
-			{	#$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ "[$1]", "id: $2", @{$data->{$f}{$1}{$2}} ] });
+			{	push @lines, ("[$1]", "id: $2", @{$data->{$f}{$1}{$2}});
 			}
 #}
 		}
@@ -117,16 +118,27 @@ foreach my $f ('f1', 'f2')
 		{	print STDERR "Couldn't understand data!\n";
 		}
 	}
-	close FH;
+	
+	$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ @lines ] });
 	print STDERR "Finished parsing $f body\n";
+	close FH;
 }
 
+
+#my $end_time = gettimeofday;
+#print STDERR "took " . ($end_time - $start_time) . " secs to complete\n";
 
 ## ANALYSIS STAGE! ##
 
 ## ok, check through the terms and compare 'em
 foreach my $t (keys %{$data->{f1}{Term}})
-{	if (! $data->{f2}{Term}{$t})
+{	## get stuff for stats
+	$data->{f1_stats}{total}{ ($data->{f1_hash}{Term}{$t}{namespace}[0] || 'unknown') }++;
+	$data->{f1_stats}{n_defined}{ ($data->{f1_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f1_hash}{Term}{$t}{def};
+	$data->{f1_stats}{is_obsolete}{ ($data->{f1_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f1_hash}{Term}{$t}{is_obsolete};
+	$data->{f1_stats}{def_not_obs}{ ($data->{f1_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f1_hash}{Term}{$t}{def} && ! $data->{f1_hash}{Term}{$t}{is_obsolete};
+
+	if (! $data->{f2}{Term}{$t})
 	{	# check it hasn't been merged
 		if ($data->{f2_alt_ids}{$t})
 		{	# the term was merged. N'mind!
@@ -158,7 +170,7 @@ foreach my $t (keys %{$data->{f1}{Term}})
 
 }
 
-print STDERR "data->diffs->term->all_tags_used: " . Dumper($data->{diffs}{Term}{all_tags_used});
+#print STDERR "data->diffs->term->all_tags_used: " . Dumper($data->{diffs}{Term}{all_tags_used});
 
 foreach my $t (keys %{$data->{f2}{Term}})
 {	if (! $data->{f1}{Term}{$t})
@@ -172,16 +184,20 @@ foreach my $t (keys %{$data->{f2}{Term}})
 		{	$data->{diffs}{Term}{f2_only}{$t}++;
 		}
 	}
+	
+	## get stuff for stats
+	$data->{f2_stats}{total}{ ($data->{f2_hash}{Term}{$t}{namespace}[0] || 'unknown') }++;
+	$data->{f2_stats}{n_defined}{ ($data->{f2_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f2_hash}{Term}{$t}{def};
+	$data->{f2_stats}{is_obsolete}{ ($data->{f2_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f2_hash}{Term}{$t}{is_obsolete};
+	$data->{f2_stats}{def_not_obs}{ ($data->{f2_hash}{Term}{$t}{namespace}[0] || 'unknown') }++ if $data->{f2_hash}{Term}{$t}{def} && ! $data->{f2_hash}{Term}{$t}{is_obsolete};
+
+	
 #	# map the subsets
 #	if ($data->{f2_hash}{Term}{$t}{subset} && grep { $options->{subset} eq $_ }  @{$data->{f2_hash}{Term}{$t}{subset}} )
 #	{	$data->{f2_hash}{subset}{ $options->{subset} }{$t} = 1;
 #	}
 
 }
-
-
-print_term_changes($output_fh, $data);
-
 
 if ($ss)
 {	
@@ -196,8 +212,8 @@ if ($ss)
 	#{	print STDERR "Subset diffs:\n" . Test::Deep::deep_diag($stack);
 	#}
 	
-	print STDERR "g1 subset: " .join(", ", keys %{$data->{g1_subset}{subset}{$ss} || {} } )."\n";
-	print STDERR "g2 subset: " .join(", ", keys %{$data->{g2_subset}{subset}{$ss} || {} } )."\n";
+#	print STDERR "g1 subset: " .join(", ", keys %{$data->{g1_subset}{subset}{$ss} || {} } )."\n";
+#	print STDERR "g2 subset: " .join(", ", keys %{$data->{g2_subset}{subset}{$ss} || {} } )."\n";
 	
 	
 	# get link data for the terms
@@ -216,19 +232,20 @@ if ($ss)
 	
 	
 	#print STDERR "g1 subset: " .join(", ", keys %{ $data->{g1_subset}{subset}{ $ss } || {} } )."\n";
-	print STDERR "g2 subset: " . join(", ", keys %{ $data->{g2_subset}{subset}{ $ss } || {} } )."\n";
+	#print STDERR "g2 subset: " . join(", ", keys %{ $data->{g2_subset}{subset}{ $ss } || {} } )."\n";
 	
 	# go through the g2 subset terms and compare the data to that we got from g1
 	foreach my $t (keys %{ $data->{g2_subset}{subset}{ $ss }})
 	{	
 		my $count;
 		if (! $data->{g1_subset}{subset}{$ss}{$t})
-		{	# $sst is a new subset term in f2
+		{	# $t is a new subset term in f2
 			print STDERR "$t is a new subset term in g2\n";
+			push @{$data->{new_in_g2_subset}}, $t;
 		}
 		else
 		{	if ($data->{g1_link_data_slimmed}{target_node_rel}{$t})
-			{	# links from target $sst in the graph for f1
+			{	# links from target $t in the graph for f1
 				foreach my $n (keys %{$data->{g1_link_data_slimmed}{target_node_rel}{$t}})
 				{	$count->{$n}++;
 				}
@@ -239,7 +256,7 @@ if ($ss)
 		}
 		
 		if ($data->{g2_link_data_slimmed}{target_node_rel}{$t})
-		{	# links from target $sst in the graph for f2
+		{	# links from target $t in the graph for f2
 			foreach my $n (keys %{$data->{g2_link_data_slimmed}{target_node_rel}{$t}})
 			{	$count->{$n}+= 10;
 			}
@@ -251,11 +268,11 @@ if ($ss)
 		foreach my $e (keys %$count) {
 			next if $count->{$e} == 11;
 			if ($count->{$e} == 1)
-			{	# term has been removed from $sst
+			{	# term has been removed from $ss
 				$data->{subset_movements}{$t}{out}{$e} = 1;
 			}
 			elsif ($count->{$e} == 10)
-			{	# term has been added to $sst
+			{	# term has been added to $ss
 				$data->{subset_movements}{$t}{in}{$e} = 1;
 			}
 		}
@@ -265,11 +282,13 @@ if ($ss)
 	# go through the g2 subset terms and compare the data to that we got from g1
 	foreach my $t (keys %{ $data->{g1_subset}{subset}{ $ss }})
 	{	if (! $data->{g2_subset}{subset}{$ss}{$t})
-		{	# $sst is a new subset term in f2
+		{	# $t is no longer a subset term
 			print STDERR "$t is no longer a subset term in g2\n";
+			push @{$data->{removed_from_g2_subset}}, $t;
 		}
 	}
 	
+=cut
 	my $pairs;
 	
 	foreach my $t (keys %{$data->{g1_link_data_slimmed}{target_node_rel}})
@@ -293,9 +312,12 @@ if ($ss)
 	
 	
 	print STDERR "subset movements: " . Dumper($data->{subset_movements})."\n";
+=cut
 }
 
 #print STDERR "file 1 alt_ids: " . Dumper($data->{f1_alt_ids}) . "file 2 alt_ids: " . Dumper($data->{f2_alt_ids}) . "\n\n";
+
+print_header($output_fh, $data, $options);
 
 print_new_terms($output_fh, $data);
 
@@ -310,6 +332,8 @@ print_term_changes($output_fh, $data);
 print_subset_changes($output_fh, $data);
 
 print_errors($output_fh, $data);
+
+print_stats($output_fh, $data);
 
 exit(0);
 
@@ -445,21 +469,27 @@ sub check_options {
 
 # print the header for the Monthly Report
 sub print_header {
+	my $fh = shift;
+	my $data = shift;
 	my $args = shift;
-	my $out = $args->{output};
-	open(OUT, ">$out") or die("Could not open $out for writing: $!");
-
 	my $f_text = {
-		1 => 'file 1 (old): ',
-		2 => 'file 2 (new): ',
+		f1 => 'file 1 (old): ',
+		f2 => 'file 2 (new): ',
 	};
 
-	print OUT "Ontology Comparison Report\n==========================\n\nFiles used:\n";
-	foreach my $f ("1", "2")
+	print $fh "Ontology Comparison Report\n==========================\n\nFiles used:\n";
+	foreach my $f ("f1", "f2")
 	{	my @f_data;
-		my $header = $args->{data}{"f$f" . "_header"};
+		my $header = $data->{$f}{"header"};
 		print STDERR "file $f header: " . Dumper($header);
-		($header->{name} = $args->{"file_$f"}) =~ s/.+\///;
+	#	($header->{name} = $args->{$f}) =~ s/.+\///;
+		my $slash = rindex $args->{$f}, "/";
+		if ($slash > -1)
+		{	push @f_data, substr $args->{$f}, ++$slash;
+		}
+		else
+		{	push @f_data, $args->{$f};
+		}
 
 		if ($header->{"data-version"})
 		{	push @f_data, "data version: " . $header->{"data-version"}[0];
@@ -476,22 +506,60 @@ sub print_header {
 			}
 		}
 		
-		print OUT $f_text->{$f};
+		print $fh $f_text->{$f};
 		
 		if (@f_data)
-		{	print OUT join("; ", @f_data) . "\n";
+		{	print $fh join("; ", @f_data) . "\n";
 		}
 		else
-		{	print OUT "unknown\n";
+		{	print $fh "unknown\n";
 		}
 	}
 	
 	if ($args->{subset})
-	{	print OUT "subset: " . join(", ", keys %{$args->{subset}}) . "\n";
+	{	print $fh "subset: " . $args->{subset} . "\n";
 	}
 	
-	print OUT "\n\n";
+	print $fh "\n\n";
 	return;
+}
+
+
+sub print_stats {
+	my $fh = shift;
+	my $data = shift;
+	
+	print $fh "\nFile Stats\n\n" . 
+		join("\n", map { "$_: " . $data->{f2_stats}{total}{$_} . " terms ("
+		. ( $data->{f2_stats}{n_defined}{$_} || '0') . " defined; "
+		. ( $data->{f2_stats}{is_obsolete}{$_} || '0' ) . " obsolete)" } sort keys %{$data->{f2_stats}{total}}).
+		"\n";
+
+	my $grand_total;
+	map { $grand_total->{total} += $data->{f2_stats}{total}{$_} } keys %{$data->{f2_stats}{total}};
+	map { $grand_total->{n_defined} += $data->{f2_stats}{n_defined}{$_} } keys %{$data->{f2_stats}{n_defined}};
+	map { $grand_total->{is_obsolete} += $data->{f2_stats}{is_obsolete}{$_} } keys %{$data->{f2_stats}{is_obsolete}};
+	map { $grand_total->{def_not_obs} += $data->{f2_stats}{def_not_obs}{$_} } keys %{$data->{f2_stats}{def_not_obs}};
+
+	foreach qw(n_defined is_obsolete def_not_obs)
+	{	if (! $grand_total->{$_})
+		{	$grand_total->{$_} = "0";
+			$grand_total->{$_ . "_percent"} = "0";
+			next;
+		}
+		$grand_total->{$_ . "_percent"} = sprintf("%.1f", $grand_total->{$_} / $grand_total->{total} * 100);
+	}
+
+
+	print $fh "\ntotals: " . 
+		$grand_total->{total} . " terms ("
+		. ( $grand_total->{n_defined} ) . "/" . " defined; "
+		. ( $grand_total->{is_obsolete} ) . " obsolete)"
+		. "\n";
+
+
+%.1f%% defined ($grandDef terms defined)\n", $grandDef/$grandTot*100
+
 }
 
 
@@ -711,11 +779,12 @@ sub print_term_changes {
 
 	print STDERR "all tags used: " . Dumper($data->{diffs}{Term}{all_tags_used}) . "\n";
 
-	my @ignore_list = qw(id name is_obsolete alt_id);
+	my @single_attribs = qw(comment def namespace is_anonymous name is_obsolete);
 
-	my @single_attribs = qw(comment def namespace is_anonymous);
+	my $ignore = '^(' . join("|", qw(id name is_obsolete alt_id) ) . ')$';
+	$ignore = qr/$ignore/;
 
-	my @attribs = grep { my $x = $_; if (exists $data->{diffs}{Term}{all_tags_used}{$x} && ! grep { $x eq $_ } @ignore_list) { 1 } else { 0 } } @ordered_attribs;
+	my @attribs = grep { exists $data->{diffs}{Term}{all_tags_used}{$_} && $_ ne 'id' } @ordered_attribs;
 
 	if (! @attribs )
 	{	# nothing to report!
@@ -765,8 +834,8 @@ sub print_term_changes {
 			$line .= "\t";
 		}
 		if ($line =~ /\S/)
-		{	#print $fh print_term_name($data, $t) . "\n$line\n";
-			print STDERR print_term_name($data, $t) . "\n$line\n";
+		{	print $fh print_term_name($data, $t) . "\n$line\n";
+			#print STDERR print_term_name($data, $t) . "\n$line\n";
 		}
 	}
 }
@@ -776,6 +845,19 @@ sub print_subset_changes {
 	my $fh = shift;
 	my $data = shift;
 	
+	if ($data->{new_in_g2_subset} || $data->{removed_from_g2_subset})
+	{	print $fh "\nSubset Changes\n\n";
+		if ($data->{new_in_g2_subset})
+		{	print $fh
+			join("\n", map { "+ $_" } sort @{$data->{new_in_g2_subset}} ) . "\n";
+		}
+		if ($data->{removed_from_g2_subset})
+		{	print $fh
+			join("\n", map { "- $_" } sort @{$data->{removed_from_g2_subset}} ) . "\n";
+		}
+		print $fh "\n";
+	}
+
 	return unless $data->{subset_movements};
 	foreach my $s (sort keys %{$data->{subset_movements}})
 	{	print $fh "\nTerm movements under " . print_term_name($data, $s) . "\n";
@@ -847,8 +929,18 @@ sub print_term_name {
 	my $file = shift || 'f2';
 	my $no_id = shift || undef;
 	
-	return $data->{$file . "_hash" }{Term}{$t_id}{name}[0] if $no_id;
-	
-	return $t_id . ", " . $data->{$file . "_hash" }{Term}{$t_id}{name}[0];
+	if ($data->{$file . "_hash" }{Term}{$t_id})
+	{	return $data->{$file . "_hash" }{Term}{$t_id}{name}[0] if $no_id;
+		return $t_id . ", " . $data->{$file . "_hash" }{Term}{$t_id}{name}[0];
+	}
+	else
+	{	if ($data->{$file . "_alt_ids"}{$t_id})
+		{	
+			return $t_id . ", alt id for " . $data->{$file . "_alt_ids"}{$t_id} . ", " . $data->{$file . "_hash" }{Term}{ $data->{$file . "_alt_ids"}{$t_id} }{name}[0];
+		}
+		return "unrecognized term" if $no_id;
+		return "$t_id, unrecognized term";
+	}
+
 
 }
