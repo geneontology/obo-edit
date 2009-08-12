@@ -553,13 +553,9 @@ sub print_stats {
 
 	print $fh "\ntotals: " . 
 		$grand_total->{total} . " terms ("
-		. ( $grand_total->{n_defined} ) . "/" . " defined; "
-		. ( $grand_total->{is_obsolete} ) . " obsolete)"
+		. $grand_total->{n_defined} . "/" . $grand_total->{n_defined_percent} . " defined; "
+		. $grand_total->{is_obsolete} . "/" . $grand_total->{is_obsolete_percent} . " obsolete)"
 		. "\n";
-
-
-%.1f%% defined ($grandDef terms defined)\n", $grandDef/$grandTot*100
-
 }
 
 
