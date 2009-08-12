@@ -541,13 +541,13 @@ sub print_stats {
 	map { $grand_total->{is_obsolete} += $data->{f2_stats}{is_obsolete}{$_} } keys %{$data->{f2_stats}{is_obsolete}};
 	map { $grand_total->{def_not_obs} += $data->{f2_stats}{def_not_obs}{$_} } keys %{$data->{f2_stats}{def_not_obs}};
 
-	foreach qw(n_defined is_obsolete def_not_obs)
-	{	if (! $grand_total->{$_})
-		{	$grand_total->{$_} = "0";
-			$grand_total->{$_ . "_percent"} = "0";
+	foreach my $x qw(n_defined is_obsolete def_not_obs)
+	{	if (! $grand_total->{$x})
+		{	$grand_total->{$x} = "0";
+			$grand_total->{$x . "_percent"} = "0";
 			next;
 		}
-		$grand_total->{$_ . "_percent"} = sprintf("%.1f", $grand_total->{$_} / $grand_total->{total} * 100);
+		$grand_total->{$x . "_percent"} = sprintf("%.1f", $grand_total->{$x} / $grand_total->{total} * 100);
 	}
 
 
