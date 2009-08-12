@@ -1,0 +1,854 @@
+#!/usr/bin/perl -w
+# find GO slim nodes and generate a graph based on them, removing any nodes not
+# in the slim
+
+=head1 NAME
+
+compare-graphs.pl
+
+=head1 SYNOPSIS
+
+ compare-graphs.pl --file_1 go/ontology/old_gene_ontology.obo --file_2 go/ontology/gene_ontology.obo -s goslim_generic -o results.txt
+
+=head1 DESCRIPTION
+
+# must supply these arguments... or else!
+# INPUT
+ -f1 || --file_1 /path/to/<file_name>     input ontology file 
+ -f2 || --file_2 /path/to/<file_2_name>   
+
+# OUTPUT
+ -o || --output /path/to/<file_name>     output file with path
+
+
+# SUBSET
+ -s || --subset <subset_name>            subset to use for graph-based comparisons
+
+
+# optional args
+
+ -v || --verbose                         prints various messages
+
+
+=cut
+
+
+use strict;
+use Data::Dumper;
+$Data::Dumper::Sortkeys = 1;
+
+use GOBO::Graph;
+use GOBO::Parsers::OBOParserDispatchHash;
+use GOBO::InferenceEngine;
+#use Test::Deep;
+use Test::Deep::NoTest;
+
+use GOBO::Util::GraphFunctions;
+
+my $options = parse_options(\@ARGV);
+
+# check verbosity
+if (! defined $options->{verbose})
+{	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
+}
+
+my $data;
+my $parser;
+my $ss = $options->{subset};
+my @tags_to_parse = qw(name is_a relationship subset);
+my $output_fh = new FileHandle($options->{output}, "w");
+if (! defined $output_fh)
+{	die "Could not create the file " . $options->{output} . ": $!";
+}
+
+foreach my $f ('f1', 'f2')
+{	
+	## let's quickly get the ontology data and do a big ass comparison that way
+	local $/ = "\n[";
+	$parser = new GOBO::Parsers::OBOParserDispatchHash;
+	
+	#foreach my $f ('f1', 'f2')
+#	my $f = 'f1';
+	print STDERR "Ready to read in $f!\n";
+	open(FH, "<" . $options->{$f}) or die("Could not open " . $options->{$f} . "! $!");
+
+	# remove and parse the header
+	my @arr = split("\n", <FH> );
+	$data->{$f}{header} = tag_val_arr_to_hash( \@arr );
+	$data->{$f}{graph} = $parser->parse_header_from_array({ array => [@arr] });
+
+	print STDERR "Parsed $f header; starting body\n";
+
+	while (<FH>)
+	{	if (/^(\S+)\]\s*.*?^id:\s*(\S+)/sm)
+		{	# store the data as a sorted array indexed by stanza type and id
+			$data->{$f}{$1}{$2} = block_to_sorted_array($_);
+
+			# and also as a tag-value hash
+			$data->{$f . "_hash"}{$1}{$2} = tag_val_arr_to_hash( $data->{$f}{$1}{$2} );
+
+			# save alt_ids
+			if ($1 eq 'Term' && $data->{$f . "_hash"}{Term}{$2}{alt_id})
+			{	# check for dodgy alt ids...
+				
+				map { 
+					if ($data->{$f . "_alt_ids"}{$_} )
+					{	warn "$2: alt_id $_ is already assigned to " . $data->{$f . "_alt_ids"}{$_};
+					}
+					else
+					{	$data->{$f . "_alt_ids"}{$_} = $2;
+					}
+				} @{$data->{$f . "_hash"}{Term}{$2}{alt_id}};
+			}
+
+			# extract the interesting data and add it to the graph
+			# skip obsoletes
+			next if $data->{$f . "_hash"}{$1}{$2}{is_obsolete};
+#			if ($f eq 'f2') {
+			if ($1 eq 'Term')
+			{	#$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ ( "[$1]", "id: $2", grep { my $x = $_; 1 if grep { $x =~ /^$_: / } @tags_to_parse } @{$data->{$f}{$1}{$2}} ) ] });
+			}
+			elsif ($1 eq 'Typedef')
+			{	#$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ "[$1]", "id: $2", @{$data->{$f}{$1}{$2}} ] });
+			}
+#}
+		}
+		else
+		{	print STDERR "Couldn't understand data!\n";
+		}
+	}
+	close FH;
+	print STDERR "Finished parsing $f body\n";
+}
+
+
+## ANALYSIS STAGE! ##
+
+## ok, check through the terms and compare 'em
+foreach my $t (keys %{$data->{f1}{Term}})
+{	if (! $data->{f2}{Term}{$t})
+	{	# check it hasn't been merged
+		if ($data->{f2_alt_ids}{$t})
+		{	# the term was merged. N'mind!
+#			print STDERR "$t was merged into " . $data->{f2_alt_ids}{$t} . "\n";
+			$data->{f1_to_f2_merge}{$t} = $data->{f2_alt_ids}{$t};
+		}
+		else
+		{	warn "$t is only in file 1\n";
+			$data->{diffs}{Term}{f1_only}{$t}++;
+		}
+	}
+	else
+	{	# quickly compare the arrays, see if they are the same
+		next if join("\0", @{$data->{f1}{Term}{$t}}) eq join("\0", @{$data->{f2}{Term}{$t}});
+
+		my $r = compare_hashes({ f1 => $data->{f1_hash}{Term}{$t}, f2 => $data->{f2_hash}{Term}{$t} });
+		if ($r)
+		{	$data->{diffs}{Term}{both}{$t} = $r;
+			foreach (keys %$r)
+			{	$data->{diffs}{Term}{all_tags_used}{$_}++;
+			}
+		}
+	}
+
+#	# map the subsets
+#	if ($data->{f1_hash}{Term}{$t}{subset} && grep { $options->{subset} eq $_ }  @{$data->{f1_hash}{Term}{$t}{subset}} )
+#		$data->{f1_hash}{subset}{ $options->{subset} }{$t} = 1;
+#	}
+
+}
+
+print STDERR "data->diffs->term->all_tags_used: " . Dumper($data->{diffs}{Term}{all_tags_used});
+
+foreach my $t (keys %{$data->{f2}{Term}})
+{	if (! $data->{f1}{Term}{$t})
+	{	# check it hasn't been de-merged
+		if ($data->{f1_alt_ids}{$t})
+		{	# erk! it was an alt id... what's going on?!
+			warn "$t was an alt id for " . $data->{f1_alt_ids}{$t} . " but it has been de-merged!";
+			$data->{f2_to_f1_merge}{$t} = $data->{f1_alt_ids}{$t};
+		}
+		else
+		{	$data->{diffs}{Term}{f2_only}{$t}++;
+		}
+	}
+#	# map the subsets
+#	if ($data->{f2_hash}{Term}{$t}{subset} && grep { $options->{subset} eq $_ }  @{$data->{f2_hash}{Term}{$t}{subset}} )
+#	{	$data->{f2_hash}{subset}{ $options->{subset} }{$t} = 1;
+#	}
+
+}
+
+
+print_term_changes($output_fh, $data);
+
+
+if ($ss)
+{	
+	# g1 and g2 should contain enough info to generate the slimming graph
+	# get the terms in the subset for g1 and g2
+	$data->{g1_subset} = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $data->{f1}{graph}, options => { subset => { $ss => 1 } } });
+	$data->{g2_subset} = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $data->{f2}{graph}, options => { subset => { $ss => 1 } } });
+	
+	
+	my ($ok, $stack); # = Test::Deep::cmp_details( $data->{g1_subset}, $data->{g2_subset} );
+	#if (! $ok)
+	#{	print STDERR "Subset diffs:\n" . Test::Deep::deep_diag($stack);
+	#}
+	
+	print STDERR "g1 subset: " .join(", ", keys %{$data->{g1_subset}{subset}{$ss} || {} } )."\n";
+	print STDERR "g2 subset: " .join(", ", keys %{$data->{g2_subset}{subset}{$ss} || {} } )."\n";
+	
+	
+	# get link data for the terms
+	$data->{g1_link_data} = GOBO::Util::GraphFunctions::get_graph_links({ graph => $data->{f1}{graph}, subset => $data->{g1_subset}{subset}{ $ss }, options => $options });
+	$data->{g2_link_data} = GOBO::Util::GraphFunctions::get_graph_links({ graph => $data->{f2}{graph}, subset => $data->{g2_subset}{subset}{ $ss }, options => $options });
+	
+	$data->{g1_link_data_slimmed} = GOBO::Util::GraphFunctions::trim_graph({ graph_data => $data->{g1_link_data} });
+	
+	$data->{g2_link_data_slimmed} = GOBO::Util::GraphFunctions::trim_graph({ graph_data => $data->{g2_link_data} });
+	
+	## go through the terms in g1 and g2, and find out if any terms have moved
+	## let's populate us some look up hashes
+	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{g1_link_data_slimmed} });
+	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{g2_link_data_slimmed} });
+	
+	
+	
+	#print STDERR "g1 subset: " .join(", ", keys %{ $data->{g1_subset}{subset}{ $ss } || {} } )."\n";
+	print STDERR "g2 subset: " . join(", ", keys %{ $data->{g2_subset}{subset}{ $ss } || {} } )."\n";
+	
+	# go through the g2 subset terms and compare the data to that we got from g1
+	foreach my $t (keys %{ $data->{g2_subset}{subset}{ $ss }})
+	{	
+		my $count;
+		if (! $data->{g1_subset}{subset}{$ss}{$t})
+		{	# $sst is a new subset term in f2
+			print STDERR "$t is a new subset term in g2\n";
+		}
+		else
+		{	if ($data->{g1_link_data_slimmed}{target_node_rel}{$t})
+			{	# links from target $sst in the graph for f1
+				foreach my $n (keys %{$data->{g1_link_data_slimmed}{target_node_rel}{$t}})
+				{	$count->{$n}++;
+				}
+			}
+			else
+			{	warn "No links in f1 involving subset term $t";
+			}
+		}
+		
+		if ($data->{g2_link_data_slimmed}{target_node_rel}{$t})
+		{	# links from target $sst in the graph for f2
+			foreach my $n (keys %{$data->{g2_link_data_slimmed}{target_node_rel}{$t}})
+			{	$count->{$n}+= 10;
+			}
+		}
+		else
+		{	warn "No links in f2 involving subset term $t";
+		}
+	
+		foreach my $e (keys %$count) {
+			next if $count->{$e} == 11;
+			if ($count->{$e} == 1)
+			{	# term has been removed from $sst
+				$data->{subset_movements}{$t}{out}{$e} = 1;
+			}
+			elsif ($count->{$e} == 10)
+			{	# term has been added to $sst
+				$data->{subset_movements}{$t}{in}{$e} = 1;
+			}
+		}
+	}
+	
+	
+	# go through the g2 subset terms and compare the data to that we got from g1
+	foreach my $t (keys %{ $data->{g1_subset}{subset}{ $ss }})
+	{	if (! $data->{g2_subset}{subset}{$ss}{$t})
+		{	# $sst is a new subset term in f2
+			print STDERR "$t is no longer a subset term in g2\n";
+		}
+	}
+	
+	my $pairs;
+	
+	foreach my $t (keys %{$data->{g1_link_data_slimmed}{target_node_rel}})
+	{	foreach my $n (keys %{$data->{g1_link_data_slimmed}{target_node_rel}{$t}})
+		{	push @$pairs, "$t $n";
+		}
+	}
+	
+	
+	print STDERR "\n\n\ng1 data:\n";
+	print STDERR join("\n", sort @$pairs) . "\n\n";
+	undef @$pairs;
+	
+	foreach my $t (keys %{$data->{g2_link_data_slimmed}{target_node_rel}})
+	{	foreach my $n (keys %{$data->{g2_link_data_slimmed}{target_node_rel}{$t}})
+		{	push @$pairs, "$t $n";
+		}
+	}
+	print STDERR "\n\n\ng2 data:\n";
+	print STDERR join("\n", sort @$pairs) . "\n\n";
+	
+	
+	print STDERR "subset movements: " . Dumper($data->{subset_movements})."\n";
+}
+
+#print STDERR "file 1 alt_ids: " . Dumper($data->{f1_alt_ids}) . "file 2 alt_ids: " . Dumper($data->{f2_alt_ids}) . "\n\n";
+
+print_new_terms($output_fh, $data);
+
+print_new_obsoletes($output_fh, $data);
+
+print_new_merges($output_fh, $data);
+
+print_term_name_changes($output_fh, $data);
+
+print_term_changes($output_fh, $data);
+
+print_subset_changes($output_fh, $data);
+
+print_errors($output_fh, $data);
+
+exit(0);
+
+
+sub compare_hashes {
+	my $args = shift;
+	my $f1 = $args->{f1};
+	my $f2 = $args->{f2};
+
+	my $results;
+
+	foreach my $p (keys %$f1)
+	{	# skip these guys
+		next if grep { /^$p$/ } qw(id is_a relationship);
+		if (! $f2->{$p})
+		{	$results->{$p}{f1} += scalar @{$f1->{$p}};
+		}
+		else
+		{	# find the same / different values
+			my @v1 = values %$f1;
+			my @v2 = values %$f2;
+
+			my %count;
+			foreach my $e (@{$f1->{$p}})
+			{	$count{$e}++;
+			}
+			foreach my $e (@{$f2->{$p}})
+			{	$count{$e} += 10;
+			}
+
+			foreach my $e (keys %count) {
+				next if $count{$e} == 11;
+				if ($count{$e} == 1)
+				{	$results->{$p}{f1}++;
+				}
+				elsif ($count{$e} == 10)
+				{	$results->{$p}{f2}++;
+				}
+			}
+		}
+	}
+	foreach (keys %$f2)
+	{	if (! $f1->{$_})
+		{	$results->{$_}{f2} += scalar @{$f2->{$_}};
+		}
+	}
+	
+	return $results;
+}
+
+
+# parse the options from the command line
+sub parse_options {
+	my $args = shift;
+	
+	my $opt;
+	
+	while (@$args && $args->[0] =~ /^\-/) {
+		my $o = shift @$args;
+		if ($o eq '-f1' || $o eq '--file_1' || $o eq '--file_one') {
+			if (@$args && $args->[0] !~ /^\-/)
+			{	$opt->{f1} = shift @$args;
+			}
+		}
+		elsif ($o eq '-f2' || $o eq '--file_2' || $o eq '--file_two') {
+			if (@$args && $args->[0] !~ /^\-/)
+			{	$opt->{f2} = shift @$args;
+			}
+		}
+		elsif ($o eq '-s' || $o eq '--subset') {
+			while (@$args && $args->[0] !~ /^\-/)
+			{	my $s = shift @$args;
+				$opt->{subset} = $s;
+			}
+		}
+		elsif ($o eq '-o' || $o eq '--output') {
+			$opt->{output} = shift @$args if @$args && $args->[0] !~ /^\-/;
+		}
+		elsif ($o eq '-h' || $o eq '--help') {
+			system("perldoc", $0);
+			exit(0);
+		}
+		elsif ($o eq '-v' || $o eq '--verbose') {
+			$opt->{verbose} = 1;
+		}
+		else {
+			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+		}
+	}
+	return check_options($opt);
+}
+
+
+# process the input params
+sub check_options {
+	my $opt = shift;
+	my $errs;
+
+	if (!$opt)
+	{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+	}
+
+	if (!$opt->{f1})
+	{	push @$errs, "specify an input file using -i /path/to/<file_name>";
+	}
+	elsif (! -e $opt->{f1})
+	{	push @$errs, "the file " . $opt->{f1} . " could not be found.\n";
+	}
+
+	if (!$opt->{f2})
+	{	push @$errs, "specify an input file using -i /path/to/<file_name>";
+	}
+	elsif (! -e $opt->{f2})
+	{	push @$errs, "the file " . $opt->{f2} . " could not be found.\n";
+	}
+
+	if (!$opt->{output})
+	{	push @$errs, "specify an output file using -o /path/to/<file_name>";
+	}
+
+	if (!$opt->{subset})
+	{	push @$errs, "specify a subset using -s <subset_name>";
+	}
+
+
+	if ($errs && @$errs)
+	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\n";
+	}
+
+	return $opt;
+}
+
+
+# print the header for the Monthly Report
+sub print_header {
+	my $args = shift;
+	my $out = $args->{output};
+	open(OUT, ">$out") or die("Could not open $out for writing: $!");
+
+	my $f_text = {
+		1 => 'file 1 (old): ',
+		2 => 'file 2 (new): ',
+	};
+
+	print OUT "Ontology Comparison Report\n==========================\n\nFiles used:\n";
+	foreach my $f ("1", "2")
+	{	my @f_data;
+		my $header = $args->{data}{"f$f" . "_header"};
+		print STDERR "file $f header: " . Dumper($header);
+		($header->{name} = $args->{"file_$f"}) =~ s/.+\///;
+
+		if ($header->{"data-version"})
+		{	push @f_data, "data version: " . $header->{"data-version"}[0];
+		}
+		if ($header->{date})
+		{	push @f_data, "date: " . $header->{date}[0];
+		}
+		if ($header->{remark})
+		{	foreach (@{$header->{remark}})
+			{	if (/cvs version: \$Revision:\s*(\S+)/)
+				{	push @f_data, "CVS revision: " . $1;
+					last;
+				}
+			}
+		}
+		
+		print OUT $f_text->{$f};
+		
+		if (@f_data)
+		{	print OUT join("; ", @f_data) . "\n";
+		}
+		else
+		{	print OUT "unknown\n";
+		}
+	}
+	
+	if ($args->{subset})
+	{	print OUT "subset: " . join(", ", keys %{$args->{subset}}) . "\n";
+	}
+	
+	print OUT "\n\n";
+	return;
+}
+
+
+=head2 block_to_sorted_array
+
+input:  a multi-line block of text (preferably an OBO format stanza!)
+output: ref to an array with the following removed
+        - empty lines
+        - lines starting with "id: ", "[", and "...]"
+        - trailing whitespace
+
+        the array is sorted
+
+=cut
+
+sub block_to_sorted_array {
+	my $block = shift;
+	my $arr;
+	foreach ( split( "\n", $block ) )
+	{	next unless /\S/;
+		next if /^(id: \S+|\[|\S+\])\s*$/;
+		$_ =~ s/^(is_a:|relationship:)\s*(.+)\s*!\s.*$/$1 $2/;
+		$_ =~ s/\s*$//;
+		push @$arr, $_;
+	}
+	
+	return [ sort @$arr ] || undef;
+}
+
+
+=head2 tag_val_arr_to_hash
+
+input:  array ref containing ": " separated tag-value pairs
+output: lines in the array split up by ": " and put into a hash
+        of the form key-[array of values]
+
+=cut
+
+sub tag_val_arr_to_hash {
+	my $arr = shift;
+	if ($arr && ! ref $arr && $_[0])
+	{	my @array = ( $arr, @_ );
+		$arr = \@array;
+	}
+
+	return undef unless $arr && @$arr;
+	my $h;
+	foreach (@$arr)
+	{	my ($k, $v) = split(": ", $_, 2);
+		if (! $k || ! $v)
+		{	print STDERR "line: $_\n";
+		}
+		else
+		{	push @{$h->{$k}}, $v;
+		}
+	}
+	return $h;
+}
+
+
+=head2 print_new_terms
+
+
+=cut
+
+sub print_new_terms {
+	my $fh = shift;
+	my $data = shift;
+
+#	print STDERR "diffs: " . Dumper($data->{diffs}{Term}) . "\n\n\n";
+	
+	print $fh "New terms in file 2\n";
+
+	if ( $data->{diffs}{Term}{f2_only} && keys %{$data->{diffs}{Term}{f2_only}})
+	{	foreach ( sort keys %{$data->{diffs}{Term}{f2_only}} )
+		{	
+			print $fh "$_\t" 
+			. print_term_name($data, $_, 'f2', 1) . "\t" 
+			. $data->{f2_hash}{Term}{$_}{namespace}[0] . "\t";
+			if ($data->{f2_hash}{Term}{$_}{is_obsolete})
+			{	print $fh "OBS\t";
+			}
+			else
+			{	# print the GS parents...
+				my $t = $_;
+				if ($data->{g2_link_data}{graph}{$t})
+				{	
+					my %parent_h;
+					foreach my $r (keys %{$data->{g2_link_data_slimmed}{graph}{$t}})
+					{	map { $parent_h{$_} = 1 } keys %{$data->{g2_link_data_slimmed}{graph}{$t}{$r}};
+					}
+					print $fh join(", ", sort keys %parent_h) . "\t";
+				}
+			}
+			print $fh "\n";
+		}
+	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n\n";
+}
+
+
+
+sub print_new_obsoletes {
+	my $fh = shift;
+	my $data = shift;
+
+	my @obsoletes = grep {
+		exists $data->{diffs}{Term}{both}{$_}{is_obsolete}
+		&& exists $data->{diffs}{Term}{both}{$_}{is_obsolete}{f2}
+	} keys %{$data->{diffs}{Term}{both}};
+
+	my @new_obs = grep { exists $data->{f2_hash}{Term}{$_}{is_obsolete} } keys %{$data->{diffs}{Term}{f2_only}};
+
+	if (@obsoletes || @new_obs)
+	{	print $fh "\n\nObsoletions\n";
+		map { print $fh print_term_name($data, $_);
+			if ($data->{f2_hash}{Term}{$_}{comment})
+			{	(my $c = $data->{f2_hash}{Term}{$_}{comment}[0]) =~ s/This term was made obsolete because //;
+				print $fh ": " . $c;
+			}
+		print $fh "\n" } sort @obsoletes;
+
+		map { print $fh print_term_name($data, $_);
+			if ($data->{f2_hash}{Term}{$_}{comment})
+			{	(my $c = $data->{f2_hash}{Term}{$_}{comment}[0]) =~ s/This term was made obsolete because //;
+				print $fh ": " . $c;
+			}
+		print $fh "\n" } sort @new_obs;
+		print $fh "\n";
+	}
+	
+}
+
+
+sub print_new_merges {
+	my $fh = shift;
+	my $data = shift;
+
+	if ($data->{f1_to_f2_merge})
+	{	print $fh "\n\nTerm merges\n";
+		map { 
+			print $fh "$_ was merged into "
+			. print_term_name($data, $data->{f1_to_f2_merge}{$_}) . "\n";
+		} keys %{$data->{f1_to_f2_merge}};
+	}
+}
+
+
+sub print_term_name_changes {
+	my $fh = shift;
+	my $data = shift;
+	my @name_changed = grep { exists $data->{diffs}{Term}{both}{$_}{name} } keys %{$data->{diffs}{Term}{both}};
+	if (@name_changed)
+	{	print $fh "\n\nTerm name changes\n";
+		map { print $fh "$_: " 
+			. print_term_name($data, $_, 'f1', 1)
+			. " --> "
+			. print_term_name($data, $_, 'f2', 1) 
+			. "\n" } sort @name_changed;
+		print $fh "\n";
+	}
+}
+
+
+sub print_term_def_changes {
+	my $fh = shift;
+	my $data = shift;
+	my @def_changed = grep { exists $data->{diffs}{Term}{both}{$_}{def} } keys %{$data->{diffs}{Term}{both}};
+	if (@def_changed)
+	{	print $fh "\n\nTerm definition changes\n";
+
+		map { 
+			if ($data->{diffs}{Term}{both}{$_}{def}{f1} && $data->{diffs}{Term}{both}{$_}{def}{f2})
+			{	print $fh "changed\t" . print_term_name($data, $_) . "\n";
+			}
+			elsif ($data->{diffs}{Term}{both}{$_}{def}{f1})
+			{	print $fh "removed\t" . print_term_name($data, $_) . "\n";
+			}
+			else
+			{	print $fh "added\t" . print_term_name($data, $_) . "\n";
+			}
+		} sort @def_changed;
+
+		print $fh "\n";
+	}
+}
+
+
+
+sub print_term_changes {
+	my $fh = shift;
+	my $data = shift;
+	
+	return unless $data->{diffs}{Term}{both};
+
+	my @ordered_attribs = qw(id
+	is_anonymous
+	name
+	namespace
+	alt_id
+	def
+	comment
+	subset
+	synonym
+	xref
+	is_a
+	intersection_of
+	union_of
+	disjoint_from
+	relationship
+	is_obsolete
+	replaced_by
+	consider);
+
+	print STDERR "all tags used: " . Dumper($data->{diffs}{Term}{all_tags_used}) . "\n";
+
+	my @ignore_list = qw(id name is_obsolete alt_id);
+
+	my @single_attribs = qw(comment def namespace is_anonymous);
+
+	my @attribs = grep { my $x = $_; if (exists $data->{diffs}{Term}{all_tags_used}{$x} && ! grep { $x eq $_ } @ignore_list) { 1 } else { 0 } } @ordered_attribs;
+
+	if (! @attribs )
+	{	# nothing to report!
+		return;
+	}
+
+	print $fh "\n\nTerm changes\n";
+	foreach my $t (sort keys %{$data->{diffs}{Term}{both}})
+	{	my $line;
+		foreach my $c (@attribs)
+		{	if ($data->{diffs}{Term}{both}{$t}{$c})
+			{	if (grep { /^$c$/ } @single_attribs)
+				{	if ($data->{diffs}{Term}{both}{$t}{$c}{f1} && $data->{diffs}{Term}{both}{$t}{$c}{f2})
+					{	# changed
+						$line .= "* $c";
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f2})
+					{	$line .= "+ $c";
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f1})
+					{	$line .= "- $c";
+					}
+				}
+				else # multiple attributes
+				{	#$line .= "$c: ";
+					if ($data->{diffs}{Term}{both}{$t}{$c}{f1} && $data->{diffs}{Term}{both}{$t}{$c}{f2})
+					{	my $net = $data->{diffs}{Term}{both}{$t}{$c}{f2} - $data->{diffs}{Term}{both}{$t}{$c}{f1};
+						if ($net == 0)
+						{	$line .= "*" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+						}
+						elsif ($net < 0)
+						{	$net = 0 - $net;
+							$line .= "*" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . ", -$net" . " $c" . "s"; # [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+						}
+						elsif ($net > 1)
+						{	$line .= "+$net, *" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s"; # . " [f1: " . $data->{diffs}{Term}{both}{$t}{$c}{f1} . ", f2: ". $data->{diffs}{Term}{both}{$t}{$c}{f2} . "]";
+						}
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f1})
+					{	$line .= "-" . $data->{diffs}{Term}{both}{$t}{$c}{f1} . " $c" . "s";
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f2})
+					{	$line .= "+" . $data->{diffs}{Term}{both}{$t}{$c}{f2} . " $c" . "s";
+					}
+				}
+			}
+			$line .= "\t";
+		}
+		if ($line =~ /\S/)
+		{	#print $fh print_term_name($data, $t) . "\n$line\n";
+			print STDERR print_term_name($data, $t) . "\n$line\n";
+		}
+	}
+}
+
+
+sub print_subset_changes {
+	my $fh = shift;
+	my $data = shift;
+	
+	return unless $data->{subset_movements};
+	foreach my $s (sort keys %{$data->{subset_movements}})
+	{	print $fh "\nTerm movements under " . print_term_name($data, $s) . "\n";
+		if ($data->{subset_movements}{$s}{out})
+		{	map { print $fh "- " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{out}};
+		}
+		if ($data->{subset_movements}{$s}{in})
+		{	map { print $fh "+ " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{in}};
+		}
+	}
+}
+
+sub print_errors {
+	my $fh = shift;
+	my $data = shift;
+	print_lost_terms($fh,$data);
+	print_unobsoletions($fh,$data);
+	print_unmerges($fh,$data);
+}
+
+sub print_lost_terms {
+	my $fh = shift;
+	my $data = shift;
+
+	return unless $data->{diffs}{Term}{f1_only} && keys %{$data->{diffs}{Term}{f1_only}};
+
+	print $fh "\n\nTerms lost\n";
+	foreach ( sort keys %{$data->{diffs}{Term}{f1_only}} )
+	{	print $fh print_term_name($data, $_, 'f1') . " (" .
+		$data->{f1_hash}{Term}{$_}{namespace}[0]
+		. ")\n";
+	}
+	print $fh "\n";
+}
+
+sub print_unobsoletions {
+	my $fh = shift;
+	my $data = shift;
+	
+	my @obsoletes = grep {
+		exists $data->{diffs}{Term}{both}{$_}{is_obsolete}
+		&& exists $data->{diffs}{Term}{both}{$_}{is_obsolete}{f1}
+	} keys %{$data->{diffs}{Term}{both}};
+
+	if (@obsoletes)
+	{	print $fh "\n\nPreviously obsolete terms reinstantiated\n";
+		map { print $fh print_term_name($data, $_) . "\n" } sort @obsoletes;
+		print $fh "\n";
+	}
+}
+
+sub print_unmerges {
+	my $fh = shift;
+	my $data = shift;
+
+	if ($data->{f2_to_f1_merge})
+	{	print $fh "\n\nTerm splits\n";
+		map { 
+			print $fh print_term_name($data, $_) . ", was split from "
+			. print_term_name($data, $data->{f2_to_f1_merge}{$_}) . "\n";
+		} keys %{$data->{f2_to_f1_merge}};
+		print $fh "\n";
+	}
+}
+
+sub print_term_name {
+	my $data = shift;
+	my $t_id = shift;
+	my $file = shift || 'f2';
+	my $no_id = shift || undef;
+	
+	return $data->{$file . "_hash" }{Term}{$t_id}{name}[0] if $no_id;
+	
+	return $t_id . ", " . $data->{$file . "_hash" }{Term}{$t_id}{name}[0];
+
+}
