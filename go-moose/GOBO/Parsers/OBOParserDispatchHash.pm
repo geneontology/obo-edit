@@ -417,9 +417,7 @@ override 'parse_header' => sub {
 
 		if (/^\[/) {
 			$self->unshift_line($_);
-			# set the parse_header to 1
-			$self->parsed_header(1);
-			return;
+			last;
 		}
 
 		if (/^(\S+):\s*(.*?)$/) {
@@ -432,8 +430,50 @@ override 'parse_header' => sub {
 			}
 		}
 	}
+
+	# set the parse_header to 1
+	$self->parsed_header(1);
 	return;
 };
+
+
+=head2 parse_header_from_array
+
+Get a header from an array of lines, rather than passing in a file
+
+input:  self, args with $args->{graph} being a Graph object
+output: the Graph object
+
+=cut
+
+sub parse_header_from_array {
+	my $self = shift;
+	my $args = shift;
+	my $g = $args->{graph} || new GOBO::Graph;
+	my $header_check = $self->get_header_check_sub;
+	
+	foreach (@{$args->{array}})
+	{	next unless /\S/;
+
+		if (/^\[/) {
+			# body starts here
+			last;
+		}
+
+		if (/^(\S+):\s*(.*?)$/) {
+			next unless &$header_check($1);
+			if ($header_subs->{$1})
+			{	$header_subs->{$1}->($self, { tag => $1, value => $2, graph => $g });
+			}
+			else
+			{	$header_subs->{default}->($self, { tag => $1, value => $2, graph => $g });
+			}
+		}
+	}
+	return $g;
+}
+
+
 
 
 override 'parse_body' => sub {
@@ -504,6 +544,89 @@ override 'parse_body' => sub {
 	}
 	return;
 };
+
+
+=head2 parse_body_from_array
+
+Get a graph from an array of lines, rather than passing in a file
+
+input:  self, args with $args->{graph} being a Graph object
+output: the Graph object
+
+=cut
+
+sub parse_body_from_array {
+	my $self = shift;
+	my $args = shift;
+	my $g = $args->{graph} || new GOBO::Graph;
+
+	confess( (caller(0))[3] . ": missing required arguments" ) unless defined $g && $args->{array} && @{$args->{array}};
+
+	my $stanza_check = $self->get_stanza_check_sub;
+	my $tag_check = $self->get_tag_check_sub;
+
+	if ($self->has_body_parser_options && $self->body_parser_options->{ignore_all})
+	{	# ignore the whole thing
+		# no more body parsing required
+	#	warn "Found that I don't have to parse the body. Returning!";
+		return;
+	}
+
+	my $stanzaclass;
+	my $n;
+	my @anns = ();
+
+	foreach (@{$args->{array}})
+	{	next unless /\S/;
+
+		if (/^\[(\S+)\]/) {
+			undef $n;
+			$stanzaclass = lc($1);
+			next unless &$stanza_check( $stanzaclass );
+#			print STDERR "passed the stanza check!\n";
+			if ($stanzaclass eq 'annotation') {
+				$n = new GOBO::Annotation;
+				push(@anns, $n);
+			}
+			next;
+		}
+		
+		if (/^id:\s*(.*)\s*$/) {
+#			print STDERR "id: $1; stanzaclass: $stanzaclass; node: " . Dumper($n) . "\n";
+			$body_subs->{id}->($self, { value => $1, graph => \$g, node => \$n, stanzaclass => $stanzaclass });
+#			print STDERR "node: " . Dumper($n) . "\n";
+			next;
+		}
+
+		if (/^(.*?):\s*/) {
+			next unless &$tag_check( $stanzaclass, $1 );
+#			print STDERR "passed the tag check!\n";
+		}
+
+		s/\!.*//; # TODO
+		s/\s+$//;
+
+		if (/^(.*?):\s*(.*)$/) {
+			if ($body_subs->{$1}) {
+				$body_subs->{$1}->($self, { tag => $1, value => $2, graph => $g, node => $n, stanzaclass => $stanzaclass });
+				next;
+			}
+			elsif (/^is_(\w+):\s*(\w+)/) {
+				$body_subs->{'is_'}->($self, { tag => $1, value => $2, graph => $g, node => $n } );
+				next;
+			}
+		}
+
+		# we don't know what's going on here!
+		warn "ignored: $_";
+	}
+	if (@anns) {
+		$g->add_annotations(\@anns);
+	}
+	return $g;
+}
+
+
 
 
 sub _parse_vals {
@@ -686,44 +809,6 @@ after 'reset_parser' => sub {
 	$self->set_stanza_check_sub( sub { return 1 } );
 	$self->set_tag_check_sub( sub { return 1 } );
 };
-
-
-=head2 parse_header_from_arr
-
-Get a header from an array of lines, rather than passing in a file
-
-input:  self, args with $args->{graph} being a Graph object
-output: the Graph object
-
-=cut
-
-sub parse_header_from_array {
-	my $self = shift;
-	my $args = shift;
-	my $g = $args->{graph} || new GOBO::Graph;
-	my $header_check = $self->get_header_check_sub;
-	
-	foreach (@{$args->{array}})
-	{	next unless /\S/;
-
-		if (/^\[/) {
-			# body starts here
-			last;
-		}
-
-		if (/^(\S+):\s*(.*?)$/) {
-			next unless &$header_check($1);
-			if ($header_subs->{$1})
-			{	$header_subs->{$1}->($self, { tag => $1, value => $2, graph => $g });
-			}
-			else
-			{	$header_subs->{default}->($self, { tag => $1, value => $2, graph => $g });
-			}
-		}
-	}
-	return $g;
-}
-
 
 
 sub get_header_check_sub {

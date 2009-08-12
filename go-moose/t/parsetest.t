@@ -289,16 +289,46 @@ undef $dh_parser;
 $dh_parser = new GOBO::Parsers::OBOParserDispatchHash( file=>'t/data/obo_file_2.obo' );
 $dh_parser->parse_header;
 
-my @arr;
+my @header_arr;
+my @body_arr;
 {	local $/ = "\n[";
 	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
-	@arr = split("\n", <FH> );
+	@header_arr = split("\n", <FH> );
 	close FH;
+	
+	local $/ = "\n";
+	open(FH, "<" . 't/data/obo_file_2.obo') or die("Could not open t/data/obo_file_2.obo: $!");
+
+	while (<FH>)
+	{	push @body_arr, $_;
+	}
+
+	
+	my $i = 1;
+	while ($i == 1)
+	{	if ( $body_arr[0] =~ /^\[\S+/ )
+		{	$i = 0;
+			last;
+		}
+		shift @body_arr;
+	}
+	print STDERR "first in array body_arr: " . $body_arr[0] . "\n";
 }
 
-my $graph_data = $dh_parser->parse_header_from_array({ array => [ @arr ] });
+my $graph_data = $dh_parser->parse_header_from_array({ array => [ @header_arr ] });
 
 cmp_deeply($graph_data, $dh_parser->graph, "Checking parse_header_from_array");
+
+
+## let's try parse_body_from_arr
+# delete the graph
+$dh_parser->graph( new GOBO::Graph );
+$dh_parser->parse_body;
+$graph_data = $dh_parser->parse_body_from_array({ array => [ @body_arr ] });
+
+cmp_deeply($graph_data, $dh_parser->graph, "Checking parse_body_from_array");
+
+
 
 exit(0);
 
