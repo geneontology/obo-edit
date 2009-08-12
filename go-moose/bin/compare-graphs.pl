@@ -481,7 +481,7 @@ sub print_header {
 	foreach my $f ("f1", "f2")
 	{	my @f_data;
 		my $header = $data->{$f}{"header"};
-		print STDERR "file $f header: " . Dumper($header);
+#		print STDERR "file $f header: " . Dumper($header);
 	#	($header->{name} = $args->{$f}) =~ s/.+\///;
 		my $slash = rindex $args->{$f}, "/";
 		if ($slash > -1)
@@ -521,15 +521,30 @@ sub print_header {
 	}
 	
 	print $fh "\n\n";
-	return;
 }
 
+
+sub print_summary {
+	my $fh = shift;
+	my $data = shift;
+
+	## number of new terms
+
+#	if ( $data->{diffs}{Term}{f2_only} && keys %{$data->{diffs}{Term}{f2_only}})
+#	{	print $fh scalar keys %{$data->{diffs}{Term}{f2_only}} . " new terms\n";
+#	}
+
+	## number of merges
+
+	## number of obsoletions
+	
+}
 
 sub print_stats {
 	my $fh = shift;
 	my $data = shift;
 	
-	print $fh "\nFile Stats\n\n" . 
+	print $fh "\nFile Stats\n==========\n" . 
 		join("\n", map { "$_: " . $data->{f2_stats}{total}{$_} . " terms ("
 		. ( $data->{f2_stats}{n_defined}{$_} || '0') . " defined; "
 		. ( $data->{f2_stats}{is_obsolete}{$_} || '0' ) . " obsolete)" } sort keys %{$data->{f2_stats}{total}}).
@@ -627,7 +642,7 @@ sub print_new_terms {
 
 #	print STDERR "diffs: " . Dumper($data->{diffs}{Term}) . "\n\n\n";
 	
-	print $fh "New terms in file 2\n";
+	print $fh "New terms\n=========\n";
 
 	if ( $data->{diffs}{Term}{f2_only} && keys %{$data->{diffs}{Term}{f2_only}})
 	{	foreach ( sort keys %{$data->{diffs}{Term}{f2_only}} )
@@ -665,6 +680,8 @@ sub print_new_obsoletes {
 	my $fh = shift;
 	my $data = shift;
 
+	print $fh "Obsoletions\n===========\n";
+
 	my @obsoletes = grep {
 		exists $data->{diffs}{Term}{both}{$_}{is_obsolete}
 		&& exists $data->{diffs}{Term}{both}{$_}{is_obsolete}{f2}
@@ -673,22 +690,26 @@ sub print_new_obsoletes {
 	my @new_obs = grep { exists $data->{f2_hash}{Term}{$_}{is_obsolete} } keys %{$data->{diffs}{Term}{f2_only}};
 
 	if (@obsoletes || @new_obs)
-	{	print $fh "\n\nObsoletions\n";
-		map { print $fh print_term_name($data, $_);
+	{	map { print $fh print_term_name($data, $_);
 			if ($data->{f2_hash}{Term}{$_}{comment})
 			{	(my $c = $data->{f2_hash}{Term}{$_}{comment}[0]) =~ s/This term was made obsolete because //;
 				print $fh ": " . $c;
 			}
 		print $fh "\n" } sort @obsoletes;
 
-		map { print $fh print_term_name($data, $_);
+		map { 
+			print $fh print_term_name($data, $_);
 			if ($data->{f2_hash}{Term}{$_}{comment})
 			{	(my $c = $data->{f2_hash}{Term}{$_}{comment}[0]) =~ s/This term was made obsolete because //;
 				print $fh ": " . $c;
 			}
-		print $fh "\n" } sort @new_obs;
-		print $fh "\n";
+			print $fh "\n";
+			} sort @new_obs;
 	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n\n";
 	
 }
 
@@ -697,40 +718,49 @@ sub print_new_merges {
 	my $fh = shift;
 	my $data = shift;
 
+	print $fh "Term merges\n===========\n";
 	if ($data->{f1_to_f2_merge})
-	{	print $fh "\n\nTerm merges\n";
-		map { 
+	{	map { 
 			print $fh "$_ was merged into "
 			. print_term_name($data, $data->{f1_to_f2_merge}{$_}) . "\n";
 		} keys %{$data->{f1_to_f2_merge}};
 	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n\n";
 }
 
 
 sub print_term_name_changes {
 	my $fh = shift;
 	my $data = shift;
+	print $fh "Term name changes\n=================\n";
+		
 	my @name_changed = grep { exists $data->{diffs}{Term}{both}{$_}{name} } keys %{$data->{diffs}{Term}{both}};
 	if (@name_changed)
-	{	print $fh "\n\nTerm name changes\n";
-		map { print $fh "$_: " 
+	{	map { print $fh "$_: " 
 			. print_term_name($data, $_, 'f1', 1)
 			. " --> "
 			. print_term_name($data, $_, 'f2', 1) 
 			. "\n" } sort @name_changed;
-		print $fh "\n";
 	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n\n";
 }
 
 
 sub print_term_def_changes {
 	my $fh = shift;
 	my $data = shift;
+
+	print $fh "Term definition changes\n=======================\n";
+
 	my @def_changed = grep { exists $data->{diffs}{Term}{both}{$_}{def} } keys %{$data->{diffs}{Term}{both}};
 	if (@def_changed)
-	{	print $fh "\n\nTerm definition changes\n";
-
-		map { 
+	{	map { 
 			if ($data->{diffs}{Term}{both}{$_}{def}{f1} && $data->{diffs}{Term}{both}{$_}{def}{f2})
 			{	print $fh "changed\t" . print_term_name($data, $_) . "\n";
 			}
@@ -741,9 +771,11 @@ sub print_term_def_changes {
 			{	print $fh "added\t" . print_term_name($data, $_) . "\n";
 			}
 		} sort @def_changed;
-
-		print $fh "\n";
 	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n\n";
 }
 
 
@@ -781,13 +813,14 @@ sub print_term_changes {
 	$ignore = qr/$ignore/;
 
 	my @attribs = grep { exists $data->{diffs}{Term}{all_tags_used}{$_} && $_ ne 'id' } @ordered_attribs;
+	print $fh "Term changes\n============\n";
 
 	if (! @attribs )
 	{	# nothing to report!
+		print $fh "None\n\n\n";
 		return;
 	}
 
-	print $fh "\n\nTerm changes\n";
 	foreach my $t (sort keys %{$data->{diffs}{Term}{both}})
 	{	my $line;
 		foreach my $c (@attribs)
@@ -834,36 +867,51 @@ sub print_term_changes {
 			#print STDERR print_term_name($data, $t) . "\n$line\n";
 		}
 	}
+	print $fh "\n\n";
 }
 
 
 sub print_subset_changes {
 	my $fh = shift;
 	my $data = shift;
-	
+
+print $fh "Subset Changes\n==============\n";
+
+
+	print $fh "Subset term alterations\n-----------------------\n";
 	if ($data->{new_in_g2_subset} || $data->{removed_from_g2_subset})
-	{	print $fh "\nSubset Changes\n\n";
-		if ($data->{new_in_g2_subset})
+	{	if ($data->{new_in_g2_subset})
 		{	print $fh
-			join("\n", map { "+ $_" } sort @{$data->{new_in_g2_subset}} ) . "\n";
+			join("\n", map { "+ " . print_term_name($data, $_) } sort @{$data->{new_in_g2_subset}} ) . "\n";
 		}
 		if ($data->{removed_from_g2_subset})
 		{	print $fh
-			join("\n", map { "- $_" } sort @{$data->{removed_from_g2_subset}} ) . "\n";
+			join("\n", map { "- " . print_term_name($data, $_) } sort @{$data->{removed_from_g2_subset}} ) . "\n";
 		}
 		print $fh "\n";
 	}
+	else
+	{	print $fh "None\n";
+	}
+	print $fh "\n";
 
-	return unless $data->{subset_movements};
-	foreach my $s (sort keys %{$data->{subset_movements}})
-	{	print $fh "\nTerm movements under " . print_term_name($data, $s) . "\n";
-		if ($data->{subset_movements}{$s}{out})
-		{	map { print $fh "- " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{out}};
-		}
-		if ($data->{subset_movements}{$s}{in})
-		{	map { print $fh "+ " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{in}};
+	print $fh "Term movement between subsets\n-----------------------------\n";
+
+	if (! $data->{subset_movements})
+	{	print $fh "None\n";
+	}
+	else
+	{	foreach my $s (sort keys %{$data->{subset_movements}})
+		{	print $fh "\nTerm movements under " . print_term_name($data, $s) . "\n";
+			if ($data->{subset_movements}{$s}{out})
+			{	map { print $fh "- " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{out}};
+			}
+			if ($data->{subset_movements}{$s}{in})
+			{	map { print $fh "+ " . print_term_name($data, $_) . "\n" } keys %{$data->{subset_movements}{$s}{in}};
+			}
 		}
 	}
+	print $fh "\n\n";
 }
 
 sub print_errors {
@@ -880,13 +928,13 @@ sub print_lost_terms {
 
 	return unless $data->{diffs}{Term}{f1_only} && keys %{$data->{diffs}{Term}{f1_only}};
 
-	print $fh "\n\nTerms lost\n";
+	print $fh "Terms lost\n";
 	foreach ( sort keys %{$data->{diffs}{Term}{f1_only}} )
 	{	print $fh print_term_name($data, $_, 'f1') . " (" .
 		$data->{f1_hash}{Term}{$_}{namespace}[0]
 		. ")\n";
 	}
-	print $fh "\n";
+	print $fh "\n\n";
 }
 
 sub print_unobsoletions {
@@ -899,9 +947,9 @@ sub print_unobsoletions {
 	} keys %{$data->{diffs}{Term}{both}};
 
 	if (@obsoletes)
-	{	print $fh "\n\nPreviously obsolete terms reinstantiated\n";
+	{	print $fh "Previously obsolete terms reinstantiated\n";
 		map { print $fh print_term_name($data, $_) . "\n" } sort @obsoletes;
-		print $fh "\n";
+		print $fh "\n\n";
 	}
 }
 
@@ -910,12 +958,12 @@ sub print_unmerges {
 	my $data = shift;
 
 	if ($data->{f2_to_f1_merge})
-	{	print $fh "\n\nTerm splits\n";
+	{	print $fh "Term splits\n";
 		map { 
 			print $fh print_term_name($data, $_) . ", was split from "
 			. print_term_name($data, $data->{f2_to_f1_merge}{$_}) . "\n";
 		} keys %{$data->{f2_to_f1_merge}};
-		print $fh "\n";
+		print $fh "\n\n";
 	}
 }
 
