@@ -197,7 +197,9 @@ sub get_subset_nodes {
 	my $graph = $args->{graph};
 	my $options = $args->{options};
 
-	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless $graph && $options;
+	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $graph && $options;
+
+	print STDERR "options: " . Dumper($options) . "\n";
 
 	my $data_h;
 
@@ -501,7 +503,7 @@ input:  graph_data => data hash with nodes and relations specified as
           plus various rearrangements, with a hash key specifying the ordering
           e.g. {node_target_rel}
                {target_node_rel}
-        options => option_h
+        options => option_h  # no options specified as yet
 
 output: new data hash, slimmed down, with relations specified as
                {graph}{ node_id }{ relation_id }{ target_id }
