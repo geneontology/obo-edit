@@ -13,8 +13,8 @@ use FileHandle;
 
 
 my $parser = new GOBO::Parsers::OBOParser;
-$parser->parse("t/data/cell.obo");
-$parser->parse("t/data/cell_union.obo");
+$parser->parse_file("t/data/cell.obo");
+$parser->parse_file("t/data/cell_union.obo");
 my $g = $parser->graph;
 
 my $n = $g->noderef('CL:0000540'); # neuron
