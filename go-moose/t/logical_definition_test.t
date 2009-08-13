@@ -36,7 +36,7 @@ ok($n == 193);
 #  print [ 1 .. 10 ]->map(sub { $_ * $_ })->join(', ');
 
 
-$parser->parse("t/data/UnionTerms.obo");
+$parser->parse_file("t/data/UnionTerms.obo");
 
 
 $c = $g->noderef('JD:0000002');
