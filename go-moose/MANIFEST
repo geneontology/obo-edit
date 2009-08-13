@@ -57,6 +57,8 @@ GOBO/DBIC/t/data/
 GOBO/DBIC/t/godbm_graph.t
 GOBO/DBIC/t/godbm_query.t
 GOBO/Definable.pm
+GOBO/Doc/
+GOBO/Doc/FAQ.pm
 GOBO/Error.pm
 GOBO/Evidence.pm
 GOBO/Formula.pm
@@ -77,7 +79,9 @@ GOBO/NegatedStatement.pm
 GOBO/Node.pm
 GOBO/Parsers/
 GOBO/Parsers/GAFParser.pm
+GOBO/Parsers/GraphParser.pm
 GOBO/Parsers/OBOParser.pm
+GOBO/Parsers/OBOParserDispatchHash.pm
 GOBO/Parsers/Parser.pm
 GOBO/Phylo/
 GOBO/Phylo/Branch.pm
@@ -101,10 +105,12 @@ GOBO/Writers/GAFWriter.pm
 GOBO/Writers/OBOWriter.pm
 GOBO/Writers/OBOXMLWriter.pm
 GOBO/Writers/Writer.pm
+GOBO.pm
 MANIFEST
 Makefile.PL
 README
 bin/
+bin/compare-graphs.pl
 bin/go-gaf-extract.pl
 bin/go-gaf-inference.pl
 bin/go-gaf-summarize.pl
@@ -112,6 +118,7 @@ bin/go-slimdown.pl
 bin/gobo-io.pl
 bin/gobo-make-lucene-index.pl
 bin/gom-gaf.pl
+bin/make-lucene-index-for-foundry.pl
 go-moose-model.graffle
 t/
 t/analysis_test.t
@@ -128,10 +135,13 @@ t/data/gpcr.nhx
 t/data/gtp.obo
 t/data/invalid_taxon_test.gaf
 t/data/obo_file.obo
+t/data/obo_file_2.obo
 t/data/relation_test.obo
 t/data/round_import.obo
 t/data/roundtripme.obo
+t/data/simple-annot-stanza-example.obo
 t/data/so-xp.obo
+t/data/sox9b_zfin.obo
 t/data/test-fb.gaf
 t/data/transporters.obo
 t/dbconnect.t

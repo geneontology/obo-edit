@@ -56,7 +56,7 @@ if (!$validate && !$infer) {
 }
 
 my $obo_parser = new GOBO::Parsers::OBOParser();
-$obo_parser->parse($_) foreach @ontfiles;
+$obo_parser->parse_file($_) foreach @ontfiles;
 my $ontg = $obo_parser->graph;
 my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
@@ -67,7 +67,8 @@ foreach my $f (@ARGV) {
     my @ics = ();
     my @invalid = ();
     $ontg->annotations([]);
-    my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
+    my $fh = new FileHandle($f);
+    my $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
     # iterate through one chunk at a time
     while ($gafparser->parse_chunk(10000)) {
         printf STDERR "processing %d annots in in $f\n", scalar(@{$gafparser->graph->annotations});
