@@ -97,6 +97,7 @@ sub parse_body {
                                 source=>$g->noderef($source_db),
                                 date=>$assocdate,
             );
+        $geneproduct =~ s/\s+//g;
         if ($geneproduct) {
             $annot->specific_node($g->noderef($geneproduct));
         }
@@ -115,6 +116,7 @@ sub parse_body {
         if ($qualh{not}) {
             $annot->negated(1);
         }
+        $annotxp =~ s/\s+//g;
         if ($annotxp) {
             my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
             $annot->add_target_differentia($xp);
