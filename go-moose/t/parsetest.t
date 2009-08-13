@@ -123,7 +123,7 @@ foreach my $p ($obo_parser, $dh_parser)
 		push @$errs, $e if ! $graph->$fn;
 	}
 	ok( ! defined $errs, "Checking entities in the graph" );
-	print STDERR "Did not find the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Did not find the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	push @{$results->{ ref($p) }}, $graph;
 	
@@ -135,7 +135,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	
 	## let's try a few options now...
 	
-	print STDERR "\n\n\nStarting options testing!\n";
+#	print STDOUT "\n\n\nStarting options testing!\n";
 	
 	# ignore body and header
 	$p->reset_parser;
@@ -143,7 +143,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	(file=>'t/data/obo_file_2.obo', options => { body => { ignore => '*' }, header => { ignore => '*' } });
 	
 	my $new_graph = $p->graph;
-	#print STDERR "ignore body and header graph: " . Dumper($new_graph);
+	#print STDOUT "ignore body and header graph: " . Dumper($new_graph);
 	isa_ok( $new_graph, "GOBO::Graph", "Ignoring body and header" );
 
 	push @{$results->{ ref($p) }}, $new_graph;
@@ -156,16 +156,16 @@ foreach my $p ($obo_parser, $dh_parser)
 	}
 	
 	ok( ! $errs, "Checking entities in the graph" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	$p->reset_parser;
 	$p->parse_file(file=>'t/data/obo_file_2.obo', options => { header => { ignore => '*' } });
 	$new_graph = $p->graph;
-	print STDERR "ignoring headers\n";
+	print STDOUT "ignoring headers\n";
 	
 	push @{$results->{ ref($p) }}, $new_graph;
 	#foreach my $e (@{$tags->{has_x}})
-	#{	print STDERR "graph->$e: " . Dumper( $graph->$e ) . "\n";
+	#{	print STDOUT "graph->$e: " . Dumper( $graph->$e ) . "\n";
 	#}
 	
 	undef $errs;
@@ -174,7 +174,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	}
 	ok( ! defined $errs, "Ignored header: checking body elements" );
 	if ($errs && @$errs)
-	{	print STDERR "Discrepancies in the following: " . join(", ", @$errs ) . "\n";
+	{	print STDOUT "Discrepancies in the following: " . join(", ", @$errs ) . "\n";
 	}
 	
 	undef $errs;
@@ -183,7 +183,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	}
 	
 	ok( ! defined $errs, "Ignored header: checking header elements" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	
 	$p->reset_parser;
@@ -198,7 +198,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	}
 	
 	ok( ! defined $errs, "Ignored body: checking body elements" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	undef $errs;
 	foreach my $e (@{$tags->{header_only}}, @{$tags->{both}})
@@ -207,7 +207,7 @@ foreach my $p ($obo_parser, $dh_parser)
 		}
 	}
 	ok( ! defined $errs, "Ignored body: checking header elements" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	
 	## ignore everything except the instance and typedef stanza
@@ -223,7 +223,7 @@ foreach my $p ($obo_parser, $dh_parser)
 	}
 	
 	ok( ! defined $errs, "Parse only instances and annotations: checking body elements" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	
 	## ignore everything except the instance and typedef stanza
@@ -239,7 +239,7 @@ foreach my $p ($obo_parser, $dh_parser)
 		push @$errs, $e if $new_graph->$fn;
 	}
 	ok( ! defined $errs, "Parse only term ids, names and namespaces: checking body elements" );
-	print STDERR "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
+	print STDOUT "Found the following entities: " . join(", ", @$errs) . "\n" if $errs && @$errs;
 	
 	
 	## ignore everything except the instance and typedef stanza
@@ -271,13 +271,13 @@ foreach my $e (@{$tags->{has_x}})
 }
 ok( ! defined $errs, "Ignored header: checking body elements" );
 if ($errs && @$errs)
-{	print STDERR "Discrepancies in the following: " . join(", ", @$errs ) . "\n";
+{	print STDOUT "Discrepancies in the following: " . join(", ", @$errs ) . "\n";
 	foreach (@$errs)
 	{	if ($_ eq 'nodes')
-		{	print STDERR "$_: got:\n" . join("\n", sort map { $_->id } @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", sort map { $_->id } @{$obo_parser->graph->$_}) . "\n\n\n\n";
+		{	print STDOUT "$_: got:\n" . join("\n", sort map { $_->id } @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", sort map { $_->id } @{$obo_parser->graph->$_}) . "\n\n\n\n";
 		}
 		elsif ($_ eq 'links')
-		{	print STDERR "$_: got:\n" . join("\n", @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", @{$obo_parser->graph->$_}) . "\n\n\n\n";
+		{	print STDOUT "$_: got:\n" . join("\n", @{$dh_parser->graph->$_}) . "\n\n\n$_: expected:\n" . join("\n", @{$obo_parser->graph->$_}) . "\n\n\n\n";
 		}
 	}
 }
@@ -312,7 +312,7 @@ my @body_arr;
 		}
 		shift @body_arr;
 	}
-	print STDERR "first in array body_arr: " . $body_arr[0] . "\n";
+#	print STDOUT "first in array body_arr: " . $body_arr[0] . "\n";
 }
 
 my $graph_data = $dh_parser->parse_header_from_array({ array => [ @header_arr ] });
@@ -333,7 +333,7 @@ cmp_deeply($graph_data, $dh_parser->graph, "Checking parse_body_from_array");
 exit(0);
 
 =cut
-#print STDERR "term: " . Dumper( [ @{$new_graph->terms}[0-5] ] ) . "\n";
+#print STDOUT "term: " . Dumper( [ @{$new_graph->terms}[0-5] ] ) . "\n";
 system("clear");
 
 ## ignore everything except the instance and typedef stanza
@@ -344,7 +344,7 @@ system("clear");
 system("clear");
 system("clear");
 
-print STDERR "terms: " . Dumper($obo_parser->graph->terms);
+print STDOUT "terms: " . Dumper($obo_parser->graph->terms);
 #$obo_parser->graph->terms->dump(3);
 
 
