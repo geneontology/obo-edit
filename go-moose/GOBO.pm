@@ -1,6 +1,6 @@
 package GOBO;
 
-our $VERSION='0.02';
+our $VERSION='0.03';
 
 # no code here, only POD docs.
 # best read on CPAN
