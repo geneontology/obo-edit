@@ -159,8 +159,9 @@ sub _parse {
 	# make sure we've checked our parser options
 	$self->check_options;
 	if ($self->parsed_header)
-	{	print STDERR "Header has been parsed!\n";
-		print STDERR "parser: " . $self->dump(2) . "\n";
+	{	
+            #print STDERR "Header has been parsed!\n";
+            #print STDERR "parser: " . $self->dump(2) . "\n";
 	}
 	else
 	{	$self->parse_header;
