@@ -199,7 +199,7 @@ sub get_subset_nodes {
 
 	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless defined $graph && $options;
 
-	print STDERR "options: " . Dumper($options) . "\n";
+#	print STDERR "options: " . Dumper($options) . "\n";
 
 	my $data_h;
 
