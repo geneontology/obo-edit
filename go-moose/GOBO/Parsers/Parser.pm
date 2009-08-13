@@ -216,7 +216,7 @@ sub set_file {
 	elsif (! ref $f)
 	{	my $fh;
 		if ($f =~ /\.gz$/) {
-			$fh = FileHandle->new("gzip -dc $f|", "r") or confess "Could not create a filehandle for $f: $! ";
+                    $fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
 		}
 		else {
 			$fh = FileHandle->new($f, "r") or confess "Could not create a filehandle for $f: $! ";
