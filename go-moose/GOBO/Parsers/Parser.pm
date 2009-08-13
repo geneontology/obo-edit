@@ -229,46 +229,6 @@ sub set_file {
 }
 *set_fh = \&set_file;
 
-=cut
-sub init_fh {
-	my $self = shift;
-	my $f = shift;
-use Data::Dumper;
-	print STDERR "f: " . Dumper($f) . "self: ". Dumper($self) . "self->has_fh: " . Dumper($self->has_fh) . "self->fh: " . Dumper($self->fh);
-	
-	return if ! $f && $self->has_fh;
-	$f = $self->file if ! $f;
-
-	print STDERR "f now: " . Dumper($f) . "\n";
-
-	if ($f) {
-		if (ref($f)) {
-			$self->fh($f);
-		}
-		else {
-			$self->file($f);
-			$self->clear_fh;
-			my $fh;
-			if ($f =~ /\.gz$/) {
-				$fh = FileHandle->new("gzip -dc $f|");
-			}
-			else {
-				$fh = FileHandle->new($f);
-			}
-			$self->fh($fh) if $fh;
-	print STDERR "fh: ". Dumper($fh);
-		}
-	}
-	if (! $self->has_fh ) {
-		 confess "no file or fh";
-	}
-#	print STDERR "fh: ". Dumper($self->fh);
-	# we're OK, we have an fh
-}
-
-
-=cut
-
 
 sub next_line {
 	my $self = shift;

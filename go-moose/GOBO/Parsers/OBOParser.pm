@@ -21,6 +21,7 @@ use Data::Dumper;
 has default_namespace => (is=>'rw', isa=>'Str');
 has format_version => (is=>'rw', isa=>'Str');
 
+
 sub parse_header {
 	my $self = shift;
 	my $g = $self->graph;
@@ -184,6 +185,7 @@ sub parse_body {
 		next unless /\S/;
 
 		if (/^\[(\S+)\]/) {
+			undef $n;
 			$stanzaclass = lc($1);
 			next unless &$stanza_check( $stanzaclass );
 #			print STDERR "passed the stanza check!\n";
@@ -384,8 +386,7 @@ sub parse_body {
 		}
 		elsif (/^is_(\w+):\s*(\w+)/) {
 			my $att = $1;
-			my $val = $2 eq 'true';
-			$n->$att($val); # TODO : check
+			$n->$att(1) if $2 eq 'true';
 			#$n->{$att} = $val; # TODO : check
 		}
 		elsif (/^transitive_over:\s*(\w+)/) {
@@ -433,6 +434,8 @@ sub parse_body {
 	}
 	return;
 }
+
+
 
 sub getnode {
 	my $self = shift;
@@ -499,6 +502,8 @@ sub _parse_vals {
 	my $s = shift;
 	my $vals = shift;
 
+#	print STDERR "input: s: $s\nvals: $vals\n";
+#
 	# optionally leads with quoted sections
 	if ($s =~ /^(\".*)/) {
 		$s = _parse_quoted($s,$vals);
@@ -514,6 +519,8 @@ sub _parse_vals {
 	if ($s =~ /^(\[)/) {
 		$s = _parse_xrefs($s,$vals);
 	}
+#	print STDERR "now: s: $s\nvals: ". Dumper($vals);
+#
 }
 
 sub _parse_quoted {
@@ -678,6 +685,7 @@ sub next_stanza {
 		}
 	}
 }
+
 
 
 
