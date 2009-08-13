@@ -51,11 +51,12 @@ my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 my @ics = ();
 foreach my $f (@ARGV) {
     print "FILE: $f\n";
-    my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
+    #my $gafparser = new GOBO::Parsers::GAFParser(file=>$f);
+    my $gafparser = new GOBO::Parsers::GAFParser();
     $gafparser->graph($ontg);
     $ontg->annotations([]);
     # iterate through one chunk at a time
-    $gafparser->parse;
+    $gafparser->parse_file($f);
     my %count_by_node = ();
     foreach my $ann (@{$gafparser->graph->annotations}) {
         $count_by_node{$ann->target->id}++;
