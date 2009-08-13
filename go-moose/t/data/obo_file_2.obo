@@ -356,12 +356,14 @@ is_a: GO:0000021
 [Term]
 id: GO:0000023
 name: test term GO:0000023
+is_obsolete: yes
 is_a: GO:0000022
 
 [Term]
 id: GO:0000024
 name: test term GO:0000024
 subset: test_goslim
+subset: goslim_generic
 is_a: GO:0000023
 relationship: part_of GO:0000025 ! test term GO:0000025
 
