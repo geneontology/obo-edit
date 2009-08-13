@@ -14,12 +14,11 @@ compare-graphs.pl
 
 # must supply these arguments... or else!
 # INPUT
- -f1 || --file_1 /path/to/<file_name>     input ontology file 
- -f2 || --file_2 /path/to/<file_2_name>   
+ -f1 || --file_1 /path/to/<file_name>     "old" ontology file 
+ -f2 || --file_2 /path/to/<file_2_name>   "new" ontology file
 
 # OUTPUT
- -o || --output /path/to/<file_name>     output file with path
-
+ -o || --output /path/to/<file_name>     output file for results
 
 # SUBSET
  -s || --subset <subset_name>            subset to use for graph-based comparisons
@@ -29,6 +28,22 @@ compare-graphs.pl
 
  -v || --verbose                         prints various messages
 
+
+Compares two OBO files and records the differences between them. These
+differences include:
+
+* new terms
+* term merges
+* term obsoletions
+* changes to term content, such as addition, removal or editing of features like
+  synonyms, xrefs, comments, def, etc..
+* term movements into or out of the subset designated by the subset option
+
+
+At present, only term differences are recorded in detail, although this could
+presumably be extended to other stanza types in an ontology file. The comparison
+is based on creating hashes of term stanza data, mainly because hashes are more
+tractable than objects. 
 
 =cut
 
@@ -70,7 +85,7 @@ foreach my $f ('f1', 'f2')
 	local $/ = "\n[";
 	$parser = new GOBO::Parsers::OBOParserDispatchHash;
 	
-	print STDERR "Ready to read in $f!\n";
+#	print STDERR "Ready to read in $f!\n";
 	open(FH, "<" . $options->{$f}) or die("Could not open " . $options->{$f} . "! $!");
 
 	# remove and parse the header
@@ -78,7 +93,7 @@ foreach my $f ('f1', 'f2')
 	$data->{$f}{header} = tag_val_arr_to_hash( \@arr );
 	$data->{$f}{graph} = $parser->parse_header_from_array({ array => [@arr] });
 
-	print STDERR "Parsed $f header; starting body\n";
+	print STDERR "Parsed $f header; starting body\n" if $options->{verbose};
 	my @lines;
 	while (<FH>)
 	{	if (/^(\S+)\]\s*.*?^id:\s*(\S+)/sm)
@@ -105,22 +120,20 @@ foreach my $f ('f1', 'f2')
 			# extract the interesting data and add it to the graph
 			# skip obsoletes
 			next if $data->{$f . "_hash"}{$1}{$2}{is_obsolete};
-#			if ($f eq 'f2') {
 			if ($1 eq 'Term')
 			{	push @lines, ( "[$1]", "id: $2", grep { /$regex/ } @{$data->{$f}{$1}{$2}} );
 			}
 			elsif ($1 eq 'Typedef')
 			{	push @lines, ("[$1]", "id: $2", @{$data->{$f}{$1}{$2}});
 			}
-#}
 		}
 		else
 		{	print STDERR "Couldn't understand data!\n";
 		}
 	}
 	
-	$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ @lines ] });
-	print STDERR "Finished parsing $f body\n";
+	$data->{$f}{graph} = $parser->parse_body_from_array({ graph => $data->{$f}{graph}, array => [ @lines ] }) if $ss;
+	print STDERR "Finished parsing $f body\n" if $options->{verbose};
 	close FH;
 }
 
@@ -129,6 +142,13 @@ foreach my $f ('f1', 'f2')
 #print STDERR "took " . ($end_time - $start_time) . " secs to complete\n";
 
 ## ANALYSIS STAGE! ##
+
+
+# ignore these tags when we're comparing hashes
+my @tags_to_ignore = qw(id is_a relationship);
+my $ignore_regex = '(' . join("|", @tags_to_ignore) . ')';
+$ignore_regex = qr/$ignore_regex/;
+
 
 ## ok, check through the terms and compare 'em
 foreach my $t (keys %{$data->{f1}{Term}})
@@ -154,7 +174,7 @@ foreach my $t (keys %{$data->{f1}{Term}})
 	{	# quickly compare the arrays, see if they are the same
 		next if join("\0", @{$data->{f1}{Term}{$t}}) eq join("\0", @{$data->{f2}{Term}{$t}});
 
-		my $r = compare_hashes({ f1 => $data->{f1_hash}{Term}{$t}, f2 => $data->{f2_hash}{Term}{$t} });
+		my $r = compare_hashes({ f1 => $data->{f1_hash}{Term}{$t}, f2 => $data->{f2_hash}{Term}{$t}, regex => $ignore_regex });
 		if ($r)
 		{	$data->{diffs}{Term}{both}{$t} = $r;
 			foreach (keys %$r)
@@ -199,22 +219,68 @@ foreach my $t (keys %{$data->{f2}{Term}})
 
 }
 
+
+## compare the other types of stanza
+foreach my $type (keys %{$data->{f1_hash}})
+{	next if $type eq 'Term';
+	foreach my $t (keys %{$data->{f1}{$type}})
+	{	
+		if (! $data->{f2}{$type}{$t})
+		{	# check it hasn't been merged
+			if ($data->{f2_alt_ids}{$t})
+			{	# the term was merged. N'mind!
+	#			print STDERR "$t was merged into " . $data->{f2_alt_ids}{$t} . "\n";
+				$data->{f1_to_f2_merge}{$t} = $data->{f2_alt_ids}{$t};
+			}
+			else
+			{	warn "$type $t is only in file 1\n";
+				$data->{diffs}{$type}{f1_only}{$t}++;
+			}
+		}
+		else
+		{	# quickly compare the arrays, see if they are the same
+#			print STDERR "f1: " . Dumper($data->{f1}{$type}{$t}) . "\nf2: " . Dumper($data->{f2}{$type}{$t}) . "\n\n";
+			next if join("\0", @{$data->{f1}{$type}{$t}}) eq join("\0", @{$data->{f2}{$type}{$t}});
+	
+			my $r = compare_hashes({ f1 => $data->{f1_hash}{$type}{$t}, f2 => $data->{f2_hash}{$type}{$t}, regex => qr/id/ });
+			if ($r)
+			{	$data->{diffs}{$type}{both}{$t} = $r;
+				foreach (keys %$r)
+				{	$data->{diffs}{$type}{all_tags_used}{$_}++;
+				}
+			}
+		}
+	}
+
+	#print STDERR "data->diffs->term->all_tags_used: " . Dumper($data->{diffs}{Typedef}{all_tags_used});
+	
+	foreach my $t (keys %{$data->{f2_hash}{$type}})
+	{	if (! $data->{f1}{$type}{$t})
+		{	# check it hasn't been de-merged
+			if ($data->{f1_alt_ids}{$t})
+			{	# erk! it was an alt id... what's going on?!
+				warn "$t was an alt id for " . $data->{f1_alt_ids}{$t} . " but it has been de-merged!";
+				$data->{f2_to_f1_merge}{$t} = $data->{f1_alt_ids}{$t};
+			}
+			else
+			{	$data->{diffs}{$type}{f2_only}{$t}++;
+			}
+		}
+	}
+	
+	
+#	print STDERR "differences hash: " . Dumper($data->{diffs}{$type}) . "\n\n";
+
+}
+
+
 if ($ss)
 {	
+	print STDERR "Starting subset analysis of subset links...\n" if $options->{verbose};
 	# g1 and g2 should contain enough info to generate the slimming graph
 	# get the terms in the subset for g1 and g2
 	$data->{g1_subset} = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $data->{f1}{graph}, options => { subset => { $ss => 1 } } });
 	$data->{g2_subset} = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $data->{f2}{graph}, options => { subset => { $ss => 1 } } });
-	
-	
-	my ($ok, $stack); # = Test::Deep::cmp_details( $data->{g1_subset}, $data->{g2_subset} );
-	#if (! $ok)
-	#{	print STDERR "Subset diffs:\n" . Test::Deep::deep_diag($stack);
-	#}
-	
-#	print STDERR "g1 subset: " .join(", ", keys %{$data->{g1_subset}{subset}{$ss} || {} } )."\n";
-#	print STDERR "g2 subset: " .join(", ", keys %{$data->{g2_subset}{subset}{$ss} || {} } )."\n";
-	
 	
 	# get link data for the terms
 	$data->{g1_link_data} = GOBO::Util::GraphFunctions::get_graph_links({ graph => $data->{f1}{graph}, subset => $data->{g1_subset}{subset}{ $ss }, options => $options });
@@ -228,11 +294,6 @@ if ($ss)
 	## let's populate us some look up hashes
 	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{g1_link_data_slimmed} });
 	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{g2_link_data_slimmed} });
-	
-	
-	
-	#print STDERR "g1 subset: " .join(", ", keys %{ $data->{g1_subset}{subset}{ $ss } || {} } )."\n";
-	#print STDERR "g2 subset: " . join(", ", keys %{ $data->{g2_subset}{subset}{ $ss } || {} } )."\n";
 	
 	# go through the g2 subset terms and compare the data to that we got from g1
 	foreach my $t (keys %{ $data->{g2_subset}{subset}{ $ss }})
@@ -287,6 +348,7 @@ if ($ss)
 			push @{$data->{removed_from_g2_subset}}, $t;
 		}
 	}
+	print STDERR "Finished subset analysis\n" if $options->{verbose};
 	
 =cut
 	my $pairs;
@@ -315,6 +377,9 @@ if ($ss)
 =cut
 }
 
+print STDERR "Printing results!\n" if $options->{verbose};
+
+
 #print STDERR "file 1 alt_ids: " . Dumper($data->{f1_alt_ids}) . "file 2 alt_ids: " . Dumper($data->{f2_alt_ids}) . "\n\n";
 
 print_header($output_fh, $data, $options);
@@ -327,9 +392,11 @@ print_new_merges($output_fh, $data);
 
 print_term_name_changes($output_fh, $data);
 
-print_subset_changes($output_fh, $data);
+print_subset_changes($output_fh, $data) if $ss;
 
 print_term_changes($output_fh, $data);
+
+print_stanza_changes($output_fh, $data);
 
 print_errors($output_fh, $data);
 
@@ -338,51 +405,6 @@ print_stats($output_fh, $data);
 exit(0);
 
 
-sub compare_hashes {
-	my $args = shift;
-	my $f1 = $args->{f1};
-	my $f2 = $args->{f2};
-
-	my $results;
-
-	foreach my $p (keys %$f1)
-	{	# skip these guys
-		next if grep { /^$p$/ } qw(id is_a relationship);
-		if (! $f2->{$p})
-		{	$results->{$p}{f1} += scalar @{$f1->{$p}};
-		}
-		else
-		{	# find the same / different values
-			my @v1 = values %$f1;
-			my @v2 = values %$f2;
-
-			my %count;
-			foreach my $e (@{$f1->{$p}})
-			{	$count{$e}++;
-			}
-			foreach my $e (@{$f2->{$p}})
-			{	$count{$e} += 10;
-			}
-
-			foreach my $e (keys %count) {
-				next if $count{$e} == 11;
-				if ($count{$e} == 1)
-				{	$results->{$p}{f1}++;
-				}
-				elsif ($count{$e} == 10)
-				{	$results->{$p}{f2}++;
-				}
-			}
-		}
-	}
-	foreach (keys %$f2)
-	{	if (! $f1->{$_})
-		{	$results->{$_}{f2} += scalar @{$f2->{$_}};
-		}
-	}
-	
-	return $results;
-}
 
 
 # parse the options from the command line
@@ -540,6 +562,7 @@ sub print_summary {
 	
 }
 
+
 sub print_stats {
 	my $fh = shift;
 	my $data = shift;
@@ -573,11 +596,6 @@ sub print_stats {
 		. "\n";
 }
 
-
-=head2 print_new_terms
-
-
-=cut
 
 sub print_new_terms {
 	my $fh = shift;
@@ -617,7 +635,6 @@ sub print_new_terms {
 	}
 	print $fh "\n\n";
 }
-
 
 
 sub print_new_obsoletes {
@@ -721,7 +738,6 @@ sub print_term_def_changes {
 	}
 	print $fh "\n\n";
 }
-
 
 
 sub print_term_changes {
@@ -856,6 +872,80 @@ print $fh "Subset Changes\n==============\n";
 	print $fh "\n\n";
 }
 
+
+sub print_stanza_changes {
+	my $fh = shift;
+	my $data = shift;
+
+	foreach my $type (%{$data->{diffs}})
+	{	next if $type eq 'Term';
+		
+		if ( $data->{diffs}{$type}{f2_only} && keys %{$data->{diffs}{$type}{f2_only}})
+		{	print $fh "New ".$type."s\n";
+			foreach ( sort keys %{$data->{diffs}{$type}{f2_only}} )
+			{	print $fh "$_";
+				if ($data->{f2_hash}{$type}{$_}{name}[0])
+				{	print $fh ", " . $data->{f2_hash}{$type}{$_}{name}[0];
+				}
+				print $fh "\n";
+			}
+			print $fh "\n\n";
+		}
+
+
+#			my @name_changed = grep { exists $data->{diffs}{$type}{both}{$_}{name} } keys %{$data->{diffs}{$type}{both}};
+#			if (@name_changed)
+#			{	print $fh "$type name changes\n";
+	
+#				map { print $fh "$_: " 
+#					. $data->{f1_hash}{$type}{$_}{name}[0]
+#					. " --> "
+#					. $data->{f2_hash}{$type}{$_}{name}[0]
+#					. "\n" } sort @name_changed;
+#				print $fh "\n\n";
+#			}
+
+
+		if ($data->{diffs}{$type}{both})
+		{	print $fh "$type changes\n";
+
+			foreach my $t (sort keys %{$data->{diffs}{$type}{both}})
+			{	my $line;
+				foreach my $c (sort keys %{$data->{diffs}{$type}{both}{$t}})
+				{	if ($data->{diffs}{$type}{both}{$t}{$c}{f1} && $data->{diffs}{$type}{both}{$t}{$c}{f2})
+					{	my $net = $data->{diffs}{$type}{both}{$t}{$c}{f2} - $data->{diffs}{$type}{both}{$t}{$c}{f1};
+						if ($net == 0)
+						{	push @$line, "*" . $data->{diffs}{$type}{both}{$t}{$c}{f1} . " $c" . "(s)";
+						}
+						elsif ($net < 0)
+						{	$net = 0 - $net;
+							push @$line, "*" . $data->{diffs}{$type}{both}{$t}{$c}{f2} . ", -$net" . " $c" . "(s)";
+						}
+						elsif ($net > 1)
+						{	push @$line, "+$net, *" . $data->{diffs}{$type}{both}{$t}{$c}{f1} . " $c" . "(s)";
+						}
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f1})
+					{	push @$line, "-" . $data->{diffs}{$type}{both}{$t}{$c}{f1} . " $c" . "(s)";
+					}
+					elsif ($data->{diffs}{Term}{both}{$t}{$c}{f2})
+					{	push @$line, "+" . $data->{diffs}{$type}{both}{$t}{$c}{f2} . " $c" . "(s)";
+					}
+				}
+				if ($line)
+				{	print $fh "$t";
+					if ($data->{f2_hash}{$type}{$t}{name}[0])
+					{	print $fh ", " . $data->{f2_hash}{$type}{$t}{name}[0];
+					}
+					print $fh "\n" . join("; ", @$line) . "\n";
+				}
+			}
+			print $fh "\n\n";
+		}
+	}
+}
+
+
 sub print_errors {
 	my $fh = shift;
 	my $data = shift;
@@ -978,7 +1068,7 @@ sub tag_val_arr_to_hash {
 	foreach (@$arr)
 	{	my ($k, $v) = split(": ", $_, 2);
 		if (! $k || ! $v)
-		{	print STDERR "line: $_\n";
+		{	#print STDERR "line: $_\n";
 		}
 		else
 		{	push @{$h->{$k}}, $v;
@@ -987,3 +1077,61 @@ sub tag_val_arr_to_hash {
 	return $h;
 }
 
+
+=head2 compare_hashes
+
+input:  two hashes of arrays
+        regex       a regular expression for hash keys to ignore
+
+output: hash of differences in the form
+        {hash key}{ f1 => number of values unique to f1,
+                    f2 => number of values unique to f2 }
+
+=cut
+
+sub compare_hashes {
+	my $args = shift;
+	my $f1 = $args->{f1};
+	my $f2 = $args->{f2};
+	my $regex = $args->{regex};
+
+	my $results;
+
+	foreach my $p (keys %$f1)
+	{	# skip these guys
+		next if $p =~ /^$regex$/;
+		if (! $f2->{$p})
+		{	$results->{$p}{f1} += scalar @{$f1->{$p}};
+		}
+		else
+		{	# find the same / different values
+			my @v1 = values %$f1;
+			my @v2 = values %$f2;
+
+			my %count;
+			foreach my $e (@{$f1->{$p}})
+			{	$count{$e}++;
+			}
+			foreach my $e (@{$f2->{$p}})
+			{	$count{$e} += 10;
+			}
+
+			foreach my $e (keys %count) {
+				next if $count{$e} == 11;
+				if ($count{$e} == 1)
+				{	$results->{$p}{f1}++;
+				}
+				elsif ($count{$e} == 10)
+				{	$results->{$p}{f2}++;
+				}
+			}
+		}
+	}
+	foreach (keys %$f2)
+	{	if (! $f1->{$_})
+		{	$results->{$_}{f2} += scalar @{$f2->{$_}};
+		}
+	}
+	
+	return $results;
+}
