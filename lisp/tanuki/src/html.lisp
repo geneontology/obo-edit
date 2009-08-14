@@ -65,6 +65,7 @@ a integer or a string."
 
 (define-condition page-is-problematic (error)
   ((problem :initarg :problem :reader problem)))
+;;   (message :initarg :message :reader message)))
   ;;((text :initarg :text :reader text)))
 ;;  ((type :initarg :type :reader type)))
 
@@ -154,10 +155,12 @@ method canonicalization for possibly funny URLs."
 				(mapcar #'rec-dec (pt-children item))))))
 	  (rec-dec parsed-document))
 	(mapcar (lambda (x)
+		  ;;(format t "trying: ~A~%" x)
 		  (handler-case
 		   (parse-uri x)
 		   ;; BUG: maybe we need to fix it on our end and theirs http://localhost/cgi-bin/amigo_1_5_MAINTENANCE/term-details.cgi?term=GO:0018250&session_id=9216amigo1214528420
 		   (PURI:URI-PARSE-ERROR (upe)
+			;;(format t "E: upe~%")
 		        (error 'page-is-problematic :problem x))))
 		anchor-list))))
 

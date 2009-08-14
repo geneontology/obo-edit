@@ -288,11 +288,12 @@ them in no particular order."
 	    (do-internal-step current-page)
 	    (do-external-step current-page))
       (tanuki-html:page-is-problematic (pip)
+	;;(format t "PIP: ~A~%" pip)
 	(mark-page-as-failed +tanuki-db+ current-page)
 	(mark-page-as-odd +tanuki-db+ current-page)))
     ;;
     (mark-page-with-time +tanuki-db+ current-page (- (get-internal-real-time)
-						     timed-time))))    
+						     timed-time))))
 
 (defun do-internal-step (page)
   ""
