@@ -36,6 +36,7 @@
 	       :clsql
 	       :s-sysdeps
 	       :s-http-client
+	       :bordeaux-threads
 	       :closure-html
 	       :s-xml
 	       :fiveam
