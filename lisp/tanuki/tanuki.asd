@@ -31,7 +31,8 @@
                                      (:file "agent")
                                      ;;(:file "web")
                                      (:file "tanuki"))))
-  :depends-on (:cl-ppcre
+  :depends-on (:bbop
+	       :cl-ppcre
 	       :clsql-sqlite3
 	       :clsql
 	       :s-sysdeps
