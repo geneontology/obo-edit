@@ -202,6 +202,9 @@ sub parse_body {
 #			print STDERR "passed the tag check!\n";
 		}
 
+		chomp;
+		s/\!.*//; # TODO
+		s/\s+$//;
 		if (/^id:\s*(.*)\s*$/) {
 			$id = $1;
 			if ($stanzaclass eq 'term') {
@@ -233,9 +236,6 @@ sub parse_body {
 		}
 
 		my $vals = [];
-		chomp;
-		s/\!.*//; # TODO
-		s/\s+$//;
 		if (/^name:\s*(.*)/) {
 			$n->label($1);
 		}

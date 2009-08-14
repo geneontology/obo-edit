@@ -13,9 +13,10 @@ my $parser = new GOBO::Parsers::GAFParser(fh=>$fh);
 $parser->max_chunk(10);
 my $n= 0;
 while ($parser->parse_chunk) {
-    print "Parsed chunk:\n";
+    printf "Parsed chunk: %d\n", scalar(@{$parser->graph->annotations});
     $n++;
 }
+printf "total chunks: $n\n";
 
 ok($n>0);
 

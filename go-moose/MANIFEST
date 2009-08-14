@@ -130,6 +130,7 @@ t/data/UnionTerms.obo
 t/data/cell.obo
 t/data/cell_union.obo
 t/data/gene_association.mgi.gaf2
+t/data/gene_association.mgi.gz
 t/data/gene_ontology_write.obo
 t/data/gpcr.nhx
 t/data/gtp.obo
@@ -148,6 +149,7 @@ t/dbconnect.t
 t/gaf_inference_test.t
 t/gaftest.t
 t/gaftest_chunked.t
+t/gaftest_chunked_gzipped.t
 t/graph_creation.t
 t/inference_engine_test.t
 t/logical_definition_test.t

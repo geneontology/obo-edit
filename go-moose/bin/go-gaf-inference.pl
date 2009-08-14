@@ -18,6 +18,7 @@ my %relh = ();
 my $per_file_ic=0;
 my $validate = 0;
 my $infer = 0;
+my $chunksize = 10000;
 while ($ARGV[0] =~ /^\-/) {
     my $opt = shift @ARGV;
     if ($opt eq '-i' || $opt eq '--ontology') {
@@ -34,6 +35,9 @@ while ($ARGV[0] =~ /^\-/) {
     }
     elsif ($opt eq '--infer') {
         $infer = 1;
+    }
+    elsif ($opt eq '--chunksize') {
+        $chunksize = shift @ARGV;
     }
     elsif ($opt eq '-h' || $opt eq '--help') {
         system("perldoc $0");
@@ -67,10 +71,11 @@ foreach my $f (@ARGV) {
     my @ics = ();
     my @invalid = ();
     $ontg->annotations([]);
-    my $fh = new FileHandle($f);
-    my $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
+    my $gafparser = new GOBO::Parsers::GAFParser();
+    $gafparser->set_file($f);
+
     # iterate through one chunk at a time
-    while ($gafparser->parse_chunk(10000)) {
+    while ($gafparser->parse_chunk(size=>$chunksize)) {
         printf STDERR "processing %d annots in in $f\n", scalar(@{$gafparser->graph->annotations});
         $ontg->add_annotations($gafparser->graph->annotations);
         printf STDERR "  ontg annots %d\n", scalar(@{$ontg->annotations});
