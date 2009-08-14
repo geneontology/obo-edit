@@ -284,12 +284,12 @@ them in no particular order."
   (mark-page-with-date +tanuki-db+ current-page)
   (let ((timed-time (get-internal-real-time)))
     (handler-case
-     (if (internal-p (get-url current-page) (get-target +tanuki-db+))
-	 (do-internal-step current-page)
-       (do-external-step current-page))
-     (tanuki-html:page-is-problematic (pip)
-      (mark-page-as-failed +tanuki-db+ current-page)
-      (mark-page-as-odd +tanuki-db+ current-page)))
+	(if (internal-p (get-url current-page) (get-target +tanuki-db+))
+	    (do-internal-step current-page)
+	    (do-external-step current-page))
+      (tanuki-html:page-is-problematic (pip)
+	(mark-page-as-failed +tanuki-db+ current-page)
+	(mark-page-as-odd +tanuki-db+ current-page)))
     ;;
     (mark-page-with-time +tanuki-db+ current-page (- (get-internal-real-time)
 						     timed-time))))    
@@ -331,10 +331,11 @@ them in no particular order."
       (progn
 	(format t "Starting (~a)...~%" page-selector)
 	(setf +tanuki-thread+
-	      (sb-thread:make-thread (lambda ()
-				       (thread-handler page-selector))
-				     :name "tanuki thread")))
-    (format t "Already started.~%")))
+;;	      (sb-thread:make-thread (lambda ()
+	      (bordeaux-threads:make-thread (lambda ()
+					      (thread-handler page-selector))
+					    :name "tanuki thread")))
+      (format t "Already started.~%")))
 
 (defun stop ()
   "Politely stop a Tanuki process."
@@ -342,7 +343,8 @@ them in no particular order."
       (progn
 	(format t "Stopping...~%")
 	(setf +stop-signal+ t)
-	(sb-thread:join-thread +tanuki-thread+)
+	;;(sb-thread:join-thread +tanuki-thread+)
+	(bordeaux-threads:join-thread +tanuki-thread+)
 	(setf +tanuki-thread+ nil))
     (format t "Already stopped.~%")))
 

@@ -16,7 +16,7 @@
 
 
 ;;
-(setf parenscript:*js-string-delimiter* #\")
+(setf parenscript:*js-string-delimiter* #\')
 
 
 ;;;
@@ -63,6 +63,10 @@
 					  (list item))))))))
     (reverse (mapcar #'reverse (rec (reverse list) nil)))))
 
+;; (defmacro e-n (ns-symbol)
+;;   (mapcar #'(lambda (x) (join-strings x :with "."))
+;; 	  (build-ns-list (split-string ns-string :with "\\."))))
+
 (defun explode-namespace (ns-string)
   (mapcar #'(lambda (x) (join-strings x :with "."))
 	  (build-ns-list (split-string ns-string :with "\\."))))
@@ -94,11 +98,33 @@
 (defun js-header ()
   (format nil  "////~%//// This was automatically generated using parenscript.~%////"))
 
+(defmacro with-readtable-preserve (&rest body)
+  `(let ((*readtable* (copy-readtable nil)))
+     (setf (readtable-case *readtable*) :preserve)
+     ,@body))
+
+;;; Yeah! Better form:
+;; (ps (@ foo bar bibble))
+
+;; (defmacro invariant-symbol-name (symbol)
+;; ;;  `(symbol-name ,symbol))
+;; ;;  `(symbol-name ,|symbol|))
+;;   (list `symbol-name `|,symbol|))
+
 (defun foo ()
   (let ((ns 'org.bbop))
       (ps
 	(if (== (typeof (lisp ns)) "undefined")
-	    (throw (+ "No module: " (lisp ns)))))))
+	    (throw (+ "No module: " (lisp (symbol-name ns))))))))
+
+(defmacro j-n-c (ns)
+  `(join-strings
+    (mapcar #'(lambda (ns)
+		(ps
+		 (if (== (typeof ns) "undefined")
+		     (throw (+ "No module: " ns)))))
+	    (exhaust-namespaces ns))
+    :with "~%"))
 
 (defun js-namespace-check (ns)
   (join-strings
@@ -158,3 +184,19 @@
     (js-body "org.bbop.amigo.term"
 	     '("terms")))
    :with "~%"))
+
+;; Technically works.
+(defpsmacro js-object-to-name-1 (obj)
+  `((slot-value (quote ,(cdr obj)) 'join) "\."))
+
+;; ;; TODO: a better version of the above.
+;; (defpsmacro js-object-to-name-2 (obj)
+;;   (let ((foo obj)
+;;   `((slot-value (quote ,(cdr obj)) 'join) "\."))
+
+(defun amigo-term-js-2 ()
+  (ps
+
+    (if (== (typeof (@ foo bar)) "undefined")
+	(throw (+ "No module: " (js-object-to-name-1 (@ foo bar)))))
+    ))
