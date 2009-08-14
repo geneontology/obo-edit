@@ -184,6 +184,11 @@ in the subset
 
 input:  graph   => Graph object
         options => option_h
+          options may be:
+          get_all_subsets => 1
+          subset => { subset_name => 1, subset_2_name => 1 }
+          
+          # subset_regexp => regular expression
 
 output: data hash or death with an appropriate error
         data hash will be of the form

@@ -24,8 +24,6 @@ if (! $options->{verbose})
 {	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
 }
 
-check_options($options);
-
 my $graph = GOBO::Util::GraphFunctions::get_graph({ options => $options });
 
 # get the nodes matching our subset criteria
@@ -42,7 +40,7 @@ foreach my $s (keys %{$data->{subset}})
 {	# in these cases, the input set is the same as the mapping set. Copy 'em remorselessly!
 
 	# get the links between the nodes
-	$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, input => $data->{subset}{$s}, subset => $data->{subset}{$s}, roots => $data->{roots}, graph => $graph, options => $options });
+	$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, input => $data->{subset}{$s}, subset => $data->{subset}{$s}, graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_links!\n" if $options->{verbose};
 
 	# populate the node look up hashes
@@ -126,7 +124,7 @@ sub parse_options {
 			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
 		}
 	}
-	return $opt;
+	return check_options($opt);
 }
 
 
@@ -210,8 +208,7 @@ sub check_options {
 	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\n";
 	}
 
-	$options = $opt;
-#	return $opt;
+	return $opt;
 }
 
 
