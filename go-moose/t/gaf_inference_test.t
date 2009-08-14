@@ -20,12 +20,11 @@ my $ontg = $obo_parser->graph;
 $obo_parser->parse;
 my $ie = new GOBO::InferenceEngine::GAFInferenceEngine(graph=>$ontg);
 
-#my $fh = new FileHandle("t/data/test-fb.gaf");
-my $fh = new FileHandle($gaf);
-my $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
+my $gafparser = new GOBO::Parsers::GAFParser();
+$gafparser->set_file($gaf);
 
 my @ics = ();
-while ($gafparser->parse_chunk(10000)) {
+while ($gafparser->parse_chunk(size=>2)) {
     $ontg->add_annotations($gafparser->graph->annotations);
     printf "inferring annotations for %s\n", scalar(@{$gafparser->graph->annotations});
     push(@ics, @{$ie->infer_annotations($gafparser->graph->annotations)});
@@ -50,7 +49,7 @@ ok($ic->source->id eq 'GOC');
 
 # now add it back in and attempt to do inference again..
 
-$fh = new FileHandle($gaf);
+my $fh = new FileHandle($gaf);
 $gafparser = new GOBO::Parsers::GAFParser(fh=>$fh);
 my $agraph = $gafparser->graph;
 $gafparser->parse;
