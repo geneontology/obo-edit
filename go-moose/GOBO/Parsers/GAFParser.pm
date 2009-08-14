@@ -25,7 +25,8 @@ sub parse_header {
             return;
         }
     }
-    # odd..
+    # we are still in the header and have reached the end of the file
+    $self->parsed_header(1);
     return;
 }
 
@@ -97,9 +98,11 @@ sub parse_body {
                                 source=>$g->noderef($source_db),
                                 date=>$assocdate,
             );
-        $geneproduct =~ s/\s+//g;
         if ($geneproduct) {
-            $annot->specific_node($g->noderef($geneproduct));
+            $geneproduct =~ s/\s+//g;
+            if ($geneproduct) {
+                $annot->specific_node($g->noderef($geneproduct));
+            }
         }
         # if >1 taxon supplied, additional taxon specifies target species
         if (@taxa) {
@@ -116,10 +119,12 @@ sub parse_body {
         if ($qualh{not}) {
             $annot->negated(1);
         }
-        $annotxp =~ s/\s+//g;
         if ($annotxp) {
-            my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
-            $annot->add_target_differentia($xp);
+            $annotxp =~ s/\s+//g; 
+            if ($annotxp) {
+                my $xp = GOBO::ClassExpression->parse_idexpr($g,$annotxp);
+                $annot->add_target_differentia($xp);
+            }
         }
         $g->add_annotation($annot);
         #push(@{$g->annotations},$annot);
