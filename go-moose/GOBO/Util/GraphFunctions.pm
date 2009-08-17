@@ -180,13 +180,15 @@ sub get_graph {
 
 get the subset nodes we want by whatever means, fair or foul
 roots will be added to the subset after determining that there are other terms
-in the subset
+in the subset unless options->{exclude_roots} is set to 1
 
 input:  graph   => Graph object
         options => option_h
           options may be:
           get_all_subsets => 1
           subset => { subset_name => 1, subset_2_name => 1 }
+          
+          exclude_roots => 1  # set this is you DON'T want the root nodes included
           
           # subset_regexp => regular expression
 
@@ -293,10 +295,12 @@ sub get_subset_nodes {
 	}
 
 
-	## add the roots to the subsets (??)
-	foreach my $r (keys %{$data_h->{roots}})
-	{	foreach my $s (keys %{$data_h->{subset}})
-		{	$data_h->{subset}{$s}{$r}++;
+	## add the roots to the subsets unless we specifically don't want 'em
+	unless (defined $options->{exclude_roots} && $options->{exclude_roots} == 1)
+	{	foreach my $r (keys %{$data_h->{roots}})
+		{	foreach my $s (keys %{$data_h->{subset}})
+			{	$data_h->{subset}{$s}{$r}++;
+			}
 		}
 	}
 
@@ -342,11 +346,12 @@ sub get_graph_relations {
 
 =head2 get_graph_links
 
+Find the links between the terms in $input and those in $subset
+
 input:  input   => hash of input nodes in the form node_id => 1; optional; uses
                    all graph nodes if not specified
         subset  => subset nodes in the form node_id => 1; optional; uses
                    all graph nodes if not specified
-#        roots   => root nodes in the form node_id => 1
         graph   => Graph object
         inf_eng => inference engine (a new one will be created if not)
         

@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test;
-#plan tests => 1;
 use Test::More 'no_plan';
 use Test::Deep;
 use Test::Deep::NoTest;
@@ -13,10 +11,6 @@ use GOBO::Parsers::OBOParserDispatchHash;
 
 use FileHandle;
 use Data::Dumper;
-
-ok 1;
-exit 0;
-
 
 my $gaf_parser;
 my $obo_parser;
