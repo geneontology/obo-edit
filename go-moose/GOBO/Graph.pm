@@ -425,10 +425,11 @@ specified, then returns terms that lack a parent by any relation
 
 sub get_roots {
     my $self = shift;
-    my $rel = shift;
+#    my $rel = shift;
     my @roots = ();
     foreach my $term (@{$self->terms || []}) {
-        if (!{@$self->get_outgoing_links($term, $rel)}) {
+        next if $term->obsolete;
+        if (!@{$self->get_outgoing_links($term, @_)}) {
             push(@roots,$term);
         }
     }
