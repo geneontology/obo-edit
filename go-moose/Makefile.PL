@@ -12,13 +12,14 @@ WriteMakefile(
     'PREREQ_PM'    => {
 #        'AmiGO::Model::Graph'       => 0,
         'DateTime::Format::ISO8601' => 0,
-        'DBIx::Class'               => 0,
+        'Test::Deep'                 => 0,
+#        'DBIx::Class'               => 0,
 #        'Graph'                     => 0,
         'List::MoreUtils'           => 0,
 #        'Lucene'                    => 0,
         'Moose'                     => 0.81,
 #        'RDF::Redland'              => 0,
-        'Set::Object'               => 0,
+#        'Set::Object'               => 0,
     },
     'EXE_FILES'    => [
         qw(
@@ -36,13 +37,4 @@ WriteMakefile(
         FILES => 'GOBO-$(VERSION).tar.gz',
     },
     );
-
-sub MY::postamble {
-  qq{
-
-MANIFEST : \
-	svn list -R > MANIFEST
- };
-}
-
 

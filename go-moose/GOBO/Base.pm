@@ -10,13 +10,6 @@ has 'verbose' => (
     default => $ENV{BIOPERL_DEBUG} || 0
     );
 
-# strictness level; setting to True converts warnings to exceptions
-has 'strict' => (
-    is      => 'rw',
-    isa     => 'Int',
-    where   => sub {$_ >= -1 && $_ <= 2},
-    default => $ENV{BIOPERL_STRICT} || 0
-    );
 
 1;
 
