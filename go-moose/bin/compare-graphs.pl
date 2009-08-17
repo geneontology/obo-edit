@@ -1,52 +1,69 @@
 #!/usr/bin/perl -w
-# find GO slim nodes and generate a graph based on them, removing any nodes not
-# in the slim
 
 =head1 NAME
 
-compare-graphs.pl
+compare-graphs.pl - compare two graphs
 
 =head1 SYNOPSIS
 
- compare-graphs.pl --file_1 go/ontology/old_gene_ontology.obo --file_2 go/ontology/gene_ontology.obo -s goslim_generic -o results.txt
+ compare-graphs.pl --file_1 old_gene_ontology.obo --file_2 gene_ontology.obo
+ -s goslim_generic -o results.txt
 
 =head1 DESCRIPTION
 
-# must supply these arguments... or else!
-# INPUT
- -f1 || --file_1 /path/to/<file_name>     "old" ontology file 
- -f2 || --file_2 /path/to/<file_2_name>   "new" ontology file
-
-# OUTPUT
- -o || --output /path/to/<file_name>     output file for results
-
-# SUBSET
- -s || --subset <subset_name>            subset to use for graph-based comparisons
-
-
-# optional args
-
- -v || --verbose                         prints various messages
-
-
-Compares two OBO files and records the differences between them. These
-differences include:
+Compares two OBO files and records the differences between them, including:
 
 * new terms
-* term merges
-* term obsoletions
-* changes to term content, such as addition, removal or editing of features like
-  synonyms, xrefs, comments, def, etc..
-* term movements into or out of the subset designated by the subset option
 
+* term merges
+
+* term obsoletions
+
+* changes to term content, such as addition, removal or editing of features like
+synonyms, xrefs, comments, def, etc..
+
+* term movements into or out of the subset designated by the subset option
 
 At present, only term differences are recorded in detail, although this could
 presumably be extended to other stanza types in an ontology file. The comparison
 is based on creating hashes of term stanza data, mainly because hashes are more
 tractable than objects. 
 
-=cut
+=head2 Input parameters
 
+=head3 Required
+
+=over
+
+=item -f1 || --file_1 /path/to/file_name
+
+"old" ontology file
+
+=item -f2 || --file_2 /path/to/file_2_name
+
+"new" ontology file
+
+=item -s || --subset I<subset_name>
+
+Subset to use for graph-based comparisons
+
+=item -o || --output /path/to/file_name
+
+output file for results
+
+=back
+
+=head3 Optional switches
+
+=over
+
+=item -v || --verbose
+
+prints various messages
+
+=back
+
+=cut
 
 use strict;
 use Data::Dumper;
@@ -1021,6 +1038,8 @@ sub print_term_name {
 
 
 
+=head2 Script methods
+
 =head2 block_to_sorted_array
 
 input:  a multi-line block of text (preferably an OBO format stanza!)
@@ -1135,3 +1154,13 @@ sub compare_hashes {
 	
 	return $results;
 }
+
+=head1 AUTHOR
+
+Amelia Ireland
+
+=head1 SEE ALSO
+
+L<GOBO::Graph>, L<GOBO::InferenceEngine>, L<GOBO::Doc::FAQ>
+
+=cut
