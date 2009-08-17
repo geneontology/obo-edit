@@ -13,79 +13,126 @@ use GOBO::Util::GraphFunctions;
 
 =head1 NAME
 
-mapmaker.pl
+mapmaker.pl - map graph terms to a selected subset
 
 =head1 SYNOPSIS
 
- mapmaker.pl -i go/ontology/gene_ontology.obo -s goslim_generic -o my_stuff/mapping-file.txt
+ mapmaker.pl -i gene_ontology.obo -s goslim_generic -o mapping-file.txt
 
 =head1 DESCRIPTION
 
-# must supply these arguments... or else!
-# INPUT
- -i || --ontology /path/to/<file_name>   input file (ontology file) with path
+Given a file where certain terms are specified as being in subset S, this
+script will produce a mapping of each term to its ancestors in subset S; the
+mapping indicates which ancestral terms are closest to the term.
 
+Relationships between terms are calculated by the inference engine.
 
-# SPECIFYING A SUBSET
- -s || --subset <subset_name>            name of the subset to extract
-    or
- -t || --termfile /path/to/<file_name>   an input file containing a list of terms
+If the root nodes are not already in the subset, they are added to the graph.
 
- if using the termfile option, a regular expression for terms can be specified:
- 
- -r || --term_regexp <regex matching term IDs>
+The slimming algorithm is 'relationship-aware', and finds the closest node
+for each relation (rather than just the closest term). For example, if we
+had the following relationships:
 
+A -i- B -i- C -p- D
 
-# OUTPUT
- -o || --output /path/to/<file_name>     output file with path
+the slimmer would say that B was the closest node via the 'i' relation, and
+D was the closest via the 'p' relation.
 
+Note that there may be several different relationships between the same two
+terms in the slimmed file.
 
-# MISC SWITCHES
- -n || --show_names                      show term names in the mapping file
+=head2 Input parameters
 
- -v || --verbose                         prints various messages
+=head3 Required
 
+=over
 
-	Given a file where certain terms are specified as being in subset S, this
-	script will produce a mapping of each term to its ancestors in subset S; the
-	mapping indicates which ancestral terms are closest to the term.
+=item -i || --ontology /path/to/file_name
 
-	Relationships between terms are calculated by the inference engine.
+input file (ontology file in OBO format) with path
 
-	If the root nodes are not already in the subset, they are added to the graph.
+=item -o || --output /path/to/file_name
 
-	The slimming algorithm is 'relationship-aware', and finds the closest node
-	for each relation (rather than just the closest term). For example, if we
-	had the following relationships:
+output file with path
 
-	A -i- B -i- C -p- D
+=item  -s || --subset I<subset_name>  OR  -t || --termfile /path/to/file_name
 
-	the slimmer would say that B was the closest node via the 'i' relation, and
-	D was the closest via the 'p' relation.
+The subset can be specified using either the -s option, which will extract terms
+where the subset matches I<subset_name>, or using a separate file of containing
+the terms to be extracted. This can be a file in OBO format, or a plain text list
+of IDs with each ID on a separate line. In the latter case, you can additionally
+specify a regular expression for that term IDs must match using the B<-r> or
+B<--term_regexp> option. For example:
 
-	Note that there may be several different relationships between the same two
-	terms in the slimmed file.
+ -t term_list.txt -r "GO:\d+"
 
-=item show_names
+This would extract all terms matching the regular expression C</GO:\d+/> in the
+file C<term_list.txt>.
 
-Show the names of the term in the slim mapping file
+=back
+
+=head3 Optional switches
+
+=over
+
+=item -n || --show_names
+
+show term names (as well as IDs) in the mapping file
+
+=item -v || --verbose
+
+prints various messages
+
+=back
 
 =head2 Output format
 
-term ID(, term name [optional]) [tab] closest ancestral subset terms for each relationship [tab] all other ancestral terms
+By default, the output of mapmaker.pl is arranged thus:
 
-some sample lines:
+ term ID [tab] closest ancestral subset terms for each relationship [tab] all other ancestral terms
 
-GO:0000942, outer kinetochore of condensed nuclear chromosome	is_a GO:0005575; part_of GO:0005634, part_of GO:0005694	part_of GO:0005575
-GO:0000943, retrotransposon nucleocapsid	is_a GO:0005575; part_of GO:0005634	part_of GO:0005575
-GO:0001400, mating projection base	is_a GO:0005575; part_of GO:0005575	
-GO:0001401, mitochondrial sorting and assembly machinery complex	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
-GO:0001405, presequence translocase-associated import motor	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
-GO:0001411, hyphal tip	is_a GO:0030427; part_of GO:0005575	is_a GO:0005575
-GO:0001518, voltage-gated sodium channel complex	is_a GO:0005575; part_of GO:0005886	part_of GO:0005575, part_of GO:0016020
-GO:0001520, outer dense fiber	is_a GO:0005575; part_of GO:0005575	
-GO:0001527, microfibril	is_a GO:0005575; part_of GO:0005576	part_of GO:0005575
-GO:0001529, elastin	obsolete
+With the b<show_names> option on, the first column will look like this:
+
+ term ID, term name
+
+Some sample output:
+
+ GO:0000942, outer kinetochore of condensed nuclear chromosome	is_a GO:0005575; part_of GO:0005634, part_of GO:0005694	part_of GO:0005575
+ GO:0001400, mating projection base	is_a GO:0005575	
+ GO:0001401, mitochondrial sorting and assembly machinery complex	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
+ GO:0001405, presequence translocase-associated import motor	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
+ GO:0001411, hyphal tip	is_a GO:0030427; part_of GO:0005575	is_a GO:0005575
+ GO:0001518, voltage-gated sodium channel complex	is_a GO:0005575; part_of GO:0005886	part_of GO:0005575, part_of GO:0016020
+ GO:0001520, outer dense fiber	is_a GO:0005575; part_of GO:0005575	
+ GO:0001527, microfibril	is_a GO:0005575; part_of GO:0005576	part_of GO:0005575
+ GO:0001529, elastin	obsolete
+
+Decoded:
+
+GO:0000942, outer kinetochore of condensed nuclear chromosome:
+- the closest is_a ancestor is GO:0005575
+- the closest part_of ancestors are GO:0005634 and GO:0005694.
+- it is also part_of GO:0005575
+
+GO:0001400, mating projection base
+- the closest is_a ancestor is GO:0005575
+- it is not connected to any other subset terms or by any other relationships
+
+GO:0001411, hyphal tip:
+- the closest is_a ancestor is GO:0030427
+- the closest part_of ancestor is GO:0005575
+- it is also is_a GO:0005575
+
+GO:0001529, elastin:
+obsolete term, therefore has no ancestors
+
+=head1 AUTHOR
+
+Amelia Ireland
+
+=head1 SEE ALSO
+
+L<GOBO::Graph>, L<GOBO::InferenceEngine>, L<GOBO::Doc::FAQ>
 
 =cut
 
