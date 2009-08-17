@@ -17,9 +17,27 @@ use Moose;
 #use base 
 extends 'GOBO::Parsers::OBOParser';
 
-has header_check_sub => (is=>'rw', isa=>'CodeRef', writer => 'set_header_check_sub', reader => 'get_header_check_sub', default=>sub{ return sub { return 1 }; });
-has stanza_check_sub => (is=>'rw', isa=>'CodeRef', writer => 'set_stanza_check_sub', reader => 'get_stanza_check_sub', default=>sub{ return sub { return 1 }; });
-has tag_check_sub    => (is=>'rw', isa=>'CodeRef', writer => 'set_tag_check_sub', reader => 'get_tag_check_sub', default=>sub{ return sub { return 1 }; });
+has header_check_sub => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_header_check_sub', reader => 'get_header_check_sub');
+has stanza_check_sub => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_stanza_check_sub', reader => 'get_stanza_check_sub');
+has tag_check_sub    => (is=>'rw', isa=>'CodeRef', default=>sub{ return sub { return 1 }; }, writer => 'set_tag_check_sub', reader => 'get_tag_check_sub');
+
+before 'get_header_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+before 'get_stanza_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+before 'get_tag_check_sub' => sub {
+	my $self = shift;
+	$self->check_options if ! $self->checked_options;
+};
+
+
+
 
 use Data::Dumper;
 
@@ -658,6 +676,7 @@ override 'check_options' => sub {
 				{	$self->set_header_parser_options({ parse_only => $options->{header}{parse_only} });
 
 					my $arr = $options->{header}{parse_only};
+					my $code = 
 					$self->set_header_check_sub( sub {
 						my $t = shift;
 						return 1 if grep { $t eq $_ } @$arr;
@@ -809,26 +828,6 @@ after 'reset_parser' => sub {
 	$self->set_stanza_check_sub( sub { return 1 } );
 	$self->set_tag_check_sub( sub { return 1 } );
 };
-
-
-sub get_header_check_sub {
-	my $self = shift;
-	$self->check_options if ! $self->checked_options;
-	return $self->header_check_sub;
-}
-
-sub get_stanza_check_sub {
-	my $self = shift;
-	$self->check_options if ! $self->checked_options;
-	return $self->stanza_check_sub;
-}
-
-sub get_tag_check_sub {
-	my $self = shift;
-	$self->check_options if ! $self->checked_options;
-	return $self->tag_check_sub;
-}
-
 
 1;
 
