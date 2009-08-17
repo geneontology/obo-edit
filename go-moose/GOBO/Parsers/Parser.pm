@@ -159,9 +159,8 @@ sub _parse {
 	# make sure we've checked our parser options
 	$self->check_options;
 	if ($self->parsed_header)
-	{	
-            #print STDERR "Header has been parsed!\n";
-            #print STDERR "parser: " . $self->dump(2) . "\n";
+	{	#print STDERR "Header has been parsed!\n";
+		#print STDERR "parser: " . $self->dump(2) . "\n";
 	}
 	else
 	{	$self->parse_header;
@@ -217,7 +216,7 @@ sub set_file {
 	elsif (! ref $f)
 	{	my $fh;
 		if ($f =~ /\.gz$/) {
-                    $fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
+			$fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
 		}
 		else {
 			$fh = FileHandle->new($f, "r") or confess "Could not create a filehandle for $f: $! ";
