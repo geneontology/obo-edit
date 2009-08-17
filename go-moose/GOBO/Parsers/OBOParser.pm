@@ -753,7 +753,7 @@ The default behaviour of the parser is to parse everything it comes across.
 Customized parsing can be achieved by giving the parser a hash ref of options
 encoding the parsing preferences:
 
-$parser->set_options($options);
+ $parser->set_options($options);
 
 To set parser options, use the following structures:
 
@@ -764,19 +764,18 @@ Header parsing instructions should be contained in the options hash with the key
 
  $options->{header} = ...
 
-# parse only tag_1, tag_2 and tag_3, and ignore any other tags in the header
+ # parse only tag_1, tag_2 and tag_3, and ignore any other tags in the header
  $options->{header} = { 
  	parse_only => [ 'tag_1', 'tag_2', 'tag_3' ],
  }
 
 
-# parse everything apart from tag_4, tag_5 and tag_6
+ # parse everything apart from tag_4, tag_5 and tag_6
  $options->{header} = {
  	ignore =>  [ 'tag_4', 'tag_5', 'tag_6' ],
  }
 
-
-# ignore all information in the header
+ # ignore all information in the header
  $options->{header}{ignore} = '*';
 
 There is no need to specify $options->{header}{parse_only} = '*' : this is the
@@ -791,26 +790,27 @@ Body parsing instructions should be contained in the options hash with the key
  $options->{body} = ...
 
 
-## parsing or ignore tags
+=head4 parsing or ignore tags
 
-# parse only tag_1, tag_2 and tag_3 from $stanza_type stanzas
+ # parse only tag_1, tag_2 and tag_3 from $stanza_type stanzas
  $options->{body}{parse_only}{$stanza_type} = [ 'tag_1', 'tag_2', 'tag_3' ],
 
 
-# ignore 'tag_4', 'tag_5', 'tag_6' from $stanza_type stanzas
+ # ignore 'tag_4', 'tag_5', 'tag_6' from $stanza_type stanzas
  $options->{body}{ignore}{$stanza_type} = [ 'tag_4', 'tag_5', 'tag_6' ],
 
 
-## parsing or ignoring stanzas
+=head4 parsing or ignoring stanzas
 
-# parse only stanzas where the type matches the key $stanza_type
+ # parse only stanzas where the type matches the key $stanza_type
  $options->{body}{parse_only}{ $stanza_type } = '*'
 
 
-# ignore stanzas where the type matches the key $stanza_type
+ # ignore stanzas where the type matches the key $stanza_type
  $options->{body}{ignore}{ $stanza_type } = '*'
 
-# ignore all information in the body
+
+ # ignore all information in the body
  $options->{body}{ignore} = '*';
 
 There is no need to specify $options->{body}{parse_only} = '*' : this is the
@@ -819,15 +819,19 @@ default behaviour. There is also no need to specify both 'ignore' and 'parse_onl
 
 =head3 Examples
 
-# parse everything from the header; parse only instance stanzas and the id, name and namespace tags from term stanzas
+parse everything from the header; parse only instance stanzas and the id, name
+and namespace tags from term stanzas
+
  $parser->set_options({ body => { parse_only => { term => [ qw(id name namespace) ] }, instance => '*' } });
 
 
-# ignore the header; parse everything in the body
+ignore the header; parse everything in the body
+
  $parser->set_options({ header => { ignore => '*' } });
 
 
-# parse the date from the header; ignore instance and annotation stanzas
+parse the date from the header; ignore instance and annotation stanzas
+
  $parser->set_options({
    header => { parse_only => [ 'date' ] },
    body => { 

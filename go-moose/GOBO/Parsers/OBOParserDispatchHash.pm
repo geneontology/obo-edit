@@ -2,6 +2,12 @@
 
 GOBO::Parsers::OBOParserDispatchHash
 
+=head1 SYNOPSIS
+
+ use GOBO::Parsers::OBOParserDispatchHash;
+ my $parser = new GOBO::Parsers::OBOParser(file => $options->{input});
+ $parser->parse;
+ my $graph = $parser->graph;
 
 =head1 DESCRIPTION
 
@@ -35,8 +41,6 @@ before 'get_tag_check_sub' => sub {
 	my $self = shift;
 	$self->check_options if ! $self->checked_options;
 };
-
-
 
 
 use Data::Dumper;
@@ -828,6 +832,12 @@ after 'reset_parser' => sub {
 	$self->set_stanza_check_sub( sub { return 1 } );
 	$self->set_tag_check_sub( sub { return 1 } );
 };
+
+=head1 SEE ALSO
+
+L<GOBO::Parsers::OBOParser>
+
+=cut
 
 1;
 
