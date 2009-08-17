@@ -214,60 +214,100 @@ sub check_options {
 
 =head1 NAME
 
-go-slimdown.pl
+go-slimdown.pl - select subset terms, slim 'em down, and output the results
 
 =head1 SYNOPSIS
 
- go-slimdown.pl -i go/ontology/gene_ontology.obo -s goslim_generic -o slimmed.obo
+ go-slimdown.pl -i gene_ontology.obo -s goslim_generic -o slimmed.obo
 
 =head1 DESCRIPTION
 
-# must supply these arguments... or else!
-# INPUT
- -i || --ontology /path/to/<file_name>   input file (ontology file) with path
+Given a file where certain terms are specified as being in subset S, this
+script will 'slim down' the file by removing terms not in the subset.
 
-# OUTPUT
- -o || --output /path/to/<file_name>     output file with path
-  or
- -b || --basename /path/to/<file_name_containing_SLIM_NAME>
+Relationships between remaining terms are calculated by the inference engine.
 
-      specify a file name containing the text "SLIM_NAME", which will be
-      substituted with the name of the subset
-      e.g. -s goslim_goa -s goslim_yeast -b /temp/gene_ontology.SLIM_NAME.obo
-      would produce two files,
-      /temp/gene_ontology.goslim_goa.obo and /temp/gene_ontology.goslim_yeast.obo
+If the root nodes are not already in the subset, they are added to the graph.
 
+The slimming algorithm is 'relationship-aware', and finds the closest node
+for each relation (rather than just the closest term). For example, if we
+had the following relationships:
 
-# SUBSET
- -s || --subset <subset_name>            name of the subset to extract; multiple
-                                         subsets can be specified
- or
- -a || --get_all_subsets                 extract all the subsets in the graph
+A -i- B -i- C -p- D
 
-# optional args
- -c || --combined                        if more than one subset is specified,
-                                         create a slim using terms from all
-                                         of the subsets specified
+the slimmer would say that B was the closest node via the 'i' relation, and
+D was the closest via the 'p' relation.
 
- -v || --verbose                         prints various messages
+Note that there may be several different relationships between the same two
+terms in the slimmed file.
 
-	Given a file where certain terms are specified as being in subset S, this
-	script will 'slim down' the file by removing terms not in the subset.
+=head2 Input parameters
 
-	Relationships between remaining terms are calculated by the inference engine.
+=head3 Required
 
-	If the root nodes are not already in the subset, they are added to the graph.
+=over
 
-	The slimming algorithm is 'relationship-aware', and finds the closest node
-	for each relation (rather than just the closest term). For example, if we
-	had the following relationships:
+=item -i || --ontology /path/to/file_name
 
-	A -i- B -i- C -p- D
+input file (ontology file) with path
 
-	the slimmer would say that B was the closest node via the 'i' relation, and
-	D was the closest via the 'p' relation.
+=item -s and -a: specifying subset(s)
 
-	Note that there may be several different relationships between the same two
-	terms in the slimmed file.
+go-slimdown.pl can extract a number of subsets from a file. You can specify
+named subset(s) using the B<-s> or B<--subset> parameter:
+
+ -s I<subset_name> (-s I<subset_2_name>, -s I<subset_3_name>, ...)
+
+Alternatively, you can get all subsets using the B<-a> or B<--get_all_subsets>
+option:
+
+ go-slimdown.pl -i gene_ontology.obo --get_all_subsets -o slimmed.obo
+
+See the B<-c> option below for combining subsets.
+
+=item -o and -b: output file or files
+
+If you are using a single subset, or wish to combine subsets, use the B<-o> or
+B<--output> option:
+ 
+ -o /path/to/file_name
+ 
+If you are using several subsets and want to create separate files for each, use
+the B<-b> or B<--basename> option to specify a base name for your output files:
+
+ -b /path/to/file_base_name_containing_SLIM_NAME
+
+The text "SLIM_NAME" will be replaced by the name of the subset. For example:
+
+  go-slimdown.pl -i myfile.obo -s slim_goa -s slim_yeast
+  -b /temp/slimmed.SLIM_NAME.obo
+
+would produce two files, C</temp/slimmed.slim_goa.obo> and
+C</temp/slimmed.slim_yeast.obo>.
+
+=back
+
+=head3 Optional switches
+
+=over
+
+=item  -c || --combined
+
+If more than one subset is specified, create a slim using terms from all of
+the subsets specified
+
+=item -v || --verbose
+
+prints various messages
+
+=back
+
+=head1 AUTHOR
+
+Amelia Ireland
+
+=head1 SEE ALSO
+
+L<GOBO::InferenceEngine>, L<GOBO::Graph>, L<GOBO::Doc::FAQ>
 
 =cut
