@@ -7,15 +7,9 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
-#use GOBO::Parsers::CustomParser;
 use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::InferenceEngine;
-use GOBO::Writers::OBOWriter;
 use GOBO::Util::GraphFunctions;
-
-my $verbose = $ENV{GO_VERBOSE} || 0;
-
-my $options = parse_options(\@ARGV);
 
 =head1 NAME
 
@@ -36,14 +30,15 @@ mapmaker.pl
  -s || --subset <subset_name>            name of the subset to extract
     or
  -t || --termfile /path/to/<file_name>   an input file containing a list of terms
- ## termfile option not yet implemented
+
+ if using the termfile option, a regular expression for terms can be specified:
+ 
+ -r || --term_regexp <regex matching term IDs>
+
 
 # OUTPUT
  -o || --output /path/to/<file_name>     output file with path
 
-
-
-#
 
 # MISC SWITCHES
  -n || --show_names                      show term names in the mapping file
@@ -101,7 +96,16 @@ GO:0001529, elastin	obsolete
 #including bucket terms will be written to B<bucket slim file>
 #
 
-my $output = new FileHandle($options->{output}, "w") or die "Could not create output file " . $options->{output} . ": $!";
+my $options = parse_options(\@ARGV);
+
+my $data;
+my $subset;
+my $output = new FileHandle($options->{output}, "w") or die "Could not create output file " . $options->{output} . ": $!\nDying";
+
+# before we check out the graph, let's see if the file actually contains any terms...
+if ($options->{termlist})
+{	$data->{to_find} = get_subset_terms($options);
+}
 
 # parse the input file and check we get a graph
 my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input}, 
@@ -113,23 +117,48 @@ options => {
 });
 $parser->parse;
 
-die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
-print STDERR "Finished parsing file " . $options->{input} . "\n" if $verbose;
+die "Error: parser could not find a graph in " . $options->{input} . "!\nDying" unless $parser->graph;
+print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
 
 my $graph = GOBO::Util::GraphFunctions::get_graph({ options => $options });
 
 # get the nodes matching our subset criteria
-my $data;
-my $subset;
-
 if ($options->{subset})
 {	$data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
-	# move the subset to 
+	# move the subset to $subset
 	foreach my $s (keys %{$data->{subset}})
 	{	$subset = $data->{subset}{$s};
 	}
+}
+else
+{	my @fail;
+	# we got the terms from a file. Check that they exist in our graph!
+	foreach (keys %{$data->{to_find}})
+	{	if ($graph->get_term($_) && ! $graph->get_term($_)->obsolete)
+		{	$subset->{$_} = 1;
+		}
+		else
+		{	push @fail, $_;
+		}
+	}
+	if (! $subset || ! keys %$subset)
+	{	my $msg = "None of the terms specified in " . $options->{termlist} . " were found in the ontology file.";
+		if ($options->{verbose})
+		{	die "$msg mapmaker.pl was looking for the following terms:\n" . join(", ", sort keys %{$options->{termlist}}) . "\nPlease try again.\nDying";
+		}
+		else
+		{	die "$msg Please try again.\nDying";
+		}
+	}
+	## make sure that we have the root nodes
+	map { $subset->{ $_->id }++ } @{$graph->get_roots};
+}
+
+if (scalar keys %$subset < 5 && ! $options->{force_continue})
+{	print STDERR "subset keys found:\n" . join("\n", keys %$subset) . "\n" if $options->{verbose};
+	die "Only " . (scalar keys %$subset) . " terms from the subset specified could be found. To continue anyway, please run the script again with the extra command line parameter -f\nDying";
 }
 
 # get the relations from the graph
@@ -275,10 +304,14 @@ sub parse_options {
 				$opt->{subset}{$s}++;
 			}
 		}
-#		elsif ($o eq '-t' || $o eq '--termlist') {
-#			## this should be the name of a file with a list of terms
-#			$opt->{termlist} = shift @$args if @$args && $args->[0] !~ /^\-/;
-#		}
+		elsif ($o eq '-t' || $o eq '--termlist') {
+			## this should be the name of a file with a list of terms
+			$opt->{termlist} = shift @$args if @$args && $args->[0] !~ /^\-/;
+		}
+		elsif ($o eq '-r' || $o eq '--term_regexp') {
+			## a regular expression for isolating terms from a text file
+			$opt->{term_regexp} = shift @$args if @$args && $args->[0] !~ /^\-/;
+		}
 		elsif ($o eq '-o' || $o eq '--output') {
 			$opt->{output} = shift @$args if @$args && $args->[0] !~ /^\-/;
 		}
@@ -288,17 +321,21 @@ sub parse_options {
 		elsif ($o eq '-n' || $o eq '--show_names') {
 			$opt->{show_names} = 1;
 		}
+		elsif ($o eq '-f' || $o eq '--force') {
+			$opt->{force_continue} = 1;
+		}
 		elsif ($o eq '-h' || $o eq '--help') {
 			system("perldoc", $0);
 			exit(0);
 		}
 		elsif ($o eq '-v' || $o eq '--verbose') {
-			$options->{verbose} = 1;
+			$opt->{verbose} = 1;
 		}
 		else {
-			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\nDying";
 		}
 	}
+
 	return check_options($opt);
 }
 
@@ -309,7 +346,7 @@ sub check_options {
 	my $errs;
 
 	if (!$opt)
-	{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
+	{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\nDying";
 	}
 
 	if (!$opt->{input})
@@ -332,9 +369,20 @@ sub check_options {
 			if (! -e $opt->{termlist})
 			{	push @$errs, "the file " . $opt->{termlist} . " could not be found.";
 			}
+
+			# if a term regular expression was specified, make sure it is OK
+			if ($opt->{term_regexp})
+			{	eval { "" =~ /$opt->{term_regexp}/; 1 };
+				if ($@)
+				{	push @$errs, "the regular expression specified was invalid: $@";
+				}
+				else
+				{	$opt->{term_regexp} = qr/$opt->{term_regexp}/;
+				}
+			}
 		}
 
-		if (scalar keys %{$opt->{subset}} > 1)
+		if ($opt->{subset} && scalar keys %{$opt->{subset}} > 1)
 		{	# only one subset can be used. sorry!
 			my $ss;
 			foreach my $k (sort keys %{$opt->{subset}})
@@ -347,14 +395,17 @@ sub check_options {
 		}
 	}
 
+	$opt->{verbose} = 1 if ! $opt->{verbose} && $ENV{VERBOSE};
+
 	if (!$opt->{output})
 	{	push @$errs, "specify an output file using -o /path/to/<file_name>";
 	}
 
-
 	if ($errs && @$errs)
-	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\n";
+	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\nDying";
 	}
+
+	print STDERR "Verbose mode is ON!\n" if $opt->{verbose};
 
 	return $opt;
 }
@@ -362,71 +413,30 @@ sub check_options {
 
 sub get_subset_terms {
 	my $sub_h;  # we'll store the data in here
-	my $options = shift;
+	my $opt = shift;
 
-	# either an existing subset or a subset matching a regexp
-	if ( $options->{subset} || $options->{subset_regexp} )
-	{	## read in the OBO file and quickly pull out the slim terms
-		open(IN, '<'.$options->{input}) or die "The file ".$options->{input}." could not be opened: $!\nDying";
-		print "Loading " . $options->{input} . "...\n" if $options->{verbose};
-		local $/ = "\n\n";
-		my $sub_test;
-	
-#		if ($options->{subset_regexp})
-#		{	$sub_test = sub {
-#				my $block = shift;
-#				if (/^\[Term\].*?^id: (.+?)$/sm)
-#				{	my $id = $1;
-#					foreach ( split("\n", $block) )
-#					{	next unless /^subset: (.+)/;
-#						$sub_h->{$id}++ if $1 =~ /$options->{subset_regexp}/;
-#					}
-#				}
-#			};
-#		}
-#		else
-#		{	
-			$sub_test = sub {
-				my $block = shift;
-				if (/^\[Term\].*?^id: (.+?)$/sm)
-				{	my $id = $1;
-					foreach ( split("\n", $block) )
-					{	next unless /^subset: (.+)/;
-						$sub_h->{$id}++ if $options->{subset}{$1};
-					}
-				}
-			};
-#		}
-		
-		while (<IN>)
-		{	&$sub_test($_) if /^subset: /sm;
-		}
-		print "Finished loading ontology.\n";
-		close(IN);
-		return { subset => $sub_h };
-	}
-	else
-	{	# see if we have an OBO file...
-		if ($options->{termlist} =~ /\.obo$/)
-		{	# looks like it! read in the file and get the term nodes
-			## read in the OBO file and quickly pull out the slim terms
-			open(IN, '<'.$options->{termlist}) or die "The file ".$options->{termlist}." could not be opened: $!\nDying";
-			print "Loading " . $options->{termlist} . "...\n" if $options->{verbose};
-			local $/ = "\n\n";
+	# see if we have an OBO file...
+	if ($opt->{termlist} =~ /\.obo$/)
+	{	# looks like it! read in the file and get the term nodes
+		## read in the OBO file and quickly pull out the slim terms
+		{	local $/ = "\n[";
+			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
+			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
 			while (<IN>)
-			{	if (/^[Term].*?^id: (.+)$/sm) {
-					$sub_h->{$1}++;
+			{	if (/^Term].*?^id: .+$/sm && /^id: ?(\S+)$/m)
+				{	$sub_h->{$1}++;
 				}
 			}
-			print "Finished loading ontology.\n" if $options->{verbose};
+			print "Finished loading ontology.\n" if $opt->{verbose};
 			close(IN);
-			return { subset => $sub_h };
 		}
-		else
-		{	# this is a file of unknown origin
-			open(IN, '<'.$options->{termlist}) or die "The file ".$options->{termlist}." could not be opened: $!\nDying";
-			print "Loading " . $options->{termlist} . "...\n" if $options->{verbose};
-			my $regexp = $options->{term_regexp} || qr/^\s*\S+[\s$]/;
+	}
+	else
+	{	# this is a file of unknown origin
+		{	local $/ = "\n";
+			open(IN, '<'.$opt->{termlist}) or die "The file ".$opt->{termlist}." could not be opened: $!\nDying";
+			print "Loading " . $opt->{termlist} . "...\n" if $opt->{verbose};
+			my $regexp = $opt->{term_regexp} || qr/^\s*\S+[\s$]/;
 			while (<IN>)
 			{	if (/($regexp)/)
 				{	my $x = $1;
@@ -435,20 +445,17 @@ sub get_subset_terms {
 					$sub_h->{$x}++;
 				}
 			}
-			print "Finished loading ontology.\n" if $options->{verbose};
+			print "Finished loading term file.\n" if $opt->{verbose};
 			close(IN);
-			return { subset => $sub_h };
 		}
 	}
-}
 
-
-## print out header material for file
-sub print_file_header {
-	my $options = shift;
+	if (! $sub_h)
+	{	die "Could not find any terms in the file " . $opt->{termlist} . ". Dying";
+	}
 	
-
-
-
+	print STDERR "Found subset terms: " . join(", ", keys %$sub_h) . "\n" if $options->{verbose};
+	
+	return $sub_h;
 
 }
