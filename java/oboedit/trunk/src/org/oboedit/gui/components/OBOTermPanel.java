@@ -61,6 +61,10 @@ import org.oboedit.util.PathUtil;
 
 import org.apache.log4j.*;
 
+/**
+ * OBOTermPanel is the Ontology Tree Editor Component (OTE) - provides a tree representation for loaded ontologies and 
+ * includes support for all ontology editing operations
+ * */
 public class OBOTermPanel extends JTree implements OntologyEditor, ObjectSelector,
 FilteredRenderable, Filterable, GUIComponent, DragImageGenerator,
 RightClickMenuProvider, Autoscroll {
@@ -69,7 +73,7 @@ RightClickMenuProvider, Autoscroll {
 	protected final static Logger logger = Logger.getLogger(OBOTermPanel.class);
 
 	private static final long serialVersionUID = 1L;
-	
+
 	protected String title;
 
 	protected static final int AUTOSCROLL_MARGIN = 12;
@@ -104,7 +108,7 @@ RightClickMenuProvider, Autoscroll {
 	protected SessionManager sessionManager = SessionManager.getManager();
 
 	protected static final Color lockGray = new Color(200, 200, 200);
-	
+
 	protected static final Color secondaryGray = new Color(247, 249, 249);
 
 	final static int HEADER_HEIGHT = 20;
@@ -132,12 +136,11 @@ RightClickMenuProvider, Autoscroll {
 
 	ReloadListener reloadListener = new ReloadListener() {
 		public void reload(ReloadEvent e) {
-//			logger.debug("OBOTermPanel.reloadListener.reload " + e);
+			//			logger.debug("OBOTermPanel.reloadListener.reload " + e);
 			OBOTermPanel.this.reload();
 			if (e.isRoot()) {
 				Set<LinkedObject> roots = new HashSet<LinkedObject>();
-				TermUtil.detectRoots(roots, getLinkDatabase(),
-						getRootAlgorithm());
+				TermUtil.detectRoots(roots, getLinkDatabase(), getRootAlgorithm());
 				TreePath rootPath = new TreePath(PathUtil.ROOT);
 				for (LinkedObject rootObj : roots) {
 					OBORestriction tr = new OBORestrictionImpl(rootObj);
@@ -376,14 +379,14 @@ RightClickMenuProvider, Autoscroll {
 
 
 	protected void ensureLockedPathIsShowing() {
-//		logger.debug("OBOTermPanel.ensureLockedPathIsShowing");
-//		logger.debug("lockedPath: " + lockedPath);
+		//		logger.debug("OBOTermPanel.ensureLockedPathIsShowing");
+		//		logger.debug("lockedPath: " + lockedPath);
 		if (lockedPath != null && !isShowing(lockedPath)) {
-//			logger.debug("locked path not null");
+			//			logger.debug("locked path not null");
 			FreezableViewport freezableViewport = (FreezableViewport) SwingUtilities
 			.getAncestorOfClass(FreezableViewport.class, this);
 			logger.debug("FreezableViewport: " + freezableViewport);
-			
+
 			if (freezableViewport != null)
 				freezableViewport.setFrozen(false);
 
@@ -416,9 +419,8 @@ RightClickMenuProvider, Autoscroll {
 		this.isLive = isLive;
 		if (isLive == true && Preferences.getPreferences().getOnlyOneGlobalOTE())
 			makeOtherOTEsNotLive();
-		if (getLinkDatabase() != null) {  // Fix for bug 2030578
-			TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(
-					getRootAlgorithm(), getLinkDatabase());
+		if (getLinkDatabase() != null) {
+			TreePath[] paths = SelectionManager.getGlobalSelection().getPaths(getRootAlgorithm(), getLinkDatabase());
 			setSelectionPaths(paths);
 		}
 		repaint(); // in order to change background color
@@ -578,8 +580,7 @@ RightClickMenuProvider, Autoscroll {
 
 				if (tree != null && tree.isEnabled()) {
 					tree.requestFocus();
-					TreePath path = getClosestPathForLocation(tree, e.getX(), e
-							.getY());
+					TreePath path = getClosestPathForLocation(tree, e.getX(), e.getY());
 
 					if (path != null) {
 						Rectangle bounds = getPathBounds(tree, path);
@@ -665,14 +666,12 @@ RightClickMenuProvider, Autoscroll {
 
 		@Override
 		protected void selectPathForEvent(TreePath path, MouseEvent event) {
-//			logger.debug("OBOTermPanel.selectPathForEvent");
+			//			logger.debug("OBOTermPanel.selectPathForEvent");
 			TreePath[] selected = getSelectionPaths();
 			super.selectPathForEvent(path, event);
-			if (!SelectionManager.getManager().doPreSelectValidation(
-					getSelection())) {
+			if (!SelectionManager.getManager().doPreSelectValidation(getSelection())) {
 				setSelectionPaths(selected);
 			} else {
-				//				logger.debug(getID() + ".selectPathForEvent: isLive = " + isLive()); // DEL
 				// condition for locked OTE's to not display selection
 				if (isLive())
 					SelectionManager.setGlobalSelection(getSelection());
@@ -759,7 +758,7 @@ RightClickMenuProvider, Autoscroll {
 	}
 
 	public void setLockedPath(TreePath lockedPath) {
-//		logger.debug("OBOTermPanel.setLockedPath");
+		//		logger.debug("OBOTermPanel.setLockedPath");
 		this.lockedPath = lockedPath;
 		FreezableScrollPane scrollPane = (FreezableScrollPane) SwingUtil.getAncestorOfClass(FreezableScrollPane.class, this);
 		if (scrollPane != null) {
@@ -1028,8 +1027,6 @@ RightClickMenuProvider, Autoscroll {
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 	}
 
-	// Hey, this doesn't get called if you X out the OBO Term Panel--shouldn't it?
-	// It only gets called when you quit OE.
 	public void cleanup() {
 		ToolTipManager.sharedInstance().unregisterComponent(this);
 		// controller.removeListener(termSelectListener);
@@ -1053,21 +1050,20 @@ RightClickMenuProvider, Autoscroll {
 	protected boolean bridgeEnabled = false;
 
 	public OBOTermPanel(String id) {
-		//		logger.debug("New OBOTermPanel(" + id + ")");
 		this.id = id;
-		
+
 		setShowsRootHandles(true);
 		setRootVisible(false);
 		setNodeLabelProvider(new HTMLNodeLabelProvider(this, CollectionUtil
 				.list(BackgroundColorSpecField.FIELD), null, null));
 		//		setFont(Preferences.getPreferences().getFont()); // doesn't do anything--need to set font in OBOCellRenderer
-		
+
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		scrollPane = new FreezableScrollPane(this);
 		scrollPane.setViewportBorder(new EmptyBorder(1,1,1,1));
 		scrollPane.setBackground(Preferences.defaultBackgroundColor());
-		
+
 		panel.add(scrollPane, "Center");
 		toolbar = new EditActionToolbar(panel, inputListener, true);
 		DragFriendlyTreeUI ui = getDefaultUI();
@@ -1101,11 +1097,10 @@ RightClickMenuProvider, Autoscroll {
 
 	// Does this get called more than necessary?
 	// Can we check whether we already created this selection?
-	protected Selection createSelectionFromPaths(TreePath lead,
-			TreePath[] paths) {
+	protected Selection createSelectionFromPaths(TreePath lead, TreePath[] paths) {
 		if (paths == null || paths.length == 0)
 			return SelectionManager.createEmptySelection();
-		//		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
+//		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
 		Link leadLink = null;
 		if (lead != null) {
 			if (lead.getLastPathComponent() instanceof Link) {
@@ -1138,8 +1133,7 @@ RightClickMenuProvider, Autoscroll {
 		long time = System.currentTimeMillis(); // DEL
 		Collection<LinkedObject> terms = selection.getTerms();
 		TreePath path1;
-		TreePath[] paths = selection.getPaths(getRootAlgorithm(),
-				getLinkDatabase());
+		TreePath[] paths = selection.getPaths(getRootAlgorithm(), getLinkDatabase());
 		setSelectionPaths(paths);  // This is a Swing operation that is quite expensive if there are a lot of paths
 
 		if (paths.length == 0)
@@ -1158,9 +1152,8 @@ RightClickMenuProvider, Autoscroll {
 	}
 
 	public void fillInMenu(MouseEvent e, JPopupMenu menu) {
-		final TreePath[] selectedPaths = getSelection().getPaths(
-				getRootAlgorithm(), getLinkDatabase());
-		
+		final TreePath[] selectedPaths = getSelection().getPaths(getRootAlgorithm(), getLinkDatabase());
+
 		// only active when children are expanded in view
 		JMenuItem collapseItem = new JMenuItem("Collapse all children of selection");
 		final Vector<TreePath> collapsePaths = new Vector<TreePath>();
@@ -1249,7 +1242,7 @@ RightClickMenuProvider, Autoscroll {
 
 	public void synchronize(OBOTermPanel panel) {
 		TreePath rootPath = new TreePath(PathUtil.ROOT);
-//		logger.debug("OBOTermPanel.synchronize");
+		//		logger.debug("OBOTermPanel.synchronize");
 		Enumeration e = panel.getExpandedDescendants(rootPath);
 		while (e.hasMoreElements()) {
 			expandPath((TreePath) e.nextElement());
@@ -1514,9 +1507,7 @@ RightClickMenuProvider, Autoscroll {
 		if (c instanceof OntologyEditorConfiguration) {
 			OntologyEditorConfiguration config = (OntologyEditorConfiguration) c;
 			setLive(config.isLive());
-			//	    links that aren't transitive.  That excludes the regulates links.
-			//		ObjectFilter istransitiveobjectfilter = new ObjectFilterImpl();
-			//		istransitiveobjectfilter.setCriterion(new IsTransitiveCriterion
+
 			setFilters(config.getTermFilter(), config.getLinkFilter()); // calls reload()
 			setObjectRenderers(config.getObjectRenderers());
 			setLinkRenderers(config.getLinkRenderers());
@@ -1680,7 +1671,9 @@ RightClickMenuProvider, Autoscroll {
 			Object o = path.getLastPathComponent();
 			if (o instanceof Link) {
 				Link link = (Link) o;
-				out.add(link);
+				if(!TermUtil.isUnion(link)){
+					out.add(link);
+				}
 				if (link.getParent() != null)
 					out.add(link.getParent());
 				if (link.getChild() != null)
@@ -1701,19 +1694,19 @@ RightClickMenuProvider, Autoscroll {
 	public void redraw() {
 		reload();
 	}
-	
+
 	protected class FreezableViewport extends JViewport{
 		private static final long serialVersionUID = 1L;
 		protected boolean frozen = false;
-		
+
 		public void setFrozen(boolean frozen){
 			this.frozen = frozen;
 		}
-		
+
 		public void setViewPosition(Point p){
 			if(!frozen)
 				super.setViewPosition(p);
 		}
-		
+
 	}
 }
