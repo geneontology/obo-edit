@@ -92,6 +92,7 @@ public class PathUtil {
 			boolean found = false;
 			for (int i = 0; i < count; i++) {
 				Object child = model.getChild(previous, i);
+				
 				if (child.equals(objects[j])) {
 					found = true;
 					break;
