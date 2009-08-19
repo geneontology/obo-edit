@@ -49,8 +49,7 @@ public interface Selection {
 
 	public TreePath getPath();
 
-	public TreePath[] getPaths(RootAlgorithm rootAlgorithm,
-			LinkDatabase linkDatabase);
+	public TreePath[] getPaths(RootAlgorithm rootAlgorithm, LinkDatabase linkDatabase);
 
 	public TreePath getPath(RootAlgorithm rootAlgorithm,
 			LinkDatabase linkDatabase);
