@@ -2,10 +2,8 @@ package org.oboedit.gui.tasks;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
-import javax.swing.tree.TreePath;
 
 import net.infonode.docking.View;
 
@@ -89,7 +86,6 @@ import org.oboedit.gui.actions.AddConsiderAction;
 import org.oboedit.gui.actions.AddParentAction;
 import org.oboedit.gui.actions.AddReplacementAction;
 import org.oboedit.gui.actions.AddRootAction;
-import org.oboedit.gui.actions.AssertImpliedAction;
 import org.oboedit.gui.actions.CloneAction;
 import org.oboedit.gui.actions.CompletesAction;
 import org.oboedit.gui.actions.CopyAction;
@@ -108,7 +104,6 @@ import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
-import org.oboedit.gui.components.OBOTermPanel;
 import org.oboedit.gui.components.imageplugin.factory.TermImageComponentFactory;
 import org.oboedit.gui.components.imageplugin.saveimage.InstallTask;
 import org.oboedit.gui.components.ontologyGeneration.factory.OntologyGenerationComponentFactory;
@@ -137,6 +132,7 @@ import org.oboedit.gui.factory.OBOMergeCanvasFactory;
 import org.oboedit.gui.factory.OntologyChangeTrackerFactory;
 import org.oboedit.gui.factory.ParentEditorFactory;
 import org.oboedit.gui.factory.ReasonerManagerFactory;
+import org.oboedit.gui.factory.RemoveRedundantLinksComponentFactory;
 import org.oboedit.gui.factory.SearchComponentFactory;
 import org.oboedit.gui.factory.SearchResultsComponentFactory;
 import org.oboedit.gui.factory.SemanticParserManagerFactory;
@@ -252,7 +248,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 				new ConfigurableMessageComponentFactory(),
 				new SearchResultsComponentFactory(),
 				new OntologyGenerationComponentFactory(),
-				new AssertLinksComponentFactory()
+				new AssertLinksComponentFactory(),
+				new RemoveRedundantLinksComponentFactory()
 		);
 	}
 
@@ -602,7 +599,8 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new DeleteAction(false));
 		EditActionManager.getManager().addEditAction(new DeleteAction(true));
 		EditActionManager.getManager().addEditAction(new RemoveRedundantAction());
-		EditActionManager.getManager().addEditAction(new AssertImpliedAction());
+		//Edit -> Assert Implied Action replaced by Reasoner -> Assert Implied Links Component
+//		EditActionManager.getManager().addEditAction(new AssertImpliedAction());
 		EditActionManager.getManager().addEditAction(new NameUnnamedTermsAction());
 		EditActionManager.getManager().addEditAction(new CloneAction());
 		EditActionManager.getManager().addEditAction(new AddRootAction());
@@ -627,7 +625,7 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
 		String[] advancedMenuItems = {"SemanticParser Manager", "Intersection Editor", "Cross-Product Matrix Editor"};
-		String[] reqReasonerMenuItems = { "Explanations", "Assert Implied Links Panel"};
+		String[] reqReasonerMenuItems = { "Explanations", "Assert Implied Links Panel", "Remove Redundant Links Panel"};
 
 		for (JMenu m : viewMenus){
 			menus.add(m);
