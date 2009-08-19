@@ -491,7 +491,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 
 	public void setSelectAllComponent(final CheckBoxHeader selectAll) {
-		selectAll.setText("Select");
+		selectAll.setText("Select All");
 		this.selectAll = selectAll;
 	}
 
