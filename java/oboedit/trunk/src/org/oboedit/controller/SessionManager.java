@@ -398,12 +398,14 @@ public class SessionManager {
 		List<JMenu> viewMenus = new ViewMenus().getMenus();
 		GUIManager.getManager().setEnabledMenuItem("Reasoner:Explanations", true);
 		GUIManager.getManager().setEnabledMenuItem("Reasoner:Assert Implied Links Panel", true);
+		GUIManager.getManager().setEnabledMenuItem("Reasoner:Remove Redundant Links Panel", true);
 	}
 
 	protected void reasonerReqComponentsOff() {
 		//logger.debug("SessionManager.reasonerReqComponentsOff");
 		GUIManager.getManager().setEnabledMenuItem("Reasoner:Explanations", false);
 		GUIManager.getManager().setEnabledMenuItem("Reasoner:Assert Implied Links Panel", false);
+		GUIManager.getManager().setEnabledMenuItem("Reasoner:Remove Redundant Links Panel", false);
 	}
 
 

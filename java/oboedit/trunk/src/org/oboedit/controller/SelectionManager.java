@@ -199,7 +199,9 @@ public class SelectionManager implements ObjectSelector {
 		for (TreePath path : paths) {
 			if (path.getLastPathComponent() instanceof Link) {
 				Link link = (Link) path.getLastPathComponent();
-				links.add(link);
+				if(!TermUtil.isUnion(link)){
+					links.add(link);
+				}
 				if (fillInTerms)
 					terms.add(link.getChild());
 			}
