@@ -244,11 +244,11 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 	public void valueChanged(final ListSelectionEvent e) {
 		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
-			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Remove Redundant Links Table");
+//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Remove Redundant Links Table");
 			//Select action for Child name and Parent name columns  
 			//selects term in all components corresponding to the column in focus
 			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
-				logger.debug("value in selected column:  " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+//				logger.debug("value in selected column:  " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 				final Object colobj = table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());					
 				SelectionManager.selectTerm(table, (LinkedObject) colobj);
 			}
