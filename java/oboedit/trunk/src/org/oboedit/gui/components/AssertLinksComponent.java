@@ -249,7 +249,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 	public void valueChanged(final ListSelectionEvent e) {
 		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
-			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Assert Links Table");
+//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Assert Links Table");
 			//Select action for Child name and Parent name columns  
 			//selects term in all components corresponding to the column in focus
 			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
