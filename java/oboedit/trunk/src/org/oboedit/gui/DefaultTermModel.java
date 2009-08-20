@@ -476,9 +476,8 @@ public class DefaultTermModel implements TermModel {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		Iterator it = temp.iterator();
-		while (it.hasNext()) {
-			IdentifiedObject identified = (IdentifiedObject) it.next();
+		
+		for(IdentifiedObject identified : temp){
 			if (identified instanceof Instance) {
 				Instance instance = (Instance) identified;
 				Link link = new TrivialLink(instance);
