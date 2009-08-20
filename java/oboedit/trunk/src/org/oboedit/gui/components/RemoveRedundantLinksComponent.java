@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.history.DeleteLinkHistoryItem;
@@ -53,6 +55,9 @@ import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Displays redundant links in table format to view, assess redundancy and delete.
+ * */
 public class RemoveRedundantLinksComponent extends AbstractGUIComponent implements ListSelectionListener {
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +68,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 	protected Box northPanel = Box.createHorizontalBox();
 	protected Box southPanel = Box.createHorizontalBox();
 	protected static ImageIcon expIcon = (ImageIcon) Preferences.loadLibraryIcon("info_icon.gif");
-	protected JButton removeLinksButton = new JButton("Remove Links");
+	protected JButton removeLinksButton = new JButton("Delete Links");
 	protected JScrollPane sp = null;
 
 	protected Collection<Link> redundantLinks = null;
@@ -77,7 +82,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 	protected boolean selectFlags[];
 	protected List<Integer> selectedIx = new ArrayList<Integer>();
 	private final int COLUMN_COUNT = 4;
-	/** Light blue color. */
+	/** Alternate row highlighting - Light blue color. */
 	public static final Color LIGHT_BLUE = new Color(210,220,240);
 
 
@@ -88,15 +93,19 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		southPanel.add(Box.createGlue());
 		
 		redundantLinks = getRedundantLinks();
-		links = new ArrayList<Link>(redundantLinks);
-		
-		displayResults();
-		removeLinksButton.setToolTipText("Remove selected links");	
-		removeLinksButton.addActionListener(new ActionListener(){
-			public void actionPerformed(final ActionEvent e){
-				removeLinks();
-			}
-		});
+		//notify when there are no redundant links
+		if(redundantLinks.size()==0){
+			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+			"There are no redundant links in the current ontology.");	
+		}
+			links = new ArrayList<Link>(redundantLinks);
+			displayResults();
+			removeLinksButton.setToolTipText("Remove selected links");	
+			removeLinksButton.addActionListener(new ActionListener(){
+				public void actionPerformed(final ActionEvent e){
+					removeLinks();
+				}
+			});
 
 		southPanel.add(removeLinksButton);
 		add(northPanel,"Center");
@@ -106,7 +115,7 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 
 	protected void removeLinks(){
 		final Collection<Link> removeLinks = new ArrayList<Link>();
-		logger.debug("redundantLinks size before removing: " + redundantLinks.size());
+//		logger.debug("redundantLinks size before removing: " + redundantLinks.size());
 		
 		logger.debug("Removing " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
@@ -262,10 +271,10 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 			i++;
 		}
 		final String[] columnToolTips = {
-				"Select Links to Remove",
+				"Select Links to Delete",
 				"Sort table alphabetically on Child Name",
 				"Sort table alphabetically on Parent Name", 
-				"Load Explanation Component to view additional information",
+				"Highlight link and display additional information in the Explanation Component",
 		};
 
 		model = new RemoveRedundantLinksModel(data);
@@ -480,8 +489,6 @@ public class RemoveRedundantLinksComponent extends AbstractGUIComponent implemen
 		public void mouseExited(final MouseEvent e) {   
 		} 
 	}
-
-
 
 
 	public void setSelectAllComponent(final CheckBoxHeader selectAll) {

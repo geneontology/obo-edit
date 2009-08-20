@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.bbop.framework.GUIManager;
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
@@ -87,6 +89,12 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		northPanel.add(Box.createVerticalGlue());
 		southPanel.add(Box.createGlue());
 		impliedLinks = getImpliedLinks();
+		//notify when there are no implied links
+		if(impliedLinks.size()==0){
+			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+			"There are no implied links in the current ontology.");	
+		}
+		
 		links = new ArrayList<Link>(impliedLinks);
 		displayResults();
 		assertButton.setToolTipText("Assert selected links");	
@@ -271,7 +279,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 				"Select Links to Assert",
 				"Sort table alphabetically on Child Name",
 				"Sort table alphabetically on Parent Name", 
-				"Load Explanation Component to view additional information",
+				"Highlight link and display additional information in the Explanation Component",
 		};
 
 		model = new AssertedLinksModel(data);
