@@ -20,6 +20,7 @@ import java.util.Map;
 import org.bbop.framework.GUIManager;
 import org.obo.filters.AllTextFieldsCriterion;
 import org.obo.filters.AncestorSearchAspect;
+import org.obo.filters.IsIntersectionCriterion;
 import org.obo.filters.SubsetSearchCriterion;
 import org.obo.filters.ChildSearchAspect;
 import org.obo.filters.CommentSearchCriterion;
@@ -337,16 +338,6 @@ public class FilterManager {
 		LinkFilter completeFilter = new LinkFilterImpl();
 		completeFilter.setAspect(LinkFilter.SELF);
 		completeFilter.setFilter(iclfilter);
-
-//		LinkFilter transitiveFilter = new LinkFilterImpl();
-//		transitiveFilter.setAspect(LinkFilter.TYPE);
-//		transitiveFilter.setFilter(istransitiveobjectfilter);
-
-//		CompoundFilter andCompleteFilter = new CompoundFilterImpl();
-//		andCompleteFilter.addFilter(completeFilter);
-//		andCompleteFilter.addFilter(transitiveFilter);
-
-//		setGlobalLinkFilter(andCompleteFilter);
 		setGlobalLinkFilter(completeFilter);
 	}
 
@@ -386,6 +377,7 @@ public class FilterManager {
 		globalTermRenderers = new LinkedList<RenderedFilter>();
 		globalTermRenderers.add(createObsoleteRenderer());
 		globalTermRenderers.add(createPropertyRenderer());
+		globalTermRenderers.add(createIntersectionTermRenderer());
 	}
 
 	protected RenderedFilter createImpliedRenderer() {
@@ -401,17 +393,26 @@ public class FilterManager {
 		return new RenderedFilter(basicLinkFilter, spec);
 	}
 
+	/** 
+	 * Display obsolete terms in red font with strikeout.
+	 * RenderedFilter: set Strikeout to true, set Foreground Color to java.awt.Color[r=255,g=0,b=0] (blend) where matches Is Obsolete
+	 * @return RenderedFilter(filter,spec)
+	 */
 	protected RenderedFilter createObsoleteRenderer() {
 		ObjectFilter filter = new ObjectFilterImpl();
 		filter.setCriterion(new IsObsoleteCriterion());
 
 		GeneralRendererSpec spec = new GeneralRendererSpec();
-		spec.setValue(ForegroundColorSpecField.FIELD, new ConfiguredColor(
-				Color.red, true));
+		spec.setValue(ForegroundColorSpecField.FIELD, new ConfiguredColor(Color.red, true));
 		spec.setValue(StrikeoutSpecField.FIELD, true);
 		return new RenderedFilter(filter, spec);
 	}
 
+	/** 
+	 * Display relations in blue font.
+	 * RenderedFilter: set Foreground Color to java.awt.Color[r=0,g=0,b=255] (blend) where matches Is Property
+	 * @return RenderedFilter(filter,spec)
+	 */
 	protected RenderedFilter createPropertyRenderer() {
 		ObjectFilter filter = new ObjectFilterImpl();
 		filter.setCriterion(new IsPropertyCriterion());
@@ -419,6 +420,20 @@ public class FilterManager {
 		GeneralRendererSpec spec = new GeneralRendererSpec();
 		spec.setValue(ForegroundColorSpecField.FIELD, new ConfiguredColor(
 				Color.blue, true));
+		return new RenderedFilter(filter, spec);
+	}
+	
+	/** 
+	 * Display terms with cross products in bold font.
+	 * RenderedFilter: set Bold to true where matches Is intersection
+	 * @return RenderedFilter(filter,spec)
+	 */
+	protected RenderedFilter createIntersectionTermRenderer() {
+		ObjectFilter filter = new ObjectFilterImpl();
+		filter.setCriterion(new IsIntersectionCriterion());
+
+		GeneralRendererSpec spec = new GeneralRendererSpec();
+		spec.setValue(BoldSpecField.FIELD, true);
 		return new RenderedFilter(filter, spec);
 	}
 
@@ -443,7 +458,6 @@ public class FilterManager {
 	}
 
 	protected void setGlobalLinkFilter(Filter linkFilter) {
-//		logger.debug("FilterManager.setGlobalLinkFilter(" + linkFilter + ")"); // DEL
 		this.globalLinkFilter = linkFilter;
 	}
 
