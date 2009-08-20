@@ -252,12 +252,10 @@ public class FilterComponent extends JPanel {
 //		JButton newButton = new JButton(Preferences.loadLibraryIcon("file.gif"));
 		JButton newButton = new JButton(Preferences.loadLibraryIcon("erase.gif"));
 		newButton.setToolTipText("Clear");
-		JButton loadButton = new JButton(Preferences
-				.loadLibraryIcon("folder.gif"));
-		loadButton.setToolTipText("Load a filter from disk");
-		JButton saveButton = new JButton(Preferences
-				.loadLibraryIcon("floppy.gif"));
-		saveButton.setToolTipText("Save this filter to disk");
+		JButton loadButton = new JButton(Preferences.loadLibraryIcon("folder.gif"));
+		loadButton.setToolTipText("Import Filter");
+		JButton saveButton = new JButton(Preferences.loadLibraryIcon("file.gif"));
+		saveButton.setToolTipText("Export Filter");
 		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				contentPanel.load();
