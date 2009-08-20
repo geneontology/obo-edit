@@ -211,7 +211,7 @@ public class TermUtil {
 
 			for(Link tr : linkDatabase.getParents(term)){
 				if(linkFilter == null || linkFilter.satisfies(tr))
-				out.add(tr.getParent());
+					out.add(tr.getParent());
 				out.addAll(getParents(incSize / term.getChildren().size(),
 						linkDatabase, tr.getChild(), memoizeTable, linkFilter));
 			}
@@ -482,8 +482,8 @@ public class TermUtil {
 			out.add(term);
 		return out;
 	}
-	
-////////////
+
+	////////////
 	/**
 	 * Returns the parents of the given term.
 	 */
@@ -591,7 +591,7 @@ public class TermUtil {
 		}
 		return parents;
 	}
-	
+
 
 	public static Collection<LinkedObject> getChildren(LinkedObject lo) {
 		HashSet<LinkedObject> children = new HashSet<LinkedObject>();
@@ -1120,8 +1120,7 @@ public class TermUtil {
 		}
 		return false;
 	}
-
-
+	
 
 
 	/**
@@ -1129,17 +1128,16 @@ public class TermUtil {
 	 * this link provides part of a union definition.
 	 */
 	public static boolean isUnion(Link link) {
-		if (link instanceof OBORestriction)
-			return link.getType().equals(OBOProperty.UNION_OF);
+		if(link instanceof OBORestriction && link.getType() != null){
+			return ((OBORestriction) link).getType().equals(OBOProperty.UNION_OF);
+		}		
 		else
 			return false;
 	}	/**
 	 * Returns whether the given object has union definition
 	 */
 	public static boolean isUnion(LinkedObject lo) {
-		Iterator it = lo.getParents().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : lo.getParents()){
 			if (isUnion(link))
 				return true;
 		}
