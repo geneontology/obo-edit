@@ -100,7 +100,6 @@ import org.oboedit.gui.actions.NameUnnamedTermsAction;
 import org.oboedit.gui.actions.NecessaryAction;
 import org.oboedit.gui.actions.RangeChangeAction;
 import org.oboedit.gui.actions.RemoveConsiderAction;
-import org.oboedit.gui.actions.RemoveRedundantAction;
 import org.oboedit.gui.actions.RemoveReplacementAction;
 import org.oboedit.gui.actions.RerootAction;
 import org.oboedit.gui.actions.TypeChangeAction;
@@ -598,9 +597,6 @@ public class DefaultGUIStartupTask extends AbstractApplicationStartupTask {
 		EditActionManager.getManager().addEditAction(new MultiAddAction());
 		EditActionManager.getManager().addEditAction(new DeleteAction(false));
 		EditActionManager.getManager().addEditAction(new DeleteAction(true));
-		EditActionManager.getManager().addEditAction(new RemoveRedundantAction());
-		//Edit -> Assert Implied Action replaced by Reasoner -> Assert Implied Links Component
-//		EditActionManager.getManager().addEditAction(new AssertImpliedAction());
 		EditActionManager.getManager().addEditAction(new NameUnnamedTermsAction());
 		EditActionManager.getManager().addEditAction(new CloneAction());
 		EditActionManager.getManager().addEditAction(new AddRootAction());
