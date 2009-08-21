@@ -8,24 +8,19 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.*;
 
 import org.bbop.swing.*;
 import org.bbop.swing.widget.AutocompleteBox;
 import org.obo.datamodel.*;
 import org.obo.datamodel.impl.*;
 import org.obo.history.*;
-import org.obo.postcomp.PostcompUtil;
-import org.obo.query.QueryEngine;
 import org.obo.util.HistoryUtil;
-import org.obo.util.IDUtil;
 import org.obo.util.ReasonerUtil;
 import org.obo.util.TermUtil;
-import org.oboedit.controller.IDManager;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.AbstractTextEditComponent;
@@ -33,19 +28,45 @@ import org.oboedit.gui.DropUtil;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.Selection;
 import org.oboedit.gui.TermAutocompleteModel;
-import org.oboedit.gui.event.RootChangeEvent;
-import org.oboedit.gui.event.RootChangeListener;
+
 
 import org.apache.log4j.*;
 
+/**
+ * Text Editor -> Cross Product Tab interface
+ * */
 public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(CrossProductEditorComponent.class);
 
-	protected class IntersectionPanelFocusPolicy extends
-	LayoutFocusTraversalPolicy {
-		@Override
+	protected JPanel editorPanel = new JPanel();
+	protected JPanel genusPanel = new JPanel();
+	protected JPanel linkListPanel = new JPanel();
+	protected JPanel relPanel = new JPanel();
+
+	protected JScrollPane editorScroller = new JScrollPane(editorPanel,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+	protected JLabel genusLabel = new JLabel("Intersection Genus");
+	protected JLabel notLoadedLabel = new JLabel("No term selected");
+	protected JTextField nameField = new JTextField();
+	protected JLabel idField = new JLabel();
+	protected JCheckBox anonymousCheckbox = new JCheckBox("anonymous");
+
+	protected OBOClass oboClass;
+	protected boolean showNameFields;
+	protected boolean createNewObject = false;
+	
+	protected JButton selectGenusButton;
+	protected ActionListener selectGenusActionListener;	
+
+	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
+	
+	protected IntersectionPanelFocusPolicy focusPolicy = new IntersectionPanelFocusPolicy();
+
+	protected class IntersectionPanelFocusPolicy extends LayoutFocusTraversalPolicy {
 		public boolean accept(Component aComponent) {
 			if (aComponent instanceof JComboBox
 					|| SwingUtilities.getAncestorOfClass(
@@ -55,36 +76,77 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				return false;
 		}
 
-		@Override
 		public Component getDefaultComponent(Container aContainer) {
 			return genusField;
 		}
 	}
+	
+	public CrossProductEditorComponent() {
+		this(false);
+	}
+	
+	public CrossProductEditorComponent(boolean showNameFields) {
+		this.showNameFields = showNameFields;
+		setCreateNewObject(false);
+		genusField.setFocusTraversalKeysEnabled(false);
+		genusField.addCommitListener(commitListener);
+		addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				Component firstComponent = focusPolicy
+				.getFirstComponent(CrossProductEditorComponent.this);
+				if (firstComponent != null)
+					firstComponent.requestFocus();
+			}
+		});
 
+		setFocusTraversalPolicy(focusPolicy);
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tabForward");
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
+						KeyEvent.SHIFT_DOWN_MASK), "tabBackward");
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
+						.getDefaultToolkit().getMenuShortcutKeyMask()),"commit");
+
+		getActionMap().put("tabForward", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				tabToNext();
+			}
+		});
+		getActionMap().put("commit", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}
+		});
+	}
+	
+
+	/** 
+	 * Relationship Line Panel
+	 * */
 	protected class RelationshipLinePanel extends JPanel {
+		private static final long serialVersionUID = 1L;
 
-		//trash can icon
-		protected Icon deleteIcon = Preferences
-		.loadLibraryIcon("trashcan.gif");
-		protected JButton deleteButton = new JButton(deleteIcon);
+		//trash can icon - delete relation
+		protected Icon deleteRelationIcon = Preferences.loadLibraryIcon("trashcan.gif");
+		protected JButton deleteRelationButton = new JButton(deleteRelationIcon);
 
-
-		//cotton ball icon - select genus term
-		protected Icon selectIcon = Preferences
-		.loadLibraryIcon("selector.gif");
-		JButton selectButton = new JButton(selectIcon);
+		//cotton ball icon - go to differentia term
+		protected Icon selectDifferentiaIcon = Preferences.loadLibraryIcon("selector.gif");
+		JButton selectDifferentiaButton = new JButton(selectDifferentiaIcon);
 
 		protected AutocompleteBox<IdentifiedObject> parentBox = new AutocompleteBox<IdentifiedObject>(
 				new TermAutocompleteModel());
-
 		protected JComboBox propertyBox = new JComboBox();
-
-		protected ActionListener selectActionListener;
+		protected ActionListener selectDifferentiaActionListener;
 
 		public RelationshipLinePanel() {
 			getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 					KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false),
-					"escapeLine");
+			"escapeLine");
 			getActionMap().put("escapeLine", new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
 					if (getProperty() == null || getParentTerm() == null) {
@@ -96,7 +158,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 							lastComp.requestFocus();
 					}
 				}
-
 			});
 			setOpaque(false);
 			propertyBox.getInputMap().put(
@@ -105,11 +166,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			parentBox.setFocusTraversalKeysEnabled(false);
 			parentBox.addCommitListener(commitListener);
 
+			deleteRelationButton.setPreferredSize(new Dimension(20, 20));
+			deleteRelationButton.setToolTipText("Delete relation");
 
-			deleteButton.setPreferredSize(new Dimension(20, 20));
-			selectButton.setPreferredSize(new Dimension(20, 20));
+			selectDifferentiaButton.setPreferredSize(new Dimension(20, 20));
+			selectDifferentiaButton.setToolTipText("Go to differentia term");
 
-			deleteButton.addActionListener(new ActionListener() {
+			deleteRelationButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					removeLine(RelationshipLinePanel.this);
 				}
@@ -126,10 +189,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			add(Box.createHorizontalStrut(10));
 			add(parentBox);
 			add(Box.createHorizontalStrut(10));
-			selectButton.setToolTipText("Select genus term");
-			add(selectButton);
-			deleteButton.setToolTipText("Delete relation");
-			add(deleteButton);
+			add(selectDifferentiaButton);
+			add(deleteRelationButton);
 		}
 
 		public OBOClass getParentTerm() {
@@ -146,18 +207,19 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			parent.repaint();
 		}
 
+		/**
+		 * setParentTerm: setting value for parent term and action listener for -> Go to differentia term
+		 * */
 		public void setParentTerm(final OBOClass parentTerm) {
-//			logger.debug("CrossProductEditorComponent.setParentTerm parentTerm: " + parentTerm);
 			parentBox.setValue(parentTerm);
-			if (selectActionListener != null)
-				selectButton.removeActionListener(selectActionListener);
-			selectActionListener = new ActionListener() {
+			if (selectDifferentiaActionListener != null)
+				selectDifferentiaButton.removeActionListener(selectDifferentiaActionListener);
+			selectDifferentiaActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					SelectionManager.selectTerm(CrossProductEditorComponent.this,
-							parentTerm);
+					SelectionManager.selectTerm(CrossProductEditorComponent.this, parentTerm);
 				}
 			};
-			selectButton.addActionListener(selectActionListener);
+			selectDifferentiaButton.addActionListener(selectDifferentiaActionListener);
 		}
 
 		public void setProperty(OBOProperty property) {
@@ -167,25 +229,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		public void tabIn() {
 			propertyBox.requestFocus();
 		}
-	}
+	}//RelationshipLine Panel
 
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	// protected OBOClass genusTerm;
-
+	
 	protected Collection<ActionListener> actionListeners = new LinkedList<ActionListener>();
-
-	protected JButton dropButton = new JButton(
-	"Click (or drop a term) here to add new differentia");
+	protected JButton dropButton = new JButton("Click (or drop a term) here to add new differentia");
 
 	protected DropTargetListener dropDiscriminatingListener = new DropTargetListener() {
 		protected LineBorder border = new LineBorder(Color.black, 2);
-
 		protected Border oldBorder;
 
 		public void dragEnter(DropTargetDragEvent dtde) {
@@ -219,17 +270,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			JMenuItem genusItem = new JMenuItem("Set genus term");
 			genusItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					setGenus((OBOClass) term);
+					setGenusTerm((OBOClass) term);
 				}
 			});
 			menu.add(genusItem);
 
 			menu.addSeparator();
 
-			Iterator it = TermUtil.getRelationshipTypes(session).iterator();
-			while (it.hasNext()) {
-				final OBOProperty prop = (OBOProperty) it.next();
-
+			for(final OBOProperty prop : TermUtil.getRelationshipTypes(session)){
 				if (prop.equals(OBOProperty.IS_A))
 					continue;
 				JMenuItem item = new JMenuItem(
@@ -252,119 +300,34 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	};
 
-	protected JPanel editorPanel = new JPanel();
+	protected void addDiscriminating(OBOClass discriminatingTerm, OBOProperty prop) {
+		RelationshipLinePanel relationshipPanel = new RelationshipLinePanel();
+		relationshipPanel.setProperty(prop);
+		relationshipPanel.setParentTerm(discriminatingTerm);
+		linkListPanel.add(relationshipPanel);
+		validate();
+		repaint();
+		relationshipPanel.tabIn();
+	}
 
-	protected JScrollPane editorScroller = new JScrollPane(editorPanel,
-			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-	protected IntersectionPanelFocusPolicy focusPolicy = new IntersectionPanelFocusPolicy();
-
-	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(
-			new TermAutocompleteModel());
-
-	protected JLabel genusLabel = new JLabel("Intersection Genus");
-
-	// protected JButton genusButton = new JButton("<no genus specified>");
-
-	protected JPanel genusPanel = new JPanel();
-
-	protected JPanel linkListPanel = new JPanel();
-
-	protected JLabel notLoadedLabel = new JLabel("No term selected");
-
-	protected OBOClass oboClass;
-
-	protected JPanel relPanel = new JPanel();
-
-	protected JTextField nameField = new JTextField();
-
-	protected JLabel idField = new JLabel();
-
-	protected JCheckBox anonymousCheckbox = new JCheckBox("anonymous");
-
-	protected boolean showNameFields;
 
 	protected Action commitListener = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-//			tabToNext();
-
-//			if (e.getSource() instanceof Component) { Component next =
-//			focusPolicy.getComponentAfter( IntersectionPanel.this,
-//			FocusManager .getCurrentKeyboardFocusManager() .getFocusOwner());
-//			next.requestFocus(); }
-
+			//			tabToNext();
+			//			if (e.getSource() instanceof Component) { Component next =
+			//			focusPolicy.getComponentAfter( IntersectionPanel.this,
+			//			FocusManager .getCurrentKeyboardFocusManager() .getFocusOwner());
+			//			next.requestFocus(); }
 		}
 	};
-
-	protected boolean createNewObject = false;
-
-	public CrossProductEditorComponent() {
-		this(false);
-	}
 
 	public void setCreateNewObject(boolean createNewObject) {
 		this.createNewObject = createNewObject;
 		anonymousCheckbox.setEnabled(createNewObject);
 	}
 
-	public CrossProductEditorComponent(boolean showNameFields) {
-		this.showNameFields = showNameFields;
-		setCreateNewObject(false);
-		genusField.setFocusTraversalKeysEnabled(false);
-		genusField.addCommitListener(commitListener);
-		addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				Component firstComponent = focusPolicy
-				.getFirstComponent(CrossProductEditorComponent.this);
-				if (firstComponent != null)
-					firstComponent.requestFocus();
-			}
-		});
-		// setFocusTraversalPolicyProvider(true);
-		setFocusTraversalPolicy(focusPolicy);
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "tabForward");
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tabForward");
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
-						KeyEvent.SHIFT_DOWN_MASK), "tabBackward");
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit
-						.getDefaultToolkit().getMenuShortcutKeyMask()),
-		"commit");
-
-		getActionMap().put("tabForward", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				tabToNext();
-			}
-		});
-		getActionMap().put("commit", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				commit();
-			}
-		});
-	}
-
 	public void addActionListener(ActionListener actionListener) {
 		actionListeners.add(actionListener);
-	}
-
-	protected void addDiscriminating(OBOClass discriminatingTerm,
-			OBOProperty prop) {
-		/*
-		 * OBORestriction or = new OBORestrictionImpl(oboClass, prop,
-		 * discriminatingTerm); or.setCompletes(true); relationshipList.add(or);
-		 * buildInterface();
-		 */
-		RelationshipLinePanel panel = new RelationshipLinePanel();
-		panel.setProperty(prop);
-		panel.setParentTerm(discriminatingTerm);
-		linkListPanel.add(panel);
-		validate();
-		repaint();
-		panel.tabIn();
 	}
 
 	protected boolean allowDrop(Selection selection) {
@@ -373,54 +336,41 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public void commit() {
-		ActionEvent e = new ActionEvent(this, (int) Math.random()
-				* Integer.MAX_VALUE, "commit");
+		ActionEvent e = new ActionEvent(this, (int) Math.random() * Integer.MAX_VALUE, "commit");
 		for (ActionListener listener : actionListeners) {
 			listener.actionPerformed(e);
 		}
 	}
 
-	public java.util.List getChanges() {
-		java.util.List<HistoryItem> historyList = new LinkedList<HistoryItem>();
-//		logger.debug("currentObject: " + currentObject.getClass().getSimpleName());
+	public List getChanges() {
+		List<HistoryItem> historyList = new LinkedList<HistoryItem>();
+		//		logger.debug("currentObject: " + currentObject.getClass().getSimpleName());
 
 		if (currentObject instanceof LinkedObject && !(currentObject.getClass().getSimpleName().toString().equalsIgnoreCase("OBOPropertyImpl")) ) {
 			//get existing differentia
-			Collection<Link> differentia = ReasonerUtil
-			.getDifferentia((OBOClass) currentObject);
+			Collection<Link> differentia = ReasonerUtil.getDifferentia((OBOClass) currentObject);
 
 			// Find any intersection links that have been deleted
-			Iterator it = ((LinkedObject) currentObject).getParents()
-			.iterator();
-			while (it.hasNext()) {
-				Link link = (Link) it.next();
-
-//				logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
-
+			for(Link link : ((LinkedObject) currentObject).getParents()){
+				//				logger.debug("link: " + link.getType().getName() + "  " + link.getParent());
 				if (!TermUtil.isIntersection(link))
 					continue;
 
 				boolean found = false;
-				Iterator it2 = getRelationshipList().iterator();
-				while (it2.hasNext()) {
-					Link completeDefLink = (Link) it2.next();
+				for(Object o : getRelationshipList()){
+					Link completeDefLink = (Link) o;
 					if (completeDefLink.equals(link)) {
 						found = true;
 						break;
 					} 
-//					else {
-//					logger.info("   " + completeDefLink + " != "
-//					+ link);
-//					}
 				}
 				if (!found) {
 					historyList.add(new DeleteLinkHistoryItem(link));
 				}
 			}
-			it = getRelationshipList().iterator();
-			while (it.hasNext()) {
-				OBORestriction completeDefLink = (OBORestriction) it.next();
-//				logger.debug("completeDefLink: " + completeDefLink);
+			for(Object o : getRelationshipList()){
+				OBORestriction completeDefLink = (OBORestriction) o;
+				//				logger.debug("completeDefLink: " + completeDefLink);
 				Link matchLink = HistoryUtil.findParentRel(completeDefLink,
 						(LinkedObject) currentObject);
 				if (matchLink == null) {
@@ -430,15 +380,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 					completeDefLink.setCompletes(false);
 					historyList.add(new CreateIntersectionLinkHistoryItem(completeDefLink));
 				}
-
 			}
 		}
 		return historyList;
 	}
 
-	public String getID() {
-		return "CROSSPRODUCT_EDITOR";
-	}
 
 	protected RelationshipLinePanel getLastRelationshipLine() {
 		Component lastComp = null;
@@ -450,17 +396,14 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	}
 
 	public Collection<Link> getRelationshipList() {
-//		logger.debug("CrossProductEditorComponent.getRelationshipList");
 		LinkedList<Link> out = new LinkedList<Link>();
 		Object intersectionGenus = genusField.getValue();
-//		logger.debug("intersectionGenus: " + intersectionGenus);
 		if ( intersectionGenus!= null
 				&& intersectionGenus instanceof LinkedObject) {
 			OBORestriction isaLink = new OBORestrictionImpl(oboClass,
 					OBOProperty.IS_A, (LinkedObject) intersectionGenus);
 			isaLink.setCompletes(true);
 			out.add(isaLink);
-//			logger.debug("CrossProductEditorComponent.getRelationshipList -- isaLink: " + isaLink);
 		}
 
 		for (int i = 0; i < linkListPanel.getComponentCount(); i++) {
@@ -474,7 +417,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 						panel.getProperty(), panel.getParentTerm());
 				discLink.setCompletes(true);
 				out.add(discLink);
-//				logger.debug("CrossProductEditorComponent.getRelationshipList -- discLink: " + discLink);
 			}
 		}
 		return out;
@@ -483,31 +425,28 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	@Override
 	protected void initializeGUI() {
-
 		JPanel linkWrapperPanel = new JPanel();
 		linkWrapperPanel.setOpaque(false);
 		linkWrapperPanel.setLayout(new BorderLayout());
-
-		setLayout(new GridLayout(1, 1));
+		
+		//northPanel houses the genus label, text box and selection button
+		JPanel northPanel = new JPanel();
+		JPanel labelBox = new JPanel();
+		labelBox.setOpaque(false);
+		
 		editorPanel.setLayout(new BorderLayout());
-
-		setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		genusPanel.setLayout(new BorderLayout());
 		linkListPanel.setLayout(new BoxLayout(linkListPanel, BoxLayout.Y_AXIS));
-
 		genusPanel.setOpaque(false);
 		linkListPanel.setOpaque(false);
+		setLayout(new GridLayout(1, 1));
+		setBorder(new EmptyBorder(5, 5, 5, 5));
 
-		TitledBorder titledBorder = new TitledBorder("Discriminating relations");
-		Border cBorder = new CompoundBorder(new EmptyBorder(20, 0, 5, 0),
-				titledBorder);
+		TitledBorder titledBorder = new TitledBorder("Discriminating Relations");
+		Border cBorder = new CompoundBorder(new EmptyBorder(20, 0, 5, 0), titledBorder);
 		linkWrapperPanel.setBorder(cBorder);
-
 		Font font = getFont();
-
 		genusLabel.setFont(font);
-
 		dropButton.setFont(font);
 		dropButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -517,40 +456,36 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 		genusField.setMinimumSize(new Dimension(0, font.getSize() + 5));
 		genusField.setFont(font);
+	
+		//cotton ball - button to go to genus term
+		Icon selectGenusIcon = Preferences.loadLibraryIcon("selector.gif");
+		selectGenusButton = new JButton(selectGenusIcon);
+		selectGenusButton.setPreferredSize(new Dimension(20, 20));
+		selectGenusButton.setToolTipText("Go to genus term");
+		selectGenusButton.addActionListener(selectGenusActionListener);
 
-		JPanel labelBox = new JPanel();
-		labelBox.setOpaque(false);
+
 		labelBox.add(genusLabel);
 		labelBox.add(Box.createHorizontalStrut(10));
-		/*
-		 * genusPanel.add(labelBox, "West"); //
-		 * genusPanel.add(Box.createHorizontalStrut(10));
-		 * genusPanel.add(genusField, "Center");
-		 * genusPanel.add(genusSelectButton, "East");
-		 * genusPanel.setOpaque(false);
-		 */
 
 		linkWrapperPanel.add(linkListPanel, "North");
 		linkWrapperPanel.add(dropButton, "South");
 
-		JPanel northPanel = new JPanel();
+		
 		northPanel.setOpaque(false);
 		northPanel.setLayout(new SpringLayout());
 
 		northPanel.add(genusLabel);
 		northPanel.add(genusField);
-		SpringUtilities.makeCompactGrid(northPanel, -1, 2, // rows, cols
+		northPanel.add(selectGenusButton);
+		SpringUtilities.makeCompactGrid(northPanel, -1, 3, // rows, cols
 				6, 6, // initX, initY
 				6, 0);
 
 		editorPanel.add(northPanel, "North");
 		editorPanel.add(linkWrapperPanel, "Center");
 		editorPanel.setOpaque(false);
-		/*
-		 * editorPanel.add(relPanel, "North"); editorPanel.add(dropButton,
-		 * "Center");
-		 */
-	}
+	} //initializeGUI
 
 	@Override
 	public void installListeners() {
@@ -558,16 +493,6 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				dropDiscriminatingListener));
 	}
 
-	/*
-	 * protected class TabFocusListener extends KeyAdapter { protected Component
-	 * comp;
-	 * 
-	 * public TabFocusListener(Component comp) { this.comp = comp; }
-	 * 
-	 * @Override public void keyPressed(KeyEvent e) { if (e.getKeyCode() ==
-	 * KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_ENTER) {
-	 * logger.info("Got keypress from genus field"); tabToNext(comp); } } }
-	 */
 	protected boolean isTabFocusable(Component c) {
 		return focusPolicy.accept(c);
 	}
@@ -589,9 +514,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	public void populateFields(IdentifiedObject currentObject) {
 		if (!(currentObject instanceof OBOClass))
 			return;
-		Iterator it = getRelationshipList().iterator();
-		while (it.hasNext()) {
-			Link link = (Link) it.next();
+		for(Link link : getRelationshipList()){
 			if (!((OBOClass) currentObject).getParents().contains(link)) {
 				((OBOClass) currentObject).atomicAddParent(link);
 			}
@@ -611,13 +534,8 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		this.oboClass = oboClass;
 		genusField.setValue(null);
 		linkListPanel.removeAll();
-
-//		logger.info("IntersectionPanel.setClass: parents of " + oboClass + " = "
-//		+ oboClass.getParents());
-
-		Iterator it = oboClass.getParents().iterator();
-		while (it.hasNext()) {
-			OBORestriction link = (OBORestriction) it.next();
+		for(Object o : oboClass.getParents()){
+			OBORestriction link = (OBORestriction) o;
 			if (!link.completes())
 				continue;
 			LinkedObject parent = link.getParent();
@@ -630,12 +548,23 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 				addDiscriminating((OBOClass) parent, link.getType());
 			}
 		}
-
 		repaint();
 	}
 
-	protected void setGenus(OBOClass genusTerm) {
+	/**
+	 * setGenusTerm
+	 * Set selection from drop down menu (combobox) and action listener for -> Go to Genus Term
+	 * */
+	protected void setGenusTerm(final OBOClass genusTerm) {
 		genusField.setValue(genusTerm);
+		if (selectGenusActionListener != null)
+			selectGenusButton.removeActionListener(selectGenusActionListener);
+		selectGenusActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
+			}
+		};
+		selectGenusButton.addActionListener(selectGenusActionListener);
 	}
 
 	protected void tabToNext() {
@@ -657,15 +586,13 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		comp.transferFocusBackward();
 	}
 
-//	if cotton ball does not select genus in OTE use genusSelectListener and install and uninstallListeners	
-//	@Override
-//	public void uninstallListeners() {
-//	genusSelectButton.removeActionListener(genusSelectListener);
-//	}
-
 	@Override
 	public boolean useSubLayout() {
 		return false;
+	}
+
+	public String getID() {
+		return "CROSSPRODUCT_EDITOR";
 	}
 
 }
