@@ -4,12 +4,15 @@ This is the core GOBO::DBIC::GODBModel class. It is responsible for environment
 and getting in all of the install-time DB meta data. Most other tasks
 should be left to subclasses.
 
-Testing for now:
-perl -I /home/sjcarbon/local/src/svn/geneontology/go-moose t/connect.t
+Testing for now, example:
+perl -I /home/user/local/src/svn/geneontology/go-moose t/connect.t
 
 =cut
 
 package GOBO::DBIC::GODBModel;
+
+our $VERSION='0.01';
+
 
 ##
 BEGIN {
