@@ -1,0 +1,8 @@
+Testing:
+If you wish to have tests done, you must at least make sure that the
+variables GO_DBNAME and GO_DBHOST are in your environemt. Otherwise,
+some tests will be ignored.
+
+Debian:
+The module seems ready to be used by dh-make-perl to package. If there
+are any problems, please contact the upstream maintainer.
