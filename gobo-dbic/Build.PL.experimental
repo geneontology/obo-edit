@@ -1,0 +1,39 @@
+####
+#### BUG: Due to differences in file layout with Module::Builder, a
+#### link from ./ -> lib is necessary to run. Will work on fixing
+#### without explicit layout remapping in pm_files.
+####
+#### NOTE: If you wish to have tests done, you must at least make sure
+#### that the variables GO_DBNAME and GO_DBHOST are in your
+#### environemt. Otherwise, some tests will be ignored.
+####
+
+use strict;
+use Module::Build;
+
+my $build = Module::Build->new
+  (
+   module_name => 'GOBO::DBIC::GODBModel',
+   #dist_name => 'GOBO-DBIC-GODBModel',
+   dist_author =>
+   ['Seth Carbon <sjcarbon@cpan.org>'],
+   license => 'open_source',
+   dist_abstract =>'DBIC wrapper and related for the Gene Ontology database.',
+   requires =>
+   {
+    'perl' => '5.6.0',
+    'Data::Dumper' => 0,
+    'DBIx::Class::Schema' => 0,
+   },
+   build_requires =>
+   {
+    'Test::More' => 0,
+   },
+## TODO: experiment with automatic remapping to get around layout problems.
+#    pm_files =>
+#    {
+#     'GODBModel.pm' => 'GOBO/DBIC/GODBModel.pm',
+#    },
+
+  );
+$build->create_build_script;
