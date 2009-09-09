@@ -14,7 +14,7 @@
    :kvetch
    :string-merge
    :join-strings
-   :generate-hash))
+   :generate-flat-hash))
 (in-package :bbop-utils)
 
 
@@ -59,8 +59,20 @@
 
 ;; BUG: needs another version to be smarter when entering dupe keys so
 ;; things get turned into an array...
-(defun generate-hash (list)
+(defun generate-flat-hash (list)
+  "Creates a sensible hash out of the form '((1 . 2) (3 . 4) (3 . 5)). Values are stored as atoms, unless there is a collision, then a list is created."
   (let ((hash (make-hash-table)))
     (loop for item in list
-       do (setf (gethash (car item) hash) (cdr item)))
-  hash))
+	  ;;do (setf (gethash (car item) hash) (cdr item)))
+	  do (let* ((key (car item))
+		    (val (cdr item)))
+		    (multiple-value-bind (hval hval-extant-p)
+			(gethash key hash)
+		      (cond
+		       ((and hval-extant-p (listp hval))
+			(setf (gethash key hash) (cons val hval)))
+		       (hval-extant-p
+			(setf (gethash key hash) (list val hval)))
+		       (t
+			  (setf (gethash key hash) val))))))
+    hash))
