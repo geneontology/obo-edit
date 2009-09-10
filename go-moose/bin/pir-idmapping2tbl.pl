@@ -9,11 +9,11 @@ while (<>) {
     my @vals = split(/\t/,$_);
     $uniprot = $vals[0];
     wpair('NCBIGene', split(/;\s+/,$vals[2]));
-    wpair('refseq', split(/;\s+/,$vals[3]));
-    wpair('gi', split(/;\s+/,$vals[4]));
-    wpair('ensembl', split(/;\s+/,$vals[18]));
-    wpair('embl', split(/;\s+/,$vals[20]));
-    wpair('emblpr', split(/;\s+/,$vals[21]));
+    wpair('RefSeq', split(/;\s+/,$vals[3]));
+    wpair('NCBI_GI', split(/;\s+/,$vals[4]));
+    wpair('ENSEMBL', split(/;\s+/,$vals[18]));
+    wpair('GenBank', split(/;\s+/,$vals[20]));  # actually GenBank/EMBL/DDBJ
+    wpair('protein_id', split(/;\s+/,$vals[21]));
 }
 exit 0;
 
