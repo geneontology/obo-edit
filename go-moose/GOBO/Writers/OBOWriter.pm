@@ -9,6 +9,8 @@ sub write_header {
     my $self = shift;
     my $g = $self->graph;
     $self->tagval('format-version','1.2');
+    return unless $g;
+
     $self->tagval(data_version => $g->version) if $g->version;
     $self->tagval(date=>sprintf("%s %02d:%02d",$g->date->dmy(':'),$g->date->hour,$g->date->minute)) if $g->date;
     my $pvm = $g->property_value_map || {};
@@ -64,6 +66,12 @@ sub write_stanza {
     $self->tagval('id',$node->id);
     $self->tagval('name',$node->label);
     $self->tagval('namespace',$node->namespace);
+
+    if ($node->can('types')) {
+        $self->tagval('instance_of', $_) foreach @{$node->types || []};
+    }
+
+
     $self->tagval('alt_id',$_) foreach sort @{$node->alt_ids || []};
     if ($node->can('definition') && $node->definition) {
         $self->ntagval('def', _quote($node->definition), $node->definition_xrefs || [])
@@ -71,7 +79,7 @@ sub write_stanza {
     $self->tagval('comment',$node->comment);
     $self->tagval('subset',$_->id) foreach sort { $a->id cmp $b->id || $a->label cmp $b->label } @{$node->subsets || []};
     $self->ntagval('synonym',
-        _quote($_->label),$_->scope,$_->type,$_->xrefs || []) foreach sort { $a->label cmp $b->label } @{$node->synonyms || []};
+        _quote($_->label),$_->scope || 'RELATED',$_->type,$_->xrefs || []) foreach sort { $a->label cmp $b->label } @{$node->synonyms || []};
 
     $self->tagval('xref',$_) foreach (sort @{$node->xrefs || []});
 
@@ -262,6 +270,7 @@ sub set_referenced {
 
 sub _quote {
     my $s = shift;
+    $s =~ s/\\/\\\\/g; # e.g. Dmel\CR32864
     $s =~ s/\"/\\\"/g;
     return sprintf('"%s"',$s);
 }

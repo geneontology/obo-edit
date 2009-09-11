@@ -11,7 +11,7 @@ GOBO::Parsers::OBOParserDispatchHash
 
 =head1 DESCRIPTION
 
-An GOBO::Parsers::Parser that parses OBO Files.
+An L<GOBO::Parsers::Parser> that parses OBO Files.
 
 Mostly identical to GOBO::Parsers::OBOParser but uses a dispatch table rather than an if/else cascade
 
