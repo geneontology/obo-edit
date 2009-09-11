@@ -1,5 +1,5 @@
 use Test;
-plan tests => 0;
+plan tests => 1;
 use strict;
 use GOBO::Graph;
 use GOBO::Statement;
@@ -9,10 +9,11 @@ use GOBO::Node;
 use GOBO::Parsers::OBOParser;
 use GOBO::Writers::OBOWriter;
 use GOBO::InferenceEngine;
-use GOBO::DBIC::GODBModel::Query;
-use GOBO::AmiGO::Indexes::AmiGOStatementIndex;
+#use GOBO::DBIC::GODBModel::Query;
+#use GOBO::AmiGO::Indexes::AmiGOStatementIndex;
 use FileHandle;
 
+ok(1);
 exit 0;
 
 ## Constructor.
