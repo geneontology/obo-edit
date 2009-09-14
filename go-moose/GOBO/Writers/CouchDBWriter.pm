@@ -12,10 +12,10 @@ sub write_stanza {
     my $json = encode_json $doc;
     my $id = $doc->{id};
     my $db_url = $self->db_url;
-    my $cmd = "curl -X PUT $db_url/$id -d '$json'";
-    print STDERR "$cmd\n";
-    system($cmd);
-    
+    my @cmd = ("curl", "-X", "PUT", "$db_url/$id", "-d", $json);
+    my $cmd = join ' ', @cmd;
+    print STDERR "Command: $cmd\n";
+    system(@cmd);
 }
 
 1;
