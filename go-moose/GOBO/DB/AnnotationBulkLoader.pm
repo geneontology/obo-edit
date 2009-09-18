@@ -6,6 +6,7 @@ use Carp;
 
 has dbh => ( is=>'rw', isa=>'DBI' );
 
+# TODO: allow splitting of file if too big; e.g. on taxonID, or something with even distribution
 sub bulkload_file {
     my $self = shift;
     my $file = shift;
@@ -31,7 +32,10 @@ sub index_gaf_table {
 
 sub create_gaf_table {
     my $self = shift;
+
+    # this table is not used any place other than bulkloading, so we can drop and re-create each time
     $self->do("DROP TABLE gaf_table IF EXISTS");
+
     $self->do(qq[
 CREATE TABLE load_gaf (
        -- following columns bulkloaded:
@@ -53,7 +57,7 @@ CREATE TABLE load_gaf (
         properties  VARCHAR(255) DEFAULT '',
         gpform  VARCHAR(255) DEFAULT '',
 
-       -- these are updated based on db contents:
+       -- these are not loaded directly but are updated as part of the load process
         gene_product_dbxref_id  INT DEFAULT NULL,
         gene_product_species_id  INT DEFAULT NULL,
         gene_product_id  INT DEFAULT NULL,
@@ -119,6 +123,18 @@ GOBO::DB::AnnotationBulkLoader
   $a->bulkload_file("gene_association.foo");
 
 =head1 DESCRIPTION
+
+Bulkloads a gene association file into a GODB. 
+
+* load gene_association file DIRECTLY into a denormalized table that mirrors the GAF structure
+* run SQL INSERTs and UPDATEs to load into the normalized tables
+
+=head2 Previous versions
+
+Originally loading was via DBStag/go-db-perl
+
+Later replaced by bulkload.pm in go-db-perl
+
 
 
 =cut
