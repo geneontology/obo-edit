@@ -327,6 +327,11 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 
 	}
 	
+	public void removeLinks(Collection<Link> links) {
+		// TODO Auto-generated method stub
+
+	}
+	
 	protected void setEquivalentClasses() {
 		for (IdentifiedObject lo : objectToEquivATermSet.keySet()) {
 			String id = lo.getID();
@@ -432,6 +437,12 @@ public class PelletWrappedReasoner extends AbstractReasoner {
 
 	@Override
 	protected void doReasoning() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void doAddLinks(Collection<Link> links) {
 		// TODO Auto-generated method stub
 		
 	}

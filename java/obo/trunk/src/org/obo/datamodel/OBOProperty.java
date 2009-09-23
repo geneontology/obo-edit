@@ -40,6 +40,51 @@ public interface OBOProperty extends OBOObject {
 			return true;
 		}
 	};
+	
+	public static final OBOProperty HAS_PART = new OBOPropertyImpl("OBO_REL:has_part",
+			null) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+		{
+			this.name = "has_part";
+		}
+
+		@Override
+		public boolean isTransitive() {
+			return false;
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return false;
+		}
+	};
+	
+	public static final OBOProperty PART_OF = new OBOPropertyImpl("OBO_REL:part_of",
+			null) {
+		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+		{
+			this.name = "part_of";
+		}
+
+		@Override
+		public boolean isTransitive() {
+			return false;
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return false;
+		}
+	};
+	
 
 	public static final OBOProperty DISJOINT_FROM = new OBOPropertyImpl(
 			"disjoint_from", null) {
@@ -261,7 +306,7 @@ public interface OBOProperty extends OBOObject {
 	public static final OBOProperty[] BUILTIN_TYPES = { IS_A, DISJOINT_FROM,
 							    UNION_OF, INVERSE_OF, TRANSITIVE_OVER};
     // 4/11/08: Don't make these builtin
-//							    REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
+    //REGULATES, NEGATIVELY_REGULATES, POSITIVELY_REGULATES};
 
 	public void setCyclic(boolean cyclic);
 

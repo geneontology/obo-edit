@@ -46,7 +46,6 @@ MutableLinkDatabase {
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
-		logger.debug("DefaultMutableLinkDatabase.getObjects");
 		if (objects == null)
 			return Collections.emptySet();
 		else
@@ -179,7 +178,6 @@ MutableLinkDatabase {
 	}
 
 	public IdentifiedObject getObject(String id) {
-		logger.debug("DefaultMutableLinkDatabase.getObject");
 		if (index != null)
 			return index.getObject(id);
 		else if (objects != null)

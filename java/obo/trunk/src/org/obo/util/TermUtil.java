@@ -337,6 +337,7 @@ public class TermUtil {
 			if (io instanceof LinkedObject) {
 				LinkedObject lo = (LinkedObject) io;
 				if (algorithm.isRoot(lo)) {
+//					logger.debug("TermUtil.detectRoots - adding as root: " + lo);
 					outSet.add((LinkedObject) io);
 				}
 			}
@@ -820,9 +821,9 @@ public class TermUtil {
 			boolean includeObsoletes, boolean includeInstances) {
 		rootAlgorithm.setLinkDatabase(linkDatabase);
 		Collection<LinkedObject> out = new LinkedList<LinkedObject>();
-		Iterator it = linkDatabase.getObjects().iterator();
-		while (it.hasNext()) {
-			IdentifiedObject io = (IdentifiedObject) it.next();
+		
+		for(IdentifiedObject io : linkDatabase.getObjects()){
+
 			if (!(io instanceof LinkedObject))
 				continue;
 			if (!includeProperties && TermUtil.isProperty(io))

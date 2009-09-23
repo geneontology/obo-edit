@@ -96,6 +96,12 @@ public class DefaultHistoryList implements SessionHistoryList {
 	public void addItem(HistoryItem item) {
 		historyList.add(item);
 	}
+	
+	public void addItems(Collection<HistoryItem> items) {
+		for(HistoryItem item : items){
+			historyList.add(item);	
+		}
+	}
 
 	public void removeItem(HistoryItem item) {
 		historyList.remove(item);

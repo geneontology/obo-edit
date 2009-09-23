@@ -56,9 +56,10 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	
 	protected long expTime = 0;
 
-
 	protected Collection<ReasonerListener> reasonerListeners = new LinkedList<ReasonerListener>();
 
+	protected Collection links;
+	
 	public AbstractReasoner() {
 	}
 
@@ -72,6 +73,8 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 	protected abstract void doReasoning();
 
 	protected abstract void doAddLink(Link link);
+	
+	protected abstract void doAddLinks(Collection<Link> links);
 
 	protected MutableLinkDatabase createImpliedLinkDatabase(
 			LinkDatabase linkDatabase) {
@@ -203,6 +206,7 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	public Collection<Link> getParents(LinkedObject lo) {
 		if (!storeGivenLinks) {
+			//get direct and implied parents
 			Collection<Link> given = linkDatabase.getParents(lo);
 			Collection<Link> impliedParents = impliedLinkDatabase.getParents(lo);
 			Collection<Link> out = new LinkedHashSet<Link>(given.size()
@@ -244,6 +248,12 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	protected void cleanupReasoner() {
 		fireDone();
+		running = false;
+	}
+	
+	public void addLinks(Collection<Link> links){
+		running = true;
+		doAddLinks(links);
 		running = false;
 	}
 

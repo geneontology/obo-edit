@@ -118,6 +118,18 @@ public interface ReasonedLinkDatabase extends LinkDatabase, ProgressValued {
 	 * @param link
 	 */
 	public void addLink(Link link);
+	
+	/**
+	 * Adds a collection of links to this {@link ReasonedLinkDatabase}. Most reasoners will
+	 * just call {@link #recache()} to implement this method, but reasoners that
+	 * can dynamically integrate new information will need to override this
+	 * method.
+	 * 
+	 * @param Collection<Link> links
+	 */
+	public void addLinks(Collection<Link> links);
+	
+	
 
 	/**
 	 * Removes a link from this {@link ReasonedLinkDatabase}. Most reasoners
@@ -128,6 +140,16 @@ public interface ReasonedLinkDatabase extends LinkDatabase, ProgressValued {
 	 * @param link
 	 */
 	public void removeLink(Link link);
+	
+	/**
+	 * Removes a collection of links from this {@link ReasonedLinkDatabase}. Most reasoners
+	 * will just call {@link #recache()} to implement this method, but reasoners
+	 * that can dynamically integrate new information will need to override this
+	 * method.
+	 * 
+	 * @param link
+	 */
+	public void removeLinks(Collection<Link> link);
 
 	/**
 	 * Reruns the reasoning process implemented by this
@@ -150,4 +172,6 @@ public interface ReasonedLinkDatabase extends LinkDatabase, ProgressValued {
 	public void addReasonerListener(ReasonerListener listener);
 
 	public void removeReasonerListener(ReasonerListener listener);
+
+	
 }

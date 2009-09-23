@@ -1,5 +1,7 @@
 package org.obo.reasoner.impl;
 
+import java.util.Collection;
+
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBORestriction;
@@ -43,15 +45,73 @@ public class ReasonerOperationModel implements OperationModel {
 	public ReasonedLinkDatabase getReasoner() {
 		return reasoner;
 	}
-	
+
 	public void addLockstepModel(OperationModel model) {
 	}
-	
+
 	public void removeLockstepModel(OperationModel model) {
 	}
 
+	/**
+	 * apply multiple items
+	 * */
+	public OperationWarning apply(Collection<HistoryItem> items) {
+		logger.debug("ReasonerOperationModel.apply multiple items");
+		Collection addlinks = null;
+		Collection rmlinks = null;
+
+		for(HistoryItem item : items){
+			if (items instanceof CreateLinkHistoryItem) {
+				CreateLinkHistoryItem tchi = (CreateLinkHistoryItem) item;
+				StringRelationship sr = new StringRelationship(
+						tchi.getTarget(), tchi.getTypeID(), tchi.getParentID());
+				Link tr = HistoryUtil.createRealRel(session, sr);
+				addlinks.add(tr);
+			}
+
+			else if (item instanceof DeleteLinkHistoryItem) {
+				DeleteLinkHistoryItem dlhi = (DeleteLinkHistoryItem) item;
+				StringRelationship sr = dlhi.getRel();
+				Link link = HistoryUtil.createRealRel(session, sr);
+				rmlinks.add(link);
+			} 
+			else if (item instanceof CompletesHistoryItem) {
+				CompletesHistoryItem chi = (CompletesHistoryItem) item;
+				Link link = HistoryUtil.getRealRel(session, chi.getRel());
+				setCompleteness(link, !chi.getOldCompletes());
+			} 
+			else if (item instanceof TermMacroHistoryItem) {
+				continue;
+				// TODO: find a cleaner way of doing this. Reasoner interface should expose what is required
+				// incremental reasoning.
+				// TODO: what about when not in a macro?
+
+			}
+
+		}
+		if(addlinks != null)
+			reasoner.addLinks(addlinks);
+
+
+		if(rmlinks != null)
+			reasoner.removeLinks(rmlinks);
+		
+		if (reasoner instanceof RuleBasedReasoner) {
+			((RuleBasedReasoner) reasoner).findNewImplications();
+		}
+		else 
+			logger.debug("reasoner not instance of RBR");
+
+		return null;
+	}
+
+	/**
+	 * apply single item
+	 * */
 	public OperationWarning apply(HistoryItem item) {
+		logger.debug("ReasonerOperationModel.apply");
 		if (item instanceof CreateLinkHistoryItem) {
+			logger.debug("apply CreateLinkHistoryItem");
 			CreateLinkHistoryItem tchi = (CreateLinkHistoryItem) item;
 			StringRelationship sr = new StringRelationship(
 					tchi.getTarget(), tchi.getTypeID(), tchi.getParentID());
@@ -64,6 +124,7 @@ public class ReasonerOperationModel implements OperationModel {
 			 */
 			reasoner.addLink(tr);
 		} else if (item instanceof DeleteLinkHistoryItem) {
+			logger.debug("apply DeleteLinkHistoryItem");
 			DeleteLinkHistoryItem dlhi = (DeleteLinkHistoryItem) item;
 			StringRelationship sr = dlhi.getRel();
 
@@ -76,10 +137,12 @@ public class ReasonerOperationModel implements OperationModel {
 			 */
 			reasoner.removeLink(link);
 		} else if (item instanceof CompletesHistoryItem) {
+			logger.debug("apply CompletesHistoryItem");
 			CompletesHistoryItem chi = (CompletesHistoryItem) item;
 			Link link = HistoryUtil.getRealRel(session, chi.getRel());
 			setCompleteness(link, !chi.getOldCompletes());
 		} else if (item instanceof TermMacroHistoryItem) {
+			logger.debug("apply TermMacroHistoryItem");
 			// TODO: find a cleaner way of doing this. Reasoner interface should expose what is required
 			// incremental reasoning.
 			// TODO: what about when not in a macro?
@@ -87,9 +150,10 @@ public class ReasonerOperationModel implements OperationModel {
 				((RuleBasedReasoner) reasoner).findNewImplications();
 			}
 		} else {
-			// 
+			//
+			logger.debug("reasoner not instance of RBR");
 		}
-		
+
 		return null;
 	}
 
