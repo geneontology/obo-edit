@@ -8,11 +8,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
 use GOBO::Graph;
-use GOBO::Statement;
-use GOBO::LinkStatement;
-use GOBO::NegatedStatement;
-use GOBO::Node;
-use GOBO::Parsers::OBOParser;
+use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::InferenceEngine;
 use GOBO::Writers::OBOWriter;
 

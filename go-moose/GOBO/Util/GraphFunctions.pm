@@ -11,161 +11,6 @@ use GOBO::InferenceEngine;
 
 use Data::Dumper;
 
-# parse the options from the command line
-sub parse_options {
-	my $args = shift;
-
-	if (!$args)
-	{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
-	}
-
-	my $opt;
-	while (@$args && $args->[0] =~ /^\-/) {
-		my $o = shift @$args;
-		if ($o eq '-i' || $o eq '--ontology') {
-			if (@$args && $args->[0] !~ /^\-/)
-			{	$opt->{input} = shift @$args;
-			}
-		}
-		elsif ($o eq '-s' || $o eq '--subset') {
-			while (@$args && $args->[0] !~ /^\-/)
-			{	my $s = shift @$args;
-				$opt->{subset}{$s}++;
-			}
-		}
-		elsif ($o eq '-o' || $o eq '--output') {
-			$opt->{output} = shift @$args if @$args && $args->[0] !~ /^\-/;
-		}
-		elsif ($o eq '-b' || $o eq '--basename') {
-			$opt->{basename} = shift @$args if @$args && $args->[0] !~ /^\-/;
-		}
-		elsif ($o eq '-c' || $o eq '--combined') {
-			## use a combination of more than one subset nodes
-			$opt->{combined} = 1;
-		}
-		elsif ($o eq '-a' || $o eq '--get_all_subsets') {
-			$opt->{get_all_subsets} = 1;
-		}
-		elsif ($o eq '-r' || $o eq '--regexp') {
-			# this option is "hidden" at the moment - enter a text string to be
-			# qr//'d and use as a regexp
-			$opt->{subset_regexp} = shift @$args if @$args && $args->[0] !~ /^\-/;
-		}
-		elsif ($o eq '-h' || $o eq '--help') {
-			system("perldoc", $0);
-			exit(0);
-		}
-		elsif ($o eq '-v' || $o eq '--verbose') {
-			$opt->{verbose} = 1;
-		}
-		else {
-			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
-		}
-	}
-	return $opt;
-}
-
-
-## process the input params
-sub check_options {
-	my $opt = shift;
-
-	if (!$opt)
-	{	die "Error: please ensure you have specified an input file, a subset, and an output file.\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";
-	}
-
-	my $errs;
-	if (!$opt->{input})
-	{	push @$errs, "specify an input file using -i /path/to/<file_name>";
-	}
-	elsif (! -e $opt->{input})
-	{	push @$errs, "the file " . $opt->{input} . " could not be found.\n";
-	}
-
-	if (!$opt->{get_all_subsets} && ! $opt->{subset_regexp} && !$opt->{subset})
-	{	push @$errs, "specify a subset using -s <subset_name>";
-	}
-
-	if (!$opt->{output} && !$opt->{basename})
-	{	push @$errs, "specify an output file using -o /path/to/<file_name>";
-	}
-
-	if ($opt->{basename} && $opt->{basename} !~ /SLIM_NAME/)
-	{	push @$errs, "specify a valid basename (containing SLIM_NAME) for the output files";
-	}
-
-	if (($opt->{subset} && scalar values %{$opt->{subset}} > 1)
-		|| $opt->{get_all_subsets}
-		|| $opt->{subset_regexp})
-	{	## if we have more than one subset, make sure that we have specified a base name for the file
-		if (!$opt->{combined} && !$opt->{basename})
-		{	push @$errs, "specify a base file name (containing SLIM_NAME) for the output files using -b /path/to/<file_name>";
-		}
-		elsif ($opt->{combined})
-		{	# only one output file if we're combining subsets
-			if (! $opt->{output})
-			{	push @$errs, "there should only be a single output file specified if subsets are to be combined";
-			}
-		}
-	}
-
-	my $cnt;
-	if ($opt->{subset_regexp})
-	{	eval { "" =~ /$opt->{subset_regexp}/; 1 };
-		if ($@)
-		{	push @$errs, "the regular expression specified was invalid: $@";
-		}
-		else
-		{	$opt->{subset_regexp} = qr/$opt->{subset_regexp}/;
-		}
-		$cnt++;
-	}
-	$cnt++ if $opt->{get_all_subsets};
-	$cnt++ if values %{$opt->{subset}};
-
-	# make sure we only have one subset-related criterion specified
-	if ($cnt && $cnt > 1)
-	{	push @$errs, "specify *either* named subset(s) ( '-s <subset_name>' )\n*or* to get all subsets ( '-a' )";
-	}
-
-	if ($opt->{output} && $opt->{basename})
-	{	## if we have any of the options which allow more than one subset
-		## and the combined flag is off, use 'basename'
-		if ((($opt->{subset} && scalar values %{$opt->{subset}} > 1)
-			|| $opt->{get_all_subsets} || $opt->{subset_regexp})
-			&& !$opt->{combined})
-		{	warn "Using file path specified by the '-b' / '--basename' option\n";
-		}
-		else
-		{	warn "Using file path specified by the '-o' / '--output' option\n";
-			delete $opt->{basename};
-		}
-	}
-
-	if ($errs && @$errs)
-	{	die "Error: please correct the following parameters to run the script:\n" . ( join("\n", map { " - " . $_ } @$errs ) ) . "\nThe help documentation can be accessed with the command\n\tgo-slimdown.pl --help\n";
-	}
-
-#	$options = $opt;
-#	return $opt;
-}
-
-
-sub get_graph {
-	my $args = shift;
-	my $options = $args->{options};
-
-	my $parser;
-	# parse the input file and check we get a graph
-	$parser = new GOBO::Parsers::OBOParserDispatchHash(file => $options->{input});
-	$parser->parse;
-	die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
-	print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
-
-	return $parser->graph;
-
-}
-
 
 =head2 get_subset_nodes
 
@@ -1157,5 +1002,69 @@ sub add_nodes_and_links_to_graph {
 	return $new_g;
 }
 
+
+=head2 load_mapping
+
+input:  mapping file in the format
+
+ term ID [tab] closest ancestral subset terms for each relationship [tab] all other ancestral terms
+
+ term [tab] r1 term, r1 term, r1 term; r2 term [tab] r1 term; r2 term, r2 term
+
+output: data structure in the form
+
+=cut
+
+sub load_mapping {
+	my $args = shift;
+	my $file = $args->{mapping_file};
+	my $data;
+
+	local $/ = "\n";
+	open(IN, '<' . $file) or die "The file ".$file." could not be opened: $!\nDying";
+	print "Loading $file...\n" if $args->{verbose};
+	while (<IN>)
+	{	if (/(.*?)\t(.+)/)
+		{	my $t = $1;
+			$t =~ s/(.*?), .+/$1/;
+			$data->{termlist}{$t}++;
+			my $rest = $2;
+			if ($rest =~ /obsolete/)
+			{	$data->{obsolete}{$t}++;
+			}
+			else
+			{	if ($rest =~ /(.*?)\t(.*)/)
+				{	my @closest = split(/[,;] /, $1);
+					my @all = split(/[,;] /, $2);
+
+					foreach (@closest)
+					{	if (/(.*?) (.+)/)
+						{	my ($rel, $term) = ($1, $2);
+							$data->{graph}{$t}{$rel}{$term} = 1;
+						}
+						else
+						{	print STDERR "Doesn't match pattern! $_\n";
+						}
+					}
+					foreach (@all)
+					{	if (/(.*?) (.+)/)
+						{	my ($rel, $term) = ($1, $2);
+							$data->{all}{$t}{$rel}{$term} = 1;
+						}
+						else
+						{	print STDERR "Doesn't match pattern! $_\n";
+						}
+					}
+				}
+			}
+		}
+	}
+
+	print "Finished loading term file.\n" if $args->{verbose};
+	close(IN);
+
+
+	return $data;
+}
 
 1;
