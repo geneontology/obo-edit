@@ -1,5 +1,6 @@
 package org.oboedit.gui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -7,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -15,7 +17,9 @@ import javax.swing.table.TableColumnModel;
 
 import org.bbop.swing.ReselectListSelectionModel;
 import org.obo.datamodel.IdentifiedObject;
+import org.obo.datamodel.LinkedObject;
 import org.obo.query.impl.SearchHit;
+import org.oboedit.controller.SelectionManager;
 
 import org.apache.log4j.*;
 
@@ -26,6 +30,8 @@ public class SearchResultsTable extends JTable {
 
 	protected SearchResultsTableModel<?> searchModel;
 	protected long maximumFormattingTime = 1000;
+	/** Light blue color. */
+	public static final Color LIGHT_BLUE = new Color(210,220,240);
 
 	protected static class SearchResultsRenderer extends
 	DefaultTableCellRenderer {
@@ -35,6 +41,7 @@ public class SearchResultsTable extends JTable {
 
 		public SearchResultsRenderer(String... expressions) {
 			columnExpressions = expressions;
+			
 		}
 
 		public Component getTableCellRendererComponent(JTable table,
@@ -46,8 +53,24 @@ public class SearchResultsTable extends JTable {
 			Component c = super.getTableCellRendererComponent(table, value,
 					isSelected, hasFocus, row, column);
 			setText(provider.getLabel(null, io));
+			
+			//alternate blue and white row colors 
+//			if (row % 2 == 0 && !isSelected) {
+			if (isSelected) {
+				c.setBackground(Color.blue);
+				c.setForeground(Color.black);
+			} 
+			else if(row %2 ==0){
+				c.setBackground(LIGHT_BLUE);
+				c.setForeground(Color.black);
+			}
+			else{
+				c.setBackground(Color.white);
+				c.setForeground(Color.black);
+			}
 			return c;
 		}
+		
 	}
 
 	public SearchResultsTable(SearchResultsTableModel<?> model,
@@ -58,9 +81,11 @@ public class SearchResultsTable extends JTable {
 			setDefaultRenderer(Object.class, new SearchResultsRenderer("$id$",
 			"$name$"));
 		}
+
 		setSelectionModel(new ReselectListSelectionModel());
 		getSelectionModel().addListSelectionListener(
 				searchModel.getSelectionListener(this));
+		
 		final JTableHeader header = getTableHeader();
 		header.addMouseListener(new MouseAdapter() {
 			@Override
@@ -117,10 +142,10 @@ public class SearchResultsTable extends JTable {
 					break;
 			}
 			if (model.columnHasMaxWidth(i)) {
-//				tc.setMinWidth(width + 10);
+				//				tc.setMinWidth(width + 10);
 				tc.setMinWidth(width-10);
 				// Don't restrict the maximum width
-//				tc.setMaxWidth(width + 10);
+				//				tc.setMaxWidth(width + 10);
 			}
 			tc.setPreferredWidth(width + 10);
 
