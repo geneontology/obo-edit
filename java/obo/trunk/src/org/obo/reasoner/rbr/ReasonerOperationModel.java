@@ -1,5 +1,7 @@
 package org.obo.reasoner.rbr;
 
+import java.util.Collection;
+
 import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.OBORestriction;
@@ -47,6 +49,21 @@ public class ReasonerOperationModel implements OperationModel {
 	}
 	
 	public void removeLockstepModel(OperationModel model) {
+	}
+	
+	public OperationWarning apply(Collection<HistoryItem> items) {
+		Collection<Link> links = null; 
+		for(HistoryItem item : items){
+			if (item instanceof CreateLinkHistoryItem) {
+				CreateLinkHistoryItem tchi = (CreateLinkHistoryItem) item;
+				StringRelationship sr = new StringRelationship(
+						tchi.getTarget(), tchi.getTypeID(), tchi.getParentID());
+				Link tr = HistoryUtil.createRealRel(session, sr);
+				links.add(tr);
+			} 
+		}
+		reasoner.addLinks(links);
+		return null;
 	}
 
 	public OperationWarning apply(HistoryItem item) {

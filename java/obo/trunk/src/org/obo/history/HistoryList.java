@@ -38,6 +38,11 @@ public interface HistoryList extends Serializable, Cloneable {
 	 * Adds a HistoryItem to the end of this history list
 	 */
 	public void addItem(HistoryItem item);
+	
+	/**
+	 * Adds a batch of HistoryItems to the end of this history list
+	 */
+	public void addItems(Collection<HistoryItem> items);
 
 	/**
 	 * Removes a history item from this history list

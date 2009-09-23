@@ -247,7 +247,9 @@ public class LinkPileReasoner extends AbstractReasoner {
 		rule.uninstall(this);
 	}
 
-	@Override
+	/**
+	 * doAddLink for LPR
+	 * */
 	protected void doAddLink(Link link) {
 		logger.debug("LinkPileReasoner.doAddLink");
 		linkPile.add(link);
@@ -255,6 +257,11 @@ public class LinkPileReasoner extends AbstractReasoner {
 			addExplanation(new GivenExplanation(link));
 		}
 		siftPile();
+	}
+	
+	protected void doAddLinks(Collection<Link> links) {
+		logger.debug("LinkPileReasoner.doAddLinks");
+		
 	}
 
 	protected Collection<Link> getLinkPile() {
@@ -513,6 +520,11 @@ public class LinkPileReasoner extends AbstractReasoner {
 					.addExplanation((AbstractExplanation) explanation);
 		}
 		// if not a ReasonerLink then it is presumably a given (asserted) link
+	}
+
+	public void removeLinks(Collection<Link> link) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -279,6 +279,54 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		return ReasonerUtil.isRedundant(this, link);
 	}
 
+	/**
+	 * adding multiple links
+	 * */
+	public void addLinks(Collection<Link> links) {
+		for(Link link : links){
+			if (link instanceof OBORestriction
+					&& ((OBORestriction) link).completes()) {
+				// adding a new complete link can cause some implied
+				// relationships to get removed, because the complete
+				// definition is now narrower
+
+				// so if you add a new complete link, delete all relationships
+				// that rely on a complete definition from link.getChild()
+
+				Collection<CompletenessExplanation> completeExplanations = new LinkedList<CompletenessExplanation>();
+				for (Link childLink : getChildren(link.getChild())) {
+					// Iterator it = getChildren(link.getChild()).iterator();
+					// while (it.hasNext()) {
+					// Link childLink = (Link) it.next();
+					for (Explanation exp : getExplanations(childLink)) {
+						if (exp.getExplanationType().equals(
+								ExplanationType.INTERSECTION)) {
+							completeExplanations.add((CompletenessExplanation) exp);
+						}
+					}
+				}
+				for (AbstractExplanation exp : completeExplanations) {
+					// it = completeExplanations.iterator();
+					// while (it.hasNext()) {
+					// AbstractExplanation exp = (AbstractExplanation) it.next();
+					reasonRemoval(exp, null);
+				}
+				internalAddLink(link);
+			} else {
+				/*
+				 * internalAddLink(link); explain(link,
+				 * Explanation.GIVEN_EXPLANATION);
+				 */
+				pushNewLink(link);
+			}
+			doCompleteChecks();
+			// fireDone();
+			debugMode = false;
+			
+		}
+
+	}
+
 	public void addLink(Link link) {
 		// fireStart();
 		if (link instanceof OBORestriction
@@ -319,6 +367,16 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 		doCompleteChecks();
 		// fireDone();
 		debugMode = false;
+	}
+	
+	public void removeLinks(Collection<Link> links) {
+		for(Link link : links){
+			// fireStart();
+			reasonRemoval(link);
+			doCompleteChecks();
+			// fireDone();
+		}
+
 	}
 
 	public void removeLink(Link link) {
@@ -1203,4 +1261,5 @@ public class ForwardChainingReasoner extends AbstractLinkDatabase implements
 	public Number getProgressValue() {
 		return progressVal;
 	}
+
 }

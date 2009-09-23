@@ -49,27 +49,45 @@ public interface RootAlgorithm {
 
 	public static final RootAlgorithm GREEDY = new AbstractRootAlgorithm() {
 		public boolean isRoot(LinkedObject lo) {
+			
 			if (lo instanceof Instance)
 				return true;
-
+				
 			for(Object parent : linkDatabase.getParents(lo)){
-				Relationship link = (Relationship) parent;
-				if (link instanceof Link && ((Link) link).getParent() instanceof DanglingObject)
+				Relationship parent_link = (Relationship) parent;
+				
+				//check for inverse relations when the LinkedObject does not have any parents 
+				// terms with inverse relations - part_of has_part relations might not be displayed as roots 
+				// ex: X --has_part--> Z INVERSE_OF Z --part_of --> X
+				for(Object child : linkDatabase.getChildren(lo)){
+					Relationship child_link = (Relationship) child;
+					
+					
+					if(parent_link.getType().getName().equals(OBOProperty.HAS_PART.getName())){
+		
+						if(child_link.getType().getName().equals(OBOProperty.PART_OF.getName())){			
+							return true;
+						}
+					}
+					
+				}
+				
+				if (parent_link instanceof Link && ((Link) parent_link).getParent() instanceof DanglingObject)
 					continue;
 
-				if (link instanceof Link)
-					if (TermUtil.isObsolete(((Link) link).getParent())
-							|| TermUtil.isObsolete(((Link) link).getType()))
+				if (parent_link instanceof Link)
+					if (TermUtil.isObsolete(((Link) parent_link).getParent())
+							|| TermUtil.isObsolete(((Link) parent_link).getType()))
 						continue;
 
-				if (link instanceof ValueLink && !(((ValueLink) link).getValue() instanceof IdentifiedObject)) {
+				if (parent_link instanceof ValueLink && !(((ValueLink) parent_link).getValue() instanceof IdentifiedObject)) {
 					continue;
 				}
 
-				if(link.getType().equals(OBOProperty.DISJOINT_FROM)){
+				if(parent_link.getType().equals(OBOProperty.DISJOINT_FROM)){
 					continue;
 				}
-				if(link.getType().equals(OBOProperty.UNION_OF)){
+				if(parent_link.getType().equals(OBOProperty.UNION_OF)){
 					continue;
 				}
 				return false;

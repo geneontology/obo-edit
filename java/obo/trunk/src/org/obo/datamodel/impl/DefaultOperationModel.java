@@ -20,10 +20,130 @@ public class DefaultOperationModel implements OperationModel {
 	public void setSession(OBOSession session) {
 		this.session = session;
 	}
+	
+	// applying multiple items
+	public OperationWarning apply(Collection<HistoryItem> items) {
+		OperationWarning warning = null;
+		for(HistoryItem item : items){
+		logger.debug(" DefaultOperationModel: apply =" + items);
+		if (items instanceof CreateObjectHistoryItem)
+			warning = apply((CreateObjectHistoryItem) items);
+		else if (items instanceof CreateLinkHistoryItem)
+			warning = apply((CreateLinkHistoryItem) items);
+		else if (items instanceof CreateIntersectionLinkHistoryItem)
+			warning = apply((CreateIntersectionLinkHistoryItem) items);
+		else if (items instanceof DeleteLinkHistoryItem)
+			warning = apply((DeleteLinkHistoryItem) items);
+		else if (items instanceof ObsoleteObjectHistoryItem)
+			warning = apply((ObsoleteObjectHistoryItem) items);
+		else if (items instanceof TermMacroHistoryItem)
+			warning = apply((TermMacroHistoryItem) items);
+		else if (items instanceof LinkTypeHistoryItem)
+			warning = apply((LinkTypeHistoryItem) items);
+		else if (items instanceof NamespaceHistoryItem)
+			warning = apply((NamespaceHistoryItem) items);
+		else if (items instanceof NameChangeHistoryItem)
+			warning = apply((NameChangeHistoryItem) items);
+		else if (items instanceof DefinitionChangeHistoryItem)
+			warning = apply((DefinitionChangeHistoryItem) items);
+		else if (items instanceof TermSubsetHistoryItem)
+			warning = apply((TermSubsetHistoryItem) items);
+		else if (items instanceof SynonymTypeHistoryItem)
+			warning = apply((SynonymTypeHistoryItem) items);
+		else if (items instanceof ChangeSynTypeHistoryItem)
+			warning = apply((ChangeSynTypeHistoryItem) items);
+		else if (items instanceof ChangeSynScopeHistoryItem)
+			warning = apply((ChangeSynScopeHistoryItem) items);
+		else if (items instanceof TermNamespaceHistoryItem)
+			warning = apply((TermNamespaceHistoryItem) items);
+		else if (items instanceof AddDbxrefHistoryItem)
+			warning = apply((AddDbxrefHistoryItem) items);
+		else if (items instanceof DelDbxrefHistoryItem)
+			warning = apply((DelDbxrefHistoryItem) items);
+		else if (items instanceof AddSynonymHistoryItem)
+			warning = apply((AddSynonymHistoryItem) items);
+		else if (items instanceof DelSynonymHistoryItem)
+			warning = apply((DelSynonymHistoryItem) items);
+		else if (items instanceof CommentChangeHistoryItem)
+			warning = apply((CommentChangeHistoryItem) items);
+		else if (items instanceof SubsetChangeHistoryItem)
+			warning = apply((SubsetChangeHistoryItem) items);
+		else if (items instanceof SecondaryIDHistoryItem)
+			warning = apply((SecondaryIDHistoryItem) items);
+		else if (items instanceof NecessarilyTrueHistoryItem)
+			warning = apply((NecessarilyTrueHistoryItem) items);
+		else if (items instanceof InverseNecHistoryItem)
+			warning = apply((InverseNecHistoryItem) items);
+		else if (items instanceof CompletesHistoryItem)
+			warning = apply((CompletesHistoryItem) items);
+		else if (items instanceof RangeHistoryItem)
+			warning = apply((RangeHistoryItem) items);
+		else if (items instanceof DomainHistoryItem)
+			warning = apply((DomainHistoryItem) items);
+		else if (items instanceof AddReplacementHistoryItem)
+			warning = apply((AddReplacementHistoryItem) items);
+		else if (items instanceof RemoveReplacementHistoryItem)
+			warning = apply((RemoveReplacementHistoryItem) items);
+		else if (items instanceof CyclicHistoryItem)
+			warning = apply((CyclicHistoryItem) items);
+		else if (items instanceof CardinalityHistoryItem)
+			warning = apply((CardinalityHistoryItem) items);
+		else if (items instanceof SymmetricHistoryItem)
+			warning = apply((SymmetricHistoryItem) items);
+		else if (items instanceof TransitiveHistoryItem)
+			warning = apply((TransitiveHistoryItem) items);
+		else if (items instanceof TRNamespaceHistoryItem)
+			warning = apply((TRNamespaceHistoryItem) items);
+		else if (items instanceof CardinalityHistoryItem)
+			warning = apply((CardinalityHistoryItem) items);
+		else if (items instanceof MinCardinalityHistoryItem)
+			warning = apply((MinCardinalityHistoryItem) items);
+		else if (items instanceof MaxCardinalityHistoryItem)
+			warning = apply((MaxCardinalityHistoryItem) items);
+		else if (items instanceof AddConsiderHistoryItem)
+			warning = apply((AddConsiderHistoryItem) items);
+		else if (items instanceof RemoveConsiderHistoryItem)
+			warning = apply((RemoveConsiderHistoryItem) items);
+		else if (items instanceof AddPropertyValueHistoryItem)
+			warning = apply((AddPropertyValueHistoryItem) items);
+		else if (items instanceof DeletePropertyValueHistoryItem)
+			warning = apply((DeletePropertyValueHistoryItem) items);
+		else
+			warning = new OperationWarning("Unknown history item " + items
+					+ " found of type " + items.getClass() + "!");
+	}
+		
+		// lockstepModels are typically ReasonerOperationModels.
+		// these need to know about changes to keep in sync for
+		// incremental reasoning
+		for (OperationModel lockstepModel : lockstepModels) {
+			OperationWarning lwarning = lockstepModel.apply(items);
+			if (lwarning != null)
+				warning.addWarning(lwarning);
+		}
+		for(HistoryItem item : items){
+			if (item.getTarget() != null) {
+				IdentifiedObject io = getRealIDObject(item.getTarget());
+				if (io instanceof ModificationMetadataObject) {
+					((ModificationMetadataObject) io)
+							.setModificationDate(new Date());
+					if (session.getCurrentUser() != null) {
+						((ModificationMetadataObject) io).setModifiedBy(session
+								.getCurrentUser());
+					}
+				}
+			}
+		}
+
+		return warning;
+	}
+	
+	
+	
 
 	public OperationWarning apply(HistoryItem item) {
 		OperationWarning warning;
-		//System.out.println("DefaultOperationModel: apply =" + item);
+		logger.debug(" DefaultOperationModel: apply =" + item);
 		if (item instanceof CreateObjectHistoryItem)
 			warning = apply((CreateObjectHistoryItem) item);
 		else if (item instanceof CreateLinkHistoryItem)

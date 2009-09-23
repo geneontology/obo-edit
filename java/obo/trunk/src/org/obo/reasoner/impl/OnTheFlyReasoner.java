@@ -293,6 +293,10 @@ public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLi
 	public void addLink(Link link) {
 	}
 
+	public void addLinks(Collection<Link> links){
+		
+	}
+	
 	public void cancel() {
 	}
 
@@ -322,6 +326,9 @@ public class OnTheFlyReasoner extends AbstractLinkDatabase implements ReasonedLi
 	}
 
 	public void removeLink(Link link) {
+	}
+	
+	public void removeLinks(Collection<Link> link) {
 	}
 
 	public void setLinkDatabase(LinkDatabase linkDatabase) {
