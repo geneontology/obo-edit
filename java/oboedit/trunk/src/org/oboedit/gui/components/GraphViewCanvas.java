@@ -87,7 +87,8 @@ FilteredRenderable {
 	public static class GraphViewConfiguration implements
 	ComponentConfiguration {
 		protected boolean showAnimations = false;
-		protected boolean succinctDisplay = true;
+		// trim reasoner-generated (implied) links from display
+		protected boolean trimImpliedLinks = true;
 		protected boolean showPerType = true;
 		protected boolean allTypes = true;
 		protected boolean nonTransitive = false;
@@ -102,12 +103,12 @@ FilteredRenderable {
 			this.showAnimations = showAnimations;
 		}
 
-		public boolean isSuccinctDisplay() {
-			return succinctDisplay;
+		public boolean istrimImpliedLinksDisplay() {
+			return trimImpliedLinks;
 		}
 
-		public void setSuccinctDisplay(boolean succinctDisplay) {
-			this.succinctDisplay = succinctDisplay;
+		public void settrimImpliedLinksDisplay(boolean trimImpliedLinksDisplay) {
+			this.trimImpliedLinks = trimImpliedLinksDisplay;
 		}
 
 		public boolean isShowPerType() {
@@ -177,13 +178,12 @@ FilteredRenderable {
 	Collection<LinkDatabaseCanvas> canvasList = new LinkedList<LinkDatabaseCanvas>();
 
 	protected JCheckBox showAnimations = new JCheckBox("Animate", false);
-	protected JCheckBox succinctCheckbox = new JCheckBox("Succinct", true);
-	protected JCheckBox showBreakdownBox = new JCheckBox(
-			"Show per-type panels", true);
-	protected JCheckBox allTypesBox = new JCheckBox("Show all types panel",
-			true);
-	protected JCheckBox nonTransitiveBox = new JCheckBox(
-			"Show non-transitive types", false);
+	// 
+	protected JCheckBox trimImpliedLinksCheckbox = new JCheckBox("Trim reasoner-generated (implied) links from display", true);
+	protected JCheckBox showBreakdownBox = new JCheckBox("Show per-type panels", true);
+	protected JCheckBox allTypesBox = new JCheckBox("Show all types panel",true);
+	protected JCheckBox nonTransitiveBox = new JCheckBox("Show non-transitive types", false);
+	
 	protected JTextArea htmlArea = new JTextArea();
 
 	protected static final String[] orientations = { "horizontal", "vertical" };
@@ -247,13 +247,15 @@ FilteredRenderable {
 //				logger.debug("reasoner: " + reasoner);
 				for (LinkedObject lo : terms) {
 					if(reasoner != null){
+						Collection parentsLinks = reasoner.getParents(lo);
 						for (Link link : reasoner.getParents(lo)) {
-							if (config.isNonTransitive()
-									|| link.getType().isTransitive())
+							if (config.isNonTransitive() || link.getType().isTransitive())
 								parents.add(link);
 						}
 					} else{
+						Collection parentLinks = SessionManager.getManager().getCurrentLinkDatabase().getParents(lo);
 						for (Link link : SessionManager.getManager().getCurrentLinkDatabase().getParents(lo)) {
+							if (config.isNonTransitive() || link.getType().isTransitive())
 								parents.add(link);
 						}
 					}
@@ -262,8 +264,7 @@ FilteredRenderable {
 				setProgressValue(currentProgress++ * 100 / totalCount);
 				if (isCancelled())
 					return;
-				LinkDatabase linkDatabase = createLinkDatabase(null, parents,
-						false);
+				LinkDatabase linkDatabase = createLinkDatabase(null, parents, false);
 				databases.put("All", linkDatabase);
 			}
 
@@ -275,15 +276,13 @@ FilteredRenderable {
 					setProgressValue(currentProgress++ * 100 / totalCount);
 					if (isCancelled())
 						return;
-					LinkDatabase linkDatabase = createLinkDatabase(type,
-							parents, config.isSuccinctDisplay());
+					LinkDatabase linkDatabase = createLinkDatabase(type,parents, config.istrimImpliedLinksDisplay());
 					databases.put(type.getID(), linkDatabase);
 				}
 			}
 			setProgressValue(100);
 			setResults(databases);
-//			logger.info("found paths in "
-//			+ (System.currentTimeMillis() - time));
+//			logger.info("found paths in " + (System.currentTimeMillis() - time));
 		}
 
 	}
@@ -295,7 +294,7 @@ FilteredRenderable {
 		configPanel.add(createPanel(showAnimations));
 		configPanel.add(createPanel(nonTransitiveBox));
 		configPanel.add(createPanel(showBreakdownBox));
-		configPanel.add(createPanel(succinctCheckbox));
+		configPanel.add(createPanel(trimImpliedLinksCheckbox));
 		Box orientationPanel = Box.createHorizontalBox();
 		orientationPanel.add(new JLabel("Panel orientation"));
 		orientationPanel.add(Box.createHorizontalStrut(10));
@@ -335,7 +334,7 @@ FilteredRenderable {
 		config.setShowAnimations(showAnimations.isSelected());
 		config.setNonTransitive(nonTransitiveBox.isSelected());
 		config.setShowPerType(showBreakdownBox.isSelected());
-		config.setSuccinctDisplay(succinctCheckbox.isSelected());
+		config.settrimImpliedLinksDisplay(trimImpliedLinksCheckbox.isSelected());
 		config.setOrientation(orientationChooser.getSelectedIndex());
 		config.setHTMLExpression(htmlArea.getText());
 		reload();
@@ -348,7 +347,7 @@ FilteredRenderable {
 		showAnimations.setSelected(config.isShowAnimations());
 		nonTransitiveBox.setSelected(config.isNonTransitive());
 		showBreakdownBox.setSelected(config.isShowPerType());
-		succinctCheckbox.setSelected(config.isSuccinctDisplay());
+		trimImpliedLinksCheckbox.setSelected(config.istrimImpliedLinksDisplay());
 		orientationChooser.setSelectedIndex(config.getOrientation());
 		htmlArea.setText(config.getHTMLExpression());
 	}
@@ -368,10 +367,10 @@ FilteredRenderable {
 	}
 
 	protected LinkDatabase createLinkDatabase(OBOProperty type,
-			Collection<Link> parents, boolean succinct) {
+			Collection<Link> parents, boolean trimImpliedLinks ) {
 		LinkDatabase linkDatabase;
-		// non succinct view
-		if (!succinct) {
+		// not trimming implied links from graph
+		if (!trimImpliedLinks) {
 			MutableLinkDatabase mutable = new DefaultMutableLinkDatabase(true);
 			for (Link link : parents) {
 					if (TermUtil.isImplied(link)) {
@@ -384,7 +383,7 @@ FilteredRenderable {
 				}
 
 			linkDatabase = mutable;
-		} else { // succinct view
+		} else { // succinct view - trimming implied links from graph
 			FilteredLinkDatabase filtered = new FilteredLinkDatabase(reasoner);
 			filtered.setLinkFilter(new LinkFilterImpl(type));
 			MaskedLinkDatabase collapsible = new MaskedLinkDatabase(filtered);

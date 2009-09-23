@@ -168,24 +168,31 @@ public class SessionManager {
 		reloadSession();
 	}
 	
-	public boolean getStepIncrementalReasoningStatus() {
-		logger.debug("SessionManager.getStepIncrementalReasoningStatus");
-		return Preferences.getPreferences().getStepIncrementalReasoningStatus();
+
+	// partial incremental reasoning where the reasonedlink database is topped off after completion of a task 
+	public boolean getStepIncReasoningStatus() {
+		logger.debug("SessionManager.getStepIncReasoningStatus");
+		return Preferences.getPreferences().getStepIncReasoningStatus();
 	}
-	//partial incremental reasoning where the reasonedlink database is topped off after completion of a task
-	public void setStepIncrementalReasoningStatus(final boolean isStepIncrementalOn){
-		logger.debug("SessionManager.setStepIncrementalReasoningStatus");
+	//
+	public void setStepIncReasoningStatus(final boolean isStepIncrementalOn){
+		logger.debug("SessionManager.setStepIncReasoningStatus");
 	}
 	
-	public boolean getIncrementalReasoningStatus() {
-		logger.debug("SessionManager.getIncrementalReasoningStatus");
-		return Preferences.getPreferences().getIncrementalReasoningStatus();
+	
+	public boolean getIncReasoningStatus() {
+		logger.debug("SessionManager.getIncReasoningStatus");
+		return Preferences.getPreferences().getIncReasoningStatus();
 	}
-	//continuous incremental reasoning
-	public void setIncrementalReasoningStatus(final boolean isIncrementalOn){
-		logger.debug("SessionManager.setIncrementalReasoningStatus");
+	
+	// continuous incremental reasoning
+	public void setIncReasoningStatus(final boolean isIncrementalOn){
+		logger.debug("SessionManager.setIncReasoningStatus");
 	}
 
+	/**
+	 * getUseReasoner - returns rasoner currently running
+	 * */
 	public boolean getUseReasoner() {
 		return Preferences.getPreferences().getUseReasoner();
 	}
@@ -282,6 +289,28 @@ public class SessionManager {
 				SelectionManager.setGlobalSelection(selection);
 		}
 	}
+	
+	/** doApply multiple history items*/
+	private void doApply(Collection<HistoryItem> items, boolean doSelect) {
+		session.getCurrentHistory().addItems(items);
+		OperationWarning warning = getOperationModel().apply(items);
+		for(HistoryItem item : items){
+			if (warning != null) {
+				Object[] params = { item, warning };
+			}
+			logger.debug("SessionManager.doApply " + item.toString() + ((warning != null) ? (" (warnings: " + warning + ")") : ""));
+
+			fireHistoryApplied(new HistoryAppliedEvent(this, item));
+
+			if (GUIUtil.getPostSelection(item) != null && doSelect) {
+
+				Selection selection = SelectionManager.resolveSelectionDanglers(
+						session, GUIUtil.getPostSelection(item));
+				if (SelectionManager.getManager().doPreSelectValidation(selection))
+					SelectionManager.setGlobalSelection(selection);
+			}
+		}		
+	}
 
 	public boolean canRedo() {
 		return redoHistoryItems.size() > 0;
@@ -300,6 +329,18 @@ public class SessionManager {
 		redoHistoryItems.clear();
 		unflushedChanges = true;
 	}
+	
+	public void apply(Collection<HistoryItem> items) {
+		apply(items, true);
+	}
+
+	public void apply(Collection<HistoryItem> items, boolean doSelect) {
+		doApply(items, doSelect);
+		redoHistoryItems.clear();
+		unflushedChanges = true;
+	}
+
+
 
 	protected void clearReasonerDatabase() {
 		if (reasoner != null) {
