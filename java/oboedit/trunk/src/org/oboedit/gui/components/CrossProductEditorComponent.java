@@ -58,12 +58,12 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 	protected OBOClass oboClass;
 	protected boolean showNameFields;
 	protected boolean createNewObject = false;
-	
+
 	protected JButton selectGenusButton;
 	protected ActionListener selectGenusActionListener;	
 
 	protected AutocompleteBox<IdentifiedObject> genusField = new AutocompleteBox<IdentifiedObject>(new TermAutocompleteModel());
-	
+
 	protected IntersectionPanelFocusPolicy focusPolicy = new IntersectionPanelFocusPolicy();
 
 	protected class IntersectionPanelFocusPolicy extends LayoutFocusTraversalPolicy {
@@ -80,11 +80,11 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			return genusField;
 		}
 	}
-	
+
 	public CrossProductEditorComponent() {
 		this(false);
 	}
-	
+
 	public CrossProductEditorComponent(boolean showNameFields) {
 		this.showNameFields = showNameFields;
 		setCreateNewObject(false);
@@ -122,7 +122,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			}
 		});
 	}
-	
+
 
 	/** 
 	 * Relationship Line Panel
@@ -231,7 +231,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		}
 	}//RelationshipLine Panel
 
-	
+
 	protected Collection<ActionListener> actionListeners = new LinkedList<ActionListener>();
 	protected JButton dropButton = new JButton("Click (or drop a term) here to add new differentia");
 
@@ -263,8 +263,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		public void drop(DropTargetDropEvent dtde) {
 			JPopupMenu menu = new JPopupMenu();
 
-			final LinkedObject term = DropUtil.getSelection(dtde)
-			.getTermSubSelection();
+			final LinkedObject term = DropUtil.getSelection(dtde).getTermSubSelection();
 			OBOSession session = SessionManager.getManager().getSession();
 
 			JMenuItem genusItem = new JMenuItem("Set genus term");
@@ -292,14 +291,17 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			menu.show(dropButton, (int) dtde.getLocation().getX(), (int) dtde
 					.getLocation().getY());
 			dropButton.setBorder(oldBorder);
-
-		}
+		} //drop
 
 		public void dropActionChanged(DropTargetDragEvent dtde) {
 		}
 
 	};
 
+	/**
+	 * addDiscriminating: add new differentia
+	 * called by dropButton action listener
+	 * */
 	protected void addDiscriminating(OBOClass discriminatingTerm, OBOProperty prop) {
 		RelationshipLinePanel relationshipPanel = new RelationshipLinePanel();
 		relationshipPanel.setProperty(prop);
@@ -428,12 +430,12 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		JPanel linkWrapperPanel = new JPanel();
 		linkWrapperPanel.setOpaque(false);
 		linkWrapperPanel.setLayout(new BorderLayout());
-		
+
 		//northPanel houses the genus label, text box and selection button
 		JPanel northPanel = new JPanel();
 		JPanel labelBox = new JPanel();
 		labelBox.setOpaque(false);
-		
+
 		editorPanel.setLayout(new BorderLayout());
 		genusPanel.setLayout(new BorderLayout());
 		linkListPanel.setLayout(new BoxLayout(linkListPanel, BoxLayout.Y_AXIS));
@@ -456,7 +458,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 		genusField.setMinimumSize(new Dimension(0, font.getSize() + 5));
 		genusField.setFont(font);
-	
+
 		//cotton ball - button to go to genus term
 		Icon selectGenusIcon = Preferences.loadLibraryIcon("selector.gif");
 		selectGenusButton = new JButton(selectGenusIcon);
@@ -471,7 +473,7 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		linkWrapperPanel.add(linkListPanel, "North");
 		linkWrapperPanel.add(dropButton, "South");
 
-		
+
 		northPanel.setOpaque(false);
 		northPanel.setLayout(new SpringLayout());
 
@@ -530,6 +532,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 		return null;
 	}
 
+	/**
+	 * setClass: current object
+	 * */
 	public void setClass(OBOClass oboClass) {
 		this.oboClass = oboClass;
 		genusField.setValue(null);
@@ -542,8 +547,20 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 			if (TermUtil.isDangling(parent)) {
 				parent = new DanglingClassImpl(parent.getID());
 			}
+
+			final OBOClass genusTerm = (OBOClass) parent;
+			logger.debug("genusTerm: " +  genusTerm);
 			if (link.getType().equals(OBOProperty.IS_A)) {
 				genusField.setValue(parent);
+
+				selectGenusButton.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e) {
+						logger.debug(">> genusTerm: " + genusTerm);
+						SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
+					}
+
+				});
+
 			} else {
 				addDiscriminating((OBOClass) parent, link.getType());
 			}
@@ -553,18 +570,9 @@ public class CrossProductEditorComponent extends AbstractTextEditComponent {
 
 	/**
 	 * setGenusTerm
-	 * Set selection from drop down menu (combobox) and action listener for -> Go to Genus Term
-	 * */
+	 * called while dropping term on drop term button */
 	protected void setGenusTerm(final OBOClass genusTerm) {
 		genusField.setValue(genusTerm);
-		if (selectGenusActionListener != null)
-			selectGenusButton.removeActionListener(selectGenusActionListener);
-		selectGenusActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SelectionManager.selectTerm(CrossProductEditorComponent.this, genusTerm);
-			}
-		};
-		selectGenusButton.addActionListener(selectGenusActionListener);
 	}
 
 	protected void tabToNext() {

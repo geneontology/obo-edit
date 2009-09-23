@@ -32,10 +32,10 @@ public class FrameNameUpdateTask extends AbstractReloadTask {
 		    out +=  ": " + loadRemark;
 		if (SessionManager.getManager().getUseReasoner())
 		    out +=  " (REASONER ON)";
-		if(SessionManager.getManager().getIncrementalReasoningStatus())
-			out += "*";
-		if(SessionManager.getManager().getStepIncrementalReasoningStatus())
+		if(SessionManager.getManager().getIncReasoningStatus())
 			out += "^";
+		if(SessionManager.getManager().getStepIncReasoningStatus())
+			out += "_^";
 		
 		logger.debug("FrameNameUpdateTask - " + out);
 		return out;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.obo.datamodel.Link;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.history.CreateLinkHistoryItem;
+import org.obo.history.HistoryItem;
 import org.obo.history.TermMacroHistoryItem;
 import org.obo.reasoner.ReasonedLinkDatabase;
 import org.obo.util.ReasonerUtil;
@@ -55,6 +57,9 @@ import org.oboedit.gui.Preferences;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Assert Implied Links Panel Table
+ * */
 public class AssertLinksComponent extends AbstractGUIComponent implements ListSelectionListener {
 	private static final long serialVersionUID = 1L;
 
@@ -90,11 +95,11 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 		southPanel.add(Box.createGlue());
 		impliedLinks = getImpliedLinks();
 		//notify when there are no implied links
-		if(impliedLinks.size()==0){
-			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
-			"There are no implied links in the current ontology.");	
-		}
-		
+//		if(impliedLinks.size()==0){
+//			JOptionPane.showMessageDialog(GUIManager.getManager().getFrame(),
+//			"There are no implied links in the current ontology.");	
+//		}
+
 		links = new ArrayList<Link>(impliedLinks);
 		displayResults();
 		assertButton.setToolTipText("Assert selected links");	
@@ -112,6 +117,8 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 	protected void assertLinks(){
 		final Collection<Link> assertLinks = new ArrayList<Link>();
+		Collection<HistoryItem> items = new ArrayList<HistoryItem>();
+		
 		//logger.debug("impliedLinks size before asserting: " + impliedLinks.size());
 		logger.debug("Asserting " + selectedIx.size() + " links...");
 		for(int i=0; i<selectedIx.size(); i++){
@@ -121,13 +128,24 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 			impliedLinks.remove(links.get(selectedIx.get(i)));
 
 		}
+
+		//handing over item to SessionManager to apply/create new link
 		for (final Link link : assertLinks) {
 			final TermMacroHistoryItem item = new TermMacroHistoryItem(
 					"Assert "+ assertLinks.size() +" implied links");
 			item.addItem(new CreateLinkHistoryItem(link));
-			if (item != null)
-				SessionManager.getManager().apply(item);
+			
+			if(item != null)
+			items.add(item);
+// apply one item at a time	
+//			if (item != null)
+//				SessionManager.getManager().apply(item);
 		}
+		
+		//batch processing for applying items
+		logger.debug("Applying " + items.size() + " items...");
+		SessionManager.getManager().apply(items);
+
 		//logger.debug("impliedLinks size after asserting: " + impliedLinks.size());
 		//update table
 		displayResults();
@@ -249,7 +267,7 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 	public void valueChanged(final ListSelectionEvent e) {
 		if(table.getSelectedColumn() == 1 || table.getSelectedColumn() ==2 || table.getSelectedColumn() ==3){
-//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Assert Links Table");
+			//			logger.debug("\nSelected [row, column]: [" + table.getSelectedRow() + ", " + table.getSelectedColumn() + "]  in Assert Links Table");
 			//Select action for Child name and Parent name columns  
 			//selects term in all components corresponding to the column in focus
 			if(table.getSelectedColumn() == 1 || table.getSelectedColumn() == 2){
@@ -286,12 +304,18 @@ public class AssertLinksComponent extends AbstractGUIComponent implements ListSe
 
 		if(table == null){
 			table = new JTable(model){
+				
 				//alternate row coloring 
 				public Component prepareRenderer
 				(TableCellRenderer renderer,int Index_row, int Index_col) {
 					Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+
+					if(isCellSelected(Index_row, Index_col)){
+						comp.setBackground(Color.blue);
+						comp.setForeground(Color.white);
+					} 	
 					//even index, selected or not selected
-					if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+					else if (Index_row % 2 == 0) {
 						comp.setBackground(LIGHT_BLUE);
 						comp.setForeground(Color.black);
 					} 

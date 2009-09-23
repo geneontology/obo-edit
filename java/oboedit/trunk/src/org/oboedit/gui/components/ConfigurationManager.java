@@ -1224,6 +1224,7 @@ public class ConfigurationManager extends AbstractGUIComponent {
 		} catch (NumberFormatException ex) {
 		}
 
+		//backing up currently loaded file through autosave
 		preferences.setAutosavePath(new File(autosavePathField.getText()));
 		preferences.setFont(GUIUtil.decodeFont((String) fontNameList
 				.getSelectedItem(), (String) fontSizeList.getSelectedItem(),
