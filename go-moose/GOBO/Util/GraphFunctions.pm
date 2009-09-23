@@ -5,10 +5,7 @@ use Moose;
 use Carp;
 
 use GOBO::Graph;
-use GOBO::Parsers::OBOParser;
-use GOBO::Writers::OBOWriter;
-#use GOBO::Parsers::QuikOBOParser;
-#use GOBO::Parsers::QuikGAFParser;
+use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::Writers::OBOWriter;
 use GOBO::InferenceEngine;
 
@@ -159,14 +156,8 @@ sub get_graph {
 	my $options = $args->{options};
 
 	my $parser;
-	if ($options->{quick_parse})
-	{	# parse the input file and check we get a graph
-		$parser = new GOBO::Parsers::QuikOBOParser(file => $options->{input}, options => $options->{parser_options});
-	}
-	else
-	{	# parse the input file and check we get a graph
-		$parser = new GOBO::Parsers::OBOParser(file => $options->{input});
-	}
+	# parse the input file and check we get a graph
+	$parser = new GOBO::Parsers::OBOParserDispatchHash(file => $options->{input});
 	$parser->parse;
 	die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
 	print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
@@ -187,10 +178,10 @@ input:  graph   => Graph object
           options may be:
           get_all_subsets => 1
           subset => { subset_name => 1, subset_2_name => 1 }
-          
-          exclude_roots => 1  # set this is you DON'T want the root nodes included
-          
           # subset_regexp => regular expression
+
+          exclude_roots => 1  # set this is you DON'T want the root nodes included
+
 
 output: data hash or death with an appropriate error
         data hash will be of the form
@@ -201,6 +192,7 @@ output: data hash or death with an appropriate error
 
 sub get_subset_nodes {
 	my $args = shift;
+	my $data = $args->{data};
 	my $graph = $args->{graph};
 	my $options = $args->{options};
 
@@ -208,15 +200,13 @@ sub get_subset_nodes {
 
 #	print STDERR "options: " . Dumper($options) . "\n";
 
-	my $data_h;
-
 	## create the subroutine to filter out the desired subset nodes
 	my $sub_test;
 	if ($options->{get_all_subsets})
 	{	$sub_test = sub {
 			my $node = shift;
 			if ($node->subsets)
-			{	map { $data_h->{subset}{$_->id}{$node->id}++ } @{$node->subsets};
+			{	map { $data->{subset}{$_->id}{$node->id}++ } @{$node->subsets};
 			}
 		};
 	}
@@ -225,7 +215,7 @@ sub get_subset_nodes {
 			my $node = shift;
 			if ($node->subsets)
 			{	foreach (map { $_->id } @{$node->subsets})
-				{	$data_h->{subset}{$_}{$node->id}++ if /$options->{subset_regexp}/;
+				{	$data->{subset}{$_}{$node->id}++ if /$options->{subset_regexp}/;
 				}
 			}
 		};
@@ -235,30 +225,30 @@ sub get_subset_nodes {
 			my $node = shift;
 			if ($node->subsets)
 			{	foreach my $s (map { $_->id } @{$node->subsets})
-				{	$data_h->{subset}{$s}{$node->id}++ if defined $options->{subset}{$s};
+				{	$data->{subset}{$s}{$node->id}++ if defined $options->{subset}{$s};
 				}
 			}
 		};
 	}
-	
+
 	foreach ( @{$graph->terms} )
 	{	next if $_->obsolete;
 		my $n = $_;
 		# make sure that we have all the root nodes
 		if (!@{$graph->get_outgoing_links($n)}) {
-			$data_h->{roots}{$n->id}++;
+			$data->{roots}{$n->id}++;
 		}
 		## if it's in a subset, save the mofo.
 		else
 		{	&$sub_test($n);
 		}
 	}
-	
+
 	#	check that we have nodes in our subsets
 	if ($options->{subset})
 	{	my $no_nodes;
 		foreach (keys %{$options->{subset}})
-		{	if (! $data_h->{subset}{$_})
+		{	if (! $data->{subset}{$_})
 			{	push @$no_nodes, $_;
 			}
 		}
@@ -272,7 +262,7 @@ sub get_subset_nodes {
 		}
 	}
 	else
-	{	if (! $data_h->{subset} || ! values %{$data_h->{subset}})
+	{	if (! $data->{subset} || ! values %{$data->{subset}})
 		{	if ($options->{get_all_subsets})
 			{	die "Error: no subsets were found! Dying";
 			}
@@ -281,30 +271,30 @@ sub get_subset_nodes {
 			}
 		}
 	}
-	
-	
+
+
 	# merge the subsets into one if we want combined results
 	if ($options->{combined})
-	{	my @subs = keys %{$data_h->{subset}};
-		map { 
-			map { 
-				$data_h->{subset}{combined}{$_}++;
-			} keys %{$data_h->{subset}{$_}};
-			delete $data_h->{subset}{$_};
+	{	my @subs = keys %{$data->{subset}};
+		map {
+			map {
+				$data->{subset}{combined}{$_}++;
+			} keys %{$data->{subset}{$_}};
+			delete $data->{subset}{$_};
 		} @subs;
 	}
 
 
 	## add the roots to the subsets unless we specifically don't want 'em
 	unless (defined $options->{exclude_roots} && $options->{exclude_roots} == 1)
-	{	foreach my $r (keys %{$data_h->{roots}})
-		{	foreach my $s (keys %{$data_h->{subset}})
-			{	$data_h->{subset}{$s}{$r}++;
+	{	foreach my $r (keys %{$data->{roots}})
+		{	foreach my $s (keys %{$data->{subset}})
+			{	$data->{subset}{$s}{$r}++;
 			}
 		}
 	}
 
-	return $data_h;
+	return $data;
 }
 
 
@@ -338,7 +328,7 @@ sub get_graph_relations {
 		}
 	}
 	print STDERR "Finished getting relationships\n" if $options->{verbose};
-	
+
 	$rel_h->{got_graph} = 1;
 	return $rel_h;
 }
@@ -354,7 +344,7 @@ input:  input   => hash of input nodes in the form node_id => 1; optional; uses
                    all graph nodes if not specified
         graph   => Graph object
         inf_eng => inference engine (a new one will be created if not)
-        
+
 output: node data in the form
              {graph}{ node_id }{ relation_id }{ target_id }
 
@@ -391,7 +381,7 @@ sub get_graph_links {
 				next unless $subset->{$_->target->id}; # || $roots->{$_->target->id} ;
 				$node_data->{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
 			}
-	
+
 			foreach (@{ $ie->get_inferred_target_links($t) })
 			{	# skip it unless the target is a root or in the subset
 				next unless $subset->{$_->target->id}; # || $roots->{$_->target->id} ;
@@ -409,7 +399,7 @@ sub get_graph_links {
 			foreach (@{ $graph->get_outgoing_links($t) })
 			{	$node_data->{graph}{$t}{$_->relation->id}{$_->target->id} = 1;
 			}
-	
+
 			foreach (@{ $ie->get_inferred_target_links($t) })
 			{	# skip it if we already have this link
 				next if defined $node_data->{graph}{$t}{$_->relation->id}{$_->target->id};
@@ -425,12 +415,12 @@ sub get_graph_links {
 
 =head2 remove_redundant_relationships
 
-input:  node_data => hash of node data in the form 
+input:  node_data => hash of node data in the form
                      {graph}{ node_id }{ relation_id }{ target_id }
         rel_data  => relationship data hash (structure same as node_data)
         graph     => Graph object
         options   => option_h
-        
+
 
 output: node_data with redundant rels carefully removed
 
@@ -471,9 +461,9 @@ sub remove_redundant_relationships {
 		## slim down the relationships
 		## get rid of redundant relations
 		# these are the closest to the root
-		
+
 		## this could probably be done more effectively / efficiently
-		
+
 		foreach my $r (keys %{$slimmed->{target_node_rel}})
 		{	foreach my $r2 (keys %{$slimmed->{target_node_rel}{$r}})
 			{	# if both exist...
@@ -608,7 +598,7 @@ output: rearrangements of the data with first key specifying the order:
 sub populate_lookup_hashes {
 	my $args = shift;
 	my $hash = $args->{graph_data};
-	
+
 	confess( (caller(0))[3] . ": missing required arguments. Dying" ) unless values %{$hash->{graph}};
 
 	foreach my $k qw(node_target_rel target_node_rel node_rel_target target_rel_node rel_node_target rel_target_node)
@@ -712,7 +702,7 @@ sub get_closest_ancestral_nodes {
 	if (! $d->{node_rel_target} || ! $d->{target_node_rel} )
 	{	populate_lookup_hashes({ graph_data => $d });
 	}
-	
+
 	# only connected to one node: must be the closest!
 	if (scalar keys %{$d->{node_target_rel}{$id}} == 1)
 	{	# we specified a relation
@@ -825,7 +815,7 @@ sub get_furthest_ancestral_nodes {
 	if (! $d->{node_rel_target} || ! $d->{target_node_rel} )
 	{	populate_lookup_hashes({ graph_data => $d });
 	}
-	
+
 	# only connected to one node: must be the closest!
 	if (scalar keys %{$d->{node_target_rel}{$id}} == 1)
 	{	# we specified a relation
@@ -839,7 +829,7 @@ sub get_furthest_ancestral_nodes {
 	}
 
 	#TODO: add in a check for the root nodes
-	
+
 
 
 	my $new_d;
@@ -920,7 +910,7 @@ sub topological_sort {
 	{	print STDERR "$id is a root node... sob!\n";
 		return;
 	}
-	
+
 	my @sorted;   # Empty list that will contain the sorted nodes
 	my @leafy;    # Set of all nodes with no incoming edges
 =algorithm:
@@ -933,7 +923,7 @@ while leafy is non-empty do
 			insert m into leafy
 if graph has edges then
 	output error message (graph has at least one cycle)
-else 
+else
 	output message (proposed topologically sorted order: sorted)
 =cut
 
@@ -1026,13 +1016,13 @@ sub add_all_relations_to_graph {
 	{	# add all the relations from the other graph
 		foreach (@{$old_g->relations})
 		{	$new_g->add_relation($old_g->noderef($_)) if check_for_relation($new_g, $_);
-	
+
 			if ($old_g->get_outgoing_links($_))
 			{	foreach (@{$old_g->get_outgoing_links($_)})
-				{	
+				{
 					$new_g->add_relation( $old_g->noderef( $_->relation ) ) if check_for_relation($new_g, $_->relation);
 					$new_g->add_relation( $old_g->noderef( $_->target ) ) if check_for_relation($new_g, $_->target);
-					
+
 					$new_g->add_link( new GOBO::LinkStatement(
 						node => $new_g->noderef($_->node),
 						relation => $new_g->noderef($_->relation),
@@ -1051,7 +1041,7 @@ sub add_all_relations_to_graph {
 
 input:  old_g => old Graph object
         new_g => new Graph object (created if does not exist)
-        no_term_links => 1  if links between terms should NOT be added 
+        no_term_links => 1  if links between terms should NOT be added
                             (default is to add them)
         no_rel_links  => 1  if links between relations should NOT be added
                             (default is to add them; only matters if no_term_links
@@ -1091,7 +1081,7 @@ sub add_all_terms_to_graph {
 			}
 		}
 	}
-	
+
 	return $new_g;
 }
 
@@ -1101,7 +1091,7 @@ sub add_all_terms_to_graph {
 input:  old_g => old Graph object
         new_g => new Graph object (created if does not exist)
 
-output: new graph with various attributes from the old graph added 
+output: new graph with various attributes from the old graph added
 
 =cut
 
@@ -1129,7 +1119,7 @@ input:  graph_data => data hash with nodes and relations specified as
         new_g      => preferably the new graph, containing relations
                       (created if does not exist)
 
-output: new graph, containing all the nodes and relations specified in 
+output: new graph, containing all the nodes and relations specified in
 
 =cut
 

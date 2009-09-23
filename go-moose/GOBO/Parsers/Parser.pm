@@ -84,11 +84,11 @@ sub parse_file {
 	else
 	{	%args = (@_);
 	}
-	
+
 	# initialize the fh
 	$self->set_fh($args{file});
 	$self->set_options($args{options}) if $args{options};
-	
+
 	# parse the file
 	$self->_parse;
 
@@ -155,7 +155,7 @@ sub parse_chunk {
 sub _parse {
 	my $self = shift;
 	return 0 unless $self->has_fh;
-	
+
 	# make sure we've checked our parser options
 	$self->check_options;
 	if ($self->parsed_header)
@@ -181,7 +181,7 @@ sub create {
 	if ($fmt) {
 		my $pc;
 		if ($fmt eq 'obo') {
-			$pc = 'GOBO::Parsers::OBOParser';
+			$pc = 'GOBO::Parsers::OBOParserDispatchHash';
 		}
 		#require $pc;
 		return $pc->new(%argh);
@@ -219,7 +219,7 @@ sub set_file {
 			$fh = FileHandle->new("gzip -dc $f |") or confess "Could not create a filehandle for $f: $! ";
 		}
 		else {
-			$fh = FileHandle->new($f, "r") or confess "Could not create a filehandle for $f: $! ";
+			$fh = FileHandle->new($f) or confess "Could not create a filehandle for $f: $! ";
 		}
 		$self->_set_fh($fh);
 		return;
@@ -236,7 +236,7 @@ sub next_line {
 	my $max_chunk = $self->max_chunk;
 	my $line_no = $self->line_no + 1;
 	$self->line_no($line_no);
-	
+
 	$self->stalled(0);
 	if ($self->parsed_header && $max_chunk && $line_no > $max_chunk) {
 		$self->line_no(0);
@@ -247,7 +247,7 @@ sub next_line {
 	if (@$lines) {
 		return shift @$lines;
 	}
-	
+
 	my $line = <$fh>;
 	return $line;
 }
@@ -267,7 +267,7 @@ input:	self, hash ref of options
 
 Sets a hash of options, accessed by $self->options.
 
-Existing options will remain intact. 
+Existing options will remain intact.
 
 =cut
 
@@ -279,7 +279,7 @@ sub set_options {
 	while ( my ( $k, $v ) = each %$o )
 	{	$options->{$k} = $v;
 	}
-	
+
 	if (! $options || ! keys %$options )
 	{	$self->clear_all_options;
 		return;
@@ -296,7 +296,7 @@ input:	self, hash ref of options
 
 Sets a hash of options, accessed by $self->options.
 
-Existing options are deleted. 
+Existing options are deleted.
 
 =cut
 
