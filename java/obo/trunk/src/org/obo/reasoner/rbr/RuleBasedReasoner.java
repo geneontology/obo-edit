@@ -158,7 +158,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		public void setParent(LinkedObject parent) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		public LinkedObject getAncestor() {
 			return ancestor;
 		}
@@ -224,7 +224,7 @@ public class RuleBasedReasoner extends AbstractReasoner {
 		logger.info("RCT:\n"+rct.toTable());
 		// TODO: replace with standard Map
 		explanationMap =
-//			new MultiHashSetMap<Link, Explanation>();
+			//			new MultiHashSetMap<Link, Explanation>();
 			new HashMap<Link,Collection<Explanation>>();
 		explanationDeps =
 			new MultiHashSetMap<Link, Explanation>();
@@ -255,8 +255,8 @@ public class RuleBasedReasoner extends AbstractReasoner {
 			rule.init(this);
 		}
 		setProgressString("Initializing Rule Based Reasoner...");
-
 		setProgressString("Reasoning...");
+
 		boolean isExhausted = false;
 		int sweep = 0;
 		int newLinks = 0;
@@ -374,17 +374,46 @@ public class RuleBasedReasoner extends AbstractReasoner {
 	}
 
 
-	// incremental reasoning
+	/**
+	 * doAddLink: adds one link at a time
+	 * incremental reasoning
+	 * */
 	protected void doAddLink(Link link) {
 		addExplanation(new GivenExplanation(link));
 		doReasoning(); // TODO - selective reasoning
 	}
+
+	/**
+	 * doAddLinks: adds multiple links.. runs the reasoner only once
+	 * */
+	protected void doAddLinks(Collection<Link> links){
+		//add Explanations
+		for(Link link : links){
+			addExplanation(new GivenExplanation(link));
+		}
+		doReasoning();
+	}
+
+	/**
+	 * calling getChildren() and getParents() from AbstractReasoner
+	 * */
 	public Collection<Link> getChildren(LinkedObject lo) {
 		return impliedLinkDatabase.getChildren(lo);
 	}
 
+	//getParents() 
 	public Collection<Link> getParents(LinkedObject lo) {
 		return impliedLinkDatabase.getParents(lo);
+	}
+
+	/**
+	 * */
+	protected void doRemoveLink(Collection<Link> links) {
+		for(Link link: links){
+			cascadingRemoveLink(link);
+			//doReasoning(); // it may be possible to re-populate some links via different explanations
+			//doReasoning(); // TODO - don't need to add all givens every time.. CHANGED - but in an ugly way. ReasonerOperationModel takes care of this at the end of a macro op
+		}
 	}
 
 	protected void doRemoveLink(Link link) {
@@ -459,6 +488,11 @@ public class RuleBasedReasoner extends AbstractReasoner {
 
 	public boolean isSubclassOf(OBOClass a, OBOClass b) {
 		return hasRelationship(a, OBOProperty.IS_A, b) != null;
+	}
+
+	public void removeLinks(Collection<Link> link) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

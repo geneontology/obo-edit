@@ -682,7 +682,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (isRealObject(obj))
 				serializer.startStanza(obj);
 			else {
-				logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
+//				logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
 				return;
 			}
 		}
@@ -727,7 +727,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			LinkDatabase linkDatabase, OBOSerializer serializer,
 			boolean allowDangling, boolean closeDangling, 
 			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
-		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
+//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
 				return;
@@ -898,7 +898,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			OBOProperty property = (OBOProperty) obj;
 			for (Link link : property.getParents()) {
 				if (link.getType().equals(OBOProperty.DISJOINT_OVER)) {
-					// >>>
 					serializer.writeLinkTag(link, null);
 				}
 			}
@@ -1245,8 +1244,6 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			//this is where we get the objects to write to file
 			List objectList = new ArrayList();
 			for(IdentifiedObject io : database.getObjects()){
-								logger.debug("OBOSerializationEngine getObjects: " + io);
-								logger.debug(">> " + stanzaMapping.getStanzaClass());
 				if (stanzaMapping.getStanzaClass().isInstance(io) && !io.isBuiltIn()) {
 					objectList.add(io);
 				}

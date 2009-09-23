@@ -1,5 +1,7 @@
 package org.obo.history;
 
+import java.util.Collection;
+
 import org.obo.datamodel.OBOSession;
 
 public interface OperationModel {
@@ -8,9 +10,12 @@ public interface OperationModel {
 
 	public OperationWarning apply(HistoryItem item);
 
+	public OperationWarning apply(Collection<HistoryItem> items);
+	
 	public OperationWarning reverse(HistoryItem item);
 	
 	public void addLockstepModel(OperationModel model);
 	
 	public void removeLockstepModel(OperationModel model);
+
 }

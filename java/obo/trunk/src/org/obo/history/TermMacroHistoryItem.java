@@ -211,6 +211,15 @@ public class TermMacroHistoryItem extends HistoryItem implements HistoryList {
 					+ "history item");
 		historyItems.add(item);
 	}
+	
+	public void addItems(Collection<HistoryItem> items) {
+		for(HistoryItem item : items){
+			if (locked)
+				throw new IllegalStateException("Cannot modify a locked macro "
+						+ "history item");
+			historyItems.add(item);
+		}
+	}
 
 	public void removeItem(HistoryItem item) {
 		if (locked)

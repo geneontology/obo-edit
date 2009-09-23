@@ -81,6 +81,12 @@ public class ReasonerPassthroughLinkDatabase extends AbstractLinkDatabase implem
 		if (reasoner != null)
 			reasoner.addLink(link);
 	}
+	
+	public void addLinks(Collection<Link> links){
+		if(reasoner != null){
+			reasoner.addLinks(links);
+		}
+	}
 
 	public void addReasonerListener(ReasonerListener listener) {
 		listeners.add(listener);
@@ -184,6 +190,12 @@ public class ReasonerPassthroughLinkDatabase extends AbstractLinkDatabase implem
 	public void removeLink(Link link) {
 		if (reasoner != null)
 			reasoner.removeLink(link);
+	}
+	
+	public void removeLinks(Collection<Link> links) {
+		for(Link link : links){
+			removeLink(link);
+		}
 	}
 
 	public void removeReasonerListener(ReasonerListener listener) {
