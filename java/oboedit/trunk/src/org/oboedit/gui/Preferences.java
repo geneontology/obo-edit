@@ -71,10 +71,10 @@ public class Preferences {
 	protected String reasonerName = "OFF";
 
 	// continuous incremental reasoning
-	protected boolean isIncrementalOn = false;
+	protected boolean isIncOn = false;
 
 	//partial incremental reasoning in steps where the reasonedlink database is topped off after completion of a task 
-	protected boolean isStepIncrementalOn = false;
+	protected boolean isStepIncOn = false;
 
 	protected boolean showComplete = false;
 
@@ -120,7 +120,7 @@ public class Preferences {
 
 	protected Dbxref personalDbxref;
 
-	protected java.util.List<Dbxref> personalDbxrefs = null;
+	protected List personalDbxrefs = null;
 
 	protected String defaultDef;
 
@@ -625,22 +625,22 @@ public class Preferences {
 	}
 
 	//partial incremental reasoning
-	public boolean getStepIncrementalReasoningStatus() {
-		return isStepIncrementalOn;
+	public boolean getStepIncReasoningStatus() {
+		return isStepIncOn;
 	}
 
-	public void setStepIncrementalReasoningStatus(boolean isStepIncrementalOn) {
+	public void setStepIncReasoningStatus(boolean isStepIncrementalOn) {
 		logger.debug("Preferences.setStepIncrementalReasoningStatus: " + isStepIncrementalOn);
-		this.isStepIncrementalOn = isStepIncrementalOn;
+		this.isStepIncOn = isStepIncrementalOn;
 	}
 
 	//continuous incremental reasoning
-	public boolean getIncrementalReasoningStatus() {
-		return isIncrementalOn;
+	public boolean getIncReasoningStatus() {
+		return isIncOn;
 	}
-	public void setIncrementalReasoningStatus(boolean isIncrementalOn) {
-		logger.debug("Preferences.setIncrementalReasoningStatus: " + isIncrementalOn);
-		this.isIncrementalOn = isIncrementalOn;
+	public void setIncReasoningStatus(boolean isIncOn) {
+		logger.debug("Preferences.setIncReasoningStatus: " + isIncOn);
+		this.isIncOn = isIncOn;
 	}
 
 

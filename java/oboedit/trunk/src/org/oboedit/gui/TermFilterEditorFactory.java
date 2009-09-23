@@ -20,6 +20,9 @@ import org.oboedit.gui.widget.ObjectSpecEditor;
 
 import org.apache.log4j.*;
 
+/**
+ * Term search results table setup
+ * */
 public class TermFilterEditorFactory implements
 	SearchComponentFactory<IdentifiedObject> {
 
@@ -67,12 +70,18 @@ public class TermFilterEditorFactory implements
 			if (index == 0)
 				return "ID";
 			else if (index == 1)
-				return "Name";
+				return "Term Name";
 			else
 				return "?!";
 		}
+		
+		public boolean isCellEditable(final int rowIndex, final int columnIndex) {
+				return false;
+		}
+		
+		
 	};
-
+	
 	public JComponent createSubEditor() {
 		return new TermFilterEditor();
 	}

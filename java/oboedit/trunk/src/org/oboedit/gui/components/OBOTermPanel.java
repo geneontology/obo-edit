@@ -378,14 +378,17 @@ RightClickMenuProvider, Autoscroll {
 	}
 
 
+	/**
+	 * ensureLockedPathIsShowing
+	 * 
+	 * */
 	protected void ensureLockedPathIsShowing() {
-		//		logger.debug("OBOTermPanel.ensureLockedPathIsShowing");
 		//		logger.debug("lockedPath: " + lockedPath);
 		if (lockedPath != null && !isShowing(lockedPath)) {
 			//			logger.debug("locked path not null");
 			FreezableViewport freezableViewport = (FreezableViewport) SwingUtilities
 			.getAncestorOfClass(FreezableViewport.class, this);
-			logger.debug("FreezableViewport: " + freezableViewport);
+			//			logger.debug("FreezableViewport: " + freezableViewport);
 
 			if (freezableViewport != null)
 				freezableViewport.setFrozen(false);
@@ -412,6 +415,10 @@ RightClickMenuProvider, Autoscroll {
 		return liveButton;
 	}
 
+	/**
+	 * setLive - set OTE to global mode
+	 * @param boolean isLive
+	 * */
 	public void setLive(boolean isLive) {
 		if (this.isLive == isLive)
 			return;  // no change
@@ -426,7 +433,10 @@ RightClickMenuProvider, Autoscroll {
 		repaint(); // in order to change background color
 	}
 
-	/** If user specified that only one OTE can be live at any given time, make any other OTEs *not* live */
+	/** 
+	 * makeOtherOTEsNotLive - If user specified that only one OTE can be live at any given time, make any other OTEs *not* live 
+	 * i.e if any other OTE's are in global mode switch them to local mode.
+	 * */
 	private void makeOtherOTEsNotLive() {
 		Map<String, GUIComponent> activeComponents = ComponentManager.getManager().getActiveComponentMap();
 		Collection<String> it = new LinkedList<String>(activeComponents.keySet());
@@ -757,8 +767,11 @@ RightClickMenuProvider, Autoscroll {
 		return lockedPath;
 	}
 
+	/**
+	 * setLockedPath - locks the view around the given TreePath  
+	 * @param TreePath lockedPath
+	 * */
 	public void setLockedPath(TreePath lockedPath) {
-		//		logger.debug("OBOTermPanel.setLockedPath");
 		this.lockedPath = lockedPath;
 		FreezableScrollPane scrollPane = (FreezableScrollPane) SwingUtil.getAncestorOfClass(FreezableScrollPane.class, this);
 		if (scrollPane != null) {
@@ -1100,7 +1113,7 @@ RightClickMenuProvider, Autoscroll {
 	protected Selection createSelectionFromPaths(TreePath lead, TreePath[] paths) {
 		if (paths == null || paths.length == 0)
 			return SelectionManager.createEmptySelection();
-//		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
+		//		logger.debug("OBOTermPanel.createSelectionFromPaths " + lead + ", " + paths.length + " paths"); // DEL
 		Link leadLink = null;
 		if (lead != null) {
 			if (lead.getLastPathComponent() instanceof Link) {
@@ -1171,22 +1184,40 @@ RightClickMenuProvider, Autoscroll {
 		});
 		collapseItem.setEnabled(collapsePaths.size() > 0);
 
-		// Lock/unlock view - essentially scroll lock for OTE
+		/** Lock/unlock view - essentially scroll lock along with enforcing local mode where selections in the OTE are global 
+		 * but the path does not chang i.e a "locked" OTE should not jump to a different view, irrespective of the mode its in.
+		 */
 		final JMenuItem lockItem = new JMenuItem("Lock View");
 		lockItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//if OTE is locked - unlock
-				if(GUIManager.getManager().getOTELockStatus()){
-					GUIManager.getManager().setOTELockStatus(false);
-					setLockedPath(null);					
-				} 
-				else { //lock
-					GUIManager.getManager().setOTELockStatus(true);
-					if(selectedPaths.length >0){
-						setLockedPath(selectedPaths[0]);
+				// get a list of activeComponents to identify OTE being locked
+				Map<String, GUIComponent> activeComponents = ComponentManager.getManager().getActiveComponentMap();
+				Collection<String> ids = new LinkedList<String>(activeComponents.keySet());
+				for (String id : ids) {
+					GUIComponent c = activeComponents.get(id);
+					if (c instanceof OBOTermPanel) {
+						//if OTE is unlocked - lock it
+						// if it is locked - unlock it
+						if(GUIManager.getManager().getOTELockStatus()){
+							GUIManager.getManager().setOTELockStatus(false);
+							setLockedPath(null);
+							((OBOTermPanel)c).setLive(true);
+							panel.repaint();
+							revalidate();
+						}else{
+							GUIManager.getManager().setOTELockStatus(true);
+							if(selectedPaths.length >0){
+								setLockedPath(selectedPaths[0]);
+								//enforce local mode on the locked OTE
+								if(((OBOTermPanel)c).isLive())	
+									((OBOTermPanel)c).setLive(false);
+								panel.repaint();
+								revalidate();
+
+							}
+
+						}
 					}
-					panel.repaint();
-					revalidate();
 				}
 			}
 		});
