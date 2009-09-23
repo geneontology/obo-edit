@@ -24,7 +24,14 @@ if (! $options->{verbose})
 {	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
 }
 
-my $graph = GOBO::Util::GraphFunctions::get_graph({ options => $options });
+# parse the input file and check we get a graph
+my $parser = new GOBO::Parsers::OBOParserDispatchHash(file => $options->{input});
+$parser->parse;
+die "Error: parser could not find a graph in " . $options->{input} . "!\n" unless $parser->graph;
+
+	print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
+
+my $graph = $parser->graph;
 
 # get the nodes matching our subset criteria
 my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
@@ -79,9 +86,9 @@ exit(0);
 # parse the options from the command line
 sub parse_options {
 	my $args = shift;
-	
+
 	my $opt;
-	
+
 	while (@$args && $args->[0] =~ /^\-/) {
 		my $o = shift @$args;
 		if ($o eq '-i' || $o eq '--ontology') {
@@ -269,9 +276,9 @@ See the B<-c> option below for combining subsets.
 
 If you are using a single subset, or wish to combine subsets, use the B<-o> or
 B<--output> option:
- 
+
  -o /path/to/file_name
- 
+
 If you are using several subsets and want to create separate files for each, use
 the B<-b> or B<--basename> option to specify a base name for your output files:
 

@@ -98,12 +98,12 @@ With the b<show_names> option on, the first column will look like this:
 Some sample output:
 
  GO:0000942, outer kinetochore of condensed nuclear chromosome	is_a GO:0005575; part_of GO:0005634, part_of GO:0005694	part_of GO:0005575
- GO:0001400, mating projection base	is_a GO:0005575	
+ GO:0001400, mating projection base	is_a GO:0005575
  GO:0001401, mitochondrial sorting and assembly machinery complex	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
  GO:0001405, presequence translocase-associated import motor	is_a GO:0005575; part_of GO:0005740, part_of GO:0016020	part_of GO:0005575, part_of GO:0005737, part_of GO:0005739
  GO:0001411, hyphal tip	is_a GO:0030427; part_of GO:0005575	is_a GO:0005575
  GO:0001518, voltage-gated sodium channel complex	is_a GO:0005575; part_of GO:0005886	part_of GO:0005575, part_of GO:0016020
- GO:0001520, outer dense fiber	is_a GO:0005575; part_of GO:0005575	
+ GO:0001520, outer dense fiber	is_a GO:0005575; part_of GO:0005575
  GO:0001527, microfibril	is_a GO:0005575; part_of GO:0005576	part_of GO:0005575
  GO:0001529, elastin	obsolete
 
@@ -155,19 +155,21 @@ if ($options->{termlist})
 }
 
 # parse the input file and check we get a graph
-my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input}, 
-options => { 
-	body => { 
-		term => { name => 1, namespace => 1, relation => 1, is_a => 1, subset => 1, is_obsolete => 1, }, 
-		typedef => { '*' => 1 },
-	}, 
+my $parser = new GOBO::Parsers::OBOParserDispatchHash(file=>$options->{input},
+options => {
+	body => {
+		parse_only => {
+			term => [ qw( name namespace relation is_a subset is_obsolete ) ],
+			typedef => '*',
+		},
+	},
 });
 $parser->parse;
 
 die "Error: parser could not find a graph in " . $options->{input} . "!\nDying" unless $parser->graph;
 print STDERR "Finished parsing file " . $options->{input} . "\n" if $options->{verbose};
 
-my $graph = GOBO::Util::GraphFunctions::get_graph({ options => $options });
+my $graph = $parser->graph;
 
 # get the nodes matching our subset criteria
 if ($options->{subset})
@@ -307,20 +309,20 @@ foreach my $id (sort map { $_->id } @{$parser->graph->terms})
 
 	print $output $print_term->($id, $parser->graph)
 	. "\t" .
-	join("; ", 
-		map { 
+	join("; ",
+		map {
 			my $r1 = $_;
 			join(", ",  map { "$r1 $_" } sort keys %{$slimmed->{graph}{$id}{$r1}})
 		} sort keys %{$slimmed->{graph}{$id}}
 		)
 	. "\t" .
-	join("; ", 
+	join("; ",
 		grep { /\S/ }
-		map { 
+		map {
 			my $r2 = $_;
 			join(", ",
-				map { "$r2 $_" } 
-				grep { ! $slimmed->{graph}{$id}{$r2}{$_} } 
+				map { "$r2 $_" }
+				grep { ! $slimmed->{graph}{$id}{$r2}{$_} }
 				sort keys %{$data->{nodes}{graph}{$id}{$r2}}
 			)
 		} sort keys %{$data->{nodes}{graph}{$id}})
@@ -335,9 +337,9 @@ exit(0);
 # parse the options from the command line
 sub parse_options {
 	my $args = shift;
-	
+
 	my $opt;
-	
+
 	while (@$args && $args->[0] =~ /^\-/) {
 		my $o = shift @$args;
 		if ($o eq '-i' || $o eq '--ontology') {
@@ -410,7 +412,7 @@ sub check_options {
 	{	if ($opt->{subset} && $opt->{termlist})
 		{	push @$errs, "specify *either* named subset(s) ( '-s <subset_name>' )\n*or* a file containing a list of terms ( '-t' )";
 		}
-		
+
 		if ($opt->{termlist})
 		{	# check the term list exists
 			if (! -e $opt->{termlist})
@@ -500,9 +502,9 @@ sub get_subset_terms {
 	if (! $sub_h)
 	{	die "Could not find any terms in the file " . $opt->{termlist} . ". Dying";
 	}
-	
+
 	print STDERR "Found subset terms: " . join(", ", keys %$sub_h) . "\n" if $options->{verbose};
-	
+
 	return $sub_h;
 
 }
