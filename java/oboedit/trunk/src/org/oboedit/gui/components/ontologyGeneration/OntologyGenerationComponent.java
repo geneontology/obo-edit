@@ -1357,6 +1357,11 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	 * 
 	 * @param definitionField
 	 */
+	/*
+	 * SPEC: generate definition for the term, if the term is visible, move term to the top,
+	 *       if not make it visible and move it to the top and select (selection should make the definition, 
+	 *       if exist, listed first) 
+	 */	
 	private void onClickGenerateDefinitionsManually(JTextField definitionField)
 	{
 		String inputLabel = definitionField.getText().trim();
@@ -1394,8 +1399,13 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 			termsTable.setTerms(newTermsList);
 
-			// scroll to top
-			JTableHelper.scrollToTopAndSelectFirst(termsTable);
+			// scroll top and select first
+			if (onlyShowExistingTerms.isSelected() && !termToGenerateDefinitionsFor.isInLoadedOntology()){
+				onlyShowExistingTerms.setSelected(false);
+				updateTermsTableWithExistingTerms(false);
+			} else {
+				JTableHelper.scrollToTopAndSelectFirst(termsTable);
+			}
 		}
 		// trigger update ontology lookup
 		updateTermsTableUsingOntologyLookup(termsTable);
