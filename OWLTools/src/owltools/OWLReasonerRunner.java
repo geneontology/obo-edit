@@ -56,6 +56,10 @@ public class OWLReasonerRunner {
 				reasonerClassName = "org.mindswap.pellet.owlapi.Reasoner";
 				reasonerName = "pellet";
 			}
+			if (opt.equals("--no-reasoner")) {
+				reasonerClassName = "";
+				reasonerName = "";
+			}
 			else if (opt.equals("-r") || opt.equals("--namerestr")) {
 				createNamedRestrictions = true;
 			}
@@ -74,6 +78,8 @@ public class OWLReasonerRunner {
 
 		try {
 			for (String uri : paths) {
+				showMemory();
+				
 				// Create our ontology manager in the usual way.
 				OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
@@ -81,7 +87,8 @@ public class OWLReasonerRunner {
 				OWLOntology ont = manager.loadOntologyFromPhysicalURI(URI.create(uri));
 				System.out.println("Loaded " + ont.getURI());
 
-
+				showMemory();
+				
 
 				// We need to create an instance of OWLReasoner.  OWLReasoner provides the basic
 				// query functionality that we need, for example the ability obtain the subclasses
@@ -97,6 +104,8 @@ public class OWLReasonerRunner {
 				System.out.println("importsClosure: "+importsClosure);
 				reasoner.loadOntologies(importsClosure);
 
+				showMemory();
+				
 				OWLDataFactory owlFactory = manager.getOWLDataFactory();
 
 
@@ -147,6 +156,9 @@ public class OWLReasonerRunner {
 				long initTime = System.nanoTime();
 				reasoner.classify();
 				long totalTime = System.nanoTime() - initTime;
+
+				showMemory();
+				
 				System.out.println("   Total reasoner time = "
 						+ (totalTime / 1000000d) + " ms");
 
@@ -295,6 +307,14 @@ public class OWLReasonerRunner {
 				logger.error("no such reasoner: "+reasonerName);
 			OWLReasoner reasoner = reasonerFactory.createReasoner(man);
 			return reasoner;
+	}
+	
+	public static void showMemory() {
+		long tm = Runtime.getRuntime().totalMemory();
+		long fm = Runtime.getRuntime().freeMemory();
+		long mem = tm-fm;
+		System.out.println("Memory total:"+tm+" free:"+fm+" diff:"+mem+" (bytes) diff:"+(mem/1000000)+" (mb)");
+
 	}
 	
 	private static OWLReasoner old__createReasoner(OWLOntologyManager man, String reasonerClassName) {
