@@ -383,6 +383,6 @@ sub parse_benchmarks {
 
 sub usage {
     print <<EOM
-reasoner-benchmarks.pl [-s TOOL-TO-SKIP...] FILE*
+reasoner-benchmarks.pl [-s TOOL-TO-SKIP...] [--only TOOL] [-t MAXTIME-SECONDS] FILE*
 EOM
 }
