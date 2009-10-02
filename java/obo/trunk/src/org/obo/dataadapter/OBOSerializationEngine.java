@@ -731,26 +731,12 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			}
 		}
 
-
-		//There is a conflict here that needs to be resolved.
-
-		//Amina's code
-		//for(Object o: tagOrdering){
-		//	OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
-		//	writeTag(tagMapping, obj, linkDatabase, serializer);
-		//}
-
-		//Jen's code
-		//This is where an iterator is created to work though the tag 
-		//ordering collection and figure out which tags will be written in the file. 
-		Iterator it = engineTagOrderingList.iterator();
-		while (it.hasNext()) {
-			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) it.next();
+		
+		//ordering collection to figure out which tags will be written in the file. 
+		for(Object o: engineTagOrderingList){
+			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
 			writeTag(tagMapping, obj, linkDatabase, serializer);
 		}
-
-
-
 
 		written = false;
 		for (OBOSerializerExtension extension : extensions) {
