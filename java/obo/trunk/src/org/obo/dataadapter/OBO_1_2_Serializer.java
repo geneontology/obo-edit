@@ -10,6 +10,8 @@ import java.io.*;
 
 import org.apache.log4j.*;
 
+import com.hp.hpl.jena.ontology.Profile;
+
 public class OBO_1_2_Serializer implements OBOSerializer {
 
 	//initialize logger
@@ -17,6 +19,18 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 
 	protected PrintStream stream;
 
+	LinkedList serializer_1_2_tagOrdering = new LinkedList();
+
+	public LinkedList getSerializer_1_2_tagOrdering() {
+		return serializer_1_2_tagOrdering;
+	}
+
+	public void setSerializer_1_2_tagOrdering(LinkedList serializer_1_2_tagOrdering) {
+		this.serializer_1_2_tagOrdering = serializer_1_2_tagOrdering;
+	}
+
+	HashSet<OBOConstants.TagMapping> tagsToWrite;
+	
 	protected List<PropertyValue> scratch = new ArrayList<PropertyValue>();
 
 	protected List<PropertyValue> writeNestedValueScratch = new ArrayList<PropertyValue>();
@@ -58,7 +72,31 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	}
 
 	public List getTagOrdering() {
-		return null;
+		getSerializer_1_2_tagOrdering();
+		return serializer_1_2_tagOrdering;
+	}
+
+	//This is where the tagOrdering is set.
+	//This method is called in AdvancedOBOUI.java in
+	//the store method. This means that by the time we get back to commit() in GraphicalAdapterChooser, the tag
+	//ordering is set and can be accessed using getTagsToWrite(). 
+	
+	public void setTagOrdering(HashSet tagsToWrite) {
+		System.out.println("OBO_1_2_Serializer: setTagOrdering: tagsToWrite = " + tagsToWrite);
+
+		if(!(tagsToWrite == null)){
+		serializer_1_2_tagOrdering = getSerializer_1_2_tagOrdering();
+		serializer_1_2_tagOrdering.clear();
+		//This gets the order right.
+		serializer_1_2_tagOrdering.addAll(OBOConstants.DEFAULT_TAG_ORDER);
+		//This keeps only the tags that the user wants. 
+		serializer_1_2_tagOrdering.retainAll(tagsToWrite);
+		setSerializer_1_2_tagOrdering(serializer_1_2_tagOrdering);
+		System.out.println("OBO_1_2_Serializer: setTagOrdering: serializer_1_2_tagOrdering = " + getSerializer_1_2_tagOrdering());
+		}
+		
+		return;
+		
 	}
 
 	public Comparator getObjectComparator() {
@@ -240,7 +278,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			println();
 		}
 	}
-	
+
 	public void writeIsMetadataTag(boolean value, NestedValue nv)
 	throws IOException {
 		if (value || nv != null) {
@@ -356,7 +394,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	public void writeHoldsOverChainTag(List<OBOProperty> chain) throws IOException {
 		print("holds_over_chain:");
 		for (OBOProperty prop : chain) {
-				print(" " + engine.mapID(prop, prop.getID()));
+			print(" " + engine.mapID(prop, prop.getID()));
 		}
 		//print(" ! " + domain.getName());
 		println();
@@ -483,7 +521,7 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 			scratch.add(new PropertyValueImpl("implied", "true"));
 
 		if (link.getParent() == null) {
-		  logger.error("invalid link object: "+link);	
+			logger.error("invalid link object: "+link);	
 		}
 		stream.print(engine.mapID(link.getParent(), link.getParent().getID()));
 		if (link instanceof OBORestriction) {
@@ -662,6 +700,8 @@ public class OBO_1_2_Serializer implements OBOSerializer {
 	public void writeGenericHeaderTag(String property, String value) throws IOException {
 		print(property+": "+value);
 		println();
-		
+
 	}
+
+
 }
