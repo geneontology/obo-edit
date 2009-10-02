@@ -53,11 +53,15 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected Filter objectFilter;
 
+		protected TagFilter tagFilter;
+
 		protected String prefilterProperty;
 
 		protected boolean doFilter = false;
 
 		protected boolean doLinkFilter = false;
+
+		protected boolean doTagFilter = true;
 
 		protected boolean allowDangling = false;
 
@@ -89,12 +93,21 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean writeModificationData = false;
 
+		protected HashSet<OBOConstants.TagMapping> tagsToWrite;
+
 		public FilteredPath() {
 		}
 
 		public FilteredPath(Filter linkFilter, Filter objectFilter, String path) {
 			setLinkFilter(linkFilter);
 			setObjectFilter(objectFilter);
+			setPath(path);
+		}
+
+		public FilteredPath(Filter linkFilter, Filter objectFilter, TagFilter tagFilter, String path) {
+			setLinkFilter(linkFilter);
+			setObjectFilter(objectFilter);			
+			setTagFilter(tagFilter);
 			setPath(path);
 		}
 
@@ -182,8 +195,16 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			return doLinkFilter;
 		}
 
+		public boolean getDoTagFilter() {
+			return doTagFilter;
+		}
+
 		public void setDoLinkFilter(boolean doLinkFilter) {
 			this.doLinkFilter = doLinkFilter;
+		}
+
+		public void setDoTagFilter(boolean doTagFilter) {
+			this.doTagFilter = doTagFilter;
 		}
 
 		public boolean getDoFilter() {
@@ -229,6 +250,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		public void setLinkFilter(Filter linkFilter) {
 			this.linkFilter = linkFilter;
+		}		
+
+		public TagFilter getTagFilter() {
+			return tagFilter;
+		}
+
+		public void setTagFilter(TagFilter tagFilter) {
+			this.tagFilter = tagFilter;
 		}
 
 		public Filter getObjectFilter() {
@@ -254,6 +283,14 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		public void setWriteModificationData(boolean writeModificationData) {
 			this.writeModificationData = writeModificationData;
 		}
+
+		public void setTagsToWrite(HashSet<OBOConstants.TagMapping> tagsToWrite) {
+			this.tagsToWrite = tagsToWrite;
+		}
+
+		public HashSet<OBOConstants.TagMapping> getTagsToWrite(){
+			return tagsToWrite;
+		}
 	}
 
 	protected boolean cancelled = false;
@@ -278,7 +315,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 	protected boolean assertImplied;
 
+	//Should this still be here? - Jen
 	protected List<TagMapping> tagOrdering;
+
+	protected List<TagMapping> engineTagOrderingList;
 
 	protected List<StanzaMapping> stanzaOrdering;
 
@@ -410,7 +450,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	public void serialize(OBOSession session, OBOSerializer serializer,
 			String path) throws DataAdapterException {
 		serialize(session, serializer, Collections.singleton(new FilteredPath(
-				null, null, path)));
+				null, null, null, path)));
 	}
 
 	public void serialize(OBOSession session, OBOSerializer serializer,
@@ -437,6 +477,8 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 				Filter linkFilter = filteredPath.getLinkFilter();
 				Filter objectFilter = filteredPath.getObjectFilter();
+				HashSet<OBOConstants.TagMapping> tagFilter = filteredPath.getTagFilter().getTagsToWrite();
+
 				if (!filteredPath.getDoFilter())
 					objectFilter = null;
 				else if (filteredPath.getSaveTypes()) {
@@ -453,7 +495,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 				}
 				if (!filteredPath.getDoLinkFilter())
 					linkFilter = null;
-				writeFile(session, objectFilter, linkFilter, serializer,
+				if (!filteredPath.getDoTagFilter())
+					tagFilter = null;
+				writeFile(session, objectFilter, linkFilter, tagFilter, serializer,
 						stream, filteredPath);
 			} catch (IOException ex) {
 				throw new DataAdapterException("Write error", ex);
@@ -682,15 +726,31 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			if (isRealObject(obj))
 				serializer.startStanza(obj);
 			else {
-//				logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
+				//				logger.info("OBOSerializationEngine.writeObject: not writing bogus object " + obj); // DEL
 				return;
 			}
 		}
 
+
+		//There is a conflict here that needs to be resolved.
+
+		//Amina's code
 		for(Object o: tagOrdering){
 			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
 			writeTag(tagMapping, obj, linkDatabase, serializer);
 		}
+
+		//Jen's code
+		//This is where an iterator is created to work though the tag 
+		//ordering collection and figure out which tags will be written in the file. 
+		Iterator it = engineTagOrderingList.iterator();
+		while (it.hasNext()) {
+			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) it.next();
+			writeTag(tagMapping, obj, linkDatabase, serializer);
+		}
+
+
+
 
 		written = false;
 		for (OBOSerializerExtension extension : extensions) {
@@ -727,7 +787,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 			LinkDatabase linkDatabase, OBOSerializer serializer,
 			boolean allowDangling, boolean closeDangling, 
 			boolean realizeImpliedLinks, boolean writeModificationData) throws IOException, CancelledAdapterException {
-//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
+		//		logger.debug("OBOSerializationEngine.writeTag -- obj:  " + obj);
 		for (OBOSerializerExtension extension : extensions) {
 			if (extension.writeTag(tagMapping, obj, linkDatabase))
 				return;
@@ -996,17 +1056,17 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	 * @param database
 	 * */
 	public void writeObjectsforDanglingLink(OBOSerializer serializer, Link link, LinkDatabase database) throws CancelledAdapterException, IOException{
-//		logger.debug("OBOSerializeEngine -- writeLink");
-//		logger.debug("link: " + link);
-//		logger.debug("child: " + link.getChild());
-//		logger.debug("parent: " + link.getParent());
+		//		logger.debug("OBOSerializeEngine -- writeLink");
+		//		logger.debug("link: " + link);
+		//		logger.debug("child: " + link.getChild());
+		//		logger.debug("parent: " + link.getParent());
 		//get relations of child and parent upto root 
 		Collection parentAncestors = TermUtil.getAncestors(link.getParent(), null);
 		Collection childAncestors = TermUtil.getAncestors(link.getChild(), null);
 
 		Collection<Link> parentLinksofChildTerm = database.getParents(link.getChild());
 		Collection<Link> parentLinksofParentTerm = database.getParents(link.getParent());
-		
+
 		for(Object o : parentAncestors){
 			Object obj = (LinkedObject)o;
 
@@ -1015,9 +1075,9 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		}
 		if(parentLinksofChildTerm != null){
-		for(Link pclink : parentLinksofChildTerm){
-			serializer.writeLinkTag(pclink, pclink.getNestedValue());
-		}
+			for(Link pclink : parentLinksofChildTerm){
+				serializer.writeLinkTag(pclink, pclink.getNestedValue());
+			}
 		}
 
 		for(Object o : childAncestors){
@@ -1077,7 +1137,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 	}
 
 	public void writeFile(OBOSession session, Filter objectFilter,
-			Filter linkFilter, OBOSerializer serializer, PrintStream stream,
+			Filter linkFilter, HashSet<TagMapping> tagFilter, OBOSerializer serializer, PrintStream stream,
 			FilteredPath filteredPath) throws IOException,
 			CancelledAdapterException {
 		String path = filteredPath.getPath();
@@ -1224,16 +1284,19 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		else
 			headerTagOrdering.addAll(serializer.getHeaderTagOrdering());
 
-		tagOrdering = new LinkedList<TagMapping>();
-		if (serializer.getTagOrdering() == null)
-			tagOrdering.addAll(OBOConstants.DEFAULT_TAG_ORDER);
-		else
-			tagOrdering.addAll(serializer.getTagOrdering());
-
+		//This is where tagOrdering is populated.
+				engineTagOrderingList = new LinkedList<TagMapping>();
+				if (serializer.getTagOrdering() == null  ){
+					engineTagOrderingList.addAll(OBOConstants.DEFAULT_TAG_ORDER);
+				} else {
+					serializer.setTagOrdering(filteredPath.getTagFilter().getTagsToWrite());
+					engineTagOrderingList.addAll(serializer.getTagOrdering());
+				}
+		
 		for (OBOSerializerExtension extension : extensions) {
 			extension.changeStanzaOrder(stanzaOrdering);
 			extension.changeHeaderTagOrder(headerTagOrdering);
-			extension.changeTagOrder(tagOrdering);
+			extension.changeTagOrder(engineTagOrderingList);
 		}
 
 		Comparator objectComparator = serializer.getObjectComparator();
