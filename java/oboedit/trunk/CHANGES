@@ -144,4 +144,11 @@ Troubleshooting- add note about:
 https://sourceforge.net/tracker2/index.php?func=detail&aid=2683791&group_id=36855&atid=418257
 
 
+2nd October - J. Deegan committed new Tag Filter code. This feature enables 
+users to choose which tags are saved out into OBO files. The GUI is in the 
+'save as' dialog. There is still some work to do to make the GUI look less intimidating. Also, though the feature has been
+carefully tested, further testing will be required in case an obscure bug is causing parts of
+the data not to be saved out at all. I have not yet run the JUnit tests. When this code is released we should warn in-house users to
+watch diffs carefully for lost tags. 
+
 
