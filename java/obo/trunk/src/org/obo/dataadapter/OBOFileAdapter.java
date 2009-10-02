@@ -311,7 +311,7 @@ public class OBOFileAdapter implements OBOAdapter {
 
 				if (ioprofile.getBasicSave()) {
 					filteredPaths.add(new OBOSerializationEngine.FilteredPath(
-							null, null, ioprofile.getWritePath()));
+							null, null, null, ioprofile.getWritePath()));
 				} else {
 					filteredPaths.addAll(ioprofile.getSaveRecords());
 				}
