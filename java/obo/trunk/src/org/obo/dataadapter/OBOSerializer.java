@@ -27,6 +27,8 @@ public interface OBOSerializer {
 	public List getStanzaOrdering();
 
 	public List getTagOrdering();
+	
+	public void setTagOrdering(HashSet tagToWrite);
 
 	public Comparator getObjectComparator();
 
