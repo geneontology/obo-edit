@@ -735,10 +735,10 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 		//There is a conflict here that needs to be resolved.
 
 		//Amina's code
-		for(Object o: tagOrdering){
-			OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
-			writeTag(tagMapping, obj, linkDatabase, serializer);
-		}
+		//for(Object o: tagOrdering){
+		//	OBOConstants.TagMapping tagMapping = (OBOConstants.TagMapping) o;
+		//	writeTag(tagMapping, obj, linkDatabase, serializer);
+		//}
 
 		//Jen's code
 		//This is where an iterator is created to work though the tag 
