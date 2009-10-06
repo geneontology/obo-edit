@@ -13,6 +13,14 @@ import org.obo.datamodel.OBOSession;
 import org.obo.history.HistoryGenerator;
 import org.obo.history.HistoryList;
 
+
+/**
+ * I have not yet modified this from the class it is based on. 
+ * 
+ * @author Jennifer I Deegan
+ *
+ */
+
 public class TagFilterTest extends TestCase {
 
 	//initialize logger
