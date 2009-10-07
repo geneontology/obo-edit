@@ -24,14 +24,22 @@ public class GOobjectFactory {
 	 * @param sf a {@link SessionFactory} object with an active transaction. 
 	 */
 	public GOobjectFactory(SessionFactory sessionFactory){
+		/*
+		if (sf != null) {
+			sf.close();
+		}
 		sf = sessionFactory;
+		*/
+		if (sf == null) {
+			sf = sessionFactory;
+		}
 	}
 
 	/**
 	 * 
 	 * @return {@link SessionFactory} object
 	 */
-	public Session getSession() {
+	public synchronized Session getSession() {
 		Session session = sf.getCurrentSession();
 		session.beginTransaction();
 		return session;
@@ -44,7 +52,7 @@ public class GOobjectFactory {
 	 * @param acc
 	 * @return
 	 */
-	public Term getTermByAcc(String acc){
+	public synchronized Term getTermByAcc(String acc){
 		Session session = getSession();
 		return (Term)session.createQuery("from Term where acc = ?").setString(0, acc).uniqueResult();
 	}
@@ -52,7 +60,7 @@ public class GOobjectFactory {
 	/**
 	 * getTermByName: Fetches a Term from the database with the specified name
 	 */
-	public Term getTermByName(String name){
+	public synchronized Term getTermByName(String name){
 		Session session = getSession();
 		Iterator<Term> results = session.createQuery("from Term where name = ?").setString(0, name).iterate();
 		Term term = null;
@@ -71,7 +79,7 @@ public class GOobjectFactory {
 	 * @param int id
 	 * @return DBXref
 	 */
-	public DBXref getDBXrefByID (int id) {
+	public synchronized DBXref getDBXrefByID (int id) {
 		Session session = getSession();
 		return (DBXref)session.createQuery("from DBXref where id = ?").setInteger(0, id).uniqueResult();
 	}
@@ -82,7 +90,7 @@ public class GOobjectFactory {
 	 * @param String acc - the accession number
 	 * @return DBXref
 	 */
-	public DBXref getDBXrefByDBAcc (String db, String acc) {
+	public synchronized DBXref getDBXrefByDBAcc (String db, String acc) {
 		Session session = getSession();
 		Query q = session.createQuery("from DBXref where db = ? and acc = ?");
 		q.setString(0, db);
@@ -95,7 +103,7 @@ public class GOobjectFactory {
 	 * @param String name
 	 * @return DB
 	 */
-	public DB getDBByName (String name) {
+	public synchronized DB getDBByName (String name) {
 		Session session = getSession();
 		return (DB)session.createQuery("from DB where name = ?").setString(0, name).uniqueResult();
 	}
@@ -106,7 +114,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs) {
+	public synchronized Iterator<GeneProduct> getGPListByDBXref(Vector<String []> xrefs) {
 		Session session = getSession();
 		String query_str = "select g from GeneProduct as g inner join g.dbxref as xref where ";
 		String prefix = "";
@@ -122,8 +130,16 @@ public class GOobjectFactory {
 			query.setString(param_count++, xref[0]);
 			query.setString(param_count++, xref[1]);
 		}
+		/*
 		Iterator<GeneProduct> results = query.iterate();
 		return results;
+		*/
+		Iterator<?> results = query.iterate();
+		java.util.List<GeneProduct> geneProducts = new java.util.ArrayList<GeneProduct>();
+		while (results.hasNext()) {
+			geneProducts.add((GeneProduct)results.next());
+		}
+		return geneProducts.iterator();
 	}
 	
 	/**
@@ -132,7 +148,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public GeneProduct getGPByDBXref(String db_name, String db_key) {
+	public synchronized GeneProduct getGPByDBXref(String db_name, String db_key) {
 		Session session = getSession();
 		GeneProduct gp = (GeneProduct) session.createQuery("select g from GeneProduct as g inner join g.dbxref as xref " +
 				" where xref.db_name = ? and" +
@@ -147,7 +163,7 @@ public class GOobjectFactory {
 	 * @param xrefStr
 	 * @return
 	 */
-	public GeneProduct getGPByDBXrefStr(String xrefStr) {
+	public synchronized GeneProduct getGPByDBXrefStr(String xrefStr) {
 		String[] parts = xrefStr.split(":", 2);
 		return getGPByDBXref(parts[0], parts[1]);
 	}
@@ -157,7 +173,7 @@ public class GOobjectFactory {
 	 * @param seq_acc the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public GeneProduct getGPByAcc(String seq_acc) {
+	public synchronized GeneProduct getGPByAcc(String seq_acc) {
 		Session session = getSession();
 		GeneProduct	gp = (GeneProduct) session.createQuery("select g from GeneProduct as g inner join g.dbxref as xref " +
 		" where xref.accession = ?")
@@ -170,7 +186,7 @@ public class GOobjectFactory {
 	 * @param int dbxref_id
 	 * @return GeneProduct
 	 */
-	public GeneProduct getGPByDBXref_ID(int dbxref_id){
+	public synchronized GeneProduct getGPByDBXref_ID(int dbxref_id){
 		Session session = getSession();
 		return (GeneProduct)session.createQuery("from GeneProduct where dbxref_id = ?").setInteger(0, dbxref_id).uniqueResult();
 	}
@@ -180,7 +196,7 @@ public class GOobjectFactory {
 	 * @param int dbxref_id
 	 * @return GeneProduct
 	 */
-	public GeneProduct getGPByID(int gene_id){
+	public synchronized GeneProduct getGPByID(int gene_id){
 		Session session = getSession();
 		return (GeneProduct)session.createQuery("from GeneProduct where id = ?").setInteger(0, gene_id).uniqueResult();
 	}
@@ -190,7 +206,7 @@ public class GOobjectFactory {
 	 * @param String name
 	 * @return GeneProduct
 	 */
-	public Iterator<GeneProduct> getGPByName (String name) {
+	public synchronized Iterator<GeneProduct> getGPByName (String name) {
 		Session session = getSession();
 		return (Iterator<GeneProduct>)session.createQuery("from GeneProduct where symbol = ?").setString(0, name).iterate();
 	}
@@ -208,7 +224,7 @@ public class GOobjectFactory {
 	 * @param db_key the {@link org..geneontology.db.model.DBXref} db_key to fetch {@link GeneProduct} objects by.
 	 * @return the unique {@link GeneProduct} that have DBXref of with the specified name and key.
 	 */
-	public Iterator<GeneProduct>  getGPBySeq(String db_key) {
+	public synchronized Iterator<GeneProduct>  getGPBySeq(String db_key) {
 		Session session = getSession();
 		return (Iterator<GeneProduct>) session.createQuery("select g from GeneProduct as g inner join g.seqs as seq_link " +
 				"inner join seq_link.seq as seq " +
@@ -222,12 +238,12 @@ public class GOobjectFactory {
 	 * @param taxa
 	 * @return Species
 	 */
-	public Species getSpeciesByTaxa(int taxa){
+	public synchronized Species getSpeciesByTaxa(int taxa){
 		Session session = getSession();
 		return (Species)session.createQuery("from Species where ncbi_taxa_id = ?").setInteger(0, taxa).uniqueResult();
 	}
 
-	public Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp) {
+	public synchronized Iterator<Association> getAssociationsIteratorByGP(GeneProduct gp) {
 		Iterator<Association> it = getSession().createQuery("from Association where gene_product = ?").setEntity(0, gp).iterate();
 		return it;
 	}
@@ -235,7 +251,7 @@ public class GOobjectFactory {
 	/**
 	 * 
 	 */
-	public Vector<Term> getTermIntersection(HashMap<Term, Vector<Association>> annots) {
+	public synchronized Vector<Term> getTermIntersection(HashMap<Term, Vector<Association>> annots) {
 		Vector<String> gp_ids = new Vector<String> (annots.size());
 		for (Iterator<Vector<Association>> it = annots.values().iterator(); it.hasNext();) {
 			Vector<Association> assocs = it.next();
@@ -252,7 +268,7 @@ public class GOobjectFactory {
 
 	}
 
-	public Vector<Term> getTermIntersectionByGP(Collection<String> gp_ids) {
+	public synchronized Vector<Term> getTermIntersectionByGP(Collection<String> gp_ids) {
 		Session session = getSession();
 		/* 
 		 * For (working) example
