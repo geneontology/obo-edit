@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Name=AmiGO
+Comment=Explore the Gene Ontology
+Exec=/usr/bin/firefox http://localhost/cgi-bin/amigo/go.cgi
+Icon=/usr/local/src/go-dev/amigo/amigo/images/opensearch_logo.png
+Type=Application
+Terminal=false
+StartupNotify=true
