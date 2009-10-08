@@ -1,0 +1,164 @@
+#!/bin/sh
+
+PREREQ=""
+DESCRIPTION="Adding live session user..."
+
+. /scripts/casper-functions
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+       prereqs
+       exit 0
+       ;;
+esac
+
+log_begin_msg "$DESCRIPTION"
+
+# U6aMy0wojraho is just a blank password
+chroot /root debconf-communicate -fnoninteractive casper > /dev/null <<EOF
+set passwd/root-password-crypted *
+set passwd/user-password-crypted U6aMy0wojraho
+set passwd/user-fullname $USERFULLNAME 
+set passwd/username $USERNAME
+set passwd/user-uid 999
+EOF
+
+chroot /root /usr/lib/user-setup/user-setup-apply > /dev/null
+
+# Clear out debconf database again to avoid confusing ubiquity later.
+chroot /root debconf-communicate -fnoninteractive casper > /dev/null <<EOF
+set passwd/root-password-crypted
+set passwd/user-password-crypted
+set passwd/user-fullname
+set passwd/username
+set passwd/user-uid
+EOF
+
+if [ -f /root/etc/sudoers ]; then
+    if [ "${BUILD_SYSTEM}" = "Ubuntu" ]; then
+	if grep -q '^%admin' /root/etc/sudoers; then
+	    sed -i -e '/^%admin/s/(ALL) ALL$/(ALL) NOPASSWD: ALL/' /root/etc/sudoers
+	else
+	    echo '%admin  ALL=(ALL) NOPASSWD: ALL' >> /root/etc/sudoers
+	fi
+    elif [ "${BUILD_SYSTEM}" = "Debian" ]; then
+		echo "${USERNAME}  ALL=(ALL) NOPASSWD: ALL" >> /root/etc/sudoers
+    fi
+fi
+
+# XXX - awful hack to stop xscreensaver locking the screen (#7150)
+echo 'RUNNING_UNDER_GDM="yes"' >> /root/etc/environment
+
+# for file in /usr/share/applications/ubiquity-gtkui.desktop /usr/share/applications/kde/ubiquity-kdeui.desktop; do
+#     if [ -f "/root/$file" ]; then
+#         chroot /root install -d -o $USERNAME -g $USERNAME /home/$USERNAME/Desktop
+#         chroot /root install -D -o $USERNAME -g $USERNAME $file /home/$USERNAME/Desktop/$(basename "$file")
+#         break
+#     fi
+# done
+
+if [ -L /root/home/$USERNAME/Examples ]; then
+    chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+    mv /root/home/$USERNAME/Examples /root/home/$USERNAME/Desktop/
+fi
+
+## Ready desktop area.
+# for file in /etc/skel/amigo.desktop /etc/skel/documentation.desktop /etc/skel/obo-edit.desktop /etc/skel/sql-client.desktop ; do
+#     if [ -f "/root/$file" ]; then
+#         chroot /root install -d -o $USERNAME -g $USERNAME /home/$USERNAME/Desktop
+#         chroot /root install -D -o $USERNAME -g $USERNAME $file /home/$USERNAME/Desktop/$(basename "$file")
+#         break
+#     fi
+# done
+# if [ -f /root/home/$USERNAME/examples.desktop ]; then
+#     chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+#     mv /root/home/$USERNAME/examples.desktop /root/home/$USERNAME/Desktop/
+# fi
+## Sadly, I'm not sure which of these work (or even if they do).
+chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+chroot /root install -D -o $USERNAME -g $USERNAME -m 755 /etc/skel/amigo.desktop /home/$USERNAME/Desktop/amigo.desktop
+chroot /root install -D -o $USERNAME -g $USERNAME /etc/skel/documentation.desktop /home/$USERNAME/Desktop/documentation.desktop
+chroot /root install -D -o $USERNAME -g $USERNAME /etc/skel/obo-edit.desktop /home/$USERNAME/Desktop/obo-edit.desktop
+chroot /root install -D -o $USERNAME -g $USERNAME /etc/skel/sql-client.desktop /home/$USERNAME/Desktop/sql-client.desktop
+
+# chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+# if [ -f /root/home/$USERNAME/amigo.desktop ]; then
+#     cp /root/home/$USERNAME/amigo.desktop /root/home/$USERNAME/Desktop/
+# fi
+# if [ -f /root/home/$USERNAME/documentation.desktop ]; then
+#     chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+#     cp /root/home/$USERNAME/documentation.desktop /root/home/$USERNAME/Desktop/
+# fi
+# if [ -f /root/home/$USERNAME/obo-edit.desktop ]; then
+#     chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+#     cp /root/home/$USERNAME/obo-edit.desktop /root/home/$USERNAME/Desktop/
+# fi
+# if [ -f /root/home/$USERNAME/sql-client.desktop ]; then
+#     chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+#     cp /root/home/$USERNAME/sql-client.desktop /root/home/$USERNAME/Desktop/
+# fi
+# chroot /root install -o $USERNAME -g $USERNAME -d /home/$USERNAME/Desktop/
+# cp /etc/skel/amigo.desktop /root/home/$USERNAME/Desktop/
+# cp /etc/skel/documentation.desktop /root/home/$USERNAME/Desktop/
+# cp /etc/skel/obo-edit.desktop /root/home/$USERNAME/Desktop/
+# cp /etc/skel/sql-client.desktop /root/home/$USERNAME/Desktop/
+# cp /root/etc/skel/amigo.desktop /root/home/$USERNAME/Desktop/
+# cp /root/etc/skel/documentation.desktop /root/home/$USERNAME/Desktop/
+# cp /root/etc/skel/obo-edit.desktop /root/home/$USERNAME/Desktop/
+# cp /root/etc/skel/sql-client.desktop /root/home/$USERNAME/Desktop/
+# cp /root/etc/skel/amigo.desktop /home/$USERNAME/Desktop/
+# cp /root/etc/skel/documentation.desktop /home/$USERNAME/Desktop/
+# cp /root/etc/skel/obo-edit.desktop /home/$USERNAME/Desktop/
+# cp /root/etc/skel/sql-client.desktop /home/$USERNAME/Desktop/
+# cp /etc/skel/amigo.desktop /home/$USERNAME/Desktop/
+# cp /etc/skel/documentation.desktop /home/$USERNAME/Desktop/
+# cp /etc/skel/obo-edit.desktop /home/$USERNAME/Desktop/
+# cp /etc/skel/sql-client.desktop /home/$USERNAME/Desktop/
+
+#Kubuntu
+if [ -f "/root/usr/bin/plasma" ]; then
+    if [ -f "/root/usr/share/kde4/apps/khelpcenter/plugins/kubuntu/about-kubuntu.desktop" ]; then
+      chroot /root install -d -o $USERNAME -g $USERNAME /home/$USERNAME/Desktop
+      chroot /root install -D -o $USERNAME -g $USERNAME /usr/share/kde4/apps/khelpcenter/plugins/kubuntu/about-kubuntu.desktop /home/$USERNAME/Desktop/about-kubuntu.desktop
+    fi
+fi
+
+# #Ubuntu MID wants to be installed with --automatic
+# if [ -f "/root/usr/share/ubuntu-mid-default-settings/mid-gui-start" ]; then
+#   if [ -f "/root/usr/share/applications/ubiquity-gtkui.desktop" ]; then
+#     sed -i 's/--desktop/--automatic --desktop/' "/root/usr/share/applications/ubiquity-gtkui.desktop"
+#   fi
+# fi
+
+# #Ubuntu MID uses kourou, and the ubiquity icon should be easy to find
+# if [ -f "/root/usr/lib/hildon-desktop/kourou.py" ]; then
+#   if [ -f "/root/etc/xdg/menus/home.menu" ]; then
+#     sed -i '/<\/Include>/i\		<Filename>ubiquity-gtkui.desktop</Filename>' "/root/etc/xdg/menus/home.menu"
+#   fi
+# fi
+
+# #Ubuntu Netbook Remix needs Categories=Favorites for ubiquity
+# if grep -q "Categories=Favorites;" "/root/usr/share/applications/firefox-fav.desktop"; then
+#   if [ -f "/root/usr/share/applications/ubiquity-gtkui.desktop" ]; then
+#     sed -i '/^Categories/s/$/Favorites;/' "/root/usr/share/applications/ubiquity-gtkui.desktop"
+#   fi
+# fi
+
+#Mythbuntu
+if [ -d "/root/usr/share/mythbuntu" ]; then
+  if [ -f "/root/usr/share/applications/mythbuntu-live-frontend.desktop" ]; then
+    chroot /root install -d -o $USERNAME -g $USERNAME /home/$USERNAME/Desktop
+    chroot /root install -D -o $USERNAME -g $USERNAME /usr/share/applications/mythbuntu-live-frontend.desktop /home/$USERNAME/Desktop/mythbuntu-live-frontend.desktop
+  fi
+  if [ -f "/root/etc/xdg/mythbuntu/xfce4/mcs_settings/desktop.xml" ]; then
+    sed -i "s/<\/mcs/\t<option\ name=\"showremovable\"\ type=\"int\"\ value=\"0\"\/>\n<\/mcs/" /root/etc/xdg/mythbuntu/xfce4/mcs_settings/desktop.xml 
+  fi
+fi
+
+log_end_msg

@@ -1,0 +1,154 @@
+## Adapted from the Ubuntu documentation: https://help.ubuntu.com/community/LiveCDCustomization
+
+In the beginning:
+
+   sudo aptitude install squashfs-tools genisoimage
+   mkdir live
+   cd live
+   sudo /etc/init.d/mysql stop
+   sudo /etc/init.d/apache2 stop
+   wget http://mirror.anl.gov/pub/ubuntu-iso/CDs/jaunty/ubuntu-9.04-desktop-i386.iso
+
+Extract CD contents:
+
+   mkdir mnt
+   sudo mount -o loop ubuntu-9.04-desktop-i386.iso mnt
+   mkdir extract-cd
+   rsync --exclude=/casper/filesystem.squashfs -a mnt/ extract-cd
+
+Extract desktop system:
+
+   sudo unsquashfs mnt/casper/filesystem.squashfs
+   sudo mv squashfs-root edit
+
+=== REPEAT ==================================================
+
+Chroot in:
+
+   sudo cp /etc/resolv.conf edit/etc/
+   (sudo cp /etc/hosts edit/etc/)*
+   sudo mount --bind /dev/ edit/dev
+   sudo chroot edit
+
+Once in:
+
+   mount -t proc none /proc
+   mount -t sysfs none /sys
+   mount -t devpts none /dev/pts
+   export HOME=/root
+   export LC_ALL=C
+
+Stuff to do (general installation):
+
+   ## Add universe and multiverse
+   nano /etc/apt/sources.list
+   apt-get update
+   (apt-get dist-upgrade)*
+   ## General
+   apt-get -u install openssh-server apache2 cvs sun-java5-jre
+   ## AmiGO (pt. 1)
+   apt-get -u install libcgi-application-perl libcgi-application-basic-plugin-bundle-perl libcgi-application-extra-plugin-bundle-perl libgraphviz-perl graphviz libdbix-class-perl libossp-uuid-perl libtest-www-mechanize-cgiapp-perl libdbd-sqlite3-perl
+   ## AmiGO (pt. 2)
+   apt-get -u remove libjson-xs-perl
+   ## AmiGO (pt. 3)
+   cd /tmp
+   apt-get -u install g++ dh-make-perl
+   ## BUG: neither of the below are working--importing for now...
+   # dh-make-perl --build --notest --cpan GO::TermFinder
+   # DEB_BUILD_OPTIONS=nocheck dh-make-perl --build --cpan GO::TermFinder
+   [sudo cp /home/sjcarbon/tmp/libgo-termfinder-perl_0.7-1_i386.deb ~/local/live/edit/tmp/]
+   dpkg -i libgo-termfinder-perl_0.7-1_i386.deb
+   ## "change"?
+   apt-get -u install mysql-server
+   apt-get install perl-doc
+
+Stuff to do (OBO-Edit):
+
+   cd /usr/local/src
+   wget http://downloads.sourceforge.net/project/geneontology/OBO-Edit%202%20%5Bcurrent%20release%5D/oboedit2.0/oboedit_2_0__unix_install4j.sh?use_mirror=softlayer
+   ## Accepting most defaults.
+   sh ./oboedit_2_0__unix_install4j.sh -c
+
+Stuff to do (apache2):
+
+   apt-get -u install libapache2-mod-fastcgi libapache2-mod-perl2
+   mkdir -p /srv/www/cgi-bin
+   mkdir -p /srv/www/htdocs
+   [sudo cp ~/local/src/svn/geneontology/live-cd/default ~/local/live/edit/etc/apache2/sites-available/]
+   a2enmod proxy_http
+   /etc/init.d/apache2 restart
+
+Stuff to do (AmiGO and GO database):
+
+   cd /usr/local/src
+   cvs -z3 -d:pserver:anonymous@geneontology.cvs.sourceforge.net:/cvsroot/geneontology co -P go-dev/go-perl
+   cvs -z3 -d:pserver:anonymous@geneontology.cvs.sourceforge.net:/cvsroot/geneontology co -P go-dev/go-db-perl
+   cvs -z3 -d:pserver:anonymous@geneontology.cvs.sourceforge.net:/cvsroot/geneontology co -P go-dev/amigo
+   ## GRANT ALL ON *.* TO ''@'localhost';GRANT ALL ON *.* TO 'root'@'localhost';
+   mysql -p -u root
+   go-dev/go-db-perl/scripts/go_db_install.pl -i -e go_latest_lite -v -d localhost
+   [sudo cp ~/local/src/cvs/go-dev/amigo/config/live-cd/config.pl ~/local/live/edit/usr/local/src/go-dev/amigo/]
+   cd /usr/local/src/go-dev/amigo
+   ./install.pl -v -e -g -j
+
+Stuff to do (user environment):
+
+   ln -s /usr/bin/perl /usr/local/bin/perl
+   [sudo cp ~/local/src/svn/geneontology/live-cd/10adduser ~/local/live/edit/usr/share/initramfs-tools/scripts/casper-bottom/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/.bashrc ~/local/live/edit/etc/skel/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/obo-edit.desktop ~/local/live/edit/etc/skel/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/amigo.desktop ~/local/live/edit/etc/skel/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/sql-client.desktop ~/local/live/edit/etc/skel/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/documentation.desktop ~/local/live/edit/etc/skel/]
+   cd /etc/skel
+   rm examples.desktop
+
+On the way out:
+
+   aptitude clean
+   rm -rf /tmp/* ~/.bash_history
+   rm /etc/resolv.conf
+   umount /proc
+   (umount -lf /proc)*
+   umount /sys
+   umount /dev/pts
+   exit
+
+===================================================
+
+   sudo umount edit/dev
+   (sudo umount -lf edit/dev)*
+
+Assembling CD:
+
+   chmod +w extract-cd/casper/filesystem.manifest
+   sudo chroot edit dpkg-query -W --showformat='${Package} ${Version}\n' > extract-cd/casper/filesystem.manifest
+   sudo cp extract-cd/casper/filesystem.manifest extract-cd/casper/filesystem.manifest-desktop
+   sudo sed -i '/ubiquity/d' extract-cd/casper/filesystem.manifest-desktop
+   sudo sed -i '/casper/d' extract-cd/casper/filesystem.manifest-desktop
+   sudo rm extract-cd/casper/filesystem.squashfs
+   sudo mksquashfs edit extract-cd/casper/filesystem.squashfs -nolzma
+   sudo mg extract-cd/README.diskdefines
+   cd extract-cd
+   sudo rm md5sum.txt
+   find -type f -print0 | xargs -0 md5sum | grep -v isolinux/boot.cat | sudo tee md5sum.txt
+
+Final:
+
+   sudo mkisofs -D -r -V "$IMAGE_NAME" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-9.04.1-desktop-i386-custom.iso .
+
+Test:
+
+   sudo modprobe kvm-intel; kvm -m 750 -soundhw sb16 -net nic -net user -cdrom ../ubuntu-9.04.1-desktop-i386-custom.iso
+
+ERRORS:
+
+  icons not appearing on the desktop
+  apt-file pop-up on login (maybe fixed by chrooted update/upgrade?)
+
+TODO:
+
+  add geneontology.obo
+  remove icon for "Install"
+  branding
+  add README to the desktop

@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Name=OBO-Edit 2
+Comment=Edit ontologies
+Exec=/usr/local/OBO-Edit2/OBO-Edit
+Icon=/usr/local/OBO-Edit2/docs/images/graph_editor_whole_window.png
+Type=Application
+Terminal=false
+StartupNotify=true
