@@ -96,10 +96,11 @@ Stuff to do (user environment):
    ln -s /usr/bin/perl /usr/local/bin/perl
    [sudo cp ~/local/src/svn/geneontology/live-cd/10adduser ~/local/live/edit/usr/share/initramfs-tools/scripts/casper-bottom/]
    [sudo cp ~/local/src/svn/geneontology/live-cd/.bashrc ~/local/live/edit/etc/skel/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/obo-edit.desktop ~/local/live/edit/etc/skel/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/amigo.desktop ~/local/live/edit/etc/skel/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/sql-client.desktop ~/local/live/edit/etc/skel/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/documentation.desktop ~/local/live/edit/etc/skel/]
+   [sudo mkdir ~/local/live/edit/etc/skel/Desktop]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/obo-edit.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/amigo.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/sql-client.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-cd/documentation.desktop ~/local/live/edit/etc/skel/Dekstop/]
    cd /etc/skel
    rm examples.desktop
 
