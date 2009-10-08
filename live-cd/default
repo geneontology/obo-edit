@@ -1,0 +1,76 @@
+NameVirtualHost *
+<VirtualHost *>
+	ServerAdmin webmaster@localhost
+	
+	DocumentRoot /srv/www/htdocs
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	<Directory /srv/www/htdocs>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		# This directive allows us to have apache2's default start page
+                # in /apache2-default/, but still have / go to the right place
+                #RedirectMatch ^/$ /apache2-default/
+	</Directory>
+
+	## cgi
+	ScriptAlias /cgi-bin/ /srv/www/cgi-bin/
+	<Directory "/srv/www/cgi-bin">
+		AllowOverride None
+		Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+ 	## mod_perl
+	<Location /cgi-bin/amigo/completion>
+	    SetHandler perl-script
+	    PerlResponseHandler ModPerl::Registry
+	    PerlOptions +ParseHeaders
+	    Options +ExecCGI
+	    Order allow,deny
+	    Allow from all 
+ 	</Location>
+
+# 	## fastcgi
+# 	FastCgiServer /srv/www/cgi-bin/amigo/fcompletion -processes 10
+# 	#FastCgiServer /srv/www/cgi-bin/amigo/fcompletion
+# 	<Location /cgi-bin/amigo/fcompletion>
+# 	    SetHandler fastcgi-script
+#  	    Options +ExecCGI
+# 	    AllowOverride all
+#  	    Order allow,deny
+#  	    Allow from all 
+# 	</Location>
+
+	ErrorLog /var/log/apache2/error.log
+	ScriptLog /var/log/apache2/cgi.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/access.log combined
+	ServerSignature On
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
+    </Directory>
+
+     ProxyRequests Off
+
+     <Proxy *>
+         Order deny,allow
+         Allow from all
+     </Proxy>
+
+</VirtualHost>

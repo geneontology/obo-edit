@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Name=SQL Client
+Comment=Run SQL against the Gene Ontology
+Exec=gnome-terminal -e "mysql go_latest_lite"
+Icon=/usr/share/icons/gnome/scalable/categories/applications-science.svg
+Type=Application
+Terminal=false
+StartupNotify=true
