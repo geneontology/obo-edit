@@ -74,7 +74,7 @@ Stuff to do (apache2):
    apt-get -u install libapache2-mod-fastcgi libapache2-mod-perl2
    mkdir -p /srv/www/cgi-bin
    mkdir -p /srv/www/htdocs
-   [sudo cp ~/local/src/svn/geneontology/live-cd/default ~/local/live/edit/etc/apache2/sites-available/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/default ~/local/live/edit/etc/apache2/sites-available/]
    a2enmod proxy_http
    /etc/init.d/apache2 restart
 
@@ -87,20 +87,22 @@ Stuff to do (AmiGO and GO database):
    ## GRANT ALL ON *.* TO ''@'localhost';GRANT ALL ON *.* TO 'root'@'localhost';
    mysql -p -u root
    go-dev/go-db-perl/scripts/go_db_install.pl -i -e go_latest_lite -v -d localhost
-   [sudo cp ~/local/src/cvs/go-dev/amigo/config/live-cd/config.pl ~/local/live/edit/usr/local/src/go-dev/amigo/]
+   [sudo cp ~/local/src/cvs/go-dev/amigo/config/live-dvd/config.pl ~/local/live/edit/usr/local/src/go-dev/amigo/]
    cd /usr/local/src/go-dev/amigo
    ./install.pl -v -e -g -j
 
 Stuff to do (user environment):
 
    ln -s /usr/bin/perl /usr/local/bin/perl
-   [sudo cp ~/local/src/svn/geneontology/live-cd/10adduser ~/local/live/edit/usr/share/initramfs-tools/scripts/casper-bottom/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/.bashrc ~/local/live/edit/etc/skel/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/10adduser ~/local/live/edit/usr/share/initramfs-tools/scripts/casper-bottom/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/.bashrc ~/local/live/edit/etc/skel/]
    [sudo mkdir ~/local/live/edit/etc/skel/Desktop]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/obo-edit.desktop ~/local/live/edit/etc/skel/Desktop/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/amigo.desktop ~/local/live/edit/etc/skel/Desktop/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/sql-client.desktop ~/local/live/edit/etc/skel/Desktop/]
-   [sudo cp ~/local/src/svn/geneontology/live-cd/documentation.desktop ~/local/live/edit/etc/skel/Dekstop/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/obo-edit.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/amigo.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/sql-client.desktop ~/local/live/edit/etc/skel/Desktop/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/documentation.desktop ~/local/live/edit/etc/skel/Dekstop/]
+   [sudo cp ~/local/src/cvs/go/ontology/gene_ontology.obo ~/local/live/edit/etc/skel/Dekstop/]
+   [sudo cp ~/local/src/svn/geneontology/live-dvd/README.txt ~/local/live/edit/etc/skel/Desktop/]
    cd /etc/skel
    rm examples.desktop
 
@@ -142,14 +144,15 @@ Test:
 
    sudo modprobe kvm-intel; kvm -m 750 -soundhw sb16 -net nic -net user -cdrom ../ubuntu-9.04.1-desktop-i386-custom.iso
 
+Publish:
+
+   scp ../ubuntu-9.04.1-desktop-i386-custom.iso sjcarbon@sin.lbl.gov:/local/www/default/go2go.iso
+
 ERRORS:
 
-  icons not appearing on the desktop
-  apt-file pop-up on login (maybe fixed by chrooted update/upgrade?)
+  #fixed? apt-file pop-up on login (maybe fixed by chrooted update/upgrade?)
 
 TODO:
 
-  add geneontology.obo
   remove icon for "Install"
   branding
-  add README to the desktop
