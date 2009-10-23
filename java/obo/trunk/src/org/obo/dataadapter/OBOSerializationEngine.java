@@ -61,7 +61,7 @@ public class OBOSerializationEngine extends AbstractProgressValued {
 
 		protected boolean doLinkFilter = false;
 
-		protected boolean doTagFilter = true;
+		protected boolean doTagFilter = false;
 
 		protected boolean allowDangling = false;
 
