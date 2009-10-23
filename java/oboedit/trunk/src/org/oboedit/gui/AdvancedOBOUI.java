@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -135,6 +136,8 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 
 	protected JComboBox serializerBox = new JComboBox();
 
+	protected JScrollPane scrollPane;// = new JScrollPane();
+	
 	protected GraphicalUI advancedUI;
 
 	protected Dimension preferredSize;
@@ -484,7 +487,7 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 		protected void rebuildPanel() {
 			filterTabbedPane.remove(objectFilterEditor);
 			filterTabbedPane.remove(linkFilterEditor);
-			filterTabbedPane.remove(tagFilterEditor);
+			filterTabbedPane.remove(scrollPane);
 
 			panel.remove(filterTabbedPane);
 			panel.add(filterTabbedPane);
@@ -496,8 +499,9 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				filterTabbedPane.addTab("Link filtering", linkFilterEditor);
 			}
 			if (tagFilterBox.isSelected()) {
-				System.out.println("AdvancedOBOUI: rebuildPanel: tagFilterBox.isSelected() = " + tagFilterBox.isSelected());
-				filterTabbedPane.addTab("Tag filtering", tagFilterEditor);
+				scrollPane = new JScrollPane(tagFilterEditor);
+				filterTabbedPane.addTab("Tag filtering", scrollPane);
+				
 			}
 			boolean rootAlgorithmControlsEnabled = filterBox.isSelected()
 			|| linkFilterBox.isSelected() || prefilterBox.isSelected();
@@ -614,13 +618,10 @@ public class AdvancedOBOUI extends JPanel implements GraphicalUI {
 				profile.setLinkFilter(linkFilterEditor.getFilter());
 			if (tagFilterBox.isSelected()){
 				TagFilter localTagFilter = new TagFilter();
-				//HashSet<OBOConstants.TagMapping> localTagSet = new HashSet<TagMapping>();
 				localTagFilter = tagFilterEditor.getTagsToWriteFromGUI();
 				profile.setDoTagFilter(true);
 				profile.setTagFilter(localTagFilter);
-				System.out.println("AdvancedOBOUI: store: tagFilter = \n" + profile.getTagsToWrite());
-				//profile.setDoTagFilter(true);
-			}
+				}
 
 			/*
 			 * This else is here so that if someone deselects all the tab types in the tab filter editor and 
