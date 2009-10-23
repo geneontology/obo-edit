@@ -10,6 +10,8 @@ import java.util.HashSet;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 import org.obo.dataadapter.OBOConstants;
@@ -31,13 +33,13 @@ import org.oboedit.gui.event.GUIUpdateListener;
  * 
  * 
  */
-public class TagFilterEditor extends JPanel {
+public class TagFilterEditor extends JPanel implements ActionListener {
 
 	// initialize logger
 	protected final static Logger logger = Logger
 	.getLogger(TagFilterEditor.class);
 
-	protected JPanel mainPanel = new JPanel();
+	//protected JPanel mainPanel = new JPanel();
 
 	/**
 	 * Unselects all of the JCheckboxes. The id JCheckbox is always selected as
@@ -96,13 +98,8 @@ public class TagFilterEditor extends JPanel {
 
 		if (tagFilterFromDisc == null) {
 			TagFilter tagFilter = new TagFilter();
-			System.out
-			.println("TagFilterEditor: setTagsToWrite: tagFilterFromDisc is null.");
 			/* Null means start from scratch */
-			// selectAllTagsToBeWritten(tagFilter);
-			// tagFilter.setDoTagFilter(true);
 			layoutGUI(tagFilter);
-			System.out.println(tagFilter.toString());
 			return;
 
 		} else {
@@ -219,30 +216,8 @@ public class TagFilterEditor extends JPanel {
 	 */
 	boolean selectAllButtonSelectsAll = false;
 
-	/**
-	 * Checks value of boolean selectAllButtonSelectsAll and then either selects
-	 * or unselects all checkboxes accordingly. Then resets the boolean so that
-	 * the next call will have the opposite effect.
-	 */
-	protected class selectAllActionListener implements ActionListener {
+	
 
-		public void actionPerformed(ActionEvent e) {
-
-			TagFilter localTagFilter = getTagsToWriteFromGUI();
-
-			if (selectAllButtonSelectsAll == true) {
-				selectAllTagsToBeWritten(localTagFilter);
-				layoutGUI(localTagFilter);
-				selectAllButtonSelectsAll = false;
-			} else {
-				unSelectAllTagsToBeWritten(localTagFilter);
-				layoutGUI(localTagFilter);
-				selectAllButtonSelectsAll = true;
-			}
-			System.out.println("Button pressed selectAll = "
-					+ selectAllButtonSelectsAll);
-		}
-	}
 
 	JCheckBox idCheckBox = new JCheckBox("id");
 	JCheckBox nameCheckBox = new JCheckBox("name");
@@ -287,11 +262,32 @@ public class TagFilterEditor extends JPanel {
 	 */
 	public TagFilterEditor() {
 		TagFilter localTagFilter = new TagFilter();
-		selectAllButton.addActionListener(new selectAllActionListener());
+		selectAllButton.addActionListener(this);
 		layoutGUI(localTagFilter);
-		System.out.println("TagEditorFactory: constructor");
 	}
 
+	
+	/**
+	 * Checks value of boolean selectAllButtonSelectsAll and then either selects
+	 * or unselects all checkboxes accordingly. Then resets the boolean so that
+	 * the next call will have the opposite effect.
+	 */
+	public void actionPerformed(ActionEvent e) {
+
+		TagFilter localTagFilter = getTagsToWriteFromGUI();
+
+		if (selectAllButtonSelectsAll == true) {
+			selectAllTagsToBeWritten(localTagFilter);
+			layoutGUI(localTagFilter);
+			selectAllButtonSelectsAll = false;
+		} else {
+			unSelectAllTagsToBeWritten(localTagFilter);
+			layoutGUI(localTagFilter);
+			selectAllButtonSelectsAll = true;
+		}
+		
+	}
+	
 	/**
 	 * Sets up the GUI for the Tag Filter Editor.
 	 * 
@@ -299,12 +295,9 @@ public class TagFilterEditor extends JPanel {
 	 * 
 	 */
 	protected void layoutGUI(TagFilter tagFilter) {
-		// setLayout(new GridLayout(1, 1));
-		add(mainPanel);
-
-		System.out.println("TagEditorFactory: layout GUI.");
-
-		mainPanel.setLayout(new GridBagLayout());
+		
+	
+		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -312,156 +305,156 @@ public class TagFilterEditor extends JPanel {
 		c.weighty = 0.5;
 		c.gridx = 0;
 		c.gridy = 0;
-		mainPanel.add(idCheckBox, c);
+		add(idCheckBox, c);
 		idCheckBox.setEnabled(false);
 		idCheckBox.setSelected(tagFilter.isIdTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(nameCheckBox, c);
+		add(nameCheckBox, c);
 		nameCheckBox.setSelected(tagFilter.isNameTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(is_anonymousCheckBox, c);
+		add(is_anonymousCheckBox, c);
 		is_anonymousCheckBox.setSelected(tagFilter
 				.isIs_anonymousTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(alt_idCheckBox, c);
+		add(alt_idCheckBox, c);
 		alt_idCheckBox.setSelected(tagFilter.isAlt_idTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(linkCheckBox, c);
+		add(linkCheckBox, c);
 		linkCheckBox.setToolTipText("Tags that start 'relationship:' or 'is_a:'.");
 		linkCheckBox.setSelected(tagFilter.isLinkTagToBeWritten());
 
 		c.gridx = 1;
 		c.gridy = 0;
-		mainPanel.add(defCheckBox, c);
+		add(defCheckBox, c);
 		defCheckBox.setSelected(tagFilter.isDefTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(commentCheckBox, c);
+		add(commentCheckBox, c);
 		commentCheckBox.setSelected(tagFilter.isCommentTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(subsetCheckBox, c);
+		add(subsetCheckBox, c);
 		subsetCheckBox.setSelected(tagFilter.isSubsetTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(synonymCheckBox, c);
+		add(synonymCheckBox, c);
 		synonymCheckBox.setSelected(tagFilter.isSynonymTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(value_linkCheckBox, c);
+		add(value_linkCheckBox, c);
 		value_linkCheckBox.setSelected(tagFilter.isValueLinkTagToBeWritten());
 
 		c.gridx = 2;
 		c.gridy = 0;
-		mainPanel.add(is_obsoleteCheckBox, c);
+		add(is_obsoleteCheckBox, c);
 		is_obsoleteCheckBox
 		.setSelected(tagFilter.isIs_obsoleteTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(xrefCheckBox, c);
+		add(xrefCheckBox, c);
 		xrefCheckBox.setSelected(tagFilter.isXrefTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(replaced_byCheckBox, c);
+		add(replaced_byCheckBox, c);
 		replaced_byCheckBox
 		.setSelected(tagFilter.isReplaced_byTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(considerCheckBox, c);
+		add(considerCheckBox, c);
 		considerCheckBox.setSelected(tagFilter.isCommentTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(unrecognizedCheckBox, c);
+		add(unrecognizedCheckBox, c);
 		unrecognizedCheckBox.setSelected(tagFilter
 				.isUnrecognizedTagToBeWritten());
 
 		c.gridx = 3;
 		c.gridy = 0;
-		mainPanel.add(namespaceCheckBox, c);
+		add(namespaceCheckBox, c);
 		namespaceCheckBox.setSelected(tagFilter.isNamespaceTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(instance_ofCheckBox, c);
+		add(instance_ofCheckBox, c);
 		instance_ofCheckBox.setSelected(tagFilter.isInstanceOfTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(property_valueCheckBox, c);
+		add(property_valueCheckBox, c);
 		property_valueCheckBox.setSelected(tagFilter
 				.isPropertyValueTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(domainCheckBox, c);
+		add(domainCheckBox, c);
 		domainCheckBox.setSelected(tagFilter.isDomainTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(created_byCheckBox, c);
+		add(created_byCheckBox, c);
 		created_byCheckBox.setSelected(tagFilter.isCreatedByTagToBeWritten());
 
 		c.gridx = 4;
 		c.gridy = 0;
-		mainPanel.add(rangeCheckBox, c);
+		add(rangeCheckBox, c);
 		rangeCheckBox.setSelected(tagFilter.isRangeTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(always_implies_inverseCheckBox, c);
+		add(always_implies_inverseCheckBox, c);
 		always_implies_inverseCheckBox.setSelected(tagFilter
 				.isAlwaysImpliesInverseTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(is_cyclicCheckBox, c);
+		add(is_cyclicCheckBox, c);
 		is_cyclicCheckBox.setSelected(tagFilter.isIsCyclicTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(is_reflexiveCheckBox, c);
+		add(is_reflexiveCheckBox, c);
 		is_reflexiveCheckBox.setSelected(tagFilter
 				.isIsReflexiveTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(creation_dateCheckBox, c);
+		add(creation_dateCheckBox, c);
 		creation_dateCheckBox.setSelected(tagFilter
 				.isCreationDateTagToBeWritten());
 
 		c.gridx = 5;
 		c.gridy = 0;
-		mainPanel.add(is_symmetricCheckBox, c);
+		add(is_symmetricCheckBox, c);
 		is_symmetricCheckBox.setSelected(tagFilter
 				.isIsSymmetricTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(is_transitiveCheckBox, c);
+		add(is_transitiveCheckBox, c);
 		is_transitiveCheckBox.setSelected(tagFilter
 				.isIsTransitiveTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(transitive_overCheckBox, c);
+		add(transitive_overCheckBox, c);
 		transitive_overCheckBox.setSelected(tagFilter
 				.isTransitiveOverTagToBeWritten());
 
 		c.gridy = 3;
-		mainPanel.add(holds_over_chainCheckBox, c);
+		add(holds_over_chainCheckBox, c);
 		holds_over_chainCheckBox.setSelected(tagFilter
 				.isHoldsOverChainTagToBeWritten());
 
 		c.gridy = 4;
-		mainPanel.add(modified_byCheckBox, c);
+		add(modified_byCheckBox, c);
 		modified_byCheckBox.setSelected(tagFilter.isModifiedByTagToBeWritten());
 
 		c.gridx = 8;
 		c.gridy = 0;
-		mainPanel.add(modification_dateCheckBox, c);
+		add(modification_dateCheckBox, c);
 		modification_dateCheckBox.setSelected(tagFilter
 				.isModificationDateTagToBeWritten());
 
 		c.gridy = 1;
-		mainPanel.add(is_metadataCheckBox, c);
+		add(is_metadataCheckBox, c);
 		is_metadataCheckBox.setSelected(tagFilter.isIsMetadataTagToBeWritten());
 
 		c.gridy = 2;
-		mainPanel.add(selectAllButton, c);
+		add(selectAllButton, c);
 		selectAllButton.setText(tagFilter.getSelectAllButtonString());
 
 		validate();
@@ -485,24 +478,15 @@ public class TagFilterEditor extends JPanel {
 		TagFilter localTagFilter = new TagFilter(false);
 
 		if (idCheckBox.isSelected()) {
-			System.out
-			.println("TagFilterEditor: getTagsToWriteFromGUI: OBOConstants.ID_TAG = "
-					+ OBOConstants.ID_TAG);
 			localTagFilter.setIdTagToBeWritten(true);
 		}
 		if (nameCheckBox.isSelected()) {
-			System.out
-			.println("TagFilterEditor: getTagsToWriteFromGUI: nameCheckbox IsSelected");
 			localTagFilter.setNameTagToBeWritten(true);
 		}
 		if (is_anonymousCheckBox.isSelected()) {
-			System.out
-			.println("TagFilterEditor: getTagsToWriteFromGUI: is_anonymousCheckBox IsSelected");
 			localTagFilter.setIs_anonymousTagToBeWritten(true);
 		}
 		if (namespaceCheckBox.isSelected()) {
-			System.out
-			.println("TagFilterEditor: getTagsToWriteFromGUI: namespaceCheckBox IsSelected");
 			localTagFilter.setNamespaceTagToBeWritten(true);
 		}
 		if (alt_idCheckBox.isSelected()) {
