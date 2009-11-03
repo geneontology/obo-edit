@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  * {@link JTable} to display {@link List} of {@link CandidateTerm}.
@@ -25,8 +27,9 @@ public class TermsTable extends JTable {
 	private String lastRegex = new String();
 	private int lastVisibleRow = -1;
 	private int firstVisibleRow = -1;
-	
+
 	private TermsTableCellRenderer termsTableCellRenderer;
+	private TableColumn colToHide;
 
 	/**
 	 * Constructs a {@link TermsTable}
@@ -40,6 +43,9 @@ public class TermsTable extends JTable {
 		setRowHeight(getRowHeight() + 4);
 		tableHeader.setReorderingAllowed(false);
 		termsTableCellRenderer = new TermsTableCellRenderer();
+		if (this.getColumnCount() > 3) {
+			colToHide = this.getColumnModel().getColumn(3);
+		}
 	}
 
 	/**
@@ -55,13 +61,13 @@ public class TermsTable extends JTable {
 	}
 
 	/**
-     * Set whether only existing loaded terms should be displayed
-     *
-     * @param onlyExistingTerms
-     */
-    public void setOnlyShowExistingTerms(boolean onlyExistingTerms) {
-    	getModel().setOnlyShowExistingTerms(onlyExistingTerms);
-    }
+	 * Set whether only existing loaded terms should be displayed
+	 * 
+	 * @param onlyExistingTerms
+	 */
+	public void setOnlyShowExistingTerms(boolean onlyExistingTerms) {
+		getModel().setOnlyShowExistingTerms(onlyExistingTerms);
+	}
 
 	/**
 	 * Remove all instances of {@link CandidateTerm} from the {@link TermsTable}
@@ -99,9 +105,9 @@ public class TermsTable extends JTable {
 	@Override
 	public void setValueAt(Object value, int row, int column) {
 		super.setValueAt(value, row, column);
- 		if (column == 0 ) {
+		if (column == 0) {
 			CandidateTerm term = getModel().getTermAt(row);
-  			term.setTicked((Boolean) value);
+			term.setTicked((Boolean) value);
 			if (term.isTicked()) {
 				getModel().addTermToClipboard(term);
 			} else {
@@ -110,7 +116,7 @@ public class TermsTable extends JTable {
 			getModel().fireTableCellUpdated(row, column);
 		}
 	}
-	
+
 	@Override
 	public String getToolTipText(MouseEvent e) {
 		String tip = null;
@@ -215,18 +221,58 @@ public class TermsTable extends JTable {
 		private static final long serialVersionUID = 5435653832511917987L;
 
 		@Override
-        public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-				JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
-				comp.setText((String) getModel().getValueAt(row, column));
-				if (getModel().getTermAt(row).isInLoadedOntology()) {
-					comp.setFont(table.getFont().deriveFont(Font.BOLD));
-				}
-				return comp;
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			JLabel comp = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			comp.setText((String) getModel().getValueAt(row, column));
+			if (getModel().getTermAt(row).isInLoadedOntology()) {
+				comp.setFont(table.getFont().deriveFont(Font.BOLD));
+			}
+			return comp;
 		}
-		
+
 	}
 
+	void updateTermsTableStructure() {
+		if (this.getColumnCount() > 0) {
+			this.getColumnModel().getColumn(0).setMinWidth(50);
+			this.getColumnModel().getColumn(0).setMaxWidth(50);
+			this.getColumnModel().getColumn(0).setPreferredWidth(50);
+			this.getColumnModel().getColumn(0).setResizable(false);
+		}
+
+		if (this.getColumnCount() > 2) {
+			this.getColumnModel().getColumn(2).setMinWidth(18);
+			this.getColumnModel().getColumn(2).setMaxWidth(18);
+			this.getColumnModel().getColumn(2).setPreferredWidth(18);
+			this.getColumnModel().getColumn(3).setResizable(false);
+			TableCellImageRenderer definitionGenerationImageRenderer = new TableCellImageRenderer(
+					"resources/iconDefinitionGeneration.png");
+			this.getColumnModel().getColumn(2).setCellRenderer(definitionGenerationImageRenderer);
+		}
+
+		if (this.getColumnCount() > 3) {
+			this.getColumnModel().getColumn(3).setMinWidth(30);
+			this.getColumnModel().getColumn(3).setMaxWidth(30);
+			this.getColumnModel().getColumn(3).setPreferredWidth(18);
+			this.getColumnModel().getColumn(3).setResizable(false);
+			TableCellImageRenderer termInformationIconRenderer = new TableCellImageRenderer("resources/aboutIcon.png");
+			this.getColumnModel().getColumn(3).setCellRenderer(termInformationIconRenderer);
+		}
+	}
+
+	private Stack<TableColumn> colHidden = new Stack<TableColumn>();
+
+	public void setShowInformationIcon(boolean b) {
+		if (!b && colHidden.isEmpty()) {
+			this.removeColumn(colToHide);
+			this.validate();
+			if (colHidden.isEmpty()) {
+				colHidden.push(colToHide);
+			}
+		} else if (b && !colHidden.isEmpty()) {
+			this.addColumn(colHidden.pop());
+			this.validate();
+		}
+	}
 }

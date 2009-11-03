@@ -217,6 +217,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 	private int selectedParentTermRow = -1;
 	private boolean resetParentTermRowSelection = false;
+	private String lastSource;
 
 	/**
 	 * Constructs a {@link OntologyGenerationComponent} instance
@@ -243,7 +244,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		this.termsTable.setBackground(COLOR_TERMS_TABLE);
 		this.termsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		updateTermsTableStructure();
+		termsTable.updateTermsTableStructure();
 
 		// SYNONYMS TABLE
 		this.synonymTermsTable = new TermsTable(clipboard, 2, false);
@@ -531,7 +532,9 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					onClickGenerateDefinitions();
 				}
 				else if (column == 3) {
-					onClickOpenExternalGoPubMedPage();
+					if (lastSource != null){
+						 onClickOpenExternalGoPubMedPage(lastSource);
+					}
 				}
 			}
 		});
@@ -675,7 +678,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				String text = filterTermsTextField.getTextField().getText();
 				termsTable.getModel().applyFilter(text);
 
-				updateTermsTableStructure();
+				termsTable.updateTermsTableStructure();
 			}
 		});
 
@@ -1181,8 +1184,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		else if (textComponent.equals(inputFolderLocationField)) {
 			source = SOURCE_FOLDER;
 		}
-		// maybe this isn't really needed here
-		updateTermsTableStructure();
+		lastSource = source;
 
 		filterTermsTextField.getTextField().setText(null);
 		searchTermsTextField.getTextField().setText(null);
@@ -1195,29 +1197,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		showProgressDlg(true);
 	}
 
-	private void updateTermsTableStructure()
-	{
-		termsTable.getColumnModel().getColumn(0).setMinWidth(50);
-		termsTable.getColumnModel().getColumn(0).setMaxWidth(50);
-		termsTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-		this.termsTable.getColumnModel().getColumn(0).setResizable(false);
 
-		termsTable.getColumnModel().getColumn(2).setMinWidth(18);
-		termsTable.getColumnModel().getColumn(2).setMaxWidth(18);
-		termsTable.getColumnModel().getColumn(2).setPreferredWidth(18);
-		this.termsTable.getColumnModel().getColumn(3).setResizable(false);
-
-		termsTable.getColumnModel().getColumn(3).setMinWidth(30);
-		termsTable.getColumnModel().getColumn(3).setMaxWidth(30);
-		termsTable.getColumnModel().getColumn(3).setPreferredWidth(18);
-		this.termsTable.getColumnModel().getColumn(3).setResizable(false);
-
-		TableCellImageRenderer definitionGenerationImageRenderer = new TableCellImageRenderer("resources/iconDefinitionGeneration.png");
-		termsTable.getColumnModel().getColumn(2).setCellRenderer(definitionGenerationImageRenderer);
-
-		TableCellImageRenderer termInformationIconRenderer = new TableCellImageRenderer("resources/aboutIcon.png");
-		termsTable.getColumnModel().getColumn(3).setCellRenderer(termInformationIconRenderer);
-	}
 
 	private void updateTermsTableHeader(String source, String inputData)
 	{
@@ -1243,9 +1223,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		}
 		termsTable.getTableHeader().repaint();
 
-		// maybe this isn't really needed here
-		updateTermsTableStructure();
-
 		filterTermsTextField.getTextField().setText(null);
 		searchTermsTextField.getTextField().setText(null);
 
@@ -1255,8 +1232,20 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	 * Launches web browser to get results from www.gopubmed.org for queryTerm and termsTable selected term.
 	 */
 	@SuppressWarnings("unchecked")
-	private void onClickOpenExternalGoPubMedPage()
+	private void onClickOpenExternalGoPubMedPage(String lastSource)
 	{
+		String goURL;
+		JTextField textField;
+		if(lastSource==SOURCE_PUBMED) {
+			textField = inputPubMedQueryField;
+			goURL = "http://www.gopubmed.org/search?q=";
+		} else if (lastSource == SOURCE_WEB) {
+			textField = inputWebQueryField;
+			goURL = "http://www.gopubmed.org/web/goweb/search?q=";
+		} else {
+			return;
+		}
+			
 		String encodedGeneratedTerm;
 		String encodedqServiceTerm;
 
@@ -1267,8 +1256,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		if (colNumber == 3 && rowNumber >= 0) {
 			CandidateTerm candidateTerm = termsTable.getModel().getTermAt(rowNumber);
 			String generatedTerm = putInQuotes(candidateTerm.getGeneratedLabel());
-			String qServiceTerm = putInQuotes(inputPubMedQueryField.getText());
-			String goURL = "http://www.gopubmed.org/search?q=";
+			String qServiceTerm = putInQuotes(textField.getText());
 
 			try {
 				encodedGeneratedTerm = URLEncoder.encode(generatedTerm, "UTF-8");
@@ -2454,7 +2442,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 								}
 							}
 						}
-						updateTermsTableStructure();
 					}
 				}
 				catch (Throwable exception) {
@@ -2607,6 +2594,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			TextConceptRepresentation[] concepts = new TextConceptRepresentation[1000];
 			try {
 				if (source.equals(SOURCE_PUBMED)) {
+					termsTable.setShowInformationIcon(true);
 					GenerateConceptsFromPubMedQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromPubMedQuery();
 					query.setMaxNumberOfTerms(1000);
 					query.setQueryString(inputData);
@@ -2615,6 +2603,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_WEB)) {
+					termsTable.setShowInformationIcon(true);					
 					GenerateConceptsFromWebQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromWebQuery();
 					query.setMaxNumberOfTerms(1000);
 					query.setQueryString(inputData);
@@ -2623,6 +2612,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_TEXT)) {
+					termsTable.setShowInformationIcon(false);					
 					String[] lines = inputData.split("\n");
 					GenerateConceptsFromText query = new GoPubMedTermGenerationStub.GenerateConceptsFromText();
 					query.setMaxNumberOfTerms(1000);
@@ -2632,6 +2622,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_FOLDER)) {
+					termsTable.setShowInformationIcon(false);
 					File file = new File(inputData);
 					String data = "";
 					PdfToTextExtraction pdfParser = new PdfToTextExtraction();
