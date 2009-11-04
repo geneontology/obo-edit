@@ -73,14 +73,11 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
 import org.apache.axis2.AxisFault;
@@ -105,8 +102,9 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
 import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGenerationStub.TextConceptRepresentation;
 
 /**
- * Ontology Generation Component which supports the automatic generation of candidate terms and candidate
- * definitions to create candidate to be added to the loaded ontologies.
+ * Ontology Generation Component which supports the automatic generation of
+ * candidate terms and candidate definitions to create candidate to be added to
+ * the loaded ontologies.
  * <p>
  * Developed at the Bioinformatics Group, BIOTEC, TU Dresden, Dresden, Germany
  * </p>
@@ -152,9 +150,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 	// GUI related
 	private ProgressBarDialog progressDlg;
-	// private TermLabelOrSynonymAutoCompletionBox autoCompletionBox = new
-	// TermLabelOrSynonymAutoCompletionBox();
-
 	private JButton generateTermsFromPubMedButton;
 	private JButton generateTermsFromWebButton;
 	private JButton generateTermsFromTextButton;
@@ -166,16 +161,15 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	private JButton loadClipBoardButton;
 	private JButton saveClipBoardButton;
 
+	private JButton saveLabelButton;
+	private JLabel saveLabelWarningLabel;
 	private JButton saveDefButton;
 	private JLabel saveDefWarningLabel;
 	private JButton saveAbbrButton;
 	private JButton addToOntologyButton;
+
 	private JCheckBox checkboxShowTickedParents;
-
 	private JCheckBox onlyShowExistingTerms = new JCheckBox();
-
-	private JLabel editSelectedTermLabel = new JLabel();
-	private JLabel manualDefInfo = new JLabel();
 
 	private JTextArea inputTextArea;
 	private JTextArea editDefArea;
@@ -216,7 +210,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	private JPanel addToOntologyPanel;
 
 	private int selectedParentTermRow = -1;
-	private boolean resetParentTermRowSelection = false;
 	private String lastSource;
 
 	/**
@@ -240,14 +233,14 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		};
 
 		// TERMS TABLE
-		this.termsTable = new TermsTable(clipboard, 4, true);
+		this.termsTable = new TermsTable(adapter, clipboard, 4, true);
 		this.termsTable.setBackground(COLOR_TERMS_TABLE);
 		this.termsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		termsTable.updateTermsTableStructure();
 
 		// SYNONYMS TABLE
-		this.synonymTermsTable = new TermsTable(clipboard, 2, false);
+		this.synonymTermsTable = new TermsTable(adapter, clipboard, 2, false);
 		this.synonymTermsTable.setBackground(COLOR_TERMS_TABLE);
 		this.synonymTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.synonymTermsTable.getColumnModel().getColumn(0).setMinWidth(50);
@@ -302,6 +295,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 		this.saveAbbrButton = new JButton("Save Abbreviations");
 		this.saveDefButton = new JButton("Save Definition");
+		this.saveLabelButton = new JButton("Save Term Label");
 
 		// TOOLTIPS
 		this.generateTermsFromPubMedButton.setToolTipText(Messages.getString("OntologyGenerationComponent.GenerateTermsFromPubMedButton")); //$NON-NLS-1$
@@ -316,8 +310,10 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 		this.saveAbbrButton.setToolTipText(Messages.getString("OntologyGenerationComponent.SaveAbbreviationsButton")); //$NON-NLS-1$
 		this.saveDefButton.setToolTipText(Messages.getString("OntologyGenerationComponent.SaveDefinitionsButton")); //$NON-NLS-1$
+		this.saveLabelButton.setToolTipText(Messages.getString("OntologyGenerationComponent.SaveLabelButton")); //$NON-NLS-1$
 
 		this.saveDefWarningLabel = new JLabel();
+		this.saveLabelWarningLabel = new JLabel();
 	}
 
 	public void initListener()
@@ -346,7 +342,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * @param e {@link PropertyChangeEvent}
+	 * @param e
+	 *            {@link PropertyChangeEvent}
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 	 */
 	public void propertyChange(PropertyChangeEvent e)
@@ -532,8 +529,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					onClickGenerateDefinitions();
 				}
 				else if (column == 3) {
-					if (lastSource != null){
-						 onClickOpenExternalGoPubMedPage(lastSource);
+					if (lastSource != null) {
+						onClickOpenExternalGoPubMedPage(lastSource);
 					}
 				}
 			}
@@ -594,25 +591,11 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 		});
 
-		definitionTable.getModel().addTableModelListener(new TableModelListener()
-		{
-
-			public void tableChanged(TableModelEvent e)
-			{
-				int column = e.getColumn();
-				int rowIndex = e.getFirstRow();
-				if (column == 0) {
-					updateOnDefinitionTickedChange(rowIndex);
-				}
-			}
-		});
-
 		definitionTable.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-
 				if (!SwingUtilities.isLeftMouseButton(e)) {
 					return;
 				}
@@ -622,9 +605,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				// The autoscroller can generate drag events outside the Table's
 				// range.
 				if (column == 0) {
-					String definition = definitionTable.getModel().getDefinitionAt(row).getDefinition();
-					definitionTable.getModel().getDefinitionAt(row).setTicked(true);
-					updateEditDefArea(definition);
+					updateOnClickAddDefinition(row);
 				}
 				else if (column == 2) {
 					onClickOpenDefinitionsPopup();
@@ -712,7 +693,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 						generateManualDefinitionButton.setEnabled(true);
 					}
 				}
-				manualDefInfo.setText("");
 			}
 		});
 
@@ -761,33 +741,18 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 		});
 
-		editDefArea.getDocument().addDocumentListener(new DocumentListener()
+		editDefArea.addCaretListener(new CaretListener()
 		{
-			public void changedUpdate(DocumentEvent e)
+			public void caretUpdate(CaretEvent e)
 			{
-				updateSaveDefWarningLabel(true);
-			}
-
-			public void insertUpdate(DocumentEvent e)
-			{
-				try {
-					if (selectedCandidateTerm.getUserDefinedDefinition() == null || !e.getDocument().getText(0, e.getLength()).equals(
-					    selectedCandidateTerm.getUserDefinedDefinition())) {
-						updateSaveDefWarningLabel(true);
-					}
-					else {
-						updateSaveDefWarningLabel(false);
-					}
+				String currentDefinition = editDefArea.getText().trim();
+				if (currentDefinition.equals(selectedCandidateTerm.getUserDefinedDefinition())
+						|| currentDefinition.equals(adapter.getDefinitionForExistingTerm(selectedCandidateTerm))) {
+					updateSaveDefWarningLabel(false);
 				}
-				catch (BadLocationException e1) {
+				else {
 					updateSaveDefWarningLabel(true);
 				}
-
-			}
-
-			public void removeUpdate(DocumentEvent e)
-			{
-				updateSaveDefWarningLabel(true);
 			}
 		});
 
@@ -799,31 +764,36 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 		});
 
-		editNameTextField.addKeyListener(new KeyAdapter()
+		editNameTextField.addCaretListener(new CaretListener()
 		{
-			@Override
-			public void keyTyped(KeyEvent event)
+
+			public void caretUpdate(CaretEvent e)
 			{
-				String labelText = editNameTextField.getText();
-				if (labelText != null && labelText.trim().length() > 0 && selectedCandidateTerm != null) {
-					selectedCandidateTerm.setUserDefinedLabel(labelText.trim());
+				String currentLabel = editNameTextField.getText().trim();
+				if (currentLabel.equals(selectedCandidateTerm.getUserDefinedLabel()) || currentLabel.equals(selectedCandidateTerm.getLabel())) {
+					updateSaveLabelWarningLabel(false);
 				}
-				if (selectedCandidateTerm != null) {
-					// TODO is called 3 times on each change of selection
-					adapter.updateParentAsSimiliarTerm(selectedCandidateTerm, oboTermsTable);
+				else {
+					updateSaveLabelWarningLabel(true);
 				}
+			}
+		});
+
+		saveLabelButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				onClickSaveLabel();
 			}
 		});
 
 		oboTermsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
 		{
-
 			public void valueChanged(ListSelectionEvent e)
 			{
 				if (e.getValueIsAdjusting()) {
 					return;
 				}
-				if (!resetParentTermRowSelection) {
 					int selectedRow = oboTermsTable.getSelectedRow();
 					if (selectedRow != selectedParentTermRow && selectedRow >= 0) {
 						selectedParentTermRow = selectedRow;
@@ -835,24 +805,18 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 						if (selectedRow >= 0) {
 							adapter.selectOntologyTerm(selectedObjectID);
 						}
-						resetParentTermRowSelection = true;
-						oboTermsTable.setRowSelectionInterval(oboTermsTable.getModel().getRowFromTerm(selectedObjectID), oboTermsTable.getModel().getRowFromTerm(selectedObjectID));
+						oboTermsTable.setRowSelectionInterval(oboTermsTable.getModel().getRowFromTerm(selectedObjectID), oboTermsTable.getModel()
+								.getRowFromTerm(selectedObjectID));
 						oboTermsTable.getModel().setTickedTerms(tickedTerms);
 					}
 				}
-				else {
-					resetParentTermRowSelection = false;
-				}
-			}
 		});
 
 		addToOntologyButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				boolean includeChildren = checkboxIncludeChildren.isSelected();
-				boolean includeBranch = false; // checkboxIncludeBranch.isSelected();
-				adapter.addToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch, selectedCandidateTerm);
+				onClickAddToOntology();
 			}
 		});
 
@@ -1197,8 +1161,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		showProgressDlg(true);
 	}
 
-
-
 	private void updateTermsTableHeader(String source, String inputData)
 	{
 		if (source.equals(SOURCE_PUBMED)) {
@@ -1229,23 +1191,26 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Launches web browser to get results from www.gopubmed.org for queryTerm and termsTable selected term.
+	 * Launches web browser to get results from www.gopubmed.org for queryTerm
+	 * and termsTable selected term.
 	 */
 	@SuppressWarnings("unchecked")
 	private void onClickOpenExternalGoPubMedPage(String lastSource)
 	{
 		String goURL;
 		JTextField textField;
-		if(lastSource==SOURCE_PUBMED) {
+		if (lastSource == SOURCE_PUBMED) {
 			textField = inputPubMedQueryField;
 			goURL = "http://www.gopubmed.org/search?q=";
-		} else if (lastSource == SOURCE_WEB) {
+		}
+		else if (lastSource == SOURCE_WEB) {
 			textField = inputWebQueryField;
 			goURL = "http://www.gopubmed.org/web/goweb/search?q=";
-		} else {
+		}
+		else {
 			return;
 		}
-			
+
 		String encodedGeneratedTerm;
 		String encodedqServiceTerm;
 
@@ -1312,7 +1277,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Instantiates DefinitionWorker thread responsible to call definitionGeneration Service
+	 * Instantiates DefinitionWorker thread responsible to call
+	 * definitionGeneration Service
 	 */
 	private void onClickGenerateDefinitions()
 	{
@@ -1346,10 +1312,10 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	 * @param definitionField
 	 */
 	/*
-	 * SPEC: generate definition for the term, if the term is visible, move term to the top,
-	 *       if not make it visible and move it to the top and select (selection should make the definition, 
-	 *       if exist, listed first) 
-	 */	
+	 * SPEC: generate definition for the term, if the term is visible, move term
+	 * to the top, if not make it visible and move it to the top and select
+	 * (selection should make the definition, if exist, listed first)
+	 */
 	private void onClickGenerateDefinitionsManually(JTextField definitionField)
 	{
 		String inputLabel = definitionField.getText().trim();
@@ -1376,7 +1342,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				termToGenerateDefinitionsFor = candidateTerm;
 			}
 		}
-		// if not selected, put term for which definitions are generated to top of the termsTable
+		// if not selected, put term for which definitions are generated to top
+		// of the termsTable
 		if (!termToGenerateDefinitionsFor.equals(selectedCandidateTerm)) {
 			List<CandidateTerm> newTermsList = new ArrayList<CandidateTerm>(allTerms.size() + 1);
 			newTermsList.add(termToGenerateDefinitionsFor);
@@ -1388,10 +1355,11 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			termsTable.setTerms(newTermsList);
 
 			// scroll top and select first
-			if (onlyShowExistingTerms.isSelected() && !termToGenerateDefinitionsFor.isInLoadedOntology()){
+			if (onlyShowExistingTerms.isSelected() && !termToGenerateDefinitionsFor.isInLoadedOntology()) {
 				onlyShowExistingTerms.setSelected(false);
 				updateTermsTableWithExistingTerms(false);
-			} else {
+			}
+			else {
 				JTableHelper.scrollToTopAndSelectFirst(termsTable);
 			}
 		}
@@ -1401,73 +1369,44 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Picks the clicked definition, sets it selected/unselected and updates depended GUI components
+	 * Picks the clicked definition, sets it ticked and updates depended GUI
+	 * components
 	 * 
 	 * @param rowIndex
 	 */
-	private void updateOnDefinitionTickedChange(int rowIndex)
+	private void updateOnClickAddDefinition(int rowIndex)
 	{
-		logger.error("onClickSelectDefinition " + rowIndex);
+		logger.info("onClickSelectDefinition " + rowIndex);
 		if (null == selectedCandidateTerm) {
 			logger.error("No term selected");
 		}
 		else {
-			if (rowIndex >= 0) {
-				CandidateDefinition definition = definitionTable.getModel().getDefinitionAt(rowIndex);
-				StringBuffer defString = new StringBuffer();
+			CandidateDefinition definition = definitionTable.getModel().getDefinitionAt(rowIndex);
+			definition.setTicked();
 
-				/*
-				 * for each def in gen if def.isSelected() defString.append(def.getDefinition());
-				 */
-				String editedDef = selectedCandidateTerm.getUserDefinedDefinition();
-				String defAreaText = editDefArea.getText();
+			StringBuffer defString = new StringBuffer();
+			String defAreaText = editDefArea.getText();
+			defString.append(defAreaText.trim());
 
-				if (definition.isTicked()) {
-					if (editedDef != null) {
-						defString.append(defAreaText.trim());
-						defString.append("\n");
-						if (defAreaText.contains("----See Newly Generated Definition Below-----")) {
-							defString.append("\n");
-							defString.append(definition.getDefinition().trim());
-						}
-						else {
-							defString.append("----See Newly Generated Definition Below-----");
-							defString.append("\n");
-							defString.append(definition.getDefinition().trim());
+			if (!defAreaText.contains("----See Newly Generated Definition Below-----")) {
+				defString.append("\n");
+				defString.append("----See Newly Generated Definition Below-----");
+				defString.append("\n- ");
+				defString.append(definition.getDefinition().trim());
 
-						}
-					}
-					else {
-						if (defAreaText.length() == 0) {
-							defString.append("\n");
-							defString.append(definition.getDefinition().trim());
-						}
-						else {
-							defString.append(defAreaText.trim());
-							defString.append("\n");
-							defString.append(definition.getDefinition().trim());
-						}
-					}
-					editDefArea.setText(defString.toString());
-					updateSaveDefWarningLabel(true);
-
-				}
-				else {
-					editDefArea.setText(defAreaText);
-					updateSaveDefWarningLabel(true);
-				}
-
-				// Set the label if term is selected from OBOterm Panel tree
-				if (adapter.isSomeOntologyTermSelected()) {
-					editSelectedTermLabel.setText("of " + "\"" + selectedCandidateTerm.getGeneratedLabel() + " \"");
-					editSelectedTermLabel.setVisible(true);
-				}
 			}
+			else {
+				defString.append("\n- ");
+				defString.append(definition.getDefinition().trim());
+			}
+
+			editDefArea.setText(defString.toString());
 		}
 	}
 
 	/**
-	 * Opens a popup showing the URLs for the definition and its similar definitions.
+	 * Opens a popup showing the URLs for the definition and its similar
+	 * definitions.
 	 */
 	private void onClickOpenDefinitionsPopup()
 	{
@@ -1489,7 +1428,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Save definition for {@link CandidateTerm} and update add-to-ontology table
+	 * Save definition for {@link CandidateTerm} and update add-to-ontology
+	 * table
 	 */
 	private void onClickSaveDefinition()
 	{
@@ -1500,15 +1440,59 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			String defText = editDefArea.getText();
 			selectedCandidateTerm.setUserDefinedDefinition(defText);
 			candidateTermCache.addTerm(selectedCandidateTerm);
-			adapter.updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
 			// commit to OBOClass if term is known
 			adapter.commitDefinition(selectedCandidateTerm);
 			updateSaveDefWarningLabel(false);
 		}
 	}
 
+	private void updateSaveLabelWarningLabel(boolean enableWarning)
+	{
+		if (enableWarning) {
+			saveLabelWarningLabel.setText("Label not saved!");
+		}
+		else {
+			saveLabelWarningLabel.setText("");
+		}
+	}
+
 	/**
-	 * Displays term selected in the termsTable and updates all depending gui components
+	 * Save definition for {@link CandidateTerm} and update add-to-ontology
+	 * table
+	 */
+	private void onClickSaveLabel()
+	{
+		if (null == selectedCandidateTerm) {
+			logger.error("No term selected");
+		}
+		else {
+			String label = editNameTextField.getText();
+			selectedCandidateTerm.setUserDefinedLabel(label);
+			candidateTermCache.addTerm(selectedCandidateTerm);
+			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+			adapter.updateParentAsSimiliarTerm(selectedCandidateTerm, oboTermsTable);
+			// commit to OBOClass if term is known
+			adapter.commitLabel(selectedCandidateTerm);
+			updateSaveLabelWarningLabel(false);
+
+		}
+	}
+
+	/**
+	 * Add selected terms to application ontology model
+	 */
+	private void onClickAddToOntology()
+	{
+		boolean includeChildren = checkboxIncludeChildren.isSelected();
+		boolean includeBranch = false; // checkboxIncludeBranch.isSelected();
+		adapter.commitAddToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch,
+				selectedCandidateTerm);
+	}
+	
+	/**
+	 * Displays term selected in the termsTable and updates all depending gui
+	 * components
 	 * 
 	 * @param term
 	 */
@@ -1528,15 +1512,9 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				definitionTable.removeAll();
 				definitionTable.setDefinitions(generatedDefinitions);
 
-				for (CandidateDefinition definition : generatedDefinitions) {
-					if (definition.isTicked()) {
-						definitionTable.getModel().selectDefinition(definition);
-					}
-				}
 			}
-			if (null != selectedCandidateTerm.getUserDefinedDefinition()) {
-				editDefArea.setText(selectedCandidateTerm.getUserDefinedDefinition());
-			}
+			updateEditDefArea();
+
 			definitionTable.getColumnModel().getColumn(1).setHeaderValue("Definitions for \"" + selectedCandidateTerm.getLabel() + "\"");
 			definitionTable.getTableHeader().repaint();
 
@@ -1546,17 +1524,18 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 
 			// TODO check order of update operations
-			adapter.updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
 			adapter.updateParentAsSimiliarTerm(selectedCandidateTerm, oboTermsTable);
 			updateSynonymOrChildTable();
-			oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(adapter.getExistingParentsIfExists(selectedCandidateTerm));
+			oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(adapter.getParentsForExistingTerm(selectedCandidateTerm));
 
 			logger.info("SelectedCandidateTerm Name: " + selectedCandidateTerm.getLabel());
 		}
 	}
 
 	/**
-	 * Update the table holding synonyms and children of the currently selected terms
+	 * Update the table holding synonyms and children of the currently selected
+	 * terms
 	 */
 	private void updateSynonymOrChildTable()
 	{
@@ -1635,7 +1614,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		int firstVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y));
 		int lastVisibleRow = pTermsTable.rowAtPoint(new Point(0, visibleRect.y + visibleRect.height - 1));
 		logger.trace(String.format("UPDATE updateTermsTableUsingOntologyLookup; FEED %s %s", firstVisibleRow, lastVisibleRow));
-		if (firstVisibleRow >= 0 && lastVisibleRow >= 0 && (termsTable.getCurrentFirstVisibleRow() != firstVisibleRow || termsTable.getCurrentLastVisibleRow() != lastVisibleRow)) {
+		if (firstVisibleRow >= 0 && lastVisibleRow >= 0
+				&& (termsTable.getCurrentFirstVisibleRow() != firstVisibleRow || termsTable.getCurrentLastVisibleRow() != lastVisibleRow)) {
 			ontologyLookupQueue.clear();
 			for (int i = firstVisibleRow; i <= lastVisibleRow; i++) {
 				CandidateTerm candidateTerm = pTermsTable.getModel().getTermAt(i);
@@ -1719,6 +1699,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		filterDefTextField.getTextField().setText(null);
 		editDefArea.setText(null);
 		saveDefWarningLabel.setText("");
+		saveLabelWarningLabel.setText("");
 		synonymTermsTable.getModel().removeAll();
 		editNameTextField.setText(null);
 		filterPotentialParentsTextField.getTextField().setText(null);
@@ -1764,26 +1745,100 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		inputDefinitionGenerationField.setText(label);
 	}
 
+	public void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable, OBOTermsTable oboTermsTable,
+			DefinitionsTable definitionsTable)
+	{
+		logger.trace("UPDATE TERMS FROM DEFINITION for :" + selectedCandidateTerm);
+
+		if (null == selectedCandidateTerm) {
+			int row = termsTable.rowAtPoint(termsTable.getMousePosition());
+			selectedCandidateTerm = termsTable.getModel().getTermAt(row);
+			logger.warn("Selection lost in terms table, recovered though mouse position");
+		}
+		// clear
+		oboTermsTable.getModel().clearTermsFromDefinitions();
+
+		// process user defined definition
+		if (null != selectedCandidateTerm.getUserDefinedDefinition()) {
+			List<String> ids = searchForOntologyTermsInStrings(Collections.singletonList(selectedCandidateTerm.getUserDefinedDefinition()));
+			int rank = 1;
+			for (String id : ids) {
+				oboTermsTable.getModel().addFromUserDefinedDefinition(id, rank);
+				rank++;
+			}
+		}
+
+		// process generated definitions
+		List<CandidateDefinition> definitions = definitionsTable.getModel().getDefinitions();
+		Set<String> definitionStringsToCheck = new HashSet<String>(definitions.size());
+		for (CandidateDefinition definition : definitions) {
+			String definitionalContext = definition.getDefinitionalContext();
+			if (definitionalContext != null && definitionalContext.length() < definition.getDefinition().length()) {
+				definitionStringsToCheck.add(definitionalContext);
+			}
+		}
+		if (definitionStringsToCheck.size() > 0) {
+			List<String> ids = searchForOntologyTermsInStrings(definitionStringsToCheck);
+			int rank = 1;
+			for (String id : ids) {
+				oboTermsTable.getModel().addFromCandidateDefinition(id, rank);
+				rank++;
+
+			}
+		}
+	}
+
 	/**
-	 * Adds the <code>definition</code>, which was selected in the <code>DefinitionsPopup</code> to the
-	 * <code>editDefArea</code>.
+	 * Create all ngrams contained in the texts in the specified list and
+	 * looking up the term these ngrams match.
 	 * 
-	 * @param definition the definition to be attached to the <code>editDefArea</code> text.
+	 * @param ngrams
+	 * @return
 	 */
-	public void updateEditDefArea(String definition)
+	private List<String> searchForOntologyTermsInStrings(Collection<String> ngrams)
+	{
+		int RANGE_FOR_PARENT_IN_DEFINITION = 5;
+
+		List<String> queries = new ArrayList<String>();
+		List<String> queriesHead = new ArrayList<String>();
+		List<String[]> listOfArrays = new ArrayList<String[]>(ngrams.size());
+
+		for (String string : ngrams) {
+			listOfArrays.add(string.trim().split(" |-"));
+		}
+
+		for (String[] stringArray : listOfArrays) {
+			StringBuffer buffer = new StringBuffer();
+			for (int i = 0; i < RANGE_FOR_PARENT_IN_DEFINITION; i++) {
+				if (i < stringArray.length) {
+					buffer.append(stringArray[i]);
+					buffer.append(" ");
+				}
+			}
+			queriesHead.add(0, buffer.toString().trim());
+		}
+		queries.addAll(queriesHead);
+		return adapter.lookupOntologyTermIdsFromIndex(queries);
+	}
+
+	/**
+	 * Updates the <code>definition</code>, based on the selected and user
+	 * defined definitions.
+	 */
+	public void updateEditDefArea()
 	{
 		StringBuffer defString = new StringBuffer();
-
-		String defAreaText = editDefArea.getText();
-
-		if (defAreaText.length() == 0) {
-			defString.append("\n");
-			defString.append(definition.trim());
-		}
-		else {
-			defString.append(defAreaText.trim());
-			defString.append("\n");
-			defString.append(definition.trim());
+		if (null != selectedCandidateTerm) {
+			if (null != selectedCandidateTerm.getUserDefinedDefinition()) {
+				defString.append(selectedCandidateTerm.getUserDefinedDefinition());
+			}
+			String definition = adapter.getDefinitionForExistingTerm(selectedCandidateTerm);
+			if (null != definition && !defString.toString().equals(definition)) {
+				if (defString.length() > 0) {
+					defString.append("\n-----\n");
+				}
+				defString.append(definition);
+			}
 		}
 		editDefArea.setText(defString.toString());
 	}
@@ -2059,7 +2114,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		manualDefGenerationPanel.add(inputDefinitionGenerationField);
 		manualDefGenerationPanel.add(Box.createRigidArea(spacer));
 		manualDefGenerationPanel.add(generateManualDefinitionButton);
-		manualDefGenerationPanel.add(manualDefInfo);
 
 		//
 		// 2-Definition Generation sub panels
@@ -2125,10 +2179,9 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 		saveDefWarningLabel.setFont(saveDefWarningLabel.getFont().deriveFont(Font.BOLD));
 		saveDefWarningLabel.setForeground(Color.red);
+		saveDefWarningLabel.setPreferredSize(new Dimension(140, 15));
 
 		editDefPanel.add(saveDefWarningLabel, saveDefWarningLabelConstraints);
-
-		saveDefWarningLabel.setPreferredSize(new Dimension(140, 15));
 
 		synonymTermsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		synonymTermsTable.getTableHeader().setVisible(false);
@@ -2202,12 +2255,20 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		editNameTextField.setToolTipText(Messages.getString("OntologyGenerationComponent.ManualTermNameField")); //$NON-NLS-1$
 		candidateToAddPanel.add(label);
 		candidateToAddPanel.add(editNameTextField);
+		candidateToAddPanel.add(saveLabelButton);
+		candidateToAddPanel.add(saveLabelWarningLabel);
+
+		saveLabelWarningLabel.setFont(saveDefWarningLabel.getFont().deriveFont(Font.BOLD));
+		saveLabelWarningLabel.setForeground(Color.red);
+		saveLabelWarningLabel.setPreferredSize(new Dimension(140, 15));
+
 		checkboxIncludeChildren = new JCheckBox("Include children");
 		checkboxIncludeChildren.setBackground(guiComponent.getBackground());
 		checkboxIncludeChildren.setToolTipText(Messages.getString("OntologyGenerationComponent.IncludeChildrenCheckbox")); //$NON-NLS-1$
 		candidateToAddPanel.add(checkboxIncludeChildren);
 		/*
-		 * checkboxIncludeBranch = new JCheckBox(); candidateToAddPanel.add(checkboxIncludeBranch); JLabel label3 = new
+		 * checkboxIncludeBranch = new JCheckBox();
+		 * candidateToAddPanel.add(checkboxIncludeBranch); JLabel label3 = new
 		 * JLabel("include sub-branch"); candidateToAddPanel.add(label3);
 		 */
 		JPanel oboClassTableHeaderPanel = new JPanel(new BorderLayout());
@@ -2368,7 +2429,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	/**
 	 * Displays or hides the progress bar dialog with the default wait text
 	 * 
-	 * @param displayDlg if true, display progress bar dialog, hide otherwise
+	 * @param displayDlg
+	 *            if true, display progress bar dialog, hide otherwise
 	 */
 	public void showProgressDlg(boolean displayDlg)
 	{
@@ -2378,8 +2440,11 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	/**
 	 * Displays or hides the progress bar dialog
 	 * 
-	 * @param displayDlg if true, display progress bar dialog, hide otherwise
-	 * @param displayMsg The wait text inside the dialog. If null, display default wait text
+	 * @param displayDlg
+	 *            if true, display progress bar dialog, hide otherwise
+	 * @param displayMsg
+	 *            The wait text inside the dialog. If null, display default wait
+	 *            text
 	 */
 	public void showProgressDlg(boolean displayDlg, String displayMsg)
 	{
@@ -2542,7 +2607,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate worker thread
+	 * Inner Class to invoke {@link GoPubMedTermGenerationStub} in a separate
+	 * worker thread
 	 */
 	private class TermGenerationServiceWorker extends SwingWorker<TextConceptRepresentation[], Void>
 	{
@@ -2554,9 +2620,12 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		/**
 		 * Constructs a {@link TermGenerationServiceWorker}
 		 * 
-		 * @param inputData , the query or text uses for the generation
-		 * @param destinationTable , the table where to place the terms
-		 * @param textSourceName , the source type (e.g. TEXT,PUBMED)
+		 * @param inputData
+		 *            , the query or text uses for the generation
+		 * @param destinationTable
+		 *            , the table where to place the terms
+		 * @param textSourceName
+		 *            , the source type (e.g. TEXT,PUBMED)
 		 */
 		public TermGenerationServiceWorker(String inputData, TermsTable destinationTable, String textSourceName)
 		{
@@ -2603,7 +2672,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_WEB)) {
-					termsTable.setShowInformationIcon(true);					
+					termsTable.setShowInformationIcon(true);
 					GenerateConceptsFromWebQuery query = new GoPubMedTermGenerationStub.GenerateConceptsFromWebQuery();
 					query.setMaxNumberOfTerms(1000);
 					query.setQueryString(inputData);
@@ -2612,7 +2681,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					concepts = response.get_return();
 				}
 				if (source.equals(SOURCE_TEXT)) {
-					termsTable.setShowInformationIcon(false);					
+					termsTable.setShowInformationIcon(false);
 					String[] lines = inputData.split("\n");
 					GenerateConceptsFromText query = new GoPubMedTermGenerationStub.GenerateConceptsFromText();
 					query.setMaxNumberOfTerms(1000);
@@ -2723,8 +2792,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 							candidateTerm = updateCandidateTermWithConcept(concept, candidateTerm);
 						}
 						else {
-							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(), concept.getLexicalRepresentation(), concept.getScore(),
-							    CandidateTerm.TYPE_GENERATED);
+							candidateTerm = new CandidateTerm(concept.getLabel(), concept.getKnownAbbreviation(), concept.getLexicalRepresentation(), concept
+									.getScore(), CandidateTerm.TYPE_GENERATED);
 						}
 						termsFromService.add(candidateTerm);
 					}
@@ -2775,7 +2844,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	}
 
 	/**
-	 * Worker to invoke the {@link GoPubMedDefinitionGeneratorStub} in a separate thread
+	 * Worker to invoke the {@link GoPubMedDefinitionGeneratorStub} in a
+	 * separate thread
 	 */
 	private class DefinitionGenerationServiceWorker extends SwingWorker<DefinitionContainer[], Void>
 	{
@@ -2786,8 +2856,11 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 		/**
 		 * Constructs a {@link DefinitionGenerationServiceWorker}
 		 * 
-		 * @param term , the term to be defined
-		 * @param relatedTerms , known terms associated with the term (e.g. known parent terms)
+		 * @param term
+		 *            , the term to be defined
+		 * @param relatedTerms
+		 *            , known terms associated with the term (e.g. known parent
+		 *            terms)
 		 */
 		public DefinitionGenerationServiceWorker(String term, String[] relatedTerms, DefinitionsTable destinationTable)
 		{
@@ -2903,9 +2976,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			this.setProgress(100);
 
 			// Reset the cursor in normal mode
-			adapter.updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
 			guiComponent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			this.table.repaint();
 		}
 
 		private void organizeDefinition(DefinitionContainer def, List<CandidateDefinition> defList, int index)
@@ -2952,8 +3024,8 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 						// found,
 						// add a new alternative definition.
 						if (!duplicateAlternativeDefinition) {
-							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def
-							    .getCachedURL(), def.getParentTermCount(), false);
+							final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(),
+									def.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
 
 							if (def.getDefinition().length() > candDef.getDefinition().length()) {
 								// swap candidateDefinition and
@@ -2975,7 +3047,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 								{
 									public void update()
 									{
-										adapter.updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+										updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
 									}
 								});
 
@@ -2988,14 +3060,14 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				}
 				// Otherwise, add new definition to list.
 				if (!duplicateDefinition) {
-					final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def.getUrl(), def
-					    .getCachedURL(), def.getParentTermCount(), false);
+					final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def
+							.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
 					index++;
 					candidateDefinition.addListener(new UpdateListener()
 					{
 						public void update()
 						{
-							adapter.updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
+							updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
 						}
 					});
 					defList.add(candidateDefinition);

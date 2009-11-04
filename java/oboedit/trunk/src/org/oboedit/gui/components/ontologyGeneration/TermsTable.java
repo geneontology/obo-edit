@@ -37,8 +37,8 @@ public class TermsTable extends JTable {
 	 * @param numberOfColumnsToShow
 	 * @param clipboard
 	 */
-	public TermsTable(CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable) {
-		super(new TermsTableModel(clipboard, numberOfColumnsToShow, isMainTermsTable));
+	public TermsTable(OntologyModelAdapterInterface adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable) {
+		super(new TermsTableModel(adapter, clipboard, numberOfColumnsToShow, isMainTermsTable));
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
 		tableHeader.setReorderingAllowed(false);

@@ -39,6 +39,7 @@ public class CandidateTerm
 	private double score;
 	private String userDefinedDefinition;
 	private String userDefinedLabel;
+	private List<CandidateDefinition> generatedDefinitions;
 
 	/**
 	 * Constructs a {@link CandidateTerm}
@@ -160,13 +161,8 @@ public class CandidateTerm
 	public List<CandidateDefinition> getGeneratedDefinitions()
 	{
 		List<CandidateDefinition> list = new ArrayList<CandidateDefinition>();
-		if (this.isInLoadedOntology()) {
-			OntologyModelAdapterInterface adapter = OBOOntologyModelAdapter.getInstance();
-			CandidateDefinition existingDefinition = adapter.getExistingDefinitionIfExists(this);
-			if (existingDefinition != null) {
-				list.add(existingDefinition);
-				this.setGeneratedDefinitions(list);
-			}
+		if (null != generatedDefinitions) {
+			list.addAll(generatedDefinitions);
 		}
 		return list;
 	}
@@ -176,7 +172,7 @@ public class CandidateTerm
 	 */
 	public void setGeneratedDefinitions(List<CandidateDefinition> generatedDefinitions)
 	{
-		new ArrayList<CandidateDefinition>(generatedDefinitions);
+		this.generatedDefinitions = new ArrayList<CandidateDefinition>(generatedDefinitions);
 	}
 
 	/**
@@ -366,7 +362,7 @@ public class CandidateTerm
 	    if (userDefinedLabel != null) {
 	    	label = userDefinedLabel;
 	    } else if (isInLoadedOntology()) {
-	    	label = OBOOntologyModelAdapter.getInstance().getLabelForExistingTermIfExists(this);
+	    	label = OBOOntologyModelAdapter.getInstance().getLabelForExistingTerm(this);
 	    }
 	    if (label == null) {
 	    	label = generatedLabel;

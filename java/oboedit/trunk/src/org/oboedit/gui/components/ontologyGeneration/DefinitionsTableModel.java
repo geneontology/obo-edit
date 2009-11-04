@@ -198,18 +198,6 @@ public class DefinitionsTableModel extends AbstractTableModel
 		return getVisibleElements().get(rowIndex);
 	}
 
-	/**
-	 * Select the {@link CandidateDefinition}
-	 *
-	 * @param definition the {@link CandidateDefinition} to be selected
-	 */
-	public void selectDefinition(CandidateDefinition definition)
-	{
-		if (definitions.contains(definition)) {
-			definition.setTicked(true);
-		}
-		// fireTableDataChanged();
-	}
 
 	/*
 	 * PRIVATE METHDOS

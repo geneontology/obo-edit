@@ -98,30 +98,6 @@ public class DefinitionsTable extends JTable
 		return (DefinitionsTableModel) super.getModel();
 	}
 
-//	@Override
-//	public String getToolTipText(MouseEvent e)
-//	{
-//		String tip = null;
-//		StringBuffer toolTipBuffer = new StringBuffer();
-//
-//		java.awt.Point p = e.getPoint();
-//		int rowIndex = rowAtPoint(p);
-//		int colIndex = columnAtPoint(p);
-//		int realColumnIndex = convertColumnIndexToModel(colIndex);
-//
-//		if (realColumnIndex == 2) {
-//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//			tip = "Click for more information on sources of the definitions";
-//		}
-//		else {
-//			/*
-//			 * You can omit this part if you know you don't have any renderer that supply their own tool tips.
-//			 */
-//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//			tip = super.getToolTipText(e);
-//		}
-//		return tip;
-//	}
 	
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int column)

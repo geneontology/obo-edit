@@ -36,8 +36,7 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 		innerComponent.initListener();
 		validate();
 		innerComponent.initClipboardAndWorker();
-		adapter.getTermsFromOntologyModel();
-		adapter.updateSelectedLinkedObjectAndParents();
+		adapter.refillOBOTermsTableWithExistingTerms();
 	}
 
 	@Override
@@ -57,8 +56,8 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 		super.updateUI();
 	}
 
-	public void updateEditDefArea(String definition)
+	public void updateEditDefArea()
 	{
-		innerComponent.updateEditDefArea(definition);
+		innerComponent.updateEditDefArea();
 	}
 }
