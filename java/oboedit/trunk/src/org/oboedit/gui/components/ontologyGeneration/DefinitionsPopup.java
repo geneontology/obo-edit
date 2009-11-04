@@ -452,8 +452,8 @@ public class DefinitionsPopup extends JDialog
 		 */
 		private void onClickAddDefinition(int rowIndex, int columnIndex)
 		{
-			String definition = candidateDefinitionList.get(rowIndex).def.getDefinition();
-				parent.updateEditDefArea(definition);
+			candidateDefinitionList.get(rowIndex).def.setTicked();
+			parent.updateEditDefArea();
 		}
 
 	}

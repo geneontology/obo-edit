@@ -12,8 +12,6 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import org.obo.datamodel.OBOClass;
-
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 
 /**
@@ -31,6 +29,7 @@ public class TermsTableModel extends AbstractTableModel
 	private final CandidateTermCache clipboard;
 	private final boolean isMainTermsTable;
 	private boolean onlyShowExistingTerms;
+	private final OntologyModelAdapterInterface adapter;
 
 	/**
 	 * Constructs a {@link TermsTableModel}.
@@ -38,8 +37,9 @@ public class TermsTableModel extends AbstractTableModel
 	 * @param isMainTermsTable
 	 * @param clipboard
 	 */
-	public TermsTableModel(CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
+	public TermsTableModel(OntologyModelAdapterInterface adapter, CandidateTermCache clipboard, int numberOfColumnsToShow, boolean isMainTermsTable)
 	{
+		this.adapter = adapter;
 		this.numberOfColumnsToShow = numberOfColumnsToShow;
 		this.clipboard = clipboard;
 		this.isMainTermsTable = isMainTermsTable;
@@ -190,7 +190,7 @@ public class TermsTableModel extends AbstractTableModel
 		synchronized (this) {
 			this.results.clear();
 			this.results.addAll(list);
-			updatePresentInOntology();
+			updateExistingTermsInExternalModel();
 			fireTableDataChanged();
 		}
 	}
@@ -360,19 +360,23 @@ public class TermsTableModel extends AbstractTableModel
 	}
 
 	/**
-	 * Update the internal {@link Map} for mappings from {@link CandidateTerm} to {@link OBOClass} to determine whether
-	 * a term is already present in OBOEdit.
+	 * Update the internal {@link Map} for mappings from {@link CandidateTerm} to ids of terms in the external ontology model.
 	 */
 	public void updatePresentInOntology()
 	{
+		updateExistingTermsInExternalModel();
+		fireTableDataChanged();
+	}
+	
+	private void updateExistingTermsInExternalModel() {
 		// check terms against ontology labels and add to lookup list
 		for (CandidateTerm candidateTerm : this.results) {
 			candidateTerm.clearTermIdInLoadedOntology();
-			OntologyModelAdapterInterface adapter = OBOOntologyModelAdapter.getInstance();
 			String id = adapter.findTermId(candidateTerm);
 			if (id != null) {
 				candidateTerm.setExistingIdOfLoadedTerm(id);
 			}
-		}
+		}		
 	}
+	
 }

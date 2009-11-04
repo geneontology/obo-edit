@@ -234,7 +234,7 @@ public class OBOOntologyIndexManager
 			queries.add(query);
 		}
 		List<String> idList = lookup(queries);
-		List<String> filteredList = new ArrayList<String>(idList.size());
+		List<String> filteredIdList = new ArrayList<String>(idList.size());
 		Set<String> set = new HashSet<String>();
 		for (String id : idList) {
 			OBOClass ontologyClass = (OBOClass) SessionManager.getManager().getSession().getLinkDatabase().getObject(id);
@@ -242,7 +242,7 @@ public class OBOOntologyIndexManager
 				String name = ontologyClass.getName();
 				for (String string : list) {
 					if (string.contains(name)) {
-						filteredList.add(id);
+						filteredIdList.add(id);
 						set.add(id);
 						continue;
 					}
@@ -253,7 +253,7 @@ public class OBOOntologyIndexManager
 			}
 
 		}
-		return filteredList;
+		return filteredIdList;
 	}
 
 	/**
