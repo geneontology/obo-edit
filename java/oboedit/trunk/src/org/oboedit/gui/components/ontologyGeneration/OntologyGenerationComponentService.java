@@ -25,4 +25,7 @@ public interface OntologyGenerationComponentService {
 	public abstract void initClipboardAndWorker();
 	
 	public abstract void showProgressDlg(boolean displayDlg, String displayMsg);
+
+	public abstract void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable, OBOTermsTable oboTermsTable,
+			DefinitionsTable definitionsTable);
 }

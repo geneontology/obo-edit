@@ -228,11 +228,9 @@ public class CandidateDefinition implements Cloneable
 	 * 
 	 * @param isTicked
 	 */
-	public void setTicked(boolean isTicked)
+	public void setTicked()
 	{
-		if (this.isTicked == isTicked)
-			return;
-		this.isTicked = isTicked;
+		this.isTicked = true;
 		notifyListeners();
 	}
 
