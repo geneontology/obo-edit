@@ -1,4 +1,4 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.extraction;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.log4j.Logger;
+import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 
 /**
  * 

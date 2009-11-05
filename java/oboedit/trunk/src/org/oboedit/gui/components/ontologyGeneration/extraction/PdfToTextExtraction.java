@@ -1,4 +1,4 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.extraction;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.log4j.Logger;
+import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 import org.pdfbox.cos.COSDocument;
 import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
@@ -31,7 +32,7 @@ public class PdfToTextExtraction extends DataExtraction{
 	PDFTextStripper pdfTextStripper;
 	String pdfText;
 	
-	PdfToTextExtraction() {
+	public PdfToTextExtraction() {
 		pdfText = "";
 	}
 	

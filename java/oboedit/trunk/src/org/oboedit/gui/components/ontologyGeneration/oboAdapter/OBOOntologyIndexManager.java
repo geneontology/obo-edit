@@ -1,4 +1,4 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -68,7 +68,8 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Recreating the Lucene in memory index for the specified {@link Collection} of {@link OBOClass} instances
+	 * Recreating the Lucene in memory index for the specified
+	 * {@link Collection} of {@link OBOClass} instances
 	 * 
 	 * @param presentTerms
 	 */
@@ -112,7 +113,8 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Find all ids for {@link LinkedObject} loaded in OBO-Edit which overlap with the specified strings
+	 * Find all ids for {@link LinkedObject} loaded in OBO-Edit which overlap
+	 * with the specified strings
 	 * 
 	 * @param queryList
 	 * @return List of ids for {@link LinkedObject}
@@ -150,21 +152,22 @@ public class OBOOntologyIndexManager
 	/**
 	 * Returns the ontology terms which match the full query
 	 * 
-	 * @param list of query strings
+	 * @param collection
+	 *            of query strings
 	 * @return list of matching ontology term ids
 	 */
-	public List<String> lookupExact(List<String> list)
+	public List<String> lookupExact(Collection<String> collection)
 	{
 		List<Query> queries = new ArrayList<Query>();
 		Set<String> testSet = new HashSet<String>();
-		for (String string : list) {
+		for (String string : collection) {
 			try {
 				string = QueryParser.escape(string);
 				Query parsedQuery = queryParser.parse("\"" + string + "\"");
 				queries.add(parsedQuery);
 			}
 			catch (ParseException exception) {
-				logger.error("Error parsing query: "+ exception.getMessage());
+				logger.error("Error parsing query: " + exception.getMessage());
 			}
 			String testString = string;
 			testSet.add(testString.toLowerCase());
@@ -207,32 +210,15 @@ public class OBOOntologyIndexManager
 	}
 
 	/**
-	 * Returns ontology terms, where all parts of the term (document) are contained in the query
+	 * Returns ontology terms, where all parts of the term (document) are
+	 * contained in the query
 	 * 
-	 * @param list
+	 * @param queryStrings
 	 * @return
 	 */
-	public List<String> lookupStrict(List<String> list)
+	public List<String> lookupStrict(Collection<String> queryStrings)
 	{
-		List<Query> queries = new ArrayList<Query>();
-		Set<Query> querySet = new HashSet<Query>();
-		for (String string : list) {
-			BooleanQuery query = new BooleanQuery();
-			try {
-				string = QueryParser.escape(string);
-				if (string.length() != 0) {
-					Query parseQuery = queryParser.parse(string);
-					if (!querySet.contains(parseQuery)) {
-						query.add(parseQuery, Occur.SHOULD);
-						querySet.add(parseQuery);
-					}
-				}
-			}
-			catch (ParseException exception) {
-				logger.error("Error parsing query: "+ exception.getMessage());
-			}
-			queries.add(query);
-		}
+		List<Query> queries = buildLuceneQueryConnectByShould(queryStrings);
 		List<String> idList = lookup(queries);
 		List<String> filteredIdList = new ArrayList<String>(idList.size());
 		Set<String> set = new HashSet<String>();
@@ -240,7 +226,7 @@ public class OBOOntologyIndexManager
 			OBOClass ontologyClass = (OBOClass) SessionManager.getManager().getSession().getLinkDatabase().getObject(id);
 			if (ontologyClass != null) {
 				String name = ontologyClass.getName();
-				for (String string : list) {
+				for (String string : queryStrings) {
 					if (string.contains(name)) {
 						filteredIdList.add(id);
 						set.add(id);
@@ -254,6 +240,44 @@ public class OBOOntologyIndexManager
 
 		}
 		return filteredIdList;
+	}
+
+	/**
+	 * Returns ontology terms, where some parts of the term (document) are
+	 * contained in the query
+	 * 
+	 * @param queryStrings
+	 * @return
+	 */
+	public List<String> lookupFuzzy(Collection<String> queryStrings)
+	{
+		List<Query> queries = buildLuceneQueryConnectByShould(queryStrings);
+		List<String> idList = lookup(queries);
+		return idList;
+	}
+
+	private List<Query> buildLuceneQueryConnectByShould(Collection<String> queryStrings)
+	{
+		List<Query> queries = new ArrayList<Query>();
+		Set<Query> querySet = new HashSet<Query>();
+		for (String string : queryStrings) {
+			BooleanQuery query = new BooleanQuery();
+			try {
+				string = QueryParser.escape(string);
+				if (string.length() != 0) {
+					Query parseQuery = queryParser.parse(string);
+					if (!querySet.contains(parseQuery)) {
+						query.add(parseQuery, Occur.SHOULD);
+						querySet.add(parseQuery);
+					}
+				}
+			}
+			catch (ParseException exception) {
+				logger.error("Error parsing query: " + exception.getMessage());
+			}
+			queries.add(query);
+		}
+		return queries;
 	}
 
 	/**

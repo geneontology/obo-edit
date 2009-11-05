@@ -28,6 +28,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
+import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
 
 /**
  * A popup showing the different kinds of the definition and its respective URLs.
