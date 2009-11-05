@@ -2,7 +2,6 @@ package org.oboedit.gui.components.ontologyGeneration.factory;
 
 import org.bbop.framework.AbstractComponentFactory;
 import org.bbop.framework.AbstractGUIComponent;
-import org.oboedit.gui.components.ontologyGeneration.OntologyGenerationComponent;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
 
 

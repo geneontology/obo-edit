@@ -2,7 +2,6 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 
 import javax.swing.JComponent;
 
-import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
 import org.oboedit.gui.components.ontologyGeneration.DefinitionsTable;
 import org.oboedit.gui.components.ontologyGeneration.TermsTable;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOTermsTable;
@@ -17,8 +16,6 @@ public interface OntologyGenerationComponentServiceInterface {
 
 	public abstract OBOTermsTable getOboTermsTable();
 
-//	public abstract CandidateTerm getSelectedCandidateTerm();
-
 	public abstract TermsTable getTermsTable();
 
 	public abstract void initClipboardAndWorker();
@@ -32,9 +29,4 @@ public interface OntologyGenerationComponentServiceInterface {
 	public abstract void updateAllDependedOnSelectedTerm();
 	
 	public abstract void updateInputFieldsForSelectedLinkedObjectLabel(String label);
-
-//	public abstract void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable, OBOTermsTable oboTermsTable,
-//			DefinitionsTable definitionsTable);
-//
-//	public abstract void updateParentAsSimiliarTerm();
 }
