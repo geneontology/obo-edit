@@ -1,4 +1,4 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.extraction;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,12 +18,13 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.swingworker.SwingWorker;
+import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 
 /**
  * Tries to extend an existing definition by looking up its source HTML content. If no extension could be found, the
  * definition is left as it is.
  */
-class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
+public class DefinitionExtensionWorker extends SwingWorker<Boolean, Object>
 {
     public static final String WAS_EXTENDED_PROPERTY = "wasExtended";
 	private static final Logger logger = Logger.getLogger(DefinitionExtensionWorker.class);

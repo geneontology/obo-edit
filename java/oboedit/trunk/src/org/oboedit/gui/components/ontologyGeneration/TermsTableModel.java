@@ -12,6 +12,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
+
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 
 /**

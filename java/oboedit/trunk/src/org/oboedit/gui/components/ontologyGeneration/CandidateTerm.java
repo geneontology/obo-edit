@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyModelAdapter;
+
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 

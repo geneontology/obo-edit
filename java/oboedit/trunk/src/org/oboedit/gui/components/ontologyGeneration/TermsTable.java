@@ -17,6 +17,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
+
 /**
  * {@link JTable} to display {@link List} of {@link CandidateTerm}.
  * 

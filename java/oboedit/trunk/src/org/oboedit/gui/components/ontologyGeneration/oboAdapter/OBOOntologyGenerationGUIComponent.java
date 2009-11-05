@@ -1,8 +1,10 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
 import java.awt.Cursor;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.oboedit.gui.components.ontologyGeneration.OntologyGenerationComponent;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
 
 /**
  * Ontology Generation Plugin for OBO-Edit 2 which supports the automatic generation of candidate terms from text
