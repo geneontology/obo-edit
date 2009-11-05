@@ -44,9 +44,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 
 	protected StringBuffer tempBuffer = new StringBuffer();
 
-        // Handle both old and new date formats
+	// Handle both old and new date formats
 	protected SimpleDateFormat oldDateFormat = new SimpleDateFormat(
-	    "dd:MM:yyyy HH:mm");  // old date format
+	"dd:MM:yyyy HH:mm");  // old date format
 	protected SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'"); // ISO 8601
 
 	protected static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
@@ -398,8 +398,8 @@ public class OBOParseEngine extends AbstractParseEngine {
 						parseTag(currentStanza, line, linenum, pair.index + 1,
 								name, value, nv);
 					} catch (OBOParseException ex) {
-								ex.printStackTrace();
-								translateAndThrow(ex, line, linenum, pair.index + 1);
+						ex.printStackTrace();
+						translateAndThrow(ex, line, linenum, pair.index + 1);
 
 					}
 				} else {
@@ -483,12 +483,12 @@ public class OBOParseEngine extends AbstractParseEngine {
 			try {
 				((OBOParser) parser).readDate(oldDateFormat.parse(value));
 			} catch (ParseException ex) {
-			    try {
-				((OBOParser) parser).readDate(newDateFormat.parse(value));
-			    } catch (ParseException ex2) {
-				throw new OBOParseException("Badly formatted date--couldn't parse with old or new format: " + value,
-							    getCurrentPath(), line, linenum, 0);
-			    }
+				try {
+					((OBOParser) parser).readDate(newDateFormat.parse(value));
+				} catch (ParseException ex2) {
+					throw new OBOParseException("Badly formatted date--couldn't parse with old or new format: " + value,
+							getCurrentPath(), line, linenum, 0);
+				}
 			}
 			return true;
 		} else if (name.equals("creation_date")) {
@@ -496,12 +496,12 @@ public class OBOParseEngine extends AbstractParseEngine {
 				((OBOParser) parser).readCreationDate(oldDateFormat.parse(value),
 						nv);
 			} catch (ParseException ex) {
-			    try {
-				((OBOParser) parser).readCreationDate(newDateFormat.parse(value), nv);
-			    } catch (ParseException ex2) {
-				throw new OBOParseException("Badly formatted creation date: " + value,
-						getCurrentPath(), line, linenum, 0);
-			    }
+				try {
+					((OBOParser) parser).readCreationDate(newDateFormat.parse(value), nv);
+				} catch (ParseException ex2) {
+					throw new OBOParseException("Badly formatted creation date: " + value,
+							getCurrentPath(), line, linenum, 0);
+				}
 			}
 			return true;
 		} else if (name.equals("modification_date")) {
@@ -509,12 +509,12 @@ public class OBOParseEngine extends AbstractParseEngine {
 				((OBOParser) parser).readModificationDate(oldDateFormat
 						.parse(value), nv);
 			} catch (ParseException ex) {
-			    try {
-				((OBOParser) parser).readModificationDate(newDateFormat.parse(value), nv);
-			    } catch (ParseException ex2) {
-				throw new OBOParseException("Badly formatted modification_date: " + value,
-						getCurrentPath(), line, linenum, 0);
-			    }
+				try {
+					((OBOParser) parser).readModificationDate(newDateFormat.parse(value), nv);
+				} catch (ParseException ex2) {
+					throw new OBOParseException("Badly formatted modification_date: " + value,
+							getCurrentPath(), line, linenum, 0);
+				}
 			}
 			return true;
 		} else if (name.equals("saved-by")) {
@@ -1008,9 +1008,9 @@ public class OBOParseEngine extends AbstractParseEngine {
 		protected Integer card;
 
 		protected String ns;
-		
+
 		boolean parentIsProperty = false;
-		
+
 		protected List<String> args; // future expansion: n-ary relations
 
 		protected NestedValue nv;
@@ -1372,9 +1372,13 @@ public class OBOParseEngine extends AbstractParseEngine {
 			char c = str.charAt(i);
 			if (c == '\\') {
 				i++;
+				if(i >= str.length()){
+					throw new OBOParseException("Unrecognized escape"
+							+ " character " + c + " found.", getCurrentPath(),
+							null, -1, i);
+				}
 				c = str.charAt(i);
-				Character mapchar = (Character) escapeChars
-				.get(new Character(c));
+				Character mapchar = (Character) escapeChars.get(new Character(c));
 				if (mapchar == null)
 					throw new OBOParseException("Unrecognized escape"
 							+ " character " + c + " found.", getCurrentPath(),
