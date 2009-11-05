@@ -1,7 +1,6 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +10,8 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JTable;
 
 import org.obo.datamodel.LinkedObject;
+import org.oboedit.gui.components.ontologyGeneration.JTableHelper;
+import org.oboedit.gui.components.ontologyGeneration.TermsTable;
 
 /**
  * {@link JTable} to display {@link List} of {@link LinkedObject}.
@@ -140,6 +141,7 @@ public class OBOTermsTable extends JTable
 		}
 	}
 
+	
 	/*
 	 * OVERRIDDEN METHODS
 	 */
@@ -148,39 +150,5 @@ public class OBOTermsTable extends JTable
 	public OBOTermsTableModel getModel()
 	{
 		return (OBOTermsTableModel) super.getModel();
-	}
-
-	@Override
-	public String getToolTipText(MouseEvent e)
-	{
-		String tip = null;
-		// java.awt.Point p = e.getPoint();
-		// int rowIndex = rowAtPoint(p);
-		// int colIndex = columnAtPoint(p);
-		// int realColumnIndex = convertColumnIndexToModel(colIndex);
-		//
-		// if (realColumnIndex == 3) {
-		// setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		// tip = "Click to see GoPubMed(www.gopubmed.org) resutls for this term";
-		//
-		// }
-		// else if (realColumnIndex == 1) {
-		// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		// tip = getModel().getValueAt(rowIndex, colIndex).toString();
-		//
-		// }
-		// else if (realColumnIndex == 2) {
-		// setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		// tip = "Click to get definitions for this term";
-		// }
-		// else {
-		// /*
-		// * You can omit this part if you know you don't have any renderer that supply their own tool tips.
-		// */
-		// setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		// tip = super.getToolTipText(e);
-		// }
-
-		return tip;
 	}
 }

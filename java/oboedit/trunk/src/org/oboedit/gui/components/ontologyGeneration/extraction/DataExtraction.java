@@ -1,8 +1,9 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.extraction;
 
 import java.io.File;
 
 import org.apache.log4j.Logger;
+import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 
 /**
  * Abstract class for different FileTyps, which will be read out.

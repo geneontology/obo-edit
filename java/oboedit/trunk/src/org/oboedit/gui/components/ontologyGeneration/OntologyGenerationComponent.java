@@ -83,6 +83,14 @@ import javax.swing.text.JTextComponent;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingworker.SwingWorker;
+import org.oboedit.gui.components.ontologyGeneration.extraction.DefinitionExtensionWorker;
+import org.oboedit.gui.components.ontologyGeneration.extraction.PdfToTextExtraction;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.UpdateListenerInterface;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyModelAdapter;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOTermsTable;
 
 import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub;
 import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.DefinitionContainer;
@@ -112,7 +120,7 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  * @version 2.0, 25/06/2009
  */
-public class OntologyGenerationComponent implements PropertyChangeListener, OntologyGenerationComponentService
+public class OntologyGenerationComponent implements PropertyChangeListener, OntologyGenerationComponentServiceInterface
 {
 
 	private final OntologyModelAdapterInterface adapter;
@@ -794,22 +802,22 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 				if (e.getValueIsAdjusting()) {
 					return;
 				}
-					int selectedRow = oboTermsTable.getSelectedRow();
-					if (selectedRow != selectedParentTermRow && selectedRow >= 0) {
-						selectedParentTermRow = selectedRow;
-						Set<String> tickedTerms = new HashSet<String>();
-						tickedTerms.addAll(oboTermsTable.getModel().getTickedTerms());
+				int selectedRow = oboTermsTable.getSelectedRow();
+				if (selectedRow != selectedParentTermRow && selectedRow >= 0) {
+					selectedParentTermRow = selectedRow;
+					Set<String> tickedTerms = new HashSet<String>();
+					tickedTerms.addAll(oboTermsTable.getModel().getTickedTerms());
 
-						String selectedObjectID = oboTermsTable.getModel().getTermAt(selectedRow).getID();
+					String selectedObjectID = oboTermsTable.getModel().getTermAt(selectedRow).getID();
 
-						if (selectedRow >= 0) {
-							adapter.selectOntologyTerm(selectedObjectID);
-						}
-						oboTermsTable.setRowSelectionInterval(oboTermsTable.getModel().getRowFromTerm(selectedObjectID), oboTermsTable.getModel()
-								.getRowFromTerm(selectedObjectID));
-						oboTermsTable.getModel().setTickedTerms(tickedTerms);
+					if (selectedRow >= 0) {
+						adapter.selectOntologyTerm(selectedObjectID);
 					}
+					oboTermsTable.setRowSelectionInterval(oboTermsTable.getModel().getRowFromTerm(selectedObjectID), oboTermsTable.getModel().getRowFromTerm(
+							selectedObjectID));
+					oboTermsTable.getModel().setTickedTerms(tickedTerms);
 				}
+			}
 		});
 
 		addToOntologyButton.addActionListener(new ActionListener()
@@ -1471,7 +1479,6 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			selectedCandidateTerm.setUserDefinedLabel(label);
 			candidateTermCache.addTerm(selectedCandidateTerm);
 			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
-			adapter.updateParentAsSimiliarTerm(selectedCandidateTerm, oboTermsTable);
 			// commit to OBOClass if term is known
 			adapter.commitLabel(selectedCandidateTerm);
 			updateSaveLabelWarningLabel(false);
@@ -1486,17 +1493,14 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 	{
 		boolean includeChildren = checkboxIncludeChildren.isSelected();
 		boolean includeBranch = false; // checkboxIncludeBranch.isSelected();
-		adapter.commitAddToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch,
-				selectedCandidateTerm);
+		adapter.commitAddToOntologyAsChildOfLinkedObject(oboTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch, selectedCandidateTerm);
 	}
-	
+
 	/**
 	 * Displays term selected in the termsTable and updates all depending gui
 	 * components
-	 * 
-	 * @param term
 	 */
-	private synchronized void updateAllDependedOnSelectedTerm()
+	public synchronized void updateAllDependedOnSelectedTerm()
 	{
 		logger.trace("UPDATE updatedAllDependedOnSelectedTerm() for :" + selectedCandidateTerm);
 
@@ -1515,21 +1519,59 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 			}
 			updateEditDefArea();
 
-			definitionTable.getColumnModel().getColumn(1).setHeaderValue("Definitions for \"" + selectedCandidateTerm.getLabel() + "\"");
-			definitionTable.getTableHeader().repaint();
+			if (selectedCandidateTerm.getGeneratedDefinitions() != null && !selectedCandidateTerm.getGeneratedDefinitions().isEmpty()) {
+				definitionTable.getColumnModel().getColumn(1).setHeaderValue("Definitions for \"" + selectedCandidateTerm.getLabel() + "\"");
+				definitionTable.getTableHeader().repaint();
+			}
 
 			if (!editNameTextField.getText().equals(selectedCandidateTerm.getLabel())) {
 				editNameTextField.setText(selectedCandidateTerm.getLabel());
 				editNameTextField.updateUI();
 			}
 
-			// TODO check order of update operations
 			updateParentAsTermFromDefinition(selectedCandidateTerm, termsTable, oboTermsTable, definitionTable);
-			adapter.updateParentAsSimiliarTerm(selectedCandidateTerm, oboTermsTable);
 			updateSynonymOrChildTable();
-			oboTermsTable.getModel().addParentsTermsOfSelectedLinkedObject(adapter.getParentsForExistingTerm(selectedCandidateTerm));
+			updateParentAsSimiliarTerm();
+			updateParentAsExistingTerm();
 
 			logger.info("SelectedCandidateTerm Name: " + selectedCandidateTerm.getLabel());
+		}
+	}
+
+	/**
+	 * Add similar (based on substring inclusion) terms to similiarTermsComboBox
+	 * based on substring comparison
+	 */
+	public void updateParentAsSimiliarTerm()
+	{
+		logger.trace("UPDATE SIMILAR TERMS for :" + selectedCandidateTerm.getLabel());
+
+		// clearing
+		oboTermsTable.getModel().clearSameAsCandidateTerms();
+		oboTermsTable.getModel().clearSimiliarToCandidateTerm();
+
+		Collection<String> labels = new HashSet<String>();
+		labels.addAll(selectedCandidateTerm.getLexicalRepresentations());
+		labels.addAll(selectedCandidateTerm.getAbbreviations());
+		if (null != selectedCandidateTerm.getLabel())
+			labels.add(selectedCandidateTerm.getLabel());
+		if (null != selectedCandidateTerm.getUserDefinedLabel())
+			labels.add(selectedCandidateTerm.getUserDefinedLabel());
+		if (null != selectedCandidateTerm.getGeneratedLabel())
+			labels.add(selectedCandidateTerm.getGeneratedLabel());
+
+		List<String> idsOfSimilarTerms = adapter.lookupOntologyTermIdsFromIndexFuzzy(labels);
+		oboTermsTable.getModel().updateSimilarTerms(labels, idsOfSimilarTerms);
+	}
+
+	/**
+	 * Updated the parent terms in the existing loaded ontology model
+	 */
+	private void updateParentAsExistingTerm()
+	{
+		if (selectedCandidateTerm != null) {
+			Map<String, String> parents = adapter.getParentsForExistingTerm(selectedCandidateTerm);
+			oboTermsTable.getModel().addParentsTermsOfExistingCandidateTerm(parents);
 		}
 	}
 
@@ -3043,7 +3085,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 
 								defList.add(pos, candidateDefinition);
 
-								candidateDefinition.addListener(new UpdateListener()
+								candidateDefinition.addListener(new UpdateListenerInterface()
 								{
 									public void update()
 									{
@@ -3063,7 +3105,7 @@ public class OntologyGenerationComponent implements PropertyChangeListener, Onto
 					final CandidateDefinition candidateDefinition = new CandidateDefinition(index, def.getDefinition(), def.getFormattedDefinition(), def
 							.getUrl(), def.getCachedURL(), def.getParentTermCount(), false);
 					index++;
-					candidateDefinition.addListener(new UpdateListener()
+					candidateDefinition.addListener(new UpdateListenerInterface()
 					{
 						public void update()
 						{

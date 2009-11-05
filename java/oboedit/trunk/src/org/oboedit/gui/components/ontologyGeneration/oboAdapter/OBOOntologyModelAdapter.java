@@ -1,4 +1,4 @@
-package org.oboedit.gui.components.ontologyGeneration;
+package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -39,6 +39,10 @@ import org.obo.util.TermUtil;
 import org.oboedit.controller.SelectionManager;
 import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
+import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
+import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
 import org.oboedit.gui.event.HistoryAppliedEvent;
 import org.oboedit.gui.event.HistoryListener;
 import org.oboedit.gui.event.OntologyReloadListener;
@@ -60,7 +64,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 
 	private static OBOOntologyModelAdapter theInstance;
 
-	private OntologyGenerationComponentService service;
+	private OntologyGenerationComponentServiceInterface service;
 	private Collection<String> idsUndergoingChange;
 	private SessionManager sessionManager;
 
@@ -84,40 +88,37 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		return theInstance;
 	}
 
-	/**
-	 * Worker to invoke the {@link UpdateOBOOntologyIndexWorker} in a separate
-	 * thread
-	 */
-	private class UpdateOBOOntologyIndexWorker extends SwingWorker<Boolean, Void>
-	{
-
-		@Override
-		public Boolean doInBackground()
-		{
-			Collection<OBOClass> presentTerms = TermUtil.getTerms(getOboEditSessionManager().getSession());
-			logger.info(String.format("Start re-creating index for ontology loaded in OBO-Edit (%s terms)", String.valueOf(presentTerms.size())));
-			OBOOntologyIndexManager indexWriter = OBOOntologyIndexManager.getInstance();
-			indexWriter.recreateIndexWith(presentTerms);
-			return true;
-		}
-
-		@Override
-		public void done()
-		{
-			logger.info("Finished re-createating index for ontology loaded in OBO-Edit");
-			updateCandidateTermToOBOTermMapping();
-			// updateOBOTermsTable();
-			service.showProgressDlg(false, null);
-		}
-
-	}
-
 	private synchronized void updateOntologyIndex()
 	{
 		service.showProgressDlg(false, null);
-		UpdateOBOOntologyIndexWorker worker = new UpdateOBOOntologyIndexWorker();
+		SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>()
+		{
+			@Override
+			public Boolean doInBackground()
+			{
+				Collection<OBOClass> presentTerms = TermUtil.getTerms(getOboEditSessionManager().getSession());
+				logger.info(String.format("Start re-creating index for ontology loaded in OBO-Edit (%s terms)", String.valueOf(presentTerms.size())));
+				OBOOntologyIndexManager indexWriter = OBOOntologyIndexManager.getInstance();
+				indexWriter.recreateIndexWith(presentTerms);
+				return true;
+			}
+
+			@Override
+			public void done()
+			{
+				logger.info("Finished re-createating index for ontology loaded in OBO-Edit");
+				updateCandidateTermToOBOTermMapping();
+				// updateOBOTermsTable();
+				service.showProgressDlg(false, null);
+			}
+		};
 		worker.execute();
 		service.showProgressDlg(true, "<html>The loaded ontology is getting pre-processed<br>" + " for ontology generation. Please wait...</html>");
+	}
+
+	public static String getOboEditVersion()
+	{
+		return Preferences.getVersion().toString();
 	}
 
 	/*
@@ -170,18 +171,11 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		}
 	};
 
-	/*
-	 * Instantiate listeners to OBOEdit
-	 */
-
 	private OntologyReloadListener ontologyReloadListener = new OntologyReloadListener()
 	{
 		public void reload()
 		{
-			updateOntologyIndex();
-			updateCandidateTermToOBOTermMapping();
-			refillOBOTermsTableWithExistingTerms();
-			updateOBOTermsTable();
+			updateAllOnOntologyChange();
 		}
 	};
 
@@ -189,6 +183,11 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	{
 		public void selectionChanged(SelectionEvent e)
 		{
+			Collection<LinkedObject> terms = SelectionManager.getManager().getSelection().getTerms();
+			if (terms.size() == 1) {
+				LinkedObject source = terms.iterator().next();
+				service.updateInputFieldsForSelectedLinkedObjectLabel(source.getName());
+			}
 		}
 	};
 
@@ -196,16 +195,16 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	{
 		public void changeRoot(RootChangeEvent arg0)
 		{
-			updateOntologyIndex();
-			updateCandidateTermToOBOTermMapping();
-			refillOBOTermsTableWithExistingTerms();
-			updateOBOTermsTable();
+			updateAllOnOntologyChange();
 		}
 	};
 
-	public static String getOboEditVersion()
+	private void updateAllOnOntologyChange()
 	{
-		return Preferences.getVersion().toString();
+		updateOntologyIndex();
+		updateCandidateTermToOBOTermMapping();
+		refillOBOTermsTableWithExistingTerms();
+		service.updateAllDependedOnSelectedTerm();
 	}
 
 	/**
@@ -230,7 +229,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		SessionManager.getManager().removeRootChangeListener(rootChangeListener);
 	}
 
-	public void setService(OntologyGenerationComponentService service)
+	public void setService(OntologyGenerationComponentServiceInterface service)
 	{
 		this.service = service;
 		updateOntologyIndex();
@@ -256,9 +255,15 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		return id;
 	}
 
-	public List<String> lookupOntologyTermIdsFromIndex(List<String> queries)
+	public List<String> lookupOntologyTermIdsFromIndex(Collection<String> queryStrings)
 	{
-		return OBOOntologyIndexManager.getInstance().lookupStrict(queries);
+		return OBOOntologyIndexManager.getInstance().lookupStrict(queryStrings);
+	}
+
+	public List<String> lookupOntologyTermIdsFromIndexFuzzy(Collection<String> queryStrings)
+	{
+		return OBOOntologyIndexManager.getInstance().lookupFuzzy(queryStrings);
+
 	}
 
 	/**
@@ -290,7 +295,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	 * 
 	 * @param candidateTerm
 	 * @return
-	 * @see org.oboedit.gui.components.ontologyGeneration.OntologyModelAdapterInterface#getLabelForExistingTerm(org.oboedit.gui.components.ontologyGeneration.CandidateTerm)
+	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#getLabelForExistingTerm(org.oboedit.gui.components.ontologyGeneration.CandidateTerm)
 	 */
 	public String getLabelForExistingTerm(CandidateTerm candidateTerm)
 	{
@@ -364,7 +369,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	 * Select a term in OBO-Edit
 	 * 
 	 * @param id
-	 * @see org.oboedit.gui.components.ontologyGeneration.OntologyModelAdapterInterface#selectOntologyTerm(java.lang.String)
+	 * @see org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface#selectOntologyTerm(java.lang.String)
 	 */
 	public void selectOntologyTerm(final String id)
 	{
@@ -422,7 +427,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 
 				}
 				else if (linkedObjectsIfExistLikeSelectedTerm.size() == 1) {
-					TermMacroHistoryItem addTerm = createdAddLinkHistoryItem(linkedObjectsIfExistLikeSelectedTerm.get(0).getID(), parentId, OBOProperty.IS_A.getID());
+					TermMacroHistoryItem addTerm = createdAddLinkHistoryItem(linkedObjectsIfExistLikeSelectedTerm.get(0).getID(), parentId, OBOProperty.IS_A
+							.getID());
 					changeItem.addItem(addTerm);
 					selectedCandidateTermID = linkedObjectsIfExistLikeSelectedTerm.get(0).getID();
 				}
@@ -483,51 +489,12 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	}
 
 	/**
-	 * Add similar (based on substring inclusion) terms to similiarTermsComboBox
-	 * based on substring comparison
-	 */
-	public void updateParentAsSimiliarTerm(CandidateTerm selectedCandidateTerm, OBOTermsTable oboTermsTable)
-	{
-		logger.trace("UPDATE SIMILAR TERMS for :" + selectedCandidateTerm);
-
-		if (null == selectedCandidateTerm) {
-			logger.error("No term selected");
-		}
-		else {
-			// clearing
-			oboTermsTable.getModel().clearSameAsCandidateTerms();
-			oboTermsTable.getModel().clearSimiliarToCandidateTerm();
-
-			// String savedDef;
-			String selectedTermLabel = selectedCandidateTerm.getLabel();
-			if (selectedTermLabel.length() != 0) {
-				Collection<IdentifiedObject> allIdentifiedObjects = sessionManager.getSession().getObjects();
-				for (IdentifiedObject identifiedObject : allIdentifiedObjects) {
-					if (identifiedObject instanceof LinkedObject) {
-						LinkedObject linkedObject = (LinkedObject) identifiedObject;
-						String linkedObjectLabel = linkedObject.getName();
-						if (linkedObjectLabel != null) {
-							if (linkedObjectLabel.equalsIgnoreCase(selectedTermLabel)) {
-								oboTermsTable.getModel().addSameAsCandidateTerm(linkedObject);
-							}
-							else if (0 < calcFirstIndexOf(linkedObjectLabel, selectedTermLabel) || 0 < calcFirstIndexOf(selectedTermLabel, linkedObjectLabel)) {
-								oboTermsTable.getModel().addSimilarToCandidateTerm(linkedObject);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Feed all terms known to OBOEdit into the {@link OBOTermsTable}
 	 * 
 	 * @param idsUndergoingChange
 	 */
 	public void refillOBOTermsTableWithExistingTerms()
 	{
-		logger.trace("UPDATE updateExistingLinkedObjects() for :" + service.getSelectedCandidateTerm());
 		List<LinkedObject> linkedObjects = new ArrayList<LinkedObject>();
 		for (IdentifiedObject identifiedObject : sessionManager.getCurrentLinkDatabase().getObjects()) {
 			if (identifiedObject instanceof LinkedObject) {
@@ -542,19 +509,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	private void updateCandidateTermToOBOTermMapping()
 	{
 		service.getTermsTable().getModel().updatePresentInOntology();
-	}
-
-	private void updateOBOTermsTable()
-	{
-
-		if (service.getSelectedCandidateTerm() != null && service.getOboTermsTable() != null) {
-			updateParentAsSimiliarTerm(service.getSelectedCandidateTerm(), service.getOboTermsTable());
-		}
-
-		if (service.getSelectedCandidateTerm() != null) {
-			service.updateParentAsTermFromDefinition(service.getSelectedCandidateTerm(), service.getTermsTable(), service.getOboTermsTable(), service
-					.getDefinitionsTable());
-		}
 	}
 
 	/**
@@ -709,23 +663,9 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		sessionManager.apply(changeItem, false);
 	}
 
-	/**
-	 * Returns index of first occurrence of potential substring in string
-	 * 
-	 * @param string
-	 * @param potentialSubString
-	 * @return
-	 */
-	private int calcFirstIndexOf(String string, String potentialSubString)
-	{
-		if (string == null || potentialSubString == null) {
-			return -1;
-		}
-		return string.toLowerCase().indexOf(potentialSubString.toLowerCase());
-	}
-
 	private SessionManager getOboEditSessionManager()
 	{
 		return sessionManager;
 	}
+
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.oboedit.gui.components.ontologyGeneration.interfaces.UpdateListenerInterface;
+
 /**
  * Internal representation of a definition
  * 
@@ -20,7 +22,7 @@ public class CandidateDefinition implements Cloneable
 	private String definitionHTMLFormatted;
 	private boolean isTicked;
 	private boolean isVisible;
-	private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
+	private List<UpdateListenerInterface> listeners = new ArrayList<UpdateListenerInterface>();
 	private int parentTermCount;
 	private final List<String> urls;
 	private static Pattern pattern = Pattern.compile("<font color=blue>(.+)</font>");
@@ -249,7 +251,7 @@ public class CandidateDefinition implements Cloneable
 	 * 
 	 * @param updateListner
 	 */
-	public void addListener(UpdateListener updateListner)
+	public void addListener(UpdateListenerInterface updateListner)
 	{
 		listeners.add(updateListner);
 		if (listeners.size() > 1)
@@ -261,7 +263,7 @@ public class CandidateDefinition implements Cloneable
 		listeners.clear();
 	}
 	
-	public List<UpdateListener> getListeners()
+	public List<UpdateListenerInterface> getListeners()
 	{
 		return listeners;
 	}
@@ -271,7 +273,7 @@ public class CandidateDefinition implements Cloneable
 	 */
 	private void notifyListeners()
 	{
-		for (UpdateListener l : listeners)
+		for (UpdateListenerInterface l : listeners)
 			l.update();
 	}
 
