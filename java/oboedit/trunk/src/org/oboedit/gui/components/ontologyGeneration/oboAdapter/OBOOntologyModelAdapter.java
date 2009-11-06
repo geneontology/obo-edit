@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.util.SwingWorker;
 import org.obo.datamodel.IdentifiedObject;
 import org.obo.datamodel.Link;
+import org.obo.datamodel.LinkDatabase;
 import org.obo.datamodel.LinkedObject;
 import org.obo.datamodel.Namespace;
 import org.obo.datamodel.OBOClass;
@@ -41,6 +42,7 @@ import org.oboedit.controller.SessionManager;
 import org.oboedit.gui.Preferences;
 import org.oboedit.gui.components.ontologyGeneration.CandidateDefinition;
 import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyGenerationComponentServiceInterface;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
 import org.oboedit.gui.event.HistoryAppliedEvent;
@@ -56,7 +58,7 @@ import org.oboedit.util.GUIUtil;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
 
-public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
+public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<LinkedObject, OBOProperty>
 {
 
 	private static final long serialVersionUID = -6595210039049170585L;
@@ -64,7 +66,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 
 	private static OBOOntologyModelAdapter theInstance;
 
-	private OntologyGenerationComponentServiceInterface service;
+	private OntologyGenerationComponentServiceInterface<LinkedObject,OBOProperty> service;
 	private Collection<String> idsUndergoingChange;
 	private SessionManager sessionManager;
 
@@ -75,12 +77,13 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	{
 		sessionManager = SessionManager.getManager();
 		idsUndergoingChange = new HashSet<String>(1);
+		addListeners();
 	}
 
 	/**
 	 * @return the singleton instance of {@link OntologyModelAdapterInterface}
 	 */
-	public static synchronized OntologyModelAdapterInterface getInstance()
+	public static synchronized OntologyModelAdapterInterface<LinkedObject,OBOProperty> getInstance()
 	{
 		if (theInstance == null) {
 			theInstance = new OBOOntologyModelAdapter();
@@ -129,8 +132,10 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		public void applied(HistoryAppliedEvent arg0)
 		{
 			HistoryItem historyItem = arg0.getHistoryItem();
+			updateRelationTypes();
 			collectAllHistoryItems(historyItem);
 			refillOBOTermsTableWithExistingTerms();
+		//	service.updateAllDependedOnSelectedTerm();
 		}
 
 		/**
@@ -167,14 +172,14 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 
 		public void reversed(HistoryAppliedEvent arg0)
 		{
-			System.err.println("REVERSED");
+			logger.error("REVERSED");
 		}
 	};
 
 	private OntologyReloadListener ontologyReloadListener = new OntologyReloadListener()
 	{
 		public void reload()
-		{
+		{                   
 			updateAllOnOntologyChange();
 		}
 	};
@@ -201,16 +206,38 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 
 	private void updateAllOnOntologyChange()
 	{
+		updateRelationTypes();
 		updateOntologyIndex();
 		updateCandidateTermToOBOTermMapping();
 		refillOBOTermsTableWithExistingTerms();
 		service.updateAllDependedOnSelectedTerm();
 	}
 
+	private void updateRelationTypes()
+	{
+		List<OBOProperty> list = new ArrayList<OBOProperty>(10);
+		for (OBOProperty property : OBOProperty.BUILTIN_TYPES) {
+			list.add(property);	
+		}
+		LinkDatabase currentLinkDatabase = sessionManager.getCurrentLinkDatabase();
+		Collection<OBOProperty> properties = currentLinkDatabase.getProperties();
+		list.addAll(properties);
+		service.getOntologyTermsTable().getModel().setRelationTypes(list.toArray());
+	}
+
+	
+	/**
+	 * Cleanup
+	 */
+	public void cleanup()
+	{
+		removeListeners();
+	}
+	
 	/**
 	 * Add listeners from {@link SessionManager}
 	 */
-	public void addListener()
+	private void addListeners()
 	{
 		SelectionManager.getManager().addSelectionListener(selectionListener);
 		SessionManager.getManager().addOntologyReloadListener(ontologyReloadListener);
@@ -218,18 +245,20 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		SessionManager.getManager().addRootChangeListener(rootChangeListener);
 	}
 
+
 	/**
 	 * Remove listeners from {@link SessionManager}
 	 */
-	public void removeListeners()
+	private void removeListeners()
 	{
 		SelectionManager.getManager().removeSelectionListener(selectionListener);
 		SessionManager.getManager().removeOntologyReloadListener(ontologyReloadListener);
 		SessionManager.getManager().removeHistoryListener(historyListener);
 		SessionManager.getManager().removeRootChangeListener(rootChangeListener);
 	}
+	
 
-	public void setService(OntologyGenerationComponentServiceInterface service)
+	public void setService(OntologyGenerationComponentServiceInterface<LinkedObject,OBOProperty> service)
 	{
 		this.service = service;
 		updateOntologyIndex();
@@ -239,16 +268,16 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	{
 		String id = JOptionPane.showInputDialog("Please input an id");
 		if (id == null || id.length() == 0) {
-			System.err.println("Cannot create a new type " + "without an id");
+			logger.error("Cannot create a new type " + "without an id");
 			return null;
 		}
 		else {
 			if (sessionManager.getSession().getObject(id) != null) {
-				System.err.println("ID " + id + " already in use!");
+				logger.error("ID " + id + " already in use!");
 				return null;
 			}
 			else if (!IDUtil.isLegalID(id)) {
-				System.err.println("ID " + id + " contains illegal characters");
+				logger.error("ID " + id + " contains illegal characters");
 				return null;
 			}
 		}
@@ -365,6 +394,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 		return list;
 	}
 
+
 	/**
 	 * Select a term in OBO-Edit
 	 * 
@@ -418,13 +448,12 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 					else
 						selectedCandidateTermID = GUIUtil.fetchID(parentLinkedObject);
 					if (selectedCandidateTermID == null || selectedCandidateTermID.trim().length() == 0) {
-						System.err.println("Could not generate ID! " + "Action cancelled.");
+						logger.error("Could not generate ID! " + "Action cancelled.");
 					}
 					TermMacroHistoryItem item = createTermInOBOEdit(selectedCandidateTermID, selectedCandidateTerm, parentLinkedObject);
 					changeItem.addItem(item);
 					TermMacroHistoryItem addTerm = createdAddLinkHistoryItem(selectedCandidateTermID, parentId, OBOProperty.IS_A.getID());
 					changeItem.addItem(addTerm);
-
 				}
 				else if (linkedObjectsIfExistLikeSelectedTerm.size() == 1) {
 					TermMacroHistoryItem addTerm = createdAddLinkHistoryItem(linkedObjectsIfExistLikeSelectedTerm.get(0).getID(), parentId, OBOProperty.IS_A
@@ -489,7 +518,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 	}
 
 	/**
-	 * Feed all terms known to OBOEdit into the {@link OBOTermsTable}
+	 * Feed all terms known to OBOEdit into the {@link AbstractOntologyTermsTable}
 	 * 
 	 * @param idsUndergoingChange
 	 */
@@ -503,7 +532,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface
 					linkedObjects.add(linkedObject);
 			}
 		}
-		service.getOboTermsTable().setTerms(linkedObjects);
+		service.getOntologyTermsTable().setTerms(linkedObjects);
 	}
 
 	private void updateCandidateTermToOBOTermMapping()
