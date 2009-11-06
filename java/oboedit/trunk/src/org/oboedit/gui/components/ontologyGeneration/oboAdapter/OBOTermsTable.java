@@ -1,154 +1,27 @@
 package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
-import java.awt.Color;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.swing.JTable;
-
 import org.obo.datamodel.LinkedObject;
-import org.oboedit.gui.components.ontologyGeneration.JTableHelper;
-import org.oboedit.gui.components.ontologyGeneration.TermsTable;
+import org.obo.datamodel.OBOProperty;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTableModel;
 
-/**
- * {@link JTable} to display {@link List} of {@link LinkedObject}.
- * 
- * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
- */
-public class OBOTermsTable extends JTable
+public class OBOTermsTable extends AbstractOntologyTermsTable<LinkedObject, OBOProperty>
 {
-	private static final long serialVersionUID = -5517462579527283469L;
-	private int minScrollableViewPortHeight;
-	private int maxScrollableViewPortHeight;
-	// private JComboBox relationTypeComboBox;
-	private String lastRegex = new String();
 
 	/**
-	 * Constructs a {@link OBOTermsTable}
-	 */
-	public OBOTermsTable()
-	{
-		super(new OBOTermsTableModel());
-		setGridColor(Color.LIGHT_GRAY);
-		setRowHeight(getRowHeight() + 4);
-		getColumnModel().getColumn(0).setMaxWidth(50);
-		getColumnModel().getColumn(0).setResizable(false);
-		getColumnModel().getColumn(1).setMinWidth(250);
-		getColumnModel().getColumn(2).setMinWidth(80);
-		getColumnModel().getColumn(2).setMaxWidth(80);
-		getColumnModel().getColumn(2).setResizable(false);
-		// TODO Add a editable combobox with known relationship types and select the one predicted/known
-		// relationTypeComboBox = new JComboBox();
-		// relationTypeComboBox.addItem("is_a"); // TODO
-		// relationTypeComboBox.addItem("part_of");
-		// relationTypeComboBox.addItem("have_fun");
-		// getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(relationTypeComboBox));
-
-		getColumnModel().getColumn(3).setMinWidth(130);
-		getColumnModel().getColumn(3).setMaxWidth(130);
-		getColumnModel().getColumn(3).setResizable(false);
-		getColumnModel().getSelectionModel().addListSelectionListener(this);
-
-		tableHeader.setReorderingAllowed(false);
-	}
-
-	/**
-	 * Set the {@link List} of {@link LinkedObject} to be contained in the {@link TermsTable} and resize table if
-	 * necessary.
 	 * 
-	 * @param results
 	 */
-	public void setTerms(Collection<LinkedObject> results)
-	{
-		getModel().setTerms(results);
-		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
-	}
-
-	/**
-	 * Remove all instances of {@link LinkedObject} from the {@link TermsTable} and resize table if necessary.
-	 * 
-	 * @param terms
-	 */
-	public void removeTerms(Collection<LinkedObject> terms)
-	{
-		getModel().removeAll(terms);
-		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
-	}
-
-	/**
-	 * Remove all instances of {@link LinkedObject} from the {@link TermsTable} and resize table if necessary.
-	 * 
-	 * @param terms
-	 */
-	public void removeAllTerms()
-	{
-		getModel().removeAll();
-		JTableHelper.recalculateScrollableViewportSize(this, minScrollableViewPortHeight, maxScrollableViewPortHeight);
-	}
-
-	/**
-	 * Set the minimal height of the visible area for the {@link TermsTable}
-	 * 
-	 * @param minHeight
-	 */
-	public void setMinimumPreferedeScrollableViewportHeight(int minHeight)
-	{
-		this.minScrollableViewPortHeight = minHeight;
-	}
-
-	/**
-	 * Set the maximal height of the visible area for the {@link TermsTable}
-	 * 
-	 * @param maxHeight
-	 */
-	public void setMaximumPreferedeScrollableViewportHeight(int maxHeight)
-	{
-		this.maxScrollableViewPortHeight = maxHeight;
-	}
-
-	/**
-	 * Update displayed candidate terms. Filter by regex provided.
-	 * 
-	 * @param regex
-	 */
-	public void findTerm(String regex)
-	{
-		if (regex != null && !lastRegex.equals(regex)) {
-			lastRegex = regex;
-			Pattern p = null;
-
-			try {
-				p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-			}
-			catch (PatternSyntaxException exception) {
-				return;
-			}
-			Iterator<LinkedObject> it = getModel().getAllTerms().iterator();
-			int index = 0;
-			while (it.hasNext()) {
-				LinkedObject term = it.next();
-				String name = term.getName();
-				if (p.matcher(name).find()) {
-					getSelectionModel().setSelectionInterval(index, index);
-					JTableHelper.scrollToCenter(this, index, 2);
-					return;
-				}
-				index++;
-			}
-		}
-	}
-
+	private static final long serialVersionUID = -8382894126882103533L;
 	
-	/*
-	 * OVERRIDDEN METHODS
-	 */
+	public OBOTermsTable(AbstractOntologyTermsTableModel<LinkedObject> tableModel)
+	{
+		super(tableModel);
+	}
 
 	@Override
-	public OBOTermsTableModel getModel()
+	public String nameFor(Object arg1)
 	{
-		return (OBOTermsTableModel) super.getModel();
+		return ((OBOProperty) arg1).getName();
 	}
+
 }

@@ -3,7 +3,10 @@ package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 import java.awt.Cursor;
 
 import org.bbop.framework.AbstractGUIComponent;
+import org.obo.datamodel.LinkedObject;
+import org.obo.datamodel.OBOProperty;
 import org.oboedit.gui.components.ontologyGeneration.OntologyGenerationComponent;
+import org.oboedit.gui.components.ontologyGeneration.interfaces.AbstractOntologyTermsTable;
 import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAdapterInterface;
 
 /**
@@ -19,14 +22,21 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 {
 
 	private static final long serialVersionUID = 6424353594539158432L;
-	final OntologyGenerationComponent innerComponent;
-	final OntologyModelAdapterInterface adapter;
+	final OntologyGenerationComponent<LinkedObject, OBOProperty> innerComponent;
+	final OntologyModelAdapterInterface<LinkedObject, OBOProperty> adapter;
 
 	public OBOOntologyGenerationGUIComponent(String id)
 	{
 		super(id);
 		adapter = OBOOntologyModelAdapter.getInstance();
-		innerComponent = new OntologyGenerationComponent(adapter, this);
+		innerComponent = new OntologyGenerationComponent<LinkedObject,OBOProperty>(adapter, this){
+
+			@Override
+			public AbstractOntologyTermsTable<LinkedObject, OBOProperty> createOntologyTermsTable()
+			{
+				return new OBOTermsTable(new OBOTermsTableModel());
+			}};
+			
 		adapter.setService(innerComponent);
 		this.setTitle("Ontology Generation view");
 	}
@@ -44,7 +54,7 @@ public class OBOOntologyGenerationGUIComponent extends AbstractGUIComponent
 	@Override
 	public void cleanup()
 	{
-		adapter.removeListeners();
+		adapter.cleanup();
 	}
 
 	@Override

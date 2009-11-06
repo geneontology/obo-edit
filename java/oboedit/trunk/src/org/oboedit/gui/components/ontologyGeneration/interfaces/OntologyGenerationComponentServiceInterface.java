@@ -4,17 +4,16 @@ import javax.swing.JComponent;
 
 import org.oboedit.gui.components.ontologyGeneration.DefinitionsTable;
 import org.oboedit.gui.components.ontologyGeneration.TermsTable;
-import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOTermsTable;
 
-public interface OntologyGenerationComponentServiceInterface {
+public interface OntologyGenerationComponentServiceInterface<T,R> {
+
+	public abstract AbstractOntologyTermsTable<T,R> getOntologyTermsTable();
 
 	public abstract JComponent buildGUI();
 
 	public abstract DefinitionsTable getDefinitionsTable();
 
 	public abstract String getId();
-
-	public abstract OBOTermsTable getOboTermsTable();
 
 	public abstract TermsTable getTermsTable();
 
