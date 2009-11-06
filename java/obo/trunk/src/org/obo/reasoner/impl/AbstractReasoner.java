@@ -60,6 +60,20 @@ public abstract class AbstractReasoner extends AbstractLinkDatabase implements
 
 	protected Collection links;
 	
+    protected Collection<OBOProperty> properties;
+	
+	public Collection<OBOProperty> getProperties() {
+		return properties;
+	}
+
+
+	public void setProperties(Collection<OBOProperty> properties)
+	{
+		this.properties = properties;
+	}
+
+
+	
 	public AbstractReasoner() {
 	}
 
