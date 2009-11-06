@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
+import java.lang.reflect.Constructor;
 
 import org.bbop.util.*;
 import org.obo.datamodel.*;
@@ -159,7 +160,12 @@ public class OBOSessionImpl implements OBOSession {
 	 * 
 	 * @param object
 	 * @param newID
+	 * 
+	 * @deprecated because of hashcode-equals contract of {@link AnnotatedObjectImpl}
+	 * 
+	 * @see AnnotatedObjectImpl#setID(String)
 	 */
+	@Deprecated
 	public void changeID(AnnotatedObjectImpl object, String newID) {
 		/*
 		 * To implement this, we first remove all references to the object from
@@ -195,7 +201,9 @@ public class OBOSessionImpl implements OBOSession {
 			}
 		}
 		// change the id
+		
 		object.setID(newID);
+		
 		// add the object back to the ontology
 		addObject(object);
 		if (object instanceof LinkedObject) {

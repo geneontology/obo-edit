@@ -20,6 +20,11 @@ public class SimpleDatatype<T> extends AnnotatedObjectImpl implements Datatype<T
 		super("xsd:simpleType");
 	}
 
+
+	protected SimpleDatatype(String id) {
+		super(id);
+	}
+	
 	public Type getType() {
 		return OBOClass.OBO_DATATYPE;
 	}

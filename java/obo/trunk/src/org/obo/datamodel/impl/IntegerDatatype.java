@@ -9,15 +9,19 @@ public class IntegerDatatype extends SimpleDatatype<Integer> {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(IntegerDatatype.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7915107256768335522L;
 
-	@Override
-	public String getID() {
-		return "xsd:integer";
+	public IntegerDatatype()
+	{
+		super("xsd:integer");
 	}
+
+
+	protected IntegerDatatype(String id)
+	{
+		super(id);
+	}
+
 
 	@Override
 	public String getName() {

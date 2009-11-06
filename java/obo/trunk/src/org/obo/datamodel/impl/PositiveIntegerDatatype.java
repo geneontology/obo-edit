@@ -9,14 +9,11 @@ public class PositiveIntegerDatatype extends IntegerDatatype {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(PositiveIntegerDatatype.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2417852104743644337L;
 
-	@Override
-	public String getID() {
-		return "xsd:positiveInteger";
+	public PositiveIntegerDatatype()
+	{
+		super("xsd:positiveInteger");
 	}
 
 	@Override
