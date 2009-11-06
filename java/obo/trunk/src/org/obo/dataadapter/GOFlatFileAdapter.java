@@ -116,7 +116,6 @@ public class GOFlatFileAdapter implements OBOAdapter {
 
 	// dummy term used to pass information about already created terms
 	// between parseLine and getRoot
-	protected OBOClassImpl dummyTerm = new OBOClassImpl("dummy");
 
 	protected static final Vector scratchVector = new Vector();
 
@@ -1534,8 +1533,8 @@ public class GOFlatFileAdapter implements OBOAdapter {
 		IDWrapper id = pullOffID(tokens, exceptionHolder);
 		OBOClassImpl term = (OBOClassImpl) allterms.get(id.toString());
 		if (term != null) {
+			OBOClassImpl dummyTerm = new OBOClassImpl(id.toString());
 			dummyTerm.setName(name);
-			dummyTerm.setID(id.toString());
 			return dummyTerm;
 		}
 		term = new OBOClassImpl(name, id.toString());

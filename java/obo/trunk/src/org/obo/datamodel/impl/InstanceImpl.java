@@ -34,7 +34,7 @@ public class InstanceImpl extends LinkedAnnotatedObjectImpl implements
 
 	@Override
 	public String toString() {
-		return name + " (" + id + ")";
+		return name + " (" + getID() + ")";
 	}
 
 	public InstanceImpl(OBOClass type) {

@@ -54,10 +54,6 @@ public class OBOClassImpl extends LinkedAnnotatedObjectImpl implements OBOClass 
 		return getName() == null ? getID() : getName();
 	}
 
-	public void setID(String id) {
-		this.id = id;
-	}
-
 	public int compareTo(Object in) {
 		if (in instanceof OBOClass) {
 			String namea = getName();

@@ -6,17 +6,16 @@ import org.apache.log4j.*;
 
 public class NonPositiveIntegerDatatype extends IntegerDatatype {
 
+
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(NonPositiveIntegerDatatype.class);
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 2283959268087758315L;
 
-	@Override
-	public String getID() {
-		return "xsd:nonPositiveInteger";
+	public NonPositiveIntegerDatatype()
+	{
+		super("xsd:nonPositiveInteger");
 	}
 
 	@Override

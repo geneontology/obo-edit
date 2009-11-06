@@ -14,9 +14,10 @@ public class NonNegativeIntegerDatatype extends IntegerDatatype {
 	 */
 	private static final long serialVersionUID = -3052439501930416397L;
 
-	@Override
-	public String getID() {
-		return "xsd:nonNegativeInteger";
+	
+	public NonNegativeIntegerDatatype()
+	{
+		super("xsd:nonNegativeInteger");
 	}
 
 	@Override
