@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.bbop.util.FastSuperset;
 import org.obo.datamodel.*;
+import org.obo.util.TermUtil;
 
 import org.apache.log4j.*;
 
@@ -24,9 +25,23 @@ MutableLinkDatabase {
 	protected Map<String, IdentifiedObject> objects;
 	protected IdentifiedObjectIndex index;
 	protected boolean returnNulls;
+	
+	protected Collection<OBOProperty> properties;
+	
+	public Collection<OBOProperty> getProperties() {
+		return properties;
+	}
+
+
+	public void setProperties(Collection<OBOProperty> properties)
+	{
+		this.properties = properties;
+	}
+
 
 	public DefaultMutableLinkDatabase() {
 		this(false, false);
+		properties = TermUtil.getProperties(session); 
 	}
 
 	public void setIdentifiedObjectIndex(IdentifiedObjectIndex index) {

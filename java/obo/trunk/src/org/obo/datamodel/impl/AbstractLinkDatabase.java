@@ -2,6 +2,7 @@ package org.obo.datamodel.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -15,7 +16,6 @@ import org.obo.util.TermUtil;
 
 public abstract class AbstractLinkDatabase implements LinkDatabase {
 	
-	protected Collection<OBOProperty> properties = new HashSet<OBOProperty>();
 	OBOSession session;
 
 
@@ -53,12 +53,8 @@ public abstract class AbstractLinkDatabase implements LinkDatabase {
 		return links;
 	}
 
-	public Collection<OBOProperty> getProperties() {
-		return properties;
-	}
-
-	public void setProperties(Collection<OBOProperty> properties) {
-		this.properties = properties;
+	public  Collection<OBOProperty> getProperties(){
+		return TermUtil.getProperties(session);
 	}
 
 	public OBOSession getSession() {
