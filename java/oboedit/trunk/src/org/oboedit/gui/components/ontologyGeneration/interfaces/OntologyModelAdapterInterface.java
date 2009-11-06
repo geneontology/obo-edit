@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
 
-public interface OntologyModelAdapterInterface
+public interface OntologyModelAdapterInterface<T,R>
 {
 
 	/*
@@ -41,19 +41,8 @@ public interface OntologyModelAdapterInterface
 	/*
 	 * Wrapper organizational methods
 	 */
-
-	public abstract void addListener();
 	
-	public abstract void setService(OntologyGenerationComponentServiceInterface service);
+	public abstract void setService(OntologyGenerationComponentServiceInterface<T,R> service);
 	
-	public abstract void removeListeners();
-
-
-
-	/*
-	 * Methods to be revised
-	 */
-	
-//	public abstract void updateParentAsSimiliarTerm(CandidateTerm candidateTerm, OBOTermsTable oboTermsTable);
-
+	public abstract void cleanup();
 }
