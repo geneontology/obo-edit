@@ -9,14 +9,12 @@ public class NegativeIntegerDatatype extends IntegerDatatype {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(NegativeIntegerDatatype.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6094346806278269220L;
 
-	@Override
-	public String getID() {
-		return "xsd:negativeInteger";
+
+	public NegativeIntegerDatatype()
+	{
+		super("xsd:negativeInteger");
 	}
 
 	@Override

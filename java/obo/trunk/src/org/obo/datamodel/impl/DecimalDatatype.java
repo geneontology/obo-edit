@@ -8,16 +8,13 @@ public class DecimalDatatype extends SimpleDatatype<Double> {
 
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DecimalDatatype.class);
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8806419242226244891L;
 
-	@Override
-	public String getID() {
-		return "xsd:decimal";
+	public DecimalDatatype()
+	{
+		super("xsd:decimal");
 	}
+
 
 	@Override
 	public String getName() {

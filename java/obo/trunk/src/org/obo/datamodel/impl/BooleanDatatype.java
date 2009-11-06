@@ -9,14 +9,11 @@ public class BooleanDatatype extends SimpleDatatype<Boolean> {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(BooleanDatatype.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4670390380971503460L;
 
-	@Override
-	public String getID() {
-		return "xsd:boolean";
+	public BooleanDatatype()
+	{
+		super("xsd:boolean");
 	}
 
 	@Override

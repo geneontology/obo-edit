@@ -91,8 +91,8 @@ public class OBOPropertyImpl extends LinkedAnnotatedObjectImpl implements
 
 	@Override
 	public String toString() {
-		if (id.equals(name))
-			return id;
+		if (getID().equals(name))
+			return getID();
 		else
 			return super.toString();
 	}

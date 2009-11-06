@@ -19,9 +19,9 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 
 	public int internal_id = internal_id_gen++;
 
-	protected String id;
+	private String id;
 	
-	protected int hashCode;
+	//private int hashCode;
 
 	protected boolean anonymous = false;
 
@@ -90,14 +90,26 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 	protected NestedValue creationDateExtension;
 
 	public AnnotatedObjectImpl(String id) {
+		setID(id);
+		
+	}
+	
+	/**
+	 * @deprecated because of hashcode-and-equals contract, this method should not be used.
+	 * Note: this object cannot be found in hashmaps when calling this method after inserting into hashmap.
+	 * 
+	 */
+	@Deprecated
+	 final void setID(String id){
 		this.id = id;
 		// store the hashcode independently; this way if we change the ids we don't
 		// have to update any hash tables; there will probably be more hashtable
 		// collisions, but it doesn't matter. We shouldn't be changing ids frequently anyway
-		hashCode = id.hashCode();
+		// THIS IS COMPLETELY WRONG! Hashcode-and-equals-contract is broken in this case! So, if we update the id, the hashcode must be updated.
+		//this.hashCode = id.hashCode();
 	}
 	
-	public String getID() {
+	public final String getID() {
 		return id;
 	}
 
@@ -451,7 +463,7 @@ public abstract class AnnotatedObjectImpl implements AnnotatedObject,
 
 	@Override
 	public int hashCode() {
-		return hashCode;
+		return id.hashCode();
 	}
 
 	public String getCreatedBy() {

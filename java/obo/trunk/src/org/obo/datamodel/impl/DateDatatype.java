@@ -13,15 +13,13 @@ public class DateDatatype extends SimpleDatatype<Date> {
 	//initialize logger
 	protected final static Logger logger = Logger.getLogger(DateDatatype.class);
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8087786198895424706L;
 	protected SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 
-	@Override
-	public String getID() {
-		return "xsd:date";
+
+	public DateDatatype()
+	{
+		super("xsd:date");
 	}
 
 	@Override
