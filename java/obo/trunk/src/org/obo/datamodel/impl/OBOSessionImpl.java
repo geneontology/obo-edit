@@ -195,7 +195,7 @@ public class OBOSessionImpl implements OBOSession {
 			}
 		}
 		// change the id
-		object.id = newID;
+		object.setID(newID);
 		// add the object back to the ontology
 		addObject(object);
 		if (object instanceof LinkedObject) {

@@ -26,8 +26,6 @@ public class DefaultLinkDatabase extends AbstractLinkDatabase implements LinkDat
 
 	public DefaultLinkDatabase(OBOSession session) {
 		this.session = session;
-		if (session != null)
-			properties = TermUtil.getProperties(session); // assume list is immutable during session?
 	}
 
 	public Collection<IdentifiedObject> getObjects() {
@@ -39,15 +37,7 @@ public class DefaultLinkDatabase extends AbstractLinkDatabase implements LinkDat
 			
 	}
 
-	public Collection<OBOProperty> getProperties() {
-		if (properties != null) {
-			return properties;
-		}
-		properties = TermUtil.getProperties(session); // assume list is immutable during session?
-
-		return properties;
-	}
-
+	
 
 	public Collection<Link> getChildren(LinkedObject lo) {
 		return lo.getChildren();
