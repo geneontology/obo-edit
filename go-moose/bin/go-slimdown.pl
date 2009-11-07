@@ -11,10 +11,12 @@ use GOBO::Graph;
 use GOBO::Parsers::OBOParserDispatchHash;
 use GOBO::InferenceEngine;
 use GOBO::Writers::OBOWriter;
+use GOBO::Writers::TreeWriter;
 
 use GOBO::Util::GraphFunctions;
 
 my $options = parse_options(\@ARGV);
+my $subset_min = $options->{minimum_subset_terms} || 5;
 
 if (! $options->{verbose})
 {	$options->{verbose} = $ENV{GO_VERBOSE} || 0;
@@ -30,6 +32,7 @@ die "Error: parser could not find a graph in " . $options->{input} . "!\n" unles
 my $graph = $parser->graph;
 
 # get the nodes matching our subset criteria
+# will die if no subset terms found
 my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_subset_nodes!\n" if $options->{verbose};
 
@@ -37,42 +40,46 @@ my $data = GOBO::Util::GraphFunctions::get_subset_nodes({ graph => $graph, optio
 $data->{relations} = GOBO::Util::GraphFunctions::get_graph_relations({ graph => $graph, options => $options });
 	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_relations!\n" if $options->{verbose};
 
-my $ie = new GOBO::InferenceEngine(graph => $graph);
+my $ie = new GOBO::InferenceEngine(graph=>$graph);
 
+## give the inference engine a subroutine to execute upon each wee little term
+## so it stops looking for parent terms when it reaches a subset node
+my $sub = sub {
+	my $x = shift;
+	return 1 if $subset->{$x->target->id};
+	return 0;
+};
+$ie->test_sub( $sub );
+
+$options->{return_as_graph} = 1;
+$options->{remove_unlinked_terms} = 1;
+
+my @errs;
 foreach my $s (keys %{$data->{subset}})
-{	# in these cases, the input set is the same as the mapping set. Copy 'em remorselessly!
+{	# check there are sufficient terms in the subset
+	if (scalar keys %{$data->{subset}{$s}} < $subset_min && ! $options->{force_continue})
+	{
+		print STDERR "subset keys found:\n" . join("\n", keys %{$data->{subset}{$s}}) . "\n" if $options->{verbose};
+		push @errs, "Error: only " . (scalar keys %{$data->{subset}{$s}}) . " terms from the subset " . Dumper($s) . " could be found. To continue anyway, please run the script again with the extra command line parameter -f";
+		next;
+	}
 
-	# get the links between the nodes
-	$data->{nodes} = GOBO::Util::GraphFunctions::get_graph_links({ inf_eng => $ie, input => $data->{subset}{$s}, subset => $data->{subset}{$s}, graph => $graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::get_graph_links!\n" if $options->{verbose};
+	# slim down the graph...
+	# in these slims, the input set is the same as the mapping set
+	my $new_graph = GOBO::Util::GraphFunctions::slim_graph({ graph => $graph, subset => $data->{subset}{$s}, input => [ keys %{$data->{subset}{$s}}], relations => $data->{relations}, options => $options, inf_eng => $ie });
 
-	# populate the node look up hashes
-	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{nodes} });
-	print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
+	if ($options->{tree_format})
+	{	my $writer = new GOBO::Writers::TreeWriter( file => $options->{output}, graph => $new_graph, show_annotation_counts => 1 );
+		$writer->write;
+	}
+	else
+	{	GOBO::Util::GraphFunctions::write_graph_to_file({ graph => $new_graph, subset => $s, options => $options });
+		print STDERR "Done GOBO::Util::GraphFunctions::write_graph_to_file!\n" if $options->{verbose};
+	}
+}
 
-	# remove redundant relationships between nodes
-	GOBO::Util::GraphFunctions::remove_redundant_relationships({ node_data => $data->{nodes}, rel_data => $data->{relations}, graph => $graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::remove_redundant_relationships!\n" if $options->{verbose};
-
-	# repopulate the node look up hashes
-	GOBO::Util::GraphFunctions::populate_lookup_hashes({ graph_data => $data->{nodes} });
-	print STDERR "Done GOBO::Util::GraphFunctions::populate_lookup_hashes!\n" if $options->{verbose};
-
-	# slim down dem nodes
-	my $slimmed = GOBO::Util::GraphFunctions::trim_graph({ graph_data => $data->{nodes}, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::trim_graph!\n" if $options->{verbose};
-
-	my $new_graph = new GOBO::Graph;
-
-	$new_graph = GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph({ old_g => $graph, new_g => $new_graph, graph_data => $slimmed->{graph}, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::add_nodes_and_links_to_graph!\n" if $options->{verbose};
-
-	$new_graph = GOBO::Util::GraphFunctions::add_extra_stuff_to_graph({ old_g => $graph, new_g => $new_graph, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::add_extra_stuff_to_graph!\n" if $options->{verbose};
-
-	GOBO::Util::GraphFunctions::write_graph_to_file({ graph => $new_graph, subset => $s, options => $options });
-	print STDERR "Done GOBO::Util::GraphFunctions::write_graph_to_file!\n" if $options->{verbose};
-
+if (@errs)
+{	warn join("\n", @errs);
 }
 
 print STDERR "Job complete!\n" if $options->{verbose};
@@ -116,12 +123,18 @@ sub parse_options {
 			# qr//'d and use as a regexp
 			$opt->{subset_regexp} = shift @$args if @$args && $args->[0] !~ /^\-/;
 		}
+		elsif ($o eq '-t' || $o eq '--tree') {
+			$opt->{tree_format} = 1;
+		}
+		elsif ($o eq '-f' || $o eq '--force') {
+			$opt->{force_continue} = 1;
+		}
 		elsif ($o eq '-h' || $o eq '--help') {
 			system("perldoc", $0);
 			exit(0);
 		}
 		elsif ($o eq '-v' || $o eq '--verbose') {
-			$options->{verbose} = 1;
+			$opt->{verbose} = 1;
 		}
 		else {
 			die "Error: no such option: $o\nThe help documentation can be accessed with the command 'go-slimdown.pl --help'\n";

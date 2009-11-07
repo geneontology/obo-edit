@@ -5,8 +5,9 @@ extends 'GOBO::Writers::Writer';
 use Data::Dumper;
 
 has 'show_annotation_counts' => (is=>'rw', isa=>'Bool');
-has 'relation_h' => (is=>'rw', isa=>'HashRef',
-	default=>sub{ 
+has 'show_gp_names' => (is=>'rw', isa=>'Bool');
+has 'relation_abbrev_h' => (is=>'rw', isa=>'HashRef',
+	default=>sub{
 		return {
 		part_of => 'p',
 		is_a => 'i',
@@ -18,14 +19,35 @@ has 'relation_h' => (is=>'rw', isa=>'HashRef',
 		};
 	});
 
-sub write_tree {
-	my $self = shift;
-	my $graph = shift || $self->graph;
+has 'header_data' => (is=>'rw', isa=>'ArrayRef[Str]', predicate=>'has_header_data');
 
-	if ($self->file)
-	{	## open the file for some writing
-		open(STDOUT, ">" . $self->file) or die "Could not open " . $self->file . ": $!";
+sub draw_graph {
+	my $self = shift;
+	if (! $self->has_fh)
+	{	$self->init_fh;
 	}
+	$self->write_header;
+	$self->write_body;
+}
+
+
+sub write_header {
+	my $self = shift;
+	if ($self->has_header_data)
+	{	my $fh = $self->fh;
+		map { print $fh "! " . $_ . "\n" } @{$self->header_data};
+		print $fh "!\n";
+	}
+	return;
+}
+
+
+sub write_body {
+	my $self = shift;
+	my $graph = $self->graph;
+	my $fh = $self->fh;
+
+	return if ! defined $graph;
 
 	## get the relations present in the graph and create abbreviations for them
 	my $rels = $graph->relations;
@@ -33,12 +55,34 @@ sub write_tree {
 	{	$self->create_r_abbrev($_->id);
 	}
 
-	print STDERR "Finished creating abbreviations: rel_h now:\n".Dumper($self->relation_h);
-
 	my $write_term_sub;
-	if ($self->show_annotation_counts)
+	if ($self->show_gp_names)
 	{	## set the writer to display association counts
-		print STDERR "setting show_annotation_counts!\n";
+		$write_term_sub = sub {
+			my ($g, $t) = (@_);
+			my $annots = $g->get_annotations_by_target($t);
+			if (! $annots)
+			{	return $t->id . ( " : " . $t->label || "" ) . " (0 / 0 total)";
+			}
+			else
+			{	my $direct = scalar ( grep { ! $_->inferred } @$annots ) || 0;
+				my $str = $t->id . ( " : " . $t->label || "" ) . " ($direct / " . (scalar @$annots)." total)\n";
+				foreach (sort { $a->node->id cmp $b->node->id } @$annots)
+				{	#$str .= "\t" . $_->node->id . "; ";
+					$str .= "\t" . $_->node->data->[2] . ": ";
+					if ($_->inferred)
+					{	$str .= "INF\n";
+					}
+					else
+					{	$str .= "DIR\n";
+					}
+				}
+				return $str;
+			}
+		};
+	}
+	elsif ($self->show_annotation_counts)
+	{	## set the writer to display association counts
 		$write_term_sub = sub {
 			my ($g, $t) = (@_);
 			my $annots = $g->get_annotations_by_target($t);
@@ -63,29 +107,32 @@ sub write_tree {
 	my $indent = 0;
 	foreach my $term (sort { $a->id cmp $b->id } @{$graph->get_roots})
 	{	## print the term info
-		print &$write_term_sub($graph, $term) . "\n";
-		my $links = $graph->get_incoming_links($term);
+#		my $str = &$write_term_sub($graph, $term);
+		print $fh "" . &$write_term_sub($graph, $term) . "\n";
+		my $links = $graph->get_links_by_target($term);
 		if ($links && @$links)
 		{	$self->print_term_array(graph => $graph, links => $links, indent => $indent, write_term_sub => $write_term_sub, terms_on_path => [$term->id]);
 		}
 	}
+	return;
 }
 
 
 sub print_term_array {
 	my $self = shift;
 	my %args = (@_);
-	
+	my $fh = $self->fh;
+
 	my ($graph, $links, $indent, $write_term_sub, $terms_on_path) = ($args{graph}, $args{links}, $args{indent}, $args{write_term_sub}, $args{terms_on_path});
 	## start the child printing
 	## increase the indent level
 	$indent += 3;
-	foreach my $l ( sort { $a->target->id cmp $b->target->id } @$links)
+	foreach my $l ( sort { $a->node->id cmp $b->node->id || $a->relation->id cmp $b->relation->id } @$links)
 	{	## print out the relationship and the term info
 		my $rel = $self->r_abbrev( $l->relation->id );
 
-		printf "%${indent}s", " ";
-		print "[$rel] ". &$write_term_sub($graph, $l->node) . "\n";
+		printf $fh "%${indent}s", " ";
+		print $fh "[$rel] ". &$write_term_sub($graph, $l->node) . "\n";
 
 		## make sure we're not going to be printing out a horrible cycle...
 		if (grep { $l->node->id eq $_ } @$terms_on_path)
@@ -93,29 +140,29 @@ sub print_term_array {
 			next;
 		}
 		## see if this term has any incoming links
-		my $inlinks = $graph->get_incoming_links($l->node);
+		my $inlinks = $graph->get_links_by_target($l->node);
 		if ($inlinks && @$inlinks)
 		{	$self->print_term_array(graph => $graph, links => $inlinks, indent => $indent, write_term_sub => $write_term_sub, terms_on_path => [ @$terms_on_path, $l->node->id ]);
 		}
 	}
 	## decrease the indent now that we've finished printing them
 	$indent -= 3;
-}
+};
 
 sub r_abbrev {
 	my $self = shift;
 	my $r = shift;
-	my $rel_h = $self->relation_h;
+	my $rel_h = $self->relation_abbrev_h;
 	return $rel_h->{$r} || $self->create_r_abbrev($r);
 }
 
 sub create_r_abbrev {
 	my $self = shift;
 	my $r = shift;
-	my $rel_h = $self->relation_h;
+	my $rel_h = $self->relation_abbrev_h;
 
 	if (! $rel_h->{$r})
-	{	print STDERR "Looking at $r...\n" if $ENV{VERBOSE};
+	{	#print STDERR "Looking at $r...\n" if $ENV{VERBOSE};
 		my $orig_r = $r;
 		$r =~ s/negative(ly)?/-/;
 		$r =~ s/positive(ly)?/+/;
@@ -129,14 +176,14 @@ sub create_r_abbrev {
 		## see if this exists...
 		if (grep { $_ eq $r } values %$rel_h)
 		{	## crap... let's try something else
-			print STDERR "Oh no, that didn't work! Using full name instead\n" if $ENV{VERBOSE};
+			#print STDERR "Oh no, that didn't work! Using full name instead\n" if $ENV{VERBOSE};
 			$r = $orig_r;
 		}
-		
+
 		## we're ok! add this to the hash
 		$rel_h->{$orig_r} = $r;
-		## save the new version of the relation_h
-		$self->relation_h($rel_h);
+		## save the new version of the relation_abbrev_h
+		$self->relation_abbrev_h($rel_h);
 	}
 	return $rel_h->{$r}
 }
