@@ -12,8 +12,8 @@ public class OBOTermsTable extends AbstractOntologyTermsTable<LinkedObject, OBOP
 	 * 
 	 */
 	private static final long serialVersionUID = -8382894126882103533L;
-	
-	public OBOTermsTable(AbstractOntologyTermsTableModel<LinkedObject> tableModel)
+
+	public OBOTermsTable(AbstractOntologyTermsTableModel<LinkedObject, OBOProperty> tableModel)
 	{
 		super(tableModel);
 	}

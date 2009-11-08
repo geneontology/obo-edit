@@ -26,98 +26,15 @@ import org.obo.datamodel.LinkedObject;
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableModel
+public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTableModel
 {
-	/**
-	 * Comparator for Ts displayed in step 3. Add to Ontology
-	 */
-	private class AddToOntologyTComparator implements Comparator<String>
-	{
-		private List<Set<String>> idSetsOrdered;
+	final static int COL_SELECT = 0;
+	final static int COL_TERM = 1;
+	final static int COL_RELATION = 2;
+	final static int COL_PREDICTED = 3;
+	final static int COL_COMMENT = 4;
 
-		protected AddToOntologyTComparator(List<Set<String>> idSetsOrdered)
-		{
-			this.idSetsOrdered = idSetsOrdered;
-		}
-
-		/**
-		 * Compares T objects for display
-		 * 
-		 * @param o1
-		 * @param o2
-		 * @return
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		public int compare(String o1, String o2)
-		{
-			// test for null
-			if (o1 == null && o2 == null) {
-				return 0;
-			}
-			else if (o1 == null && o2 != null) {
-				return 1;
-			}
-			else if (o1 != null && o2 == null) {
-				return -1;
-			}
-
-			// test identity
-			if (o1.equals(o2)) {
-				return 0;
-			}
-
-			// test rankingOrder
-			int i = 0;
-			int cnt1 = 100;
-			for (Set<String> set : idSetsOrdered) {
-				if (set.contains(o1)) {
-					cnt1 = i;
-					break;
-				}
-				i++;
-			}
-			int j = 0;
-			int cnt2 = 100;
-			for (Set<String> set : idSetsOrdered) {
-				if (set.contains(o2)) {
-					cnt2 = j;
-					break;
-				}
-				j++;
-			}
-
-			if (cnt1 < cnt2) {
-				return -1;
-			}
-			if (cnt1 > cnt2) {
-				return 1;
-			}
-
-			// then compare by rank
-			Integer integer = termsRankInDefinitions.get(o1);
-			Integer integer2 = termsRankInDefinitions.get(o2);
-			if (integer != null && integer2 != null) {
-				if (!integer.equals(integer2)) {
-					return integer.compareTo(integer2);
-				}
-			}
-
-			// compare by label length
-			String name = getTermName(allTermsMap.get(o1));
-			String name2 = getTermName(allTermsMap.get(o2));
-
-			if (name == null && name2 != null) {
-				return 1;
-			}
-			else if (name != null && name2 == null) {
-				return -1;
-			}
-			else if (name == null && name2 == null) {
-				return 0;
-			}
-			return Integer.valueOf(name.length()).compareTo(Integer.valueOf(name2.length()));
-		}
-	}
+	String[] colNames = { "", "Term", "Relation", "Predicted", "Comment" };
 
 	private static final long serialVersionUID = 4146368118692966602L;
 
@@ -140,17 +57,20 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 
 	private Map<String, Integer> termsRankInDefinitions = new HashMap<String, Integer>();
 
-	private Map<String, String> typesOfKnownParentTerms = new HashMap<String, String>();
+	private Map<String, String> commentForKnownParentTerms = new HashMap<String, String>();
 
 	private Object[][] order = { { termsSelected, "selected term", null }, //
 			{ termsSameAsCandidateTerm, "same as existing term", "identical" }, //
-			{ termsKnownParentsOfCandidateTerm, "validated", typesOfKnownParentTerms },//
+			{ termsKnownParentsOfCandidateTerm, "validated", commentForKnownParentTerms },//
 			{ termsPredictedParentsOfCandidateTerm, "predicted", "sub_class_of" }, //
 			{ termsFromDefinitions, "predicted", "sub_class_of" }, //
 			{ termsSimilarToCandidateTerm, "similar term", null } };
+
 	private boolean showOnlyTicked;
 
-	private Object[] relationTypes = getDefaultRelationTypes();
+	private R[] relationTypes = getDefaultRelationTypes();
+
+	private Map<T, R> selectedRelationType = new HashMap<T, R>(1);
 
 	/**
 	 * Constructs a {@link AbstractOntologyTermsTableModel}.
@@ -193,7 +113,7 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 		if (parentTerms != null) {
 			for (Entry<String, String> entry : parentTerms.entrySet()) {
 				termsKnownParentsOfCandidateTerm.add(entry.getKey());
-				typesOfKnownParentTerms.put(entry.getKey(), entry.getValue());
+				commentForKnownParentTerms.put(entry.getKey(), entry.getValue());
 				ticked.add(entry.getKey());
 			}
 			sortingNeeded = true;
@@ -378,31 +298,20 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 	@Override
 	public String getColumnName(int column)
 	{
-		if (column == 0) {
+		if (column < colNames.length) {
+			return colNames[column];
+		}
+		else {
 			return "";
 		}
-		else if (column == 1) {
-			return "Term";
-		}
-		else if (column == 2) {
-			return "Relation";
-		}
-		else if (column == 3) {
-			return "Predicted relation";
-		}
-		else if (column == 4) {
-			return "Comment";
-		}
-		else
-			return "";
 
 	}
 
-	public abstract Object[] getDefaultRelationTypes();
+	public abstract R[] getDefaultRelationTypes();
 
-	public abstract Object getPreselectedRelationType();
+	public abstract R getDefaultRelationType();
 
-	public Object[] getRelationTypes()
+	public R[] getRelationTypes()
 	{
 		return this.relationTypes;
 	}
@@ -462,10 +371,10 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 		List<T> visibleElements = this.getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			T term = visibleElements.get(rowIndex);
-			if (columnIndex == 0) {
+			if (columnIndex == COL_SELECT) {
 				return ticked.contains(getTermId(term));
 			}
-			else if (columnIndex == 1) {
+			else if (columnIndex == COL_TERM) {
 				StringBuffer buffer = new StringBuffer();
 				buffer.append(getTermName(term));
 				buffer.append(" (");
@@ -473,23 +382,28 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 				buffer.append(" )");
 				return buffer.toString();
 			}
-			else if (columnIndex == 2) {
-				return getPreselectedRelationType();
+			else if (columnIndex == COL_RELATION) {
+				if (selectedRelationType.containsKey(term)) {
+					return selectedRelationType.get(term);
+				}
+				else {
+					return getDefaultRelationType();
+				}
 			}
-			else if (columnIndex == 3) {
+			else if (columnIndex == COL_PREDICTED) {
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
 					if (set.contains(getTermId(term))) {
 						if (objects[2] instanceof String)
 							return objects[2];
-						else if (objects[2] == typesOfKnownParentTerms) {
-							return typesOfKnownParentTerms.get(getTermId(term));
+						else if (objects[2] == commentForKnownParentTerms) {
+							return commentForKnownParentTerms.get(getTermId(term));
 						}
 					}
 				}
 				return null;
 			}
-			else if (columnIndex == 4) {
+			else if (columnIndex == COL_COMMENT) {
 				StringBuffer buffer = new StringBuffer();
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
@@ -539,7 +453,7 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
-		if (columnIndex == 0 || columnIndex == 2) {
+		if (columnIndex == COL_SELECT || columnIndex == COL_RELATION) {
 			return true;
 		}
 		else {
@@ -586,11 +500,11 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 		fireTableDataChanged();
 	}
 
-	public void setRelationTypes(Object[] relationTypes)
+	public void setRelationTypes(R[] relationTypes)
 	{
 		this.relationTypes = relationTypes;
 		// fire tabel changed event
-		TableModelEvent e = new TableModelEvent(this, 0, this.getRowCount(), 2, TableModelEvent.UPDATE);
+		TableModelEvent e = new TableModelEvent(this, 0, this.getRowCount(), COL_RELATION, TableModelEvent.UPDATE);
 		fireTableChanged(e);
 	}
 
@@ -646,16 +560,20 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 		this.ticked.addAll(ticked);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 	{
 		T term = this.getVisibleElements().get(rowIndex);
-		if (columnIndex == 0) {
+		if (columnIndex == COL_SELECT) {
 			if (aValue instanceof Boolean) {
 				Boolean isTicked = (Boolean) aValue;
 				setTicked(term, isTicked);
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
+		}
+		else if (columnIndex == COL_RELATION) {
+			selectedRelationType.put(this.getTermAt(rowIndex), (R) aValue);
 		}
 	}
 
@@ -676,7 +594,7 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 				if (termLabel.equalsIgnoreCase(label)) {
 					addSameAsCandidateTerm(Collections.singleton(term));
 				}
-				else if (0 < calcFirstIndexOf(termLabel, label) || 0 < calcFirstIndexOf(label, termLabel)) {
+				else if (COL_SELECT < calcFirstIndexOf(termLabel, label) || COL_SELECT < calcFirstIndexOf(label, termLabel)) {
 					addSimilarToCandidateTerm(Collections.singleton(term));
 				}
 			}
@@ -701,5 +619,113 @@ public abstract class AbstractOntologyTermsTableModel<T> extends AbstractTableMo
 		}
 		sortingNeeded = true;
 		fireTableDataChanged();
+	}
+
+	/**
+	 * Comparator for Ts displayed in step 3. Add to Ontology
+	 */
+	private class AddToOntologyTComparator implements Comparator<String>
+	{
+		private List<Set<String>> idSetsOrdered;
+
+		protected AddToOntologyTComparator(List<Set<String>> idSetsOrdered)
+		{
+			this.idSetsOrdered = idSetsOrdered;
+		}
+
+		/**
+		 * Compares T objects for display
+		 * 
+		 * @param o1
+		 * @param o2
+		 * @return
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		public int compare(String o1, String o2)
+		{
+			// test for null
+			if (o1 == null && o2 == null) {
+				return 0;
+			}
+			else if (o1 == null && o2 != null) {
+				return 1;
+			}
+			else if (o1 != null && o2 == null) {
+				return -1;
+			}
+
+			// test identity
+			if (o1.equals(o2)) {
+				return 0;
+			}
+
+			// test rankingOrder
+			int i = 0;
+			int cnt1 = 100;
+			for (Set<String> set : idSetsOrdered) {
+				if (set.contains(o1)) {
+					cnt1 = i;
+					break;
+				}
+				i++;
+			}
+			int j = 0;
+			int cnt2 = 100;
+			for (Set<String> set : idSetsOrdered) {
+				if (set.contains(o2)) {
+					cnt2 = j;
+					break;
+				}
+				j++;
+			}
+
+			if (cnt1 < cnt2) {
+				return -1;
+			}
+			if (cnt1 > cnt2) {
+				return 1;
+			}
+
+			// then compare by rank
+			Integer integer = termsRankInDefinitions.get(o1);
+			Integer integer2 = termsRankInDefinitions.get(o2);
+			if (integer != null && integer2 != null) {
+				if (!integer.equals(integer2)) {
+					return integer.compareTo(integer2);
+				}
+			}
+
+			// compare by label length
+			String name = getTermName(allTermsMap.get(o1));
+			String name2 = getTermName(allTermsMap.get(o2));
+
+			if (name == null && name2 != null) {
+				return 1;
+			}
+			else if (name != null && name2 == null) {
+				return -1;
+			}
+			else if (name == null && name2 == null) {
+				return 0;
+			}
+			return Integer.valueOf(name.length()).compareTo(Integer.valueOf(name2.length()));
+		}
+	}
+
+	public R getRelationType(String parentId)
+	{
+		T term = allTermsMap.get(parentId);
+		R relationType = selectedRelationType.get(term);
+		if (relationType == null) {
+			return getDefaultRelationType();
+		}
+		else {
+			return relationType;
+		}
+	}
+
+	public T getTermById(String parentId)
+	{
+		return allTermsMap.get(parentId);
 	}
 }
