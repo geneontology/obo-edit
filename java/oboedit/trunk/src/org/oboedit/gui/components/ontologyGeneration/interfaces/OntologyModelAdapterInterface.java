@@ -3,9 +3,9 @@ package org.oboedit.gui.components.ontologyGeneration.interfaces;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.oboedit.gui.components.ontologyGeneration.CandidateTerm;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.ParentRelationEntry;
 
 public interface OntologyModelAdapterInterface<T,R>
 {
@@ -34,9 +34,8 @@ public interface OntologyModelAdapterInterface<T,R>
 
 	public abstract void commitDefinition(CandidateTerm candidateTerm);
 
-	public abstract void commitAddToOntologyAsChildOfLinkedObject(Set<String> parentIds, boolean includeChildren, boolean includeBranch,
-			CandidateTerm selectedCandidateTerm);
-
+	public abstract void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm,
+			Collection<ParentRelationEntry<T, R>> parentRelations, boolean includeChildren, boolean includeBranch);
 
 	/*
 	 * Wrapper organizational methods

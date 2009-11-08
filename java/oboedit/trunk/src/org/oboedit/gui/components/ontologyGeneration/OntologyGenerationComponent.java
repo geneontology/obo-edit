@@ -91,6 +91,7 @@ import org.oboedit.gui.components.ontologyGeneration.interfaces.OntologyModelAda
 import org.oboedit.gui.components.ontologyGeneration.interfaces.UpdateListenerInterface;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyGenerationGUIComponent;
 import org.oboedit.gui.components.ontologyGeneration.oboAdapter.OBOOntologyModelAdapter;
+import org.oboedit.gui.components.ontologyGeneration.oboAdapter.ParentRelationEntry;
 
 import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub;
 import de.tud.biotec.gopubmedDefinitionGeneration.client.GoPubMedDefinitionGeneratorStub.DefinitionContainer;
@@ -120,10 +121,10 @@ import de.tud.biotec.gopubmedTermGenerationService.client.GoPubMedTermGeneration
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  * @version 2.0, 25/06/2009
  */
-public abstract class OntologyGenerationComponent<T,R> implements PropertyChangeListener, OntologyGenerationComponentServiceInterface<T,R>
+public abstract class OntologyGenerationComponent<T, R> implements PropertyChangeListener, OntologyGenerationComponentServiceInterface<T, R>
 {
 
-	private final OntologyModelAdapterInterface<T,R> adapter;
+	private final OntologyModelAdapterInterface<T, R> adapter;
 	private final OBOOntologyGenerationGUIComponent guiComponent;
 
 	public static final String PLUGIN_VERSION = "2.0";
@@ -154,7 +155,7 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 	private TermsTable candidateTermsTable;
 	private TermsTable synonymTermsTable;
 	private DefinitionsTable definitionTable;
-	private AbstractOntologyTermsTable<T,R> ontologyTermsTable;
+	private AbstractOntologyTermsTable<T, R> ontologyTermsTable;
 
 	// GUI related
 	private ProgressBarDialog progressDlg;
@@ -220,15 +221,11 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 	private int selectedParentTermRow = -1;
 	private String lastSource;
 
-	/* 
+	/*
 	 * ABSTRACT METHODS
 	 */
-	public abstract AbstractOntologyTermsTable<T,R> createOntologyTermsTable();
-	
-	
-	
-	
-	
+	public abstract AbstractOntologyTermsTable<T, R> createOntologyTermsTable();
+
 	/**
 	 * Constructs a {@link OntologyGenerationComponent} instance
 	 * 
@@ -332,7 +329,6 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 		this.saveDefWarningLabel = new JLabel();
 		this.saveLabelWarningLabel = new JLabel();
 	}
-
 
 	public void initListener()
 	{
@@ -826,8 +822,8 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 					if (selectedRow >= 0) {
 						adapter.selectOntologyTerm(selectedObjectID);
 					}
-					ontologyTermsTable.setRowSelectionInterval(ontologyTermsTable.getModel().getRowFromTerm(selectedObjectID), ontologyTermsTable.getModel().getRowFromTerm(
-							selectedObjectID));
+					ontologyTermsTable.setRowSelectionInterval(ontologyTermsTable.getModel().getRowFromTerm(selectedObjectID), ontologyTermsTable.getModel()
+							.getRowFromTerm(selectedObjectID));
 					ontologyTermsTable.getModel().setTickedTerms(tickedTerms);
 				}
 			}
@@ -1505,7 +1501,15 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 	{
 		boolean includeChildren = checkboxIncludeChildren.isSelected();
 		boolean includeBranch = false; // checkboxIncludeBranch.isSelected();
-		adapter.commitAddToOntologyAsChildOfLinkedObject(ontologyTermsTable.getModel().getTickedTerms(), includeChildren, includeBranch, selectedCandidateTerm);
+
+		ArrayList<ParentRelationEntry<T, R>> parentRelationList = new ArrayList<ParentRelationEntry<T, R>>(10);
+		for (String parentId : ontologyTermsTable.getModel().getTickedTerms()) {
+			T parentTerm = ontologyTermsTable.getModel().getTermById(parentId);
+			R relationType = ontologyTermsTable.getModel().getRelationType(parentId);
+			ParentRelationEntry<T, R> parentRelationEntry = new ParentRelationEntry<T, R>(parentTerm, relationType);
+			parentRelationList.add(parentRelationEntry);
+		}
+		adapter.commitAddToOntologyAsChildOfLinkedObject(selectedCandidateTerm, parentRelationList, includeChildren, includeBranch);
 	}
 
 	/**
@@ -1798,8 +1802,8 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 		inputDefinitionGenerationField.setText(label);
 	}
 
-	public void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable, AbstractOntologyTermsTable<T,R> ontologyTermsTable,
-			DefinitionsTable definitionsTable)
+	public void updateParentAsTermFromDefinition(CandidateTerm selectedCandidateTerm, TermsTable termsTable,
+			AbstractOntologyTermsTable<T, R> ontologyTermsTable, DefinitionsTable definitionsTable)
 	{
 		logger.trace("UPDATE TERMS FROM DEFINITION for :" + selectedCandidateTerm);
 
@@ -1921,7 +1925,7 @@ public abstract class OntologyGenerationComponent<T,R> implements PropertyChange
 		return definitionTable;
 	}
 
-	public AbstractOntologyTermsTable<T,R> getOntologyTermsTable()
+	public AbstractOntologyTermsTable<T, R> getOntologyTermsTable()
 	{
 		return ontologyTermsTable;
 	}

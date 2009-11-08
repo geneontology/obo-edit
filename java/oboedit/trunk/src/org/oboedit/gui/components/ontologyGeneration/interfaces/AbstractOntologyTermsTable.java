@@ -21,14 +21,12 @@ import javax.swing.table.TableColumn;
 import org.oboedit.gui.components.ontologyGeneration.JTableHelper;
 import org.oboedit.gui.components.ontologyGeneration.TermsTable;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 /**
  * {@link JTable} to display {@link List} of {@link T}.
  * 
  * @author Thomas Waechter (<href>waechter@biotec.tu-dresden.de</href>), 2008
  */
-public abstract class AbstractOntologyTermsTable<T,R> extends JTable
+public abstract class AbstractOntologyTermsTable<T, R> extends JTable
 {
 	private static final long serialVersionUID = -5517462579527283469L;
 	private int minScrollableViewPortHeight;
@@ -38,50 +36,46 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 	/**
 	 * Constructs a {@link AbstractOntologyTermsTable}
 	 */
-	public AbstractOntologyTermsTable(AbstractOntologyTermsTableModel<T> tableModel)
+	public AbstractOntologyTermsTable(AbstractOntologyTermsTableModel<T,R> tableModel)
 	{
 		super(tableModel);
 		setGridColor(Color.LIGHT_GRAY);
 		setRowHeight(getRowHeight() + 4);
-		getColumnModel().getColumn(0).setMaxWidth(50);
-		getColumnModel().getColumn(0).setResizable(false);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_SELECT).setMaxWidth(50);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_SELECT).setResizable(false);
 
-		getColumnModel().getColumn(1).setMinWidth(250);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_TERM).setMinWidth(250);
 
-		getColumnModel().getColumn(2).setMinWidth(80);
-		getColumnModel().getColumn(2).setMaxWidth(80);
-		getColumnModel().getColumn(2).setResizable(false);
-		TableColumn col = this.getColumnModel().getColumn(2);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_RELATION).setMinWidth(80);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_RELATION).setMaxWidth(80);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_RELATION).setResizable(false);
+		TableColumn col = this.getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_RELATION);
 
 		col.setCellEditor(new RelationComboBoxEditor());
 		col.setCellRenderer(new RelationComboBoxRenderer());
 
-		getColumnModel().getColumn(3).setMinWidth(80);
-		getColumnModel().getColumn(3).setMaxWidth(80);
-		getColumnModel().getColumn(3).setResizable(false);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_PREDICTED).setMinWidth(80);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_PREDICTED).setMaxWidth(80);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_PREDICTED).setResizable(false);
 
-		getColumnModel().getColumn(4).setMinWidth(130);
-		getColumnModel().getColumn(4).setMaxWidth(130);
-		getColumnModel().getColumn(4).setResizable(false);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_COMMENT).setMinWidth(130);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_COMMENT).setMaxWidth(130);
+		getColumnModel().getColumn(AbstractOntologyTermsTableModel.COL_COMMENT).setResizable(false);
+
 		getColumnModel().getSelectionModel().addListSelectionListener(this);
-
 		tableHeader.setReorderingAllowed(false);
 	}
 
-	/*
-	 * ABSTRACT METHODS
-	 */
 	public abstract String nameFor(Object arg1);
 
-	
-	
-	
 	/**
 	 * Set the {@link List} of {@link T} to be contained in the
 	 * {@link TermsTable} and resize table if necessary.
 	 * 
 	 * @param results
-	 */
+	 */	
+	
+	
 	public void setTerms(Collection<T> results)
 	{
 		getModel().setTerms(results);
@@ -89,8 +83,8 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 	}
 
 	/**
-	 * Remove all instances of {@link T} from the {@link TermsTable}
-	 * and resize table if necessary.
+	 * Remove all instances of {@link T} from the {@link TermsTable} and resize
+	 * table if necessary.
 	 * 
 	 * @param terms
 	 */
@@ -101,8 +95,8 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 	}
 
 	/**
-	 * Remove all instances of {@link T} from the {@link TermsTable}
-	 * and resize table if necessary.
+	 * Remove all instances of {@link T} from the {@link TermsTable} and resize
+	 * table if necessary.
 	 * 
 	 * @param terms
 	 */
@@ -166,9 +160,9 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public AbstractOntologyTermsTableModel<T> getModel()
+	public AbstractOntologyTermsTableModel<T,R> getModel()
 	{
-		return (AbstractOntologyTermsTableModel<T>) super.getModel();
+		return (AbstractOntologyTermsTableModel<T,R>) super.getModel();
 	}
 
 	private class RelationComboBoxRenderer extends DefaultTableCellRenderer
@@ -186,31 +180,33 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 
 	public class RelationComboBoxEditor extends DefaultCellEditor implements TableModelListener
 	{
+
 		private static final long serialVersionUID = 6608118736812902848L;
 
 		public RelationComboBoxEditor()
 		{
 			super(new JComboBox(getModel().getRelationTypes()));
 			JComboBox component = (JComboBox) this.getComponent();
+			component.setEnabled(true);
 			component.setRenderer(new DefaultListCellRenderer()
 			{
 				private static final long serialVersionUID = 640070988606722883L;
 
 				@Override
-				public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4)
+				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 				{
 
-					super.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-					this.setText(nameFor(arg1));
+					super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+					this.setText(nameFor(value));
 					return this;
 				}
 			});
-			
+
 			getModel().addTableModelListener(this);
 		}
 
 		@Override
-		public Component getTableCellEditorComponent(JTable arg0, Object value, boolean arg2, int arg3, int arg4)
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
 		{
 			JComboBox component = (JComboBox) this.getComponent();
 			component.setSelectedItem(value);
@@ -219,18 +215,20 @@ public abstract class AbstractOntologyTermsTable<T,R> extends JTable
 
 		public void tableChanged(TableModelEvent e)
 		{
-			if(e.getSource()==getModel()) {
-			
+			if (e.getSource() == getModel()) {
+
 				int column = e.getColumn();
-				if(column==2) {
+				getModel();
+				if (column == AbstractOntologyTermsTableModel.COL_RELATION) {
 					JComboBox component = (JComboBox) this.getComponent();
 					component.removeAllItems();
-					Object[] relationTypes = getModel().getRelationTypes();
+					R[] relationTypes = getModel().getRelationTypes();
 					for (Object relationType : relationTypes) {
 						component.addItem(relationType);
 					}
 				}
-			}else{
+			}
+			else {
 				throw new RuntimeException("Not my event");
 			}
 		}
