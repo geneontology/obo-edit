@@ -1,7 +1,6 @@
 package GOBO::Parsers::Parser;
 use Moose;
 use Moose::Util::TypeConstraints;
-#use GOBO::Graph;
 use FileHandle;
 use Carp;
 
@@ -29,6 +28,7 @@ has header_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_he
 has body_parser_options => (is => 'rw', isa => 'HashRef', clearer => 'clear_body_parser_options', predicate => 'has_body_parser_options', writer => 'set_body_parser_options');
 
 has liberal_mode => (is=>'rw', isa=>'Bool',default=>sub{1});
+has verbose => (is=>'rw', isa=>'Bool',default=>sub{0});
 
 sub BUILDARGS {
 	my $class = shift;

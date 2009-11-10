@@ -1,12 +1,12 @@
 package GOBO::InferenceEngine;
 use Moose;
 use strict;
-use GOBO::Statement;
-use GOBO::Annotation;
 use GOBO::Graph;
-use GOBO::Node;
-use GOBO::TermNode;
-use GOBO::RelationNode;
+#use GOBO::Statement;
+#use GOBO::Annotation;
+#use GOBO::Node;
+#use GOBO::TermNode;
+#use GOBO::RelationNode;
 
 has graph => (is=>'rw', isa=> 'GOBO::Graph');
 has inferred_graph => (is=>'rw', isa=> 'GOBO::Graph', default=>sub{new GOBO::Graph});
@@ -16,10 +16,10 @@ sub backward_chain {
     my $n = shift;
     my $g = $self->graph;
     my $ig = $self->inferred_graph;
-    
+
     # initialize link set based on input node;
     # we will iteratively extend upwards
-    my @links = @{$g->get_target_links($n)};
+    my @links = @{$g->get_outgoing_links($n)};
     my %outlink_h = ();
     my %link_closure_h = ();
     while (@links) {
@@ -54,15 +54,15 @@ sub get_inferred_target_links {
     my $n = shift;
     my $g = $self->graph;
     my $ig = $self->inferred_graph;
-    my $tlinks = $ig->get_target_links($n);
+    my $tlinks = $ig->get_outgoing_links($n);
     if (@$tlinks) {
         # cached
         return $tlinks;
     }
-    
+
     # initialize link set based on input node;
     # we will iteratively extend upwards
-    my @links = @{$g->get_target_links($n)};
+    my @links = @{$g->get_outgoing_links($n)};
     #printf STDERR "target $n => @links\n";
 
     my %outlink_h = ();
@@ -81,7 +81,7 @@ sub get_inferred_target_links {
                                                  target=>$link->target);
            push(@links,$newlink);
        }
-       
+
        if (@$extlinks) {
            push(@links,@$extlinks);
            #push(@outlinks,@$extlinks);
@@ -91,6 +91,7 @@ sub get_inferred_target_links {
     $ig->add_links([values %outlink_h]);
     return [values %outlink_h];
 }
+*get_inferred_outgoing_links = \&get_inferred_target_links;
 
 =head2 get_inferred_target_nodes (subject GOBO::Node, relation GOBO::RelationNode OPTIONAL)
 
@@ -128,11 +129,12 @@ sub extend_link {
     my $link = shift;
     my @newlinks = ();
     foreach my $rel_1 (@{$self->get_subrelation_reflexive_closure($link->relation)} ) {
-        foreach my $xlink (@{$self->graph->get_target_links($link->target)}) {
+        foreach my $xlink (@{$self->graph->get_outgoing_links($link->target)}) {
             #printf STDERR "  XLINK: $xlink\n";
             my $rel_2 = $xlink->relation;
             my @rels = $self->relation_composition($rel_1, $rel_2);
-            
+#            print STDERR "result: " . join("\n", @rels) . "\n\n";
+
             # R1 subrelation_of R2, x R1 y => x R2 y
             @rels = map { @{$self->get_subrelation_reflexive_closure($_)} } @rels;
             foreach my $rel (@rels) {
@@ -208,6 +210,7 @@ sub relation_composition {
     my $self = shift;
     my $r1 = shift;
     my $r2 = shift;
+#	print STDERR "input: r1: $r1; r2: $r2\n";
     if ($r1->equals($r2) && $r1->transitive) {
         return ($r1);
     }
@@ -231,17 +234,17 @@ sub forward_chain {
     $ig->copy_from($g);
     $self->inferred_graph($ig);
     $self->calculate_deductive_closure;
-    
+
 }
 
 sub calculate_deductive_closure {
     my $self = shift;
     my $g = $self->graph;
     my $ig = $self->inferred_graph;
-    
+
     my $saturated = 0;
     while (!$saturated) {
-        
+
     }
 }
 
@@ -330,7 +333,7 @@ sub subsumed_by {
             }
         }
         else {
-            
+
         }
     }
     return $subsumes;
@@ -339,7 +342,7 @@ sub subsumed_by {
 # TODO
 #sub disjoint_from_violations {
 #    my $self = shift;
-#    
+#
 #}
 
 =head1 NAME
