@@ -30,7 +30,7 @@ bless $g->link_ix, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
 #bless $g, 'GOBO::AmiGO::Indexes::AmiGOStatementIndex';
 $g->link_ix->query( $q );
 
-my $links = $g->get_target_links('GO:0005634');
+my $links = $g->get_outgoing_links('GO:0005634');
 
 foreach my $link (@$links) {
     printf "$link\n";
