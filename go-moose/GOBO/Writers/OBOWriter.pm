@@ -61,7 +61,7 @@ sub write_stanza {
     elsif ($node->isa('GOBO::Annotation')) {
         # TODO
     }
-    
+
     $self->open_stanza($stanzaclass);
     $self->tagval('id',$node->id);
     $self->tagval('name',$node->label);
@@ -93,7 +93,7 @@ sub write_stanza {
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
-    foreach (@{$g->get_target_links($node)}) {
+    foreach (@{$g->get_outgoing_links($node)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {
                 $self->tagval(intersection_of => $_->target);
@@ -158,7 +158,7 @@ sub write_stanza {
     $self->tagval('created_by',$node->created_by);
     #$self->tagval('creation_date',$node->creation_date->format_cldr('yyyy-MM-ddTHH:mm:ss.SSSZ')) if $node->creation_date;
     $self->tagval('creation_date',$node->creation_date->iso8601 . 'Z') if $node->creation_date;
-    
+
     return;
 }
 
@@ -174,7 +174,7 @@ sub write_annotation_stanza {
 
     $self->nl;
     my $stanzaclass = 'Annotation';
-    
+
     $self->open_stanza($stanzaclass);
     $self->tagval('id',$ann->id) if $ann->id;  # annotations need not have an ID
     $self->tagval(subject=>$ann->node->id);
@@ -215,7 +215,7 @@ sub tagval {
     }
 
     $self->trailing_qualifiers($s);
-    
+
     if (ref($val) && $val->can('label') && $val->label) {
         $self->printf(" ! %s\n",$val->label);
     }

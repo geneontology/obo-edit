@@ -48,7 +48,7 @@ sub write_stanza {
         $type = 'annotation';
     }
     $doc->{type} = $type;
-    
+
     $doc->{id}=$node->id;
     $doc->{name}=$node->label if $node->label;
     $doc->{namespace}=$node->namespace if $node->namespace;
@@ -59,12 +59,12 @@ sub write_stanza {
     }
     $doc->{comment}=$node->comment if $node->comment;
     $doc->{subsets} = [map {$_->id} @{$node->subsets || []}];
-    $doc->{synonyms} = 
+    $doc->{synonyms} =
         map {
             (scope=>$_->scope,
              text=>$_->label,
              xrefs => [map {$_->id} @{$_->xrefs || []}])
-    } @{$node->synonyms || []}; 
+    } @{$node->synonyms || []};
 
     # xref
 
@@ -80,7 +80,7 @@ sub write_stanza {
 
     my @isas = ();
     my @rels = ();
-    foreach (@{$g->get_target_links($node)}) {
+    foreach (@{$g->get_outgoing_links($node)}) {
         if ($_->is_intersection) {
         }
         else {
@@ -109,7 +109,7 @@ sub write_annotation_stanza {
     my $doc;
     $self->nl;
     my $stanzaclass = 'Annotation';
-    
+
     $self->open_stanza($stanzaclass);
     $doc->{id}=$ann->id if $ann->id;  # annotations need not have an ID
     $self->tagval(subject=>$ann->node->id);
