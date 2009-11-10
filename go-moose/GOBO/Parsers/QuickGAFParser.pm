@@ -1,8 +1,6 @@
 package GOBO::Parsers::QuickGAFParser;
 use Moose;
-use strict;
 extends 'GOBO::Parsers::GAFParser';
-with 'GOBO::Parsers::GraphParser';
 
 use Data::Dumper;
 
@@ -42,14 +40,32 @@ override 'parse_body' => sub {
 			next;
 		}
 
-		## undef the term and store the array data
+		## undef the term and ontology abbrev, store the array data
 		my $t_id = $arr[5];
 		$arr[5] = '';
+		$arr[9] = '';
+
 		if ($data->{by_a}{$a_id})
 		{	## if the assoc ID exists, we're in the strange situation of already
 			## having v. similar assoc info
 			if ( join("\t", @arr) ne join("\t", @{$data->{by_a}{$a_id}{arr}}) )
-			{	warn "Error: association ID $a_id already exists with different association data! Keeping term, ignoring assoc data";
+			{	warn "Error: association ID $a_id already exists with different association data. Keeping old data.";
+				if ($self->verbose)
+				{	my $x;
+					my @old = @{$data->{by_a}{$a_id}{arr}};
+					my $errs;
+					for ($x = 1; $x < 20; $x++)
+					{	if (! defined $arr[$x] && ! defined $old[$x] )
+						{	next;
+						}
+						if (defined $arr[$x] && defined $old[$x] && $arr[$x] eq $old[$x])
+						{	next;
+						}
+						push @$errs, [ $x, $old[$x], $arr[$x] ];
+					}
+					print STDERR "OLD: " . join("\t", map { $_->[1] } @$errs) . "\n" .
+					"NEW: " . join("\t", map { $_->[2] } @$errs) . "\n\n";
+				}
 			}
 		}
 		push @{$data->{by_a}{$a_id}{terms}}, $t_id;
@@ -57,13 +73,12 @@ override 'parse_body' => sub {
 	}
 
 	if (@errs)
-	{
-		print STDERR "The following (potentially) duplicate annotations were found:\n";
-		foreach (@errs)
-		{	my ($t, $a_id) = split("---", $_, 2);
-			print STDERR "$t, $a_id: " . Dumper($data->{by_t}{$t}{$a_id}) . "\n";
-		}
-		print STDERR "\n\n";
+	{	warn "The following (potentially) duplicate annotations were found:\n"
+		. join("\n", map {
+			my ($t, $a_id) = split("---", $_, 2);
+			"$t, $a_id: " . Dumper($data->{by_t}{$t}{$a_id});
+		} @errs )
+		. "\n\n";
 	}
 	return $data;
 };
