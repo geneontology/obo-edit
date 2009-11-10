@@ -45,7 +45,7 @@ sub write_stanza {
     elsif ($node->isa('GOBO::Annotation')) {
         $stanzaclass = 'annotation';
     }
-    
+
     $self->open_element($stanzaclass);
     $self->tagval('id',$node->id);
     $self->tagval('name',$node->label);
@@ -53,7 +53,7 @@ sub write_stanza {
     $self->tagval('alt_id',$_) foreach @{$node->alt_ids || []};
     if ($node->definition) {
         $self->ntagval('def', [],
-                       [defstr=>$node->definition], 
+                       [defstr=>$node->definition],
                        map {_dbxref($_)} @{$node->definition_xrefs || []});
     }
     $self->tagval('comment',$node->comment);
@@ -75,7 +75,7 @@ sub write_stanza {
         $self->tagval('equivalent_to_chain', _chain($_)) foreach @{$node->equivalent_to_chain_list || []};
     }
 
-    foreach (@{$g->get_target_links($node)}) {
+    foreach (@{$g->get_outgoing_links($node)}) {
         if ($_->is_intersection) {
             if ($_->relation->is_subsumption) {
                 $self->ntagval(intersection_of => ([], [to=>$_->target]));
@@ -119,7 +119,7 @@ sub write_annotation_stanza {
 
     $self->nl;
     my $stanzaclass = 'Annotation';
-    
+
     $self->open_stanza($stanzaclass);
     $self->tagval('id',$ann->id) if $ann->id;  # annotations need not have an ID
     $self->tagval(subject=>$ann->node->id);
@@ -172,7 +172,7 @@ sub tagval {
                                sprintf('%s="%s"', $_->relation->id, $_->target);
                            } @{$s->sub_statements}));
     }
-    
+
     if (ref($val) && $val->label) {
         $self->printf(" ! %s\n",$val->label);
     }
