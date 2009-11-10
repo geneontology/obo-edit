@@ -56,7 +56,7 @@ sub remove_nodes {
             my $label = $n->label;
             if ($label) {
                 my $unodes = $self->ixLabel->{$label} || [];
-                @$unodes = grep {$_->id ne $_->n->id} @$unodes;
+                @$unodes = grep {$_->id ne $n->id} @$unodes;
             }
         }
     }
@@ -111,9 +111,9 @@ sub nodes_by_metaclass {
     else {
         # ok
     }
-    return [grep { $_->isa($c) } 
+    return [grep { $_->isa($c) }
             @{$self->nodes}];
-    
+
 }
 
 
