@@ -13,7 +13,7 @@ use FileHandle;
 my $g = new GOBO::Graph;
 my $x = GOBO::ClassExpression->parse_idexpr($g, 'a^foo(bar)');
 print "x=$x\n";
-printf "  target: %s\n", $_ foreach @{$g->get_target_links($x)};
+printf "  target: %s\n", $_ foreach @{$g->get_outgoing_links($x)};
 ok($x->isa('GOBO::ClassExpression::Intersection'));
 ok scalar(@{$x->arguments}) == 2;
 ok grep { $_->id eq 'a' } @{$x->arguments};
