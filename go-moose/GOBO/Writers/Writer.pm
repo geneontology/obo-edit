@@ -1,11 +1,9 @@
 package GOBO::Writers::Writer;
 use Moose;
-use strict;
 use GOBO::Graph;
 use FileHandle;
 
-has fh => (is=>'rw', isa=>'Maybe[FileHandle]', clearer=>'clear_fh', predicate=>'has_fh');
-#has fh => (is=>'rw', isa=>'FileHandle' );
+has fh => (is=>'rw', isa=>'FileHandle', clearer=>'clear_fh', predicate=>'has_fh'); #, coerce=>1);
 has file => (is=>'rw', isa=>'Str');
 has graph => (is=>'rw', isa=>'GOBO::Graph');
 
@@ -45,7 +43,7 @@ sub xxxfile {
         $self->{file} = $f;
         $self->fh(FileHandle->new(">$f"));
     }
-    
+
     return $self->{file};
 }
 
