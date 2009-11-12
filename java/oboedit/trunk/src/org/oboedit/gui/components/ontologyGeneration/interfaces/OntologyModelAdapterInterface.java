@@ -35,7 +35,7 @@ public interface OntologyModelAdapterInterface<T,R>
 	public abstract void commitDefinition(CandidateTerm candidateTerm);
 
 	public abstract void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm,
-			Collection<ParentRelationEntry<T, R>> parentRelations, boolean includeChildren, boolean includeBranch);
+			Collection<ParentRelationEntry<R>> parentRelations, boolean includeChildren, boolean includeBranch);
 
 	/*
 	 * Wrapper organizational methods
