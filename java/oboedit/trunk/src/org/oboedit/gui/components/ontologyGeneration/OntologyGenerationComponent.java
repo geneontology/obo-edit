@@ -1502,11 +1502,10 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 		boolean includeChildren = checkboxIncludeChildren.isSelected();
 		boolean includeBranch = false; // checkboxIncludeBranch.isSelected();
 
-		ArrayList<ParentRelationEntry<T, R>> parentRelationList = new ArrayList<ParentRelationEntry<T, R>>(10);
+		ArrayList<ParentRelationEntry<R>> parentRelationList = new ArrayList<ParentRelationEntry<R>>(10);
 		for (String parentId : ontologyTermsTable.getModel().getTickedTerms()) {
-			T parentTerm = ontologyTermsTable.getModel().getTermById(parentId);
 			R relationType = ontologyTermsTable.getModel().getRelationType(parentId);
-			ParentRelationEntry<T, R> parentRelationEntry = new ParentRelationEntry<T, R>(parentTerm, relationType);
+			ParentRelationEntry<R> parentRelationEntry = new ParentRelationEntry<R>(parentId, relationType);
 			parentRelationList.add(parentRelationEntry);
 		}
 		adapter.commitAddToOntologyAsChildOfLinkedObject(selectedCandidateTerm, parentRelationList, includeChildren, includeBranch);
