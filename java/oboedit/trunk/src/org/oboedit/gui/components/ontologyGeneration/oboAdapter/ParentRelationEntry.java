@@ -1,27 +1,27 @@
 package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
-public class ParentRelationEntry<T, R>
+public class ParentRelationEntry<R>
 {
-	private T parentTerm;
+	private String parentTermId;
 	private R relationShipType;
 
-	public ParentRelationEntry(T parentTerm, R relationShipType)
+	public ParentRelationEntry(String parentTerm, R relationShipType)
 	{
 		super();
-		this.parentTerm = parentTerm;
+		this.parentTermId = parentTerm;
 		this.relationShipType = relationShipType;
 	}
 
 
 
-	public T getParentTerm()
+	public String getParentTermId()
 	{
-		return parentTerm;
+		return parentTermId;
 	}
 
-	public void setParentTerm(T parentTerm)
+	public void setParentTermId(String parentTermId)
 	{
-		this.parentTerm = parentTerm;
+		this.parentTermId = parentTermId;
 	}
 
 	public R getRelationShipType()
@@ -39,7 +39,7 @@ public class ParentRelationEntry<T, R>
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((parentTerm == null) ? 0 : parentTerm.hashCode());
+		result = prime * result + ((parentTermId == null) ? 0 : parentTermId.hashCode());
 		result = prime * result + ((relationShipType == null) ? 0 : relationShipType.hashCode());
 		return result;
 	}
@@ -54,12 +54,12 @@ public class ParentRelationEntry<T, R>
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ParentRelationEntry<T,R> other = (ParentRelationEntry<T,R>) obj;
-		if (parentTerm == null) {
-			if (other.parentTerm != null)
+		ParentRelationEntry<R> other = (ParentRelationEntry<R>) obj;
+		if (parentTermId == null) {
+			if (other.parentTermId != null)
 				return false;
 		}
-		else if (!parentTerm.equals(other.parentTerm))
+		else if (!parentTermId.equals(other.parentTermId))
 			return false;
 		if (relationShipType == null) {
 			if (other.relationShipType != null)

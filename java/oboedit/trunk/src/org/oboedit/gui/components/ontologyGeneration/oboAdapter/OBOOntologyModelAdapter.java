@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -56,6 +57,7 @@ import org.oboedit.util.GUIUtil;
 
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<LinkedObject, OBOProperty>
 {
@@ -77,6 +79,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		sessionManager = SessionManager.getManager();
 		idsUndergoingChange = new HashSet<String>(1);
 		addListeners();
+		updateRelationTypes();
 	}
 
 	/**
@@ -202,7 +205,7 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			updateAllOnOntologyChange();
 		}
 	};
-	private List<OBOProperty> relationTypes;
+	private List<OBOProperty> relationTypes = null;
 
 	private void updateAllOnOntologyChange()
 	{
@@ -224,7 +227,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		list.addAll(properties);
 		OBOProperty[] array = new OBOProperty[list.size()];
 		this.relationTypes = list;
-		service.getOntologyTermsTable().getModel().setRelationTypes(list.toArray(array));
+		if (service != null)
+			service.getOntologyTermsTable().getModel().setRelationTypes(list.toArray(array));
 	}
 
 	/**
@@ -461,11 +465,11 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 * @param includeChildren
 	 * @param includeBranch
 	 */
-	public void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm,
-			Collection<ParentRelationEntry<LinkedObject, OBOProperty>> parentRelations, boolean includeChildren, boolean includeBranch)
+	public void commitAddToOntologyAsChildOfLinkedObject(CandidateTerm selectedCandidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations,
+			boolean includeChildren, boolean includeBranch)
 	{
 		tryCommitAddTerm(selectedCandidateTerm, parentRelations, includeChildren, includeBranch);
-
+		updateAllOnOntologyChange(); // TODO change for better
 	}
 
 	/**
@@ -493,8 +497,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		return sessionManager;
 	}
 
-	private void tryCommitAddTerm(CandidateTerm candidateTerm, Collection<ParentRelationEntry<LinkedObject, OBOProperty>> parentRelations,
-			boolean includeChildren, boolean includeBranch)
+	private void tryCommitAddTerm(CandidateTerm candidateTerm, Collection<ParentRelationEntry<OBOProperty>> parentRelations, boolean includeChildren,
+			boolean includeBranch)
 	{
 		TermMacroHistoryItem changeItem = new TermMacroHistoryItem();
 		if (parentRelations == null || parentRelations.size() == 0) {
@@ -502,17 +506,18 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			return;
 		}
 		else {
-			List<IdentifiedObject> children = getLinkedObjectsIfExist(candidateTerm.getLabel());
-
-			Iterator<ParentRelationEntry<LinkedObject, OBOProperty>> selectedParentIdIterator = parentRelations.iterator();
+			List<IdentifiedObject> termsExistingIntern = getLinkedObjectsIfExist(candidateTerm.getLabel());
+			Iterator<ParentRelationEntry<OBOProperty>> parentExistingInternIterator = parentRelations.iterator();
 			String childTermID = null;
-			while (selectedParentIdIterator.hasNext()) {
-				ParentRelationEntry<LinkedObject, OBOProperty> entry = selectedParentIdIterator.next();
-				LinkedObject parentLinkedObject = entry.getParentTerm();
+			while (parentExistingInternIterator.hasNext()) {
+				ParentRelationEntry<OBOProperty> entry = parentExistingInternIterator.next();
+				String parentLinkedObjectId = entry.getParentTermId();
 				OBOProperty relationShipType = entry.getRelationShipType();
 
-				if (children.isEmpty()) {
-
+				LinkedObject parentLinkedObject = (LinkedObject) sessionManager.getCurrentFullLinkDatabase().getObject(parentLinkedObjectId);
+				// check for existing term in OBO-Edit
+				if (termsExistingIntern.isEmpty()) {
+					// check for existing term
 					if (TermUtil.isProperty(parentLinkedObject)) {
 						childTermID = getTypeID();
 					}
@@ -526,13 +531,12 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 							.getNamespace());
 					changeItem.addItem(item);
 				}
-				else if (children.size() == 1) {
-					childTermID = children.get(0).getID();
+				else if (termsExistingIntern.size() == 1) {
+					childTermID = termsExistingIntern.get(0).getID();
 				}
 				else {
-					logger.error("Multiple terms with this label exist.");
+					throw new RuntimeException("Multiple terms with this label exist.");
 				}
-
 				if (childTermID != null) {
 					TermMacroHistoryItem addTerm = createdAddLinkHistoryItem(childTermID, parentLinkedObject.getID(), relationShipType.getID());
 					changeItem.addItem(addTerm);
@@ -548,7 +552,6 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 					throw new RuntimeException("feature is not implemented");
 				}
 			}
-
 		}
 	}
 
@@ -572,44 +575,53 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	{
 		TermMacroHistoryItem changeItem = new TermMacroHistoryItem();
 		// setup the map of id to name mappings
-		HashMap<String, String> idToName = new HashMap<String, String>();
-		for (OBOLookupTerm lookupTerm : candidateTerm.getExistingChildTerms()) {
-			idToName.put(lookupTerm.getOboID(), lookupTerm.getLabel());
-		}
+		Map<String, Set<String>> nameToIds = new HashMap<String, Set<String>>();
+		Map<String, String> idToRelation = new HashMap<String, String>();
 
-		// create all and add all known children
-		for (final OBOLookupRelation relation : candidateTerm.getExistingChildRelations()) {
-			final String childLabel = idToName.get(relation.getOboChildTermID());
-			if (childLabel != null) {
-				final List<IdentifiedObject> linkedObjectIfExist = getLinkedObjectsIfExist(childLabel);
-				final LinkedObject parentLinkedObject = (LinkedObject) sessionManager.getCurrentLinkDatabase().getObject(id);
-				if (null == linkedObjectIfExist || linkedObjectIfExist.isEmpty()) {
-					final String[] lexicalRepresentation = { childLabel };
-					final CandidateTerm childCandidateTerm = new CandidateTerm(childLabel, new String[0], lexicalRepresentation, Double.NaN,
-							CandidateTerm.TYPE_OBO_TERM);
-					final TermMacroHistoryItem createTermItem = createAddTermHistoryItem(childCandidateTerm, id, relation.getOboChildTermID(),
-							parentLinkedObject.getNamespace());
-					changeItem.addItem(createTermItem);
-					final TermMacroHistoryItem addTermItem = createdAddLinkHistoryItem(relation.getOboChildTermID(), parentLinkedObject.getID(), relation
-							.getOboRelationShipType());
-					changeItem.addItem(addTermItem);
-					// accumulate return value
+		for (OBOLookupTerm lookupTerm : candidateTerm.getExistingChildTerms()) {
+			if (lookupTerm.getLabel() != null && lookupTerm.getLabel().length() > 0) {
+				if (!nameToIds.containsKey(lookupTerm.getLabel())) {
+					HashSet<String> set = new HashSet<String>();
+					set.add(lookupTerm.getOboID());
+					nameToIds.put(lookupTerm.getLabel(), set);
 				}
 				else {
-					final Collection<Link> children = sessionManager.getCurrentLinkDatabase().getChildren(parentLinkedObject);
-					for (final IdentifiedObject childTerm : linkedObjectIfExist) {
-						final IdentifiedObject childLinkedObject = sessionManager.getCurrentLinkDatabase().getObject(id);
-						if (!children.contains(childLinkedObject)) {
-							final TermMacroHistoryItem addTermItem = createdAddLinkHistoryItem(childTerm.getID(), parentLinkedObject.getID(), relation
-									.getOboRelationShipType());
-							changeItem.addItem(addTermItem);
-							// accumulate return value
-						}
-					}
+					nameToIds.get(lookupTerm.getLabel()).add(lookupTerm.getOboID());
 				}
 			}
 		}
+		for (OBOLookupRelation relation : candidateTerm.getExistingChildRelations()) {
+			idToRelation.put(relation.getOboChildTermID(), relation.getOboRelationShipType());
+		}
+
+		for (String label : nameToIds.keySet()) {
+			Set<String> set = nameToIds.get(label);
+			final CandidateTerm childCandidateTerm = new CandidateTerm(label, new String[0], new String[0], Double.NaN, CandidateTerm.TYPE_OBO_TERM);
+
+			String relString = idToRelation.get(set.iterator().next());
+			String relationId = getValidRelation(relString);
+			if (null == relationId) {
+				tryCommitCreateNewRelation(relString);
+				relationId = getValidRelation(relString);
+			}
+			OBOProperty relation = (OBOProperty) sessionManager.getCurrentFullLinkDatabase().getObject(relationId);
+			ParentRelationEntry<OBOProperty> parentRelationEntry = new ParentRelationEntry<OBOProperty>(id, relation);
+			tryCommitAddTerm(childCandidateTerm, Collections.singletonList(parentRelationEntry), false, false);
+		}
 		sessionManager.apply(changeItem, false);
+	}
+
+	private void tryCommitCreateNewRelation(String relString)
+	{
+		TermMacroHistoryItem item = new TermMacroHistoryItem("Created new relation:" + relString);
+		String typeID = OBOClass.OBO_PROPERTY.getID();
+		item.addItem(new CreateObjectHistoryItem(relString, typeID));
+		item.addItem(new NameChangeHistoryItem(relString, relString, relString));
+
+		Namespace ns = SessionManager.getManager().getSession().getDefaultNamespace();
+		if (ns != null)
+			item.addItem(new NamespaceHistoryItem(null, ns, relString));
+		sessionManager.apply(item);
 	}
 
 	/**
@@ -644,6 +656,17 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 		for (String lex : candidateTerm.getLexicalRepresentations()) {
 			if (!lex.equals(label)) {
 				item.addItem(new AddSynonymHistoryItem(id, lex));
+			}
+		}
+		List<OBOLookupTerm> childrenExistingExtern = candidateTerm.getExistingOntologyTerms();
+		if (null != childrenExistingExtern && !childrenExistingExtern.isEmpty()) {
+			// use OBO terms
+			Iterator<OBOLookupTerm> iterator = childrenExistingExtern.iterator();
+			while (iterator.hasNext()) {
+				OBOLookupTerm refTerm = iterator.next();
+				AddDbxrefHistoryItem addDbxrefHistoryItem = new AddDbxrefHistoryItem(id, new DbxrefImpl("REF_OBO", refTerm.getOboID()), false, refTerm
+						.getLabel());
+				item.addItem(addDbxrefHistoryItem);
 			}
 		}
 		return item;
@@ -708,22 +731,8 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 	 */
 	private TermMacroHistoryItem createdAddLinkHistoryItem(String id, String parentId, String relationId)
 	{
-		boolean isValidRelation = false;
-		String relationIdToUse = relationId;
-		for (OBOProperty property : relationTypes) {
-			if (property.getID().equals(relationId)) {
-				isValidRelation = true;
-			}
-		}
-		if (!isValidRelation) {
-			for (OBOProperty property : relationTypes) {
-				if (property.getName().equals(relationId)) {
-					relationIdToUse = property.getID();
-					isValidRelation = true;
-				}
-			}
-		}
-		if (isValidRelation) {
+		String relationIdToUse = getValidRelation(relationId);
+		if (null != relationIdToUse) {
 			TermMacroHistoryItem item = new TermMacroHistoryItem("Add new child to " + parentId);
 			item.addItem(new CreateLinkHistoryItem(id, relationIdToUse, parentId));
 			// item.setTarget(parentId); // TODO unclear if needed
@@ -734,6 +743,28 @@ public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<Li
 			logger.error("Relation type not supported: " + relationIdToUse);
 			return null;
 		}
+	}
+
+	private String getValidRelation(String relationId)
+	{
+		String relationIdToUse = null;
+		boolean isValidRelation = false;
+		for (OBOProperty property : relationTypes) {
+			if (property.getID().equals(relationId)) {
+				relationIdToUse = property.getID();
+				isValidRelation = true;
+				break;
+			}
+		}
+		if (!isValidRelation) {
+			for (OBOProperty property : relationTypes) {
+				if (property.getName().equals(relationId)) {
+					relationIdToUse = property.getID();
+					isValidRelation = true;
+				}
+			}
+		}
+		return relationIdToUse;
 	}
 
 }
