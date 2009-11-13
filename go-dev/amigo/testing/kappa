@@ -6,25 +6,30 @@
 #### TODO: Agents should share cookies...
 ####
 
+require 'pagent'
 require 'amigo'
+require 'aunit'
 #require 'amb'
 #require 'nondeterminism'
 
 include AmiGO
+include AUnit
 
 
 ## Setup data.
-aconf = AmiGO::Conf.new('./config.json')
+aconf = Conf.new('./config.json')
 #home_url = aconf.get('amigo_cgi_url') + '/amigo'
 $te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
 $data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
 $dump_home = '/home/sjcarbon/tmp/kappa/'
+$tests_home = '/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/'
 
 ## Do these tests:
 # $tests = [:straight, :template, :links101, :timeout, :random, :file]
 # $tests = [:template]
 # $tests = [:random]
-$tests = [:file]
+# $tests = [:file]
+$tests = [:tests]
 $test_map = {}
 
 ###
@@ -33,7 +38,7 @@ $test_map = {}
 
 $test_map[:straight] = proc do
 
-  $t1 = AmiGO::PAgent::HTML.new($te_home_url)
+  $t1 = PAgent::HTML.new($te_home_url)
   $t1.set_upload('term_enrichment_form',
                  'gp_file',
                  $data_home + 'gp/sgd-small-10.txt')
@@ -64,7 +69,7 @@ end
 
 $test_map[:template] = proc do
 
-  $t4 = AmiGO::PAgent::HTML.new($te_home_url)
+  $t4 = PAgent::HTML.new($te_home_url)
   $form_hash = {
     'form' => 'term_enrichment_form',
     'upload' => {
@@ -75,7 +80,7 @@ $test_map[:template] = proc do
     'radio' => {'iea' => 'yes'},
     'field' => {'cutoff' => '10'}
   }
-  $t4.form_from_conf(AmiGO::Conf.new($form_hash))
+  $t4.form_from_conf(Conf.new($form_hash))
   $t5 = $t4.submit('term_enrichment_form')
 
   ## May time out.
@@ -92,7 +97,7 @@ end
 ## TODO:
 $test_map[:file] = proc do
 
-  $runner = AmiGO::PageRunner.new('profiles/te_001.page')
+  $runner = PageRunner.new('profiles/te_001.page')
   $runner.over_page($te_home_url)
   puts $runner.resultant_page
 
@@ -104,7 +109,7 @@ end
 
 $test_map[:timeout] = proc do
   $ts_url = 'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=299'
-  $t7 = AmiGO::PAgent::HTML.new($ts_url)
+  $t7 = PAgent::HTML.new($ts_url)
 end
 
 ###
@@ -114,11 +119,11 @@ end
 $test_map[:links101] = proc do
 
   $test_url = 'http://localhost/cgi-bin/amigo/form_test?mode=links_101'
-  $t8 = AmiGO::PAgent::HTML.new($test_url)
+  $t8 = PAgent::HTML.new($test_url)
 
   $new_links = [];
   $new_forms = [];
-  if $t8.okay && ($t8.code == "200") 
+  if $t8.okay? && ($t8.code == "200") 
     $new_links = $t8.links 
   else
     puts "trouble getting: " + $t8.uri
@@ -136,7 +141,7 @@ end
 $test_map[:random] = proc do
 
   ## Get initial page for probing.
-  $t9 = AmiGO::PAgent::HTML.new($te_home_url)
+  $t9 = PAgent::HTML.new($te_home_url)
 
   ## Create a speciesdb subset using amb.
   all_sdb = $t9.select_values('term_enrichment_form', 'speciesdb')
@@ -189,7 +194,7 @@ $test_map[:random] = proc do
   }
 
   ## Run page.
-  $t9.form_from_conf(AmiGO::Conf.new($random_form_hash))
+  $t9.form_from_conf(Conf.new($random_form_hash))
   $t10 = $t9.submit('term_enrichment')
 
   ## May have timed out.
@@ -210,10 +215,39 @@ $test_map[:random] = proc do
 end
 
 ###
+### Try doing tests.
+###
+
+## TODO:
+$test_map[:tests] = proc do
+
+  test_files = File.join("**", "*.t")
+  Dir.glob(test_files).each do |test_desc|
+
+    puts "Trying #{test_desc}..."
+
+    $runner = PageRunner.new(test_desc)
+    $runner.over_page($te_home_url)
+    $tester = PageVerifier.new($runner.resultant_page)
+
+#     # $runner.resultant_page
+#     if $runner.resultant_page.code.eql?("200")
+#       puts "Page okay."
+#     else
+#       puts "Page bad."
+#     end
+#     # puts $runner.resultant_page
+
+  end
+
+
+end
+
+###
 ### Do specified tests.
 ###
 
 $tests.each do |s|
-  puts "Doing " + s.to_s + "..."
+  puts "Doing \"" + s.to_s + "\"..."
   $test_map[s].call
 end
