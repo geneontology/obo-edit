@@ -52,18 +52,41 @@ module AUnit
   ## A class to run a pagent out of a file.
   class PageRunner
 
-    attr_reader :resultant_page
+    # attr_queue :error
+    attr_reader :resultant_page, :comment, :tests, :assertions
 
     @json_conf = nil
     @tester = nil
 
-    def initialize (file_str)
+    def initialize (url, file_str)
+
       @json_conf = AmiGO::Conf.new(file_str)
-    end
+      @comment = @json_conf.get('comment') || ''
 
-    ##
-    def over_page (url)
+      ## Pull the boolean tests out of the conf.
+      tmp = @json_conf.get('tests') || []
+      @tests = tmp.map do |t|
+        t.to_sym
+      end
 
+      ##
+      tmp = @json_conf.get('assertions') || []
+      @assertions = tmp.map do |a|
+        if a.class == Array or a.size == 3
+          # [a[0], a[1].to_sym, a[2]]
+          [a[0], a[1], a[2]]
+        else
+          raise "miss formatted conf file in assertions"
+        end
+      end
+      
+      ## TODO: dump output to a specific directory
+      # 
+      
+      ## TODO: continue on down...
+      # 
+
+      ##
       @tester = PAgent::HTML.new(url)
       #puts "_@tester: " + @tester.to_s
       #puts "_@json_conf: " + @json_conf.to_s
@@ -82,10 +105,127 @@ module AUnit
   class PageVerifier
 
     attr_queue :error, :warning
-
+    attr_reader :comments, :comment_properties
+    
     def initialize (pagent)
+      # puts "runner class2: " + runner.class.to_s
       @pagent = pagent
+      # @tests = runner.tests
+      # @assertions = runner.assertions
+
+      ##
+      @comment_regexp = Regexp.new('\<\!\-\-.*\-\-\>')
+      @comments = @pagent.content.scan(@comment_regexp)
+
+      ##
+      @comment_properties = nil
+      ## Essentially, two values embedded in an HTML comment separated
+      ## by an equals sign.
+      value = '[\w\"\'\_\-\.]+'
+      @quality_comment_regexp =
+        Regexp.new('\<\!\-\-\s*(' + value + ')\s*\=\s*(' + value + ')\s*\-\-\>')
+      @comment_properties = Hash.new 
+      # puts "comments: " + comments.to_s
+      @comments.each do |c|
+
+        # puts "c: " + c
+
+        results = c.match(@quality_comment_regexp)
+        if not results.nil?
+
+          matches = results[1..2]
+          if matches.size == 2
+
+            ## Remove trailing and leading quotes.
+            matches = matches.map do |s|
+              s = s.gsub(/^[\"\']/, '')
+              s = s.gsub(/[\"\']$/, '')
+            end
+
+            ##
+            key = matches[0]
+            value = matches[1]
+            puts "c: #{key} : #{value}"
+            @comment_properties[key] = value
+          end
+        end
+      end
+
     end
+
+    ###
+    ### Utils for test writing.
+    ###
+
+    def content
+      @pagent.content
+    end
+
+    ##
+    def comment_property (name)
+      puts "in cp: #{name}"
+      puts "cp1: #{@comment_properties}"
+      puts "cp2: #{@comment_properties.class}"
+      $foo = @comment_properties[name]
+      res = @comment_properties[name]
+      puts "res: #{res}"
+      res
+    end
+    
+    ###
+    ### Assertions about comment properties.
+    ###
+
+    # "tests" : ["okay?", "code?", "links?"],
+    # "tests" : ["okay?",
+    #            "code?"],
+
+    ## Make an assertion out of strings
+    def assert (lval_key, boper, rval)
+
+      ##
+      lval = comment_property(lval_key)
+      
+      ##
+      decomp = boper.split('_')
+      type = decomp[0]
+      op = decomp[1].to_sym
+      
+      puts "pre"
+      puts "type: #{type}"
+      puts "op: #{op}"
+      puts "lval_key: #{lval_key}"
+      puts "lval: #{lval}"
+
+      ##
+      case type
+      when 'i'
+        lval = lval.to_i
+        rval = rval.to_i
+      when 'f'
+        lval = lval.to_f
+        rval = rval.to_f
+      else
+        lval = lval.to_s
+        rval = rval.to_s
+      end
+      
+      puts "post"
+      puts "lval: #{lval}"
+      puts "lval.class: #{lval.class}"
+      puts "op: #{op}"
+      puts "op.class: #{op.class}"
+      puts "rval: #{rval}"
+      puts "rval.class: #{rval.class}"
+
+      ##
+      meth = lval.method op
+      meth.call rval
+    end
+
+    ###
+    ### Boolean tests.
+    ###
 
     ## TODO: Yeah, need to get more codes here eventually.
     def okay?
@@ -145,17 +285,31 @@ module AUnit
             warning("link \"#{pagent.uri}\" returned error")
             all_links_pure_and_true = false
           end
-
+          
         end
-
+        
       end
       
       all_links_pure_and_true
     end
+
+
+    ##3
+
+    # ###
+    # ### Do everything we can tests.
+    # ###
     
-    #     ## TODO: Here's a real meaty one...
-    #     def debug_property (name, value)    
-    #     end
+    # def do_all
+      
+    #   # num = comment_property("NUMBER_OF_RESULTS").to_i
+    #   # if num > 100
+    #   #   puts "\tX is okay!"
+    #   # else
+    #   #   puts "\tX is bad!"
+    #   # end
+      
+    # end
     
   end
 

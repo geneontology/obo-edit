@@ -61,7 +61,11 @@ class PAgent
   end
   
   def uri
-    @agent.history[0].uri.to_s
+    if @agent.history.size != 0
+      @agent.history[0].uri.to_s
+    else
+      ''
+    end
   end
   
   def uuid
@@ -191,8 +195,38 @@ class PAgent::HTML < PAgent
     field.value = value
   end
 
-  ## TODO: 
+  ## Turn the conf fields into form information.
   def form_from_conf (form_conf)
+    
+    ##
+    form_id = form_conf.get('form')
+    if form_id.nil?
+      raise "we need at least a form name to prepare it"
+    end
+      
+    types = {
+      'radio' => :set_radio,
+      'field' => :set_field,
+      'upload' => :set_upload,
+      'select' => :set_select,
+      'multi_select' => :set_multi_select
+      }
+    types.each_pair do |label, function|
+      params_of_type = form_conf.get(label)
+      if ! params_of_type.nil? 
+        params_of_type.each_pair do |key,val|
+          send(function, form_id, key, val)
+        end
+      end
+      
+    end
+
+    nil
+  end
+  
+  ## TODO: Turn the extra conf fields into meta information (comments,
+  ## tests to run, etc.).
+  def meta_from_conf (form_conf)
     
     ##
     form_id = form_conf.get('form')
