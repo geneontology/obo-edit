@@ -1,5 +1,6 @@
 {
     "comment" : "testing for small set...no ieas",
+    "assertions" : [["NUMBER_OR_RESULTS", "i_>=", "100"]],
     "form" : "term_enrichment_form",
     "upload" : {
 	"gp_file" : "data/sgd-small-10.txt",
