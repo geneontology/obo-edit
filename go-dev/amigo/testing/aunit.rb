@@ -72,9 +72,10 @@ module AUnit
       ##
       tmp = @json_conf.get('assertions') || []
       @assertions = tmp.map do |a|
-        if a.class == Array or a.size == 3
+        if a.class == Hash or a.size >= 3
           # [a[0], a[1].to_sym, a[2]]
-          [a[0], a[1], a[2]]
+          # [a[0], a[1], a[2]]
+          a
         else
           raise "miss formatted conf file in assertions"
         end
@@ -145,7 +146,7 @@ module AUnit
             ##
             key = matches[0]
             value = matches[1]
-            puts "c: #{key} : #{value}"
+            # puts "c: #{key} : #{value}"
             @comment_properties[key] = value
           end
         end
@@ -163,12 +164,13 @@ module AUnit
 
     ##
     def comment_property (name)
-      puts "in cp: #{name}"
-      puts "cp1: #{@comment_properties}"
-      puts "cp2: #{@comment_properties.class}"
-      $foo = @comment_properties[name]
-      res = @comment_properties[name]
-      puts "res: #{res}"
+      # puts "in cp: #{name}"
+      # puts "cp: cp1: #{@comment_properties}"
+      # puts "cp: cp2: #{@comment_properties.class}"
+      # $foo = name
+      # $bar = @comment_properties
+      res = @comment_properties.fetch(name, nil)
+      # puts "cp: res: #{res}"
       res
     end
     
@@ -176,26 +178,30 @@ module AUnit
     ### Assertions about comment properties.
     ###
 
-    # "tests" : ["okay?", "code?", "links?"],
-    # "tests" : ["okay?",
-    #            "code?"],
-
     ## Make an assertion out of strings
-    def assert (lval_key, boper, rval)
+    # def assert (lval_key, boper, rval)
+    def assert (arg_bundle)
+
+      ## 
+      sub = arg_bundle.fetch('sub', nil)
+      rval = arg_bundle.fetch('arg', nil)
+      op = arg_bundle.fetch('op', nil)
+      type = arg_bundle.fetch('as', nil)
 
       ##
-      lval = comment_property(lval_key)
+      lval = comment_property(sub)
       
+      # puts "lval_key: #{lval_key}"
+      # puts "lval: #{lval}"
+
       ##
-      decomp = boper.split('_')
-      type = decomp[0]
-      op = decomp[1].to_sym
+      # decomp = boper.split('_')
+      # type = decomp[0]
+      # op = decomp[1].to_sym
       
-      puts "pre"
-      puts "type: #{type}"
-      puts "op: #{op}"
-      puts "lval_key: #{lval_key}"
-      puts "lval: #{lval}"
+      # puts "pre"
+      # puts "type: #{type}"
+      # puts "op: #{op}"
 
       ##
       case type
@@ -210,13 +216,13 @@ module AUnit
         rval = rval.to_s
       end
       
-      puts "post"
-      puts "lval: #{lval}"
-      puts "lval.class: #{lval.class}"
-      puts "op: #{op}"
-      puts "op.class: #{op.class}"
-      puts "rval: #{rval}"
-      puts "rval.class: #{rval.class}"
+      # puts "post"
+      # puts "lval: #{lval}"
+      # puts "lval.class: #{lval.class}"
+      # puts "op: #{op}"
+      # puts "op.class: #{op.class}"
+      # puts "rval: #{rval}"
+      # puts "rval.class: #{rval.class}"
 
       ##
       meth = lval.method op
