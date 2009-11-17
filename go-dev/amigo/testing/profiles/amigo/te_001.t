@@ -1,5 +1,6 @@
 {
     "comment" : "testing for small set...ieas",
+    "tests" : ["okay?", "code?", "links?"],
     "form" : "term_enrichment_form",
     "upload" : {
 	"gp_file" : "data/sgd-small-10.txt",
