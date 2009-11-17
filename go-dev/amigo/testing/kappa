@@ -240,16 +240,16 @@ $test_map[:tests] = proc do
     
     ## Walk through assertions.
     $runner.assertions.each do |a|
-      puts "a: #{a}"
-      puts "a.class: #{a.class}"
-      puts "a[0]: #{a[0]}"
-      puts "a[1]: #{a[1]}"
-      puts "a[2]: #{a[2]}"
-      lval_key = a[0]
-      op = a[1]
-      rval = a[2]
+      # puts "a: #{a}"
+      # puts "a.class: #{a.class}"
+      # puts "a[0]: #{a[0]}"
+      # puts "a[1]: #{a[1]}"
+      # puts "a[2]: #{a[2]}"
+      lval_key = a.fetch('sub', nil)
+      op = a.fetch('op', nil)
+      rval = a.fetch('arg', nil)
       puts "\tTrying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
-      puts "\t\t" + $vpage.assert(lval_key, op, rval).to_s
+      puts "\t\t" + $vpage.assert(a).to_s
     end
       
   end
