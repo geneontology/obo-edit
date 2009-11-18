@@ -53,15 +53,22 @@ module AUnit
   class PageRunner
 
     # attr_queue :error
-    attr_reader :resultant_page, :comment, :tests, :assertions
+    attr_reader :resultant, :comment, :page, :url, :tests, :assertions
 
     @json_conf = nil
     @tester = nil
 
-    def initialize (url, file_str)
+    def initialize (home_url, file_str)
 
       @json_conf = AmiGO::Conf.new(file_str)
       @comment = @json_conf.get('comment') || ''
+
+      @page = @json_conf.get('page') || ''
+      if @page.eql?('')
+        raise "miss formatted conf file in page"      
+      else
+        @url = home_url + '/' + @page
+      end
 
       ## Pull the boolean tests out of the conf.
       tmp = @json_conf.get('tests') || []
@@ -88,13 +95,18 @@ module AUnit
       # 
 
       ##
-      @tester = PAgent::HTML.new(url)
+      @tester = PAgent::HTML.new(@url)
       #puts "_@tester: " + @tester.to_s
       #puts "_@json_conf: " + @json_conf.to_s
-      @tester.form_from_conf(@json_conf)
 
-      form_name = @json_conf.get('form')
-      @resultant_page = @tester.submit(form_name)
+      ## If there is a 
+      begin
+        @tester.form_from_conf(@json_conf)
+        form_name = @json_conf.get('form')
+        @resultant = @tester.submit(form_name)
+      rescue
+        @resultant = @tester        
+      end
 
     end
 

@@ -19,6 +19,7 @@ include AUnit
 ## Setup data.
 aconf = Conf.new('./config.json')
 #home_url = aconf.get('amigo_cgi_url') + '/amigo'
+$amigo_url = aconf.get('amigo_cgi_url')
 $te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
 $data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
 $dump_home = '/home/sjcarbon/tmp/kappa/'
@@ -99,7 +100,7 @@ $test_map[:file] = proc do
 
   $runner = PageRunner.new('profiles/te_001.page')
   $runner.over_page($te_home_url)
-  puts $runner.resultant_page
+  puts $runner.resultant
 
 end
 
@@ -222,34 +223,46 @@ end
 $test_map[:tests] = proc do
 
   test_files = File.join("**", "*.t")
-  Dir.glob(test_files).each do |test_desc|
+  Dir.glob(test_files).sort.each do |test_desc|
 
     puts "Form tests defined in #{test_desc}..."
 
     ## TODO: this section should maybe grow to the Inspector's domain.
-    $runner = PageRunner.new($te_home_url, test_desc)
-    # puts "runner class1: " + $runner.class.to_s
-    $vpage = PageVerifier.new($runner.resultant_page)
-
-    ## Walk through tests.
-    $runner.tests.each do |t|
-      puts "\tTrying test: #{t.to_s}" # + "\" on " + @pagent.uri
-      result = $vpage.send t
-      puts "\t\t" + result.to_s
+    cleared = false
+    begin
+      $runner = PageRunner.new($amigo_url, test_desc)
+      $vpage = PageVerifier.new($runner.resultant)
+      cleared = true
+    rescue
+      ## TODO: 
+      puts "\t Failed to get the testable page."
     end
+
+    if cleared
+
+      ## Walk through tests.
+      $runner.tests.each do |t|
+        puts "\tTrying test: #{t.to_s}" # + "\" on " + @pagent.uri
+        result = $vpage.send t
+        puts "\t\t" + result.to_s
+      end
     
-    ## Walk through assertions.
-    $runner.assertions.each do |a|
-      # puts "a: #{a}"
-      # puts "a.class: #{a.class}"
-      # puts "a[0]: #{a[0]}"
-      # puts "a[1]: #{a[1]}"
-      # puts "a[2]: #{a[2]}"
-      lval_key = a.fetch('sub', nil)
-      op = a.fetch('op', nil)
-      rval = a.fetch('arg', nil)
-      puts "\tTrying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
-      puts "\t\t" + $vpage.assert(a).to_s
+      ## Walk through assertions.
+      $runner.assertions.each do |a|
+        # puts "a: #{a}"
+        # puts "a.class: #{a.class}"
+        # puts "a[0]: #{a[0]}"
+        # puts "a[1]: #{a[1]}"
+        # puts "a[2]: #{a[2]}"
+        lval_key = a.fetch('sub', nil)
+        op = a.fetch('op', nil)
+        rval = a.fetch('arg', nil)
+        puts "\tTrying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
+        puts "\t\t" + $vpage.assert(a).to_s
+      end
+
+    else
+      ## 
     end
       
   end
