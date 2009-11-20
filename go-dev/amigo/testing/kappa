@@ -5,6 +5,15 @@
 ####
 #### TODO: Agents should share cookies...
 ####
+#### irb:
+####    ['pagent.rb', 'amigo.rb', 'aunit.rb', 'kappa'].each{|l| load l }
+####
+#### command line:
+####    ./kappa --url http://localhost/cgi-bin/amigo --data /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/data --tests /home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/amigo --output /home/sjcarbon/tmp/kappa
+####
+
+require 'getoptlong'
+require 'rdoc/usage'
 
 require 'pagent'
 require 'amigo'
@@ -15,15 +24,108 @@ require 'aunit'
 include AmiGO
 include AUnit
 
+##
+opts = GetoptLong.new(
+                      ['--help', '-h', GetoptLong::NO_ARGUMENT],
+                      # ['--aconf', '-a', GetoptLong::REQUIRED_ARGUMENT],
+                      ['--data', '-d', GetoptLong::REQUIRED_ARGUMENT],
+                      ['--tests', '-t', GetoptLong::REQUIRED_ARGUMENT],
+                      ['--output', '-o', GetoptLong::REQUIRED_ARGUMENT],
+                      ['--url', '-u', GetoptLong::REQUIRED_ARGUMENT]
+                      )
 
-## Setup data.
-aconf = Conf.new('./config.json')
+## Globals until all of the debugging is done.
+# $aconf = './config.json'
+$data = './data'
+$tests = './tests'
+$output = './tmp'
+$url = 'http://localhost'
+opts.each do |opt, arg|
+  case opt
+  when '--help'
+    RDoc::usage
+  # when '--aconf'
+  #   $aconf = arg
+  when '--data'
+    $data = arg
+  when '--tests'
+    $tests = arg
+  when '--output'
+    $output = arg
+  when '--url'
+    $url = arg
+  end
+end
+
+# ## Make sure that file things are files.
+# [$aconf].each do |f|
+#   if not File.readable? f
+#     raise "file argument not readable: #{f}"
+#   end
+# end
+
+## Make sure that dir things are directories.
+[$data, $tests, $output].each do |d|
+  if not File.writable? d
+    raise "directory argument not writable: #{d}"
+  end
+end
+
+# ## Setup data.
+# _log("Reading conf #{$aconf}")
+# aconf = Conf.new($aconf)
+
+## TODO: Use the values in the conf if not otherwise specified.
 #home_url = aconf.get('amigo_cgi_url') + '/amigo'
-$amigo_url = aconf.get('amigo_cgi_url')
-$te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
-$data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
-$dump_home = '/home/sjcarbon/tmp/kappa/'
-$tests_home = '/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/'
+# $amigo_url = aconf.get('amigo_cgi_url')
+# $te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
+
+##
+# $data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
+# $dump_home = '/home/sjcarbon/tmp/kappa/'
+# $output_home = '/home/sjcarbon/tmp/kappa'
+# $tests_home = '/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/'
+
+$log_file = $output +'/'+ 'details.log'
+$errors = 0
+
+## Delete log file.
+def _erase_log
+  if File.exists?($log_file)
+    File.delete($log_file)
+    true
+  else
+    false
+  end
+end
+
+##
+def _ready_dir (dir)
+  ## Make sure that there is a directory or something there...
+  if File.exists? dir
+    if not File.directory? dir or not File.writable? dir
+      raise "There is something wrong with an extant #{dir}"
+    end
+    false
+  else
+    Dir.mkdir(dir)
+    true
+  end
+end
+
+## 
+def _log (line = "???")
+
+  gtime = "[#{Time.now.strftime("%Y%m%d%H%M%S")}]"
+  _ready_dir(File.dirname($log_file))
+  
+    f = File.open($log_file, 'a')
+  f.write("#{gtime} #{line}\n")
+  f.close
+  
+  nil
+end
+
 
 ## Do these tests:
 # $tests = [:straight, :template, :links101, :timeout, :random, :file]
@@ -205,7 +307,7 @@ $test_map[:random] = proc do
     ## possible.
     $t11 = $t10.submit('visualize')
     if ! $t11.nil?
-      puts "got image: " + $t11.dump($dump_home)
+      puts "got image: " + $t11.dump($output)
     else
       puts "random visualize may have timed out"
     end
@@ -219,61 +321,101 @@ end
 ### Try doing tests.
 ###
 
-## TODO:
-$test_map[:tests] = proc do
+def inspector (runner)
+  
+  puts "Trying tests: #{runner.id}..."
+  _log("Trying tests: #{runner.id}: #{runner.comment}")
 
-  test_files = File.join("**", "*.t")
-  Dir.glob(test_files).sort.each do |test_desc|
-
-    puts "Form tests defined in #{test_desc}..."
-
-    ## TODO: this section should maybe grow to the Inspector's domain.
-    cleared = false
-    begin
-      $runner = PageRunner.new($amigo_url, test_desc)
-      $vpage = PageVerifier.new($runner.resultant)
-      cleared = true
-    rescue
-      ## TODO: 
-      puts "\t Failed to get the testable page."
-    end
-
-    if cleared
-
-      ## Walk through tests.
-      $runner.tests.each do |t|
-        puts "\tTrying test: #{t.to_s}" # + "\" on " + @pagent.uri
-        result = $vpage.send t
-        puts "\t\t" + result.to_s
-      end
-    
-      ## Walk through assertions.
-      $runner.assertions.each do |a|
-        # puts "a: #{a}"
-        # puts "a.class: #{a.class}"
-        # puts "a[0]: #{a[0]}"
-        # puts "a[1]: #{a[1]}"
-        # puts "a[2]: #{a[2]}"
-        lval_key = a.fetch('sub', nil)
-        op = a.fetch('op', nil)
-        rval = a.fetch('arg', nil)
-        puts "\tTrying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}"
-        puts "\t\t" + $vpage.assert(a).to_s
-      end
-
-    else
-      ## 
-    end
-      
+  ##
+  cleared = false
+  begin
+    $vpage = PageVerifier.new(runner.resultant)
+    cleared = true
+  rescue
+    ##
+    # puts "   Failed to get the testable page."
+    _log("*  Failed to get the testable page: #{$!}")
   end
+  
+  if cleared
 
+    ## Walk through tests.
+    runner.tests.each do |t|
+      _log("   Trying test: #{t.to_s}")
+      result = $vpage.send t
+      # puts "\t\t" + result.to_s
+    end
+    
+    ## Walk through assertions.
+    runner.assertions.each do |a|
+      # puts "a: #{a}"
+      # puts "a.class: #{a.class}"
+      # puts "a[0]: #{a[0]}"
+      # puts "a[1]: #{a[1]}"
+      # puts "a[2]: #{a[2]}"
+      lval_key = a.fetch('sub', nil)
+      op = a.fetch('op', nil)
+      rval = a.fetch('arg', nil)
+      _log( "   Trying assertion: #{lval_key.to_s} #{op.to_s} #{rval.to_s}")
+      # puts "\t\t" + $vpage.assert(a).to_s
+    end
+    
+    ## Output: files and logging.
+    $vpage.dump($output, runner.id)
+    
+    $vpage.warnings.each do |w|
+      _log("#{runner.id}: warning: #{w}")
+    end
+    
+    $vpage.errors.each do |e|
+      _log("#{runner.id}: ERROR: #{e}")
+      $errors = $errors + 1
+    end
+
+    ## Check to see if there are any continues.
+    runner.continue.each do |next_desc|
+      _log("   Do a continue <--")
+      next_pagent = runner.resultant
+      next_runner = PageRunner.new(next_pagent, next_desc)
+      inspector(next_runner)
+    end
+    
+  else
+    ## 
+  end
+  
 end
+
+
+## TODO:
+# $test_map[:tests] = proc do
+
+## Ready up.
+_erase_log
+_ready_dir $output
+
+test_files = File.join("**", "*.t")
+Dir.glob(test_files).sort.each do |test_desc|
+  
+  $runner = PageRunner.new($url, test_desc)
+  inspector($runner)
+      
+end
+
+# end
 
 ###
 ### Do specified tests.
 ###
 
-$tests.each do |s|
-  puts "Doing \"" + s.to_s + "\"..."
-  $test_map[s].call
-end
+# $tests.each do |s|
+#   _log("Doing \"" + s.to_s + "\"...")
+#   $test_map[s].call
+# end
+
+puts "Finished with #{$errors} errors."
+_log("Finished with #{$errors} errors.")
+
+## TODO: make irb work as well as command line ($0 loopback?)
+## TODO: move extra stuff into aunit self-test
+## TODO: randomized input (generate new test files in the fly?)

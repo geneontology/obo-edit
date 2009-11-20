@@ -71,13 +71,53 @@ class PAgent
   def uuid
     UUIDTools::UUID.random_create.to_s
   end
-  
-  def dump (dump_home)
-    ct = @core.response['content-type']
-    suffix = '.' + ct.split('/')[-1]
-    fname = dump_home + uuid + suffix
-    File.open(fname, 'w') {|f| f.write(@core.body) }
-    fname
+
+  ## Take id input, catch output errors.
+  ## DEPRECATED: moved into PageVerifier
+  def dump (output_dir, token_label = "")
+
+    ## Work if there is a core, otherwise
+    if @core and @core.response
+
+      ## Get the best suffix we can.
+      suffix = '.nil'
+      ct = @core.response['content-type']
+      if ct
+        suffix = '.' + ct.split('/')[-1]
+      end
+
+      ## Good times.
+      gtime = Time.now.strftime("%Y%m%d%H%M%S")
+
+      ## Complete file name.
+      fname = nil
+      if token_label.eql?('')
+        fname = output_dir +'/'+ gtime +'_'+ uuid + suffix
+      else
+        slabel = File.basename(token_label, '.t')
+        fname = output_dir +'/'+ gtime +'_'+ slabel + suffix
+      end
+      
+      # puts "output_dir: #{output_dir}"
+      # puts "gtime: #{gtime}"
+      # puts "token_label: #{token_label}"
+      # puts "uuid: #{uuid}"
+      # puts "suffix: #{suffix}"
+      
+      ##
+      begin
+        File.open(fname, 'w') {|f| f.write(@core.body) }
+        # puts "HERE"
+      rescue
+        fname = nil
+        # puts "THERE"
+      end
+
+      fname
+    else
+      nil
+    end
+
   end
   
 end

@@ -52,23 +52,52 @@ module AUnit
   ## A class to run a pagent out of a file.
   class PageRunner
 
-    # attr_queue :error
-    attr_reader :resultant, :comment, :page, :url, :tests, :assertions
+    attr_reader :resultant, :id, :comment, :continue, :page, :tests, :assertions
 
     @json_conf = nil
     @tester = nil
 
-    def initialize (home_url, file_str)
+    ## We either have to bootstrap from a desc file (with a "page")
+    ## and a url, or we have to work from a pagent and have a desc
+    ## that doesn't need a "page" (since we are already working from a
+    ## pagent).
+    def initialize (page_source, desc_source)
 
-      @json_conf = AmiGO::Conf.new(file_str)
-      @comment = @json_conf.get('comment') || ''
+      # home_url, file_str
+      # puts "FOO: #{page_source.class} #{desc_source.class}"
 
-      @page = @json_conf.get('page') || ''
-      if @page.eql?('')
-        raise "miss formatted conf file in page"      
+      ## After this part, the following should be defined:
+      ##   @json_conf : the configuration
+      ##   @tester : a pagent to test
+      if page_source.is_a?(String) and desc_source.is_a?(String)
+
+        @json_conf = AmiGO::Conf.new(desc_source)
+        page = @json_conf.get('page') || ''
+        if page.eql?('')
+          raise "miss formatted conf file in page"      
+        end
+        @tester = PAgent::HTML.new(page_source + '/' + page)
+
+      elsif page_source.is_a?(PAgent) and desc_source.is_a?(AmiGO::Conf)
+        
+        @json_conf = desc_source
+        @tester = page_source
+
+      elsif page_source.is_a?(PAgent) and desc_source.is_a?(Hash)
+        
+        @json_conf = AmiGO::Conf.new(desc_source)
+        @tester = page_source
+
       else
-        @url = home_url + '/' + @page
+        raise "unusable argument types"
       end
+
+      ##
+      @id = @json_conf.get('id')
+      # $j =  @json_conf
+      if @id.nil? then raise "at least need a test id" end
+      @comment = @json_conf.get('comment') || ''
+      @continue = @json_conf.get('continue') || []
 
       ## Pull the boolean tests out of the conf.
       tmp = @json_conf.get('tests') || []
@@ -76,7 +105,7 @@ module AUnit
         t.to_sym
       end
 
-      ##
+      ## Pull the assertions out of the conf.
       tmp = @json_conf.get('assertions') || []
       @assertions = tmp.map do |a|
         if a.class == Hash or a.size >= 3
@@ -88,18 +117,8 @@ module AUnit
         end
       end
       
-      ## TODO: dump output to a specific directory
-      # 
-      
-      ## TODO: continue on down...
-      # 
-
-      ##
-      @tester = PAgent::HTML.new(@url)
-      #puts "_@tester: " + @tester.to_s
-      #puts "_@json_conf: " + @json_conf.to_s
-
-      ## If there is a 
+      ## If there is a form defined and it exists in page, go do
+      ## that. Otherwise, just use the current page as the resultant.
       begin
         @tester.form_from_conf(@json_conf)
         form_name = @json_conf.get('form')
@@ -164,6 +183,72 @@ module AUnit
         end
       end
 
+    end
+
+    ###
+    ### Dumping, logging, record keeping routines.
+    ###
+
+    def _ready_dir (dir)
+      ## Make sure that there is a directory or something there...
+      if File.exists? dir
+        if not File.directory? dir or not File.writable? dir
+          raise "There is something wrong with an extant #{dir}"
+        end
+        false
+      else
+        Dir.mkdir(dir)
+        true
+      end
+    end
+
+    ## Take id input, catch output errors.
+    def dump (output_dir, token_label = "")
+      
+      ## Work if there is a core, otherwise
+      if @pagent and @pagent.core and @pagent.core.response
+
+        _ready_dir(output_dir)
+        
+        ## Get the best suffix we can.
+        suffix = '.nil'
+        ct = @pagent.core.response['content-type']
+        if ct
+          suffix = '.' + ct.split('/')[-1]
+        end
+        
+        ## Good times.
+        gtime = Time.now.strftime("%Y%m%d%H%M%S")
+        
+        ## Complete file name.
+        fname = nil
+        if token_label.eql?('')
+          fname = output_dir +'/'+ gtime +'_'+ uuid + suffix
+        else
+          slabel = File.basename(token_label, '.t')
+          fname = output_dir +'/'+ gtime +'_'+ slabel + suffix
+        end
+        
+        # puts "output_dir: #{output_dir}"
+        # puts "gtime: #{gtime}"
+        # puts "token_label: #{token_label}"
+        # puts "uuid: #{uuid}"
+        # puts "suffix: #{suffix}"
+        
+        ##
+        begin
+          File.open(fname, 'w') {|f| f.write(@pagent.content)}
+          # puts "HERE"
+        rescue
+          fname = nil
+          # puts "THERE"
+        end
+        
+        fname
+      else
+        nil
+      end
+      
     end
 
     ###
