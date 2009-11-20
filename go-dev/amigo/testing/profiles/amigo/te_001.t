@@ -1,4 +1,5 @@
 {
+    "id" : "te_001",
     "page" : "term_enrichment",
     "comment" : "testing for small set...ieas",
     "tests" : ["okay?", "code?", "links?"],
