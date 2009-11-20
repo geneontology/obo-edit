@@ -18,11 +18,11 @@ module AmiGO
     def initialize (thingy)
 
       ## Switch on incoming hash or file identifying a JSON file.
-      if Hash == thingy.class 
+      if thingy.is_a?(Hash)
 
         @conf_hash = thingy
 
-      elsif String == thingy.class
+      elsif thingy.is_a?(String)
 
         ## If extant, bring in the JSON config.
         if File.exists?(thingy) && File.readable?(thingy)

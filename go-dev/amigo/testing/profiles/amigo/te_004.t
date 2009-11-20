@@ -1,5 +1,6 @@
 {
-    "page" : "term_enrichment",
+   "id" : "te_004", 
+   "page" : "term_enrichment",
     "comment" : "testing for minimal iea set breakage",
     "tests" : ["okay?",
                "code?"],
