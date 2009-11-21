@@ -1,9 +1,11 @@
 #!/usr/bin/ruby -w
 ####
-#### NOTE: Right now, needs to run from "go-dev/amigo/testing".
 #### Run: ./kappa
 ####
+#### TODO: Still needs to be run from geneontology/go-dev/amigo/testing.
 #### TODO: Agents should share cookies...
+#### TODO: Randomized input (generate new test files on the fly?).
+#### TODO: Still have globals running around (nice for debugging for now)...
 ####
 #### irb:
 ####    ['pagent.rb', 'amigo.rb', 'aunit.rb', 'kappa'].each{|l| load l }
@@ -13,7 +15,7 @@
 ####
 
 require 'getoptlong'
-require 'rdoc/usage'
+# require 'rdoc/usage'
 
 require 'pagent'
 require 'amigo'
@@ -37,15 +39,16 @@ opts = GetoptLong.new(
 ## Globals until all of the debugging is done.
 # $aconf = './config.json'
 $data = './data'
-$tests = './tests'
-$output = './tmp'
+$tests = './profiles/tests' # ? should this be switched on if __FILE__ == $0
+$output = '/tmp'
 $url = 'http://localhost'
 opts.each do |opt, arg|
   case opt
   when '--help'
-    RDoc::usage
-  # when '--aconf'
-  #   $aconf = arg
+    ## TODO: 
+    # RDoc::usage
+    puts "Please see the source code for now for usage and examples."
+    Kernel.exit
   when '--data'
     $data = arg
   when '--tests'
@@ -71,28 +74,27 @@ end
   end
 end
 
-# ## Setup data.
-# _log("Reading conf #{$aconf}")
-# aconf = Conf.new($aconf)
-
-## TODO: Use the values in the conf if not otherwise specified.
-#home_url = aconf.get('amigo_cgi_url') + '/amigo'
-# $amigo_url = aconf.get('amigo_cgi_url')
-# $te_home_url = aconf.get('amigo_cgi_url') + '/term_enrichment'
-
 ##
-# $data_home = '/home/sjcarbon/local/src/svn/geneontology/lisp/tanuki/data/'
-# $dump_home = '/home/sjcarbon/tmp/kappa/'
-# $output_home = '/home/sjcarbon/tmp/kappa'
-# $tests_home = '/home/sjcarbon/local/src/svn/geneontology/go-dev/amigo/testing/profiles/'
-
 $log_file = $output +'/'+ 'details.log'
 $errors = 0
 
+## Clear output directory of html and png files.
+def _clear_output_dir da_dir
+  Dir.foreach(da_dir) do |f|
+    full_name = da_dir + '/' + f
+    if File.exists?(full_name)
+      if f =~ /^[0-9]{14}\_.*\.(png|gif|html|json)$/
+        # puts "_" + full_name
+        File.delete(full_name)
+      end
+    end
+  end
+end
+
 ## Delete log file.
-def _erase_log
-  if File.exists?($log_file)
-    File.delete($log_file)
+def _erase_log log_file
+  if File.exists?(log_file)
+    File.delete(log_file)
     true
   else
     false
@@ -126,129 +128,18 @@ def _log (line = "???")
   nil
 end
 
-
-## Do these tests:
-# $tests = [:straight, :template, :links101, :timeout, :random, :file]
-# $tests = [:template]
-# $tests = [:random]
-# $tests = [:file]
-$tests = [:tests]
-$test_map = {}
-
-###
-### Direct manipulation.
-###
-
-$test_map[:straight] = proc do
-
-  $t1 = PAgent::HTML.new($te_home_url)
-  $t1.set_upload('term_enrichment_form',
-                 'gp_file',
-                 $data_home + 'gp/sgd-small-10.txt')
-  $t1.set_upload('term_enrichment_form',
-                 'bggp_file',
-                 $data_home + 'gp/sgd-small-40.txt')
-  $t1.set_multi_select('term_enrichment_form',
-                       'speciesdb',
-                       ['SGD'])
-  $t1.set_radio('term_enrichment_form',
-                'iea',
-                'yes')
-  $t1.set_field('term_enrichment_form',
-                'cutoff',
-                '10')
-  $t2 = $t1.submit('term_enrichment_form')
-
-  ## May time out.
-  if ! $t2.nil?
-    $t3 = $t2.submit('visualize')
-  end
-
-end
-
-###
-### Try templating.
-###
-
-$test_map[:template] = proc do
-
-  $t4 = PAgent::HTML.new($te_home_url)
-  $form_hash = {
-    'form' => 'term_enrichment_form',
-    'upload' => {
-      'gp_file' => $data_home + 'gp/sgd-small-10.txt',
-      'bggp_file' => $data_home + 'gp/sgd-small-40.txt'
-    },
-    'multi_select' => {'speciesdb' => ['SGD']},
-    'radio' => {'iea' => 'yes'},
-    'field' => {'cutoff' => '10'}
-  }
-  $t4.form_from_conf(Conf.new($form_hash))
-  $t5 = $t4.submit('term_enrichment_form')
-
-  ## May time out.
-  if ! $t5.nil?
-    $t6 = $t5.submit('visualize')
-  end
-
-end
-
-###
-### Try doing things based from the file system.
-###
-
-## TODO:
-$test_map[:file] = proc do
-
-  $runner = PageRunner.new('profiles/te_001.page')
-  $runner.over_page($te_home_url)
-  puts $runner.resultant
-
-end
-
-###
-### Check timeouts.
-###
-
-$test_map[:timeout] = proc do
-  $ts_url = 'http://localhost/cgi-bin/amigo/form_test?mode=timeout&seconds=299'
-  $t7 = PAgent::HTML.new($ts_url)
-end
-
-###
-### Check example links and timeouts.
-###
-
-$test_map[:links101] = proc do
-
-  $test_url = 'http://localhost/cgi-bin/amigo/form_test?mode=links_101'
-  $t8 = PAgent::HTML.new($test_url)
-
-  $new_links = [];
-  $new_forms = [];
-  if $t8.okay? && ($t8.code == "200") 
-    $new_links = $t8.links 
-  else
-    puts "trouble getting: " + $t8.uri
-  end
-
-  $new_agents = $new_links.map{ |l| $t8.click(l) }
-  #puts $new_agents
-
-end
-
 ###
 ### TODO: randomly generate input.
 ###
 
-$test_map[:random] = proc do
+# $test_map[:random] = proc do
 
-  ## Get initial page for probing.
-  $t9 = PAgent::HTML.new($te_home_url)
+#   ## Get initial page for probing.
+#   $t9 = PAgent::HTML.new($te_home_url)
 
-  ## Create a speciesdb subset using amb.
-  all_sdb = $t9.select_values('term_enrichment_form', 'speciesdb')
-  $sbd_subset = []
+#   ## Create a speciesdb subset using amb.
+#   all_sdb = $t9.select_values('term_enrichment_form', 'speciesdb')
+#   $sbd_subset = []
 #   amb = Amb.new
 #   begin
 #     a = amb.choose(all_asdb)
@@ -261,64 +152,63 @@ $test_map[:random] = proc do
 #         #puts "No More Solutions"
 #       end
 
+# ## Get large bank of GPs.
+# $gp_bank = [];
+# ['gp/All_genes',
+#  'gp/sc_product_list',
+#  'gp/total-genes-MGIMGI.txt'].each do |fname|
 
-  ## Get large bank of GPs.
-  $gp_bank = [];
-  ['gp/All_genes',
-   'gp/sc_product_list',
-   'gp/total-genes-MGIMGI.txt'].each do |fname|
+#   full_name = $data_home + fname
+#   file = File.new(full_name)
+#   file.each do |line|
+#     $gp_bank.push(line.chomp)
+#   end
+#   file.close
 
-    full_name = $data_home + fname
-    file = File.new(full_name)
-    file.each do |line|
-      $gp_bank.push(line.chomp)
-    end
-    file.close
+# end
 
-  end
+# ## Shuffle banked gene products...
+# shuffled = $gp_bank.sort_by { rand }
+# $gp_subset = shuffled.slice(0,100)
+# $bggp_subset = shuffled.slice(0,500)
 
-  ## Shuffle banked gene products...
-  shuffled = $gp_bank.sort_by { rand }
-  $gp_subset = shuffled.slice(0,100)
-  $bggp_subset = shuffled.slice(0,500)
+# ## Create form template.
+# $random_form_hash = {
+#   'form' => 'term_enrichment_form',
+#   'multi_select' => {'speciesdb' => ['SGD', 'dictyBase', 'MGI']},
+#   'radio' => {'iea' => 'yes'},
+#   'field' => {
+#     #'request' => 'results',
+#     #'force' => 'yes',
+#     'cutoff' => '10',
+#     'gp_list' => $gp_subset.join(' '),
+#     'bggp_list' => $bggp_subset.join(' ')
+#   }
+# }
 
-  ## Create form template.
-  $random_form_hash = {
-    'form' => 'term_enrichment_form',
-    'multi_select' => {'speciesdb' => ['SGD', 'dictyBase', 'MGI']},
-    'radio' => {'iea' => 'yes'},
-    'field' => {
-      #'request' => 'results',
-      #'force' => 'yes',
-      'cutoff' => '10',
-      'gp_list' => $gp_subset.join(' '),
-      'bggp_list' => $bggp_subset.join(' ')
-    }
-  }
+# ## Run page.
+# $t9.form_from_conf(Conf.new($random_form_hash))
+# $t10 = $t9.submit('term_enrichment')
 
-  ## Run page.
-  $t9.form_from_conf(Conf.new($random_form_hash))
-  $t10 = $t9.submit('term_enrichment')
+#   ## May have timed out.
+#   if ! $t10.nil?
 
-  ## May have timed out.
-  if ! $t10.nil?
+#     ## Run out the visualization from the TE results pages if
+#     ## possible.
+#     $t11 = $t10.submit('visualize')
+#     if ! $t11.nil?
+#       puts "got image: " + $t11.dump($output)
+#     else
+#       puts "random visualize may have timed out"
+#     end
+#   else
+#     puts "random TE may have timed out"
+#   end
 
-    ## Run out the visualization from the TE results pages if
-    ## possible.
-    $t11 = $t10.submit('visualize')
-    if ! $t11.nil?
-      puts "got image: " + $t11.dump($output)
-    else
-      puts "random visualize may have timed out"
-    end
-  else
-    puts "random TE may have timed out"
-  end
-
-end
+# end
 
 ###
-### Try doing tests.
+### ...
 ###
 
 def inspector (runner)
@@ -374,7 +264,7 @@ def inspector (runner)
 
     ## Check to see if there are any continues.
     runner.continue.each do |next_desc|
-      _log("   Do a continue <--")
+      _log("   Do a continue <==")
       next_pagent = runner.resultant
       next_runner = PageRunner.new(next_pagent, next_desc)
       inspector(next_runner)
@@ -386,13 +276,14 @@ def inspector (runner)
   
 end
 
-
-## TODO:
-# $test_map[:tests] = proc do
+###
+### Program body.
+###
 
 ## Ready up.
-_erase_log
+_erase_log $log_file
 _ready_dir $output
+_clear_output_dir $output
 
 test_files = File.join("**", "*.t")
 Dir.glob(test_files).sort.each do |test_desc|
@@ -402,20 +293,6 @@ Dir.glob(test_files).sort.each do |test_desc|
       
 end
 
-# end
-
-###
-### Do specified tests.
-###
-
-# $tests.each do |s|
-#   _log("Doing \"" + s.to_s + "\"...")
-#   $test_map[s].call
-# end
-
+##
 puts "Finished with #{$errors} errors."
 _log("Finished with #{$errors} errors.")
-
-## TODO: make irb work as well as command line ($0 loopback?)
-## TODO: move extra stuff into aunit self-test
-## TODO: randomized input (generate new test files in the fly?)
