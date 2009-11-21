@@ -28,17 +28,11 @@ import org.obo.datamodel.LinkedObject;
  */
 public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTableModel
 {
-	final static int COL_SELECT = 0;
-	final static int COL_TERM = 1;
-	final static int COL_RELATION = 2;
-	final static int COL_PREDICTED = 3;
-	final static int COL_COMMENT = 4;
 
-	String[] colNames = { "", "Term", "Relation", "Predicted", "Comment" };
+	public enum columns  { Selector, Predicted, Relation, Term, Comment }
 
 	private static final long serialVersionUID = 4146368118692966602L;
 
-	private int numberOfColumns = 5;
 	private String lastRegex = new String();
 
 	private Set<String> ticked = new HashSet<String>();
@@ -292,14 +286,14 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	 */
 	public int getColumnCount()
 	{
-		return numberOfColumns;
+		return columns.values().length;
 	}
 
 	@Override
 	public String getColumnName(int column)
 	{
-		if (column < colNames.length) {
-			return colNames[column];
+		if (column < columns.values().length) {
+			return columns.values()[column].name();
 		}
 		else {
 			return "";
@@ -371,10 +365,10 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 		List<T> visibleElements = this.getVisibleElements();
 		if (rowIndex < visibleElements.size()) {
 			T term = visibleElements.get(rowIndex);
-			if (columnIndex == COL_SELECT) {
+			if (columnIndex == columns.Selector.ordinal()) {
 				return ticked.contains(getTermId(term));
 			}
-			else if (columnIndex == COL_TERM) {
+			else if (columnIndex == columns.Term.ordinal()) {
 				StringBuffer buffer = new StringBuffer();
 				buffer.append(getTermName(term));
 				buffer.append(" (");
@@ -382,7 +376,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				buffer.append(" )");
 				return buffer.toString();
 			}
-			else if (columnIndex == COL_RELATION) {
+			else if (columnIndex == columns.Relation.ordinal()) {
 				if (selectedRelationType.containsKey(term)) {
 					return selectedRelationType.get(term);
 				}
@@ -390,7 +384,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 					return getDefaultRelationType();
 				}
 			}
-			else if (columnIndex == COL_PREDICTED) {
+			else if (columnIndex == columns.Predicted.ordinal()) {
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
 					if (set.contains(getTermId(term))) {
@@ -403,7 +397,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				}
 				return null;
 			}
-			else if (columnIndex == COL_COMMENT) {
+			else if (columnIndex == columns.Comment.ordinal()) {
 				StringBuffer buffer = new StringBuffer();
 				for (Object[] objects : order) {
 					Set<String> set = (Set<String>) objects[0];
@@ -453,7 +447,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
-		if (columnIndex == COL_SELECT || columnIndex == COL_RELATION) {
+		if (columnIndex == columns.Selector.ordinal() || columnIndex == columns.Relation.ordinal()) {
 			return true;
 		}
 		else {
@@ -504,7 +498,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	{
 		this.relationTypes = relationTypes;
 		// fire tabel changed event
-		TableModelEvent e = new TableModelEvent(this, 0, this.getRowCount(), COL_RELATION, TableModelEvent.UPDATE);
+		TableModelEvent e = new TableModelEvent(this, 0, this.getRowCount(), columns.Relation.ordinal(), TableModelEvent.UPDATE);
 		fireTableChanged(e);
 	}
 
@@ -565,14 +559,14 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 	{
 		T term = this.getVisibleElements().get(rowIndex);
-		if (columnIndex == COL_SELECT) {
+		if (columnIndex == columns.Selector.ordinal()) {
 			if (aValue instanceof Boolean) {
 				Boolean isTicked = (Boolean) aValue;
 				setTicked(term, isTicked);
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}
-		else if (columnIndex == COL_RELATION) {
+		else if (columnIndex == columns.Relation.ordinal()) {
 			selectedRelationType.put(this.getTermAt(rowIndex), (R) aValue);
 		}
 	}
@@ -594,7 +588,7 @@ public abstract class AbstractOntologyTermsTableModel<T, R> extends AbstractTabl
 				if (termLabel.equalsIgnoreCase(label)) {
 					addSameAsCandidateTerm(Collections.singleton(term));
 				}
-				else if (COL_SELECT < calcFirstIndexOf(termLabel, label) || COL_SELECT < calcFirstIndexOf(label, termLabel)) {
+				else if (columns.Selector.ordinal() < calcFirstIndexOf(termLabel, label) || columns.Selector.ordinal() < calcFirstIndexOf(label, termLabel)) {
 					addSimilarToCandidateTerm(Collections.singleton(term));
 				}
 			}
