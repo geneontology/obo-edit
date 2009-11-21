@@ -127,7 +127,7 @@ public abstract class OntologyGenerationComponent<T, R> implements PropertyChang
 	private final OntologyModelAdapterInterface<T, R> adapter;
 	private final OBOOntologyGenerationGUIComponent guiComponent;
 
-	public static final String PLUGIN_VERSION = "2.0";
+	public static final String PLUGIN_VERSION = "3.0";
 	public static final String PLUGIN_VERSIONED_NAME = "OBO-Edit-" + OBOOntologyModelAdapter.getOboEditVersion() + "_" + PLUGIN_VERSION;
 	private static final String SOURCE_PUBMED = "PUBMED";
 	private static final String SOURCE_TEXT = "TEXT";
