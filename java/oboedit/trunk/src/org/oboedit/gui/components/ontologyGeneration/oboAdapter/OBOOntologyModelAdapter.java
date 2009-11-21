@@ -1,9 +1,9 @@
 package org.oboedit.gui.components.ontologyGeneration.oboAdapter;
 
-import java.awt.Component;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +58,6 @@ import org.oboedit.util.GUIUtil;
 
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupRelation;
 import de.tud.biotec.gopubmedOntologyLookupService.xsd.OBOLookupTerm;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class OBOOntologyModelAdapter implements OntologyModelAdapterInterface<LinkedObject, OBOProperty>
 {
